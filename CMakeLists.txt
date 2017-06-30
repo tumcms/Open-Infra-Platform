@@ -260,7 +260,7 @@ include(external/cmake/FindQhull.cmake)
 include_directories(external/carve/include)
 include_directories(${CMAKE_BINARY_DIR}/external/carve/include) #for out of source builds
 include_directories(external/carve/common)
-add_subdirectory(external/carve)
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
 set_target_properties(carve 								PROPERTIES FOLDER "ThirdParty/carve")
 
 macro (find_prebuild_earlybinding library) 

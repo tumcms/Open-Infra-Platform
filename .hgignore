@@ -8,7 +8,6 @@ bin/vs2013/x64/*
 lib/vs2013/x64/*
 *.wixobj
 *.wixpdb
-lib/*
 testdata/**
 bin/vs2015/x64/OpenInfraPlatform.Infrastructure.dll
 bin/vs2015/x64/OpenInfraPlatform.Infrastructured.dll
