@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<schema targetNamespace="http://schema.okstra.de/2016/okstra-typen"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:gml="http://www.opengis.net/gml/3.2"
+    elementFormDefault="qualified" version="2.016">
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+    <import namespace="http://www.w3.org/1999/xlink" schemaLocation="./xlink/xlink.xsd" />
+    <!-- -->
+    <!-- ========================================= -->
+    <!-- = Definition der verwendeten Grundtypen = -->
+    <!-- ========================================= -->
+    <!-- -->
+    <complexType name="WeightType">
+        <simpleContent>
+            <extension base="gml:MeasureType"/>
+        </simpleContent>
+    </complexType>
+    <complexType name="CurrencyType">
+        <simpleContent>
+            <extension base="gml:MeasureType"/>
+        </simpleContent>
+    </complexType>
+    <complexType name="ForceType">
+        <simpleContent>
+            <extension base="gml:MeasureType"/>
+        </simpleContent>
+    </complexType>
+    <complexType name="ForcePerUnitAreaType">
+        <simpleContent>
+            <extension base="gml:MeasureType"/>
+        </simpleContent>
+    </complexType>
+    <complexType name="FrequencyType">
+        <simpleContent>
+            <extension base="gml:MeasureType"/>
+        </simpleContent>
+    </complexType>
+    <complexType name="IlluminanceType">
+        <simpleContent>
+            <extension base="gml:MeasureType"/>
+        </simpleContent>
+    </complexType>
+    <complexType name="PowerType">
+        <simpleContent>
+            <extension base="gml:MeasureType"/>
+        </simpleContent>
+    </complexType>
+    <complexType name="SlopeType">
+        <simpleContent>
+            <extension base="gml:MeasureType"/>
+        </simpleContent>
+    </complexType>
+    <complexType name="TemperatureType">
+        <simpleContent>
+            <extension base="gml:MeasureType"/>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Anzahl">
+        <restriction base="integer"/>
+    </simpleType>
+    <simpleType name="Anzahl_einstellig">
+        <restriction base="integer"/>
+    </simpleType>
+    <simpleType name="Anzahl_Klassen">
+        <restriction base="integer"/>
+    </simpleType>
+    <simpleType name="Anzahl_zweistellig">
+        <restriction base="integer"/>
+    </simpleType>
+    <simpleType name="AOA_Kennung">
+        <restriction base="string"/>
+    </simpleType>
+    <simpleType name="ASB_ING_Schluessel">
+        <restriction base="string"/>
+    </simpleType>
+    <complexType name="cd_pro_Quadratmeter">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="cd%2Fm%B2" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Dezimeter">
+        <simpleContent>
+            <restriction base="gml:LengthType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="dm" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="DM">
+        <simpleContent>
+            <restriction base="okstra-typen:CurrencyType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="DM" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="dpi">
+        <restriction base="integer"/>
+    </simpleType>
+    <complexType name="Eins_zu_N">
+        <simpleContent>
+            <restriction base="okstra-typen:SlopeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="Eins_zu_N" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="EURO">
+        <simpleContent>
+            <restriction base="okstra-typen:CurrencyType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="EUR" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Farbtiefe">
+        <restriction base="integer"/>
+    </simpleType>
+    <complexType name="Gon">
+        <simpleContent>
+            <restriction base="gml:AngleType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="gon" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Grad">
+        <simpleContent>
+            <restriction base="gml:AngleType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="%B0" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Grad_Celsius">
+        <simpleContent>
+            <restriction base="okstra-typen:TemperatureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="%B0C" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Gramm_pro_Quadratmeter">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="g%2Fm%B2" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Groesse">
+        <restriction base="double"/>
+    </simpleType>
+    <simpleType name="GUID">
+        <restriction base="string"/>
+    </simpleType>
+    <complexType name="Hektar">
+        <simpleContent>
+            <restriction base="gml:AreaType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="ha" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Hektopascal">
+        <simpleContent>
+            <restriction base="okstra-typen:ForcePerUnitAreaType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="hPa" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Jahr">
+        <restriction base="integer"/>
+    </simpleType>
+    <complexType name="Jahre">
+        <simpleContent>
+            <restriction base="gml:TimeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="a" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Kilogramm">
+        <simpleContent>
+            <restriction base="okstra-typen:WeightType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="kg" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Kilogramm_pro_Kubikmeter">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="kg%2Fm%B3" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Kilogramm_pro_Quadratmeter">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="kg%2Fm%B2" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Kilometer">
+        <simpleContent>
+            <restriction base="gml:LengthType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="km" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Kilonewton">
+        <simpleContent>
+            <restriction base="okstra-typen:ForceType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="kN" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Kilonewton_pro_Meter">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="kN%2Fm" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Kilonewton_pro_Quadratmeter">
+        <simpleContent>
+            <restriction base="okstra-typen:ForcePerUnitAreaType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="kN%2Fm%B2" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Kilowatt">
+        <simpleContent>
+            <restriction base="okstra-typen:PowerType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="kW" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Klassenwert">
+        <restriction base="integer"/>
+    </simpleType>
+    <complexType name="Kubikmeter">
+        <simpleContent>
+            <restriction base="gml:VolumeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="m%B3" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Kubikzentimeter">
+        <simpleContent>
+            <restriction base="gml:VolumeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="cm%B3" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="lfd_NK_Nummer">
+        <restriction base="string"/>
+    </simpleType>
+    <complexType name="Liter_pro_Sekunde_und_Meter">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="l%2F(ms)" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Lux">
+        <simpleContent>
+            <restriction base="okstra-typen:IlluminanceType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="lx" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Megahertz">
+        <simpleContent>
+            <restriction base="okstra-typen:FrequencyType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="MHz" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Meter">
+        <simpleContent>
+            <restriction base="gml:LengthType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="m" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Meter_pro_Sekunde">
+        <simpleContent>
+            <restriction base="gml:SpeedType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="m%2Fs" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Meter_pro_Sekunde_Wasserdurchl">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="m%2Fs" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Mikrometer">
+        <simpleContent>
+            <restriction base="gml:LengthType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="%B5m" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Millimeter">
+        <simpleContent>
+            <restriction base="gml:LengthType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="mm" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Millimeter_Niederschlag">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="mm" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Millimeter_pro_Stunde">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="mm%2Fh" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Millisekunde">
+        <restriction base="integer"/>
+    </simpleType>
+    <complexType name="Millisekunden">
+        <simpleContent>
+            <restriction base="gml:TimeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="ms" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Minute">
+        <restriction base="integer"/>
+    </simpleType>
+    <complexType name="Minuten">
+        <simpleContent>
+            <restriction base="gml:TimeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="min" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Monate">
+        <simpleContent>
+            <restriction base="gml:TimeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="Monate" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Netzknotennummer">
+        <restriction base="string"/>
+    </simpleType>
+    <complexType name="Newton">
+        <simpleContent>
+            <restriction base="okstra-typen:ForceType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="N" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Newton_pro_Quadratmillimeter">
+        <simpleContent>
+            <restriction base="okstra-typen:ForcePerUnitAreaType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="N%2Fmm%B2" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Nullpunktkennung">
+        <restriction base="string"/>
+    </simpleType>
+    <simpleType name="Nullpunktnummer">
+        <restriction base="string"/>
+    </simpleType>
+    <simpleType name="Promille">
+        <restriction base="double"/>
+    </simpleType>
+    <simpleType name="Prozent">
+        <restriction base="double"/>
+    </simpleType>
+    <complexType name="Prozent_Neigung">
+        <simpleContent>
+            <restriction base="okstra-typen:SlopeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="%" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Quadratmeter">
+        <simpleContent>
+            <restriction base="gml:AreaType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="m%B2" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Quadratmillimeter">
+        <simpleContent>
+            <restriction base="gml:AreaType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="mm%B2" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Radiant">
+        <simpleContent>
+            <restriction base="gml:AngleType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="rad" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="RGB_Farbwert">
+        <restriction base="integer"/>
+    </simpleType>
+    <simpleType name="Schadensbewertung">
+        <restriction base="integer"/>
+    </simpleType>
+    <simpleType name="Sekunde">
+        <restriction base="integer"/>
+    </simpleType>
+    <complexType name="Sekunden">
+        <simpleContent>
+            <restriction base="gml:TimeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="s" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Strassennummer">
+        <restriction base="integer"/>
+    </simpleType>
+    <simpleType name="Stunde">
+        <restriction base="integer"/>
+    </simpleType>
+    <complexType name="Stunden">
+        <simpleContent>
+            <restriction base="gml:TimeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="h" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Stunden_pro_Woche">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="h%2FWoche" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Stundenkilometer">
+        <simpleContent>
+            <restriction base="gml:SpeedType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="km%2Fh" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Tag">
+        <restriction base="integer"/>
+    </simpleType>
+    <complexType name="Tage">
+        <simpleContent>
+            <restriction base="gml:TimeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="d" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="TK25_Blattnummer">
+        <restriction base="string"/>
+    </simpleType>
+    <complexType name="Tonnen">
+        <simpleContent>
+            <restriction base="okstra-typen:WeightType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="t" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Unfaelle_pro_km_und_Jahr">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="1%2F(kma)" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Unfaelle_pro_Mio_Kfz_km">
+        <simpleContent>
+            <restriction base="gml:MeasureType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="1%2Fkm" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Woche">
+        <restriction base="integer"/>
+    </simpleType>
+    <complexType name="Wochen">
+        <simpleContent>
+            <restriction base="gml:TimeType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="Wochen" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <complexType name="Zentimeter">
+        <simpleContent>
+            <restriction base="gml:LengthType">
+                <attribute name="uom" type="gml:UomSymbol" fixed="cm" use="required"/>
+            </restriction>
+        </simpleContent>
+    </complexType>
+    <simpleType name="Zusatzbuchstabe">
+        <restriction base="string"/>
+    </simpleType>
+</schema>

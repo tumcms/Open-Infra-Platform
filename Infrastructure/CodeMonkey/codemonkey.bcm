@@ -1,0 +1,915 @@
+<?xml version="1.0"?>
+<BlueCodeMonkey version="Alpha1">
+ <project projectFolder="E:\dev\OpenInfraPlatform\Infrastructure\src"/>
+ <templateVariables userName="Julian Amann" userEmail="julian.amann@tum.de"/>
+ <classes>
+  <class name="ExportExcelDialog" namespace="">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DigitalElevationModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::Data">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="NavigationCubeMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="TerrainMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="SVGConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadXMLParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PropertyList" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CodeEditorWindow" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PreferencesDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="View" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="eView" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Hud" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="GenerateTerrain" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="ExportExcelDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="ExportExcelDialog" namespace="">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DigitalElevationModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::Data">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="NavigationCubeMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="TerrainMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="SVGConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadXMLParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PropertyList" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CodeEditorWindow" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PreferencesDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="View" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="eView" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Hud" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="GenerateTerrain" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="ExportExcelDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DeleteSurface" namespace="OpenInfraPlatform::DataManagement::Command">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DeleteSurface" namespace="OpenInfraPlatform::DataManagement::Command">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DeleteSurface" namespace="OpenInfraPlatfom::DataManagement::Command">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadDesignVCP" namespace="OpenInfraPlatfom::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadDesignVCP" namespace="OpenInfraPlatfom::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadDesignVCP" namespace="OpenInfraPlatfom::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="namespace" namespace="OpenInfraPlatfom::Core">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="namespace" namespace="OpenInfraPlatfom::Core">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="ExportExcelDialog" namespace="">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DigitalElevationModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::Data">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="NavigationCubeMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="TerrainMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="SVGConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadXMLParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PropertyList" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CodeEditorWindow" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PreferencesDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="View" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="eView" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Hud" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="GenerateTerrain" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="ExportExcelDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="ExportExcelDialog" namespace="">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DigitalElevationModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::Data">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="NavigationCubeMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="TerrainMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="SVGConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadXMLParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PropertyList" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CodeEditorWindow" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PreferencesDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="View" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="eView" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Hud" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="GenerateTerrain" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="ExportExcelDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DeleteSurface" namespace="OpenInfraPlatform::DataManagement::Command">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DeleteSurface" namespace="OpenInfraPlatform::DataManagement::Command">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DeleteSurface" namespace="OpenInfraPlatfom::DataManagement::Command">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadDesignVCP" namespace="OpenInfraPlatfom::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadDesignVCP" namespace="OpenInfraPlatfom::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadDesignVCP" namespace="OpenInfraPlatfom::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="namespace" namespace="OpenInfraPlatfom::Core">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="namespace" namespace="OpenInfraPlatfom::Core">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="namespace" namespace="OpenInfraPlatfom::Core">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CommandCreateClothoid" namespace="OpenInfraPlatfom::DataManagement::Command">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CommandCreateClothoid" namespace="OpenInfraPlatfom::DataManagement::Command">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CommandCreateClothoid" namespace="OpenInfraPlatform::DataManagement::Command">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="clothoidDescription" namespace="OpenInfraPlatform::Data">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DigitalElevationModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::Data">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="NavigationCubeMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="TerrainMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="SVGConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadXMLParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PropertyList" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CodeEditorWindow" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PreferencesDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="View" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="eView" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Hud" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="GenerateTerrain" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DigitalElevationModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::Data">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="NavigationCubeMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="TerrainMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="SVGConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadXMLParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PropertyList" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CodeEditorWindow" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PreferencesDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="View" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="eView" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Hud" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="GenerateTerrain" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DigitalElevationModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::Data">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="NavigationCubeMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="TerrainMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="SVGConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadXMLParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PropertyList" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CodeEditorWindow" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PreferencesDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="View" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="eView" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Hud" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="GenerateTerrain" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DigitalElevationModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::Data">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="NavigationCubeMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="TerrainMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="SVGConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadXMLParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PropertyList" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CodeEditorWindow" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PreferencesDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="View" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="eView" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Hud" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="GenerateTerrain" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="DigitalElevationModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::DataManagement">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AlignmentModel" namespace="BlueRoadDesign::Data">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="StepFileParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="NavigationCubeMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="TerrainMeshBuilder" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="SVGConverter" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="RoadXMLParser" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PropertyList" namespace="BlueInfrastructureCenter">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CodeEditorWindow" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PreferencesDialog" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="View" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="eView" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CatmullRomSpline" namespace="BlueInfrastructureCenter::UserInterface">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Lexer" namespace="BlueFramework::Infastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Lexer" namespace="BlueFramework::Infastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Lexer" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="token" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Interpreter" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AbstractSyntaxTreeNode" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="AbstractSyntaxTree" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Parser" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Alignment2DBased3D" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Alignment3DBased3D" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="IAlignment3D" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="crossSection" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="VerticalAlignment2D" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="HorizontalAlignment2D" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="VerticalAlignmentElement2D" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="IQueryable" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="types" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Line2" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CatmullRomSpline" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="CatmullRomSpline" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="HorizontalAlignment2DLine" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="HorizontalAlignment2DArc" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="HorizontalAlignment2DPowerClothoid" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="HorizontalAlignment2DClothoid" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="HorizontalAlignmentElement2D" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="VerticalAlignmentElement2DParabola" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="VerticalAlignmentElement2DLine" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="OkstraParser" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PythonInterpreter" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PythonInterpreter" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="IfcAlignmenBuildingSmartP6StepFileWriter" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="IfcAlignmenBuildingSmartP6StepFileWriter" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="IfcAlignmenBuildingSmartP6StepFileReader" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="VerticalAlignmentElement2DArc" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="OkstraExport" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="Surface" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="OutputStreamLandXMLDataBuilder" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="muhit" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="ExcelReport2" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="ExcelReport3" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="PointCloudProcessing" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="HorizontalAlignmentElement2DClothoid" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="HorizontalAlignmentElement2DClothoid" namespace="BlueFramework::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="HorizontalAlignmentElement2DClothoid" namespace="OpenInfraPlatform::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="HorizontalAlignmentElement2DClothoid" namespace="OpenInfraPlatform::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+  <class name="HorizontalAlignmentElement2DClothoid" namespace="OpenInfraPlatform::Infrastructure">
+   <CodeGenerationDescription includeGuard="Defines" defSharedPointers="0" exportImportSymbol="" copyCtorAndAssignmentProtection="Boost" implementPimpl="0" exportImportSymbols="0" creationDate=""/>
+   <methods/>
+  </class>
+ </classes>
+</BlueCodeMonkey>

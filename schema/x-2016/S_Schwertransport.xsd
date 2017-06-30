@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Bauwerksueberfahrt" substitutionGroup="gml:AbstractFeature" type="okstra:BauwerksueberfahrtType"/>
+  <complexType name="BauwerksueberfahrtType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Richtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" name="ueber_Teilbauwerk" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Teilbauwerksergebnis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Schwertransport" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BauwerksueberfahrtPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Bauwerksueberfahrt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Schwertransport" substitutionGroup="gml:AbstractFeature" type="okstra:SchwertransportType"/>
+  <complexType name="SchwertransportType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Antragsnummer" type="string"/>
+          <element minOccurs="0" name="Anhoerungs_ID" type="integer"/>
+          <element minOccurs="0" name="Vorgangs_ID" type="integer"/>
+          <element minOccurs="0" name="Laenge_Last" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Breite_Last" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Gewicht_Last" type="okstra-typen:Tonnen"/>
+          <element minOccurs="0" name="Anzahl_der_Achsen" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="Ausgabeumfang" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Achsen" type="okstra:achsbezogene_DatenPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_VEMAGS_Ergebnis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Bauwerksueberfahrt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SchwertransportPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Schwertransport"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="VEMAGS_Berechnungsergebnis" substitutionGroup="gml:AbstractFeature" type="okstra:VEMAGS_BerechnungsergebnisType"/>
+  <complexType name="VEMAGS_BerechnungsergebnisType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Info" type="okstra:VEMAGS_InfoPropertyType"/>
+          <element name="zu_Schwertransport" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Teilbauwerksergebnis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="basiert_auf_Grundlage" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="VEMAGS_BerechnungsergebnisPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:VEMAGS_Berechnungsergebnis"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="VEMAGS_Berechnungsgrundlage" substitutionGroup="gml:AbstractFeature" type="okstra:VEMAGS_BerechnungsgrundlageType"/>
+  <complexType name="VEMAGS_BerechnungsgrundlageType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Ersatzsystem_Bogenbauwerke" type="boolean"/>
+          <element minOccurs="0" name="Abmind_faktor_Temp_Innenfeld" type="double"/>
+          <element minOccurs="0" name="Abmind_faktor_Temp_Stuetze" type="double"/>
+          <element minOccurs="0" name="Abmind_faktor_Grenzjahr" type="okstra-typen:Jahr"/>
+          <element minOccurs="0" name="Auslastungsgrad" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Zustandsnote" type="double"/>
+          <element minOccurs="0" name="max_Standsicherheitsnote_ab" type="integer"/>
+          <element minOccurs="0" name="Stand" type="okstra:ZeitpunktPropertyType"/>
+          <element minOccurs="0" name="definiert_durch" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Berechnungsergebnis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Lastbild_Definition" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="VEMAGS_BerechnungsgrundlagePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:VEMAGS_Berechnungsgrundlage"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="VEMAGS_Lastbild_Definition" substitutionGroup="gml:AbstractFeature" type="okstra:VEMAGS_Lastbild_DefinitionType"/>
+  <complexType name="VEMAGS_Lastbild_DefinitionType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Name_Lastbild" type="string"/>
+          <element minOccurs="0" name="ASB_Tragfaehigkeitsbezug" type="okstra-typen:ASB_ING_Schluessel"/>
+          <element minOccurs="0" name="Ueberschr_grenze_Lastvergl" type="okstra-typen:Prozent"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Achsen_Hauptspur" type="okstra:achsbezogene_DatenPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Achsen_Nebenspur" type="okstra:achsbezogene_DatenPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Achsen_Nebenspur2" type="okstra:achsbezogene_DatenPropertyType"/>
+          <element minOccurs="0" name="Flaechenlast_Hauptspur" type="okstra-typen:Kilonewton_pro_Quadratmeter"/>
+          <element minOccurs="0" name="Flaechenlast_Nebenspur" type="okstra-typen:Kilonewton_pro_Quadratmeter"/>
+          <element minOccurs="0" name="Flaechenlast_Nebenspur2" type="okstra-typen:Kilonewton_pro_Quadratmeter"/>
+          <element minOccurs="0" name="Ueberhang_Abstand_HS_vorn" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Ueberhang_Abstand_HS_hinten" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Ueberhang_Abstand_NS_vorn" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Ueberhang_Abstand_NS_hinten" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Ueberhang_Abstand_NS2_vorn" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Ueberhang_Abstand_NS2_hinten" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="RGST_Bezug" type="string"/>
+          <element minOccurs="0" name="durchgehende_Flaechenlast" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="enthalten_in_Grundlage" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="VEMAGS_Lastbild_DefinitionPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:VEMAGS_Lastbild_Definition"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="VEMAGS_Teilbauwerksergebnis" substitutionGroup="gml:AbstractFeature" type="okstra:VEMAGS_TeilbauwerksergebnisType"/>
+  <complexType name="VEMAGS_TeilbauwerksergebnisType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Fahrauflage_RGST" type="string"/>
+          <element minOccurs="0" name="Art_der_Auflage" type="string"/>
+          <element minOccurs="0" name="Geschwindigkeit" type="okstra-typen:Stundenkilometer"/>
+          <element minOccurs="0" name="Abstand_zum_Vorausverkehr" type="okstra-typen:Meter"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Schnittgroessenvergleich" type="okstra:SchnittgroessenvergleichPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Info" type="okstra:VEMAGS_InfoPropertyType"/>
+          <element minOccurs="0" name="zu_Bauwerksueberfahrt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Berechnungsergebnis" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="VEMAGS_TeilbauwerksergebnisPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:VEMAGS_Teilbauwerksergebnis"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

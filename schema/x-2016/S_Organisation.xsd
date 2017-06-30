@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Organisation" substitutionGroup="gml:AbstractFeature" type="okstra:OrganisationType"/>
+  <complexType name="OrganisationType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Anschrift" type="okstra:AdressdatenPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Zustaendigkeit" type="okstra-basis:ObjectRefType"/>
+          <element name="Name" type="string"/>
+          <element minOccurs="0" name="Behoerdenkennung" type="string"/>
+          <element minOccurs="0" name="Registernummer" type="string"/>
+          <element name="Organisationsart" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="untergeordnete_Organisation" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="uebergeordnete_Organisation" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Mitarbeiter" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Organisationseinheit" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Behoerde_in" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="OrganisationPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Organisation"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Organisationseinheit" substitutionGroup="gml:AbstractFeature" type="okstra:OrganisationseinheitType"/>
+  <complexType name="OrganisationseinheitType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Anschrift" type="okstra:AdressdatenPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Zustaendigkeit" type="okstra-basis:ObjectRefType"/>
+          <element name="Bezeichnung" type="string"/>
+          <element minOccurs="0" name="ist_Organisationseinheit_von" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="uebergeordnete_OE" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="untergeordnete_OE" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Person" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="OrganisationseinheitPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Organisationseinheit"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Person" substitutionGroup="gml:AbstractFeature" type="okstra:PersonType"/>
+  <complexType name="PersonType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Anschrift" type="okstra:AdressdatenPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Zustaendigkeit" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Personenklasse" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Titel" type="string"/>
+          <element name="Name" type="string"/>
+          <element minOccurs="0" name="Vorname" type="string"/>
+          <element minOccurs="0" name="Firma" type="string"/>
+          <element minOccurs="0" name="Abteilung" type="string"/>
+          <element minOccurs="0" name="Geburtsdatum" type="date"/>
+          <element minOccurs="0" name="Geburtsname" type="string"/>
+          <element minOccurs="0" name="Anrede" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Bankverbindung" type="okstra:BankverbindungPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Kommunikationsdaten" type="okstra:KommunikationPropertyType"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Mitarbeiter_von" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Organisationseinheit" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Rolle_Arbeitsstelle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Stat_Arbeitsst_erfasst" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Belastungsberechtigter" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Eigentuemer_Grundbuch" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Paechter_Mieter" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Flurstueck" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="PersonPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Person"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Zustaendigkeit" substitutionGroup="gml:AbstractFeature" type="okstra:ZustaendigkeitType"/>
+  <complexType name="ZustaendigkeitType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Netzbereich" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Verkehrsflaeche" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Erfassungsdatum" type="date"/>
+          <element minOccurs="0" name="Systemdatum" type="date"/>
+          <element minOccurs="0" name="Textfeld" type="string"/>
+          <element minOccurs="0" name="Art_der_Erfassung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Erfassung_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="RFID" type="string"/>
+          <element minOccurs="0" name="Migrationshinweise" type="string"/>
+          <element minOccurs="0" name="unscharf" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Dokument" type="okstra-basis:ObjectRefType"/>
+          <element name="Art_Zustaendigkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Beginn_der_Zustaendigkeit" type="date"/>
+          <element minOccurs="0" name="Ende_der_Zustaendigkeit" type="date"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Multigeometrie" type="okstra:MultigeometriePropertyType"/>
+          <element maxOccurs="unbounded" name="hat_Zustaendigen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="fuer_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Dokument" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZustaendigkeitPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Zustaendigkeit"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="rechtliches_Ereignis" substitutionGroup="gml:AbstractFeature" type="okstra:rechtliches_EreignisType"/>
+  <complexType name="rechtliches_EreignisType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Verkehrsflaeche" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Erfassungsdatum" type="date"/>
+          <element minOccurs="0" name="Systemdatum" type="date"/>
+          <element minOccurs="0" name="Textfeld" type="string"/>
+          <element minOccurs="0" name="Art_der_Erfassung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Erfassung_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="RFID" type="string"/>
+          <element minOccurs="0" name="Migrationshinweise" type="string"/>
+          <element minOccurs="0" name="unscharf" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Dokument" type="okstra-basis:ObjectRefType"/>
+          <element name="Art" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="rechtsgueltig_ab" type="date"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Infrastrukturobjekt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="rechtliches_EreignisPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:rechtliches_Ereignis"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

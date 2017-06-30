@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Angaben_zu_Unfallbeteiligten" substitutionGroup="gml:AbstractFeature" type="okstra:Angaben_zu_UnfallbeteiligtenType"/>
+  <complexType name="Angaben_zu_UnfallbeteiligtenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Anzahl_der_Beteiligten" type="okstra-typen:Anzahl_zweistellig"/>
+          <element name="Anzahl_der_Getoeteten" type="okstra-typen:Anzahl_zweistellig"/>
+          <element name="Anzahl_der_Schwerverletzten" type="okstra-typen:Anzahl_zweistellig"/>
+          <element name="Anzahl_der_Leichtverletzten" type="okstra-typen:Anzahl_zweistellig"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Unfallbeteiligte" type="okstra-basis:ObjectRefType"/>
+          <element name="von_Unfall" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Angaben_zu_UnfallbeteiligtenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Angaben_zu_Unfallbeteiligten"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Angaben_zu_Unfallumstaenden" substitutionGroup="gml:AbstractFeature" type="okstra:Angaben_zu_UnfallumstaendenType"/>
+  <complexType name="Angaben_zu_UnfallumstaendenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="3" minOccurs="0" name="Charakteristik_d_Unfallstelle" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="3" minOccurs="0" name="Besonderheiten_d_Unfallstelle" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="2" minOccurs="0" name="Verkehrsregelung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Geschwindigkeitsbegrenzung" type="okstra-typen:Stundenkilometer"/>
+          <element maxOccurs="2" minOccurs="0" name="Lichtverhaeltnisse" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Strassenbefestigung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="3" minOccurs="0" name="Strassenzustand" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="3" minOccurs="0" name="Witterung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Alkoholeinwirkung" type="boolean"/>
+          <element minOccurs="0" name="Verkehrsflucht" type="boolean"/>
+          <element minOccurs="0" name="Aquaplaning" type="boolean"/>
+          <element minOccurs="0" name="Aufprall_auf_Hindernis" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="hat_DTV_im_Gesamtquerschnitt" type="okstra-basis:ObjectRefType"/>
+          <element name="von_Unfall" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Angaben_zu_UnfallumstaendenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Angaben_zu_Unfallumstaenden"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Angaben_zum_Unfallgeschehen" substitutionGroup="gml:AbstractFeature" type="okstra:Angaben_zum_UnfallgeschehenType"/>
+  <complexType name="Angaben_zum_UnfallgeschehenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Unfallart" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="2" minOccurs="0" name="vorlaeufige_Unfallursache" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Unfallkategorie" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Unfalltyp" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Gesamtsachschaden" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Waehrung_Gesamtsachschaden" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Kfz_fahrbereit" type="boolean"/>
+          <element name="von_Unfall" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Angaben_zum_UnfallgeschehenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Angaben_zum_Unfallgeschehen"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Angaben_zum_Unfallort" substitutionGroup="gml:AbstractFeature" type="okstra:Angaben_zum_UnfallortType"/>
+  <complexType name="Angaben_zum_UnfallortType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenpunkt" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenelementpunkt" type="okstra:StrassenelementpunktPropertyType"/>
+          <element minOccurs="0" name="Punktgeometrie" type="gml:PointPropertyType"/>
+          <element minOccurs="0" name="Fahrtrichtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Teilabschnittsnummer" type="integer"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Bauamt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="in_Verwaltungsbezirk" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="einm_klassifiz_Strasse_am_Anfg" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="auf_klassifizierter_Strasse" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="einm_klassifiz_Strasse_am_Ende" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Hausnummer_Strasse" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Betriebskilometer" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="bei_Polizeidienststelle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Ortslage_gemaess_SIB" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Hausnummer_einmuendende_Str" type="okstra-basis:ObjectRefType"/>
+          <element name="von_Unfall" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Angaben_zum_UnfallortPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Angaben_zum_Unfallort"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Angaben_zur_Unfallzeit" substitutionGroup="gml:AbstractFeature" type="okstra:Angaben_zur_UnfallzeitType"/>
+  <complexType name="Angaben_zur_UnfallzeitType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Unfalldatum" type="date"/>
+          <element minOccurs="0" name="Wochentag" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Unfallzeit" type="time"/>
+          <element minOccurs="0" name="Feiertag" type="boolean"/>
+          <element name="von_Unfall" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Angaben_zur_UnfallzeitPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Angaben_zur_Unfallzeit"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="DV_Merkmale_StaLa" substitutionGroup="gml:AbstractFeature" type="okstra:DV_Merkmale_StaLaType"/>
+  <complexType name="DV_Merkmale_StaLaType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="landesinterne_Angaben" type="string"/>
+          <element minOccurs="0" name="Sondererhebungen" type="string"/>
+          <element minOccurs="0" name="Berichtsjahr" type="okstra-typen:Jahr"/>
+          <element minOccurs="0" name="Berichtsmonat" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Durchlaufnummer" type="okstra-typen:Anzahl_zweistellig"/>
+          <element minOccurs="0" name="Fehlerbyte" type="string"/>
+          <element minOccurs="0" name="Kennz_fuer_Materialergaenzung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="in_Bundesland" type="okstra-basis:ObjectRefType"/>
+          <element name="von_Unfall" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="DV_Merkmale_StaLaPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:DV_Merkmale_StaLa"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Mitfahrer" substitutionGroup="gml:AbstractFeature" type="okstra:MitfahrerType"/>
+  <complexType name="MitfahrerType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="laufende_Nummer" type="integer"/>
+          <element minOccurs="0" name="Art_der_Verletzung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Geschlecht" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Alter_des_Mitfahrers" type="integer"/>
+          <element name="von_Unfallteiligtem" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="MitfahrerPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Mitfahrer"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Unfall" substitutionGroup="gml:AbstractFeature" type="okstra:UnfallType"/>
+  <complexType name="UnfallType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Paginiernummer" type="string"/>
+          <element minOccurs="0" name="laufende_jaehrliche_Nummer" type="integer"/>
+          <element minOccurs="0" name="lfd_Nr_d_Unfallhaeufungsstelle" type="integer"/>
+          <element minOccurs="0" name="DV_Merkmale_StaLa" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Unfallzeit" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Unfallort" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Unfallgeschehen" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Unfallumstaende" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Unfallbeteiligte" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="UnfallPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Unfall"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Unfallbeteiligter" substitutionGroup="gml:AbstractFeature" type="okstra:UnfallbeteiligterType"/>
+  <complexType name="UnfallbeteiligterType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Alter_des_Beteiligten" type="integer"/>
+          <element minOccurs="0" name="Geschlecht" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="3" minOccurs="0" name="hat_spezifische_Unfallursachen" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Verkehrsbeteiligung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Ortskenntnisse_vorhanden" type="boolean"/>
+          <element minOccurs="0" name="Wohnsitz_Auslaender" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Nationalitaetenzeichen" type="string"/>
+          <element minOccurs="0" name="Art_der_Verletzung" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Anzahl_Fahrzeugbenutzer" type="okstra-typen:Anzahl_zweistellig"/>
+          <element name="Anzahl_getoetete_Mitfahrer" type="okstra-typen:Anzahl_zweistellig"/>
+          <element name="Anzahl_schwerverl_Mitfahrer" type="okstra-typen:Anzahl_zweistellig"/>
+          <element name="Anzahl_leichtverl_Mitfahrer" type="okstra-typen:Anzahl_zweistellig"/>
+          <element minOccurs="0" name="Fahrerlaubnis_vorhanden" type="boolean"/>
+          <element minOccurs="0" name="Datum_Fahrerlaubnis" type="date"/>
+          <element minOccurs="0" name="Geburtsdatum" type="date"/>
+          <element minOccurs="0" name="Blutalkoholkonzentration" type="okstra-typen:Promille"/>
+          <element minOccurs="0" name="Verkehrsflucht" type="boolean"/>
+          <element minOccurs="0" name="Ordnungsnummer" type="integer"/>
+          <element name="von_Ang_zu_Unfallbeteiligten" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Angaben_zum_Kraftfahrzeug" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_verletzte_Mitfahrer" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="UnfallbeteiligterPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Unfallbeteiligter"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Unfalldichte" substitutionGroup="gml:AbstractFeature" type="okstra:UnfalldichteType"/>
+  <complexType name="UnfalldichteType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Ausschnitt_Unfallgeschehen" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="fuer_Richtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Untersuchungszeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element name="Wert" type="okstra-typen:Unfaelle_pro_km_und_Jahr"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="UnfalldichtePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Unfalldichte"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Unfallfahrzeug" substitutionGroup="gml:AbstractFeature" type="okstra:UnfallfahrzeugType"/>
+  <complexType name="UnfallfahrzeugType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kennzeichen" type="string"/>
+          <element minOccurs="0" name="Nationalitaetenkennzeichen" type="string"/>
+          <element minOccurs="0" name="zulaessiges_Gesamtgewicht" type="okstra-typen:Kilogramm"/>
+          <element minOccurs="0" name="Zusatzsignatur_LKR_und_PKW" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Freisetzung_von_Gefahrgut" type="boolean"/>
+          <element minOccurs="0" name="Jahr_Erstzulassung" type="okstra-typen:Jahr"/>
+          <element minOccurs="0" name="Gefahrklasse" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Gefahrgutkennzeichen" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Hoehe_des_Sachschadens" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Waehrung_Sachschaden" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Aufprall_auf_Hindernis" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Kfz_fahrbereit" type="boolean"/>
+          <element minOccurs="0" name="Leergewicht" type="okstra-typen:Kilogramm"/>
+          <element minOccurs="0" name="Anhaenger_vorhanden" type="boolean"/>
+          <element minOccurs="0" name="Typschluessel" type="string"/>
+          <element minOccurs="0" name="Fahrzeugart" type="string"/>
+          <element minOccurs="0" name="Aufbauart" type="string"/>
+          <element minOccurs="0" name="Motorleistung" type="okstra-typen:Kilowatt"/>
+          <element minOccurs="0" name="Hubraum" type="okstra-typen:Kubikzentimeter"/>
+          <element minOccurs="0" name="Hoechstgeschwindigkeit" type="okstra-typen:Stundenkilometer"/>
+          <element minOccurs="0" name="Anzahl_der_Achsen" type="okstra-typen:Anzahl_zweistellig"/>
+          <element minOccurs="0" name="Anzahl_angetriebene_Achsen" type="okstra-typen:Anzahl_einstellig"/>
+          <element minOccurs="0" name="UN_Nummer" type="string"/>
+          <element minOccurs="0" name="sonstiges_befoerd_Gefahrgut" type="string"/>
+          <element minOccurs="0" name="Nummer_der_Ausnahmeverordnung" type="integer"/>
+          <element minOccurs="0" name="Zusatzgutachten_vorhanden" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="gemeldet_in_Kreis" type="okstra-basis:ObjectRefType"/>
+          <element name="von_Unfallteiligtem" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="UnfallfahrzeugPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Unfallfahrzeug"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Unfallrate" substitutionGroup="gml:AbstractFeature" type="okstra:UnfallrateType"/>
+  <complexType name="UnfallrateType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Ausschnitt_Unfallgeschehen" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="fuer_Richtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Untersuchungszeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element name="Wert" type="okstra-typen:Unfaelle_pro_Mio_Kfz_km"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="UnfallratePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Unfallrate"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

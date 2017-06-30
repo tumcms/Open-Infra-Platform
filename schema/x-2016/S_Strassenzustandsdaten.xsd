@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Streckenbild" substitutionGroup="gml:AbstractFeature" type="okstra:StreckenbildType"/>
+  <complexType name="StreckenbildType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erstellt_von" type="string"/>
+          <element minOccurs="0" name="physikalische_Aufloesung" type="okstra-typen:dpi"/>
+          <element minOccurs="0" name="Farbspektrum" type="okstra-typen:Farbtiefe"/>
+          <element minOccurs="0" name="Datei" type="string"/>
+          <element minOccurs="0" name="inhaltliche_Beschreibung" type="string"/>
+          <element name="Startdatum" type="okstra:StartdatumPropertyType"/>
+          <element minOccurs="0" name="verwendetes_Verfahren" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Aufbewahrungsort_Medium_analog" type="string"/>
+          <element minOccurs="0" name="hat_Fotostandpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenpunkt" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenelementpunkt" type="okstra:StrassenelementpunktPropertyType"/>
+          <element minOccurs="0" name="Punktgeometrie" type="gml:PointPropertyType"/>
+          <element minOccurs="0" name="Bezugsrichtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_Kamera" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="sonstige_Art_Kamera" type="string"/>
+          <element minOccurs="0" name="URI" type="string"/>
+          <element minOccurs="0" name="MIME_Type" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Fahrstreifen" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="StreckenbildPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Streckenbild"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Wert_einer_Zustandsgroesse" substitutionGroup="gml:AbstractFeature" type="okstra:Wert_einer_ZustandsgroesseType"/>
+  <complexType name="Wert_einer_ZustandsgroesseType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Wert" type="string"/>
+          <element name="von_ZEB_Parameter" type="okstra-basis:ObjectRefType"/>
+          <element name="von_ZEB_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element name="von_ZEB_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erfasst_am" type="date"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Wert_einer_ZustandsgroessePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Wert_einer_Zustandsgroesse"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Wert_eines_Gesamtwertes" substitutionGroup="gml:AbstractFeature" type="okstra:Wert_eines_GesamtwertesType"/>
+  <complexType name="Wert_eines_GesamtwertesType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Wert" type="string"/>
+          <element name="von_ZEB_Parameter" type="okstra-basis:ObjectRefType"/>
+          <element name="von_ZEB_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element name="von_ZEB_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="berechnet_am" type="date"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Wert_eines_GesamtwertesPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Wert_eines_Gesamtwertes"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Wert_eines_Rohdatums" substitutionGroup="gml:AbstractFeature" type="okstra:Wert_eines_RohdatumsType"/>
+  <complexType name="Wert_eines_RohdatumsType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Wert" type="string"/>
+          <element name="von_ZEB_Parameter" type="okstra-basis:ObjectRefType"/>
+          <element name="von_ZEB_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element name="von_ZEB_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erfasst_am" type="date"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Wert_eines_RohdatumsPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Wert_eines_Rohdatums"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Wert_eines_Teilwertes" substitutionGroup="gml:AbstractFeature" type="okstra:Wert_eines_TeilwertesType"/>
+  <complexType name="Wert_eines_TeilwertesType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Wert" type="string"/>
+          <element name="von_ZEB_Parameter" type="okstra-basis:ObjectRefType"/>
+          <element name="von_ZEB_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element name="von_ZEB_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="berechnet_am" type="date"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Wert_eines_TeilwertesPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Wert_eines_Teilwertes"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Wert_eines_Zustandswertes" substitutionGroup="gml:AbstractFeature" type="okstra:Wert_eines_ZustandswertesType"/>
+  <complexType name="Wert_eines_ZustandswertesType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Wert" type="string"/>
+          <element name="von_ZEB_Parameter" type="okstra-basis:ObjectRefType"/>
+          <element name="von_ZEB_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element name="von_ZEB_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="bewertet_am" type="date"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Wert_eines_ZustandswertesPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Wert_eines_Zustandswertes"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="ZEB_Bewerter" substitutionGroup="gml:AbstractFeature" type="okstra:ZEB_BewerterType"/>
+  <complexType name="ZEB_BewerterType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kurzbezeichnung_Subjekt" type="string"/>
+          <element minOccurs="0" name="Subjekt" type="string"/>
+          <element minOccurs="0" name="Adresse_Subjekt" type="string"/>
+          <element maxOccurs="unbounded" name="von_ZEB_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_ZEB_Projekt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZEB_BewerterPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:ZEB_Bewerter"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="ZEB_Dokument" substitutionGroup="gml:AbstractFeature" type="okstra:ZEB_DokumentType"/>
+  <complexType name="ZEB_DokumentType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kurzbezeichnung_ZEB_Dokument" type="string"/>
+          <element minOccurs="0" name="ZEB_Dokument" type="string"/>
+          <element minOccurs="0" name="Datum_der_Erstellung" type="date"/>
+          <element minOccurs="0" name="Ersteller" type="string"/>
+          <element minOccurs="0" name="Art_des_Dokumentes" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_ZEB_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_ZEB_Parameter" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZEB_DokumentPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:ZEB_Dokument"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="ZEB_Ereignis" substitutionGroup="gml:AbstractFeature" type="okstra:ZEB_EreignisType"/>
+  <complexType name="ZEB_EreignisType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kurzbezeichnung_ZEB_Ereignis" type="string"/>
+          <element minOccurs="0" name="ZEB_Ereignis" type="string"/>
+          <element name="Zeitabschnitt" type="okstra:ZeitabschnittPropertyType"/>
+          <element maxOccurs="unbounded" name="hat_ZEB_Subjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_ZEB_Dokument" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_ZEB_Parameterwert" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_ZEB_Projekt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZEB_EreignisPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:ZEB_Ereignis"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="ZEB_Erfasser" substitutionGroup="gml:AbstractFeature" type="okstra:ZEB_ErfasserType"/>
+  <complexType name="ZEB_ErfasserType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kurzbezeichnung_Subjekt" type="string"/>
+          <element minOccurs="0" name="Subjekt" type="string"/>
+          <element minOccurs="0" name="Adresse_Subjekt" type="string"/>
+          <element maxOccurs="unbounded" name="von_ZEB_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_ZEB_Projekt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZEB_ErfasserPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:ZEB_Erfasser"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="ZEB_Objekt" substitutionGroup="gml:AbstractFeature" type="okstra:ZEB_ObjektType"/>
+  <complexType name="ZEB_ObjektType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="ZEB_Objekt" type="string"/>
+          <element minOccurs="0" name="Objektnummer" type="integer"/>
+          <element name="hat_Verkehrsrichtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Art_des_ZEB_Objektes" type="okstra:Art_des_ZEB_ObjektesPropertyType"/>
+          <element maxOccurs="unbounded" name="gilt_fuer_Fahrstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="von_ZEB_Projekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="gilt_fuer_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_ZEB_Parameterwert" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZEB_ObjektPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:ZEB_Objekt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="ZEB_Parameter" substitutionGroup="gml:AbstractFeature" type="okstra:ZEB_ParameterType"/>
+  <complexType name="ZEB_ParameterType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kurzbezeichnung_Paramgroesse" type="string"/>
+          <element minOccurs="0" name="Parametergroesse" type="string"/>
+          <element minOccurs="0" name="Parameternummer" type="integer"/>
+          <element minOccurs="0" name="Einheit" type="string"/>
+          <element name="Art_ZEB_Parameter" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Art_ZEB_Methode" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="hat_ZEB_Dokument" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_ZEB_Parameterliste" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_ZEB_Parameterwert" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZEB_ParameterPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:ZEB_Parameter"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="ZEB_Parameterliste" substitutionGroup="gml:AbstractFeature" type="okstra:ZEB_ParameterlisteType"/>
+  <complexType name="ZEB_ParameterlisteType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kurzbezeichnung_ZEB_Paramliste" type="string"/>
+          <element minOccurs="0" name="Bezeichnung_ZEB_Parameterliste" type="string"/>
+          <element maxOccurs="unbounded" name="hat_ZEB_Parameter" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_ZEB_Projekt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZEB_ParameterlistePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:ZEB_Parameterliste"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="ZEB_Projekt" substitutionGroup="gml:AbstractFeature" type="okstra:ZEB_ProjektType"/>
+  <complexType name="ZEB_ProjektType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kurzbezeichnung_ZEB_Kamp" type="string"/>
+          <element minOccurs="0" name="ZEB_Projekt" type="string"/>
+          <element minOccurs="0" name="Hauptmessverfahren" type="string"/>
+          <element minOccurs="0" name="Zweck" type="string"/>
+          <element minOccurs="0" name="Umfang" type="string"/>
+          <element minOccurs="0" name="Zeitabschnitt" type="okstra:ZeitabschnittPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_ZEB_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_ZEB_Subjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="hat_ZEB_Parameterliste" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_ZEB_Ereignis" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZEB_ProjektPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:ZEB_Projekt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="ZEB_Veranlasser" substitutionGroup="gml:AbstractFeature" type="okstra:ZEB_VeranlasserType"/>
+  <complexType name="ZEB_VeranlasserType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kurzbezeichnung_Subjekt" type="string"/>
+          <element minOccurs="0" name="Subjekt" type="string"/>
+          <element minOccurs="0" name="Adresse_Subjekt" type="string"/>
+          <element maxOccurs="unbounded" name="von_ZEB_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_ZEB_Projekt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZEB_VeranlasserPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:ZEB_Veranlasser"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

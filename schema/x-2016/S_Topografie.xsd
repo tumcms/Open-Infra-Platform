@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Anschrift" substitutionGroup="gml:AbstractFeature" type="okstra:AnschriftType"/>
+  <complexType name="AnschriftType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Hausnummer" type="string"/>
+          <element minOccurs="0" name="Strassenname" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Gebaeude" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AnschriftPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Anschrift"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Boeschung" substitutionGroup="gml:AbstractFeature" type="okstra:BoeschungType"/>
+  <complexType name="BoeschungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Bestandsstatus" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Art_Boeschung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" name="hat_Oberkante" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Kehle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Unterkante" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BoeschungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Boeschung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Boeschungskantenabschnitt" substitutionGroup="gml:AbstractFeature" type="okstra:BoeschungskantenabschnittType"/>
+  <complexType name="BoeschungskantenabschnittType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Liniengeometrie" type="gml:CurvePropertyType"/>
+          <element name="undeutlich" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Oberkante_zu" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Unterkante_zu" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BoeschungskantenabschnittPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Boeschungskantenabschnitt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Gebaeude" substitutionGroup="gml:AbstractFeature" type="okstra:GebaeudeType"/>
+  <complexType name="GebaeudeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Bestandsstatus" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Liniengeometrie" type="gml:CurvePropertyType"/>
+          <element minOccurs="0" name="Flaechengeometrie" type="gml:SurfacePropertyType"/>
+          <element name="Gebaeudenutzung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Gebaeudefunktion" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Name" type="string"/>
+          <element minOccurs="0" name="Traufhoehe" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Firsthoehe" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="hat_Erfassungsqualitaet" type="okstra:ErfassungsqualitaetPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Geschoss" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Anschrift" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GebaeudePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Gebaeude"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Gebuesch" substitutionGroup="gml:AbstractFeature" type="okstra:GebueschType"/>
+  <complexType name="GebueschType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Beschreibung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Konfliktbestandteil" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Lpf_Teilelement" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Leistungsbeschreibung" type="okstra-basis:ObjectRefType"/>
+          <element name="Bestandsstatus" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Multigeometrie" type="okstra:MultigeometriePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="gehoert_zu_Massnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Biotoptyp" type="okstra:BiotoptypPropertyType"/>
+          <element minOccurs="0" name="Flaechengroesse" type="okstra-typen:Hektar"/>
+          <element minOccurs="0" name="Laenge" type="okstra-typen:Meter"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Zielbiotop_von" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Ausgangsbiotop_von" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="gehoert_zu_Biotopkomplex" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Gehoelzart" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GebueschPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Gebuesch"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Geschoss" substitutionGroup="gml:AbstractFeature" type="okstra:GeschossType"/>
+  <complexType name="GeschossType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Hoehe" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Oberkante_Fenster" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Bezeichnung" type="string"/>
+          <element name="von_Gebaeude" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GeschossPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Geschoss"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Hecke" substitutionGroup="gml:AbstractFeature" type="okstra:HeckeType"/>
+  <complexType name="HeckeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Gehoelzart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Heckenfunktion" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" name="hat_Heckenabschnitt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="HeckePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Hecke"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Heckenabschnitt" substitutionGroup="gml:AbstractFeature" type="okstra:HeckenabschnittType"/>
+  <complexType name="HeckenabschnittType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Beschreibung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Konfliktbestandteil" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Lpf_Teilelement" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Leistungsbeschreibung" type="okstra-basis:ObjectRefType"/>
+          <element name="Bestandsstatus" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Multigeometrie" type="okstra:MultigeometriePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="gehoert_zu_Massnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Biotoptyp" type="okstra:BiotoptypPropertyType"/>
+          <element minOccurs="0" name="Flaechengroesse" type="okstra-typen:Hektar"/>
+          <element minOccurs="0" name="Laenge" type="okstra-typen:Meter"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Zielbiotop_von" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Ausgangsbiotop_von" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="gehoert_zu_Biotopkomplex" type="okstra-basis:ObjectRefType"/>
+          <element name="Breite" type="okstra-typen:Zentimeter"/>
+          <element minOccurs="0" name="Hoehe" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="wahre_Laenge" type="okstra-typen:Meter"/>
+          <element name="gehoert_zu_Hecke" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Oeffnung" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="HeckenabschnittPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Heckenabschnitt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Isolinie" substitutionGroup="gml:AbstractFeature" type="okstra:IsolinieType"/>
+  <complexType name="IsolinieType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Liniengeometrie" type="gml:CurvePropertyType"/>
+          <element name="Art" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Wert" type="double"/>
+          <element name="Einheit" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="IsoliniePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Isolinie"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Kehle" substitutionGroup="gml:AbstractFeature" type="okstra:KehleType"/>
+  <complexType name="KehleType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Liniengeometrie" type="gml:CurvePropertyType"/>
+          <element name="gehoert_zu_Boeschung" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="KehlePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Kehle"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Mauer" substitutionGroup="gml:AbstractFeature" type="okstra:MauerType"/>
+  <complexType name="MauerType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Bestandsstatus" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Mauerfunktion" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" name="hat_Mauerabschnitt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="MauerPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Mauer"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Mauerabschnitt" substitutionGroup="gml:AbstractFeature" type="okstra:MauerabschnittType"/>
+  <complexType name="MauerabschnittType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Liniengeometrie" type="gml:CurvePropertyType"/>
+          <element name="Breite" type="okstra-typen:Zentimeter"/>
+          <element name="Hoehe" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="wahre_Laenge" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="ist_Pfeiler" type="boolean"/>
+          <element minOccurs="0" name="Material_Mauerabschnitt" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Lage_Bezugsgeometrie" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="gehoert_zu_Mauer" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Zaun" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Oeffnung" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="MauerabschnittPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Mauerabschnitt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Oeffnung" substitutionGroup="gml:AbstractFeature" type="okstra:OeffnungType"/>
+  <complexType name="OeffnungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Punktgeometrie" type="gml:PointPropertyType"/>
+          <element name="Art_Oeffnung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Heckenabschnitt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="von_Mauerabschnitt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="von_Zaun" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="OeffnungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Oeffnung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Zaun" substitutionGroup="gml:AbstractFeature" type="okstra:ZaunType"/>
+  <complexType name="ZaunType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Bestandsstatus" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Liniengeometrie" type="gml:CurvePropertyType"/>
+          <element minOccurs="0" name="Hoehe" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="wahre_Laenge" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Fundament_vorhanden" type="boolean"/>
+          <element minOccurs="0" name="Seite_Zaunpfaehle" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Zaunart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Material_Zaunpfaehle" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Zaunfunktion" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="auf_Mauerabschnitt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Oeffnung" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZaunPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Zaun"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

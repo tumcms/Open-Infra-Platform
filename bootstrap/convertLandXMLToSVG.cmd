@@ -1,0 +1,7 @@
+OpenInfraPlatform.CommandLineUtilities.exe -i "C:\dev\OpenInfraPlatform\testdata\LandXML\AutoCAD Civil 3D\CircCurve.xml" -o "C:\svgtest\CircCurve_1041.svg"
+OpenInfraPlatform.CommandLineUtilities.exe -i "C:\dev\OpenInfraPlatform\testdata\LandXML\AutoCAD Civil 3D\debug.xml" -o "C:\svgtest\debug_1041.svg"
+OpenInfraPlatform.CommandLineUtilities.exe -i "C:\dev\OpenInfraPlatform\testdata\LandXML\AutoCAD Civil 3D\debug2.xml" -o "C:\svgtest\debug2_1041.svg"
+OpenInfraPlatform.CommandLineUtilities.exe -i "C:\dev\OpenInfraPlatform\testdata\LandXML\AutoCAD Civil 3D\Land1.xml" -o "C:\svgtest\Land1_1041.svg"
+OpenInfraPlatform.CommandLineUtilities.exe -i "C:\dev\OpenInfraPlatform\testdata\LandXML\AutoCAD Civil 3D\LandXMLDemo.xml" -o "C:\svgtest\LandXMLDemo_1041.svg"
+OpenInfraPlatform.CommandLineUtilities.exe -i "C:\dev\OpenInfraPlatform\testdata\LandXML\Bilbao\Bilbao.xml" -o "C:\svgtest\Bilbao_1041.svg"
+OpenInfraPlatform.CommandLineUtilities.exe -i "C:\dev\OpenInfraPlatform\testdata\LandXML\CityCad\Sito_Tie.xml" -o "C:\svgtest\Sito_Tie_1041.svg"

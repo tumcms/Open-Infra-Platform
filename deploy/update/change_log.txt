@@ -1,0 +1,24 @@
+TUM Open Infra Platform 2016 
+
+Revision 1544
+- Added basic support for D40 file format
+
+Revision 1506
+- Removed console window again
+- Fixed bug in OKSTRA export related to new OKLABI library.
+
+Revision 1476
+- Quick Fix: Console output bug
+
+Revision 1455
+- Improved Python import script
+
+Revison 1406
+- Added selection of alignments
+- Added import of OSM files
+
+Revison 1380
+- New: Added a spanish translation.
+- Improved German and Spanish translation.
+- Added support for storing IfcAlignment files as ifczip files.
+- Added support for IFC-Bridge files.

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Settings -->
+
+<settings>
+	<renderSystemDescription>
+		<renderAPI>Direct3D11</renderAPI>
+		<forceWarpDevice>false</forceWarpDevice>
+		<enableMSAA>true</enableMSAA>
+	</renderSystemDescription>
+</settings>

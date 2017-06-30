@@ -1,0 +1,793 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Achslastdatenerfassung" substitutionGroup="gml:AbstractFeature" type="okstra:AchslastdatenerfassungType"/>
+  <complexType name="AchslastdatenerfassungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_GG_Verteilung_e_FZ_Klasse" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_abgel_Werte_und_Vertlgen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Achslastvertlg_e_Achstyps" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AchslastdatenerfassungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Achslastdatenerfassung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Achslastverteilung_e_Achstyps" substitutionGroup="gml:AbstractFeature" type="okstra:Achslastverteilung_e_AchstypsType"/>
+  <complexType name="Achslastverteilung_e_AchstypsType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Achstyp" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Anz_d_Klassen_f_Einzelachsen" type="okstra-typen:Anzahl_Klassen"/>
+          <element name="Anz_d_Klassen_f_Doppelachsen" type="okstra-typen:Anzahl_Klassen"/>
+          <element name="Anz_d_Klassen_f_Dreifachachsen" type="okstra-typen:Anzahl_Klassen"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Achslastdatenerfassung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Klasse_AL" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Achslastverteilung_e_AchstypsPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Achslastverteilung_e_Achstyps"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Anteil_Kennwert" substitutionGroup="gml:AbstractFeature" type="okstra:Anteil_KennwertType"/>
+  <complexType name="Anteil_KennwertType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Anteil" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Fahrzeugart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Fahrzeuggruppe" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kennwert_z_Laermberechnung" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Anteil_KennwertPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Anteil_Kennwert"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Anteil_am_DTV" substitutionGroup="gml:AbstractFeature" type="okstra:Anteil_am_DTVType"/>
+  <complexType name="Anteil_am_DTVType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Anteil" type="okstra-typen:Prozent"/>
+          <element name="Fahrzeuggruppe" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="von_Bauwerk_Verkehrsstaerke" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_MSV" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Anteil_am_DTVPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Anteil_am_DTV"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Anzahl_V_Klassen" substitutionGroup="gml:AbstractFeature" type="okstra:Anzahl_V_KlassenType"/>
+  <complexType name="Anzahl_V_KlassenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Fahrzeugklasse" type="integer"/>
+          <element name="Anzahl_V_Klassen" type="okstra-typen:Anzahl"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_V_Verteilungen" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Anzahl_V_KlassenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Anzahl_V_Klassen"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="DTV" substitutionGroup="gml:AbstractFeature" type="okstra:DTVType"/>
+  <complexType name="DTVType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Fahrzeuge_pro_24h" type="integer"/>
+          <element name="Bezugsjahr" type="okstra-typen:Jahr"/>
+          <element minOccurs="0" name="Fahrzeugart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Fahrzeuggruppe" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="von_Bauwerk_Verkehrsstaerke" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Bezugsmonat" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Tagesgruppe" type="okstra:TagesgruppePropertyType"/>
+          <element name="Zaehltage" type="okstra-typen:Anzahl"/>
+          <element name="Gesamtstunden" type="okstra-typen:Anzahl"/>
+          <element name="Schaetzwert" type="boolean"/>
+          <element minOccurs="0" name="hat_Bezugsrichtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="fuer_Fahrstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="aus_Zaehlstelle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Unfallumstaenden" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="DTVPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:DTV"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="DTV_Basis" substitutionGroup="gml:AbstractFeature" type="okstra:DTV_BasisType"/>
+  <complexType name="DTV_BasisType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Fahrzeuge_pro_24h" type="integer"/>
+          <element name="Bezugsjahr" type="okstra-typen:Jahr"/>
+          <element minOccurs="0" name="Fahrzeugart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Fahrzeuggruppe" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="von_Bauwerk_Verkehrsstaerke" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="DTV_BasisPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:DTV_Basis"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Einzelfahrzeugdaten" substitutionGroup="gml:AbstractFeature" type="okstra:EinzelfahrzeugdatenType"/>
+  <complexType name="EinzelfahrzeugdatenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Geschwindigkeit" type="okstra-typen:Stundenkilometer"/>
+          <element name="Fahrzeugklasse" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Fahrzeuglaenge" type="okstra-typen:Meter"/>
+          <element name="zugehoeriger_Zeitpunkt" type="okstra:ZeitpunktPropertyType"/>
+          <element minOccurs="0" name="Abstand_zum_vorausfahrenden_FZ" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Nettozeitluecke_z_vorherig_FZ" type="okstra-typen:Millisekunden"/>
+          <element minOccurs="0" name="Anzahl_der_Achsen" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="Gesamtgewicht" type="okstra-typen:Tonnen"/>
+          <element minOccurs="0" name="Ueberladung_vorhanden" type="boolean"/>
+          <element minOccurs="0" name="Ueberladung" type="okstra-typen:Tonnen"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="achsbezogene_Daten" type="okstra:achsbezogene_DatenPropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="EinzelfahrzeugdatenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Einzelfahrzeugdaten"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erfassung_Geschwindigkeiten" substitutionGroup="gml:AbstractFeature" type="okstra:Erfassung_GeschwindigkeitenType"/>
+  <complexType name="Erfassung_GeschwindigkeitenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="zugehoerige_Fahrzeugklasse" type="integer"/>
+          <element maxOccurs="unbounded" name="hat_aggregierte_Werte" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_V_Verteilungen" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Erfassung_GeschwindigkeitenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erfassung_Geschwindigkeiten"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="GG_Klasse" substitutionGroup="gml:AbstractFeature" type="okstra:GG_KlasseType"/>
+  <complexType name="GG_KlasseType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Klassennummer" type="integer"/>
+          <element name="Klassengrenze" type="okstra-typen:Groesse"/>
+          <element name="Klassenwert" type="okstra-typen:Klassenwert"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_GG_Verteilung_e_FZ_Klasse" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GG_KlassePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:GG_Klasse"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="GG_Verteilung_einer_FZ_Klasse" substitutionGroup="gml:AbstractFeature" type="okstra:GG_Verteilung_einer_FZ_KlasseType"/>
+  <complexType name="GG_Verteilung_einer_FZ_KlasseType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Fahrzeugklasse" type="integer"/>
+          <element name="Anzahl_der_GG_Klassen_FZ_Kl_3" type="integer"/>
+          <element name="Anzahl_der_GG_Klassen_FZ_Kl_4" type="integer"/>
+          <element name="Anzahl_der_GG_Klassen_FZ_Kl_5" type="integer"/>
+          <element name="Anzahl_Ueberladungen" type="okstra-typen:Anzahl"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Achslastdatenerfassung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_GG_Klasse" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GG_Verteilung_einer_FZ_KlassePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:GG_Verteilung_einer_FZ_Klasse"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Ganglinie" substitutionGroup="gml:AbstractFeature" type="okstra:GanglinieType"/>
+  <complexType name="GanglinieType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Netzbereich" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenpunkt" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenelementpunkt" type="okstra:StrassenelementpunktPropertyType"/>
+          <element name="Bezeichnung" type="string"/>
+          <element name="fachliche_Bedeutung" type="string"/>
+          <element minOccurs="0" name="Informationstext" type="string"/>
+          <element minOccurs="0" name="Datum" type="date"/>
+          <element minOccurs="0" name="Inhalt" type="string"/>
+          <element minOccurs="0" name="Intervall_Einheit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Intervall_Dauer" type="double"/>
+          <element minOccurs="0" name="Intervall_Anzahl" type="integer"/>
+          <element minOccurs="0" name="Wert_min" type="double"/>
+          <element minOccurs="0" name="Wert_max" type="double"/>
+          <element minOccurs="0" name="Einheit" type="string"/>
+          <element minOccurs="0" name="Bezugsrichtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" name="hat_Ganglinienwert" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Fahrstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="aus_Zaehlstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GangliniePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Ganglinie"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Ganglinienwert" substitutionGroup="gml:AbstractFeature" type="okstra:GanglinienwertType"/>
+  <complexType name="GanglinienwertType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Startzeit" type="time"/>
+          <element minOccurs="0" name="Startdatum" type="date"/>
+          <element minOccurs="0" name="Endzeit" type="time"/>
+          <element minOccurs="0" name="Enddatum" type="date"/>
+          <element name="Wert" type="double"/>
+          <element maxOccurs="unbounded" name="gehoert_zu_Ganglinie" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GanglinienwertPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Ganglinienwert"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Gueltigkeitsbereich_ZS" substitutionGroup="gml:AbstractFeature" type="okstra:Gueltigkeitsbereich_ZSType"/>
+  <complexType name="Gueltigkeitsbereich_ZSType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Erfassungsdatum" type="date"/>
+          <element minOccurs="0" name="Systemdatum" type="date"/>
+          <element minOccurs="0" name="Textfeld" type="string"/>
+          <element minOccurs="0" name="Art_der_Erfassung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Erfassung_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="RFID" type="string"/>
+          <element minOccurs="0" name="Migrationshinweise" type="string"/>
+          <element minOccurs="0" name="unscharf" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Dokument" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="zu_Zaehlstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Gueltigkeitsbereich_ZSPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Gueltigkeitsbereich_ZS"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Jahresganglinientyp" substitutionGroup="gml:AbstractFeature" type="okstra:JahresganglinientypType"/>
+  <complexType name="JahresganglinientypType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Bezugsjahr" type="okstra-typen:Jahr"/>
+          <element name="Typ" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" name="aus_Zaehlstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="JahresganglinientypPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Jahresganglinientyp"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Kennwert_zur_Laermberechnung" substitutionGroup="gml:AbstractFeature" type="okstra:Kennwert_zur_LaermberechnungType"/>
+  <complexType name="Kennwert_zur_LaermberechnungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Stundengruppe" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Kraftfahrzeuge_pro_h" type="okstra-typen:Anzahl"/>
+          <element name="Bezugsjahr" type="okstra-typen:Jahr"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Anteil_Kennwert" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="aus_Zaehlstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Kennwert_zur_LaermberechnungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Kennwert_zur_Laermberechnung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Klasse_AL" substitutionGroup="gml:AbstractFeature" type="okstra:Klasse_ALType"/>
+  <complexType name="Klasse_ALType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Klassennummer" type="integer"/>
+          <element name="Klassengrenze" type="okstra-typen:Groesse"/>
+          <element name="Klassenwert" type="okstra-typen:Klassenwert"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Achslastvertlg_e_Achstyps" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Klasse_ALPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Klasse_AL"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="MSV" substitutionGroup="gml:AbstractFeature" type="okstra:MSVType"/>
+  <complexType name="MSVType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Fahrzeuge_pro_h" type="okstra-typen:Anzahl"/>
+          <element name="Bezugsjahr" type="okstra-typen:Jahr"/>
+          <element name="Tagesgruppe" type="okstra:TagesgruppePropertyType"/>
+          <element name="hat_Bezugsrichtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Anteil_am_DTV" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="aus_Zaehlstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="MSVPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:MSV"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Tagesganglinientyp" substitutionGroup="gml:AbstractFeature" type="okstra:TagesganglinientypType"/>
+  <complexType name="TagesganglinientypType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Bezugsjahr" type="okstra-typen:Jahr"/>
+          <element name="Typ" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Bezugsrichtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Stundenindex" type="integer"/>
+          <element maxOccurs="unbounded" name="aus_Zaehlstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TagesganglinientypPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Tagesganglinientyp"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="V_Klassen" substitutionGroup="gml:AbstractFeature" type="okstra:V_KlassenType"/>
+  <complexType name="V_KlassenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Klassennummer" type="okstra-typen:Anzahl_zweistellig"/>
+          <element name="Klassengrenze" type="integer"/>
+          <element name="Klassenwert" type="integer"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_abgel_Werte_und_Verteilgen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_V_Klassen" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="V_KlassenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:V_Klassen"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="V_Verteilungen" substitutionGroup="gml:AbstractFeature" type="okstra:V_VerteilungenType"/>
+  <complexType name="V_VerteilungenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Erfassung_Geschwindigktn" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_V_Klassen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Anzahl_V_Klassen" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="V_VerteilungenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:V_Verteilungen"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Verkehrslage" substitutionGroup="gml:AbstractFeature" type="okstra:VerkehrslageType"/>
+  <complexType name="VerkehrslageType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenpunkt" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenelementpunkt" type="okstra:StrassenelementpunktPropertyType"/>
+          <element minOccurs="0" name="Bezeichnung" type="string"/>
+          <element name="Datum" type="date"/>
+          <element name="Uhrzeit" type="time"/>
+          <element name="Lkw_pro_Stunde" type="okstra-typen:Anzahl"/>
+          <element name="Pkw_pro_Stunde" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="v_Lkw" type="okstra-typen:Stundenkilometer"/>
+          <element minOccurs="0" name="v_Pkw" type="okstra-typen:Stundenkilometer"/>
+          <element name="Bezugsrichtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="auf_Fahrstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="aus_Zaehlstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="VerkehrslagePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Verkehrslage"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Verkehrsstau" substitutionGroup="gml:AbstractFeature" type="okstra:VerkehrsstauType"/>
+  <complexType name="VerkehrsstauType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenpunkt" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenelementpunkt" type="okstra:StrassenelementpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Bezeichnung" type="string"/>
+          <element name="Datum" type="date"/>
+          <element name="Uhrzeit" type="time"/>
+          <element name="Staulaenge" type="okstra-typen:Kilometer"/>
+          <element name="Verlustzeit" type="okstra:DauerPropertyType"/>
+          <element name="Bezugsrichtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="auf_Fahrstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="aus_Zaehlstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="VerkehrsstauPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Verkehrsstau"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Wochenganglinientyp" substitutionGroup="gml:AbstractFeature" type="okstra:WochenganglinientypType"/>
+  <complexType name="WochenganglinientypType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Bezugsjahr" type="okstra-typen:Jahr"/>
+          <element name="Typ" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Bezugsrichtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" name="aus_Zaehlstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="WochenganglinientypPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Wochenganglinientyp"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Zaehlstelle" substitutionGroup="gml:AbstractFeature" type="okstra:ZaehlstelleType"/>
+  <complexType name="ZaehlstelleType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Erfassungsdatum" type="date"/>
+          <element minOccurs="0" name="Systemdatum" type="date"/>
+          <element minOccurs="0" name="Textfeld" type="string"/>
+          <element minOccurs="0" name="Art_der_Erfassung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Erfassung_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="RFID" type="string"/>
+          <element minOccurs="0" name="Migrationshinweise" type="string"/>
+          <element minOccurs="0" name="unscharf" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Dokument" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenpunkt" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenelementpunkt" type="okstra:StrassenelementpunktPropertyType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Art" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Status" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Zaehlstellennummer" type="string"/>
+          <element name="Richtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Landesnummer" type="string"/>
+          <element minOccurs="0" name="Beginn" type="date"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Wochenganglinientyp" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="gibt_Verkehrsstau_an" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="gibt_Verkehrslage_an" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Tagesganglinientyp" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_MSV" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kennw_zur_Laermberechnung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Jahresganglinientyp" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Gueltigkeitsbereich" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Ganglinie" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_DTV" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="stellt_Teilhindernis_dar" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZaehlstellePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Zaehlstelle"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="abgel_Werte_u_Verteilgen_VK" substitutionGroup="gml:AbstractFeature" type="okstra:abgel_Werte_u_Verteilgen_VKType"/>
+  <complexType name="abgel_Werte_u_Verteilgen_VKType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_V_Klassen" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="abgel_Werte_u_Verteilgen_VKPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:abgel_Werte_u_Verteilgen_VK"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="abgel_Werte_und_Verteilungen" substitutionGroup="gml:AbstractFeature" type="okstra:abgel_Werte_und_VerteilungenType"/>
+  <complexType name="abgel_Werte_und_VerteilungenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Achslastdatenerfassung" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="abgel_Werte_und_VerteilungenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:abgel_Werte_und_Verteilungen"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="abgeleitete_Werte_VM" substitutionGroup="gml:AbstractFeature" type="okstra:abgeleitete_Werte_VMType"/>
+  <complexType name="abgeleitete_Werte_VMType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_mittlerer_Geschwindigkeit" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="abgeleitete_Werte_VMPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:abgeleitete_Werte_VM"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="aggregierte_Werte" substitutionGroup="gml:AbstractFeature" type="okstra:aggregierte_WerteType"/>
+  <complexType name="aggregierte_WerteType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Standardabweichung" type="okstra-typen:Stundenkilometer"/>
+          <element minOccurs="0" name="v85" type="okstra-typen:Stundenkilometer"/>
+          <element name="hat_mittlere_Geschwindigkeit" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Erfassung_Geschwindigkeit" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="aggregierte_WertePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:aggregierte_Werte"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="mittlere_Geschwindigkeit" substitutionGroup="gml:AbstractFeature" type="okstra:mittlere_GeschwindigkeitType"/>
+  <complexType name="mittlere_GeschwindigkeitType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Geschwindigkeit" type="okstra-typen:Stundenkilometer"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_aggregierten_Werten" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_abgeleitete_Werte" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="mittlere_GeschwindigkeitPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:mittlere_Geschwindigkeit"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

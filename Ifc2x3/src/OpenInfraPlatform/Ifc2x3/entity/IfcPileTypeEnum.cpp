@@ -1,0 +1,89 @@
+// Copied and modified code from "IfcPlusPlus" library.
+// This library is available under the OpenSceneGraph Public License. Original copyright notice:
+
+/* -*-c++-*- IfcPlusPlus - www.ifcplusplus.com - Copyright (C) 2011 Fabian Gerold
+*
+* This library is open source and may be redistributed and / or modified under
+* the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
+* (at your option) any later version.The full license is in LICENSE file
+* included with this distribution, and on the openscenegraph.org website.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+* OpenSceneGraph Public License for more details.
+*/
+
+/* This file has been automatically generated using the TUM Open Infra Platform
+Early Binding EXPRESS Generator. Any changes to this file my be lost in the future. */
+
+#include <sstream>
+#include <limits>
+#include <map>
+#include "reader/ReaderUtil.h"
+#include "writer/WriterUtil.h"
+#include "../model/shared_ptr.h"
+#include "../model/Ifc2x3Exception.h"
+#include "include/IfcPileTypeEnum.h"
+
+namespace OpenInfraPlatform
+{
+	namespace Ifc2x3
+	{
+		// TYPE IfcPileTypeEnum 
+		IfcPileTypeEnum::IfcPileTypeEnum() {}
+		IfcPileTypeEnum::~IfcPileTypeEnum() {}
+		void IfcPileTypeEnum::getStepParameter( std::stringstream& stream, bool is_select_type ) const
+		{
+			if( is_select_type ) { stream << "IFCPILETYPEENUM("; }
+			if( m_enum == ENUM_COHESION )
+			{
+				stream << ".COHESION.";
+			}
+			else if( m_enum == ENUM_FRICTION )
+			{
+				stream << ".FRICTION.";
+			}
+			else if( m_enum == ENUM_SUPPORT )
+			{
+				stream << ".SUPPORT.";
+			}
+			else if( m_enum == ENUM_USERDEFINED )
+			{
+				stream << ".USERDEFINED.";
+			}
+			else if( m_enum == ENUM_NOTDEFINED )
+			{
+				stream << ".NOTDEFINED.";
+			}
+			if( is_select_type ) { stream << ")"; }
+		}
+		shared_ptr<IfcPileTypeEnum> IfcPileTypeEnum::readStepData( std::string& arg )
+		{
+			// read TYPE
+			if( arg.compare( "$" ) == 0 ) { return shared_ptr<IfcPileTypeEnum>(); }
+			shared_ptr<IfcPileTypeEnum> type_object( new IfcPileTypeEnum() );
+			if( _stricmp( arg.c_str(), ".COHESION." ) == 0 )
+			{
+				type_object->m_enum = IfcPileTypeEnum::ENUM_COHESION;
+			}
+			else if( _stricmp( arg.c_str(), ".FRICTION." ) == 0 )
+			{
+				type_object->m_enum = IfcPileTypeEnum::ENUM_FRICTION;
+			}
+			else if( _stricmp( arg.c_str(), ".SUPPORT." ) == 0 )
+			{
+				type_object->m_enum = IfcPileTypeEnum::ENUM_SUPPORT;
+			}
+			else if( _stricmp( arg.c_str(), ".USERDEFINED." ) == 0 )
+			{
+				type_object->m_enum = IfcPileTypeEnum::ENUM_USERDEFINED;
+			}
+			else if( _stricmp( arg.c_str(), ".NOTDEFINED." ) == 0 )
+			{
+				type_object->m_enum = IfcPileTypeEnum::ENUM_NOTDEFINED;
+			}
+			return type_object;
+		}
+	} // end namespace Ifc2x3
+} // end namespace OpenInfraPlatform

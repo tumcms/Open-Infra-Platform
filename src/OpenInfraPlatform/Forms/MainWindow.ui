@@ -1,0 +1,1200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>947</width>
+    <height>573</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>TUM Open Infra Platform</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../Resources/OpenInfraPlatform.qrc">
+    <normaloff>:/icons/icon.ico</normaloff>:/icons/icon.ico</iconset>
+  </property>
+  <property name="animated">
+   <bool>false</bool>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks</set>
+  </property>
+  <widget class="QDockWidget" name="centralWidget">
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QTabWidget" name="tabWidgetView">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>294</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="tabAlignment">
+     <attribute name="title">
+      <string>Alignment</string>
+     </attribute>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <layout class="QVBoxLayout" name="verticalLayoutAlignment">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMaximumSize</enum>
+        </property>
+        <item>
+         <widget class="QCheckBox" name="checkBoxHighlightSelectedAlignmentSegment">
+          <property name="text">
+           <string>Highlight selected alignment segment</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBoxShowDifferentAlignmentElements">
+          <property name="text">
+           <string>Different colors for alignment elements</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBoxDifferentColorsForVerticalAlignmentElements">
+          <property name="text">
+           <string>Different colors for vertical alignment elements</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonDeleteSelectedAlignment">
+          <property name="text">
+           <string>Delete selected alignment</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBoxAlignment"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="tabTerrain">
+     <attribute name="title">
+      <string>Terrain</string>
+     </attribute>
+     <widget class="QComboBox" name="comboBoxSurfaces">
+      <property name="geometry">
+       <rect>
+        <x>9</x>
+        <y>40</y>
+        <width>271</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButtonDeleteSurface">
+      <property name="geometry">
+       <rect>
+        <x>9</x>
+        <y>70</y>
+        <width>121</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Delete Surface</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>9</x>
+        <y>15</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Surfaces</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tabLaserScan">
+     <attribute name="title">
+      <string>LaserScan</string>
+     </attribute>
+     <layout class="QFormLayout" name="verticalLayout">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBoxUseUniformColor">
+        <property name="text">
+         <string>Use uniform color</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="checkBoxUseUniformSize">
+        <property name="text">
+         <string>Use uniform size</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="labelPointSize">
+            <property name="text">
+             <string>PointSize: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="doubleSpinBoxPointSize">
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>20.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="value">
+             <double>3.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QSlider" name="horizontalSliderPointSize">
+          <property name="value">
+           <number>0</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="tabMap">
+     <attribute name="title">
+      <string>Map</string>
+     </attribute>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QCheckBox" name="checkBoxShowMap">
+        <property name="text">
+         <string>Show Map</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>947</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuExport">
+     <property name="title">
+      <string>Export...</string>
+     </property>
+     <widget class="QMenu" name="menuHorizontal_Alignment_and_Terrain_svg">
+      <property name="title">
+       <string>Horizontal Alignment and Terrain (*.svg)</string>
+      </property>
+      <addaction name="actionUsualSVG"/>
+      <addaction name="actionAdvancedSVG"/>
+     </widget>
+     <addaction name="actionExportIfcAlignment"/>
+     <addaction name="actionExportIfcZip"/>
+     <addaction name="actionIfcAlignment_buildingSMART_P6_Excel_Comparison"/>
+     <addaction name="actionIFC_Alignment_1_1_Export"/>
+     <addaction name="separator"/>
+     <addaction name="actionExportIIfcRoad"/>
+     <addaction name="actionLandXML"/>
+     <addaction name="actionOkstra"/>
+     <addaction name="actionOkstra_translated"/>
+     <addaction name="separator"/>
+     <addaction name="menuHorizontal_Alignment_and_Terrain_svg"/>
+     <addaction name="actionExportVerticalAlignment"/>
+     <addaction name="actionExportCurvature"/>
+     <addaction name="separator"/>
+     <addaction name="actionExport_Terrain_As_Heightmap"/>
+     <addaction name="separator"/>
+     <addaction name="actionViewport_as_screenshot"/>
+     <addaction name="separator"/>
+     <addaction name="actionAlignments_as_3D_Points_txt"/>
+    </widget>
+    <widget class="QMenu" name="menuRecentFiles">
+     <property name="title">
+      <string>Recent Files...</string>
+     </property>
+     <addaction name="actionRecentFile1"/>
+     <addaction name="actionRecentFile2"/>
+     <addaction name="actionRecentFile3"/>
+     <addaction name="actionRecentFile4"/>
+     <addaction name="actionRecentFile5"/>
+     <addaction name="actionRecentFile6"/>
+     <addaction name="actionRecentFile7"/>
+     <addaction name="actionRecentFile8"/>
+     <addaction name="actionRecentFile9"/>
+     <addaction name="actionRecentFile10"/>
+     <addaction name="separator"/>
+     <addaction name="actionClearMenu"/>
+    </widget>
+    <widget class="QMenu" name="menuImport">
+     <property name="title">
+      <string>Import</string>
+     </property>
+     <addaction name="actionImport_OSM_File"/>
+     <addaction name="actionImport_IFC_Alignment_1_0"/>
+    </widget>
+    <widget class="QMenu" name="menuMerge">
+     <property name="title">
+      <string>Merge</string>
+     </property>
+     <addaction name="actionMerge_XYZ_File"/>
+     <addaction name="actionMerge_Mesh"/>
+     <addaction name="separator"/>
+     <addaction name="actionMerge_LAS_File"/>
+    </widget>
+    <addaction name="actionSaveAs"/>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionMerge"/>
+    <addaction name="separator"/>
+    <addaction name="menuImport"/>
+    <addaction name="menuMerge"/>
+    <addaction name="menuExport"/>
+    <addaction name="menuRecentFiles"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionShow_Help"/>
+    <addaction name="separator"/>
+    <addaction name="actionCheck_for_Updates"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuDesignView">
+    <property name="title">
+     <string>Design View</string>
+    </property>
+    <addaction name="actionHorizontal_alignment"/>
+    <addaction name="action3D"/>
+    <addaction name="separator"/>
+    <addaction name="actionVertical_alignment"/>
+    <addaction name="separator"/>
+    <addaction name="actionCurvature"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionCreate_Alignment_Points"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreate_Alignment"/>
+    <addaction name="actionCreate_Line_Clothoid"/>
+    <addaction name="actionCreate_Line_Clothoid_Clothoid_Line"/>
+    <addaction name="actionCreate_Line_Clothoid_Arc_Clothoid_Line"/>
+    <addaction name="actionCreate_Arc_Clothoid_Arc"/>
+    <addaction name="actionCreate_Arc_Clothoid_Arc2"/>
+    <addaction name="actionCreate_Arc_Clothoid_Clothoid_Arc"/>
+    <addaction name="actionCreate_Arc_Clothoid_Clothoid_Arc2"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreateClothoid"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+    <addaction name="separator"/>
+    <addaction name="actionPreferences"/>
+   </widget>
+   <widget class="QMenu" name="menuTerrain">
+    <property name="title">
+     <string>Terrain</string>
+    </property>
+    <addaction name="actionTerrain_Hide"/>
+    <addaction name="separator"/>
+    <addaction name="actionTerrain_Wireframe"/>
+    <addaction name="actionTerrain_Textured"/>
+    <addaction name="actionTerrain_Gradient_Ramp"/>
+    <addaction name="actionTerrain_Iso_Lines"/>
+    <addaction name="separator"/>
+    <addaction name="actionTerrain_Generate_Random_Terrain"/>
+    <addaction name="actionTerrain_Create_Terrain_from_Heightmap"/>
+   </widget>
+   <widget class="QMenu" name="menuCross_Section">
+    <property name="title">
+     <string>Cross Section</string>
+    </property>
+    <addaction name="actionShow_Cross_Section"/>
+    <addaction name="actionShow_Design_Cross_Section"/>
+    <addaction name="separator"/>
+    <addaction name="actionRoad_body_wireframe"/>
+    <addaction name="actionRoad_body_solid"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="actionDraw_Road_Texture"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuDesignView"/>
+   <addaction name="menuTerrain"/>
+   <addaction name="menuCross_Section"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="actionUndo"/>
+   <addaction name="actionRedo"/>
+   <addaction name="separator"/>
+   <addaction name="actionCreateClothoid"/>
+  </widget>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="../Resources/OpenInfraPlatform.qrc">
+     <normaloff>:/blueform/open.png</normaloff>:/blueform/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open...</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../Resources/OpenInfraPlatform.qrc">
+     <normaloff>:/blueform/redo.svg</normaloff>:/blueform/redo.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../Resources/OpenInfraPlatform.qrc">
+     <normaloff>:/blueform/undo.svg</normaloff>:/blueform/undo.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+  </action>
+  <action name="actionMerge">
+   <property name="text">
+    <string>Merge...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionLandXML">
+   <property name="text">
+    <string>LandXML 1.2 (*.xml)</string>
+   </property>
+  </action>
+  <action name="actionRecentFile1">
+   <property name="text">
+    <string notr="true">RecentFile1</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecentFile2">
+   <property name="text">
+    <string notr="true">RecentFile2</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecentFile3">
+   <property name="text">
+    <string notr="true">RecentFile3</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecentFile4">
+   <property name="text">
+    <string notr="true">RecentFile4</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecentFile5">
+   <property name="text">
+    <string notr="true">RecentFile5</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecentFile6">
+   <property name="text">
+    <string notr="true">RecentFile6</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecentFile7">
+   <property name="text">
+    <string notr="true">RecentFile7</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecentFile8">
+   <property name="text">
+    <string notr="true">RecentFile8</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecentFile9">
+   <property name="text">
+    <string notr="true">RecentFile9</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRecentFile10">
+   <property name="text">
+    <string notr="true">RecentFile10</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionClearMenu">
+   <property name="text">
+    <string>Clear Menu</string>
+   </property>
+  </action>
+  <action name="actionExportIIfcRoad">
+   <property name="text">
+    <string>IfcRoad (TUM Proposal) ICCBEI 2015 (*.ifc, *.ifczip)</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionHorizontal_alignment">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Horizontal alignment</string>
+   </property>
+  </action>
+  <action name="action3D">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>3D</string>
+   </property>
+  </action>
+  <action name="actionCreate_Alignment_Points">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Create Alignment Points</string>
+   </property>
+  </action>
+  <action name="actionCreate_Alignment">
+   <property name="text">
+    <string>Create Alignment</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_Updates">
+   <property name="text">
+    <string>Check for Updates...</string>
+   </property>
+  </action>
+  <action name="actionViewport_as_screenshot">
+   <property name="text">
+    <string>Viewport as Screenshot</string>
+   </property>
+  </action>
+  <action name="actionVertical_alignment">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Vertical alignment</string>
+   </property>
+  </action>
+  <action name="actionCurvature">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Curvature</string>
+   </property>
+  </action>
+  <action name="actionExportVerticalAlignment">
+   <property name="text">
+    <string>Vertical Alignment</string>
+   </property>
+  </action>
+  <action name="actionExportCurvature">
+   <property name="text">
+    <string>Curvature</string>
+   </property>
+  </action>
+  <action name="actionExportIfcAlignment">
+   <property name="text">
+    <string>IFC Alignment 1.0 (*.ifc, *.ifczip)</string>
+   </property>
+   <property name="toolTip">
+    <string>IFC Alignment 1.0 (*.ifc, *.ifczip)</string>
+   </property>
+  </action>
+  <action name="actionShow_Help">
+   <property name="text">
+    <string>Show Help...</string>
+   </property>
+  </action>
+  <action name="actionOkstra">
+   <property name="text">
+    <string>OKSTRA (*.xml, *.cte)</string>
+   </property>
+  </action>
+  <action name="actionExport_Terrain_As_Heightmap">
+   <property name="text">
+    <string>Export Terrain As Heightmap</string>
+   </property>
+  </action>
+  <action name="actionIfcAlignment_buildingSMART_P6_Excel_Comparison">
+   <property name="text">
+    <string>IFC 4.1/IFC Alignment 1.1 Excel Comparison Report (*.xlsx)</string>
+   </property>
+  </action>
+  <action name="actionAlignments_as_3D_Points_txt">
+   <property name="text">
+    <string>Alignments as 3D Points (*.txt)</string>
+   </property>
+  </action>
+  <action name="actionTerrain_Hide">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hide</string>
+   </property>
+  </action>
+  <action name="actionTerrain_Wireframe">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Wireframe</string>
+   </property>
+  </action>
+  <action name="actionTerrain_Textured">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Textured</string>
+   </property>
+  </action>
+  <action name="actionTerrain_Gradient_Ramp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Gradient Ramp</string>
+   </property>
+  </action>
+  <action name="actionTerrain_Iso_Lines">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Iso Lines</string>
+   </property>
+  </action>
+  <action name="actionMerge_XYZ_File">
+   <property name="text">
+    <string>Merge XYZ File</string>
+   </property>
+  </action>
+  <action name="actionTerrain_Generate_Random_Terrain">
+   <property name="text">
+    <string>Generate Random Terrain</string>
+   </property>
+  </action>
+  <action name="actionTerrain_Create_Terrain_from_Heightmap">
+   <property name="text">
+    <string>Create Terrain from Heightmap</string>
+   </property>
+  </action>
+  <action name="actionShow_Cross_Section">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Cross Section</string>
+   </property>
+  </action>
+  <action name="actionShow_Design_Cross_Section">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Design Cross Section</string>
+   </property>
+  </action>
+  <action name="actionRoad_body_wireframe">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Road body wireframe</string>
+   </property>
+  </action>
+  <action name="actionRoad_body_solid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Road body solid</string>
+   </property>
+  </action>
+  <action name="actionDraw_Road_Texture">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Draw Road Texture</string>
+   </property>
+  </action>
+  <action name="actionCreate_Line_Clothoid_Arc_Clothoid_Line_2">
+   <property name="text">
+    <string>Create Line Clothoid Arc Clothoid Line</string>
+   </property>
+  </action>
+  <action name="actionDialog_Line_Clothoid">
+   <property name="text">
+    <string>Dialog</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Line_Clothoid">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionDialog_Arc_Clothoid_Clothoid_Arc">
+   <property name="text">
+    <string>Dialog for given intersection between clothoids</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Arc_Clothoid_Clothoid_Arc">
+   <property name="text">
+    <string>Generate for given intersection between clothoids</string>
+   </property>
+  </action>
+  <action name="actionDialog_Line_Clothoid_Clothoid_Line">
+   <property name="text">
+    <string>Dialog</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Line_Clothoid_Clothoid_Line">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionDialog_Line_Clothoid_Arc_Clothoid_Line">
+   <property name="text">
+    <string>Dialog</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Line_Clothoid_Arc_Clothoid_Line">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionDialog_Line_Arc_Arc_Line">
+   <property name="text">
+    <string>Dialog </string>
+   </property>
+  </action>
+  <action name="actionGenerate_Line_Arc_Arc_Line">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionDialogCreate_Line_Arc_Arc_Arc_Line">
+   <property name="text">
+    <string>Dialog</string>
+   </property>
+  </action>
+  <action name="actionGenerateCreate_Line_Arc_Arc_Arc_Line">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionDialogCreate_Arc_Clothoid_Arc">
+   <property name="text">
+    <string>Dialog</string>
+   </property>
+  </action>
+  <action name="actionGenerateCreate_Arc_Clothoid_Arc">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionDialog_Line_Arc_Arc_Arc_Line">
+   <property name="text">
+    <string>Dialog</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Line_Arc_Arc_Arc_Line">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionDialog_Arc_Clothoid_Arc">
+   <property name="text">
+    <string>Dialog for given arc-center, clothoid-point and clothoid-constant</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Arc_Clothoid_Arc">
+   <property name="text">
+    <string>Generate for given arc-center, clothoid-point and clothoid-constant</string>
+   </property>
+  </action>
+  <action name="actionDialog_Clothoid_Parallel">
+   <property name="text">
+    <string>Dialog</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Clothoid_Parallel">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionExportIfcZip">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>IFC Alignment buildingSMART P6 (*.ifczip)</string>
+   </property>
+   <property name="toolTip">
+    <string>Export File as compressed IfcZip File</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionImportFile">
+   <property name="text">
+    <string>Import...</string>
+   </property>
+   <property name="toolTip">
+    <string>Import from non native File Formats</string>
+   </property>
+  </action>
+  <action name="actionDialog_Arc_Clothoid_Arc_Meth2">
+   <property name="text">
+    <string>Dialog for given arc-centers and clothoid-point</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Arc_Clothoid_Arc_Meth2">
+   <property name="text">
+    <string>Generate for given arc-centers and clothoid-point</string>
+   </property>
+  </action>
+  <action name="actionDialog_Arc_Clothoid_Clothoid_Arc_Meth2">
+   <property name="text">
+    <string>Dialog for given arc-centers</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Arc_Clothoid_Clothoid_Arc_Meth2">
+   <property name="text">
+    <string>Generate for given arc-centers</string>
+   </property>
+  </action>
+  <action name="actionDialog_Parallel_Clothoid">
+   <property name="text">
+    <string>Dialog</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Parallel_Clothoid">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionFfggdddf">
+   <property name="text">
+    <string>ffggdddf</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Arc_Clothoid_Clothoid_Arc_Meth2">
+   <property name="text">
+    <string>Generate for given arc-centers</string>
+   </property>
+  </action>
+  <action name="actionDialog_Parallel_Clothoid">
+   <property name="text">
+    <string>Dialog</string>
+   </property>
+  </action>
+  <action name="actionGenerate_Parallel_Clothoid">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionFfggdddf">
+   <property name="text">
+    <string>ffggdddf</string>
+   </property>
+  </action>
+  <action name="actionMerge_Mesh">
+   <property name="text">
+    <string>Merge Mesh</string>
+   </property>
+  </action>
+  <action name="actionUsualSVG">
+   <property name="text">
+    <string>Usual (every alignment-group selectable)</string>
+   </property>
+  </action>
+  <action name="actionAdvancedSVG">
+   <property name="text">
+    <string>Advanced (every alignment-element(line,arc...) selectable)</string>
+   </property>
+  </action>
+  <action name="actionDialog_AA">
+   <property name="text">
+    <string>Dialog</string>
+   </property>
+  </action>
+  <action name="actionGenerate_AA">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionDialog_AAA">
+   <property name="text">
+    <string>Dialog</string>
+   </property>
+  </action>
+  <action name="actionGenerate_AAA">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </action>
+  <action name="actionDialog_for_given_arc_centers_ACA">
+   <property name="text">
+    <string>Dialog for given arc-centers</string>
+   </property>
+  </action>
+  <action name="actionGenerate_for_given_arc_centers_ACA">
+   <property name="text">
+    <string>Generate for given arc-centers</string>
+   </property>
+  </action>
+  <action name="actionDialog_for_given_arc_centers_ACCA">
+   <property name="text">
+    <string>Dialog for given arc-centers</string>
+   </property>
+  </action>
+  <action name="actionGenerate_for_given_arc_centers_ACCA">
+   <property name="text">
+    <string>Generate for given arc-centers</string>
+   </property>
+  </action>
+  <action name="actionImport_OSM_File">
+   <property name="text">
+    <string>Import OSM file</string>
+   </property>
+  </action>
+  <action name="actionMerge_LAS_File">
+   <property name="text">
+    <string>Merge LAS File</string>
+   </property>
+  </action>
+  <action name="actionCreate_Line_Clothoid">
+   <property name="text">
+    <string>Create Line Clothoid</string>
+   </property>
+  </action>
+  <action name="actionCreate_Line_Clothoid_Clothoid_Line">
+   <property name="text">
+    <string>Create Line Clothoid Clothoid Line</string>
+   </property>
+  </action>
+  <action name="actionCreate_Line_Clothoid_Arc_Clothoid_Line">
+   <property name="text">
+    <string>Create Line Clothoid Arc Clothoid Line</string>
+   </property>
+  </action>
+  <action name="actionCreate_Arc_Clothoid_Arc">
+   <property name="text">
+    <string>Create Arc Clothoid Arc (input one arc-center)</string>
+   </property>
+  </action>
+  <action name="actionCreate_Arc_Clothoid_Clothoid_Arc">
+   <property name="text">
+    <string>Create Arc Clothoid Clothoid Arc (input clothoid-startpoint)</string>
+   </property>
+  </action>
+  <action name="actionCreate_Arc_Clothoid_Clothoid_Arc2">
+   <property name="text">
+    <string>Create Arc Clothoid Clothoid Arc (input two arc-centers)</string>
+   </property>
+  </action>
+  <action name="actionCreate_Arc_Clothoid_Arc2">
+   <property name="text">
+    <string>Create Arc Clothoid Arc (input two arc-centers)</string>
+   </property>
+  </action>
+  <action name="actionCreateClothoid">
+   <property name="icon">
+    <iconset resource="../Resources/OpenInfraPlatform.qrc">
+     <normaloff>:/blueform/clothoid.svg</normaloff>:/blueform/clothoid.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Create Clothoid</string>
+   </property>
+   <property name="toolTip">
+    <string>Create Clothoid</string>
+   </property>
+  </action>
+  <action name="actionIFC_Alignment_1_1_Export">
+   <property name="text">
+    <string>IFC 4.1/IFC Alignment 1.1 (*.ifc)</string>
+   </property>
+  </action>
+  <action name="actionImport_IFC_Alignment_1_0">
+   <property name="text">
+    <string>Import IFC Alignment 1.0</string>
+   </property>
+  </action>
+  <action name="actionOkstra_translated">
+   <property name="text">
+    <string>OKSTRA translated (*.xml)</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="../Resources/OpenInfraPlatform.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionTerrain_Hide</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>actionTerrain_Wireframe</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionTerrain_Hide</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>actionTerrain_Textured</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionTerrain_Hide</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>actionTerrain_Iso_Lines</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionTerrain_Hide</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>actionTerrain_Gradient_Ramp</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRoad_body_solid</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>actionDraw_Road_Texture</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

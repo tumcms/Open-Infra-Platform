@@ -1,0 +1,21 @@
+{
+	"Size": 1,
+	"BindingColor": "0.2784,0.2784,0.2784",
+	"FaceColor": "0.4000,0.4000,0.4000",
+	"HighlightColor": "0.2824,0.7176,0.9059",
+	"TextColor": "0.0,1.0,0.0",
+	"OuterBoundWidth" : 0.0155,
+    "OuterBoundHeight" : 0.22999999999999998,
+    "InnerBoundWidth" : 0.0115,
+    "InnerBoundHeight" : 0.22999999999999998,
+	"OuterCircleRadius" : 1.1,
+	"OuterCircleWidth" : 0.03,
+	"InnerCircleWidth": 0.27,
+	"CircleOffset": 0.77,
+	"Front": "Data/front.png",
+	"Back" : "Data/back.png",
+	"Left": "Data/left.png",
+	"Right": "Data/right.png",
+	"Top" : "Data/top.png",
+	"Bottom" : "Data/bottom.png"
+}

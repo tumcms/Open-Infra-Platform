@@ -1,0 +1,594 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="RoadXML">
+    <xs:annotation>
+      <xs:documentation>The RoadXML is a complete description of a road network for a driving simulator.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Network" maxOccurs="1" minOccurs="1">
+          <xs:complexType>
+            <xs:all>
+              <xs:element name="SubNetworks">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="SubNetwork" minOccurs="1" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="ExternalTerrain" type="ExternalElementCT" maxOccurs="1" minOccurs="0" />
+                          <xs:element name="ExternalSurface" maxOccurs="1" minOccurs="0" type="ExternalElementCT" />
+                          <xs:element name="RoadNetwork" maxOccurs="1" minOccurs="0">
+                            <xs:complexType>
+                              <xs:all>
+                                <xs:element name="Intersections">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element maxOccurs="unbounded" name="Intersection" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:all>
+                                            <xs:element name="Material" type="MaterialCT" minOccurs="0" maxOccurs="1" />
+                                            <xs:element name="BannedLinks">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="LanePair" maxOccurs="unbounded" minOccurs="0">
+                                                    <xs:complexType>
+                                                      <xs:sequence />
+                                                      <xs:attribute name="fromTrack" type="xs:string" use="required" />
+                                                      <xs:attribute name="toLane" type="xs:string" use="required" />
+                                                      <xs:attribute name="toTrackBoundInfo" type="xs:string" use="required" />
+                                                      <xs:attribute name="toTrack" type="xs:string" use="required" />
+                                                      <xs:attribute name="fromLane" type="xs:string" use="required" />
+                                                      <xs:attribute name="fromTrackBoundInfo" type="xs:string" use="required" />
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                              </xs:complexType>
+                                            </xs:element>
+                                            <xs:element name="ClippedDatas" type="MarkClippedDataCT" />
+                                            <xs:element name="Contours">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="ContourPiece" maxOccurs="1" minOccurs="0">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element name="PolyLine" type="PolyLineCT" minOccurs="1" maxOccurs="1" />
+                                                      </xs:sequence>
+                                                      <xs:attribute name="startAnchorTrack" type="xs:string" use="required" />
+                                                      <xs:attribute name="isStartAnchorOnTrackEnd" type="xs:int" use="required" />
+                                                      <xs:attribute name="isStartAnchorOnLeftSide" type="xs:int" use="required" />
+                                                      <xs:attribute name="endAnchorTrack" type="xs:string" use="required" />
+                                                      <xs:attribute name="isEndAnchorOnTrackEnd" type="xs:int" use="required" />
+                                                      <xs:attribute name="isEndAnchorOnLeftSide" type="xs:int" use="required" />
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:all>
+                                          <xs:attribute name="name" type="xs:string" use="required" />
+                                          <xs:attribute name="x" type="xs:double" use="required" />
+                                          <xs:attribute name="y" type="xs:double" use="required" />
+                                          <xs:attribute name="z" type="xs:double" use="required" />
+                                          <xs:attribute name="uVOffsetX" type="xs:double" use="optional" />
+                                          <xs:attribute name="uVOffsetY" type="xs:double" use="optional" />
+                                          <xs:attribute name="uVScaleX" type="xs:double" use="optional" />
+                                          <xs:attribute name="uVScaleY" type="xs:double" use="optional" />
+                                          <xs:attribute name="uVHeading" type="xs:double" use="optional" />
+                                          <xs:attribute name="groundName" type="xs:string" use="optional" />
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element name="Tracks">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element maxOccurs="unbounded" name="Track" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:all>
+                                            <xs:element name="XYCurve" type="Curve2DCT" maxOccurs="1" minOccurs="1" />
+                                            <xs:element name="SZCurve" type="CurveCT" maxOccurs="1" minOccurs="1" />
+                                            <xs:element name="BankingCurve" type="CurveCT" maxOccurs="1" minOccurs="0" />
+                                            <xs:element name="Portions">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element maxOccurs="unbounded" name="Portion" minOccurs="1">
+                                                    <xs:complexType>
+                                                      <xs:sequence />
+                                                      <xs:attribute name="endDistance" type="xs:double" use="required" />
+                                                      <xs:attribute name="endProfile" type="xs:string" use="required" />
+                                                      <xs:attribute name="name" type="xs:string" use="required" />
+                                                      <xs:attribute name="startProfile" type="xs:string" use="required" />
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                              </xs:complexType>
+                                            </xs:element>
+                                            <xs:element name="ClippedDatas">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element minOccurs="0" maxOccurs="unbounded" name="TrackClippedData">
+                                                    <xs:complexType>
+                                                      <xs:all>
+                                                        <xs:element name="TrackClip" maxOccurs="1" minOccurs="1">
+                                                          <xs:complexType>
+                                                            <xs:attribute name="abscissa" type="xs:double" use="required" />
+                                                            <xs:attribute name="distance" type="xs:double" use="required" />
+                                                            <xs:attribute name="elevation" type="xs:double" use="required" />
+                                                            <xs:attribute name="heading" type="xs:double" use="required" />
+                                                            <xs:attribute name="vertical" type="xs:boolean" use="required" />
+                                                          </xs:complexType>
+                                                        </xs:element>
+                                                        <xs:element name="TrackScope" maxOccurs="1" minOccurs="1">
+                                                          <xs:complexType>
+                                                            <xs:attribute name="bottom" type="xs:double" use="required" />
+                                                            <xs:attribute name="from" type="xs:double" use="required" />
+                                                            <xs:attribute name="left" type="xs:double" use="required" />
+                                                            <xs:attribute name="right" type="xs:double" use="required" />
+                                                            <xs:attribute name="to" type="xs:double" use="required" />
+                                                            <xs:attribute name="top" type="xs:double" use="required" />
+                                                            <xs:attribute name="way" type="xs:string" use="required" />
+                                                          </xs:complexType>
+                                                        </xs:element>
+                                                        <xs:element name="RoadSign" type="RoadSignCT" maxOccurs="1" minOccurs="0" />
+                                                        <xs:element name="ExternalElement" type="ExternalElementCT" minOccurs="0" maxOccurs="1" />
+                                                        <xs:element name="Obstacle" type="ObstacleCT" maxOccurs="1" minOccurs="0" />
+                                                        <xs:element name="Sequence" type="SequenceCT" maxOccurs="1" minOccurs="0" />
+                                                        <xs:element name="SequenceY" type="SequenceCT" maxOccurs="1" minOccurs="0" />
+                                                        <xs:element name="SequenceZ" type="SequenceCT" maxOccurs="1" minOccurs="0" />
+                                                      </xs:all>
+                                                      <xs:attribute name="name" type="xs:string" use="required" />
+                                                      <xs:attribute name="mass" type="xs:double" use="optional" />
+                                                      <xs:attribute name="sequenceOrientation" type="xs:double" use="optional" />
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:all>
+                                          <xs:attribute name="endNode" type="xs:string" use="required" />
+                                          <xs:attribute name="name" type="xs:string" use="required" />
+                                          <xs:attribute name="startNode" type="xs:string" use="required" />
+                                          <xs:attribute name="roadCategory" type="xs:string" />
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element name="Profiles">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element maxOccurs="unbounded" name="Profile" minOccurs="1">
+                                        <xs:complexType>
+                                          <xs:choice minOccurs="1" maxOccurs="unbounded">
+                                            <xs:element name="LaneBorder" type="LaneBorderCT">
+                                            </xs:element>
+                                            <xs:element name="Lane" type="LaneCT">
+                                            </xs:element>
+                                          </xs:choice>
+                                          <xs:attribute name="name" type="xs:string" use="required" />
+                                          <xs:attribute name="type" type="xs:string" use="required" />
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element name="Grounds">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="Ground" type="GroundCT" minOccurs="0" maxOccurs="unbounded" />
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element name="Markings">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="Marking" maxOccurs="unbounded" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:all>
+                                            <xs:element name="Material" type="MaterialCT" minOccurs="1" maxOccurs="1" />
+                                            <xs:element name="UVMapping" type="UVMappingCT" maxOccurs="1" minOccurs="1" />
+                                          </xs:all>
+                                          <xs:attribute name="width" type="xs:double" use="required" />
+                                          <xs:attribute name="leftToRight" type="xs:string" use="required" />
+                                          <xs:attribute name="lineLength" type="xs:double" use="required" />
+                                          <xs:attribute name="name" type="xs:string" use="required" />
+                                          <xs:attribute name="rightToLeft" type="xs:string" use="required" />
+                                          <xs:attribute name="totalLength" type="xs:double" use="required" />
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element name="TrafficLightGroups">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element maxOccurs="unbounded" name="TrafficLightGroup" minOccurs="0">
+                                        <xs:complexType>
+                                          <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                                            <xs:element name="Animations">
+                                              <xs:complexType>
+                                                <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                                                  <xs:element name="TrafficLightAnimation">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element maxOccurs="unbounded" name="States" minOccurs="0">
+                                                          <xs:complexType>
+                                                            <xs:sequence>
+                                                              <xs:element maxOccurs="unbounded" name="TrafficLightState" minOccurs="0">
+                                                                <xs:complexType>
+                                                                  <xs:sequence>
+                                                                    <xs:element maxOccurs="unbounded" name="State" minOccurs="0">
+                                                                      <xs:complexType>
+                                                                        <xs:attribute name="illumination" type="xs:string" use="required" />
+                                                                      </xs:complexType>
+                                                                    </xs:element>
+                                                                  </xs:sequence>
+                                                                  <xs:attribute name="timeLength" type="xs:double" use="required" />
+                                                                </xs:complexType>
+                                                              </xs:element>
+                                                            </xs:sequence>
+                                                          </xs:complexType>
+                                                        </xs:element>
+                                                      </xs:sequence>
+                                                      <xs:attribute name="roadSign" type="xs:string" use="required" />
+                                                      <xs:attribute name="cycleName" type="xs:string" use="required" />
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                          <xs:attribute name="name" type="xs:string" use="required" />
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:all>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="TrajectoryParts" maxOccurs="1" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element maxOccurs="unbounded" name="TrajectoryPart" minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:all>
+                                      <xs:element name="XYCurve" type="Curve2DCT" maxOccurs="1" minOccurs="1" />
+                                      <xs:element name="SZCurve" type="CurveCT" maxOccurs="1" minOccurs="1" />
+                                    </xs:all>
+                                    <xs:attribute name="name" type="xs:string" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="Trajectories" maxOccurs="1" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element maxOccurs="unbounded" name="Trajectory" minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element maxOccurs="unbounded" name="TrajectoryElement" minOccurs="1">
+                                        <xs:complexType>
+                                          <xs:attribute name="circulationWay" type="xs:string" use="required" />
+                                          <xs:attribute name="trajectoryPart" type="xs:string" use="required" />
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute name="name" type="xs:string" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="ProxyFile" maxOccurs="1" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence />
+                              <xs:attribute name="path" type="xs:string" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="ClippedDatas" type="MarkClippedDataCT" maxOccurs="1" minOccurs="0"/>
+                        </xs:all>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="heading" type="xs:double" use="optional" />
+                        <xs:attribute name="x" type="xs:double" use="optional" />
+                        <xs:attribute name="y" type="xs:double" use="optional" />
+                        <xs:attribute name="z" type="xs:double" use="optional" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="SubNetworkJunctions">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="SubNetworkJunction" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence />
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Roads">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="Road" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence minOccurs="0">
+                          <xs:element name="RoadPieces">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element maxOccurs="unbounded" name="RoadElement" minOccurs="0">
+                                  <xs:complexType>
+                                    <xs:attribute name="subNetwork" type="xs:string" use="required" />
+                                    <xs:attribute name="track" type="xs:string" use="required" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="priorityLevel" type="xs:int" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Geolocalisation" maxOccurs="1" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Translation" maxOccurs="1" minOccurs="1">
+                      <xs:complexType>
+                        <xs:sequence>
+                        </xs:sequence>
+                        <xs:attribute name="x" type="xs:double" use="required" />
+                        <xs:attribute name="y" type="xs:double" use="required" />
+                        <xs:attribute name="z" type="xs:double" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="EPSG" type="xs:string" use="required" />
+                  <xs:attribute name="WKT" type="xs:string" use="required" />
+                  <xs:attribute name="Azimuth" type="xs:double" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:all>
+            <xs:attribute name="name" type="xs:string" use="required" />
+            <xs:attribute name="traffic" type="xs:string" use="required" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" use="required" />
+      <xs:attribute name="versionRevision" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ColorCT">
+    <xs:attribute name="alpha" type="xs:double" use="required" />
+    <xs:attribute name="blue" type="xs:double" use="required" />
+    <xs:attribute name="green" type="xs:double" use="required" />
+    <xs:attribute name="red" type="xs:double" use="required" />
+  </xs:complexType>
+  <xs:complexType name="TextureCT">
+    <xs:attribute name="path" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ChanelCT">
+    <xs:all>
+      <xs:element minOccurs="0" name="Texture" type="TextureCT" maxOccurs="1">
+      </xs:element>
+      <xs:element name="Color" type="ColorCT" minOccurs="0" maxOccurs="1">
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="MaterialCT">
+    <xs:all>
+      <xs:element name="Diffuse" type="ChanelCT" minOccurs="0" maxOccurs="1">
+      </xs:element>
+      <xs:element name="Ambient" type="ChanelCT" minOccurs="0" maxOccurs="1">
+      </xs:element>
+      <xs:element name="Specular" type="ChanelCT" minOccurs="0" maxOccurs="1">
+      </xs:element>
+      <xs:element name="Emissive" type="ChanelCT" minOccurs="0" maxOccurs="1">
+      </xs:element>
+    </xs:all>
+    <xs:attribute name="shininess" type="xs:double" use="optional" />
+  </xs:complexType>
+  <xs:complexType name="UVMappingCT">
+    <xs:attribute name="leftU" type="xs:double" use="required" />
+    <xs:attribute name="lengthV" type="xs:double" use="required" />
+    <xs:attribute name="rightU" type="xs:double" use="required" />
+  </xs:complexType>
+  <xs:complexType name="Vectord2CT">
+    <xs:attribute name="x" type="xs:double" use="required" />
+    <xs:attribute name="y" type="xs:double" use="required" />
+  </xs:complexType>
+  <xs:complexType name="PolyLineCT">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" name="Vectord2" type="Vectord2CT" minOccurs="1">
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="type" type="xs:string" use="required" />
+    <xs:attribute name="endHeading" type="xs:double" use="required" />
+  </xs:complexType>
+  <xs:complexType name="CircleArcCT">
+    <xs:attribute name="curvature" type="xs:double" use="required" />
+    <xs:attribute name="length" type="xs:double" use="required" />
+  </xs:complexType>
+  <xs:complexType name="SegmentCT">
+    <xs:attribute name="length" type="xs:double" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ClothoArcCT">
+    <xs:attribute name="endCurvature" type="xs:double" use="required" />
+    <xs:attribute name="length" type="xs:double" use="required" />
+    <xs:attribute name="startCurvature" type="xs:double" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ClothoidSplineCT">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" name="Vectord2" type="Vectord2CT" minOccurs="2">
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="symetric" type="xs:string" use="required" />
+    <xs:attribute name="threshold" type="xs:double" use="required" />
+  </xs:complexType>
+  <xs:complexType name="Curve2DCT">
+    <xs:choice minOccurs="1" maxOccurs="unbounded">
+      <xs:element name="Segment" type="SegmentCT" />
+      <xs:element name="CircleArc" type="CircleArcCT" />
+      <xs:element name="PolyLine" type="PolyLineCT" />
+      <xs:element name="ClothoArc" type="ClothoArcCT" />
+      <xs:element name="ClothoidSpline" type="ClothoidSplineCT" />
+    </xs:choice>
+    <xs:attribute name="direction" type="xs:double" use="required" />
+    <xs:attribute name="x" type="xs:double" use="required" />
+    <xs:attribute name="y" type="xs:double" use="required" />
+  </xs:complexType>
+  <xs:complexType name="PolynomialCT">
+    <xs:all>
+      <xs:element name="begin">
+        <xs:complexType>
+          <xs:attribute name="direction" type="xs:double" use="required" />
+          <xs:attribute name="x" type="xs:double" use="required" />
+          <xs:attribute name="y" type="xs:double" use="required" />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="end">
+        <xs:complexType>
+          <xs:attribute name="direction" type="xs:double" use="required" />
+          <xs:attribute name="x" type="xs:double" use="required" />
+          <xs:attribute name="y" type="xs:double" use="required" />
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="VehicleTypeCT">
+    <xs:attribute name="categories" type="xs:string" use="required" />
+    <xs:attribute name="height" type="xs:double" use="optional" />
+    <xs:attribute name="length" type="xs:double" use="optional" />
+    <xs:attribute name="trailedWeight" type="xs:double" use="optional" />
+    <xs:attribute name="weight" type="xs:double" use="optional" />
+    <xs:attribute name="weightPerAxle" type="xs:double" use="optional" />
+    <xs:attribute name="width" type="xs:double" use="optional" />
+  </xs:complexType>
+  <xs:complexType name="ExternalElementCT">
+    <xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="path" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:complexType name="StringArrayCT">
+    <xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="fourCharID" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:complexType name="SequenceCT">
+    <xs:attribute name="number" type="xs:int" />
+    <xs:attribute name="distance" type="xs:double" />
+  </xs:complexType>
+  <xs:complexType name="GroundCT">
+    <xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="grip" type="xs:double" />
+    <xs:attribute name="granulosity" type="xs:double" />
+    <xs:attribute name="type" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="RoadSignCT">
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="VehicleType" type="VehicleTypeCT" maxOccurs="1" minOccurs="1">
+      </xs:element>
+      <xs:element name="Light">
+        <xs:complexType>
+          <xs:attribute name="VehicleType" type="xs:string" use="required" />
+          <xs:attribute name="color" type="xs:string" use="required" />
+          <xs:attribute name="direction" type="xs:string" use="required" />
+          <xs:attribute name="illumination" type="xs:string" use="required" />
+          <xs:attribute name="name" type="xs:string" use="optional" />
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+    <xs:attribute name="direction" type="xs:string" use="required" />
+    <xs:attribute name="message" type="xs:string" use="required" />
+    <xs:attribute name="signType" type="xs:string" use="required" />
+    <xs:attribute name="temporary" type="xs:boolean" use="required" />
+    <xs:attribute name="value" type="xs:double" use="required" />
+    <xs:attribute name="targetName" type="xs:string" use="optional" />
+  </xs:complexType>
+  <xs:complexType name="ObstacleCT">
+    <xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="dodge" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:complexType name="CurveCT">
+    <xs:sequence>
+      <xs:element name="Polynomial" type="PolynomialCT" maxOccurs="unbounded" minOccurs="1">
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LaneCT">
+    <xs:all>
+      <xs:element name="VehicleType" type="VehicleTypeCT" maxOccurs="1" minOccurs="1" />
+      <xs:element name="Material" type="MaterialCT" maxOccurs="1" minOccurs="1" />
+      <xs:element name="UVMapping" type="UVMappingCT" maxOccurs="1" minOccurs="1" />
+    </xs:all>
+    <xs:attribute name="circulationWay" type="xs:string" use="required" />
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="speedLimit" type="xs:double" use="required" />
+    <xs:attribute name="type" type="xs:string" use="required" />
+    <xs:attribute name="Ground" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="LaneBorderCT">
+    <xs:sequence>
+      <xs:element name="Decoration" maxOccurs="1" minOccurs="0">
+        <xs:complexType>
+          <xs:all>
+            <xs:element name="Material" type="MaterialCT" minOccurs="1" maxOccurs="1" />
+            <xs:element name="UVMapping" type="UVMappingCT" minOccurs="1" maxOccurs="1" />
+            <xs:element name="PolyLine" type="PolyLineCT" minOccurs="1" maxOccurs="1" />
+          </xs:all>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="distance" type="xs:double" use="required" />
+    <xs:attribute name="height" type="xs:double" use="required" />
+    <xs:attribute name="markingName" type="xs:string" use="optional" />
+    <xs:attribute name="markingOffset" type="xs:string" use="optional" />
+  </xs:complexType>
+  <xs:complexType name="FrameCT">
+    <xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="x" type="xs:double" use="required" />
+    <xs:attribute name="y" type="xs:double" use="required" />
+    <xs:attribute name="z" type="xs:double" use="required" />
+    <xs:attribute name="heading" type="xs:double" use="required" />
+    <xs:attribute name="pitch" type="xs:double" use="required" />
+    <xs:attribute name="roll" type="xs:double" use="required" />
+  </xs:complexType>
+  <xs:complexType name="MarkClippedDataCT">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MarkClippedData">
+        <xs:complexType>
+          <xs:all>
+            <xs:element name="RoadSign" type="RoadSignCT" maxOccurs="1" minOccurs="0" />
+            <xs:element name="ExternalElement" type="ExternalElementCT" minOccurs="0" maxOccurs="1" />
+            <xs:element name="Obstacle" type="ObstacleCT" maxOccurs="1" minOccurs="0" />
+            <xs:element name="Sequence" type="SequenceCT" maxOccurs="1" minOccurs="0" />
+            <xs:element name="SequenceY" type="SequenceCT" maxOccurs="1" minOccurs="0" />
+            <xs:element name="SequenceZ" type="SequenceCT" maxOccurs="1" minOccurs="0" />
+            <xs:element name="Frame" type="FrameCT" maxOccurs="1" minOccurs="0" />
+          </xs:all>
+          <xs:attribute name="name" type="xs:string" use="required" />
+          <xs:attribute name="mass" type="xs:double" use="optional" />
+          <xs:attribute name="sequenceOrientation" type="xs:double" use="optional" />
+          <xs:attribute name="x" type="xs:double" use="optional" />
+          <xs:attribute name="y" type="xs:double" use="optional" />
+          <xs:attribute name="z" type="xs:double" use="optional" />
+          <xs:attribute name="heading" type="xs:double" use="optional" />
+          <xs:attribute name="pitch" type="xs:double" use="optional" />
+          <xs:attribute name="roll" type="xs:double" use="optional" />
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

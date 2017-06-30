@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CreateArcClothoidClothoidArcMeth2</class>
+ <widget class="QDialog" name="CreateArcClothoidClothoidArcMeth2">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>408</width>
+    <height>507</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Create-Arc-Clothoid-Clothoid-Arc</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="8" column="1">
+    <widget class="QLineEdit" name="lineEdit_A1">
+     <property name="text">
+      <string>0.0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="1">
+    <widget class="QLineEdit" name="lineEdit_R2">
+     <property name="text">
+      <string>0.0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="15" column="1">
+    <widget class="QPushButton" name="pushButtonCancel">
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QLineEdit" name="lineEdit_R1">
+     <property name="text">
+      <string>0.0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="3">
+    <widget class="QLineEdit" name="lineEdit_phi2">
+     <property name="text">
+      <string>0.0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="2">
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>m                  phi2=</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="5">
+    <widget class="QTextBrowser" name="textBrowser">
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;In order to use this function create two alignment points, insert values in this dialog and then click &amp;quot;Generate&amp;quot;.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;First point for arc-center 1 and last point for arc-center 2. &amp;quot;A&amp;quot; means clothoidparameter and &amp;quot;phi&amp;quot; means arc-angle. You can but do not need to insert A1 and A2. Leave at least one of these values at 0.0.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="4">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>gon</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>R2=</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="4">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>gon</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>R1=</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="5">
+    <widget class="QLabel" name="labelPicture">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>200</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="3">
+    <widget class="QLineEdit" name="lineEdit_A2">
+     <property name="text">
+      <string>0.0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="4">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>m</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="2">
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>m                  phi1=</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="3">
+    <widget class="QLineEdit" name="lineEdit_phi1">
+     <property name="text">
+      <string>0.0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="2">
+    <widget class="QLabel" name="label_11">
+     <property name="text">
+      <string>m         or        A2=</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>A1=</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="15" column="3">
+    <widget class="QPushButton" name="pushButtonGenerate">
+     <property name="text">
+      <string>Generate</string>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="1">
+    <widget class="QLineEdit" name="lineEdit_c_2">
+     <property name="text">
+      <string>0.0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="1" rowspan="2" colspan="3">
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="title">
+      <string/>
+     </property>
+     <widget class="QRadioButton" name="z_form">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>0</y>
+        <width>125</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Z-form</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="s_form">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>0</y>
+        <width>124</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>S-form</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+   </item>
+   <item row="14" column="3">
+    <widget class="QLineEdit" name="lineEdit_d_2">
+     <property name="text">
+      <string>0.0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="13" column="0" colspan="5">
+    <widget class="QLabel" name="label_18">
+     <property name="text">
+      <string>For drawing street-borders by the use of connected roadpoints, please insert:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="2">
+    <widget class="QLabel" name="label_22">
+     <property name="text">
+      <string>m  Step-distance =</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="0">
+    <widget class="QLabel" name="label_20">
+     <property name="text">
+      <string>Carriageway-width =</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="4">
+    <widget class="QLabel" name="label_19">
+     <property name="text">
+      <string>m</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

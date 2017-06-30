@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Aufstellvorrichtung_Schild" substitutionGroup="gml:AbstractFeature" type="okstra:Aufstellvorrichtung_SchildType"/>
+  <complexType name="Aufstellvorrichtung_SchildType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenpunkt" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenelementpunkt" type="okstra:StrassenelementpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Erfassungsdatum" type="date"/>
+          <element minOccurs="0" name="Systemdatum" type="date"/>
+          <element minOccurs="0" name="Textfeld" type="string"/>
+          <element minOccurs="0" name="Art_der_Erfassung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Erfassung_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="RFID" type="string"/>
+          <element minOccurs="0" name="Migrationshinweise" type="string"/>
+          <element minOccurs="0" name="unscharf" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Dokument" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kreuzungszuordnung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Unterhaltsbezug_SP" type="okstra:StrassenpunktPropertyType"/>
+          <element minOccurs="0" name="zu_Hausnummer" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Hausnummernbereich" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Hausnummernblock" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_rechtliches_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Zustaendigkeit" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="an_Verbindungspunkt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="an_komplexem_Knoten" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Nummer_Aufstellvorrichtung" type="string"/>
+          <element minOccurs="0" name="Abstand_linker_Pfosten" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Abstand_rechter_Pfosten" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Position_linker_Pfosten" type="gml:PointPropertyType"/>
+          <element minOccurs="0" name="Position_rechter_Pfosten" type="gml:PointPropertyType"/>
+          <element minOccurs="0" name="Lage" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Durchmesser" type="okstra-typen:Millimeter"/>
+          <element minOccurs="0" name="Hoehe" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Material" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Detaillierungsgrad" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Teilbauwerk" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Schild" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="stellt_Teilhindernis_dar" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Aufstellvorrichtung_SchildPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Aufstellvorrichtung_Schild"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Schild" substitutionGroup="gml:AbstractFeature" type="okstra:SchildType"/>
+  <complexType name="SchildType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Erfassungsdatum" type="date"/>
+          <element minOccurs="0" name="Systemdatum" type="date"/>
+          <element minOccurs="0" name="Textfeld" type="string"/>
+          <element minOccurs="0" name="Art_der_Erfassung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Erfassung_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="RFID" type="string"/>
+          <element minOccurs="0" name="Migrationshinweise" type="string"/>
+          <element minOccurs="0" name="unscharf" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Dokument" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Hausnummer" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Hausnummernbereich" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Hausnummernblock" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_rechtliches_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Zustaendigkeit" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Art_Schild_OK" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_Schild_ASB" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_Schild_nichtamtlich_ASB" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Schildnummer" type="string"/>
+          <element minOccurs="0" name="StVO_ZNr" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Lage_Schild" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Breite" type="okstra-typen:Zentimeter"/>
+          <element minOccurs="0" name="Hoehe" type="okstra-typen:Zentimeter"/>
+          <element minOccurs="0" name="Hoehe_Unterkante" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Normalenrichtung" type="okstra-typen:Gon"/>
+          <element minOccurs="0" name="Lesbarkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Strassenbezug_ASB" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Befestigung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Beleuchtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="verdeckbar" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Groessenklasse" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Einzel_Mehrfach_Schild" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="an_Aufstellvorrichtung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Wegweisung_Info" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Zusatzschild_von" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Zusatzschild" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="haengt_ueber" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="haengt_unter" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Verkehrseinschraenkung" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SchildPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Schild"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Schild_nichtamtlich_Summe" substitutionGroup="gml:AbstractFeature" type="okstra:Schild_nichtamtlich_SummeType"/>
+  <complexType name="Schild_nichtamtlich_SummeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kreuzungszuordnung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Unterhaltsbezug_SP" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Erfassungsdatum" type="date"/>
+          <element minOccurs="0" name="Systemdatum" type="date"/>
+          <element minOccurs="0" name="Textfeld" type="string"/>
+          <element minOccurs="0" name="Art_der_Erfassung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Erfassung_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="RFID" type="string"/>
+          <element minOccurs="0" name="Migrationshinweise" type="string"/>
+          <element minOccurs="0" name="unscharf" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Dokument" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Lage" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Schilder" type="okstra-typen:Anzahl"/>
+          <element name="Aufstellvorrichtungen" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="Detaillierungsgrad" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Schild_nichtamtlich_SummePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Schild_nichtamtlich_Summe"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Verkehrszeichen_Summe" substitutionGroup="gml:AbstractFeature" type="okstra:Verkehrszeichen_SummeType"/>
+  <complexType name="Verkehrszeichen_SummeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kreuzungszuordnung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Unterhaltsbezug_SP" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Erfassungsdatum" type="date"/>
+          <element minOccurs="0" name="Systemdatum" type="date"/>
+          <element minOccurs="0" name="Textfeld" type="string"/>
+          <element minOccurs="0" name="Art_der_Erfassung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Erfassung_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="RFID" type="string"/>
+          <element minOccurs="0" name="Migrationshinweise" type="string"/>
+          <element minOccurs="0" name="unscharf" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Dokument" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Lage" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Schilder" type="okstra-typen:Anzahl"/>
+          <element name="Aufstellvorrichtungen" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="Detaillierungsgrad" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="saisonale_Schilder" type="okstra-typen:Anzahl"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Verkehrszeichen_SummePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Verkehrszeichen_Summe"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Wegweiser_Summe" substitutionGroup="gml:AbstractFeature" type="okstra:Wegweiser_SummeType"/>
+  <complexType name="Wegweiser_SummeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kreuzungszuordnung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Unterhaltsbezug_SP" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Erfassungsdatum" type="date"/>
+          <element minOccurs="0" name="Systemdatum" type="date"/>
+          <element minOccurs="0" name="Textfeld" type="string"/>
+          <element minOccurs="0" name="Art_der_Erfassung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Erfassung_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="RFID" type="string"/>
+          <element minOccurs="0" name="Migrationshinweise" type="string"/>
+          <element minOccurs="0" name="unscharf" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Dokument" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Lage" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Schilder" type="okstra-typen:Anzahl"/>
+          <element name="Aufstellvorrichtungen" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="Detaillierungsgrad" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Wegweiser_SummePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Wegweiser_Summe"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Wegweisung_Info" substitutionGroup="gml:AbstractFeature" type="okstra:Wegweisung_InfoType"/>
+  <complexType name="Wegweisung_InfoType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="Wegweiserart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Typ_Wegweiser" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Ausfuehrungstyp" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="zu_dyn_verkehrsreg_Beschild" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="zu_Schild" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Zielangabe" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Wegweisung_InfoPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Wegweisung_Info"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Zielangabe_Wegweisung" substitutionGroup="gml:AbstractFeature" type="okstra:Zielangabe_WegweisungType"/>
+  <complexType name="Zielangabe_WegweisungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Zielort" type="string"/>
+          <element minOccurs="0" name="Entfernung" type="okstra-typen:Kilometer"/>
+          <element minOccurs="0" name="Richtung" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="zu_Wegweisung_Info" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="nach_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Zielangabe_WegweisungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Zielangabe_Wegweisung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

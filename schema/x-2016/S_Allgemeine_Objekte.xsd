@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Dokument" substitutionGroup="gml:AbstractFeature" type="okstra:DokumentType"/>
+  <complexType name="DokumentType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="URI" type="string"/>
+          <element minOccurs="0" name="Seite" type="integer"/>
+          <element minOccurs="0" name="verfuegt" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Datum" type="date"/>
+          <element minOccurs="0" name="von_Benutzer" type="string"/>
+          <element minOccurs="0" name="Wirksamkeitsdatum_Dokument" type="date"/>
+          <element minOccurs="0" name="Inhalt" type="base64Binary"/>
+          <element minOccurs="0" name="MIME_Type" type="string"/>
+          <element minOccurs="0" name="Text" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Zustaendigkeit" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Baulast" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Grundlage_fuer_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Bewuchs" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Einmessskizze_zu" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="ist_Verkehrszeichenplan_zu" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="ist_verkehrsrechtl_Anordn_zu" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Netzknotenskizze_zu" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Lpf_Massnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Widmung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Unterhaltungsvereinbarung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_OD_FS" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Baulasttraeger" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_ASB_Objekt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="DokumentPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Dokument"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Formular" substitutionGroup="gml:AbstractFeature" type="okstra:FormularType"/>
+  <complexType name="FormularType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Name" type="string"/>
+          <element maxOccurs="unbounded" name="Formularfeldgruppe" type="okstra:FormularfeldgruppePropertyType"/>
+          <element minOccurs="0" name="zu_CSBF_Meldung_Info" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="FormularPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Formular"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Foto" substitutionGroup="gml:AbstractFeature" type="okstra:FotoType"/>
+  <complexType name="FotoType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erstellt_von" type="string"/>
+          <element minOccurs="0" name="physikalische_Aufloesung" type="okstra-typen:dpi"/>
+          <element minOccurs="0" name="Farbspektrum" type="okstra-typen:Farbtiefe"/>
+          <element minOccurs="0" name="Datei" type="string"/>
+          <element minOccurs="0" name="inhaltliche_Beschreibung" type="string"/>
+          <element name="Startdatum" type="okstra:StartdatumPropertyType"/>
+          <element minOccurs="0" name="verwendetes_Verfahren" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Aufbewahrungsort_Medium_analog" type="string"/>
+          <element minOccurs="0" name="hat_Fotostandpunkt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="FotoPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Foto"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Fotostandpunkt" substitutionGroup="gml:AbstractFeature" type="okstra:FotostandpunktType"/>
+  <complexType name="FotostandpunktType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Sensorstandpunkt" type="gml:PointPropertyType"/>
+          <element minOccurs="0" name="Sensorstandlinie" type="gml:PointPropertyType"/>
+          <element name="Erfassungsqualitaet" type="okstra:ErfassungsqualitaetPropertyType"/>
+          <element minOccurs="0" name="Wirkungsrichtung_horizontal" type="okstra-typen:Radiant"/>
+          <element minOccurs="0" name="Wirkungsrichtung_vertikal" type="okstra-typen:Radiant"/>
+          <element name="Art" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Typbezeichnung" type="string"/>
+          <element minOccurs="0" name="Hoehe_ueber_Boden" type="okstra-typen:Meter"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Foto" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="FotostandpunktPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Fotostandpunkt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Kommunikationsobjekt" substitutionGroup="gml:AbstractFeature" type="okstra:KommunikationsobjektType"/>
+  <complexType name="KommunikationsobjektType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Multigeometrie" type="okstra:MultigeometriePropertyType"/>
+          <element name="Beschreibung" type="string"/>
+          <element minOccurs="0" name="Art_des_betroffenen_Objekts" type="string"/>
+          <element name="Datum" type="date"/>
+          <element name="Uhrzeit" type="time"/>
+          <element name="Sachbearbeiter" type="string"/>
+          <element minOccurs="0" name="Status" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_OKSTRA_Objekt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="KommunikationsobjektPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Kommunikationsobjekt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Sensor" substitutionGroup="gml:AbstractFeature" type="okstra:SensorType"/>
+  <complexType name="SensorType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Sensorstandpunkt" type="gml:PointPropertyType"/>
+          <element minOccurs="0" name="Sensorstandlinie" type="gml:PointPropertyType"/>
+          <element name="Erfassungsqualitaet" type="okstra:ErfassungsqualitaetPropertyType"/>
+          <element minOccurs="0" name="Wirkungsrichtung_horizontal" type="okstra-typen:Radiant"/>
+          <element minOccurs="0" name="Wirkungsrichtung_vertikal" type="okstra-typen:Radiant"/>
+          <element name="Art" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Typbezeichnung" type="string"/>
+          <element minOccurs="0" name="Hoehe_ueber_Boden" type="okstra-typen:Meter"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SensorPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Sensor"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

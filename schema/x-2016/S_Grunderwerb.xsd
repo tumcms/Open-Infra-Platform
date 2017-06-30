@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Belastung" substitutionGroup="gml:AbstractFeature" type="okstra:BelastungType"/>
+  <complexType name="BelastungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Abteilung" type="string"/>
+          <element minOccurs="0" name="laufende_Nummer" type="string"/>
+          <element minOccurs="0" name="Belastungstext" type="string"/>
+          <element minOccurs="0" name="Erlaeuterungen" type="string"/>
+          <element minOccurs="0" name="Eintragung" type="date"/>
+          <element minOccurs="0" name="Abloesung" type="date"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Belastungsberechtigten" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="in_Grundbuch" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="von_Flurstueck" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BelastungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Belastung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Belastungsberechtigter" substitutionGroup="gml:AbstractFeature" type="okstra:BelastungsberechtigterType"/>
+  <complexType name="BelastungsberechtigterType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="zu_Belastung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="ist_Person" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BelastungsberechtigterPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Belastungsberechtigter"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Eigentuemer_Grundbuch" substitutionGroup="gml:AbstractFeature" type="okstra:Eigentuemer_GrundbuchType"/>
+  <complexType name="Eigentuemer_GrundbuchType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Eigentumsverhaeltnis" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="ET_Anteil_Zaehler" type="double"/>
+          <element name="ET_Anteil_Nenner" type="integer"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element name="ist_Person" type="okstra-basis:ObjectRefType"/>
+          <element name="von_Grundbuch" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Eigentuemer_GrundbuchPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Eigentuemer_Grundbuch"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erwerbsflaeche" substitutionGroup="gml:AbstractFeature" type="okstra:ErwerbsflaecheType"/>
+  <complexType name="ErwerbsflaecheType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Flaechengeometrie" type="gml:SurfacePropertyType"/>
+          <element name="Erwerbsart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Erwerbsart_spezifisch" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Erwerbszweck" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="GE_Massnahme" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Bedarfsflaeche" type="okstra-typen:Quadratmeter"/>
+          <element minOccurs="0" name="GE_Plannummer" type="string"/>
+          <element minOccurs="0" name="laufende_Nummer_Flurstueck" type="string"/>
+          <element minOccurs="0" name="laufende_Nummer_Teilflaeche" type="string"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="hat_Nutzungsart" type="okstra-basis:ObjectRefType"/>
+          <element name="in_Flurstueck" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Lpf_Massnahme" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ErwerbsflaechePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erwerbsflaeche"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Flurstueck_Grundbuch" substitutionGroup="gml:AbstractFeature" type="okstra:Flurstueck_GrundbuchType"/>
+  <complexType name="Flurstueck_GrundbuchType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="GB_Anteil_Zaehler" type="double"/>
+          <element name="GB_Anteil_Nenner" type="integer"/>
+          <element minOccurs="0" name="Eigentumsart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Bestandsnummer" type="string"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Grundbuch" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Flurstueck" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Flurstueck_GrundbuchPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Flurstueck_Grundbuch"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Grundbuch" substitutionGroup="gml:AbstractFeature" type="okstra:GrundbuchType"/>
+  <complexType name="GrundbuchType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Band" type="string"/>
+          <element name="Blatt" type="string"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Eigentuemer" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="in_Flurstueck_Grundbuch" type="okstra-basis:ObjectRefType"/>
+          <element name="zu_Gemarkung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Belastungen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Paechter_Mieter" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GrundbuchPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Grundbuch"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Nutzungsart" substitutionGroup="gml:AbstractFeature" type="okstra:NutzungsartType"/>
+  <complexType name="NutzungsartType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Nutzungsartschluessel" type="integer"/>
+          <element minOccurs="0" name="Kurztext" type="string"/>
+          <element name="Bezeichnung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Erwerbsflaeche" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Nutzungsartflaeche_Basis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Paechter_Mieter" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="NutzungsartPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Nutzungsart"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Nutzungsartflaeche" substitutionGroup="gml:AbstractFeature" type="okstra:NutzungsartflaecheType"/>
+  <complexType name="NutzungsartflaecheType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Bestandsstatus" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Flaechengeometrie" type="gml:SurfacePropertyType"/>
+          <element minOccurs="0" name="Teilflaeche" type="okstra-typen:Quadratmeter"/>
+          <element minOccurs="0" name="Bodenwert" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bodenklasse" type="string"/>
+          <element minOccurs="0" name="tatsaechliche_Nutzung" type="string"/>
+          <element minOccurs="0" name="rechtliche_Nutzung" type="string"/>
+          <element name="hat_Nutzungsart" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_auf_Flurstueck" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="NutzungsartflaechePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Nutzungsartflaeche"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Nutzungsartteilflaeche" substitutionGroup="gml:AbstractFeature" type="okstra:NutzungsartteilflaecheType"/>
+  <complexType name="NutzungsartteilflaecheType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Bestandsstatus" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Flaechengeometrie" type="gml:SurfacePropertyType"/>
+          <element minOccurs="0" name="Teilflaeche" type="okstra-typen:Quadratmeter"/>
+          <element minOccurs="0" name="Bodenwert" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bodenklasse" type="string"/>
+          <element minOccurs="0" name="tatsaechliche_Nutzung" type="string"/>
+          <element minOccurs="0" name="rechtliche_Nutzung" type="string"/>
+          <element name="hat_Nutzungsart" type="okstra-basis:ObjectRefType"/>
+          <element name="von_Flurstueck" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kompensationsteilflaeche" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="NutzungsartteilflaechePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Nutzungsartteilflaeche"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Paechter_Mieter" substitutionGroup="gml:AbstractFeature" type="okstra:Paechter_MieterType"/>
+  <complexType name="Paechter_MieterType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Pachtbeginn" type="date"/>
+          <element minOccurs="0" name="Pachtende" type="date"/>
+          <element minOccurs="0" name="Pachtzins" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Pachtflaeche" type="okstra-typen:Quadratmeter"/>
+          <element minOccurs="0" name="Vertragsart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Erstzahldatum" type="date"/>
+          <element minOccurs="0" name="Bankeinzug" type="boolean"/>
+          <element minOccurs="0" name="Kuendigungsdatum" type="date"/>
+          <element minOccurs="0" name="Abschlussdatum" type="date"/>
+          <element minOccurs="0" name="Pachtart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Anordnungsart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Verlaengerung" type="boolean"/>
+          <element minOccurs="0" name="Marktgaengigkeitspruefung" type="date"/>
+          <element minOccurs="0" name="Ortspachtzins" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Geloescht" type="boolean"/>
+          <element minOccurs="0" name="von_Flurstueck" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="ist_Person" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nutzungsart" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Grundbuch" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Paechter_MieterPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Paechter_Mieter"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Person_Flurstueck" substitutionGroup="gml:AbstractFeature" type="okstra:Person_FlurstueckType"/>
+  <complexType name="Person_FlurstueckType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Verhaeltnis" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element name="Flurstueck" type="okstra-basis:ObjectRefType"/>
+          <element name="Person" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Person_FlurstueckPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Person_Flurstueck"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

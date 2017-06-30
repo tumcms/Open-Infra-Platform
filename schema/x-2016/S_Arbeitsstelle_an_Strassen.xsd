@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Abbruch_Einstellung_Arbeitsst" substitutionGroup="gml:AbstractFeature" type="okstra:Abbruch_Einstellung_ArbeitsstType"/>
+  <complexType name="Abbruch_Einstellung_ArbeitsstType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Datum" type="date"/>
+          <element name="Grund" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Erlaeuterung" type="string"/>
+          <element name="zu_Arbeitsstelle_an_Strassen" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Rolle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Abbruch_Einstellung_ArbeitsstPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Abbruch_Einstellung_Arbeitsst"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Arbeitsstelle_an_Strassen" substitutionGroup="gml:AbstractFeature" type="okstra:Arbeitsstelle_an_StrassenType"/>
+  <complexType name="Arbeitsstelle_an_StrassenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Lagebeschreibung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Art_der_Leistung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Abbruch_Einstellung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Durchfuehrenden" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Zusatzinformationen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Status" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_verkehrliche_Angaben" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_hist_Meldungszustand" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Rolle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_zust_Polizeidienststelle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Massnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="auf_Strasse" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Arbeitsstelle_an_StrassenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Arbeitsstelle_an_Strassen"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Behinderung_Prognose" substitutionGroup="gml:AbstractFeature" type="okstra:Behinderung_PrognoseType"/>
+  <complexType name="Behinderung_PrognoseType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Datum" type="date"/>
+          <element name="Status" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_verkehrlichen_Angaben" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Behinderung_PrognosePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Behinderung_Prognose"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Durchfuehrender_Arbeitsstelle" substitutionGroup="gml:AbstractFeature" type="okstra:Durchfuehrender_ArbeitsstelleType"/>
+  <complexType name="Durchfuehrender_ArbeitsstelleType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Baudienststelle" type="okstra-basis:ObjectRefType"/>
+          <element name="zu_Arbeitsstelle" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Firma" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Durchfuehrender_ArbeitsstellePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Durchfuehrender_Arbeitsstelle"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Firma_Arbeitsstelle" substitutionGroup="gml:AbstractFeature" type="okstra:Firma_ArbeitsstelleType"/>
+  <complexType name="Firma_ArbeitsstelleType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Durchfuehrendem" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Ansprechpartner" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Firma_ArbeitsstellePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Firma_Arbeitsstelle"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Rolle_Arbeitsstelle" substitutionGroup="gml:AbstractFeature" type="okstra:Rolle_ArbeitsstelleType"/>
+  <complexType name="Rolle_ArbeitsstelleType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Abbruch_Einstellung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Firma" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_hist_Meldungszustand" type="okstra-basis:ObjectRefType"/>
+          <element name="hat_Person" type="okstra-basis:ObjectRefType"/>
+          <element name="Rollenbeschreibung" type="okstra-basis:ObjectRefType"/>
+          <element name="hat_Arbeitsstelle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Polizeidienststelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Rolle_ArbeitsstellePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Rolle_Arbeitsstelle"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Rollenbeschreibung_Arbeitsst" substitutionGroup="gml:AbstractFeature" type="okstra:Rollenbeschreibung_ArbeitsstType"/>
+  <complexType name="Rollenbeschreibung_ArbeitsstType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Bezeichnung" type="string"/>
+          <element minOccurs="0" name="Beschreibung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Rolle_Arbeitsstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Rollenbeschreibung_ArbeitsstPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Rollenbeschreibung_Arbeitsst"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Status_der_Arbeitsstelle" substitutionGroup="gml:AbstractFeature" type="okstra:Status_der_ArbeitsstelleType"/>
+  <complexType name="Status_der_ArbeitsstelleType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Status" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="zu_Arbeitsstelle_an_Strassen" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erfasst_von_Person" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Status_der_ArbeitsstellePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Status_der_Arbeitsstelle"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Umleitung_Arbeitsstelle" substitutionGroup="gml:AbstractFeature" type="okstra:Umleitung_ArbeitsstelleType"/>
+  <complexType name="Umleitung_ArbeitsstelleType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Mehrkilometer" type="okstra-typen:Kilometer"/>
+          <element minOccurs="0" name="Mehrzeit" type="okstra:DauerPropertyType"/>
+          <element minOccurs="0" name="Beschreibung" type="string"/>
+          <element minOccurs="0" name="Bedarfsumleitung_Nummer" type="integer"/>
+          <element minOccurs="0" name="hat_Umleitung_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Arbeitsstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Umleitung_ArbeitsstellePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Umleitung_Arbeitsstelle"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Umleitung_Strecke" substitutionGroup="gml:AbstractFeature" type="okstra:Umleitung_StreckeType"/>
+  <complexType name="Umleitung_StreckeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Umleitung" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Umleitung_StreckePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Umleitung_Strecke"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Zusatzinformationen_Arbeitsst" substitutionGroup="gml:AbstractFeature" type="okstra:Zusatzinformationen_ArbeitsstType"/>
+  <complexType name="Zusatzinformationen_ArbeitsstType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Ausweichstrecke_frei" type="boolean"/>
+          <element minOccurs="0" name="OePNV_betroffen" type="boolean"/>
+          <element minOccurs="0" name="Arb_nur_i_verkehrsarmen_Zeiten" type="boolean"/>
+          <element minOccurs="0" name="Unterbrechung_moeglich" type="boolean"/>
+          <element minOccurs="0" name="Ausschlusszeiten_beruecksicht" type="boolean"/>
+          <element minOccurs="0" name="Grossveranstaltungen_eingepl" type="boolean"/>
+          <element minOccurs="0" name="Erfassung_Gegenrichtung" type="boolean"/>
+          <element name="zu_Arbeitsstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Zusatzinformationen_ArbeitsstPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Zusatzinformationen_Arbeitsst"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="hist_Meldungszustand_Arbeitsst" substitutionGroup="gml:AbstractFeature" type="okstra:hist_Meldungszustand_ArbeitsstType"/>
+  <complexType name="hist_Meldungszustand_ArbeitsstType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Datum" type="date"/>
+          <element name="Meldungszustand" type="string"/>
+          <element name="hat_Rolle" type="okstra-basis:ObjectRefType"/>
+          <element name="zu_Arbeitsstelle_an_Strassen" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="hist_Meldungszustand_ArbeitsstPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:hist_Meldungszustand_Arbeitsst"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="verkehrliche_Angaben_Arbeitsst" substitutionGroup="gml:AbstractFeature" type="okstra:verkehrliche_Angaben_ArbeitsstType"/>
+  <complexType name="verkehrliche_Angaben_ArbeitsstType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Status" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Art_der_Arbeitsstelle" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="zugrundeliegender_Regelplan" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="verursacht_Behinderung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Verkehrsfuehrung" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="verengte_Fahrstreifen" type="integer"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="gesperrte_Fahrstreifen" type="integer"/>
+          <element minOccurs="0" name="Ueberleitung" type="boolean"/>
+          <element minOccurs="0" name="Verkehrsteilung" type="boolean"/>
+          <element minOccurs="0" name="Vollsperrung" type="boolean"/>
+          <element minOccurs="0" name="Standstreifenmitnutzung" type="boolean"/>
+          <element minOccurs="0" name="Standstreifensperrung" type="boolean"/>
+          <element minOccurs="0" name="halbseitige_Sperrung" type="boolean"/>
+          <element minOccurs="0" name="max_Gewicht" type="okstra-typen:Tonnen"/>
+          <element minOccurs="0" name="max_Hoehe" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="max_Breite" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Beschreibung_Sondertransporte" type="string"/>
+          <element minOccurs="0" name="Verkehrsfuehrung_Sondertransp" type="string"/>
+          <element minOccurs="0" name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element maxOccurs="unbounded" name="hat_Verkehrszeichenplan" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_verkehrsrechtl_Anordnung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Arbeitsstelle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Umleitung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Behinderungsprognose" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="verkehrliche_Angaben_ArbeitsstPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:verkehrliche_Angaben_Arbeitsst"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="zust_Polizeidienstst_Arbeitsst" substitutionGroup="gml:AbstractFeature" type="okstra:zust_Polizeidienstst_ArbeitsstType"/>
+  <complexType name="zust_Polizeidienstst_ArbeitsstType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Ansprechpartner" type="okstra-basis:ObjectRefType"/>
+          <element name="zu_Arbeitsstelle_an_Strassen" type="okstra-basis:ObjectRefType"/>
+          <element name="hat_Dienststelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="zust_Polizeidienstst_ArbeitsstPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:zust_Polizeidienstst_Arbeitsst"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

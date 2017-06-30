@@ -1,0 +1,8 @@
+option(QHULL_AUTOMATIC_INSTALL "Automatically install qhull" OFF)
+find_path(QHULL_INSTALL_DIR OPTIONAL)
+if(QHULL_AUTOMATIC_INSTALL AND QHULL_INSTALL_DIR)
+	MESSAGE(STATUS "Installing qhull...")
+	execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_qhull-2015.2_Visual Studio 14 2015 Win64.cmd" ${QHULL_INSTALL_DIR} "${CMAKE_COMMAND}" WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external)
+	set(QHULL_ROOT ${QHULL_INSTALL_DIR}/qhull-master CACHE PATH "qhull root" FORCE)
+	set(QHULL_AUTOMATIC_INSTALL OFF CACHE BOOL "Automatically install qhull" FORCE)
+endif()

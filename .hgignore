@@ -1,0 +1,17 @@
+syntax: glob
+*.cso
+Infrastructure.Net/TestProject/bin
+Infrastructure.Net/TestProject/obj
+Infrastructure.Net/Infrastructure.Net/obj
+prebuild_libs/vs2015/x64/**
+bin/vs2013/x64/*
+lib/vs2013/x64/*
+*.wixobj
+*.wixpdb
+lib/*
+testdata/**
+bin/vs2015/x64/OpenInfraPlatform.Infrastructure.dll
+bin/vs2015/x64/OpenInfraPlatform.Infrastructured.dll
+src/OpenInfraPlatform/log.txt
+IFC4x1ExampleFiles/TUM Open Infra Platform_1935/*
+build/*

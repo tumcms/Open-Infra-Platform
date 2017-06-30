@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Attribut_Flurstueck" substitutionGroup="gml:AbstractFeature" type="okstra:Attribut_FlurstueckType"/>
+  <complexType name="Attribut_FlurstueckType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Attributname" type="string"/>
+          <element minOccurs="0" name="Attributdatum" type="date"/>
+          <element name="Attributstatus" type="boolean"/>
+          <element minOccurs="0" name="Attributtext" type="string"/>
+          <element name="von_Flurstueck" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Attribut_FlurstueckPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Attribut_Flurstueck"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Flur" substitutionGroup="gml:AbstractFeature" type="okstra:FlurType"/>
+  <complexType name="FlurType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Kennung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Flurstuecke" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="FlurPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Flur"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Flurstueck" substitutionGroup="gml:AbstractFeature" type="okstra:FlurstueckType"/>
+  <complexType name="FlurstueckType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Flaechengeometrie" type="gml:SurfacePropertyType"/>
+          <element name="Flurstueck_Zaehler" type="string"/>
+          <element minOccurs="0" name="Flurstueck_Nenner" type="string"/>
+          <element minOccurs="0" name="Flaeche" type="okstra-typen:Quadratmeter"/>
+          <element minOccurs="0" name="Lage" type="string"/>
+          <element minOccurs="0" name="Baukilometer" type="okstra-typen:Kilometer"/>
+          <element minOccurs="0" name="Liegenschaftsbuch" type="string"/>
+          <element minOccurs="0" name="Flurkarte" type="string"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Geloescht" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="in_Grundbuch" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Paechter_Mieter" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Person" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Nachfolger_Flurstueck" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Vorgaenger_Flurstueck" type="okstra-basis:ObjectRefType"/>
+          <element name="in_Gemarkung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_LV_Flurstuecksdetails" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="in_Flur" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Attribute" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Nutzungsartteilflaechen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_auf_Nutzungsartflaeche" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Erwerbsflaechen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Belastungen" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="FlurstueckPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Flurstueck"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Gemarkung" substitutionGroup="gml:AbstractFeature" type="okstra:GemarkungType"/>
+  <complexType name="GemarkungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Schluessel" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="in_Verwaltungsbezirk" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Grundbuch" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Flurstuecke" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="enthaelt_Festpunkt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GemarkungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Gemarkung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Grenzpunkt" substitutionGroup="gml:AbstractFeature" type="okstra:GrenzpunktType"/>
+  <complexType name="GrenzpunktType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Vermessungspunkt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GrenzpunktPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Grenzpunkt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="besondere_Flurstuecksgrenze" substitutionGroup="gml:AbstractFeature" type="okstra:besondere_FlurstuecksgrenzeType"/>
+  <complexType name="besondere_FlurstuecksgrenzeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Liniengeometrie" type="gml:CurvePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="besondere_FlurstuecksgrenzePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:besondere_Flurstuecksgrenze"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

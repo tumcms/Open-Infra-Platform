@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:okstra="http://schema.okstra.de/2016/okstra" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <include schemaLocation="Datentypen.xsd"/>
+  <include schemaLocation="S_Administration.xsd"/>
+  <include schemaLocation="S_Allgemeine_Geometrieobjekte.xsd"/>
+  <include schemaLocation="S_Allgemeine_Mengenberechnung.xsd"/>
+  <include schemaLocation="S_Allgemeine_Objekte.xsd"/>
+  <include schemaLocation="S_Arbeitsstelle_an_Strassen.xsd"/>
+  <include schemaLocation="S_Bauliche_Strasseneigenschaften.xsd"/>
+  <include schemaLocation="S_Bauwerke.xsd"/>
+  <include schemaLocation="S_Dynamische_Beschilderung.xsd"/>
+  <include schemaLocation="S_Dynamische_Verkehrsdaten.xsd"/>
+  <include schemaLocation="S_Entwurf.xsd"/>
+  <include schemaLocation="S_Flaechenmodell.xsd"/>
+  <include schemaLocation="S_Grunderwerb.xsd"/>
+  <include schemaLocation="S_Hausnummern.xsd"/>
+  <include schemaLocation="S_Historisierung.xsd"/>
+  <include schemaLocation="S_Kataster.xsd"/>
+  <include schemaLocation="S_Kostenberechnung.xsd"/>
+  <include schemaLocation="S_Kreuzungen.xsd"/>
+  <include schemaLocation="S_Landschaftsplanung.xsd"/>
+  <include schemaLocation="S_Lichtsignalanlage.xsd"/>
+  <include schemaLocation="S_Liegenschaftsverwaltung.xsd"/>
+  <include schemaLocation="S_Netzaenderungsprotokoll.xsd"/>
+  <include schemaLocation="S_Oekologie.xsd"/>
+  <include schemaLocation="S_Organisation.xsd"/>
+  <include schemaLocation="S_Projektressourcen.xsd"/>
+  <include schemaLocation="S_REB_22013.xsd"/>
+  <include schemaLocation="S_Schwertransport.xsd"/>
+  <include schemaLocation="S_Statische_Beschilderung.xsd"/>
+  <include schemaLocation="S_Strassenausstattungen.xsd"/>
+  <include schemaLocation="S_Strassennetz.xsd"/>
+  <include schemaLocation="S_Strassenverzeichnis.xsd"/>
+  <include schemaLocation="S_Strassenzustandsdaten.xsd"/>
+  <include schemaLocation="S_Topografie.xsd"/>
+  <include schemaLocation="S_Umfeldmessstelle.xsd"/>
+  <include schemaLocation="S_Unfall.xsd"/>
+  <include schemaLocation="S_Verkehr.xsd"/>
+  <include schemaLocation="S_Vermessungspunkt.xsd"/>
+  <include schemaLocation="Schluesseltabellen.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+</schema>

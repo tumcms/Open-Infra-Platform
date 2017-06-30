@@ -1,0 +1,1103 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Ab_teilmassnahme_Bwk" substitutionGroup="gml:AbstractFeature" type="okstra:Ab_teilmassnahme_BwkType"/>
+  <complexType name="Ab_teilmassnahme_BwkType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Teilbauwerk" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Ab_teilmassnahme_BwkPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Ab_teilmassnahme_Bwk"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Ab_teilmassnahme_Str" substitutionGroup="gml:AbstractFeature" type="okstra:Ab_teilmassnahme_StrType"/>
+  <complexType name="Ab_teilmassnahme_StrType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Ursache" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Ab_teilmassnahme_StrPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Ab_teilmassnahme_Str"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Ab_teilmassnahme_sonst_AT" substitutionGroup="gml:AbstractFeature" type="okstra:Ab_teilmassnahme_sonst_ATType"/>
+  <complexType name="Ab_teilmassnahme_sonst_ATType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betroffenes_Anlagenteil" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Ab_teilmassnahme_sonst_ATPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Ab_teilmassnahme_sonst_AT"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Abnahme" substitutionGroup="gml:AbstractFeature" type="okstra:AbnahmeType"/>
+  <complexType name="AbnahmeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Gesamtabnahme" type="boolean"/>
+          <element name="Teilabnahme" type="boolean"/>
+          <element minOccurs="0" name="Daten_zur_Gesamtabnahme" type="okstra:Daten_zur_GesamtabnahmePropertyType"/>
+          <element name="Lfd_Nummer_Teilabnahme" type="integer"/>
+          <element name="Datum_Abnahme" type="date"/>
+          <element name="Gemeinsame_Abnahme_AG_AN" type="boolean"/>
+          <element name="Anzahl_Maengel" type="okstra-typen:Anzahl"/>
+          <element name="Anz_wesentliche_Maengel_ABRU" type="okstra-typen:Anzahl"/>
+          <element name="Anz_wesentliche_Maengel_EBAU" type="okstra-typen:Anzahl"/>
+          <element name="Anz_wesentliche_Maengel_KBAU" type="okstra-typen:Anzahl"/>
+          <element name="Anz_wesentliche_Maengel_OBAU" type="okstra-typen:Anzahl"/>
+          <element name="Anz_wesentliche_Maengel_STBAU" type="okstra-typen:Anzahl"/>
+          <element name="Anz_wesentliche_Maengel_SOARB" type="okstra-typen:Anzahl"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Frist_Maengelansprueche" type="okstra:Frist_MaengelanspruechePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="durch_Dienststelle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Teilnehmer_Abnahme" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AbnahmePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Abnahme"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Administrative_Massnahme" substitutionGroup="gml:AbstractFeature" type="okstra:Administrative_MassnahmeType"/>
+  <complexType name="Administrative_MassnahmeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Bezeichnung" type="string"/>
+          <element minOccurs="0" name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Arbeitsstelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Administrative_MassnahmePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Administrative_Massnahme"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Angebot" substitutionGroup="gml:AbstractFeature" type="okstra:AngebotType"/>
+  <complexType name="AngebotType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Summe_nach_Submission" type="okstra-typen:EURO"/>
+          <element name="Summe_nachgerechnet" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Wertungspunkte" type="integer"/>
+          <element name="Wertungssumme_gesamt" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Nachlass" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Nebenangebote_bei_Submission" type="okstra-typen:Anzahl"/>
+          <element name="Nebenangebot_ohne_Hauptangebot" type="boolean"/>
+          <element minOccurs="0" name="Nebenangebote_nach_Wertung" type="okstra-typen:Anzahl"/>
+          <element name="Rangplatz_Nachrechnung" type="integer"/>
+          <element name="Rangplatz_Zuschlagserteilung" type="integer"/>
+          <element name="von_Firmenkonstrukt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Vergabeverfahren" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AngebotPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Angebot"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Ausgabestand" substitutionGroup="gml:AbstractFeature" type="okstra:AusgabestandType"/>
+  <complexType name="AusgabestandType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Datum_Ausgabestand" type="date"/>
+          <element name="Ausgabestand_Quartalsende" type="okstra-typen:EURO"/>
+          <element name="aktueller_Auftragnehmer" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AusgabestandPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Ausgabestand"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Ausschreibungsverfahren" substitutionGroup="gml:AbstractFeature" type="okstra:AusschreibungsverfahrenType"/>
+  <complexType name="AusschreibungsverfahrenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Ausschreibungsart" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="STLK_LB_Nummer" type="integer"/>
+          <element minOccurs="0" name="CPV_Nummer" type="string"/>
+          <element name="Beschleunigungsverguetung" type="boolean"/>
+          <element name="Lohngleitklausel" type="boolean"/>
+          <element name="Stoffpreisgleitklausel" type="boolean"/>
+          <element name="Vereinbarung_Vertragsstrafen" type="boolean"/>
+          <element name="Losweise_Vergabe" type="boolean"/>
+          <element name="Vertragsart_I" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Vertragsart_II" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Nebenangebote_zugelassen" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Nebenangebote_Erlaeuterung" type="string"/>
+          <element minOccurs="0" name="Gruende_Teilnahmewettbewerb" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AusschreibungsverfahrenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Ausschreibungsverfahren"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Baubeginn" substitutionGroup="gml:AbstractFeature" type="okstra:BaubeginnType"/>
+  <complexType name="BaubeginnType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Datum_Baubeginn_real" type="date"/>
+          <element name="Praesenz_oertl_Bauueberwachung" type="okstra-typen:Stunden_pro_Woche"/>
+          <element minOccurs="0" name="Anz_Nachunternehmer_Zuschlag" type="okstra-typen:Anzahl"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Baudienststelle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="AN_Bauoberleitung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="AN_oertliche_Bauueberwachung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Nachunternehmer_bei_Zuschlag" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BaubeginnPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Baubeginn"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Baumassnahme" substitutionGroup="gml:AbstractFeature" type="okstra:BaumassnahmeType"/>
+  <complexType name="BaumassnahmeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Bezeichnung" type="string"/>
+          <element minOccurs="0" name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Arbeitsstelle" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Massnahme_Schluessel" type="string"/>
+          <element minOccurs="0" name="Art_der_Baumassnahme" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_Baulasttraeger" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Landesschluessel" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_des_betroffenen_Objekts" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Status" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Haushaltsbezug" type="okstra:HaushaltsbezugPropertyType"/>
+          <element minOccurs="0" name="Kosten_nach_AKS" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Stand_AKS" type="date"/>
+          <element minOccurs="0" name="NUTS_Code" type="string"/>
+          <element name="DEGES_Vergabe" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="auf_Strassenteilstueck" type="okstra:StrassenteilstueckPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Vergabe_Dienststelle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Baudienststelle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Bauwerk" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_CSBF_Meldung_Info" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Erstellg_Entwurfsunterl" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Teilmassnahme" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Schlusszahlung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Vergabeverfahren" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Nachtrag" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Zuschlag" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Erstellg_Vergabeunterl" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Objektbetreuung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Baubeginn" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Ausschreibungsverfahren" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Ausgabestand" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Abnahme" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="in_Projekt_Strassenbau" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="in_Teilprojekt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BaumassnahmePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Baumassnahme"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="CSBF_Meldung_Info" substitutionGroup="gml:AbstractFeature" type="okstra:CSBF_Meldung_InfoType"/>
+  <complexType name="CSBF_Meldung_InfoType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="CSBF_Identnummer" type="okstra:CSBF_IdentnummerPropertyType"/>
+          <element name="E_Mail_Benachrichtigung" type="string"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Formular" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="CSBF_Meldung_InfoPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:CSBF_Meldung_Info"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erh_teilmassnahme_Bwk" substitutionGroup="gml:AbstractFeature" type="okstra:Erh_teilmassnahme_BwkType"/>
+  <complexType name="Erh_teilmassnahme_BwkType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Teilbauwerk" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Erh_teilmassnahme_BwkPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erh_teilmassnahme_Bwk"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erh_teilmassnahme_Str" substitutionGroup="gml:AbstractFeature" type="okstra:Erh_teilmassnahme_StrType"/>
+  <complexType name="Erh_teilmassnahme_StrType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Art" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Ursache" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Erh_teilmassnahme_StrPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erh_teilmassnahme_Str"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erh_teilmassnahme_sonst_AT" substitutionGroup="gml:AbstractFeature" type="okstra:Erh_teilmassnahme_sonst_ATType"/>
+  <complexType name="Erh_teilmassnahme_sonst_ATType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betroffenes_Anlagenteil" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Erh_teilmassnahme_sonst_ATPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erh_teilmassnahme_sonst_AT"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erstellg_Entwurfsunterlagen" substitutionGroup="gml:AbstractFeature" type="okstra:Erstellg_EntwurfsunterlagenType"/>
+  <complexType name="Erstellg_EntwurfsunterlagenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="wird_extern_durchgefuehrt" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="erfolgt_durch_Dienststelle" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="erfolgt_durch_Firmenkonstrukt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Erstellg_EntwurfsunterlagenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erstellg_Entwurfsunterlagen"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erstellg_Vergabeunterlagen" substitutionGroup="gml:AbstractFeature" type="okstra:Erstellg_VergabeunterlagenType"/>
+  <complexType name="Erstellg_VergabeunterlagenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="wird_extern_durchgefuehrt" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="erfolgt_durch_Dienststelle" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="erfolgt_durch_Firmenkonstrukt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Erstellg_VergabeunterlagenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erstellg_Vergabeunterlagen"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erw_teilmassnahme_Bwk" substitutionGroup="gml:AbstractFeature" type="okstra:Erw_teilmassnahme_BwkType"/>
+  <complexType name="Erw_teilmassnahme_BwkType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Teilbauwerk" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Erw_teilmassnahme_BwkPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erw_teilmassnahme_Bwk"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erw_teilmassnahme_Str" substitutionGroup="gml:AbstractFeature" type="okstra:Erw_teilmassnahme_StrType"/>
+  <complexType name="Erw_teilmassnahme_StrType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Ursache" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Erw_teilmassnahme_StrPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erw_teilmassnahme_Str"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erw_teilmassnahme_sonst_AT" substitutionGroup="gml:AbstractFeature" type="okstra:Erw_teilmassnahme_sonst_ATType"/>
+  <complexType name="Erw_teilmassnahme_sonst_ATType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betroffenes_Anlagenteil" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Erw_teilmassnahme_sonst_ATPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erw_teilmassnahme_sonst_AT"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Firma" substitutionGroup="gml:AbstractFeature" type="okstra:FirmaType"/>
+  <complexType name="FirmaType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Name" type="string"/>
+          <element minOccurs="0" name="Adresse" type="okstra:AdressdatenPropertyType"/>
+          <element minOccurs="0" name="U_Steuernummer" type="string"/>
+          <element minOccurs="0" name="Firmenart" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="vertritt_Firmenkonstrukt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="beteiligt_an_Firmenkonstrukt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="FirmaPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Firma"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Firmenkonstrukt" substitutionGroup="gml:AbstractFeature" type="okstra:FirmenkonstruktType"/>
+  <complexType name="FirmenkonstruktType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Name" type="string"/>
+          <element minOccurs="0" name="Adresse" type="okstra:AdressdatenPropertyType"/>
+          <element minOccurs="0" name="U_Steuernummer" type="string"/>
+          <element minOccurs="0" name="ARGE" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="nimmt_an_Abnahme_teil" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="macht_Angebot" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Ausgabestand" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="AN_Bauoberleitung_bei" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="AN_oertl_Bauueberwachung_bei" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Nachunternehmer_Zuschlag_bei" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Erstellg_Entwurfsunterlagen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Erstellg_Vergabeunterlagen" type="okstra-basis:ObjectRefType"/>
+          <element name="wird_vertreten_durch_Firma" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="weitere_Firma" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Beigeladener_zu_Nachpruefung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Antragsteller_zu_Nachpruefung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="fuehrt_Objektbetreuung_durch" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="wirkt_an_Wertung_mit_in" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="erhaelt_Zuschlag" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="FirmenkonstruktPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Firmenkonstrukt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Nachpruefungsverfahren" substitutionGroup="gml:AbstractFeature" type="okstra:NachpruefungsverfahrenType"/>
+  <complexType name="NachpruefungsverfahrenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Dauer_Nachpruefung" type="okstra:DauerPropertyType"/>
+          <element name="Art_Abschluss_Nachpruefung" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Aenderung_durch_Nachpruefung" type="boolean"/>
+          <element name="Mehrkosten_durch_Nachpruefung" type="okstra-typen:EURO"/>
+          <element name="Nicht_verausgabte_HH_Mittel" type="okstra-typen:EURO"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Beigeladenen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Antragsteller" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Vergabeverfahren" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="NachpruefungsverfahrenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Nachpruefungsverfahren"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Nachtrag" substitutionGroup="gml:AbstractFeature" type="okstra:NachtragType"/>
+  <complexType name="NachtragType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Lfd_Nummer_Nachtrag" type="integer"/>
+          <element minOccurs="0" name="Lfd_Nummer_Nachtrag_Zusatz" type="string"/>
+          <element name="Datum_Abschluss_Nachtrag" type="date"/>
+          <element name="Mehr_Minder_Kosten_real" type="okstra-typen:EURO"/>
+          <element name="Auftragsvolumen_nach_Nachtrag" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Neues_Datum_Bauende" type="date"/>
+          <element minOccurs="0" name="Neue_Bauzeit_Wochentage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="NachtragPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Nachtrag"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Nb_teilmassnahme_Bwk" substitutionGroup="gml:AbstractFeature" type="okstra:Nb_teilmassnahme_BwkType"/>
+  <complexType name="Nb_teilmassnahme_BwkType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Teilbauwerk" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Nb_teilmassnahme_BwkPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Nb_teilmassnahme_Bwk"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Nb_teilmassnahme_Str" substitutionGroup="gml:AbstractFeature" type="okstra:Nb_teilmassnahme_StrType"/>
+  <complexType name="Nb_teilmassnahme_StrType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Ursache" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Nb_teilmassnahme_StrPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Nb_teilmassnahme_Str"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Nb_teilmassnahme_sonst_AT" substitutionGroup="gml:AbstractFeature" type="okstra:Nb_teilmassnahme_sonst_ATType"/>
+  <complexType name="Nb_teilmassnahme_sonst_ATType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betroffenes_Anlagenteil" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Nb_teilmassnahme_sonst_ATPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Nb_teilmassnahme_sonst_AT"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Objektbetreuung" substitutionGroup="gml:AbstractFeature" type="okstra:ObjektbetreuungType"/>
+  <complexType name="ObjektbetreuungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="wird_extern_durchgefuehrt" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="erfolgt_durch_Dienststelle" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="erfolgt_durch_Firmenkonstrukt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ObjektbetreuungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Objektbetreuung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Projekt_Strassenbau" substitutionGroup="gml:AbstractFeature" type="okstra:Projekt_StrassenbauType"/>
+  <complexType name="Projekt_StrassenbauType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Projekt_Schluessel" type="string"/>
+          <element minOccurs="0" name="Bezeichnung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="umfasst_Teilprojekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="umfasst_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Projekt_StrassenbauPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Projekt_Strassenbau"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Rb_teilmassnahme_Bwk" substitutionGroup="gml:AbstractFeature" type="okstra:Rb_teilmassnahme_BwkType"/>
+  <complexType name="Rb_teilmassnahme_BwkType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Teilbauwerk" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Rb_teilmassnahme_BwkPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Rb_teilmassnahme_Bwk"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Rb_teilmassnahme_Str" substitutionGroup="gml:AbstractFeature" type="okstra:Rb_teilmassnahme_StrType"/>
+  <complexType name="Rb_teilmassnahme_StrType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Art" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Ursache" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Rb_teilmassnahme_StrPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Rb_teilmassnahme_Str"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Rb_teilmassnahme_sonst_AT" substitutionGroup="gml:AbstractFeature" type="okstra:Rb_teilmassnahme_sonst_ATType"/>
+  <complexType name="Rb_teilmassnahme_sonst_ATType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betroffenes_Anlagenteil" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Rb_teilmassnahme_sonst_ATPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Rb_teilmassnahme_sonst_AT"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Schlusszahlung" substitutionGroup="gml:AbstractFeature" type="okstra:SchlusszahlungType"/>
+  <complexType name="SchlusszahlungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Datum_Schlussrechnung_real" type="date"/>
+          <element name="Datum_Schlusszahlung" type="date"/>
+          <element name="Schlussabrechnungssumme" type="okstra-typen:EURO"/>
+          <element name="Anteil_LV_Mengenaend_gr_10_vH" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SchlusszahlungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Schlusszahlung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Teilprojekt" substitutionGroup="gml:AbstractFeature" type="okstra:TeilprojektType"/>
+  <complexType name="TeilprojektType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Bezeichnung" type="string"/>
+          <element minOccurs="0" name="in_Projekt_Strassenbau" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="umfasst_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TeilprojektPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Teilprojekt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Ub_teilmassnahme_Bwk" substitutionGroup="gml:AbstractFeature" type="okstra:Ub_teilmassnahme_BwkType"/>
+  <complexType name="Ub_teilmassnahme_BwkType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Teilbauwerk" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Ub_teilmassnahme_BwkPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Ub_teilmassnahme_Bwk"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Ub_teilmassnahme_Str" substitutionGroup="gml:AbstractFeature" type="okstra:Ub_teilmassnahme_StrType"/>
+  <complexType name="Ub_teilmassnahme_StrType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betrifft_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Ursache" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Ub_teilmassnahme_StrPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Ub_teilmassnahme_Str"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Ub_teilmassnahme_sonst_AT" substitutionGroup="gml:AbstractFeature" type="okstra:Ub_teilmassnahme_sonst_ATType"/>
+  <complexType name="Ub_teilmassnahme_sonst_ATType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeitraum" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Ausgaben" type="okstra-typen:EURO"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Vollendung_spaetest_Werktage" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Vollendung_spaetestens_am" type="date"/>
+          <element minOccurs="0" name="Vertragsstrafe_Vollendung" type="okstra-typen:EURO"/>
+          <element name="von_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="betroffenes_Anlagenteil" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Ub_teilmassnahme_sonst_ATPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Ub_teilmassnahme_sonst_AT"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Vergabeverfahren" substitutionGroup="gml:AbstractFeature" type="okstra:VergabeverfahrenType"/>
+  <complexType name="VergabeverfahrenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Datum_Vergabebekanntmachung" type="date"/>
+          <element minOccurs="0" name="Eroeffnungstermin" type="date"/>
+          <element name="Datum_Zuschlagserteilung" type="date"/>
+          <element minOccurs="0" name="Datum_Bieterinformation" type="date"/>
+          <element name="Nachpruefung_beantragt" type="boolean"/>
+          <element name="Anzahl_Bewerber_D" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Bewerber_EU" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Bewerber_SO" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Bieter_D" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Bieter_EU" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Bieter_SO" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Bieter_ausgeschloss_D" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Bieter_ausgeschloss_EU" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Bieter_ausgeschloss_SO" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Hauptangebote_D" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Hauptangebote_EU" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Hauptangebote_SO" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Nebenangebote_D" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Nebenangebote_EU" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_Nebenangebote_SO" type="okstra-typen:Anzahl"/>
+          <element name="Wertungskriterium" type="okstra:WertungskriteriumPropertyType"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Nachpruefungsverfahren" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="an_Wertung_mitwirkende_Firma" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Angebot" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="VergabeverfahrenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Vergabeverfahren"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Zuschlag" substitutionGroup="gml:AbstractFeature" type="okstra:ZuschlagType"/>
+  <complexType name="ZuschlagType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Auftragssumme_Brutto" type="okstra-typen:EURO"/>
+          <element name="Auftragserteilung_HA_o_NA" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Bauzeit_in_Werktagen" type="okstra-typen:Tage"/>
+          <element minOccurs="0" name="Anteil_ABRU" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Anteil_EBAU" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Anteil_KBAU" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Anteil_OBAU" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Anteil_STBAU" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Anteil_SOARB" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Anteil_Summe_Mittelstand" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Anteil_Summe_Grossunternehmen" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Anteil_Auftragssumme_D_Ost" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Anteil_Auftragssumme_D_West" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Anteil_Auftragssumme_EU" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="Anteil_Auftragssumme_SO" type="okstra-typen:Prozent"/>
+          <element minOccurs="0" name="zu_Baumassnahme" type="okstra-basis:ObjectRefType"/>
+          <element name="fuer_Firmenkonstrukt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZuschlagPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Zuschlag"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

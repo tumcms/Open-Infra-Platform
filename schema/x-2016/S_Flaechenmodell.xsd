@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Querschnittstreifen" substitutionGroup="gml:AbstractFeature" type="okstra:QuerschnittstreifenType"/>
+  <complexType name="QuerschnittstreifenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Strecke" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Kreuzungszuordnung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Unterhaltsbezug_SP" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Erfassungsdatum" type="date"/>
+          <element minOccurs="0" name="Systemdatum" type="date"/>
+          <element minOccurs="0" name="Textfeld" type="string"/>
+          <element minOccurs="0" name="Art_der_Erfassung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Erfassung_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Quelle_der_Information_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="RFID" type="string"/>
+          <element minOccurs="0" name="Migrationshinweise" type="string"/>
+          <element minOccurs="0" name="unscharf" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Dokument" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Leistungsbeschreibung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Flaechengeometrie" type="gml:SurfacePropertyType"/>
+          <element minOccurs="0" name="x_Wert_von_Station_links" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="x_Wert_von_Station_rechts" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="x_Wert_bis_Station_links" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="x_Wert_bis_Station_rechts" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Lage" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="abgewickelte_Breite" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="mittlere_Breite" type="okstra-typen:Meter"/>
+          <element name="Streifenart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Streifenart_sonst" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="laengs_verlaufende_Gleise" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Oberflaeche" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="unscharfe_Breite" type="boolean"/>
+          <element minOccurs="0" name="tatsaechliche_Laenge" type="okstra-typen:Kilometer"/>
+          <element minOccurs="0" name="tatsaechliche_Flaeche" type="okstra-typen:Quadratmeter"/>
+          <element minOccurs="0" name="partielle_Baulast" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="partielle_UI_Partner" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="partielle_UI_sonstiger_Partner" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Detaillierungsgrad" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Flaechenbezugsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="partieller_Baulasttraeger_Dr" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="in_Verkehrsflaeche" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Teilmassnahme_Str" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Zielangabe_von" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Zielangabe_nach" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="in_ZEB_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Fahrstreifen" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="QuerschnittstreifenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Querschnittstreifen"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Verkehrsflaeche" substitutionGroup="gml:AbstractFeature" type="okstra:VerkehrsflaecheType"/>
+  <complexType name="VerkehrsflaecheType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Segment_kommunale_Strasse" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_kommunale_Strasse" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Strasse" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Flaeche" type="gml:SurfacePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Flaechenbezugsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="besteht_aus_Querschnittstreifen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Verkehrsnutzungsflaeche" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="VerkehrsflaechePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Verkehrsflaeche"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Verkehrsnutzungsflaeche" substitutionGroup="gml:AbstractFeature" type="okstra:VerkehrsnutzungsflaecheType"/>
+  <complexType name="VerkehrsnutzungsflaecheType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Hausnummer" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Hausnummernbereich" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Hausnummernblock" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="Art_der_Verkehrsnutzung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Flaeche" type="gml:SurfacePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="auf_Verkehrsflaeche" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="entspricht_Nutzungsbereich" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="VerkehrsnutzungsflaechePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Verkehrsnutzungsflaeche"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

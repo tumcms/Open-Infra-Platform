@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<schema targetNamespace="http://schema.okstra.de/2016/okstra-basis" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" version="2.016">
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="./xlink/xlink.xsd" />
+    <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>    
+    <complexType name="ObjectRefType">
+        <simpleContent>
+            <extension base="string">
+                <attributeGroup ref="gml:AssociationAttributeGroup"/>
+                <attribute name="Objektklasse" type="string" use="required"/>
+            </extension>
+        </simpleContent>
+    </complexType>
+    <complexType name="KeyValuePropertyType">
+        <simpleContent>
+            <extension base="string">
+                <attributeGroup ref="gml:AssociationAttributeGroup"/>
+                <attribute name="Objektklasse" type="string" use="optional"/>
+            </extension>
+        </simpleContent>
+    </complexType>
+    <!-- Meta-Daten fuer OKSTRA-Daten -->
+    <element name="OKSTRAMetaDaten" type="okstra-basis:OKSTRAMetaDatenType" substitutionGroup="gml:AbstractMetaData"/>
+    <complexType name="OKSTRAMetaDatenType" mixed="true">
+        <complexContent>
+            <extension base="gml:AbstractMetaDataType">
+                <sequence>
+                    <element name="description" type="string" minOccurs="0" maxOccurs="unbounded"/>
+                    <element name="implementation_level" type="string" minOccurs="0"/>
+                    <element name="name" type="string" minOccurs="0"/>
+                    <element name="time_stamp" type="dateTime" minOccurs="0"/>
+                    <element name="author" type="string" minOccurs="0" maxOccurs="unbounded"/>
+                    <element name="organization" type="string" minOccurs="0" maxOccurs="unbounded"/>
+                    <element name="preprocessor_version" type="string" minOccurs="0"/>
+                    <element name="originating_system" type="string" minOccurs="0"/>
+                    <element name="authorization" type="string" minOccurs="0"/>
+                    <element name="schema_identifiers" type="string" maxOccurs="unbounded"/>
+                    <element name="relRep" type="okstra-basis:RelRepType" minOccurs="0"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <simpleType name="RelRepType">
+        <restriction base="string">
+            <enumeration value="einseitig"/>
+            <enumeration value="beidseitig"/>
+        </restriction>
+    </simpleType>
+    <!-- Meta-Daten fuer Herkunft und Genauigkeit von Punktkoordinaten -->
+    <element name="KoordinatenMetadaten" type="okstra-basis:KoordinatenMetadatenType" substitutionGroup="gml:AbstractMetaData"/>
+    <complexType name="KoordinatenMetadatenType" mixed="true">
+        <complexContent>
+            <extension base="gml:AbstractMetaDataType">
+                <sequence>
+                    <element name="Koordinatenherkunft" type="okstra-basis:KeyValuePropertyType" minOccurs="0"/>
+                    <element name="Koordinatenherkunft_Land" type="okstra-basis:KeyValuePropertyType" minOccurs="0"/>                    
+                    <element name="Koordinatengenauigkeit" type="okstra-typen:Meter" minOccurs="0"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+
+    
+</schema>

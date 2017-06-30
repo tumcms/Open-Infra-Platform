@@ -1,0 +1,1 @@
+x=integrate cos(pow(l,2) / (2*pow(0.5,2))) from 0 to l, y =integrate sin(pow(l,2) / (2*pow(0.5,2))) from 0 to l

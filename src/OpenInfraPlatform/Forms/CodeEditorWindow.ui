@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CodeEditorWindow</class>
+ <widget class="QMainWindow" name="CodeEditorWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>666</width>
+    <height>623</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Salabim</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../Resources/OpenInfraPlatform.qrc">
+    <normaloff>:/icons/icon.ico</normaloff>:/icons/icon.ico</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_2"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButtonExecute">
+      <property name="text">
+       <string>Execute</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>666</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuSnippets">
+    <property name="title">
+     <string>Snippets</string>
+    </property>
+    <addaction name="actionExample1"/>
+    <addaction name="actionHello_World"/>
+    <addaction name="actionEuclidean"/>
+   </widget>
+   <widget class="QMenu" name="menuDebug">
+    <property name="title">
+     <string>Debug</string>
+    </property>
+    <addaction name="actionStart_Debugging"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSnippets"/>
+   <addaction name="menuDebug"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionExample1">
+   <property name="text">
+    <string>Example1</string>
+   </property>
+  </action>
+  <action name="actionStart_Debugging">
+   <property name="text">
+    <string>Start Debugging</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionHello_World">
+   <property name="text">
+    <string>Hello World</string>
+   </property>
+  </action>
+  <action name="actionEuclidean">
+   <property name="text">
+    <string>Euclidean</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../Resources/OpenInfraPlatform.qrc"/>
+ </resources>
+ <connections/>
+</ui>

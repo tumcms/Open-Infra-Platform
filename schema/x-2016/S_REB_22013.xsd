@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Berechnung_REB_22013" substitutionGroup="gml:AbstractFeature" type="okstra:Berechnung_REB_22013Type"/>
+  <complexType name="Berechnung_REB_22013Type">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Bezeichnung_Berechnung" type="string"/>
+          <element minOccurs="0" name="Bezeichnung_Massnahme" type="string"/>
+          <element minOccurs="0" name="Auftragsnummer" type="string"/>
+          <element minOccurs="0" name="Vertragsnummer" type="string"/>
+          <element minOccurs="0" name="Kostentraeger" type="string"/>
+          <element minOccurs="0" name="Zeitstempel" type="okstra:ZeitpunktPropertyType"/>
+          <element minOccurs="0" name="Aufsteller" type="string"/>
+          <element minOccurs="0" name="Erlaeuterung" type="string"/>
+          <element maxOccurs="unbounded" name="hat_Mengendefinition" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Berechnung_REB_22013PropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Berechnung_REB_22013"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Oberflaechendefinition" substitutionGroup="gml:AbstractFeature" type="okstra:OberflaechendefinitionType"/>
+  <complexType name="OberflaechendefinitionType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Name" type="string"/>
+          <element minOccurs="0" name="Herkunft" type="string"/>
+          <element minOccurs="0" name="OZ" type="string"/>
+          <element name="zu_Berechnung_REB_22013" type="okstra-basis:ObjectRefType"/>
+          <element name="hat_Horizont" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="OberflaechendefinitionPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Oberflaechendefinition"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Rauminhaltsdefinition" substitutionGroup="gml:AbstractFeature" type="okstra:RauminhaltsdefinitionType"/>
+  <complexType name="RauminhaltsdefinitionType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Name" type="string"/>
+          <element minOccurs="0" name="Herkunft" type="string"/>
+          <element minOccurs="0" name="OZ" type="string"/>
+          <element name="zu_Berechnung_REB_22013" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Z_oben" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="DZ_oben" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Z_unten" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="DZ_unten" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="hat_unteren_Horizont" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_oberen_Horizont" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="RauminhaltsdefinitionPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Rauminhaltsdefinition"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

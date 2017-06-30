@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="LV_Behoerde" substitutionGroup="gml:AbstractFeature" type="okstra:LV_BehoerdeType"/>
+  <complexType name="LV_BehoerdeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Baubehoerdennummer" type="string"/>
+          <element minOccurs="0" name="Baubehoerdenname" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Baudienststelle" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_LV_Flurstuecksdetails" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="LV_BehoerdePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:LV_Behoerde"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="LV_Flurstuecksdetails" substitutionGroup="gml:AbstractFeature" type="okstra:LV_FlurstuecksdetailsType"/>
+  <complexType name="LV_FlurstuecksdetailsType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Bestandsnummer" type="string"/>
+          <element minOccurs="0" name="Projekt" type="string"/>
+          <element minOccurs="0" name="Vermoegensgruppe" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Weitere_VMG" type="boolean"/>
+          <element minOccurs="0" name="VD_Pruefung" type="boolean"/>
+          <element minOccurs="0" name="GEStand" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="GEArt" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Erwerbsdatum" type="date"/>
+          <element minOccurs="0" name="Besitzuebergang" type="date"/>
+          <element minOccurs="0" name="Bodenwert" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Eigentuemerkurzbezeichnung" type="string"/>
+          <element minOccurs="0" name="Fortfuehrungsnachweis" type="string"/>
+          <element minOccurs="0" name="Versiegelte_Flaeche" type="okstra-typen:Quadratmeter"/>
+          <element minOccurs="0" name="Belastung_Abt2" type="string"/>
+          <element minOccurs="0" name="Belastung_Abt3" type="string"/>
+          <element minOccurs="0" name="Bemerkungen" type="string"/>
+          <element minOccurs="0" name="Baubeginn" type="date"/>
+          <element minOccurs="0" name="Entbehrlichkeitspruefung" type="date"/>
+          <element minOccurs="0" name="Beurkundungsdaten" type="string"/>
+          <element minOccurs="0" name="Tausch" type="boolean"/>
+          <element minOccurs="0" name="SAP_Projektnummer" type="string"/>
+          <element minOccurs="0" name="Verschmelzung_Antragsnummer" type="string"/>
+          <element minOccurs="0" name="zu_Strasse" type="okstra:StrassenbezeichnungPropertyType"/>
+          <element name="zu_Flurstueck" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Baubehoerde" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zugehoerige_Gebuehren" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="LV_FlurstuecksdetailsPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:LV_Flurstuecksdetails"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="LV_Gebuehren" substitutionGroup="gml:AbstractFeature" type="okstra:LV_GebuehrenType"/>
+  <complexType name="LV_GebuehrenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Verbuchungsstelle" type="string"/>
+          <element minOccurs="0" name="Aktenzeichen" type="string"/>
+          <element minOccurs="0" name="Verwalter" type="string"/>
+          <element minOccurs="0" name="Grundsteuer" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Entwaesserung" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Muellabfuhr" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Strassenreinigung" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Wasser" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Kaminkehrer" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="SonstigeKosten" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="TextSonstigeKosten" type="string"/>
+          <element minOccurs="0" name="Gebuehren_Februar" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Gebuehren_Mai" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Gebuehren_Juli" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Gebuehren_August" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Gebuehren_November" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Grundsteuermessbescheid" type="date"/>
+          <element minOccurs="0" name="Grundsteuerbescheid" type="date"/>
+          <element minOccurs="0" name="Einheitswert" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Grundsteuermessbetrag" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Hebesatz" type="okstra:WaehrungsbetragPropertyType"/>
+          <element minOccurs="0" name="Empfaenger" type="string"/>
+          <element minOccurs="0" name="Personenkennnummer" type="string"/>
+          <element minOccurs="0" name="Kassenzeichen" type="string"/>
+          <element minOccurs="0" name="Bankverbindung" type="okstra:BankverbindungPropertyType"/>
+          <element minOccurs="0" name="Bemerkung" type="string"/>
+          <element minOccurs="0" name="Projektnummer" type="string"/>
+          <element minOccurs="0" name="Kostentraeger" type="string"/>
+          <element minOccurs="0" name="Kostenstelle" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_LV_Flurstuecksdetails" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="LV_GebuehrenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:LV_Gebuehren"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

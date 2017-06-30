@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Allgemeine_Mengenberechnung" substitutionGroup="gml:AbstractFeature" type="okstra:Allgemeine_MengenberechnungType"/>
+  <complexType name="Allgemeine_MengenberechnungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Name" type="string"/>
+          <element minOccurs="0" name="Beschreibung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Formelkatalog" type="okstra:FormelkatalogPropertyType"/>
+          <element minOccurs="0" name="Ordnungsrahmen_Summation" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="definiert_Konstante" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="verwendet_Ordnungsrahmen" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="enthaelt_Blatt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Allgemeine_MengenberechnungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Allgemeine_Mengenberechnung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Blatt" substitutionGroup="gml:AbstractFeature" type="okstra:BlattType"/>
+  <complexType name="BlattType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Blattnummer" type="integer"/>
+          <element minOccurs="0" name="Beschreibung" type="string"/>
+          <element name="zu_Berechnung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="definiert_Konstante" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="enthaelt_Zeile" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="BlattPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Blatt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Koordinatenkonstante" substitutionGroup="gml:AbstractFeature" type="okstra:KoordinatenkonstanteType"/>
+  <complexType name="KoordinatenkonstanteType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Name" type="string"/>
+          <element minOccurs="0" name="Beschreibung" type="string"/>
+          <element minOccurs="0" name="Versionsinfo" type="okstra:VersionsinfoPropertyType"/>
+          <element minOccurs="0" name="zu_Berechnung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Blatt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="x_Koordinate" type="double"/>
+          <element minOccurs="0" name="y_Koordinate" type="double"/>
+          <element minOccurs="0" name="z_Koordinate" type="double"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="KoordinatenkonstantePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Koordinatenkonstante"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Mengenansatz" substitutionGroup="gml:AbstractFeature" type="okstra:MengenansatzType"/>
+  <complexType name="MengenansatzType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Faktor" type="double"/>
+          <element minOccurs="0" name="Hilfswert" type="boolean"/>
+          <element minOccurs="0" name="Schaetzwert" type="boolean"/>
+          <element name="Formel" type="okstra:FormelPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Zuordnung" type="okstra:ZuordnungPropertyType"/>
+          <element minOccurs="0" name="zbV1" type="string"/>
+          <element minOccurs="0" name="zbV2" type="string"/>
+          <element name="Versionsinfo" type="okstra:VersionsinfoPropertyType"/>
+          <element name="zu_Zeile" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="MengenansatzPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Mengenansatz"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Ordnungsrahmen" substitutionGroup="gml:AbstractFeature" type="okstra:OrdnungsrahmenType"/>
+  <complexType name="OrdnungsrahmenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Name" type="string"/>
+          <element name="Art_Ordnungsrahmen" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Sonstige_Art_Ordnungsrahmen" type="string"/>
+          <element minOccurs="0" name="Beschreibung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Ordnungsbegriff" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Hierarchiestufe" type="okstra:HierarchiestufePropertyType"/>
+          <element minOccurs="0" name="Richtung_Hierarchie" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Versionsinfo" type="okstra:VersionsinfoPropertyType"/>
+          <element name="zu_Berechnung" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="OrdnungsrahmenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Ordnungsrahmen"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Tabelle" substitutionGroup="gml:AbstractFeature" type="okstra:TabelleType"/>
+  <complexType name="TabelleType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeilenzahl" type="integer"/>
+          <element name="Spaltenzahl" type="integer"/>
+          <element minOccurs="0" name="Schaetzwert" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Tabellenspalte" type="okstra:TabellenspaltePropertyType"/>
+          <element name="Versionsinfo" type="okstra:VersionsinfoPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="definiert_Konstante" type="okstra-basis:ObjectRefType"/>
+          <element name="zu_Zeile" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="TabellePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Tabelle"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Zahlenwertkonstante" substitutionGroup="gml:AbstractFeature" type="okstra:ZahlenwertkonstanteType"/>
+  <complexType name="ZahlenwertkonstanteType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Name" type="string"/>
+          <element minOccurs="0" name="Beschreibung" type="string"/>
+          <element minOccurs="0" name="Versionsinfo" type="okstra:VersionsinfoPropertyType"/>
+          <element minOccurs="0" name="zu_Berechnung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_Blatt" type="okstra-basis:ObjectRefType"/>
+          <element name="Wert" type="double"/>
+          <element minOccurs="0" name="zu_Tabelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZahlenwertkonstantePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Zahlenwertkonstante"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Zeile" substitutionGroup="gml:AbstractFeature" type="okstra:ZeileType"/>
+  <complexType name="ZeileType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Zeilenname" type="string"/>
+          <element minOccurs="0" name="Beschreibung" type="string"/>
+          <element minOccurs="0" name="Bildreferenz" type="string"/>
+          <element name="in_Blatt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="enthaelt_Mengenansatz" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="enthaelt_Tabelle" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ZeilePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Zeile"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

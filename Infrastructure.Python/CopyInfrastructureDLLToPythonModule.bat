@@ -1,0 +1,1 @@
+copy OpenInfraPlatform.Infrastructure.dll Infrastructure.pyd

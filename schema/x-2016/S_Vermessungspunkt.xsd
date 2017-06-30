@@ -1,0 +1,708 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Aufnahmepunkt" substitutionGroup="gml:AbstractFeature" type="okstra:AufnahmepunktType"/>
+  <complexType name="AufnahmepunktType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Name_Lage" type="string"/>
+          <element minOccurs="0" name="interne_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="Nutzerspezifische_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="letzte_oertliche_Ueberpruefung" type="date"/>
+          <element minOccurs="0" name="Befund" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="historische_Unterlagen" type="string"/>
+          <element minOccurs="0" name="hat_Punktvermarkung" type="okstra:PunktvermarkungPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_in_Bundesland" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Grenzpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_weiteren_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_weiterer_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Skizze" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Punktort" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Hoehe" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Katasteramt_Stellart" type="string"/>
+          <element minOccurs="0" name="Katasteramt_Schluessel" type="string"/>
+          <element minOccurs="0" name="GPS_Tauglichkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="liegt_in_Gemarkung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Punktstabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="AufnahmepunktPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Aufnahmepunkt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="GPS_Antenne" substitutionGroup="gml:AbstractFeature" type="okstra:GPS_AntenneType"/>
+  <complexType name="GPS_AntenneType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Antennentyp" type="string"/>
+          <element minOccurs="0" name="Radometyp" type="string"/>
+          <element minOccurs="0" name="Antennenreferenzpunkt" type="string"/>
+          <element minOccurs="0" name="azimutale_Abweichung" type="okstra-typen:Grad"/>
+          <element minOccurs="0" name="Antennenhoehe" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Hoehenoffset_zum_Phasenz_L1" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Hoehenoffset_zum_Phasenz_L2" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Aufbau_Datum" type="date"/>
+          <element minOccurs="0" name="Aufbau_Uhrzeit" type="time"/>
+          <element minOccurs="0" name="Abbau_Datum" type="date"/>
+          <element minOccurs="0" name="Abbau_Uhrzeit" type="time"/>
+          <element minOccurs="0" name="zusaetzliche_Informationen" type="string"/>
+          <element maxOccurs="unbounded" name="von_Referenzstationspunkt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GPS_AntennePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:GPS_Antenne"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="GPS_Empfaenger" substitutionGroup="gml:AbstractFeature" type="okstra:GPS_EmpfaengerType"/>
+  <complexType name="GPS_EmpfaengerType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Empfaengertyp" type="string"/>
+          <element minOccurs="0" name="Seriennummer" type="string"/>
+          <element minOccurs="0" name="Firmwareversion" type="string"/>
+          <element minOccurs="0" name="Aufbau_Datum" type="date"/>
+          <element minOccurs="0" name="Aufbau_Uhrzeit" type="time"/>
+          <element minOccurs="0" name="Abbau_Datum" type="date"/>
+          <element minOccurs="0" name="Abbau_Uhrzeit" type="time"/>
+          <element minOccurs="0" name="zusaetzliche_Informationen" type="string"/>
+          <element maxOccurs="unbounded" name="von_Referenzstationspunkt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="GPS_EmpfaengerPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:GPS_Empfaenger"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Hoehe" substitutionGroup="gml:AbstractFeature" type="okstra:HoeheType"/>
+  <complexType name="HoeheType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Hoehenwert" type="double"/>
+          <element name="Hoehensystem" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Hoehenstatus" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Ueberpruefungsdatum" type="date"/>
+          <element minOccurs="0" name="Hinweise" type="string"/>
+          <element minOccurs="0" name="hat_Qualitaetsangaben" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="zu_Vermessungspunkt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="HoehePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Hoehe"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Hoehenfestpunkt_SBV" substitutionGroup="gml:AbstractFeature" type="okstra:Hoehenfestpunkt_SBVType"/>
+  <complexType name="Hoehenfestpunkt_SBVType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Name_Lage" type="string"/>
+          <element minOccurs="0" name="interne_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="Nutzerspezifische_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="letzte_oertliche_Ueberpruefung" type="date"/>
+          <element minOccurs="0" name="Befund" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="historische_Unterlagen" type="string"/>
+          <element minOccurs="0" name="hat_Punktvermarkung" type="okstra:PunktvermarkungPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_in_Bundesland" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Grenzpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_weiteren_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_weiterer_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Skizze" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Punktort" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Hoehe" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Katasteramt_Stellart" type="string"/>
+          <element minOccurs="0" name="Katasteramt_Schluessel" type="string"/>
+          <element minOccurs="0" name="GPS_Tauglichkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="liegt_in_Gemarkung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="vermutete_Hoehenstabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Guete_des_Vermarkungstraegers" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Topographie_und_Umwelt" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Guete_des_Baugrundes" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="geologische_Stabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Grundwasserstand" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Grundwasserschwankung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Hoehenstabilitaet_aus_Wdhmessg" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Punktnummer" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Hoehenfestpunkt_SBVPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Hoehenfestpunkt_SBV"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Hoehenpasspunkt_SBV" substitutionGroup="gml:AbstractFeature" type="okstra:Hoehenpasspunkt_SBVType"/>
+  <complexType name="Hoehenpasspunkt_SBVType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Name_Lage" type="string"/>
+          <element minOccurs="0" name="interne_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="Nutzerspezifische_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="letzte_oertliche_Ueberpruefung" type="date"/>
+          <element minOccurs="0" name="Befund" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="historische_Unterlagen" type="string"/>
+          <element minOccurs="0" name="hat_Punktvermarkung" type="okstra:PunktvermarkungPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_in_Bundesland" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Grenzpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_weiteren_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_weiterer_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Skizze" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Punktort" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Hoehe" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Katasteramt_Stellart" type="string"/>
+          <element minOccurs="0" name="Katasteramt_Schluessel" type="string"/>
+          <element minOccurs="0" name="GPS_Tauglichkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="liegt_in_Gemarkung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="vermutete_Hoehenstabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Guete_des_Vermarkungstraegers" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Topographie_und_Umwelt" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Guete_des_Baugrundes" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="geologische_Stabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Grundwasserstand" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Grundwasserschwankung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Hoehenstabilitaet_aus_Wdhmessg" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Punktnummer" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Hoehenpasspunkt_SBVPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Hoehenpasspunkt_SBV"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Lagefestpunkt_SBV" substitutionGroup="gml:AbstractFeature" type="okstra:Lagefestpunkt_SBVType"/>
+  <complexType name="Lagefestpunkt_SBVType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Name_Lage" type="string"/>
+          <element minOccurs="0" name="interne_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="Nutzerspezifische_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="letzte_oertliche_Ueberpruefung" type="date"/>
+          <element minOccurs="0" name="Befund" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="historische_Unterlagen" type="string"/>
+          <element minOccurs="0" name="hat_Punktvermarkung" type="okstra:PunktvermarkungPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_in_Bundesland" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Grenzpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_weiteren_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_weiterer_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Skizze" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Punktort" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Hoehe" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Katasteramt_Stellart" type="string"/>
+          <element minOccurs="0" name="Katasteramt_Schluessel" type="string"/>
+          <element minOccurs="0" name="GPS_Tauglichkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="liegt_in_Gemarkung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Punktstabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Punktnummer" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Lagefestpunkt_SBVPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Lagefestpunkt_SBV"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Lagepasspunkt_SBV" substitutionGroup="gml:AbstractFeature" type="okstra:Lagepasspunkt_SBVType"/>
+  <complexType name="Lagepasspunkt_SBVType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Name_Lage" type="string"/>
+          <element minOccurs="0" name="interne_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="Nutzerspezifische_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="letzte_oertliche_Ueberpruefung" type="date"/>
+          <element minOccurs="0" name="Befund" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="historische_Unterlagen" type="string"/>
+          <element minOccurs="0" name="hat_Punktvermarkung" type="okstra:PunktvermarkungPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_in_Bundesland" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Grenzpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_weiteren_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_weiterer_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Skizze" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Punktort" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Hoehe" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Katasteramt_Stellart" type="string"/>
+          <element minOccurs="0" name="Katasteramt_Schluessel" type="string"/>
+          <element minOccurs="0" name="GPS_Tauglichkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="liegt_in_Gemarkung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Punktstabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Punktnummer" type="string"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Lagepasspunkt_SBVPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Lagepasspunkt_SBV"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Nivellementpunkt" substitutionGroup="gml:AbstractFeature" type="okstra:NivellementpunktType"/>
+  <complexType name="NivellementpunktType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Name_Lage" type="string"/>
+          <element minOccurs="0" name="interne_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="Nutzerspezifische_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="letzte_oertliche_Ueberpruefung" type="date"/>
+          <element minOccurs="0" name="Befund" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="historische_Unterlagen" type="string"/>
+          <element minOccurs="0" name="hat_Punktvermarkung" type="okstra:PunktvermarkungPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_in_Bundesland" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Grenzpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_weiteren_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_weiterer_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Skizze" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Punktort" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Hoehe" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Katasteramt_Stellart" type="string"/>
+          <element minOccurs="0" name="Katasteramt_Schluessel" type="string"/>
+          <element minOccurs="0" name="GPS_Tauglichkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="liegt_in_Gemarkung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="vermutete_Hoehenstabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Guete_des_Vermarkungstraegers" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Topographie_und_Umwelt" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Guete_des_Baugrundes" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="geologische_Stabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Grundwasserstand" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Grundwasserschwankung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Hoehenstabilitaet_aus_Wdhmessg" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Punktkennung" type="integer"/>
+          <element minOccurs="0" name="Ordnung" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="NivellementpunktPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Nivellementpunkt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Punktort" substitutionGroup="gml:AbstractFeature" type="okstra:PunktortType"/>
+  <complexType name="PunktortType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Punktgeometrie" type="gml:PointPropertyType"/>
+          <element minOccurs="0" name="Liegenschaftskarte" type="boolean"/>
+          <element name="Koordinatenstatus" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Ueberpruefungsdatum" type="date"/>
+          <element minOccurs="0" name="Hinweise" type="string"/>
+          <element minOccurs="0" name="hat_Qualitaetsangaben" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="stellt_Vermessungspunkt_dar" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="PunktortPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Punktort"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Qualitaetsangaben_Hoehe" substitutionGroup="gml:AbstractFeature" type="okstra:Qualitaetsangaben_HoeheType"/>
+  <complexType name="Qualitaetsangaben_HoeheType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Erhebungsstelle_Stellenart" type="string"/>
+          <element minOccurs="0" name="Erhebungsstelle" type="string"/>
+          <element minOccurs="0" name="Datenerhebung_Hoehe" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Berechnungsdatum" type="date"/>
+          <element minOccurs="0" name="Messjahr" type="okstra-typen:Jahr"/>
+          <element minOccurs="0" name="Genauigkeit_Hoehe" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Hoehe" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Erhebungsstelle_Land" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Qualitaetsangaben_HoehePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Qualitaetsangaben_Hoehe"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Qualitaetsangaben_Punktort" substitutionGroup="gml:AbstractFeature" type="okstra:Qualitaetsangaben_PunktortType"/>
+  <complexType name="Qualitaetsangaben_PunktortType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Erhebungsstelle_Pos_2D_SArt" type="string"/>
+          <element minOccurs="0" name="Erhebungsstelle_Pos_2D" type="string"/>
+          <element minOccurs="0" name="Erhebungsstelle_Pos_Hoehe_SArt" type="string"/>
+          <element minOccurs="0" name="Erhebungsstelle_Pos_Hoehe" type="string"/>
+          <element minOccurs="0" name="Erhebungsstelle_Pos_3D_SArt" type="string"/>
+          <element minOccurs="0" name="Erhebungsstelle_Pos_3D" type="string"/>
+          <element minOccurs="0" name="Datenerhebung_Pos_2D" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Datenerhebung_Pos_Hoehe" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Datenerhebung_Pos_3D" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Berechnungsdatum_Pos_2D" type="date"/>
+          <element minOccurs="0" name="Berechnungsdatum_Pos_Hoehe" type="date"/>
+          <element minOccurs="0" name="Berechnungsdatum_Pos_3D" type="date"/>
+          <element minOccurs="0" name="Bestimmungsdatum_Pos_2D" type="date"/>
+          <element minOccurs="0" name="Bestimmungsdatum_Pos_Hoehe" type="date"/>
+          <element minOccurs="0" name="Bestimmungsdatum_Pos_3D" type="date"/>
+          <element minOccurs="0" name="Genauigkeit_Pos_2D" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Genauigkeit_Pos_Hoehe" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Genauigkeit_Pos_3D" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Vertrauenswuerdigk_Pos_2D" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Vertrauenswuerdigk_Pos_Hoehe" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Vertrauenswuerdigk_Pos_3D" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Punktort" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Erhebungsstelle_Pos_Hoehe_Land" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Erhebungsstelle_Pos_2D_Land" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Erhebungsstelle_Pos_3D_Land" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Qualitaetsangaben_PunktortPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Qualitaetsangaben_Punktort"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Referenzstationspunkt" substitutionGroup="gml:AbstractFeature" type="okstra:ReferenzstationspunktType"/>
+  <complexType name="ReferenzstationspunktType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Punktkennung" type="integer"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Name_Lage" type="string"/>
+          <element minOccurs="0" name="interne_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="Nutzerspezifische_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="letzte_oertliche_Ueberpruefung" type="date"/>
+          <element minOccurs="0" name="Befund" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="historische_Unterlagen" type="string"/>
+          <element minOccurs="0" name="hat_Punktvermarkung" type="okstra:PunktvermarkungPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_in_Bundesland" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Grenzpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_weiteren_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_weiterer_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Skizze" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Punktort" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Hoehe" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Funktion_in_einer_Punktgruppe" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Zeitraum_permanente_Messungen" type="okstra:ZeitraumPropertyType"/>
+          <element minOccurs="0" name="Offset_N_L1" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Offset_E_L1" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Offset_H_L1" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Offset_N_L2" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Offset_E_L2" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Offset_H_L2" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="ISDN_Nummer" type="string"/>
+          <element minOccurs="0" name="Funkfrequenz" type="okstra-typen:Megahertz"/>
+          <element maxOccurs="72" minOccurs="0" name="PCV_L1" type="okstra:PCVPropertyType"/>
+          <element maxOccurs="72" minOccurs="0" name="PCV_L2" type="okstra:PCVPropertyType"/>
+          <element minOccurs="0" name="hat_GPS_Empfaenger" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_GPS_Antenne" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="ReferenzstationspunktPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Referenzstationspunkt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Sicherungspunkt" substitutionGroup="gml:AbstractFeature" type="okstra:SicherungspunktType"/>
+  <complexType name="SicherungspunktType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Name_Lage" type="string"/>
+          <element minOccurs="0" name="interne_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="Nutzerspezifische_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="letzte_oertliche_Ueberpruefung" type="date"/>
+          <element minOccurs="0" name="Befund" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="historische_Unterlagen" type="string"/>
+          <element minOccurs="0" name="hat_Punktvermarkung" type="okstra:PunktvermarkungPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_in_Bundesland" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Grenzpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_weiteren_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_weiterer_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Skizze" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Punktort" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Hoehe" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Katasteramt_Stellart" type="string"/>
+          <element minOccurs="0" name="Katasteramt_Schluessel" type="string"/>
+          <element minOccurs="0" name="GPS_Tauglichkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="liegt_in_Gemarkung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Punktstabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SicherungspunktPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Sicherungspunkt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Skizze" substitutionGroup="gml:AbstractFeature" type="okstra:SkizzeType"/>
+  <complexType name="SkizzeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Aktualitaet" type="date"/>
+          <element name="Skizzenname" type="string"/>
+          <element minOccurs="0" name="Skizzenart" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Bemerkungen" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="historische_Skizzen" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Vermessungspunkt" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SkizzePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Skizze"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="sonstiger_Vermessungspunkt" substitutionGroup="gml:AbstractFeature" type="okstra:sonstiger_VermessungspunktType"/>
+  <complexType name="sonstiger_VermessungspunktType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Name_Lage" type="string"/>
+          <element minOccurs="0" name="interne_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="Nutzerspezifische_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="letzte_oertliche_Ueberpruefung" type="date"/>
+          <element minOccurs="0" name="Befund" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="historische_Unterlagen" type="string"/>
+          <element minOccurs="0" name="hat_Punktvermarkung" type="okstra:PunktvermarkungPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_in_Bundesland" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Grenzpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_weiteren_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_weiterer_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Skizze" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Punktort" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Hoehe" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Katasteramt_Stellart" type="string"/>
+          <element minOccurs="0" name="Katasteramt_Schluessel" type="string"/>
+          <element minOccurs="0" name="GPS_Tauglichkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="liegt_in_Gemarkung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Punktstabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="sonstiger_VermessungspunktPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:sonstiger_Vermessungspunkt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="trigonometrischer_Punkt" substitutionGroup="gml:AbstractFeature" type="okstra:trigonometrischer_PunktType"/>
+  <complexType name="trigonometrischer_PunktType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Punktkennung" type="integer"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Objekt_ID" type="okstra:Objekt_IDPropertyType"/>
+          <element minOccurs="0" name="Name_Lage" type="string"/>
+          <element minOccurs="0" name="interne_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="Nutzerspezifische_Bemerkungen" type="string"/>
+          <element minOccurs="0" name="letzte_oertliche_Ueberpruefung" type="date"/>
+          <element minOccurs="0" name="Befund" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="historische_Unterlagen" type="string"/>
+          <element minOccurs="0" name="hat_Punktvermarkung" type="okstra:PunktvermarkungPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="liegt_in_Bundesland" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_Grenzpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_weiteren_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="ist_weiterer_Punkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Skizze" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Punktort" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Hoehe" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Katasteramt_Stellart" type="string"/>
+          <element minOccurs="0" name="Katasteramt_Schluessel" type="string"/>
+          <element minOccurs="0" name="GPS_Tauglichkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="liegt_in_Gemarkung" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Punktstabilitaet" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Ordnung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Hierarchiestufe" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Wertigkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Hoehendiff_Pfeiler_ue_Platte" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Datum_der_Messung" type="date"/>
+          <element minOccurs="0" name="Funktion_in_einer_Punktgruppe" type="okstra-basis:KeyValuePropertyType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="trigonometrischer_PunktPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:trigonometrischer_Punkt"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>

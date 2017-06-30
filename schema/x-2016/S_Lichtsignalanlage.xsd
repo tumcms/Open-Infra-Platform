@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:okstra="http://schema.okstra.de/2016/okstra" xmlns:okstra-basis="http://schema.okstra.de/2016/okstra-basis" xmlns:okstra-typen="http://schema.okstra.de/2016/okstra-typen" elementFormDefault="qualified" targetNamespace="http://schema.okstra.de/2016/okstra" version="2.016.0">
+  <import namespace="http://schema.okstra.de/2016/okstra-basis" schemaLocation="okstra-basis.xsd"/>
+  <import namespace="http://schema.okstra.de/2016/okstra-typen" schemaLocation="okstra-typen.xsd"/>
+  <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="./gml/3.2.1/gml.xsd"/>
+  <!--XML Schema document created by ShapeChange-->
+  <element name="Angaben_z_Aufstellvorrichtung" substitutionGroup="gml:AbstractFeature" type="okstra:Angaben_z_AufstellvorrichtungType"/>
+  <complexType name="Angaben_z_AufstellvorrichtungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Art" type="string"/>
+          <element name="Anzahl" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="Ausleger_Laenge" type="okstra-typen:Meter"/>
+          <element minOccurs="0" name="Ausleger_Anzahl" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="Gruendung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Hardwarekomponenten" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Angaben_z_AufstellvorrichtungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Angaben_z_Aufstellvorrichtung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Angaben_zu_Verkehrsdaten" substitutionGroup="gml:AbstractFeature" type="okstra:Angaben_zu_VerkehrsdatenType"/>
+  <complexType name="Angaben_zu_VerkehrsdatenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Datum_VZ" type="date"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Verkehrsstroeme" type="string"/>
+          <element minOccurs="0" name="OePNV_Frequenzen" type="string"/>
+          <element minOccurs="0" name="Fussgaengerzaehlung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Lichtsignalanlage" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Angaben_zu_VerkehrsdatenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Angaben_zu_Verkehrsdaten"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Angaben_zum_Knotenpunkt_LSA" substitutionGroup="gml:AbstractFeature" type="okstra:Angaben_zum_Knotenpunkt_LSAType"/>
+  <complexType name="Angaben_zum_Knotenpunkt_LSAType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Name" type="string"/>
+          <element minOccurs="0" name="Zahl_der_Knotenarme" type="okstra-typen:Anzahl"/>
+          <element name="Hauptrichtung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="Markierungspfeile" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Lichtsignalanlage" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Angaben_zum_Knotenpunkt_LSAPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Angaben_zum_Knotenpunkt_LSA"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Angaben_zum_Steuergeraet" substitutionGroup="gml:AbstractFeature" type="okstra:Angaben_zum_SteuergeraetType"/>
+  <complexType name="Angaben_zum_SteuergeraetType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Geraetebezeichnung" type="string"/>
+          <element name="max_Programmzahl" type="okstra-typen:Anzahl"/>
+          <element name="max_SG_Anzahl_Kfz" type="okstra-typen:Anzahl"/>
+          <element name="max_SG_Anzahl_Fussgaenger" type="okstra-typen:Anzahl"/>
+          <element name="max_SG_Anzahl_OeV" type="okstra-typen:Anzahl"/>
+          <element name="max_SG_Anzahl_Zusatzsignalgeb" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="max_Anzahl_Kanaele" type="okstra-typen:Anzahl"/>
+          <element name="Programmierbarkeit" type="boolean"/>
+          <element minOccurs="0" name="Spannungsversorgung" type="string"/>
+          <element minOccurs="0" name="Anordnung" type="string"/>
+          <element minOccurs="0" name="Verkehrszaehlspeicher" type="string"/>
+          <element minOccurs="0" name="Schliesssystem" type="string"/>
+          <element minOccurs="0" name="Handbedienteil" type="boolean"/>
+          <element name="BUeSTRA" type="boolean"/>
+          <element minOccurs="0" name="Koordinierung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Telefonbuchse" type="boolean"/>
+          <element minOccurs="0" name="Messschreiberanschluss" type="boolean"/>
+          <element minOccurs="0" name="Heizung_Luefter" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Hardwarekomponenten" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Angaben_zum_SteuergeraetPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Angaben_zum_Steuergeraet"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Angaben_zur_Verkabelung" substitutionGroup="gml:AbstractFeature" type="okstra:Angaben_zur_VerkabelungType"/>
+  <complexType name="Angaben_zur_VerkabelungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Rohrbelegung" type="boolean"/>
+          <element name="Verbindung_NK" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Hardwarekomponenten" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Angaben_zur_VerkabelungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Angaben_zur_Verkabelung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erfassungseinrichtungen_IV" substitutionGroup="gml:AbstractFeature" type="okstra:Erfassungseinrichtungen_IVType"/>
+  <complexType name="Erfassungseinrichtungen_IVType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Art_der_Erfassung" type="string"/>
+          <element name="Anzahl_1" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="Anzahl_2" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="zu_erkennende_Fz" type="string"/>
+          <element minOccurs="0" name="Funktion" type="string"/>
+          <element minOccurs="0" name="Gestaltung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Hardwarekomponenten" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Erfassungseinrichtungen_IVPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erfassungseinrichtungen_IV"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Erfassungseinrichtungen_OeV" substitutionGroup="gml:AbstractFeature" type="okstra:Erfassungseinrichtungen_OeVType"/>
+  <complexType name="Erfassungseinrichtungen_OeVType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Art_der_Erfassung" type="string"/>
+          <element name="Anzahl" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="Position" type="string"/>
+          <element name="Funktion" type="string"/>
+          <element name="Verbindung" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Hardwarekomponenten" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Erfassungseinrichtungen_OeVPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Erfassungseinrichtungen_OeV"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Grundlage_und_Inbetriebn_daten" substitutionGroup="gml:AbstractFeature" type="okstra:Grundlage_und_Inbetriebn_datenType"/>
+  <complexType name="Grundlage_und_Inbetriebn_datenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Einsatzzeiten" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Nummer" type="integer"/>
+          <element maxOccurs="4" minOccurs="0" name="Nummer_Nachbar_LSA" type="integer"/>
+          <element name="Baulasttraeger" type="string"/>
+          <element minOccurs="0" name="Stoerungsstelle" type="string"/>
+          <element name="Datum_Installation" type="date"/>
+          <element name="Wartungszyklus" type="string"/>
+          <element minOccurs="0" name="Datum_Zwischenzeitmatrix" type="date"/>
+          <element minOccurs="0" name="Datum_VZ_Plan" type="date"/>
+          <element minOccurs="0" name="Datum_Signalprogramme" type="date"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Lichtsignalanlage" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="Grundlage_und_Inbetriebn_datenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Grundlage_und_Inbetriebn_daten"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Hardwarekomponenten" substitutionGroup="gml:AbstractFeature" type="okstra:HardwarekomponentenType"/>
+  <complexType name="HardwarekomponentenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element name="Hersteller" type="string"/>
+          <element minOccurs="0" name="Signalgruppen" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_akust_o_taktile_Signalgeb" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_optische_Signalgeber" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Erfassungseinrichtungn_OeV" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Erfassungseinrichtungen_IV" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Angaben_zur_Verkabelung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Angaben_zum_Steuergeraet" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Angab_z_Aufstellvorrichtg" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Lichtsignalanlage" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="HardwarekomponentenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Hardwarekomponenten"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Lichtsignalanlage" substitutionGroup="gml:AbstractFeature" type="okstra:LichtsignalanlageType"/>
+  <complexType name="LichtsignalanlageType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenpunkt" type="okstra:StrassenpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="bei_Strassenelementpunkt" type="okstra:StrassenelementpunktPropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Segment_kommunale_Strasse" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="zu_kommunale_Strasse" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Strasse" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Softwarekomponenten" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Rotlichtueberwachung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_uebergeordnete_Zentrale" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Hardwarekomponenten" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Grundl_u_Inbetriebn_daten" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Angaben_zum_Knotenpunkt" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="hat_Angaben_zu_Verkehrsdaten" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="LichtsignalanlagePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Lichtsignalanlage"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Rotlichtueberwachung" substitutionGroup="gml:AbstractFeature" type="okstra:RotlichtueberwachungType"/>
+  <complexType name="RotlichtueberwachungType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Ueberwachung" type="boolean"/>
+          <element minOccurs="0" name="Fahrtrichtung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Lichtsignalanlage" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="RotlichtueberwachungPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Rotlichtueberwachung"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Signalprogrammparameter" substitutionGroup="gml:AbstractFeature" type="okstra:SignalprogrammparameterType"/>
+  <complexType name="SignalprogrammparameterType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Zwischenzeit" type="string"/>
+          <element minOccurs="0" name="maximale_Freigabezeit" type="string"/>
+          <element name="Umlaufzeit" type="string"/>
+          <element minOccurs="0" name="maximale_Wartezeit" type="string"/>
+          <element minOccurs="0" name="Zeitluecke_Belegung" type="string"/>
+          <element minOccurs="0" name="Berechnungsverfahren" type="string"/>
+          <element minOccurs="0" name="Mindestfreigabezeit" type="string"/>
+          <element minOccurs="0" name="Versatzzeit" type="string"/>
+          <element minOccurs="0" name="Radfahrerberuecksichtigung" type="boolean"/>
+          <element minOccurs="0" name="OePNV_Beruecksichtigung" type="boolean"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Softwarekomponenten" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SignalprogrammparameterPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Signalprogrammparameter"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="Softwarekomponenten" substitutionGroup="gml:AbstractFeature" type="okstra:SoftwarekomponentenType"/>
+  <complexType name="SoftwarekomponentenType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Hersteller" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Lichtsignalanlage" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_hinterlegte_Programme" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" name="hat_Signalprogrammparameter" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="SoftwarekomponentenPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:Softwarekomponenten"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="akust_oder_taktile_Signalgeber" substitutionGroup="gml:AbstractFeature" type="okstra:akust_oder_taktile_SignalgeberType"/>
+  <complexType name="akust_oder_taktile_SignalgeberType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Anzahl_1" type="okstra-typen:Anzahl"/>
+          <element name="Anzahl_2" type="okstra-typen:Anzahl"/>
+          <element name="Position_1" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Position_2" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Hardwarekomponenten" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="akust_oder_taktile_SignalgeberPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:akust_oder_taktile_Signalgeber"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="hinterlegte_Programme" substitutionGroup="gml:AbstractFeature" type="okstra:hinterlegte_ProgrammeType"/>
+  <complexType name="hinterlegte_ProgrammeType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="Steuerungsverfahren" type="string"/>
+          <element name="Anzahl" type="okstra-typen:Anzahl"/>
+          <element name="Auswahlverfahren" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Art_der_Programme" type="string"/>
+          <element name="OePNV_Berechtigung" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Darstellung" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Softwarekomponenten" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="hinterlegte_ProgrammePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:hinterlegte_Programme"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="optische_Signalgeber" substitutionGroup="gml:AbstractFeature" type="okstra:optische_SignalgeberType"/>
+  <complexType name="optische_SignalgeberType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Anzahl" type="okstra-typen:Anzahl"/>
+          <element minOccurs="0" name="Durchmesser" type="string"/>
+          <element name="Blendensymbol" type="string"/>
+          <element name="Position" type="okstra-basis:KeyValuePropertyType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Hardwarekomponenten" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="optische_SignalgeberPropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:optische_Signalgeber"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+  <element name="uebergeordnete_Zentrale" substitutionGroup="gml:AbstractFeature" type="okstra:uebergeordnete_ZentraleType"/>
+  <complexType name="uebergeordnete_ZentraleType">
+    <complexContent>
+      <extension base="gml:AbstractFeatureType">
+        <sequence>
+          <element minOccurs="0" name="OKSTRA_ID" type="okstra-typen:GUID"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Beschriftung" type="okstra-basis:ObjectRefType"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="zu_Kommunikationsobjekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="gueltig_von" type="date"/>
+          <element minOccurs="0" name="gueltig_bis" type="date"/>
+          <element minOccurs="0" name="hat_Vorgaenger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="hat_Nachfolger_hist_Objekt" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="erzeugt_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element minOccurs="0" name="geloescht_von_Ereignis" type="okstra-basis:ObjectRefType"/>
+          <element name="Lage" type="string"/>
+          <element name="Schnittstellendef_bekannt" type="boolean"/>
+          <element name="Typ" type="okstra-basis:KeyValuePropertyType"/>
+          <element name="Eingriffsmoeglichkeit" type="okstra-basis:KeyValuePropertyType"/>
+          <element minOccurs="0" name="Hersteller_des_Steuerrechners" type="string"/>
+          <element minOccurs="0" name="Typ_des_Steuerrechners" type="string"/>
+          <element maxOccurs="unbounded" minOccurs="0" name="von_Lichtsignalanlage" type="okstra-basis:ObjectRefType"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="uebergeordnete_ZentralePropertyType">
+    <sequence minOccurs="0">
+      <element ref="okstra:uebergeordnete_Zentrale"/>
+    </sequence>
+    <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+  </complexType>
+</schema>
