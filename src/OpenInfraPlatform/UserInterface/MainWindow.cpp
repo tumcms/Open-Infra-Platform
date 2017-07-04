@@ -669,7 +669,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered()
 		"Faculty of Civil, Geo and Environmental Engineering<br/>"
 		"Chair of Computational Modeling and Simulation<br/><br/>"
 		"Website: <a href=\"http://www.cms.bgu.tum.de/oip\"><font color=\"#48B7E7\">http://www.cms.bgu.tum.de/oip</font></a><br/>"
-		"Please send your bug reports or support requests to Julian Amann &lt;<a href=\"mailto:julian.amann@tum.de?subject=Bug Report\"><font color=\"#48B7E7\">julian.amann@tum.de</font></a>&gt;<br/><br/>")
+		"Please submit your bug reports or support requests to our repository <a href=\"https://bitbucket.org/tumcms/openinfraplatform\"><font color=\"#48B7E7\">https://bitbucket.org/tumcms/openinfraplatform</font></a><br/><br/>")
 			.arg( copyright, updater->installedVersion() );
 
 	QMessageBox::about( this, tr( "About TUM Open Infra Platform 2017" ), head + desc );
