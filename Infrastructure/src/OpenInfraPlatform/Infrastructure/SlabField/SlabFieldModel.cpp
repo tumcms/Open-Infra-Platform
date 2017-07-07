@@ -23,7 +23,7 @@
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
 SlabFieldModel::SlabFieldModel()
-	: slabFields_()
+	: slabFieldElements_()
 {
 }
 
@@ -38,15 +38,15 @@ SlabFieldModel* SlabFieldModel::createFlatCopy(SlabFieldModel const& src)
 
 size_t SlabFieldModel::getItemCount() const
 {
-	return slabFields_.size();
+	return slabFieldElements_.size();
 }
 
-std::shared_ptr<SlabField> SlabFieldModel::getItem(size_t const index) const
+std::shared_ptr<SlabFieldElement> SlabFieldModel::getItem(size_t const index) const
 {
-	return slabFields_[index];
+	return slabFieldElements_[index];
 }
 
-std::shared_ptr<SlabField> SlabFieldModel::getItemById(size_t const id) const
+std::shared_ptr<SlabFieldElement> SlabFieldModel::getItemById(size_t const id) const
 {
 	// FGI TODO
 	//for (auto const& sf : slabFields_)
@@ -55,23 +55,23 @@ std::shared_ptr<SlabField> SlabFieldModel::getItemById(size_t const id) const
 	return nullptr;
 }
 
-std::vector<std::shared_ptr<SlabField>> const& SlabFieldModel::getAllItems() const
+std::vector<std::shared_ptr<SlabFieldElement>> const& SlabFieldModel::getAllItems() const
 {
-	return slabFields_;
+	return slabFieldElements_;
 }
 
-void SlabFieldModel::addItem(std::shared_ptr<SlabField> const& slabField)
+void SlabFieldModel::addItem(std::shared_ptr<SlabFieldElement> const& slabFieldElement)
 {
-	slabFields_.push_back(slabField);
+	slabFieldElements_.push_back(slabFieldElement);
 }
 
-void SlabFieldModel::deleteItem(std::shared_ptr<SlabField> const& slabField)
+void SlabFieldModel::deleteItem(std::shared_ptr<SlabFieldElement> const& slabFieldElement)
 {
-	auto const& findIt = std::find(slabFields_.begin(), slabFields_.end(), slabField);
-	if(findIt != slabFields_.end())
-		slabFields_.erase(findIt);
+	auto const& findIt = std::find(slabFieldElements_.begin(), slabFieldElements_.end(), slabFieldElement);
+	if(findIt != slabFieldElements_.end())
+		slabFieldElements_.erase(findIt);
 	else
-		throw std::runtime_error("Deltion of slab field failed.");
+		throw std::runtime_error("Deletion of slab field element failed.");
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END

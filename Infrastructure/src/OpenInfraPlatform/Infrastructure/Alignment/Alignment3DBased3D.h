@@ -42,16 +42,18 @@ public:
 	virtual ~Alignment3DBased3D();
 
 	//! Computes the 3d position given a stationing.
-	buw::Vector3d	getPosition(const Stationing station ) const override;
+	buw::Vector3d			getPosition(const Stationing station ) const override;
 
-	buw::Stationing getStartStation() const override;
+	buw::Stationing			getStartStation() const override;
 
-	buw::Stationing getEndStation() const override;
+	buw::Stationing			getEndStation() const override;
 
 	//! Length of horizontal alignment
-	double			getLength() const override;	
+	double					getLength() const override;	
 
-	void			addPoint(const buw::Vector3d& p);
+	void					addPoint(const buw::Vector3d& p);
+	buw::Vector3d const&	getPoint(size_t const idx) const;
+	size_t					getNumPoints() const;
 
 private:
 	buw::Stationing	startSation_;

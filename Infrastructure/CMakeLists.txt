@@ -18,8 +18,10 @@ file(GLOB OpenInfraPlatform_Infrastructure_Bindings_Source 							src/OpenInfraP
 file(GLOB OpenInfraPlatform_Infrastructure_Core_Source 								src/OpenInfraPlatform/Infrastructure/Core/*.*)	
 file(GLOB OpenInfraPlatform_Infrastructure_CrossSection_Source 						src/OpenInfraPlatform/Infrastructure/CrossSection/*.*)			
 file(GLOB OpenInfraPlatform_Infrastructure_DigitalElevationModel_Source 			src/OpenInfraPlatform/Infrastructure/DigitalElevationModel/*.*)
+file(GLOB OpenInfraPlatform_Infrastructure_SectionedSolid_Source 					src/OpenInfraPlatform/Infrastructure/SectionedSolid/*.*)
 file(GLOB OpenInfraPlatform_Infrastructure_Girder_Source 							src/OpenInfraPlatform/Infrastructure/Girder/*.*)
 file(GLOB OpenInfraPlatform_Infrastructure_SlabField_Source 						src/OpenInfraPlatform/Infrastructure/SlabField/*.*)
+file(GLOB OpenInfraPlatform_Infrastructure_Tessellation_Source 						src/OpenInfraPlatform/Infrastructure/Tessellation/*.*)
 file(GLOB OpenInfraPlatform_Infrastructure_EnergyConsumption_Source 				src/OpenInfraPlatform/Infrastructure/EnergyConsumption/*.*)						
 file(GLOB OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Source 	src/OpenInfraPlatform/Infrastructure/EnergyConsumption/Calculators/*.*)	
 file(GLOB OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Parameters_Source 	src/OpenInfraPlatform/Infrastructure/EnergyConsumption/Calculators/Parameters/*.*)	
@@ -38,8 +40,10 @@ source_group(OpenInfraPlatform\\Infrastructure\\Bindings							FILES ${OpenInfra
 source_group(OpenInfraPlatform\\Infrastructure\\Core								FILES ${OpenInfraPlatform_Infrastructure_Core_Source})		
 source_group(OpenInfraPlatform\\Infrastructure\\CrossSection						FILES ${OpenInfraPlatform_Infrastructure_CrossSection_Source})				
 source_group(OpenInfraPlatform\\Infrastructure\\DigitalElevationModel  				FILES ${OpenInfraPlatform_Infrastructure_DigitalElevationModel_Source})						
+source_group(OpenInfraPlatform\\Infrastructure\\SectionedSolid						FILES ${OpenInfraPlatform_Infrastructure_SectionedSolid_Source})
 source_group(OpenInfraPlatform\\Infrastructure\\Girder  							FILES ${OpenInfraPlatform_Infrastructure_Girder_Source})
 source_group(OpenInfraPlatform\\Infrastructure\\SlabField  							FILES ${OpenInfraPlatform_Infrastructure_SlabField_Source})
+source_group(OpenInfraPlatform\\Infrastructure\\Tessellation  						FILES ${OpenInfraPlatform_Infrastructure_Tessellation_Source})
 source_group(OpenInfraPlatform\\Infrastructure\\EnergyConsumption					FILES ${OpenInfraPlatform_Infrastructure_EnergyConsumption_Source})
 source_group(OpenInfraPlatform\\Infrastructure\\EnergyConsumption\\Calculators 		FILES ${OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Source_Source})
 source_group(OpenInfraPlatform\\Infrastructure\\EnergyConsumption\\Calculators\\Parameters_Source 	FILES ${OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Parameters_Source})
@@ -72,8 +76,10 @@ add_library(OpenInfraPlatform.Infrastructure SHARED
 	${OpenInfraPlatform_Infrastructure_Core_Source}
 	${OpenInfraPlatform_Infrastructure_CrossSection_Source}
 	${OpenInfraPlatform_Infrastructure_DigitalElevationModel_Source}
+	${OpenInfraPlatform_Infrastructure_SectionedSolid_Source}
 	${OpenInfraPlatform_Infrastructure_Girder_Source}
 	${OpenInfraPlatform_Infrastructure_SlabField_Source}
+	${OpenInfraPlatform_Infrastructure_Tessellation_Source}
 	${OpenInfraPlatform_Infrastructure_EnergyConsumption_Source}
 	${OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Source_Source}
 	${OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Parameters_Source}

@@ -464,6 +464,8 @@ void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) 
     trafficSignModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::TrafficSignModel>();
     digitalElevationModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::DigitalElevationModel>();
 	alignmentModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::AlignmentModel>();
+	girderModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::GirderModel>();
+	slabFieldModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::SlabFieldModel>();
 	ifcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
 	selectedAlignmentIndex_ = 0;
 
@@ -693,7 +695,7 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 	ChangeFlag flag = (ChangeFlag)0;
 	if (importer_)
 	{
-		flag = flag | ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::Preferences | ChangeFlag::TrafficModel;
+		flag = flag | ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::Preferences | ChangeFlag::TrafficModel | ChangeFlag::GirderModel | ChangeFlag::SlabFieldModel;
 
 		if (merge_)
 		{
@@ -709,12 +711,22 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 			{
 				digitalElevationModel_->addBreakLine(breakLine);
 			}
+			for (auto girder : importer_->getGirderModel()->getAllItems())
+			{
+				girderModel_->addItem(girder);
+			}
+			for (auto slabField : importer_->getSlabFieldModel()->getAllItems())
+			{
+				slabFieldModel_->addItem(slabField);
+			}
 		}
 		else
 		{
 			alignmentModel_ = importer_->getAlignmentModel();
 			digitalElevationModel_ = importer_->getDigitalElevationModel();
 			trafficSignModel_ = importer_->getTrafficSignModel();
+			girderModel_ = importer_->getGirderModel();
+			slabFieldModel_ = importer_->getSlabFieldModel();
 		}
 
 		delete importer_;
@@ -1158,6 +1170,16 @@ void OpenInfraPlatform::DataManagement::Data::setAlignmentLineWidth(const double
 buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> OpenInfraPlatform::DataManagement::Data::getAlignmentModel() const
 {
 	return alignmentModel_;
+}
+
+buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::GirderModel> OpenInfraPlatform::DataManagement::Data::getGirderModel() const
+{
+	return girderModel_;
+}
+
+buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::SlabFieldModel> OpenInfraPlatform::DataManagement::Data::getSlabFieldModel() const
+{
+	return slabFieldModel_;
 }
 
 buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> OpenInfraPlatform::DataManagement::Data::getIfcGeometryModel() const

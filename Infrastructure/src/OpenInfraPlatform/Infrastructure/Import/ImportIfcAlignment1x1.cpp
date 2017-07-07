@@ -26,6 +26,9 @@
 #include "OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignmentElement2DLine.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignmentElement2DParabola.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignmentElement2DArc.h"
+#include "OpenInfraPlatform/Infrastructure/SlabField/SlabField.h"
+#include "OpenInfraPlatform/Infrastructure/SlabField/Railing.h"
+#include "OpenInfraPlatform/Infrastructure/Tessellation/Tessellation.h"
 
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Exception.h"
@@ -46,6 +49,8 @@
 #include <map>
 #include <set>
 #include <utility>
+#include <algorithm>
+#include <functional>
 
 using namespace OpenInfraPlatform::IfcAlignment1x1;
 
@@ -293,94 +298,329 @@ public:
 						switch (assembly->m_PredefinedType->m_enum)
 						{
 						case IfcElementAssemblyTypeEnum::ENUM_GIRDER:
-							createGirder(assembly);
-							break;
+						{
+							auto ssh = createSectionedSolidHorizontals(assembly);
+							if (!ssh.empty())
+							{
+								auto girder = std::make_shared<Girder>(
+									assembly->getId(),
+									assembly->m_Name ? buw::String::toWStdString(assembly->m_Name->m_value) : L"Girder");
+								girder->addSectionedSolid(ssh);
+								girderModel_->addItem(girder);
+							}
+						} break;
 						case IfcElementAssemblyTypeEnum::ENUM_SLAB_FIELD:
-							break;
+						{
+							auto ssh = createSectionedSolidHorizontals(assembly);
+							if (!ssh.empty())
+							{
+								auto slabField = std::make_shared<SlabField>(
+									assembly->getId(),
+									assembly->m_Name ? buw::String::toWStdString(assembly->m_Name->m_value) : L"SlabField");
+								slabField->addSectionedSolid(ssh);
+								slabFieldModel_->addItem(slabField);
+							}
+						} break;
 						default:
 							throw buw::NotImplementedYetException("Unimplemented assembly type.");
 						}
 					}
 				}
 			}
+
+			if (importSlabFields && it->second->m_entity_enum == IFCRAILING)
+			{
+				auto ifcRailing = std::static_pointer_cast<IfcRailing>(it->second);
+				if (ifcRailing->m_PredefinedType && ifcRailing->m_PredefinedType->m_enum == IfcRailingTypeEnum::ENUM_GUARDRAIL)
+				{
+					auto ssh = createSectionedSolidHorizontals(ifcRailing);
+					if (!ssh.empty())
+					{
+						auto railing = std::make_shared<Railing>(
+							ifcRailing->getId(),
+							ifcRailing->m_Name ? buw::String::toWStdString(ifcRailing->m_Name->m_value) : L"Railing");
+						railing->addSectionedSolid(ssh);
+						slabFieldModel_->addItem(railing);
+					}
+				}
+				else
+					throw buw::NotImplementedYetException("Unimplemented railing type.");
+			}
 		}
 	}
 
-	void createGirder(std::shared_ptr<IfcElementAssembly> ifcAssembly)
+	buw::Vector3d computeOffsetPoint(
+		std::shared_ptr<buw::HorizontalAlignment2D> horiz,
+		std::shared_ptr<buw::VerticalAlignment2D> vert,
+		double const dStation,
+		double const dOffsetLateral,
+		double const dOffsetVertical,
+		double const dOffsetLongitudinal,
+		std::pair<buw::Vector2d, buw::Vector2d>* pHorizontalTangentAndNormalOut = nullptr)
 	{
-		if (!ifcAssembly->m_PredefinedType ||
-			ifcAssembly->m_PredefinedType->m_enum != IfcElementAssemblyTypeEnum::ENUM_GIRDER)
-			return;
+		auto const& horizPos = horiz->getPosition(dStation);
+		auto const& horizNormal = horiz->getNormal(dStation);
+		auto const& horizTangent = horiz->getTangent(dStation);
+		double const dHeight = vert ? vert->getPosition(dStation)[1] : 0.0;
 
-		auto findIt = aggregations_.find(ifcAssembly);
-		if (findIt == aggregations_.end() || !findIt->second || findIt->second->m_RelatedObjects.empty())
-			return;
-		auto parts = findIt->second->m_RelatedObjects;
+		if (pHorizontalTangentAndNormalOut)
+			*pHorizontalTangentAndNormalOut = std::make_pair(horizTangent, horizNormal);
 
-		auto girder = std::make_shared<Girder>(
-			ifcAssembly->getId(),
-			ifcAssembly->m_Name ? buw::String::toWStdString(ifcAssembly->m_Name->m_value) : L"Girder");
+		auto const& newHorizPos = horizPos + dOffsetLateral * horizNormal + dOffsetLongitudinal * horizTangent;
+		return buw::Vector3d(
+			newHorizPos[0] + offset_.x(),
+			newHorizPos[1] + offset_.y(),
+			dHeight + dOffsetVertical + offset_.z());
+	}
 
-		for (auto part : parts)
+	std::shared_ptr<Alignment3DBased3D> sampleIfcAlignmentCurve(
+		std::shared_ptr<IfcAlignmentCurve> ifcAlignmentCurve,
+		std::vector<std::shared_ptr<IfcDistanceExpression>> stations,
+		bool const bExtendToHeadAndTail = false,
+		std::vector<std::pair<buw::Vector2d, buw::Vector2d>>* pHorizontalTangentsAndNormalsOut = nullptr,
+		bool const bAdaptiveSampling = false)
+	{
+		using namespace std::placeholders;
+		auto h = createHorizontalAlignment(ifcAlignmentCurve);
+		if (!h || h->getAlignmentElementCount() < 1) return nullptr; // At least the horizontal alignment is mandatory.
+		auto v = createVerticalAlignment(ifcAlignmentCurve);
+		double const dStartStation = h->getStartStation();
+		double const dEndStation = h->getEndStation();
+		auto alignment = std::make_shared<buw::Alignment3DBased3D>(dStartStation, Alignment3DBased3DType::Polyline /*Spline*/);
+		std::pair<buw::Vector2d, buw::Vector2d> horizontalTangentAndNormal;
+
+		// Sample the 2D alignments, offset the samples and add them to the 3D curve.
+		// From the specification (IfcOffsetCurveByDistances):
+		// "If the offsets do not span the full extent of the basis curve (e.g. if the list contains only one item),
+		// then the lateral and vertical offsets implicitly continue with the same value towards the head and tail of
+		// the basis curve."
+
+		// Extend towards the head of the basis curve, if needed.
+		if (bExtendToHeadAndTail && !stations.empty())
 		{
-			if (!part) continue;
-			switch (part->m_entity_enum)
+			auto firstStation = stations.front();
+			if (firstStation->m_AlongHorizontal && firstStation->m_AlongHorizontal->m_value
+				&& fabs(firstStation->m_DistanceAlong->m_value - dStartStation) > geometryPrecision_)
 			{
-			case IFCBEAM:
-			{
-				auto ifcBeam = std::static_pointer_cast<IfcBeam>(part);
-				if(ifcBeam->m_Representation)
+				double const dOffsetLateral = firstStation->m_OffsetLateral ? firstStation->m_OffsetLateral->m_value : 0.0;
+				double const dOffsetVertical = firstStation->m_OffsetVertical ? firstStation->m_OffsetVertical->m_value : 0.0;
+				double const dOffsetLongitudinal = 0.0;
+				if (bAdaptiveSampling && ((firstStation->m_DistanceAlong->m_value - dStartStation) > geometryPrecision_))
 				{
-					for (auto repr : ifcBeam->m_Representation->m_Representations)
-					{
-						for (auto reprItem : repr->m_Items)
-						{
-							if (!reprItem) continue;
-							switch (reprItem->m_entity_enum)
-							{
-							case IFCSECTIONEDSOLIDHORIZONTAL:
-							{
-								auto ssh = std::static_pointer_cast<IfcSectionedSolidHorizontal>(reprItem);
-								if (!ssh->m_Directrix) continue;
-
-								// Get the reference curve.
-								switch (ssh->m_Directrix->m_entity_enum)
-								{
-								case IFCALIGNMENTCURVE:
-								{
-									auto ac = std::static_pointer_cast<IfcAlignmentCurve>(ssh->m_Directrix);
-
-									// The horizontal alignment is mandatory for IfcAlignmentCurve.
-									auto h = createHorizontalAlignment(ac);
-									if (h && h->getAlignmentElementCount() > 0)
-									{
-										girder->setHorizontalAlignment(h);
-
-										// The accompanying vertical alignment is optional for IfcAlignmentCurve.
-										auto v = createVerticalAlignment(ac);
-										if (v)
-											girder->setVerticalAlignment(v);
-									}
-								} break;
-								default:
-									throw buw::NotImplementedYetException("Unimplemented girder reference curve type.");
-								}
-
-								// Get the profile curve.
-							} break;
-							default:
-								throw buw::NotImplementedYetException("Unimplemented geometric representation item.");
-							}
-						}
-					}
+					auto const& eval = std::bind<buw::Vector3d>(&ImportIfcAlignment1x1Impl::computeOffsetPoint, this, _2, _3, _1,
+						dOffsetLateral, dOffsetVertical, dOffsetLongitudinal, _4);
+					Tessellation::tessellate(dStartStation, firstStation->m_DistanceAlong->m_value, h, v,
+						alignment, pHorizontalTangentsAndNormalsOut, eval, false, true);
 				}
-			} break;
-			default:
-				throw buw::NotImplementedYetException("Unimplemented part element type.");
+				else
+				{
+					alignment->addPoint(computeOffsetPoint(h, v, dStartStation, dOffsetLateral, dOffsetVertical,
+						dOffsetLongitudinal, &horizontalTangentAndNormal));
+					if (pHorizontalTangentsAndNormalsOut)
+						pHorizontalTangentsAndNormalsOut->push_back(horizontalTangentAndNormal);
+				}
 			}
 		}
 
-		girderModel_->addItem(girder);
+		std::shared_ptr<IfcDistanceExpression> lastStation;
+		for (size_t i = 0; i < stations.size(); ++i)
+		{
+			auto station = stations[i];
+			if (!station->m_AlongHorizontal || !station->m_AlongHorizontal->m_value)
+				throw buw::NotImplementedYetException("Only horizontal distances are supported.");
+			double const dOffsetLateral = station->m_OffsetLateral ? station->m_OffsetLateral->m_value : 0.0;
+			double const dOffsetVertical = station->m_OffsetVertical ? station->m_OffsetVertical->m_value : 0.0;
+			double const dOffsetLongitudinal = station->m_OffsetLongitudinal ? station->m_OffsetLongitudinal->m_value : 0.0;
+			double const dStation = station->m_DistanceAlong->m_value;
+			if (dStation < dStartStation || dStation > dEndStation) continue;
+
+			// Don't evaluate points before the first (valid) station, even when doing adaptive sampling.
+			// When doing adaptive sampling and it's not the first (valid) station, then possibly intermediate
+			// stations will be evaluated by the tessellator.
+			if (bAdaptiveSampling && lastStation)
+			{
+				// The tessellation evaluator must linearly interpolate the offset values.
+				auto const& eval = [this, dOffsetLateral, dOffsetVertical, dOffsetLongitudinal, dStation, lastStation](
+					double dStationInterpolated,
+					std::shared_ptr<buw::HorizontalAlignment2D> horiz,
+					std::shared_ptr<buw::VerticalAlignment2D> vert,
+					std::pair<buw::Vector2d, buw::Vector2d>* pHorizontalTangentAndNormalOut)->buw::Vector3d{
+						// Get the last offsets and station for interpolation.
+						double const dLastOffsetLateral = lastStation->m_OffsetLateral ? lastStation->m_OffsetLateral->m_value : 0.0;
+						double const dLastOffsetVertical = lastStation->m_OffsetVertical ? lastStation->m_OffsetVertical->m_value : 0.0;
+						double const dLastOffsetLongitudinal = lastStation->m_OffsetLongitudinal ? lastStation->m_OffsetLongitudinal->m_value : 0.0;
+						double const dLastStation = lastStation->m_DistanceAlong->m_value;
+						double const dInterpolationLength = dStation - dLastStation;
+						double const p = (dStationInterpolated - dLastStation) / dInterpolationLength;
+
+						return computeOffsetPoint(horiz, vert, dStationInterpolated,
+							(1-p)*dLastOffsetLateral + p*dOffsetLateral,
+							(1-p)*dLastOffsetVertical + p*dOffsetVertical,
+							(1-p)*dLastOffsetLongitudinal + p*dOffsetLongitudinal,
+							pHorizontalTangentAndNormalOut);
+						};
+				Tessellation::tessellate(lastStation->m_DistanceAlong->m_value, dStation, h, v,
+					alignment, pHorizontalTangentsAndNormalsOut, eval, true, false);
+			}
+			else
+			{
+				alignment->addPoint(computeOffsetPoint(h, v, dStation, dOffsetLateral, dOffsetVertical, dOffsetLongitudinal,
+					&horizontalTangentAndNormal));
+				if (pHorizontalTangentsAndNormalsOut)
+					pHorizontalTangentsAndNormalsOut->push_back(horizontalTangentAndNormal);
+			}
+
+			lastStation = station;
+		}
+
+		// Extend towards the tail of the basis curve, if needed.
+		if (bExtendToHeadAndTail && !stations.empty())
+		{
+			auto lastStation = stations.back();
+			if (lastStation->m_AlongHorizontal && lastStation->m_AlongHorizontal->m_value
+				&& fabs(lastStation->m_DistanceAlong->m_value - dEndStation) > geometryPrecision_)
+			{
+				double const dOffsetLateral = lastStation->m_OffsetLateral ? lastStation->m_OffsetLateral->m_value : 0.0;
+				double const dOffsetVertical = lastStation->m_OffsetVertical ? lastStation->m_OffsetVertical->m_value : 0.0;
+				double const dOffsetLongitudinal = 0.0;
+				if (bAdaptiveSampling && ((dEndStation - lastStation->m_DistanceAlong->m_value) > geometryPrecision_))
+				{
+					auto const& eval = std::bind<buw::Vector3d>(&ImportIfcAlignment1x1Impl::computeOffsetPoint, this, _2, _3, _1,
+						dOffsetLateral, dOffsetVertical, dOffsetLongitudinal, _4);
+					Tessellation::tessellate(lastStation->m_DistanceAlong->m_value, dEndStation, h, v,
+						alignment, pHorizontalTangentsAndNormalsOut, eval, true, false);
+				}
+				else
+				{
+					alignment->addPoint(computeOffsetPoint(h, v, dEndStation, dOffsetLateral, dOffsetVertical,
+						dOffsetLongitudinal, &horizontalTangentAndNormal));
+					if (pHorizontalTangentsAndNormalsOut)
+						pHorizontalTangentsAndNormalsOut->push_back(horizontalTangentAndNormal);
+				}
+			}
+		}
+
+		return alignment;
+	}
+
+	std::vector<SectionedSolidHorizontal> createSectionedSolidHorizontals(std::shared_ptr<IfcElementAssembly> ifcAssembly)
+	{
+		std::vector<SectionedSolidHorizontal> results;
+
+		auto findIt = aggregations_.find(ifcAssembly);
+		if (findIt == aggregations_.end() || !findIt->second || findIt->second->m_RelatedObjects.empty())
+			return results;
+		auto parts = findIt->second->m_RelatedObjects;
+		for (auto part : parts)
+		{
+			if (!part) continue;
+			if (part->m_entity_enum != IFCBEAM && part->m_entity_enum != IFCSLAB)
+				throw buw::NotImplementedYetException("Unimplemented part element type.");
+			auto const& ssh = createSectionedSolidHorizontals(std::static_pointer_cast<IfcElement>(part));
+			results.insert(results.end(), ssh.begin(), ssh.end());
+		}
+
+		return results;
+	}
+
+	std::vector<SectionedSolidHorizontal> createSectionedSolidHorizontals(std::shared_ptr<IfcProduct> ifcProduct)
+	{
+		std::vector<SectionedSolidHorizontal> results;
+		if (!ifcProduct->m_Representation)
+			return results;
+
+		for (auto repr : ifcProduct->m_Representation->m_Representations)
+		{
+			for (auto reprItem : repr->m_Items)
+			{
+				if (!reprItem || reprItem->m_entity_enum != IFCSECTIONEDSOLIDHORIZONTAL) continue;
+
+				auto ssh = std::static_pointer_cast<IfcSectionedSolidHorizontal>(reprItem);
+				if (!ssh->m_Directrix || ssh->m_CrossSectionPositions.size() < 2) continue;
+				if (!ssh->m_FixedAxisVertical || !ssh->m_FixedAxisVertical->m_value)
+					throw buw::NotImplementedYetException("Profile Y axis only in world Z direction supported.");
+
+				// Though not documented in the official specification, we interpolate cross sections if
+				// only 2 are given. The need to do so was motivated by the example file given at
+				// http://www.buildingsmart-tech.org/ifc/review/IFC4x1/rc3/html/annex/annex-e/sectioned-solid.htm
+				// The railings are IfcSectionedSolidHorizontal entities running partially along an arc,
+				// however only the first and last cross sections are given. Directly connecting those
+				// would make the railings not follow the curve. Therefore we repeat the first profile at
+				// intermediate positions along the directrix, if the first and the last profiles are
+				// identical.
+				bool const bAdaptiveSampling =
+					(ssh->m_CrossSectionPositions.size() == 2) && (ssh->m_CrossSections.size() == 2) &&
+					ssh->m_CrossSections.front() && ssh->m_CrossSections.back() &&
+					(ssh->m_CrossSections.front()->getId() == ssh->m_CrossSections.back()->getId());
+
+				// Get the profile positions (and associated horizontal tangent and normal directions).
+				std::shared_ptr<Alignment3DBased3D> profilePositions;
+				std::vector<std::pair<buw::Vector2d, buw::Vector2d>> horizontalTangentsAndNormals;
+				switch (ssh->m_Directrix->m_entity_enum)
+				{
+				case IFCALIGNMENTCURVE:
+				{
+					auto directrix = std::static_pointer_cast<IfcAlignmentCurve>(ssh->m_Directrix);
+					profilePositions = sampleIfcAlignmentCurve(
+						directrix,
+						ssh->m_CrossSectionPositions,
+						false,
+						&horizontalTangentsAndNormals,
+						bAdaptiveSampling);
+					if (!profilePositions) continue;
+					profilePositions->setName(directrix->m_Tag ? buw::String::toWStdString(directrix->m_Tag->m_value) : L"Directrix");
+				} break;
+				default:
+					throw buw::NotImplementedYetException("Unimplemented reference curve type.");
+				}
+				if (profilePositions->getNumPoints() != horizontalTangentsAndNormals.size())
+					throw buw::Exception("Mismatch between number of profile positions and number of tangents and normals for them.");
+
+				// Get the profile curves.
+				std::vector<std::shared_ptr<CrossSectionProfile>> profiles;
+				for (auto cs : ssh->m_CrossSections)
+					profiles.push_back(createProfileCurve(cs));
+				if (bAdaptiveSampling)
+				{
+					// We checked previously that there are only two cross sections and that they are identical.
+					// Therefore we repeat the last cross section for the number of interpolated anchor points.
+					for (size_t i = 0; i < profilePositions->getNumPoints()-2; ++i)
+						profiles.push_back(profiles.back());
+				}
+				if (profilePositions->getNumPoints() != profiles.size())
+					throw buw::Exception("Mismatch between number of profile positions and number of profiles.");
+
+				results.push_back(SectionedSolidHorizontal(profilePositions, horizontalTangentsAndNormals, profiles));
+			}
+		}
+
+		return results;
+	}
+
+	std::shared_ptr<CrossSectionProfile> createProfileCurve(std::shared_ptr<IfcProfileDef> profile)
+	{
+		if (!profile) return nullptr;
+		switch (profile->m_entity_enum)
+		{
+		case IFCASYMMETRICISHAPEPROFILEDEF:
+			return std::make_shared<CrossSectionProfile>(std::static_pointer_cast<IfcAsymmetricIShapeProfileDef>(profile));
+		case IFCARBITRARYCLOSEDPROFILEDEF:
+			return std::make_shared<CrossSectionProfile>(std::static_pointer_cast<IfcArbitraryClosedProfileDef>(profile));
+		case IFCMIRROREDPROFILEDEF:
+		{
+			auto mirroredProfile = std::static_pointer_cast<IfcMirroredProfileDef>(profile);
+			if (mirroredProfile->m_Operator)
+				throw buw::NotImplementedYetException("Advanced mirror profiles are not supported.");
+			auto profileCurve = createProfileCurve(mirroredProfile->m_ParentProfile);
+			std::transform(profileCurve->pntList2D.begin(), profileCurve->pntList2D.end(), profileCurve->pntList2D.begin(),
+				[](buw::Vector2d const& p)->buw::Vector2d {return buw::Vector2d(-p[0], p[1]); });
+			return profileCurve;
+		}
+		default:
+			throw buw::NotImplementedYetException("Unsupported profile type.");
+		}
+
+		return nullptr;
 	}
 
 	void createAlignment(std::shared_ptr<IfcAlignment> ifcAlignment)
@@ -464,53 +704,10 @@ public:
 						throw buw::NotImplementedYetException("Unknown/unimplemented offset basis curve type.");
 					if(ifcOffsetCurve->m_OffsetValues.empty()) break;
 					auto ifcBasisCurve = std::static_pointer_cast<IfcAlignmentCurve>(ifcOffsetCurve->m_BasisCurve);
-					auto h = createHorizontalAlignment(ifcBasisCurve);
-					if (!h || h->getAlignmentElementCount() < 1) break; // At least the horizontal alignment is mandatory.
-					auto v = createVerticalAlignment(ifcBasisCurve);
-					double const dStartStation = h->getStartStation();
-					double const dEndStation = h->getEndStation();
-
-					// Sample the 2D alignments, offset the samples and add them to the offset curve.
-					// From the specification:
-					// "If the offsets do not span the full extent of the basis curve (e.g. if the list contains only one item),
-					// then the lateral and vertical offsets implicitly continue with the same value towards the head and tail of
-					// the basis curve."
-					auto alignment = std::make_shared<buw::Alignment3DBased3D>(dStartStation, Alignment3DBased3DType::Polyline /*Spline*/);
+					auto alignment = sampleIfcAlignmentCurve(ifcBasisCurve, ifcOffsetCurve->m_OffsetValues, true);
+					if (!alignment) break;
 					alignment->setName(ifcOffsetCurve->m_Tag ?
 						buw::String::toWStdString(ifcOffsetCurve->m_Tag->m_value) : L"Offset curve");
-					if (!ifcOffsetCurve->m_OffsetValues.empty()) // Extend towards the head of the basis curve, if needed.
-					{
-						auto firstOffset = ifcOffsetCurve->m_OffsetValues.front();
-						if (firstOffset->m_AlongHorizontal && std::fabs(firstOffset->m_DistanceAlong->m_value - dStartStation) > geometryPrecision_)
-						{
-							addPointToOffsetAlignment(alignment, h, v, dStartStation,
-								firstOffset->m_OffsetLateral ? firstOffset->m_OffsetLateral->m_value : 0.0,
-								firstOffset->m_OffsetVertical ? firstOffset->m_OffsetVertical->m_value : 0.0,
-								0.0);
-						}
-					}
-					for (auto offset : ifcOffsetCurve->m_OffsetValues)
-					{
-						if (!offset->m_AlongHorizontal)
-							throw buw::NotImplementedYetException("Only horizontal distances for offset curves are supported.");
-						double const dStation = offset->m_DistanceAlong->m_value;
-						if (dStation < dStartStation || dStation > dEndStation) continue;
-						addPointToOffsetAlignment(alignment, h, v, dStation,
-							offset->m_OffsetLateral ? offset->m_OffsetLateral->m_value : 0.0,
-							offset->m_OffsetVertical ? offset->m_OffsetVertical->m_value : 0.0,
-							offset->m_OffsetLongitudinal ? offset->m_OffsetLongitudinal->m_value : 0.0);
-					}
-					if (!ifcOffsetCurve->m_OffsetValues.empty()) // Extend towards the tail of the basis curve, if needed.
-					{
-						auto lastOffset = ifcOffsetCurve->m_OffsetValues.back();
-						if (lastOffset->m_AlongHorizontal && std::fabs(lastOffset->m_DistanceAlong->m_value - dEndStation) > geometryPrecision_)
-						{
-							addPointToOffsetAlignment(alignment, h, v, dEndStation,
-								lastOffset->m_OffsetLateral ? lastOffset->m_OffsetLateral->m_value : 0.0,
-								lastOffset->m_OffsetVertical ? lastOffset->m_OffsetVertical->m_value : 0.0,
-								0.0);
-						}
-					}
 					alignmentModel_->addAlignment(alignment);
 				} break;
 				case IFCSECTIONEDSOLIDHORIZONTAL:
@@ -520,27 +717,6 @@ public:
 				}
 			}
 		}
-	}
-
-	void addPointToOffsetAlignment(
-		std::shared_ptr<buw::Alignment3DBased3D> alignment,
-		std::shared_ptr<buw::HorizontalAlignment2D> horiz,
-		std::shared_ptr<buw::VerticalAlignment2D> vert,
-		double const dStation,
-		double const dOffsetLateral,
-		double const dOffsetVertical,
-		double const dOffsetLongitudinal)
-	{
-		auto const& horizPos = horiz->getPosition(dStation);
-		auto const& horizNormal = horiz->getNormal(dStation);
-		auto const& horizTangent = horiz->getTangent(dStation);
-		double const dHeight = vert ? vert->getPosition(dStation)[1] : 0.0;
-
-		auto const& newHorizPos = horizPos + dOffsetLateral * horizNormal + dOffsetLongitudinal * horizTangent;
-		alignment->addPoint(buw::Vector3d(
-			newHorizPos[0] + offset_.x(),
-			newHorizPos[1] + offset_.y(),
-			dHeight + dOffsetVertical + offset_.z()));
 	}
 
 	buw::ReferenceCounted<buw::HorizontalAlignment2D> createHorizontalAlignment(std::shared_ptr<IfcAlignmentCurve> ifcAlignmentCurve)

@@ -22,8 +22,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 Girder::Girder(int const id, std::wstring const& name)
 	: id(id)
 	, name(name)
-	, horizontalAlignment()
-	, verticalAlignment()
+	, sectionedSolids()
 {
 }
 
@@ -41,14 +40,19 @@ void Girder::setName(std::wstring const& name)
 	this->name = name;
 }
 
-void Girder::setHorizontalAlignment(std::shared_ptr<HorizontalAlignment2D> horiz)
+Girder::SectionedSolidVector const& Girder::getSectionedSolids() const
 {
-	horizontalAlignment = horiz;
+	return sectionedSolids;
 }
 
-void Girder::setVerticalAlignment(std::shared_ptr<VerticalAlignment2D> vert)
+void Girder::addSectionedSolid(SectionedSolidHorizontal const& ssh)
 {
-	verticalAlignment = vert;
+	sectionedSolids.push_back(ssh);
+}
+
+void Girder::addSectionedSolid(SectionedSolidVector const& sshs)
+{
+	sectionedSolids.insert(sectionedSolids.end(), sshs.begin(), sshs.end());
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END

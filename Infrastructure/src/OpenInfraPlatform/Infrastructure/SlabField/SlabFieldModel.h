@@ -20,7 +20,7 @@
 
 #include <OpenInfraPlatform/Infrastructure/namespace.h>
 #include <OpenInfraPlatform/Infrastructure/OIPInfrastructure.h>
-#include "SlabField.h"
+#include "SlabFieldElement.h"
 
 #include <memory>
 #include <vector>
@@ -37,19 +37,19 @@ public:
 
 	size_t getItemCount() const;
 
-	std::shared_ptr<SlabField> getItem(size_t const index) const;
-	std::shared_ptr<SlabField> getItemById(size_t const id) const;
-	std::vector<std::shared_ptr<SlabField>> const& getAllItems() const;
+	std::shared_ptr<SlabFieldElement> getItem(size_t const index) const;
+	std::shared_ptr<SlabFieldElement> getItemById(size_t const id) const;
+	std::vector<std::shared_ptr<SlabFieldElement>> const& getAllItems() const;
 
-	void addItem(std::shared_ptr<SlabField> const& slabField);
-	void deleteItem(std::shared_ptr<SlabField> const& slabField);
+	void addItem(std::shared_ptr<SlabFieldElement> const& slabFieldElement);
+	void deleteItem(std::shared_ptr<SlabFieldElement> const& slabFieldElement);
 
 	// FGI TODO
 	//buw::AxisAlignedBoundingBox3d getExtends() const;
 	//buw::AxisAlignedBoundingBox3d getVerticalAlignmentExtends();
 
 private:
-	std::vector<std::shared_ptr<SlabField>> slabFields_;
+	std::vector<std::shared_ptr<SlabFieldElement>> slabFieldElements_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END

@@ -32,6 +32,30 @@ void Alignment3DBased3D::addPoint( const buw::Vector3d& p )
 		assert(false);
 }
 
+buw::Vector3d const& Alignment3DBased3D::getPoint(size_t const idx) const
+{
+	if (type_ == Alignment3DBased3DType::Spline)
+		return crs_.GetNthPoint(idx);
+	else if (type_ == Alignment3DBased3DType::Polyline)
+		return polyline_.GetNthPoint(idx);
+	else
+		assert(false);
+
+	return buw::Vector3d();
+}
+
+size_t Alignment3DBased3D::getNumPoints() const
+{
+	if (type_ == Alignment3DBased3DType::Spline)
+		return crs_.GetNumPoints();
+	else if (type_ == Alignment3DBased3DType::Polyline)
+		return polyline_.GetNumPoints();
+	else
+		assert(false);
+
+	return 0;
+}
+
 double Alignment3DBased3D::getLength() const 
 {
 	if (type_ == Alignment3DBased3DType::Spline)

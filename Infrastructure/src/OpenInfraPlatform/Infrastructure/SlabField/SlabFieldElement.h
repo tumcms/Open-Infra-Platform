@@ -15,27 +15,45 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __SLABFIELD_H_00E7AEEDA54E46FE9489A1F3E518223F__
-#define __SLABFIELD_H_00E7AEEDA54E46FE9489A1F3E518223F__
+#ifndef __SLABFIELDELEMENT_H_4E0E43F3630D4764A9CD2FA6214EF8A6__
+#define __SLABFIELDELEMENT_H_4E0E43F3630D4764A9CD2FA6214EF8A6__
 
 #include <OpenInfraPlatform/Infrastructure/namespace.h>
 #include <OpenInfraPlatform/Infrastructure/OIPInfrastructure.h>
-#include "SlabFieldElement.h"
+#include <OpenInfraPlatform/Infrastructure/SectionedSolid/SectionedSolidHorizontal.h>
+#include <BlueFramework/Core/string.h>
+
+#include <vector>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-class BLUEINFRASTRUCTURE_API SlabField : public SlabFieldElement
+class BLUEINFRASTRUCTURE_API SlabFieldElement
 {
 public:
-	explicit SlabField(int const id, std::wstring const& name);
-	virtual ~SlabField();
+	typedef std::vector<SectionedSolidHorizontal> SectionedSolidVector;
+
+	buw::String getName() const;
+	void setName(std::wstring const& name);
+
+	SectionedSolidVector const& getSectionedSolids() const;
+	void addSectionedSolid(SectionedSolidHorizontal const& ssh);
+	void addSectionedSolid(SectionedSolidVector const& sshs);
+
+protected:
+	explicit SlabFieldElement(int const id, std::wstring const& name);
+	virtual ~SlabFieldElement();
+
+private:
+	int const id;
+	buw::String name;
+	SectionedSolidVector sectionedSolids;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 
 namespace buw
 {
-	using OpenInfraPlatform::Infrastructure::SlabField;
+	using OpenInfraPlatform::Infrastructure::SlabFieldElement;
 }
 
-#endif // __SLABFIELD_H_00E7AEEDA54E46FE9489A1F3E518223F__
+#endif // __SLABFIELDELEMENT_H_4E0E43F3630D4764A9CD2FA6214EF8A6__
