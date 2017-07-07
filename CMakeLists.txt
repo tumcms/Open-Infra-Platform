@@ -118,18 +118,7 @@ find_package(PythonLibs 		3.5.2  REQUIRED)
 
 # Find the Oklabi libraries
 find_package(Oklabi)
-
-
-#Gtest
-if(NOT GTEST_ROOT)
-	include(external/cmake/InstallGTest.cmake)
-endif()
-
 find_package(gtest REQUIRED) #reduce to this line
-
-if(NOT gtest OR NOT GTEST_ROOT)
-	include(external/cmake/FindGTest.cmake)
-endif()
 GTEST_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 #ZLib
