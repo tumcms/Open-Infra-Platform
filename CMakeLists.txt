@@ -108,7 +108,7 @@ find_package(VLD 					   REQUIRED)
 #Find BlueFramework root dir
 #set(BLUEFRAMEWORK_USE_INSTALLED FALSE CACHE BOOL "bool")
 #set(BLUEFRAMEWORK_ROOT "" CACHE PATH "path")
-find_package(BlueFramework		3.0.491 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
+find_package(BlueFramework		COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
 
 #Find Eigen
 find_package(Eigen3             3.3.2  REQUIRED)

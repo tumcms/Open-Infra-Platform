@@ -15,7 +15,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-
+find_path(BlueFramework_DIR NAMES BlueFrameworkConfig.cmake PATHS "C:/Program Files/BlueFramework" REQUIRED)
 
 if (MSVC)
 	if("${MSVC_C_ARCHITECTURE_ID}" STREQUAL "X86")
@@ -35,14 +35,12 @@ else(BlueFramework_FIND_COMPONENTS)
 	set(BLUEFRAMEWORK_COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem GLRenderSystem)
 endif(BlueFramework_FIND_COMPONENTS)
 
-find_path(BlueFramework_DIR_OVERRIDE OPTIONAL)
-
-if(BlueFramework_DIR_OVERRIDE)
-	set(BlueFramework_DIR ${BlueFramework_DIR_OVERRIDE})
-endif()
-
 if(BlueFramework_DIR)
-	include(${BlueFramework_DIR}/CMake/BlueFramework-macros.cmake)
+	find_path(BlueFramework_DIR_OVERRIDE OPTIONAL)
+	if(BlueFramework_DIR_OVERRIDE)
+		set(BlueFramework_DIR ${BlueFramework_DIR_OVERRIDE})
+	endif()
+	include(${BlueFramework_DIR}/CMake/BlueFrameworkMacros.cmake)
 	set(BLUEFRAMEWORK_INCLUDE_DIR ${BLUEFRAMEWORK_INCLUDE_DIR} ${BlueFramework_DIR}/include/)
 	set(BLUEFRAMEWORK_LIBRARY_DIR ${BlueFramework_DIR}/lib/${MSVC_VERSION_STRING}/${CMAKE_VS_PLATFORM_NAME}/)
 
