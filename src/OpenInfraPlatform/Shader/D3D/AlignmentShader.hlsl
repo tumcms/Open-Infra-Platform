@@ -365,7 +365,6 @@ FragmentToPickBuffer PS_line_pick(GeometryToPixel gs2ps)
 {
     FragmentToPickBuffer final = (FragmentToPickBuffer) 0;
     final.pick = gs2ps.pickId;
-    final.pick = 64;
     return final;
 }
 

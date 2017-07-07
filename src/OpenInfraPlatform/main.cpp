@@ -91,8 +91,11 @@ int main(int argc, char* argv[]) {
 		std::wstring_convert<convert_type, wchar_t> converter;
 
 		//use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
-		std::string converted_str = converter.to_bytes(ss.str());
-		converted_str = "";
+		std::string converted_str = "";
+#ifndef _DEBUG
+		converted_str = converter.to_bytes(ss.str());
+#endif
+
 		buw::initializeLogSystem(converted_str, true, true);
 			
 		BLUE_LOG(trace) << "Initialized log system";
