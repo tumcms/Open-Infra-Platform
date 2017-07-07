@@ -41,18 +41,26 @@ else()
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/RelWithDebInfo)
 endif()
 
-#------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
+# Check for Microsoft VisualStudio version and processor architecture.
 # Some checks to ensure that the prerequisites are ok
 #------------------------------------------------------------------------------
 
-if(NOT MSVC14)
-	message("Please switch to Visual Studio 14 2015.")
+if(MSVC_VERSION EQUAL 1900)
+	set(MSVC_VERSION_STRING "vs2015")
+	set(MSVC_VERSION_YEAR "2015")
+	message("Welcome to Visual Studio 14 2015.")
+elseif(MSVC_VERSION EQUAL 1910)
+	set(MSVC_VERSION_STRING "vs2017")
+	set(MSVC_VERSION_YEAR "2017")
+	message("Welcome to Visual Studio 15 2017.")
+else()
+	message("Please switch to Visual Studio 14 2015 or Visual Studio 15 2017.")
 	return()
 endif()
 
-if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8 )
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     message("Please switch to x64 build.")
 	return()
 endif()
@@ -64,10 +72,10 @@ option(OIP_USE_PREBUILD_EARLYBINDING_LIBS "Set to OFF to build early binding by 
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
-	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS "C:\\thirdparty\\vs2015\\x64\\boost_1_64_0")
-	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS "C:\\thirdparty\\vs2015\\x64\\Eigen_3.3.4" "C:\\thirdparty\\vs2015\\x64\\Eigen_3.3.3")
-	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc2015_64" "C:\\Qt\\Qt5.9.0\\5.9\\msvc2015_64")
-	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS "C:\\thirdparty\\vs2015\\x64\\googletest-release-1.8.0" "C:\\thirdparty\\vs2015\\x64\\googletest-1.8.0")
+	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_64_0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_63_0")
+	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
+	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\Qt5.9.0\\5.9\\msvc${MSVC_VERSION_YEAR}_64" "C:\\Qt\\5.9\\msvc${MSVC_VERSION_YEAR}_64" "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc${MSVC_VERSION_YEAR}_64")
+	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG     ${CMAKE_BINARY_DIR}/Debug)
@@ -98,9 +106,9 @@ find_package(Boost				1.63.0 COMPONENTS signals system filesystem thread program
 find_package(VLD 					   REQUIRED)
 
 #Find BlueFramework root dir
-#set(BLUEFRAMEWORK3_USE_INSTALLED FALSE CACHE BOOL "bool")
-#set(BLUEFRAMEWORK3_ROOT "" CACHE PATH "path")
-find_package(BlueFramework3		3.0.491 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
+#set(BLUEFRAMEWORK_USE_INSTALLED FALSE CACHE BOOL "bool")
+#set(BLUEFRAMEWORK_ROOT "" CACHE PATH "path")
+find_package(BlueFramework		3.0.491 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
 
 #Find Eigen
 find_package(Eigen3             3.3.2  REQUIRED)
@@ -183,7 +191,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR} # Qt generated files will be located here
 	${Boost_INCLUDE_DIR}
 	${VLD_INCLUDE_DIR}
-	${BLUEFRAMEWORK3_INCLUDE_DIR}
+	${BLUEFRAMEWORK_INCLUDE_DIR}
 	${EIGEN3_INCLUDE_DIR}
 	${PYTHON_INCLUDE_DIRS}
 	#DirectX for rendering
@@ -223,7 +231,7 @@ link_directories(
 #ENDMACRO(ADD_MSVC_PRECOMPILED_HEADER)
 
 # BlueFramework Copy Binaries
-BLUEFRAMEWORK3_COPY_BINARIES(${CMAKE_BINARY_DIR})
+BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 # Oklabi Copy Binaries
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
@@ -502,7 +510,7 @@ if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 		# Qt
 		Qt5::WinMain  # New target available via find_package ( Qt5Core )
 		# BlueFramework
-		${BLUEFRAMEWORK3_LIBRARIES}
+		${BLUEFRAMEWORK_LIBRARIES}
 		# External libs
 		QtXlsxWriter
 		QSimpleUpdater
@@ -525,7 +533,7 @@ elseif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 		# Qt
 		Qt5::WinMain  # New target available via find_package ( Qt5Core )
 		# BlueFramework
-		${BLUEFRAMEWORK3_LIBRARIES}
+		${BLUEFRAMEWORK_LIBRARIES}
 		# External libs
 		QtXlsxWriter
 		QSimpleUpdater
@@ -547,7 +555,7 @@ target_link_libraries( OpenInfraPlatform.UI
 	OpenInfraPlatform.Ifc4
 	Qt5::WinMain  # New target available via find_package ( Qt5Core )
 	# BlueFramework
-	${BLUEFRAMEWORK3_LIBRARIES}
+	${BLUEFRAMEWORK_LIBRARIES}
 	# External libs
 	QtXlsxWriter
 	QSimpleUpdater
@@ -646,7 +654,7 @@ if (WIN32)
 
 set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(BlueFramework3CopyBinaries 				PROPERTIES FOLDER "Copy")
+set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
 set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 #set_target_properties(DirectXCopyBinaries		 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
@@ -832,7 +840,7 @@ installData(${CMAKE_BINARY_DIR}/res)
 installData(${CMAKE_BINARY_DIR}/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${BLUEFRAMEWORK3_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE}
+install(FILES ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE}
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 

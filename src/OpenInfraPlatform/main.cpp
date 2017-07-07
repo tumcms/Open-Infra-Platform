@@ -107,8 +107,8 @@ int main(int argc, char* argv[]) {
 
 		// check if we have an appropriate BlueFramework
 		int patchNumber = 559;
-		if (!buw::Version::isAtLeast(3, 0, patchNumber)) {
-			BLUE_LOG(error) << "Please switch to BlueFramework 3.0." << patchNumber << " or newer (can be downloaded from vertexwahn.de/blueframework)!";
+		if (!buw::Version::isAtLeast(3, 1, 1, 0)) {
+			BLUE_LOG(error) << "Please switch to BlueFramework 3.1.1.0 or newer (can be downloaded from vertexwahn.de/blueframework)!";
 			system("pause");
 		}
 
