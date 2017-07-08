@@ -1,26 +1,28 @@
 #
-#   This file is part of BlueFramework, a simple 3D engine.
-#	Copyright (c) 2016-2017 Technical University of Munich
-#	Chair of Computational Modeling and Simulation.
+#    Copyright (c) 2017 Technical University of Munich
+#    Chair of Computational Modeling and Simulation.
 #
-#   BlueFramework is free software; you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License Version 3
-#   as published by the Free Software Foundation.
+#    TUM Open Infra Platform is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License Version 3
+#    as published by the Free Software Foundation.
 #
-#   BlueFramework is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#   GNU General Public License for more details.
+#    TUM Open Infra Platform is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#    GNU General Public License for more details.
 #
-#   You should have received a copy of the GNU General Public License
-#   along with this program. If not, see <http://www.gnu.org/licenses/>.
+#    You should have received a copy of the GNU General Public License
+#    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# This module defines the following variables:
+#	This module defines the following variables:
 #
 #   GTEST_INCLUDE_DIRS
 #	GTEST_MAIN_LIBRARIES
 #   GTEST_LIBRARIES
 #	GTEST_BOTH_LIBRARIES
+#	GTEST_RELEASE_BINARIES
+#	GTEST_DEBUG_BINARIES
+#	GTEST_RELWITHDEBINFO_BINARIES
 #   GTEST_FOUND
 #
 find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h googlemock/include/gmock/gmock.h  REQUIRED)
@@ -52,20 +54,61 @@ if(NOT GTEST_ROOT)
 endif()
 
 if(GTEST_ROOT)
-	find_library(GTEST_LIBRARY NAMES gtest.lib HINTS "${GTEST_ROOT}/build/googlemock/gtest/Release/")
-	find_library(GTEST_MAIN_LIBRARY NAMES gtest_main.lib HINTS "${GTEST_ROOT}/build/googlemock/gtest/Release/")
-	find_library(GTEST_LIBRARY_DEBUG NAMES gtest.lib HINTS "${GTEST_ROOT}/build/googlemock/gtest/Debug/")
-	find_library(GTEST_MAIN_LIBRARY_DEBUG NAMES gtest_main.lib HINTS "${GTEST_ROOT}/build/googlemock/gtest/Debug/")
 	find_path(GTEST_INCLUDE_DIR NAMES gtest/gtest.h HINTS "${GTEST_ROOT}/googletest/include")
-	if(GTEST_LIBRARY AND GTEST_LIBRARY_DEBUG)
-		set(GTEST_LIBRARIES debug "${GTEST_LIBRARY_DEBUG}" optimized "${GTEST_LIBRARY}")
+
+	find_library(GTEST_LIBRARY_RELEASE NAMES gtest.lib HINTS "${GTEST_ROOT}/build/googlemock/gtest/Release/")
+	find_library(GTEST_LIBRARY_DEBUG NAMES gtest.lib HINTS "${GTEST_ROOT}/build/googlemock/gtest/Debug/")
+	find_library(GTEST_LIBRARY_RELWITHDEBINFO NAMES gtest.lib HINTS "${GTEST_ROOT}/build/googlemock/gtest/RelWithDebInfo/")
+	
+	find_file(GTEST_LIBRARY_RELEASE_DLL NAMES gtest.dll HINTS "${GTEST_ROOT}/build/googlemock/gtest/Release/")
+	find_file(GTEST_LIBRARY_DEBUG_DLL NAMES gtest.dll HINTS "${GTEST_ROOT}/build/googlemock/gtest/Debug/")
+	find_file(GTEST_LIBRARY_RELWITHDEBINFO_DLL NAMES gtest.dll HINTS "${GTEST_ROOT}/build/googlemock/gtest/RelWithDebInfo/")
+	
+	find_file(GTEST_LIBRARY_DEBUG_PDB NAMES gtest.pdb HINTS "${GTEST_ROOT}/build/googlemock/gtest/Debug/")
+	find_file(GTEST_LIBRARY_RELWITHDEBINFO_PDB NAMES gtest.pdb HINTS "${GTEST_ROOT}/build/googlemock/gtest/RelWithDebInfo/")
+	
+	find_library(GTEST_MAIN_LIBRARY_RELEASE NAMES gtest_main.lib HINTS "${GTEST_ROOT}/build/googlemock/gtest/Release/")
+	find_library(GTEST_MAIN_LIBRARY_DEBUG NAMES gtest_main.lib HINTS "${GTEST_ROOT}/build/googlemock/gtest/Debug/")
+	find_library(GTEST_MAIN_LIBRARY_RELWITHDEBINFO NAMES gtest_main.lib HINTS "${GTEST_ROOT}/build/googlemock/gtest/RelWithDebInfo/")
+	
+	find_file(GTEST_MAIN_LIBRARY_RELEASE_DLL NAMES gtest_main.dll HINTS "${GTEST_ROOT}/build/googlemock/gtest/Release/")
+	find_file(GTEST_MAIN_LIBRARY_DEBUG_DLL NAMES gtest_main.dll HINTS "${GTEST_ROOT}/build/googlemock/gtest/Debug/")
+	find_file(GTEST_MAIN_LIBRARY_RELWITHDEBINFO_DLL NAMES gtest_main.dll HINTS "${GTEST_ROOT}/build/googlemock/gtest/RelWithDebInfo/")
+	
+	find_file(GTEST_MAIN_LIBRARY_DEBUG_PDB NAMES gtest_main.pdb HINTS "${GTEST_ROOT}/build/googlemock/gtest/Debug/")
+	find_file(GTEST_MAIN_LIBRARY_RELWITHDEBINFO_PDB NAMES gtest_main.pdb HINTS "${GTEST_ROOT}/build/googlemock/gtest/RelWithDebInfo/")
+	
+	if(GTEST_LIBRARY_RELEASE AND GTEST_LIBRARY_DEBUG)
+		set(GTEST_LIBRARIES debug "${GTEST_LIBRARY_DEBUG}" optimized "${GTEST_LIBRARY_RELEASE}")
 	endif()
-	if(GTEST_MAIN_LIBRARY AND GTEST_MAIN_LIBRARY_DEBUG)
-		set(GTEST_MAIN_LIBRARIES debug "${GTEST_MAIN_LIBRARY_DEBUG}" optimized "${GTEST_MAIN_LIBRARY}")
+	if(GTEST_MAIN_LIBRARY_RELEASE AND GTEST_MAIN_LIBRARY_DEBUG)
+		set(GTEST_MAIN_LIBRARIES debug "${GTEST_MAIN_LIBRARY_DEBUG}" optimized "${GTEST_MAIN_LIBRARY_RELEASE}")
 	endif()
+	
+	if(GTEST_LIBRARY_RELEASE_DLL AND GTEST_MAIN_LIBRARY_RELEASE_DLL)
+		set(GTEST_RELEASE_BINARIES "${GTEST_LIBRARY_RELEASE_DLL}" "${GTEST_MAIN_LIBRARY_RELEASE_DLL}")
+	endif()
+	
+	if(GTEST_LIBRARY_DEBUG_DLL AND GTEST_MAIN_LIBRARY_DEBUG_DLL AND GTEST_LIBRARY_DEBUG_PDB AND GTEST_MAIN_LIBRARY_DEBUG_PDB)
+		set(GTEST_DEBUG_BINARIES 
+			"${GTEST_LIBRARY_DEBUG_DLL}"
+			"${GTEST_MAIN_LIBRARY_DEBUG_DLL}"
+			"${GTEST_LIBRARY_DEBUG_PDB}"
+			"${GTEST_MAIN_LIBRARY_DEBUG_PDB}")
+	endif()
+	
+	if(GTEST_LIBRARY_RELWITHDEBINFO_DLL AND GTEST_MAIN_LIBRARY_RELWITHDEBINFO_DLL AND GTEST_LIBRARY_DEBUG_PDB AND GTEST_MAIN_LIBRARY_DEBUG_PDB)
+		set(GTEST_RELWITHDEBINFO_BINARIES
+			"${GTEST_LIBRARY_RELWITHDEBINFO_DLL}"
+			"${GTEST_MAIN_LIBRARY_RELWITHDEBINFO_DLL}"
+			"${GTEST_LIBRARY_RELWITHDEBINFO_PDB}"
+			"${GTEST_MAIN_LIBRARY_RELWITHDEBINFO_PDB}")
+	endif()
+	
 	if(GTEST_MAIN_LIBRARIES AND GTEST_LIBRARIES)
 		set(GTEST_BOTH_LIBRARIES ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})
 	endif()
+	
 	if(GTEST_INCLUDE_DIR)
 		set(GTEST_INCLUDE_DIRS ${GTEST_INCLUDE_DIR})
 	endif()
@@ -79,15 +122,15 @@ else()
 	message(FATAL_ERROR "Could NOT find GTest.")
 endif()
 	
-
-function(GTEST_COPY_BINARIES TargetDirectory)
-	add_custom_target(GTestCopyBinaries
-		COMMENT "Copying googletest binaries to '${TargetDirectory}'" VERBATIM
-		COMMAND ${CMAKE_COMMAND} -E copy ${GTEST_ROOT}/build/googlemock/gtest/Debug/gtest.dll ${TargetDirectory}/Debug
-		COMMAND ${CMAKE_COMMAND} -E copy ${GTEST_ROOT}/build/googlemock/gtest/Debug/gtest_main.dll ${TargetDirectory}/Debug
-		COMMAND ${CMAKE_COMMAND} -E copy ${GTEST_ROOT}/build/googlemock/gtest/Release/gtest.dll ${TargetDirectory}/Release
-		COMMAND ${CMAKE_COMMAND} -E copy ${GTEST_ROOT}/build/googlemock/gtest/Release/gtest_main.dll ${TargetDirectory}/Release
-		COMMAND ${CMAKE_COMMAND} -E copy ${GTEST_ROOT}/build/googlemock/gtest/RelWithDebInfo/gtest.dll ${TargetDirectory}/RelWithDebInfo
-		COMMAND ${CMAKE_COMMAND} -E copy ${GTEST_ROOT}/build/googlemock/gtest/RelWithDebInfo/gtest_main.dll ${TargetDirectory}/RelWithDebInfo
-	)
-endfunction(GTEST_COPY_BINARIES)
+if(GTEST_RELEASE_BINARIES AND GTEST_DEBUG_BINARIES AND GTEST_RELWITHDEBINFO_BINARIES)
+	function(GTEST_COPY_BINARIES TargetDirectory)
+		add_custom_target(GTestCopyBinaries
+			COMMENT "Copying googletest binaries to '${TargetDirectory}'" VERBATIM
+			COMMAND ${CMAKE_COMMAND} -E copy ${GTEST_RELEASE_BINARIES} ${TargetDirectory}/Release
+			COMMAND ${CMAKE_COMMAND} -E copy ${GTEST_DEBUG_BINARIES} ${TargetDirectory}/Debug
+			COMMAND ${CMAKE_COMMAND} -E copy ${GTEST_RELWITHDEBINFO_BINARIES} ${TargetDirectory}/RelWithDebInfo		
+		)
+	endfunction(GTEST_COPY_BINARIES)
+	
+	GTEST_COPY_BINARIES(${CMAKE_BINARY_DIR})
+endif()

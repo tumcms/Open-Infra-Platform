@@ -12,3 +12,4 @@ cd %dest%\zlib-1.2.11\build
 %cmake_command% --build . --config Debug
 %cmake_command% --build . --config Release
 %cmake_command% --build . --config RelWithDebInfo
+xcopy %dest%\zlib-1.2.11\build\zconf.h %dest%\zlib-1.2.11\zconf.h

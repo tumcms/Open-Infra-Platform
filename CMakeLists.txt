@@ -119,20 +119,12 @@ find_package(PythonLibs 		3.5.2  REQUIRED)
 # Find the Oklabi libraries
 find_package(Oklabi)
 find_package(gtest REQUIRED) #reduce to this line
-GTEST_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 #ZLib
-if(NOT ZLIB_ROOT)
-	include(external/cmake/InstallZLIB.cmake)
-endif()
-
-if(NOT ZLIB_LIBRARY)
-	include(external/cmake/FindZLIB.cmake)
-endif()
-if(ZLIB_LIBRARY_RELEASE AND ZLIB_LIBRARY_DEBUG)
-	set(ZLIB_LIBRARY debug "${ZLIB_LIBRARY_DEBUG}" optimized "${ZLIB_LIBRARY_RELEASE}")
-endif()
 find_package(ZLIB REQUIRED)
+
+find_package(libLAS REQUIRED)
+find_package(qhull REQUIRED)
 
 
 # Find the Qt components
@@ -151,7 +143,7 @@ set(QT5_COMPONENTS
 	Location)
 
 foreach(Component ${QT5_COMPONENTS})
-	find_package( Qt5 5.7.0 COMPONENTS ${Component}	REQUIRED)
+	find_package( Qt5 5.9.0 COMPONENTS ${Component}	REQUIRED)
 	if(TARGET ${Qt5${Component}_LIBRARIES})
 		get_target_property(Qt5${Component}_location ${Qt5${Component}_LIBRARIES} LOCATION_Release)
 		set(QT5_DLLS_RELEASE ${QT5_DLLS_RELEASE} ${Qt5${Component}_location})
@@ -160,11 +152,57 @@ foreach(Component ${QT5_COMPONENTS})
 	endif()
 endforeach()
 
+set(Qt5_IMAGEFORMATS_PLUGINS
+	QGifPlugin
+	QICNSPlugin
+	QICOPlugin
+	QJpegPlugin
+	QTgaPlugin
+	QTiffPlugin
+	QWbmpPlugin
+	QWebpPlugin
+	QSvgPlugin
+)
+
+set(Qt5_GEOSERVICES_PLUGINS
+	QGeoServiceProviderFactoryOsm
+	QGeoServiceProviderFactoryNokia
+	QGeoServiceProviderFactoryMapbox
+	QGeoServiceProviderFactoryItemsOverlay
+	GeoServiceProviderFactoryEsri
+)
+
+foreach(plugin ${Qt5_GEOSERVICES_PLUGINS})
+	include(${Qt5Location_DIR}/Qt5Location_${plugin}.cmake)
+endforeach()
+
+set(Qt5_PLATFORMS_PLUGINS
+	QWindowsIntegrationPlugin
+	QWindowsDirect2DIntegrationPlugin
+	QMinimalIntegrationPlugin
+	QOffscreenIntegrationPlugin
+)
+
+set(Qt5_NETWORK_PLUGINS
+	QNativeWifiEnginePlugin
+	QGenericEnginePlugin
+)
+
+set(Qt5_ICONENGINES_PLUGINS
+	QSvgIconPlugin
+)
+
 string(REPLACE "lib/cmake/Qt5" "bin" Qt5_BIN_DIR "${Qt5_DIR}")
 
 macro(addQt5Dll lib)
 	set(QT5_DLLS_RELEASE ${QT5_DLLS_RELEASE} ${Qt5_BIN_DIR}/Qt5${lib}.dll)
 	set(QT5_DLLS_DEBUG ${QT5_DLLS_DEBUG} ${Qt5_BIN_DIR}/Qt5${lib}d.dll)
+endmacro()
+
+macro(addQt5PluginDll plugin output)
+	get_target_property(_loc Qt5::${plugin} LOCATION)
+	list(APPEND ${output} ${_loc})
+	#message("Plugin Qt5::${plugin} is at location ${_loc}")
 endmacro()
 
 addQt5Dll(Gui)
@@ -175,6 +213,22 @@ addQt5Dll(Script)
 addQt5Dll(Sensors)
 addQt5Dll(Sql)
 addQt5Dll(WebChannel)
+
+foreach(plugin ${Qt5_PLATFORMS_PLUGINS})
+	addQt5PluginDll(${plugin} Qt5_PLATFORMS_PLUGINS_DLLS)
+endforeach()
+foreach(plugin ${Qt5_IMAGEFORMATS_PLUGINS})
+	addQt5PluginDll(${plugin} Qt5_IMAGEFORMATS_PLUGINS_DLLS)
+endforeach()
+foreach(plugin ${Qt5_GEOSERVICES_PLUGINS})
+	addQt5PluginDll(${plugin} Qt5_GEOSERVICES_PLUGINS_DLLS)
+endforeach()
+foreach(plugin ${Qt5_NETWORK_PLUGINS})
+	addQt5PluginDll(${plugin} Qt5_NETWORK_PLUGINS_DLLS)
+endforeach()
+foreach(plugin ${Qt5_ICONENGINES_PLUGINS})
+	addQt5PluginDll(${plugin} Qt5_ICONENGINES_PLUGINS_DLLS)
+endforeach()
 
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR} # Qt generated files will be located here
@@ -191,7 +245,7 @@ include_directories(
 	external/QSimpleUpdater/src
 	external/QSimpleUpdater/dialogs
 	Infrastructure/canonicalHeaders
-	${ZLIB_INCLUDE_DIR}
+	${ZLIB_INCLUDE_DIRS}
 )
 
 link_directories(
@@ -230,23 +284,6 @@ add_subdirectory(external/QtXlsxWriter)
 
 # QSimpleUpdater
 add_subdirectory(external/QSimpleUpdater)
-
-# libLAS
-#add_subdirectory(external/libLAS-1.7.0)
-
-if(NOT LIBLAS_ROOT)
-	include(external/cmake/InstallLiblas.cmake)
-endif()
-include(external/cmake/FindLiblas.cmake)
-LIBLAS_COPY_BINARIES(${CMAKE_BINARY_DIR})
-
-if(NOT QHULL_ROOT)
-	include(external/cmake/InstallQhull.cmake)
-endif()
-include(external/cmake/FindQhull.cmake)
-
-#add_subdirectory(${PROJECT_SOURCE_DIR}/external/qhull)
-#include_directories(external/qhull/src)
 
 #####################################################################################################
 # add carve
@@ -503,11 +540,11 @@ if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 		# External libs
 		QtXlsxWriter
 		QSimpleUpdater
-		${LIBLAS_LIB}
+		${LIBLAS_LIBRARIES}
 		carve
 		# Python
 		${PYTHON_LIBRARIES}
-		${ZLIB_LIB}
+		${ZLIB_LIBRARIES}
 	)
 elseif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 	target_link_libraries( OpenInfraPlatform.UI
@@ -526,11 +563,11 @@ elseif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 		# External libs
 		QtXlsxWriter
 		QSimpleUpdater
-		${LIBLAS_LIB}
+		${LIBLAS_LIBRARIES}
 		carve
 		# Python
 		${PYTHON_LIBRARIES}
-		${ZLIB_LIB}
+		${ZLIB_LIBRARIES}
 	)
 endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 
@@ -548,11 +585,11 @@ target_link_libraries( OpenInfraPlatform.UI
 	# External libs
 	QtXlsxWriter
 	QSimpleUpdater
-	${LIBLAS_LIB}
+	${LIBLAS_LIBRARIES}
 	carve
 	# Python
 	${PYTHON_LIBRARIES}
-	${ZLIB_LIB}
+	${ZLIB_LIBRARIES}
 )
 
 # Python35
@@ -666,18 +703,6 @@ set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "Ope
 
 endif (WIN32)
 
-# http://annealingtechnologies.blogspot.de/2010/02/wix-and-cpack-integration.html
-# http://www.cmake.org/cmake/help/cmake_tutorial.html
-# http://stackoverflow.com/questions/18457044/what-is-the-cmake-configuration-for-wixproject
-# build a CPack driven installer package
-# include (InstallRequiredSystemLibraries)
-# set (CPACK_RESOURCE_FILE_LICENSE
-	 # "${CMAKE_CURRENT_SOURCE_DIR}/docs/licenses.txt")
-# set (CPACK_PACKAGE_VERSION_MAJOR "0")
-# set (CPACK_PACKAGE_VERSION_MINOR "1")
-# set (CPACK_GENERATOR "WIX")
-# set (CPACK_WIX_XSL ${YOUR_PACKAGE_SOURCE_DIR}/win.xsl)
-# include (CPack)
 
 if(WIN32)
 	if(MSVC12 OR MSVC14)
@@ -690,7 +715,7 @@ if(WIN32)
 			endif(MSVC12)
 
 			add_custom_target(UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs
-				COMMENT "Copying BlueFramework Libraries ..." VERBATIM
+				COMMENT "Copying OpenInfraPlatform Libraries ..." VERBATIM
 			)
 
 			add_custom_command(TARGET UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Release/OpenInfraPlatform.Infrastructure.dll 						${BIN_DIR}OpenInfraPlatform.Infrastructure.dll VERBATIM)
@@ -799,20 +824,47 @@ set(CPACK_PACKAGE_VERSION_TEWAK "${PROJECT_VERSION_TWEAK}}")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "OpenInfraPlatform")
 set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.txt")
 set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README.md")
+set(CPACK_WIX_UI_BANNER "${PROJECT_SOURCE_DIR}/Data/banner.bmp")
+set(CPACK_WIX_PRODUCT_ICON "${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Resources/icons/icon.ico")
+set(CPACK_WIX_PROGRAM_MENU_FOLDER "TUM OpenInfraPlatform")
+set(CPACK_PACKAGE_EXECUTABLES OpenInfraPlatform.UI "TUM OpenInfraPlatform")
+
+#set(CPACK_WIX_PROPERTY_AdvancedWelcomeEulaDlgTitle "Test")
+#set(LOC_FILE "${PROJECT_SOURCE_DIR}/deploy/en-us.wxl")
+set(CPACK_WIX_CULTURES "en-us")
+#set(CPACK_WIX_LIGHT_EXTRA_FLAGS ${PROJECT_SOURCE_DIR}/deploy/en-us.wxl)
+#set(CPACK_WIX_EXTRA_SOURCES ${PROJECT_SOURCE_DIR}/deploy/UI_colors.wxs)
+#set(CPACK_WIX_EXTRA_OBJECTS ${PROJECT_SOURCE_DIR}/deploy/col.wixlib)
 
 include(CPackComponent)
 
-cpack_add_component(oip_runtime INSTALL_TYPES default)
-cpack_add_component(oip_import_libs INSTALL_TYPES default)
-cpack_add_component(oip_static_libs INSTALL_TYPES default)
-cpack_add_component(oip_data INSTALL_TYPES default)
-cpack_add_component(oip_thirdparty INSTALL_TYPES default)
+cpack_add_component(oip_runtime 	DISPLAY_NAME "Runtime" DESCRIPTION "Application runtime components (*.dll, *.exe)" REQUIRED INSTALL_TYPES default)
+cpack_add_component(oip_import_libs DISPLAY_NAME "Import libs" DESCRIPTION "Infrastructure import library (*.lib)" REQUIRED INSTALL_TYPES default)
+cpack_add_component(oip_static_libs DISPLAY_NAME "Static libs" DESCRIPTION "Infrastructure static library (*.lib)" REQUIRED INSTALL_TYPES default)
+cpack_add_component(oip_data 		DISPLAY_NAME "Application data" DESCRIPTION "Data required by the application" REQUIRED INSTALL_TYPES default)
+cpack_add_component(oip_thirdparty 	DISPLAY_NAME "Thirdparty libraries" DESCRIPTION "Thirdparty libraries required by the application" REQUIRED INSTALL_TYPES default)
 
 set(CPACK_COMPONENTS_ALL "oip_runtime;oip_import_libs;oip_static_libs;oip_data;oip_thirdparty")
 
 install(TARGETS OpenInfraPlatform.UI
    RUNTIME DESTINATION bin
    COMPONENT oip_runtime
+)
+
+find_file(MSVC_VCOMP_DLL NAMES vcomp140.dll PATHS ${WINDIR}/System32)
+find_file(MSVC_VCRUNTIME_DLL NAMES vcruntime140.dll PATHS ${WINDIR}/System32)
+find_file(MSVC_VCCORLIB_DLL NAMES vccorlib140.dll PATHS ${WINDIR}/System32)
+find_file(MSVC_MSVCP_DLL NAMES msvcp140.dll PATHS ${WINDIR}/System32)
+find_file(MSVC_MSVCP_WIN_DLL NAMES msvcp_win.dll PATHS ${WINDIR}/System32)
+find_file(MSVC_MSVCRT_DLL NAMES msvcrt.dll PATHS ${WINDIR}/System32)
+
+set(WINDOWS_RUNTIME_DLLS
+	${MSCV_VCOMP_DLL}
+	${MSCV_VCRUNTIME_DLL}
+	${MSCV_VCCORLIB_DLL}
+	${MSCV_MSVCP_DLL}
+	${MSCV_MSVCP_WIN_DLL}
+	${MSCV_MSVCRT_DLL}
 )
 
 macro(installData DATA)
@@ -829,8 +881,28 @@ installData(${CMAKE_BINARY_DIR}/res)
 installData(${CMAKE_BINARY_DIR}/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE}
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES}
 	DESTINATION bin
+	COMPONENT oip_thirdparty)
+	
+install(FILES ${Qt5_IMAGEFORMATS_PLUGINS_DLLS}
+		DESTINATION bin/plugins/imageformats
+		COMPONENT oip_thirdparty)
+		
+install(FILES ${Qt5_GEOSERVICES_PLUGINS_DLLS}
+	DESTINATION bin/plugins/geoservices
+	COMPONENT oip_thirdparty)
+
+install(FILES ${Qt5_PLATFORMS_PLUGINS_DLLS}
+	DESTINATION bin/platforms
+	COMPONENT oip_thirdparty)
+
+install(FILES ${Qt5_NETWORK_PLUGINS_DLLS}
+	DESTINATION bin/plugins/bearer
+	COMPONENT oip_thirdparty)
+	
+install(FILES ${Qt5_ICONENGINES_PLUGINS_DLLS}
+	DESTINATION bin/plugins/iconengines
 	COMPONENT oip_thirdparty)
 
 include(CPack)

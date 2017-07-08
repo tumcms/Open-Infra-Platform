@@ -1,110 +1,137 @@
-###############################################################################
 #
-# CMake module to search for libLAS library
+#    Copyright (c) 2017 Technical University of Munich
+#    Chair of Computational Modeling and Simulation.
 #
-# On success, the macro sets the following variables:
-# LIBLAS_FOUND       = if the library found
-# LIBLAS_LIBRARIES   = full path to the library
-# LIBLAS_INCLUDE_DIR = where to find the library headers also defined,
-#                       but not for general use are
-# LIBLAS_LIBRARY     = where to find the PROJ.4 library.
-# LIBLAS_VERSION     = version of library which was found, e.g. "1.2.5"
+#    TUM Open Infra Platform is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License Version 3
+#    as published by the Free Software Foundation.
 #
-# Copyright (c) 2009 Mateusz Loskot <mateusz@loskot.net>
+#    TUM Open Infra Platform is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#    GNU General Public License for more details.
 #
-# Module source: http://github.com/mloskot/workshop/tree/master/cmake/
+#    You should have received a copy of the GNU General Public License
+#    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# Redistribution and use is allowed according to the terms of the BSD license.
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
+#	This module defines the following variables:
+# 	
+#	LIBLAS_FOUND
+#	LIBLAS_LIBRARIES
+#	LIBLAS_INCLUDE_DIRS
+#	LIBLAS_RELEASE_BINARIES
+#	LIBLAS_DEBUG_BINARIES
+#	LIBLAS_RELWITHDEBINFO_BINARIES
 #
-###############################################################################
-MESSAGE(STATUS "Searching for LibLAS ${LibLAS_FIND_VERSION}+ library")
 
-IF(LIBLAS_INCLUDE_DIR)
-  # Already in cache, be silent
-  SET(LIBLAS_FIND_QUIETLY TRUE)
-ENDIF()
+find_path(LIBLAS_ROOT NAMES liblas-osgeo4w-init.bat include/liblas/liblas.hpp HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\libLAS-1.6-master" REQUIRED)
 
-IF(WIN32)
-  SET(OSGEO4W_IMPORT_LIBRARY liblas)
-  IF(DEFINED ENV{OSGEO4W_ROOT})
-    SET(OSGEO4W_ROOT_DIR $ENV{OSGEO4W_ROOT})
-    #MESSAGE(STATUS " FindLibLAS: trying OSGeo4W using environment variable OSGEO4W_ROOT=$ENV{OSGEO4W_ROOT}")
-  ELSE()
-    SET(OSGEO4W_ROOT_DIR c:/OSGeo4W)
-    #MESSAGE(STATUS " FindLibLAS: trying OSGeo4W using default location OSGEO4W_ROOT=${OSGEO4W_ROOT_DIR}")
-  ENDIF()
-ENDIF()
-
-
-FIND_PATH(LIBLAS_INCLUDE_DIR
-  liblas.hpp
-  PATH_PREFIXES liblas
-  PATHS
-  /usr/include
-  /usr/local/include
-  /tmp/lasjunk/include
-  ${OSGEO4W_ROOT_DIR}/include)
-
-if(WIN32)
-    SET(LIBLAS_NAMES ${OSGEO4W_IMPORT_LIBRARY} liblas)
-else()
-    SET(LIBLAS_NAMES ${OSGEO4W_IMPORT_LIBRARY} las)
+if(NOT LIBLAS_ROOT)
+	set(LIBLAS_INSTALL_DIR "C:/thirdparty/${MSVC_VERSION_STRING}/x64" CACHE FILEPATH "Please specify an installation directory.")
+	option(LIBLAS_AUTOMATIC_INSTALL OFF)
+	if(NOT BOOST_ROOT)
+		find_path(BOOST_ROOT REQUIRED)
+		message(FATAL_ERROR"Boost required!")
+	endif()
+	if(LIBLAS_AUTOMATIC_INSTALL AND LIBLAS_INSTALL_DIR AND BOOST_ROOT)
+		message(STATUS "Installing libLAS...")
+		execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_libLAS-1.6_Visual Studio 14 2015 Win64.cmd"
+		${LIBLAS_INSTALL_DIR}
+		"${CMAKE_COMMAND}"
+		"${BOOST_ROOT}"
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
+		RESULT_VARIABLE RESULT
+		ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_liblas.txt"
+		OUTPUT_FILE "${PROJECT_SOURCE_DIR}/external/log_install_liblas.txt")
+		if(RESULT EQUAL 0)
+			message(STATUS "Successfully installed libLAS.")
+			set(LIBLAS_ROOT ${LIBLAS_INSTALL_DIR}/libLAS-1.6-master CACHE PATH "libLAS root" FORCE)
+		else()
+			message(SEND_ERROR "Installation failed. Processes exited with code ${RESULT}. Output was written to ${PROJECT_SOURCE_DIR}/external/log_install_liblas.txt")
+		endif()
+		set(LIBLAS_AUTOMATIC_INSTALL OFF CACHE BOOL "Automatically install libLAS" FORCE)
+	endif()	
 endif()
 
-FIND_LIBRARY(LIBLAS_LIBRARY
-  NAMES ${LIBLAS_NAMES}
-  PATHS
-  /usr/lib
-  /usr/local/lib
-  /tmp/lasjunk/lib
-  ${OSGEO4W_ROOT_DIR}/lib)
 
-IF(LIBLAS_FOUND)
-  SET(LIBLAS_LIBRARIES ${LIBLAS_LIBRARY})
-ENDIF()
+if(LIBLAS_ROOT)
+	find_path(LIBLAS_INCLUDE_DIR NAMES liblas/liblas.hpp PATHS ${LIBLAS_ROOT}/include)
+	
+	find_library(LIBLAS_LIBRARY_RELEASE NAMES liblas.lib HINTS "${LIBLAS_ROOT}/build/bin/Release")
+	find_library(LIBLAS_LIBRARY_DEBUG NAMES liblas.lib HINTS "${LIBLAS_ROOT}/build/bin/Debug")	
+	find_library(LIBLAS_LIBRARY_RELWITHDEBINFO NAMES liblas.lib HINTS "${LIBLAS_ROOT}/build/bin/RelWithDebInfo")
+	
+	find_file(LIBLAS_LIBRARY_RELEASE_DLL NAMES liblas.dll HINTS "${LIBLAS_ROOT}/build/bin/Release")
+	find_file(LIBLAS_LIBRARY_DEBUG_DLL NAMES liblas.dll HINTS "${LIBLAS_ROOT}/build/bin/Debug")	
+	find_file(LIBLAS_LIBRARY_RELWITHDEBINFO_DLL NAMES liblas.dll HINTS "${LIBLAS_ROOT}/build/bin/RelWithDebInfo")
+	
+	find_file(LIBLAS_LIBRARY_DEBUG_PDB NAMES liblas.pdb HINTS "${LIBLAS_ROOT}/build/bin/Debug")	
+	find_file(LIBLAS_LIBRARY_RELWITHDEBINFO_PDB NAMES liblas.pdb HINTS "${LIBLAS_ROOT}/build/bin/RelWithDebInfo")
+	
+	find_library(LIBLAS_C_LIBRARY_RELEASE NAMES liblas_c.lib HINTS "${LIBLAS_ROOT}/build/bin/Release")
+	find_library(LIBLAS_C_LIBRARY_DEBUG NAMES liblas_c.lib HINTS "${LIBLAS_ROOT}/build/bin/Debug")
+	find_library(LIBLAS_C_LIBRARY_RELWITHDEBINFO NAMES liblas_c.lib HINTS "${LIBLAS_ROOT}/build/bin/RelWithDebInfo")
+	
+	find_file(LIBLAS_C_LIBRARY_RELEASE_DLL NAMES liblas_c.dll HINTS "${LIBLAS_ROOT}/build/bin/Release")
+	find_file(LIBLAS_C_LIBRARY_DEBUG_DLL NAMES liblas_c.dll HINTS "${LIBLAS_ROOT}/build/bin/Debug")
+	find_file(LIBLAS_C_LIBRARY_RELWITHDEBINFO_DLL NAMES liblas_c.dll HINTS "${LIBLAS_ROOT}/build/bin/RelWithDebInfo")
+	
+	find_file(LIBLAS_C_LIBRARY_DEBUG_PDB NAMES liblas_c.pdb HINTS "${LIBLAS_ROOT}/build/bin/Debug")	
+	find_file(LIBLAS_C_LIBRARY_RELWITHDEBINFO_PDB NAMES liblas_c.pdb HINTS "${LIBLAS_ROOT}/build/bin/RelWithDebInfo")
+	
+	if(LIBLAS_LIBRARY_RELEASE AND LIBLAS_LIBRARY_DEBUG)
+		set(LIBLAS_LIBRARY debug "${LIBLAS_LIBRARY_DEBUG}" optimized "${LIBLAS_LIBRARY_RELEASE}")
+	endif()
+	
+	if(LIBLAS_C_LIBRARY_RELEASE AND LIBLAS_C_LIBRARY_DEBUG)
+		set(LIBLAS_C_LIBRARY debug "${LIBLAS_C_LIBRARY_DEBUG}" optimized "${LIBLAS_C_LIBRARY_RELEASE}")
+	endif()
+	
+	if(LIBLAS_LIBRARY_RELEASE_DLL AND LIBLAS_C_LIBRARY_RELEASE_DLL)
+		set(LIBLAS_RELEASE_BINARIES "${LIBLAS_LIBRARY_RELEASE_DLL}" "${LIBLAS_C_LIBRARY_RELEASE_DLL}")
+	endif()
+	
+	if(LIBLAS_LIBRARY_DEBUG_DLL AND LIBLAS_C_LIBRARY_DEBUG_DLL AND LIBLAS_LIBRARY_DEBUG_PDB AND LIBLAS_C_LIBRARY_DEBUG_PDB)
+		set(LIBLAS_DEBUG_BINARIES 
+			"${LIBLAS_LIBRARY_DEBUG_DLL}"
+			"${LIBLAS_C_LIBRARY_DEBUG_DLL}"
+			"${LIBLAS_LIBRARY_DEBUG_PDB}"
+			"${LIBLAS_C_LIBRARY_DEBUG_PDB}")
+	endif()
+	
+	if(LIBLAS_LIBRARY_RELWITHDEBINFO_DLL AND LIBLAS_C_LIBRARY_RELWITHDEBINFO_DLL AND LIBLAS_LIBRARY_DEBUG_PDB AND LIBLAS_C_LIBRARY_DEBUG_PDB)
+		set(LIBLAS_RELWITHDEBINFO_BINARIES
+			"${LIBLAS_LIBRARY_RELWITHDEBINFO_DLL}"
+			"${LIBLAS_C_LIBRARY_RELWITHDEBINFO_DLL}"
+			"${LIBLAS_LIBRARY_RELWITHDEBINFO_PDB}"
+			"${LIBLAS_C_LIBRARY_RELWITHDEBINFO_PDB}")
+	endif()
+	
+	if(LIBLAS_LIBRARY AND LIBLAS_C_LIBRARY)
+		set(LIBLAS_LIBRARIES ${LIBLAS_C_LIBRARY} ${LIBLAS_LIBRARY})
+	endif()
+	if(LIBLAS_INCLUDE_DIR)
+		set(LIBLAS_INCLUDE_DIRS ${LIBLAS_INCLUDE_DIR})
+	endif()
+endif()
 
-IF(LIBLAS_INCLUDE_DIR)
-  SET(LIBLAS_VERSION 0)
+if(LIBLAS_LIBRARIES AND LIBLAS_INCLUDE_DIRS)
+	message(STATUS "Successfully found libLAS.")
+	set(LIBLAS_FOUND 1)
+else()
+	unset(LIBLAS_FOUND)
+	message(FATAL_ERROR "Could NOT find libLAS.")
+endif()
 
-  SET(LIBLAS_VERSION_H "${LIBLAS_INCLUDE_DIR}/liblas/version.hpp")
-  FILE(READ ${LIBLAS_VERSION_H} LIBLAS_VERSION_H_CONTENTS)
+if(LIBLAS_DEBUG_BINARIES AND LIBLAS_RELEASE_BINARIES AND LIBLAS_RELWITHDEBINFO_BINARIES)
+	function(LIBLAS_COPY_BINARIES TargetDirectory)
+		add_custom_target(libLASCopyBinaries
+			COMMENT "Copying libLAS binaries to '${TargetDirectory}'" VERBATIM
+			COMMAND ${CMAKE_COMMAND} -E copy ${LIBLAS_DEBUG_BINARIES} ${TargetDirectory}/Debug
+			COMMAND ${CMAKE_COMMAND} -E copy ${LIBLAS_RELEASE_BINARIES} ${TargetDirectory}/Release
+			COMMAND ${CMAKE_COMMAND} -E copy ${LIBLAS_RELWITHDEBINFO_BINARIES} ${TargetDirectory}/RelWithDebInfo		
+		)
+	endfunction(LIBLAS_COPY_BINARIES)
+endif()
 
-  IF (DEFINED LIBLAS_VERSION_H_CONTENTS)
-  
-    # string will be something like "106000", which is xyyzzz (x=major, y=minor, z=patch)
-    string(REGEX REPLACE ".*#define[ \t]LIBLAS_VERSION[ \t]+([0-9]).*" "\\1" LIBLAS_VERSION_MAJOR "${LIBLAS_VERSION_H_CONTENTS}")
-    string(REGEX REPLACE ".*#define[ \t]LIBLAS_VERSION[ \t]+[0-9]([0-9][0-9]).*" "\\1" LIBLAS_VERSION_MINOR "${LIBLAS_VERSION_H_CONTENTS}")
-    string(REGEX REPLACE ".*#define[ \t]LIBLAS_VERSION[ \t]+[0-9][0-9][0-9]([0-9][0-9][0-9]).*"   "\\1" LIBLAS_VERSION_PATCH   "${LIBLAS_VERSION_H_CONTENTS}")
-    #message(FATAL_ERROR "${LIBLAS_VERSION_MAJOR}.${LIBLAS_VERSION_MINOR}.${LIBLAS_VERSION_PATCH}")
-
-    if(NOT ${LIBLAS_VERSION_MAJOR} MATCHES "[0-9]+")
-      message(FATAL_ERROR "libLAS version parsing failed for LIBLAS_VERSION_MAJOR!")
-    endif()
-    if(NOT ${LIBLAS_VERSION_MINOR} MATCHES "[0-9]+")
-      message(FATAL_ERROR "libLAS version parsing failed for LIBLAS_VERSION_MINOR!")
-    endif()
-    if(NOT ${LIBLAS_VERSION_PATCH} MATCHES "[0-9]+")
-      message(FATAL_ERROR "libLAS version parsing failed for LIBLAS_VERSION_PATCH!")
-    endif()
-
-
-    SET(LIBLAS_VERSION "${LIBLAS_VERSION_MAJOR}.${LIBLAS_VERSION_MINOR}.${LIBLAS_VERSION_PATCH}"
-      CACHE INTERNAL "The version string for libLAS library")
-
-    IF (LIBLAS_VERSION VERSION_EQUAL LibLAS_FIND_VERSION OR
-        LIBLAS_VERSION VERSION_GREATER LibLAS_FIND_VERSION)
-      MESSAGE(STATUS "Found libLAS version: ${LIBLAS_VERSION}")
-    ELSE()
-      MESSAGE(FATAL_ERROR "libLS version check failed. Version ${LIBLAS_VERSION} was found, at least version ${LibLAS_FIND_VERSION} is required")
-    ENDIF()
-  ELSE()
-    MESSAGE(FATAL_ERROR "Failed to open ${LIBLAS_VERSION_H} file")
-  ENDIF()
-
-ENDIF()
-
-# Handle the QUIETLY and REQUIRED arguments and set LIBLAS_FOUND to TRUE
-# if all listed variables are TRUE
-INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(libLAS DEFAULT_MSG LIBLAS_LIBRARY LIBLAS_INCLUDE_DIR)
+LIBLAS_COPY_BINARIES(${CMAKE_BINARY_DIR})
