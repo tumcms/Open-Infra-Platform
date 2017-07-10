@@ -18,6 +18,7 @@
 #ifndef __SECTIONEDSOLIDHORIZONTAL_H_B07F90B2FC3A4129BFEB2E08591E8DD3__
 #define __SECTIONEDSOLIDHORIZONTAL_H_B07F90B2FC3A4129BFEB2E08591E8DD3__
 
+#include "CrossSectionProfile.h"
 #include <OpenInfraPlatform/Infrastructure/namespace.h>
 #include <OpenInfraPlatform/Infrastructure/OIPInfrastructure.h>
 #include <OpenInfraPlatform/Infrastructure/Alignment/Alignment3DBased3D.h>
@@ -34,7 +35,7 @@ class BLUEINFRASTRUCTURE_API SectionedSolidHorizontal
 public:
 	typedef std::shared_ptr<Alignment3DBased3D> AnchorPoints; // The profile reference points.
 	typedef std::vector<std::pair<buw::Vector2d, buw::Vector2d>> HorizTangentAndNormalVector; // Used to orient the 2D profiles in the 3D target space.
-	typedef std::vector<std::shared_ptr<CrossSectionProfile>> ProfileVector; // Vector of profiles; one per reference point.
+	typedef std::vector<std::shared_ptr<SectionedSolid::CrossSectionProfile>> ProfileVector; // Vector of profiles; one per reference point.
 
 	explicit SectionedSolidHorizontal(
 		AnchorPoints directrix,

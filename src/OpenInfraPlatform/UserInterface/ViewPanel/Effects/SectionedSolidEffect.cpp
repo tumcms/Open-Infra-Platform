@@ -33,6 +33,7 @@ SectionedSolidEffect::SectionedSolidEffect(
 	buw::Vector4f const& materialColor)
 	: Effect(renderSystem)
 	, materialColor_(materialColor)
+	, vertexLayout_(buw::VertexPosition3Normal3::getVertexLayout())
 	, pipelineState_()
 	, vertexBuffers_()
 	, paintColorShaderBuffer_()
@@ -80,37 +81,48 @@ bool SectionedSolidEffect::addData(Infrastructure::SectionedSolidHorizontal cons
 	if (xformedAnchors.empty()) return false;
 
 	// Transform the profiles to their destination in 3D space.
-	std::vector<std::vector<buw::Vector3f>> xformedProfiles;
+	typedef std::vector<buw::VertexPosition3Normal3> ProfileSegment;
+	typedef std::vector<ProfileSegment> Profile;
+	std::vector<Profile> xformedProfiles;
 	for (size_t i = 0; i < numAnchors; ++i)
 	{
 		buw::Vector2f const anchorNormal(tangentAndNormalVector[i].second.cast<float>());
 		auto const& rotation2D = buw::createRotationMatrix(anchorNormal);
 		auto const& profile = profiles[i];
-		std::vector<buw::Vector3f> xformedProfile(profile->pntList2D.size());
-		std::transform(profile->pntList2D.begin(), profile->pntList2D.end(), xformedProfile.begin(),
-			[&xformedAnchors, &rotation2D, i](buw::Vector2d const& p)->buw::Vector3f {
-			buw::Vector3f sweptPoint(p[0], 0.0f, p[1]);
-			sweptPoint.block<2, 1>(0, 0) = rotation2D * sweptPoint.block<2, 1>(0, 0);
-			return sweptPoint + xformedAnchors[i];
-		});
-		xformedProfiles.push_back(xformedProfile);
+		xformedProfiles.push_back(Profile());
+		for (auto const& segment : profile->segments)
+		{
+			ProfileSegment xformedSegment(segment.size());
+			std::transform(segment.begin(), segment.end(), xformedSegment.begin(),
+				[&xformedAnchors, &rotation2D, i](Infrastructure::SectionedSolid::CrossSectionProfile::Vertex const& p)->buw::VertexPosition3Normal3 {
+				buw::Vector3f sweptPosition(p.position[0], 0.0f, p.position[1]);
+				sweptPosition.block<2, 1>(0, 0) = rotation2D * sweptPosition.block<2, 1>(0, 0);
+				buw::Vector3f sweptNormal(p.normal[0], 0.0f, p.normal[1]);
+				sweptNormal.block<2, 1>(0, 0) = rotation2D * sweptNormal.block<2, 1>(0, 0);
+				return buw::VertexPosition3Normal3(sweptPosition + xformedAnchors[i], sweptNormal);
+			});
+			xformedProfiles.back().push_back(xformedSegment);
+		}
 	}
 
 	// Create the vertex buffer(s) for rendering.
 	buw::vertexBufferDescription vbd;
-	vbd.vertexLayout = buw::VertexPosition3::getVertexLayout();
+	vbd.vertexLayout = vertexLayout_;
 	if (bRenderProfiles_)
 	{
 		for (auto& profile : xformedProfiles)
 		{
-			// We must repeat the first and last points, because we use adjacency in the geometry shader.
-			profile.insert(profile.begin(), profile.front());
-			profile.push_back(profile.back());
+			for (auto& segment : profile)
+			{
+				// We must repeat the first and last points, because we use adjacency in the geometry shader.
+				segment.insert(segment.begin(), segment.front());
+				segment.push_back(segment.back());
 
-			// Upload the geometry.
-			vbd.data = &profile[0];
-			vbd.vertexCount = profile.size();
-			vertexBuffers_.push_back(renderSystem()->createVertexBuffer(vbd));
+				// Upload the geometry.
+				vbd.data = &segment[0];
+				vbd.vertexCount = segment.size();
+				vertexBuffers_.push_back(renderSystem()->createVertexBuffer(vbd));
+			}
 		}
 	}
 	else
@@ -118,25 +130,31 @@ bool SectionedSolidEffect::addData(Infrastructure::SectionedSolidHorizontal cons
 		size_t const lastProfileIdx = xformedProfiles.size() - 1;
 		for (size_t i = 0; i < lastProfileIdx; ++i)
 		{
-			auto& lastProfile = xformedProfiles[i];
-			auto& profile = xformedProfiles[i+1];
+			auto const& lastProfile = xformedProfiles[i];
+			auto const& profile = xformedProfiles[i+1];
 			if(lastProfile.size() != profile.size())
-				throw buw::Exception("Mismatch between number of profile points.");
+				throw buw::Exception("Mismatch between number of profile segments.");
 			if (profile.empty()) continue;
 
-			// For a triangle strip we must zip both profiles.
-			std::vector<buw::Vector3f> solid(4*profile.size(), buw::Vector3f(-1.0f, 0.0f, 0.0f));
 			for (size_t j = 0; j < profile.size(); ++j)
 			{
-				// CW winding for front faces.
-				solid[2*j] = profile[j];
-				solid[2*j+1] = lastProfile[j];
-			}
+				auto const& lastSegment = lastProfile[j];
+				auto const& segment = profile[j];
 
-			// Upload the geometry.
-			vbd.data = &solid[0];
-			vbd.vertexCount = solid.size()/2;
-			vertexBuffers_.push_back(renderSystem()->createVertexBuffer(vbd));
+				// For a triangle strip we must zip both profiles.
+				std::vector<buw::VertexPosition3Normal3> solid(2 * segment.size());
+				for (size_t k = 0; k < segment.size(); ++k)
+				{
+					// CW winding for front faces.
+					solid[2 * k] = segment[k];
+					solid[2 * k + 1] = lastSegment[k];
+				}
+
+				// Upload the geometry.
+				vbd.data = &solid[0];
+				vbd.vertexCount = solid.size();
+				vertexBuffers_.push_back(renderSystem()->createVertexBuffer(vbd));
+			}
 		}
 	}
 
@@ -147,14 +165,10 @@ void SectionedSolidEffect::loadShader()
 {
 	try
 	{
-		buw::VertexLayout vertexLayout;
-		vertexLayout.add(buw::eVertexAttributeSemantic::Position, buw::eVertexAttributeFormat::Float3);
-		vertexLayout.add(buw::eVertexAttributeSemantic::Normal, buw::eVertexAttributeFormat::Float3);
-
 		buw::pipelineStateDescription psd;
 		psd.effectFilename = buw::Singleton<RenderResources>::instance().getResourceRootDir() + "/Shader/SectionedSolidEffect.be";
 		psd.pipelineStateName = bRenderProfiles_ ? "lineStrip" : "triangleStrip";
-		psd.vertexLayout = vertexLayout;
+		psd.vertexLayout = vertexLayout_;
 		psd.primitiveTopology = bRenderProfiles_ ? buw::ePrimitiveTopology::LineStrip : buw::ePrimitiveTopology::TriangleStrip;
 		psd.useAdjacency = bRenderProfiles_;
 		psd.renderTargetFormats = { buw::eTextureFormat::R8G8B8A8_UnsignedNormalizedInt_SRGB };

@@ -44,10 +44,6 @@ public:
 	void addItem(std::shared_ptr<Girder> const& girder);
 	void deleteItem(std::shared_ptr<Girder> const& girder);
 
-	// FGI TODO
-	//buw::AxisAlignedBoundingBox3d getExtends() const;
-	//buw::AxisAlignedBoundingBox3d getVerticalAlignmentExtends();
-
 private:
 	std::vector<std::shared_ptr<Girder>> girders_;
 };

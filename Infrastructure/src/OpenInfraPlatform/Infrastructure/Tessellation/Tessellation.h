@@ -62,20 +62,24 @@ namespace Tessellation
 	//                     arc. The default value for instance, results in two arc points
 	//                     between start and end for a quarter circle, thus the arc has a total
 	//                     of four points. Must be in [0, Pi[.
-	std::vector<buw::Vector2d> tessellateArc(
+	void tessellateArc(
 		buw::Vector2d const& start,
 		buw::Vector2d const& end,
 		buw::Vector2d const& center,
 		bool const bCCW,
+		std::vector<buw::Vector2d>& positionsOut,
+		std::vector<buw::Vector2d>* normalsOut,
 		double const minSegCreaseRAD = M_PI - ((M_PI/2) / (2 + 0.5)));
 
 	// Tessellates a circle arc. The shortest possible arc from start to end is preferred.
 	// \param minSegCrease Same as for the version above.
-	std::vector<buw::Vector2d> tessellateArc(
+	void tessellateArc(
 		buw::Vector2d const& start,
 		buw::Vector2d const& end,
 		double const radius,
 		bool const bCCW,
+		std::vector<buw::Vector2d>& positionsOut,
+		std::vector<buw::Vector2d>* normalsOut,
 		double const minSegCreaseRAD = M_PI - ((M_PI/2) / (2 + 0.5)));
 
 	// Tessellates a 3D alignment given by its 2D components \parm horiz and \param vert.

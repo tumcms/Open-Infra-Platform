@@ -63,6 +63,8 @@ public:
 
 	double									getGradient(const double x) const;
 
+	double									getCurvature() const;
+
 private:
 	buw::Vector2d	start_;
 	buw::Vector2d	end_;

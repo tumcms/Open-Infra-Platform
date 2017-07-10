@@ -44,10 +44,6 @@ public:
 	void addItem(std::shared_ptr<SlabFieldElement> const& slabFieldElement);
 	void deleteItem(std::shared_ptr<SlabFieldElement> const& slabFieldElement);
 
-	// FGI TODO
-	//buw::AxisAlignedBoundingBox3d getExtends() const;
-	//buw::AxisAlignedBoundingBox3d getVerticalAlignmentExtends();
-
 private:
 	std::vector<std::shared_ptr<SlabFieldElement>> slabFieldElements_;
 };

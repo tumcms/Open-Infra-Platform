@@ -21,7 +21,6 @@
 
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
 #include "OpenInfraPlatform/Infrastructure/namespace.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Entities.h"
 #include <BlueFramework/Core/Exception.h>
 #include <BlueFramework/Core/Math/Vector.h>
 #include <BlueFramework/Core/memory.h>
@@ -57,8 +56,6 @@ public:
 class BLUEINFRASTRUCTURE_API CrossSectionProfile {
 public:
 	CrossSectionProfile(){};
-	CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcArbitraryClosedProfileDef> csp);
-	CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcAsymmetricIShapeProfileDef> csp);
 	virtual ~CrossSectionProfile(){};
 
 	std::string name;

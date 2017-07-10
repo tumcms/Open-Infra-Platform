@@ -52,6 +52,7 @@ private:
 	bool bRenderProfiles_ = false; // For debugging.
 
 	buw::Vector4f const materialColor_;
+	buw::VertexLayout const vertexLayout_;
 
 	buw::ReferenceCounted<buw::IPipelineState> pipelineState_;
 	std::vector<buw::ReferenceCounted<buw::IVertexBuffer>> vertexBuffers_;

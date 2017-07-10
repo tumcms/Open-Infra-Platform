@@ -39,12 +39,13 @@ public:
 	void addSectionedSolid(SectionedSolidHorizontal const& ssh);
 	void addSectionedSolid(SectionedSolidVector const& sshs);
 
+	int const id;
+
 protected:
 	explicit SlabFieldElement(int const id, std::wstring const& name);
 	virtual ~SlabFieldElement();
 
 private:
-	int const id;
 	buw::String name;
 	SectionedSolidVector sectionedSolids;
 };

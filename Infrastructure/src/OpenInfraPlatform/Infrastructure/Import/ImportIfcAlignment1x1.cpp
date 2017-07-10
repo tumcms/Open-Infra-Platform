@@ -577,7 +577,7 @@ public:
 					throw buw::Exception("Mismatch between number of profile positions and number of tangents and normals for them.");
 
 				// Get the profile curves.
-				std::vector<std::shared_ptr<CrossSectionProfile>> profiles;
+				std::vector<std::shared_ptr<SectionedSolid::CrossSectionProfile>> profiles;
 				for (auto cs : ssh->m_CrossSections)
 					profiles.push_back(createProfileCurve(cs));
 				if (bAdaptiveSampling)
@@ -597,23 +597,28 @@ public:
 		return results;
 	}
 
-	std::shared_ptr<CrossSectionProfile> createProfileCurve(std::shared_ptr<IfcProfileDef> profile)
+	std::shared_ptr<SectionedSolid::CrossSectionProfile> createProfileCurve(std::shared_ptr<IfcProfileDef> profile)
 	{
 		if (!profile) return nullptr;
 		switch (profile->m_entity_enum)
 		{
 		case IFCASYMMETRICISHAPEPROFILEDEF:
-			return std::make_shared<CrossSectionProfile>(std::static_pointer_cast<IfcAsymmetricIShapeProfileDef>(profile));
+			return std::make_shared<SectionedSolid::CrossSectionProfile>(std::static_pointer_cast<IfcAsymmetricIShapeProfileDef>(profile));
 		case IFCARBITRARYCLOSEDPROFILEDEF:
-			return std::make_shared<CrossSectionProfile>(std::static_pointer_cast<IfcArbitraryClosedProfileDef>(profile));
+			return std::make_shared<SectionedSolid::CrossSectionProfile>(std::static_pointer_cast<IfcArbitraryClosedProfileDef>(profile));
 		case IFCMIRROREDPROFILEDEF:
 		{
 			auto mirroredProfile = std::static_pointer_cast<IfcMirroredProfileDef>(profile);
 			if (mirroredProfile->m_Operator)
 				throw buw::NotImplementedYetException("Advanced mirror profiles are not supported.");
 			auto profileCurve = createProfileCurve(mirroredProfile->m_ParentProfile);
-			std::transform(profileCurve->pntList2D.begin(), profileCurve->pntList2D.end(), profileCurve->pntList2D.begin(),
-				[](buw::Vector2d const& p)->buw::Vector2d {return buw::Vector2d(-p[0], p[1]); });
+			for (auto& segment : profileCurve->segments)
+			{
+				std::transform(segment.begin(), segment.end(), segment.begin(),
+					[](SectionedSolid::CrossSectionProfile::Vertex const& v)->SectionedSolid::CrossSectionProfile::Vertex {
+					return SectionedSolid::CrossSectionProfile::Vertex(buw::Vector2d(-v.position[0], v.position[1]), buw::Vector2d(-v.normal[0], v.normal[1]));
+				});
+			}
 			return profileCurve;
 		}
 		default:

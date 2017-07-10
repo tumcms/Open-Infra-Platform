@@ -183,3 +183,10 @@ double OpenInfraPlatform::Infrastructure::VerticalAlignmentElement2DParabola::ge
 	getParameters(a, b, c);
 	return 2.0 * a * x + b;
 }
+
+double OpenInfraPlatform::Infrastructure::VerticalAlignmentElement2DParabola::getCurvature() const
+{
+	double a, b, c;
+	getParameters(a, b, c);
+	return 2 * a;
+}

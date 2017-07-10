@@ -48,9 +48,8 @@ std::shared_ptr<SlabFieldElement> SlabFieldModel::getItem(size_t const index) co
 
 std::shared_ptr<SlabFieldElement> SlabFieldModel::getItemById(size_t const id) const
 {
-	// FGI TODO
-	//for (auto const& sf : slabFields_)
-	//	if (sf->id == id) return sf;
+	for (auto const& sfe : slabFieldElements_)
+		if (sfe && (sfe->id == id)) return sfe;
 
 	return nullptr;
 }

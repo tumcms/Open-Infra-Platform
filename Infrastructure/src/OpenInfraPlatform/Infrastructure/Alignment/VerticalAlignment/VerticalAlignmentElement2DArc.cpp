@@ -20,44 +20,6 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-VerticalAlignmentElement2DArc::VerticalAlignmentElement2DArc(const buw::Vector2d& start,
-                                                             const buw::Vector2d& end,
-                                                             const double radius,
-                                                             const double startGradient,
-                                                             const bool isConvex)
-    : start_(start), end_(end), radius_(radius), startGradient_(startGradient), isConvex_(isConvex) {
-	BLUE_ASSERT(start.x() <= end.x(), "Invalid coordinates.");
-	BLUE_ASSERT(radius >= 0, "Invalid radius.");
-}
-
-VerticalAlignmentElement2DArc::~VerticalAlignmentElement2DArc() {
-}
-
-bool VerticalAlignmentElement2DArc::genericQuery(const int id, void* result) const {
-	switch (id) {
-	case OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartPosition: *reinterpret_cast<buw::Vector2d*>(result) = start_; break;
-	case OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::EndPosition: *reinterpret_cast<buw::Vector2d*>(result) = end_; break;
-	case OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Radius: *reinterpret_cast<double*>(result) = radius_; break;
-	case OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::IsConvex: *reinterpret_cast<bool*>(result) = isConvex_; break;
-	case OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartGradient: *reinterpret_cast<double*>(result) = startGradient_; break;
-	default: BLUE_ASSERT(false, "Invalid id."); return false;
-	}
-
-	return true;
-}
-
-eVerticalAlignmentType VerticalAlignmentElement2DArc::getAlignmentType() const {
-	return eVerticalAlignmentType::Arc;
-}
-
-Stationing VerticalAlignmentElement2DArc::getEndStation() const {
-	return end_.x();
-}
-
-Stationing VerticalAlignmentElement2DArc::getStartStation() const {
-	return start_.x();
-}
-
 enum class eCircleIntersectionResult { NoIntersection, Coincident, TangentIntersection, TwoPointIntersection };
 
 class Circle2 {
@@ -125,37 +87,90 @@ private:
 	Vector2d center_;
 };
 
+
+
+VerticalAlignmentElement2DArc::VerticalAlignmentElement2DArc(const buw::Vector2d& start,
+                                                             const buw::Vector2d& end,
+                                                             const double radius,
+                                                             const double startGradient,
+                                                             const bool isConvex)
+    : start_(start), end_(end), radius_(radius), startGradient_(startGradient), isConvex_(isConvex) {
+	BLUE_ASSERT(start.x() <= end.x(), "Invalid coordinates.");
+	BLUE_ASSERT(radius >= 0, "Invalid radius.");
+}
+
+VerticalAlignmentElement2DArc::~VerticalAlignmentElement2DArc() {
+}
+
+bool VerticalAlignmentElement2DArc::genericQuery(const int id, void* result) const {
+	switch (id) {
+	case OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartPosition: *reinterpret_cast<buw::Vector2d*>(result) = start_; break;
+	case OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::EndPosition: *reinterpret_cast<buw::Vector2d*>(result) = end_; break;
+	case OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Radius: *reinterpret_cast<double*>(result) = radius_; break;
+	case OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::IsConvex: *reinterpret_cast<bool*>(result) = isConvex_; break;
+	case OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartGradient: *reinterpret_cast<double*>(result) = startGradient_; break;
+	default: BLUE_ASSERT(false, "Invalid id."); return false;
+	}
+
+	return true;
+}
+
+eVerticalAlignmentType VerticalAlignmentElement2DArc::getAlignmentType() const {
+	return eVerticalAlignmentType::Arc;
+}
+
+buw::Vector2d VerticalAlignmentElement2DArc::getCenter() const
+{
+	Circle2 c1(radius_, start_);
+	Circle2 c2(radius_, end_);
+
+	buw::Vector2d i1, i2;
+	auto result = c1.intersect(c2, i1, i2);
+	BLUE_ASSERT(result == eCircleIntersectionResult::TwoPointIntersection || result == eCircleIntersectionResult::TangentIntersection, "Invalid center point.");
+
+	buw::Vector2d center = i1;
+
+	if (!isConvex_) {
+		if (i1.y() < i2.y())
+			center = i1;
+		else
+			center = i2;
+	} else {
+		if (i1.y() > i2.y())
+			center = i1;
+		else
+			center = i2;
+	}
+
+	return center;
+}
+
+double VerticalAlignmentElement2DArc::getRadius() const {
+	return radius_;
+}
+
+double VerticalAlignmentElement2DArc::getCurvature() const {
+	return 1.0 / getRadius() * (isConvex_ ? 1 : -1);
+}
+
+bool VerticalAlignmentElement2DArc::isConvex() const {
+	return isConvex_;
+}
+
+
+Stationing VerticalAlignmentElement2DArc::getEndStation() const {
+	return end_.x();
+}
+
+Stationing VerticalAlignmentElement2DArc::getStartStation() const {
+	return start_.x();
+}
+
 buw::Vector2d VerticalAlignmentElement2DArc::getPosition(const Stationing station) const {
 	BLUE_ASSERT(station >= getStartStation(), "Invalid station.");
 	BLUE_ASSERT(station <= getEndStation(), "Invalid station.");
 
-	// getCenter() const
-	buw::Vector2d center;
-
-	{
-		Circle2 c1(radius_, start_);
-		Circle2 c2(radius_, end_);
-
-		buw::Vector2d i1, i2;
-		auto result = c1.intersect(c2, i1, i2);
-
-		BLUE_ASSERT(result == eCircleIntersectionResult::TwoPointIntersection || result == eCircleIntersectionResult::TangentIntersection, "Invalid center point.");
-
-		center = i1;
-
-		if (!isConvex_) {
-			if (i1.y() < i2.y())
-				center = i1;
-			else
-				center = i2;
-		} else {
-			if (i1.y() > i2.y())
-				center = i1;
-			else
-				center = i2;
-		}
-	}
-
+	buw::Vector2d const center = getCenter();
 	double a = center.x();
 	double b = center.y();
 	double sqrtTmp = std::sqrt(radius_ * radius_ - (station - a) * (station - a));
