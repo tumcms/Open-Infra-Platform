@@ -21,9 +21,43 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "OpenInfraPlatform/Infrastructure/Import/Import.h"
 
+#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DLine.h"
+#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DArc.h"
+#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
+
+#include <QtXml>
+
 
 namespace OpenInfraPlatform {
 	namespace Infrastructure {
+
+		class BLUEINFRASTRUCTURE_API LandInfraNode : public QDomNode
+		{
+		public:
+
+			LandInfraNode(const QDomNode &other) :QDomNode(other) {};
+
+			virtual buw::ReferenceCounted<buw::AlignmentModel> toAlignmentModel();
+
+			/*Parses a lia:Alignment node and returns an Alignment2DBased3D. Currently there are no other types supported.*/
+			virtual buw::ReferenceCounted<buw::IAlignment3D> toIAlignment3D();
+
+			virtual buw::ReferenceCounted<buw::Alignment2DBased3D> toAlignment2DBased3D();
+
+			virtual buw::ReferenceCounted<buw::HorizontalAlignment2D> toHorizontalAlignment2D();
+
+			virtual buw::ReferenceCounted<buw::HorizontalAlignmentElement2D> toHorizontalAlignmentElement2D();
+
+			virtual buw::ReferenceCounted<buw::HorizontalAlignmentElement2DLine> toHorizontalAlignmentElement2DLine();
+
+			virtual buw::ReferenceCounted<buw::HorizontalAlignmentElement2DClothoid> toHorizontalAlignmentElement2DClothoid();
+
+			virtual buw::ReferenceCounted<buw::HorizontalAlignmentElement2DArc> toHorizontalAlignmentElement2DArc();
+
+
+			virtual buw::Vector2d toVector2d() const;
+		};		
+
 		class BLUEINFRASTRUCTURE_API ImportLandInfra : public Import
 		{
 		public:

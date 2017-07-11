@@ -565,10 +565,14 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 		// Get root names and attributes
 		std::string type = root.tagName().toStdString();
 
-		if (boost::starts_with(type, "Land"))
+		if (boost::starts_with(type, "LandXML"))
 		{
 			OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing LandXML ").append(filename));
 			importer_ = new buw::ImportLandXml(filename);
+		}
+		else if (boost::starts_with(type, "LandInfra")) {
+			OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing LandInfra ").append(filename));
+			importer_ = new buw::ImportLandInfra(filename);
 		}
 		else
 		{

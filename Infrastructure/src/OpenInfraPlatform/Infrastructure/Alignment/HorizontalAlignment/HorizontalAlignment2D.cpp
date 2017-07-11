@@ -73,11 +73,11 @@ Stationing HorizontalAlignment2D::getEndStation() const {
 
 Stationing HorizontalAlignment2D::getStartStation(const int index /*= 0*/) const {
 	BLUE_ASSERT(index >= 0, "Invalid index.");
-	BLUE_ASSERT(index < horizontalElements_.size(), "Invalid index.");
+	//BLUE_ASSERT(index < horizontalElements_.size(), "Invalid index.");
 
 	Stationing s = startStationing_;
 
-	for (int i = 0; i < index; i++) {
+	for (int i = 0; i < index && index < horizontalElements_.size(); i++) {
 		s += horizontalElements_[i]->getLength();
 	}
 
@@ -97,8 +97,9 @@ buw::ReferenceCounted<HorizontalAlignmentElement2D> HorizontalAlignment2D::getAl
 double HorizontalAlignment2D::getLength() const {
 	double sum = 0;
 
-	for (buw::ReferenceCounted<HorizontalAlignmentElement2D> a : horizontalElements_) {
-		sum += a->getLength();
+	for (buw::ReferenceCounted<HorizontalAlignmentElement2D> alignmentElement : horizontalElements_) {
+		if(alignmentElement)
+			sum += alignmentElement->getLength();
 	}
 
 	return sum;

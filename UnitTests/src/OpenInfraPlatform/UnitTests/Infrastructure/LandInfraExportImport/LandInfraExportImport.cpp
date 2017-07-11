@@ -27,7 +27,7 @@ namespace
 	TEST(LandInfra, ExportImport)
 	{
 		buw::ImportLandInfra landInfraImporter("../../../../../../testdata/LandInfra/complete_alignment_example_20170321_pxs.xml");
-		
+		int alignments = landInfraImporter.getAlignmentModel()->getAlignmentCount();
 		
 	}
 }
