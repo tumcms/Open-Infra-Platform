@@ -15,18 +15,19 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __SLABFIELD_H_15E3AD51DC7B46B89085CD0B221EF5B9__
-#define __SLABFIELD_H_15E3AD51DC7B46B89085CD0B221EF5B9__
+#ifndef __SLABFIELD_H_00E7AEEDA54E46FE9489A1F3E518223F__
+#define __SLABFIELD_H_00E7AEEDA54E46FE9489A1F3E518223F__
 
 #include <OpenInfraPlatform/Infrastructure/namespace.h>
 #include <OpenInfraPlatform/Infrastructure/OIPInfrastructure.h>
+#include "SlabFieldElement.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-class BLUEINFRASTRUCTURE_API SlabField
+class BLUEINFRASTRUCTURE_API SlabField : public SlabFieldElement
 {
 public:
-	explicit SlabField();
+	explicit SlabField(int const id, std::wstring const& name);
 	virtual ~SlabField();
 };
 
@@ -37,4 +38,4 @@ namespace buw
 	using OpenInfraPlatform::Infrastructure::SlabField;
 }
 
-#endif // __SLABFIELD_H_15E3AD51DC7B46B89085CD0B221EF5B9__
+#endif // __SLABFIELD_H_00E7AEEDA54E46FE9489A1F3E518223F__

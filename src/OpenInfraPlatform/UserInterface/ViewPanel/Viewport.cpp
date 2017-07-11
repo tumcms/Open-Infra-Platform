@@ -23,6 +23,8 @@
 #include "OpenInfraPlatform/Infrastructure/Import/ImportLandXml.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/CoordinateSystem.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/AlignmentEffect.h"
+#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/GirderEffect.h"
+#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/SlabFieldEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/DEMEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/TrafficSignEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/GradientClearEffect.h"
@@ -134,6 +136,14 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 	alignmentEffect_->init();
 
 	BLUE_LOG(trace) << "Creating effects (5)";
+	girderEffect_ = buw::makeReferenceCounted<GirderEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+	girderEffect_->init();
+
+	BLUE_LOG(trace) << "Creating effects (6)";
+	slabFieldEffect_ = buw::makeReferenceCounted<SlabFieldEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+	slabFieldEffect_->init();
+
+	BLUE_LOG(trace) << "Creating effects (7)";
 	uiElements_ = buw::makeReferenceCounted<UIElements>(renderSystem_.get(), depthStencilMSAA_, worldBuffer_);
 	uiElements_->init();
 
@@ -171,6 +181,8 @@ Viewport::~Viewport() {
 	timer_ = nullptr;
 
 	uiElements_ = nullptr;
+	slabFieldEffect_ = nullptr;
+	girderEffect_ = nullptr;
 	alignmentEffect_ = nullptr;
 	trafficSignEffect_ = nullptr;
 	demEffect_ = nullptr;
@@ -597,6 +609,8 @@ void Viewport::onChange(ChangeFlag changeFlag) {
 	auto dem = data.getDigitalElevationModel();
 	auto alignment = data.getAlignmentModel();
 	auto trafficSignModel = data.getTrafficSignModel();
+	auto girderModel = data.getGirderModel();
+	auto slabFieldModel = data.getSlabFieldModel();
     auto ifcGeometryModel = data.getIfcGeometryModel();
 
 	buw::Vector3d min, max;
@@ -625,7 +639,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
     }
 
     if(changeFlag & ChangeFlag::AlignmentModel && alignment) {
-        alignmentEffect_->setAlignment(alignment, offset);        
+        alignmentEffect_->setAlignment(alignment, offset);
         activeEffects_.push_back(alignmentEffect_);
     }
 
@@ -637,6 +651,16 @@ void Viewport::onChange(ChangeFlag changeFlag) {
     if(changeFlag & ChangeFlag::TrafficModel && trafficSignModel) {
         trafficSignEffect_->setData(alignment, offset, trafficSignModel);
         activeEffects_.push_back(trafficSignEffect_);
+    }
+
+	if(changeFlag & ChangeFlag::GirderModel && girderModel) {
+        girderEffect_->setData(girderModel, offset);
+        activeEffects_.push_back(girderEffect_);
+    }
+
+	if(changeFlag & ChangeFlag::SlabFieldModel && slabFieldModel) {
+        slabFieldEffect_->setData(slabFieldModel, offset);
+        activeEffects_.push_back(slabFieldEffect_);
     }
 
     if(changeFlag & ChangeFlag::SelectedAlignmentIndex && alignment) {
@@ -654,6 +678,8 @@ void Viewport::onClear() {
 }
 
 void Viewport::reloadShader() {
+	slabFieldEffect_->loadShader();
+	girderEffect_->loadShader();
 	alignmentEffect_->loadShader();
 	demEffect_->loadShader();
 	gradientClearEffect_->loadShader();

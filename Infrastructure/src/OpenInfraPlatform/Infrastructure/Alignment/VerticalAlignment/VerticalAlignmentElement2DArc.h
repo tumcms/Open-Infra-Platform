@@ -48,6 +48,14 @@ public:
 
 	virtual eVerticalAlignmentType		getAlignmentType() const override;
 
+	buw::Vector2d getCenter() const;
+
+	double getRadius() const;
+
+	double getCurvature() const;
+
+	bool isConvex() const;
+
 	//! A generic Query
 	virtual bool						genericQuery(const int id, void* result) const;
 

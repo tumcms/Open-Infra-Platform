@@ -23,6 +23,9 @@
 //#include "OpenInfraPlatform/DataManagement/ViewCubeData.h"
 #include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
+#include "OpenInfraPlatform/Infrastructure/Girder/GirderModel.h"
+#include "OpenInfraPlatform/Infrastructure/SlabField/SlabFieldModel.h"
+#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
 #include <BlueFramework/Application/DataManagement/DocumentManager.h>
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
@@ -52,7 +55,9 @@ namespace OpenInfraPlatform
 			PointCloud = 1 << 3,
 			Preferences = 1 << 4,
 			TrafficModel = 1 << 5,
-            SelectedAlignmentIndex = 1 << 6
+            SelectedAlignmentIndex = 1 << 6,
+            GirderModel = 1 << 7,
+            SlabFieldModel = 1 << 8
 		};
 
 		inline ChangeFlag operator|(ChangeFlag a, ChangeFlag b)
@@ -176,6 +181,18 @@ namespace OpenInfraPlatform
 			}
 
 			//---------------------------------------------------------------------------//
+			// Girder Model
+			//---------------------------------------------------------------------------//
+
+			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::GirderModel> getGirderModel() const;
+
+			//---------------------------------------------------------------------------//
+			// Slab Field Model
+			//---------------------------------------------------------------------------//
+
+			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::SlabFieldModel> getSlabFieldModel() const;
+
+			//---------------------------------------------------------------------------//
 			// IFCx Model
 			//---------------------------------------------------------------------------//
 
@@ -275,6 +292,8 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<buw::TrafficSignModel>					trafficSignModel_;
 			buw::ReferenceCounted<buw::DigitalElevationModel> 				digitalElevationModel_;
 			buw::ReferenceCounted<buw::AlignmentModel>						alignmentModel_;
+			buw::ReferenceCounted<buw::GirderModel>							girderModel_;
+			buw::ReferenceCounted<buw::SlabFieldModel>						slabFieldModel_;
 			buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel>	ifcGeometryModel_;
 			buw::PointCloud*												pointCloud_;
 

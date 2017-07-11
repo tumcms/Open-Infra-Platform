@@ -100,7 +100,7 @@ namespace OpenInfraPlatform
 				return vp.size();
 			}
 
-			const buw::Vector3f& GetNthPoint(const int n) const
+			const VectorType& GetNthPoint(const int n) const
 			{
 				return vp[n];
 			}

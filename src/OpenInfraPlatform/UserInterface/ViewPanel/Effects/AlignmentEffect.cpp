@@ -133,7 +133,6 @@ void AlignmentEffect::setAlignment(buw::ReferenceCounted<buw::AlignmentModel> al
 	roadBodyWireframeVertexBuffers_.clear();
 	roadBodySolidVertexBuffers_.clear();
 
-	buw::VertexLayout vertexLayout = buw::VertexPosition3::getVertexLayout();
 	std::mutex mutex;
 	std::time_t start, end;
 	std::time(&start);
@@ -195,26 +194,26 @@ void AlignmentEffect::setAlignment(buw::ReferenceCounted<buw::AlignmentModel> al
                 buw::Vector3d currentCenter = (alignment2D->getPosition(crossSection->stationing));
                 buw::Vector3d nextCenter = (alignment2D->getPosition(alignment2D->getCrossSection(sectionIdx + 1)->stationing));
 				
-				auto getRotation44f = [&](buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::CrossSectionStatic> crossSection) {
-					auto pos1 = alignment2D->getPosition(crossSection->stationing);
-					auto pos2 = alignment2D->getPosition(crossSection->stationing + 0.001f);
-					buw::Vector3d direction;
-					if(buw::distance(pos2, pos1) > 0.0001) {
-						direction = (pos2 - pos1).normalized();
-					}
-					else {
-						pos2 = alignment2D->getPosition(crossSection->stationing + 0.1f);
-						direction = (pos2 - pos1).normalized();
-					}
-					
-					buw::Matrix44f rotation = buw::createRotationMatrixZ(
-						buw::calculateAngleBetweenVectors(
-							buw::Vector2f(1, 0),
-							buw::Vector2f(direction.x(), direction.y())
-						)
-					);
-					return rotation;
-				};
+				//auto getRotation44f = [&](buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::CrossSectionStatic> crossSection) {
+				//	auto pos1 = alignment2D->getPosition(crossSection->stationing);
+				//	auto pos2 = alignment2D->getPosition(crossSection->stationing + 0.001f);
+				//	buw::Vector3d direction;
+				//	if(buw::distance(pos2, pos1) > 0.0001) {
+				//		direction = (pos2 - pos1).normalized();
+				//	}
+				//	else {
+				//		pos2 = alignment2D->getPosition(crossSection->stationing + 0.1f);
+				//		direction = (pos2 - pos1).normalized();
+				//	}
+				//	
+				//	buw::Matrix44f rotation = buw::createRotationMatrixZ(
+				//		buw::calculateAngleBetweenVectors(
+				//			buw::Vector2f(1, 0),
+				//			buw::Vector2f(direction.x(), direction.y())
+				//		)
+				//	);
+				//	return rotation;
+				//};
 
 				auto getRotation33d = [&](buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::CrossSectionStatic> crossSection) {
 					auto pos1 = alignment2D->getPosition(crossSection->stationing);

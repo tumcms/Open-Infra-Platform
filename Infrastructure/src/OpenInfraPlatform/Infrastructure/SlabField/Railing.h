@@ -15,44 +15,27 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __SLABFIELDMODEL_H_4F964D8615F44A9E980A0017774D2FB8__
-#define __SLABFIELDMODEL_H_4F964D8615F44A9E980A0017774D2FB8__
+#ifndef __RAILING_H_CDF60130BDB74E008EF218179045C693__
+#define __RAILING_H_CDF60130BDB74E008EF218179045C693__
 
 #include <OpenInfraPlatform/Infrastructure/namespace.h>
 #include <OpenInfraPlatform/Infrastructure/OIPInfrastructure.h>
 #include "SlabFieldElement.h"
 
-#include <memory>
-#include <vector>
-
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-class BLUEINFRASTRUCTURE_API SlabFieldModel
+class BLUEINFRASTRUCTURE_API Railing : public SlabFieldElement
 {
 public:
-	explicit SlabFieldModel();
-	virtual ~SlabFieldModel();
-
-	static SlabFieldModel* createFlatCopy(SlabFieldModel const& src);
-
-	size_t getItemCount() const;
-
-	std::shared_ptr<SlabFieldElement> getItem(size_t const index) const;
-	std::shared_ptr<SlabFieldElement> getItemById(size_t const id) const;
-	std::vector<std::shared_ptr<SlabFieldElement>> const& getAllItems() const;
-
-	void addItem(std::shared_ptr<SlabFieldElement> const& slabFieldElement);
-	void deleteItem(std::shared_ptr<SlabFieldElement> const& slabFieldElement);
-
-private:
-	std::vector<std::shared_ptr<SlabFieldElement>> slabFieldElements_;
+	explicit Railing(int const id, std::wstring const& name);
+	virtual ~Railing();
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 
 namespace buw
 {
-	using OpenInfraPlatform::Infrastructure::SlabFieldModel;
+	using OpenInfraPlatform::Infrastructure::Railing;
 }
 
-#endif // __SLABFIELDMODEL_H_4F964D8615F44A9E980A0017774D2FB8__
+#endif // __RAILING_H_CDF60130BDB74E008EF218179045C693__
