@@ -85,7 +85,7 @@ namespace OpenInfraPlatform {
 			buw::ReferenceCounted<buw::Alignment2DBased3D> alignment = buw::makeReferenceCounted<buw::Alignment2DBased3D>();
 
 			if (!(nodeName() == "lia:AlignmentCurve")) {
-				QString message = "Invalid lia:AlignmentCurve node. Node name is " + nodeName() + ".Line: " + lineNumber();
+				QString message = "Invalid lia:AlignmentCurve node. Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
 				throw buw::Exception(message.toStdString().data());
 			}
 
@@ -111,7 +111,7 @@ namespace OpenInfraPlatform {
 		buw::ReferenceCounted<buw::HorizontalAlignment2D> LandInfraNode::toHorizontalAlignment2D()
 		{
 			if (!(nodeName() == "lia:Alignment2DHorizontal")) {
-				QString message = "Invalid lia:Alignment2DHorizontal node. Node name is " + nodeName() + ".Line: " + lineNumber();
+				QString message = "Invalid lia:Alignment2DHorizontal node. Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
 				throw buw::Exception(message.toStdString().data());
 			}			
 			
@@ -137,7 +137,7 @@ namespace OpenInfraPlatform {
 		{
 			/*Throw if we process a wrong node.*/
 			if (!(nodeName() == "lia:segment")) {
-				QString message = "Invalid lia:segment node. Node name is " + nodeName() + ".Line: " + lineNumber();
+				QString message = "Invalid lia:segment node. Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
 				throw buw::Exception(message.toStdString().data());
 			}
 
@@ -167,14 +167,14 @@ namespace OpenInfraPlatform {
 		buw::ReferenceCounted<buw::HorizontalAlignmentElement2DLine> LandInfraNode::toHorizontalAlignmentElement2DLine()
 		{
 			if (!(nodeName() == "lia:lineSegment")) {
-				QString message = "Node name is " + nodeName() + ".Line: " + lineNumber();
+				QString message = "Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
 				throw buw::Exception(message.toStdString().data());
 			}
 
 			/*A line segment is given by its start and end point.*/
 			QDomNodeList children = childNodes();
 			if (!(children.count() >= 2)) {
-				QString message = "Invalid lia:lineSegment node. Node has less than 2 children. Line: " + lineNumber();
+				QString message = "Invalid lia:lineSegment node. Node has less than 2 children. Line: " + QString::number(lineNumber());
 				throw buw::Exception(message.toStdString().data());
 			}
 			else {
@@ -187,7 +187,7 @@ namespace OpenInfraPlatform {
 		buw::ReferenceCounted<buw::HorizontalAlignmentElement2DClothoid> LandInfraNode::toHorizontalAlignmentElement2DClothoid()
 		{
 			if (!(nodeName() == "lia:clothoidArcSegment")) {
-				QString message = "Invalid lia:clothoidArcSegment Node. Node name is " + nodeName() + ".Line: " + lineNumber();
+				QString message = "Invalid lia:clothoidArcSegment Node. Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
 				throw buw::Exception(message.toStdString().data());
 			}
 
@@ -198,7 +198,7 @@ namespace OpenInfraPlatform {
 		buw::ReferenceCounted<buw::HorizontalAlignmentElement2DArc> LandInfraNode::toHorizontalAlignmentElement2DArc()
 		{
 			if (!(nodeName() == "lia:circularArcSegment")) {
-				QString message = "Invalid lia:circularArcSegment Node. Node name is " + nodeName() + ".Line: " + lineNumber();
+				QString message = "Invalid lia:circularArcSegment Node. Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
 				throw buw::Exception(message.toStdString().data());
 			}
 
@@ -262,12 +262,12 @@ namespace OpenInfraPlatform {
 				}
 				else {
 					/*Not all specifications are currently known or implemented.*/
-					QString message = "Invalid lia:circularArcSegment Node. Unknown specification. Line: " + lineNumber();
+					QString message = "Invalid lia:circularArcSegment Node. Unknown specification. Line: " + QString::number(lineNumber());
 					throw buw::Exception(message.toStdString().data());
 				}
 			}
 			else {
-				QString message = "Invalid lia:circularArcSegment Node. Circular arc has no further specifications. Line: " + lineNumber();
+				QString message = "Invalid lia:circularArcSegment Node. Circular arc has no further specifications. Line: " + QString::number(lineNumber());
 				throw buw::Exception(message.toStdString().data());
 			}
 				
@@ -276,7 +276,7 @@ namespace OpenInfraPlatform {
 		buw::Vector2d LandInfraNode::toVector2d() const
 		{
 			if (!(nodeName() == "gml:pos")) {
-				QString message = "Invalid gml:pos node. Node name is " + nodeName() + ".Line: " + lineNumber();
+				QString message = "Invalid gml:pos node. Node name is " + nodeName() + ".Line: " +  QString::number(lineNumber());
 				throw buw::Exception(message.toStdString().data());
 			}
 						
@@ -287,8 +287,8 @@ namespace OpenInfraPlatform {
 				return buw::Vector2d(posX, posY);
 			}
 			else {
-				BLUE_LOG(error) << "Invalid gml:pos node. Position has less than 2 dimensions. Line: " << lineNumber();
-				throw buw::Exception("Invalid gml:pos node.");
+				QString message = "Invalid gml:pos node. Position has less than 2 dimensions. Line: " + QString::number(lineNumber());
+				throw buw::Exception(message.toStdString().data());
 			}
 		}
 		
