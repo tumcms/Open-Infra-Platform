@@ -18,7 +18,7 @@
 #
 
 set(CMAKE_MODULE_PATH ${CMAKE_ROOT}/Modules)
-find_package(zlib REQUIRED)
+find_package(zlib)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake/)
 
 if(NOT ZLIB_FOUND)
