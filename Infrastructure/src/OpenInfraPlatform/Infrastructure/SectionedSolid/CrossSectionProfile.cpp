@@ -127,7 +127,7 @@ namespace
 			{
 				auto lineSegment = std::static_pointer_cast<IfcAlignment1x1::IfcLineIndex>(seg);
 				dArea += computeGaussArea(
-					[&points, &lineSegment](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {return points->m_CoordList[lineSegment->m_vec[i]-1];},
+					[&points, &lineSegment](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {return points->m_CoordList[lineSegment->m_vec[i]];},
 					lineSegment->m_vec.size());
 			}
 			else if (std::dynamic_pointer_cast<IfcAlignment1x1::IfcArcIndex>(seg))
@@ -196,7 +196,7 @@ namespace SectionedSolid
 					{
 						auto lineSegment = std::static_pointer_cast<IfcAlignment1x1::IfcLineIndex>(segment);
 						segments.push_back(processLineStrip(
-							[&points, &lineSegment](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {return points->m_CoordList[lineSegment->m_vec[i]-1];},
+							[&points, &lineSegment](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {return points->m_CoordList[lineSegment->m_vec[i]];},
 							lineSegment->m_vec.size(),
 							bIsCCW));
 					}
