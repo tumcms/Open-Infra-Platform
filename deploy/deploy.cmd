@@ -1,1 +1,1 @@
-deploy.py C:\build\vs2015\x64\OpenInfraPlatform2
+deploy.py C:\build\vs2015\x64\OpenInfraPlatform
