@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import zipfile
+import subprocess
 
 # get the directory the script is in
 current_dir = os.path.dirname(sys.argv[0]) + '\\'
@@ -48,7 +49,7 @@ def clean():
 
 def deploy():
 	os.environ["LANGUAGE"] = "en_US.UTF-8"
-
+	
 	# check if the build directory was passed
 	if len(sys.argv) != 2:
 		print('No build directory was passed!')
@@ -190,9 +191,8 @@ def deploy():
 	DeleteFiles(deploy_path + "/Data/translations", ".ts") # linguist files
 	# Shader
 	#os.mkdir(deploy_path + '/Shader')
-
-
-	shutil.copytree(current_dir + '../src/OpenInfraPlatform/Shader',										deploy_path + '/Shader')
+	subprocess.call(['python', build_dir + '/Tools/precompileEffectFiles.py', current_dir + '../src/OpenInfraPlatform/Shader'], stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))	
+	shutil.copytree(current_dir + '../src/OpenInfraPlatform/Shader', deploy_path + '/Shader', ignore = shutil.ignore_patterns("*.hlsl*"))
 	
 	#shutil.copy(current_dir + '../src/OpenInfraPlatform/' + 'Shader/D3D12/AlignmentShader.hlsl',	deploy_path + '/Shader/D3D12/AlignmentShader.hlsl');
 	#shutil.copy(current_dir + '../src/OpenInfraPlatform/' + 'Shader/D3D12/CoordinateSystem.hlsl',	deploy_path + '/Shader/D3D12/CoordinateSystem.hlsl');
