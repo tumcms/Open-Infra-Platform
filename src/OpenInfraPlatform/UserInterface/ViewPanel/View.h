@@ -43,7 +43,7 @@ namespace OpenInfraPlatform
 			void createViewport(buw::eRenderAPI renderAPI, bool warp, bool msaa);
 			void getViewportSettings(buw::eRenderAPI& renderAPI, bool& warp, bool& msaa);
 
-			void enableBlueMap( const bool checked );
+			void enableOpenInfraMap( const bool checked );
 
 			void enableTerrainGradientRamp(const bool enable);
 

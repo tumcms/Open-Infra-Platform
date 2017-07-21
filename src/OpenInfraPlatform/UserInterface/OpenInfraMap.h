@@ -1,34 +1,22 @@
-/*
-    Copyright (c) 2017 Technical University of Munich
-    Chair of Computational Modeling and Simulation.
-
-    TUM Open Infra Platform is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License Version 3
-    as published by the Free Software Foundation.
-
-    TUM Open Infra Platform is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+/*! \verbatim
+ *  \copyright	Copyright (c) 2015 Julian Amann. All rights reserved.
+ *	\author		Julian Amann <julian.amann@tum.de> (https://www.cms.bgu.tum.de/en/team/amann)
+ *	\brief		This file is part of the BlueFramework.
+ *	\endverbatim
+ */
 
 #pragma once
-#ifndef BlueFramework_GraphicsEngine_BlueMap_89d0ecd9_c7bb_42aa_87a1_f2b355d8cf2c_h
-#define BlueFramework_GraphicsEngine_BlueMap_89d0ecd9_c7bb_42aa_87a1_f2b355d8cf2c_h
+#ifndef OpenInfraPlatform_UserInterface_OpenInfraMap_fb3c8e89_70ea_4bd7_8393_1d1b86e58faa_h
+#define OpenInfraPlatform_UserInterface_OpenInfraMap_fb3c8e89_70ea_4bd7_8393_1d1b86e58faa_h
 
-#include <BlueFramework/Core/PropertySet.h>
-#include <boost/noncopyable.hpp>
-#include <string>
+#include <buw.h>
+#include <QWidget>
 #include <QQuickView>
 #include <QGeoCoordinate>
-#include <QPointF>
 
-namespace BlueFramework
+namespace OpenInfraPlatform
 {
-	namespace Engine
+	namespace UserInterface
 	{
 		enum class GeoCoordinateSystem
 		{
@@ -36,14 +24,15 @@ namespace BlueFramework
 			GaussKrueger,
 		};
 
-		class OpenInfraMap : private boost::noncopyable
+		class OpenInfraMap
 		{
 		public:			
 			explicit OpenInfraMap(QWidget* parent);
 
 			virtual ~OpenInfraMap();
 			
-			QWidget* show();
+			QWidget* widget();
+			void show();
 			void hide();
 
 			QGeoCoordinate position() const;
@@ -56,16 +45,11 @@ namespace BlueFramework
 			void reposition(const buw::Vector3d& vector, GeoCoordinateSystem coordinateSystem);
 
 		private:
-			QQuickView m_view;
-			QWidget* m_container;
-		}; // end class BlueMap
-	} // end namespace GraphicsEngine
-} // end namespace BlueFramework
+			QQuickView* view_;
+			QWidget* container_;
+		}; // end class OpenInfraMap
+	} // end namespace UserInterface
+} // end namespace OpenInfraPlatform
 
-namespace buw
-{
-	using BlueFramework::Engine::OpenInfraMap;
-	using BlueFramework::Engine::GeoCoordinateSystem;
-}
 
-#endif // end define BlueFramework_GraphicsEngine_BlueMap_89d0ecd9_c7bb_42aa_87a1_f2b355d8cf2c_h
+#endif // end define OpenInfraPlatform_UserInterface_OpenInfraMap_fb3c8e89_70ea_4bd7_8393_1d1b86e58faa_h
