@@ -74,6 +74,7 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
 	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\Qt5.9.0\\5.9\\msvc${MSVC_VERSION_YEAR}_64" "C:\\Qt\\5.9\\msvc${MSVC_VERSION_YEAR}_64" "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc${MSVC_VERSION_YEAR}_64")
 	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
+	set(ZLIB_ROOT "C:/thirdparty/vs2015/x64/zlib-1.2.11")
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG     ${CMAKE_BINARY_DIR}/Debug)
@@ -119,7 +120,7 @@ find_package(Oklabi)
 find_package(gtest REQUIRED) #reduce to this line
 
 #ZLib
-find_package(ZLIB REQUIRED)
+find_package(ZLIB 1.2.10 REQUIRED)
 
 find_package(libLAS REQUIRED)
 find_package(qhull REQUIRED)
