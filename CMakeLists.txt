@@ -677,6 +677,13 @@ add_subdirectory(oip)
 
 if (WIN32)
 
+add_custom_target(ZLIBCopyBinaries
+  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Debug/zlibd.dll           ${CMAKE_BINARY_DIR}/Debug
+  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Release/zlib.dll          ${CMAKE_BINARY_DIR}/Release
+  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/RelWithDebInfo/zlib.dll   ${CMAKE_BINARY_DIR}/RelWithDebInfo
+)
+
+set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
 set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
