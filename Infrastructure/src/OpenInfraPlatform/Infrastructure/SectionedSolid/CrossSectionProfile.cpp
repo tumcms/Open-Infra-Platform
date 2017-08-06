@@ -73,10 +73,24 @@ namespace
 			}
 			else
 			{
-				// Compute normal at half-angle.
 				auto normal1 = buw::orthogonal(buw::Vector2d(position - prevPosition), !bRunsCCW).normalized();
 				auto normal2 = buw::orthogonal(buw::Vector2d(nextPosition - position), !bRunsCCW).normalized();
-				normal = (normal1 + normal2).normalized();
+
+				auto angle = buw::calculateAngleBetweenVectors(normal1, normal2);
+				if (std::abs(angle) < 0.05) // < 2 degrees -> the angle is small enough for a continuous transition between the two surfaces
+				{
+					// Compute normal at half-angle.
+					normal = (normal1 + normal2).normalized();
+					// Add the segment, so that the number of segments stays the same
+					segment.push_back(CrossSectionProfile::Vertex(position, normal));
+				}
+				else
+				{
+					// add the normal of the previous surface
+					segment.push_back(CrossSectionProfile::Vertex(position, normal1));
+					// add the normal of the next surface
+					normal = normal2;
+				}
 			}
 
 			segment.push_back(CrossSectionProfile::Vertex(position, normal));
@@ -176,6 +190,8 @@ namespace SectionedSolid
 			if (curve->m_Points->m_entity_enum != IfcAlignment1x1::IFCCARTESIANPOINTLIST2D)
 				throw buw::Exception("Profile curve must be 2D.");
 			auto points = std::static_pointer_cast<IfcAlignment1x1::IfcCartesianPointList2D>(curve->m_Points);
+
+			// if Segments = empty -> all the points are connected using simple lines
 			if (curve->m_Segments.empty())
 			{
 				auto const& pointSource = [&points](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {
