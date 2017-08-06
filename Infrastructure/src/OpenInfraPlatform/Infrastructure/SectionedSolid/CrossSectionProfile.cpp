@@ -49,8 +49,9 @@ namespace
 			bool const bIsLast = (i == numPnts - 1);
 			auto const& point = pointSource(i);
 			pNextPoint = bIsLast ? nullptr : &(pointSource(i + 1));
-			if (point.size() != 2 || !point[0] || !point[1] ||
-				(pNextPoint && (pNextPoint->size() != 2 || !(*pNextPoint)[0] || !(*pNextPoint)[1])))
+			if (                        point.size() != 2 || !point[0]         || !point[1]          ||
+				  (pNextPoint && (pNextPoint->size() != 2 || !(*pNextPoint)[0] || !(*pNextPoint)[1]))
+				)
 			{
 				BLUE_LOG(warning) << "Cross section profile data is corrupt.";
 				continue;
@@ -227,6 +228,31 @@ namespace SectionedSolid
 					}
 				}
 			}
+		} break;
+		case IfcAlignment1x1::IFCPOLYLINE:
+		{
+			auto curve = std::static_pointer_cast<IfcAlignment1x1::IfcPolyline>(csp->m_OuterCurve);
+			if (curve->m_Points.size() == 0)
+				throw buw::Exception("Empty polyline.");
+
+			// translate from 3d to 2d (polyline have as x = 0.0)
+			std::vector<std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint>> points2d;
+			for (auto point : curve->m_Points)
+			{
+				std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> p(new IfcAlignment1x1::IfcCartesianPoint());
+				p->m_Coordinates.push_back(point->m_Coordinates[1]);
+				p->m_Coordinates.push_back(point->m_Coordinates[2]);
+				points2d.push_back(p);
+			}
+			auto const& pointSource = [&points2d](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {
+				return points2d[i]->m_Coordinates;
+			};
+
+			segments.push_back(processLineStrip(
+				pointSource,
+				curve->m_Points.size(),
+				isCCW(pointSource, curve->m_Points.size()),
+				true));
 		} break;
 		default:
 			throw buw::NotImplementedYetException("Unimplemented profile curve type.");
