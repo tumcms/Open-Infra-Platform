@@ -181,6 +181,9 @@ namespace SectionedSolid
 	{
 		if (!csp->m_OuterCurve)
 			throw buw::Exception("Empty curve.");
+
+		std::vector<std::vector<CrossSectionProfile::Vertex>> outerCurve;
+
 		switch (csp->m_OuterCurve->m_entity_enum)
 		{
 		case IfcAlignment1x1::IFCINDEXEDPOLYCURVE:
@@ -198,7 +201,7 @@ namespace SectionedSolid
 				auto const& pointSource = [&points](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {
 					return points->m_CoordList[i];
 				};
-				segments.push_back(processLineStrip(
+				outerCurve.push_back(processLineStrip(
 					pointSource,
 					points->m_CoordList.size(),
 					isCCW(pointSource, points->m_CoordList.size())));
@@ -212,7 +215,7 @@ namespace SectionedSolid
 					if (std::dynamic_pointer_cast<IfcAlignment1x1::IfcLineIndex>(segment))
 					{
 						auto lineSegment = std::static_pointer_cast<IfcAlignment1x1::IfcLineIndex>(segment);
-						segments.push_back(processLineStrip(
+						outerCurve.push_back(processLineStrip(
 							[&points, &lineSegment](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {return points->m_CoordList[lineSegment->m_vec[i]-1];},
 							lineSegment->m_vec.size(),
 							bIsCCW));
@@ -248,7 +251,7 @@ namespace SectionedSolid
 				return points2d[i]->m_Coordinates;
 			};
 
-			segments.push_back(processLineStrip(
+			outerCurve.push_back(processLineStrip(
 				pointSource,
 				curve->m_Points.size(),
 				isCCW(pointSource, curve->m_Points.size())));
@@ -256,11 +259,15 @@ namespace SectionedSolid
 		default:
 			throw buw::NotImplementedYetException("Unimplemented profile curve type.");
 		}
+
+		segments.push_back(outerCurve);
 	}
 
 	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcAsymmetricIShapeProfileDef> csp)
 		: segments()
 	{
+		std::vector<std::vector<CrossSectionProfile::Vertex>> outerCurve;
+
 		// Get the local profile transformation (IfcParameterizedProfileDef).
 		buw::Vector2d translation(0.0, 0.0);
 		buw::Matrix22d rotation = buw::Matrix22d::Identity();
@@ -309,9 +316,9 @@ namespace SectionedSolid
 			BLUE_LOG(warning) << "TopFlangeSlope not supported";
 
 		// Right side (except first point)...
-		segments.push_back(getLinearSegment(buw::Vector2d(-bottomWidth_2, -height_2), buw::Vector2d(bottomWidth_2, -height_2),
+		outerCurve.push_back(getLinearSegment(buw::Vector2d(-bottomWidth_2, -height_2), buw::Vector2d(bottomWidth_2, -height_2),
 			buw::Vector2d(0.0, -1.0), rotation, translation, true));
-		segments.push_back(getLinearSegment(segments.back().back().position, buw::Vector2d(bottomWidth_2, -height_2 + bottomThickness),
+		outerCurve.push_back(getLinearSegment(outerCurve.back().back().position, buw::Vector2d(bottomWidth_2, -height_2 + bottomThickness),
 			buw::Vector2d(1.0, 0.0), rotation, translation));
 		if (bottomFilletRadius > 0.0)
 		{
@@ -325,14 +332,14 @@ namespace SectionedSolid
 				positions,
 				&normals);
 			std::vector<CrossSectionProfile::Vertex> segment;
-			segment.push_back(Vertex(segments.back().back().position, rotation * buw::Vector2d(0.0, 1.0)));
+			segment.push_back(Vertex(outerCurve.back().back().position, rotation * buw::Vector2d(0.0, 1.0)));
 			for (auto positionsIt = positions.begin(), normalsIt = normals.begin(); positionsIt != positions.end(); ++positionsIt, ++normalsIt)
 				segment.push_back(Vertex(*positionsIt, *normalsIt));
-			segments.push_back(segment);
+			outerCurve.push_back(segment);
 		}
 		else
 		{
-			segments.push_back(getLinearSegment(segments.back().back().position, buw::Vector2d(webThickness_2, -height_2 + bottomThickness),
+			outerCurve.push_back(getLinearSegment(outerCurve.back().back().position, buw::Vector2d(webThickness_2, -height_2 + bottomThickness),
 				buw::Vector2d(0.0, 1.0), rotation, translation));
 		}
 		if (topFilletRadius > 0.0)
@@ -347,24 +354,24 @@ namespace SectionedSolid
 				positions,
 				&normals);
 			std::vector<CrossSectionProfile::Vertex> segment;
-			segment.push_back(Vertex(segments.back().back().position, rotation * buw::Vector2d(1.0, 0.0)));
+			segment.push_back(Vertex(outerCurve.back().back().position, rotation * buw::Vector2d(1.0, 0.0)));
 			for (auto positionsIt = positions.begin(), normalsIt = normals.begin(); positionsIt != positions.end(); ++positionsIt, ++normalsIt)
 				segment.push_back(Vertex(*positionsIt, *normalsIt));
-			segments.push_back(segment);
+			outerCurve.push_back(segment);
 		}
 		else
 		{
-			segments.push_back(getLinearSegment(segments.back().back().position, buw::Vector2d(webThickness_2, height_2 - topThickness),
+			outerCurve.push_back(getLinearSegment(outerCurve.back().back().position, buw::Vector2d(webThickness_2, height_2 - topThickness),
 				buw::Vector2d(1.0, 0.0), rotation, translation));
 		}
-		segments.push_back(getLinearSegment(segments.back().back().position, buw::Vector2d(topWidth_2, height_2 - topThickness),
+		outerCurve.push_back(getLinearSegment(outerCurve.back().back().position, buw::Vector2d(topWidth_2, height_2 - topThickness),
 			buw::Vector2d(0.0, -1.0), rotation, translation));
-		segments.push_back(getLinearSegment(segments.back().back().position, buw::Vector2d(topWidth_2, height_2),
+		outerCurve.push_back(getLinearSegment(outerCurve.back().back().position, buw::Vector2d(topWidth_2, height_2),
 			buw::Vector2d(1.0, 0.0), rotation, translation));
 		// Left side...
-		segments.push_back(getLinearSegment(segments.back().back().position, buw::Vector2d(-topWidth_2, height_2),
+		outerCurve.push_back(getLinearSegment(outerCurve.back().back().position, buw::Vector2d(-topWidth_2, height_2),
 			buw::Vector2d(0.0, 1.0), rotation, translation));
-		segments.push_back(getLinearSegment(segments.back().back().position, buw::Vector2d(-topWidth_2, height_2 - topThickness),
+		outerCurve.push_back(getLinearSegment(outerCurve.back().back().position, buw::Vector2d(-topWidth_2, height_2 - topThickness),
 			buw::Vector2d(-1.0, 0.0), rotation, translation));
 		if (topFilletRadius > 0.0)
 		{
@@ -378,14 +385,14 @@ namespace SectionedSolid
 				positions,
 				&normals);
 			std::vector<CrossSectionProfile::Vertex> segment;
-			segment.push_back(Vertex(segments.back().back().position, rotation * buw::Vector2d(0.0, -1.0)));
+			segment.push_back(Vertex(outerCurve.back().back().position, rotation * buw::Vector2d(0.0, -1.0)));
 			for (auto positionsIt = positions.begin(), normalsIt = normals.begin(); positionsIt != positions.end(); ++positionsIt, ++normalsIt)
 				segment.push_back(Vertex(*positionsIt, *normalsIt));
-			segments.push_back(segment);
+			outerCurve.push_back(segment);
 		}
 		else
 		{
-			segments.push_back(getLinearSegment(segments.back().back().position, buw::Vector2d(-webThickness_2, height_2 - topThickness),
+			outerCurve.push_back(getLinearSegment(outerCurve.back().back().position, buw::Vector2d(-webThickness_2, height_2 - topThickness),
 				buw::Vector2d(0.0, -1.0), rotation, translation));
 		}
 		if (bottomFilletRadius > 0.0)
@@ -400,20 +407,22 @@ namespace SectionedSolid
 				positions,
 				&normals);
 			std::vector<CrossSectionProfile::Vertex> segment;
-			segment.push_back(Vertex(segments.back().back().position, rotation * buw::Vector2d(-1.0, 0.0)));
+			segment.push_back(Vertex(outerCurve.back().back().position, rotation * buw::Vector2d(-1.0, 0.0)));
 			for (auto positionsIt = positions.begin(), normalsIt = normals.begin(); positionsIt != positions.end(); ++positionsIt, ++normalsIt)
 				segment.push_back(Vertex(*positionsIt, *normalsIt));
-			segments.push_back(segment);
+			outerCurve.push_back(segment);
 		}
 		else
 		{
-			segments.push_back(getLinearSegment(segments.back().back().position, buw::Vector2d(-webThickness_2, -height_2 + bottomThickness),
+			outerCurve.push_back(getLinearSegment(outerCurve.back().back().position, buw::Vector2d(-webThickness_2, -height_2 + bottomThickness),
 				buw::Vector2d(-1.0, 0.0), rotation, translation));
 		}
-		segments.push_back(getLinearSegment(segments.back().back().position, buw::Vector2d(-bottomWidth_2, -height_2 + bottomThickness),
+		outerCurve.push_back(getLinearSegment(outerCurve.back().back().position, buw::Vector2d(-bottomWidth_2, -height_2 + bottomThickness),
 			buw::Vector2d(0.0, 1.0), rotation, translation));
-		segments.push_back(getLinearSegment(segments.back().back().position, buw::Vector2d(-bottomWidth_2, -height_2),
+		outerCurve.push_back(getLinearSegment(outerCurve.back().back().position, buw::Vector2d(-bottomWidth_2, -height_2),
 			buw::Vector2d(-1.0, 0.0), rotation, translation));
+
+		segments.push_back(outerCurve);
 	}
 
 	CrossSectionProfile::~CrossSectionProfile()

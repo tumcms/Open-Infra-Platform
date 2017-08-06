@@ -612,13 +612,14 @@ public:
 			if (mirroredProfile->m_Operator)
 				throw buw::NotImplementedYetException("Advanced mirror profiles are not supported.");
 			auto profileCurve = createProfileCurve(mirroredProfile->m_ParentProfile);
-			for (auto& segment : profileCurve->segments)
-			{
-				std::transform(segment.begin(), segment.end(), segment.begin(),
-					[](SectionedSolid::CrossSectionProfile::Vertex const& v)->SectionedSolid::CrossSectionProfile::Vertex {
-					return SectionedSolid::CrossSectionProfile::Vertex(buw::Vector2d(-v.position[0], v.position[1]), buw::Vector2d(-v.normal[0], v.normal[1]));
-				});
-			}
+			for (auto& curve : profileCurve->segments )
+				for (auto& segment : curve)
+				{
+					std::transform(segment.begin(), segment.end(), segment.begin(),
+						[](SectionedSolid::CrossSectionProfile::Vertex const& v)->SectionedSolid::CrossSectionProfile::Vertex {
+						return SectionedSolid::CrossSectionProfile::Vertex(buw::Vector2d(-v.position[0], v.position[1]), buw::Vector2d(-v.normal[0], v.normal[1]));
+					});
+				}
 			return profileCurve;
 		}
 		default:

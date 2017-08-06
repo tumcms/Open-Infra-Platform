@@ -90,19 +90,20 @@ bool SectionedSolidEffect::addData(Infrastructure::SectionedSolidHorizontal cons
 		auto const& rotation2D = buw::createRotationMatrix(anchorNormal);
 		auto const& profile = profiles[i];
 		xformedProfiles.push_back(Profile());
-		for (auto const& segment : profile->segments)
-		{
-			ProfileSegment xformedSegment(segment.size());
-			std::transform(segment.begin(), segment.end(), xformedSegment.begin(),
-				[&xformedAnchors, &rotation2D, i](Infrastructure::SectionedSolid::CrossSectionProfile::Vertex const& p)->buw::VertexPosition3Normal3 {
-				buw::Vector3f sweptPosition(p.position[0], 0.0f, p.position[1]);
-				sweptPosition.block<2, 1>(0, 0) = rotation2D * sweptPosition.block<2, 1>(0, 0);
-				buw::Vector3f sweptNormal(p.normal[0], 0.0f, p.normal[1]);
-				sweptNormal.block<2, 1>(0, 0) = rotation2D * sweptNormal.block<2, 1>(0, 0);
-				return buw::VertexPosition3Normal3(sweptPosition + xformedAnchors[i], sweptNormal);
-			});
-			xformedProfiles.back().push_back(xformedSegment);
-		}
+		for (auto const& curve : profile->segments )
+			for (auto const& segment : curve )
+			{
+				ProfileSegment xformedSegment(segment.size());
+				std::transform(segment.begin(), segment.end(), xformedSegment.begin(),
+					[&xformedAnchors, &rotation2D, i](Infrastructure::SectionedSolid::CrossSectionProfile::Vertex const& p)->buw::VertexPosition3Normal3 {
+					buw::Vector3f sweptPosition(p.position[0], 0.0f, p.position[1]);
+					sweptPosition.block<2, 1>(0, 0) = rotation2D * sweptPosition.block<2, 1>(0, 0);
+					buw::Vector3f sweptNormal(p.normal[0], 0.0f, p.normal[1]);
+					sweptNormal.block<2, 1>(0, 0) = rotation2D * sweptNormal.block<2, 1>(0, 0);
+					return buw::VertexPosition3Normal3(sweptPosition + xformedAnchors[i], sweptNormal);
+				});
+				xformedProfiles.back().push_back(xformedSegment);
+			}
 	}
 
 	// Create the vertex buffer(s) for rendering.
