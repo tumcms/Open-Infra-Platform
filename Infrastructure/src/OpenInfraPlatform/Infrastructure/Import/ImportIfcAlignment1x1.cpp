@@ -605,6 +605,7 @@ public:
 		case IFCASYMMETRICISHAPEPROFILEDEF:
 			return std::make_shared<SectionedSolid::CrossSectionProfile>(std::static_pointer_cast<IfcAsymmetricIShapeProfileDef>(profile));
 		case IFCARBITRARYCLOSEDPROFILEDEF:
+		case IFCARBITRARYPROFILEDEFWITHVOIDS:
 			return std::make_shared<SectionedSolid::CrossSectionProfile>(std::static_pointer_cast<IfcArbitraryClosedProfileDef>(profile));
 		case IFCMIRROREDPROFILEDEF:
 		{

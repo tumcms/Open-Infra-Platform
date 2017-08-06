@@ -261,6 +261,47 @@ namespace SectionedSolid
 		}
 
 		segments.push_back(outerCurve);
+
+		if (csp->m_entity_enum == IfcAlignment1x1::IFCARBITRARYPROFILEDEFWITHVOIDS )
+		{
+			auto const& profile = std::static_pointer_cast<IfcAlignment1x1::IfcArbitraryProfileDefWithVoids>(csp);
+
+			for (auto& _innerCurve : profile->m_InnerCurves)
+			{
+				std::vector<std::vector<CrossSectionProfile::Vertex>> innerCurve;
+				switch (_innerCurve->m_entity_enum)
+				{
+				case IfcAlignment1x1::IFCPOLYLINE:
+				{
+					auto curve = std::static_pointer_cast<IfcAlignment1x1::IfcPolyline>(_innerCurve);
+					if (curve->m_Points.size() == 0)
+						throw buw::Exception("Empty polyline.");
+
+					// translate from 3d to 2d (polyline have as x = 0.0)
+					std::vector<std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint>> points2d;
+					for (auto point : curve->m_Points)
+					{
+						std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> p(new IfcAlignment1x1::IfcCartesianPoint());
+						p->m_Coordinates.push_back(point->m_Coordinates[1]);
+						p->m_Coordinates.push_back(point->m_Coordinates[2]);
+						points2d.push_back(p);
+					}
+					auto const& pointSource = [&points2d](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {
+						return points2d[i]->m_Coordinates;
+					};
+
+					innerCurve.push_back(processLineStrip(
+						pointSource,
+						curve->m_Points.size(),
+						!isCCW(pointSource, curve->m_Points.size())));
+				} break;
+				default:
+					throw buw::NotImplementedYetException("Unimplemented profile curve type.");
+				}
+				segments.push_back(innerCurve);
+			}
+
+		}
 	}
 
 	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcAsymmetricIShapeProfileDef> csp)
