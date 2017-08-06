@@ -251,8 +251,7 @@ namespace SectionedSolid
 			segments.push_back(processLineStrip(
 				pointSource,
 				curve->m_Points.size(),
-				isCCW(pointSource, curve->m_Points.size()),
-				true));
+				isCCW(pointSource, curve->m_Points.size())));
 		} break;
 		default:
 			throw buw::NotImplementedYetException("Unimplemented profile curve type.");
