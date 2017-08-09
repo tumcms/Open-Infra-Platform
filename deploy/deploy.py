@@ -158,7 +158,7 @@ def deploy():
 	shutil.copy('InstanceLevelTranslator/OkstraI18NTranslation.dll',		deploy_path + "/OkstraI18NTranslation.dll")
 
 	# Zlib
-	#shutil.copy(build_dir + 'Release/zlib1.dll',							deploy_path + '/zlib1.dll')
+	shutil.copy(build_dir + 'Release/zlib.dll',							deploy_path + '/zlib.dll')
 
 	# DirectX
 	#shutil.copy(current_dir + 'D3DRedist/D3D/x64/d3dcompiler_47.dll',						deploy_path + '/d3dcompiler_47.dll')
