@@ -50,7 +50,7 @@ endif()
 if(MSVC_VERSION EQUAL 1900)
 	set(MSVC_VERSION_STRING "vs2015")
 	set(MSVC_VERSION_YEAR "2015")
-elseif(MSVC_VERSION EQUAL 1910)
+elseif(MSVC_VERSION EQUAL 1910 OR MSVC_VERSION EQUAL 1911)
 	set(MSVC_VERSION_STRING "vs2017")
 	set(MSVC_VERSION_YEAR "2017")
 else()
@@ -70,7 +70,7 @@ option(OIP_USE_PREBUILD_EARLYBINDING_LIBS "Set to OFF to build early binding by 
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
-	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_64_0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_63_0")
+	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_64_0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_63_0")
 	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
 	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\Qt5.9.0\\5.9\\msvc${MSVC_VERSION_YEAR}_64" "C:\\Qt\\5.9\\msvc${MSVC_VERSION_YEAR}_64" "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc${MSVC_VERSION_YEAR}_64")
 	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
