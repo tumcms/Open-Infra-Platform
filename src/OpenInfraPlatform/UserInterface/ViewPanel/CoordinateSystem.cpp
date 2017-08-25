@@ -18,101 +18,101 @@
 #include "CoordinateSystem.h"
 
 void OpenInfraPlatform::UserInterface::drawCoordinateSystem(
-	buw::ReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>> vertexCacheLine,
-	float scale/* = 1.0f*/, 
-	eCoordinateSystemType type/* = eCoordinateSystemType::Autodesk*/)
+    buw::ReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>> vertexCacheLine,
+    float scale/* = 1.0f*/, 
+    eCoordinateSystemType type/* = eCoordinateSystemType::Autodesk*/)
 {
-	// draw axes
-	
-	/// X
-	// draw x-Axis	
-	buw::Vector3f redColor = { 153.0f / 255.0f, 30.0f / 255.0f, 30.0f / 255.0f };
-	
-	vertexCacheLine->drawLine(
-		{ { buw::Vector3f(-0.4f,0.0f,0.0f) * 100.0f * scale }, redColor, 1.0f },
-		{ { buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale }, redColor, 1.0f }
-	);
+    // draw axes
+    
+    /// X
+    // draw x-Axis	
+    buw::Vector3f redColor = { 153.0f / 255.0f, 30.0f / 255.0f, 30.0f / 255.0f };
 
-	// draw arrowhead
-	vertexCacheLine->drawLine( 
-		{ { buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale }, redColor, 1.0f },
-		{ { buw::Vector3f(0.375f,0.0f,0.025f) * 100.0f * scale }, redColor, 1.0f }
-	);
-	vertexCacheLine->drawLine( 
-		{ { buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale }, redColor, 1.0f },
-		{ { buw::Vector3f(0.375f,0.0f,-0.025f) * 100.0f * scale }, redColor, 1.0f }
-	);
+    vertexCacheLine->drawLine(
+        buw::VertexPosition3Color3Size1(buw::Vector3f(-0.4f,0.0f,0.0f) * 100.0f * scale, redColor, 1.0f),
+        buw::VertexPosition3Color3Size1(buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale, redColor, 1.0f)
+    );
 
-	// draw x character
-	buw::Vector3f offsetX(3.5, 0.0f, 0.0f);
-	offsetX *= scale;
+    // draw arrowhead
+    vertexCacheLine->drawLine(
+        buw::VertexPosition3Color3Size1(buw::Vector3f(0.4f, 0.0f, 0.0f) * 100.0f * scale, redColor, 1.0f),
+        buw::VertexPosition3Color3Size1(buw::Vector3f(0.375f, 0.0f, 0.025f) * 100.0f * scale, redColor, 1.0f)
+    );
+    vertexCacheLine->drawLine( 
+        buw::VertexPosition3Color3Size1(buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale, redColor, 1.0f),
+        buw::VertexPosition3Color3Size1(buw::Vector3f(0.375f,0.0f,-0.025f) * 100.0f * scale, redColor, 1.0f)
+    );
 
-	vertexCacheLine->drawLine( 
-		{ { offsetX + buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale }, redColor, 1.0f },
-		{ { offsetX + buw::Vector3f(0.375f,0.0f,0.025f) * 100.0f * scale }, redColor, 1.0f }
-	);
+    // draw x character
+    buw::Vector3f offsetX(3.5, 0.0f, 0.0f);
+    offsetX *= scale;
+
+//     vertexCacheLine->drawLine( 
+//         { { offsetX + buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale }, redColor, 1.0f },
+//         { { offsetX + buw::Vector3f(0.375f,0.0f,0.025f) * 100.0f * scale }, redColor, 1.0f }
+//     );
 /*
-	vertexCacheLine->drawLine( offsetX + buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale, offsetX + buw::Vector3f(0.375f,0.0f,-0.025f) * 100.0f * scale);
+    vertexCacheLine->drawLine( offsetX + buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale, offsetX + buw::Vector3f(0.375f,0.0f,-0.025f) * 100.0f * scale);
 
-	vertexCacheLine->drawLine( offsetX + buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale, offsetX + buw::Vector3f(2*(0.4f-0.375f) + 0.375f,0.0f,0.025f) * 100.0f * scale);
-	vertexCacheLine->drawLine( offsetX + buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale, offsetX + buw::Vector3f(2*(0.4f-0.375f) + 0.375f,0.0f,-0.025f) * 100.0f * scale);
+    vertexCacheLine->drawLine( offsetX + buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale, offsetX + buw::Vector3f(2*(0.4f-0.375f) + 0.375f,0.0f,0.025f) * 100.0f * scale);
+    vertexCacheLine->drawLine( offsetX + buw::Vector3f(0.4f,0.0f,0.0f) * 100.0f * scale, offsetX + buw::Vector3f(2*(0.4f-0.375f) + 0.375f,0.0f,-0.025f) * 100.0f * scale);
 
-	/// Y
+    /// Y
 
-	// draw y-Axis
-	vertexCacheLine->setColor(30.0f / 255.0f, 153.0f / 255.0f, 30.0f / 255.0f);  // green color
-	vertexCacheLine->drawLine( buw::Vector3f(0.0f,-0.4f,0.0f) * 100.0f * scale, buw::Vector3f(0.0f,0.4f,0.0f) * 100.0f * scale);
+    // draw y-Axis
+    vertexCacheLine->setColor(30.0f / 255.0f, 153.0f / 255.0f, 30.0f / 255.0f);  // green color
+    vertexCacheLine->drawLine( buw::Vector3f(0.0f,-0.4f,0.0f) * 100.0f * scale, buw::Vector3f(0.0f,0.4f,0.0f) * 100.0f * scale);
 
-	// draw arrowhead
-	vertexCacheLine->drawLine( buw::Vector3f(0.0f,0.4f,0.0f) * 100.0f * scale, buw::Vector3f(0.0f,0.375f,0.025f) * 100.0f * scale);
-	vertexCacheLine->drawLine( buw::Vector3f(0.0f,0.4f,0.0f) * 100.0f * scale, buw::Vector3f(0.0f,0.375f,-0.025f) * 100.0f * scale);
+    // draw arrowhead
+    vertexCacheLine->drawLine( buw::Vector3f(0.0f,0.4f,0.0f) * 100.0f * scale, buw::Vector3f(0.0f,0.375f,0.025f) * 100.0f * scale);
+    vertexCacheLine->drawLine( buw::Vector3f(0.0f,0.4f,0.0f) * 100.0f * scale, buw::Vector3f(0.0f,0.375f,-0.025f) * 100.0f * scale);
 
-	buw::Vector3f offsetY(0.0, 3.5f, 0.0f);
-	offsetY *= scale;
-	
-	if(type == eCoordinateSystemType::OpenGL)
-	{
-		// draw y character
-		vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.375f,0.0f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.400f,0.0f) * 100.0f * scale);
-		vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.400f,0.0f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.425f,0.025f) * 100.0f * scale);
-		vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.400f,0.0f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.425f,-0.025f) * 100.0f * scale);
-	}
-	else // type == eCoordinateSystemType::Autodesk
-	{
-		// draw z character
-		vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.375f,-0.025f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.375f,0.025f) * 100.0f * scale);
-		vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.425f,-0.025f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.375f,0.025f) * 100.0f * scale);
-		vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.425f,-0.025f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.425f,0.025f) * 100.0f * scale);
-	}
+    buw::Vector3f offsetY(0.0, 3.5f, 0.0f);
+    offsetY *= scale;
+    
+    if(type == eCoordinateSystemType::OpenGL)
+    {
+        // draw y character
+        vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.375f,0.0f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.400f,0.0f) * 100.0f * scale);
+        vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.400f,0.0f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.425f,0.025f) * 100.0f * scale);
+        vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.400f,0.0f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.425f,-0.025f) * 100.0f * scale);
+    }
+    else // type == eCoordinateSystemType::Autodesk
+    {
+        // draw z character
+        vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.375f,-0.025f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.375f,0.025f) * 100.0f * scale);
+        vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.425f,-0.025f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.375f,0.025f) * 100.0f * scale);
+        vertexCacheLine->drawLine(offsetY + buw::Vector3f(0.0f,0.425f,-0.025f) * 100.0f * scale,offsetY + buw::Vector3f(0.0f,0.425f,0.025f) * 100.0f * scale);
+    }
 
-	/// Z
+    /// Z
 
-	buw::Vector3f offsetZ(0.0, 0.0f, -3.5f);
-	offsetZ *= scale;
+    buw::Vector3f offsetZ(0.0, 0.0f, -3.5f);
+    offsetZ *= scale;
 
-	// draw z-Axis
-	vertexCacheLine->setColor(30.0f / 255.0f, 30.0f / 255.0f, 153.0f / 255.0f); // blue color
-	vertexCacheLine->drawLine( buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale, buw::Vector3f(0.0f,0.0f,0.4f) * 100.0f * scale);
+    // draw z-Axis
+    vertexCacheLine->setColor(30.0f / 255.0f, 30.0f / 255.0f, 153.0f / 255.0f); // blue color
+    vertexCacheLine->drawLine( buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale, buw::Vector3f(0.0f,0.0f,0.4f) * 100.0f * scale);
 
-	// draw arrowhead
-	vertexCacheLine->drawLine( buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale, buw::Vector3f( 0.025f, 0.0f,-0.375f) * 100.0f * scale);
-	vertexCacheLine->drawLine( buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale, buw::Vector3f(-0.025f,0.0f,-0.375f) * 100.0f * scale);
+    // draw arrowhead
+    vertexCacheLine->drawLine( buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale, buw::Vector3f( 0.025f, 0.0f,-0.375f) * 100.0f * scale);
+    vertexCacheLine->drawLine( buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale, buw::Vector3f(-0.025f,0.0f,-0.375f) * 100.0f * scale);
 
-	if(type == eCoordinateSystemType::OpenGL)
-	{
-		// draw z character
-		vertexCacheLine->drawLine( offsetZ + buw::Vector3f(-0.025f,0.0f,-0.375f) * 100.0f * scale, offsetZ + buw::Vector3f(0.025f,0.0f,-0.425f) * 100.0f * scale);
-		vertexCacheLine->drawLine( offsetZ + buw::Vector3f(-0.025f,0.0f,-0.425f) * 100.0f * scale, offsetZ + buw::Vector3f(0.025f,0.0f,-0.425f) * 100.0f * scale);
-		vertexCacheLine->drawLine( offsetZ + buw::Vector3f(-0.025f,0.0f,-0.375f) * 100.0f * scale, offsetZ + buw::Vector3f(0.025f,0.0f,-0.375f) * 100.0f * scale);
-	}
-	else // type == eCoordinateSystemType::Autodesk
-	{
-		//	draw y character
-		vertexCacheLine->drawLine( offsetZ + buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale, offsetZ + buw::Vector3f( 0.025f,0.0f, -0.375f - 2*0.025) * 100.0f * scale);
-		vertexCacheLine->drawLine( offsetZ + buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale, offsetZ + buw::Vector3f(-0.025f,0.0f, -0.375f - 2*0.025) * 100.0f * scale);
-		vertexCacheLine->drawLine( offsetZ + buw::Vector3f(0.0f,0.0f,-0.4f + 0.025) * 100.0f * scale, offsetZ + buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale);
-	}
-	*/
+    if(type == eCoordinateSystemType::OpenGL)
+    {
+        // draw z character
+        vertexCacheLine->drawLine( offsetZ + buw::Vector3f(-0.025f,0.0f,-0.375f) * 100.0f * scale, offsetZ + buw::Vector3f(0.025f,0.0f,-0.425f) * 100.0f * scale);
+        vertexCacheLine->drawLine( offsetZ + buw::Vector3f(-0.025f,0.0f,-0.425f) * 100.0f * scale, offsetZ + buw::Vector3f(0.025f,0.0f,-0.425f) * 100.0f * scale);
+        vertexCacheLine->drawLine( offsetZ + buw::Vector3f(-0.025f,0.0f,-0.375f) * 100.0f * scale, offsetZ + buw::Vector3f(0.025f,0.0f,-0.375f) * 100.0f * scale);
+    }
+    else // type == eCoordinateSystemType::Autodesk
+    {
+        //	draw y character
+        vertexCacheLine->drawLine( offsetZ + buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale, offsetZ + buw::Vector3f( 0.025f,0.0f, -0.375f - 2*0.025) * 100.0f * scale);
+        vertexCacheLine->drawLine( offsetZ + buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale, offsetZ + buw::Vector3f(-0.025f,0.0f, -0.375f - 2*0.025) * 100.0f * scale);
+        vertexCacheLine->drawLine( offsetZ + buw::Vector3f(0.0f,0.0f,-0.4f + 0.025) * 100.0f * scale, offsetZ + buw::Vector3f(0.0f,0.0f,-0.4f) * 100.0f * scale);
+    }
+    */
 }
 
 //void OpenInfraPlatform::UserInterface::drawGrid( 
