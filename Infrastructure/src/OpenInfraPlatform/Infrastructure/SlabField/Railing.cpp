@@ -15,16 +15,16 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SlabField.h"
+#include "Railing.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-SlabField::SlabField(int const id, std::wstring const& name)
+Railing::Railing(int const id, std::wstring const& name)
 	: SlabFieldElement(id, name)
 {
 }
 
-SlabField::~SlabField()
+Railing::~Railing()
 {
 }
 

@@ -29,7 +29,7 @@ find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h googlemock/include/g
 
 if(NOT GTEST_ROOT)
 	set(CMAKE_MODULE_PATH ${CMAKE_ROOT}/Modules)
-	find_package(gtest REQUIRED)
+	find_package(gtest)
 	set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake/)
 	
 	set(GTEST_INSTALL_DIR "C:/thirdparty/${MSVC_VERSION_STRING}/x64" CACHE FILEPATH "Please specify an installation directory.")

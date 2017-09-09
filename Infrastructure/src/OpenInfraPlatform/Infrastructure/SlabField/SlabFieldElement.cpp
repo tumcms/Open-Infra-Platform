@@ -15,17 +15,44 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SlabField.h"
+#include "SlabFieldElement.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-SlabField::SlabField(int const id, std::wstring const& name)
-	: SlabFieldElement(id, name)
+SlabFieldElement::SlabFieldElement(int const id, std::wstring const& name)
+	: id(id)
+	, name(name)
+	, sectionedSolids()
 {
 }
 
-SlabField::~SlabField()
+SlabFieldElement::~SlabFieldElement()
 {
+}
+
+buw::String SlabFieldElement::getName() const
+{
+	return name;
+}
+
+void SlabFieldElement::setName(std::wstring const& name)
+{
+	this->name = name;
+}
+
+SlabFieldElement::SectionedSolidVector const& SlabFieldElement::getSectionedSolids() const
+{
+	return sectionedSolids;
+}
+
+void SlabFieldElement::addSectionedSolid(SectionedSolidHorizontal const& ssh)
+{
+	sectionedSolids.push_back(ssh);
+}
+
+void SlabFieldElement::addSectionedSolid(SectionedSolidVector const& sshs)
+{
+	sectionedSolids.insert(sectionedSolids.end(), sshs.begin(), sshs.end());
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END

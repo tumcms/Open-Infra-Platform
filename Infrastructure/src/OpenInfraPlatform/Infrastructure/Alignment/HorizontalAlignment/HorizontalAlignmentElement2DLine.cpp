@@ -48,18 +48,8 @@ buw::Vector2d HorizontalAlignmentElement2DLine::getTangent(const double /*lerpPa
 
 buw::Vector2d HorizontalAlignmentElement2DLine::getNormal(const double lerpParameter) const
 {
-	buw::Vector2d normal = getTangent(lerpParameter);
-
 	// Rotate the tangent by 90 degrees CCW to get the normal.
-
-	// Swap coordinates.
-	std::swap(normal[0], normal[1]);
-
-	// Flip the respective sign.
-	bool const bFlipFirstCoord = normal[0] < 0.0 ^ normal[1] < 0.0;
-	normal[1 - bFlipFirstCoord] = -normal[1 - bFlipFirstCoord];
-
-	return normal;
+	return buw::orthogonal(getTangent(lerpParameter), true);
 }
 
 double HorizontalAlignmentElement2DLine::getLength() const {

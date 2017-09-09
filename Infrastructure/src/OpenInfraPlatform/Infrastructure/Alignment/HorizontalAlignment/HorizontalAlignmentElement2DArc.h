@@ -41,6 +41,10 @@ public:
 
 	virtual buw::Vector2d getNormal(const double lerpParameter) const override;
 
+	virtual buw::Vector2d getCenter() const { return center_; }
+
+	virtual bool getClockWise() const { return clockWise_; }
+
 	virtual buw::Vector2d getStartPosition() const override;
 
 	virtual buw::Vector2d getEndPosition() const override;

@@ -50,11 +50,9 @@ endif()
 if(MSVC_VERSION EQUAL 1900)
 	set(MSVC_VERSION_STRING "vs2015")
 	set(MSVC_VERSION_YEAR "2015")
-	message("Welcome to Visual Studio 14 2015.")
-elseif(MSVC_VERSION EQUAL 1910)
+elseif(MSVC_VERSION EQUAL 1910 OR MSVC_VERSION EQUAL 1911)
 	set(MSVC_VERSION_STRING "vs2017")
 	set(MSVC_VERSION_YEAR "2017")
-	message("Welcome to Visual Studio 15 2017.")
 else()
 	message("Please switch to Visual Studio 14 2015 or Visual Studio 15 2017.")
 	return()
@@ -72,10 +70,11 @@ option(OIP_USE_PREBUILD_EARLYBINDING_LIBS "Set to OFF to build early binding by 
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
-	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_64_0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_63_0")
+	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_64_0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_63_0")
 	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
 	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\Qt5.9.0\\5.9\\msvc${MSVC_VERSION_YEAR}_64" "C:\\Qt\\5.9\\msvc${MSVC_VERSION_YEAR}_64" "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc${MSVC_VERSION_YEAR}_64")
 	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
+	find_path(ZLIB_ROOT NAMES zlib.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG     ${CMAKE_BINARY_DIR}/Debug)
@@ -100,7 +99,12 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
 # Visual Studio expected
 # Find Boost
 set(Boost_USE_STATIC_LIBS   ON)
-find_package(Boost				1.63.0 COMPONENTS signals system filesystem thread program_options python REQUIRED)
+if(MSVC_VERSION EQUAL 1910 OR MSVC_VERSION EQUAL 1911)
+find_package(Boost 1.63.0 COMPONENTS signals system filesystem python3 REQUIRED) # we suggest Boost 1.65.0
+else()
+find_package(Boost 1.63.0 COMPONENTS signals system filesystem python REQUIRED) # we suggest Boost 1.65.0
+endif()
+
 
 #Find VisualLeakDetector
 find_package(VLD 					   REQUIRED)
@@ -121,7 +125,7 @@ find_package(Oklabi)
 find_package(gtest REQUIRED) #reduce to this line
 
 #ZLib
-find_package(ZLIB REQUIRED)
+find_package(ZLIB 1.2.10 REQUIRED)
 
 find_package(libLAS REQUIRED)
 find_package(qhull REQUIRED)
@@ -678,6 +682,13 @@ add_subdirectory(oip)
 
 if (WIN32)
 
+add_custom_target(ZLIBCopyBinaries
+  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Debug/zlibd.dll           ${CMAKE_BINARY_DIR}/Debug
+  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Release/zlib.dll          ${CMAKE_BINARY_DIR}/Release
+  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/RelWithDebInfo/zlib.dll   ${CMAKE_BINARY_DIR}/RelWithDebInfo
+)
+
+set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
 set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")

@@ -86,19 +86,9 @@ buw::Vector2d OpenInfraPlatform::Infrastructure::HorizontalAlignmentElement2DArc
 
 buw::Vector2d OpenInfraPlatform::Infrastructure::HorizontalAlignmentElement2DArc::getTangent(const double lerpParameter) const
 {
-	buw::Vector2d tangent = getNormal(lerpParameter);
-
 	// Rotate the normal by 90 degrees CW to get the tangent.
 	// The tanget must point into the direction of increasing parameter value.
-
-	// Swap coordinates.
-	std::swap(tangent[0], tangent[1]);
-
-	// Flip the respective sign.
-	bool const bFlipSecondCoord = (tangent[0] < 0.0 ^ tangent[1] < 0.0);
-	tangent[bFlipSecondCoord] = -tangent[bFlipSecondCoord];
-
-	return tangent;
+	return buw::orthogonal(getNormal(lerpParameter), false);
 }
 
 buw::Vector2d OpenInfraPlatform::Infrastructure::HorizontalAlignmentElement2DArc::getNormal(const double lerpParameter) const

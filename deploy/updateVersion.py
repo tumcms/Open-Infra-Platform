@@ -4,19 +4,22 @@ import sys
 	
 CurrentPath = os.path.dirname(__file__)
 
-	
 def DetermineCurrentRevison():
+	os.environ['PATH'] = "%PATH;C:\Program Files\TortoiseHg"
+	os.environ["LANGUAGE"] = "en_US.UTF-8"
+	
 	pattern = r"""
 				changeset: 		# Result preceeded by 'changeset:'		
 				(?:\s+)			# Unknown amount of whitespaces
-				([0-9]{4})		# Four digit revision number				
+				([0-9]{2})		# Four digit revision number				
 			  """
 			  
 	regex = re.compile(pattern, re.X)	
 	
 	text = os.popen('hg log -l 1').read()	
+	print(text)
 	match = regex.match(text)	
-	
+	print(match)
 	revision = -1
 	
 	if match:
@@ -24,8 +27,9 @@ def DetermineCurrentRevison():
 		irev = int(revision) + 1
 		return str(irev)
 	else:
-		print ("Could not retrieve revision number!")	
-	
+		print ("Could not retrieve revision number!")
+		return str("UnkownVersion")
+
 	
 def ReplaceFile(fileName, content):
 	tempFileName = fileName + '.tmp'

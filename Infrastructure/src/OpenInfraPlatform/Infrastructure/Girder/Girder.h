@@ -20,31 +20,32 @@
 
 #include <OpenInfraPlatform/Infrastructure/namespace.h>
 #include <OpenInfraPlatform/Infrastructure/OIPInfrastructure.h>
-#include <OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignment2D.h>
-#include <OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignment2D.h>
+#include <OpenInfraPlatform/Infrastructure/SectionedSolid/SectionedSolidHorizontal.h>
 #include <BlueFramework/Core/string.h>
 
-#include <memory>
+#include <vector>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
 class BLUEINFRASTRUCTURE_API Girder
 {
 public:
+	typedef std::vector<SectionedSolidHorizontal> SectionedSolidVector;
+
 	explicit Girder(int const id, std::wstring const& name);
 	virtual ~Girder();
 
 	buw::String getName() const;
 	void setName(std::wstring const& name);
 
-	void setHorizontalAlignment(std::shared_ptr<HorizontalAlignment2D> horiz);
-	void setVerticalAlignment(std::shared_ptr<VerticalAlignment2D> vert);
+	SectionedSolidVector const& getSectionedSolids() const;
+	void addSectionedSolid(SectionedSolidHorizontal const& ssh);
+	void addSectionedSolid(SectionedSolidVector const& sshs);
 
 private:
 	int const id;
 	buw::String name;
-	std::shared_ptr<HorizontalAlignment2D> horizontalAlignment;
-	std::shared_ptr<VerticalAlignment2D> verticalAlignment;
+	SectionedSolidVector sectionedSolids;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END

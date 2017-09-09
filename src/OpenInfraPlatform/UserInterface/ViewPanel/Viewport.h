@@ -45,7 +45,9 @@ namespace OpenInfraPlatform
 		class DEMEffect;
 		class TrafficSignEffect;
 		class AlignmentEffect;
-        class IfcGeometryEffect;
+		class GirderEffect;
+		class SlabFieldEffect;
+		class IfcGeometryEffect;
         class SkyboxEffect;
 		class UIElements;
 
@@ -159,6 +161,8 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<DEMEffect> demEffect_;
 			buw::ReferenceCounted<TrafficSignEffect> trafficSignEffect_;
 			buw::ReferenceCounted<AlignmentEffect> alignmentEffect_;
+			buw::ReferenceCounted<GirderEffect> girderEffect_;
+			buw::ReferenceCounted<SlabFieldEffect> slabFieldEffect_;
             buw::ReferenceCounted<IfcGeometryEffect> ifcGeometryEffect_;
 			buw::ReferenceCounted<UIElements> uiElements_;
             buw::ReferenceCounted<SkyboxEffect> skyboxEffect_;

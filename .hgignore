@@ -14,3 +14,4 @@ bin/vs2015/x64/OpenInfraPlatform.Infrastructured.dll
 src/OpenInfraPlatform/log.txt
 IFC4x1ExampleFiles/TUM Open Infra Platform_1935/*
 build/*
+lib/**

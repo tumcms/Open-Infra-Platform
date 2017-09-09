@@ -1,7 +1,9 @@
 import sys
 import os
+import re
 import shutil
 import zipfile
+import subprocess
 
 # get the directory the script is in
 current_dir = os.path.dirname(sys.argv[0]) + '\\'
@@ -16,10 +18,30 @@ def DeleteFiles(directory, extension):
 				os.remove(os.path.join(root, file))
 
 def DetermineCurrentRevison():
-	text = os.popen('hg log -l 1').read()
-	revision = text[13:17] # extract revision number
-	irev = int(revision) + 1
-	return str(irev)
+	os.environ['PATH'] = "%PATH;C:\Program Files\TortoiseHg"
+	os.environ["LANGUAGE"] = "en_US.UTF-8"
+	
+	pattern = r"""
+				changeset: 		# Result preceeded by 'changeset:'		
+				(?:\s+)			# Unknown amount of whitespaces
+				([0-9]{2})		# Four digit revision number				
+			  """
+			  
+	regex = re.compile(pattern, re.X)	
+	
+	text = os.popen('hg log -l 1').read()	
+	print(text)
+	match = regex.match(text)	
+	print(match)
+	revision = -1
+	
+	if match:
+		revision = match.group(1)		
+		irev = int(revision) + 1
+		return str(irev)
+	else:
+		print ("Could not retrieve revision number!")
+		return str("UnkownVersion")
 
 def clean():
 	shutil.rmtree(deploy_path)
@@ -27,7 +49,7 @@ def clean():
 
 def deploy():
 	os.environ["LANGUAGE"] = "en_US.UTF-8"
-
+	
 	# check if the build directory was passed
 	if len(sys.argv) != 2:
 		print('No build directory was passed!')
@@ -136,7 +158,7 @@ def deploy():
 	shutil.copy('InstanceLevelTranslator/OkstraI18NTranslation.dll',		deploy_path + "/OkstraI18NTranslation.dll")
 
 	# Zlib
-	#shutil.copy(build_dir + 'Release/zlib1.dll',							deploy_path + '/zlib1.dll')
+	shutil.copy(build_dir + 'Release/zlib.dll',							deploy_path + '/zlib.dll')
 
 	# DirectX
 	#shutil.copy(current_dir + 'D3DRedist/D3D/x64/d3dcompiler_47.dll',						deploy_path + '/d3dcompiler_47.dll')
@@ -169,9 +191,8 @@ def deploy():
 	DeleteFiles(deploy_path + "/Data/translations", ".ts") # linguist files
 	# Shader
 	#os.mkdir(deploy_path + '/Shader')
-
-
-	shutil.copytree(current_dir + '../src/OpenInfraPlatform/Shader',										deploy_path + '/Shader')
+	subprocess.call(['python', build_dir + '/Tools/precompileEffectFiles.py', current_dir + '../src/OpenInfraPlatform/Shader'], stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))	
+	shutil.copytree(current_dir + '../src/OpenInfraPlatform/Shader', deploy_path + '/Shader', ignore = shutil.ignore_patterns("*.hlsl*"))
 	
 	#shutil.copy(current_dir + '../src/OpenInfraPlatform/' + 'Shader/D3D12/AlignmentShader.hlsl',	deploy_path + '/Shader/D3D12/AlignmentShader.hlsl');
 	#shutil.copy(current_dir + '../src/OpenInfraPlatform/' + 'Shader/D3D12/CoordinateSystem.hlsl',	deploy_path + '/Shader/D3D12/CoordinateSystem.hlsl');

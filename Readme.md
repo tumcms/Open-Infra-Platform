@@ -6,6 +6,44 @@
 
 ![Beta1_5_Windows8_1.png](screenshots/Beta1_5_Windows8_1.png)
 
+## Building
+
+### Buildng thirdparty libararies
+
+OIP depence on several third party libaries such as zlib. The [percdems](http://bitbucket.org/Vertexwahn/percdems/src) contains several scirpts to build the different needed libraries. For instance, building zlib for Visual Studio 2015 x64 can be done using the following batch script on Windows:
+
+```bash
+wget.exe http://zlib.net/zlib1211.zip -OC:\thirdparty\vs2015\x64\zlib-1.2.11.zip
+7za.exe x C:\thirdparty\vs2015\x64\zlib-1.2.11.zip -oC:\thirdparty\vs2015\x64
+del C:\thirdparty\vs2015\x64\zlib-1.2.11.zip
+call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+cmake -G"Visual Studio 14 2015 Win64" -HC:\thirdparty\vs2015\x64\zlib-1.2.11 -BC:\thirdparty\vs2015\x64\zlib-1.2.11\build
+C:
+cd C:\thirdparty\vs2015\x64\zlib-1.2.11\build
+cmake --build . --config Debug
+cmake --build . --config Release
+cmake --build . --config RelWithDebInfo
+mkdir C:\thirdparty\vs2015\x64\zlib-1.2.11\lib
+mkdir C:\thirdparty\vs2015\x64\zlib-1.2.11\bin
+copy Debug\zlibd.dll C:\thirdparty\vs2015\x64\zlib-1.2.11\bin\zlibd.dll
+copy Debug\zlibd.exp C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlibd.exp
+copy Debug\zlibd.ilk C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlibd.ilk
+copy Debug\zlibd.lib C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlibd.lib
+copy Debug\zlibd.pdb C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlibd.pdb
+copy Debug\zlibstaticd.lib C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlibstaticd.lib
+
+REM copy RelWithDebInfo\zlib.dll C:\thirdparty\vs2015\x64\zlib-1.2.11\bin\zlib.dll
+REM copy RelWithDebInfo\zlib.exp C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlib.exp
+REM copy RelWithDebInfo\zlib.lib C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlib.lib
+REM copy RelWithDebInfo\zlibstatic.lib C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlibstatic.lib
+
+copy Release\zlib.dll C:\thirdparty\vs2015\x64\zlib-1.2.11\bin\zlib.dll
+copy Release\zlib.exp C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlib.exp
+copy Release\zlib.lib C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlib.lib
+copy Release\zlibstatic.lib C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlibstatic.lib
+copy zconf.h C:\thirdparty\vs2015\x64\zlib-1.2.11\zconf.h
+```
+
 ## License
 
 Copyright (c) 2016 Technical University of Munich

@@ -15,44 +15,46 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __SLABFIELDMODEL_H_4F964D8615F44A9E980A0017774D2FB8__
-#define __SLABFIELDMODEL_H_4F964D8615F44A9E980A0017774D2FB8__
+#ifndef __SLABFIELDELEMENT_H_4E0E43F3630D4764A9CD2FA6214EF8A6__
+#define __SLABFIELDELEMENT_H_4E0E43F3630D4764A9CD2FA6214EF8A6__
 
 #include <OpenInfraPlatform/Infrastructure/namespace.h>
 #include <OpenInfraPlatform/Infrastructure/OIPInfrastructure.h>
-#include "SlabFieldElement.h"
+#include <OpenInfraPlatform/Infrastructure/SectionedSolid/SectionedSolidHorizontal.h>
+#include <BlueFramework/Core/string.h>
 
-#include <memory>
 #include <vector>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-class BLUEINFRASTRUCTURE_API SlabFieldModel
+class BLUEINFRASTRUCTURE_API SlabFieldElement
 {
 public:
-	explicit SlabFieldModel();
-	virtual ~SlabFieldModel();
+	typedef std::vector<SectionedSolidHorizontal> SectionedSolidVector;
 
-	static SlabFieldModel* createFlatCopy(SlabFieldModel const& src);
+	buw::String getName() const;
+	void setName(std::wstring const& name);
 
-	size_t getItemCount() const;
+	SectionedSolidVector const& getSectionedSolids() const;
+	void addSectionedSolid(SectionedSolidHorizontal const& ssh);
+	void addSectionedSolid(SectionedSolidVector const& sshs);
 
-	std::shared_ptr<SlabFieldElement> getItem(size_t const index) const;
-	std::shared_ptr<SlabFieldElement> getItemById(size_t const id) const;
-	std::vector<std::shared_ptr<SlabFieldElement>> const& getAllItems() const;
+	int const id;
 
-	void addItem(std::shared_ptr<SlabFieldElement> const& slabFieldElement);
-	void deleteItem(std::shared_ptr<SlabFieldElement> const& slabFieldElement);
+protected:
+	explicit SlabFieldElement(int const id, std::wstring const& name);
+	virtual ~SlabFieldElement();
 
 private:
-	std::vector<std::shared_ptr<SlabFieldElement>> slabFieldElements_;
+	buw::String name;
+	SectionedSolidVector sectionedSolids;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 
 namespace buw
 {
-	using OpenInfraPlatform::Infrastructure::SlabFieldModel;
+	using OpenInfraPlatform::Infrastructure::SlabFieldElement;
 }
 
-#endif // __SLABFIELDMODEL_H_4F964D8615F44A9E980A0017774D2FB8__
+#endif // __SLABFIELDELEMENT_H_4E0E43F3630D4764A9CD2FA6214EF8A6__
