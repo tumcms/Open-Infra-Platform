@@ -78,12 +78,14 @@ namespace OpenInfraPlatform
 
 		void cancelJob();
 
+		/*Signals to communicate job progress/status to the main thread.*/
 		boost::signals2::signal<void()> jobStarting;
 		boost::signals2::signal<void(int jobID)> jobStarted;
 		boost::signals2::signal<void(int jobID, float progress, const std::string& message)> jobRunning;
 		boost::signals2::signal<void(int jobID, bool completed)> jobFinishing;
 		boost::signals2::signal<void(int jobID, bool completed)> jobFinished;
 
+		/*Signal to inform IfcZip export/import to delete temporary file. Unused for other importers.*/
 		Q_SIGNAL void finished();
 	
 	private:

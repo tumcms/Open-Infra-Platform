@@ -20,14 +20,28 @@
 #include <string>
 #include <iostream>
 
+#include <QtXml>
+
+#define __EXPORT
+
+
 using namespace std;
 
 namespace
 {
-	TEST(LandInfra, ExportImport)
+#ifdef __IMPORT
+	TEST(LandInfra, Import)
 	{
 		buw::ImportLandInfra landInfraImporter("../../../../../../testdata/LandInfra/complete_alignment_example_20170321_pxs.xml");
-		int alignments = landInfraImporter.getAlignmentModel()->getAlignmentCount();
-		
+		int alignments = landInfraImporter.getAlignmentModel()->getAlignmentCount();		
 	}
+#endif
+
+#ifdef __EXPORT
+	TEST(LandInfra, Export)
+	{
+		buw::ImportLandXml landXMLImporter("../../../../../../testdata/LandXML/Mainbruecke_Klingenberg.xml");
+		buw::ExportLandInfra(landXMLImporter.getAlignmentModel(), landXMLImporter.getDigitalElevationModel(), "export_landinfra_test.xml");
+	}
+#endif
 }
