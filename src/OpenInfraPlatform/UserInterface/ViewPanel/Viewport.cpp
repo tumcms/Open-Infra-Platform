@@ -35,11 +35,14 @@
 
 #include <buw.Engine.h>
 #include <buw.Rasterizer.h>
+#include <QHBoxLayout>
 #include <QDir>
 #include <QTimer>
 #include <QtXml>
 #include <QtXmlPatterns>
 #include <iomanip>
+
+
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
 
@@ -64,6 +67,14 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().Change.connect(boost::bind(&Viewport::onChange, this));
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().Clear.connect(boost::bind(&Viewport::onClear, this));
+
+	map_ = buw::makeReferenceCounted<OpenInfraMap>(parent);
+	map_->hide();
+
+	QHBoxLayout* layout = new QHBoxLayout(this);
+	layout->setMargin(0);
+	layout->addWidget(map_->widget());
+
 
 	camera_ = buw::makeReferenceCounted<buw::Camera>();
 	cameraController_ = buw::makeReferenceCounted<buw::CameraController>(camera_);
@@ -144,7 +155,7 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 	slabFieldEffect_->init();
 
 	BLUE_LOG(trace) << "Creating effects (7)";
-	uiElements_ = buw::makeReferenceCounted<UIElements>(renderSystem_.get(), depthStencilMSAA_, worldBuffer_);
+	uiElements_ = buw::makeReferenceCounted<UIElements>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
 	uiElements_->init();
 
     BLUE_LOG(trace) << "Creating IfcGeometry effects";
@@ -246,6 +257,14 @@ void Viewport::setDifferentColorsForAlignmentElements(const bool checked) {
 void OpenInfraPlatform::UserInterface::Viewport::setHighlightSelectedAlignmentSegment(const bool checked)
 {
     alignmentEffect_->enableHighlightSelected(checked);
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::enableOpenInfraMap(const bool checked)
+{
+	if (checked)
+		map_->show();
+	else
+		map_->hide();
 }
 
 void Viewport::viewDirection(const buw::Vector3f& direction) {
@@ -629,9 +648,9 @@ void Viewport::onChange(ChangeFlag changeFlag) {
 	minExtend_ = (min + offset).cast<float>();
 	maxExtend_ = (max + offset).cast<float>();
 
-	minExtend_ = buw::Vector3f(minExtend_.x(), minExtend_.z(), minExtend_.y());
-	maxExtend_ = buw::Vector3f(maxExtend_.x(), maxExtend_.z(), maxExtend_.y());
-	buw::Vector3d offset_data = data.getOffset();
+	BLUE_LOG(trace) << "before reposition";
+	map_->reposition(-offset, GeoCoordinateSystem::GaussKrueger);
+	BLUE_LOG(trace) << "AFTER reposition";
 
     if(changeFlag & ChangeFlag::DigitalElevationModel && dem) {
         demEffect_->setDEM(dem, offset);

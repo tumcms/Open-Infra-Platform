@@ -1210,7 +1210,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionPreferences_triggere
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowMap_clicked( bool checked )
 {
-	view_->enableBlueMap(checked);
+	view_->enableOpenInfraMap(checked);
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionViewport_as_screenshot_triggered()
@@ -2153,7 +2153,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::showMap()
 {
 	static bool checked = false;
 	checked = !checked;
-	view_->enableBlueMap(checked);
+	view_->enableOpenInfraMap(checked);
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_variantEditor_currentItemChanged(QtBrowserItem * item)

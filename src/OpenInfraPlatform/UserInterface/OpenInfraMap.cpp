@@ -1,79 +1,79 @@
-/*
-    Copyright (c) 2017 Technical University of Munich
-    Chair of Computational Modeling and Simulation.
+/*! \verbatim
+ *  \copyright	Copyright (c) 2015 Julian Amann. All rights reserved.
+ *	\author		Julian Amann <julian.amann@tum.de> (https://www.cms.bgu.tum.de/en/team/amann)
+ *	\brief		This file is part of the BlueFramework.
+ *	\endverbatim
+ */
 
-    TUM Open Infra Platform is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License Version 3
-    as published by the Free Software Foundation.
-
-    TUM Open Infra Platform is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-#include "OpenInfraMap.h"
-#include <BlueFramework/Core/Diagnostics/log.h>
-#include <QQuickItem>
-#include <QWidget>
+#include "OpenInfraPlatform/UserInterface/OpenInfraMap.h"
 #include <QVariant>
-#include <cmath>
+#include <QQuickItem>
+#include "BlueFramework/Engine/ResourceManagment/download.h"
 
-BlueFramework::Engine::OpenInfraMap::OpenInfraMap(QWidget* parent) :
-	m_view()
+#define BOOST_SPIRIT_THREADSAFE
+
+OpenInfraPlatform::UserInterface::OpenInfraMap::OpenInfraMap(QWidget* parent) :
+	view_(nullptr),
+	container_(nullptr)
 {
-	this->m_view.setSource(QUrl("qrc:/qml/Map.qml"));
-	this->m_container = QWidget::createWindowContainer(&this->m_view, parent);
-	this->m_container->setFocusPolicy(Qt::TabFocus);
-	this->m_view.setResizeMode(QQuickView::SizeRootObjectToView);
+	view_ = new QQuickView();
+	container_ = QWidget::createWindowContainer(view_, parent);
+	view_->setSource(QUrl("main.qml"));
+	container_->setFocusPolicy(Qt::TabFocus);
+	view_->setResizeMode(QQuickView::SizeRootObjectToView);
 }
 
-BlueFramework::Engine::OpenInfraMap::~OpenInfraMap()
+OpenInfraPlatform::UserInterface::OpenInfraMap::~OpenInfraMap()
 {
+	if (view_)
+		delete view_;
+	if (container_)
+		delete container_;
 }
 
-QWidget* BlueFramework::Engine::OpenInfraMap::show()
+QWidget* OpenInfraPlatform::UserInterface::OpenInfraMap::widget()
 {
-	this->m_container->setVisible(true);
-	return this->m_container;
+	return container_;
 }
 
-void BlueFramework::Engine::OpenInfraMap::hide()
+void OpenInfraPlatform::UserInterface::OpenInfraMap::show()
 {
-	this->m_container->setVisible(false);
+	container_->setVisible(true);
 }
 
-QGeoCoordinate BlueFramework::Engine::OpenInfraMap::position() const
+void OpenInfraPlatform::UserInterface::OpenInfraMap::hide()
 {
-	return qvariant_cast<QGeoCoordinate>(this->m_view.rootObject()->property("position"));
+	container_->setVisible(false);
 }
 
-void BlueFramework::Engine::OpenInfraMap::position(const QGeoCoordinate& value)
+QGeoCoordinate OpenInfraPlatform::UserInterface::OpenInfraMap::position() const
 {
-	if (!this->m_view.rootObject()->setProperty("position", QVariant::fromValue(value))) throw std::logic_error("setProperty failed");
+	return qvariant_cast<QGeoCoordinate>(view_->rootObject()->property("position"));
 }
 
-int BlueFramework::Engine::OpenInfraMap::zoom() const
+void OpenInfraPlatform::UserInterface::OpenInfraMap::position(const QGeoCoordinate& value)
 {
-	return this->m_view.rootObject()->property("zoomLevel").toInt();
+	if (!view_->rootObject()->setProperty("position", QVariant::fromValue(value))) throw std::logic_error("setProperty failed");
 }
 
-void BlueFramework::Engine::OpenInfraMap::zoom(int value)
+int OpenInfraPlatform::UserInterface::OpenInfraMap::zoom() const
 {
-	if(!this->m_view.rootObject()->setProperty("zoomLevel", QVariant::fromValue(value))) throw std::logic_error("setProperty failed");
+	return view_->rootObject()->property("zoomLevel").toInt();
 }
 
-int BlueFramework::Engine::OpenInfraMap::minimalZoom() const
+void OpenInfraPlatform::UserInterface::OpenInfraMap::zoom(int value)
 {
-	return this->m_view.rootObject()->property("minZoomLevel").toInt();
+	if(!view_->rootObject()->setProperty("zoomLevel", QVariant::fromValue(value))) throw std::logic_error("setProperty failed");
 }
 
-int BlueFramework::Engine::OpenInfraMap::maximalZoom() const
+int OpenInfraPlatform::UserInterface::OpenInfraMap::minimalZoom() const
 {
-	return this->m_view.rootObject()->property("maxZoomLevel").toInt();
+	return view_->rootObject()->property("minZoomLevel").toInt();
+}
+
+int OpenInfraPlatform::UserInterface::OpenInfraMap::maximalZoom() const
+{
+	return view_->rootObject()->property("maxZoomLevel").toInt();
 }
 
 //taken from the javascript of http://www.deine-berge.de/umrechner_koordinaten.php
@@ -205,7 +205,7 @@ buw::Vector2d gk2wgs(const buw::Vector2d& gk)
 	return pod2wgs(buw::Vector2d(lat, lng));
 }
 
-void BlueFramework::Engine::OpenInfraMap::reposition(const buw::Vector3d& vector, GeoCoordinateSystem coordinateSystem)
+void OpenInfraPlatform::UserInterface::OpenInfraMap::reposition(const buw::Vector3d& vector, GeoCoordinateSystem coordinateSystem)
 {
 	QGeoCoordinate coord;
 	switch (coordinateSystem)

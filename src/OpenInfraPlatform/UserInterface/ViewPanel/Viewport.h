@@ -16,8 +16,8 @@
 */
 
 #pragma once
-#ifndef Blueform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
-#define Blueform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
+#ifndef OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
+#define OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
 
 #include "OpenInfraPlatform/UserInterface/OpenInfraMap.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/eView.h"
@@ -36,6 +36,7 @@
 #include <buw.h>
 #include <QWidget>
 #include <QMouseEvent>
+#include <QQuickItem>
 
 namespace OpenInfraPlatform
 {
@@ -98,10 +99,11 @@ namespace OpenInfraPlatform
 			void setDrawTerrainWireframe(const bool enable);
             void setDifferentColorsForAlignmentElements(const bool checked);
             void setHighlightSelectedAlignmentSegment(const bool checked);
+			void enableOpenInfraMap(const bool checked);
 			void enableTerrainTextured(const bool checked);
             void enableRoadBodyTextured(const bool checked);
 			void enableIsoLines(const bool checked);
-            void enableTerrainGradientRamp(const bool checked);
+			void enableTerrainGradientRamp(const bool checked);
 
             void saveAsScreenshot(const std::string& filename);
             void storeGBuffer();
@@ -173,10 +175,12 @@ namespace OpenInfraPlatform
             bool snow_ = false;
 			buw::Color3f clearColor_;
 
-			int									selectedAlignmentIndex_;
+			int selectedAlignmentIndex_;
             UINT currentPickId_ = -1;
 			buw::Image4b pickIdImage_;
 
+			// Map
+			buw::ReferenceCounted<OpenInfraMap> map_;
 		};
 
 		//class Viewport : public QWidget
@@ -571,4 +575,4 @@ namespace OpenInfraPlatform
 //	using OpenInfraPlatform::UserInterface::Viewport;
 //}
 
-#endif // end define Blueform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
+#endif // end define OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h

@@ -35,6 +35,7 @@ class UIElements : public buw::Effect {
 public:
 	UIElements(
 		buw::IRenderSystem* renderSystem,
+		buw::ReferenceCounted<buw::IViewport> viewport,
 		buw::ReferenceCounted<buw::ITexture2D> depthStencil,
 		buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer);
 
@@ -47,6 +48,7 @@ private:
 
 	void v_render();
 
+	void loadMap();
 
 private:
 	buw::ReferenceCounted<buw::IPipelineState> pipelineState_;
@@ -55,6 +57,12 @@ private:
 	buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer_, viewportBuffer_;
 
 	buw::ReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>> vertexCacheLine_;
+
+	buw::ReferenceCounted<buw::IPipelineState> mapState_;
+	buw::ReferenceCounted<buw::IViewport> mapViewport_;
+	buw::ReferenceCounted<buw::IVertexBuffer> mapBuffer_;
+	buw::ReferenceCounted<buw::ITexture2D> mapTexture_;
+	buw::ReferenceCounted<buw::ISampler> linearSampler_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
