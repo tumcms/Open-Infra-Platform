@@ -22,26 +22,16 @@
 
 #include <QtXml>
 
-#define __EXPORT
-
 
 using namespace std;
 
 namespace
 {
-#ifdef __IMPORT
-	TEST(LandInfra, Import)
-	{
-		buw::ImportLandInfra landInfraImporter("../../../../../../testdata/LandInfra/complete_alignment_example_20170321_pxs.xml");
-		int alignments = landInfraImporter.getAlignmentModel()->getAlignmentCount();		
-	}
-#endif
-
-#ifdef __EXPORT
-	TEST(LandInfra, Export)
+	TEST(LandInfra, ExportImport)
 	{
 		buw::ImportLandXml landXMLImporter("../../../../../../testdata/LandXML/Mainbruecke_Klingenberg.xml");
 		buw::ExportLandInfra(landXMLImporter.getAlignmentModel(), landXMLImporter.getDigitalElevationModel(), "export_landinfra_test.xml");
+		buw::ImportLandInfra landInfraImporter("export_landinfra_test.xml");
+		auto alignmentModel = landInfraImporter.getAlignmentModel();		
 	}
-#endif
 }

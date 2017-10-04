@@ -98,7 +98,7 @@ namespace OpenInfraPlatform {
 			QDomNodeList children = childNodes();
 
 			/*Iterate over all children and add the horizontal alignments.*/
-			for(int i = 0; i < children.count(); i++) {
+			for(int i = 0; i < children.size(); i++) {
 				QDomNode child = children.at(i);
 
 				/*Check whether we have a horizontal or vertical alignment.*/
@@ -143,7 +143,7 @@ namespace OpenInfraPlatform {
 			for(int i = 3; i < children.count(); i++) {
 				LandInfraNode child = children.at(i);
 				auto element = child.toHorizontalAlignmentElement2D();
-				horizontalAlignment->addElement(child.toHorizontalAlignmentElement2D());
+				horizontalAlignment->addElement(element);
 			}
 
 			return horizontalAlignment;
@@ -172,6 +172,8 @@ namespace OpenInfraPlatform {
 						alignmentElement = segment.toHorizontalAlignmentElement2DClothoid();
 					else if(segment.nodeName() == "lia:circularArcSegment")
 						alignmentElement = segment.toHorizontalAlignmentElement2DArc();
+					else if(segment.nodeName() == "lia:transitionSegment")
+						alignmentElement = segment.toHorizontalAlignmentElement2DBlossCurve();
 				}
 			}
 			if(!(alignmentElement)) {
@@ -215,18 +217,23 @@ namespace OpenInfraPlatform {
 				buw::clothoidDescription desc;
 
 				/*Read refLocation from node.*/
-				QDomNodeList refLocation = children.at(0).childNodes();
+				QDomNode refLocation = children.at(0);
+				QDomNode affinePlacement = refLocation.firstChild();
 
 				/*Determine startPosition.*/
-				QStringList location = refLocation.at(0).toElement().text().split(' ');
-				if(!(location.count() == 2)) {
+				QStringList location = affinePlacement.childNodes().at(0).toElement().text().split(' ');
+				if(location.count() >= 2) {
 					double posX = location[0].toDouble();
 					double posY = location[1].toDouble();
 					desc.startPosition = buw::Vector2d(posX, posY);
 				}
+				else {
+					QString message = "Invalid location, less than 2 dimensions. Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
+					throw buw::Exception(message.toStdString().data());
+				}
 
 				/*Determine start direction.*/
-				desc.startDirection = refLocation.at(1).toElement().text().toDouble();
+				double startDirection = affinePlacement.childNodes().at(1).toElement().text().toDouble();
 
 				/*Read scaleFactor, startParameter and endParameter.*/
 				double scaleFactor    = children.at(1).toElement().text().toDouble();
@@ -237,8 +244,19 @@ namespace OpenInfraPlatform {
 				desc.clothoidConstant = scaleFactor;
 				desc.startCurvature   = startParameter;
 				desc.length           = endParameter;
+				desc.startDirection	  = startDirection;
+				/*Don't know yet how to determine from the given data whether it is cw or ccw, and if it's entry or not.*/
+				//desc.counterClockwise = false;
 
-				return buw::makeReferenceCounted<buw::HorizontalAlignmentElement2DClothoid>(desc);				 
+				/*Determine whether it is entry or not.*/			
+				//desc.entry = true;
+				auto clothoidSegment = buw::makeReferenceCounted<buw::HorizontalAlignmentElement2DClothoid>(
+					desc.startPosition,
+					desc.startDirection,
+					scaleFactor,
+					startParameter,
+					endParameter);
+				return clothoidSegment;// buw::makeReferenceCounted<buw::HorizontalAlignmentElement2DClothoid>(desc);
 			}
 			else {
 				QString message = "Invalid lia:clothoidArcSegment Node. Wrong number of children. Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
@@ -266,8 +284,16 @@ namespace OpenInfraPlatform {
 					buw::Vector2d centerPoint     = centerPointNode.toVector2d();
 
 					/*Determine radius.*/
-					LandInfraNode radiusNode = centerPointNode.nextSibling();
-					double radius            = radiusNode.toElement().text().toDouble();
+					LandInfraNode radiusNode = arcSpecification.childNodes().at(1);
+					double radius;
+					if(radiusNode.attributes().contains("uom")) {
+						if(radiusNode.attributes().namedItem("uom").nodeValue() == "m") {
+							radius = radiusNode.toElement().text().toDouble();
+						}
+					}
+					else {
+						radius = radiusNode.toElement().text().toDouble();
+					}
 
 					/*Lambda for setting the angles.*/
 					auto getAngle = [&](LandInfraNode angle) -> double {
@@ -277,20 +303,22 @@ namespace OpenInfraPlatform {
 						if(attributes.contains("uom")) {
 							QDomNode unitOfMeasurement = attributes.namedItem("uom");
 							if(unitOfMeasurement.nodeValue() == "r")
-								return buw::radianToDegree(angle.toElement().text().toDouble());
+								return angle.toElement().text().toDouble();
+							if(unitOfMeasurement.nodeValue() == "d")
+								return buw::degreeToRadian(angle.toElement().text().toDouble());
 						}
 						else {
 							/*Assume we have a degree unit of measurement, but we should report this.*/
 							BLUE_LOG(warning) << "No uom attribute found, assuming degree. Line: " << QString::number(lineNumber()).toStdString();
-							return angle.toElement().text().toDouble();
+							return buw::degreeToRadian(angle.toElement().text().toDouble());
 						}
 					};
 
 					/*Determine start angle.*/
-					double startAngle = getAngle(radiusNode.nextSibling());			
+					double startAngle = getAngle(arcSpecification.childNodes().at(2));			
 
 					/*Determine end angle.*/
-					double endAngle = getAngle(radiusNode.nextSibling());
+					double endAngle = getAngle(arcSpecification.childNodes().at(3));
 					
 					/*Convert to intern representation for HorizontalAlignmentElement2DArc: center, start, end, clockwise.*/
 					buw::Vector2d center = centerPoint;
@@ -302,7 +330,7 @@ namespace OpenInfraPlatform {
 					buw::Vector2d end = center + buw::Vector2d(std::cos(endAngle), std::sin(endAngle)) * radius;
 
 					/*If endAngle is larger than startAngle, we have a clockwise rotation, otherwise it's counter clockwise.*/
-					bool clockwise = endAngle > startAngle ? true : false;
+					bool clockwise = endAngle >= startAngle ? true : false;
 					return buw::makeReferenceCounted<buw::HorizontalAlignmentElement2DArc>(center, start, end, clockwise);
 				}
 				else {
@@ -316,6 +344,93 @@ namespace OpenInfraPlatform {
 				throw buw::Exception(message.toStdString().data());
 			}
 
+		}
+
+		buw::ReferenceCounted<buw::HorizontalAlignmentElement2DBlossCurve> LandInfraNode::toHorizontalAlignmentElement2DBlossCurve()
+		{
+			/*Cancel if node was falsely interpreted as lia:transitionSegment.*/
+			if(!(nodeName() == "lia:transitionSegment")) {
+				QString message = "Invalid lia:transitionSegment Node. Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
+				throw buw::Exception(message.toStdString().data());
+			}
+
+			QDomNodeList children = childNodes();
+			if(children.size() == 5) {
+				/*Retrieve all specifications from child nodes.*/
+				QDomNode referenceLocation = children.at(0);
+				QDomNode length = children.at(1);
+				QDomNode startCurvature = children.at(2);
+				QDomNode endCurvature = children.at(3);
+				QDomNode transitionType = children.at(4);
+
+				/*Currently only Bloss curve is supported as transition type.*/
+				if(transitionType.attributes().contains("xlink:title")) {
+					QDomNode title = transitionType.attributes().namedItem("xlink:title");
+					if(title.nodeValue() != "Bloss") {
+						BLUE_LOG(error) << "Unsupported transition type!";
+					}
+				}
+				/*Fill in Bloss curve description, can't determine absolute position from data specification.*/
+				buw::blossDescription desc;
+				desc.length = length.nodeValue().toDouble();
+				
+				/*TODO: Get math behind calculation of radius etc., fill with dummy values by now!*/
+				desc.radius = 1;
+				desc.startDirection = 1;
+				desc.startPosition = buw::Vector2d(1.0, 1.0);
+				desc.counterClockwise = false;
+				desc.entry = true;
+				
+				return buw::makeReferenceCounted<buw::HorizontalAlignmentElement2DBlossCurve>(desc);
+			}
+			else {
+				QString message = "Invalid lia:transitionSegment Node. Not all required specifications found. Line: " + QString::number(lineNumber());
+				throw buw::Exception(message.toStdString().data());
+			}
+		}
+
+		buw::ReferenceCounted<buw::VerticalAlignment2D> LandInfraNode::toVerticalAlignment2D()
+		{
+			/*Cancel if node was falsely interpreted as lia:Alignment2DVertical.*/
+			if(!(nodeName() == "lia:Alignment2DVertical")) {
+				QString message = "Invalid lia:Alignment2DVertical node. Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
+				throw buw::Exception(message.toStdString().data());
+			}
+
+			buw::ReferenceCounted<buw::VerticalAlignment2D> verticalAlignment = buw::makeReferenceCounted<buw::VerticalAlignment2D>();
+			QDomNodeList children = childNodes();			
+			int numChildren = children.size();
+			if(numChildren > 4) {
+				for(int i = 0; i < numChildren; i++) {
+					auto child = children.at(i);
+					if(child.nodeName() == "lia:location") {
+						//TODO: location implementation
+					}
+					else if(child.nodeName() == "lia:description") {
+						//TODO: description implementation
+					}
+					else if(child.nodeName() == "lia:state") {
+						//TODO:: state implementation
+					}
+					else if(child.nodeName() == "lia:alignmentOffset") {
+						//TODO: alignmentoffset implementation
+					}
+					else if(child.nodeName() == "lia:segment") {
+						//TODO: segment implementation
+					}
+					else if(child.nodeName() == "lia:measuredAlong") {
+						//TODO: implement measuredAlong
+					}
+					else {
+						QString message = "Invalid lia:Alignment2DVertical node. Invalid child node detected. Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
+						throw buw::Exception(message.toStdString().data());
+					}
+				}
+			}
+			else {
+				QString message = "Invalid lia:Alignment2DVertical node. Not all necessary attributes are present. Node name is " + nodeName() + ".Line: " + QString::number(lineNumber());
+				throw buw::Exception(message.toStdString().data());
+			}
 		}
 
 		buw::Vector2d LandInfraNode::toVector2d() const

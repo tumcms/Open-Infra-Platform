@@ -25,6 +25,7 @@ namespace OpenInfraPlatform {
 	namespace Infrastructure {
 		class BLUEINFRASTRUCTURE_API ExportLandInfra : public Export {
 		public:
+			/*Exporter for data in LandInfra XML specification. Throws an exception if behaviour is undefined.*/
 			ExportLandInfra(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename);
 		};
 	} // end namespace Infrastructure

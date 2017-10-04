@@ -47,6 +47,21 @@ struct BLUEINFRASTRUCTURE_API clothoidDescription {
 class BLUEINFRASTRUCTURE_API HorizontalAlignmentElement2DClothoid : public HorizontalAlignmentElement2D {
 public:
 	HorizontalAlignmentElement2DClothoid(const clothoidDescription& cd);
+	HorizontalAlignmentElement2DClothoid(
+		const buw::Vector2d& startPosition,
+		const double& startDirection,
+		const double& clothoidConstant,
+		const double& startParameter,
+		const double& endParameter)
+		:
+		startDirection_(startDirection),
+		startPosition_(startPosition),
+		clothoidConstant_(clothoidConstant),
+		startL_(startParameter),
+		endL_(endParameter),
+		counterClockwise_(false)
+	{
+	};
 
 	virtual eHorizontalAlignmentType getAlignmentType() const override;
 	bool genericQuery(const int id, void* result) const override;

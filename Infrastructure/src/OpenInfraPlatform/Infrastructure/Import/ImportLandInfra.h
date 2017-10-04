@@ -24,6 +24,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DLine.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DArc.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
+#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DBlossCurve.h"
 
 #include <QtXml>
 
@@ -53,6 +54,10 @@ namespace OpenInfraPlatform {
 			virtual buw::ReferenceCounted<buw::HorizontalAlignmentElement2DClothoid> toHorizontalAlignmentElement2DClothoid();
 
 			virtual buw::ReferenceCounted<buw::HorizontalAlignmentElement2DArc> toHorizontalAlignmentElement2DArc();
+
+			virtual buw::ReferenceCounted<buw::HorizontalAlignmentElement2DBlossCurve> toHorizontalAlignmentElement2DBlossCurve();
+
+			virtual buw::ReferenceCounted<buw::VerticalAlignment2D> toVerticalAlignment2D();
 
 
 			virtual buw::Vector2d toVector2d() const;
