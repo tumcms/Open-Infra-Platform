@@ -44,10 +44,18 @@ void OpenInfraPlatform::AsyncJob::cancelJob()
 
 void OpenInfraPlatform::AsyncJob::run()
 {
-	running_ = true;
-	job_();
-	running_ = false;
-	Q_EMIT finished();
+	try {
+		running_ = true;
+		job_();
+		running_ = false;
+		Q_EMIT finished();
+	}
+	catch(...) {
+		/*Catch any occurring exceptions and cancel job.*/
+		running_ = false;
+		cancel_ = true;
+		Q_EMIT finished();
+	}
 }
 
 void OpenInfraPlatform::AsyncJob::checkThread()

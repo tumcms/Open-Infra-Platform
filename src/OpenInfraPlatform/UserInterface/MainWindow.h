@@ -117,6 +117,7 @@ namespace OpenInfraPlatform
 			void on_actionExportIfcZip_triggered();
 			void on_actionExportIIfcRoad_triggered();
 			void on_actionExportVerticalAlignment_triggered();
+			void on_actionExportLandInfra_triggered();
 			void on_actionHorizontal_alignment_triggered();
 			void on_actionIfcAlignment_buildingSMART_P6_Excel_Comparison_triggered();
 
