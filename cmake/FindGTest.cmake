@@ -36,13 +36,25 @@ if(NOT GTEST_ROOT)
 	option(GTEST_AUTOMATIC_INSTALL OFF)
 	if(GTEST_AUTOMATIC_INSTALL AND GTEST_INSTALL_DIR)
 		message(STATUS "Installing GTest...")
-		execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_googletest-1.8.0_Visual Studio 14 2015 Win64.cmd"
-		${GTEST_INSTALL_DIR}
-		"${CMAKE_COMMAND}"
-		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
-		RESULT_VARIABLE RESULT
-		ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_gtest.txt"
-		OUTPUT_FILE "${PROJECT_SOURCE_DIR}/external/log_install_gtest.txt")
+		if(${MSVC_VERSION_STRING} STREQUAL "vs2015")
+			execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_googletest-1.8.0_Visual Studio 14 2015 Win64.cmd"
+				${GTEST_INSTALL_DIR}
+				"${CMAKE_COMMAND}"
+				WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
+				RESULT_VARIABLE RESULT
+				ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_gtest.txt"
+				OUTPUT_FILE "${PROJECT_SOURCE_DIR}/external/log_install_gtest.txt")
+		elseif(${MSVC_VERSION_STRING} STREQUAL "vs2017")
+			execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_googletest-1.8.0_Visual Studio 15 2017 Win64.cmd"
+				${GTEST_INSTALL_DIR}
+				"${CMAKE_COMMAND}"
+				WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
+				RESULT_VARIABLE RESULT
+				ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_gtest.txt"
+				OUTPUT_FILE "${PROJECT_SOURCE_DIR}/external/log_install_gtest.txt")
+		else()
+			message(FATAL_ERROR "Couldn't determine VS version.")
+		endif()
 		if(RESULT EQUAL 0)
 			set(GTEST_ROOT ${GTEST_INSTALL_DIR}/googletest-release-1.8.0 CACHE PATH "GTest root" FORCE)
 			message(STATUS "Successfully installed GTest.")
