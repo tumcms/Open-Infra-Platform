@@ -37,6 +37,36 @@ OpenInfraPlatform::Infrastructure::ExportLandInfra::ExportLandInfra(buw::Referen
 	QDomProcessingInstruction header = doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\"");
 	doc.appendChild(header);
 
+
+	/*Create a gml:pos node from buw::Vector2d.*/
+	auto createNodeWithVector = [&](QString nodeName, buw::Vector2d pos) -> QDomElement {
+		QDomElement position = doc.createElement(nodeName);
+		QString posX = QString::number(pos.x(), 'g', 10);
+		QString posY = QString::number(pos.y(), 'g', 10);
+		QDomText posText = doc.createTextNode(posX + " " + posY);
+		position.appendChild(posText);
+		return position;
+	};
+
+	/*Shortcut for gml:pos node.*/
+	auto createPosition = [&](buw::Vector2d pos) -> QDomElement {
+		return createNodeWithVector("gml:pos", pos);
+	};
+
+	/*Shortcut for gml:location node.*/
+	auto createLocation = [&](buw::Vector2d pos) -> QDomElement {
+		return createNodeWithVector("gml:location", pos);
+	};
+
+	/*Create node with certain name holding single scalar value.*/
+	auto createNodeWithScalar = [&](QString nodeName, double value) ->QDomElement {
+		QDomElement element = doc.createElement(nodeName);
+		QString text = QString::number(value, 'g', 10);
+		QDomText elementText = doc.createTextNode(text);
+		element.appendChild(elementText);
+		return element;
+	};
+
 	/*Converts the buw::HorizontalAlignmentElement2DLine to XML element segment.*/
 	auto convertHorizontalAlignmentElement2DLine = 
 		[&](buw::ReferenceCounted<buw::HorizontalAlignmentElement2DLine> lineSegment) -> QDomElement
@@ -52,24 +82,11 @@ OpenInfraPlatform::Infrastructure::ExportLandInfra::ExportLandInfra(buw::Referen
 		/*All lia:lineSegment etc. are surrounded by the lia:geometry environment.*/
 		QDomElement geometryElement = doc.createElement("lia:geometry");
 		segmentElement.appendChild(geometryElement);
-		QDomElement lineSegmentElement = doc.createElement("lia:lineSegment");
+		QDomElement lineSegmentElement = doc.createElement("lia:lineSegment");		
 
-		/*Read start and end position from line segment.*/
-		QString startPosX = QString::number(lineSegment->getStartPosition().x());
-		QString startPosY = QString::number(lineSegment->getStartPosition().y());
-		QString endPosX = QString::number(lineSegment->getEndPosition().x());
-		QString endPosY = QString::number(lineSegment->getEndPosition().y());
-
-		/*Create gml:pos nodes for start and end position in the lineSegment element.*/
-		QDomElement startPos = doc.createElement("gml:pos");
-		QDomText startPosString = doc.createTextNode(startPosX + " " + startPosY);
-		startPos.appendChild(startPosString);
-		lineSegmentElement.appendChild(startPos);
-
-		QDomElement endPos = doc.createElement("gml:pos");
-		QDomText endPosString = doc.createTextNode(endPosX + " " + endPosY);
-		endPos.appendChild(endPosString);
-		lineSegmentElement.appendChild(endPos);
+		/*Create gml:pos nodes for start and end position in the lineSegment element.*/		
+		lineSegmentElement.appendChild(createPosition(lineSegment->getStartPosition()));		
+		lineSegmentElement.appendChild(createPosition(lineSegment->getEndPosition()));
 
 		geometryElement.appendChild(lineSegmentElement);
 
@@ -102,30 +119,17 @@ OpenInfraPlatform::Infrastructure::ExportLandInfra::ExportLandInfra(buw::Referen
 		liaCircularArcSegment.appendChild(liaCircularArcByCenterPoint);
 
 		/*Read the center position from arcSegment and write it to gml:pos*/
-		QDomElement gmlPos = doc.createElement("gml:pos");
-		QString gmlPosX = QString::number(arcSegment->getCenter().x());
-		QString gmlPosY = QString::number(arcSegment->getCenter().y());
-		QDomText gmlPosText = doc.createTextNode(gmlPosX + " " + gmlPosY);
-		gmlPos.appendChild(gmlPosText);
-		liaCircularArcByCenterPoint.appendChild(gmlPos);
+		liaCircularArcByCenterPoint.appendChild(createPosition(arcSegment->getCenter()));
 
 		/*Read the radius from arcSegment and write it to gml:radius*/
-		QDomElement gmlRadius = doc.createElement("gml:radius");
+		QDomElement gmlRadius = createNodeWithScalar("gml:radius", arcSegment->getRadius());
 		gmlRadius.setAttribute("uom", "m");
-		QDomText gmlRadiusText = doc.createTextNode(QString::number(arcSegment->getRadius()));
-		gmlRadius.appendChild(gmlRadiusText);
 		liaCircularArcByCenterPoint.appendChild(gmlRadius);
-
-		/*Determine the start angle and write it to gml:startAngle*/
-		QDomElement gmlStartAngle = doc.createElement("gml:startAngle");
-		gmlStartAngle.setAttribute("uom", "r");
+				
 		/*Calculate the start angle as the angle betweeen startPos - center and x axis.*/
 		buw::Vector2d localStartPosition = arcSegment->getStartPosition() - arcSegment->getCenter();
-		double startAngle = buw::calculateAngleBetweenVectors(buw::Vector2d(1.0, 0.0), localStartPosition);
+		double startAngle = buw::calculateAngleBetweenVectors(buw::Vector2d(1.0, 0.0), localStartPosition);		
 		
-		/*Determine the end angle and write it to gml:endAngle*/
-		QDomElement gmlEndAngle = doc.createElement("gml:endAngle");
-		gmlEndAngle.setAttribute("uom", "r");
 		/*Calculate the end angle as the angle between endPos - center and x axis.*/
 		buw::Vector2d localEndPosition = arcSegment->getEndPosition() - arcSegment->getCenter();
 		double endAngle = buw::calculateAngleBetweenVectors(buw::Vector2d(1.0, 0.0), localEndPosition);
@@ -142,13 +146,13 @@ OpenInfraPlatform::Infrastructure::ExportLandInfra::ExportLandInfra(buw::Referen
 		}
 
 		/*Write startAngle to node.*/
-		QDomText gmlStartAngleText = doc.createTextNode(QString::number(startAngle));
-		gmlStartAngle.appendChild(gmlStartAngleText);
+		QDomElement gmlStartAngle = createNodeWithScalar("gml:startAngle",startAngle);
+		gmlStartAngle.setAttribute("uom", "r");
 		liaCircularArcByCenterPoint.appendChild(gmlStartAngle);
 
 		/*Write endAngle to node.*/
-		QDomText gmlEndAngleText = doc.createTextNode(QString::number(endAngle));
-		gmlEndAngle.appendChild(gmlEndAngleText);
+		QDomElement gmlEndAngle = createNodeWithScalar("gml:endAngle", endAngle);
+		gmlEndAngle.setAttribute("uom", "r");
 		liaCircularArcByCenterPoint.appendChild(gmlEndAngle);
 
 		liaSegment.appendChild(liaGeometry);
@@ -175,44 +179,36 @@ OpenInfraPlatform::Infrastructure::ExportLandInfra::ExportLandInfra(buw::Referen
 
 		/*lia:referenceLocation has location, direction and in/out dimensions.*/
 		QDomElement liaReferenceLocation = doc.createElement("lia:referenceLocation");
-		QDomElement gmlLocation = doc.createElement("gml:location");
+		
+		/*Set gml:location as startPosition*/		
+		QDomElement gmlLocation = createLocation(transitionSegment->getStartPosition());
 		liaReferenceLocation.appendChild(gmlLocation);
 
-		/*Is empty since it can't be determined from internal data representation.*/
-		QDomElement gmlRefDirection = doc.createElement("gml:refDirection");
+		/*Retrieve startDirection from curve.*/		
+		QDomElement gmlRefDirection = createNodeWithScalar("gml:refDirection", transitionSegment->getStartDirection());
 		liaReferenceLocation.appendChild(gmlRefDirection);
 
-		/*Determine the input dimension, currently fixed at 2.*/
-		QDomElement gmlInDimension = doc.createElement("gml:inDimension");
-		QDomText gmlInDimensionText = doc.createTextNode("2");
-		gmlInDimension.appendChild(gmlInDimensionText);
+		/*Determine the input dimension, currently fixed at 2.*/		
+		QDomElement gmlInDimension = createNodeWithScalar("gml:inDimension", 2);
 		liaReferenceLocation.appendChild(gmlInDimension);
 
 		/*Determine the output dimension, currently fixed at 2.*/
-		QDomElement gmlOutDimension = doc.createElement("gml:outDimension");
-		QDomText gmlOutDimensionText = doc.createTextNode("2");
-		gmlOutDimension.appendChild(gmlOutDimensionText);
+		QDomElement gmlOutDimension = createNodeWithScalar("gml:outDimension", 2);
 		liaReferenceLocation.appendChild(gmlOutDimension);
 
 		liaTransitionSegment.appendChild(liaReferenceLocation);
 
 		/*Determine and set the lia:length from getLength()*/
-		QDomElement liaLength = doc.createElement("lia:length");
+		QDomElement liaLength = createNodeWithScalar("lia:length", transitionSegment->getLength());
 		liaLength.setAttribute("uom", "m");
-		QDomText liaLengthText = doc.createTextNode(QString::number(transitionSegment->getLength()));
-		liaLength.appendChild(liaLengthText);
 		liaTransitionSegment.appendChild(liaLength);
 
 		/*Determine startCurvature with getStartCurvature() and store it in the lia:startCurvature XML element.*/
-		QDomElement liaStartCurvature = doc.createElement("lia:startCurvature");
-		QDomText liaStartCurvatureText = doc.createTextNode(QString::number(transitionSegment->getStartCurvature()));
-		liaStartCurvature.appendChild(liaStartCurvatureText);
+		QDomElement liaStartCurvature = createNodeWithScalar("lia:startCurvature", transitionSegment->getStartCurvature());
 		liaTransitionSegment.appendChild(liaStartCurvature);
 
 		/*Determine endCurvature with getEndCurvature() and store it in the lia:endCurvature XML element.*/
-		QDomElement liaEndCurvature = doc.createElement("lia:endCurvature");
-		QDomText liaEndCurvatureText = doc.createTextNode(QString::number(transitionSegment->getEndCurvature()));
-		liaEndCurvature.appendChild(liaEndCurvatureText);
+		QDomElement liaEndCurvature = createNodeWithScalar("lia:endCurvature", transitionSegment->getEndCurvature());
 		liaTransitionSegment.appendChild(liaEndCurvature);
 
 		/*Currently only Bloss curve as transition type supported.*/
@@ -247,54 +243,34 @@ OpenInfraPlatform::Infrastructure::ExportLandInfra::ExportLandInfra(buw::Referen
 		QDomElement gmlAffinePlacement = doc.createElement("gml:AffinePlacement");
 
 		/*Set location as start location of clothoid segment*/
-		QDomElement gmlLocation = doc.createElement("gml:location");
-		QString posX = QString::number(clothoidSegment->getStartPosition().x());
-		QString posY = QString::number(clothoidSegment->getStartPosition().y());
-		QDomText gmlLocationText = doc.createTextNode(posX + " " + posY);
-		gmlLocation.appendChild(gmlLocationText);
+		QDomElement gmlLocation = createLocation(clothoidSegment->getStartPosition());
 		gmlAffinePlacement.appendChild(gmlLocation);
 
-		/*TODO: Determine refDirection from data*/
-		QDomElement gmlRefDirection = doc.createElement("gml:refDirection");
-		QString refDirection = QString::number(clothoidSegment->getStartDirection());
-		QDomText gmlRefDirectionText = doc.createTextNode(refDirection);
-		gmlRefDirection.appendChild(gmlRefDirectionText);
+		/*Determine refDirection from data*/
+		QDomElement gmlRefDirection = createNodeWithScalar("gml:refDirection", clothoidSegment->getStartDirection());
 		gmlAffinePlacement.appendChild(gmlRefDirection);
 
 		/*Set inDimension to 2.*/
-		QDomElement gmlInDimension = doc.createElement("gml:inDimension");
-		QDomText gmlInDimensionText = doc.createTextNode("2");
-		gmlInDimension.appendChild(gmlInDimensionText);
+		QDomElement gmlInDimension = createNodeWithScalar("gml:inDimension", 2);
 		gmlAffinePlacement.appendChild(gmlInDimension);
 
 		/*Set outDimension to 2.*/
-		QDomElement gmlOutDimension = doc.createElement("gml:outDimension");
-		QDomText gmlOutDimensionText = doc.createTextNode("2");
-		gmlOutDimension.appendChild(gmlOutDimensionText);
+		QDomElement gmlOutDimension = createNodeWithScalar("gml:outDimension", 2);
 		gmlAffinePlacement.appendChild(gmlOutDimension);
 
 		gmlRefLocation.appendChild(gmlAffinePlacement);
 		liaClothoidArcSegment.appendChild(gmlRefLocation);
 
 		/*Get the clothoid constant and set it as the scaleFactor.*/
-		QDomElement gmlScaleFactor = doc.createElement("gml:scaleFactor");
-		QString scaleFactor = QString::number(clothoidSegment->getClothoidConstant());
-		QDomText gmlScaleFactorText = doc.createTextNode(scaleFactor);
-		gmlScaleFactor.appendChild(gmlScaleFactorText);
+		QDomElement gmlScaleFactor = createNodeWithScalar("gml:scaleFactor", clothoidSegment->getClothoidConstant());
 		liaClothoidArcSegment.appendChild(gmlScaleFactor);
 
-		/*Get the start curvature and set it as the start parameter.*/
-		QDomElement gmlStartParameter = doc.createElement("gml:startParameter");
-		QString startParameter = QString::number(clothoidSegment->getStartCurvature() * std::pow(clothoidSegment->getClothoidConstant(),2));
-		QDomText gmlStartParameterText = doc.createTextNode(startParameter);
-		gmlStartParameter.appendChild(gmlStartParameterText);
+		/*Get startL_ as startParameter and set it as the start parameter.*/
+		QDomElement gmlStartParameter = createNodeWithScalar("gml:startParameter", clothoidSegment->getStartParameter());
 		liaClothoidArcSegment.appendChild(gmlStartParameter);
 
-		/*Get the length and set it as the endParameter.*/
-		QDomElement gmlEndParameter = doc.createElement("gml:endParameter");
-		QString endParameter = QString::number(clothoidSegment->getEndCurvature()* std::pow(clothoidSegment->getClothoidConstant(), 2));
-		QDomText gmlEndParameterText = doc.createTextNode(endParameter);
-		gmlEndParameter.appendChild(gmlEndParameterText);
+		/*Get endL_ as endParameter  and set it as the endParameter.*/
+		QDomElement gmlEndParameter = createNodeWithScalar("gml:endParameter", clothoidSegment->getEndParameter());
 		liaClothoidArcSegment.appendChild(gmlEndParameter);
 		
 		liaGeometry.appendChild(liaClothoidArcSegment);
@@ -332,6 +308,7 @@ OpenInfraPlatform::Infrastructure::ExportLandInfra::ExportLandInfra(buw::Referen
 				buw::ReferenceCounted<buw::HorizontalAlignmentElement2DBlossCurve> blossSegment = nullptr;
 				buw::ReferenceCounted<buw::HorizontalAlignmentElement2DClothoid> clothoidSegment = nullptr;
 
+				/*Convert alignment element to corresponding type depending on its eHorizontalAlignmentType.*/
 				switch(horizontalAlignmentElement2D->getAlignmentType()) {
 				case buw::eHorizontalAlignmentType::Line:
 					lineSegment = std::static_pointer_cast<buw::HorizontalAlignmentElement2DLine>(horizontalAlignmentElement2D);
@@ -369,6 +346,7 @@ OpenInfraPlatform::Infrastructure::ExportLandInfra::ExportLandInfra(buw::Referen
 	{
 		QDomElement liaVertical = doc.createElement("lia:vertical");
 		QDomElement liaAlignment2DVertical = doc.createElement("lia:Alignment2DVertical");
+
 		/*Set empty ID since no representation is present in the internal representation.*/
 		liaAlignment2DVertical.setAttribute("gml:id", "empty");
 
@@ -433,11 +411,10 @@ OpenInfraPlatform::Infrastructure::ExportLandInfra::ExportLandInfra(buw::Referen
 			throw buw::Exception(message.toStdString().data());
 		}
 
-		//TODO: Implement vertical alignment.
 		/*Convert the vertical alignments, if they don't exist just skip this part.*/
-		//if(alignment2D->hasVerticalAlignment()) {
-		//	liaAlignmentCurve.appendChild(convertVerticalAlignment2D(alignment2D->getVerticalAlignment()));
-		//}
+		if(alignment2D->hasVerticalAlignment()) {
+			//TODO: Implement vertical alignment.
+		}
 
 		return liaAlignmentCurve;
 	};
@@ -476,6 +453,7 @@ OpenInfraPlatform::Infrastructure::ExportLandInfra::ExportLandInfra(buw::Referen
 		liaIdentifier.appendChild(liaIdentifierText);
 		liaAlignmentID.appendChild(liaIdentifier);
 
+		/*Keep empty since there is no representation in the internal file format.*/
 		QDomElement liaScope = doc.createElement("lia:scope");
 		liaAlignmentID.appendChild(liaScope);
 		liaAlignment.appendChild(liaAlignmentID);
@@ -528,16 +506,18 @@ OpenInfraPlatform::Infrastructure::ExportLandInfra::ExportLandInfra(buw::Referen
 		return root;
 	};
 
+	/*Convert the alignmentModel to its XML representation.*/
 	if(alignmentModel) {
 		doc.appendChild(convertAlignmentModel(alignmentModel));
 	}
 
+	/*Open file to write to.*/
 	QFile file(filename.c_str());
-
 	if(!file.open(QIODevice::WriteOnly)) {
 		throw buw::Exception("Failed opening file for writing.");
 	}
 
+	/*Write document to file.*/
 	QTextStream textStream(&file);
 	doc.save(textStream, 4);
 	file.close();

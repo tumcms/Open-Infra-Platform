@@ -31,6 +31,8 @@ clothoidDescription::clothoidDescription() {
 	clothoidConstant = 200;
 	entry = true;
 	length = 500.0;
+	startParameter = 0.0;
+	endParameter = 0.0;
 }
 
 clothoidDescription::clothoidDescription(const buw::Vector2d startPosition,
@@ -47,15 +49,33 @@ clothoidDescription::clothoidDescription(const buw::Vector2d startPosition,
 	this->clothoidConstant = clothoidConstant;
 	this->entry = entry;
 	this->length = length;
+	this->startParameter = 0.0;
+	this->endParameter = 0.0;
+}
+
+clothoidDescription::clothoidDescription(const buw::Vector2d startPosition, const double startDirection, const double clothoidConstant, const double startParameter, const double endParameter, const bool counterClockwise)
+{
+	this->startPosition = startPosition;
+	this->startDirection = startDirection;
+	this->counterClockwise = counterClockwise;
+	this->clothoidConstant = clothoidConstant;
+	this->startParameter = startParameter;
+	this->endParameter = endParameter;
 }
 
 HorizontalAlignmentElement2DClothoid::HorizontalAlignmentElement2DClothoid(const clothoidDescription& cd)
     : startPosition_(cd.startPosition), startDirection_(cd.startDirection), counterClockwise_(cd.counterClockwise), clothoidConstant_(cd.clothoidConstant) {
-	startL_ = clothoidConstant_ * clothoidConstant_ * cd.startCurvature;
-	if (cd.entry)
-		endL_ = startL_ + cd.length;
-	else
-		endL_ = buw::max(startL_ - cd.length, 0.0);
+	if(cd.startParameter != 0.0 || cd.endParameter != 0.0) {
+		startL_ = cd.startParameter;
+		endL_ = cd.endParameter;
+	}
+	else {
+		startL_ = clothoidConstant_ * clothoidConstant_ * cd.startCurvature;
+		if(cd.entry)
+			endL_ = startL_ + cd.length;
+		else
+			endL_ = buw::max(startL_ - cd.length, 0.0);
+	}
 }
 
 OpenInfraPlatform::Infrastructure::eHorizontalAlignmentType HorizontalAlignmentElement2DClothoid::getAlignmentType() const {
@@ -172,6 +192,16 @@ double HorizontalAlignmentElement2DClothoid::getStartDirection() const {
 
 double HorizontalAlignmentElement2DClothoid::getEndDirection() const {
 	return startDirection_ + (computeT(endL_, clothoidConstant_) - computeT(startL_, clothoidConstant_)) * (counterClockwise_ ? 1 : -1) * (isEntry() ? 1 : -1);
+}
+
+double HorizontalAlignmentElement2DClothoid::getStartParameter() const
+{
+	return startL_;
+}
+
+double HorizontalAlignmentElement2DClothoid::getEndParameter() const
+{
+	return endL_;
 }
 
 double HorizontalAlignmentElement2DClothoid::getClothoidConstant() const {

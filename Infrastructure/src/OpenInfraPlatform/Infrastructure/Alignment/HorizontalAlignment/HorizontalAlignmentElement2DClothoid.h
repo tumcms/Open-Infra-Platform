@@ -33,6 +33,8 @@ struct BLUEINFRASTRUCTURE_API clothoidDescription {
 	double clothoidConstant;
 	bool entry;
 	double length;
+	double startParameter;
+	double endParameter;
 
 	clothoidDescription();
 	clothoidDescription(const buw::Vector2d startPosition,
@@ -42,27 +44,20 @@ struct BLUEINFRASTRUCTURE_API clothoidDescription {
 	                    const double clothoidConstant,
 	                    const bool entry,
 	                    const double length);
+
+	clothoidDescription(const buw::Vector2d startPosition,
+		const double startDirection,
+		const double clothoidConstant,
+		const double startParameter,
+		const double endParameter,
+		const bool counterClockwise = false);
+
 };
 
 class BLUEINFRASTRUCTURE_API HorizontalAlignmentElement2DClothoid : public HorizontalAlignmentElement2D {
 public:
 	HorizontalAlignmentElement2DClothoid(const clothoidDescription& cd);
-	HorizontalAlignmentElement2DClothoid(
-		const buw::Vector2d& startPosition,
-		const double& startDirection,
-		const double& clothoidConstant,
-		const double& startParameter,
-		const double& endParameter)
-		:
-		startDirection_(startDirection),
-		startPosition_(startPosition),
-		clothoidConstant_(clothoidConstant),
-		startL_(startParameter),
-		endL_(endParameter),
-		counterClockwise_(false)
-	{
-	};
-
+	
 	virtual eHorizontalAlignmentType getAlignmentType() const override;
 	bool genericQuery(const int id, void* result) const override;
 
@@ -81,6 +76,9 @@ public:
 
 	double getStartDirection() const;
 	double getEndDirection() const;
+
+	double getStartParameter() const;
+	double getEndParameter() const;
 
 	double getClothoidConstant() const;
 	double getLength() const override;
