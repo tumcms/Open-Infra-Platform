@@ -99,6 +99,12 @@ float3 lighting(float3 position, float3 normal, float3 color)
     return lerp(color, color * l, 0.8);
 }
 
+float median(float r, float g, float b)
+{
+    return max(min(r, g), min(max(r, g), b));
+}
+
+
 FragmentToPixel PS_cube(VertexToFragment v2f)
 {
     FragmentToPixel final;
@@ -106,7 +112,9 @@ FragmentToPixel PS_cube(VertexToFragment v2f)
     if (v2f.regionid == 2) {
         float2 uv = (v2f.texCoord - float2(textureRange, textureRange)) / (1.0f - (2.0f*textureRange));
         switch (v2f.faceid) {
-        case 0: texColor = float4(front.Sample(samplerLinear, uv)); break;
+            case 0:
+                texColor = float4(front.Sample(samplerLinear, uv));
+                break;
         case 1: texColor = float4(back.Sample(samplerLinear, uv)); break;
         case 2: texColor = float4(left.Sample(samplerLinear, uv)); break;
         case 3: texColor = float4(right.Sample(samplerLinear, uv)); break;
