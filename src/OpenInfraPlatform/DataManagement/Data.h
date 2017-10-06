@@ -140,6 +140,7 @@ namespace OpenInfraPlatform
 			void exportSVGAdvanced(const std::string& filename);
 			void exportSVG( const std::string& filename );
 			void exportLandXML( const std::string& filename );
+			void exportLandInfra(const std::string& filename);
 			void exportOkstra(const std::string& filename, const std::string& version);
 			void exportOkstraTranslated(const std::string& filename);
 			void export3DAlignmentAsTextfile(const std::string& filename);
@@ -262,6 +263,7 @@ namespace OpenInfraPlatform
 			void exportSVGAdvancedJob(const std::string& filename);
 			void exportSVGJob(const std::string& filename);
 			void exportLandXMLJob(const std::string& filename);
+			void exportLandInfraJob(const std::string& filename);
 			void exportOkstraJob(const std::string& filename, const std::string& version);
 			void exportOkstraJobTranslated(const std::string& filename);
 			void export3DAlignmentAsTextfileJob(const std::string& filename);

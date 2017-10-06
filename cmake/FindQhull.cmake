@@ -21,20 +21,35 @@
 #   QHULL_FOUND
 #
 
-find_path(QHULL_ROOT NAMES src/qhull-all.pro HINTS "C:\\thirdparty\\vs2015\\x64\\qhull-master" REQUIRED)
+find_path(QHULL_ROOT NAMES src/qhull-all.pro HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\qhull-master" REQUIRED)
 
 if(NOT QHULL_ROOT)
 	option(QHULL_AUTOMATIC_INSTALL "Automatically install qhull" OFF)
 	set(QHULL_INSTALL_DIR "C:/thirdparty/${MSVC_VERSION_STRING}/x64" CACHE FILEPATH "Please specify an installation directory.")
 	if(QHULL_AUTOMATIC_INSTALL AND QHULL_INSTALL_DIR)
 		MESSAGE(STATUS "Installing qhull...")
-		execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_qhull-2015.2_Visual Studio 14 2015 Win64.cmd"
-		${QHULL_INSTALL_DIR}
-		"${CMAKE_COMMAND}"
-		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
-		RESULT_VARIABLE RESULT
-		ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_qhull.txt"
-		OUTPUT_FILE "${PROJECT_SOURCE_DIR}/external/log_install_qhull.txt")
+		
+		if(${MSVC_VERSION_STRING} STREQUAL "vs2015")
+			execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_qhull-2015.2_Visual Studio 14 2015 Win64.cmd"
+				${QHULL_INSTALL_DIR}
+				"${CMAKE_COMMAND}"
+				WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
+				RESULT_VARIABLE RESULT
+				ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_qhull.txt"
+				OUTPUT_FILE "${PROJECT_SOURCE_DIR}/external/log_install_qhull.txt")
+		elseif(${MSVC_VERSION_STRING} STREQUAL "vs2017")
+			execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_qhull-2015.2_Visual Studio 15 2017 Win64.cmd"
+				${QHULL_INSTALL_DIR}
+				"${CMAKE_COMMAND}"
+				WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
+				RESULT_VARIABLE RESULT
+				ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_qhull.txt"
+				OUTPUT_FILE "${PROJECT_SOURCE_DIR}/external/log_install_qhull.txt")
+		else()
+			message(FATAL_ERROR "Couldn't determine VS version")
+		endif()
+
+		
 		set(QHULL_AUTOMATIC_INSTALL OFF CACHE BOOL "Automatically install qhull" FORCE)
 		if(RESULT EQUAL 0)
 			message(STATUS "Successfully installed qhull.")

@@ -31,6 +31,7 @@
 
 // Import
 #include "OpenInfraPlatform/Infrastructure/Import/ImportLandXml.h"
+#include "OpenInfraPlatform/Infrastructure/Import/ImportLandInfra.h"
 #include "OpenInfraPlatform/Infrastructure/Import/ImportOkstra.h"
 #include "OpenInfraPlatform/Infrastructure/Import/OutputStreamLandXMLDataBuilder.h"
 #include "OpenInfraPlatform/Infrastructure/Import/ImportIfcAlignment1x0.h"
@@ -42,6 +43,7 @@
 // Export
 #include "OpenInfraPlatform/Infrastructure/Export/IfcAlignment1x1ExcelReport.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportOkstra.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportLandInfra.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcRoad.h"

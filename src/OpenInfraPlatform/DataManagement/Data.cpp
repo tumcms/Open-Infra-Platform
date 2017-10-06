@@ -504,9 +504,7 @@ OpenInfraPlatform::DataManagement::ChangeFlag OpenInfraPlatform::DataManagement:
 void OpenInfraPlatform::DataManagement::Data::import(const std::string & filename)
 {
 	BLUE_ASSERT(boost::filesystem::exists(filename))("File does not exist");
-
-	if (boost::filesystem::exists(filename))
-	{
+	if(boost::filesystem::exists(filename)) {
 		clear(false);
 		merge_ = false;
 
@@ -567,10 +565,14 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 		// Get root names and attributes
 		std::string type = root.tagName().toStdString();
 
-		if (boost::starts_with(type, "Land"))
+		if (boost::starts_with(type, "LandXML"))
 		{
 			OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing LandXML ").append(filename));
 			importer_ = new buw::ImportLandXml(filename);
+		}
+		else if (boost::starts_with(type, "LandInfra")) {
+			OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing LandInfra ").append(filename));
+			importer_ = new buw::ImportLandInfra(filename);
 		}
 		else
 		{
@@ -689,8 +691,22 @@ void OpenInfraPlatform::DataManagement::Data::importOSMJob(const std::string& fi
 
 void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool completed)
 {
-	if (currentJobID_ != jobID || !completed)
+	if(currentJobID_ != jobID) {
+		/*If jobID doesn't match, write errror to log file and display a dialog and return.*/
+		BLUE_LOG(error) << "Wrong jobID. Expected " << QString::number(currentJobID_).toStdString() << " was " << QString::number(jobID).toStdString();
+		QString errorMessage = "No matching jobID for this job. Error message was written to log file.";
+		QString errorTitle = "ID Error!";
+		QMessageBox(QMessageBox::Icon::Critical, errorTitle, errorMessage, QMessageBox::StandardButton::Ok, nullptr).exec();		return;
 		return;
+	}
+
+	if(!completed) {
+		/*If job was cancelled show message box to inform the user and return.*/
+		QString errorMessage = "Import job cancelled. Error message was written to log file.";
+		QString errorTitle = "Import Error!";
+		QMessageBox(QMessageBox::Icon::Critical, errorTitle, errorMessage, QMessageBox::StandardButton::Ok, nullptr).exec();
+		return;
+	}
 
 	ChangeFlag flag = (ChangeFlag)0;
 	if (importer_)
@@ -923,11 +939,23 @@ void OpenInfraPlatform::DataManagement::Data::exportLandXML(const std::string& f
 	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportLandXMLJob, this, filename);
 }
 
+void OpenInfraPlatform::DataManagement::Data::exportLandInfra(const std::string & filename)
+{
+	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportLandInfraJob, this, filename);
+}
+
 void OpenInfraPlatform::DataManagement::Data::exportLandXMLJob(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandXML ").append(filename));
 
 	new buw::ExportLandXML(alignmentModel_, digitalElevationModel_, filename);
+}
+
+void OpenInfraPlatform::DataManagement::Data::exportLandInfraJob(const std::string & filename)
+{
+	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandInfra ").append(filename));
+
+	new buw::ExportLandInfra(alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::addAlignment( buw::ReferenceCounted<buw::IAlignment3D> alignment )

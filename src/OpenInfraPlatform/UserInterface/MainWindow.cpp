@@ -804,6 +804,19 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportVerticalAlignm
 	verticalAlignmentWindow_->exportToFile();
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportLandInfra_triggered()
+{
+	QString filename = QFileDialog::getSaveFileName(
+		this,
+		tr("Save Document"),
+		QDir::currentPath(),
+		tr("LandInfra (*.xml)"));
+
+	if(!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportLandInfra(filename.toStdString());
+	}
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportCurvature_triggered()
 {
 	curvatureWindow_->exportToFile();

@@ -278,6 +278,7 @@
      <addaction name="separator"/>
      <addaction name="actionExportIIfcRoad"/>
      <addaction name="actionLandXML"/>
+     <addaction name="actionExportLandInfra"/>
      <addaction name="actionOkstra"/>
      <addaction name="actionOkstra_translated"/>
      <addaction name="separator"/>
@@ -1108,6 +1109,14 @@
   <action name="actionOkstra_translated">
    <property name="text">
     <string>OKSTRA translated (*.xml)</string>
+   </property>
+  </action>
+  <action name="actionExportLandInfra">
+   <property name="text">
+    <string>LandInfra (*.xml)</string>
+   </property>
+   <property name="toolTip">
+    <string>Export im LandInfra Dateiformat</string>
    </property>
   </action>
  </widget>

@@ -240,13 +240,19 @@ namespace SectionedSolid
 
 			// translate from 3d to 2d (polyline have as x = 0.0)
 			std::vector<std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint>> points2d;
-			for (auto point : curve->m_Points)
-			{
-				std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> p(new IfcAlignment1x1::IfcCartesianPoint());
-				p->m_Coordinates.push_back(point->m_Coordinates[1]);
-				p->m_Coordinates.push_back(point->m_Coordinates[2]);
-				points2d.push_back(p);
-			}
+			if (curve->m_Points[0]->m_Coordinates.size() == 2)
+				points2d = curve->m_Points;
+			// translate from 3d to 2d (polyline have as x = 0.0)
+			else if (curve->m_Points[0]->m_Coordinates.size() == 3)
+				for (auto point : curve->m_Points)
+				{
+					std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> p(new IfcAlignment1x1::IfcCartesianPoint());
+					p->m_Coordinates.push_back(point->m_Coordinates[1]);
+					p->m_Coordinates.push_back(point->m_Coordinates[2]);
+					points2d.push_back(p);
+				}
+			else
+				throw buw::Exception("Polyline points' coordinates number not supported.");
 			auto const& pointSource = [&points2d](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {
 				return points2d[i]->m_Coordinates;
 			};
@@ -277,15 +283,20 @@ namespace SectionedSolid
 					if (curve->m_Points.size() == 0)
 						throw buw::Exception("Empty polyline.");
 
-					// translate from 3d to 2d (polyline have as x = 0.0)
 					std::vector<std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint>> points2d;
-					for (auto point : curve->m_Points)
-					{
-						std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> p(new IfcAlignment1x1::IfcCartesianPoint());
-						p->m_Coordinates.push_back(point->m_Coordinates[1]);
-						p->m_Coordinates.push_back(point->m_Coordinates[2]);
-						points2d.push_back(p);
-					}
+					if (curve->m_Points[0]->m_Coordinates.size() == 2)
+						points2d = curve->m_Points;
+					// translate from 3d to 2d (polyline have as x = 0.0)
+					else if (curve->m_Points[0]->m_Coordinates.size() == 3)
+						for (auto point : curve->m_Points)
+						{
+							std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> p(new IfcAlignment1x1::IfcCartesianPoint());
+							p->m_Coordinates.push_back(point->m_Coordinates[1]);
+							p->m_Coordinates.push_back(point->m_Coordinates[2]);
+							points2d.push_back(p);
+						}
+					else
+						throw buw::Exception("Polyline points' coordinates number not supported.");
 					auto const& pointSource = [&points2d](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {
 						return points2d[i]->m_Coordinates;
 					};

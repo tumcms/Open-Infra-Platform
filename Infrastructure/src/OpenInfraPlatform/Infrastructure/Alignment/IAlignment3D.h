@@ -37,6 +37,18 @@ enum class e3DAlignmentType
 	Unknown
 };
 
+BLUEINFRASTRUCTURE_API inline std::string e3DAlignmentTypeToString(const e3DAlignmentType type)
+{
+	switch(type) {
+	case e3DAlignmentType::e2DBased:
+		return "e2DBased";
+	case e3DAlignmentType::e3DBased:
+		return "e3DBased";
+	default:
+		return "Unknown";
+	}
+};
+
 class BLUEINFRASTRUCTURE_API IAlignment3D
 {
 public:
@@ -69,6 +81,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 
 namespace buw
 {
+	using OpenInfraPlatform::Infrastructure::e3DAlignmentTypeToString;
 	using OpenInfraPlatform::Infrastructure::e3DAlignmentType;
 	using OpenInfraPlatform::Infrastructure::IAlignment3D;
 }

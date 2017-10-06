@@ -35,14 +35,28 @@ if(NOT LIBLAS_ROOT)
 	endif()
 	if(LIBLAS_AUTOMATIC_INSTALL AND LIBLAS_INSTALL_DIR AND BOOST_ROOT)
 		message(STATUS "Installing libLAS...")
-		execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_libLAS-1.6_Visual Studio 14 2015 Win64.cmd"
-		${LIBLAS_INSTALL_DIR}
-		"${CMAKE_COMMAND}"
-		"${BOOST_ROOT}"
-		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
-		RESULT_VARIABLE RESULT
-		ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_liblas.txt"
-		OUTPUT_FILE "${PROJECT_SOURCE_DIR}/external/log_install_liblas.txt")
+		if(${MSVC_VERSION_STRING} STREQUAL "vs2015")
+			execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_libLAS-1.6_Visual Studio 14 2015 Win64.cmd"
+				${LIBLAS_INSTALL_DIR}
+				"${CMAKE_COMMAND}"
+				"${BOOST_ROOT}"
+				WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
+				RESULT_VARIABLE RESULT
+				ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_liblas.txt"
+				OUTPUT_FILE "${PROJECT_SOURCE_DIR}/external/log_install_liblas.txt")
+		elseif(${MSVC_VERSION_STRING} STREQUAL "vs2017")
+			execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_libLAS-1.6_Visual Studio 15 2017 Win64.cmd"
+				${LIBLAS_INSTALL_DIR}
+				"${CMAKE_COMMAND}"
+				"${BOOST_ROOT}"
+				WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
+				RESULT_VARIABLE RESULT
+				ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_liblas.txt"
+				OUTPUT_FILE "${PROJECT_SOURCE_DIR}/external/log_install_liblas.txt")
+		else()
+			message(FATAL_ERROR "Couldn't determine VS version")
+		endif()
+		
 		if(RESULT EQUAL 0)
 			message(STATUS "Successfully installed libLAS.")
 			set(LIBLAS_ROOT ${LIBLAS_INSTALL_DIR}/libLAS-1.6-master CACHE PATH "libLAS root" FORCE)
