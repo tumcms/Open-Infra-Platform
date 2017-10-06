@@ -19,7 +19,6 @@
 #ifndef OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
 #define OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
 
-#include "OpenInfraPlatform/UserInterface/OpenInfraMap.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/eView.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 #include "OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.h"
@@ -51,6 +50,7 @@ namespace OpenInfraPlatform
 		class IfcGeometryEffect;
         class SkyboxEffect;
 		class UIElements;
+		class BoundingBoxEffect;
 
 		class Viewport : public QWidget
 		{
@@ -99,7 +99,7 @@ namespace OpenInfraPlatform
 			void setDrawTerrainWireframe(const bool enable);
             void setDifferentColorsForAlignmentElements(const bool checked);
             void setHighlightSelectedAlignmentSegment(const bool checked);
-			void enableOpenInfraMap(const bool checked);
+			void enableMap(const bool checked);
 			void enableTerrainTextured(const bool checked);
             void enableRoadBodyTextured(const bool checked);
 			void enableIsoLines(const bool checked);
@@ -167,6 +167,7 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<SlabFieldEffect> slabFieldEffect_;
             buw::ReferenceCounted<IfcGeometryEffect> ifcGeometryEffect_;
 			buw::ReferenceCounted<UIElements> uiElements_;
+			buw::ReferenceCounted<BoundingBoxEffect> boundingBoxEffect_;
             buw::ReferenceCounted<SkyboxEffect> skyboxEffect_;
             std::vector<buw::ReferenceCounted<buw::Effect>> activeEffects_;
 
@@ -178,9 +179,6 @@ namespace OpenInfraPlatform
 			int selectedAlignmentIndex_;
             UINT currentPickId_ = -1;
 			buw::Image4b pickIdImage_;
-
-			// Map
-			buw::ReferenceCounted<OpenInfraMap> map_;
 		};
 
 		//class Viewport : public QWidget

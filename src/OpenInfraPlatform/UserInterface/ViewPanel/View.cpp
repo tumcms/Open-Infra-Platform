@@ -377,9 +377,9 @@ void OpenInfraPlatform::UserInterface::View::enableDrawTerrainWireframe( const b
 	viewport_->setDrawTerrainWireframe(enable);
 }
 
-void OpenInfraPlatform::UserInterface::View::enableOpenInfraMap( const bool checked )
+void OpenInfraPlatform::UserInterface::View::enableMap( const bool checked )
 {
-	viewport_->enableOpenInfraMap(checked);
+	viewport_->enableMap(checked);
 }
 
 //void OpenInfraPlatform::UserInterface::View::onViewCubeSelectionChanged(buw::eViewCubeOrientation::Enum state)

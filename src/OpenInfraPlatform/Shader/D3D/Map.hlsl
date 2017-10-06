@@ -36,7 +36,7 @@ struct VertexToPixel {
 
 VertexToPixel VS_main(ApplicationToVertex app2vs) {
 	VertexToPixel vs2ps = (VertexToPixel)0;
-	vs2ps.position = mul(viewProjection, float4(app2vs.position.x, -50, app2vs.position.y, 1));
+	vs2ps.position = mul(viewProjection, float4(app2vs.position.x, -20, app2vs.position.y, 1));
 	vs2ps.uv = app2vs.position.zw;
 	return vs2ps;
 }

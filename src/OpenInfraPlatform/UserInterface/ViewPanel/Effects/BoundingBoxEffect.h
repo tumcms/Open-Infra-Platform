@@ -16,8 +16,8 @@
 */
 
 #pragma once
-#ifndef BlueFramework_UserInterface_UIElementsEffect_ce3ae2a7_9ba0_4302_9860_f5d26081abd7_h
-#define BlueFramework_UserInterface_UIElementsEffect_ce3ae2a7_9ba0_4302_9860_f5d26081abd7_h
+#ifndef BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h
+#define BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h
 
 #include "OpenInfraPlatform/namespace.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
@@ -26,36 +26,44 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
 
-struct ViewportBuffer {
-	int width, height;
-	int p1, p2;
-};
-
-class UIElements : public buw::Effect {
+class BoundingBoxEffect : public buw::Effect {
 public:
-	UIElements(
+	BoundingBoxEffect(
 		buw::IRenderSystem* renderSystem,
+		buw::ReferenceCounted<buw::IViewport> viewport,
 		buw::ReferenceCounted<buw::ITexture2D> depthStencil,
 		buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer);
 
 	void loadShader();
 
-	void resize(const buw::viewportDescription& vpd);
+	void enableMap(bool enable);
+	bool mapEnabled() const;
+
+	void setBounds(const buw::Vector3d& minExtend, const buw::Vector3d& maxExtend);
+
+	buw::ReferenceCounted<buw::ITexture2D> mapTexture();
 
 private:
 	void v_init();
 
 	void v_render();
 
+	void loadMap();
+
 private:
 	buw::ReferenceCounted<buw::IPipelineState> pipelineState_;
+
 	buw::ReferenceCounted<buw::IViewport> viewport_;
 	buw::ReferenceCounted<buw::ITexture2D> depthStencil_;
-	buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer_, viewportBuffer_;
+	buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer_;
+	buw::ReferenceCounted<buw::IVertexBuffer> vertexBuffer_;
+	buw::ReferenceCounted<buw::ITexture2D> texture_;
+	buw::ReferenceCounted<buw::ISampler> linearSampler_;
 
-	buw::ReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>> vertexCacheLine_;
+	bool drawMap_;
+	buw::Vector3d minExtend_, maxExtend_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
 
-#endif // end define BlueFramework_UserInterface_UIElementsEffect_ce3ae2a7_9ba0_4302_9860_f5d26081abd7_h
+#endif // end define BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h

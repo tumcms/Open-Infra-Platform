@@ -29,6 +29,7 @@
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/TrafficSignEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/GradientClearEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/UIElementsEffect.h"
+#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/BoundingBoxEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/IfcGeometryEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/SkyboxEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
@@ -67,14 +68,6 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().Change.connect(boost::bind(&Viewport::onChange, this));
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().Clear.connect(boost::bind(&Viewport::onClear, this));
-
-	map_ = buw::makeReferenceCounted<OpenInfraMap>(parent);
-	map_->hide();
-
-	QHBoxLayout* layout = new QHBoxLayout(this);
-	layout->setMargin(0);
-	layout->addWidget(map_->widget());
-
 
 	camera_ = buw::makeReferenceCounted<buw::Camera>();
 	cameraController_ = buw::makeReferenceCounted<buw::CameraController>(camera_);
@@ -155,8 +148,12 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 	slabFieldEffect_->init();
 
 	BLUE_LOG(trace) << "Creating effects (7)";
-	uiElements_ = buw::makeReferenceCounted<UIElements>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+	uiElements_ = buw::makeReferenceCounted<UIElements>(renderSystem_.get(), depthStencilMSAA_, worldBuffer_);
 	uiElements_->init();
+
+	BLUE_LOG(trace) << "Creating effects (8)";
+	boundingBoxEffect_ = buw::makeReferenceCounted<BoundingBoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+	boundingBoxEffect_->init();
 
     BLUE_LOG(trace) << "Creating IfcGeometry effects";
     ifcGeometryEffect_ = buw::makeReferenceCounted<IfcGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
@@ -259,12 +256,9 @@ void OpenInfraPlatform::UserInterface::Viewport::setHighlightSelectedAlignmentSe
     alignmentEffect_->enableHighlightSelected(checked);
 }
 
-void OpenInfraPlatform::UserInterface::Viewport::enableOpenInfraMap(const bool checked)
+void OpenInfraPlatform::UserInterface::Viewport::enableMap(const bool checked)
 {
-	if (checked)
-		map_->show();
-	else
-		map_->hide();
+	boundingBoxEffect_->enableMap(checked);
 }
 
 void Viewport::viewDirection(const buw::Vector3f& direction) {
@@ -447,6 +441,8 @@ void Viewport::paintEvent(QPaintEvent* paintEvent) {
 
 	if (OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().isShowReferenceCoordinateSystemEnabled())
 		uiElements_->render();
+
+	boundingBoxEffect_->render();
 
     for(auto effect : activeEffects_)
         effect->render();
@@ -648,9 +644,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
 	minExtend_ = (min + offset).cast<float>();
 	maxExtend_ = (max + offset).cast<float>();
 
-	BLUE_LOG(trace) << "before reposition";
-	map_->reposition(-offset, GeoCoordinateSystem::GaussKrueger);
-	BLUE_LOG(trace) << "AFTER reposition";
+	boundingBoxEffect_->setBounds(min, max);
 
     if(changeFlag & ChangeFlag::DigitalElevationModel && dem) {
         demEffect_->setDEM(dem, offset);
@@ -703,6 +697,7 @@ void Viewport::reloadShader() {
 	demEffect_->loadShader();
 	gradientClearEffect_->loadShader();
 	uiElements_->loadShader();
+	boundingBoxEffect_->loadShader();
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
