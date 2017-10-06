@@ -306,7 +306,7 @@ buw::Vector2d num2deg(const buw::Vector2i& tile, int zoom)
 
 void BoundingBoxEffect::loadMap()
 {
-	int z = 17;
+	int z = 16;
 	
 	buw::Vector2d wgsSouthEast = gk2wgs(minExtend_.block<2,1>(0,0));
 	buw::Vector2d wgsNorthWest = gk2wgs(maxExtend_.block<2, 1>(0, 0));
