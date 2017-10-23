@@ -333,15 +333,14 @@ void OpenInfraPlatform::UserInterface::PreferencesDialog::on_radioButtonStandard
 
 void OpenInfraPlatform::UserInterface::PreferencesDialog::on_checkBoxShowViewCube_clicked(bool checked)
 {
-    OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().showViewCube(checked);
-    view_->getViewport()->repaint();
+	view_->getViewport()->getViewCube()->showCube(checked);
+	view_->getViewport()->repaint();
 }
 
 void OpenInfraPlatform::UserInterface::PreferencesDialog::on_checkBoxShowCompass_clicked(bool checked)
 {
-   
-    //view_->getViewport()->setShowCompass(checked);
-    
+	view_->getViewport()->getViewCube()->showCompass(checked);
+	view_->getViewport()->repaint();
 }
 
 void OpenInfraPlatform::UserInterface::PreferencesDialog::on_checkBoxShowRotationArrows_clicked(bool checked)

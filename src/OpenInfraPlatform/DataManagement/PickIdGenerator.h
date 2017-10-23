@@ -34,6 +34,6 @@ namespace OpenInfraPlatform {
     private:
         PickIdGenerator() {};
         ~PickIdGenerator() {};
-        unsigned int currentId_ = 64;
+        unsigned int currentId_ = 128;
     };
 }
