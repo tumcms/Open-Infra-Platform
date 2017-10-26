@@ -22,25 +22,21 @@
 #include "OpenInfraPlatform/Infrastructure/Import/Import.h"
 #include <boost/noncopyable.hpp>
 
-namespace OpenInfraPlatform
-{
-	namespace Infrastructure
-	{
-		class BLUEINFRASTRUCTURE_API ImportIfcAlignment1x0 : public Import
-		{
-		public:
-			//! Default constructor.
-			ImportIfcAlignment1x0(const std::string& filename);
+namespace OpenInfraPlatform {
+    namespace Infrastructure {
+        class BLUEINFRASTRUCTURE_API ImportIfcAlignment1x0 : public Import {
+        public:
+            //! Default constructor.
+            ImportIfcAlignment1x0(const std::string& filename);
 
-		private:
-			class ImportIfcAlignmenImpl;					// Forward declaration of internal class
-			std::shared_ptr<ImportIfcAlignmenImpl> impl_;	// Opaque pointer to implementation
-		}; // end class IfcAlignmentImport
-	} // end namespace Infrastructure
+        private:
+            class ImportIfcAlignmenImpl;                  // Forward declaration of internal class
+            std::shared_ptr<ImportIfcAlignmenImpl> impl_; // Opaque pointer to implementation
+        };                                                // end class IfcAlignmentImport
+    }                                                     // end namespace Infrastructure
 } // end namespace OpenInfraPlatform
-namespace buw
-{
-	using OpenInfraPlatform::Infrastructure::ImportIfcAlignment1x0;
+namespace buw {
+    using OpenInfraPlatform::Infrastructure::ImportIfcAlignment1x0;
 }
 
 #endif // end define OpenInfraPlatform_Infrastructure_IfcAlignmentImport_793bf9e2_b78a_4b91_9fbf_7fe73a844d9f_h

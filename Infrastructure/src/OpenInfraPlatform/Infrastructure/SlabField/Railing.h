@@ -18,24 +18,22 @@
 #ifndef __RAILING_H_CDF60130BDB74E008EF218179045C693__
 #define __RAILING_H_CDF60130BDB74E008EF218179045C693__
 
-#include <OpenInfraPlatform/Infrastructure/namespace.h>
-#include <OpenInfraPlatform/Infrastructure/OIPInfrastructure.h>
 #include "SlabFieldElement.h"
+#include <OpenInfraPlatform/Infrastructure/OIPInfrastructure.h>
+#include <OpenInfraPlatform/Infrastructure/namespace.h>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-class BLUEINFRASTRUCTURE_API Railing : public SlabFieldElement
-{
+class BLUEINFRASTRUCTURE_API Railing : public SlabFieldElement {
 public:
-	explicit Railing(int const id, std::wstring const& name);
-	virtual ~Railing();
+    explicit Railing(int const id, std::wstring const& name);
+    virtual ~Railing();
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 
-namespace buw
-{
-	using OpenInfraPlatform::Infrastructure::Railing;
+namespace buw {
+    using OpenInfraPlatform::Infrastructure::Railing;
 }
 
 #endif // __RAILING_H_CDF60130BDB74E008EF218179045C693__

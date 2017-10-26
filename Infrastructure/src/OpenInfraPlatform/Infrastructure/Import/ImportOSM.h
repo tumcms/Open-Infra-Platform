@@ -24,23 +24,23 @@
 
 namespace OpenInfraPlatform
 {
-	namespace Infrastructure
-	{
-		class BLUEINFRASTRUCTURE_API ImportOSM : public Import
-		{
-		public:
-			ImportOSM(const std::string& filename);
-			ImportOSM(const std::string& filename, const std::vector<std::string>& filter, int mode);
-			
-			static std::vector<std::string> getDefaultFilter();
-			static std::vector<std::string> getModeNames();
-		}; // end class OSMImport
-	} // end namespace Infrastructure
+    namespace Infrastructure
+    {
+        class BLUEINFRASTRUCTURE_API ImportOSM : public Import
+        {
+        public:
+            ImportOSM(const std::string& filename);
+            ImportOSM(const std::string& filename, const std::vector<std::string>& filter, int mode);
+            
+            static std::vector<std::string> getDefaultFilter();
+            static std::vector<std::string> getModeNames();
+        }; // end class OSMImport
+    } // end namespace Infrastructure
 } // end namespace OpenInfraPlatform
 
 namespace buw
 {
-	using OpenInfraPlatform::Infrastructure::ImportOSM;
+    using OpenInfraPlatform::Infrastructure::ImportOSM;
 }
 
 #endif // end define OpenInfraPlatform_Infrastructure_OSMImport_cb390352_9e34_4971_a173_eab046fe8eec_h

@@ -27,53 +27,53 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
 class BLUEINFRASTRUCTURE_API HorizontalAlignmentElement2DArc : public HorizontalAlignmentElement2D {
 public:
-	HorizontalAlignmentElement2DArc(
-		const buw::Vector2d& center,
-		const buw::Vector2d& start,
-		const buw::Vector2d& end,
-		const bool clockWise);
+    HorizontalAlignmentElement2DArc(
+        const buw::Vector2d& center,
+        const buw::Vector2d& start,
+        const buw::Vector2d& end,
+        const bool clockWise);
 
-	virtual ~HorizontalAlignmentElement2DArc();
+    virtual ~HorizontalAlignmentElement2DArc();
 
-	virtual buw::Vector2d getPosition(const double lerpParameter) const override;
+    virtual buw::Vector2d getPosition(const double lerpParameter) const override;
 
-	virtual buw::Vector2d getTangent(const double lerpParameter) const override;
+    virtual buw::Vector2d getTangent(const double lerpParameter) const override;
 
-	virtual buw::Vector2d getNormal(const double lerpParameter) const override;
+    virtual buw::Vector2d getNormal(const double lerpParameter) const override;
 
-	virtual buw::Vector2d getCenter() const { return center_; }
+    virtual buw::Vector2d getCenter() const { return center_; }
 
-	virtual bool getClockWise() const { return clockWise_; }
+    virtual bool getClockWise() const { return clockWise_; }
 
-	virtual buw::Vector2d getStartPosition() const override;
+    virtual buw::Vector2d getStartPosition() const override;
 
-	virtual buw::Vector2d getEndPosition() const override;
+    virtual buw::Vector2d getEndPosition() const override;
 
-	virtual double getLength() const;
+    virtual double getLength() const;
 
-	virtual bool genericQuery(const int id, void* result) const override;
+    virtual bool genericQuery(const int id, void* result) const override;
 
-	virtual eHorizontalAlignmentType getAlignmentType() const override;
+    virtual eHorizontalAlignmentType getAlignmentType() const override;
 
-	double getRadius() const;
+    double getRadius() const;
 
-	double getCurvature()	const { return 1 / getRadius() * (clockWise_ ? -1 : 1); }
+    double getCurvature()	const { return 1 / getRadius() * (clockWise_ ? -1 : 1); }
 
 private:
-	buw::Vector2d Rotate(const double angle, const buw::Vector2d& v) const;
-	buw::Vector2d Rotate(const double angle, const double x, const double y) const;
+    buw::Vector2d Rotate(const double angle, const buw::Vector2d& v) const;
+    buw::Vector2d Rotate(const double angle, const double x, const double y) const;
 
-	buw::Vector2d		center_;
-	buw::Vector2d		start_;
-	buw::Vector2d		end_;
-	bool			clockWise_;
+    buw::Vector2d		center_;
+    buw::Vector2d		start_;
+    buw::Vector2d		end_;
+    bool			clockWise_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 
 namespace buw
 {
-	using OpenInfraPlatform::Infrastructure::HorizontalAlignmentElement2DArc;
+    using OpenInfraPlatform::Infrastructure::HorizontalAlignmentElement2DArc;
 }
 
 #endif // end define OpenInfraPlatform_Infrastructure_HorizontalAlignment2DArc_c9b849d5_4ac6_41a1_b0f9_9067c70f948a_h
