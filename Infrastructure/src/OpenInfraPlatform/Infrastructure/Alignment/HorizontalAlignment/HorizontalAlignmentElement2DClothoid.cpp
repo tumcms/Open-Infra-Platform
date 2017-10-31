@@ -70,7 +70,7 @@ HorizontalAlignmentElement2DClothoid::HorizontalAlignmentElement2DClothoid(const
 		endL_ = cd.endParameter;
 	}
 	else {
-		startL_ = clothoidConstant_ * clothoidConstant_ * cd.startCurvature;
+		startL_ = buw::max(clothoidConstant_ * clothoidConstant_ * cd.startCurvature, 0.0);
 		if(cd.entry)
 			endL_ = startL_ + cd.length;
 		else

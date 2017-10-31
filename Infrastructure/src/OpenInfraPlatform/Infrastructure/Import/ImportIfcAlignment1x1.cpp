@@ -840,12 +840,14 @@ public:
             const bool		hasEndRadius = ifcTransitionCurve->m_EndRadius != nullptr ? true : false;
 
             double startCurvature = 0;
-            if (hasStartRadius)	{
+            if (   hasStartRadius
+				&& ifcTransitionCurve->m_StartRadius->m_value != 0)	{
                 startCurvature = 1 / ifcTransitionCurve->m_StartRadius->m_value;
             }
 
             double endCurvature = 0;
-            if (hasEndRadius) {
+            if (   hasEndRadius
+				&& ifcTransitionCurve->m_EndRadius->m_value != 0) {
                 endCurvature = 1 / ifcTransitionCurve->m_EndRadius->m_value;
             }
 
