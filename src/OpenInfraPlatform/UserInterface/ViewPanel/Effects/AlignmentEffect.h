@@ -55,19 +55,19 @@ public:
 
     };
 
-	AlignmentEffect::AlignmentEffect(
+    AlignmentEffect::AlignmentEffect(
         buw::IRenderSystem* renderSystem,
         buw::ReferenceCounted<buw::IViewport> viewport,
         buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA,
         buw::ReferenceCounted<buw::ITexture2D> pickBuffer,
         buw::ReferenceCounted<buw::ITexture2D> depthStencil,
-		buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer,
+        buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer,
         buw::ReferenceCounted<buw::IConstantBuffer> viewportBuffer,
         buw::ReferenceCounted<buw::IConstantBuffer> pickIdBuffer = nullptr);
 
-	~AlignmentEffect();
+    ~AlignmentEffect();
 
-	boost::signals2::signal<void(const unsigned int&)> AlignmentSelectionChanged;
+    boost::signals2::signal<void(const unsigned int&)> AlignmentSelectionChanged;
 
     void enableAlignmentColor(const bool checked);
     void enableHighlightSelected(const bool checked);
@@ -80,23 +80,23 @@ public:
     void drawRoadBodyTextured(const bool checked);
     void drawFlattened(const bool checked);
 
-	void setAlignment(buw::ReferenceCounted<buw::AlignmentModel> alignmentModel, buw::Vector3d& offset);
-	void loadShader();
+    void setAlignment(buw::ReferenceCounted<buw::AlignmentModel> alignmentModel, buw::Vector3d& offset);
+    void loadShader();
 
-	void setCurrentSelectedAlignment(const int index);
+    void setCurrentSelectedAlignment(const int index);
     void setColors(std::vector<buw::Vector4f> colors);
 
     int getAlignmentId(UINT pickId);
 
 private:
-	void v_init();
-	void v_render();
+    void v_init();
+    void v_render();
 
     void updateSettingsBuffer();
     void updateColorBuffer();
 
 private:
-	buw::ReferenceCounted<buw::IPipelineState>
+    buw::ReferenceCounted<buw::IPipelineState>
         lineStripState_ = nullptr,
         lineListState_ = nullptr,
         triangleListState_ = nullptr,
@@ -104,24 +104,24 @@ private:
         pickLineListState_ = nullptr,
         pickTriangleListState_ = nullptr;
 
-	buw::ReferenceCounted<buw::IViewport>  viewport_ = nullptr;
-	buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA_ = nullptr;
+    buw::ReferenceCounted<buw::IViewport>  viewport_ = nullptr;
+    buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA_ = nullptr;
     buw::ReferenceCounted<buw::ITexture2D> pickBuffer_ = nullptr;
     buw::ReferenceCounted<buw::ITexture2D> depthStencil_ = nullptr;
 
-	buw::ReferenceCounted<buw::ITexture2D> roadBodyTexture_ = nullptr;
-	buw::ReferenceCounted<buw::ITexture2D> roadBodyNormalTexture_ = nullptr;
-	buw::ReferenceCounted<buw::ISampler>   sampler_ = nullptr;
+    buw::ReferenceCounted<buw::ITexture2D> roadBodyTexture_ = nullptr;
+    buw::ReferenceCounted<buw::ITexture2D> roadBodyNormalTexture_ = nullptr;
+    buw::ReferenceCounted<buw::ISampler>   sampler_ = nullptr;
 
 
-	buw::ReferenceCounted<buw::IConstantBuffer>
+    buw::ReferenceCounted<buw::IConstantBuffer>
         worldBuffer_ = nullptr,
         viewportBuffer_ = nullptr,
         settingsBuffer_ = nullptr,
         colorBuffer_ = nullptr,
         pickIdBuffer_ = nullptr;
 
-	std::vector<buw::ReferenceCounted<buw::IVertexBuffer>>
+    std::vector<buw::ReferenceCounted<buw::IVertexBuffer>>
         vertexBuffersAlignment_,
         crossSectionVertexBuffers_,
         designCrossSectionVertexBuffers_,
