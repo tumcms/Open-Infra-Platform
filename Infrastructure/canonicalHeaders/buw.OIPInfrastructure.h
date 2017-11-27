@@ -43,6 +43,7 @@
 // Export
 #include "OpenInfraPlatform/Infrastructure/Export/IfcAlignment1x1ExcelReport.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportOkstra.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportOkstraOWL.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportLandInfra.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"

@@ -281,6 +281,7 @@
      <addaction name="actionExportLandInfra"/>
      <addaction name="actionOkstra"/>
      <addaction name="actionOkstra_translated"/>
+     <addaction name="actionOkstraOWL"/>
      <addaction name="separator"/>
      <addaction name="menuHorizontal_Alignment_and_Terrain_svg"/>
      <addaction name="actionExportVerticalAlignment"/>
@@ -1117,6 +1118,11 @@
    </property>
    <property name="toolTip">
     <string>Export im LandInfra Dateiformat</string>
+   </property>
+  </action>
+  <action name="actionOkstraOWL">
+   <property name="text">
+    <string>OKSTRA OWL (*.rdf)</string>
    </property>
   </action>
  </widget>

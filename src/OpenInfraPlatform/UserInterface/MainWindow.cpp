@@ -2281,6 +2281,21 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstra_translated_tr
 	}
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstraOWL_triggered()
+{
+	QString filename = QFileDialog::getSaveFileName(
+		this,
+		tr("Save Document"),
+		QDir::currentPath(),
+		tr("RDF (*.rdf);;"));
+
+
+	if (!filename.isNull())
+	{
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportOkstraOWL(filename.toStdString());
+	}
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonDeleteSelectedAlignment_clicked()
 {
 	int index = ui_->comboBoxAlignment->currentIndex();

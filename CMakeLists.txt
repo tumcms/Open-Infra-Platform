@@ -138,6 +138,8 @@ find_package(ZLIB 1.2.10 REQUIRED)
 find_package(libLAS REQUIRED)
 find_package(qhull REQUIRED)
 
+#Raptor
+find_package(raptor2 REQUIRED)
 
 # Find the Qt components
 set(QT5_COMPONENTS

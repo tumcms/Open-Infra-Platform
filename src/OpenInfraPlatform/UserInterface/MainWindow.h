@@ -134,6 +134,7 @@ namespace OpenInfraPlatform
 			void on_actionNew_triggered();
 			void on_actionOkstra_triggered();
 			void on_actionOkstra_translated_triggered();
+			void on_actionOkstraOWL_triggered();
 			void on_actionOpen_triggered();
 			void on_actionPrecisionTest();
 			void on_actionPreferences_triggered();
@@ -215,8 +216,8 @@ namespace OpenInfraPlatform
 
 			void openRecentFileViaAction( QAction *actionRecentFile );
 
-			void	onChange();
-			void	onChange(ChangeFlag changeFlag);
+			void onChange();
+			void onChange(ChangeFlag changeFlag);
 
 			void updateActionUndo( unsigned int numberOfUndoActions );
 

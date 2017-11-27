@@ -27,6 +27,7 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE 	    ../Release)
 add_definitions(-D_UNICODE)
 add_definitions(-DNOMINMAX)
 add_definitions(-D_UNICODE -DBOOST_PYTHON_STATIC_LIB)
+add_definitions(-DRAPTOR_STATIC)
 
 file(GLOB OpenInfraPlatform_Infrastructure_Alignment_HorizontalAlignment_Source 	src/OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/*.*)								
 file(GLOB OpenInfraPlatform_Infrastructure_Alignment_Source 						src/OpenInfraPlatform/Infrastructure/Alignment/*.*)			
@@ -82,6 +83,7 @@ include_directories(
 	${OKLABI_ROOT_DIR}/Kern-C++
 	${OKLABI_ROOT_DIR}/Dienst
 	${QHULL_INCLUDE_DIRS}
+	${RAPTOR2_INCLUDE_DIRS}
 )
 
 # Create a target for the library
@@ -127,7 +129,9 @@ if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 		# Oklabi
 		${OKLABI_LIBRARIES}
 		#
-		${QHULL_STATIC_LIBRARIES}
+		${QHULL_STATIC_LIBRARIES}	
+	# Raptor		
+		${RAPTOR2_LIBRARIES}
 		)
 else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 	target_link_libraries( OpenInfraPlatform.Infrastructure
@@ -147,6 +151,8 @@ else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 		${OKLABI_LIBRARIES}
 		#
 		${QHULL_STATIC_LIBRARIES}
+		# Raptor
+		${RAPTOR2_LIBRARIES}
 	)
 endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 
