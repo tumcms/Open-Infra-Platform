@@ -80,7 +80,8 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 			  "C:\\Qt\\Qt5.9.0\\5.9\\msvc${MSVC_VERSION_YEAR}_64" 
 			  "C:\\Qt\\5.9\\msvc${MSVC_VERSION_YEAR}_64" 
 			  "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\5.9.2\\msvc${MSVC_VERSION_YEAR}_64")
+			  "C:\\Qt\\5.9.2\\msvc${MSVC_VERSION_YEAR}_64"
+			  "C:\\Qt\\Qt5.9.3\\5.9.3\\msvc${MSVC_VERSION_YEAR}_64")
 	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
 	find_path(ZLIB_ROOT NAMES zlib.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
 endif()
