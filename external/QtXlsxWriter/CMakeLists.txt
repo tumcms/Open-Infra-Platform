@@ -15,13 +15,13 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_MODULE_PATH ${PROJECT_Source_DIR}/build/)
 # Compiler settings
 if (WIN32)
-	# Standard:          /DWIN32 /D_WINDOWS /W3 /Zm1000 /EHsc /GR
-	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR- /MP /openmp /bigobj")
+    # Standard:          /DWIN32 /D_WINDOWS /W3 /Zm1000 /EHsc /GR
+    set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR- /MP /openmp /bigobj")
 endif (WIN32)
 
 if (UNIX)
-	set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -g -Wall -fPIC")
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D_UNIX_DEBUG")
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x -g -Wall -fPIC")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D_UNIX_DEBUG")
 endif (UNIX)
 
 set(CMAKE_DEBUG_POSTFIX  "d")
@@ -42,29 +42,33 @@ file(GLOB QtXlsxWriter_Source			src/xlsx/*.cpp src/xlsx/*.h)
 
 source_group(QtXlsxWriter	FILES ${QtXlsxWriter_Source})
 include_directories(
-	${CMAKE_CURRENT_BINARY_DIR} # Qt generated files will be located here
-	#C:/Qt/Qt5.8.0/5.8/msvc2015_64/include/QtGui/5.8.0
-	#C:/Qt/Qt5.8.0/5.8/msvc2015_64/include/QtCore/5.8.0
-	${Qt5Gui_DIR}/../../../include/QtGui/5.9.0
-	${Qt5Core_DIR}/../../../include/QtCore/5.9.0
-	${Qt5Gui_DIR}/../../../include/QtGui/5.9.1
-	${Qt5Core_DIR}/../../../include/QtCore/5.9.1
-	${Qt5Gui_DIR}/../../../include/QtGui/5.9.2
-	${Qt5Core_DIR}/../../../include/QtCore/5.9.2
+    ${CMAKE_CURRENT_BINARY_DIR} # Qt generated files will be located here
+    # Support for Qt 5.9.0
+    ${Qt5Gui_DIR}/../../../include/QtGui/5.9.0
+    ${Qt5Core_DIR}/../../../include/QtCore/5.9.0
+    # Support for Qt 5.9.1
+    ${Qt5Gui_DIR}/../../../include/QtGui/5.9.1
+    ${Qt5Core_DIR}/../../../include/QtCore/5.9.1
+    # Support for Qt 5.9.1
+    ${Qt5Gui_DIR}/../../../include/QtGui/5.9.2
+    ${Qt5Core_DIR}/../../../include/QtCore/5.9.2
+    # Support for Qt 5.9.3
+    ${Qt5Gui_DIR}/../../../include/QtGui/5.9.3
+    ${Qt5Core_DIR}/../../../include/QtCore/5.9.3
 )
 
 ADD_LIBRARY(QtXlsxWriter SHARED
-	${QtXlsxWriter_Source}
+    ${QtXlsxWriter_Source}
 )
 
 target_link_libraries(QtXlsxWriter
-	# Qt5
-	${Qt5Core_QTMAIN_LIBRARIES}  # <-- New target available via find_package ( Qt5Core ) 
+    # Qt5
+    ${Qt5Core_QTMAIN_LIBRARIES}  # <-- New target available via find_package ( Qt5Core ) 
 )
 
 install(TARGETS QtXlsxWriter
-	RUNTIME DESTINATION bin
-	COMPONENT oip_thirdparty)
+    RUNTIME DESTINATION bin
+    COMPONENT oip_thirdparty)
 
 # Use the Widgets module from Qt 5.
 qt5_use_modules(QtXlsxWriter Xml XmlPatterns Widgets)

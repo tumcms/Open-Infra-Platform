@@ -130,9 +130,9 @@ if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 		${OKLABI_LIBRARIES}
 		#
 		${QHULL_STATIC_LIBRARIES}	
-	# Raptor		
+		# Raptor		
 		${RAPTOR2_LIBRARIES}
-		)
+	)
 else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 	target_link_libraries( OpenInfraPlatform.Infrastructure
 		OpenInfraPlatform.IfcAlignment
