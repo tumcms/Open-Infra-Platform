@@ -477,6 +477,39 @@ namespace SectionedSolid
 		segments.push_back(outerCurve);
 	}
 
+	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcCircleProfileDef> csp)
+		: segments()
+	{
+		std::vector<std::vector<CrossSectionProfile::Vertex>> outerCurve;
+		double r = csp->m_Radius->m_value;
+
+		std::vector<buw::Vector2d> points;
+		points.push_back(buw::Vector2d( r,  0));
+		points.push_back(buw::Vector2d( 0,  r));
+		points.push_back(buw::Vector2d(-r,  0));
+		points.push_back(buw::Vector2d( 0, -r));
+		points.push_back(buw::Vector2d(r, 0));
+		for( auto p = points.begin(), pprev = p++; p != points.end(); ++p, ++pprev )
+		{
+			std::vector<buw::Vector2d> positions;
+			std::vector<buw::Vector2d> normals;
+			Tessellation::tessellateArc(
+				*pprev,
+				*p,
+				buw::Vector2d(0, 0),
+				false,
+				positions,
+				&normals);
+			std::vector<CrossSectionProfile::Vertex> segment;
+			//segment.push_back(Vertex(outerCurve.back().back().position, rotation * buw::Vector2d(0.0, 1.0)));
+			for (auto positionsIt = positions.begin(), normalsIt = normals.begin(); positionsIt != positions.end(); ++positionsIt, ++normalsIt)
+				segment.push_back(Vertex(*positionsIt, *normalsIt));
+			outerCurve.push_back(segment);
+		}
+		segments.push_back(outerCurve);
+	}
+
+
 	CrossSectionProfile::~CrossSectionProfile()
 	{
 	}

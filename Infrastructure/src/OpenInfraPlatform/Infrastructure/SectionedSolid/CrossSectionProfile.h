@@ -44,6 +44,7 @@ namespace SectionedSolid {
 
 		explicit CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcArbitraryClosedProfileDef> csp);
 		explicit CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcAsymmetricIShapeProfileDef> csp);
+		explicit CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcCircleProfileDef> csp);
 		virtual ~CrossSectionProfile();
 
 		// the first outmost element is the outer curve, the rest the inner curves (may be non-existent)

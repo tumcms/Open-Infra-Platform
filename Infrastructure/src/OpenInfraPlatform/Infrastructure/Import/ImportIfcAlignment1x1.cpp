@@ -514,7 +514,7 @@ public:
         for (auto part : parts)
         {
             if (!part) continue;
-            if (part->m_entity_enum != IFCBEAM && part->m_entity_enum != IFCSLAB)
+            if (part->m_entity_enum != IFCBEAM && part->m_entity_enum != IFCSLAB && part->m_entity_enum != IFCTENDON)
                 throw buw::NotImplementedYetException("Unimplemented part element type.");
             auto const& ssh = createSectionedSolidHorizontals(std::static_pointer_cast<IfcElement>(part));
             results.insert(results.end(), ssh.begin(), ssh.end());
@@ -537,8 +537,8 @@ public:
 
                 auto ssh = std::static_pointer_cast<IfcSectionedSolidHorizontal>(reprItem);
                 if (!ssh->m_Directrix || ssh->m_CrossSectionPositions.size() < 2) continue;
-                if (!ssh->m_FixedAxisVertical || !ssh->m_FixedAxisVertical->m_value)
-                    throw buw::NotImplementedYetException("Profile Y axis only in world Z direction supported.");
+				if (!ssh->m_FixedAxisVertical || !ssh->m_FixedAxisVertical->m_value)
+					;// throw buw::NotImplementedYetException("Profile Y axis only in world Z direction supported.");
 
                 // Though not documented in the official specification, we interpolate cross sections if
                 // only 2 are given. The need to do so was motivated by the example file given at
@@ -623,6 +623,8 @@ public:
                 }
             return profileCurve;
         }
+		case IFCCIRCLEPROFILEDEF:
+			return std::make_shared<SectionedSolid::CrossSectionProfile>(std::static_pointer_cast<IfcCircleProfileDef>(profile));
         default:
             throw buw::NotImplementedYetException("Unsupported profile type.");
         }
