@@ -538,7 +538,7 @@ public:
                 auto ssh = std::static_pointer_cast<IfcSectionedSolidHorizontal>(reprItem);
                 if (!ssh->m_Directrix || ssh->m_CrossSectionPositions.size() < 2) continue;
 				if (!ssh->m_FixedAxisVertical || !ssh->m_FixedAxisVertical->m_value)
-					;// throw buw::NotImplementedYetException("Profile Y axis only in world Z direction supported.");
+					printf("Profile Y axis only in world Z direction supported.");// throw buw::NotImplementedYetException("Profile Y axis only in world Z direction supported.");
 
                 // Though not documented in the official specification, we interpolate cross sections if
                 // only 2 are given. The need to do so was motivated by the example file given at
@@ -713,7 +713,8 @@ public:
                         throw buw::NotImplementedYetException("Unknown/unimplemented offset basis curve type.");
                     if(ifcOffsetCurve->m_OffsetValues.empty()) break;
                     auto ifcBasisCurve = std::static_pointer_cast<IfcAlignmentCurve>(ifcOffsetCurve->m_BasisCurve);
-                    auto alignment = sampleIfcAlignmentCurve(ifcBasisCurve, ifcOffsetCurve->m_OffsetValues, true);
+					const bool bExtendToStartAndEnd = ifcOffsetCurve->m_OffsetValues.size() == 1 ? true : false;
+                    auto alignment = sampleIfcAlignmentCurve(ifcBasisCurve, ifcOffsetCurve->m_OffsetValues, bExtendToStartAndEnd);
                     if (!alignment) break;
                     alignment->setName(ifcOffsetCurve->m_Tag ?
                         buw::String::toWStdString(ifcOffsetCurve->m_Tag->m_value) : L"Offset curve");
