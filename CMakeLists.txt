@@ -50,7 +50,7 @@ endif()
 if(MSVC_VERSION EQUAL 1900)
 	set(MSVC_VERSION_STRING "vs2015")
 	set(MSVC_VERSION_YEAR "2015")
-elseif(MSVC_VERSION EQUAL 1910 OR MSVC_VERSION EQUAL 1911)
+elseif(MSVC_VERSION EQUAL 1910 OR MSVC_VERSION EQUAL 1911 OR MSVC_VERSION EQUAL 1912)
 	set(MSVC_VERSION_STRING "vs2017")
 	set(MSVC_VERSION_YEAR "2017")
 else()
@@ -108,12 +108,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
 # Visual Studio expected
 # Find Boost
 set(Boost_USE_STATIC_LIBS   ON)
-if(MSVC_VERSION EQUAL 1910 OR MSVC_VERSION EQUAL 1911)
 find_package(Boost 1.63.0 COMPONENTS signals system filesystem python3 REQUIRED) # we suggest Boost 1.65.1
-else()
-find_package(Boost 1.63.0 COMPONENTS signals system filesystem python REQUIRED) # we suggest Boost 1.65.1
-endif()
-
 
 #Find VisualLeakDetector
 find_package(VLD 					   REQUIRED)
