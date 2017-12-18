@@ -50,7 +50,7 @@ endif()
 if(MSVC_VERSION EQUAL 1900)
 	set(MSVC_VERSION_STRING "vs2015")
 	set(MSVC_VERSION_YEAR "2015")
-elseif(MSVC_VERSION EQUAL 1910 OR MSVC_VERSION EQUAL 1911)
+elseif(MSVC_VERSION EQUAL 1910 OR MSVC_VERSION EQUAL 1911 OR MSVC_VERSION EQUAL 1912)
 	set(MSVC_VERSION_STRING "vs2017")
 	set(MSVC_VERSION_YEAR "2017")
 else()
@@ -81,7 +81,8 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 			  "C:\\Qt\\5.9\\msvc${MSVC_VERSION_YEAR}_64" 
 			  "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc${MSVC_VERSION_YEAR}_64"
 			  "C:\\Qt\\5.9.2\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\Qt5.9.3\\5.9.3\\msvc${MSVC_VERSION_YEAR}_64")
+			  "C:\\Qt\\Qt5.9.3\\5.9.3\\msvc${MSVC_VERSION_YEAR}_64"
+			  "C:\\Qt\\Qt5.10.0\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64")
 	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
 	find_path(ZLIB_ROOT NAMES zlib.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
 endif()
@@ -108,12 +109,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
 # Visual Studio expected
 # Find Boost
 set(Boost_USE_STATIC_LIBS   ON)
-if(MSVC_VERSION EQUAL 1910 OR MSVC_VERSION EQUAL 1911)
 find_package(Boost 1.63.0 COMPONENTS signals system filesystem python3 REQUIRED) # we suggest Boost 1.65.1
-else()
-find_package(Boost 1.63.0 COMPONENTS signals system filesystem python REQUIRED) # we suggest Boost 1.65.1
-endif()
-
 
 #Find VisualLeakDetector
 find_package(VLD 					   REQUIRED)

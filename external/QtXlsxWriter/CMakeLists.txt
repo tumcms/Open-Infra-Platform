@@ -55,6 +55,9 @@ include_directories(
     # Support for Qt 5.9.3
     ${Qt5Gui_DIR}/../../../include/QtGui/5.9.3
     ${Qt5Core_DIR}/../../../include/QtCore/5.9.3
+	# Support for Qt 5.10.0
+    ${Qt5Gui_DIR}/../../../include/QtGui/5.10.0
+    ${Qt5Core_DIR}/../../../include/QtCore/5.10.0
 )
 
 ADD_LIBRARY(QtXlsxWriter SHARED
