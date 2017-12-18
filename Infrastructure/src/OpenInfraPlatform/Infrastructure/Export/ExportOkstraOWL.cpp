@@ -22,44 +22,69 @@
 
 static raptor_serializer* rdf_serializer;
 
-static void serialize_triple(void* user_data, raptor_statement* triple) {
-    raptor_serializer_serialize_statement(rdf_serializer, triple);
+static void
+serialize_triple(void* user_data, raptor_statement* triple)
+{
+	raptor_serializer_serialize_statement(rdf_serializer, triple);
 }
 
-static void declare_namespace(void* user_data, raptor_namespace* nspace) {
-    raptor_serializer_set_namespace_from_namespace(rdf_serializer, nspace);
+static void
+declare_namespace(void* user_data, raptor_namespace *nspace)
+{
+	raptor_serializer_set_namespace_from_namespace(rdf_serializer, nspace);
 }
 
-OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::ReferenceCounted<buw::AlignmentModel> am,
-                                                                    buw::ReferenceCounted<buw::DigitalElevationModel> dem,
-                                                                    const std::string& filename)
-    : Export(am, dem, filename) {
-    FILE* outfile = fopen(filename.c_str(), "w");
 
-    raptor_world* world = NULL;
-    raptor_statement* triple;
 
-    world = raptor_new_world();
+OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename) :
+Export(am, dem, filename)
+{
+	FILE* outfile = fopen(filename.c_str(), "w");
 
-    rdf_serializer = raptor_new_serializer(world, "rdfxml-abbrev");
-    raptor_serializer_start_to_file_handle(rdf_serializer, nullptr, outfile);
+	raptor_world *world = nullptr;
+	raptor_statement* triple;
 
-    triple = raptor_new_statement(world);
-    triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://example.org/subject");
-    triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://example.org/predicate");
-    triple->object = raptor_new_term_from_literal(world, (const unsigned char*)"An example literal", NULL, (const unsigned char*)"en");
+	world = raptor_new_world();
 
-    raptor_serializer_serialize_statement(rdf_serializer, triple);
+	rdf_serializer = raptor_new_serializer(world, "turtle");
+	raptor_serializer_start_to_file_handle(rdf_serializer, nullptr, outfile);
+	
+	const unsigned char* prefix = (const unsigned char*)"okstra";
+	raptor_uri* uri = raptor_new_uri(world, (const unsigned char*)"Data/okstra#");
+	raptor_serializer_set_namespace(rdf_serializer, uri, prefix);
 
-    raptor_free_statement(triple);
 
-    raptor_serializer_serialize_end(rdf_serializer);
+	triple = raptor_new_statement(world);
+	triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Hauptachse");
+	triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#hat_Achselement_Achse");
+	triple->object = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Achselement_List");;
+	raptor_serializer_serialize_statement(rdf_serializer, triple);
+	raptor_free_statement(triple);
 
-    raptor_free_serializer(rdf_serializer);
-    raptor_free_world(world);
+	triple = raptor_new_statement(world);
+	triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Hauptachse");
+	triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Kennung");
+	triple->object = raptor_new_term_from_literal(world, (const unsigned char*)"1", nullptr, nullptr);
+	raptor_serializer_serialize_statement(rdf_serializer, triple);
+	raptor_free_statement(triple);
 
-    fclose(outfile);
+	triple = raptor_new_statement(world);
+	triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Hauptachse");
+	triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Langtext");
+	triple->object = raptor_new_term_from_literal(world, (const unsigned char*)"Hauptachse 1", nullptr, nullptr);
+	raptor_serializer_serialize_statement(rdf_serializer, triple);
+	raptor_free_statement(triple);
+
+
+	raptor_serializer_serialize_end(rdf_serializer);
+
+	raptor_free_serializer(rdf_serializer);
+	raptor_free_world(world);
+
+	fclose(outfile);
 }
 
-OpenInfraPlatform::Infrastructure::ExportOkstraOWL::~ExportOkstraOWL() {
+OpenInfraPlatform::Infrastructure::ExportOkstraOWL::~ExportOkstraOWL()
+{
+
 }

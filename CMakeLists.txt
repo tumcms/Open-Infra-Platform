@@ -81,7 +81,8 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 			  "C:\\Qt\\5.9\\msvc${MSVC_VERSION_YEAR}_64" 
 			  "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc${MSVC_VERSION_YEAR}_64"
 			  "C:\\Qt\\5.9.2\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\Qt5.9.3\\5.9.3\\msvc${MSVC_VERSION_YEAR}_64")
+			  "C:\\Qt\\Qt5.9.3\\5.9.3\\msvc${MSVC_VERSION_YEAR}_64"
+			  "C:\\Qt\\Qt5.10.0\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64")
 	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
 	find_path(ZLIB_ROOT NAMES zlib.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
 endif()
@@ -660,6 +661,9 @@ add_custom_target(CopyOpenInfraPlatformUIResources
 	
 	COMMAND	${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/deploy/InstanceLevelTranslator/InstanceLevelTranslator.exe		${CMAKE_BINARY_DIR}/RelWithDebInfo/InstanceLevelTranslator.exe
 	COMMAND	${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/deploy/InstanceLevelTranslator/OkstraI18NTranslation.dll		${CMAKE_BINARY_DIR}/RelWithDebInfo/OkstraI18NTranslation.dll
+	
+	# OKSTRA OWL
+	COMMAND	${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Data/okstra							${CMAKE_BINARY_DIR}/Data
 )
 
 # DirectX

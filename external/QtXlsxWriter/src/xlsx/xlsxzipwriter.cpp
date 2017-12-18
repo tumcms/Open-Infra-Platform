@@ -48,6 +48,8 @@
 		#include "QtGui/5.9.2/QtGui/private/qzipwriter_p.h"
 	#elif (QT_VERSION == 0x050903)
 		#include "QtGui/5.9.3/QtGui/private/qzipwriter_p.h"
+	#elif (QT_VERSION == QT_VERSION_CHECK(5,10,0))
+		#include  "QtGui/5.10.0/QtGui/private/qzipwriter_p.h"
 	#endif
 #endif
 
