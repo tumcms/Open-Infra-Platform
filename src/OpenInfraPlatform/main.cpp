@@ -32,7 +32,6 @@
 #include <QtCore>
 #include <QtGui>
 #include <sstream>
-#include <sstream>
 #include <string>
 
 #include "version.h"
@@ -41,132 +40,157 @@ void compile();
 
 QSplashScreen* g_splash = nullptr;
 
+#include <codecvt>
+#include <shlobj.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <shlobj.h>
-#include <codecvt>
 
 using convert_type = std::codecvt_utf8<wchar_t>;
 
-
 void SignalHandler(int signal) {
-	printf("Signal %d", signal);
-	throw buw::Exception("!Access Violation!");
+    printf("Signal %d", signal);
+    throw buw::Exception("!Access Violation!");
+}
+
+//#include <boost/multiprecision/float128.hpp>
+
+// L = 13.33 A = 20.0
+double computeX(const double L, const double A, int iterations = 5) {
+    double x = L;
+    
+    for (int i = 1; i < iterations + 1; i++) {
+        double sign = i % 2 == 0 ? 1 : -1;
+
+        double L_exponent = 5 + (i - 1) * 4;
+        double A_exponent = i * 4;
+        double factor = buw::factorial(2 * i) * pow(2.0, 2 * i) * (5 + (i - 1) * 4);
+        factor = factor + 3.0;
+        double debug = pow(A, A_exponent);
+        x += sign * pow(L, L_exponent) / (factor * debug);
+    }
+
+    return x;
+}
+
+void testCA() {
+    
+    for (int i = 5; i < 10; ++i) {
+        double x = computeX(13.33*10, 20.0, i);
+        std::cout << "Number of iterations: " << i <<  x << std::endl;
+    }
 }
 
 int main(int argc, char* argv[]) {
-	typedef void (*SignalHandlerPointer)(int);
+    //testCA();
 
-	SignalHandlerPointer previousHandler;
-	previousHandler = signal(SIGSEGV, SignalHandler);
+    typedef void (*SignalHandlerPointer)(int);
 
-	QApplication application(argc, argv);
+    SignalHandlerPointer previousHandler;
+    previousHandler = signal(SIGSEGV, SignalHandler);
 
-	try {
-		application.addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
+    QApplication application(argc, argv);
 
-		QApplication::setApplicationName("TUM Open Infra Platform 2017");
-		QApplication::setApplicationVersion(OpenInfraPlatform::VERSION_STR.c_str());
-		QApplication::setOrganizationName("Technische Universitaet Muenchen Chair of Computational Modeling and Simulation");
-		QApplication::setOrganizationDomain("cms.bv.tum.de");
-		QApplication::setWindowIcon(QIcon(":/images/icons/icon.ico"));
+    try {
+        application.addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
+
+        QApplication::setApplicationName("TUM Open Infra Platform 2017");
+        QApplication::setApplicationVersion(OpenInfraPlatform::VERSION_STR.c_str());
+        QApplication::setOrganizationName("Technische Universitaet Muenchen Chair of Computational Modeling and Simulation");
+        QApplication::setOrganizationDomain("cms.bv.tum.de");
+        QApplication::setWindowIcon(QIcon(":/images/icons/icon.ico"));
 
 #ifdef SPLASH_SCREEN
-		g_splash = new QSplashScreen();
-		g_splash->setPixmap(QPixmap(":/images/splash.png"));
-		g_splash->show();
+        g_splash = new QSplashScreen();
+        g_splash->setPixmap(QPixmap(":/images/splash.png"));
+        g_splash->show();
 
-		Qt::Alignment leftBottom = Qt::AlignLeft | Qt::AlignBottom;
-		g_splash->showMessage("Starting application...", leftBottom, Qt::lightGray);
+        Qt::Alignment leftBottom = Qt::AlignLeft | Qt::AlignBottom;
+        g_splash->showMessage("Starting application...", leftBottom, Qt::lightGray);
 #endif
-		wchar_t* localAppData = 0;
-		SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
+        wchar_t* localAppData = 0;
+        SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
 
-		std::wstringstream ss;
-		ss << localAppData << L"/OpenInfraPlatform/";
+        std::wstringstream ss;
+        ss << localAppData << L"/OpenInfraPlatform/";
 
-		CoTaskMemFree(static_cast<void*>(localAppData));
-		//setup converter
-		std::wstring_convert<convert_type, wchar_t> converter;
+        CoTaskMemFree(static_cast<void*>(localAppData));
+        // setup converter
+        std::wstring_convert<convert_type, wchar_t> converter;
 
-		//use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
-		std::string converted_str = "";
+        // use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
+        std::string converted_str = "";
 #ifndef _DEBUG
-		converted_str = converter.to_bytes(ss.str());
+        converted_str = converter.to_bytes(ss.str());
 #endif
 
-		buw::initializeLogSystem(converted_str, true, true);
-			
-		BLUE_LOG(trace) << "Initialized log system";
+        buw::initializeLogSystem(converted_str, true, true);
 
-		// 		if (!true)
-		// 		{
-		// 			compile();
-		// 			return 0;
-		// 		}
+        BLUE_LOG(trace) << "Initialized log system";
 
-		OpenInfraPlatform::Benchmark::getInstance().beginStartup();
+        // 		if (!true)
+        // 		{
+        // 			compile();
+        // 			return 0;
+        // 		}
 
-		// check if we have an appropriate BlueFramework
-		int patchNumber = 559;
-		if (!buw::Version::isAtLeast(3, 1, 1, 0)) {
-			BLUE_LOG(error) << "Please switch to BlueFramework 3.1.1.0 or newer (can be downloaded from vertexwahn.de/blueframework)!";
-			system("pause");
-		}
+        OpenInfraPlatform::Benchmark::getInstance().beginStartup();
 
-		if (buw::Version::getPatch() != BLUEFRAMEWORK_API_PATCH) {
-			BLUE_LOG(error) 
-				<< "Invalid BlueCore DLL found! Found DLL patch version " 
-				<< buw::Version::getPatch() 
-				<< " but header file is at " 
-				<< BLUEFRAMEWORK_API_PATCH;
-		}
+        // check if we have an appropriate BlueFramework
+        int patchNumber = 559;
+        if (!buw::Version::isAtLeast(3, 1, 1, 0)) {
+            BLUE_LOG(error) << "Please switch to BlueFramework 3.1.1.0 or newer (can be downloaded from vertexwahn.de/blueframework)!";
+            system("pause");
+        }
 
-		// Test our exception handling!
-		//*(int *)0 = 0;// Baaaaaaad thing that should never happen
-		// throw std::runtime_error("muh");
+        if (buw::Version::getPatch() != BLUEFRAMEWORK_API_PATCH) {
+            BLUE_LOG(error) << "Invalid BlueCore DLL found! Found DLL patch version " << buw::Version::getPatch() << " but header file is at " << BLUEFRAMEWORK_API_PATCH;
+        }
 
-		std::string basePath = "Style/blueform.qss";
+        // Test our exception handling!
+        //*(int *)0 = 0;// Baaaaaaad thing that should never happen
+        // throw std::runtime_error("muh");
 
-		QFile styleSheet(basePath.c_str());
+        std::string basePath = "Style/blueform.qss";
 
-		if (!styleSheet.open(QIODevice::ReadOnly)) {
-			qWarning("Unable to open stylesheet");
-		} else {
-			application.setStyleSheet(styleSheet.readAll());
-		}
+        QFile styleSheet(basePath.c_str());
 
-		QTranslator translator;
-		translator.load("English", "Data/translations");
-		application.installTranslator(&translator);
+        if (!styleSheet.open(QIODevice::ReadOnly)) {
+            qWarning("Unable to open stylesheet");
+        } else {
+            application.setStyleSheet(styleSheet.readAll());
+        }
 
-		OpenInfraPlatform::UserInterface::MainWindow mainWindow;
-		mainWindow.setAttribute(Qt::WA_QuitOnClose);
-		mainWindow.show();
+        QTranslator translator;
+        translator.load("English", "Data/translations");
+        application.installTranslator(&translator);
 
-		// OpenInfraPlatform::UserInterface::CodeEditorWindow CodeEditor;
-		// CodeEditor.show();
-		// return application.exec();
+        OpenInfraPlatform::UserInterface::MainWindow mainWindow;
+        mainWindow.setAttribute(Qt::WA_QuitOnClose);
+        mainWindow.show();
 
-		if (g_splash) {
-			g_splash->hide();
-			delete g_splash;
-		}
+        // OpenInfraPlatform::UserInterface::CodeEditorWindow CodeEditor;
+        // CodeEditor.show();
+        // return application.exec();
 
-		return application.exec();
-	} catch (const buw::FileNotFoundException& e) {
-		std::stringstream ss;
-		ss << "An unexpected error occurred:\nCould not find file \"" << e.getFilename().c_str() << "\"";
-		QMessageBox::information(nullptr, QApplication::applicationName(), ss.str().c_str());
-	} catch (const buw::Exception& e) {
-		std::stringstream ss;
-		ss << "An unexpected error occurred:\n" << e.what() << "\"";
-		QMessageBox::information(nullptr, QApplication::applicationName(), ss.str().c_str());
-	} catch (...) {
-		std::stringstream ss;
-		ss << "An unexpected error occurred in logging catch block.";
-		QMessageBox::information(nullptr, QApplication::applicationName(), ss.str().c_str());
-		return -1;
-	}
+        if (g_splash) {
+            g_splash->hide();
+            delete g_splash;
+        }
+
+        return application.exec();
+    } catch (const buw::FileNotFoundException& e) {
+        std::stringstream ss;
+        ss << "An unexpected error occurred:\nCould not find file \"" << e.getFilename().c_str() << "\"";
+        QMessageBox::information(nullptr, QApplication::applicationName(), ss.str().c_str());
+    } catch (const buw::Exception& e) {
+        std::stringstream ss;
+        ss << "An unexpected error occurred:\n" << e.what() << "\"";
+        QMessageBox::information(nullptr, QApplication::applicationName(), ss.str().c_str());
+    } catch (...) {
+        std::stringstream ss;
+        ss << "An unexpected error occurred in logging catch block.";
+        QMessageBox::information(nullptr, QApplication::applicationName(), ss.str().c_str());
+        return -1;
+    }
 }
