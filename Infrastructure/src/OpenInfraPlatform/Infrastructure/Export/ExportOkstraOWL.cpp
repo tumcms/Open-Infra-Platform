@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2017 Technical University of Munich
+    Copyright (c) 2018 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -34,8 +34,6 @@ declare_namespace(void* user_data, raptor_namespace *nspace)
 	raptor_serializer_set_namespace_from_namespace(rdf_serializer, nspace);
 }
 
-
-
 OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename) :
 	Export(am, dem, filename)
 {
@@ -53,9 +51,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 	raptor_uri* uri = raptor_new_uri(world, (const unsigned char*)"Data/okstra#");
 	raptor_serializer_set_namespace(rdf_serializer, uri, prefix);
 
-	for (int i = 0; i < am->getAlignmentCount(); i++)
-	{
-
+	for (int i = 0; i < am->getAlignmentCount(); i++) {
 		buw::String id = am->getAlignments()[i]->getName();
 
 		triple = raptor_new_statement(world);

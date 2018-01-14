@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2017 Technical University of Munich
+    Copyright (c) 2018 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -661,9 +661,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered()
 {
 	QString head, desc;
 
-	head = tr( "<h2><b>TUM Open Infra Platform 2017</b><br/></h2>" );
+	head = tr( "<h2><b>TUM Open Infra Platform 2018</b><br/></h2>" );
 
-	const QString copyright( tr( "Copyright &copy; 2017" ) );
+	const QString copyright( tr( "Copyright &copy; 2018" ) );
 
 	desc = QString( "Version %2<br/>%1<br/>Technische Universit&auml;t M&uuml;nchen<br/>"
 		"Faculty of Civil, Geo and Environmental Engineering<br/>"
@@ -672,7 +672,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered()
 		"Please submit your bug reports or support requests to our repository <a href=\"https://bitbucket.org/tumcms/openinfraplatform\"><font color=\"#48B7E7\">https://bitbucket.org/tumcms/openinfraplatform</font></a><br/><br/>")
 			.arg( copyright, updater->installedVersion() );
 
-	QMessageBox::about( this, tr( "About TUM Open Infra Platform 2017" ), head + desc );
+	QMessageBox::about( this, tr( "About TUM Open Infra Platform 2018" ), head + desc );
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionHorizontal_alignment_triggered()
