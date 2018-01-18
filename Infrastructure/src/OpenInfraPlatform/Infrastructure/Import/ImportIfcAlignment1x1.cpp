@@ -70,7 +70,8 @@ public:
         const bool importAlignment = true;
         const bool importProxyElements = true; // e.g. traffic signs
         const bool importGirders = true;
-        const bool importSlabFields = true;
+		const bool importSlabFields = true;
+		const bool importWallsAndSlabs = true;
 
         shared_ptr<IfcStepReader> m_step_reader = shared_ptr<IfcStepReader>(new IfcStepReader());
         shared_ptr<IfcAlignment1x1Model> m_ifc_model(new IfcAlignment1x1Model());
@@ -328,24 +329,56 @@ public:
                 }
             }
 
-            if (importSlabFields && it->second->m_entity_enum == IFCRAILING)
-            {
-                auto ifcRailing = std::static_pointer_cast<IfcRailing>(it->second);
-                if (ifcRailing->m_PredefinedType && ifcRailing->m_PredefinedType->m_enum == IfcRailingTypeEnum::ENUM_GUARDRAIL)
-                {
-                    auto ssh = createSectionedSolidHorizontals(ifcRailing);
-                    if (!ssh.empty())
-                    {
-                        auto railing = std::make_shared<Railing>(
-                            ifcRailing->getId(),
-                            ifcRailing->m_Name ? buw::String::toWStdString(ifcRailing->m_Name->m_value) : L"Railing");
-                        railing->addSectionedSolid(ssh);
-                        slabFieldModel_->addItem(railing);
-                    }
-                }
-                else
-                    throw buw::NotImplementedYetException("Unimplemented railing type.");
-            }
+            if (importSlabFields)
+				if(it->second->m_entity_enum == IFCRAILING)
+				{
+					auto ifcRailing = std::static_pointer_cast<IfcRailing>(it->second);
+					if (ifcRailing->m_PredefinedType && ifcRailing->m_PredefinedType->m_enum == IfcRailingTypeEnum::ENUM_GUARDRAIL)
+					{
+						auto ssh = createSectionedSolidHorizontals(ifcRailing);
+						if (!ssh.empty())
+						{
+							auto railing = std::make_shared<Railing>(
+								ifcRailing->getId(),
+								ifcRailing->m_Name ? buw::String::toWStdString(ifcRailing->m_Name->m_value) : L"Railing");
+							railing->addSectionedSolid(ssh);
+							slabFieldModel_->addItem(railing);
+						}
+					}
+					else
+						throw buw::NotImplementedYetException("Unimplemented railing type.");
+				}
+				else if (it->second->m_entity_enum == IFCWALL)
+				{
+					auto ifcWall = std::static_pointer_cast<IfcWall>(it->second);
+					if (ifcWall->m_PredefinedType && ifcWall->m_PredefinedType->m_enum == IfcWallTypeEnum::ENUM_PARAPET)
+					{
+						auto ssh = createSectionedSolidHorizontals(ifcWall);
+						if (!ssh.empty())
+						{
+							auto slabField = std::make_shared<SlabField>(
+								ifcWall->getId(),
+								ifcWall->m_Name ? buw::String::toWStdString(ifcWall->m_Name->m_value) : L"Wall");
+							slabField->addSectionedSolid(ssh);
+							slabFieldModel_->addItem(slabField);
+						}
+					}
+					else
+						throw buw::NotImplementedYetException("Unimplemented wall type.");
+				}
+				else if (it->second->m_entity_enum == IFCSLAB)
+				{
+					auto ifcSlab = std::static_pointer_cast<IfcSlab>(it->second);
+					auto ssh = createSectionedSolidHorizontals(ifcSlab);
+					if (!ssh.empty())
+					{
+						auto slabField = std::make_shared<SlabField>(
+							ifcSlab->getId(),
+							ifcSlab->m_Name ? buw::String::toWStdString(ifcSlab->m_Name->m_value) : L"Slab");
+						slabField->addSectionedSolid(ssh);
+						slabFieldModel_->addItem(slabField);
+					}
+				}
         }
     }
 
@@ -514,8 +547,15 @@ public:
         for (auto part : parts)
         {
             if (!part) continue;
-            if (part->m_entity_enum != IFCBEAM && part->m_entity_enum != IFCSLAB && part->m_entity_enum != IFCTENDON)
-                throw buw::NotImplementedYetException("Unimplemented part element type.");
+			if (part->m_entity_enum != IFCBEAM
+				&& part->m_entity_enum != IFCSLAB
+				&& part->m_entity_enum != IFCTENDON
+				&& part->m_entity_enum != IFCPLATE
+				&& part->m_entity_enum != IFCWALL)
+			{
+				//throw buw::NotImplementedYetException("Unimplemented part element type.");
+				BLUE_LOG(info, "muh");
+			}
             auto const& ssh = createSectionedSolidHorizontals(std::static_pointer_cast<IfcElement>(part));
             results.insert(results.end(), ssh.begin(), ssh.end());
         }
@@ -538,7 +578,12 @@ public:
                 auto ssh = std::static_pointer_cast<IfcSectionedSolidHorizontal>(reprItem);
                 if (!ssh->m_Directrix || ssh->m_CrossSectionPositions.size() < 2) continue;
 				if (!ssh->m_FixedAxisVertical || !ssh->m_FixedAxisVertical->m_value)
-					printf("Profile Y axis only in world Z direction supported.");// throw buw::NotImplementedYetException("Profile Y axis only in world Z direction supported.");
+					BLUE_LOG(warning) << "Profile Y axis only in world Z direction supported.";// throw buw::NotImplementedYetException("Profile Y axis only in world Z direction supported.");
+
+				// There was an example file from Tim Chipman, where there were 2 cross sections, but had no different DistanceAlong
+				if (ssh->m_CrossSectionPositions.size() == 2 &&
+					ssh->m_CrossSectionPositions[0]->m_DistanceAlong->m_value == ssh->m_CrossSectionPositions[1]->m_DistanceAlong->m_value)
+					continue;
 
                 // Though not documented in the official specification, we interpolate cross sections if
                 // only 2 are given. The need to do so was motivated by the example file given at
@@ -549,9 +594,10 @@ public:
                 // intermediate positions along the directrix, if the first and the last profiles are
                 // identical.
                 bool const bAdaptiveSampling =
-                    (ssh->m_CrossSectionPositions.size() == 2) && (ssh->m_CrossSections.size() == 2) &&
-                    ssh->m_CrossSections.front() && ssh->m_CrossSections.back() &&
-                    (ssh->m_CrossSections.front()->getId() == ssh->m_CrossSections.back()->getId());
+                    (ssh->m_CrossSectionPositions.size() == 2) && (ssh->m_CrossSections.size() == 2)
+                    // && ssh->m_CrossSections.front() && ssh->m_CrossSections.back() &&
+                    //(ssh->m_CrossSections.front()->getId() == ssh->m_CrossSections.back()->getId())
+					;
 
                 // Get the profile positions (and associated horizontal tangent and normal directions).
                 std::shared_ptr<Alignment3DBased3D> profilePositions;
@@ -599,7 +645,8 @@ public:
 
     std::shared_ptr<SectionedSolid::CrossSectionProfile> createProfileCurve(std::shared_ptr<IfcProfileDef> profile)
     {
-        if (!profile) return nullptr;
+        if (!profile) 
+			return nullptr;
         switch (profile->m_entity_enum)
         {
         case IFCASYMMETRICISHAPEPROFILEDEF:
@@ -625,6 +672,8 @@ public:
         }
 		case IFCCIRCLEPROFILEDEF:
 			return std::make_shared<SectionedSolid::CrossSectionProfile>(std::static_pointer_cast<IfcCircleProfileDef>(profile));
+		case IFCRECTANGLEPROFILEDEF:
+			return std::make_shared<SectionedSolid::CrossSectionProfile>(std::static_pointer_cast<IfcRectangleProfileDef>(profile));
         default:
             throw buw::NotImplementedYetException("Unsupported profile type.");
         }

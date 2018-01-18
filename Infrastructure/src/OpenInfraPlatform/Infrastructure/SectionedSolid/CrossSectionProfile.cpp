@@ -509,6 +509,47 @@ namespace SectionedSolid
 		segments.push_back(outerCurve);
 	}
 
+	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcRectangleProfileDef> csp)
+		: segments()
+	{
+		std::vector<std::vector<CrossSectionProfile::Vertex>> outerCurve;
+		std::vector<std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint>> points2d;
+		
+		std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure> left (std::make_shared < IfcAlignment1x1::IfcLengthMeasure>(-0.5 * csp->m_XDim->m_value));
+		std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure> right(std::make_shared < IfcAlignment1x1::IfcLengthMeasure>( 0.5 * csp->m_XDim->m_value));
+		std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure> down (std::make_shared < IfcAlignment1x1::IfcLengthMeasure>(-0.5 * csp->m_YDim->m_value));
+		std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure> top  (std::make_shared < IfcAlignment1x1::IfcLengthMeasure>( 0.5 * csp->m_YDim->m_value));
+
+		std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> LD(new IfcAlignment1x1::IfcCartesianPoint());
+		LD->m_Coordinates.push_back(left);
+		LD->m_Coordinates.push_back(down);
+		points2d.push_back(LD);
+		std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> LT(new IfcAlignment1x1::IfcCartesianPoint());
+		LT->m_Coordinates.push_back(left);
+		LT->m_Coordinates.push_back(top);
+		points2d.push_back(LT);
+		std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> RT(new IfcAlignment1x1::IfcCartesianPoint());
+		RT->m_Coordinates.push_back(right);
+		RT->m_Coordinates.push_back(top);
+		points2d.push_back(RT);
+		std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> RD(new IfcAlignment1x1::IfcCartesianPoint());
+		RD->m_Coordinates.push_back(right);
+		RD->m_Coordinates.push_back(down);
+		points2d.push_back(RD);
+		points2d.push_back(LD);
+
+
+		auto const& pointSource = [&points2d](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {
+			return points2d[i]->m_Coordinates;
+		};
+		
+		outerCurve.push_back(processLineStrip(
+			pointSource,
+			5,
+			isCCW(pointSource, 5)));
+
+		segments.push_back(outerCurve);
+	}
 
 	CrossSectionProfile::~CrossSectionProfile()
 	{
