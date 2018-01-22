@@ -75,7 +75,8 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_0" 
 			  "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_64_0" 
 			  "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_63_0")
-	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
+	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS 
+			  "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
 	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS 
 			  "C:\\Qt\\Qt5.9.0\\5.9\\msvc${MSVC_VERSION_YEAR}_64" 
 			  "C:\\Qt\\5.9\\msvc${MSVC_VERSION_YEAR}_64" 
@@ -84,8 +85,11 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 			  "C:\\Qt\\Qt5.9.3\\5.9.3\\msvc${MSVC_VERSION_YEAR}_64"
 			  "C:\\Qt\\Qt5.10.0\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64"
 			  "C:\\Qt\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64")
-	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
-	find_path(ZLIB_ROOT NAMES zlib.h HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
+	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS 
+		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
+		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
+	find_path(ZLIB_ROOT NAMES zlib.h HINTS 
+	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG     ${CMAKE_BINARY_DIR}/Debug)
