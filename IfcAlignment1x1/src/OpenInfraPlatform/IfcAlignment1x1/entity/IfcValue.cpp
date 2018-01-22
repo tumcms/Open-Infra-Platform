@@ -30,6 +30,10 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include "IfcPressureMeasure.h"
 #include "IfcThermodynamicTemperatureMeasure.h"
 #include "IfcVolumeMeasure.h"
+#include "IfcMassDensityMeasure.h"
+#include "IfcModulusOfElasticityMeasure.h"
+#include "IfcPositiveRatioMeasure.h"
+#include "IfcThermalExpansionCoefficientMeasure.h"
 
 namespace OpenInfraPlatform
 {
@@ -90,6 +94,23 @@ namespace OpenInfraPlatform
 					return std::make_shared<IfcThermodynamicTemperatureMeasure>(atof(inline_arg.c_str()));
 				} else if (keyword == "IFCVOLUMEMEASURE") {
 					return std::make_shared<IfcVolumeMeasure>(atof(inline_arg.c_str()));
+				} else if (keyword == "IFCMASSDENSITYMEASURE") {
+					if (inline_arg.size() == 0) 
+						return std::make_shared<IfcMassDensityMeasure>(0.0);
+					else
+						return std::make_shared<IfcMassDensityMeasure>(atof(inline_arg.c_str()));
+				} else if (keyword == "IFCMODULUSOFELASTICITYMEASURE") {
+					if (inline_arg.size() == 0)
+						return std::make_shared<IfcModulusOfElasticityMeasure>(0.0);
+					else
+						return std::make_shared<IfcModulusOfElasticityMeasure>(atof(inline_arg.c_str()));
+				} else if (keyword == "IFCPOSITIVERATIOMEASURE") {
+					return nullptr;
+				} else if (keyword == "IFCTHERMALEXPANSIONCOEFFICIENTMEASURE") {
+					if (inline_arg.size() == 0) 
+						return std::make_shared<IfcThermalExpansionCoefficientMeasure>(0.0);
+					else
+						return std::make_shared<IfcThermalExpansionCoefficientMeasure>(atof(inline_arg.c_str()));
 				}
 
 				std::stringstream strs;

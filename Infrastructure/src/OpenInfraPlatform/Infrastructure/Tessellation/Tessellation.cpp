@@ -202,7 +202,7 @@ namespace Tessellation
 
 		// Collect relevant vertical alignment elements and their starting positions.
 		dCurrentLength = 0.0;
-		int const numVertElements = vert->getAlignmentElementCount();
+		int const numVertElements = vert ? vert->getAlignmentElementCount() : 0;
 		for (int i = 0; i < numVertElements && dCurrentLength < dTo; ++i)
 		{
 			auto element = vert->getAlignmentElementByIndex(i);
@@ -266,7 +266,7 @@ namespace Tessellation
 				bool const bCCW = (horizArc ? !horizArc->getClockWise() : vertArc->isConvex());
 				size_t numIntermediateSteps = 0;
 				double unused = 0.0;
-				getUniformArcSampling(startPos, stopPos, centerPos, bCCW, circleMaxSegErr2minSegCrease(dRadius, log1p(dRadius) / LN_BASE),
+				getUniformArcSampling(startPos, stopPos, centerPos, bCCW, circleMaxSegErr2minSegCrease(dRadius, 0.001), //log1p(dRadius) / LN_BASE),
 					numIntermediateSteps, unused);
 				if (numIntermediateSteps > 0)
 				{
