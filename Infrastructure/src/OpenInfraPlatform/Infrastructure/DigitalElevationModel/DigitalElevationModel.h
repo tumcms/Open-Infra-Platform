@@ -40,9 +40,8 @@ public:
 
 	void addSurface(buw::ReferenceCounted<buw::Surface> surface);
 
-	//! A digital terrain model can
+	bool hasSurfaces() const;
 	int getSurfaceCount() const;
-
 	buw::ReferenceCounted<buw::Surface> getSurface(const int index) const;
 
 	const std::vector<buw::ReferenceCounted<buw::Surface>>& getSurfaces() const;
@@ -64,6 +63,8 @@ public:
 
 	const std::vector<std::vector<buw::Vector3d>>& getBreakLines() const;
 
+	
+
 private:
 	void updateMinMax(const buw::Vector3d& position, buw::Vector3d& minPos, buw::Vector3d& maxPos) const;
 
@@ -79,6 +80,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 namespace buw {
 	using OpenInfraPlatform::Infrastructure::DigitalElevationModel;
 	using OpenInfraPlatform::Infrastructure::createSurfaceFromXYZPoints;
-}
+} // namespace buw
 
 #endif // end define OpenInfraPlatform_Infrastructure_DigitalElevationModel_8b94f7d0_a5fc_4ba4_ab63_f15df1bd6515_h
