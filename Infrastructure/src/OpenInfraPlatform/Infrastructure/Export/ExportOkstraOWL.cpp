@@ -20,39 +20,55 @@
 
 #include "raptor2/raptor2.h"
 
-static raptor_serializer* rdf_serializer;
-
-// static void serialize_triple(void* user_data, raptor_statement* triple) {
-// 	raptor_serializer_serialize_statement(rdf_serializer, triple);
-// }
-//
-// static void declare_namespace(void* user_data, raptor_namespace* nspace) {
-// 	raptor_serializer_set_namespace_from_namespace(rdf_serializer, nspace);
-// }
-
 OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::ReferenceCounted<buw::AlignmentModel> am,
                                                                     buw::ReferenceCounted<buw::DigitalElevationModel> dem,
                                                                     const std::string& filename)
     : Export(am, dem, filename) {
-	// foaf test
+	if(false) // foaf test
 	{
 		FILE* outfile = fopen(filename.c_str(), "w");
+
 		raptor_world* world = raptor_new_world();
-		rdf_serializer = raptor_new_serializer(world, "rdfxml" /* "turtle" */);
+		raptor_serializer* rdf_serializer = raptor_new_serializer(world, "turtle" /*"rdfxml"*/ /* "rdfxml-abbrev"  */);
 		raptor_serializer_start_to_file_handle(rdf_serializer, nullptr, outfile);
 
 		const unsigned char* prefix = (const unsigned char*)"foaf";
 		raptor_uri* uri = raptor_new_uri(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/");
 		raptor_serializer_set_namespace(rdf_serializer, uri, prefix);
 
-		raptor_statement* triple = nullptr;
-		triple = raptor_new_statement(world);
-		triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/Person");
-		triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/Person/name");
-		std::string name = "Jimmy Wales";
-		triple->object = raptor_new_term_from_literal(world, (unsigned char*)name.c_str(), nullptr, nullptr);
-		raptor_serializer_serialize_statement(rdf_serializer, triple);
-		raptor_free_statement(triple);
+		{
+			raptor_statement* triple = nullptr;
+			triple = raptor_new_statement(world);
+
+			triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"genid:A4486");
+			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+			triple->object = raptor_new_term_from_literal(world, (unsigned char*)"http://xmlns.com/foaf/0.1/Person", nullptr, nullptr);
+
+			raptor_serializer_serialize_statement(rdf_serializer, triple);
+			raptor_free_statement(triple);
+		}
+
+		{
+			raptor_statement* triple = nullptr;
+			triple = raptor_new_statement(world);
+
+			triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/Person");
+			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/name");
+			triple->object = raptor_new_term_from_literal(world, (unsigned char*)"Jimmy Wales", nullptr, nullptr);
+			raptor_serializer_serialize_statement(rdf_serializer, triple);
+			raptor_free_statement(triple);
+		}
+
+		{
+			raptor_statement* triple = nullptr;
+			triple = raptor_new_statement(world);
+
+			triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/Person");
+			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/mbox");
+			triple->object = raptor_new_term_from_literal(world, (unsigned char*)"mailto:jwales@bomis.com", nullptr, nullptr);
+			raptor_serializer_serialize_statement(rdf_serializer, triple);
+			raptor_free_statement(triple);
+		}
 
 		raptor_serializer_serialize_end(rdf_serializer);
 		raptor_free_serializer(rdf_serializer);
@@ -63,64 +79,99 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 		return;
 	}
 
-	FILE* outfile = fopen(filename.c_str(), "w");
+	if (false) {
+		FILE* outfile = fopen(filename.c_str(), "w");
 
-	raptor_world* world = raptor_new_world();
+		raptor_world* world = raptor_new_world();
 
-	rdf_serializer = raptor_new_serializer(world, "turtle");
-	raptor_serializer_start_to_file_handle(rdf_serializer, nullptr, outfile);
+		raptor_serializer* rdf_serializer;
+		rdf_serializer = raptor_new_serializer(world, "turtle");
+		raptor_serializer_start_to_file_handle(rdf_serializer, nullptr, outfile);
 
-	const unsigned char* prefix = (const unsigned char*)"okstra";
-	raptor_uri* uri = raptor_new_uri(world, (const unsigned char*)"Data/okstra#");
-	raptor_serializer_set_namespace(rdf_serializer, uri, prefix);
+		const unsigned char* prefix = (const unsigned char*)"okstra";
+		raptor_uri* uri = raptor_new_uri(world, (const unsigned char*)"Data/okstra#");
+		raptor_serializer_set_namespace(rdf_serializer, uri, prefix);
+
+		for (int i = 0; i < am->getAlignmentCount(); i++) {
+			buw::String id = am->getAlignments()[i]->getName();
+
+			raptor_statement* triple = nullptr;
+
+			triple = raptor_new_statement(world);
+			triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Hauptachse");
+			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#hat_Achselement_Achse");
+			triple->object = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Achselement_List");
+			raptor_serializer_serialize_statement(rdf_serializer, triple);
+			raptor_free_statement(triple);
+
+			triple = raptor_new_statement(world);
+			triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Hauptachse");
+			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Kennung");
+			triple->object = raptor_new_term_from_literal(world, (unsigned char*)id.toCString(), nullptr, nullptr);
+			raptor_serializer_serialize_statement(rdf_serializer, triple);
+			raptor_free_statement(triple);
+
+			triple = raptor_new_statement(world);
+			triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Hauptachse");
+			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Langtext");
+			triple->object = raptor_new_term_from_literal(world, (const unsigned char*)"Hauptachse 1", nullptr, nullptr);
+			raptor_serializer_serialize_statement(rdf_serializer, triple);
+			raptor_free_statement(triple);
+		}
+
+		if (dem->hasSurfaces()) {
+			raptor_statement* triple = nullptr;
+
+			triple = raptor_new_statement(world);
+			triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#DGM");
+			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Bezeichnung");
+			triple->object = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Geländemodell");
+			raptor_serializer_serialize_statement(rdf_serializer, triple);
+			raptor_free_statement(triple);
+
+			for (int i = 0; i < dem->getSurfaceCount(); i++) {
+			}
+		}
+
+		raptor_serializer_serialize_end(rdf_serializer);
+
+		raptor_free_serializer(rdf_serializer);
+		raptor_free_world(world);
+
+		fclose(outfile);
+
+		return;
+	}
+
+
+	std::ofstream out(filename.c_str());
+	out << "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ." << std::endl;
+	out << "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ." << std::endl;
+	out << "@prefix okstra: <http://okstraowl.org/def/2017/okstraowl#> ." << std::endl;
+	out << std::endl;
 
 	for (int i = 0; i < am->getAlignmentCount(); i++) {
-		buw::String id = am->getAlignments()[i]->getName();
+		buw::String name = am->getAlignments()[i]->getName();
 
-		raptor_statement* triple = nullptr;
-
-		triple = raptor_new_statement(world);
-		triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Hauptachse");
-		triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#hat_Achselement_Achse");
-		triple->object = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Achselement_List");
-		raptor_serializer_serialize_statement(rdf_serializer, triple);
-		raptor_free_statement(triple);
-
-		triple = raptor_new_statement(world);
-		triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Hauptachse");
-		triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Kennung");
-		triple->object = raptor_new_term_from_literal(world, (unsigned char*)id.toCString(), nullptr, nullptr);
-		raptor_serializer_serialize_statement(rdf_serializer, triple);
-		raptor_free_statement(triple);
-
-		triple = raptor_new_statement(world);
-		triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Hauptachse");
-		triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Langtext");
-		triple->object = raptor_new_term_from_literal(world, (const unsigned char*)"Hauptachse 1", nullptr, nullptr);
-		raptor_serializer_serialize_statement(rdf_serializer, triple);
-		raptor_free_statement(triple);
+		out << "<#" << name.toCString() << ">" << std::endl;
+		out << "\t" << "a okstra:Trasse ;" << std::endl;
+		out << "\t" << "okstra:Bezeichnung \"" << name.toCString() << "\"";
+		out << " ." << std::endl << std::endl;
 	}
 
-	if (dem->hasSurfaces()) {
-		raptor_statement* triple = nullptr;
+	for (int i = 0; i < dem->getSurfaceCount(); i++) {
+		buw::String name = dem->getSurface(i)->getName();
 
-		triple = raptor_new_statement(world);
-		triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#DGM");
-		triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Bezeichnung");
-		triple->object = raptor_new_term_from_uri_string(world, (const unsigned char*)"Data/okstra#Geländemodell");
-		raptor_serializer_serialize_statement(rdf_serializer, triple);
-		raptor_free_statement(triple);
+		out << "<#" << name.toCString() << ">" << std::endl;
+		out << "\t" << "a okstra:DGM ;" << std::endl;
+		out << "\t" << "okstra:Bezeichnung \"" << name.toCString() << "\"";
+		out << " ." << std::endl << std::endl;
 
-		for (int i = 0; i < dem->getSurfaceCount(); i++) {
-		}
+
+
 	}
 
-	raptor_serializer_serialize_end(rdf_serializer);
-
-	raptor_free_serializer(rdf_serializer);
-	raptor_free_world(world);
-
-	fclose(outfile);
+	out.close();
 }
 
 OpenInfraPlatform::Infrastructure::ExportOkstraOWL::~ExportOkstraOWL() {
