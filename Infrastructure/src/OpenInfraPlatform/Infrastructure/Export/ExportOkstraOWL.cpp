@@ -17,6 +17,7 @@
 
 #include "ExportOkstraOWL.h"
 #include <fstream>
+#include <iomanip>
 
 #include "raptor2/raptor2.h"
 
@@ -145,6 +146,9 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 
 
 	std::ofstream out(filename.c_str());
+
+	out << std::setprecision(9) << std::showpoint << std::fixed;
+
 	out << "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ." << std::endl;
 	out << "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ." << std::endl;
 	out << "@prefix okstra: <http://okstraowl.org/def/2017/okstraowl#> ." << std::endl;
@@ -164,11 +168,41 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 
 		out << "<#" << name.toCString() << ">" << std::endl;
 		out << "\t" << "a okstra:DGM ;" << std::endl;
-		out << "\t" << "okstra:Bezeichnung \"" << name.toCString() << "\"";
-		out << " ." << std::endl << std::endl;
+		out << "\t" << "okstra:Bezeichnung \"" << name.toCString() << "\"" << " ;" << std::endl;
+
+		out << "\t" << "okstra:hat_Dreiecke [" << std::endl;
 
 
+		buw::ReferenceCounted<buw::Surface> surface = dem->getSurface(i);
 
+		const std::vector<buw::Vector3d>& points = surface->getPoints();
+		
+		const std::vector<buw::Vector3i>& faces = surface->getTriangeFaces();
+		for (size_t i = 0; i < faces.size(); ++i) { // t buw::Vector3i& face : faces) {
+			const buw::Vector3i& face = faces[i];
+
+			out << "\t\t" << "okstra:Dreieck [" << std::endl;
+
+			const buw::Vector3d& p0 = points[face[0]];
+			const buw::Vector3d& p1 = points[face[1]];
+			const buw::Vector3d& p2 = points[face[2]];
+
+			out << "\t\t\t" << "okstra:allgemeines_Punktobjekt " << "\"Point(" << p0.x() << " " << p0.y() << " " << p0.z() << ")\" ;" << std::endl;
+			out << "\t\t\t" << "okstra:allgemeines_Punktobjekt " << "\"Point(" << p1.x() << " " << p1.y() << " " << p1.z() << ")\" ;" << std::endl;
+			out << "\t\t\t" << "okstra:allgemeines_Punktobjekt " << "\"Point(" << p2.x() << " " << p2.y() << " " << p2.z() << ")\"" << std::endl;
+
+			out << "\t\t" << "]";
+
+			if (i != faces.size()-1)
+			{
+				out << " ;";
+			}
+
+			out << std::endl;
+		}
+
+		
+		out <<  "\t" << "] ." << std::endl << std::endl;
 	}
 
 	out.close();
