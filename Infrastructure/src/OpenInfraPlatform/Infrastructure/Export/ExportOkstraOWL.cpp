@@ -193,8 +193,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 
 			out << "\t\t" << "]";
 
-			if (i != faces.size()-1)
-			{
+			if (i != faces.size()-1) {
 				out << " ;";
 			}
 
