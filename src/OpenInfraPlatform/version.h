@@ -24,20 +24,20 @@
 
 namespace OpenInfraPlatform
 {
-	
+    
 static const std::string	NAME         		= std::string("TUM Open Infra Platfrom");
 
 static const int      		VERSION_MAJOR		= 1;
 static const int      		VERSION_MINOR		= 0;
 static const int            VERSION_BUILD 		= 0; // 0 for alpha, 1 for beta, 2 for release candidate, 3 for (final) release
-static const int			VERSION_REVISION    = 28;
+static const int			VERSION_REVISION    = 84;
 
 static const std::string	VERSION_STR = std::string { 
-										std::to_string(VERSION_MAJOR) + "." + 
-										std::to_string(VERSION_MINOR) + "." + 
-										std::to_string(VERSION_BUILD) + "." + 
-										std::to_string(VERSION_REVISION) 
-							};
+                                        std::to_string(VERSION_MAJOR) + "." + 
+                                        std::to_string(VERSION_MINOR) + "." + 
+                                        std::to_string(VERSION_BUILD) + "." + 
+                                        std::to_string(VERSION_REVISION) 
+                            };
 
 #if BLUE_DEBUG
 static const std::string    VERSION_BUILD_TAG   = std::string("debug");
@@ -57,13 +57,13 @@ static const std::string    VERSION_ARCH_TAG   = std::string("x64");
 /*
 namespace buw
 {
-	using OpenInfraPlatform::NAME;
-	using OpenInfraPlatform::VERSION_MAJOR;
-	using OpenInfraPlatform::VERSION_MINOR;
-	using OpenInfraPlatform::VERSION_REVISION;
-	using OpenInfraPlatform::VERSION_STR;
-	using OpenInfraPlatform::VERSION_ARCH_TAG;
-	using OpenInfraPlatform::VERSION_BUILD_TAG;
+    using OpenInfraPlatform::NAME;
+    using OpenInfraPlatform::VERSION_MAJOR;
+    using OpenInfraPlatform::VERSION_MINOR;
+    using OpenInfraPlatform::VERSION_REVISION;
+    using OpenInfraPlatform::VERSION_STR;
+    using OpenInfraPlatform::VERSION_ARCH_TAG;
+    using OpenInfraPlatform::VERSION_BUILD_TAG;
 }
 */
 

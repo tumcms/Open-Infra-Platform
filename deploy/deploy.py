@@ -103,7 +103,7 @@ def deploy():
 	shutil.copy(build_dir + 'Release/Qt5PrintSupport.dll',					deploy_path + '/Qt5PrintSupport.dll')
 	shutil.copy(build_dir + 'Release/Qt5Qml.dll',							deploy_path + '/Qt5Qml.dll')
 	shutil.copy(build_dir + 'Release/Qt5Quick.dll',							deploy_path + '/Qt5Quick.dll')
-	shutil.copy(build_dir + 'Release/Qt5Script.dll',						deploy_path + '/Qt5Script.dll')
+	#shutil.copy(build_dir + 'Release/Qt5Script.dll',						deploy_path + '/Qt5Script.dll')
 	shutil.copy(build_dir + 'Release/Qt5Sensors.dll',						deploy_path + '/Qt5Sensors.dll')
 	shutil.copy(build_dir + 'Release/Qt5Sql.dll',							deploy_path + '/Qt5Sql.dll')
 	shutil.copy(build_dir + 'Release/Qt5Svg.dll',							deploy_path + '/Qt5Svg.dll')
@@ -139,8 +139,6 @@ def deploy():
 
 	# QML
 	shutil.copytree(build_dir + 'Release/qml/',									deploy_path + '/qml')
-
-	shutil.copy('qt.conf',				deploy_path + '/qt.conf')
 
 	# Oklabi
 	shutil.copy(build_dir + 'Release/OklabiGdal1464.dll',					deploy_path + '/OklabiGdal1464.dll')
