@@ -29,50 +29,52 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 	{
 		FILE* outfile = fopen(filename.c_str(), "w");
 
-		raptor_world* world = raptor_new_world();
-		raptor_serializer* rdf_serializer = raptor_new_serializer(world, "turtle" /*"rdfxml"*/ /* "rdfxml-abbrev"  */);
+		raptor_world *world = raptor_new_world();
+
+		raptor_serializer* rdf_serializer = raptor_new_serializer(world, "rdfxml-abbrev");
 		raptor_serializer_start_to_file_handle(rdf_serializer, nullptr, outfile);
 
-		const unsigned char* prefix = (const unsigned char*)"foaf";
-		raptor_uri* uri = raptor_new_uri(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/");
-		raptor_serializer_set_namespace(rdf_serializer, uri, prefix);
+		const unsigned char* foaf_prefix = (const unsigned char*)"foaf";
+		raptor_uri* foaf_uri = raptor_new_uri(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/");
+		raptor_serializer_set_namespace(rdf_serializer, foaf_uri, foaf_prefix);
+
+		const unsigned char* rdf_prefix = (const unsigned char*)"rdf";
+		raptor_uri* rdf_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+		raptor_serializer_set_namespace(rdf_serializer, rdf_uri, rdf_prefix);
 
 		{
-			raptor_statement* triple = nullptr;
-			triple = raptor_new_statement(world);
+			raptor_statement* triple = NULL; triple = raptor_new_statement(world);
 
-			triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"genid:A4486");
-			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-			triple->object = raptor_new_term_from_literal(world, (unsigned char*)"http://xmlns.com/foaf/0.1/Person", nullptr, nullptr);
-
-			raptor_serializer_serialize_statement(rdf_serializer, triple);
-			raptor_free_statement(triple);
-		}
-
-		{
-			raptor_statement* triple = nullptr;
-			triple = raptor_new_statement(world);
-
-			triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/Person");
+			triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)"b1");
 			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/name");
-			triple->object = raptor_new_term_from_literal(world, (unsigned char*)"Jimmy Wales", nullptr, nullptr);
-			raptor_serializer_serialize_statement(rdf_serializer, triple);
-			raptor_free_statement(triple);
+			triple->object = raptor_new_term_from_literal(world, (unsigned char*)"Jimmy Wales", NULL, NULL);
+
+			raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
 		}
 
 		{
-			raptor_statement* triple = nullptr;
-			triple = raptor_new_statement(world);
+			raptor_statement* triple = NULL; triple = raptor_new_statement(world);
 
-			triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/Person");
+			triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)"b1");
 			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://xmlns.com/foaf/0.1/mbox");
-			triple->object = raptor_new_term_from_literal(world, (unsigned char*)"mailto:jwales@bomis.com", nullptr, nullptr);
-			raptor_serializer_serialize_statement(rdf_serializer, triple);
-			raptor_free_statement(triple);
+			triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"mailto:jwales@bomis.com");
+
+			raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
+		}
+
+		{
+			raptor_statement* triple = NULL; triple = raptor_new_statement(world);
+
+			triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)"b1");
+			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+			triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://xmlns.com/foaf/0.1/Person");
+
+			raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
 		}
 
 		raptor_serializer_serialize_end(rdf_serializer);
 		raptor_free_serializer(rdf_serializer);
+	
 		raptor_free_world(world);
 
 		fclose(outfile);
