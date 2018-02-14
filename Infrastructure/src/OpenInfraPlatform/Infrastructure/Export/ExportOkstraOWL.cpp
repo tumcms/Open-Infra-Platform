@@ -229,7 +229,151 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 		}
 
 		
+		for (int i = 0; i < dem->getSurfaceCount(); i++) {
+			buw::String name = dem->getSurface(i)->getName();
 
+			std::stringstream dgmUniqueBlankTermName;
+			dgmUniqueBlankTermName << "dgm_" << i << "_element_" << i;
+
+			{
+				raptor_statement* triple = NULL; triple = raptor_new_statement(world);
+
+				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dgmUniqueBlankTermName.str().c_str());
+				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/0.1/DGM");
+
+				raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
+			}
+
+			{
+				raptor_statement* triple = NULL; triple = raptor_new_statement(world);
+
+				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dgmUniqueBlankTermName.str().c_str());
+				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Bezeichnung");
+				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)name.toCString());
+
+				raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
+			}
+	
+			//out << "\t" << "okstra:hat_Dreiecke [" << std::endl;
+
+
+			buw::ReferenceCounted<buw::Surface> surface = dem->getSurface(i);
+
+			const std::vector<buw::Vector3d>& points = surface->getPoints();
+
+			const std::vector<buw::Vector3i>& faces = surface->getTriangeFaces();
+
+
+
+			for (size_t k = 0; k < faces.size(); ++k) { // t buw::Vector3i& face : faces) {
+				const buw::Vector3i& face = faces[i];
+
+				std::stringstream dreieckUniqueBlankTermName;
+				dreieckUniqueBlankTermName << "dgm_" << i << "_dreieck_" << k;
+
+				//out << "\t\t" << "okstra:Dreieck [" << std::endl;
+
+				// create "Dreieck"
+				{
+					raptor_statement* triple = NULL; triple = raptor_new_statement(world);
+
+					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dreieckUniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/0.1/Dreieck");
+
+					raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
+				}
+
+				// add "Dreieck to DGM"
+				{
+					raptor_statement* triple = NULL; triple = raptor_new_statement(world);
+
+					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dgmUniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/hat_Dreiecke___DGM");
+					triple->object = raptor_new_term_from_blank(world, (unsigned char*)dreieckUniqueBlankTermName.str().c_str());
+
+					raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
+				}
+
+
+
+				const buw::Vector3d& p0 = points[face[0]];
+				const buw::Vector3d& p1 = points[face[1]];
+				const buw::Vector3d& p2 = points[face[2]];
+
+				// allgemeines Punktobjekt
+				
+				std::stringstream allgemeinesPunktobjektUniqueBlankTermName;
+				allgemeinesPunktobjektUniqueBlankTermName << "dgm_" << i << "_dreieck_" << k << "_allgPunkt_1";
+
+				{
+					raptor_statement* triple = NULL; triple = raptor_new_statement(world);
+
+					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)allgemeinesPunktobjektUniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/0.1/allgemeines_Punktobjekt");
+
+					raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
+				}
+
+
+				{
+					std::stringstream ss;
+					ss << "Point(" << p0.x() << " " << p0.y() << " " << p0.z() << ")";
+
+					raptor_statement* triple = NULL; triple = raptor_new_statement(world);
+
+					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)allgemeinesPunktobjektUniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Punktgeometrie___allgemeines_Punktobjekt");
+					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)ss.str().c_str());
+
+					raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
+				}
+
+
+				// Dreieck -> okstra:hat_Punkte
+				{
+					raptor_statement* triple = NULL; triple = raptor_new_statement(world);
+
+					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dreieckUniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/hat_Punkte___Dreieck");
+					triple->object = raptor_new_term_from_blank(world, (unsigned char*)allgemeinesPunktobjektUniqueBlankTermName.str().c_str());
+
+					raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
+				}
+
+				/*
+				{
+					std::stringstream ss;
+					ss << "\"Point(" << p0.x() << " " << p0.y() << " " << p0.z() << ")\"";
+					
+					raptor_statement* triple = NULL; triple = raptor_new_statement(world);
+
+					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dgmUniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/allgemeines_Punktobjekt");
+					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)ss.str().c_str());
+
+					raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
+				}
+*/
+				//out << "\t\t\t" << "okstra:allgemeines_Punktobjekt " << "\"Point(" << p0.x() << " " << p0.y() << " " << p0.z() << ")\" ;" << std::endl;
+				//out << "\t\t\t" << "okstra:allgemeines_Punktobjekt " << "\"Point(" << p1.x() << " " << p1.y() << " " << p1.z() << ")\" ;" << std::endl;
+				//out << "\t\t\t" << "okstra:allgemeines_Punktobjekt " << "\"Point(" << p2.x() << " " << p2.y() << " " << p2.z() << ")\"" << std::endl;
+
+				//out << "\t\t" << "]";
+
+				if (i != faces.size() - 1) {
+					//out << " ;";
+				}
+
+				//out << std::endl;
+			}
+
+
+			//out << "\t" << "] ." << std::endl << std::endl;
+			
+		}
 
 
 		raptor_serializer_serialize_end(rdf_serializer);
