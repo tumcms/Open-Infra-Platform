@@ -1122,7 +1122,7 @@
   </action>
   <action name="actionOkstraOWL">
    <property name="text">
-    <string>OKSTRA OWL (*.rdf, *.ttl)</string>
+    <string>OKSTRA OWL (*.ttl, *.rdf)</string>
    </property>
   </action>
  </widget>

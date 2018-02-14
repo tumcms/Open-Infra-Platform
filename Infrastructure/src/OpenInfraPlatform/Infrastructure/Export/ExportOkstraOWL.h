@@ -22,27 +22,26 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "OpenInfraPlatform/Infrastructure/Export/Export.h"
 #include <BlueFramework/Core/memory.h>
-#include <vector>
 #include <memory>
+#include <vector>
 
-namespace OpenInfraPlatform
-{
-	namespace Infrastructure
-	{
+namespace OpenInfraPlatform {
+	namespace Infrastructure {
 
-		class BLUEINFRASTRUCTURE_API ExportOkstraOWL : public Export
-		{
+		class BLUEINFRASTRUCTURE_API ExportOkstraOWL : public Export {
 		public:
 			ExportOkstraOWL(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename);
 
 			virtual ~ExportOkstraOWL();
 
-		}; // end class ExportOkstraOWL
-	} // end namespace Infrastructure
-} // end namespace BlueFramework
+			// Manual turtle output - not currently used - can be safely removed.
+			void fallbackTerainOutput(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename);
 
-namespace buw
-{
+		}; // end class ExportOkstraOWL
+	}      // end namespace Infrastructure
+} // namespace OpenInfraPlatform
+
+namespace buw {
 	using OpenInfraPlatform::Infrastructure::ExportOkstraOWL;
 }
 
