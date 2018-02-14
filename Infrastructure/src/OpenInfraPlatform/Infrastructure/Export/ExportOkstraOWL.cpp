@@ -41,7 +41,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 		raptor_serializer_start_to_file_handle(rdf_serializer, nullptr, outfile);
 
 		const unsigned char* okstra_prefix = (const unsigned char*)"okstra";
-		raptor_uri* okstra_uri = raptor_new_uri(world, (const unsigned char*)"http://okstraowl.org/0.1/");
+		raptor_uri* okstra_uri = raptor_new_uri(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#");
 		raptor_serializer_set_namespace(rdf_serializer, okstra_uri, okstra_prefix);
 
 		const unsigned char* rdf_prefix = (const unsigned char*)"rdf";
@@ -69,7 +69,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 
 				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
 				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/0.1/Achse");
+				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Achse");
 
 				raptor_serializer_serialize_statement(rdf_serializer, triple);
 				raptor_free_statement(triple);
@@ -94,7 +94,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 
 					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
 					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/0.1/Achselement");
+					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Achselement");
 
 					raptor_serializer_serialize_statement(rdf_serializer, triple);
 					raptor_free_statement(triple);
@@ -105,7 +105,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 					triple = raptor_new_statement(world);
 
 					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
-					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Anfangsstation_rechnerisch___Achselement");
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Anfangsstation_rechnerisch___Achselement");
 					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)std::to_string(station).c_str());
 
 					raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -117,7 +117,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 					triple = raptor_new_statement(world);
 
 					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
-					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Laenge___Achselement");
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Laenge___Achselement");
 					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)std::to_string(element->getLength()).c_str());
 
 					raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -137,7 +137,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 					triple = raptor_new_statement(world);
 
 					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
-					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Richtung___Achselement");
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Richtung___Achselement");
 					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)std::to_string(angle).c_str());
 
 					raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -152,7 +152,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 					triple = raptor_new_statement(world);
 
 					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
-					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Radius_zu_Beginn___Achselement");
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Radius_zu_Beginn___Achselement");
 					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)std::to_string(radius).c_str());
 
 					raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -167,7 +167,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 					triple = raptor_new_statement(world);
 
 					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
-					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Radius_am_Ende___Achselement");
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Radius_am_Ende___Achselement");
 					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)std::to_string(radius).c_str());
 
 					raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -179,7 +179,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 					triple = raptor_new_statement(world);
 
 					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
-					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Elementtyp___Achselement");
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Elementtyp___Achselement");
 
 					std::string langtext = std::to_string(1);
 					if (element->getAlignmentType() == eHorizontalAlignmentType::Arc)
@@ -201,7 +201,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 				triple = raptor_new_statement(world);
 
 				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
-				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Bezeichnung");
+				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Bezeichnung");
 				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)axisName.toCString());
 
 				raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -213,7 +213,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 				triple = raptor_new_statement(world);
 
 				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
-				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Art_Achse.1");
+				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Art_Achse.1");
 				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"Hauptachse");
 
 				raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -226,7 +226,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 				triple = raptor_new_statement(world);
 
 				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
-				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/hat_Achselement___Achse");
+				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#hat_Achselement___Achse");
 				triple->object = raptor_new_term_from_blank(world, (const unsigned char*)axisElementName.c_str());
 
 				raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -239,7 +239,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 
 				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
 				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/0.1/Achse");
+				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Achse");
 
 				raptor_serializer_serialize_statement(rdf_serializer, triple);
 				raptor_free_statement(triple);
@@ -256,7 +256,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 
 				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)gradientUniqueBlankTermName.str().c_str());
 				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/0.1/Gradiente");
+				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Gradiente");
 
 				raptor_serializer_serialize_statement(rdf_serializer, triple);
 				raptor_free_statement(triple);
@@ -269,13 +269,79 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 				triple = raptor_new_statement(world);
 
 				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
-				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/hat_Gradiente___Achse");
+				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#hat_Gradiente___Achse");
 				triple->object = raptor_new_term_from_blank(world, (const unsigned char*)gradientUniqueBlankTermName.str().c_str());
 
 				raptor_serializer_serialize_statement(rdf_serializer, triple);
 				raptor_free_statement(triple);
 			}
 
+
+			enum class OKSTRA_PVI_Type { Start, Line, Parabola };
+
+			struct OKSTRA_PVI {
+				OKSTRA_PVI_Type pvi_type;
+				buw::Vector2d Position;
+
+				// pvi_type : Parabola
+				double Ausrundung;
+			};
+
+			std::vector<OKSTRA_PVI> pvis;
+
+			/*double*/ station = verticalAlignment->getStartStation();
+			for (int i = 0; i < verticalAlignment->getAlignmentElementCount(); i++) {
+				buw::ReferenceCounted<buw::VerticalAlignmentElement2D> element = verticalAlignment->getAlignmentElementByIndex(i);
+
+				if (i == 0) {
+					OKSTRA_PVI pvi;
+					pvi.pvi_type = OKSTRA_PVI_Type::Start;
+					pvi.Position = element->getStartPosition();
+					pvis.push_back(pvi);
+				}
+
+				if (i == verticalAlignment->getAlignmentElementCount() - 1
+					|| (element->getAlignmentType() == buw::eVerticalAlignmentType::Line
+						&& verticalAlignment->getAlignmentElementByIndex(i + 1)->getAlignmentType() != buw::eVerticalAlignmentType::Parabola)) {
+					OKSTRA_PVI pvi;
+					pvi.pvi_type = OKSTRA_PVI_Type::Line;
+					pvi.Position = element->getEndPosition();
+					pvis.push_back(pvi);
+				}
+
+				if (element->getAlignmentType() == buw::eVerticalAlignmentType::Parabola) {
+					OKSTRA_PVI pvi;
+					pvi.pvi_type = OKSTRA_PVI_Type::Parabola;
+					element->genericQuery(buw::eAlignmentElementQueryId::PVI, &pvi.Position);
+
+					double T, startGradient, endGradient;
+					element->genericQuery(buw::eAlignmentElementQueryId::IntersectionPointDistance, &T);
+					element->genericQuery(buw::eAlignmentElementQueryId::StartGradient, &startGradient);
+					element->genericQuery(buw::eAlignmentElementQueryId::EndGradient, &endGradient);
+
+					pvi.Ausrundung = abs(T / (endGradient - startGradient));
+
+					pvis.push_back(pvi);
+				}
+			}
+
+			for (int i = 0; i < pvis.size(); i++) {
+				//Oklabi::Fachobjekt* gradKoor = bestand->FuegeHinzu(Oklabi::Objektart::Gib("Grad_Koor", version));
+				//gradiente->FuegeHinzu("hat_Grad_Koor", Oklabi::AnyType::Erzeuge(gradKoor));
+
+				// create okstra:Station___Grad_Koor 
+
+
+				//gradKoor->Setze("Station", Oklabi::AnyType::Erzeuge(pvis[i].Position.x()));
+				//gradKoor->Setze("Hoehe", Oklabi::AnyType::Erzeuge(pvis[i].Position.y()));
+
+				if (pvis[i].pvi_type == OKSTRA_PVI_Type::Parabola) {
+					//Oklabi::Fachobjekt* ausrundung = bestand->FuegeHinzu(Oklabi::Objektart::Gib("Ausrundung", version));
+					//gradKoor->FuegeHinzu("hat_Ausrundung", Oklabi::AnyType::Erzeuge(ausrundung));
+
+					//ausrundung->Setze("Scheitelradius", Oklabi::AnyType::Erzeuge(pvis[i].Ausrundung));
+				}
+			}
 		}
 		
 
@@ -286,7 +352,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 
 			triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)"trasse1");
 			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-			triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/0.1/Trasse");
+			triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Trasse");
 
 			raptor_serializer_serialize_statement(rdf_serializer, triple);
 			raptor_free_statement(triple);
@@ -298,7 +364,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 			triple = raptor_new_statement(world);
 
 			triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)"trasse1");
-			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/hat_Achse___Trasse");
+			triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#hat_Achse___Trasse");
 			triple->object = raptor_new_term_from_blank(world, (const unsigned char*)axisElementName.c_str());
 
 			raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -317,7 +383,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 
 				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dgmUniqueBlankTermName.str().c_str());
 				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/0.1/DGM");
+				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#DGM");
 
 				raptor_serializer_serialize_statement(rdf_serializer, triple);
 				raptor_free_statement(triple);
@@ -328,7 +394,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 				triple = raptor_new_statement(world);
 
 				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dgmUniqueBlankTermName.str().c_str());
-				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Bezeichnung");
+				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Bezeichnung");
 				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)name.toCString());
 
 				raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -358,7 +424,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 
 					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dreieckUniqueBlankTermName.str().c_str());
 					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/0.1/Dreieck");
+					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Dreieck");
 
 					raptor_serializer_serialize_statement(rdf_serializer, triple);
 					raptor_free_statement(triple);
@@ -370,7 +436,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 					triple = raptor_new_statement(world);
 
 					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dgmUniqueBlankTermName.str().c_str());
-					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/hat_Dreiecke___DGM");
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#hat_Dreiecke___DGM");
 					triple->object = raptor_new_term_from_blank(world, (unsigned char*)dreieckUniqueBlankTermName.str().c_str());
 
 					raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -389,7 +455,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 
 						triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)allgemeinesPunktobjektUniqueBlankTermName.str().c_str());
 						triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-						triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/0.1/allgemeines_Punktobjekt");
+						triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#allgemeines_Punktobjekt");
 
 						raptor_serializer_serialize_statement(rdf_serializer, triple);
 						raptor_free_statement(triple);
@@ -404,7 +470,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 						triple = raptor_new_statement(world);
 
 						triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)allgemeinesPunktobjektUniqueBlankTermName.str().c_str());
-						triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/Punktgeometrie___allgemeines_Punktobjekt");
+						triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Punktgeometrie___allgemeines_Punktobjekt");
 						triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)ss.str().c_str());
 
 						raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -417,7 +483,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 						triple = raptor_new_statement(world);
 
 						triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dreieckUniqueBlankTermName.str().c_str());
-						triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/hat_Punkte___Dreieck");
+						triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#hat_Punkte___Dreieck");
 						triple->object = raptor_new_term_from_blank(world, (unsigned char*)allgemeinesPunktobjektUniqueBlankTermName.str().c_str());
 
 						raptor_serializer_serialize_statement(rdf_serializer, triple);
@@ -433,7 +499,7 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 				    raptor_statement* triple = NULL; triple = raptor_new_statement(world);
 
 				    triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dgmUniqueBlankTermName.str().c_str());
-				    triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/0.1/allgemeines_Punktobjekt");
+				    triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#allgemeines_Punktobjekt");
 				    triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)ss.str().c_str());
 
 				    raptor_serializer_serialize_statement(rdf_serializer, triple); raptor_free_statement(triple);
