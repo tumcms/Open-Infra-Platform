@@ -22,33 +22,33 @@
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
 eHorizontalAlignmentType HorizontalAlignmentElement2D::getAlignmentType() const {
-	return eHorizontalAlignmentType::Unknown;
+    return eHorizontalAlignmentType::Unknown;
 }
 
 bool HorizontalAlignmentElement2D::genericQuery(const int /*id*/, void* /*result*/) const {
-	return false;
+    return false;
 }
 
 std::string horizontalAlignmentTypeToString(const eHorizontalAlignmentType type) {
-	switch (type) {
-	case eHorizontalAlignmentType::Line: return QApplication::tr("Line").toStdString();
+    switch (type) {
+    case eHorizontalAlignmentType::Line: return QApplication::tr("Line").toStdString();
 
-	case eHorizontalAlignmentType::Arc: return QApplication::tr("Arc").toStdString();
+    case eHorizontalAlignmentType::Arc: return QApplication::tr("Arc").toStdString();
 
-	case eHorizontalAlignmentType::Clothoid: return QApplication::tr("Clothoid").toStdString();
+    case eHorizontalAlignmentType::Clothoid: return QApplication::tr("Clothoid").toStdString();
 
-	case eHorizontalAlignmentType::Bloss: return QApplication::tr("Bloss").toStdString();
+    case eHorizontalAlignmentType::Bloss: return QApplication::tr("Bloss").toStdString();
 
-	case eHorizontalAlignmentType::Unknown: return QApplication::tr("Unknown").toStdString();
+    case eHorizontalAlignmentType::Unknown: return QApplication::tr("Unknown").toStdString();
 
-	default: break;
-	}
-	return QApplication::tr("Unknown").toStdString();
+    default: break;
+    }
+    return QApplication::tr("Unknown").toStdString();
 }
 
 std::ostream& operator<<(std::ostream& os, const OpenInfraPlatform::Infrastructure::eHorizontalAlignmentType hat) {
-	os << horizontalAlignmentTypeToString(hat);
-	return os;
+    os << horizontalAlignmentTypeToString(hat);
+    return os;
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
