@@ -2287,7 +2287,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstraOWL_triggered(
 		this,
 		tr("Save Document"),
 		QDir::currentPath(),
-		tr("RDF (*.rdf);;"));
+		tr("RDF/XML-ABBREV (*.rdf);;Turtle (*.ttl);;"));
 
 
 	if (!filename.isNull())
