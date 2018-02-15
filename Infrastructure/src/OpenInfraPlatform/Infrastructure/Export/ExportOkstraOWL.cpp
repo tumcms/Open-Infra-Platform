@@ -325,15 +325,71 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 				}
 			}
 
-			for (int i = 0; i < pvis.size(); i++) {
+			for (int ki = 0; ki < pvis.size(); ki++) {
+
+				std::stringstream gradKoorUniqueBlankTermName;
+				gradKoorUniqueBlankTermName << "axis" << i << "_gradKoor_" << ki;
+
+				// Add "Grad_Koor"
+				{
+					raptor_statement* triple = NULL;
+					triple = raptor_new_statement(world);
+
+					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)gradKoorUniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Grad_Koor");
+
+					raptor_serializer_serialize_statement(rdf_serializer, triple);
+					raptor_free_statement(triple);
+				}
+			
+
 				//Oklabi::Fachobjekt* gradKoor = bestand->FuegeHinzu(Oklabi::Objektart::Gib("Grad_Koor", version));
 				//gradiente->FuegeHinzu("hat_Grad_Koor", Oklabi::AnyType::Erzeuge(gradKoor));
-
-				// create okstra:Station___Grad_Koor 
-
-
+		
 				//gradKoor->Setze("Station", Oklabi::AnyType::Erzeuge(pvis[i].Position.x()));
 				//gradKoor->Setze("Hoehe", Oklabi::AnyType::Erzeuge(pvis[i].Position.y()));
+
+				// create okstra:Station___Grad_Koor 
+				{
+					raptor_statement* triple = NULL;
+					triple = raptor_new_statement(world);
+
+					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)gradKoorUniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Station___Grad_Koor");
+					double station = pvis[i].Position.x();
+					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)std::to_string(station).c_str());
+
+					raptor_serializer_serialize_statement(rdf_serializer, triple);
+					raptor_free_statement(triple);
+				}
+
+				{
+					raptor_statement* triple = NULL;
+					triple = raptor_new_statement(world);
+
+					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)gradKoorUniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Hoehe___Grad_Koor");
+					double hoehe = pvis[i].Position.y();
+					triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)std::to_string(hoehe).c_str());
+
+					raptor_serializer_serialize_statement(rdf_serializer, triple);
+					raptor_free_statement(triple);
+				}
+
+				// hat_Grad_Koor
+
+				{
+					raptor_statement* triple = NULL;
+					triple = raptor_new_statement(world);
+
+					triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)gradientUniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#hat_Grad_Koor___Gradiente");
+					triple->object = raptor_new_term_from_blank(world, (const unsigned char*)gradKoorUniqueBlankTermName.str().c_str());
+
+					raptor_serializer_serialize_statement(rdf_serializer, triple);
+					raptor_free_statement(triple);
+				}
 
 				if (pvis[i].pvi_type == OKSTRA_PVI_Type::Parabola) {
 					//Oklabi::Fachobjekt* ausrundung = bestand->FuegeHinzu(Oklabi::Objektart::Gib("Ausrundung", version));
