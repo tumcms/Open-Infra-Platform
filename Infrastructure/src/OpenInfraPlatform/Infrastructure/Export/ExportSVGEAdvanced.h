@@ -18,25 +18,20 @@
 #pragma once
 #include "ExportSVG.h"
 
-namespace OpenInfraPlatform
-{
-	namespace Infrastructure
-	{
-		//! SVG Exporter for alignments
-		class BLUEINFRASTRUCTURE_API ExportSVGEAdvanced : public Export
-		{
-		public:
-			ExportSVGEAdvanced(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename);
+namespace OpenInfraPlatform {
+    namespace Infrastructure {
+        //! SVG Exporter for alignments
+        class BLUEINFRASTRUCTURE_API ExportSVGEAdvanced : public Export {
+        public:
+            ExportSVGEAdvanced(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename);
 
-		private:
-			void addPath(FILE *fp, const buw::Vector2d& a, const buw::Vector2d& b, const buw::Vector2d& c);
-			void outputToSVG(FILE *fp, buw::ReferenceCounted<buw::HorizontalAlignment2D> horizontalAlignment);
-		}; // end class SVGExportAdvanced
-	} // end namespace Infrastructure
-} // end namespace BlueFramework
+        private:
+            void addPath(FILE* fp, const buw::Vector2d& a, const buw::Vector2d& b, const buw::Vector2d& c);
+            void outputToSVG(FILE* fp, buw::ReferenceCounted<buw::HorizontalAlignment2D> horizontalAlignment);
+        }; // end class SVGExportAdvanced
+    }      // end namespace Infrastructure
+} // namespace OpenInfraPlatform
 
-namespace buw
-{
-	using OpenInfraPlatform::Infrastructure::ExportSVGEAdvanced;
+namespace buw {
+    using OpenInfraPlatform::Infrastructure::ExportSVGEAdvanced;
 }
-
