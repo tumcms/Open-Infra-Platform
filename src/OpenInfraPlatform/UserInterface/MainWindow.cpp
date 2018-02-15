@@ -2023,7 +2023,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstra_translated_tr
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstraOWL_triggered() {
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("Turtle (*.ttl);;RDF/XML-ABBREV (*.rdf);; All files(*.*)"));
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("Turtle (*.ttl);;RDF/XML-ABBREV (*.rdf);; All files (*.*)"));
 
     if (!filename.isNull()) {
         OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportOkstraOWL(filename.toStdString());

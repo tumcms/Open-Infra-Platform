@@ -598,7 +598,9 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 				{
 				    std::stringstream ss;
 				    ss << "\"Point(" << p0.x() << " " << p0.y() << " " << p0.z() << ")\"";
-				    
+				    
+
+
 				    raptor_statement* triple = NULL; triple = raptor_new_statement(world);
 
 				    triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)dgmUniqueBlankTermName.str().c_str());
