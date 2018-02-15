@@ -392,10 +392,57 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 				}
 
 				if (pvis[i].pvi_type == OKSTRA_PVI_Type::Parabola) {
+
+
+
+
+					std::stringstream ausrundungUniqueBlankTermName;
+					ausrundungUniqueBlankTermName << "axis" << i << "_gradKoor_" << ki << "_ausrundung";
+
+					
 					//Oklabi::Fachobjekt* ausrundung = bestand->FuegeHinzu(Oklabi::Objektart::Gib("Ausrundung", version));
+					// Add "Ausrundung"
+					{
+						raptor_statement* triple = NULL;
+						triple = raptor_new_statement(world);
+
+						triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)ausrundungUniqueBlankTermName.str().c_str());
+						triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+						triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Ausrundung");
+
+						raptor_serializer_serialize_statement(rdf_serializer, triple);
+						raptor_free_statement(triple);
+					}
+
 					//gradKoor->FuegeHinzu("hat_Ausrundung", Oklabi::AnyType::Erzeuge(ausrundung));
+					// Add "hat_Ausrundung___Grad_Koor"
+					{
+						raptor_statement* triple = NULL;
+						triple = raptor_new_statement(world);
+
+						triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)gradKoorUniqueBlankTermName.str().c_str());
+						triple->predicate = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#hat_Ausrundung___Grad_Koor");
+						triple->object = raptor_new_term_from_blank(world, (const unsigned char*)ausrundungUniqueBlankTermName.str().c_str());
+
+						raptor_serializer_serialize_statement(rdf_serializer, triple);
+						raptor_free_statement(triple);
+					}
 
 					//ausrundung->Setze("Scheitelradius", Oklabi::AnyType::Erzeuge(pvis[i].Ausrundung));
+
+
+					{
+						raptor_statement* triple = NULL;
+						triple = raptor_new_statement(world);
+
+						triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)ausrundungUniqueBlankTermName.str().c_str());
+						triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Scheitelradius___Ausrundung");
+						double Ausrundung = pvis[i].Ausrundung;
+						triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)std::to_string(Ausrundung).c_str());
+
+						raptor_serializer_serialize_statement(rdf_serializer, triple);
+						raptor_free_statement(triple);
+					}
 				}
 			}
 		}
