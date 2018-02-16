@@ -192,6 +192,60 @@ OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::Referen
 				raptor_free_statement(triple);
 			}
 
+
+			// create Achshauptpunkt
+
+			buw::Vector2d start = element->getStartPosition();
+			buw::Vector2d end = element->getEndPosition();
+
+			buw::String axisName = am->getAlignments()[i]->getName();
+
+			std::stringstream achshauptpunktUniqueBlankTermName;
+			achshauptpunktUniqueBlankTermName << "axis_" << i << "_element_" << k << "_achshauptpunkt_start";
+
+			collectedAxisUniqueBlankTermNames.push_back(axisUniqueBlankTermName.str());
+
+			{
+				raptor_statement* triple = NULL;
+				triple = raptor_new_statement(world);
+
+				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)achshauptpunktUniqueBlankTermName.str().c_str());
+				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Achshauptpunkt");
+
+				raptor_serializer_serialize_statement(rdf_serializer, triple);
+				raptor_free_statement(triple);
+			}
+
+			{
+				std::stringstream ss;
+				const buw::Vector2d& p0 = start;
+				ss << std::setprecision(9) << "Point(" << p0.x() << "," << p0.y() << ")";
+
+				raptor_statement* triple = NULL;
+				triple = raptor_new_statement(world);
+
+				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)achshauptpunktUniqueBlankTermName.str().c_str());
+				triple->predicate =
+					raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Punktgeometrie___allgemeines_Punktobjekt");
+				triple->object = raptor_new_term_from_uri_string(world, (unsigned char*)ss.str().c_str());
+
+				raptor_serializer_serialize_statement(rdf_serializer, triple);
+				raptor_free_statement(triple);
+			}
+
+			{
+				raptor_statement* triple = NULL;
+				triple = raptor_new_statement(world);
+
+				triple->subject = raptor_new_term_from_blank(world, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());  
+				triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#beginnt_bei_Achshauptpunkt___Achselement");
+				triple->object = raptor_new_term_from_blank(world, (unsigned char*)achshauptpunktUniqueBlankTermName.str().c_str());
+
+				raptor_serializer_serialize_statement(rdf_serializer, triple);
+				raptor_free_statement(triple);
+			}
+
 			station += element->getLength();
 		}
 
