@@ -24,7 +24,7 @@ def DetermineCurrentRevison():
 	pattern = r"""
 				changeset: 		# Result preceeded by 'changeset:'		
 				(?:\s+)			# Unknown amount of whitespaces
-				([0-9]{2})		# Four digit revision number				
+				([0-9]{3})		# Three digit revision number			
 			  """
 			  
 	regex = re.compile(pattern, re.X)	

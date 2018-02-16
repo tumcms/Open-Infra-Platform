@@ -180,6 +180,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 
     retranslatePropertyBrowser();
 
+	// check for updates
     updater = std::make_unique<QSimpleUpdater>(this);
 
     // set version and urls
@@ -192,6 +193,8 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
     connect(updater.get(), SIGNAL(checkingFinished()), this, SLOT(onCheckingFinished()));
 
     checkForUpdates();
+
+
     setAcceptDrops(true);
 }
 
