@@ -2025,6 +2025,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstra_translated_tr
     }
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionifcOWL4x1Export_triggered() {
+	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("Turtle (*.ttl);;RDF/XML-ABBREV (*.rdf);; All files (*.*)"));
+
+	if (!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportIfcOWL4x1(filename.toStdString());
+	}
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstraOWL_triggered() {
     QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("Turtle (*.ttl);;RDF/XML-ABBREV (*.rdf);; All files (*.*)"));
 

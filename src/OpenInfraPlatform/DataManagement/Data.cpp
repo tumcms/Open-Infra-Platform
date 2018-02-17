@@ -17,6 +17,7 @@
 
 #include "Data.h"
 
+#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
 #include "OpenInfraPlatform/Infrastructure/Import/ImportIfcAlignment1x1.h"
 
@@ -848,6 +849,10 @@ void OpenInfraPlatform::DataManagement::Data::exportOkstraTranslated(const std::
 {
 	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportOkstraJobTranslated, this, filename);
 }
+void OpenInfraPlatform::DataManagement::Data::exportIfcOWL4x1(const std::string & filename)
+{
+	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportIfcOWL4x1Job, this, filename);
+}
 void OpenInfraPlatform::DataManagement::Data::exportOkstraOWL(const std::string & filename)
 {
 	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportOkstraJobOWL, this, filename);
@@ -881,6 +886,11 @@ void OpenInfraPlatform::DataManagement::Data::exportOkstraJobOWL(const std::stri
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra OWL").append(filename));
 	buw::ExportOkstraOWL(alignmentModel_, digitalElevationModel_, filename);
+}
+void OpenInfraPlatform::DataManagement::Data::exportIfcOWL4x1Job(const std::string& filename)
+{
+	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra OWL").append(filename));
+	buw::ExportIfcOWL4x1(alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::export3DAlignmentAsTextfile(const std::string& filename)

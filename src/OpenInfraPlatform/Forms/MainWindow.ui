@@ -275,13 +275,15 @@
      <addaction name="actionExportIfcZip"/>
      <addaction name="actionIfcAlignment_buildingSMART_P6_Excel_Comparison"/>
      <addaction name="actionIFC_Alignment_1_1_Export"/>
+     <addaction name="actionifcOWL4x1Export"/>
      <addaction name="separator"/>
-     <addaction name="actionExportIIfcRoad"/>
-     <addaction name="actionLandXML"/>
-     <addaction name="actionExportLandInfra"/>
      <addaction name="actionOkstra"/>
      <addaction name="actionOkstra_translated"/>
      <addaction name="actionOkstraOWL"/>
+     <addaction name="separator"/>
+     <addaction name="actionExportLandInfra"/>
+     <addaction name="actionLandXML"/>
+     <addaction name="actionExportIIfcRoad"/>
      <addaction name="separator"/>
      <addaction name="menuHorizontal_Alignment_and_Terrain_svg"/>
      <addaction name="actionExportVerticalAlignment"/>
@@ -1123,6 +1125,11 @@
   <action name="actionOkstraOWL">
    <property name="text">
     <string>OKSTRA OWL (*.ttl, *.rdf)</string>
+   </property>
+  </action>
+  <action name="actionifcOWL4x1Export">
+   <property name="text">
+    <string>ifcOWL 4.1 (*ttl, *rdf)</string>
    </property>
   </action>
  </widget>

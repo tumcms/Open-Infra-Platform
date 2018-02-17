@@ -143,6 +143,7 @@ namespace OpenInfraPlatform
 			void exportLandInfra(const std::string& filename);
 			void exportOkstra(const std::string& filename, const std::string& version);
 			void exportOkstraTranslated(const std::string& filename);
+			void exportIfcOWL4x1(const std::string& filename);
 			void exportOkstraOWL(const std::string& filename);
 			void export3DAlignmentAsTextfile(const std::string& filename);
 			void createExcelReport(const std::string& filename, bool useDegree);
@@ -268,6 +269,7 @@ namespace OpenInfraPlatform
 			void exportOkstraJob(const std::string& filename, const std::string& version);
 			void exportOkstraJobTranslated(const std::string& filename);
 			void exportOkstraJobOWL(const std::string& filename);
+			void exportIfcOWL4x1Job(const std::string& filename);
 			void export3DAlignmentAsTextfileJob(const std::string& filename);
 			void createExcelReportJob(const std::string& filename, bool useDegree);
 
