@@ -189,7 +189,7 @@ public:
 					if (element->getAlignmentType() == eHorizontalAlignmentType::Clothoid)
 						langtext = std::to_string(12);
 
-					triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)langtext.c_str());
+					triple->object = raptor_new_term_from_literal(world_, (unsigned char*)langtext.c_str(), nullptr, nullptr);
 
 					raptor_serializer_serialize_statement(serializer_, triple);
 					raptor_free_statement(triple);
