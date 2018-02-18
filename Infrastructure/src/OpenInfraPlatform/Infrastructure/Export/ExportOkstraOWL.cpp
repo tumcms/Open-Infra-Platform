@@ -106,9 +106,9 @@ public:
 					triple = raptor_new_statement(world_);
 
 					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
-					triple->predicate =
-					  raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Anfangsstation_rechnerisch___Achselement");
-					triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)std::to_string(station).c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Anfangsstation_rechnerisch___Achselement");
+					triple->object = raptor_new_term_from_literal(world_, (unsigned char*)std::to_string(station).c_str(), nullptr, nullptr);
+
 
 					raptor_serializer_serialize_statement(serializer_, triple);
 					raptor_free_statement(triple);
@@ -120,7 +120,7 @@ public:
 
 					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
 					triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Laenge___Achselement");
-					triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)std::to_string(element->getLength()).c_str());
+					triple->object = raptor_new_term_from_literal(world_, (unsigned char*)std::to_string(element->getLength()).c_str(), nullptr, nullptr);
 
 					raptor_serializer_serialize_statement(serializer_, triple);
 					raptor_free_statement(triple);
@@ -140,7 +140,7 @@ public:
 
 					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
 					triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Richtung___Achselement");
-					triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)std::to_string(angle).c_str());
+					triple->object = raptor_new_term_from_literal(world_, (unsigned char*)std::to_string(angle).c_str(), nullptr, nullptr);
 
 					raptor_serializer_serialize_statement(serializer_, triple);
 					raptor_free_statement(triple);
@@ -155,7 +155,7 @@ public:
 
 					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
 					triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Radius_zu_Beginn___Achselement");
-					triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)std::to_string(radius).c_str());
+					triple->object = raptor_new_term_from_literal(world_, (unsigned char*)std::to_string(radius).c_str(), nullptr, nullptr);
 
 					raptor_serializer_serialize_statement(serializer_, triple);
 					raptor_free_statement(triple);
@@ -170,7 +170,7 @@ public:
 
 					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
 					triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Radius_am_Ende___Achselement");
-					triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)std::to_string(radius).c_str());
+					triple->object = raptor_new_term_from_literal(world_, (unsigned char*)std::to_string(radius).c_str(), nullptr, nullptr);
 
 					raptor_serializer_serialize_statement(serializer_, triple);
 					raptor_free_statement(triple);
@@ -221,7 +221,7 @@ public:
 
 				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
 				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Bezeichnung");
-				triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)axisName.toCString());
+				triple->object = raptor_new_term_from_literal(world_, (unsigned char*)axisName.toCString(), nullptr, nullptr);
 
 				raptor_serializer_serialize_statement(serializer_, triple);
 				raptor_free_statement(triple);
@@ -373,7 +373,7 @@ public:
 					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)gradKoorUniqueBlankTermName.str().c_str());
 					triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Station___Grad_Koor");
 					double station = pvis[i].Position.x();
-					triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)std::to_string(station).c_str());
+					triple->object = raptor_new_term_from_literal(world_, (unsigned char*)std::to_string(station).c_str(), nullptr, nullptr);
 
 					raptor_serializer_serialize_statement(serializer_, triple);
 					raptor_free_statement(triple);
@@ -386,7 +386,7 @@ public:
 					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)gradKoorUniqueBlankTermName.str().c_str());
 					triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Hoehe___Grad_Koor");
 					double hoehe = pvis[i].Position.y();
-					triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)std::to_string(hoehe).c_str());
+					triple->object = raptor_new_term_from_literal(world_, (unsigned char*)std::to_string(hoehe).c_str(), nullptr, nullptr);
 
 					raptor_serializer_serialize_statement(serializer_, triple);
 					raptor_free_statement(triple);
@@ -506,7 +506,7 @@ public:
 
 				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)dgmUniqueBlankTermName.str().c_str());
 				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Bezeichnung");
-				triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)name.toCString());
+				triple->object = raptor_new_term_from_literal(world_, (unsigned char*)name.toCString(), nullptr, nullptr);
 
 				raptor_serializer_serialize_statement(serializer_, triple);
 				raptor_free_statement(triple);
@@ -575,7 +575,7 @@ public:
 					{
 						std::stringstream ss;
 						const buw::Vector3d& p0 = points[face[p]];
-						ss << std::setprecision(9) << "Point(" << p0.x() << "," << p0.y() << "," << p0.z() << ")";
+						ss << std::setprecision(9) << "Point(" << p0.x() << " " << p0.y() << " " << p0.z() << ")";
 
 						raptor_statement* triple = nullptr;
 						triple = raptor_new_statement(world_);
@@ -583,7 +583,7 @@ public:
 						triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)allgemeinesPunktobjektUniqueBlankTermName.str().c_str());
 						triple->predicate =
 						  raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Punktgeometrie___allgemeines_Punktobjekt");
-						triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)ss.str().c_str());
+						triple->object = raptor_new_term_from_literal(world_, (unsigned char*)ss.str().c_str(), nullptr, nullptr);
 
 						raptor_serializer_serialize_statement(serializer_, triple);
 						raptor_free_statement(triple);
@@ -633,14 +633,14 @@ public:
 		{
 			std::stringstream ss;
 			const buw::Vector2d& p0 = position;
-			ss << std::setprecision(9) << "Point(" << p0.x() << "," << p0.y() << ")";
+			ss << std::setprecision(9) << "Point(" << p0.x() << " " << p0.y() << ")";
 
 			raptor_statement* triple = nullptr;
 			triple = raptor_new_statement(world_);
 
 			triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)achshauptpunktUniqueBlankTermName.str().c_str());
 			triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Punktgeometrie___allgemeines_Punktobjekt");
-			triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)ss.str().c_str());
+			triple->object = raptor_new_term_from_literal(world_, (unsigned char*)ss.str().c_str(), nullptr, nullptr);
 
 			raptor_serializer_serialize_statement(serializer_, triple);
 			raptor_free_statement(triple);

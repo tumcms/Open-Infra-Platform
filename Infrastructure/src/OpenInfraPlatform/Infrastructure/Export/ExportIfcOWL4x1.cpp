@@ -54,16 +54,16 @@ public:
 
 			buw::String axisName = am->getAlignments()[i]->getName();
 
-			std::stringstream axisUniqueBlankTermName;
-			axisUniqueBlankTermName << "axis_" << i;
+			std::stringstream ifcAlignmentUniqueBlankTermName;
+			ifcAlignmentUniqueBlankTermName << "axis_" << i;
 
-			collectedAxisUniqueBlankTermNames.push_back(axisUniqueBlankTermName.str());
+			collectedAxisUniqueBlankTermNames.push_back(ifcAlignmentUniqueBlankTermName.str());
 
 			{
 				raptor_statement* triple = nullptr;
 				triple = raptor_new_statement(world_);
 
-				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
+				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)ifcAlignmentUniqueBlankTermName.str().c_str());
 				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 				triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)"http://www.buildingsmart-tech.org/ifcowl/IFC4x1#IfcAlignment");
 
@@ -75,13 +75,15 @@ public:
 				raptor_statement* triple = nullptr;
 				triple = raptor_new_statement(world_);
 
-				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
+				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)ifcAlignmentUniqueBlankTermName.str().c_str());
 				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://www.buildingsmart-tech.org/ifcowl/IFC4x1#name_IfcRoot");
-				triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)axisName.toCString());
+				triple->object = raptor_new_term_from_literal(world_, (unsigned char*)axisName.toCString(), nullptr, nullptr);
 
 				raptor_serializer_serialize_statement(serializer_, triple);
 				raptor_free_statement(triple);
 			}
+
+
 
 		}
 	}
