@@ -349,6 +349,8 @@
     <addaction name="actionCheck_for_Updates"/>
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
+    <addaction name="separator"/>
+    <addaction name="actionShow_Log_File"/>
    </widget>
    <widget class="QMenu" name="menuDesignView">
     <property name="title">
@@ -1130,6 +1132,11 @@
   <action name="actionifcOWL4x1Export">
    <property name="text">
     <string>ifcOWL 4.1 (*ttl, *rdf)</string>
+   </property>
+  </action>
+  <action name="actionShow_Log_File">
+   <property name="text">
+    <string>Show Log File</string>
    </property>
   </action>
  </widget>
