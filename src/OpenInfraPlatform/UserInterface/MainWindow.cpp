@@ -38,8 +38,13 @@
 #include <QLineEdit>
 #include <QSettings>
 #include <QUuid>
-#include <iostream>
 #include <boost/filesystem.hpp>
+#include <iostream>
+#include <stdlib.h>
+#include <shlobj.h>
+#include <codecvt>
+
+using convert_type = std::codecvt_utf8<wchar_t>;
 
 OpenInfraPlatform::UserInterface::MainWindow::MainWindow( QWidget *parent /*= nullptr*/ ) :
 	BlueFramework::Application::UserInterface::MainWindowBase(&OpenInfraPlatform::DataManagement::DocumentManager::getInstance(), parent),
@@ -2246,6 +2251,28 @@ void OpenInfraPlatform::UserInterface::MainWindow::aboutQt()
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Help_triggered()
 {
 	HelpBrowser::showPage("index.html");
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_File_triggered()
+{
+	wchar_t* localAppData = 0;
+	SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
+
+	std::wstringstream ss;
+	ss << localAppData << L"/OpenInfraPlatform/";
+
+	CoTaskMemFree(static_cast<void*>(localAppData));
+	//setup converter
+	std::wstring_convert<convert_type, wchar_t> converter;
+
+	//use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
+	std::wstring filename = L"log.txt";
+
+#ifndef _DEBUG
+	filename = ss.str().append(L"log.txt");
+#endif
+
+	ShellExecute(0, 0, filename.c_str(), 0, 0, SW_SHOW);
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstra_triggered()
