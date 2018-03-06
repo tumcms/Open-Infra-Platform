@@ -90,6 +90,8 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
 	find_path(ZLIB_ROOT NAMES zlib.h HINTS 
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
+	find_path(RAPTOR2_ROOT_DIR include/raptor2/raptor2.h HINTS 
+	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\raptor2")		
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG     ${CMAKE_BINARY_DIR}/Debug)
