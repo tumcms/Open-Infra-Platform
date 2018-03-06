@@ -32,6 +32,7 @@
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/BoundingBoxEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/IfcGeometryEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/SkyboxEffect.h"
+#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/PointCloudEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
 
 #include <buw.Engine.h>
@@ -154,6 +155,10 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     BLUE_LOG(trace) << "Creating effects (8)";
     boundingBoxEffect_ = buw::makeReferenceCounted<BoundingBoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
     boundingBoxEffect_->init();
+
+	BLUE_LOG(trace) << "Creating effects (9)";
+	pointCloudEffect_ = buw::makeReferenceCounted<PointCloudEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+	pointCloudEffect_->init();
 
     BLUE_LOG(trace) << "Creating IfcGeometry effects";
     ifcGeometryEffect_ = buw::makeReferenceCounted<IfcGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
@@ -627,6 +632,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
     auto girderModel = data.getGirderModel();
     auto slabFieldModel = data.getSlabFieldModel();
     auto ifcGeometryModel = data.getIfcGeometryModel();
+	auto pointCloud = data.getPointCloud();
 
     buw::Vector3d min, max;
     min = buw::Vector3d(-1, -1, -1);
@@ -638,11 +644,17 @@ void Viewport::onChange(ChangeFlag changeFlag) {
         auto bb = alignment->getExtends();
         min = bb.getMinimum();
         max = bb.getMaximum();
-    }
+	} else if(pointCloud && data.getPointCloudPointCount() > 0) {
+		min = pointCloud->minPos;
+		max = pointCloud->maxPos;
+	}
+	
 
     buw::Vector3d offset = (min + max) / -2.f;
     minExtend_ = (min + offset).cast<float>();
     maxExtend_ = (max + offset).cast<float>();
+	buw::Vector3f extend = maxExtend_ - minExtend_;
+	
 
     boundingBoxEffect_->setBounds(min, max);
 
@@ -681,6 +693,11 @@ void Viewport::onChange(ChangeFlag changeFlag) {
         alignmentEffect_->setCurrentSelectedAlignment(selectedAlignmentIndex_);
     }
 
+	if(changeFlag & ChangeFlag::PointCloud && pointCloud && !pointCloud->points.empty()) {
+		pointCloudEffect_->setPointCloud(pointCloud);
+		activeEffects_.push_back(pointCloudEffect_);
+	}
+
     if(changeFlag & ChangeFlag::Preferences) {
         //TODO
     }
@@ -698,6 +715,7 @@ void Viewport::reloadShader() {
     gradientClearEffect_->loadShader();
     uiElements_->loadShader();
     boundingBoxEffect_->loadShader();
+	pointCloudEffect_->loadShader();
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END

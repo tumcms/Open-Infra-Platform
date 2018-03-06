@@ -39,29 +39,31 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointClo
 	buw::Vector3d minv(0, 0, 0);
 	buw::Vector3d maxv(0, 0, 0);
 
-	pointCloud.points.reserve(header.GetPointRecordsCount());
+	pointCloud.points.resize(header.GetPointRecordsCount());
 
 	bool first = true;
-	while (reader.ReadNextPoint())
-	{
-		liblas::Point const& p = reader.GetPoint();
-
-		float colorRange = std::numeric_limits<liblas::Color::value_type>::max();
-		//p.GetColor()
-		pointCloud.points.push_back({
-			buw::Vector3d(p.GetX(), p.GetY(), p.GetZ()),
-			buw::Vector3f(p.GetColor().GetRed() / colorRange, p.GetColor().GetGreen() / colorRange, p.GetColor().GetBlue() / colorRange) });
-
-		if (first)
+	for(uint32_t i = 0; i < header.GetPointRecordsCount(); i++) {
+		if(reader.ReadNextPoint())
 		{
-			minv = maxv = pointCloud.points.back().position;
-			first = false;
-		}
-		else
-		{
-			minv = buw::minimizedVector(minv, pointCloud.points.back().position);
-			maxv = buw::minimizedVector(maxv, pointCloud.points.back().position);
-		}
+			liblas::Point const& p = reader.GetPoint();
+
+			float colorRange = std::numeric_limits<liblas::Color::value_type>::max();
+			auto pos = buw::Vector3d(p.GetX(), p.GetZ(), p.GetY());
+
+			pointCloud.points[i] = {
+				buw::Vector3f(p.GetX(), p.GetZ(), p.GetY()),
+				buw::Vector4f(p.GetColor().GetRed() / colorRange, p.GetColor().GetGreen() / colorRange, p.GetColor().GetBlue() / colorRange, 1.0f) };
+			
+				if(first) {
+					minv = maxv = pos;
+					first = false;
+				}
+				else {
+					minv = buw::minimizedVector(minv, pos);
+					maxv = buw::maximizedVector(maxv, pos);
+				}
+			
+		}		
 	}
 
 	pointCloud.minPos = minv;

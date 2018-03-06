@@ -206,7 +206,7 @@ namespace OpenInfraPlatform
 			//---------------------------------------------------------------------------//
 			const int getPointCloudPointCount() const;
 
-			const std::vector<buw::LaserPoint>& getPointCloud() const;
+			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> getPointCloud() const;
 
 
 			//---------------------------------------------------------------------------//
@@ -301,7 +301,7 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<buw::GirderModel>							girderModel_;
 			buw::ReferenceCounted<buw::SlabFieldModel>						slabFieldModel_;
 			buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel>	ifcGeometryModel_;
-			buw::PointCloud*												pointCloud_;
+			buw::ReferenceCounted<buw::PointCloud>							pointCloud_;
 
 
 
@@ -309,7 +309,7 @@ namespace OpenInfraPlatform
 			bool merge_;
 			buw::Import*													importer_;
 			buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel>	tempIfcGeometryModel_;
-			buw::PointCloud*												tempPointCloud_;
+			buw::ReferenceCounted<buw::PointCloud>							tempPointCloud_;
 
 			int																currentJobID_;
 

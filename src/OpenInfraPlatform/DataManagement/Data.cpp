@@ -98,7 +98,7 @@ importer_(nullptr),
 tempIfcGeometryModel_(nullptr),
 tempPointCloud_(nullptr)
 {
-	pointCloud_ = new buw::PointCloud();
+	pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
 	clear(false);
 
 	latestChangeFlag_ = (ChangeFlag) (ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences);
@@ -109,7 +109,7 @@ tempPointCloud_(nullptr)
 OpenInfraPlatform::DataManagement::Data::~Data()
 {
 	if (pointCloud_)
-		delete pointCloud_;
+		pointCloud_ = nullptr;
 }
 
 void OpenInfraPlatform::DataManagement::Data::save( const std::string & filename )
@@ -471,9 +471,9 @@ void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) 
 	selectedAlignmentIndex_ = 0;
 
 	if (pointCloud_)
-		delete pointCloud_;
+		pointCloud_ = nullptr;
 
-	pointCloud_ = new buw::PointCloud();
+	pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
 	
 	if (notifyObservers) {
 		// The notification state is not used here, because a clear is not executed by an action.
@@ -663,6 +663,9 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 	{
 		importOSMJob(filename, buw::ImportOSM::getDefaultFilter(), 2);
 	}
+	else if(buwstrFilename.toLower().endsWith(".las")) {
+		importLASJob(filename);
+	}
 	else if (buwstrFilename.toLower().endsWith(".d40"))
 	{
 		importer_ = new buw::ImportD40Import(filename);
@@ -768,7 +771,7 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 	{
 		flag = flag | ChangeFlag::PointCloud;
 		if (pointCloud_)
-			delete pointCloud_;
+			pointCloud_ = nullptr;
 		
 		if (merge_)
 		{
@@ -1234,9 +1237,9 @@ buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel>
 	return ifcGeometryModel_;
 }
 
-const std::vector<buw::LaserPoint>& OpenInfraPlatform::DataManagement::Data::getPointCloud() const
+buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::DataManagement::Data::getPointCloud() const
 {
-	return pointCloud_->points;
+	return pointCloud_;
 }
 
 const int OpenInfraPlatform::DataManagement::Data::getPointCloudPointCount() const
@@ -1249,14 +1252,15 @@ void OpenInfraPlatform::DataManagement::Data::importLAS(const std::string& filen
 	merge_ = false;
 	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importLASJob, this, filename);
 }
+
 void OpenInfraPlatform::DataManagement::Data::importLASJob(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing laserscan ").append(filename));
 
 	if (tempPointCloud_)
-		delete tempPointCloud_;
+		tempPointCloud_ = nullptr;
 
-	tempPointCloud_ = new buw::PointCloud();
+	tempPointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
 	buw::importLASPointCloud(filename.c_str(), *tempPointCloud_);
 }
 

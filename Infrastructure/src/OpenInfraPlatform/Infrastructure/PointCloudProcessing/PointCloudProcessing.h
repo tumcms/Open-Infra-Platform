@@ -22,6 +22,7 @@
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
 #include <BlueFramework/ImageProcessing/color.h>
 #include <BlueFramework/Core/Math/vector.h>
+#include <BlueFramework/Rasterizer/vertex.h>
 #include <vector>
 #include <boost/noncopyable.hpp>
 
@@ -29,15 +30,17 @@ namespace OpenInfraPlatform
 {
 	namespace Infrastructure
 	{
-		struct LaserPoint
-		{
-			buw::Vector3d position;
-			buw::Vector3f color;
-		};
+		//struct LaserPoint
+		//{
+		//	buw::Vector3d position;
+		//	buw::Vector3f color;
+		//};
+
+		typedef buw::VertexPosition3Color4 LaserPoint;
 
 		struct PointCloud
 		{
-			std::vector<LaserPoint> points;
+			std::vector<buw::VertexPosition3Color4> points;
 			buw::Vector3d			minPos;
 			buw::Vector3d			maxPos;
 		};

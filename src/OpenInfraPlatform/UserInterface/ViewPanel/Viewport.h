@@ -51,6 +51,7 @@ namespace OpenInfraPlatform
         class SkyboxEffect;
 		class UIElements;
 		class BoundingBoxEffect;
+		class PointCloudEffect;
 
 		class Viewport : public QWidget
 		{
@@ -169,6 +170,7 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<UIElements> uiElements_;
 			buw::ReferenceCounted<BoundingBoxEffect> boundingBoxEffect_;
             buw::ReferenceCounted<SkyboxEffect> skyboxEffect_;
+			buw::ReferenceCounted<PointCloudEffect> pointCloudEffect_;
             std::vector<buw::ReferenceCounted<buw::Effect>> activeEffects_;
 
 			// Clear
