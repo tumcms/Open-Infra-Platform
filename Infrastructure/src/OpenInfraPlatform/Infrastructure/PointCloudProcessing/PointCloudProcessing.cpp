@@ -48,11 +48,11 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointClo
 			liblas::Point const& p = reader.GetPoint();
 
 			float colorRange = std::numeric_limits<liblas::Color::value_type>::max();
-			auto pos = buw::Vector3d(p.GetX(), p.GetZ(), p.GetY());
+			auto pos = buw::Vector3d(p.GetX(), p.GetY(), p.GetZ());
 
 			pointCloud.points[i] = {
-				buw::Vector3f(p.GetX(), p.GetZ(), p.GetY()),
-				buw::Vector4f(p.GetColor().GetRed() / colorRange, p.GetColor().GetGreen() / colorRange, p.GetColor().GetBlue() / colorRange, 1.0f) };
+				pos,
+				buw::Vector3f(p.GetColor().GetRed() / colorRange, p.GetColor().GetGreen() / colorRange, p.GetColor().GetBlue() / colorRange) };
 			
 				if(first) {
 					minv = maxv = pos;

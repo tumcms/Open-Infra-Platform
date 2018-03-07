@@ -34,7 +34,6 @@ public:
 	/*Struct for possible settings*/
 	struct SettingsBuffer {
 		BlueFramework::Rasterizer::AlignedTo16Byte::Float4 positions[4];
-		BlueFramework::Rasterizer::AlignedTo16Byte::Float4 offset;
 		BlueFramework::Rasterizer::AlignedTo16Byte::Int bDrawColored = false;
 		BlueFramework::Rasterizer::AlignedTo16Byte::Int bUseUniformPointSize = true;
 		BlueFramework::Rasterizer::AlignedTo16Byte::Float pointSize = 1.0f;
@@ -60,7 +59,7 @@ public:
 	void setPointSize(const float size);
 
 	/*Set the point cloud to be rendered*/
-	void setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud);
+	void setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset);
 
 
 private:

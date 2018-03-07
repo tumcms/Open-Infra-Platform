@@ -30,17 +30,16 @@ namespace OpenInfraPlatform
 {
 	namespace Infrastructure
 	{
-		//struct LaserPoint
-		//{
-		//	buw::Vector3d position;
-		//	buw::Vector3f color;
-		//};
+		struct LaserPoint
+		{
+			buw::Vector3d position;
+			buw::Vector3f color;
+		};
 
-		typedef buw::VertexPosition3Color4 LaserPoint;
 
 		struct PointCloud
 		{
-			std::vector<buw::VertexPosition3Color4> points;
+			std::vector<LaserPoint> points;
 			buw::Vector3d			minPos;
 			buw::Vector3d			maxPos;
 		};

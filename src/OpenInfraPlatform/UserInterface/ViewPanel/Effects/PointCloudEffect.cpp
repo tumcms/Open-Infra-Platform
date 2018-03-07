@@ -84,18 +84,24 @@ void PointCloudEffect::setPointSize(const float size)
 	updateSettingsBuffer();
 }
 
-void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud)
+void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset)
 {
 	buw::vertexBufferDescription vbd;
 	vbd.vertexCount = pointCloud->points.size();
 	vbd.vertexLayout = VertexTypePointCloud::getVertexLayout();
-	vbd.data = pointCloud->points.data();
+	
+	std::vector<VertexTypePointCloud> vertices = std::vector<VertexTypePointCloud>(pointCloud->points.size());
 
-	vertexBuffer_ = renderSystem()->createVertexBuffer(vbd);
+#pragma omp parallel for
+	for(int i = 0; i < pointCloud->points.size(); i++) {
+		auto vertex = pointCloud->points[i];
+		buw::Vector3f pos = (vertex.position + offset).cast<float>();
+		buw::Vector4f col = buw::Vector4f(vertex.color.x(), vertex.color.y(), vertex.color.z(), 1.0f);
+		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos.x(),pos.z(),pos.y()), col);
+	}
+	vbd.data = vertices.data();
 
-	auto offset = ((pointCloud->minPos + pointCloud->maxPos) / 2.0).cast<float>();
-	settings_.offset = buw::Vector4f(offset.x(), offset.y(), offset.z(), 1.0f);
-	updateSettingsBuffer();
+	vertexBuffer_ = renderSystem()->createVertexBuffer(vbd);	
 }
 
 void PointCloudEffect::v_init()

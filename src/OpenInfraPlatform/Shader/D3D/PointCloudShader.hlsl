@@ -13,7 +13,6 @@ cbuffer WorldBuffer
 cbuffer SettingsBuffer
 {
     float4 positions[4];
-    float4 offset;
     float pointSize;
     bool bUseUniformPointSize;
     bool bDrawColored;
@@ -26,8 +25,8 @@ cbuffer ViewportBuffer
 
 struct ApplicationToVertex
 {
-	float3 position				: position;
-	float4 color				: color;
+	float3 position			: Position;
+	float4 color			: Color;
 };
 
 struct VertexToGeometry
@@ -39,7 +38,7 @@ struct VertexToGeometry
 struct VertexToFragment
 {
     float4 position : SV_POSITION;
-    float4 color : color;
+    float4 color : Color;
 };
 
 struct GeometryToFragmet
@@ -60,7 +59,7 @@ VertexToGeometry VS_main_old(ApplicationToVertex app2vs)
 {
 	VertexToGeometry vtf = (VertexToGeometry)0;
 
-    vtf.worldPosition = app2vs.position - offset.xyz;
+    vtf.worldPosition = app2vs.position.xyz;
     vtf.color = bDrawColored ? app2vs.color : float4(1, 1, 1, 1);
 
 	return vtf;
@@ -69,7 +68,7 @@ VertexToGeometry VS_main_old(ApplicationToVertex app2vs)
 VertexToFragment VS_main(ApplicationToVertex app2vs)
 {
     VertexToFragment vtf = (VertexToFragment) 0;
-    vtf.position = mul(viewProjection, float4(app2vs.position.xyz - offset.xyz, 1.0f));
+    vtf.position = mul(viewProjection, float4(app2vs.position.xyz, 1.0f));
     vtf.color = bDrawColored ? app2vs.color : float4(1, 1, 1, 1);
     return vtf;
 }

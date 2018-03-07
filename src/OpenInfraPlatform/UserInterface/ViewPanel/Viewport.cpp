@@ -694,7 +694,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
     }
 
 	if(changeFlag & ChangeFlag::PointCloud && pointCloud && !pointCloud->points.empty()) {
-		pointCloudEffect_->setPointCloud(pointCloud);
+		pointCloudEffect_->setPointCloud(pointCloud, offset);
 		activeEffects_.push_back(pointCloudEffect_);
 	}
 
