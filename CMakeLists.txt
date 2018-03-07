@@ -668,10 +668,6 @@ add_custom_target(CopyOpenInfraPlatformUIResources
 	
 	COMMAND	${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/deploy/InstanceLevelTranslator/InstanceLevelTranslator.exe		${CMAKE_BINARY_DIR}/RelWithDebInfo/InstanceLevelTranslator.exe
 	COMMAND	${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/deploy/InstanceLevelTranslator/OkstraI18NTranslation.dll		${CMAKE_BINARY_DIR}/RelWithDebInfo/OkstraI18NTranslation.dll
-	
-	# OKSTRA OWL
-	COMMAND	${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Data/OOWL_Okstra.ttl					${CMAKE_BINARY_DIR}/Data
-	COMMAND	${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Data/OWL_IFC4x1.ttl					${CMAKE_BINARY_DIR}/Data
 )
 
 # DirectX
