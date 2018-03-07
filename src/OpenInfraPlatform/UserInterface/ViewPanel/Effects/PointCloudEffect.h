@@ -34,9 +34,9 @@ public:
 	/*Struct for possible settings*/
 	struct SettingsBuffer {
 		BlueFramework::Rasterizer::AlignedTo16Byte::Float4 positions[4];
-		BlueFramework::Rasterizer::AlignedTo16Byte::Int bDrawColored = false;
-		BlueFramework::Rasterizer::AlignedTo16Byte::Int bUseUniformPointSize = true;
-		BlueFramework::Rasterizer::AlignedTo16Byte::Float pointSize = 1.0f;
+		BlueFramework::Rasterizer::AlignedTo16Byte::Float pointSize = 3.0f;
+		BlueFramework::Rasterizer::AlignedTo16Byte::Int bUseUniformPointSize = false;
+		BlueFramework::Rasterizer::AlignedTo16Byte::Int bUseUniformColor = false;
 	};
 
 	/*Construct by providing the renderSystem, viewport, depthStencil and worldBuffer for camera etc.*/
@@ -53,7 +53,9 @@ public:
 	void loadShader();
 
 	/*Turn colored drawing on or off*/
-	void drawPointsColored(const bool colored);
+	void drawPointsWithUniformColor(const bool checked);
+
+	void drawPointsWithUniformSize(const bool checked);
 
 	/*Set the point size for the geometry shader*/
 	void setPointSize(const float size);

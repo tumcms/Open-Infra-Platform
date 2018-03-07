@@ -64,6 +64,8 @@ void PointCloudEffect::loadShader()
 		psd.renderTargetFormats = { buw::eTextureFormat::R8G8B8A8_UnsignedNormalizedInt_SRGB };
 		psd.useDepth = true;
 		psd.useMSAA = true;
+		psd.fillMode = buw::eFillMode::Solid;
+		psd.cullMode = buw::eCullMode::None;
 
 		pipelineState_ = createPipelineState(psd);		
 	}
@@ -72,9 +74,15 @@ void PointCloudEffect::loadShader()
 	}
 }
 
-void PointCloudEffect::drawPointsColored(const bool colored)
+void PointCloudEffect::drawPointsWithUniformColor(const bool checked)
 {
-	settings_.bDrawColored = colored;
+	settings_.bUseUniformColor = checked;
+	updateSettingsBuffer();
+}
+
+void PointCloudEffect::drawPointsWithUniformSize(const bool checked)
+{
+	settings_.bUseUniformPointSize = checked;
 	updateSettingsBuffer();
 }
 
@@ -113,7 +121,7 @@ void PointCloudEffect::v_init()
 	settings_.positions[1] = buw::Vector4f(0.5, 0.5, 0, 0);
 	settings_.positions[2] = buw::Vector4f(-0.5, -0.5, 0, 0);
 	settings_.positions[3] = buw::Vector4f(0.5, -0.5, 0, 0);
-	settings_.bDrawColored = true;
+	settings_.bUseUniformColor = false;
 	settings_.bUseUniformPointSize = false;
 	settings_.pointSize = 3.0f;
 

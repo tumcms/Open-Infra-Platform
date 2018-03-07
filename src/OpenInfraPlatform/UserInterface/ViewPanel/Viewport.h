@@ -106,6 +106,12 @@ namespace OpenInfraPlatform
 			void enableIsoLines(const bool checked);
 			void enableTerrainGradientRamp(const bool checked);
 
+			/*Settings for rendering point clouds*/
+			void setUseUniformPointColor(const bool useUniformColor);
+			void setUseUniformPointSize(const bool useUniformSize);
+			void setPointSize(const float size);
+
+
             void saveAsScreenshot(const std::string& filename);
             void storeGBuffer();
 

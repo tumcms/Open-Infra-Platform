@@ -10,17 +10,17 @@ cbuffer WorldBuffer
     float3 cam;
 };
 
-cbuffer SettingsBuffer
+cbuffer SettingsBuffer : register(b1)
 {
-    float4 positions[4];
-    float pointSize;
-    bool bUseUniformPointSize;
-    bool bDrawColored;
+    float4 positions[4] : packoffset(c0);
+    float pointSize : packoffset(c4);
+    int bUseUniformPointSize : packoffset(c5);
+    int bUseUniformColor: packoffset(c6);
 };
 
-cbuffer ViewportBuffer
+cbuffer ViewportBuffer : register(b2)
 {
-    int2 viewport;
+    int2 viewport : packoffset(c0);
 };
 
 struct ApplicationToVertex
@@ -32,19 +32,13 @@ struct ApplicationToVertex
 struct VertexToGeometry
 {
 	float3 worldPosition		: position;
-	float4 color				: color;
+	float4 color				: Color;
 };
 
-struct VertexToFragment
-{
-    float4 position : SV_POSITION;
-    float4 color : Color;
-};
-
-struct GeometryToFragmet
+struct GeometryToFragment
 {
 	float4 position				: SV_POSITION;
-	float4 color				: color;
+	float4 color				: Color;
 };
 
 struct FragmentToPixel
@@ -55,21 +49,12 @@ struct FragmentToPixel
 //----------------------------------------------------------------------------
 // Vertex Shader
 //----------------------------------------------------------------------------
-VertexToGeometry VS_main_old(ApplicationToVertex app2vs)
+
+VertexToGeometry VS_main(ApplicationToVertex app2vs)
 {
-	VertexToGeometry vtf = (VertexToGeometry)0;
-
-    vtf.worldPosition = app2vs.position.xyz;
-    vtf.color = bDrawColored ? app2vs.color : float4(1, 1, 1, 1);
-
-	return vtf;
-}
-
-VertexToFragment VS_main(ApplicationToVertex app2vs)
-{
-    VertexToFragment vtf = (VertexToFragment) 0;
-    vtf.position = mul(viewProjection, float4(app2vs.position.xyz, 1.0f));
-    vtf.color = bDrawColored ? app2vs.color : float4(1, 1, 1, 1);
+    VertexToGeometry vtf = (VertexToGeometry) 0;
+    vtf.worldPosition = app2vs.position;
+    vtf.color = bUseUniformColor ? float4(1, 1, 1, 1) : app2vs.color;
     return vtf;
 }
 
@@ -77,19 +62,18 @@ VertexToFragment VS_main(ApplicationToVertex app2vs)
 // Geometry Shader
 //----------------------------------------------------------------------------
 [maxvertexcount(4)]
-void GS_main(point VertexToGeometry input[1], inout TriangleStream<GeometryToFragmet> outStream)
+void GS_main(point VertexToGeometry input[1], inout TriangleStream<GeometryToFragment> outStream)
 {
 	if (bUseUniformPointSize)
 	{
         float fSizeX = (pointSize / viewport.x) / 4; //0.002;
         float fSizeY = (pointSize / viewport.y) / 4;
 
-        GeometryToFragmet output;
-
+        GeometryToFragment output;
+        float4 outPos = mul(view, float4(input[0].worldPosition, 1));
 		for (int i = 0; i < 4; i++)
 		{
-            float4 outPos = mul(float4(input[0].worldPosition, 1), view);
-				output.position = mul(outPos, projection);
+            output.position = mul(projection,outPos);
 
 			// ideal wäre wenn die pixel positon genau auf ein pixel-zentrum fallen würde
 			float2 l_vCurrScreenPosition = output.position.xy / output.position.w;
@@ -100,6 +84,7 @@ void GS_main(point VertexToGeometry input[1], inout TriangleStream<GeometryToFra
 			l_vCurrPixelPosition.x = x + 0.5;// round(l_vCurrPixelPosition.x);
 			l_vCurrPixelPosition.y = y + 0.5;//round(l_vCurrPixelPosition.y);
 
+            
 			// wie wärde die ideelae Bildschirmposition [0;1]?
 			l_vCurrScreenPosition = l_vCurrPixelPosition * (1.0f / (viewport.xy / 2)) * output.position.w;
 
@@ -111,36 +96,36 @@ void GS_main(point VertexToGeometry input[1], inout TriangleStream<GeometryToFra
 
 			// Pixel nach der Projektion vergrößern auf gewünschte größe
 
-			float zoverNear = 1;//(outPos.z)/g_ClipPlanes.x;
-			fSizeX = 1 / viewport.x * 2 * pointSize;
-			fSizeY = 1 / viewport.y * 2 * pointSize;
-			float4 posSize = float4(positions[i].x*fSizeX,
-				positions[i].y*fSizeY,
+			
+			fSizeX = 1.0f / viewport.x * 2.0f * pointSize;
+			fSizeY = 1.0f / viewport.y * 2.0f * pointSize;
+
+			float4 posSize = float4(
+                positions[i].x * fSizeX * 0.1f,
+				positions[i].y * fSizeY * 0.1f,
 				0,
-				0);
+				0);         
 
+            output.position += posSize;
 
-			output.position += posSize;
-			output.color = input[0].color; //float3(204.0/255,204.0/255,204.0/255);
-
+            output.color = input[0].color; //float3(204.0/255,204.0/255,204.0/255);
 			outStream.Append(output);
 		}
 	}
 	else
 	{
-        GeometryToFragmet output;
+        GeometryToFragment output;
         output.color = input[0].color;
         float4 pos = mul(viewProjection, float4(input[0].worldPosition, 1));
 		for (int i = 0; i < 4; i++)
 		{
 			output.position = pos + float4(
-				positions[i].x*pointSize * 0.0001,
-				positions[i].y*pointSize * 0.0001,
+				positions[i].x*pointSize * 0.01,
+				positions[i].y*pointSize * 0.01,
 				0,
 				0);
 
-            //output.position = mul(projection, output.position);
-			outStream.Append(output);
+		    outStream.Append(output);
 		}
 	}
 	outStream.RestartStrip();
@@ -150,20 +135,12 @@ void GS_main(point VertexToGeometry input[1], inout TriangleStream<GeometryToFra
 //----------------------------------------------------------------------------
 // Pixel Shader
 //----------------------------------------------------------------------------
-FragmentToPixel PS_main_old(GeometryToFragmet gtf)
-{
-	FragmentToPixel final;
 
-	final.color = float4(gtf.color.xyz, 1.0f);
-
-	return final;
-}
-
-FragmentToPixel PS_main(VertexToFragment vtf)
+FragmentToPixel PS_main(GeometryToFragment gtf)
 {
     FragmentToPixel final;
 
-    final.color = float4(vtf.color.xyz, 1.0f);
+    final.color = float4(gtf.color.xyz, 1.0f);
 
     return final;
 }

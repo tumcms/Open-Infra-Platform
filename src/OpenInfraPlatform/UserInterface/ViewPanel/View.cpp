@@ -293,17 +293,17 @@ void OpenInfraPlatform::UserInterface::View::setHighlightSelectedAlignmentSegmen
 
 void OpenInfraPlatform::UserInterface::View::setUseUniformPointColor(const bool useUniformColor)
 {
-	//viewport_->setUseUniformPointColor(useUniformColor);
+	viewport_->setUseUniformPointColor(useUniformColor);
 }
 
 void OpenInfraPlatform::UserInterface::View::setUseUniformPointSize(const bool useUniformSize)
 {
-	//viewport_->setUseUniformPointSize(useUniformSize);
+	viewport_->setUseUniformPointSize(useUniformSize);
 }
 
 void OpenInfraPlatform::UserInterface::View::setPointSize(const float pointSize)
 {
-	//viewport_->setPointSize(pointSize);
+	viewport_->setPointSize(pointSize);
 }
 
 

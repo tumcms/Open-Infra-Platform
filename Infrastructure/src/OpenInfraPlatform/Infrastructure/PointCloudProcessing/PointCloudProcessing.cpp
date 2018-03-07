@@ -17,6 +17,7 @@
 
 #include "PointCloudProcessing.h"
 #include <liblas/liblas.hpp>
+#include <BlueFramework/Core/Diagnostics/log.h>
 
 BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointCloud(
 	const char* filename,
@@ -32,9 +33,9 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointClo
 
 	liblas::Header const& header = reader.GetHeader();
 
-	std::cout << "Compressed: " << (header.Compressed() == true) ? "true" : "false";
-	std::cout << "Signature: " << header.GetFileSignature() << '\n';
-	std::cout << "Points count: " << header.GetPointRecordsCount() << '\n';
+	BLUE_LOG(info) << "Compressed: " << ((header.Compressed() == true) ? "true" : "false");
+	BLUE_LOG(info) << "Signature: " << header.GetFileSignature();
+	BLUE_LOG(info) << "Points count: " << header.GetPointRecordsCount();
 
 	buw::Vector3d minv(0, 0, 0);
 	buw::Vector3d maxv(0, 0, 0);
@@ -42,7 +43,7 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointClo
 	pointCloud.points.resize(header.GetPointRecordsCount());
 
 	bool first = true;
-	for(uint32_t i = 0; i < header.GetPointRecordsCount(); i++) {
+	for(int i = 0; i < header.GetPointRecordsCount(); i++) {
 		if(reader.ReadNextPoint())
 		{
 			liblas::Point const& p = reader.GetPoint();

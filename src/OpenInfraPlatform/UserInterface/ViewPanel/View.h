@@ -70,9 +70,9 @@ namespace OpenInfraPlatform
 			void setDifferentColorsForAlignmentElements( const bool checked );
 			void setHighlightSelectedAlignmentSegment( const bool enable );
 
-			void	setUseUniformPointColor(const bool useUniformColor);
-			void	setUseUniformPointSize(const bool useUniformSize);
-			void	setPointSize(const float size);
+			void setUseUniformPointColor(const bool useUniformColor);
+			void setUseUniformPointSize(const bool useUniformSize);
+			void setPointSize(const float size);
 
 			buw::Vector3d getOffset() const;
 

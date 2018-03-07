@@ -106,17 +106,19 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     pbTD.useMSAA = false;
     pickBuffer_ = renderSystem_->createTexture2D(pbTD, buw::eTextureBindType::RTV);
 
-    buw::constantBufferDescription cbd1;
-    cbd1.sizeInBytes = sizeof(WorldBuffer);
-    cbd1.data = nullptr;
-    worldBuffer_ = renderSystem_->createConstantBuffer(cbd1);
+    buw::constantBufferDescription cbd0;
+    cbd0.sizeInBytes = sizeof(WorldBuffer);
+    cbd0.data = nullptr;
+    worldBuffer_ = renderSystem_->createConstantBuffer(cbd0);
+
+	ViewportBuffer buffer = { width(), height() };
+
+	buw::constantBufferDescription cbd1;
+	cbd1.sizeInBytes = sizeof(ViewportBuffer);
+	cbd1.data = &buffer;
+    viewportBuffer_ = renderSystem_->createConstantBuffer(cbd1);
 
     buw::constantBufferDescription cbd2;
-    cbd2.sizeInBytes = sizeof(ViewportBuffer);
-    cbd2.data = nullptr;
-    viewportBuffer_ = renderSystem_->createConstantBuffer(cbd2);
-
-    buw::constantBufferDescription cbd3;
     cbd2.sizeInBytes = sizeof(UINT);
     cbd2.data = nullptr;
     pickIdBuffer_ = renderSystem_->createConstantBuffer(cbd2);
@@ -294,6 +296,21 @@ void Viewport::enableIsoLines(const bool checked) {
 void Viewport::enableTerrainGradientRamp(const bool checked) {
     demEffect_->enableTerrainColorRamp(checked);
     repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::setUseUniformPointColor(const bool useUniformColor)
+{
+	pointCloudEffect_->drawPointsWithUniformColor(useUniformColor);
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::setUseUniformPointSize(const bool useUniformSize)
+{
+	pointCloudEffect_->drawPointsWithUniformSize(useUniformSize);
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::setPointSize(const float size)
+{
+	pointCloudEffect_->setPointSize(size);
 }
 
 void Viewport::showCrossSection(const bool showCrossSection) {
