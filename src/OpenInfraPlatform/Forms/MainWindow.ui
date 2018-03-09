@@ -352,6 +352,7 @@
     <addaction name="separator"/>
     <addaction name="actionShow_Log_File"/>
     <addaction name="actionShow_Log_Folder"/>
+    <addaction name="actionShow_License_and_Copyright_Information"/>
    </widget>
    <widget class="QMenu" name="menuDesignView">
     <property name="title">
@@ -1143,6 +1144,11 @@
   <action name="actionShow_Log_Folder">
    <property name="text">
     <string>Show Log Folder</string>
+   </property>
+  </action>
+  <action name="actionShow_License_and_Copyright_Information">
+   <property name="text">
+    <string>Show License and Copyright Information</string>
    </property>
   </action>
  </widget>

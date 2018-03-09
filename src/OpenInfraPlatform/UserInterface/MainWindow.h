@@ -24,6 +24,7 @@
 #include "OpenInfraPlatform/UserInterface/PreferencesDialog.h"
 #include "OpenInfraPlatform/UserInterface/ExportIfcAlignment1x0Dialog.h"
 #include "OpenInfraPlatform/UserInterface/ExportIfcAlignment1x1Dialog.h"
+#include "OpenInfraPlatform/UserInterface/LicenseAndCopyrightInformationDialog.h"
 #include "OpenInfraPlatform/UserInterface/ExportIfcZipDialog.h"
 #include "OpenInfraPlatform/UserInterface/ExportExcelDialog.h"
 #include "OpenInfraPlatform/UserInterface/GenerateTerrainDialog.h"
@@ -120,6 +121,8 @@ namespace OpenInfraPlatform
 			void on_actionExportLandInfra_triggered();
 			void on_actionHorizontal_alignment_triggered();
 			void on_actionIfcAlignment_buildingSMART_P6_Excel_Comparison_triggered();
+
+			void on_actionShow_License_and_Copyright_Information_triggered();
 
 			void on_actionShow_Log_Folder_triggered();
 
@@ -249,27 +252,28 @@ namespace OpenInfraPlatform
 			QtVariantProperty*			itemLength_;
 
 			// Dialogs
-			CreateArcClothoidArcDialog*					ACA_;
-			CreateArcClothoidArcMeth2Dialog*			ACA2_;
-			CreateArcClothoidClothoidArcDialog*			ACCA_;
-			CreateArcClothoidClothoidArcMeth2Dialog*	ACCA2_;
-			CreateClothoidDialog*						LC_;
-			CreateClothoidDialog2*						createClothoidDialog2_;
-			CreateLineArcArcArcLineDialog*				LAAAL_;
-			CreateLineArcArcLineDialog*					LAAL_;
-			CreateLineClothoidArcClothoidLineDialog*	LCACL_;
-			CreateLineClothoidClothoidLineDialog*		LCCL_;
-			CurvatureWindow*							curvatureWindow_;
-			ExportExcelDialog*							exportExcelDialog_;
-			ExportIfcAlignment1x0Dialog*					exportIfcAlignment1x0Dialog_;
-			ExportIfcAlignment1x1Dialog*				exportIfcAlignment1x1Dialog_;
-			ExportIfcZipDialog*							exportIfcZipDialog_;
-			GenerateTerrainDialog*						generateTerrainDialog_;
-			OSMImportDialog*							osmImportDialog_;
-			PreferencesDialog*							preferencesDialog_;
-			QProgressDialog*							progressDialog_;
-			VerticalAlignmentWindow*					verticalAlignmentWindow_;
-			XYZImportDialog*							XYZImportDialog_;
+			CreateArcClothoidArcDialog*					ACA_ = nullptr;
+			CreateArcClothoidArcMeth2Dialog*			ACA2_ = nullptr;
+			CreateArcClothoidClothoidArcDialog*			ACCA_ = nullptr;
+			CreateArcClothoidClothoidArcMeth2Dialog*	ACCA2_ = nullptr;
+			CreateClothoidDialog*						LC_ = nullptr;
+			CreateClothoidDialog2*						createClothoidDialog2_ = nullptr;
+			CreateLineArcArcArcLineDialog*				LAAAL_ = nullptr;
+			CreateLineArcArcLineDialog*					LAAL_ = nullptr;
+			CreateLineClothoidArcClothoidLineDialog*	LCACL_ = nullptr;
+			CreateLineClothoidClothoidLineDialog*		LCCL_ = nullptr;
+			CurvatureWindow*							curvatureWindow_ = nullptr;
+			ExportExcelDialog*							exportExcelDialog_ = nullptr;
+			ExportIfcAlignment1x0Dialog*				exportIfcAlignment1x0Dialog_ = nullptr;
+			ExportIfcAlignment1x1Dialog*				exportIfcAlignment1x1Dialog_ = nullptr;
+			ExportIfcZipDialog*							exportIfcZipDialog_ = nullptr;
+			GenerateTerrainDialog*						generateTerrainDialog_ = nullptr;
+			OSMImportDialog*							osmImportDialog_ = nullptr;
+			PreferencesDialog*							preferencesDialog_ = nullptr;
+			QProgressDialog*							progressDialog_ = nullptr;
+			VerticalAlignmentWindow*					verticalAlignmentWindow_ = nullptr;
+			XYZImportDialog*							XYZImportDialog_ = nullptr;
+			LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
 
 			QProgressBar*								progressBar_;
 			

@@ -116,7 +116,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
     preferencesDialog_ = new PreferencesDialog(view_, this);
     verticalAlignmentWindow_ = new VerticalAlignmentWindow(ui_->actionVertical_alignment);
     XYZImportDialog_ = new XYZImportDialog(this);
-
+	
     updateRecentFileActions();
 
     connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), ACA_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
@@ -2158,6 +2158,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionExport_Terrain_As_He
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionIfcAlignment_buildingSMART_P6_Excel_Comparison_triggered() {
     exportExcelDialog_->show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_License_and_Copyright_Information_triggered() {
+	if (licenseAndCopyrightInformationDialog_ == nullptr) {
+		licenseAndCopyrightInformationDialog_ = new LicenseAndCopyrightInformationDialog(this);
+	}
+
+	licenseAndCopyrightInformationDialog_->show();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_Folder_triggered() {
