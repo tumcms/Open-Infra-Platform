@@ -121,6 +121,8 @@ namespace OpenInfraPlatform
 			void on_actionHorizontal_alignment_triggered();
 			void on_actionIfcAlignment_buildingSMART_P6_Excel_Comparison_triggered();
 
+			void on_actionShow_Log_Folder_triggered();
+
 			void on_actionImport_IFC_Alignment_1_0_triggered();
 
 			void on_actionIFC_Alignment_1_1_Export_triggered();

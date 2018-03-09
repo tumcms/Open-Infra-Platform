@@ -2160,6 +2160,16 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionIfcAlignment_buildin
     exportExcelDialog_->show();
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_Folder_triggered() {
+	// TODO: Find a way to do this with pure Qt or move it at least to an own 
+	// function that can be reused by on_actionShow_Log_File_triggered
+	wchar_t* localAppData = 0;
+	SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
+	
+	QString path = QDir::toNativeSeparators(QString::fromWCharArray(localAppData) + "/OpenInfraPlatform");
+	QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionImport_IFC_Alignment_1_0_triggered() {
     QString filename = QFileDialog::getOpenFileName(this, "Open Document", QDir::currentPath(), "IFC Alignment 1.0 (*.ifc)");
 
