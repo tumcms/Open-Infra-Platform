@@ -22,6 +22,7 @@
 #include "OpenInfraPlatform/Data/terrainDescription.h"
 //#include "OpenInfraPlatform/DataManagement/ViewCubeData.h"
 #include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
+#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/ProxyModel.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 #include "OpenInfraPlatform/Infrastructure/Girder/GirderModel.h"
 #include "OpenInfraPlatform/Infrastructure/SlabField/SlabFieldModel.h"
@@ -176,6 +177,14 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> getAlignmentModel() const;
 
 			//---------------------------------------------------------------------------//
+			// Proxy Model
+			//---------------------------------------------------------------------------//
+
+			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::ProxyModel> getProxyModel() const {
+				return proxyModel_;
+			}
+
+			//---------------------------------------------------------------------------//
 			// Traffic Sign Model
 			//---------------------------------------------------------------------------//
 
@@ -302,7 +311,7 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<buw::SlabFieldModel>						slabFieldModel_;
 			buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel>	ifcGeometryModel_;
 			buw::ReferenceCounted<buw::PointCloud>							pointCloud_;
-
+			buw::ReferenceCounted<buw::ProxyModel>							proxyModel_;
 
 
 			// temporary data for asynchronous operations

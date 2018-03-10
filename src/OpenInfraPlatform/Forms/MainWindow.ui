@@ -50,7 +50,7 @@
      </size>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tabAlignment">
      <attribute name="title">
@@ -150,6 +150,21 @@
       </property>
       <property name="text">
        <string>Surfaces</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tabProxies">
+     <attribute name="title">
+      <string>Proxies</string>
+     </attribute>
+     <widget class="QListWidget" name="listWidgetProxies">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>31</y>
+        <width>256</width>
+        <height>351</height>
+       </rect>
       </property>
      </widget>
     </widget>

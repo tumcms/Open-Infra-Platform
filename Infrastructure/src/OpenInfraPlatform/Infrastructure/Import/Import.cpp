@@ -25,6 +25,7 @@ Import::Import(const std::string& filename) : filename_(filename) {
 	trafficSignModel_ = buw::makeReferenceCounted<buw::TrafficSignModel>();
 	girderModel_ = buw::makeReferenceCounted<buw::GirderModel>();
 	slabFieldModel_ = buw::makeReferenceCounted<buw::SlabFieldModel>();
+	proxyModel_ = buw::makeReferenceCounted<buw::ProxyModel>();
 }
 buw::ReferenceCounted<buw::AlignmentModel> Import::getAlignmentModel() {
 	return alignmentModel_;
@@ -43,6 +44,11 @@ buw::ReferenceCounted<buw::GirderModel> Import::getGirderModel() {
 
 buw::ReferenceCounted<buw::SlabFieldModel> Import::getSlabFieldModel() {
 	return slabFieldModel_;
+}
+
+buw::ReferenceCounted<buw::ProxyModel> Import::getProxyModel()
+{
+	return proxyModel_;
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END

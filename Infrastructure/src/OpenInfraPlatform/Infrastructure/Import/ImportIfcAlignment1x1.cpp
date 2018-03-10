@@ -113,6 +113,8 @@ public:
             throw buw::Exception(e.what());
         }
 
+		getProxyModel()->setIfc4x1Entities(map_entities);
+
         // get offset value and project entity!
         for (auto it = map_entities.begin(); it != map_entities.end(); it++)
         {
@@ -1243,4 +1245,5 @@ OpenInfraPlatform::Infrastructure::ImportIfcAlignment1x1::ImportIfcAlignment1x1(
     trafficSignModel_ = impl_->getTrafficSignModel();
     girderModel_ = impl_->getGirderModel();
     slabFieldModel_ = impl_->getSlabFieldModel();
+	proxyModel_ = impl_->getProxyModel();
 }

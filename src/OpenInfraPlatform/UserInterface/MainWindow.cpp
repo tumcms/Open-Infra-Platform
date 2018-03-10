@@ -993,6 +993,20 @@ void OpenInfraPlatform::UserInterface::MainWindow::onChange(ChangeFlag changeFla
             ui_->comboBoxSurfaces->addItem(surface->getName());
         }
     }
+
+	buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::ProxyModel> pm =
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
+	if (pm) 
+	{
+		if (pm->hasIfc4x1Data()) {
+			for (auto it = pm->getIfc4x1Data().begin(); it != pm->getIfc4x1Data().end(); ++it)
+			{
+				ui_->listWidgetProxies->addItem(it->second->classname());
+			}
+
+			ui_->listWidgetProxies->addItem("muh");
+		}
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_comboBoxAlignment_currentIndexChanged(int index) {

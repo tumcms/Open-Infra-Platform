@@ -17,39 +17,40 @@
 
 #pragma once
 
-#include "OpenInfraPlatform/Infrastructure/namespace.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 #include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
+#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/ProxyModel.h"
 #include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/TrafficSignModel.h"
 #include "OpenInfraPlatform/Infrastructure/Girder/GirderModel.h"
 #include "OpenInfraPlatform/Infrastructure/SlabField/SlabFieldModel.h"
+#include "OpenInfraPlatform/Infrastructure/namespace.h"
 #include <boost/noncopyable.hpp>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-class BLUEINFRASTRUCTURE_API Import : private boost::noncopyable
-{
+class BLUEINFRASTRUCTURE_API Import : private boost::noncopyable {
 public:
 	Import(const std::string& filename);
 
-	buw::ReferenceCounted<buw::AlignmentModel>			getAlignmentModel();
-	buw::ReferenceCounted<buw::DigitalElevationModel>	getDigitalElevationModel();
-	buw::ReferenceCounted<buw::TrafficSignModel>		getTrafficSignModel();
-	buw::ReferenceCounted<buw::GirderModel>				getGirderModel();
-	buw::ReferenceCounted<buw::SlabFieldModel>			getSlabFieldModel();
+	buw::ReferenceCounted<buw::AlignmentModel> getAlignmentModel();
+	buw::ReferenceCounted<buw::DigitalElevationModel> getDigitalElevationModel();
+	buw::ReferenceCounted<buw::TrafficSignModel> getTrafficSignModel();
+	buw::ReferenceCounted<buw::GirderModel> getGirderModel();
+	buw::ReferenceCounted<buw::SlabFieldModel> getSlabFieldModel();
+	buw::ReferenceCounted<buw::ProxyModel> getProxyModel();
 
 protected:
-	std::string											filename_;
-	buw::ReferenceCounted<buw::AlignmentModel>			alignmentModel_;
-	buw::ReferenceCounted<buw::DigitalElevationModel>	digitalElevationModel_;
-	buw::ReferenceCounted<buw::TrafficSignModel>		trafficSignModel_;
-	buw::ReferenceCounted<buw::GirderModel>				girderModel_;
-	buw::ReferenceCounted<buw::SlabFieldModel>			slabFieldModel_;
+	std::string filename_;
+	buw::ReferenceCounted<buw::AlignmentModel> alignmentModel_;
+	buw::ReferenceCounted<buw::DigitalElevationModel> digitalElevationModel_;
+	buw::ReferenceCounted<buw::TrafficSignModel> trafficSignModel_;
+	buw::ReferenceCounted<buw::GirderModel> girderModel_;
+	buw::ReferenceCounted<buw::SlabFieldModel> slabFieldModel_;
+	buw::ReferenceCounted<buw::ProxyModel> proxyModel_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 
-namespace buw
-{
+namespace buw {
 	using OpenInfraPlatform::Infrastructure::Import;
 }

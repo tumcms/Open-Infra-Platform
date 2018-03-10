@@ -747,6 +747,7 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 			trafficSignModel_ = importer_->getTrafficSignModel();
 			girderModel_ = importer_->getGirderModel();
 			slabFieldModel_ = importer_->getSlabFieldModel();
+			proxyModel_ = importer_->getProxyModel();
 		}
 
 		delete importer_;
