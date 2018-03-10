@@ -36,7 +36,7 @@ namespace OpenInfraPlatform
             virtual ~LicenseAndCopyrightInformationDialog();
 					
         private Q_SLOTS:
-			void on_pushButtonCancel_clicked();
+			void on_pushButtonClose_clicked();
 
         private:
             Ui::LicenseAndCopyrightInformationDialog*	ui_;

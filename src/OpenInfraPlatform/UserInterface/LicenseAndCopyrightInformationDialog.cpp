@@ -30,7 +30,7 @@ OpenInfraPlatform::UserInterface::LicenseAndCopyrightInformationDialog::~License
 
 }
 
-void OpenInfraPlatform::UserInterface::LicenseAndCopyrightInformationDialog::on_pushButtonCancel_clicked()
+void OpenInfraPlatform::UserInterface::LicenseAndCopyrightInformationDialog::on_pushButtonClose_clicked()
 {
 	hide();
 }
