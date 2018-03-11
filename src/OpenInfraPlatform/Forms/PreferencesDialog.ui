@@ -21,7 +21,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidgetCommon">
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabClearColor">
       <attribute name="title">
@@ -388,58 +388,6 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <spacer name="horizontalSpacer_24">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioButtonStandard">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Standard ViewCube</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_23">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
           <item row="2" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_19">
             <property name="leftMargin">
@@ -488,22 +436,6 @@
           <item row="3" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_18">
             <item>
-             <spacer name="horizontalSpacer_27">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
              <widget class="QRadioButton" name="radioButtonTextured">
               <property name="enabled">
                <bool>false</bool>
@@ -521,80 +453,6 @@
                <string>Textured ViewCube</string>
               </property>
              </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_26">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item row="2" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_17">
-            <item>
-             <spacer name="horizontalSpacer_28">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioButtonLegacy">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="visible">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Legacy View Cube</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_29">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </item>
@@ -664,7 +522,7 @@
             <item>
              <widget class="QPushButton" name="pushButton_Import">
               <property name="text">
-               <string>Import</string>
+               <string>Import  View Cube settings</string>
               </property>
              </widget>
             </item>
@@ -704,7 +562,7 @@
             <item>
              <widget class="QPushButton" name="pushButton_Export">
               <property name="text">
-               <string>Export</string>
+               <string>Export View Cube settings</string>
               </property>
              </widget>
             </item>
@@ -765,28 +623,12 @@
           <item row="0" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_8">
             <item>
-             <spacer name="horizontalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
              <widget class="QPushButton" name="pushButtonFaceColor">
               <property name="enabled">
                <bool>true</bool>
               </property>
               <property name="text">
-               <string>Face Color</string>
+               <string>Select Face Color</string>
               </property>
              </widget>
             </item>
@@ -811,28 +653,12 @@
           <item row="1" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <item>
-             <spacer name="horizontalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
              <widget class="QPushButton" name="pushButtonBorderColor">
               <property name="enabled">
                <bool>true</bool>
               </property>
               <property name="text">
-               <string>Border Color</string>
+               <string>Select Border Color</string>
               </property>
              </widget>
             </item>
@@ -857,28 +683,12 @@
           <item row="2" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_11">
             <item>
-             <spacer name="horizontalSpacer_7">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
              <widget class="QPushButton" name="pushButtonHighlightColor">
               <property name="enabled">
                <bool>true</bool>
               </property>
               <property name="text">
-               <string>Highlight Color</string>
+               <string>Select Highlight Color</string>
               </property>
              </widget>
             </item>
@@ -903,22 +713,6 @@
           <item row="3" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_12">
             <item>
-             <spacer name="horizontalSpacer_9">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Preferred</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
              <widget class="QPushButton" name="pushButtonTextColor">
               <property name="enabled">
                <bool>true</bool>
@@ -930,7 +724,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Text Color</string>
+               <string>Select Text Color</string>
               </property>
              </widget>
             </item>
