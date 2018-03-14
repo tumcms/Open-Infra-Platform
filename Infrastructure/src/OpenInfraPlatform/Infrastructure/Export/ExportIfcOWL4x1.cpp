@@ -17,9 +17,13 @@
 */
 
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
 #include "OpenInfraPlatform/ExpressBinding/Meta/Schema.h"
 #include "raptor2/raptor2.h"
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
 #include <fstream>
 #include <iomanip>
 
@@ -32,6 +36,12 @@ public:
 		const std::string url = "http://www.buildingsmart-tech.org/ifc/IFC4x1/final/IFC4x1_FINAL.exp";
 		buw::downloadFile(url, "./IFC4x1_FINAL.exp");
 		OpenInfraPlatform::ExpressBinding::Schema schema = OpenInfraPlatform::ExpressBinding::Schema::read("IFC4x1_FINAL.exp");
+		
+		auto temp = "./" + boost::lexical_cast<std::string>(boost::uuids::uuid()) + ".ifc";
+		auto ifcExporter = buw::makeReferenceCounted<buw::ExportIfcAlignment1x1>(ifcAlignmentExportDescription(),am, dem, temp);
+		boost::filesystem::remove(temp);
+
+		auto model = ifcExporter->getIfcAlignment1x1Model();
 
 
 		outfile = fopen(filename.c_str(), "w");
