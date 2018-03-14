@@ -132,6 +132,8 @@ if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 		${QHULL_STATIC_LIBRARIES}	
 		# Raptor		
 		${RAPTOR2_LIBRARIES}
+		# EXPRESS Binding for Meta model
+		OpenInfraPlatform.ExpressBinding
 	)
 else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 	target_link_libraries( OpenInfraPlatform.Infrastructure
@@ -153,6 +155,8 @@ else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 		${QHULL_STATIC_LIBRARIES}
 		# Raptor
 		${RAPTOR2_LIBRARIES}
+		# EXPRESS Binding for Meta model
+		OpenInfraPlatform.ExpressBinding
 	)
 endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 
