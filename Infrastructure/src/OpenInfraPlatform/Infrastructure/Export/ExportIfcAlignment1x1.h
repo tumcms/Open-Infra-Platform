@@ -41,7 +41,7 @@ namespace OpenInfraPlatform {
 				buw::ReferenceCounted<buw::DigitalElevationModel> dem,
 				const std::string& filename);
 			
-			buw::ReferenceCounted<IfcAlignment1x1Model> getIfcAlignment1x1Model();
+			buw::ReferenceCounted<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> getIfcAlignment1x1Model();
 
 			virtual ~ExportIfcAlignment1x1();
 

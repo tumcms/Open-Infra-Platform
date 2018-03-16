@@ -365,7 +365,7 @@ public:
         textFile << stream.str().c_str();
     }
 
-	std::shared_ptr<IfcAlignment1x1Model> getIfcAlignment1x1Model()
+	std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> getIfcAlignment1x1Model()
 	{
 		return model_;
 	}
@@ -1224,7 +1224,7 @@ private:
 private:
     shared_ptr<IfcLocalPlacement> site_localPlacement;
 
-    std::shared_ptr<IfcAlignment1x1Model> model_;
+    std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> model_;
     int entityId_;
     ifcAlignmentExportDescription settings_;
 
@@ -1244,7 +1244,7 @@ OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::ExportIfcAlignment1x1(
     : Export(am, dem, filename), impl_(new IfcAlignment1x1ExportImpl(desc, am, dem, filename)) {
 }
 
-buw::ReferenceCounted<IfcAlignment1x1Model> OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::getIfcAlignment1x1Model()
+buw::ReferenceCounted<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::getIfcAlignment1x1Model()
 {
 	return impl_->getIfcAlignment1x1Model();
 }
