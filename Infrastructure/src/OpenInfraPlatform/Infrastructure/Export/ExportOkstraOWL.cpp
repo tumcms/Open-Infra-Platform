@@ -233,7 +233,7 @@ public:
 
 				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
 				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Art_Achse.1");
-				triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)"Hauptachse");
+				triple->object = raptor_new_term_from_blank(world_, (unsigned char*)"Hauptachse");
 
 				raptor_serializer_serialize_statement(serializer_, triple);
 				raptor_free_statement(triple);
@@ -447,7 +447,7 @@ public:
 						triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)ausrundungUniqueBlankTermName.str().c_str());
 						triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Scheitelradius___Ausrundung");
 						double Ausrundung = pvis[i].Ausrundung;
-						triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)std::to_string(Ausrundung).c_str());
+						triple->object = raptor_new_term_from_blank(world_, (unsigned char*)std::to_string(Ausrundung).c_str());
 
 						raptor_serializer_serialize_statement(serializer_, triple);
 						raptor_free_statement(triple);
