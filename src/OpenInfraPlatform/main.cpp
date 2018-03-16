@@ -53,34 +53,6 @@ void SignalHandler(int signal) {
     throw buw::Exception("!Access Violation!");
 }
 
-//#include <boost/multiprecision/float128.hpp>
-
-// L = 13.33 A = 20.0
-double computeX(const double L, const double A, int iterations = 5) {
-    double x = L;
-    
-    for (int i = 1; i < iterations + 1; i++) {
-        double sign = i % 2 == 0 ? 1 : -1;
-
-        double L_exponent = 5 + (i - 1) * 4;
-        double A_exponent = i * 4;
-        double factor = buw::factorial(2 * i) * pow(2.0, 2 * i) * (5 + (i - 1) * 4);
-        factor = factor + 3.0;
-        double debug = pow(A, A_exponent);
-        x += sign * pow(L, L_exponent) / (factor * debug);
-    }
-
-    return x;
-}
-
-void testCA() {
-    
-    for (int i = 5; i < 10; ++i) {
-        double x = computeX(13.33*10, 20.0, i);
-        std::cout << "Number of iterations: " << i <<  x << std::endl;
-    }
-}
-
 int main(int argc, char* argv[]) {
     //testCA();
 
