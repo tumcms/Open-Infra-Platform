@@ -17,7 +17,7 @@
 
 #include "CreateCarAccidentReportDialog.h"
 
-#include "OpenInfraPlatform/DataManagement/Command/CreateCarAccident.h"
+#include "OpenInfraPlatform/DataManagement/Command/CreateAccidentReport.h"
 #include "OpenInfraPlatform/DataManagement/Data.h"
 
 
@@ -46,8 +46,10 @@ void OpenInfraPlatform::UserInterface::CreateCarAccidentReportDialog::on_pushBut
 	}
 
 	if (OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel()) {
-		double station = 0;
-		buw::ReferenceCounted<buw::CreateCarAccident> actionCreateCarAccident = std::make_shared<buw::CreateCarAccident>(index, station);
+		buw::ReferenceCounted<buw::IAlignment3D> a = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getAlignmentModel()->getAlignments()[index];
+
+		double station = ui_->lineEditStation->text().toDouble();
+		buw::ReferenceCounted<buw::CreateAccidentReport> actionCreateCarAccident = std::make_shared<buw:: CreateAccidentReport>(a, station);
 		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().execute(actionCreateCarAccident);
 	}
 	

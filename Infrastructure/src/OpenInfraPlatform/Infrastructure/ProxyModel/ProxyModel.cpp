@@ -60,10 +60,12 @@ OpenInfraPlatform::Infrastructure::ProxyModel::~ProxyModel()
 
 OpenInfraPlatform::Infrastructure::ProxyModel::ProxyModel()
 {
+	/* // Add some stuff for test proposes
 	carAccidentDescription a;
 	a.position = buw::Vector3d(0, 0, 0);
 	
 	addCarAccident(a);
 	a.position = buw::Vector3d(100, 0, 0);
 	addCarAccident(a);
+	*/
 }

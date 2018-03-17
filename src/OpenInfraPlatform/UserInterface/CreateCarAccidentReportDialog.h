@@ -21,31 +21,26 @@
 #include <QDialog>
 #include <iostream>
 
-namespace OpenInfraPlatform
-{
-    namespace UserInterface
-    {
-        class CreateCarAccidentReportDialog : public QDialog
-        {
-            Q_OBJECT;
+namespace OpenInfraPlatform {
+	namespace UserInterface {
+		class CreateCarAccidentReportDialog : public QDialog {
+			Q_OBJECT;
 
-        public:
-			CreateCarAccidentReportDialog(QWidget *parent = nullptr);
+		public:
+			CreateCarAccidentReportDialog(QWidget* parent = nullptr);
 
- 
-            virtual ~CreateCarAccidentReportDialog();
-					
-        private Q_SLOTS:
+			virtual ~CreateCarAccidentReportDialog();
+
+		private Q_SLOTS:
 			void on_pushButtonOK_clicked();
 			void on_pushButtonCancel_clicked();
 
-        private:
-            Ui::FormCreateCarAccidentReport*	ui_;
-        }; // end class ExportP6AlginmentDialog
-    } // end namespace UserInterface
+		private:
+			Ui::FormCreateCarAccidentReport* ui_;
+		}; // end class CreateCarAccidentReportDialog
+	}      // end namespace UserInterface
 } // end namespace OpenInfraPlatform
 
-namespace buw
-{
-    using OpenInfraPlatform::UserInterface::CreateCarAccidentReportDialog;
+namespace buw {
+	using OpenInfraPlatform::UserInterface::CreateCarAccidentReportDialog;
 }

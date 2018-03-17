@@ -35,6 +35,9 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="text">
+    <string>0</string>
+   </property>
   </widget>
   <widget class="QPushButton" name="pushButtonCancel">
    <property name="geometry">

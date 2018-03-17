@@ -15,27 +15,20 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "CreateCarAccident.h"
+#include "CreateAccidentReport.h"
 #include "../Data.h"
 
-OpenInfraPlatform::DataManagement::Command::CreateCarAccident::CreateCarAccident(const int selectedIndex, const double station)
-{
-	selectedIndex_ = selectedIndex;
-	station_ = station;
-	ca_.position = buw::Vector3d(10, 10, 10);
+OpenInfraPlatform::DataManagement::Command:: CreateAccidentReport:: CreateAccidentReport(buw::ReferenceCounted<buw::IAlignment3D> alignment, const double station) {
+	ca_.position = alignment->getPosition(station);
 }
 
-OpenInfraPlatform::DataManagement::Command::CreateCarAccident::~CreateCarAccident()
-{
-
+OpenInfraPlatform::DataManagement::Command:: CreateAccidentReport::~ CreateAccidentReport() {
 }
 
-void OpenInfraPlatform::DataManagement::Command::CreateCarAccident::execute()
-{	
+void OpenInfraPlatform::DataManagement::Command:: CreateAccidentReport::execute() {
 	CarAccidentReportIndex_ = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().createCarAccidentReport(ca_);
 }
 
-void OpenInfraPlatform::DataManagement::Command::CreateCarAccident::unexecute()
-{
+void OpenInfraPlatform::DataManagement::Command:: CreateAccidentReport::unexecute() {
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().removeCarAccidentReport(CarAccidentReportIndex_);
 }

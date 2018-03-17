@@ -104,7 +104,7 @@ void BillboardEffect::setProxyModel(buw::ReferenceCounted<OpenInfraPlatform::Inf
 #pragma omp parallel for
 	for(int i = 0; i < proxyModel->getCarAccidentCount(); i++) {
 		
-		buw::Vector3f pos = (proxyModel->getCarAccidentByIndex(i).position /*+ offset*/).cast<float>();
+		buw::Vector3f pos = (proxyModel->getCarAccidentByIndex(i).position + offset).cast<float>();
 		buw::Vector4f col = buw::Vector4f(1, 0, 0, 1.0f);
 		vertices[i] = VertexTypeBillboard(buw::Vector3f(pos.x(),pos.z(),pos.y()), col);
 	}
@@ -143,8 +143,6 @@ void BillboardEffect::v_init()
 	td1.data = img1.getData();
 
 	texture_ = renderSystem()->createTexture2D(td1, buw::eTextureBindType::SRV);
-
-	
 
 	buw::samplerStateDescription samplerStateDesc;
 	samplerStateDesc.minificationFilter = buw::eFilter::Linear;

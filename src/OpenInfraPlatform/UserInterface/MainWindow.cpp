@@ -24,7 +24,7 @@
 #include "OpenInfraPlatform/DataManagement/Command/DeleteAlignment.h"
 #include "OpenInfraPlatform/DataManagement/Command/DeleteSurface.h"
 #include "OpenInfraPlatform/DataManagement/Command/SelectAlignment.h"
-#include "OpenInfraPlatform/DataManagement/Command/CreateCarAccident.h"
+
 #include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DBlossCurve.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
 #include "OpenInfraPlatform/UserInterface/HelpBrowser.h"
