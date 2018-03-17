@@ -41,7 +41,7 @@ public:
                               buw::ReferenceCounted<buw::AlignmentModel> am,
                               buw::ReferenceCounted<buw::DigitalElevationModel> dem,
                               const std::string& filename)
-        : Export(am, dem, filename), entityId_(1), model_(nullptr) {
+        : Export(am, dem, nullptr, filename), entityId_(1), model_(nullptr) {
 
         // create model
 		createModel(desc);

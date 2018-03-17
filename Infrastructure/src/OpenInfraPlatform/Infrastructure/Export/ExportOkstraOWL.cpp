@@ -23,13 +23,12 @@
 
 class OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWLImpl {
 public:
-	enum class eAchshauptpunktType
-	{
-		Beginn_von_Achselement,
-		Ende_von_Achselement
-	};
+	enum class eAchshauptpunktType { Beginn_von_Achselement, Ende_von_Achselement };
 
-	ExportOkstraOWLImpl(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename) {
+	ExportOkstraOWLImpl(buw::ReferenceCounted<buw::AlignmentModel> am,
+	                    buw::ReferenceCounted<buw::DigitalElevationModel> dem,
+	                    buw::ReferenceCounted<buw::ProxyModel> pm,
+	                    const std::string& filename) {
 		outfile = fopen(filename.c_str(), "w");
 
 		world_ = raptor_new_world();
@@ -106,9 +105,9 @@ public:
 					triple = raptor_new_statement(world_);
 
 					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
-					triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Anfangsstation_rechnerisch___Achselement");
+					triple->predicate =
+					  raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Anfangsstation_rechnerisch___Achselement");
 					triple->object = raptor_new_term_from_literal(world_, (unsigned char*)std::to_string(station).c_str(), nullptr, nullptr);
-
 
 					raptor_serializer_serialize_statement(serializer_, triple);
 					raptor_free_statement(triple);
@@ -233,7 +232,7 @@ public:
 
 				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
 				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Art_Achse.1");
-				triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)"Hauptachse");
+				triple->object = raptor_new_term_from_blank(world_, (unsigned char*)"Hauptachse");
 
 				raptor_serializer_serialize_statement(serializer_, triple);
 				raptor_free_statement(triple);
@@ -447,13 +446,76 @@ public:
 						triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)ausrundungUniqueBlankTermName.str().c_str());
 						triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Scheitelradius___Ausrundung");
 						double Ausrundung = pvis[i].Ausrundung;
-						triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)std::to_string(Ausrundung).c_str());
+						triple->object = raptor_new_term_from_blank(world_, (unsigned char*)std::to_string(Ausrundung).c_str());
 
 						raptor_serializer_serialize_statement(serializer_, triple);
 						raptor_free_statement(triple);
 					}
 				}
 			}
+
+			// now export Strasse
+
+			std::stringstream strasseUniqueBlankTermName;
+			strasseUniqueBlankTermName << "strasse_" << i;
+
+			{
+				raptor_statement* triple = nullptr;
+				triple = raptor_new_statement(world_);
+
+				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)strasseUniqueBlankTermName.str().c_str());
+				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+				triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Strasse");
+
+				raptor_serializer_serialize_statement(serializer_, triple);
+				raptor_free_statement(triple);
+			}
+
+			{
+				raptor_statement* triple = nullptr;
+				triple = raptor_new_statement(world_);
+
+				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)strasseUniqueBlankTermName.str().c_str());
+				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#hat_Strassenbezeichnung___Strasse");
+				triple->object = raptor_new_term_from_literal(world_, (unsigned char*)axisName.toCString(), nullptr, nullptr);
+
+				raptor_serializer_serialize_statement(serializer_, triple);
+				raptor_free_statement(triple);
+			}
+
+			{
+				raptor_statement* triple = nullptr;
+				triple = raptor_new_statement(world_);
+
+				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)strasseUniqueBlankTermName.str().c_str());
+				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#hat_Achse___Strasse");
+				triple->object = raptor_new_term_from_blank(world_, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
+
+				raptor_serializer_serialize_statement(serializer_, triple);
+				raptor_free_statement(triple);
+			}
+
+			for (int i = 0; i < pm->getCarAccidentCount(); ++i) {
+				buw::carAccidentDescription ca = pm->getCarAccidentByIndex(i);
+				break;
+				// Angaben zum Unfallort
+				
+
+				//
+				raptor_statement* triple = nullptr;
+				triple = raptor_new_statement(world_);
+
+				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)strasseUniqueBlankTermName.str().c_str());
+				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#von_Unfallort___Strasse");
+				triple->object = raptor_new_term_from_blank(world_, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
+
+				raptor_serializer_serialize_statement(serializer_, triple);
+				raptor_free_statement(triple);
+			}
+
+			// okstra:von_Unfallort___Strasse a owl : ObjectProperty;
+			// rdfs:domain okstra : Strasse;
+			// rdfs:range okstra : Angaben_zum_Unfallort .
 		}
 
 		// Create "Trasse"
@@ -604,8 +666,6 @@ public:
 				}
 			}
 		}
-
-
 	}
 
 	~ExportOkstraOWLImpl() {
@@ -617,7 +677,10 @@ public:
 		fclose(outfile);
 	}
 
-	void createAchshauptpunkt(std::stringstream& achshauptpunktUniqueBlankTermName, const buw::Vector2d& position, std::stringstream& axisElementUniqueBlankTermName, eAchshauptpunktType type = eAchshauptpunktType::Beginn_von_Achselement) {
+	void createAchshauptpunkt(std::stringstream& achshauptpunktUniqueBlankTermName,
+	                          const buw::Vector2d& position,
+	                          std::stringstream& axisElementUniqueBlankTermName,
+	                          eAchshauptpunktType type = eAchshauptpunktType::Beginn_von_Achselement) {
 		{
 			raptor_statement* triple = nullptr;
 			triple = raptor_new_statement(world_);
@@ -652,16 +715,14 @@ public:
 
 			triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)axisElementUniqueBlankTermName.str().c_str());
 
-			if (type == eAchshauptpunktType::Beginn_von_Achselement)
-			{
-				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#beginnt_bei_Achshauptpunkt___Achselement");
-			}
-			else
-			{
-				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#endet_bei_Achshauptpunkt___Achselement");
+			if (type == eAchshauptpunktType::Beginn_von_Achselement) {
+				triple->predicate =
+				  raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#beginnt_bei_Achshauptpunkt___Achselement");
+			} else {
+				triple->predicate =
+				  raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#endet_bei_Achshauptpunkt___Achselement");
 			}
 
-			
 			triple->object = raptor_new_term_from_blank(world_, (unsigned char*)achshauptpunktUniqueBlankTermName.str().c_str());
 
 			raptor_serializer_serialize_statement(serializer_, triple);
@@ -670,15 +731,16 @@ public:
 	}
 
 private:
-	FILE * outfile = nullptr;
+	FILE* outfile = nullptr;
 	raptor_world* world_ = nullptr;
 	raptor_serializer* serializer_ = nullptr;
 };
 
 OpenInfraPlatform::Infrastructure::ExportOkstraOWL::ExportOkstraOWL(buw::ReferenceCounted<buw::AlignmentModel> am,
                                                                     buw::ReferenceCounted<buw::DigitalElevationModel> dem,
+                                                                    buw::ReferenceCounted<buw::ProxyModel> pm,
                                                                     const std::string& filename)
-    : Export(am, dem, filename), impl_(new ExportOkstraOWLImpl(am, dem, filename)) {
+    : Export(am, dem, filename), impl_(new ExportOkstraOWLImpl(am, dem, pm, filename)) {
 }
 
 OpenInfraPlatform::Infrastructure::ExportOkstraOWL::~ExportOkstraOWL() {

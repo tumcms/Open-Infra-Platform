@@ -38,24 +38,34 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
+struct carAccidentDescription {
+	buw::Vector3d position;
+};
+
 class BLUEINFRASTRUCTURE_API ProxyModel {
 public:
-	ProxyModel() {}
+	ProxyModel();
 
-	virtual ~ProxyModel() {}
+	virtual ~ProxyModel();
 	
-	void setIfc4x1Entities(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > entities) {
-		Ifc4x1Entities_ = entities;
-	}
+	void setIfc4x1Entities(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > entities);
 
-	bool hasIfc4x1Data() {
-		return Ifc4x1Entities_.size() > 0;
-	}
+	bool hasIfc4x1Data();
 
-	const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& getIfc4x1Data() const {
-		return Ifc4x1Entities_;
-	};
+	const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& getIfc4x1Data() const;;
+
+	// Each car accident has a unique id 
+	int addCarAccident(const carAccidentDescription& c );
+
+	int getCarAccidentCount();
+
+	void removeCarAccidentAt(const int index);
+
+	const carAccidentDescription& getCarAccidentByIndex(const int index) const;
+
 private:
+	std::vector<carAccidentDescription> carAccidents_;
+
 	// IFC4x1 entities
 	std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > Ifc4x1Entities_;
 };
@@ -63,5 +73,6 @@ private:
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 
 namespace buw {
+	using OpenInfraPlatform::Infrastructure::carAccidentDescription;
 	using OpenInfraPlatform::Infrastructure::ProxyModel;
 }

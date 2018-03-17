@@ -17,8 +17,13 @@
 
 #include "OpenInfraPlatform/Infrastructure/Export/Export.h"
 
-OpenInfraPlatform::Infrastructure::Export::Export(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename) :
-	alignmentModel_(am),
-	digitalElevationModel_(dem),
-	filename_(filename)
-{}
+OpenInfraPlatform::Infrastructure::Export::Export(buw::ReferenceCounted<buw::AlignmentModel> am,
+                                                  buw::ReferenceCounted<buw::DigitalElevationModel> dem,
+                                                  buw::ReferenceCounted<buw::ProxyModel> pm,
+                                                  const std::string& filename)
+    : alignmentModel_(am), digitalElevationModel_(dem), proxyModel_(pm), filename_(filename) {
+}
+
+OpenInfraPlatform::Infrastructure::Export::Export(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename)
+    : alignmentModel_(am), digitalElevationModel_(dem), proxyModel_(nullptr), filename_(filename) {
+}

@@ -33,6 +33,7 @@
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/IfcGeometryEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/SkyboxEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/PointCloudEffect.h"
+#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/BillboardEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
 
 #include <buw.Engine.h>
@@ -161,6 +162,10 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 	BLUE_LOG(trace) << "Creating effects (9)";
 	pointCloudEffect_ = buw::makeReferenceCounted<PointCloudEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
 	pointCloudEffect_->init();
+
+	BLUE_LOG(trace) << "Creating effects (10)";
+	billboardEffect_ = buw::makeReferenceCounted<BillboardEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+	billboardEffect_->init();
 
     BLUE_LOG(trace) << "Creating IfcGeometry effects";
     ifcGeometryEffect_ = buw::makeReferenceCounted<IfcGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
@@ -650,6 +655,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
     auto slabFieldModel = data.getSlabFieldModel();
     auto ifcGeometryModel = data.getIfcGeometryModel();
 	auto pointCloud = data.getPointCloud();
+	auto proxyModel = data.getProxyModel();
 
     buw::Vector3d min, max;
     min = buw::Vector3d(-1, -1, -1);
@@ -715,6 +721,14 @@ void Viewport::onChange(ChangeFlag changeFlag) {
 		activeEffects_.push_back(pointCloudEffect_);
 	}
 
+	if (/*changeFlag & ChangeFlag::ProxyModel && */proxyModel) {
+		billboardEffect_->setProxyModel(proxyModel, offset);
+		billboardEffect_->setPointSize(621.0f);
+		billboardEffect_->drawPointsWithUniformColor(false);
+		billboardEffect_->drawPointsWithUniformSize(true);
+		activeEffects_.push_back(billboardEffect_);
+	}
+
     if(changeFlag & ChangeFlag::Preferences) {
         //TODO
     }
@@ -733,6 +747,7 @@ void Viewport::reloadShader() {
     uiElements_->loadShader();
     boundingBoxEffect_->loadShader();
 	pointCloudEffect_->loadShader();
+	billboardEffect_->loadShader();
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END

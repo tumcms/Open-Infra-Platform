@@ -101,7 +101,7 @@ tempPointCloud_(nullptr)
 	pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
 	clear(false);
 
-	latestChangeFlag_ = (ChangeFlag) (ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences);
+	latestChangeFlag_ = (ChangeFlag) (ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel);
 
 	AsyncJob::getInstance().jobFinished.connect(boost::bind(&OpenInfraPlatform::DataManagement::Data::jobFinished, this, _1, _2));
 }
@@ -479,7 +479,7 @@ void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) 
 		// The notification state is not used here, because a clear is not executed by an action.
 		//m_pNotifiactionState->Change();
 
-		pushChange(ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences);
+		pushChange(ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel);
 
 		Clear();
 	}
@@ -889,7 +889,7 @@ void OpenInfraPlatform::DataManagement::Data::exportOkstraJobTranslated(const st
 void OpenInfraPlatform::DataManagement::Data::exportOkstraJobOWL(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra OWL").append(filename));
-	buw::ExportOkstraOWL(alignmentModel_, digitalElevationModel_, filename);
+	buw::ExportOkstraOWL(alignmentModel_, digitalElevationModel_, proxyModel_, filename);
 }
 void OpenInfraPlatform::DataManagement::Data::exportIfcOWL4x1Job(const std::string& filename)
 {
@@ -1221,6 +1221,21 @@ void OpenInfraPlatform::DataManagement::Data::setAlignmentLineWidth(const double
 buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> OpenInfraPlatform::DataManagement::Data::getAlignmentModel() const
 {
 	return alignmentModel_;
+}
+
+void OpenInfraPlatform::DataManagement::Data::removeCarAccidentReport(const int index)
+{
+	proxyModel_->removeCarAccidentAt(index);
+	pushChange(ChangeFlag::ProxyModel);
+}
+
+int OpenInfraPlatform::DataManagement::Data::createCarAccidentReport(const OpenInfraPlatform::Infrastructure::carAccidentDescription& ca)
+{
+	int index = proxyModel_->addCarAccident(ca);
+
+	pushChange(ChangeFlag::ProxyModel);
+
+	return index;
 }
 
 buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::GirderModel> OpenInfraPlatform::DataManagement::Data::getGirderModel() const

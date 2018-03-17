@@ -24,6 +24,7 @@
 #include "OpenInfraPlatform/DataManagement/Command/DeleteAlignment.h"
 #include "OpenInfraPlatform/DataManagement/Command/DeleteSurface.h"
 #include "OpenInfraPlatform/DataManagement/Command/SelectAlignment.h"
+#include "OpenInfraPlatform/DataManagement/Command/CreateCarAccident.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DBlossCurve.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
 #include "OpenInfraPlatform/UserInterface/HelpBrowser.h"
@@ -199,8 +200,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
     connect(updater.get(), SIGNAL(checkingFinished()), this, SLOT(onCheckingFinished()));
 
     checkForUpdates();
-
-
+	
     setAcceptDrops(true);
 }
 
@@ -994,13 +994,11 @@ void OpenInfraPlatform::UserInterface::MainWindow::onChange(ChangeFlag changeFla
         }
     }
 
-	buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::ProxyModel> pm =
-		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
-	if (pm) 
-	{
+	if (changeFlag & ChangeFlag::ProxyModel) {
+		buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::ProxyModel> pm = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
+
 		if (pm->hasIfc4x1Data()) {
-			for (auto it = pm->getIfc4x1Data().begin(); it != pm->getIfc4x1Data().end(); ++it)
-			{
+			for (auto it = pm->getIfc4x1Data().begin(); it != pm->getIfc4x1Data().end(); ++it) {
 				ui_->listWidgetProxies->addItem(it->second->classname());
 			}
 
@@ -2278,4 +2276,13 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreateClothoid_trigg
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionIFC_Alignment_1_1_Export_triggered() {
     exportIfcAlignment1x1Dialog_->show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Accident_Report_triggered()
+{
+	if (createCarAccidentReportDialog_ == nullptr) {
+		createCarAccidentReportDialog_ = new CreateCarAccidentReportDialog(this);
+	}
+
+	createCarAccidentReportDialog_->show();
 }
