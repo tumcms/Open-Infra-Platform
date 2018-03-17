@@ -38,50 +38,32 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-struct CarAccident {
+struct carAccidentDescription {
 	buw::Vector3d position;
 };
 
 class BLUEINFRASTRUCTURE_API ProxyModel {
 public:
-	ProxyModel() {
-		CarAccident a;
-		a.position = buw::Vector3d(0, 0, 0);
-		addCarAccident(a);
-	}
+	ProxyModel();
 
-	virtual ~ProxyModel() {}
+	virtual ~ProxyModel();
 	
-	void setIfc4x1Entities(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > entities) {
-		Ifc4x1Entities_ = entities;
-	}
+	void setIfc4x1Entities(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > entities);
 
-	bool hasIfc4x1Data() {
-		return Ifc4x1Entities_.size() > 0;
-	}
+	bool hasIfc4x1Data();
 
-	const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& getIfc4x1Data() const {
-		return Ifc4x1Entities_;
-	};
+	const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& getIfc4x1Data() const;;
 
-	void addCarAccident(const CarAccident& c ) {
-		carAccidents_.push_back(c);
-	}
+	void addCarAccident(const carAccidentDescription& c );
 
-	int getCarAccidentCount() {
-		return static_cast<int>(carAccidents_.size());
-	}
+	int getCarAccidentCount();
 
-	void removeCarAccidentAt(const int index) {
-		carAccidents_.erase(carAccidents_.begin() + index);
-	}
+	void removeCarAccidentAt(const int index);
 
-	const CarAccident& getCarAccidentByIndex(const int index) const {
-		return carAccidents_[index];
-	}
+	const carAccidentDescription& getCarAccidentByIndex(const int index) const;
 
 private:
-	std::vector<CarAccident> carAccidents_;
+	std::vector<carAccidentDescription> carAccidents_;
 
 	// IFC4x1 entities
 	std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > Ifc4x1Entities_;

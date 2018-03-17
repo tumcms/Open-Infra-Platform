@@ -16,3 +16,53 @@
 */
 
 #include "ProxyModel.h"
+
+const OpenInfraPlatform::Infrastructure::carAccidentDescription& OpenInfraPlatform::Infrastructure::ProxyModel::getCarAccidentByIndex(const int index) const
+{
+	return carAccidents_[index];
+}
+
+void OpenInfraPlatform::Infrastructure::ProxyModel::removeCarAccidentAt(const int index)
+{
+	carAccidents_.erase(carAccidents_.begin() + index);
+}
+
+int OpenInfraPlatform::Infrastructure::ProxyModel::getCarAccidentCount()
+{
+	return static_cast<int>(carAccidents_.size());
+}
+
+void OpenInfraPlatform::Infrastructure::ProxyModel::addCarAccident(const carAccidentDescription& c)
+{
+	carAccidents_.push_back(c);
+}
+
+const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& OpenInfraPlatform::Infrastructure::ProxyModel::getIfc4x1Data() const
+{
+	return Ifc4x1Entities_;
+}
+
+bool OpenInfraPlatform::Infrastructure::ProxyModel::hasIfc4x1Data()
+{
+	return Ifc4x1Entities_.size() > 0;
+}
+
+void OpenInfraPlatform::Infrastructure::ProxyModel::setIfc4x1Entities(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > entities)
+{
+	Ifc4x1Entities_ = entities;
+}
+
+OpenInfraPlatform::Infrastructure::ProxyModel::~ProxyModel()
+{
+
+}
+
+OpenInfraPlatform::Infrastructure::ProxyModel::ProxyModel()
+{
+	carAccidentDescription a;
+	a.position = buw::Vector3d(0, 0, 0);
+	
+	addCarAccident(a);
+	a.position = buw::Vector3d(100, 0, 0);
+	addCarAccident(a);
+}
