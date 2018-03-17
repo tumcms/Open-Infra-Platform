@@ -497,20 +497,74 @@ public:
 
 			for (int i = 0; i < pm->getAccidentReportCount(); ++i) {
 				buw::accidentReportDescription ca = pm->getAccidentReportByIndex(i);
-				break;
-				// Angaben zum Unfallort
 				
+				if (ca.roadName != alignment->getName())
+				{
+					break;
+				}
 
-				//
-				raptor_statement* triple = nullptr;
-				triple = raptor_new_statement(world_);
+				// Create object: Angaben_zum_Unfallort
+				std::stringstream Angaben_zum_Unfallort_UniqueBlankTermName;
+				Angaben_zum_Unfallort_UniqueBlankTermName << "Angaben_zum_Unfallort_" << i;
 
-				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)strasseUniqueBlankTermName.str().c_str());
-				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#von_Unfallort___Strasse");
-				triple->object = raptor_new_term_from_blank(world_, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
+				{
+					raptor_statement* triple = nullptr;
+					triple = raptor_new_statement(world_);
 
-				raptor_serializer_serialize_statement(serializer_, triple);
-				raptor_free_statement(triple);
+					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)Angaben_zum_Unfallort_UniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+					triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Angaben_zum_Unfallort");
+
+					raptor_serializer_serialize_statement(serializer_, triple);
+					raptor_free_statement(triple);
+				}
+
+				// Add attribute Punktgeometrie to object Angaben_zum_Unfallort
+				{
+					std::stringstream ss;
+					const buw::Vector3d& p0 = ca.position;
+					ss << std::setprecision(9) << "Point(" << p0.x() << " " << p0.y() << " " << p0.z() << ")";
+
+					raptor_statement* triple = nullptr;
+					triple = raptor_new_statement(world_);
+
+					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)Angaben_zum_Unfallort_UniqueBlankTermName.str().c_str());
+					triple->predicate =
+						raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Punktgeometrie___Angaben_zum_Unfallort");
+					triple->object = raptor_new_term_from_literal(world_, (unsigned char*)ss.str().c_str(), nullptr, nullptr);
+
+					raptor_serializer_serialize_statement(serializer_, triple);
+					raptor_free_statement(triple);
+				}
+
+				// Add attribute auf_klassifizierter_Strasse___Angaben_zum_Unfallort to object Angaben_zum_Unfallort
+				{
+					raptor_statement* triple = nullptr;
+					triple = raptor_new_statement(world_);
+
+					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)Angaben_zum_Unfallort_UniqueBlankTermName.str().c_str());
+					triple->predicate =
+						raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#auf_klassifizierter_Strasse___Angaben_zum_Unfallort");
+					triple->object = raptor_new_term_from_literal(world_, (unsigned char*)strasseUniqueBlankTermName.str().c_str(), nullptr, nullptr);
+
+					raptor_serializer_serialize_statement(serializer_, triple);
+					raptor_free_statement(triple);
+				}
+
+				
+				// von_Unfallort___Strasse
+				{
+					raptor_statement* triple = nullptr;
+					triple = raptor_new_statement(world_);
+
+					triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)strasseUniqueBlankTermName.str().c_str());
+					triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#von_Unfallort___Strasse");
+					triple->object = raptor_new_term_from_blank(world_, (const unsigned char*)Angaben_zum_Unfallort_UniqueBlankTermName.str().c_str());
+
+					raptor_serializer_serialize_statement(serializer_, triple);
+					raptor_free_statement(triple);
+				}
+
 			}
 
 			// okstra:von_Unfallort___Strasse a owl : ObjectProperty;

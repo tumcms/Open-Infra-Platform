@@ -53,7 +53,7 @@ void OpenInfraPlatform::UserInterface::CreateAccidentReportDialog::on_pushButton
 		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().execute(actionCreateAccidentReport);
 	}
 	
-	hide();
+	//hide();
 }
 
 void OpenInfraPlatform::UserInterface::CreateAccidentReportDialog::on_pushButtonCancel_clicked()
