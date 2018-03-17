@@ -495,8 +495,8 @@ public:
 				raptor_free_statement(triple);
 			}
 
-			for (int i = 0; i < pm->getCarAccidentCount(); ++i) {
-				buw::carAccidentDescription ca = pm->getCarAccidentByIndex(i);
+			for (int i = 0; i < pm->getAccidentReportCount(); ++i) {
+				buw::accidentReportDescription ca = pm->getAccidentReportByIndex(i);
 				break;
 				// Angaben zum Unfallort
 				

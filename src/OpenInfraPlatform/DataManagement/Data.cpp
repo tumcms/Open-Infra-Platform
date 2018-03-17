@@ -1223,15 +1223,15 @@ buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> OpenInf
 	return alignmentModel_;
 }
 
-void OpenInfraPlatform::DataManagement::Data::removeCarAccidentReport(const int index)
+void OpenInfraPlatform::DataManagement::Data::removeAccidentReport(const int index)
 {
-	proxyModel_->removeCarAccidentAt(index);
+	proxyModel_->removeAccidentReportAt(index);
 	pushChange(ChangeFlag::ProxyModel);
 }
 
-int OpenInfraPlatform::DataManagement::Data::createCarAccidentReport(const OpenInfraPlatform::Infrastructure::carAccidentDescription& ca)
+int OpenInfraPlatform::DataManagement::Data::createAccidentReport(const OpenInfraPlatform::Infrastructure::accidentReportDescription& ca)
 {
-	int index = proxyModel_->addCarAccident(ca);
+	int index = proxyModel_->addAccidentReport(ca);
 
 	pushChange(ChangeFlag::ProxyModel);
 

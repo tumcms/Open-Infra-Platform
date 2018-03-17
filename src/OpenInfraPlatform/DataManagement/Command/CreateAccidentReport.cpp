@@ -20,15 +20,16 @@
 
 OpenInfraPlatform::DataManagement::Command:: CreateAccidentReport:: CreateAccidentReport(buw::ReferenceCounted<buw::IAlignment3D> alignment, const double station) {
 	ca_.position = alignment->getPosition(station);
+	ca_.roadName = alignment->getName().toStdString();
 }
 
 OpenInfraPlatform::DataManagement::Command:: CreateAccidentReport::~ CreateAccidentReport() {
 }
 
 void OpenInfraPlatform::DataManagement::Command:: CreateAccidentReport::execute() {
-	CarAccidentReportIndex_ = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().createCarAccidentReport(ca_);
+	AccidentReportIndex_ = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().createAccidentReport(ca_);
 }
 
 void OpenInfraPlatform::DataManagement::Command:: CreateAccidentReport::unexecute() {
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().removeCarAccidentReport(CarAccidentReportIndex_);
+	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().removeAccidentReport(AccidentReportIndex_);
 }

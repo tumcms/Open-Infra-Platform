@@ -17,30 +17,30 @@
 
 #pragma once
 
-#include "ui_CreateCarAccidentReport.h"
+#include "ui_CreateAccidentReport.h"
 #include <QDialog>
 #include <iostream>
 
 namespace OpenInfraPlatform {
 	namespace UserInterface {
-		class CreateCarAccidentReportDialog : public QDialog {
+		class CreateAccidentReportDialog : public QDialog {
 			Q_OBJECT;
 
 		public:
-			CreateCarAccidentReportDialog(QWidget* parent = nullptr);
+			CreateAccidentReportDialog(QWidget* parent = nullptr);
 
-			virtual ~CreateCarAccidentReportDialog();
+			virtual ~CreateAccidentReportDialog();
 
 		private Q_SLOTS:
 			void on_pushButtonOK_clicked();
 			void on_pushButtonCancel_clicked();
 
 		private:
-			Ui::FormCreateCarAccidentReport* ui_;
-		}; // end class CreateCarAccidentReportDialog
+			Ui::FormCreateAccidentReport* ui_;
+		}; // end class CreateAccidentReportDialog
 	}      // end namespace UserInterface
 } // end namespace OpenInfraPlatform
 
 namespace buw {
-	using OpenInfraPlatform::UserInterface::CreateCarAccidentReportDialog;
+	using OpenInfraPlatform::UserInterface::CreateAccidentReportDialog;
 }

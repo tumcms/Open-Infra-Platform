@@ -96,15 +96,15 @@ void BillboardEffect::setProxyModel(buw::ReferenceCounted<OpenInfraPlatform::Inf
 	buw::vertexBufferDescription vbd;
 	
 
-	vbd.vertexCount = proxyModel->getCarAccidentCount();
+	vbd.vertexCount = proxyModel->getAccidentReportCount();
 	vbd.vertexLayout = VertexTypeBillboard::getVertexLayout();
 	
-	std::vector<VertexTypeBillboard> vertices = std::vector<VertexTypeBillboard>(proxyModel->getCarAccidentCount());
+	std::vector<VertexTypeBillboard> vertices = std::vector<VertexTypeBillboard>(proxyModel->getAccidentReportCount());
 
 #pragma omp parallel for
-	for(int i = 0; i < proxyModel->getCarAccidentCount(); i++) {
+	for(int i = 0; i < proxyModel->getAccidentReportCount(); i++) {
 		
-		buw::Vector3f pos = (proxyModel->getCarAccidentByIndex(i).position + offset).cast<float>();
+		buw::Vector3f pos = (proxyModel->getAccidentReportByIndex(i).position + offset).cast<float>();
 		buw::Vector4f col = buw::Vector4f(1, 0, 0, 1.0f);
 		vertices[i] = VertexTypeBillboard(buw::Vector3f(pos.x(),pos.z(),pos.y()), col);
 	}

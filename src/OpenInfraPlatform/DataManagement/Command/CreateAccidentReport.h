@@ -40,10 +40,10 @@ namespace OpenInfraPlatform
 				virtual void unexecute();
 
 			private:
-				int CarAccidentReportIndex_ = -1;
-				buw::carAccidentDescription ca_;
+				int AccidentReportIndex_ = -1;
+				buw::accidentReportDescription ca_;
 				buw::ReferenceCounted<buw::IAlignment3D> alignment_;
-			}; // end class CreateCarAccident
+			}; // end class CreateAccidentReport
 		} // end namespace Action
 	} // end namespace DataManagement
 } // end namespace OpenInfraPlatform

@@ -17,25 +17,25 @@
 
 #include "ProxyModel.h"
 
-const OpenInfraPlatform::Infrastructure::carAccidentDescription& OpenInfraPlatform::Infrastructure::ProxyModel::getCarAccidentByIndex(const int index) const
+const OpenInfraPlatform::Infrastructure::accidentReportDescription& OpenInfraPlatform::Infrastructure::ProxyModel::getAccidentReportByIndex(const int index) const
 {
-	return carAccidents_[index];
+	return accidentReports_[index];
 }
 
-void OpenInfraPlatform::Infrastructure::ProxyModel::removeCarAccidentAt(const int index)
+void OpenInfraPlatform::Infrastructure::ProxyModel::removeAccidentReportAt(const int index)
 {
-	carAccidents_.erase(carAccidents_.begin() + index);
+	accidentReports_.erase(accidentReports_.begin() + index);
 }
 
-int OpenInfraPlatform::Infrastructure::ProxyModel::getCarAccidentCount()
+int OpenInfraPlatform::Infrastructure::ProxyModel::getAccidentReportCount()
 {
-	return static_cast<int>(carAccidents_.size());
+	return static_cast<int>(accidentReports_.size());
 }
 
-int OpenInfraPlatform::Infrastructure::ProxyModel::addCarAccident(const carAccidentDescription& c)
+int OpenInfraPlatform::Infrastructure::ProxyModel::addAccidentReport(const accidentReportDescription& c)
 {
-	carAccidents_.push_back(c);
-	return static_cast<int>(carAccidents_.size()) - 1;
+	accidentReports_.push_back(c);
+	return static_cast<int>(accidentReports_.size()) - 1;
 }
 
 const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& OpenInfraPlatform::Infrastructure::ProxyModel::getIfc4x1Data() const
@@ -61,11 +61,11 @@ OpenInfraPlatform::Infrastructure::ProxyModel::~ProxyModel()
 OpenInfraPlatform::Infrastructure::ProxyModel::ProxyModel()
 {
 	/* // Add some stuff for test proposes
-	carAccidentDescription a;
+	accidentReportDescription a;
 	a.position = buw::Vector3d(0, 0, 0);
 	
-	addCarAccident(a);
+	addAccidentReport(a);
 	a.position = buw::Vector3d(100, 0, 0);
-	addCarAccident(a);
+	addAccidentReport(a);
 	*/
 }

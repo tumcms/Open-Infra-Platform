@@ -2280,9 +2280,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionIFC_Alignment_1_1_Ex
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Accident_Report_triggered()
 {
-	if (createCarAccidentReportDialog_ == nullptr) {
-		createCarAccidentReportDialog_ = new CreateCarAccidentReportDialog(this);
+	if (createAccidentReportDialog_ == nullptr) {
+		createAccidentReportDialog_ = new CreateAccidentReportDialog(this);
 	}
 
-	createCarAccidentReportDialog_->show();
+	createAccidentReportDialog_->show();
 }
