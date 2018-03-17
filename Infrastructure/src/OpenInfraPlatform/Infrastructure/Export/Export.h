@@ -17,28 +17,28 @@
 
 #pragma once
 
-#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
+#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
+#include "OpenInfraPlatform/Infrastructure/ProxyModel/ProxyModel.h"
 #include <boost/noncopyable.hpp>
 
-namespace OpenInfraPlatform
-{
-	namespace Infrastructure
-	{
-		class BLUEINFRASTRUCTURE_API Export : private boost::noncopyable
-		{
+namespace OpenInfraPlatform {
+	namespace Infrastructure {
+		class BLUEINFRASTRUCTURE_API Export : private boost::noncopyable {
 		public:
+			Export(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, buw::ReferenceCounted<buw::ProxyModel> pm, const std::string& filename);
+
 			Export(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename);
 
 		protected:
-			buw::ReferenceCounted<buw::AlignmentModel>			alignmentModel_;
-			buw::ReferenceCounted<buw::DigitalElevationModel>	digitalElevationModel_;
+			buw::ReferenceCounted<buw::AlignmentModel> alignmentModel_;
+			buw::ReferenceCounted<buw::DigitalElevationModel> digitalElevationModel_;
+			buw::ReferenceCounted<buw::ProxyModel> proxyModel_;
 			std::string filename_;
 		};
 	} // end namespace Infrastructure
 } // end namespace OpenInfraPlatform
 
-namespace buw
-{
+namespace buw {
 	using OpenInfraPlatform::Infrastructure::Export;
 }

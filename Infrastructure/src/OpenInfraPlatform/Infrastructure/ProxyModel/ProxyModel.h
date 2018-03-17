@@ -54,7 +54,8 @@ public:
 
 	const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& getIfc4x1Data() const;;
 
-	void addCarAccident(const carAccidentDescription& c );
+	// Each car accident has a unique id 
+	int addCarAccident(const carAccidentDescription& c );
 
 	int getCarAccidentCount();
 
@@ -72,5 +73,6 @@ private:
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 
 namespace buw {
+	using OpenInfraPlatform::Infrastructure::carAccidentDescription;
 	using OpenInfraPlatform::Infrastructure::ProxyModel;
 }

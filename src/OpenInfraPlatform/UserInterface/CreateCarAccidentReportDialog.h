@@ -16,42 +16,36 @@
 */
 
 #pragma once
-#include "ui_CreateArcClothoidArc.h"
-#include "functions.h"
+
+#include "ui_CreateCarAccidentReport.h"
+#include <QDialog>
+#include <iostream>
 
 namespace OpenInfraPlatform
 {
-	namespace UserInterface
-	{
-		class CreateArcClothoidArcDialog : public QDialog
-		{
-			Q_OBJECT;
+    namespace UserInterface
+    {
+        class CreateCarAccidentReportDialog : public QDialog
+        {
+            Q_OBJECT;
 
-		public:
-			CreateArcClothoidArcDialog(QWidget *parent = nullptr);
+        public:
+			CreateCarAccidentReportDialog(QWidget *parent = nullptr);
 
-			virtual ~CreateArcClothoidArcDialog();
-			
-		private Q_SLOTS:
-			void on_pushButtonGenerate_clicked();
+ 
+            virtual ~CreateCarAccidentReportDialog();
+					
+        private Q_SLOTS:
+			void on_pushButtonOK_clicked();
 			void on_pushButtonCancel_clicked();
 
-			public Q_SLOTS:
-			void takePoints(std::vector<buw::Vector3d> givenPoints, buw::Vector2d givenOffset)
-			{
-				points_ = givenPoints;
-				offset_ = givenOffset;
-			};
-		private:
-			std::vector<buw::Vector3d> points_;
-			buw::Vector2d offset_;
-			Ui::CreateArcClothoidArc *	ui_;
-		}; // end class CreateArcClothoidArcDialog 
-	} // end namespace UserInterface
-} // end namespace OpenInfraPlatfom
+        private:
+            Ui::FormCreateCarAccidentReport*	ui_;
+        }; // end class ExportP6AlginmentDialog
+    } // end namespace UserInterface
+} // end namespace OpenInfraPlatform
 
 namespace buw
 {
-	using OpenInfraPlatform::UserInterface::CreateArcClothoidArcDialog;
+    using OpenInfraPlatform::UserInterface::CreateCarAccidentReportDialog;
 }
-

@@ -185,6 +185,9 @@ namespace OpenInfraPlatform
 				return proxyModel_;
 			}
 
+			int createCarAccidentReport(const OpenInfraPlatform::Infrastructure::carAccidentDescription& ca);
+			void removeCarAccidentReport(const int index);
+
 			//---------------------------------------------------------------------------//
 			// Traffic Sign Model
 			//---------------------------------------------------------------------------//

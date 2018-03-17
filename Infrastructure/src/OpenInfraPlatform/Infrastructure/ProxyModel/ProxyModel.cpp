@@ -32,9 +32,10 @@ int OpenInfraPlatform::Infrastructure::ProxyModel::getCarAccidentCount()
 	return static_cast<int>(carAccidents_.size());
 }
 
-void OpenInfraPlatform::Infrastructure::ProxyModel::addCarAccident(const carAccidentDescription& c)
+int OpenInfraPlatform::Infrastructure::ProxyModel::addCarAccident(const carAccidentDescription& c)
 {
 	carAccidents_.push_back(c);
+	return static_cast<int>(carAccidents_.size()) - 1;
 }
 
 const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& OpenInfraPlatform::Infrastructure::ProxyModel::getIfc4x1Data() const

@@ -889,7 +889,7 @@ void OpenInfraPlatform::DataManagement::Data::exportOkstraJobTranslated(const st
 void OpenInfraPlatform::DataManagement::Data::exportOkstraJobOWL(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra OWL").append(filename));
-	buw::ExportOkstraOWL(alignmentModel_, digitalElevationModel_, filename);
+	buw::ExportOkstraOWL(alignmentModel_, digitalElevationModel_, proxyModel_, filename);
 }
 void OpenInfraPlatform::DataManagement::Data::exportIfcOWL4x1Job(const std::string& filename)
 {
@@ -1221,6 +1221,17 @@ void OpenInfraPlatform::DataManagement::Data::setAlignmentLineWidth(const double
 buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> OpenInfraPlatform::DataManagement::Data::getAlignmentModel() const
 {
 	return alignmentModel_;
+}
+
+void OpenInfraPlatform::DataManagement::Data::removeCarAccidentReport(const int index)
+{
+	proxyModel_->removeCarAccidentAt(index);
+}
+
+int OpenInfraPlatform::DataManagement::Data::createCarAccidentReport(const OpenInfraPlatform::Infrastructure::carAccidentDescription& ca)
+{
+	int index = proxyModel_->addCarAccident(ca);
+	return index;
 }
 
 buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::GirderModel> OpenInfraPlatform::DataManagement::Data::getGirderModel() const

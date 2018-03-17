@@ -434,11 +434,18 @@
     <addaction name="separator"/>
     <addaction name="actionDraw_Road_Texture"/>
    </widget>
+   <widget class="QMenu" name="menuProxy">
+    <property name="title">
+     <string>Proxy</string>
+    </property>
+    <addaction name="actionCreate_Accident_Report"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuDesignView"/>
    <addaction name="menuTerrain"/>
    <addaction name="menuCross_Section"/>
+   <addaction name="menuProxy"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -1165,6 +1172,11 @@
   <action name="actionShow_License_and_Copyright_Information">
    <property name="text">
     <string>Show License and Copyright Information</string>
+   </property>
+  </action>
+  <action name="actionCreate_Accident_Report">
+   <property name="text">
+    <string>Create Accident Report</string>
    </property>
   </action>
  </widget>

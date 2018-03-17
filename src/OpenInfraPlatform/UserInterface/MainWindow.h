@@ -42,6 +42,7 @@
 #include "OpenInfraPlatform/UserInterface/Tools/CreateLineClothoidClothoidLineDialog.h"
 #include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidArcDialog.h"
 #include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcDialog.h"
+#include "OpenInfraPlatform/UserInterface/CreateCarAccidentReportDialog.h"
 #include "OpenInfraPlatform/UserInterface/OSMImportDialog.h"
 
 #include "qsimpleupdater.h"
@@ -129,7 +130,7 @@ namespace OpenInfraPlatform
 			void on_actionImport_IFC_Alignment_1_0_triggered();
 
 			void on_actionIFC_Alignment_1_1_Export_triggered();
-
+			void on_actionCreate_Accident_Report_triggered();
 			void on_actionImport_OSM_File_triggered();
 			void on_actionLandXML_triggered();
 			void on_actionLoad_Bridge();
@@ -274,6 +275,7 @@ namespace OpenInfraPlatform
 			VerticalAlignmentWindow*					verticalAlignmentWindow_ = nullptr;
 			XYZImportDialog*							XYZImportDialog_ = nullptr;
 			LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
+			CreateCarAccidentReportDialog*				createCarAccidentReportDialog_ = nullptr;
 
 			QProgressBar*								progressBar_;
 			
