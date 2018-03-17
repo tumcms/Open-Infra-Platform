@@ -994,13 +994,11 @@ void OpenInfraPlatform::UserInterface::MainWindow::onChange(ChangeFlag changeFla
         }
     }
 
-	buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::ProxyModel> pm =
-		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
-	if (pm) 
-	{
+	if (changeFlag & ChangeFlag::ProxyModel) {
+		buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::ProxyModel> pm = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
+
 		if (pm->hasIfc4x1Data()) {
-			for (auto it = pm->getIfc4x1Data().begin(); it != pm->getIfc4x1Data().end(); ++it)
-			{
+			for (auto it = pm->getIfc4x1Data().begin(); it != pm->getIfc4x1Data().end(); ++it) {
 				ui_->listWidgetProxies->addItem(it->second->classname());
 			}
 

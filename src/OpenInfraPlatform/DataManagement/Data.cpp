@@ -1226,11 +1226,15 @@ buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> OpenInf
 void OpenInfraPlatform::DataManagement::Data::removeCarAccidentReport(const int index)
 {
 	proxyModel_->removeCarAccidentAt(index);
+	pushChange(ChangeFlag::ProxyModel);
 }
 
 int OpenInfraPlatform::DataManagement::Data::createCarAccidentReport(const OpenInfraPlatform::Infrastructure::carAccidentDescription& ca)
 {
 	int index = proxyModel_->addCarAccident(ca);
+
+	pushChange(ChangeFlag::ProxyModel);
+
 	return index;
 }
 
