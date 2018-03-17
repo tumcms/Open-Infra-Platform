@@ -38,6 +38,7 @@ struct VertexToGeometry
 struct GeometryToFragment
 {
 	float4 position				: SV_POSITION;
+	float2 uv					: Texture;
 	float4 color				: Color;
 };
 
@@ -109,6 +110,10 @@ void GS_main(point VertexToGeometry input[1], inout TriangleStream<GeometryToFra
             output.position += posSize;
 
             output.color = float4(0,1,0,1);//input[0].color; //float3(204.0/255,204.0/255,204.0/255);
+			
+			output.uv.x = positions[i].x + 0.5;
+			output.uv.y = 1.0 - positions[i].y + 0.5;
+			
 			outStream.Append(output);
 		}
 	}
@@ -125,6 +130,9 @@ void GS_main(point VertexToGeometry input[1], inout TriangleStream<GeometryToFra
 				0,
 				0);
 
+			output.uv.x = positions[i].x + 0.5;
+			output.uv.y = positions[i].y + 0.5;
+			
 		    outStream.Append(output);
 		}
 	}
@@ -136,13 +144,14 @@ void GS_main(point VertexToGeometry input[1], inout TriangleStream<GeometryToFra
 // Pixel Shader
 //----------------------------------------------------------------------------
 
-//Texture2D<float4> texDiffuseMap : register(t0);
+Texture2D<float4> texDiffuseMap : register(t0);
+sampler sampler_ : register(s0);
 
 FragmentToPixel PS_main(GeometryToFragment gtf)
 {
     FragmentToPixel final;
 
-    final.color = float4(gtf.color.xyz, 1.0f);
+    final.color = float4(texDiffuseMap.Sample(sampler_, gtf.uv).rgb, 1.0f);
 
     return final;
 }

@@ -131,7 +131,29 @@ void BillboardEffect::v_init()
 	cbd.data = &settings_;
 
 	settingsBuffer_ = renderSystem()->createConstantBuffer(cbd);
+
+
+	// load terrain texture
+	auto img1 = buw::loadImage4b("Data/CarCrash.png");
+
+	buw::texture2DDescription td1;
+	td1.width = img1.getWidth();
+	td1.height = img1.getHeight();
+	td1.format = buw::eTextureFormat::R8G8B8A8_UnsignedNormalizedInt_SRGB;
+	td1.data = img1.getData();
+
+	texture_ = renderSystem()->createTexture2D(td1, buw::eTextureBindType::SRV);
+
 	
+
+	buw::samplerStateDescription samplerStateDesc;
+	samplerStateDesc.minificationFilter = buw::eFilter::Linear;
+	samplerStateDesc.magnificationFilter = buw::eFilter::Linear;
+	samplerStateDesc.mipLevelFilter = buw::eFilter::None;
+	samplerStateDesc.textureAddressModeU = buw::eTextureAddressMode::Clamp;
+	samplerStateDesc.textureAddressModeV = buw::eTextureAddressMode::Clamp;
+	samplerStateDesc.textureAddressModeW = buw::eTextureAddressMode::Clamp;
+	sampler_ = renderSystem()->createSampler(samplerStateDesc);
 }
 
 void BillboardEffect::v_render()
@@ -143,6 +165,9 @@ void BillboardEffect::v_render()
 	setConstantBuffer(worldBuffer_, "WorldBuffer");
 	setConstantBuffer(viewportBuffer_, "ViewportBuffer");
 	setConstantBuffer(settingsBuffer_, "SettingsBuffer");
+
+	setSampler(buw::Singleton<RenderResources>::instance().getLinearSampler(), "sampler_");
+	setTexture(texture_, "texDiffuseMap");
 
 	setVertexBuffer(vertexBuffer_);
 	draw(static_cast<UINT>(vertexBuffer_->getVertexCount()));

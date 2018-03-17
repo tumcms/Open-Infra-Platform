@@ -69,6 +69,10 @@ private:
 	void updateSettingsBuffer();
 
 private:
+
+	buw::ReferenceCounted<buw::ITexture2D> texture_ = nullptr;
+	buw::ReferenceCounted<buw::ISampler>   sampler_ = nullptr;
+
 	buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer_ = nullptr;
 	buw::ReferenceCounted<buw::IConstantBuffer> settingsBuffer_ = nullptr;
 	buw::ReferenceCounted<buw::IConstantBuffer> viewportBuffer_ = nullptr;

@@ -723,7 +723,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
 
 	if (/*changeFlag & ChangeFlag::ProxyModel && */proxyModel) {
 		billboardEffect_->setProxyModel(proxyModel, offset);
-		billboardEffect_->setPointSize(321.0f);
+		billboardEffect_->setPointSize(621.0f);
 		billboardEffect_->drawPointsWithUniformColor(false);
 		billboardEffect_->drawPointsWithUniformSize(true);
 		activeEffects_.push_back(billboardEffect_);
