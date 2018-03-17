@@ -199,8 +199,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
     connect(updater.get(), SIGNAL(checkingFinished()), this, SLOT(onCheckingFinished()));
 
     checkForUpdates();
-
-
+	
     setAcceptDrops(true);
 }
 

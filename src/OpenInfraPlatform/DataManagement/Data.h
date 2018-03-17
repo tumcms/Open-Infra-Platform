@@ -22,7 +22,7 @@
 #include "OpenInfraPlatform/Data/terrainDescription.h"
 //#include "OpenInfraPlatform/DataManagement/ViewCubeData.h"
 #include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
-#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/ProxyModel.h"
+#include "OpenInfraPlatform/Infrastructure/ProxyModel/ProxyModel.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 #include "OpenInfraPlatform/Infrastructure/Girder/GirderModel.h"
 #include "OpenInfraPlatform/Infrastructure/SlabField/SlabFieldModel.h"
@@ -58,7 +58,8 @@ namespace OpenInfraPlatform
 			TrafficModel = 1 << 5,
             SelectedAlignmentIndex = 1 << 6,
             GirderModel = 1 << 7,
-            SlabFieldModel = 1 << 8
+            SlabFieldModel = 1 << 8,
+			ProxyModel = 1 << 9
 		};
 
 		inline ChangeFlag operator|(ChangeFlag a, ChangeFlag b)
@@ -216,7 +217,6 @@ namespace OpenInfraPlatform
 			const int getPointCloudPointCount() const;
 
 			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> getPointCloud() const;
-
 
 			//---------------------------------------------------------------------------//
 			// Preferences

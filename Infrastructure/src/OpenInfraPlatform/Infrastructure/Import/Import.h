@@ -19,7 +19,7 @@
 
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 #include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
-#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/ProxyModel.h"
+#include "OpenInfraPlatform/Infrastructure/ProxyModel/ProxyModel.h"
 #include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/TrafficSignModel.h"
 #include "OpenInfraPlatform/Infrastructure/Girder/GirderModel.h"
 #include "OpenInfraPlatform/Infrastructure/SlabField/SlabFieldModel.h"

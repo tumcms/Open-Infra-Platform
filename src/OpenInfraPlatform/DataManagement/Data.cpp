@@ -101,7 +101,7 @@ tempPointCloud_(nullptr)
 	pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
 	clear(false);
 
-	latestChangeFlag_ = (ChangeFlag) (ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences);
+	latestChangeFlag_ = (ChangeFlag) (ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel);
 
 	AsyncJob::getInstance().jobFinished.connect(boost::bind(&OpenInfraPlatform::DataManagement::Data::jobFinished, this, _1, _2));
 }
@@ -479,7 +479,7 @@ void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) 
 		// The notification state is not used here, because a clear is not executed by an action.
 		//m_pNotifiactionState->Change();
 
-		pushChange(ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences);
+		pushChange(ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel);
 
 		Clear();
 	}

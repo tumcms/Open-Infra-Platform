@@ -454,6 +454,55 @@ public:
 					}
 				}
 			}
+
+			// now export Strasse
+
+			std::stringstream strasseUniqueBlankTermName;
+			strasseUniqueBlankTermName << "strasse_" << i;
+
+			{
+				raptor_statement* triple = nullptr;
+				triple = raptor_new_statement(world_);
+
+				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)strasseUniqueBlankTermName.str().c_str());
+				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+				triple->object = raptor_new_term_from_uri_string(world_, (unsigned char*)"http://okstraowl.org/model/2017/okstraowl#Strasse");
+
+				raptor_serializer_serialize_statement(serializer_, triple);
+				raptor_free_statement(triple);
+			}
+
+
+			{
+				raptor_statement* triple = nullptr;
+				triple = raptor_new_statement(world_);
+
+				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)strasseUniqueBlankTermName.str().c_str());
+				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#hat_Strassenbezeichnung___Strasse");
+				triple->object = raptor_new_term_from_literal(world_, (unsigned char*)axisName.toCString(), nullptr, nullptr);
+
+				raptor_serializer_serialize_statement(serializer_, triple);
+				raptor_free_statement(triple);
+			}
+
+
+			{
+				raptor_statement* triple = nullptr;
+				triple = raptor_new_statement(world_);
+
+				triple->subject = raptor_new_term_from_blank(world_, (const unsigned char*)strasseUniqueBlankTermName.str().c_str());
+				triple->predicate = raptor_new_term_from_uri_string(world_, (const unsigned char*)"http://okstraowl.org/model/2017/okstraowl#hat_Achse___Strasse");
+				triple->object = raptor_new_term_from_blank(world_, (const unsigned char*)axisUniqueBlankTermName.str().c_str());
+
+				raptor_serializer_serialize_statement(serializer_, triple);
+				raptor_free_statement(triple);
+			}
+
+
+			//okstra:von_Unfallort___Strasse a owl : ObjectProperty;
+			//rdfs:domain okstra : Strasse;
+			//rdfs:range okstra : Angaben_zum_Unfallort .
+
 		}
 
 		// Create "Trasse"

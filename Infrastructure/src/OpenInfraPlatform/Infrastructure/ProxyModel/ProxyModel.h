@@ -38,9 +38,17 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
+struct CarAccident {
+	buw::Vector3d position;
+};
+
 class BLUEINFRASTRUCTURE_API ProxyModel {
 public:
-	ProxyModel() {}
+	ProxyModel() {
+		CarAccident a;
+		a.position = buw::Vector3d(0, 0, 0);
+		addCarAccident(a);
+	}
 
 	virtual ~ProxyModel() {}
 	
@@ -55,7 +63,26 @@ public:
 	const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& getIfc4x1Data() const {
 		return Ifc4x1Entities_;
 	};
+
+	void addCarAccident(const CarAccident& c ) {
+		carAccidents_.push_back(c);
+	}
+
+	int getCarAccidentCount() {
+		return static_cast<int>(carAccidents_.size());
+	}
+
+	void removeCarAccidentAt(const int index) {
+		carAccidents_.erase(carAccidents_.begin() + index);
+	}
+
+	const CarAccident& getCarAccidentByIndex(const int index) const {
+		return carAccidents_[index];
+	}
+
 private:
+	std::vector<CarAccident> carAccidents_;
+
 	// IFC4x1 entities
 	std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > Ifc4x1Entities_;
 };
