@@ -52,7 +52,7 @@ void BillboardEffect::loadShader()
 		/*Retrieve the vertexLayout from the vertex type.*/
 		auto vertexLayout = VertexTypeBillboard::getVertexLayout();
 
-		std::string effectFilename = buw::Singleton<RenderResources>::instance().getResourceRootDir() + "/Shader/PointCloudEffect.be";
+		std::string effectFilename = buw::Singleton<RenderResources>::instance().getResourceRootDir() + "/Shader/BillboardEffect.be";
 
 		/*Create the pipeline state.*/
 		buw::pipelineStateDescription psd;
