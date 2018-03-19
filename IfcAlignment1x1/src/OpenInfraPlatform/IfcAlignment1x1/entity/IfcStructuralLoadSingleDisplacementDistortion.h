@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcStructuralLoadSingleDisplacement.h"
 
@@ -55,3 +56,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleDisplacementDistortion, m_Name, m_DisplacementX, m_DisplacementY, m_DisplacementZ, m_RotationalDisplacementRX, m_RotationalDisplacementRY, m_RotationalDisplacementRZ, m_Distortion);

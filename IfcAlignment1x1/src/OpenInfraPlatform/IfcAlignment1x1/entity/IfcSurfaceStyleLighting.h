@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcSurfaceStyleElementSelect.h"
 #include "IfcPresentationItem.h"
@@ -63,3 +64,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleLighting, m_DiffuseTransmissionColour, m_DiffuseReflectionColour, m_TransmissionColour, m_ReflectanceColour);

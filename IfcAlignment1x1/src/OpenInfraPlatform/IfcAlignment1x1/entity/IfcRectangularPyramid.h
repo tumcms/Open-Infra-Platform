@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcCsgPrimitive3D.h"
 
@@ -59,3 +60,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcRectangularPyramid, m_Position, m_XLength, m_YLength, m_Height);

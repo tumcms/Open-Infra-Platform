@@ -21,20 +21,6 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include "OpenInfraPlatform/IfcAlignment1x1/reader/ReaderUtil.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/writer/WriterUtil.h"
 
-#include "IfcReal.h"
-#include "IfcLabel.h"
-#include "IfcAreaMeasure.h"
-#include "IfcMassMeasure.h"
-#include "IfcLengthMeasure.h"
-#include "IfcPlaneAngleMeasure.h"
-#include "IfcPressureMeasure.h"
-#include "IfcThermodynamicTemperatureMeasure.h"
-#include "IfcVolumeMeasure.h"
-#include "IfcMassDensityMeasure.h"
-#include "IfcModulusOfElasticityMeasure.h"
-#include "IfcPositiveRatioMeasure.h"
-#include "IfcThermalExpansionCoefficientMeasure.h"
-
 namespace OpenInfraPlatform
 {
 	namespace IfcAlignment1x1
@@ -75,44 +61,6 @@ namespace OpenInfraPlatform
 				std::string keyword;
 				std::string inline_arg;
 				tokenizeInlineArgument( arg, keyword, inline_arg );
-
-				if (keyword == "IFCREAL") {
-					return std::make_shared<IfcReal>(atof(inline_arg.c_str()));
-				} else if (keyword == "IFCLABEL") {
-					return std::make_shared<IfcLabel>(inline_arg);
-				} else if (keyword == "IFCAREAMEASURE") {
-					return std::make_shared<IfcAreaMeasure>(atof(inline_arg.c_str()));
-				} else if (keyword == "IFCMASSMEASURE") {
-					return std::make_shared<IfcMassMeasure>(atof(inline_arg.c_str()));
-				} else if (keyword == "IFCLENGTHMEASURE") {
-					return std::make_shared<IfcLengthMeasure>(atof(inline_arg.c_str()));
-				} else if (keyword == "IFCPLANEANGLEMEASURE") {
-					return std::make_shared<IfcPlaneAngleMeasure>(atof(inline_arg.c_str()));
-				} else if (keyword == "IFCPRESSUREMEASURE") {
-					return std::make_shared<IfcPressureMeasure>(atof(inline_arg.c_str()));
-				} else if (keyword == "IFCTHERMODYNAMICTEMPERATUREMEASURE") {
-					return std::make_shared<IfcThermodynamicTemperatureMeasure>(atof(inline_arg.c_str()));
-				} else if (keyword == "IFCVOLUMEMEASURE") {
-					return std::make_shared<IfcVolumeMeasure>(atof(inline_arg.c_str()));
-				} else if (keyword == "IFCMASSDENSITYMEASURE") {
-					if (inline_arg.size() == 0) 
-						return std::make_shared<IfcMassDensityMeasure>(0.0);
-					else
-						return std::make_shared<IfcMassDensityMeasure>(atof(inline_arg.c_str()));
-				} else if (keyword == "IFCMODULUSOFELASTICITYMEASURE") {
-					if (inline_arg.size() == 0)
-						return std::make_shared<IfcModulusOfElasticityMeasure>(0.0);
-					else
-						return std::make_shared<IfcModulusOfElasticityMeasure>(atof(inline_arg.c_str()));
-				} else if (keyword == "IFCPOSITIVERATIOMEASURE") {
-					return nullptr;
-				} else if (keyword == "IFCTHERMALEXPANSIONCOEFFICIENTMEASURE") {
-					if (inline_arg.size() == 0) 
-						return std::make_shared<IfcThermalExpansionCoefficientMeasure>(0.0);
-					else
-						return std::make_shared<IfcThermalExpansionCoefficientMeasure>(atof(inline_arg.c_str()));
-				}
-
 				std::stringstream strs;
 				strs << "unhandled inline argument: " << arg << " in function IfcAlignment1x1::IfcValue::readStepData" << std::endl;
 				throw IfcAlignment1x1Exception( strs.str() );

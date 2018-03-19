@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcStructuralLoadOrResult.h"
 
@@ -59,3 +60,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceReinforcementArea, m_Name, m_SurfaceReinforcement1, m_SurfaceReinforcement2, m_ShearReinforcement);

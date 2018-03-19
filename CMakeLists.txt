@@ -134,7 +134,7 @@ find_package(Eigen3             3.3.2  REQUIRED)
 find_package(PythonLibs 		3.5.2  REQUIRED)
 
 # Find the Oklabi libraries
-find_package(Oklabi)
+find_package(Oklabi REQUIRED)
 find_package(gtest REQUIRED) #reduce to this line
 
 #ZLib
@@ -391,6 +391,8 @@ include_directories(ExpressBinding/src)
 # add source directory
 add_subdirectory(Infrastructure)
 include_directories(Infrastructure/src)
+
+enable_testing()
 
 add_subdirectory(UnitTests)
 

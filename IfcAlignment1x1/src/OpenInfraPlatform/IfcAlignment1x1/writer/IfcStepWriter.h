@@ -23,16 +23,15 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 
 namespace OpenInfraPlatform
 {
-	namespace IfcAlignment1x1
-	{
-		class IfcStepWriter : public IfcAlignment1x1Writer
-		{
-		public:
-			IfcStepWriter();
-			~IfcStepWriter();
-			virtual void writeStream( std::stringstream& stream, shared_ptr<IfcAlignment1x1Model> model );
-
-			void IfcStepWriter::write(const std::string& filename, shared_ptr<IfcAlignment1x1Model> model);
-		};
-	} // end namespace IfcAlignment1x1
+    namespace IfcAlignment1x1
+    {
+        class IfcStepWriter : public IfcAlignment1x1Writer
+        {
+        public:
+            IfcStepWriter();
+            ~IfcStepWriter();
+            virtual void writeStream( std::stringstream& stream, shared_ptr<IfcAlignment1x1Model> model );
+			void write(const std::string& filename, shared_ptr<IfcAlignment1x1Model> model);
+        };
+    } // end namespace IfcAlignment1x1
 } // end namespace OpenInfraPlatform

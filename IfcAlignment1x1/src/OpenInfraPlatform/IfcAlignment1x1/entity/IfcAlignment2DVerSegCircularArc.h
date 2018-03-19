@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcAlignment2DVerticalSegment.h"
 
@@ -57,3 +58,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerSegCircularArc, m_TangentialContinuity, m_StartTag, m_EndTag, m_StartDistAlong, m_HorizontalLength, m_StartHeight, m_StartGradient, m_Radius, m_IsConvex);

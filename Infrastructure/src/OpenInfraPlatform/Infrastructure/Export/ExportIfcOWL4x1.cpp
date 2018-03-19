@@ -33,9 +33,9 @@
 class OpenInfraPlatform::Infrastructure::ExportIfcOWL4x1::ExportIfcOWL4x1Impl {
 public:
 	ExportIfcOWL4x1Impl(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename) {
-		const std::string url = "http://www.buildingsmart-tech.org/ifc/IFC4x1/final/IFC4x1_FINAL.exp";
-		buw::downloadFile(url, "./IFC4x1_FINAL.exp");
-		OpenInfraPlatform::ExpressBinding::Schema schema = OpenInfraPlatform::ExpressBinding::Schema::read("IFC4x1_FINAL.exp");
+		//const std::string url = "http://www.buildingsmart-tech.org/ifc/IFC4x1/final/IFC4x1_FINAL.exp";
+		//buw::downloadFile(url, "./IFC4x1_FINAL.exp");
+		//OpenInfraPlatform::ExpressBinding::Schema schema = OpenInfraPlatform::ExpressBinding::Schema::read("IFC4x1_FINAL.exp");
 		
 		auto uuid = boost::uuids::uuid();
 		std::string temp = "./";
@@ -68,9 +68,25 @@ public:
 		raptor_serializer_set_namespace(serializer_, rdf_uri, rdf_prefix);
 		
 		for(auto entry : model->getMapIfcObjects()) {
-			auto entity = entry.second;
-			std::string name = entity->classname();
-			auto entityType = schema.getEntityByName(name);
+			auto entity = *(entry.second);
+			auto name = entity.classname();
+			//auto entityType = schema.getEntityByName(name);
+
+			if(visit_struct::field_count(entity) > 2) {
+				std::cout << name << std::endl;
+				//std::cout << entityType.getName() << std::endl;
+				//std::fprintf(outfile, "%s\n", name);
+
+				//std::cout << visit_struct::field_count(entity) << std::endl;;
+
+				visit_struct::for_each(entity,
+					[this](const char * name, const auto & value) {
+					std::cout << name << ": " << value << std::endl;
+					//std::fprintf(outfile, "%s:%s\n", name, value);
+				});
+
+				std::cout << std::endl;
+			}
 		}
 
 

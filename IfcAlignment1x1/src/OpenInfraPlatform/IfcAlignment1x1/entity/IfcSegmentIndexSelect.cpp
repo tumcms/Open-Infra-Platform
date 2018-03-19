@@ -20,8 +20,6 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include "IfcSegmentIndexSelect.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/reader/ReaderUtil.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/writer/WriterUtil.h"
-#include "IfcLineIndex.h"
-#include "IfcArcIndex.h"
 
 namespace OpenInfraPlatform
 {
@@ -63,13 +61,6 @@ namespace OpenInfraPlatform
 				std::string keyword;
 				std::string inline_arg;
 				tokenizeInlineArgument( arg, keyword, inline_arg );
-
-				if (keyword == "IFCLINEINDEX") {
-					return IfcLineIndex::readStepData(inline_arg);
-				} else if (keyword == "IFCARCINDEX") {
-					return IfcArcIndex::readStepData(inline_arg);
-				}
-
 				std::stringstream strs;
 				strs << "unhandled inline argument: " << arg << " in function IfcAlignment1x1::IfcSegmentIndexSelect::readStepData" << std::endl;
 				throw IfcAlignment1x1Exception( strs.str() );

@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcEnergyConversionDeviceType.h"
 
@@ -55,3 +56,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcCondenserType, m_GlobalId, m_OwnerHistory, m_Name, m_Description, m_ApplicableOccurrence, m_HasPropertySets, m_RepresentationMaps, m_Tag, m_ElementType, m_PredefinedType);

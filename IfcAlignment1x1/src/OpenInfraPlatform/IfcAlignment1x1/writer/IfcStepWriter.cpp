@@ -29,53 +29,52 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <sstream>
 #include <iomanip>
 #include <locale.h>
-
 #include <fstream>
 
 namespace OpenInfraPlatform
 {
-	namespace IfcAlignment1x1
-	{
-		IfcStepWriter::IfcStepWriter()
-		{
-		}
+    namespace IfcAlignment1x1
+    {
+        IfcStepWriter::IfcStepWriter()
+        {
+        }
 
-		IfcStepWriter::~IfcStepWriter()
-		{
-		}
+        IfcStepWriter::~IfcStepWriter()
+        {
+        }
 
-		void IfcStepWriter::writeStream( std::stringstream& stream, shared_ptr<IfcAlignment1x1Model> model )
-		{
-			char* current_numeric_locale = setlocale(LC_NUMERIC, NULL);
-			setlocale(LC_NUMERIC,"C");
+        void IfcStepWriter::writeStream( std::stringstream& stream, shared_ptr<IfcAlignment1x1Model> model )
+        {
+            char* current_numeric_locale = setlocale(LC_NUMERIC, NULL);
+            setlocale(LC_NUMERIC,"C");
 
-			stream << model->getFileHeader().c_str();
-			stream << "DATA;\n";
+            stream << model->getFileHeader().c_str();
+            stream << "DATA;\n";
 			stream << std::setprecision(20);
 			stream << std::showpoint;
-			const std::map<int,shared_ptr<IfcAlignment1x1Entity> >& map = model->getMapIfcObjects();
-			std::map<int,shared_ptr<IfcAlignment1x1Entity> >::const_iterator it;
-			for( it=map.begin(); it!=map.end(); ++it )
-			{
-				shared_ptr<IfcAlignment1x1Entity> obj = it->second;
+            const std::map<int,shared_ptr<IfcAlignment1x1Entity> >& map = model->getMapIfcObjects();
+            std::map<int,shared_ptr<IfcAlignment1x1Entity> >::const_iterator it;
+            for( it=map.begin(); it!=map.end(); ++it )
+            {
+                shared_ptr<IfcAlignment1x1Entity> obj = it->second;
 
-				if( obj.use_count() < 2 )
-				{
-					// entity is referenced only in model map, not by other entities
-					if( !dynamic_pointer_cast<IfcProduct>(obj) && !dynamic_pointer_cast<IfcProject>(obj) )
-					{
-						continue;
-					}
-				}
-				obj->getStepLine( stream );
-				stream << std::endl;
-			}
+                if( obj.use_count() < 2 )
+                {
+                    // entity is referenced only in model map, not by other entities
+                    if( !dynamic_pointer_cast<IfcProduct>(obj) && !dynamic_pointer_cast<IfcProject>(obj) )
+                    {
+                        continue;
+                    }
+                }
+                obj->getStepLine( stream );
+                stream << std::endl;
+            }
 
-			stream << "ENDSEC;\nEND-ISO-10303-21;\n";
+            stream << "ENDSEC;\nEND-ISO-10303-21;\n";
 
-			setlocale(LC_NUMERIC, current_numeric_locale);
-		}
-
+            setlocale(LC_NUMERIC, current_numeric_locale);
+        }
+		
 		// https://stackoverflow.com/questions/2896600/how-to-replace-all-occurrences-of-a-character-in-string
 		std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
 			size_t start_pos = 0;
@@ -85,7 +84,7 @@ namespace OpenInfraPlatform
 			}
 			return str;
 		}
-
+		
 		void IfcStepWriter::write(const std::string& filename, shared_ptr<IfcAlignment1x1Model> model)
 		{
 			shared_ptr<IfcStepWriter> step_writer = shared_ptr<IfcStepWriter>(new IfcStepWriter());
@@ -131,6 +130,5 @@ namespace OpenInfraPlatform
 			std::ofstream textFile(filename.c_str());
 			textFile << stream.str().c_str();
 		}
-
-	} // end namespace IfcAlignment1x1
+    } // end namespace IfcAlignment1x1
 } // end namespace OpenInfraPlatform

@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcPropertyTemplate.h"
 
@@ -69,3 +70,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcSimplePropertyTemplate, m_GlobalId, m_OwnerHistory, m_Name, m_Description, m_TemplateType, m_PrimaryMeasureType, m_SecondaryMeasureType, m_Enumerators, m_PrimaryUnit, m_SecondaryUnit, m_Expression, m_AccessState);

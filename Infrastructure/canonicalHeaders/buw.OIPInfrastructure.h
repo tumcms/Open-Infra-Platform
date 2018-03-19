@@ -45,9 +45,11 @@
 #include "OpenInfraPlatform/Infrastructure/Export/ExportOkstra.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportOkstraOWL.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportLandInfra.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportLandXML.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcRoad.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportSVG.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"
 
 #endif // end define buw_BlueInfrastructure_2c344381_de0a_4a5a_8499_87683fa8ce80_h

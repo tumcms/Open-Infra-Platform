@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcCartesianTransformationOperator3D.h"
 
@@ -57,3 +58,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator3DnonUniform, m_Axis1, m_Axis2, m_LocalOrigin, m_Scale, m_Axis3, m_Scale2, m_Scale3);

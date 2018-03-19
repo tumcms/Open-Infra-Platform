@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcSchedulingTime.h"
 
@@ -83,3 +84,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcResourceTime, m_Name, m_DataOrigin, m_UserDefinedDataOrigin, m_ScheduleWork, m_ScheduleUsage, m_ScheduleStart, m_ScheduleFinish, m_ScheduleContour, m_LevelingDelay, m_IsOverAllocated, m_StatusTime, m_ActualWork, m_ActualUsage, m_ActualStart, m_ActualFinish, m_RemainingWork, m_RemainingUsage, m_Completion);

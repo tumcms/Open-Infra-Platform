@@ -23,7 +23,6 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <cmath>
 #endif
 #include <limits>
-#include <algorithm>
 
 #include "model/Exception.h"
 #include "ReaderUtil.h"
@@ -173,7 +172,6 @@ namespace OpenInfraPlatform
             }
             char* stream_pos = (char*)list_str.c_str();
             char* last_token = stream_pos;
-			int openBrackets = 0;
             while( *stream_pos != '\0' )
             {
                 if( *stream_pos == '\'' )
@@ -192,18 +190,7 @@ namespace OpenInfraPlatform
                     continue;
                 }
 
-				// We must take care of nested lists, e.g. list_str = "IFCLINEINDEX((1,2,3,4,1))".
-				// This example must result in a single token. Therefore we can only split at a comma
-				// if there is no open bracket.
-				if (*stream_pos == '(')
-					++openBrackets;
-				else if (*stream_pos == ')')
-				{
-					--openBrackets;
-					if(openBrackets < 0)
-						throw IfcAlignment1x1Exception( "tokenizeList: Unmatched closing bracket", __func__ );
-				}
-				else if( *stream_pos == ',' && openBrackets == 0 )
+                if( *stream_pos == ',' )
                 {
                     std::string item( last_token, stream_pos-last_token );
                     if( item.at(0) == '\'' && item.at(item.size()-1) == '\'' )
@@ -241,9 +228,6 @@ namespace OpenInfraPlatform
                     list_items.push_back( item );
                 }
             }
-
-			if(openBrackets > 0)
-				throw IfcAlignment1x1Exception( "tokenizeList: Unmatched opening bracket", __func__ );
         }
 
         void tokenizeEntityList( std::string& list_str, std::vector<int>& list_items )
@@ -730,10 +714,7 @@ namespace OpenInfraPlatform
 
         void tokenizeInlineArgument( std::string arg, std::string& keyword, std::string& inline_arg )
         {
-			keyword.clear();
-			inline_arg.clear();
-
-			if( arg.size() == 0 )
+            if( arg.size() == 0 )
             {
                 throw IfcAlignment1x1Exception( "tokenizeInlineArgument: arg.size() == 0", __func__ );
             }
@@ -750,61 +731,101 @@ namespace OpenInfraPlatform
                 throw IfcAlignment1x1Exception( "tokenizeInlineArgument: argument begins with #, so it is not inline", __func__ );
             }
 
-			auto stream_pos = arg.begin();
-			while (isspace(*stream_pos))
-			{
-				++stream_pos;
-			}
+            char* stream_pos = (char*)arg.c_str();
+            while(isspace(*stream_pos))
+            {
+                ++stream_pos;
+            }
 
-			auto begin_keyword = stream_pos;
+            char* begin_keyword = stream_pos;
             while(isalnum(*stream_pos))
             {
                 ++stream_pos;
             }
 
             // get type name
-			keyword.assign(begin_keyword, stream_pos);
-			std::transform(keyword.begin(), keyword.end(), keyword.begin(), toupper);
-			if (keyword.size() == 0)
+            std::string key( begin_keyword, stream_pos-begin_keyword );
+
+            if( key.size() == 0 )
             {
                 // single argument, for example .T.
                 inline_arg = arg;
                 return;
             }
 
-            // Proceed just after '(', eat whitespace and remove a potential single quote.
-			stream_pos = std::find(stream_pos, arg.end(), '(');
-			if (stream_pos != arg.end())
-				++stream_pos;
-			while (stream_pos != arg.end() && isspace(*stream_pos))
-				++stream_pos;
-			if (stream_pos != arg.end() && *stream_pos == '\'')
-				++stream_pos;
-			if (stream_pos == arg.end())
-			{
-				// Just a key, but no arguments. Is that valid?
-				return;
-			}
-			auto inline_argument_begin = stream_pos;
+            // proceed to '('
+            if( *stream_pos == '(' )
+            {
+                ++stream_pos;
+            }
+            else
+            {
+                while( *stream_pos != '\0' )
+                {
+                    if( *stream_pos == '(' )
+                    {
+                        ++stream_pos;
+                        break;
+                    }
+                    ++stream_pos;
+                }
+            }
 
-			// Find the matching ')' from behind and move just in front of it. Eat surrounding
-			// whitespace and remove a potential trailing single quote.
-			auto reverseEnd = std::string::reverse_iterator(inline_argument_begin);
-			auto inline_argument_reverse = std::find(arg.rbegin(), reverseEnd, ')');
-			if (inline_argument_reverse != reverseEnd)
-				++inline_argument_reverse; // Goes backwards!
-			while (inline_argument_reverse != reverseEnd && isspace(*inline_argument_reverse))
-				++inline_argument_reverse; // Goes backwards!
-			if (inline_argument_reverse != reverseEnd && *inline_argument_reverse == '\'')
-				++inline_argument_reverse; // Goes backwards!
-			if (inline_argument_reverse == reverseEnd)
-			{
-				// Just a key, but no arguments (empty parenthesis). Is that valid?
-				return;
-			}
-			auto inline_argument_end = inline_argument_reverse.base(); // Gets the corresponding forward iterator.
+            // proceed to ')'
+            std::string inline_argument;
+            char* inline_argument_begin = stream_pos;
 
-			inline_arg.assign(inline_argument_begin, inline_argument_end);
+            while( *stream_pos != '\0' )
+            {
+                if( *stream_pos == '\'' )
+                {
+                    ++stream_pos;
+                    // inside string
+                    char look_back = ' ';
+                    while( *stream_pos != '\0' )
+                    {
+                        if( *stream_pos == '\'' )
+                        {
+                            if( look_back == '\\' )
+                            {
+                                // tick is escaped
+                                look_back = *stream_pos;
+                                ++stream_pos;
+                                continue;
+                            }
+                            // else tick marks the end of argument
+                            break;
+                        }
+                        look_back = *stream_pos;
+                        ++stream_pos;
+                    }
+                }
+
+                if( *stream_pos == ')' )
+                {
+                    // skip whitespace
+                    while( isspace( *inline_argument_begin ) )
+                    {
+                        ++inline_argument_begin;
+                    }
+                    char* end_arg = stream_pos-1;
+                    if( *inline_argument_begin == '\'' && *end_arg == '\'' )
+                    {
+                        inline_argument = std::string( inline_argument_begin+1, end_arg-inline_argument_begin-1 );
+                    }
+                    else
+                    {
+                        inline_argument = std::string( inline_argument_begin, end_arg-inline_argument_begin+1 );
+                    }
+
+                    break;
+                }
+                ++stream_pos;
+            }
+
+            std::transform(key.begin(), key.end(), key.begin(), toupper);
+            keyword = key;
+            inline_arg = inline_argument;
         }
     } // end namespace IfcAlignment1x1
 } // end namespace OpenInfraPlatform

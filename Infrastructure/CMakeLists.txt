@@ -86,6 +86,9 @@ include_directories(
 	${OKLABI_ROOT_DIR}/Dienst
 	${QHULL_INCLUDE_DIRS}
 	${RAPTOR2_INCLUDE_DIRS}
+	
+	#Experimental
+	${visit_struct_INCLUDE_DIR}
 )
 
 # Create a target for the library

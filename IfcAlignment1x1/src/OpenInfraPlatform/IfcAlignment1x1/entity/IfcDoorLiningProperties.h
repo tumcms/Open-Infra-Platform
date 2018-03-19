@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcPreDefinedPropertySet.h"
 
@@ -79,3 +80,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcDoorLiningProperties, m_GlobalId, m_OwnerHistory, m_Name, m_Description, m_LiningDepth, m_LiningThickness, m_ThresholdDepth, m_ThresholdThickness, m_TransomThickness, m_TransomOffset, m_LiningOffset, m_ThresholdOffset, m_CasingThickness, m_CasingDepth, m_ShapeAspectStyle, m_LiningToPanelOffsetX, m_LiningToPanelOffsetY);
