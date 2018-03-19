@@ -503,7 +503,7 @@ set(OpenInfraPlatform_UIS
 	src/OpenInfraPlatform/Forms/VerticalAlignmentWindow.ui
 	src/OpenInfraPlatform/Forms/XYZImportDialog.ui
 	src/OpenInfraPlatform/Forms/LicenseAndCopyrightInformation.ui
-	src/OpenInfraPlatform/Forms/CreateCarAccidentReport.ui
+	src/OpenInfraPlatform/Forms/CreateAccidentReport.ui
 )
 
 source_group(OpenInfraPlatform\\UserInterface\\Forms					FILES ${OpenInfraPlatform_UIS})

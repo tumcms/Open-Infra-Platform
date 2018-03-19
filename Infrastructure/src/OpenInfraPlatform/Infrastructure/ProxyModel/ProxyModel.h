@@ -35,11 +35,13 @@
 #include <BlueFramework/Rasterizer/vertex.h>
 #include <boost/noncopyable.hpp>
 #include <vector>
+#include <string>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-struct carAccidentDescription {
+struct accidentReportDescription {
 	buw::Vector3d position;
+	std::string roadName;
 };
 
 class BLUEINFRASTRUCTURE_API ProxyModel {
@@ -55,16 +57,16 @@ public:
 	const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& getIfc4x1Data() const;;
 
 	// Each car accident has a unique id 
-	int addCarAccident(const carAccidentDescription& c );
+	int addAccidentReport(const accidentReportDescription& c );
 
-	int getCarAccidentCount();
+	int getAccidentReportCount();
 
-	void removeCarAccidentAt(const int index);
+	void removeAccidentReportAt(const int index);
 
-	const carAccidentDescription& getCarAccidentByIndex(const int index) const;
+	const accidentReportDescription& getAccidentReportByIndex(const int index) const;
 
 private:
-	std::vector<carAccidentDescription> carAccidents_;
+	std::vector<accidentReportDescription> accidentReports_;
 
 	// IFC4x1 entities
 	std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > Ifc4x1Entities_;
@@ -73,6 +75,6 @@ private:
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 
 namespace buw {
-	using OpenInfraPlatform::Infrastructure::carAccidentDescription;
+	using OpenInfraPlatform::Infrastructure::accidentReportDescription;
 	using OpenInfraPlatform::Infrastructure::ProxyModel;
 }

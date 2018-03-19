@@ -15,26 +15,26 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "CreateCarAccidentReportDialog.h"
+#include "CreateAccidentReportDialog.h"
 
-#include "OpenInfraPlatform/DataManagement/Command/CreateCarAccident.h"
+#include "OpenInfraPlatform/DataManagement/Command/CreateAccidentReport.h"
 #include "OpenInfraPlatform/DataManagement/Data.h"
 
 
-OpenInfraPlatform::UserInterface::CreateCarAccidentReportDialog::CreateCarAccidentReportDialog(QWidget *parent /*= nullptr*/) :
+OpenInfraPlatform::UserInterface::CreateAccidentReportDialog::CreateAccidentReportDialog(QWidget *parent /*= nullptr*/) :
 	QDialog(parent, Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
-	ui_(new Ui::FormCreateCarAccidentReport)
+	ui_(new Ui::FormCreateAccidentReport)
 {
 
 	ui_->setupUi(this);
 }
 
-OpenInfraPlatform::UserInterface::CreateCarAccidentReportDialog::~CreateCarAccidentReportDialog()
+OpenInfraPlatform::UserInterface::CreateAccidentReportDialog::~CreateAccidentReportDialog()
 {
 
 }
 
-void OpenInfraPlatform::UserInterface::CreateCarAccidentReportDialog::on_pushButtonOK_clicked()
+void OpenInfraPlatform::UserInterface::CreateAccidentReportDialog::on_pushButtonOK_clicked()
 {
 	int index = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment();
 	if (index == -1)
@@ -46,15 +46,17 @@ void OpenInfraPlatform::UserInterface::CreateCarAccidentReportDialog::on_pushBut
 	}
 
 	if (OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel()) {
-		double station = 0;
-		buw::ReferenceCounted<buw::CreateCarAccident> actionCreateCarAccident = std::make_shared<buw::CreateCarAccident>(index, station);
-		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().execute(actionCreateCarAccident);
+		buw::ReferenceCounted<buw::IAlignment3D> a = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getAlignmentModel()->getAlignments()[index];
+
+		double station = ui_->lineEditStation->text().toDouble();
+		buw::ReferenceCounted<buw::CreateAccidentReport> actionCreateAccidentReport = std::make_shared<buw:: CreateAccidentReport>(a, station);
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().execute(actionCreateAccidentReport);
 	}
 	
-	hide();
+	//hide();
 }
 
-void OpenInfraPlatform::UserInterface::CreateCarAccidentReportDialog::on_pushButtonCancel_clicked()
+void OpenInfraPlatform::UserInterface::CreateAccidentReportDialog::on_pushButtonCancel_clicked()
 {
 	hide();
 }

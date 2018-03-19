@@ -42,7 +42,7 @@
 #include "OpenInfraPlatform/UserInterface/Tools/CreateLineClothoidClothoidLineDialog.h"
 #include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidArcDialog.h"
 #include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcDialog.h"
-#include "OpenInfraPlatform/UserInterface/CreateCarAccidentReportDialog.h"
+#include "OpenInfraPlatform/UserInterface/CreateAccidentReportDialog.h"
 #include "OpenInfraPlatform/UserInterface/OSMImportDialog.h"
 
 #include "qsimpleupdater.h"
@@ -275,7 +275,7 @@ namespace OpenInfraPlatform
 			VerticalAlignmentWindow*					verticalAlignmentWindow_ = nullptr;
 			XYZImportDialog*							XYZImportDialog_ = nullptr;
 			LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
-			CreateCarAccidentReportDialog*				createCarAccidentReportDialog_ = nullptr;
+			CreateAccidentReportDialog*					createAccidentReportDialog_ = nullptr;
 
 			QProgressBar*								progressBar_;
 			

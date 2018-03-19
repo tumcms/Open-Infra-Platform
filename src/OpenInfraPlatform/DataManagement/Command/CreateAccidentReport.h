@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 #include "OpenInfraPlatform/Infrastructure/ProxyModel/ProxyModel.h"
 #include <BlueFramework/Core/Math/vector.h>
 #include <BlueFramework/Application/DataManagement/Command/ICommand.h>
@@ -29,26 +30,25 @@ namespace OpenInfraPlatform
 	{
 		namespace Command
 		{
-			class CreateCarAccident : public buw::ICommand
+			class CreateAccidentReport : public buw::ICommand
 			{
 			public:
-				CreateCarAccident(const int selectedIndex, const double station);
-				virtual ~CreateCarAccident();
+				 CreateAccidentReport(buw::ReferenceCounted<buw::IAlignment3D> alignment, const double station);
+				virtual ~ CreateAccidentReport();
 
 				virtual void execute();
 				virtual void unexecute();
 
 			private:
-				int selectedIndex_;
-				double station_;
-				int CarAccidentReportIndex_ = -1;
-				buw::carAccidentDescription ca_;
-			}; // end class SelectAlignment
+				int AccidentReportIndex_ = -1;
+				buw::accidentReportDescription ca_;
+				buw::ReferenceCounted<buw::IAlignment3D> alignment_;
+			}; // end class CreateAccidentReport
 		} // end namespace Action
 	} // end namespace DataManagement
 } // end namespace OpenInfraPlatform
 
 namespace buw
 {
-	using OpenInfraPlatform::DataManagement::Command::CreateCarAccident;
+	using OpenInfraPlatform::DataManagement::Command:: CreateAccidentReport;
 }

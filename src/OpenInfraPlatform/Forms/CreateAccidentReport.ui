@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FormCreateCarAccidentReport</class>
- <widget class="QWidget" name="FormCreateCarAccidentReport">
+ <class>FormCreateAccidentReport</class>
+ <widget class="QWidget" name="FormCreateAccidentReport">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>CarAccidentReport</string>
+   <string>AccidentReport</string>
   </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
@@ -34,6 +34,9 @@
      <width>113</width>
      <height>20</height>
     </rect>
+   </property>
+   <property name="text">
+    <string>0</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButtonCancel">
