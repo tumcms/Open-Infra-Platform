@@ -27,15 +27,16 @@
 #include <fstream>
 #include <iomanip>
 
+#include <OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntitiesMap.h>
+
 #include <BlueFramework/Engine/ResourceManagment/download.h>
 
 
 class OpenInfraPlatform::Infrastructure::ExportIfcOWL4x1::ExportIfcOWL4x1Impl {
 public:
 	ExportIfcOWL4x1Impl(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename) {
-		//const std::string url = "http://www.buildingsmart-tech.org/ifc/IFC4x1/final/IFC4x1_FINAL.exp";
-		//buw::downloadFile(url, "./IFC4x1_FINAL.exp");
-		//OpenInfraPlatform::ExpressBinding::Schema schema = OpenInfraPlatform::ExpressBinding::Schema::read("IFC4x1_FINAL.exp");
+		
+		OpenInfraPlatform::ExpressBinding::Schema schema = OpenInfraPlatform::ExpressBinding::Schema::read("IFC4x1_RC3.exp");
 		
 		auto uuid = boost::uuids::uuid();
 		std::string temp = "./";
@@ -44,7 +45,7 @@ public:
 
 		auto ifcExporter = buw::makeReferenceCounted<buw::ExportIfcAlignment1x1>(ifcAlignmentExportDescription(),am, dem, temp);
 		boost::filesystem::remove(temp);
-
+		
 		auto model = ifcExporter->getIfcAlignment1x1Model();
 
 		//Write header to file
@@ -69,8 +70,13 @@ public:
 		
 		for(auto entry : model->getMapIfcObjects()) {
 			auto entity = *(entry.second);
-			auto name = entity.classname();
-			//auto entityType = schema.getEntityByName(name);
+			buw::String name;
+			for(auto it : OpenInfraPlatform::IfcAlignment1x1::initializers_IfcAlignment1x1_entity) {
+				if(it.second == entity.m_entity_enum)
+					name = buw::String(it.first);
+			}
+			
+			auto entityType = schema.getEntityByName(name);
 
 			if(visit_struct::field_count(entity) > 2) {
 				std::cout << name << std::endl;

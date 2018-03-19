@@ -32,6 +32,7 @@ include_directories(
   src/OpenInfraPlatform/IfcAlignment1x1
   src
   ${Boost_INCLUDE_DIR}
+  ${visit_struct_INCLUDE_DIR}
 )
 
 file(GLOB OpenInfraPlatform_IfcAlignment1x1_Source              src/OpenInfraPlatform/IfcAlignment1x1/*.*)

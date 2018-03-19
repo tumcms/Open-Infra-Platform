@@ -268,6 +268,8 @@ include_directories(
 	external/QSimpleUpdater/dialogs
 	Infrastructure/canonicalHeaders
 	${ZLIB_INCLUDE_DIRS}
+	#Experimental
+	${visit_struct_INCLUDE_DIR}
 )
 
 link_directories(
