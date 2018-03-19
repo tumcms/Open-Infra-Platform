@@ -146,6 +146,9 @@ find_package(qhull REQUIRED)
 #Raptor
 find_package(raptor2 REQUIRED)
 
+#visit_struct
+find_path(visit_struct_INCLUDE_DIR REQUIRED)
+
 # Find the Qt components
 set(QT5_COMPONENTS
 	Core 
