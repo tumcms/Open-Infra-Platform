@@ -26,17 +26,18 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <iomanip>
+#include <typeinfo>
 
 #include <OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntitiesMap.h>
 
 #include <BlueFramework/Engine/ResourceManagment/download.h>
 
+#include <QString>
+#include <QStringList>
 
 class OpenInfraPlatform::Infrastructure::ExportIfcOWL4x1::ExportIfcOWL4x1Impl {
 public:
 	ExportIfcOWL4x1Impl(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename) {
-		
-		OpenInfraPlatform::ExpressBinding::Schema schema = OpenInfraPlatform::ExpressBinding::Schema::read("IFC4x1_RC3.exp");
 		
 		auto uuid = boost::uuids::uuid();
 		std::string temp = "./";
@@ -68,30 +69,35 @@ public:
 		raptor_uri* rdf_uri = raptor_new_uri(world_, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		raptor_serializer_set_namespace(serializer_, rdf_uri, rdf_prefix);
 		
+
 		for(auto entry : model->getMapIfcObjects()) {
-			auto entity = *(entry.second);
-			buw::String name;
-			for(auto it : OpenInfraPlatform::IfcAlignment1x1::initializers_IfcAlignment1x1_entity) {
-				if(it.second == entity.m_entity_enum)
-					name = buw::String(it.first);
-			}
-			
-			auto entityType = schema.getEntityByName(name);
+			auto entity = entry.second;
+			//std::cout << visit_struct::field_count(*entity) << std::endl;
 
-			if(visit_struct::field_count(entity) > 2) {
-				std::cout << name << std::endl;
-				//std::cout << entityType.getName() << std::endl;
-				//std::fprintf(outfile, "%s\n", name);
+			if(entity->classname() == "IfcPerson") {
+				auto person = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcPerson>(entity);
 
-				//std::cout << visit_struct::field_count(entity) << std::endl;;
+				visit_struct::for_each(*person,
+					[](const char * name, auto & value) {
+					std::cout << name << " is a " << typeid(value).name() << std::endl;
+					QString value_name = typeid(value).name();
+					QStringList tokens = value_name.split("class ");
+					tokens.filter("<");
+					tokens.filter(">");
+					for(auto word : tokens)
+						std::cout << word.toStdString() << std::endl;
+					
+					
 
-				visit_struct::for_each(entity,
-					[this](const char * name, const auto & value) {
-					std::cout << name << ": " << value << std::endl;
-					//std::fprintf(outfile, "%s:%s\n", name, value);
+					
+
+					/*if(typeid(value) == typeid(std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcIdentifier>)) {
+						if(typeid(*(value)) == typeid(OpenInfraPlatform::IfcAlignment1x1::IfcIdentifier)) {
+							std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcIdentifier> ptr = (std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcIdentifier>) value;
+						}
+					}*/
+					
 				});
-
-				std::cout << std::endl;
 			}
 		}
 

@@ -60,7 +60,7 @@ namespace OpenInfraPlatform
 			virtual void readStepData(std::vector<std::string>& args, const std::map<int, shared_ptr<IfcAlignment1x1Entity> >& map);
 			virtual void setInverseCounterparts(shared_ptr<IfcAlignment1x1Entity> ptr_self);
 			virtual void unlinkSelf();
-			virtual const char* classname() const { return "IfcPerson"; }
+			virtual const char* classname() const override { return "IfcPerson"; }
 
 			// IfcPerson -----------------------
 			// attributes:
