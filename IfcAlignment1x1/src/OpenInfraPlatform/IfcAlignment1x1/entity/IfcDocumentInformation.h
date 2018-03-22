@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcDocumentSelect.h"
 #include "IfcExternalInformation.h"
@@ -89,3 +90,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcDocumentInformation, m_Identification, m_Name, m_Description, m_Location, m_Purpose, m_IntendedUse, m_Scope, m_Revision, m_DocumentOwner, m_Editors, m_CreationTime, m_LastRevisionTime, m_ElectronicFormat, m_ValidFrom, m_ValidUntil, m_Confidentiality, m_Status);

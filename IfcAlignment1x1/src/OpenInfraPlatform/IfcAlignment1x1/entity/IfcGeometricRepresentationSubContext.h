@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcGeometricRepresentationContext.h"
 
@@ -61,3 +62,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcGeometricRepresentationSubContext, m_ContextIdentifier, m_ContextType, m_CoordinateSpaceDimension, m_Precision, m_WorldCoordinateSystem, m_TrueNorth, m_ParentContext, m_TargetScale, m_TargetView, m_UserDefinedTargetView);

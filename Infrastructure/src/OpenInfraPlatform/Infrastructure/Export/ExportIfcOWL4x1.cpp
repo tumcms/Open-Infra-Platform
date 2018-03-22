@@ -17,19 +17,43 @@
 */
 
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
+#include "OpenInfraPlatform/ExpressBinding/Meta/Schema.h"
 #include "raptor2/raptor2.h"
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/filesystem.hpp>
 #include <fstream>
 #include <iomanip>
+
+#include <OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntitiesMap.h>
+
+#include <BlueFramework/Engine/ResourceManagment/download.h>
+
 
 class OpenInfraPlatform::Infrastructure::ExportIfcOWL4x1::ExportIfcOWL4x1Impl {
 public:
 	ExportIfcOWL4x1Impl(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename) {
+		
+		OpenInfraPlatform::ExpressBinding::Schema schema = OpenInfraPlatform::ExpressBinding::Schema::read("IFC4x1_RC3.exp");
+		
+		auto uuid = boost::uuids::uuid();
+		std::string temp = "./";
+		temp.append(boost::uuids::to_string(uuid));
+		temp.append(".ifc");
+
+		auto ifcExporter = buw::makeReferenceCounted<buw::ExportIfcAlignment1x1>(ifcAlignmentExportDescription(),am, dem, temp);
+		boost::filesystem::remove(temp);
+		
+		auto model = ifcExporter->getIfcAlignment1x1Model();
+
+		//Write header to file
 		outfile = fopen(filename.c_str(), "w");
 
 		world_ = raptor_new_world();
 
-		if (boost::ends_with(filename, "rdf"))
+		if(boost::ends_with(filename, "rdf"))
 			serializer_ = raptor_new_serializer(world_, "rdfxml-abbrev");
 		else
 			serializer_ = raptor_new_serializer(world_, "turtle");
@@ -43,7 +67,35 @@ public:
 		const unsigned char* rdf_prefix = (const unsigned char*)"rdf";
 		raptor_uri* rdf_uri = raptor_new_uri(world_, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		raptor_serializer_set_namespace(serializer_, rdf_uri, rdf_prefix);
+		
+		for(auto entry : model->getMapIfcObjects()) {
+			auto entity = *(entry.second);
+			buw::String name;
+			for(auto it : OpenInfraPlatform::IfcAlignment1x1::initializers_IfcAlignment1x1_entity) {
+				if(it.second == entity.m_entity_enum)
+					name = buw::String(it.first);
+			}
+			
+			if(visit_struct::field_count(entity) > 2) {
+				std::cout << name << std::endl;
+				//std::cout << entityType.getName() << std::endl;
+				//std::fprintf(outfile, "%s\n", name);
 
+				//std::cout << visit_struct::field_count(entity) << std::endl;;
+
+				visit_struct::for_each(entity,
+					[this](const char * name, const auto & value) {
+					std::cout << name << ": " << value << std::endl;
+					//std::fprintf(outfile, "%s:%s\n", name, value);
+				});
+
+				std::cout << std::endl;
+			}
+		}
+
+
+		
+		/*
 		std::vector<std::string> collectedAxisUniqueBlankTermNames;
 
 		for (int i = 0; i < am->getAlignmentCount(); i++) {
@@ -85,7 +137,7 @@ public:
 
 
 
-		}
+		}*/
 	}
 
 	virtual ~ExportIfcOWL4x1Impl() {

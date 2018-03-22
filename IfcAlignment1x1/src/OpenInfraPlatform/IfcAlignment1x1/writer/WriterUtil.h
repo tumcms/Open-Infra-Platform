@@ -69,15 +69,15 @@ namespace OpenInfraPlatform
 
 			for( it=vec.begin(); it!=vec.end(); ++it )
 			{
-				std::stringstream ss;
-				ss << (*it)->m_value;
-				std::string tmp = convertToStepRealRepresentation(ss.str());
+				// std::stringstream ss;
+				// ss << (*it)->m_value;
+				// std::string tmp = convertToStepRealRepresentation(ss.str());
 
 				if( it != vec.begin() )
 				{
 					stream << ",";
 				}
-				stream << tmp; //(*it)->m_value;
+				stream << (*it)->m_value; //tmp;
 			}
 			stream << ")";
 		}

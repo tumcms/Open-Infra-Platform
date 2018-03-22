@@ -25,6 +25,8 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include "../model/shared_ptr.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntityEnums.h"
 
+#include <visit_struct/visit_struct.hpp>
+
 namespace OpenInfraPlatform
 {
     namespace IfcAlignment1x1
@@ -102,3 +104,5 @@ namespace OpenInfraPlatform
         };
     } // end namespace IfcAlignment1x1
 } // end namespace OpenInfraPlatform
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, m_arguments, m_entity_enum);

@@ -22,7 +22,6 @@
 #include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Types.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/guid/CreateGuid_64.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Exception.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/model/UnitConverter.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/reader/Reader.h"
@@ -43,135 +42,143 @@ public:
                               buw::ReferenceCounted<buw::DigitalElevationModel> dem,
                               const std::string& filename)
         : Export(am, dem, nullptr, filename), entityId_(1), model_(nullptr) {
+
         // create model
-        model_ = std::shared_ptr<IfcAlignment1x1Model>(new IfcAlignment1x1Model());
+		createModel(desc);
 
-        settings_ = desc;
+		writeStepFile(filename);
 
-        try {
-            // Person, Organization, Application
-            shared_ptr<IfcPerson> person = createIfcPerson();
-            shared_ptr<IfcOrganization> organization = createIfcOrganization();
-            shared_ptr<IfcApplication> application = createIfcApplication(organization);
-
-            auto personAndOrganization = createIfcPersonAndOrganization(person, organization);
-
-            shared_ptr<IfcOwnerHistory> ownerHistory = createIfcOwnerHistory(personAndOrganization, application);
-
-            zeroDimExp_ = std::make_shared<IfcDimensionalExponents>(createEntityId());
-            zeroDimExp_->m_LengthExponent = 0;
-            zeroDimExp_->m_MassExponent = 0;
-            zeroDimExp_->m_TimeExponent = 0;
-            zeroDimExp_->m_ElectricCurrentExponent = 0;
-            zeroDimExp_->m_ThermodynamicTemperatureExponent = 0;
-            zeroDimExp_->m_AmountOfSubstanceExponent = 0;
-            zeroDimExp_->m_LuminousIntensityExponent = 0;
-            model_->insertEntity(zeroDimExp_);
-
-            // create project
-            shared_ptr<IfcProject> project = std::make_shared<IfcProject>(createEntityId());
-            project->m_GlobalId = createGlobalId();
-            project->m_Name = std::make_shared<IfcLabel>("IfcAlignment Project");
-            project->m_UnitsInContext = createIfcUnitAssignment(); // Units
-            project->m_OwnerHistory = ownerHistory;
-            model_->insertEntity(project);
-
-            // create site
-            shared_ptr<IfcAxis2Placement3D> site_axisPlacement = createIfcAxis2Placement3D(createIfcCartesianPoint(0, 0, 0));
-            site_localPlacement = createIfcLocalPlacement(site_axisPlacement);
-
-            shared_ptr<IfcSite> site = std::make_shared<IfcSite>(createEntityId());
-            site->m_GlobalId = createGlobalId();
-            site->m_OwnerHistory = nullptr; // ownerHistory;
-            site->m_Description = std::make_shared<IfcText>("My description.");
-            site->m_Name = std::make_shared<IfcLabel>("Terrain surface");
-            site->m_ObjectPlacement = site_localPlacement;
-            site->m_RefElevation = std::make_shared<IfcLengthMeasure>(0.0);
-            model_->insertEntity(site);
-
-            // create map conversion
-            shared_ptr<IfcProjectedCRS> projectedCRS = std::make_shared<IfcProjectedCRS>(createEntityId());
-            model_->insertEntity(projectedCRS);
-            projectedCRS->m_Name = std::make_shared<IfcLabel>("EPSG:31467"); // todo get EPSG code from Gau�-Krueger coordinates
-            projectedCRS->m_Description = std::make_shared<IfcText>("EPSG:31467 - DHDN / 3-Degree Gauss-Krueger Zone 3");
-            projectedCRS->m_GeodeticDatum = std::make_shared<IfcIdentifier>("EPSG:31467");
-            projectedCRS->m_MapProjection = std::make_shared<IfcIdentifier>("Gauss-Krueger");
-            projectedCRS->m_MapZone = std::make_shared<IfcIdentifier>("3");
-
-            shared_ptr<IfcSIUnit> lengthUnit = std::make_shared<IfcSIUnit>(createEntityId());
-            model_->insertEntity(lengthUnit);
-            lengthUnit->m_UnitType = std::make_shared<IfcUnitEnum>(IfcUnitEnum::ENUM_LENGTHUNIT);
-            lengthUnit->m_Name = std::make_shared<IfcSIUnitName>(IfcSIUnitName::ENUM_METRE);
-
-            projectedCRS->m_MapUnit = lengthUnit;
-
-            buw::Vector3d centerOffset;
-            if (alignmentModel_->getAlignmentCount() > 0)
-                centerOffset = alignmentModel_->getAlignment(0)->getPosition(0);
-            else
-                centerOffset = digitalElevationModel_->getCenterPoint();
-
-            // in my view (and as an implementer agreement) we should not use the height setting in the IfcMapConversion - leave it 0.00 (sea level according to the CRS). 
-            // Same for IfcSite. Then the z-Value would be in the vertical alignment values and in the z Values of the TIN.
-            centerOffset.z() = 0;
-
-            if (desc.roundOffsetMapConversion)
-            {
-                centerOffset = buw::Vector3d(
-                    std::round(centerOffset.x()),
-                    std::round(centerOffset.y()),
-                    std::round(centerOffset.z())
-                );
-            }
-
-            // connect site and project with IfcRelAggregates
-            shared_ptr<IfcRelAggregates> connection = std::make_shared<IfcRelAggregates>(createEntityId());
-            model_->insertEntity(connection);
-            connection->m_GlobalId = createGlobalId();
-            connection->m_OwnerHistory = nullptr; // ownerHistory;
-            connection->m_RelatingObject = project;
-            connection->m_RelatedObjects.push_back(site);
-
-            shared_ptr<IfcRelContainedInSpatialStructure> c2 = std::make_shared<IfcRelContainedInSpatialStructure>(createEntityId());
-            model_->insertEntity(c2);
-            c2->m_GlobalId = createGlobalId();
-            c2->m_OwnerHistory = nullptr; // ownerHistory;
-            c2->m_RelatingStructure = site;
-
-            shared_ptr<IfcMapConversion> mapConversion = std::make_shared<IfcMapConversion>(createEntityId());
-            model_->insertEntity(mapConversion);
-            // mapConversion->m_SourceCRS =
-            mapConversion->m_TargetCRS = projectedCRS;
-            mapConversion->m_Eastings = std::make_shared<IfcLengthMeasure>(centerOffset.x());
-            mapConversion->m_Northings = std::make_shared<IfcLengthMeasure>(centerOffset.y());
-            mapConversion->m_OrthogonalHeight = std::make_shared<IfcLengthMeasure>(centerOffset.z());
-
-            shared_ptr<IfcGeometricRepresentationContext> geometricRepresentationContext = std::make_shared<IfcGeometricRepresentationContext>(createEntityId());
-
-            geometricRepresentationContext->m_ContextIdentifier = nullptr; // std::make_shared<IfcLabel>("Body");
-            geometricRepresentationContext->m_ContextType = std::make_shared<IfcLabel>("Model");
-            geometricRepresentationContext->m_CoordinateSpaceDimension = std::make_shared<IfcDimensionCount>(3);
-            geometricRepresentationContext->m_WorldCoordinateSystem = site_axisPlacement;
-            geometricRepresentationContext->m_Precision = nullptr; // std::make_shared<IfcReal>(1e-5);
-            model_->insertEntity(geometricRepresentationContext);
-            mapConversion->m_SourceCRS = geometricRepresentationContext;
-
-            project->m_RepresentationContexts.push_back(geometricRepresentationContext);
-
-            if (desc.exportTerrain) {
-                exportTerrain(digitalElevationModel_, centerOffset, geometricRepresentationContext, c2);
-            }
-
-            // export alignments
-            if (desc.exportAlignment && desc.schemaVersion == eIfcSchemaVersion::IFC4x1) {
-                exportAlignment(alignmentModel_->getAlignments(), site_axisPlacement, geometricRepresentationContext, centerOffset, c2);
-            }
-
-            wirteStepFile(filename);
-        } catch (const IfcAlignment1x1Exception& e) {
-            std::cout << e.what() << std::endl;
-        }
     }
+
+	void createModel(const OpenInfraPlatform::Infrastructure::ifcAlignmentExportDescription & desc)
+	{
+		model_ = std::shared_ptr<IfcAlignment1x1Model>(new IfcAlignment1x1Model());
+
+		settings_ = desc;
+
+		try {
+			// Person, Organization, Application
+			shared_ptr<IfcPerson> person = createIfcPerson();
+			shared_ptr<IfcOrganization> organization = createIfcOrganization();
+			shared_ptr<IfcApplication> application = createIfcApplication(organization);
+
+			auto personAndOrganization = createIfcPersonAndOrganization(person, organization);
+
+			shared_ptr<IfcOwnerHistory> ownerHistory = createIfcOwnerHistory(personAndOrganization, application);
+
+			zeroDimExp_ = std::make_shared<IfcDimensionalExponents>(createEntityId());
+			zeroDimExp_->m_LengthExponent = 0;
+			zeroDimExp_->m_MassExponent = 0;
+			zeroDimExp_->m_TimeExponent = 0;
+			zeroDimExp_->m_ElectricCurrentExponent = 0;
+			zeroDimExp_->m_ThermodynamicTemperatureExponent = 0;
+			zeroDimExp_->m_AmountOfSubstanceExponent = 0;
+			zeroDimExp_->m_LuminousIntensityExponent = 0;
+			model_->insertEntity(zeroDimExp_);
+
+			// create project
+			shared_ptr<IfcProject> project = std::make_shared<IfcProject>(createEntityId());
+			project->m_GlobalId = createGlobalId();
+			project->m_Name = std::make_shared<IfcLabel>("IfcAlignment Project");
+			project->m_UnitsInContext = createIfcUnitAssignment(); // Units
+			project->m_OwnerHistory = ownerHistory;
+			model_->insertEntity(project);
+
+			// create site
+			shared_ptr<IfcAxis2Placement3D> site_axisPlacement = createIfcAxis2Placement3D(createIfcCartesianPoint(0, 0, 0));
+			site_localPlacement = createIfcLocalPlacement(site_axisPlacement);
+
+			shared_ptr<IfcSite> site = std::make_shared<IfcSite>(createEntityId());
+			site->m_GlobalId = createGlobalId();
+			site->m_OwnerHistory = nullptr; // ownerHistory;
+			site->m_Description = std::make_shared<IfcText>("My description.");
+			site->m_Name = std::make_shared<IfcLabel>("Terrain surface");
+			site->m_ObjectPlacement = site_localPlacement;
+			site->m_RefElevation = std::make_shared<IfcLengthMeasure>(0.0);
+			model_->insertEntity(site);
+
+			// create map conversion
+			shared_ptr<IfcProjectedCRS> projectedCRS = std::make_shared<IfcProjectedCRS>(createEntityId());
+			model_->insertEntity(projectedCRS);
+			projectedCRS->m_Name = std::make_shared<IfcLabel>("EPSG:31467"); // todo get EPSG code from Gau�-Krueger coordinates
+			projectedCRS->m_Description = std::make_shared<IfcText>("EPSG:31467 - DHDN / 3-Degree Gauss-Krueger Zone 3");
+			projectedCRS->m_GeodeticDatum = std::make_shared<IfcIdentifier>("EPSG:31467");
+			projectedCRS->m_MapProjection = std::make_shared<IfcIdentifier>("Gauss-Krueger");
+			projectedCRS->m_MapZone = std::make_shared<IfcIdentifier>("3");
+
+			shared_ptr<IfcSIUnit> lengthUnit = std::make_shared<IfcSIUnit>(createEntityId());
+			model_->insertEntity(lengthUnit);
+			lengthUnit->m_UnitType = std::make_shared<IfcUnitEnum>(IfcUnitEnum::ENUM_LENGTHUNIT);
+			lengthUnit->m_Name = std::make_shared<IfcSIUnitName>(IfcSIUnitName::ENUM_METRE);
+
+			projectedCRS->m_MapUnit = lengthUnit;
+
+			buw::Vector3d centerOffset;
+			if(alignmentModel_->getAlignmentCount() > 0)
+				centerOffset = alignmentModel_->getAlignment(0)->getPosition(0);
+			else
+				centerOffset = digitalElevationModel_->getCenterPoint();
+
+			// in my view (and as an implementer agreement) we should not use the height setting in the IfcMapConversion - leave it 0.00 (sea level according to the CRS). 
+			// Same for IfcSite. Then the z-Value would be in the vertical alignment values and in the z Values of the TIN.
+			centerOffset.z() = 0;
+
+			if(desc.roundOffsetMapConversion) {
+				centerOffset = buw::Vector3d(
+					std::round(centerOffset.x()),
+					std::round(centerOffset.y()),
+					std::round(centerOffset.z())
+				);
+			}
+
+			// connect site and project with IfcRelAggregates
+			shared_ptr<IfcRelAggregates> connection = std::make_shared<IfcRelAggregates>(createEntityId());
+			model_->insertEntity(connection);
+			connection->m_GlobalId = createGlobalId();
+			connection->m_OwnerHistory = nullptr; // ownerHistory;
+			connection->m_RelatingObject = project;
+			connection->m_RelatedObjects.push_back(site);
+
+			shared_ptr<IfcRelContainedInSpatialStructure> c2 = std::make_shared<IfcRelContainedInSpatialStructure>(createEntityId());
+			model_->insertEntity(c2);
+			c2->m_GlobalId = createGlobalId();
+			c2->m_OwnerHistory = nullptr; // ownerHistory;
+			c2->m_RelatingStructure = site;
+
+			shared_ptr<IfcMapConversion> mapConversion = std::make_shared<IfcMapConversion>(createEntityId());
+			model_->insertEntity(mapConversion);
+			// mapConversion->m_SourceCRS =
+			mapConversion->m_TargetCRS = projectedCRS;
+			mapConversion->m_Eastings = std::make_shared<IfcLengthMeasure>(centerOffset.x());
+			mapConversion->m_Northings = std::make_shared<IfcLengthMeasure>(centerOffset.y());
+			mapConversion->m_OrthogonalHeight = std::make_shared<IfcLengthMeasure>(centerOffset.z());
+
+			shared_ptr<IfcGeometricRepresentationContext> geometricRepresentationContext = std::make_shared<IfcGeometricRepresentationContext>(createEntityId());
+
+			geometricRepresentationContext->m_ContextIdentifier = nullptr; // std::make_shared<IfcLabel>("Body");
+			geometricRepresentationContext->m_ContextType = std::make_shared<IfcLabel>("Model");
+			geometricRepresentationContext->m_CoordinateSpaceDimension = std::make_shared<IfcDimensionCount>(3);
+			geometricRepresentationContext->m_WorldCoordinateSystem = site_axisPlacement;
+			geometricRepresentationContext->m_Precision = nullptr; // std::make_shared<IfcReal>(1e-5);
+			model_->insertEntity(geometricRepresentationContext);
+			mapConversion->m_SourceCRS = geometricRepresentationContext;
+
+			project->m_RepresentationContexts.push_back(geometricRepresentationContext);
+
+			if(desc.exportTerrain) {
+				exportTerrain(digitalElevationModel_, centerOffset, geometricRepresentationContext, c2);
+			}
+
+			// export alignments
+			if(desc.exportAlignment && desc.schemaVersion == eIfcSchemaVersion::IFC4x1) {
+				exportAlignment(alignmentModel_->getAlignments(), site_axisPlacement, geometricRepresentationContext, centerOffset, c2);
+			}
+
+		}
+		catch(const IfcAlignment1x1Exception& e) {
+			std::cout << e.what() << std::endl;
+		}
+	}
 
     virtual ~IfcAlignment1x1ExportImpl() {
     }
@@ -295,7 +302,7 @@ public:
         }
     }
 
-    void wirteStepFile(const std::string& filename) {
+    void writeStepFile(const std::string& filename) {
         // writer
         shared_ptr<IfcStepWriter> step_writer = shared_ptr<IfcStepWriter>(new IfcStepWriter());
         std::stringstream stream;
@@ -357,6 +364,11 @@ public:
         std::ofstream textFile(filename.c_str());
         textFile << stream.str().c_str();
     }
+
+	std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> getIfcAlignment1x1Model()
+	{
+		return model_;
+	}
 
 private:
     void convertVerticalAlignment(buw::ReferenceCounted<buw::Alignment2DBased3D> alignment,
@@ -1212,7 +1224,7 @@ private:
 private:
     shared_ptr<IfcLocalPlacement> site_localPlacement;
 
-    std::shared_ptr<IfcAlignment1x1Model> model_;
+    std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> model_;
     int entityId_;
     ifcAlignmentExportDescription settings_;
 
@@ -1230,6 +1242,11 @@ OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::ExportIfcAlignment1x1(
                                                                                 buw::ReferenceCounted<buw::DigitalElevationModel> dem,
                                                                                 const std::string& filename)
     : Export(am, dem, filename), impl_(new IfcAlignment1x1ExportImpl(desc, am, dem, filename)) {
+}
+
+buw::ReferenceCounted<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::getIfcAlignment1x1Model()
+{
+	return impl_->getIfcAlignment1x1Model();
 }
 
 OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::~ExportIfcAlignment1x1() {

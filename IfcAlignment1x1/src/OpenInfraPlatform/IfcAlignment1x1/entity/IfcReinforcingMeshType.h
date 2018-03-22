@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcReinforcingElementType.h"
 
@@ -75,3 +76,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingMeshType, m_GlobalId, m_OwnerHistory, m_Name, m_Description, m_ApplicableOccurrence, m_HasPropertySets, m_RepresentationMaps, m_Tag, m_ElementType, m_PredefinedType, m_MeshLength, m_MeshWidth, m_LongitudinalBarNominalDiameter, m_TransverseBarNominalDiameter, m_LongitudinalBarCrossSectionArea, m_TransverseBarCrossSectionArea, m_LongitudinalBarSpacing, m_TransverseBarSpacing, m_BendingShapeCode, m_BendingParameters);

@@ -1,6 +1,6 @@
 # For make-based builds, defines make target named test.
 # For Visual Studio builds, defines Visual Studio project named RUN_TESTS.
-enable_testing()
+#enable_testing()
 
 # Google Test
 set(gtest_force_shared_crt ON CACHE INTERNAL "")
@@ -17,4 +17,5 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Inf
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/HorizontalAlignmentElement2DLine)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/OkstraExportImport)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/LandInfraExportImport)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/IfcOWLExport)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/TrafficSign)

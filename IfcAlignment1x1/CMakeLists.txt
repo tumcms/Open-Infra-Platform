@@ -1,3 +1,24 @@
+#
+#    Copyright(c) 2018 Technical University of Munich
+#    Chair of Computational Modeling and Simulation.
+#
+#    TUM Open Infra Platform is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License Version 3
+#    as published by the Free Software Foundation.
+#
+#    TUM Open Infra Platform is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+# This file has been automatically generated using the TUM Open Infra Platform
+# Early Binding EXPRESS Generator. Any changes to this file my be lost in the future.
+
 project(OpenInfraPlatform.IfcAlignment1x1)
 
 set(CMAKE_DEBUG_POSTFIX "d")
@@ -11,6 +32,7 @@ include_directories(
   src/OpenInfraPlatform/IfcAlignment1x1
   src
   ${Boost_INCLUDE_DIR}
+  ${visit_struct_INCLUDE_DIR}
 )
 
 file(GLOB OpenInfraPlatform_IfcAlignment1x1_Source              src/OpenInfraPlatform/IfcAlignment1x1/*.*)
@@ -46,3 +68,19 @@ if (WIN32)
 	target_link_libraries(OpenInfraPlatform.IfcAlignment1x1
 	Rpcrt4.lib)
 endif (WIN32)
+
+Install(DIRECTORY ${PROJECT_SOURCE_DIR}/build/${MSVC_VERSION_STRING}/Debug DESTINATION lib/${MSVC_VERSION_STRING}/x64
+	COMPONENT IfcAlignment1x1
+	FILES_MATCHING PATTERN "*.lib" PATTERN "*.pdb"
+)
+
+
+Install(DIRECTORY ${PROJECT_SOURCE_DIR}/build/${MSVC_VERSION_STRING}/Release DESTINATION lib/${MSVC_VERSION_STRING}/x64
+	COMPONENT IfcAlignment1x1
+	FILES_MATCHING PATTERN "*.lib"
+)
+
+Install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/ DESTINATION include
+	COMPONENT IfcAlignment1x1
+	FILES_MATCHING PATTERN "*.h"
+)

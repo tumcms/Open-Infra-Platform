@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcBSplineSurface.h"
 
@@ -63,3 +64,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcBSplineSurfaceWithKnots, m_UDegree, m_VDegree, m_ControlPointsList, m_SurfaceForm, m_UClosed, m_VClosed, m_SelfIntersect, m_UMultiplicities, m_VMultiplicities, m_UKnots, m_VKnots, m_KnotSpec);

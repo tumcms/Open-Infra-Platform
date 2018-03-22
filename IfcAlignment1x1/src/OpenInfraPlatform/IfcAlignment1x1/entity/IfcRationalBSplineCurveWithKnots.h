@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcBSplineCurveWithKnots.h"
 
@@ -55,3 +56,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcRationalBSplineCurveWithKnots, m_Degree, m_ControlPointsList, m_CurveForm, m_ClosedCurve, m_SelfIntersect, m_KnotMultiplicities, m_Knots, m_KnotSpec, m_WeightsData);

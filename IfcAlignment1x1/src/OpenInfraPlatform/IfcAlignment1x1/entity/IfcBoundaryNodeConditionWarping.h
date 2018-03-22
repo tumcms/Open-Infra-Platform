@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcBoundaryNodeCondition.h"
 
@@ -55,3 +56,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryNodeConditionWarping, m_Name, m_TranslationalStiffnessX, m_TranslationalStiffnessY, m_TranslationalStiffnessZ, m_RotationalStiffnessX, m_RotationalStiffnessY, m_RotationalStiffnessZ, m_WarpingStiffness);

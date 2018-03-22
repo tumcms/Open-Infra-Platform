@@ -4,14 +4,14 @@ import sys
 	
 CurrentPath = os.path.dirname(__file__)
 
-def DetermineCurrentRevison():
+def DetermineCurrentRevision():
 	os.environ['PATH'] = "%PATH;C:\Program Files\TortoiseHg"
 	os.environ["LANGUAGE"] = "en_US.UTF-8"
 	
 	pattern = r"""
 				changeset: 		# Result preceeded by 'changeset:'		
 				(?:\s+)			# Unknown amount of whitespaces
-				([0-9]{2})		# Four digit revision number				
+				([0-9]{3})		# Four digit revision number				
 			  """
 			  
 	regex = re.compile(pattern, re.X)	
@@ -29,6 +29,16 @@ def DetermineCurrentRevison():
 	else:
 		print ("Could not retrieve revision number!")
 		return str("UnkownVersion")
+		
+# def DetermineCurrentRevision():
+	# os.environ['PATH'] = "%PATH;C:\Program Files\TortoiseHg"
+	# os.environ["LANGUAGE"] = "en_US.UTF-8"
+
+	# text = os.popen('hg log -l 1').read()
+	# print(text)
+	# revision = text[13:15].split(':')[0] # extract revision number
+	# irev = int(revision) - 1
+	# return str(irev)
 
 	
 def ReplaceFile(fileName, content):
@@ -49,7 +59,7 @@ def UpdateVersionHeader(revision):
 	versionHeaderPath = os.path.join(CurrentPath, '../src/OpenInfraPlatform', versionHeader)
 	
 	newContent = ''
-	pattern = "(?:static const int([\s\t]*)VERSION_REVISION)([\s\t]*)=(?:[\s]*)([0-9]{4})"
+	pattern = "(?:static const int([\s\t]*)VERSION_REVISION)([\s\t]*)=(?:[\s]*)([0-9]{3})"
 	with open(versionHeaderPath, "r") as versionFile:
 		fileContent = versionFile.read()
 		# Keep amount of spaces from before with \\1 and \\2
@@ -85,11 +95,34 @@ def UpdateServerVersion(revision):
 		
 	ReplaceFile(versionFilePath, newContent)
 	
+def UpdateCMakeFile(revision):
+	versionFile = 'ProjectVersion.cmake'
+	versionFilePath = os.path.join(CurrentPath, '../cmake', versionFile)
+	
+	with open(versionFilePath, "r") as versionFile:
+		line_number = 0;
+		newContent = ''
+		for line in versionFile:
+			line_number = line_number + 1
+			if line_number == 1:
+				newContent += "set(PROJECT_VERSION_TWEAK \""
+				newContent += revision
+				newContent += "\")"
+				newContent += "\n"
+			else:
+				newContent += line
+		
+	
+	ReplaceFile(versionFilePath, newContent)
+
+
+
+	
 	
 def main():	
 	os.environ["LANGUAGE"] = "en_US.UTF-8"
 	
-	revision = DetermineCurrentRevison()
+	revision = DetermineCurrentRevision()
 	if not revision:
 		print("An error occurred. Canceling!")
 		return 1
@@ -104,6 +137,9 @@ def main():
 	
 	print("Updating CurrentVersion!")
 	UpdateServerVersion(revision)
+	
+	print("Updating CMake file!")
+	UpdateCMakeFile(revision)
 	
 	return 0
 	

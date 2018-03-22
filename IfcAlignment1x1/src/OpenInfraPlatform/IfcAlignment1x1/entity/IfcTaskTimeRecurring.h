@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcTaskTime.h"
 
@@ -55,3 +56,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcTaskTimeRecurring, m_Name, m_DataOrigin, m_UserDefinedDataOrigin, m_DurationType, m_ScheduleDuration, m_ScheduleStart, m_ScheduleFinish, m_EarlyStart, m_EarlyFinish, m_LateStart, m_LateFinish, m_FreeFloat, m_TotalFloat, m_IsCritical, m_StatusTime, m_ActualDuration, m_ActualStart, m_ActualFinish, m_RemainingTime, m_Completion, m_Recurrence);

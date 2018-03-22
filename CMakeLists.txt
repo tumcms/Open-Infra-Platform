@@ -18,7 +18,11 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
-project(OpenInfraPlatform VERSION "2.20.0.0")
+project(OpenInfraPlatform)
+
+# tell cmake where to look for our scripts
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
+include(ProjectVersion)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -66,7 +70,7 @@ endif()
 #------------------------------------------------------------------------------
 
 option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to set boost, Eigen and Qt path" ON)
-option(OIP_USE_PREBUILD_EARLYBINDING_LIBS "Set to OFF to build early binding by yourself" ON)
+option(OIP_USE_PREBUILD_EARLYBINDING_LIBS "Set to OFF to build early binding by yourself" OFF)
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
@@ -111,8 +115,7 @@ if (WIN32)
 	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR /MP /openmp /bigobj")
 endif (WIN32)
 
-# tell cmake where to look for our scripts
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
+
 
 # Visual Studio expected
 # Find Boost
@@ -134,7 +137,7 @@ find_package(Eigen3             3.3.2  REQUIRED)
 find_package(PythonLibs 		3.5.2  REQUIRED)
 
 # Find the Oklabi libraries
-find_package(Oklabi)
+find_package(Oklabi REQUIRED)
 find_package(gtest REQUIRED) #reduce to this line
 
 #ZLib
@@ -145,6 +148,12 @@ find_package(qhull REQUIRED)
 
 #Raptor
 find_package(raptor2 REQUIRED)
+
+#visit_struct
+find_path(visit_struct_INCLUDE_DIR REQUIRED)
+
+#Find OpenInfraPlatform.EarlyBinding
+find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
 
 # Find the Qt components
 set(QT5_COMPONENTS
@@ -265,6 +274,8 @@ include_directories(
 	external/QSimpleUpdater/dialogs
 	Infrastructure/canonicalHeaders
 	${ZLIB_INCLUDE_DIRS}
+	#Experimental
+	${visit_struct_INCLUDE_DIR}
 )
 
 link_directories(
@@ -316,73 +327,75 @@ include_directories(external/carve/common)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
 set_target_properties(carve 								PROPERTIES FOLDER "ThirdParty/carve")
 
-macro (find_prebuild_earlybinding library) 
-	find_file(OpenInfraPlatform_${library}_LIBRARY_RELEASE
-		NAMES OpenInfraPlatform.${library}.lib
-		HINTS ${OIP_PRBEUILD_LIBS_DIR} REQUIRED)
-		
-	find_file(OpenInfraPlatform_${library}_LIBRARY_DEBUG
-		NAMES OpenInfraPlatform.${library}d.lib
-		HINTS ${OIP_PRBEUILD_LIBS_DIR} REQUIRED)
-		
-	set(OpenInfraPlatform_${library}_LIBRARY
-		optimized 	${OpenInfraPlatform_${library}_LIBRARY_RELEASE}
-		debug		${OpenInfraPlatform_${library}_LIBRARY_DEBUG})
-endmacro()
+include_directories(${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR})
 
-# Earlybinding
-if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	include_directories(
-		Ifc2x3/src
-		Ifc4/src
-		IfcAlignment/src
-		IfcAlignment1x1/src
-		IfcBridge/src
-		IfcRoad/src
-		IfcTunnel/src
-	)
+# macro (find_prebuild_earlybinding library) 
+	# find_file(OpenInfraPlatform_${library}_LIBRARY_RELEASE
+		# NAMES OpenInfraPlatform.${library}.lib
+		# HINTS ${OIP_PRBEUILD_LIBS_DIR} REQUIRED)
+		
+	# find_file(OpenInfraPlatform_${library}_LIBRARY_DEBUG
+		# NAMES OpenInfraPlatform.${library}d.lib
+		# HINTS ${OIP_PRBEUILD_LIBS_DIR} REQUIRED)
+		
+	# set(OpenInfraPlatform_${library}_LIBRARY
+		# optimized 	${OpenInfraPlatform_${library}_LIBRARY_RELEASE}
+		# debug		${OpenInfraPlatform_${library}_LIBRARY_DEBUG})
+# endmacro()
+
+# # Earlybinding
+# if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
+	# include_directories(
+		# Ifc2x3/src
+		# Ifc4/src
+		# IfcAlignment/src
+		# IfcAlignment1x1/src
+		# IfcBridge/src
+		# IfcRoad/src
+		# IfcTunnel/src
+	# )
 	
-	set(OIP_PRBEUILD_LIBS_DIR ${PROJECT_SOURCE_DIR}/prebuild_libs/vs2015/x64/)
+	# set(OIP_PRBEUILD_LIBS_DIR ${PROJECT_SOURCE_DIR}/prebuild_libs/vs2015/x64/)
 
-	link_directories(${OIP_PRBEUILD_LIBS_DIR})
+	# link_directories(${OIP_PRBEUILD_LIBS_DIR})
 		
-	find_prebuild_earlybinding(Ifc2x3)
-	find_prebuild_earlybinding(IfcAlignment)
-	find_prebuild_earlybinding(IfcAlignment1x1)
-	find_prebuild_earlybinding(Ifc4)
-	find_prebuild_earlybinding(IfcBridge)
-	find_prebuild_earlybinding(IfcRoad)
-	find_prebuild_earlybinding(IfcTunnel)
+	# find_prebuild_earlybinding(Ifc2x3)
+	# find_prebuild_earlybinding(IfcAlignment)
+	# find_prebuild_earlybinding(IfcAlignment1x1)
+	# find_prebuild_earlybinding(Ifc4)
+	# find_prebuild_earlybinding(IfcBridge)
+	# find_prebuild_earlybinding(IfcRoad)
+	# find_prebuild_earlybinding(IfcTunnel)
 			
-else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	# add Ifc2x3
-	add_subdirectory(Ifc2x3)
-	include_directories(Ifc2x3/src)
+# else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
+	# # add Ifc2x3
+	# add_subdirectory(Ifc2x3)
+	# include_directories(Ifc2x3/src)
 
-	# add Ifc4
-	add_subdirectory(Ifc4)
-	include_directories(Ifc4/src)
+	# # add Ifc4
+	# add_subdirectory(Ifc4)
+	# include_directories(Ifc4/src)
 
-	# add IfcAlignment
-	add_subdirectory(IfcAlignment)
-	include_directories(IfcAlignment/src)
+	# # add IfcAlignment
+	# add_subdirectory(IfcAlignment)
+	# include_directories(IfcAlignment/src)
 
-	# add IfcAlignment1x1
-	add_subdirectory(IfcAlignment1x1)
-	include_directories(IfcAlignment1x1/src)
+	# # add IfcAlignment1x1
+	# add_subdirectory(IfcAlignment1x1)
+	# include_directories(IfcAlignment1x1/src)
 
-	# add IfcBridge
-	add_subdirectory(IfcBridge)
-	include_directories(IfcBridge/src)
+	# # add IfcBridge
+	# add_subdirectory(IfcBridge)
+	# include_directories(IfcBridge/src)
 
-	# add IfcRoad
-	add_subdirectory(IfcRoad)
-	include_directories(IfcRoad/src)
+	# # add IfcRoad
+	# add_subdirectory(IfcRoad)
+	# include_directories(IfcRoad/src)
 
-	# add IfcTunnel
-	add_subdirectory(IfcTunnel)
-	include_directories(IfcTunnel/src)
-endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
+	# # add IfcTunnel
+	# add_subdirectory(IfcTunnel)
+	# include_directories(IfcTunnel/src)
+# endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 
 # add ExpressBinding
 add_subdirectory(ExpressBinding)
@@ -391,6 +404,8 @@ include_directories(ExpressBinding/src)
 # add source directory
 add_subdirectory(Infrastructure)
 include_directories(Infrastructure/src)
+
+enable_testing()
 
 add_subdirectory(UnitTests)
 
@@ -543,63 +558,65 @@ set(CMAKE_DEBUG_POSTFIX "d")
 # Use the Widgets module from Qt 5.
 qt5_use_modules(OpenInfraPlatform.UI Widgets Xml XmlPatterns Svg PrintSupport Quick Qml Location Positioning)
 
-if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	target_link_libraries( OpenInfraPlatform.UI
-		OpenInfraPlatform.Infrastructure
-		# Early bindings
-		${OpenInfraPlatform_Ifc2x3_LIBRARY}
-		${OpenInfraPlatform_Ifc4_LIBRARY}
-		${OpenInfraPlatform_IfcAlignment_LIBRARY}
-		${OpenInfraPlatform_IfcAlignment1x1_LIBRARY}
-		${OpenInfraPlatform_IfcBridge_LIBRARY}
-		${OpenInfraPlatform_IfcRoad_LIBRARY}
-		${OpenInfraPlatform_IfcTunnel_LIBRARY}
-		# Qt
-		Qt5::WinMain  # New target available via find_package ( Qt5Core )
-		# BlueFramework
-		${BLUEFRAMEWORK_LIBRARIES}
-		# External libs
-		QtXlsxWriter
-		QSimpleUpdater
-		${LIBLAS_LIBRARIES}
-		carve
-		# Python
-		${PYTHON_LIBRARIES}
-		${ZLIB_LIBRARIES}
-	)
-elseif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	target_link_libraries( OpenInfraPlatform.UI
-		OpenInfraPlatform.Infrastructure
-		# Early bindings
-		OpenInfraPlatform.Ifc2x3
-		OpenInfraPlatform.Ifc4
-		OpenInfraPlatform.IfcAlignment
-		OpenInfraPlatform.IfcAlignment1x1
-		OpenInfraPlatform.IfcBridge
-		OpenInfraPlatform.IfcRoad
-		# Qt
-		Qt5::WinMain  # New target available via find_package ( Qt5Core )
-		# BlueFramework
-		${BLUEFRAMEWORK_LIBRARIES}
-		# External libs
-		QtXlsxWriter
-		QSimpleUpdater
-		${LIBLAS_LIBRARIES}
-		carve
-		# Python
-		${PYTHON_LIBRARIES}
-		${ZLIB_LIBRARIES}
-	)
-endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
+# if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
+	# target_link_libraries( OpenInfraPlatform.UI
+		# OpenInfraPlatform.Infrastructure
+		# # Early bindings
+		# ${OpenInfraPlatform_Ifc2x3_LIBRARY}
+		# ${OpenInfraPlatform_Ifc4_LIBRARY}
+		# ${OpenInfraPlatform_IfcAlignment_LIBRARY}
+		# ${OpenInfraPlatform_IfcAlignment1x1_LIBRARY}
+		# ${OpenInfraPlatform_IfcBridge_LIBRARY}
+		# ${OpenInfraPlatform_IfcRoad_LIBRARY}
+		# ${OpenInfraPlatform_IfcTunnel_LIBRARY}
+		# # Qt
+		# Qt5::WinMain  # New target available via find_package ( Qt5Core )
+		# # BlueFramework
+		# ${BLUEFRAMEWORK_LIBRARIES}
+		# # External libs
+		# QtXlsxWriter
+		# QSimpleUpdater
+		# ${LIBLAS_LIBRARIES}
+		# carve
+		# # Python
+		# ${PYTHON_LIBRARIES}
+		# ${ZLIB_LIBRARIES}
+	# )
+# elseif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
+	# target_link_libraries( OpenInfraPlatform.UI
+		# OpenInfraPlatform.Infrastructure
+		# # Early bindings
+		# OpenInfraPlatform.Ifc2x3
+		# OpenInfraPlatform.Ifc4
+		# OpenInfraPlatform.IfcAlignment
+		# OpenInfraPlatform.IfcAlignment1x1
+		# OpenInfraPlatform.IfcBridge
+		# OpenInfraPlatform.IfcRoad
+		# # Qt
+		# Qt5::WinMain  # New target available via find_package ( Qt5Core )
+		# # BlueFramework
+		# ${BLUEFRAMEWORK_LIBRARIES}
+		# # External libs
+		# QtXlsxWriter
+		# QSimpleUpdater
+		# ${LIBLAS_LIBRARIES}
+		# carve
+		# # Python
+		# ${PYTHON_LIBRARIES}
+		# ${ZLIB_LIBRARIES}
+	# )
+# endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 
 target_link_libraries( OpenInfraPlatform.UI
 	OpenInfraPlatform.Infrastructure
-	OpenInfraPlatform.IfcBridge
-	OpenInfraPlatform.IfcRoad
-	OpenInfraPlatform.IfcAlignment
-	OpenInfraPlatform.IfcAlignment1x1
-	OpenInfraPlatform.Ifc2x3
-	OpenInfraPlatform.Ifc4
+	OpenInfraPlatform.ExpressBinding
+	# OpenInfraPlatform.IfcBridge
+	# OpenInfraPlatform.IfcRoad
+	# OpenInfraPlatform.IfcAlignment
+	# OpenInfraPlatform.IfcAlignment1x1
+	# OpenInfraPlatform.Ifc4
+	# OpenInfraPlatform.Ifc2x3
+	${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 	Qt5::WinMain  # New target available via find_package ( Qt5Core )
 	# BlueFramework
 	${BLUEFRAMEWORK_LIBRARIES}
@@ -611,6 +628,7 @@ target_link_libraries( OpenInfraPlatform.UI
 	# Python
 	${PYTHON_LIBRARIES}
 	${ZLIB_LIBRARIES}
+	Rpcrt4.lib
 )
 
 # Python35
@@ -716,15 +734,15 @@ set_target_properties(Python35CopyBinaries						PROPERTIES FOLDER "Copy")
 set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
 
-if(NOT OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	set_target_properties(OpenInfraPlatform.Ifc2x3		 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	set_target_properties(OpenInfraPlatform.Ifc4		 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	set_target_properties(OpenInfraPlatform.IfcAlignment 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	set_target_properties(OpenInfraPlatform.IfcAlignment1x1		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	set_target_properties(OpenInfraPlatform.IfcBridge	 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	set_target_properties(OpenInfraPlatform.IfcRoad		 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	set_target_properties(OpenInfraPlatform.IfcTunnel	 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-endif(NOT OIP_USE_PREBUILD_EARLYBINDING_LIBS)
+# if(NOT OIP_USE_PREBUILD_EARLYBINDING_LIBS)
+	# set_target_properties(OpenInfraPlatform.Ifc2x3		 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+	# set_target_properties(OpenInfraPlatform.Ifc4		 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+	# set_target_properties(OpenInfraPlatform.IfcAlignment 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+	# set_target_properties(OpenInfraPlatform.IfcAlignment1x1		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+	# set_target_properties(OpenInfraPlatform.IfcBridge	 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+	# set_target_properties(OpenInfraPlatform.IfcRoad		 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+	# set_target_properties(OpenInfraPlatform.IfcTunnel	 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+# endif(NOT OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 
 set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 #set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
@@ -837,7 +855,7 @@ set_target_properties(OpenInfraPlatform.UI					 PROPERTIES FOLDER "OpenInfraPlat
 
 #-------------------------------------------------------------------------------------
 # Deployment
-set(CPACK_GENERATOR WIX)
+set(CPACK_GENERATOR WIX ZIP)
 set(CPACK_WIX_UPGRADE_GUID "178111DC-0B0C-4E3F-8C80-D756F742645F")
 set(CPACK_WIX_PRODUCT_GUID "D936BC02-9157-4D86-9652-F8CB6D62BAAE")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")

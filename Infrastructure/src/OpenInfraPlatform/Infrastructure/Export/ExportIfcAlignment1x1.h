@@ -20,9 +20,12 @@
 #include "OpenInfraPlatform/Infrastructure/Export/Export.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/Alignment2DBased3D.h"
+#include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
+
 #include <BlueFramework/Core/memory.h>
 #include <vector>
 #include <memory>
+
 
 namespace OpenInfraPlatform {
 	namespace Infrastructure {
@@ -37,6 +40,8 @@ namespace OpenInfraPlatform {
 				buw::ReferenceCounted<buw::AlignmentModel> am,
 				buw::ReferenceCounted<buw::DigitalElevationModel> dem,
 				const std::string& filename);
+			
+			buw::ReferenceCounted<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> getIfcAlignment1x1Model();
 
 			virtual ~ExportIfcAlignment1x1();
 

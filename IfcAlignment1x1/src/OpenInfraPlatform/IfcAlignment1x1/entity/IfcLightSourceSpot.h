@@ -24,6 +24,7 @@ Early Binding EXPRESS Generator. Any changes to this file my be lost in the futu
 #include <memory>
 #include <sstream>
 #include <string>
+#include <visit_struct/visit_struct.hpp>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "IfcLightSourcePositional.h"
 
@@ -61,3 +62,5 @@ namespace OpenInfraPlatform
 		};
 	}
 }
+
+VISITABLE_STRUCT(OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceSpot, m_Name, m_LightColour, m_AmbientIntensity, m_Intensity, m_Position, m_Radius, m_ConstantAttenuation, m_DistanceAttenuation, m_QuadricAttenuation, m_Orientation, m_ConcentrationExponent, m_SpreadAngle, m_BeamWidthAngle);
