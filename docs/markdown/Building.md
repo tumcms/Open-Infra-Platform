@@ -10,7 +10,7 @@ TUM Open Infra Platform is built using CMake (version 3.8 or newer is required) 
 
 #### Installing/Building
 
-The rendering system for the OIP is the [BlueFramwork](https://bitbucket.org/tumcms/blueframework/overview) which features a DirectX11 and DirectX12 backend. The BlueFramework library also provides other utilities. A binary installer for the latest stable release is available on the [BlueFramwork](https://bitbucket.org/tumcms/blueframework/overview) bitbucket page under section "Releases". If you want to build the library yourself follow the instructions in the BlueFramework's building documentation.
+The rendering system for the OIP is the [BlueFramework](https://bitbucket.org/tumcms/blueframework/overview) which features a DirectX11 and DirectX12 backend. The BlueFramework library also provides other utilities. A binary installer for the latest stable release is available on the [BlueFramework](https://bitbucket.org/tumcms/blueframework/overview) bitbucket page under section "Releases". If you want to build the library yourself follow the instructions in the BlueFramework's building documentation.
 
 #### Linking
 
@@ -60,7 +60,7 @@ copy zconf.h C:\thirdparty\vs2015\x64\zlib-1.2.11\zconf.h
 
 These build scripts are also contained in this repository under './external/*.cmd'. If the library is not found, the option to install this library shows up in the CMakeGUI and the corresponding script is invoked from cmake once an installation directory is specified or the default directory (C:\thirdparty\vs2015\x64\ for Visual Studio 14 2015 Win64 generator) is accepted.
 
-![Automatic Install Scripts](docs/images/Automatic_Install_CMake.PNG)
+![Automatic Install Scripts](../images/Automatic_Install_CMake.PNG)
 
 The libraries which can be installed this way are libLAS, zlib, qhull, raptor2 and gtest.
 

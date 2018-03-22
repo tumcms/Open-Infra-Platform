@@ -126,8 +126,6 @@ find_package(Boost 1.63.0 COMPONENTS signals system filesystem python3 REQUIRED)
 find_package(VLD 					   REQUIRED)
 
 #Find BlueFramework root dir
-#set(BLUEFRAMEWORK_USE_INSTALLED FALSE CACHE BOOL "bool")
-#set(BLUEFRAMEWORK_ROOT "" CACHE PATH "path")
 find_package(BlueFramework		COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
 
 #Find Eigen
@@ -230,7 +228,6 @@ endmacro()
 macro(addQt5PluginDll plugin output)
 	get_target_property(_loc Qt5::${plugin} LOCATION)
 	list(APPEND ${output} ${_loc})
-	#message("Plugin Qt5::${plugin} is at location ${_loc}")
 endmacro()
 
 addQt5Dll(Gui)
@@ -274,6 +271,7 @@ include_directories(
 	external/QSimpleUpdater/dialogs
 	Infrastructure/canonicalHeaders
 	${ZLIB_INCLUDE_DIRS}
+	
 	#Experimental
 	${visit_struct_INCLUDE_DIR}
 )
