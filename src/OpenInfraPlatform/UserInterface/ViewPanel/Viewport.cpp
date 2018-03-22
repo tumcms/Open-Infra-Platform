@@ -261,20 +261,24 @@ void Viewport::setDrawTerrainWireframe(const bool enable) {
 
 void Viewport::setDifferentColorsForAlignmentElements(const bool checked) {
     alignmentEffect_->enableAlignmentColor(checked);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setHighlightSelectedAlignmentSegment(const bool checked)
 {
     alignmentEffect_->enableHighlightSelected(checked);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::enableMap(const bool checked)
 {
     boundingBoxEffect_->enableMap(checked);
+	repaint();
 }
 
 void Viewport::viewDirection(const buw::Vector3f& direction) {
     cameraController_->setViewDirection(direction);
+	repaint();
 }
 
 void Viewport::setHideTerrain(const bool checked) {
@@ -429,6 +433,9 @@ void Viewport::toggleSnow() {
 
 void Viewport::leaveEvent(QEvent* event) {
     viewCube_->mouseMove(0, 0);
+
+	// To avoid continuous rendering.
+	repaint();
 }
 
 void Viewport::toggleCameraMode() {
@@ -526,6 +533,9 @@ void Viewport::repositionCamera() {
             camera_->setOffset(d);
         }
     }
+
+	// To avoid continuous rendering.
+	repaint();
 }
 
 void Viewport::mousePressEvent(QMouseEvent* event) {
@@ -540,6 +550,9 @@ void Viewport::mousePressEvent(QMouseEvent* event) {
         }
         repositionCamera();
     }
+
+	// To avoid continuous rendering.
+	repaint();
 }
 
 void Viewport::mouseMoveEvent(QMouseEvent* event) {
@@ -579,6 +592,9 @@ void Viewport::mouseMoveEvent(QMouseEvent* event) {
 
         lastMousePos_ = mouse;
     }
+
+	// To avoid continuous rendering.
+	repaint();
 }
 
 void Viewport::wheelEvent(QWheelEvent* event) {
@@ -588,6 +604,9 @@ void Viewport::wheelEvent(QWheelEvent* event) {
     cameraController_->handleWheel(factor);
 
     QWidget::wheelEvent(event);
+
+	// To avoid continuous rendering.
+	repaint();
 }
 
 const std::map<int, buw::CameraController::eKey> keyMap = {
@@ -604,6 +623,9 @@ void Viewport::keyPressEvent(QKeyEvent* event) {
             cameraController_->handleKeyDown(key);
         }
     }
+
+	// To avoid continuous rendering.
+	repaint();
 }
 void Viewport::keyReleaseEvent(QKeyEvent* event) {
     if (!event->isAutoRepeat()) {
@@ -612,6 +634,9 @@ void Viewport::keyReleaseEvent(QKeyEvent* event) {
             cameraController_->handleKeyUp(key);
         }
     }
+
+	// To avoid continuous rendering.
+	repaint();
 }
 
 void Viewport::updateWorldBuffer() {
@@ -635,7 +660,9 @@ void Viewport::tick() {
     cameraController_->tick(delta);
     camera_->tick(delta);
 
-    repaint();
+	if(cameraController_->isInterpolating() || cameraController_->getVelocity() > 0.0f) {
+		repaint();
+	}
 
     lastTick_ = current;
 }

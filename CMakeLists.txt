@@ -18,7 +18,7 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
-project(OpenInfraPlatform VERSION "2.20.0.0")
+project(OpenInfraPlatform)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
