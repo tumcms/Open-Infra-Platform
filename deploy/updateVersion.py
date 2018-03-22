@@ -59,7 +59,7 @@ def UpdateVersionHeader(revision):
 	versionHeaderPath = os.path.join(CurrentPath, '../src/OpenInfraPlatform', versionHeader)
 	
 	newContent = ''
-	pattern = "(?:static const int([\s\t]*)VERSION_REVISION)([\s\t]*)=(?:[\s]*)([0-9]{4})"
+	pattern = "(?:static const int([\s\t]*)VERSION_REVISION)([\s\t]*)=(?:[\s]*)([0-9]{3})"
 	with open(versionHeaderPath, "r") as versionFile:
 		fileContent = versionFile.read()
 		# Keep amount of spaces from before with \\1 and \\2

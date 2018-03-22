@@ -20,6 +20,10 @@ cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
 project(OpenInfraPlatform)
 
+# tell cmake where to look for our scripts
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
+include(ProjectVersion)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 #------------------------------------------------------------------------------
@@ -111,8 +115,7 @@ if (WIN32)
 	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR /MP /openmp /bigobj")
 endif (WIN32)
 
-# tell cmake where to look for our scripts
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
+
 
 # Visual Studio expected
 # Find Boost
@@ -852,7 +855,7 @@ set_target_properties(OpenInfraPlatform.UI					 PROPERTIES FOLDER "OpenInfraPlat
 
 #-------------------------------------------------------------------------------------
 # Deployment
-set(CPACK_GENERATOR WIX)
+set(CPACK_GENERATOR WIX ZIP)
 set(CPACK_WIX_UPGRADE_GUID "178111DC-0B0C-4E3F-8C80-D756F742645F")
 set(CPACK_WIX_PRODUCT_GUID "D936BC02-9157-4D86-9652-F8CB6D62BAAE")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
