@@ -12,7 +12,7 @@
 
 ### Developer
 
-[Building](Docs/markdown/Building.md)
+[Building](docs/markdown/Building.md)
 
 ## License
 
