@@ -10,6 +10,8 @@
 
 ### User
 
+[User](docs/markdown/User.md)
+
 ### Developer
 
 [Building](docs/markdown/Building.md)
