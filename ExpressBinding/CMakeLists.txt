@@ -27,6 +27,7 @@ include_directories(
 	src/OpenInfraPlatform/ExpressBinding
 	${CMAKE_CURRENT_SOURCE_DIR}/../
 	${CMAKE_CURRENT_BINARY_DIR}
+	${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR}
 )
 
 

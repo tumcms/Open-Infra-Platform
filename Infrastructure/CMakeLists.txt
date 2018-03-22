@@ -89,6 +89,7 @@ include_directories(
 	
 	#Experimental
 	${visit_struct_INCLUDE_DIR}
+	${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR}
 )
 
 # Create a target for the library
@@ -117,35 +118,57 @@ add_library(OpenInfraPlatform.Infrastructure SHARED
 )
 
 
-if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)		
-	target_link_libraries( OpenInfraPlatform.Infrastructure			
-		${OpenInfraPlatform_IfcRoad_LIBRARY}
-		${OpenInfraPlatform_IfcAlignment1x1_LIBRARY}
-		${OpenInfraPlatform_IfcAlignment_LIBRARY}
-		Rpcrt4.lib
-		# Boost
-		${Boost_LIBRARIES}
-		# BlueFramework
-		${BLUEFRAMEWORK_LIBRARIES}
-		# Python
-		${PYTHON_LIBRARIES}
-		# External libs
-		QtXlsxWriter
-		${LIBLAS_LIBRARIES}
-		# Oklabi
-		${OKLABI_LIBRARIES}
-		#
-		${QHULL_STATIC_LIBRARIES}	
-		# Raptor		
-		${RAPTOR2_LIBRARIES}
-		# EXPRESS Binding for Meta model
-		OpenInfraPlatform.ExpressBinding
-	)
-else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	target_link_libraries( OpenInfraPlatform.Infrastructure
-		OpenInfraPlatform.IfcAlignment
-		OpenInfraPlatform.IfcAlignment1x1
-		OpenInfraPlatform.IfcRoad
+# if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)		
+	# target_link_libraries( OpenInfraPlatform.Infrastructure			
+		# ${OpenInfraPlatform_IfcRoad_LIBRARY}
+		# ${OpenInfraPlatform_IfcAlignment1x1_LIBRARY}
+		# ${OpenInfraPlatform_IfcAlignment_LIBRARY}
+		# Rpcrt4.lib
+		# # Boost
+		# ${Boost_LIBRARIES}
+		# # BlueFramework
+		# ${BLUEFRAMEWORK_LIBRARIES}
+		# # Python
+		# ${PYTHON_LIBRARIES}
+		# # External libs
+		# QtXlsxWriter
+		# ${LIBLAS_LIBRARIES}
+		# # Oklabi
+		# ${OKLABI_LIBRARIES}
+		# #
+		# ${QHULL_STATIC_LIBRARIES}	
+		# # Raptor		
+		# ${RAPTOR2_LIBRARIES}
+		# # EXPRESS Binding for Meta model
+		# OpenInfraPlatform.ExpressBinding
+	# )
+# else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
+	# target_link_libraries( OpenInfraPlatform.Infrastructure
+		# OpenInfraPlatform.IfcAlignment
+		# OpenInfraPlatform.IfcAlignment1x1
+		# OpenInfraPlatform.IfcRoad
+		# # Boost
+		# ${Boost_LIBRARIES}		
+		# # BlueFramework
+		# ${BLUEFRAMEWORK_LIBRARIES}	
+		# # Python
+		# ${PYTHON_LIBRARIES}
+		# # External libs
+		# QtXlsxWriter
+		# ${LIBLAS_LIBRARIES}
+		# # Oklabi
+		# ${OKLABI_LIBRARIES}
+		# #
+		# ${QHULL_STATIC_LIBRARIES}
+		# # Raptor
+		# ${RAPTOR2_LIBRARIES}
+		# # EXPRESS Binding for Meta model
+		# OpenInfraPlatform.ExpressBinding
+	# )
+# endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
+
+target_link_libraries( OpenInfraPlatform.Infrastructure
+		${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 		# Boost
 		${Boost_LIBRARIES}		
 		# BlueFramework
@@ -163,8 +186,8 @@ else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 		${RAPTOR2_LIBRARIES}
 		# EXPRESS Binding for Meta model
 		OpenInfraPlatform.ExpressBinding
+		Rpcrt4.lib
 	)
-endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
 
 # Use the Widgets module from Qt 5.
 qt5_use_modules(OpenInfraPlatform.Infrastructure Xml XmlPatterns)

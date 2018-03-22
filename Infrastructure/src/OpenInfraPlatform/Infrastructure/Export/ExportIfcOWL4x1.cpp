@@ -76,8 +76,6 @@ public:
 					name = buw::String(it.first);
 			}
 			
-			auto entityType = schema.getEntityByName(name);
-
 			if(visit_struct::field_count(entity) > 2) {
 				std::cout << name << std::endl;
 				//std::cout << entityType.getName() << std::endl;
