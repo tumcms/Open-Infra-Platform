@@ -2,7 +2,7 @@
 
 ## Info
 
-TUM Open Infra Platform is built using CMake (version 3.8 or newer is required) on x64 based systems and Microsoft Visual Studio 14 2015 or Microsoft Visual Studio 15 2017. We are currently not supporting other systems or compilers.
+TUM Open Infra Platform is build using CMake (version 3.8 or newer is required) on x64 based systems and Microsoft Visual Studio 14 2015 or Microsoft Visual Studio 15 2017. We are currently not supporting other systems or compilers.
 
 ## Dependencies
 
@@ -58,7 +58,7 @@ copy Release\zlibstatic.lib C:\thirdparty\vs2015\x64\zlib-1.2.11\lib\zlibstatic.
 copy zconf.h C:\thirdparty\vs2015\x64\zlib-1.2.11\zconf.h
 ```
 
-These build scripts are also contained in this repository under './external/*.cmd'. If the library is not found, the option to install this library shows up in the CMakeGUI and the corresponding script is invoked from cmake once an installation directory is specified or the default directory (C:\thirdparty\vs2015\x64\ for Visual Studio 14 2015 Win64 generator) is accepted.
+These build scripts are also contained in this repository under "./external/*.cmd". If the library is not found, the option to install this library shows up in the CMakeGUI and the corresponding script is invoked from cmake once an installation directory is specified or the default directory (C:\thirdparty\vs2015\x64\ for Visual Studio 14 2015 Win64 generator) is accepted.
 
 ![Automatic Install Scripts](../images/Automatic_Install_CMake.PNG)
 

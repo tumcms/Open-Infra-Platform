@@ -8,11 +8,7 @@
 
 ## Documentation
 
-### User
-
-[User](docs/markdown/User.md)
-
-### Developer
+[Installation, Usage & Updating](docs/markdown/User.md)
 
 [Building](docs/markdown/Building.md)
 

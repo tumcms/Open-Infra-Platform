@@ -75,7 +75,7 @@ source_group(OpenInfraPlatform\\Infrastructure\\PointCloudProcessing				FILES ${
 
 include_directories(
 	${Boost_INCLUDE_DIR} 
-	${PYTHON_INCLUDE_DIRS}
+	#${PYTHON_INCLUDE_DIRS}
 	${VLD_INCLUDE_DIR}
 	${BLUEFRAMEWORK_INCLUDE_DIR}
 	${EIGEN3_INCLUDE_DIR}
@@ -174,7 +174,7 @@ target_link_libraries( OpenInfraPlatform.Infrastructure
 		# BlueFramework
 		${BLUEFRAMEWORK_LIBRARIES}	
 		# Python
-		${PYTHON_LIBRARIES}
+		#${PYTHON_LIBRARIES}
 		# External libs
 		QtXlsxWriter
 		${LIBLAS_LIBRARIES}

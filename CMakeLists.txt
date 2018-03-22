@@ -130,17 +130,16 @@ find_package(BlueFramework		COMPONENTS Core Engine Application ImageProcessing R
 
 #Find Eigen
 find_package(Eigen3             3.3.2  REQUIRED)
+
 #Find Python
 #unset(PYTHON_LIBRARY)
-find_package(PythonLibs 		3.5.2  REQUIRED)
+#find_package(PythonLibs 		3.5.2  REQUIRED)
 
 # Find the Oklabi libraries
 find_package(Oklabi REQUIRED)
-find_package(gtest REQUIRED) #reduce to this line
 
-#ZLib
+find_package(gtest REQUIRED) 
 find_package(ZLIB 1.2.10 REQUIRED)
-
 find_package(libLAS REQUIRED)
 find_package(qhull REQUIRED)
 
@@ -261,7 +260,7 @@ include_directories(
 	${VLD_INCLUDE_DIR}
 	${BLUEFRAMEWORK_INCLUDE_DIR}
 	${EIGEN3_INCLUDE_DIR}
-	${PYTHON_INCLUDE_DIRS}
+	#${PYTHON_INCLUDE_DIRS}
 	#DirectX for rendering
 	${DirectX12_INCLUDE_DIR}
 	${DirectX12_INCLUDE_DIR_SHARED}
@@ -624,7 +623,7 @@ target_link_libraries( OpenInfraPlatform.UI
 	${LIBLAS_LIBRARIES}
 	carve
 	# Python
-	${PYTHON_LIBRARIES}
+	#${PYTHON_LIBRARIES}
 	${ZLIB_LIBRARIES}
 	Rpcrt4.lib
 )
