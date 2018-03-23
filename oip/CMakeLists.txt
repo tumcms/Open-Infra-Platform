@@ -1,32 +1,39 @@
+#
+#    Copyright (c) 2018 Technical University of Munich
+#    Chair of Computational Modeling and Simulation.
+#
+#    TUM Open Infra Platform is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License Version 3
+#    as published by the Free Software Foundation.
+#
+#    TUM Open Infra Platform is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+project(OpenInfraPlatform.CommandLineUtilities)
+
+find_package(TCLAP REQUIRED)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG 	../Debug)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE	../Release)
 set(CMAKE_PDB_OUTPUT_DIRECTORY_DEBUG 	    ../Debug)
 set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE 		../Release)
 
-file(GLOB oip_Source		*.*)
-file(GLOB oip_Source_tclap	tclap/*.*)
-
-include_directories(${BLUEFRAMEWORK_INCLUDE_DIR}
-					${Boost_INCLUDE_DIR}
-					${CMAKE_CURRENT_BINARY_DIR} # Qt generated files will be located here
-					${VLD_INCLUDE_DIR}
-)
-
-link_directories(	
-	${Boost_LIBRARY_DIRS} 
-	${VLD_LIBRARIES_DIR}
-	../external/Oklabi
+include_directories(
+	${BLUEFRAMEWORK_INCLUDE_DIR}
+	${TCLAP_INCLUDE_DIR}
 )
 
 # Tell CMake to create the Qt5HelloWorld executable
-add_executable( OpenInfraPlatform.CommandLineUtilities
-	${oip_Source}
-	${oip_Source_tclap}
-)
+add_executable(OpenInfraPlatform.CommandLineUtilities main.cpp)
 
-target_link_libraries( OpenInfraPlatform.CommandLineUtilities
+target_link_libraries(OpenInfraPlatform.CommandLineUtilities
 	OpenInfraPlatform.Infrastructure
-    Qt5::WinMain  # <-- New target available via find_package ( Qt5Core )
 	# BlueFramework
 	${BLUEFRAMEWORK_BLUECORE_LIBRARY}
 	${BLUEFRAMEWORK_BLUEIMAGEPROCESSING_LIBRARY}
