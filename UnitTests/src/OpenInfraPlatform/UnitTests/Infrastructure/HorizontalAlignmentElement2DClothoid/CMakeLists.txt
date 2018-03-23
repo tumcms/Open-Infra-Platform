@@ -15,7 +15,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-file(GLOB OpenInfraPlatform_UnitTests_Infrastructure_HorizontalAlignmentElement2DClothoid	*.*)
+file(GLOB OpenInfraPlatform_UnitTests_Infrastructure_HorizontalAlignmentElement2DClothoid	*.cpp)
 
 source_group(OpenInfraPlatform\\UnitTests\\Infrastructure 	FILES ${OpenInfraPlatform_UnitTests_Infrastructure_HorizontalAlignmentElement2DClothoid})
 source_group(OpenInfraPlatform\\UnitTests       			FILES ${OpenInfraPlatform_UnitTests_Source})

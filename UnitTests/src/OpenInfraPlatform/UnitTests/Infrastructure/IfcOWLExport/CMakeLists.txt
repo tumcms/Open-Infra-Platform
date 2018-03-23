@@ -15,7 +15,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-file(GLOB OpenInfraPlatform_UnitTests_Infrastructure_IfcOWLExport	*.*)
+file(GLOB OpenInfraPlatform_UnitTests_Infrastructure_IfcOWLExport	*.cpp)
 
 source_group(OpenInfraPlatform\\UnitTests\\Infrastructure 	FILES ${OpenInfraPlatform_UnitTests_Infrastructure_IfcOWLExport})
 source_group(OpenInfraPlatform\\UnitTests       			FILES ${OpenInfraPlatform_UnitTests_Source})

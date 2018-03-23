@@ -15,7 +15,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-file(GLOB OpenInfraPlatform_UnitTests_Infrastructure_HorizontalAlignmentElement2DArbitraryCurve	*.*)
+file(GLOB OpenInfraPlatform_UnitTests_Infrastructure_HorizontalAlignmentElement2DArbitraryCurve	*.cpp)
 
 source_group(OpenInfraPlatform\\UnitTests\\Infrastructure 	FILES ${OpenInfraPlatform_UnitTests_Infrastructure_HorizontalAlignmentElement2DArbitraryCurve})
 source_group(OpenInfraPlatform\\UnitTests       			FILES ${OpenInfraPlatform_UnitTests_Source})
@@ -37,10 +37,6 @@ target_link_libraries(HorizontalAlignmentElement2DArbitraryCurve
 	${GTEST_LIBRARIES}
 	${GTEST_MAIN_LIBRARIES})
 
-include_directories(
-	${DirectX12_INCLUDE_DIR}
-	${DirectX12_INCLUDE_DIR_SHARED}
-)
 
 add_test(
     NAME HorizontalAlignmentElement2DArbitraryCurveTest

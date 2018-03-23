@@ -535,7 +535,7 @@ void Viewport::repositionCamera() {
     }
 
 	// To avoid continuous rendering.
-	repaint();
+	//repaint();
 }
 
 void Viewport::mousePressEvent(QMouseEvent* event) {
@@ -594,7 +594,9 @@ void Viewport::mouseMoveEvent(QMouseEvent* event) {
     }
 
 	// To avoid continuous rendering.
-	repaint();
+	if(!cameraController_->isCameraMoving()) {
+		repaint();
+	}
 }
 
 void Viewport::wheelEvent(QWheelEvent* event) {
@@ -606,7 +608,7 @@ void Viewport::wheelEvent(QWheelEvent* event) {
     QWidget::wheelEvent(event);
 
 	// To avoid continuous rendering.
-	repaint();
+	//repaint();
 }
 
 const std::map<int, buw::CameraController::eKey> keyMap = {
@@ -625,7 +627,7 @@ void Viewport::keyPressEvent(QKeyEvent* event) {
     }
 
 	// To avoid continuous rendering.
-	repaint();
+	//repaint();
 }
 void Viewport::keyReleaseEvent(QKeyEvent* event) {
     if (!event->isAutoRepeat()) {
@@ -636,7 +638,7 @@ void Viewport::keyReleaseEvent(QKeyEvent* event) {
     }
 
 	// To avoid continuous rendering.
-	repaint();
+	//repaint();
 }
 
 void Viewport::updateWorldBuffer() {
@@ -660,7 +662,7 @@ void Viewport::tick() {
     cameraController_->tick(delta);
     camera_->tick(delta);
 
-	if(cameraController_->isInterpolating() || cameraController_->getVelocity() > 0.0f) {
+	if(cameraController_->isCameraMoving()) {
 		repaint();
 	}
 
