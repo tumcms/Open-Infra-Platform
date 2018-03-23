@@ -27,5 +27,8 @@ if(TCLAP_DIR)
 endif()
 
 if(TCLAP_INCLUDE_DIR)
+	message(STATUS "Successfully found TCLAP.")
 	set(TCLAP_FOUND 1)
+else()
+	message(ERROR "Couldn't find TCLAP. Please install TCLAP or download it using the Get_TCLAP.cmd file.")
 endif()
