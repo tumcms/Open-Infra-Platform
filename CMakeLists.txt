@@ -20,12 +20,15 @@ cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
 project(OpenInfraPlatform)
 
-# tell cmake where to look for our scripts
+#-------------------------------------------------------------------------------------
+# CMake definitions and propertiess
+#-------------------------------------------------------------------------------------
+
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_DEBUG_POSTFIX "d")
 include(ProjectVersion)
 enable_testing()
-
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 #------------------------------------------------------------------------------
@@ -292,16 +295,9 @@ add_subdirectory(oip)
 # Do currently not work
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)
+#add_subdirectory(IfcBridgeGenerator)
+#add_subdirectory(IfcTunnelGenerator)
 
-#------------------------------------------------------------------------------
-# Calling copy functions to provide custom targets.
-#------------------------------------------------------------------------------
-
-# BlueFramework Copy Binaries
-BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
-
-# Oklabi Copy Binaries
-OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 #------------------------------------------------------------------------------
 # Collect source files
@@ -367,6 +363,9 @@ set(OpenInfraPlatform_RC
 	src/QtPropertyBrowser/qtpropertybrowser.qrc
 )
 
+# Collect all translation files
+FILE(GLOB Translation_TS Data/translations/*.ts)
+
 #------------------------------------------------------------------------------
 # Set source groups
 #------------------------------------------------------------------------------
@@ -407,12 +406,16 @@ set_source_files_properties(${OpenInfraPlatform_Shader_D3D_Source} 	PROPERTIES H
 # Qt related stuff
 QT5_ADD_RESOURCES(OpenInfraPlatform_RC_SRCS ${OpenInfraPlatform_RC})
 QT5_WRAP_UI(OpenInfraPlatform_UIS_H ${OpenInfraPlatform_UIS})
+QT5_ADD_TRANSLATION(OpenInfra_QMS ${Translation_TS})
 
 IF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 	MESSAGE(WARNING "Could not find lrelease. Your build won't contain translations.")
 ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 
-# Tell CMake to create the Qt5HelloWorld executable
+#------------------------------------------------------------------------------
+# Add the actual executable.
+#------------------------------------------------------------------------------
+
 add_executable(OpenInfraPlatform.UI
 	${OpenInfraPlatform_QtPropertyBrowser_Source}
 	${OpenInfraPlatform_UIS_H}
@@ -434,7 +437,10 @@ add_executable(OpenInfraPlatform.UI
 	${OpenInfraPlatform_Shader_D3D_Source}
 )
 
-set(CMAKE_DEBUG_POSTFIX "d")
+#------------------------------------------------------------------------------
+# Link qt and other external libraries to our executable.
+#------------------------------------------------------------------------------
+
 # Use the Widgets module from Qt 5.
 qt5_use_modules(OpenInfraPlatform.UI Widgets Xml XmlPatterns Svg PrintSupport Quick Qml Location Positioning)
 
@@ -452,6 +458,18 @@ target_link_libraries( OpenInfraPlatform.UI
 	Rpcrt4.lib
 )
 
+
+#------------------------------------------------------------------------------
+# Calling copy functions to provide custom targets.
+# Add the custom targets to copy the required binaries.
+#------------------------------------------------------------------------------
+
+# BlueFramework Copy Binaries
+BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
+
+# Oklabi Copy Binaries
+OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
+
 # QtCopyBinaries
 add_custom_target(Qt5CopyBinaries
 	COMMAND ${CMAKE_COMMAND} -E copy ${QT5_DLLS_RELEASE} ${CMAKE_BINARY_DIR}/Release
@@ -466,10 +484,6 @@ add_custom_target(Qt5CopyBinaries
 	# Output Message
 	COMMENT "Copying Ot binaries from '${Qt5Core_DIR}/../../bin/' to '${CMAKE_BINARY_DIR}'" VERBATIM
 )
-
-# Collect all translation files
-FILE(GLOB Translation_TS Data/translations/*.ts)
-QT5_ADD_TRANSLATION(OpenInfra_QMS ${Translation_TS})
 
 add_custom_target(CopyOpenInfraPlatformUIResources
 	ALL DEPENDS ${OpenInfra_QMS}
@@ -521,18 +535,9 @@ add_custom_target(ZLIBCopyBinaries
   COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/RelWithDebInfo/zlib.dll   ${CMAKE_BINARY_DIR}/RelWithDebInfo
 )
 
-set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
-set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
-set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
-set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
-set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
-set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
-set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(carve 									PROPERTIES FOLDER "ThirdParty/carve")
-set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-#set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-
+#-------------------------------------------------------------------------------------
+# Add carve thirdparty library without corrupting our own install target.
+#-------------------------------------------------------------------------------------
 
 macro(add_thirdparty TGT)
 	if(TARGET ${TGT})
@@ -595,8 +600,21 @@ if (WIN32)
 	add_thirdparty(test_carve_polyhedrons_2	"carve")
 endif (WIN32)
 
-#add_subdirectory(IfcBridgeGenerator)
-#add_subdirectory(IfcTunnelGenerator)
+#-------------------------------------------------------------------------------------
+# Set the target properties.
+#-------------------------------------------------------------------------------------
+
+set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
+set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
+set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
+set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
+set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
+set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
+set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
+set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
+set_target_properties(carve 									PROPERTIES FOLDER "ThirdParty/carve")
+set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+#set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
 set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
@@ -607,7 +625,9 @@ set_target_properties(OpenInfraPlatform.Infrastructure		 PROPERTIES FOLDER "Open
 set_target_properties(OpenInfraPlatform.UI					 PROPERTIES FOLDER "OpenInfraPlatform")
 
 #-------------------------------------------------------------------------------------
-# Deployment
+# Deployment & Installation.
+#-------------------------------------------------------------------------------------
+
 set(CPACK_GENERATOR WIX ZIP)
 set(CPACK_WIX_UPGRADE_GUID "178111DC-0B0C-4E3F-8C80-D756F742645F")
 set(CPACK_WIX_PRODUCT_GUID "D936BC02-9157-4D86-9652-F8CB6D62BAAE")
