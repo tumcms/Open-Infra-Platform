@@ -37,7 +37,7 @@ void BlueIfcBridgeViewer::UserInterface::BridgeGeneratorWindow::on_pushButtonSav
 	try
 	{
 		bd.length = ui_->lineEditLength->text().toDouble();
-		bd.width = ui_->lineEditLength->text().toDouble();
+		bd.width = ui_->lineEditWidth->text().toDouble();
 	}
 	catch (...)
 	{
