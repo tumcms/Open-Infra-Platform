@@ -28,9 +28,5 @@ target_link_libraries( OpenInfraPlatform.CommandLineUtilities
 	OpenInfraPlatform.Infrastructure
     Qt5::WinMain  # <-- New target available via find_package ( Qt5Core )
 	# BlueFramework
-	${BLUEFRAMEWORK_BLUECORE_LIBRARY}
-	${BLUEFRAMEWORK_BLUEIMAGEPROCESSING_LIBRARY}
-	${BLUEFRAMEWORK_BLUERASTERIZER_LIBRARY}
-	${BLUEFRAMEWORK_BLUEENGINE_LIBRARY}
-	${BLUEFRAMEWORK_BLUEAPPLICATION_LIBRARY}
+	${BLUEFRAMEWORK_LIBRARIES}
 )

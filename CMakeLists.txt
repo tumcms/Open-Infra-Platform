@@ -824,11 +824,11 @@ if (WIN32)
 	add_thirdparty(test_carve_polyhedrons_2	"carve")
 endif (WIN32)
 
-#add_subdirectory(IfcBridgeGenerator)
+add_subdirectory(IfcBridgeGenerator)
 #add_subdirectory(IfcTunnelGenerator)
 
 set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.IfcTunnelGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.Infrastructure		 PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.LandXMLViewer		 PROPERTIES FOLDER "OpenInfraPlatform")

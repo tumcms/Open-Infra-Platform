@@ -16,33 +16,31 @@
 */
 
 #include "UserInterface/BridgeGeneratorWindow.h"
-#include "buw.BlueCore.h"
+//#include "buw.BlueCore.h"
 
-BLUE_DROP_COMPILER_LEVEL_TO_3
 #include <QtGui>
 #include <QtCore>
 #include <QLabel>
 #include <QMainWindow>
 #include <QApplication>
 #include <QPushButton>
-BLUE_RESTORE_COMPILER_WARNING_LEVEL
 
 int main(int argc,char *argv[])
 {
-	std::ofstream logfile;
-	logfile.open("log.txt");
-	buw::LogManager::getInstance().addOutputStream(&logfile);
+	//std::ofstream logfile;
+	//logfile.open("log.txt");
+	//buw::LogManager::getInstance().addOutputStream(&logfile);
 
-	buw::LifetimeManager lm;
+	//buw::LifetimeManager lm;
 
 	// log file should be outputted in XML format
-	buw::logMangerSettings settings;
-	settings.outputAsXML = true;
-	settings.colorConsoleOutput = true;
-	buw::LogManager::getInstance().setSettings(settings);
-	buw::LogManager::getInstance().LogCPUInfo();
-	buw::LogManager::getInstance().LogOSInfo();
-	buw::LogManager::getInstance().LogGPUInfo();
+	//buw::logMangerSettings settings;
+	//settings.outputAsXML = true;
+	//settings.colorConsoleOutput = true;
+	//buw::LogManager::getInstance().setSettings(settings);
+	//buw::LogManager::getInstance().LogCPUInfo();
+	//buw::LogManager::getInstance().LogOSInfo();
+	//buw::LogManager::getInstance().LogGPUInfo();
 		
 	QApplication application(argc,argv);
 	std::string basePath = "Style/blueform.qss";

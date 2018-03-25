@@ -22,7 +22,8 @@
 #include <math.h> 
 #include <cmath>  
 
-#include "buw.BlueCore.h"
+#include <BlueFramework/Core/string.h>
+//#include "buw.BlueCore.h"
 
 using namespace OpenInfraPlatform::IfcBridge;
 
