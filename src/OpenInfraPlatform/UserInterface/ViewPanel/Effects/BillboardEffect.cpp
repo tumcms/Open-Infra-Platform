@@ -54,6 +54,11 @@ void BillboardEffect::loadShader()
 
 		std::string effectFilename = buw::Singleton<RenderResources>::instance().getResourceRootDir() + "/Shader/BillboardEffect.be";
 
+		buw::blendStateDescription bsd;
+		bsd.renderTarget[0].blendEnable = true;		
+		bsd.renderTarget[0].srcBlend = buw::eBlendValue::SrcAlpha;
+		bsd.renderTarget[0].destBlend = buw::eBlendValue::InvSrcAlpha;
+
 		/*Create the pipeline state.*/
 		buw::pipelineStateDescription psd;
 		psd.effectFilename = effectFilename;
@@ -65,6 +70,8 @@ void BillboardEffect::loadShader()
 		psd.useMSAA = true;
 		psd.fillMode = buw::eFillMode::Solid;
 		psd.cullMode = buw::eCullMode::None;
+		psd.blendStateDesc = bsd;
+		
 
 		pipelineState_ = createPipelineState(psd);		
 	}

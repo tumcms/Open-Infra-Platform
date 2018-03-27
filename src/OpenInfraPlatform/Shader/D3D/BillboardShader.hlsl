@@ -151,7 +151,8 @@ FragmentToPixel PS_main(GeometryToFragment gtf)
 {
     FragmentToPixel final;
 
-    final.color = float4(texDiffuseMap.Sample(sampler_, gtf.uv));
+    float4 texColor = float4(texDiffuseMap.Sample(sampler_, gtf.uv));
+    final.color = texColor.rgba;
 
     return final;
 }
