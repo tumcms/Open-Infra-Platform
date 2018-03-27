@@ -608,7 +608,9 @@ void Viewport::wheelEvent(QWheelEvent* event) {
     QWidget::wheelEvent(event);
 
 	// To avoid continuous rendering.
-	//repaint();
+	if(!cameraController_->isCameraMoving()) {
+		repaint();
+	}
 }
 
 const std::map<int, buw::CameraController::eKey> keyMap = {
