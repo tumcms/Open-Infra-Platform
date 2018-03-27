@@ -31,12 +31,28 @@
 
 #include <BlueFramework/Engine/ResourceManagment/download.h>
 
+#include <QString>
+#include <QRegExp>
+#include <type_traits>
+
+std::string sanitize(const char* name){
+	auto reg0 = QRegExp("class ", Qt::CaseSensitive, QRegExp::Wildcard);
+	auto reg1 = QRegExp("OpenInfraPlatform::IfcAlignment1x1::", Qt::CaseSensitive, QRegExp::Wildcard);
+	return (QString(name).remove(reg0).remove(reg1)).toStdString();
+};
+
+template<template<typename...> class TT, typename T>
+struct is_instantiation_of : std::false_type {};
+
+template<template<typename...> class TT, typename... Ts>
+struct is_instantiation_of<TT, TT<Ts...>> : std::true_type {};
+
 
 class OpenInfraPlatform::Infrastructure::ExportIfcOWL4x1::ExportIfcOWL4x1Impl {
 public:
 	ExportIfcOWL4x1Impl(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename) {
 		
-		OpenInfraPlatform::ExpressBinding::Schema schema = OpenInfraPlatform::ExpressBinding::Schema::read("IFC4x1_RC3.exp");
+		//OpenInfraPlatform::ExpressBinding::Schema schema = OpenInfraPlatform::ExpressBinding::Schema::read("IFC4x1_RC3.exp");
 		
 		auto uuid = boost::uuids::uuid();
 		std::string temp = "./";
@@ -68,29 +84,58 @@ public:
 		raptor_uri* rdf_uri = raptor_new_uri(world_, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		raptor_serializer_set_namespace(serializer_, rdf_uri, rdf_prefix);
 		
+		
+
 		for(auto entry : model->getMapIfcObjects()) {
 			auto entity = *(entry.second);
-			buw::String name;
+			std::string name;
 			for(auto it : OpenInfraPlatform::IfcAlignment1x1::initializers_IfcAlignment1x1_entity) {
 				if(it.second == entity.m_entity_enum)
-					name = buw::String(it.first);
+					name = it.first;
 			}
 			
-			if(visit_struct::field_count(entity) > 2) {
-				std::cout << name << std::endl;
-				//std::cout << entityType.getName() << std::endl;
-				//std::fprintf(outfile, "%s\n", name);
 
-				//std::cout << visit_struct::field_count(entity) << std::endl;;
+			if(entity.m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCPERSON) {				
 
-				visit_struct::for_each(entity,
-					[this](const char * name, const auto & value) {
-					std::cout << name << ": " << value << std::endl;
-					//std::fprintf(outfile, "%s:%s\n", name, value);
+				std::string type = sanitize(typeid(entry.second).name());
+				std::cout << entity.getId() << "=" << name << ": " << type << std::endl;
+
+				auto person = *(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcPerson>(entry.second));
+
+				visit_struct::for_each(person,
+					[](const char* name, auto value) {
+
+					if(is_instantiation_of<std::shared_ptr, decltype(value)>::value) {
+
+						assert((is_instantiation_of<std::shared_ptr, decltype(value)>::value, "failure"));
+
+						if(std::is_same<std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcLabel>, decltype(value)>::value == true) {
+							//TODO: Do stuff with pointers
+							//std::cout << "\t" << name << ": " << sanitize(typeid(value).name()) << std::endl;
+							std::cout << "\t" << name << ": " << sanitize(typeid(value).name()) << std::endl;
+
+						}
+					}
+
+					if(is_instantiation_of<std::vector, decltype(value)>::value == true) {
+						
+						//std::cout << "\t" << name << ": " << "vector of " << sanitize(typeid(value[0]).name()) << std::endl;
+					}
+					//if(std::is_convertible<decltype(value), const std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcLabel>>::value) {
+					//	std::cout << "\t" << name << ": " << sanitize(typeid(value).name()) << std::endl;
+					//}
+					
+					//std::cout << "\t" << name << ": " << sanitize(typeid(value).name()) << std::endl;
 				});
-
-				std::cout << std::endl;
 			}
+			//else {
+			//	visit_struct::for_each(entity,
+			//		[](const char * name, const auto & value) {
+			//		std::cout << "\t" << name << ": " << value << std::endl;
+			//	});
+			//}
+
+			//std::cout << std::endl;			
 		}
 
 
