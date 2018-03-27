@@ -750,7 +750,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
 		activeEffects_.push_back(pointCloudEffect_);
 	}
 
-	if (/*changeFlag & ChangeFlag::ProxyModel && */proxyModel) {
+	if (/*changeFlag & ChangeFlag::ProxyModel && */proxyModel && proxyModel->getAccidentReportCount()) {
 		billboardEffect_->setProxyModel(proxyModel, offset);
 		billboardEffect_->setPointSize(621.0f);
 		billboardEffect_->drawPointsWithUniformColor(false);

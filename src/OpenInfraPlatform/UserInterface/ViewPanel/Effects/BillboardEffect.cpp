@@ -94,12 +94,11 @@ void BillboardEffect::setPointSize(const float size)
 void BillboardEffect::setProxyModel(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::ProxyModel> proxyModel, buw::Vector3d offset)
 {
 	buw::vertexBufferDescription vbd;
-	
-
 	vbd.vertexCount = proxyModel->getAccidentReportCount();
+
 	vbd.vertexLayout = VertexTypeBillboard::getVertexLayout();
 	
-	std::vector<VertexTypeBillboard> vertices = std::vector<VertexTypeBillboard>(proxyModel->getAccidentReportCount());
+	std::vector<VertexTypeBillboard> vertices = std::vector<VertexTypeBillboard>(vbd.vertexCount);
 
 #pragma omp parallel for
 	for(int i = 0; i < proxyModel->getAccidentReportCount(); i++) {
