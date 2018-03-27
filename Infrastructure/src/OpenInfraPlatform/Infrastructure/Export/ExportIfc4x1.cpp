@@ -15,7 +15,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportIfc4x1.h"
 
 #include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Entities.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntityEnums.h"
@@ -36,7 +36,7 @@
 
 using namespace OpenInfraPlatform::IfcAlignment1x1;
 
-class OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::IfcAlignment1x1ExportImpl : public Export {
+class OpenInfraPlatform::Infrastructure::ExportIfc4x1::IfcAlignment1x1ExportImpl : public Export {
 public:
     IfcAlignment1x1ExportImpl(const ifcAlignmentExportDescription& desc,
                               buw::ReferenceCounted<buw::AlignmentModel> am,
@@ -1225,12 +1225,12 @@ void OpenInfraPlatform::Infrastructure::exportIfcAlignment1x1(buw::ReferenceCoun
                                                               const std::string& filename) {
 }
 
-OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::ExportIfcAlignment1x1(const ifcAlignmentExportDescription& desc,
+OpenInfraPlatform::Infrastructure::ExportIfc4x1::ExportIfc4x1(const ifcAlignmentExportDescription& desc,
                                                                                 buw::ReferenceCounted<buw::AlignmentModel> am,
                                                                                 buw::ReferenceCounted<buw::DigitalElevationModel> dem,
                                                                                 const std::string& filename)
     : Export(am, dem, filename), impl_(new IfcAlignment1x1ExportImpl(desc, am, dem, filename)) {
 }
 
-OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::~ExportIfcAlignment1x1() {
+OpenInfraPlatform::Infrastructure::ExportIfc4x1::~ExportIfc4x1() {
 }

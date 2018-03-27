@@ -18,8 +18,8 @@
 #include "Data.h"
 
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"
-#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
-#include "OpenInfraPlatform/Infrastructure/Import/ImportIfcAlignment1x1.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportIfc4x1.h"
+#include "OpenInfraPlatform/Infrastructure/Import/ImportIfc4x1.h"
 
 #include <BlueFramework/Application/DataManagement/Notification/NotifiyAfterEachActionOnlyOnce.h>
 #include "buw.OIPInfrastructure.h"
@@ -646,7 +646,7 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 		{
 			OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing IfcAlignment ").append(filename));
 			//importer_ = new buw::ImportIfcAlignment1x0(filename);
-			importer_ = new buw::ImportIfcAlignment1x1(filename);
+			importer_ = new buw::ImportIfc4x1(filename);
 		}
 		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_ROAD)
 		{
@@ -809,7 +809,7 @@ void OpenInfraPlatform::DataManagement::Data::exportIfcAlignment1x1(const buw::i
 void OpenInfraPlatform::DataManagement::Data::exportIfcAlignment1x1Job(const buw::ifcAlignmentExportDescription& desc, const std::string & filename) {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting IFC Alignment 1x1").append(filename));
 
-	new buw::ExportIfcAlignment1x1(desc, alignmentModel_, digitalElevationModel_, filename);
+	new buw::ExportIfc4x1(desc, alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::exportIfcAlignment1x0(const buw::ifcAlignmentExportDescription& desc, const std::string & filename)
@@ -954,7 +954,7 @@ void OpenInfraPlatform::DataManagement::Data::createExcelReportJob(const std::st
 	exportIfcAlignment1x1Job(desc, ifcFilename);
 	exportLandXMLJob(landXMLFilename);
 
-	buw::IfcAlignment1x1ExcelReport ec(filename.c_str(), landXMLFilename.c_str(), ifcFilename.c_str());
+	buw::ExportIfc4x1ExcelReport ec(filename.c_str(), landXMLFilename.c_str(), ifcFilename.c_str());
 }
 
 void OpenInfraPlatform::DataManagement::Data::exportLandXML(const std::string& filename)

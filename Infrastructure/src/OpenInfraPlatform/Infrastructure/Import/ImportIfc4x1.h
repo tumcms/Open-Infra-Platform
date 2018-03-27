@@ -22,17 +22,17 @@
 
 namespace OpenInfraPlatform {
     namespace Infrastructure {
-        class BLUEINFRASTRUCTURE_API ImportIfcAlignment1x1 : public Import {
+        class BLUEINFRASTRUCTURE_API ImportIfc4x1 : public Import {
         public:
-            ImportIfcAlignment1x1(const std::string& filename);
+            ImportIfc4x1(const std::string& filename);
 
         private:
-            class ImportIfcAlignment1x1Impl;                  // Forward declaration of internal class
-            std::shared_ptr<ImportIfcAlignment1x1Impl> impl_; // Opaque pointer to implementation
+            class ImportIfc4x1Impl;                  // Forward declaration of internal class
+            std::shared_ptr<ImportIfc4x1Impl> impl_; // Opaque pointer to implementation
         };                                                    // end class IfcAlignmentImport
     }                                                         // end namespace Infrastructure
 } // end namespace OpenInfraPlatform
 
 namespace buw {
-    using OpenInfraPlatform::Infrastructure::ImportIfcAlignment1x1;
+    using OpenInfraPlatform::Infrastructure::ImportIfc4x1;
 }

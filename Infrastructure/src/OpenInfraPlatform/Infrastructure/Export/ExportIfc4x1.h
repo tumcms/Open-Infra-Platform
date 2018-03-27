@@ -31,14 +31,14 @@ namespace OpenInfraPlatform {
 			buw::ReferenceCounted<buw::DigitalElevationModel> dem,
 			const std::string& filename);
 
-		class BLUEINFRASTRUCTURE_API ExportIfcAlignment1x1 : public Export {
+		class BLUEINFRASTRUCTURE_API ExportIfc4x1 : public Export {
 		public:
-			ExportIfcAlignment1x1(const ifcAlignmentExportDescription& desc,
+			ExportIfc4x1(const ifcAlignmentExportDescription& desc,
 				buw::ReferenceCounted<buw::AlignmentModel> am,
 				buw::ReferenceCounted<buw::DigitalElevationModel> dem,
 				const std::string& filename);
 
-			virtual ~ExportIfcAlignment1x1();
+			virtual ~ExportIfc4x1();
 
 		private:
 			class IfcAlignment1x1ExportImpl;						// Forward declaration of internal class
@@ -49,5 +49,5 @@ namespace OpenInfraPlatform {
 
 namespace buw {
 	using OpenInfraPlatform::Infrastructure::exportIfcAlignment1x1;
-	using OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1;
+	using OpenInfraPlatform::Infrastructure::ExportIfc4x1;
 }

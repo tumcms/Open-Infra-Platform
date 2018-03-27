@@ -15,7 +15,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ImportIfcAlignment1x1.h"
+#include "ImportIfc4x1.h"
 
 #include "OpenInfraPlatform/Infrastructure/Alignment/Alignment2DBased3D.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/Alignment3DBased3D.h"
@@ -54,10 +54,10 @@
 
 using namespace OpenInfraPlatform::IfcAlignment1x1;
 
-class OpenInfraPlatform::Infrastructure::ImportIfcAlignment1x1::ImportIfcAlignment1x1Impl : public Import
+class OpenInfraPlatform::Infrastructure::ImportIfc4x1::ImportIfc4x1Impl : public Import
 {
 public:
-    ImportIfcAlignment1x1Impl(const std::string& filename)
+    ImportIfc4x1Impl(const std::string& filename)
         : Import(filename)
         , offset_(0.0, 0.0, 0.0)
         , project_()
@@ -442,7 +442,7 @@ public:
                 double const dOffsetLongitudinal = 0.0;
                 if (bAdaptiveSampling && ((firstStation->m_DistanceAlong->m_value - dStartStation) > geometryPrecision_))
                 {
-                    auto const& eval = std::bind<buw::Vector3d>(&ImportIfcAlignment1x1Impl::computeOffsetPoint, this, _2, _3, _1,
+                    auto const& eval = std::bind<buw::Vector3d>(&ImportIfc4x1Impl::computeOffsetPoint, this, _2, _3, _1,
                         dOffsetLateral, dOffsetVertical, dOffsetLongitudinal, _4);
                     Tessellation::tessellate(dStartStation, firstStation->m_DistanceAlong->m_value, h, v,
                         alignment, pHorizontalTangentsAndNormalsOut, eval, false, true);
@@ -520,7 +520,7 @@ public:
                 double const dOffsetLongitudinal = 0.0;
                 if (bAdaptiveSampling && ((dEndStation - lastStation->m_DistanceAlong->m_value) > geometryPrecision_))
                 {
-                    auto const& eval = std::bind<buw::Vector3d>(&ImportIfcAlignment1x1Impl::computeOffsetPoint, this, _2, _3, _1,
+                    auto const& eval = std::bind<buw::Vector3d>(&ImportIfc4x1Impl::computeOffsetPoint, this, _2, _3, _1,
                         dOffsetLateral, dOffsetVertical, dOffsetLongitudinal, _4);
                     Tessellation::tessellate(lastStation->m_DistanceAlong->m_value, dEndStation, h, v,
                         alignment, pHorizontalTangentsAndNormalsOut, eval, true, false);
@@ -1235,10 +1235,10 @@ private:
     std::set<std::shared_ptr<IfcProduct>> spatialContainments_; // "Top-level objects". Others are parts (of assemblies) or subassemblies.
 };
 
-OpenInfraPlatform::Infrastructure::ImportIfcAlignment1x1::ImportIfcAlignment1x1(
+OpenInfraPlatform::Infrastructure::ImportIfc4x1::ImportIfc4x1(
     const std::string& filename) :
     Import(filename),
-    impl_(new ImportIfcAlignment1x1Impl(filename))
+    impl_(new ImportIfc4x1Impl(filename))
 {
     alignmentModel_ = impl_->getAlignmentModel();
     digitalElevationModel_ = impl_->getDigitalElevationModel();
