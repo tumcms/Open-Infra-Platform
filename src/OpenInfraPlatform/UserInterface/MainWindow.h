@@ -239,7 +239,7 @@ namespace OpenInfraPlatform
 
 			// URLs for QSimpleUpdater
 			const QString				changeLogUrl { "http://oip.cms.bgu.tum.de/update/change_log.txt" };
-			const QString				currentVersionUrl { "http://oip.cms.bgu.tum.de/update/current_version_dev.txt" };
+			const QString				currentVersionUrl { "http://oip.cms.bgu.tum.de/update/current_version.txt" };
 			const QString				installerUrl { "http://oip.cms.bgu.tum.de/update/TUM%20Open%20Infra%20Platform.msi" };
 
 			std::unique_ptr<QSimpleUpdater> updater;

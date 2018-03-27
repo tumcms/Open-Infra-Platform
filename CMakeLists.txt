@@ -20,10 +20,15 @@ cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
 project(OpenInfraPlatform)
 
-# tell cmake where to look for our scripts
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
-include(ProjectVersion)
+#-------------------------------------------------------------------------------------
+# CMake definitions and propertiess
+#-------------------------------------------------------------------------------------
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_DEBUG_POSTFIX "d")
+include(ProjectVersion)
+enable_testing()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 #------------------------------------------------------------------------------
@@ -68,9 +73,10 @@ if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
 endif()
 
 #------------------------------------------------------------------------------
+# Look for thirdparty libraries in some predefined locations.
+#------------------------------------------------------------------------------
 
-option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to set boost, Eigen and Qt path" ON)
-option(OIP_USE_PREBUILD_EARLYBINDING_LIBS "Set to OFF to build early binding by yourself" OFF)
+option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to find boost, Eigen and Qt path" ON)
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
@@ -99,61 +105,45 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\raptor2")		
 endif()
 
+#------------------------------------------------------------------------------
+# Set output directories.
+#------------------------------------------------------------------------------
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG     ${CMAKE_BINARY_DIR}/Debug)
 set(CMAKE_PDB_OUTPUT_DIRECTORY_DEBUG         ${CMAKE_BINARY_DIR}/Debug)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE   ${CMAKE_BINARY_DIR}/Release)
 set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE       ${CMAKE_BINARY_DIR}/Release)
+
+#------------------------------------------------------------------------------
+# Add preprocessor directives and compiler flags.
+#------------------------------------------------------------------------------
 
 add_definitions(-D_UNICODE 			# Unicode rules
 				-DQT_NO_KEYWORDS 	# No qt keywords
 				-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
 ) # -DNOMINMAX does not work because GDI+ needs these macros
 
-# Compiler settings
 if (WIN32)
 	# Standard:          /DWIN32 /D_WINDOWS /W3 /Zm1000 /EHsc /GR
 	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR /MP /openmp /bigobj")
 endif (WIN32)
 
+#------------------------------------------------------------------------------
+# Find required thirdparty libraries.
+#------------------------------------------------------------------------------
 
-
-# Visual Studio expected
-# Find Boost
 set(Boost_USE_STATIC_LIBS   ON)
-find_package(Boost 1.63.0 COMPONENTS signals system filesystem python3 REQUIRED) # we suggest Boost 1.65.1
-
-#Find VisualLeakDetector
-find_package(VLD 					   REQUIRED)
-
-#Find BlueFramework root dir
-#set(BLUEFRAMEWORK_USE_INSTALLED FALSE CACHE BOOL "bool")
-#set(BLUEFRAMEWORK_ROOT "" CACHE PATH "path")
-find_package(BlueFramework		COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
-
-#Find Eigen
-find_package(Eigen3             3.3.2  REQUIRED)
-#Find Python
-#unset(PYTHON_LIBRARY)
-find_package(PythonLibs 		3.5.2  REQUIRED)
-
-# Find the Oklabi libraries
+find_package(Boost 1.63.0 COMPONENTS signals system filesystem REQUIRED) # we suggest Boost 1.65.1
+find_package(BlueFramework COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
+find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
+find_package(Eigen3 3.3.2  REQUIRED)
 find_package(Oklabi REQUIRED)
-find_package(gtest REQUIRED) #reduce to this line
-
-#ZLib
+find_package(gtest REQUIRED) 
 find_package(ZLIB 1.2.10 REQUIRED)
-
 find_package(libLAS REQUIRED)
 find_package(qhull REQUIRED)
-
-#Raptor
 find_package(raptor2 REQUIRED)
-
-#visit_struct
 find_path(visit_struct_INCLUDE_DIR REQUIRED)
-
-#Find OpenInfraPlatform.EarlyBinding
-find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
 
 # Find the Qt components
 set(QT5_COMPONENTS
@@ -168,10 +158,12 @@ set(QT5_COMPONENTS
 	Qml
 	Quick
 	Positioning
-	Location)
+	Location
+)
 
+# Loop over all components, find them and initialize the corresponding variables
 foreach(Component ${QT5_COMPONENTS})
-	find_package( Qt5 5.9.0 COMPONENTS ${Component}	REQUIRED)
+	find_package( Qt5 5.10.0 COMPONENTS ${Component}	REQUIRED)
 	if(TARGET ${Qt5${Component}_LIBRARIES})
 		get_target_property(Qt5${Component}_location ${Qt5${Component}_LIBRARIES} LOCATION_Release)
 		set(QT5_DLLS_RELEASE ${QT5_DLLS_RELEASE} ${Qt5${Component}_location})
@@ -179,6 +171,10 @@ foreach(Component ${QT5_COMPONENTS})
 		set(QT5_DLLS_DEBUG ${QT5_DLLS_DEBUG} ${Qt5${Component}_location})
 	endif()
 endforeach()
+
+#------------------------------------------------------------------------------
+# Set required Qt plugins variables and find and add the corresponding dlls for deployment and copying.
+#------------------------------------------------------------------------------
 
 set(Qt5_IMAGEFORMATS_PLUGINS
 	QGifPlugin
@@ -200,10 +196,6 @@ set(Qt5_GEOSERVICES_PLUGINS
 	GeoServiceProviderFactoryEsri
 )
 
-foreach(plugin ${Qt5_GEOSERVICES_PLUGINS})
-	include(${Qt5Location_DIR}/Qt5Location_${plugin}.cmake)
-endforeach()
-
 set(Qt5_PLATFORMS_PLUGINS
 	QWindowsIntegrationPlugin
 	QWindowsDirect2DIntegrationPlugin
@@ -212,13 +204,16 @@ set(Qt5_PLATFORMS_PLUGINS
 )
 
 set(Qt5_NETWORK_PLUGINS
-	#QNativeWifiEnginePlugin
 	QGenericEnginePlugin
 )
 
 set(Qt5_ICONENGINES_PLUGINS
 	QSvgIconPlugin
 )
+
+foreach(plugin ${Qt5_GEOSERVICES_PLUGINS})
+	include(${Qt5Location_DIR}/Qt5Location_${plugin}.cmake)
+endforeach()
 
 string(REPLACE "lib/cmake/Qt5" "bin" Qt5_BIN_DIR "${Qt5_DIR}")
 
@@ -230,14 +225,12 @@ endmacro()
 macro(addQt5PluginDll plugin output)
 	get_target_property(_loc Qt5::${plugin} LOCATION)
 	list(APPEND ${output} ${_loc})
-	#message("Plugin Qt5::${plugin} is at location ${_loc}")
 endmacro()
 
 addQt5Dll(Gui)
 addQt5Dll(Multimedia)
 addQt5Dll(MultimediaWidgets)
 addQt5Dll(OpenGL)
-#addQt5Dll(Script)
 addQt5Dll(Sensors)
 addQt5Dll(Sql)
 addQt5Dll(WebChannel)
@@ -258,178 +251,74 @@ foreach(plugin ${Qt5_ICONENGINES_PLUGINS})
 	addQt5PluginDll(${plugin} Qt5_ICONENGINES_PLUGINS_DLLS)
 endforeach()
 
+#------------------------------------------------------------------------------
+# Set include directories and link directories.
+#------------------------------------------------------------------------------
+
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR} # Qt generated files will be located here
 	${Boost_INCLUDE_DIR}
-	${VLD_INCLUDE_DIR}
 	${BLUEFRAMEWORK_INCLUDE_DIR}
-	${EIGEN3_INCLUDE_DIR}
-	${PYTHON_INCLUDE_DIRS}
-	#DirectX for rendering
-	${DirectX12_INCLUDE_DIR}
-	${DirectX12_INCLUDE_DIR_SHARED}
+	${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR}
+	${EIGEN3_INCLUDE_DIR}	
 	src
 	external/QtXlsxWriter/src/xlsx
 	external/QSimpleUpdater/src
 	external/QSimpleUpdater/dialogs
 	Infrastructure/canonicalHeaders
-	${ZLIB_INCLUDE_DIRS}
-	#Experimental
+	${ZLIB_INCLUDE_DIRS}	
 	${visit_struct_INCLUDE_DIR}
+	external/carve/include
+	${CMAKE_BINARY_DIR}/external/carve/include
+	external/carve/common
+	ExpressBinding/src
+	Infrastructure/src
 )
 
 link_directories(
 	${Boost_LIBRARY_DIRS}
-	${VLD_LIBRARIES_DIR}
 	${OKLABI_ROOT_DIR}
-	${CMAKE_CURRENT_BINARY_DIR}/external/zlib/src
 )
 
-# macro for precompiled header - see also http://stackoverflow.com/questions/148570/using-pre-compiled-headers-with-cmake
-#MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)
-#  IF(MSVC)
-#    GET_FILENAME_COMPONENT(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
-#    SET(PrecompiledBinary "${CMAKE_CURRENT_BINARY_DIR}/${PrecompiledBasename}.pch")
-#    SET(Sources ${${SourcesVar}})
-#
-#    SET_SOURCE_FILES_PROPERTIES(${PrecompiledSource}
-#                                PROPERTIES COMPILE_FLAGS "/Yc\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
-#                                           OBJECT_OUTPUTS "${PrecompiledBinary}")
-#    SET_SOURCE_FILES_PROPERTIES(${Sources}
-#                                PROPERTIES COMPILE_FLAGS "/Yu\"${PrecompiledHeader}\" /FI\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
-#                                           OBJECT_DEPENDS "${PrecompiledBinary}")
-#    # Add precompiled header to SourcesVar
-#    LIST(APPEND ${SourcesVar} ${PrecompiledSource})
-#  ENDIF(MSVC)
-#ENDMACRO(ADD_MSVC_PRECOMPILED_HEADER)
+#------------------------------------------------------------------------------
+# Add subdirectories.
+#------------------------------------------------------------------------------
 
-# BlueFramework Copy Binaries
-BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
-
-# Oklabi Copy Binaries
-OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
-
-# QtXlsxWriter
 add_subdirectory(external/QtXlsxWriter)
-
-# QSimpleUpdater
 add_subdirectory(external/QSimpleUpdater)
-
-#####################################################################################################
-# add carve
-#####################################################################################################
-
-#add_definitions(-DCARVE_SYSTEM_BOOST) # use system boost directories
-
-include_directories(external/carve/include)
-include_directories(${CMAKE_BINARY_DIR}/external/carve/include) #for out of source builds
-include_directories(external/carve/common)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
-set_target_properties(carve 								PROPERTIES FOLDER "ThirdParty/carve")
-
-include_directories(${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR})
-
-# macro (find_prebuild_earlybinding library) 
-	# find_file(OpenInfraPlatform_${library}_LIBRARY_RELEASE
-		# NAMES OpenInfraPlatform.${library}.lib
-		# HINTS ${OIP_PRBEUILD_LIBS_DIR} REQUIRED)
-		
-	# find_file(OpenInfraPlatform_${library}_LIBRARY_DEBUG
-		# NAMES OpenInfraPlatform.${library}d.lib
-		# HINTS ${OIP_PRBEUILD_LIBS_DIR} REQUIRED)
-		
-	# set(OpenInfraPlatform_${library}_LIBRARY
-		# optimized 	${OpenInfraPlatform_${library}_LIBRARY_RELEASE}
-		# debug		${OpenInfraPlatform_${library}_LIBRARY_DEBUG})
-# endmacro()
-
-# # Earlybinding
-# if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	# include_directories(
-		# Ifc2x3/src
-		# Ifc4/src
-		# IfcAlignment/src
-		# IfcAlignment1x1/src
-		# IfcBridge/src
-		# IfcRoad/src
-		# IfcTunnel/src
-	# )
-	
-	# set(OIP_PRBEUILD_LIBS_DIR ${PROJECT_SOURCE_DIR}/prebuild_libs/vs2015/x64/)
-
-	# link_directories(${OIP_PRBEUILD_LIBS_DIR})
-		
-	# find_prebuild_earlybinding(Ifc2x3)
-	# find_prebuild_earlybinding(IfcAlignment)
-	# find_prebuild_earlybinding(IfcAlignment1x1)
-	# find_prebuild_earlybinding(Ifc4)
-	# find_prebuild_earlybinding(IfcBridge)
-	# find_prebuild_earlybinding(IfcRoad)
-	# find_prebuild_earlybinding(IfcTunnel)
-			
-# else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	# # add Ifc2x3
-	# add_subdirectory(Ifc2x3)
-	# include_directories(Ifc2x3/src)
-
-	# # add Ifc4
-	# add_subdirectory(Ifc4)
-	# include_directories(Ifc4/src)
-
-	# # add IfcAlignment
-	# add_subdirectory(IfcAlignment)
-	# include_directories(IfcAlignment/src)
-
-	# # add IfcAlignment1x1
-	# add_subdirectory(IfcAlignment1x1)
-	# include_directories(IfcAlignment1x1/src)
-
-	# # add IfcBridge
-	# add_subdirectory(IfcBridge)
-	# include_directories(IfcBridge/src)
-
-	# # add IfcRoad
-	# add_subdirectory(IfcRoad)
-	# include_directories(IfcRoad/src)
-
-	# # add IfcTunnel
-	# add_subdirectory(IfcTunnel)
-	# include_directories(IfcTunnel/src)
-# endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-
-# add ExpressBinding
 add_subdirectory(ExpressBinding)
-include_directories(ExpressBinding/src)
-
-# add source directory
 add_subdirectory(Infrastructure)
-include_directories(Infrastructure/src)
-
-enable_testing()
-
 add_subdirectory(UnitTests)
+add_subdirectory(oip)
 
-add_definitions(-DNOMINMAX)
+# Do currently not work
+#add_subdirectory(RoadXMLViewer)
+#add_subdirectory(LandXMLViewer)
+#add_subdirectory(IfcBridgeGenerator)
+#add_subdirectory(IfcTunnelGenerator)
 
-# Find includes in corresponding build directories
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-# Instruct CMake to run moc automatically when needed.
-set(CMAKE_AUTOMOC ON)
 
-file(GLOB OpenInfraPlatform_QtPropertyBrowser_Source 				src/QtPropertyBrowser/*.*)
+#------------------------------------------------------------------------------
+# Collect source files
+#------------------------------------------------------------------------------
 
+# Collect general source files
+file(GLOB OpenInfraPlatform_Source									src/OpenInfraPlatform/*.*)
 file(GLOB OpenInfraPlatform_Core_Source 							src/OpenInfraPlatform/Core/*.*)
 file(GLOB OpenInfraPlatform_Data_Source 							src/OpenInfraPlatform/Data/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Source 					src/OpenInfraPlatform/DataManagement/*.*)
 file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)
-file(GLOB_RECURSE OpenInfraPlatform_Shader_Header					src/OpenInfraPlatform/Shader/*.hlsl.inc)
-file(GLOB OpenInfraPlatform_Shader_D3D12_Source 					src/OpenInfraPlatform/Shader/D3D12/*.hlsl)
-file(GLOB OpenInfraPlatform_Shader_D3D11_Source 					src/OpenInfraPlatform/Shader/D3D11/*.*)
-file(GLOB OpenInfraPlatform_Shader_GL4x_Source 						src/OpenInfraPlatform/Shader/GL4x/*.*)
-file(GLOB OpenInfraPlatform_Shader_Source 							src/OpenInfraPlatform/Shader/*.*)
-file(GLOB OpenInfraPlatform_Source									src/OpenInfraPlatform/*.*)
+
+# UnitTesting for images is currently not working but still in the code so files have to be collected
 file(GLOB OpenInfraPlatform_UnitTesting_Source						src/OpenInfraPlatform/UnitTesting/*.*)
+
+# Collect Shader files
+file(GLOB OpenInfraPlatform_Shader_Source 							src/OpenInfraPlatform/Shader/*.*)
+file(GLOB OpenInfraPlatform_Shader_D3D_Source 						src/OpenInfraPlatform/Shader/D3D/*.*)
+
+# Collect UserInterface files
 file(GLOB OpenInfraPlatform_UserInterface_ColorPicker_Source		src/OpenInfraPlatform/UserInterface/ColorPicker/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Tools_Source				src/OpenInfraPlatform/UserInterface/Tools/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Source 					src/OpenInfraPlatform/UserInterface/*.*)
@@ -437,60 +326,9 @@ file(GLOB OpenInfraPlatform_UserInterface_View2DWindow			 	src/OpenInfraPlatform
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			src/OpenInfraPlatform/UserInterface/ViewPanel/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source 	src/OpenInfraPlatform/UserInterface/ViewPanel/Effects/*.*)
 
+file(GLOB OpenInfraPlatform_QtPropertyBrowser_Source 				src/QtPropertyBrowser/*.*)
 
-source_group(OpenInfraPlatform										FILES ${OpenInfraPlatform_Source})
-source_group(OpenInfraPlatform\\Core								FILES ${OpenInfraPlatform_Core_Source})
-source_group(OpenInfraPlatform\\Data								FILES ${OpenInfraPlatform_Data_Source})
-source_group(OpenInfraPlatform\\DataManagement						FILES ${OpenInfraPlatform_DataManagement_Source})
-source_group(OpenInfraPlatform\\DataManagement\\Command				FILES ${OpenInfraPlatform_DataManagement_Command_Source})
-source_group(OpenInfraPlatform\\IfcGeometryConverter				FILES ${OpenInfraPlatform_IfcGeometryConverter_Source})
-source_group(OpenInfraPlatform\\Shader								FILES ${OpenInfraPlatform_Shader_Source})
-source_group(OpenInfraPlatform\\Shader\\Header						FILES ${OpenInfraPlatform_Shader_Header})
-source_group(OpenInfraPlatform\\Shader\\D3D12						FILES ${OpenInfraPlatform_Shader_D3D12_Source})
-source_group(OpenInfraPlatform\\Shader\\D3D11						FILES ${OpenInfraPlatform_Shader_D3D11_Source})
-source_group(OpenInfraPlatform\\Shader\\GL4x						FILES ${OpenInfraPlatform_Shader_GL4x_Source})
-source_group(OpenInfraPlatform\\UnitTesting  						FILES ${OpenInfraPlatform_UnitTesting_Source})
-source_group(OpenInfraPlatform\\UserInterface						FILES ${OpenInfraPlatform_UserInterface_Source})
-source_group(OpenInfraPlatform\\UserInterface\\ColorPicker			FILES ${OpenInfraPlatform_UserInterface_ColorPicker_Source})
-source_group(OpenInfraPlatform\\UserInterface\\Tools				FILES ${OpenInfraPlatform_UserInterface_Tools_Source})
-source_group(OpenInfraPlatform\\UserInterface\\View2DWindow			FILES ${OpenInfraPlatform_UserInterface_View2DWindow})
-source_group(OpenInfraPlatform\\UserInterface\\ViewPanel			FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Source})
-source_group(OpenInfraPlatform\\UserInterface\\ViewPanel\\Effects	FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source})
-source_group(QtPropertyBrowser										FILES ${OpenInfraPlatform_QtPropertyBrowser_Source})
-
-
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D12_Source} PROPERTY VS_SHADER_TYPE Vertex)
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D12_Source} PROPERTY VS_SHADER_ENTRYPOINT VS_main)
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D12_Source} PROPERTY VS_SHADER_MODEL 5.0)
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D12_Source} PROPERTY PS_SHADER_TYPE PIXEL)
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D12_Source} PROPERTY PS_SHADER_ENTRYPOINT PS_main)
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D12_Source} PROPERTY PS_SHADER_MODEL 5.0)
-
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D11_Source} PROPERTY VS_SHADER_TYPE Vertex)
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D11_Source} PROPERTY VS_SHADER_ENTRYPOINT VS_main)
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D11_Source} PROPERTY VS_SHADER_MODEL 5.0)
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D11_Source} PROPERTY PS_SHADER_TYPE PIXEL)
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D11_Source} PROPERTY PS_SHADER_ENTRYPOINT PS_main)
-set_property(SOURCE ${OpenInfraPlatform_Shader_D3D11_Source} PROPERTY PS_SHADER_MODEL 5.0)
-
-
-file(GLOB BlueFramework_GraphicsEngine_Source 					src/BlueFramework/GraphicsEngine/*.*)
-source_group(BlueFramework\\GraphicsEngine						FILES ${BlueFramework_GraphicsEngine_Source})
-
-file(GLOB BlueFramework_Core_Source 							src/BlueFramework/Core/*.*)
-source_group(BlueFramework\\Core								FILES ${BlueFramework_Core_Source})
-
-IF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
-	MESSAGE(WARNING "Could not find lrelease. Your build won't contain translations.")
-ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
-
-#ADD_MSVC_PRECOMPILED_HEADER(
-#	"precompiled.h"
-#	"src/OpenInfraPlatform/precompiled.cpp"
-#	OpenInfraPlatform_UserInterface_Source)
-
-
-# Qt related stuff
+# Collect Qt related stuff and UI files
 set(OpenInfraPlatform_UIS
 	external/QSimpleUpdater/src/dialogs/download_dialog.ui
 	src/OpenInfraPlatform/Forms/CodeEditorWindow.ui
@@ -519,126 +357,118 @@ set(OpenInfraPlatform_UIS
 	src/OpenInfraPlatform/Forms/CreateAccidentReport.ui
 )
 
-source_group(OpenInfraPlatform\\UserInterface\\Forms					FILES ${OpenInfraPlatform_UIS})
-
+# Collect RC files
 set(OpenInfraPlatform_RC
 	src/OpenInfraPlatform/Resources/OpenInfraPlatform.qrc
 	src/QtPropertyBrowser/qtpropertybrowser.qrc
 )
 
+# Collect all translation files
+FILE(GLOB Translation_TS Data/translations/*.ts)
+
+#------------------------------------------------------------------------------
+# Set source groups
+#------------------------------------------------------------------------------
+
+source_group(OpenInfraPlatform										FILES ${OpenInfraPlatform_Source})
+source_group(OpenInfraPlatform\\Core								FILES ${OpenInfraPlatform_Core_Source})
+source_group(OpenInfraPlatform\\Data								FILES ${OpenInfraPlatform_Data_Source})
+source_group(OpenInfraPlatform\\DataManagement						FILES ${OpenInfraPlatform_DataManagement_Source})
+source_group(OpenInfraPlatform\\DataManagement\\Command				FILES ${OpenInfraPlatform_DataManagement_Command_Source})
+source_group(OpenInfraPlatform\\IfcGeometryConverter				FILES ${OpenInfraPlatform_IfcGeometryConverter_Source})
+
+# Set Shader source groups
+source_group(OpenInfraPlatform\\Shader								FILES ${OpenInfraPlatform_Shader_Source})
+source_group(OpenInfraPlatform\\Shader\\D3D							FILES ${OpenInfraPlatform_Shader_D3D_Source})
+
+# UnitTesting for images is currently not working but still in the code so it has to be linked
+source_group(OpenInfraPlatform\\UnitTesting  						FILES ${OpenInfraPlatform_UnitTesting_Source})
+
+# Set UserInterface source groups
+source_group(OpenInfraPlatform\\UserInterface						FILES ${OpenInfraPlatform_UserInterface_Source})
+source_group(OpenInfraPlatform\\UserInterface\\ColorPicker			FILES ${OpenInfraPlatform_UserInterface_ColorPicker_Source})
+source_group(OpenInfraPlatform\\UserInterface\\Tools				FILES ${OpenInfraPlatform_UserInterface_Tools_Source})
+source_group(OpenInfraPlatform\\UserInterface\\View2DWindow			FILES ${OpenInfraPlatform_UserInterface_View2DWindow})
+source_group(OpenInfraPlatform\\UserInterface\\ViewPanel			FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Source})
+source_group(OpenInfraPlatform\\UserInterface\\ViewPanel\\Effects	FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source})
+source_group(OpenInfraPlatform\\UserInterface\\Forms				FILES ${OpenInfraPlatform_UIS})
+
+source_group(QtPropertyBrowser										FILES ${OpenInfraPlatform_QtPropertyBrowser_Source})
+
+#------------------------------------------------------------------------------
+# Set source group properties
+#------------------------------------------------------------------------------
+
+# Set HEADER_FILES_ONLY to true to make them show up in the IDE but be excluded from compiling
+set_source_files_properties(${OpenInfraPlatform_Shader_Source} 		PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties(${OpenInfraPlatform_Shader_D3D_Source} 	PROPERTIES HEADER_FILE_ONLY TRUE)
+
+# Qt related stuff
 QT5_ADD_RESOURCES(OpenInfraPlatform_RC_SRCS ${OpenInfraPlatform_RC})
 QT5_WRAP_UI(OpenInfraPlatform_UIS_H ${OpenInfraPlatform_UIS})
+QT5_ADD_TRANSLATION(OpenInfra_QMS ${Translation_TS})
 
-# Tell CMake to create the Qt5HelloWorld executable
+IF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
+	MESSAGE(WARNING "Could not find lrelease. Your build won't contain translations.")
+ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
+
+#------------------------------------------------------------------------------
+# Add the actual executable.
+#------------------------------------------------------------------------------
+
 add_executable(OpenInfraPlatform.UI
 	${OpenInfraPlatform_QtPropertyBrowser_Source}
 	${OpenInfraPlatform_UIS_H}
 	${OpenInfraPlatform_RC_SRCS}
 	${OpenInfraPlatform_Source}
+	${OpenInfraPlatform_Core_Source}
+	${OpenInfraPlatform_Data_Source}
+	${OpenInfraPlatform_DataManagement_Source}
+	${OpenInfraPlatform_DataManagement_Command_Source}
+	${OpenInfraPlatform_IfcGeometryConverter_Source}
+	${OpenInfraPlatform_UnitTesting_Source}
 	${OpenInfraPlatform_UserInterface_Source}
 	${OpenInfraPlatform_UserInterface_ColorPicker_Source}
 	${OpenInfraPlatform_UserInterface_Tools_Source}
 	${OpenInfraPlatform_UserInterface_ViewPanel_Source}
 	${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source}
-	${OpenInfraPlatform_UserInterface_View2DWindow}
-	${OpenInfraPlatform_UnitTesting_Source}
-	${OpenInfraPlatform_Data_Source}
-	${OpenInfraPlatform_DataManagement_Source}
-	${OpenInfraPlatform_DataManagement_Command_Source}
-	${OpenInfraPlatform_IfcGeometryConverter_Source}
+	${OpenInfraPlatform_UserInterface_View2DWindow}	
 	${OpenInfraPlatform_Shader_Source}
-	${OpenInfraPlatform_Shader_Header}
-	${OpenInfraPlatform_Shader_D3D12_Source}
-	${OpenInfraPlatform_Shader_D3D11_Source}
-	${OpenInfraPlatform_Shader_GL4x_Source}
-	${OpenInfraPlatform_Core_Source}
+	${OpenInfraPlatform_Shader_D3D_Source}
 )
 
-set(CMAKE_DEBUG_POSTFIX "d")
+#------------------------------------------------------------------------------
+# Link qt and other external libraries to our executable.
+#------------------------------------------------------------------------------
+
 # Use the Widgets module from Qt 5.
 qt5_use_modules(OpenInfraPlatform.UI Widgets Xml XmlPatterns Svg PrintSupport Quick Qml Location Positioning)
 
-# if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	# target_link_libraries( OpenInfraPlatform.UI
-		# OpenInfraPlatform.Infrastructure
-		# # Early bindings
-		# ${OpenInfraPlatform_Ifc2x3_LIBRARY}
-		# ${OpenInfraPlatform_Ifc4_LIBRARY}
-		# ${OpenInfraPlatform_IfcAlignment_LIBRARY}
-		# ${OpenInfraPlatform_IfcAlignment1x1_LIBRARY}
-		# ${OpenInfraPlatform_IfcBridge_LIBRARY}
-		# ${OpenInfraPlatform_IfcRoad_LIBRARY}
-		# ${OpenInfraPlatform_IfcTunnel_LIBRARY}
-		# # Qt
-		# Qt5::WinMain  # New target available via find_package ( Qt5Core )
-		# # BlueFramework
-		# ${BLUEFRAMEWORK_LIBRARIES}
-		# # External libs
-		# QtXlsxWriter
-		# QSimpleUpdater
-		# ${LIBLAS_LIBRARIES}
-		# carve
-		# # Python
-		# ${PYTHON_LIBRARIES}
-		# ${ZLIB_LIBRARIES}
-	# )
-# elseif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	# target_link_libraries( OpenInfraPlatform.UI
-		# OpenInfraPlatform.Infrastructure
-		# # Early bindings
-		# OpenInfraPlatform.Ifc2x3
-		# OpenInfraPlatform.Ifc4
-		# OpenInfraPlatform.IfcAlignment
-		# OpenInfraPlatform.IfcAlignment1x1
-		# OpenInfraPlatform.IfcBridge
-		# OpenInfraPlatform.IfcRoad
-		# # Qt
-		# Qt5::WinMain  # New target available via find_package ( Qt5Core )
-		# # BlueFramework
-		# ${BLUEFRAMEWORK_LIBRARIES}
-		# # External libs
-		# QtXlsxWriter
-		# QSimpleUpdater
-		# ${LIBLAS_LIBRARIES}
-		# carve
-		# # Python
-		# ${PYTHON_LIBRARIES}
-		# ${ZLIB_LIBRARIES}
-	# )
-# endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-
 target_link_libraries( OpenInfraPlatform.UI
 	OpenInfraPlatform.Infrastructure
-	OpenInfraPlatform.ExpressBinding
-	# OpenInfraPlatform.IfcBridge
-	# OpenInfraPlatform.IfcRoad
-	# OpenInfraPlatform.IfcAlignment
-	# OpenInfraPlatform.IfcAlignment1x1
-	# OpenInfraPlatform.Ifc4
-	# OpenInfraPlatform.Ifc2x3
+	OpenInfraPlatform.ExpressBinding	
 	${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 	Qt5::WinMain  # New target available via find_package ( Qt5Core )
-	# BlueFramework
 	${BLUEFRAMEWORK_LIBRARIES}
-	# External libs
 	QtXlsxWriter
 	QSimpleUpdater
 	${LIBLAS_LIBRARIES}
 	carve
-	# Python
-	${PYTHON_LIBRARIES}
 	${ZLIB_LIBRARIES}
 	Rpcrt4.lib
 )
 
-# Python35
-add_custom_target(Python35CopyBinaries
-	COMMAND	${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/deploy/python/python35.dll		${CMAKE_BINARY_DIR}/Debug
-	COMMAND	${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/deploy/python/python35.dll		${CMAKE_BINARY_DIR}/Release
 
-	# Output Message
-	COMMENT "Copying Pyhton35 binaries from ' ${CMAKE_CURRENT_SOURCE_DIR}/deploy/python' to '${CMAKE_BINARY_DIR}'" VERBATIM
-)
+#------------------------------------------------------------------------------
+# Calling copy functions to provide custom targets.
+# Add the custom targets to copy the required binaries.
+#------------------------------------------------------------------------------
+
+# BlueFramework Copy Binaries
+BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
+
+# Oklabi Copy Binaries
+OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 # QtCopyBinaries
 add_custom_target(Qt5CopyBinaries
@@ -654,10 +484,6 @@ add_custom_target(Qt5CopyBinaries
 	# Output Message
 	COMMENT "Copying Ot binaries from '${Qt5Core_DIR}/../../bin/' to '${CMAKE_BINARY_DIR}'" VERBATIM
 )
-
-# Collect all translation files
-FILE(GLOB Translation_TS Data/translations/*.ts)
-QT5_ADD_TRANSLATION(OpenInfra_QMS ${Translation_TS})
 
 add_custom_target(CopyOpenInfraPlatformUIResources
 	ALL DEPENDS ${OpenInfra_QMS}
@@ -691,13 +517,6 @@ add_custom_target(CopyOpenInfraPlatformUIResources
 	COMMAND	${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/deploy/InstanceLevelTranslator/OkstraI18NTranslation.dll		${CMAKE_BINARY_DIR}/RelWithDebInfo/OkstraI18NTranslation.dll
 )
 
-# DirectX
-# add_custom_target(DirectXCopyBinaries
-	# COMMAND	${CMAKE_COMMAND} -E copy "C:/Program Files (x86)/Windows Kits/8.1/Redist/D3D/x64/d3dcompiler_47.dll" ${CMAKE_BINARY_DIR}/Debug
-	# COMMAND	${CMAKE_COMMAND} -E copy "C:/Program Files (x86)/Windows Kits/8.1/Redist/D3D/x64/d3dcompiler_47.dll" ${CMAKE_BINARY_DIR}/Release
-	# COMMAND	${CMAKE_COMMAND} -E copy "C:/Program Files (x86)/Windows Kits/8.1/Redist/D3D/x64/d3dcompiler_47.dll" ${CMAKE_BINARY_DIR}/RelWithDebInfo
-# )
-
 # QSimpleUpdater
 add_custom_target(QSimpleUpdaterCopyBinaries
 	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll	${CMAKE_BINARY_DIR}/Debug
@@ -709,13 +528,6 @@ add_custom_target(QSimpleUpdaterCopyBinaries
 	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll	${CMAKE_BINARY_DIR}/RelWithDebInfo
 )
 
-# Do currently not work
-#add_subdirectory(RoadXMLViewer)
-#add_subdirectory(LandXMLViewer)
-
-add_subdirectory(oip)
-
-if (WIN32)
 
 add_custom_target(ZLIBCopyBinaries
   COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Debug/zlibd.dll           ${CMAKE_BINARY_DIR}/Debug
@@ -723,63 +535,9 @@ add_custom_target(ZLIBCopyBinaries
   COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/RelWithDebInfo/zlib.dll   ${CMAKE_BINARY_DIR}/RelWithDebInfo
 )
 
-set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
-set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
-set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
-set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
-#set_target_properties(DirectXCopyBinaries		 				PROPERTIES FOLDER "Copy")
-set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
-set_target_properties(Python35CopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
-set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
-
-# if(NOT OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	# set_target_properties(OpenInfraPlatform.Ifc2x3		 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	# set_target_properties(OpenInfraPlatform.Ifc4		 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	# set_target_properties(OpenInfraPlatform.IfcAlignment 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	# set_target_properties(OpenInfraPlatform.IfcAlignment1x1		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	# set_target_properties(OpenInfraPlatform.IfcBridge	 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	# set_target_properties(OpenInfraPlatform.IfcRoad		 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-	# set_target_properties(OpenInfraPlatform.IfcTunnel	 		PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-# endif(NOT OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-
-set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-#set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-
-endif (WIN32)
-
-
-if(WIN32)
-	if(MSVC12 OR MSVC14)
-			if (MSVC12)
-				set(BIN_DIR "${PROJECT_SOURCE_DIR}/bin/vs2013/x64/")
-				set(LIB_DIR "${PROJECT_SOURCE_DIR}/lib/vs2013/x64/")
-			elseif(MSVC14)
-				set(BIN_DIR "${PROJECT_SOURCE_DIR}/bin/vs2015/x64/")
-				set(LIB_DIR "${PROJECT_SOURCE_DIR}/lib/vs2015/x64/")
-			endif(MSVC12)
-
-			add_custom_target(UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs
-				COMMENT "Copying OpenInfraPlatform Libraries ..." VERBATIM
-			)
-
-			add_custom_command(TARGET UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Release/OpenInfraPlatform.Infrastructure.dll 						${BIN_DIR}OpenInfraPlatform.Infrastructure.dll VERBATIM)
-			add_custom_command(TARGET UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Infrastructure/Release/OpenInfraPlatform.Infrastructure.exp 		${LIB_DIR}OpenInfraPlatform.Infrastructure.exp VERBATIM)
-			add_custom_command(TARGET UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Infrastructure/Release/OpenInfraPlatform.Infrastructure.lib 		${LIB_DIR}OpenInfraPlatform.Infrastructure.lib VERBATIM)
-			add_custom_command(TARGET UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Debug/OpenInfraPlatform.Infrastructured.dll 						${BIN_DIR}OpenInfraPlatform.Infrastructured.dll VERBATIM)
-			add_custom_command(TARGET UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Infrastructure/Debug/OpenInfraPlatform.Infrastructured.exp 		${LIB_DIR}OpenInfraPlatform.Infrastructured.exp VERBATIM)
-			#add_custom_command(TARGET UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Infrastructure/Debug/OpenInfraPlatform.Infrastructured.ilk 						${LIB_DIR}OpenInfraPlatform.Infrastructured.ilk VERBATIM)
-			add_custom_command(TARGET UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Infrastructure/Debug/OpenInfraPlatform.Infrastructured.lib 		${LIB_DIR}OpenInfraPlatform.Infrastructured.lib VERBATIM)
-			#add_custom_command(TARGET UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Infrastructure/Debug/OpenInfraPlatform.Infrastructured.pdb 		${LIB_DIR}OpenInfraPlatform.Infrastructured.pdb VERBATIM)
-
-			add_dependencies(UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs
-				OpenInfraPlatform.Infrastructure
-			)
-
-			set_target_properties(UpdateOpenInfraPlatformLibsDebugSymbolsAndDLLs	PROPERTIES FOLDER "Copy")
-	endif()
-endif()
+#-------------------------------------------------------------------------------------
+# Add carve thirdparty library without corrupting our own install target.
+#-------------------------------------------------------------------------------------
 
 macro(add_thirdparty TGT)
 	if(TARGET ${TGT})
@@ -814,36 +572,46 @@ macro(add_thirdparty TGT)
 endmacro()
 
 # Thirdparty
-if (WIN32)
 	add_thirdparty(QtXlsxWriter 	"REQUIRED")
 	add_thirdparty(QSimpleUpdater 	"REQUIRED")
 		
-	# carve
-	add_thirdparty(carve					"carve")
-	add_thirdparty(carve_fileformats		"carve")
-	add_thirdparty(carve_misc				"carve")
-	add_thirdparty(close_manifold			"carve")
-	add_thirdparty(cutgraph					"carve")
-	add_thirdparty(convert					"carve")
-	add_thirdparty(extrude					"carve")
-	add_thirdparty(face_merge				"carve")
-	add_thirdparty(gloop_model				"carve")
-	add_thirdparty(gloop_image				"carve")
-	add_thirdparty(gloop_math				"carve")
-	add_thirdparty(intersect				"carve")
-	add_thirdparty(slice					"carve")		
-	add_thirdparty(tetrahedron				"carve")
-	add_thirdparty(triangulate				"carve")
-	add_thirdparty(test_eigen				"carve")
-	add_thirdparty(test_aabb				"carve")
-	add_thirdparty(test_geom				"carve")
-	add_thirdparty(test_rescale				"carve")
-	add_thirdparty(test_spacetree			"carve")
-	add_thirdparty(test_carve_polyhedrons_2	"carve")
-endif (WIN32)
+# carve
+add_thirdparty(carve					"carve")
+add_thirdparty(carve_fileformats		"carve")
+add_thirdparty(carve_misc				"carve")
+add_thirdparty(close_manifold			"carve")
+add_thirdparty(cutgraph					"carve")
+add_thirdparty(convert					"carve")
+add_thirdparty(extrude					"carve")
+add_thirdparty(face_merge				"carve")
+add_thirdparty(gloop_model				"carve")
+add_thirdparty(gloop_image				"carve")
+add_thirdparty(gloop_math				"carve")
+add_thirdparty(intersect				"carve")
+add_thirdparty(slice					"carve")		
+add_thirdparty(tetrahedron				"carve")
+add_thirdparty(triangulate				"carve")
+add_thirdparty(test_eigen				"carve")
+add_thirdparty(test_aabb				"carve")
+add_thirdparty(test_geom				"carve")
+add_thirdparty(test_rescale				"carve")
+add_thirdparty(test_spacetree			"carve")
+add_thirdparty(test_carve_polyhedrons_2	"carve")
 
-#add_subdirectory(IfcBridgeGenerator)
-#add_subdirectory(IfcTunnelGenerator)
+#-------------------------------------------------------------------------------------
+# Set the target properties.
+#-------------------------------------------------------------------------------------
+
+set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
+set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
+set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
+set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
+set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
+set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
+set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
+set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
+set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+#set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
 set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
@@ -854,8 +622,10 @@ set_target_properties(OpenInfraPlatform.Infrastructure		 PROPERTIES FOLDER "Open
 set_target_properties(OpenInfraPlatform.UI					 PROPERTIES FOLDER "OpenInfraPlatform")
 
 #-------------------------------------------------------------------------------------
-# Deployment
-set(CPACK_GENERATOR WIX ZIP)
+# Deployment & Installation.
+#-------------------------------------------------------------------------------------
+
+set(CPACK_GENERATOR WIX)
 set(CPACK_WIX_UPGRADE_GUID "178111DC-0B0C-4E3F-8C80-D756F742645F")
 set(CPACK_WIX_PRODUCT_GUID "D936BC02-9157-4D86-9652-F8CB6D62BAAE")
 set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
@@ -874,13 +644,7 @@ set(CPACK_WIX_UI_BANNER "${PROJECT_SOURCE_DIR}/Data/banner.bmp")
 set(CPACK_WIX_PRODUCT_ICON "${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Resources/icons/icon.ico")
 set(CPACK_WIX_PROGRAM_MENU_FOLDER "TUM OpenInfraPlatform")
 set(CPACK_PACKAGE_EXECUTABLES OpenInfraPlatform.UI "TUM OpenInfraPlatform")
-
-#set(CPACK_WIX_PROPERTY_AdvancedWelcomeEulaDlgTitle "Test")
-#set(LOC_FILE "${PROJECT_SOURCE_DIR}/deploy/en-us.wxl")
 set(CPACK_WIX_CULTURES "en-us")
-#set(CPACK_WIX_LIGHT_EXTRA_FLAGS ${PROJECT_SOURCE_DIR}/deploy/en-us.wxl)
-#set(CPACK_WIX_EXTRA_SOURCES ${PROJECT_SOURCE_DIR}/deploy/UI_colors.wxs)
-#set(CPACK_WIX_EXTRA_OBJECTS ${PROJECT_SOURCE_DIR}/deploy/col.wixlib)
 
 include(CPackComponent)
 

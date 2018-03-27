@@ -15,7 +15,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-file(GLOB OpenInfraPlatform_UnitTests_Infrastructure_TrafficSign	*.*)
+file(GLOB OpenInfraPlatform_UnitTests_Infrastructure_TrafficSign	*.cpp)
 
 source_group(OpenInfraPlatform\\UnitTests\\Infrastructure 	FILES ${OpenInfraPlatform_UnitTests_Infrastructure_TrafficSign})
 source_group(OpenInfraPlatform\\UnitTests       			FILES ${OpenInfraPlatform_UnitTests_Source})
@@ -27,7 +27,6 @@ add_executable(TrafficSign
 
 target_link_libraries(TrafficSign 
 	OpenInfraPlatform.Infrastructure
-	OpenInfraPlatform.IfcAlignment1x1
 	# BlueFramework
 	${BLUEFRAMEWORK_BLUECORE_LIBRARY}
 	${BLUEFRAMEWORK_BLUEIMAGEPROCESSING_LIBRARY}
@@ -37,11 +36,6 @@ target_link_libraries(TrafficSign
 	# Googletest
 	${GTEST_LIBRARIES}
 	${GTEST_MAIN_LIBRARIES}	
-)
-
-include_directories(
-	${DirectX12_INCLUDE_DIR}
-	${DirectX12_INCLUDE_DIR_SHARED}
 )
 
 add_test(

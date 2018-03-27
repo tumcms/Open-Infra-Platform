@@ -15,7 +15,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-file(GLOB OpenInfraPlatform_UnitTests_Infrastructure_LandInfraExportImport	*.*)
+file(GLOB OpenInfraPlatform_UnitTests_Infrastructure_LandInfraExportImport	*.cpp)
 
 source_group(OpenInfraPlatform\\UnitTests\\Infrastructure 	FILES ${OpenInfraPlatform_UnitTests_Infrastructure_LandInfraExportImport})
 source_group(OpenInfraPlatform\\UnitTests       			FILES ${OpenInfraPlatform_UnitTests_Source})

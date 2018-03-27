@@ -75,7 +75,7 @@ source_group(OpenInfraPlatform\\Infrastructure\\PointCloudProcessing				FILES ${
 
 include_directories(
 	${Boost_INCLUDE_DIR} 
-	${PYTHON_INCLUDE_DIRS}
+	#${PYTHON_INCLUDE_DIRS}
 	${VLD_INCLUDE_DIR}
 	${BLUEFRAMEWORK_INCLUDE_DIR}
 	${EIGEN3_INCLUDE_DIR}
@@ -118,55 +118,6 @@ add_library(OpenInfraPlatform.Infrastructure SHARED
 )
 
 
-# if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)		
-	# target_link_libraries( OpenInfraPlatform.Infrastructure			
-		# ${OpenInfraPlatform_IfcRoad_LIBRARY}
-		# ${OpenInfraPlatform_IfcAlignment1x1_LIBRARY}
-		# ${OpenInfraPlatform_IfcAlignment_LIBRARY}
-		# Rpcrt4.lib
-		# # Boost
-		# ${Boost_LIBRARIES}
-		# # BlueFramework
-		# ${BLUEFRAMEWORK_LIBRARIES}
-		# # Python
-		# ${PYTHON_LIBRARIES}
-		# # External libs
-		# QtXlsxWriter
-		# ${LIBLAS_LIBRARIES}
-		# # Oklabi
-		# ${OKLABI_LIBRARIES}
-		# #
-		# ${QHULL_STATIC_LIBRARIES}	
-		# # Raptor		
-		# ${RAPTOR2_LIBRARIES}
-		# # EXPRESS Binding for Meta model
-		# OpenInfraPlatform.ExpressBinding
-	# )
-# else(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	# target_link_libraries( OpenInfraPlatform.Infrastructure
-		# OpenInfraPlatform.IfcAlignment
-		# OpenInfraPlatform.IfcAlignment1x1
-		# OpenInfraPlatform.IfcRoad
-		# # Boost
-		# ${Boost_LIBRARIES}		
-		# # BlueFramework
-		# ${BLUEFRAMEWORK_LIBRARIES}	
-		# # Python
-		# ${PYTHON_LIBRARIES}
-		# # External libs
-		# QtXlsxWriter
-		# ${LIBLAS_LIBRARIES}
-		# # Oklabi
-		# ${OKLABI_LIBRARIES}
-		# #
-		# ${QHULL_STATIC_LIBRARIES}
-		# # Raptor
-		# ${RAPTOR2_LIBRARIES}
-		# # EXPRESS Binding for Meta model
-		# OpenInfraPlatform.ExpressBinding
-	# )
-# endif(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-
 target_link_libraries( OpenInfraPlatform.Infrastructure
 		${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 		# Boost
@@ -174,7 +125,7 @@ target_link_libraries( OpenInfraPlatform.Infrastructure
 		# BlueFramework
 		${BLUEFRAMEWORK_LIBRARIES}	
 		# Python
-		${PYTHON_LIBRARIES}
+		#${PYTHON_LIBRARIES}
 		# External libs
 		QtXlsxWriter
 		${LIBLAS_LIBRARIES}

@@ -16,10 +16,9 @@
 */
 
 #include "buw.OIPInfrastructure.h"
-#include "tclap/CmdLine.h"
+#include <tclap/CmdLine.h>
 #include <BlueFramework/Core/Diagnostics/log.h>
 #include <BlueFramework/Core/version.h>
-#include <boost/algorithm/string/predicate.hpp>
 #include <iomanip>
 
 void convertLandXMLtoIfcAlignment1x1ExcelComparison(const char* inputFilename, const char* outputFilename) {
@@ -99,24 +98,24 @@ int main(int argc, char* argv[]) {
 	}
 
 	try {
-		buw::CmdLine cmd("TUM Open Infra Platform command line utilities", ' ', "0.1");
+		TCLAP::CmdLine cmd("TUM Open Infra Platform command line utilities", ' ', "0.1");
 
 		std::vector<std::string> allowed;
 		allowed.push_back("IfcAlignment1x0");
 		allowed.push_back("IfcAlignment1x1");
 		allowed.push_back("IfcAlignment1x1_XLSX");
 		allowed.push_back("SVG");
-		buw::ValuesConstraint<std::string> allowedVals(allowed);
+		TCLAP::ValuesConstraint<std::string> allowedVals(allowed);
 
-		buw::ValueArg<std::string> nameArg("t", "exportType", "Export type that should be used", true, "IfcAlignment1x0", &allowedVals);
+		TCLAP::ValueArg<std::string> nameArg("t", "exportType", "Export type that should be used", true, "IfcAlignment1x0", &allowedVals);
 		cmd.add(nameArg);
 
 		// Define a value argument and add it to the command line.
-		buw::ValueArg<std::string> nameOutputArg("o", "output", "Path to output file", true, "text.xml", "string");
+		TCLAP::ValueArg<std::string> nameOutputArg("o", "output", "Path to output file", true, "text.xml", "string");
 		cmd.add(nameOutputArg);
 
 	    // Define a value argument and add it to the command line.
-		buw::ValueArg<std::string> nameInputArg("i", "input", "Path to input file", true, "text.xml", "string");
+		TCLAP::ValueArg<std::string> nameInputArg("i", "input", "Path to input file", true, "text.xml", "string");
 		cmd.add(nameInputArg);
 
 		// Parse the args.
@@ -142,7 +141,7 @@ int main(int argc, char* argv[]) {
 		if (exportType == "IfcAlignment1x1_XLSX") {
 			convertLandXMLtoIfcAlignment1x1ExcelComparison(inputFilename.c_str(), outputFilename.c_str());
 		}
-	} catch (buw::ArgException& e) // catch any exceptions
+	} catch (TCLAP::ArgException& e) // catch any exceptions
 	{
 		std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
 	}

@@ -15,25 +15,20 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-file(GLOB OpenInfraPlatform_UnitTests_Infrastructure_IfcOWLExport	*.cpp)
+# Once done this will define
+#
+#  TCLAP_FOUND
+#  TCLAP_INCLUDE_DIR
 
-source_group(OpenInfraPlatform\\UnitTests\\Infrastructure 	FILES ${OpenInfraPlatform_UnitTests_Infrastructure_IfcOWLExport})
-source_group(OpenInfraPlatform\\UnitTests       			FILES ${OpenInfraPlatform_UnitTests_Source})
+find_path(TCLAP_DIR NAMES include/tclap/Arg.h aclocal.m4 HINTS "C:/thirdparty/tclap-1.2.2" REQUIRED)
 
-add_executable(IfcOWLExport
-	${OpenInfraPlatform_UnitTests_Source}
-	${OpenInfraPlatform_UnitTests_Infrastructure_IfcOWLExport}
-)
+if(TCLAP_DIR)
+	find_path(TCLAP_INCLUDE_DIR NAMES tclap/Arg.h Makefile.am PATHS ${TCLAP_DIR}/include REQUIRED)	
+endif()
 
-target_link_libraries(IfcOWLExport
-	OpenInfraPlatform.Infrastructure
-	# Googletest
-	${GTEST_BOTH_LIBRARIES}
-)
-
-add_test(
-    NAME IfcOWLExportTest
-    COMMAND IfcOWLExport
-)
-
-set_target_properties(IfcOWLExport PROPERTIES FOLDER "OpenInfraPlatform/UnitTests/Infrastructure")
+if(TCLAP_INCLUDE_DIR)
+	message(STATUS "Successfully found TCLAP.")
+	set(TCLAP_FOUND 1)
+else()
+	message(ERROR "Couldn't find TCLAP. Please install TCLAP or download it using the Get_TCLAP.cmd file.")
+endif()
