@@ -146,3 +146,6 @@ def main():
 	
 if __name__ == '__main__':
 	sys.exit(main())
+	
+def PreCommitHook(ui, repo, hooktype, node=None, source=None, **kwargs):
+	main()
