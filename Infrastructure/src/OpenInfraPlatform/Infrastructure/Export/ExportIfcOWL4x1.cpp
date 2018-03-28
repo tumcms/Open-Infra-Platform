@@ -24,8 +24,10 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/shared_ptr.hpp>
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 
 #include <OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntitiesMap.h>
 
@@ -47,6 +49,56 @@ struct is_instantiation_of : std::false_type {};
 template<template<typename...> class TT, typename... Ts>
 struct is_instantiation_of<TT, TT<Ts...>> : std::true_type {};
 
+struct func {	
+	template <typename T>
+	void operator()(const char* name, std::shared_ptr<T> ptr)
+	{
+		if(ptr) {
+			std::cout << name << ": pointer" << std::endl;
+			if(visit_struct::traits::is_visitable<T>::value) {
+				visit_struct::for_each(*ptr, func {});
+			}
+		}
+		else {
+			std::cout << name << ": pointer(empty)" << std::endl;
+		}
+
+	}
+
+	template <typename T>
+	void operator()(const char* name, std::vector<std::shared_ptr<T>> vector)
+	{
+		std::cout << name << ": vector" << std::endl;
+		if(visit_struct::traits::is_visitable<T>::value) {
+			for(auto it : vector) {
+				visit_struct::for_each(*it, func {});
+			}
+		}
+	}
+
+	template <typename T>
+	void operator()(const char* name, T t)
+	{
+		std::cout << name << ": T" << std::endl;
+	}
+
+	void operator()(const char* name, std::string string)
+	{
+		std::cout << "\t" << name << ": " << string << std::endl;
+	}
+};
+
+struct process {
+	template <typename K, class V, class T>
+	void operator()(std::pair<const K, std::shared_ptr<V>> pair)
+	{
+		if(visit_struct::traits::is_visitable<V>::value) {
+			auto& entity = *pair.second;
+			std::cout << sanitize(typeid(entity).name()) << std::endl;
+			visit_struct::for_each(entity, func {});
+		}
+	}
+};
 
 class OpenInfraPlatform::Infrastructure::ExportIfcOWL4x1::ExportIfcOWL4x1Impl {
 public:
@@ -85,57 +137,21 @@ public:
 		raptor_serializer_set_namespace(serializer_, rdf_uri, rdf_prefix);
 		
 		
+		std::for_each(model->getMapIfcObjects().begin(), model->getMapIfcObjects().end(), process {});
 
-		for(auto entry : model->getMapIfcObjects()) {
-			auto entity = *(entry.second);
-			std::string name;
-			for(auto it : OpenInfraPlatform::IfcAlignment1x1::initializers_IfcAlignment1x1_entity) {
-				if(it.second == entity.m_entity_enum)
-					name = it.first;
-			}
-			
+		for(auto& entry : model->getMapIfcObjects()) {
+			auto& entity = *(entry.second);
+			std::string type = sanitize(typeid(entity).name());
+			std::cout << entity.getId() << "=" << entity.m_entity_enum << ": " << type << std::endl;
 
-			if(entity.m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCPERSON) {				
+			const std::type_info& t = (typeid(entity));
 
-				std::string type = sanitize(typeid(entry.second).name());
-				std::cout << entity.getId() << "=" << name << ": " << type << std::endl;
+			visit_struct::for_each(entity, func {});
 
-				auto person = *(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcPerson>(entry.second));
-
-				visit_struct::for_each(person,
-					[](const char* name, auto value) {
-
-					if(is_instantiation_of<std::shared_ptr, decltype(value)>::value) {
-
-						assert((is_instantiation_of<std::shared_ptr, decltype(value)>::value, "failure"));
-
-						if(std::is_same<std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcLabel>, decltype(value)>::value == true) {
-							//TODO: Do stuff with pointers
-							//std::cout << "\t" << name << ": " << sanitize(typeid(value).name()) << std::endl;
-							std::cout << "\t" << name << ": " << sanitize(typeid(value).name()) << std::endl;
-
-						}
-					}
-
-					if(is_instantiation_of<std::vector, decltype(value)>::value == true) {
-						
-						//std::cout << "\t" << name << ": " << "vector of " << sanitize(typeid(value[0]).name()) << std::endl;
-					}
-					//if(std::is_convertible<decltype(value), const std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcLabel>>::value) {
-					//	std::cout << "\t" << name << ": " << sanitize(typeid(value).name()) << std::endl;
-					//}
-					
-					//std::cout << "\t" << name << ": " << sanitize(typeid(value).name()) << std::endl;
-				});
-			}
-			//else {
-			//	visit_struct::for_each(entity,
-			//		[](const char * name, const auto & value) {
-			//		std::cout << "\t" << name << ": " << value << std::endl;
-			//	});
+			//if(entity.m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCPERSON) {
+			//	auto person = *(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcPerson>(entry.second));
+			//	visit_struct::for_each(person, func {});
 			//}
-
-			//std::cout << std::endl;			
 		}
 
 
