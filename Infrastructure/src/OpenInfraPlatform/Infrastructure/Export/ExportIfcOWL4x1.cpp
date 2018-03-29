@@ -1,19 +1,18 @@
 /*
-    This file is part of BlueFramework, a simple 3D engine.
-    Copyright (c) 2016 Technical University of Munich
-    Chair of Computational Modeling and Simulation.
-    
-    BlueFramework is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License Version 3
-    as published by the Free Software Foundation.
-    
-    BlueFramework is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
-    
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
+Copyright (c) 2018 Technical University of Munich
+Chair of Computational Modeling and Simulation.
+
+TUM Open Infra Platform is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License Version 3
+as published by the Free Software Foundation.
+
+TUM Open Infra Platform is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"
@@ -30,6 +29,7 @@
 #include <algorithm>
 
 #include <OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntitiesMap.h>
+#include <OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntityTypes.h>
 
 #include <BlueFramework/Engine/ResourceManagment/download.h>
 
@@ -37,17 +37,55 @@
 #include <QRegExp>
 #include <type_traits>
 
+//#include <boost/preprocessor/iteration/local.hpp>
+//#include <boost/preprocessor/iteration/iterate.hpp>
+
+#include <boost/preprocessor/repetition.hpp>
+#include <boost/preprocessor/arithmetic/sub.hpp>
+#include <boost/preprocessor/arithmetic/add.hpp>
+#include <boost/preprocessor/punctuation/comma_if.hpp>
+
+
 std::string sanitize(const char* name){
 	auto reg0 = QRegExp("class ", Qt::CaseSensitive, QRegExp::Wildcard);
 	auto reg1 = QRegExp("OpenInfraPlatform::IfcAlignment1x1::", Qt::CaseSensitive, QRegExp::Wildcard);
 	return (QString(name).remove(reg0).remove(reg1)).toStdString();
 };
 
-template<template<typename...> class TT, typename T>
-struct is_instantiation_of : std::false_type {};
 
-template<template<typename...> class TT, typename... Ts>
-struct is_instantiation_of<TT, TT<Ts...>> : std::true_type {};
+#define GET_IFCALIGNMENT1X1_ENTITY_TYPE(N)	IFCALIGNMENT1X1_ENTITY_TYPE_##N
+
+#define IFCALIGNMENT1X1_ENTITY_ENUM_MIN 0
+#define IFCALIGNMENT1X1_ENTITY_ENUM_MAX 802
+
+
+
+//#define CREATE_SPECIALIZATION(z, n, unused) \
+//	template <> struct unrolled_dynamic_visitor<n> {\
+//		template <typename F, typename P> static void castAndCall(std::shared_ptr<P> ptr, F const& f)\
+//		{\
+//			if(typeid(GET_IFCALIGNMENT1X1_ENTITY_TYPE(n)) == typeid(*(ptr.get()))) {\
+//				GET_IFCALIGNMENT1X1_ENTITY_TYPE(n) entity = *(std::dynamic_pointer_cast<GET_IFCALIGNMENT1X1_ENTITY_TYPE(n)>(ptr)); \
+//				f(entity); \
+//			}\
+//			else {\
+//				unrolled_dynamic_visitor<BOOST_PP_SUB(n,1)>::castAndCall(ptr,f);\
+//			}\
+//		}\
+//	};
+//
+//
+//BOOST_PP_REPEAT(80, CREATE_SPECIALIZATION, ~)
+
+//#define BOOST_PP_LOCAL_MACRO(n)   CREATE_SPECIALIZATION(n)
+//#define BOOST_PP_LOCAL_LIMITS     (1, 802)
+//#include BOOST_PP_LOCAL_ITERATE()
+
+
+#include "C:\Users\ga38fih\dev\openinfraplatform\Tools\test.h"
+
+
+
 
 struct func {	
 	template <typename T>
@@ -56,7 +94,7 @@ struct func {
 		if(ptr) {
 			std::cout << name << ": pointer" << std::endl;
 			if(visit_struct::traits::is_visitable<T>::value) {
-				visit_struct::for_each(*ptr, func {});
+				//visit_struct::for_each(*ptr, func {});
 			}
 		}
 		else {
@@ -71,7 +109,7 @@ struct func {
 		std::cout << name << ": vector" << std::endl;
 		if(visit_struct::traits::is_visitable<T>::value) {
 			for(auto it : vector) {
-				visit_struct::for_each(*it, func {});
+				//visit_struct::for_each(*it, func {});
 			}
 		}
 	}
@@ -88,17 +126,27 @@ struct func {
 	}
 };
 
-struct process {
-	template <typename K, class V, class T>
-	void operator()(std::pair<const K, std::shared_ptr<V>> pair)
+struct func2 {
+	template <typename T>
+	void operator()(T entity)
 	{
-		if(visit_struct::traits::is_visitable<V>::value) {
-			auto& entity = *pair.second;
-			std::cout << sanitize(typeid(entity).name()) << std::endl;
+		if(visit_struct::traits::is_visitable<T>::value) {
 			visit_struct::for_each(entity, func {});
 		}
 	}
 };
+
+
+struct process {
+	template <typename K, class V>
+	void operator()(std::pair<const K, std::shared_ptr<V>> pair)
+	{	
+		unrolled_dynamic_visitor<>::castAndCall(pair.second, func2 {});
+	}
+};
+
+
+
 
 class OpenInfraPlatform::Infrastructure::ExportIfcOWL4x1::ExportIfcOWL4x1Impl {
 public:
@@ -139,20 +187,20 @@ public:
 		
 		std::for_each(model->getMapIfcObjects().begin(), model->getMapIfcObjects().end(), process {});
 
-		for(auto& entry : model->getMapIfcObjects()) {
-			auto& entity = *(entry.second);
-			std::string type = sanitize(typeid(entity).name());
-			std::cout << entity.getId() << "=" << entity.m_entity_enum << ": " << type << std::endl;
-
-			const std::type_info& t = (typeid(entity));
-
-			visit_struct::for_each(entity, func {});
-
-			//if(entity.m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCPERSON) {
-			//	auto person = *(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcPerson>(entry.second));
-			//	visit_struct::for_each(person, func {});
-			//}
-		}
+		//for(auto& entry : model->getMapIfcObjects()) {			
+		//	auto& entity = *(entry.second);
+		//	std::string type = sanitize(typeid(entity).name());
+		//	std::cout << entity.getId() << "=" << entity.m_entity_enum << ": " << type << std::endl;
+		//
+		//	const std::type_info& t = (typeid(entity));
+		//	
+		//	visit_struct::for_each(entity, func {});
+		//
+		//	if(entity.m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCPERSON) {
+		//		auto person = *(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcPerson>(entry.second));
+		//		visit_struct::for_each(person, func {});
+		//	}
+		//}
 
 
 		

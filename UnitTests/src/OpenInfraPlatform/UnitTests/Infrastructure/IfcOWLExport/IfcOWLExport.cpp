@@ -35,6 +35,8 @@
 
 #include "C:\Users\ga38fih\Downloads\Boost.DynamicAny-master\include\boost\dynamic_any.hpp"
 
+#include <boost/preprocessor/comparison/equal.hpp>
+
 class A {
 public:
 	A() = default;
@@ -113,12 +115,59 @@ struct func2 {
 };
 
 
-
+//#define TYPE_2 decltype(B())
+//#define TYPE_1 decltype(A())
+//
+//#include <boost/preprocessor/iteration/local.hpp>
+//
+//template <unsigned N> struct unrolled_dynamic_visitor {
+//	template <typename F, typename P> static void castAndCall(std::shared_ptr<P> ptr, F const& f)
+//	{
+//	}
+//};
+//
+//#define GET_IFC_ENTITY_TYPE(N) TYPE_##N
+//
+//#define CREATE_SPECIALIZATION(n)\
+//	template <> struct unrolled_dynamic_visitor<n> {\
+//		template <typename F, typename P> static void castAndCall(std::shared_ptr<P> ptr, F const& f)\
+//		{\
+//			if(typeid(GET_IFC_ENTITY_TYPE(n)) == typeid(*(ptr.get()))) {\
+//				GET_IFC_ENTITY_TYPE(n) entity = *(std::dynamic_pointer_cast<GET_IFC_ENTITY_TYPE(n)>(ptr)); \
+//				f(entity); \
+//			}\
+//			else {\
+//				unrolled_dynamic_visitor<n - 1>::castAndCall(ptr,f);\
+//			}\
+//		}\
+//	};\
+//
+//
+//#define BOOST_PP_LOCAL_MACRO(n)   CREATE_SPECIALIZATION(n)
+//#define BOOST_PP_LOCAL_LIMITS (1, 2)
+//#include BOOST_PP_LOCAL_ITERATE()
 
 using namespace std;
 
+
+
 namespace
 {
+	TEST(Preprocessor, Constructor)
+	{
+		//std::shared_ptr<A> b = std::shared_ptr<A>(new B());
+		//
+		//auto myGenericLambda = [](auto elem) {
+		//	visit_struct::for_each(elem, func2 {});
+		//};
+		//
+		//std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> entity = std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(new OpenInfraPlatform::IfcAlignment1x1::IfcPerson());
+		//unrolled_dynamic_visitor<2>::castAndCall(b, myGenericLambda);
+		//std::shared_ptr<A> a_ptr = std::shared_ptr<A>(&CREATE(0));
+		//const std::type_info& t = (typeid(A));
+
+		
+	}
 	/*
 	TEST(Deprecated, boost_dynamic_any)
 	{
