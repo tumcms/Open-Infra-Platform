@@ -491,7 +491,7 @@ set(OpenInfraPlatform_UIS
 	src/OpenInfraPlatform/Forms/CreateLineClothoidClothoidLine.ui
 	src/OpenInfraPlatform/Forms/CurvatureWindow.ui
 	src/OpenInfraPlatform/Forms/ExportExcel.ui
-	src/OpenInfraPlatform/Forms/ExportIfcAlignment1x1Dialog.ui
+	src/OpenInfraPlatform/Forms/ExportIfc4x1Dialog.ui
 	src/OpenInfraPlatform/Forms/ExportIfcAlignmentDialog.ui
 	src/OpenInfraPlatform/Forms/ExportIfcZipDialog.ui
 	src/OpenInfraPlatform/Forms/GenerateTerrain.ui

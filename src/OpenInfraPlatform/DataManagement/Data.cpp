@@ -803,11 +803,11 @@ void OpenInfraPlatform::DataManagement::Data::exportIfcRoadTUMProposalJob(const 
 	new buw::ExportIfcRoad(desc, alignmentModel_, digitalElevationModel_, filename);
 }
 
-void OpenInfraPlatform::DataManagement::Data::exportIfcAlignment1x1(const buw::ifcAlignmentExportDescription& desc, const std::string & filename) {
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportIfcAlignment1x1Job, this, desc, filename);
+void OpenInfraPlatform::DataManagement::Data::exportIfc4x1(const buw::ifcAlignmentExportDescription& desc, const std::string & filename) {
+	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportIfc4x1Job, this, desc, filename);
 }
-void OpenInfraPlatform::DataManagement::Data::exportIfcAlignment1x1Job(const buw::ifcAlignmentExportDescription& desc, const std::string & filename) {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting IFC Alignment 1x1").append(filename));
+void OpenInfraPlatform::DataManagement::Data::exportIfc4x1Job(const buw::ifcAlignmentExportDescription& desc, const std::string & filename) {
+	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting IFC 4x1").append(filename));
 
 	new buw::ExportIfc4x1(desc, alignmentModel_, digitalElevationModel_, filename);
 }
@@ -951,7 +951,7 @@ void OpenInfraPlatform::DataManagement::Data::createExcelReportJob(const std::st
 	std::string ifcFilename = tempIfcFilename.toStdString(); // "alignment.ifc"; //"C:/Users/no68koc/Desktop/alignment.ifc";//
 	std::string landXMLFilename = tempLandXMLFilename.toStdString(); //  "alignment.xml"; //"C:/Users/no68koc/Desktop/alignment.xml";//
 
-	exportIfcAlignment1x1Job(desc, ifcFilename);
+	exportIfc4x1Job(desc, ifcFilename);
 	exportLandXMLJob(landXMLFilename);
 
 	buw::ExportIfc4x1ExcelReport ec(filename.c_str(), landXMLFilename.c_str(), ifcFilename.c_str());

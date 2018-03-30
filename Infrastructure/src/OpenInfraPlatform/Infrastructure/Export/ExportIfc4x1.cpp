@@ -248,6 +248,7 @@ public:
 
                 // set name of alignment
                 std::string name = alignments[ai]->getName().toStdString();
+				ifcAlignment->m_Name = std::make_shared<IfcLabel>(name);
                 ifcAlignment->m_Description = std::make_shared<IfcText>(name);
                 ifcAlignment->m_ObjectPlacement = site_localPlacement;
 
