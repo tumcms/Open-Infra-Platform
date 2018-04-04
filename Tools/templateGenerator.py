@@ -60,14 +60,47 @@ template <> struct unrolled_dynamic_visitor<__n__> {
 };
 """
 
+declaration = """
+using namespace OpenInfraPlatform::IfcAlignment1x1;
+template <typename F> void castAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
+	switch (ptr->m_entity_enum) {"""
+
+pattern1 = """
+		case __enum__:
+			f(*(std::dynamic_pointer_cast<__classname__>(ptr)));
+			break;"""
+
+ending = """
+		default: break;
+	}
+}
+"""
 def main(argv):
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument("header")
+
+	args = parser.parse_args()
+	
+	in_file = open(args.header,"r")	
+	line_number = 0
 	print(textHeader)
-	for x in range(1,803):
-		x = 803 - x
-		text = pattern
-		text = text.replace("__n__",str(x))
-		text = text.replace("__n-1__", str(x-1))
-		print(text)
+	
+	print(declaration)
+
+	for line in in_file:
+		if line.split(" ")[0] == "#include":
+			first, second = line.split(".h")
+			classname = first.split("/")[-1]
+			
+			text = pattern1
+			text = text.replace("__classname__",classname)
+			text = text.replace("__enum__", classname.upper())
+			print(text)
+	
+	print(ending)
+	in_file.close()
+	
 		
 if __name__ == "__main__":
    main(sys.argv[1:])

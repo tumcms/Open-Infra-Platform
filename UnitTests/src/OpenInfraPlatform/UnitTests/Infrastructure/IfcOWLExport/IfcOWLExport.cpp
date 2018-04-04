@@ -33,7 +33,7 @@
 #include <boost/any.hpp>
 #include <boost/type_index.hpp>
 
-#include "C:\Users\ga38fih\Downloads\Boost.DynamicAny-master\include\boost\dynamic_any.hpp"
+//#include "C:\Users\ga38fih\Downloads\Boost.DynamicAny-master\include\boost\dynamic_any.hpp"
 
 #include <boost/preprocessor/comparison/equal.hpp>
 
@@ -93,7 +93,7 @@ public:
 	}
 };
 
-struct func2 {
+struct DerivedIfcEntityParser {
 	template <typename T>
 	void operator()(const char* name, std::shared_ptr<T> a_ptr)
 	{
@@ -153,12 +153,13 @@ using namespace std;
 
 namespace
 {
+	/*
 	TEST(Preprocessor, Constructor)
 	{
 		//std::shared_ptr<A> b = std::shared_ptr<A>(new B());
 		//
 		//auto myGenericLambda = [](auto elem) {
-		//	visit_struct::for_each(elem, func2 {});
+		//	visit_struct::for_each(elem, DerivedIfcEntityParser {});
 		//};
 		//
 		//std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> entity = std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(new OpenInfraPlatform::IfcAlignment1x1::IfcPerson());
@@ -168,6 +169,7 @@ namespace
 
 		
 	}
+	*/
 	/*
 	TEST(Deprecated, boost_dynamic_any)
 	{
@@ -244,7 +246,7 @@ namespace
 			}
 		}
 
-		visit_struct::for_each(B(), func2 {});
+		visit_struct::for_each(B(), DerivedIfcEntityParser {});
 
 	}*/
 
@@ -253,6 +255,7 @@ namespace
 		
 		buw::ImportLandXml landXMLImporter("../../../../../../testdata/LandXML/Mainbruecke_Klingenberg.xml");
 		//buw::ImportLandXml landXMLImporter("testdata/LandXML/Mainbruecke_Klingenberg.xml");
+		buw::ExportIfcAlignment1x1(buw::ifcAlignmentExportDescription(), landXMLImporter.getAlignmentModel(), landXMLImporter.getDigitalElevationModel(), "export_ifcowl_test.ifc");
 		buw::ExportIfcOWL4x1(landXMLImporter.getAlignmentModel(), landXMLImporter.getDigitalElevationModel(), "export_ifcowl_test.ttl");
 	}
 }
