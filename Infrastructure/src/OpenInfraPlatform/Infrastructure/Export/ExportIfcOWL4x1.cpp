@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
-#include "OpenInfraPlatform/ExpressBinding/Meta/Schema.h"
+
 #include "raptor2/raptor2.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -28,23 +28,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <iomanip>
 #include <algorithm>
 
-#include <OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntitiesMap.h>
-#include <OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntityTypes.h>
-
-#include <BlueFramework/Engine/ResourceManagment/download.h>
-
 #include <QString>
 #include <QStringList>
 #include <QRegExp>
 #include <type_traits>
-
-//#include <boost/preprocessor/iteration/local.hpp>
-//#include <boost/preprocessor/iteration/iterate.hpp>
-
-#include <boost/preprocessor/repetition.hpp>
-#include <boost/preprocessor/arithmetic/sub.hpp>
-#include <boost/preprocessor/arithmetic/add.hpp>
-#include <boost/preprocessor/punctuation/comma_if.hpp>
 
 
 std::string sanitize(const char* name){
@@ -78,6 +65,11 @@ static void printIndented(int count, ...)
 	std::cout << std::endl;
 }
 
+template<template<typename...> class TT, typename T>
+struct is_instantiation_of : std::false_type {};
+
+template<template<typename...> class TT, typename... Ts>
+struct is_instantiation_of<TT, TT<Ts...>> : std::true_type {};
 
 
 class OpenInfraPlatform::Infrastructure::ExportIfcOWL4x1::ExportIfcOWL4x1Impl {
@@ -87,66 +79,110 @@ private:
 	static raptor_serializer* serializer_;
 
 private:
+	static void createStatementFromLiteral(std::string literal)
+	{
+		raptor_statement* triple = nullptr;
+		triple = raptor_new_statement(world_);
 
-	struct parseType {
+		triple->subject = raptor_term_copy(subjectStack.back());
+		triple->predicate = raptor_term_copy(predicateStack.back());
+		triple->object = raptor_new_term_from_literal(world_, (unsigned char*)literal.c_str(), nullptr, nullptr);
 
-		void createStatementFromLiteral(std::string literal)
+		raptor_serializer_serialize_statement(serializer_, triple);
+		raptor_free_statement(triple);
+	}
+
+	struct parseVector {		
+		void operator()(const char* name, std::vector<std::shared_ptr<IfcParameterValue>> vector)
 		{
-			raptor_statement* triple = nullptr;
-			triple = raptor_new_statement(world_);
+			if(!vector.empty()) {
+				QStringList text = QStringList();
+				for(auto it : vector) {
+					text.append(QString::number(visit_struct::get<0>(*it)));
+				}
 
-			triple->subject = raptor_term_copy(subjectStack.back());
-			triple->predicate = raptor_term_copy(predicateStack.back());
-			triple->object = raptor_new_term_from_literal(world_, (unsigned char*)literal.c_str(), nullptr, nullptr);
-
-			raptor_serializer_serialize_statement(serializer_, triple);
-			raptor_free_statement(triple);
+				createStatementFromLiteral(text.join(", ").toStdString());
+			}
 		}
 
-		void operator()(const char* name, std::string string)
+		void operator()(const char* name, std::vector<std::shared_ptr<IfcLengthMeasure>> vector)
 		{
-			//std::cout << name << ": string" << std::endl;
-			printIndented(3, name, ": ", string.data());
+			if(!vector.empty()) {
+				QStringList text = QStringList();
+				for(auto it : vector) {
+					text.append(QString::number(visit_struct::get<0>(*it)));
+				}
+
+				createStatementFromLiteral(text.join(", ").toStdString());
+			}
+		}
+
+		void operator()(const char* name, std::vector<std::shared_ptr<IfcPositiveInteger>> vector)
+		{
+			if(!vector.empty()) {
+				QStringList text = QStringList();
+				for(auto it : vector) {
+					text.append(QString::number(visit_struct::get<0>((IfcInteger)*it)));
+				}
+
+				createStatementFromLiteral(text.join(", ").toStdString());
+			}
+		}
+
+		template <typename T>
+		void operator()(const char* name, T t)
+		{
+			std::cout << "Dummy" << std::endl;
+		}
+	};
+
+	struct parseType {		
+
+		void operator()(const char* name, std::string string)
+		{			
 			createStatementFromLiteral(string);
 		}
 
 		void operator()(const char* name, double value)
 		{
-			//std::cout << name << ": string" << std::endl;
 			std::string string = QString::number(value).toStdString();
-			printIndented(3, name, ": ", string.data());
-
 			createStatementFromLiteral(string);
 		}
 
 		void operator()(const char* name, float value)
 		{
 			std::string string = QString::number(value).toStdString();
-			//std::cout << name << ": string" << std::endl;
-			printIndented(3, name, ": ", string.data());
-
 			createStatementFromLiteral(string);
 		}
 
 		void operator()(const char* name, int value)
 		{
 			std::string string = QString::number(value).toStdString();
-			//std::cout << name << ": string" << std::endl;
-			printIndented(3, name, ": ", string.data());
-
 			createStatementFromLiteral(string);
+		}
+
+		void operator()(const char* name, bool value)
+		{
+			value ? createStatementFromLiteral("true") : createStatementFromLiteral("false");
+		}
+
+		template <typename T>
+		void operator()(const char* name, std::shared_ptr<T> &ptr)
+		{
+			std::cout << "Error!" << std::endl;
 		}
 
 		template <typename T>
 		void operator()(const char* name, T t)
 		{
-			//DUMMY
+			createStatementFromLiteral("ENUM_PLACEHOLDER");			
 		}
-	};
+
+	} typeParser_;
 
 	struct parseAttribute {
 		template < class T, class = typename std::enable_if<visit_struct::traits::is_visitable<T>::value>::type>
-		void operator()(const char* name, std::shared_ptr<T> ptr)
+		void operator()(const char* name, std::shared_ptr<T> &ptr)
 		{
 			if(ptr) {
 				if(std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Type, T>::value) {
@@ -167,83 +203,137 @@ private:
 				}
 			}
 			else {
-				//std::cout << name << ": pointer(empty)" << std::endl;
-				printIndented(2, name, ": pointer(empty)");
+				std:: cout << name << ": pointer(empty)(1)" << std::endl;
 			}
-
-		}
+		}		
 
 		template < class T, class = typename std::enable_if<std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value>::type>
-		void parse(const char* name, std::shared_ptr<T> ptr)
+		void parse(const char* name, std::shared_ptr<T> &ptr)
 		{
-			auto id = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(ptr)->getId();
-			if(subjectMap.count(id)) {
+			if(ptr) {
+				if(std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(ptr)) {
+					auto id = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(ptr)->getId();
+					if(subjectMap.count(id)) {
 
-				QString predicate = QString(name).split('_')[1];
-				predicate[0] = predicate[0].toLower();
-				predicate = predicate.append("_").append(typenameStack.back().data()).prepend("http://www.buildingsmart-tech.org/ifcowl/IFC4x1#");
+						QString predicate = QString(name).split('_')[1];
+						predicate[0] = predicate[0].toLower();
+						predicate = predicate.append("_").append(typenameStack.back().data()).prepend("http://www.buildingsmart-tech.org/ifcowl/IFC4x1#");
 
 
-				raptor_statement* triple = nullptr;
-				triple = raptor_new_statement(world_);
+						raptor_statement* triple = nullptr;
+						triple = raptor_new_statement(world_);
 
-				triple->subject = raptor_term_copy(subjectStack.back());
-				triple->predicate = raptor_new_term_from_uri_string(world_, (unsigned char*)(predicate.toStdString().c_str()));
-				triple->object = raptor_term_copy(subjectMap.find(id)->second);
+						triple->subject = raptor_term_copy(subjectStack.back());
+						triple->predicate = raptor_new_term_from_uri_string(world_, (unsigned char*)(predicate.toStdString().c_str()));
+						triple->object = raptor_term_copy(subjectMap.find(id)->second);
 
-				raptor_serializer_serialize_statement(serializer_, triple);
-				raptor_free_statement(triple);
+						raptor_serializer_serialize_statement(serializer_, triple);
+						raptor_free_statement(triple);
+					}
+				}
+				else {
+					std::cout << name << ": static cast failed" << std::endl;
+				}
 			}
+			else {
+				std::cout << name << ": pointer(empty)(2)" << std::endl;
+			}
+		}
+
+		void parse(const char* name, std::shared_ptr<IfcPositiveInteger> ptr)
+		{
+			QString predicate = QString(name).split('_')[1];
+			predicate[0] = predicate[0].toLower();
+			predicate = predicate.append("_").append(typenameStack.back().data()).prepend("http://www.buildingsmart-tech.org/ifcowl/IFC4x1#");
+			predicateStack.push_back(raptor_new_term_from_uri_string(world_, (unsigned char*)(predicate.toStdString().c_str())));
+
+			parseType {}(name, ((IfcInteger)*ptr).m_value);
+
+			predicateStack.pop_back();
+		}
+
+		void parse(const char* name, std::shared_ptr<IfcPositiveLengthMeasure> ptr)
+		{
+			QString predicate = QString(name).split('_')[1];
+			predicate[0] = predicate[0].toLower();
+			predicate = predicate.append("_").append(typenameStack.back().data()).prepend("http://www.buildingsmart-tech.org/ifcowl/IFC4x1#");
+			predicateStack.push_back(raptor_new_term_from_uri_string(world_, (unsigned char*)(predicate.toStdString().c_str())));
+
+			parseType {}(name, ((IfcLengthMeasure)*ptr).m_value);
+
+			predicateStack.pop_back();
 		}
 
 		template < class T, class = typename std::enable_if<!std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value>::type>
 		void parse(const char* name, T ptr)
 		{
-			//DUMMY
+			std::cout << name << ": " << sanitize(typeid(T).name()) << " unhandled!(1)" << std::endl;
+
 		}
 
-
-		template < class T, class = typename std::enable_if<visit_struct::traits::is_visitable<T>::value>::type>
-		void operator()(const char* name, std::vector<std::shared_ptr<T>> vector)
+		template < class T>
+		void operator()(const char* name, std::vector<std::vector<std::shared_ptr<T>>> vector)
 		{
 			if(!vector.empty()) {
-				//std::cout << name << ": vector(" << vector.size() << ")" << std::endl;
-				printIndented(4, name, ": vector(", QString::number(vector.size()).data(), ")");
+				QString predicate = QString(name).split('_')[1];
+				predicate[0] = predicate[0].toLower();
+				predicate = predicate.append("_").append(typenameStack.back().data()).prepend("http://www.buildingsmart-tech.org/ifcowl/IFC4x1#");
+				predicateStack.push_back(raptor_new_term_from_uri_string(world_, (unsigned char*)(predicate.toStdString().c_str())));
 
-				//if(std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Type, T>::value) {
-				//	QString predicate = QString(name).split('_')[1];
-				//	predicate[0] = predicate[0].toLower();
-				//	predicate = predicate.append("_").append(typenameStack.back().data()).prepend("http://www.buildingsmart-tech.org/ifcowl/IFC4x1#");
-				//	predicateStack.push_back(raptor_new_term_from_uri_string(world_, (unsigned char*)(predicate.toStdString().c_str())));
-				//
-				//	//TODO
-				//	parseType parser;
-				//	for(auto it : vector) {
-				//		level++;
-				//		parser(name, *it);
-				//		level--;
-				//	}
-				//
-				//	predicateStack.pop_back();
-				//}
-				//else {
-					for(auto it : vector) {
-						level++;
-						parseAttribute()(name, it);
-						level--;
-					}
-				//}
+				for(auto it : vector) {
+					parseVector {}(name, it);
+				}
+
+				predicateStack.pop_back();
 			}
 		}
 
+		void operator()(const char* name, std::vector<std::shared_ptr<IfcLengthMeasure>> vector)
+		{
+			if(!vector.empty()) {
+				QString predicate = QString(name).split('_')[1];
+				predicate[0] = predicate[0].toLower();
+				predicate = predicate.append("_").append(typenameStack.back().data()).prepend("http://www.buildingsmart-tech.org/ifcowl/IFC4x1#");
+				predicateStack.push_back(raptor_new_term_from_uri_string(world_, (unsigned char*)(predicate.toStdString().c_str())));
+
+				parseVector {}(name, vector);		
+
+				predicateStack.pop_back();
+			}
+		}
 		
+		template < class T>
+		void operator()(const char* name, std::vector<T> vector)
+		{
+			if(!vector.empty()) {				
+				for(auto it : vector) {
+					this->operator()(name, it);
+				}
+			}
+		}
+				
 		template <typename T>
 		void operator()(const char* name, T t)
 		{
-			//std::cout << name << ": "<< typeid(t).name() << std::endl;
-			printIndented(3, name, ": ", sanitize(typeid(t).name()).data());
+			if(std::is_integral<T>::value || std::is_floating_point<T>::value) {
+				QString predicate = QString(name).split('_')[1];
+				predicate[0] = predicate[0].toLower();
+				predicate = predicate.append("_").append(typenameStack.back().data()).prepend("http://www.buildingsmart-tech.org/ifcowl/IFC4x1#");
+				predicateStack.push_back(raptor_new_term_from_uri_string(world_, (unsigned char*)(predicate.toStdString().c_str())));
+
+				parseType {}(name, t);
+
+				predicateStack.pop_back();
+			}		
+			else if(is_instantiation_of<std::shared_ptr, T>::value) {
+				parse(name, t);
+			}
+			else {
+				std::cout << name << ": " << sanitize(typeid(T).name()) << " unhandled!(2)" << std::endl;
+			}
 		}
-	};
+	} attributeParser_;
+
 
 	struct DerivedIfcEntityParser {
 
@@ -292,12 +382,12 @@ private:
 
 		void operator()(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity& entity) const
 		{
+			std::cout << "Dummy (3)" << std::endl;
 		}
 	};
 
 
 	struct MapIfcObjectsParser {
-
 		void operator()(std::pair<const int, std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>> pair)
 		{
 			castAndCall(pair.second, DerivedIfcEntityParser {});
