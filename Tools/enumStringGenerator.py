@@ -52,22 +52,17 @@ def main(argv):
 	
 	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f)) & f.endswith("Enum.h")]
 	
+		
 	print(textHeader)
 	
-	print(declaration)
-
-	for line in in_file:
-		if line.split(" ")[0] == "#include":
-			first, second = line.split(".h")
-			classname = first.split("/")[-1]
-			
-			text = pattern1
-			text = text.replace("__classname__",classname)
-			text = text.replace("__enum__", classname.upper())
-			print(text)
 	
-	print(ending)
-	in_file.close()
+	for file in onlyfiles:
+		in_file = open(file, "r")
+		
+		for line in in_file:
+			
+	
+		in_file.close()
 	
 		
 if __name__ == "__main__":
