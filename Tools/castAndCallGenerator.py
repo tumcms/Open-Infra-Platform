@@ -24,6 +24,8 @@ import io
 import filecmp 
 
 from optparse import OptionParser
+from os import listdir
+from os.path import isfile, join
 
 textHeader = """/*
     Copyright (c) 2018 Technical University of Munich
@@ -43,64 +45,40 @@ textHeader = """/*
 */
 """
 
-pattern = """
-template <> struct unrolled_dynamic_visitor<__n__> {
-	template <typename F, typename P> static void castAndCall(std::shared_ptr<P> ptr, F const& f)
-	{
-		const std::type_info& t0 = (typeid(*(ptr.get())));
-		const std::type_info& t1 = (typeid(GET_IFCALIGNMENT1X1_ENTITY_TYPE(__n__)));
-		if(t0 == t1) {
-			GET_IFCALIGNMENT1X1_ENTITY_TYPE(__n__) entity = *(std::dynamic_pointer_cast<GET_IFCALIGNMENT1X1_ENTITY_TYPE(__n__)>(ptr));
-			f(entity);
-		}
-		else {
-			unrolled_dynamic_visitor<__n-1__>::castAndCall(ptr, f);
-		}
-	}
-};
-"""
 
-declaration = """
+header = """
 using namespace OpenInfraPlatform::IfcAlignment1x1;
-template <typename F> void castAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
-	switch (ptr->m_entity_enum) {"""
+template <typename F, typename T> bool castAndCall(std::shared_ptr<T> ptr, F &f) {
+	std::string name = std::string(typeid(T).name());"""
 
-pattern1 = """
-		case __enum__:
-			f(*(std::dynamic_pointer_cast<__classname__>(ptr)));
-			break;"""
+pattern = """
+	if (name == "class OpenInfraPlatform::IfcAlignment1x1::__classname__") {
+		f(*(std::dynamic_pointer_cast<__classname__>(ptr)));
+		return true;
+	}"""
 
-ending = """
-		default: break;
-	}
+ending = """		
+	return false;
 }
 """
 def main(argv):
-
 	parser = argparse.ArgumentParser()
-	parser.add_argument("header")
+	parser.add_argument("directory")
 
 	args = parser.parse_args()
 	
-	in_file = open(args.header,"r")	
-	line_number = 0
-	print(textHeader)
-	
-	print(declaration)
-
-	for line in in_file:
-		if line.split(" ")[0] == "#include":
-			first, second = line.split(".h")
-			classname = first.split("/")[-1]
+	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f))]
 			
-			text = pattern1
-			text = text.replace("__classname__",classname)
-			text = text.replace("__enum__", classname.upper())
-			print(text)
+	print(textHeader)	
+	print(header)
 	
-	print(ending)
-	in_file.close()
+	for file in onlyfiles:
+		classname = file[0:len(file) - 2]			
+		text = pattern
+		text = text.replace("__classname__",classname)
+		print(text)
 	
+	print(ending)	
 		
 if __name__ == "__main__":
    main(sys.argv[1:])
