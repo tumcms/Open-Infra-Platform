@@ -33,6 +33,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <QRegExp>
 #include <type_traits>
 
+#include "IfcAlignment1x1Caster.h"
+#include "IfcAlignment1x1EnumStrings.h"
 
 std::string sanitize(const char* name){
 	auto reg0 = QRegExp("class ", Qt::CaseSensitive, QRegExp::Wildcard);
@@ -41,37 +43,11 @@ std::string sanitize(const char* name){
 	return (QString(name).remove(reg0).remove(reg1).remove(reg2)).toStdString();
 };
 
-
-#include "IfcAlignment1x1Caster.h"
-#include "IfcAlignment1x1EnumStrings.h"
-
-static unsigned level = 0;
 static std::vector<raptor_term*> subjectStack = std::vector<raptor_term*>();
 static std::vector<raptor_term*> predicateStack = std::vector<raptor_term*>();
 static std::vector<raptor_term*> objectStack = std::vector<raptor_term*>();
 static std::vector<std::string> typenameStack = std::vector<std::string>();
 static std::map<int, raptor_term*> subjectMap = std::map<int, raptor_term*>();
-
-static void printIndented(int count, ...)
-{
-	for(int i = 0; i < level; i++) {
-		std::cout << "\t";
-	}
-	va_list args;
-	va_start(args, count);
-	for(int i = 0; i < count; ++i) {
-		std::cout << va_arg(args, char*);
-	}
-	va_end(args);
-	std::cout << std::endl;
-}
-
-template<template<typename...> class TT, typename T>
-struct is_instantiation_of : std::false_type {};
-
-template<template<typename...> class TT, typename... Ts>
-struct is_instantiation_of<TT, TT<Ts...>> : std::true_type {};
-
 
 class OpenInfraPlatform::Infrastructure::ExportIfcOWL4x1::ExportIfcOWL4x1Impl {
 private:
@@ -144,7 +120,7 @@ private:
 		template <class T> 
 		void operator()(const char* name, T t)
 		{
-			std::cout << name << ": " << sanitize(typeid(T).name()) << " unhandled!(0)" << std::endl;
+			BLUE_LOG(warning) << "Attribute " << name << ": " << sanitize(typeid(T).name()) << ". Type unhandled!";
 		}
 	};
 
@@ -170,13 +146,15 @@ private:
 		template <typename T>
 		void operator()(const char* name, std::shared_ptr<T> &ptr)
 		{
-			std::cout << "Error!" << std::endl;
+			std::string message = "Invalid function call. " + sanitize(typeid(ptr).name()) + " can't be a member of IfcAlignment1x1Type.";
+			throw buw::Exception(message.data());
 		}
 
 		template <typename T>
 		void operator()(const char* name, std::vector<T> vector)
 		{
-			std::cout << "Error!" << std::endl;
+			std::string message = "Invalid function call. " + sanitize(typeid(vector).name()) + " can't be a member of IfcAlignment1x1Type.";
+			throw buw::Exception(message.data());
 		}
 
 		template <class T> typename std::enable_if<!std::is_floating_point<T>::value && !std::is_same<T, int>::value, void>::type
@@ -188,7 +166,7 @@ private:
 				createStatementFromLiteral(getStringFromEnum(enumName.toStdString(), (int) t));
 			}
 			else {
-				std::cout << name << ": " << sanitize(typeid(T).name()) << " unhandled!(1)" << std::endl;
+				BLUE_LOG(warning) << "Attribute " << name << ": " << sanitize(typeid(T).name()) << ". Type unhandled!";
 			}
 		}
 
@@ -205,14 +183,12 @@ private:
 				predicate = predicate.append("_").append(typenameStack.back().data()).prepend("http://www.buildingsmart-tech.org/ifcowl/IFC4x1#");
 				predicateStack.push_back(raptor_new_term_from_uri_string(world_, (unsigned char*)(predicate.toStdString().c_str())));
 
-				level++;
 				visit_struct::for_each(*ptr, parseType {});
-				level--;
 
 				predicateStack.pop_back();				
 			}
 			else {
-				std:: cout << name << ": pointer(empty)(1)" << std::endl;
+				BLUE_LOG(trace) << "Class " << typenameStack.back() << ", attribute " << name << ". Empty pointer.";
 			}
 		}		
 		
@@ -236,12 +212,12 @@ private:
 				else if(classname.endsWith("IfcGeometricRepresentationContext"))
 					createPropertyStatementFromMap(name, std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcGeometricRepresentationContext>(base_ptr)->getId());
 				else {
-					std::cout << name << ": " << sanitize(typeid(T).name()) << " unhandled!(2)" << std::endl;
+					BLUE_LOG(warning) << "Attribute " << name << ": " << sanitize(typeid(T).name()) << ". Type unhandled!";
 				}
 			}
 			else {
-				std::cout << name << ": pointer(empty)(2)" << std::endl;
-			}			
+				BLUE_LOG(trace) << "Class " << typenameStack.back() << ", attribute " << name << ". Empty pointer.";
+			}
 		}
 		
 		void operator()(const char* name, std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcPositiveInteger> ptr)
@@ -324,7 +300,7 @@ private:
 				predicateStack.pop_back();
 			}			
 			else {
-				std::cout << name << ": " << sanitize(typeid(T).name()) << " unhandled!(3)" << std::endl;
+				BLUE_LOG(warning) << "Attribute " << name << ": " << sanitize(typeid(T).name()) << ". Type unhandled!";
 			}
 		}
 	};
@@ -356,9 +332,7 @@ private:
 			subjectStack.push_back(subject);
 			typenameStack.push_back(type);
 			
-			level++;
 			visit_struct::for_each(entity, parseAttribute {});
-			level--;
 
 			triple = raptor_new_statement(world_);
 
@@ -377,12 +351,14 @@ private:
 		template <class T> typename std::enable_if<!std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
 		operator()(T& entity) const
 		{
-			std::cout << "Dummy (3)" << std::endl;
+			std::string message = "Invalid function call. " + sanitize(typeid(entity).name()) + " isn't a member of IfcAlignment1x1Entity.";
+			throw buw::Exception(message.data());
 		}
 
 		void operator()(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity& entity) const
 		{
-			std::cout << "Dummy (4)" << std::endl;
+			std::string message = "Invalid function call.";
+			throw buw::Exception(message.data());
 		}
 	};
 
