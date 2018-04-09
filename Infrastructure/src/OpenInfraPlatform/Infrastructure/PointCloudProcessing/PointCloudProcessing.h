@@ -45,12 +45,14 @@ namespace OpenInfraPlatform
 		};
 
 		BLUEINFRASTRUCTURE_API void importLASPointCloud(const char* filename, PointCloud& pointCloud);
+		BLUEINFRASTRUCTURE_API void importCCPointCloud(const char* filename, PointCloud& pointCloud);
 	} // end namespace Infrastructure
 } // end namespace BlueFramework
 
 namespace buw
 {
 	using OpenInfraPlatform::Infrastructure::importLASPointCloud;
+	using OpenInfraPlatform::Infrastructure::importCCPointCloud;
 	using OpenInfraPlatform::Infrastructure::LaserPoint;
 	using OpenInfraPlatform::Infrastructure::PointCloud;
 }

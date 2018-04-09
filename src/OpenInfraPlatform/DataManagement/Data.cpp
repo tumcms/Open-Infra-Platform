@@ -666,6 +666,9 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 	else if(buwstrFilename.toLower().endsWith(".las")) {
 		importLASJob(filename);
 	}
+	else if(buwstrFilename.toLower().endsWith(".bin")) {
+		importBINJob(filename);
+	}
 	else if (buwstrFilename.toLower().endsWith(".d40"))
 	{
 		importer_ = new buw::ImportD40Import(filename);
@@ -1269,6 +1272,12 @@ void OpenInfraPlatform::DataManagement::Data::importLAS(const std::string& filen
 	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importLASJob, this, filename);
 }
 
+void OpenInfraPlatform::DataManagement::Data::importBIN(const std::string& filename)
+{
+	merge_ = false;
+	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importBINJob, this, filename);
+}
+
 void OpenInfraPlatform::DataManagement::Data::importLASJob(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing laserscan ").append(filename));
@@ -1278,6 +1287,17 @@ void OpenInfraPlatform::DataManagement::Data::importLASJob(const std::string& fi
 
 	tempPointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
 	buw::importLASPointCloud(filename.c_str(), *tempPointCloud_);
+}
+
+void OpenInfraPlatform::DataManagement::Data::importBINJob(const std::string& filename)
+{
+	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing laserscan ").append(filename));
+
+	if(tempPointCloud_)
+		tempPointCloud_ = nullptr;
+
+	tempPointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
+	buw::importCCPointCloud(filename.c_str(), *tempPointCloud_);
 }
 
 

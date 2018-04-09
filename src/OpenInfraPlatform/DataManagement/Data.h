@@ -135,7 +135,8 @@ namespace OpenInfraPlatform
 			void importOSM(const std::string& filename, const std::vector<std::string>& filter, int mode);
 			
 			void importLAS(const std::string& filename);
-			
+			void importBIN(const std::string& filename);
+
 			void exportIfcRoadTUMProposal(const std::string & filename);
 			void exportIfcAlignment1x0(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
 			void exportIfcAlignment1x1(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
@@ -287,6 +288,7 @@ namespace OpenInfraPlatform
 
 
 			void importLASJob(const std::string& filename);
+			void importBINJob(const std::string& filename);
 
 			void importXYZJob(const std::string& filename, const buw::Vector2d& start, const buw::Vector2d& end);
 			void createRandomTerrainJob(const buw::terrainDescription& td);

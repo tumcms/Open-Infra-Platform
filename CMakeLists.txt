@@ -119,7 +119,7 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE       ${CMAKE_BINARY_DIR}/Release)
 #------------------------------------------------------------------------------
 
 add_definitions(-D_UNICODE 			# Unicode rules
-				-DQT_NO_KEYWORDS 	# No qt keywords
+				#-DQT_NO_KEYWORDS 	# No qt keywords
 				-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
 ) # -DNOMINMAX does not work because GDI+ needs these macros
 
@@ -143,7 +143,9 @@ find_package(ZLIB 1.2.10 REQUIRED)
 find_package(libLAS REQUIRED)
 find_package(qhull REQUIRED)
 find_package(raptor2 REQUIRED)
+find_package(CloudCompare REQUIRED)
 find_path(visit_struct_INCLUDE_DIR REQUIRED)
+
 
 # Find the Qt components
 set(QT5_COMPONENTS
@@ -159,6 +161,8 @@ set(QT5_COMPONENTS
 	Quick
 	Positioning
 	Location
+	OpenGL
+	OpenGLExtensions
 )
 
 # Loop over all components, find them and initialize the corresponding variables
@@ -227,6 +231,7 @@ macro(addQt5PluginDll plugin output)
 	list(APPEND ${output} ${_loc})
 endmacro()
 
+addQt5Dll(Concurrent)
 addQt5Dll(Gui)
 addQt5Dll(Multimedia)
 addQt5Dll(MultimediaWidgets)
@@ -470,6 +475,9 @@ BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
 # Oklabi Copy Binaries
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
+#CloudCompare copy binaries
+CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
+
 # QtCopyBinaries
 add_custom_target(Qt5CopyBinaries
 	COMMAND ${CMAKE_COMMAND} -E copy ${QT5_DLLS_RELEASE} ${CMAKE_BINARY_DIR}/Release
@@ -610,6 +618,8 @@ set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
 set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
+set_target_properties(CloudCompareCopyBinaries					PROPERTIES FOLDER "Copy")
+
 set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 #set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
