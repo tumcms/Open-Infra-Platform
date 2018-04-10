@@ -22,7 +22,8 @@
 #include <FileIOFilter.h>
 #include <ccPointCloud.h>
 #include <ccHObjectCaster.h>
-
+#include <Neighbourhood.h>
+#include <algorithm>
 
 BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointCloud(
 	const char* filename,
@@ -137,14 +138,14 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importCCPointClou
 	Eigen::Matrix<double,3,3> vec = eig.eigenvectors().rightCols(3);
 
 	buw::Vector3d eigenX = vec.col(2);
-	buw::Vector3d eigenY = vec.col(0);
-	buw::Vector3d eigenZ = vec.col(1);
+	buw::Vector3d eigenY = vec.col(1);
+	buw::Vector3d eigenZ = vec.col(0);
 
 	auto pitch = buw::calculateAngleBetweenVectors(buw::Vector3d(1, 0, 0), buw::Vector3d(1,0,0));
 	auto roll = buw::calculateAngleBetweenVectors(eigenX, buw::Vector3d(1.0, 0.0, 0.0));
 	auto yaw = buw::calculateAngleBetweenVectors(eigenX, buw::Vector3d(1.0, 0.0, 0.0));
 
-	Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitZ());
+	Eigen::AngleAxisd rollAngle(0, Eigen::Vector3d::UnitZ());
 	Eigen::AngleAxisd yawAngle(0, Eigen::Vector3d::UnitY());
 	Eigen::AngleAxisd pitchAngle(0, Eigen::Vector3d::UnitX());
 
@@ -152,12 +153,129 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importCCPointClou
 
 	Eigen::Matrix3d rotationMatrix = q.matrix();
 
-	for(auto &point : pointCloud.points) {
-		point.position.applyOnTheLeft(rotationMatrix);
-	}
-
 	pointCloud.minPos.applyOnTheLeft(rotationMatrix);
 	pointCloud.maxPos.applyOnTheLeft(rotationMatrix);
 
+	buw::Vector3d axis = eigenX.normalized();
 
+	float minLength = 0.0f, maxLength = 0.0f;
+
+	for(auto &point : pointCloud.points) {
+		point.position.applyOnTheLeft(rotationMatrix);
+		float length = axis.dot(point.position);
+		minLength = fminf(minLength, length);
+		maxLength = fmaxf(maxLength, length);		
+	}
+
+	float n = maxLength - minLength;
+
+	float precision = 50.0f;
+
+	size_t numBuckets = (std::floorf(precision * maxLength) - std::floorf(precision * minLength)) + 1;
+
+	std::vector<std::vector<size_t>> segments = std::vector<std::vector<size_t>>(numBuckets);
+
+	for(auto vec : segments) {
+		vec = std::vector<size_t>();
+	}
+
+	for(size_t i = 0; i < pointCloud.points.size(); i++) {
+		auto& point = pointCloud.points[i];
+		float length = axis.dot(point.position);
+		
+		float col = (length - minLength) / n;
+		point.color = buw::Vector3f(col, col, col);
+
+		float diff = (std::floorf(precision *length) / precision) - length;
+		point.position += diff*axis;
+
+		size_t bucket = std::floorf(precision *length) - std::floorf(precision * minLength);
+		segments[bucket].push_back(i);
+	}
+
+	buw::Vector3d center;
+	for(auto point : pointCloud.points)
+		center += point.position;
+
+	center /= pointCloud.points.size();
+	CCVector3 center3D = CCVector3(center.x(), center.y(), center.z());
+
+
+	//BLUE_LOG(trace) << QString::number(numBuckets).toStdString();
+
+	std::vector<buw::LaserPoint> segmentedPoints = std::vector<buw::LaserPoint>();
+
+	for(auto segment : segments) {
+		if(segment.size() > 2) {
+			ccPointCloud cloud = ccPointCloud();
+			cloud.reserve(segment.size());
+			for(auto index : segment) {
+				auto pos = pointCloud.points[index].position;
+				const CCVector3 point = CCVector3(pos.x(), pos.y(), pos.z());
+				cloud.addPoint(point);
+			}
+
+			CCLib::Neighbourhood neighbourhood = CCLib::Neighbourhood(&cloud);
+			std::vector<CCVector2> points2D = std::vector<CCVector2>(cloud.size());
+
+			CCVector3 N(neighbourhood.getLSPlane());
+
+			CCVector3 u, v;
+			CCLib::CCMiscTools::ComputeBaseVectors(N, u, v);
+
+
+			std::shared_ptr<CCVector3> planeO = std::make_shared<CCVector3>(), planeX = std::make_shared<CCVector3>(), planeY = std::make_shared<CCVector3>();
+
+			if(neighbourhood.projectPointsOn2DPlane(points2D,nullptr,planeO.get(), planeX.get(), planeY.get())) {
+				auto comp = [](CCVector2 lhs, CCVector2 rhs)->bool {
+					return lhs.x < rhs.x;
+				};
+
+				auto invertY = [](CCVector2 &point) {
+					point.y = -point.y;
+				};
+				
+				CCVector2 center2D = CCVector2(center3D.dot(*planeX), center3D.dot(*planeY));
+
+				auto isOutlier = [=](const CCVector2 &point) -> bool {					
+					float threshold = 1.0f;
+					return std::fabsf(point.y - center2D.y) > threshold;
+				};
+
+				std::sort(points2D.begin(), points2D.end(), comp);
+
+				std::for_each(points2D.begin(), points2D.end(), invertY);
+
+				//auto end = std::remove_if(points2D.begin(), points2D.end(), isOutlier);
+				//points2D.erase(end, points2D.end());
+				
+
+				if(points2D.size() > 2) {
+					std::vector<float> dx = std::vector<float>(points2D.size() - 2);
+					std::vector<float> dy = std::vector<float>(points2D.size() - 2);
+
+					for(size_t i = 1; i < points2D.size() - 1; i++) {
+						dx[i - 1] = points2D[i + 1].x - points2D[i - 1].x;
+						dy[i - 1] = points2D[i + 1].y - points2D[i - 1].y;
+
+						float delta = std::fabsf(dy[i - 1]) / std::fabsf(dx[i - 1]);
+						if(delta > 500.0f) {
+							CCVector3 point3D = *planeO + points2D[i].x * *planeX + (-points2D[i].y) * *planeY;
+							segmentedPoints.push_back({ {point3D.x, point3D.y, point3D.z},{0.0f,1.0f,0.0f} });
+						}
+						else {
+							CCVector3 point3D = *planeO + points2D[i].x * *planeX + (-points2D[i].y) * *planeY;
+							segmentedPoints.push_back({ { point3D.x, point3D.y, point3D.z }, { 0.9f,0.9f,0.9f } });
+						}
+					}
+				}
+
+			}
+			else {
+				BLUE_LOG(warning) << "Projection failed.";
+			}
+		}
+	}
+	
+	pointCloud.points = segmentedPoints;
 }
