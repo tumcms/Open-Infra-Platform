@@ -23,6 +23,7 @@
 #include <ccPointCloud.h>
 #include <ccHObjectCaster.h>
 #include <Neighbourhood.h>
+#include <ccScalarField.h>
 #include <algorithm>
 
 BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointCloud(
@@ -77,20 +78,29 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointClo
 	pointCloud.maxPos = maxv;
 }
 
-BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importCCPointCloud(const char * filename, PointCloud & pointCloud)
+template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors(const buw::PointCloud& pointCloud) {
+	//Matrix which is capable of holding all points for PCA.
+	Eigen::MatrixX3d points;
+	points.resize(pointCloud.points.size(), 3);
+	for(size_t i = 0; i < pointCloud.points.size(); i++) {
+		points.row(i) = pointCloud.points[i].position;
+	}
+
+	//Do PCA to find the largest eigenvector -> main axis.
+	Eigen::MatrixXd centered = points.rowwise() - points.colwise().mean();
+	Eigen::MatrixXd cov = centered.adjoint() * centered;
+	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+	Eigen::Matrix<double, 3, N> vec = eig.eigenvectors().rightCols(N);
+	return vec;
+}
+
+void parsePointCloud(std::shared_ptr<ccHObject> ccTempObject, buw::PointCloud &pointCloud)
 {
-	//Initialize the filters for file IO
-	if(FileIOFilter::GetFilters().size() == 0)
-		FileIOFilter::InitInternalFilters();
-	
-	ColorCompType color = ColorCompType();
-	CC_FILE_ERROR err;
-	std::shared_ptr<ccHObject> ccTempObject = std::shared_ptr<ccHObject>(FileIOFilter::LoadFromFile(QString(filename), FileIOFilter::LoadParameters(), FileIOFilter::FindBestFilterForExtension("BIN"), err));
-	
-	buw::Vector3d minv(0, 0, 0);
-	buw::Vector3d maxv(0, 0, 0);
+	//Initialize minv and maxv for bounds as zero vectors.
+	buw::Vector3d minv(0, 0, 0), maxv(0, 0, 0);
 	bool first = true;
 
+	//Lambda to parse a CCVector3 and insert it as point into the buw::PointCloud.
 	auto parsePoint = [&](const CCVector3* point) {
 		buw::LaserPoint lasPoint;
 		buw::Vector3d pos = { (double)point->x, (double)point->y, (double)point->z };
@@ -109,173 +119,295 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importCCPointClou
 		pointCloud.points.push_back(lasPoint);
 	};
 
-
+	//Iterate over all child objects to collect all point clouds.
 	for(size_t i = 0; i < ccTempObject->getChildrenNumber(); i++) {
 		ccPointCloud* ccTempCloud = ccHObjectCaster::ToPointCloud(ccTempObject->getChild(i));
-
+		//If the point cloud was cast successful, add all points to the buw::PointCloud.
 		if(ccTempCloud) {
 			for(size_t idx = 0; idx < ccTempCloud->size(); idx++) {
 				parsePoint(ccTempCloud->getPoint(idx));
 			}
 		}
 	}
-	ccTempObject = nullptr;
 
+	//Set minPos and maxPos for offset calculation etc.
 	pointCloud.minPos = minv;
 	pointCloud.maxPos = maxv;
+}
 
-	Eigen::MatrixX3d points;
-	points.resize(pointCloud.points.size(), 3);
+BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importCCPointCloud(const char * filename, PointCloud & pointCloud)
+{
+	//Initialize the filters for file IO
+	if(FileIOFilter::GetFilters().size() == 0)
+		FileIOFilter::InitInternalFilters();
+	
+	CC_FILE_ERROR err;
+	//Load the point cloud from file and store it temporarily.
+	std::shared_ptr<ccHObject> ccTempObject = std::shared_ptr<ccHObject>(FileIOFilter::LoadFromFile(QString(filename), FileIOFilter::LoadParameters(), FileIOFilter::FindBestFilterForExtension("BIN"), err));
+	
+	if(err == CC_FILE_ERROR::CC_FERR_NO_ERROR) {
 
-	for(size_t i = 0; i < pointCloud.points.size(); i++) {
-		points.row(i) = pointCloud.points[i].position;
-	}
+		//Parse the point cloud.
+		parsePointCloud(ccTempObject, pointCloud);		
 
-	//Do PCA to find the largest eigenvector -> main axis
-	Eigen::MatrixXd centered = points.rowwise() - points.colwise().mean();
-	Eigen::MatrixXd cov = centered.adjoint() * centered;
-	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-	Eigen::Matrix<double,3,3> vec = eig.eigenvectors().rightCols(3);
+		//Delete our temporary parrent object.
+		ccTempObject = nullptr;		
 
-	buw::Vector3d eigenX = vec.col(2);
-	buw::Vector3d eigenY = vec.col(1);
-	buw::Vector3d eigenZ = vec.col(0);
+		//Calculate the center of mass of our point cloud and store it in center and center3D.
+		buw::Vector3d center;
+		for(auto point : pointCloud.points) {
+			center += point.position;
+		}
+		center /= pointCloud.points.size();
+		CCVector3 center3D = CCVector3(center.x(), center.y(), center.z());
 
-	auto pitch = buw::calculateAngleBetweenVectors(buw::Vector3d(1, 0, 0), buw::Vector3d(1,0,0));
-	auto roll = buw::calculateAngleBetweenVectors(eigenX, buw::Vector3d(1.0, 0.0, 0.0));
-	auto yaw = buw::calculateAngleBetweenVectors(eigenX, buw::Vector3d(1.0, 0.0, 0.0));
+		//Get three largest eigenvectors by PCA.
+		Eigen::Matrix<double, 3, 3> vec = getEigenvectors<3>(pointCloud);
 
-	Eigen::AngleAxisd rollAngle(0, Eigen::Vector3d::UnitZ());
-	Eigen::AngleAxisd yawAngle(0, Eigen::Vector3d::UnitY());
-	Eigen::AngleAxisd pitchAngle(0, Eigen::Vector3d::UnitX());
+		//Get the 3 main axis of the dataset which and interpret them as x,y,z axis.
+		buw::Vector3d eigenX, eigenY, eigenZ;
+		eigenX = vec.col(2).normalized();
+		eigenY = vec.col(1).normalized();
+		eigenZ = vec.col(0).normalized();
 
-	Eigen::Quaternion<double> q = rollAngle * yawAngle * pitchAngle;
+		//The main axis of the dataset.
+		buw::Vector3d axis = eigenX;
 
-	Eigen::Matrix3d rotationMatrix = q.matrix();
+		//Calculate the projection of all points along the main axis to find the min and max.
+		float minLength = 0.0f, maxLength = 0.0f;
+		for(auto point : pointCloud.points) {
+			float length = axis.dot(point.position);
+			minLength = fminf(minLength, length);
+			maxLength = fmaxf(maxLength, length);
+		}
 
-	pointCloud.minPos.applyOnTheLeft(rotationMatrix);
-	pointCloud.maxPos.applyOnTheLeft(rotationMatrix);
+		//Normalization constant for the length of projection along main axis.
+		float n = maxLength - minLength;
 
-	buw::Vector3d axis = eigenX.normalized();
+		//The actual precision is 1/precision, so if precision is 1, each segment covers 1 meter along the main axis.
+		float precision = 10.0f;
 
-	float minLength = 0.0f, maxLength = 0.0f;
+		//Determine the number of buckets where floor(prec*minLength) is the number of buckets in "negative direction" - so also negative - and this is "subtracted" from
+		//the number of buckets in "positive direction".
+		size_t numBuckets = (std::floorf(precision * maxLength) - std::floorf(precision * minLength)) + 1;
+		std::vector<std::vector<size_t>> segments = std::vector<std::vector<size_t>>(numBuckets);
+		for(auto vec : segments) {
+			vec = std::vector<size_t>();
+		}
 
-	for(auto &point : pointCloud.points) {
-		point.position.applyOnTheLeft(rotationMatrix);
-		float length = axis.dot(point.position);
-		minLength = fminf(minLength, length);
-		maxLength = fmaxf(maxLength, length);		
-	}
+		//Determine the segment and color for each point.
+		for(size_t i = 0; i < pointCloud.points.size(); i++) {
+			auto& point = pointCloud.points[i];
+			float length = axis.dot(point.position);
 
-	float n = maxLength - minLength;
+			//Set the color as grayscale to indicate the position along the main axis.
+			float col = (length - minLength) / n;
+			point.color = buw::Vector3f(col, col, col);
 
-	float precision = 50.0f;
+			//Remove this for now and let the cc library find the ls plane to improve the behaviour in curves slightly.
+			//float diff = (std::floorf(precision *length) / precision) - length;
+			//point.position += diff*axis;
 
-	size_t numBuckets = (std::floorf(precision * maxLength) - std::floorf(precision * minLength)) + 1;
+			//Each bucket is a segment, so insert the index of the point into the corresponding bucket to avoid cloning all points etc.
+			size_t bucket = std::floorf(precision *length) - std::floorf(precision * minLength);
+			segments[bucket].push_back(i);
+		}
 
-	std::vector<std::vector<size_t>> segments = std::vector<std::vector<size_t>>(numBuckets);
+		//Initialize and empty vector for the points which will be segmented.
+		std::vector<buw::LaserPoint> segmentedPoints = std::vector<buw::LaserPoint>();
 
-	for(auto vec : segments) {
-		vec = std::vector<size_t>();
-	}
+		//Iterate over all segments and try to segment the rail points.
+		for(auto segment : segments) {			
 
-	for(size_t i = 0; i < pointCloud.points.size(); i++) {
-		auto& point = pointCloud.points[i];
-		float length = axis.dot(point.position);
-		
-		float col = (length - minLength) / n;
-		point.color = buw::Vector3f(col, col, col);
+			//If segment has less then 2 points, we can't fit a distinct plane - we can fit infinitely many planes with 0 error.
+			if(segment.size() > 2) {
 
-		float diff = (std::floorf(precision *length) / precision) - length;
-		point.position += diff*axis;
-
-		size_t bucket = std::floorf(precision *length) - std::floorf(precision * minLength);
-		segments[bucket].push_back(i);
-	}
-
-	buw::Vector3d center;
-	for(auto point : pointCloud.points)
-		center += point.position;
-
-	center /= pointCloud.points.size();
-	CCVector3 center3D = CCVector3(center.x(), center.y(), center.z());
-
-
-	//BLUE_LOG(trace) << QString::number(numBuckets).toStdString();
-
-	std::vector<buw::LaserPoint> segmentedPoints = std::vector<buw::LaserPoint>();
-
-	for(auto segment : segments) {
-		if(segment.size() > 2) {
-			ccPointCloud cloud = ccPointCloud();
-			cloud.reserve(segment.size());
-			for(auto index : segment) {
-				auto pos = pointCloud.points[index].position;
-				const CCVector3 point = CCVector3(pos.x(), pos.y(), pos.z());
-				cloud.addPoint(point);
-			}
-
-			CCLib::Neighbourhood neighbourhood = CCLib::Neighbourhood(&cloud);
-			std::vector<CCVector2> points2D = std::vector<CCVector2>(cloud.size());
-
-			CCVector3 N(neighbourhood.getLSPlane());
-
-			CCVector3 u, v;
-			CCLib::CCMiscTools::ComputeBaseVectors(N, u, v);
-
-
-			std::shared_ptr<CCVector3> planeO = std::make_shared<CCVector3>(), planeX = std::make_shared<CCVector3>(), planeY = std::make_shared<CCVector3>();
-
-			if(neighbourhood.projectPointsOn2DPlane(points2D,nullptr,planeO.get(), planeX.get(), planeY.get())) {
-				auto comp = [](CCVector2 lhs, CCVector2 rhs)->bool {
-					return lhs.x < rhs.x;
-				};
-
-				auto invertY = [](CCVector2 &point) {
-					point.y = -point.y;
-				};
-				
-				CCVector2 center2D = CCVector2(center3D.dot(*planeX), center3D.dot(*planeY));
-
-				auto isOutlier = [=](const CCVector2 &point) -> bool {					
-					float threshold = 1.0f;
-					return std::fabsf(point.y - center2D.y) > threshold;
-				};
-
-				std::sort(points2D.begin(), points2D.end(), comp);
-
-				std::for_each(points2D.begin(), points2D.end(), invertY);
-
-				//auto end = std::remove_if(points2D.begin(), points2D.end(), isOutlier);
-				//points2D.erase(end, points2D.end());
-				
-
-				if(points2D.size() > 2) {
-					std::vector<float> dx = std::vector<float>(points2D.size() - 2);
-					std::vector<float> dy = std::vector<float>(points2D.size() - 2);
-
-					for(size_t i = 1; i < points2D.size() - 1; i++) {
-						dx[i - 1] = points2D[i + 1].x - points2D[i - 1].x;
-						dy[i - 1] = points2D[i + 1].y - points2D[i - 1].y;
-
-						float delta = std::fabsf(dy[i - 1]) / std::fabsf(dx[i - 1]);
-						if(delta > 500.0f) {
-							CCVector3 point3D = *planeO + points2D[i].x * *planeX + (-points2D[i].y) * *planeY;
-							segmentedPoints.push_back({ {point3D.x, point3D.y, point3D.z},{0.0f,1.0f,0.0f} });
-						}
-						else {
-							CCVector3 point3D = *planeO + points2D[i].x * *planeX + (-points2D[i].y) * *planeY;
-							segmentedPoints.push_back({ { point3D.x, point3D.y, point3D.z }, { 0.9f,0.9f,0.9f } });
-						}
-					}
+				//Create a empty point cloud and add all points from the segment to it to have access to the CCLib::Neighbourhood functionality.
+				ccPointCloud cloud3D = ccPointCloud();
+				cloud3D.reserve(segment.size());
+				for(auto index : segment) {
+					auto pos = pointCloud.points[index].position;
+					const CCVector3 point = CCVector3(pos.x(), pos.y(), pos.z());
+					cloud3D.addPoint(point);
 				}
 
-			}
-			else {
-				BLUE_LOG(warning) << "Projection failed.";
+				//Get the center of the segment.
+				CCVector3 segmentCenter = cloud3D.computeGravityCenter();
+
+				//Create a CCLib::Neighbourhood from our cloud to do projection and search etc.
+				CCLib::Neighbourhood neighbourhood = CCLib::Neighbourhood(&cloud3D);
+				
+				//Initialize a vector of 2D points to hold our projected points.
+				std::vector<CCVector2> points2D = std::vector<CCVector2>(cloud3D.size());
+
+				//Calculate d as projection of the segment center onto the main axis.
+				float d = (float)axis.dot(buw::Vector3d(segmentCenter.x, segmentCenter.y, segmentCenter.z));
+
+				//Set the plane along the main axis at the position of the projection of the center of mass of the segment.
+				float plane[4] = { axis.x(), axis.y(), axis.z(), d };
+				
+				//Store the plane origin, X and Y axis to project our segmented points back into the original 3D space.
+				std::shared_ptr<CCVector3> planeO = std::make_shared<CCVector3>(), planeX = std::make_shared<CCVector3>(), planeY = std::make_shared<CCVector3>();
+
+				//Project the points of the segment onto plane determined by the main axis plane.
+				if(neighbourhood.projectPointsOn2DPlane(points2D, plane, planeO.get(), planeX.get(), planeY.get())) {
+
+					//Create a 2D point cloud to estimate the curvature of the points.
+					std::shared_ptr<ccPointCloud> cloud2D = std::make_shared<ccPointCloud>();
+					cloud2D->reserve(points2D.size());
+					for(auto point : points2D) {
+						//Add points with their 3D coordinates, but in 2d space to make the curvature computation "2D".
+						cloud2D->addPoint(*planeO + point.x * *planeX + point.y * *planeY);
+					}
+					int result = 0;
+					
+					//Remove duplicate points
+					result = CCLib::GeometricalAnalysisTools::flagDuplicatePoints(cloud2D.get(),0.005f);
+					if(result == 0) {
+						size_t sizeBefore = cloud2D->size();
+						cloud2D.swap(std::shared_ptr<ccPointCloud>(cloud2D->filterPointsByScalarValue(0, 0)));
+						BLUE_LOG(trace) << "Removed " << QString::number(sizeBefore - cloud2D->size()).toStdString() << " duplicate points.";
+					}
+					else {
+						BLUE_LOG(warning) << "Duplicate flagging failed! Error code: " << QString::number(result).toStdString();
+						result = 0;
+					}
+
+					//Not really working, cant detect outliers.			
+					/*{
+						int idx_density = cloud2D->addScalarField("density");
+						cloud2D->setCurrentInScalarField(idx_density);
+
+						result = CCLib::GeometricalAnalysisTools::computeLocalDensity(cloud2D.get(), CCLib::GeometricalAnalysisTools::DENSITY_3D, 0.1f);
+						if(result == 0) {
+							cloud2D->setCurrentOutScalarField(idx_density);
+							size_t sizeBefore = cloud2D->size();
+							cloud2D.swap(std::shared_ptr<ccPointCloud>(cloud2D->filterPointsByScalarValue(0, 100, true)));
+							BLUE_LOG(trace) << "Removed " << QString::number(sizeBefore - cloud2D->size()).toStdString() << " lonesome outlier points.";
+						}
+						else {
+							BLUE_LOG(warning) << "Approximate density computation failed! Error code: " << QString::number(result).toStdString();
+							result = 0;
+						}
+					}*/	
+
+					//Compute the curvature for all points with diefferent metrics
+					int idx[2];
+					idx[0] = cloud2D->addScalarField("curvature_mean");
+					idx[1] = cloud2D->addScalarField("curvature_normal");					
+
+					cloud2D->setCurrentInScalarField(idx[0]);
+					result += CCLib::GeometricalAnalysisTools::computeCurvature(cloud2D.get(), CCLib::Neighbourhood::CC_CURVATURE_TYPE::MEAN_CURV, 0.7f);
+
+					cloud2D->setCurrentInScalarField(idx[1]);
+					result += CCLib::GeometricalAnalysisTools::computeCurvature(cloud2D.get(), CCLib::Neighbourhood::CC_CURVATURE_TYPE::NORMAL_CHANGE_RATE, 0.05f);					
+
+					if(result == 0) {
+						float mean0, mean1, min0, min1, max0, max1;
+
+						cloud2D->getScalarField(idx[0])->computeMeanAndVariance(mean0);
+						cloud2D->getScalarField(idx[0])->computeMinAndMax();
+						min0 = cloud2D->getScalarField(idx[0])->getMin();
+						max0 = cloud2D->getScalarField(idx[0])->getMax();
+
+						cloud2D->getScalarField(idx[1])->computeMeanAndVariance(mean1);
+						cloud2D->getScalarField(idx[1])->computeMinAndMax();
+						min1 = cloud2D->getScalarField(idx[1])->getMin();
+						max1 = cloud2D->getScalarField(idx[1])->getMax();
+						
+						float scale = 200000.0f;
+
+						for(size_t i = 0; i < cloud2D->size(); i++) {
+							auto point = cloud2D->getPoint(i);
+							buw::Vector3d pos = { point->x,point->y,point->z };
+							buw::Vector3f col = buw::Vector3f(0.0f, 0.0f, 0.0f);
+
+							cloud2D->setCurrentOutScalarField(idx[0]);
+							float curvature0 = cloud2D->getPointScalarValue(i);
+							bool hasAboveAvgMeanCurve = curvature0 >= mean0;
+							col[0] = scale *curvature0;
+
+							cloud2D->setCurrentOutScalarField(idx[1]);
+							float curvature1 = cloud2D->getPointScalarValue(i);
+							bool hasAboveAvgNormalChangeRate = curvature1 >= mean1;
+							col[1] = scale *curvature1;
+
+							//if(hasAboveAvgNormalChangeRate && !hasAboveAvgMeanCurve)
+							segmentedPoints.push_back({ pos, col });
+								
+							
+						}
+					}
+					else {
+						BLUE_LOG(warning) << "Curvature computation failed! Error code: " << QString::number(result).toStdString();
+						result = 0;
+					}					
+
+					//Lambda function which sorts after increasing X value
+					auto increasingX = [](const CCVector2 &lhs, const CCVector2 &rhs)->bool {
+						return lhs.x < rhs.x;
+					};
+
+					//Lambda function to invert the y values.
+					auto invertY = [](CCVector2 &point) {
+						point.y = -point.y;
+					};
+
+					//Is somewhere, don't know why, but not the real center.
+					CCVector2 center2D = CCVector2(center3D.dot(*planeX), center3D.dot(*planeY));
+
+					//Lambda function which performs a flat threshold on the y values.
+					auto isOutlierFlat = [](const CCVector2 &point) -> bool {
+						float threshold = 0.2f;
+						return std::fabsf(point.y) > threshold;
+					};
+
+
+					//Currently disabled to use curvature.
+					//std::sort(points2D.begin(), points2D.end(), increasingX);
+
+					//Invert y values since they are upside down.
+					//std::for_each(points2D.begin(), points2D.end(), invertY);
+
+					//Currently removed since the metric is not yet really effective.
+					//auto end = std::remove_if(points2D.begin(), points2D.end(), isOutlier);
+					//points2D.erase(end, points2D.end());
+
+					//If we have more than 2 points, calculate derivatives and decide whether the point is belonging to a rail or not.
+					if(points2D.size() > 2) {
+
+						//Initialize vectors to store changes in x and y direction and compute derivatives.
+						std::vector<float> dx = std::vector<float>(points2D.size() - 2), dy = std::vector<float>(points2D.size() - 2);
+						for(size_t i = 1; i < points2D.size() - 1; i++) {
+							dx[i - 1] = points2D[i + 1].x - points2D[i - 1].x;
+							dy[i - 1] = points2D[i + 1].y - points2D[i - 1].y;
+						}
+
+						//Currently disabled to test curvature
+						/*{
+							//Calculate rate of change as dy/dx - first derivative.
+							float delta = std::fabsf(dy[i - 1]) / std::fabsf(dx[i - 1]);
+
+							//Segment point if delta is above a flat threshold.
+							if(delta > 500.0f) {
+								CCVector3 point3D = *planeO + points2D[i].x * *planeX + (-points2D[i].y) * *planeY;
+								segmentedPoints.push_back({ {point3D.x, point3D.y, point3D.z},{ 0.0f,1.0f,0.0f} });
+							}
+							else {
+								CCVector3 point3D = *planeO + points2D[i].x * *planeX + (-points2D[i].y) * *planeY;
+								segmentedPoints.push_back({ { point3D.x, point3D.y, point3D.z }, { 0.9f,0.9f,0.9f } });
+							}
+						}*/
+						
+					}
+				}
+				else {
+					//Write an info, but no warning since this might happen quite often.
+					BLUE_LOG(info) << "Projection failed.";
+				}
 			}
 		}
+
+		pointCloud.points = segmentedPoints;
 	}
-	
-	pointCloud.points = segmentedPoints;
 }
