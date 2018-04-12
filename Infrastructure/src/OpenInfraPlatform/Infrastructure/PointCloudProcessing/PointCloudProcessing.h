@@ -26,7 +26,9 @@
 #include <BlueFramework/Rasterizer/vertex.h>
 #include <vector>
 #include <boost/noncopyable.hpp>
+
 #include <ccHObject.h>
+#include <GeometricalAnalysisTools.h>
 
 namespace OpenInfraPlatform
 {
@@ -38,6 +40,11 @@ namespace OpenInfraPlatform
 			buw::Vector3f color;
 		};
 
+		struct FilterSettings {
+			bool bRemoveDuplicates = false, bApplyLocalDensityFiltering = false;
+			float removeDuplicatesDistanceThreshold, localDensityFilteringMinDensityThreshold;
+			CCLib::GeometricalAnalysisTools::Density eDensityMetric;
+		};
 
 		struct PointCloud
 		{
@@ -50,9 +57,7 @@ namespace OpenInfraPlatform
 			Eigen::Matrix<double, 3, 3> mainAxes;
 		};
 
-		struct FilterSettings {
-
-		};
+		
 
 		BLUEINFRASTRUCTURE_API void importLASPointCloud(const char* filename, PointCloud& pointCloud);
 		BLUEINFRASTRUCTURE_API void importBINPointCloud(const char* filename, PointCloud& pointCloud);
