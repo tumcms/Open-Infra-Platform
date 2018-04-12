@@ -726,8 +726,10 @@ void Viewport::onChange(ChangeFlag changeFlag) {
         min = bb.getMinimum();
         max = bb.getMaximum();
 	} else if(pointCloud && data.getPointCloudPointCount() > 0) {
-		min = pointCloud->minPos;
-		max = pointCloud->maxPos;
+		CCVector3 minPos, maxPos;
+		pointCloud->getBoundingBox(minPos, maxPos);
+		min = buw::Vector3d(minPos.x, minPos.y, minPos.z);
+		max = buw::Vector3d(maxPos.x, maxPos.y, maxPos.z);
 	}
 	
 
@@ -774,7 +776,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
         alignmentEffect_->setCurrentSelectedAlignment(selectedAlignmentIndex_);
     }
 
-	if(changeFlag & ChangeFlag::PointCloud && pointCloud && !pointCloud->points.empty()) {
+	if(changeFlag & ChangeFlag::PointCloud && pointCloud && pointCloud->size() > 0) {
 		pointCloudEffect_->setPointCloud(pointCloud, offset);
 		activeEffects_.push_back(pointCloudEffect_);
 	}

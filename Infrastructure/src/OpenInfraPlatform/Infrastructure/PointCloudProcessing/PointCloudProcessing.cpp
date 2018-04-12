@@ -26,22 +26,6 @@
 #include <ccScalarField.h>
 #include <algorithm>
 
-template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors(const buw::PointCloud& pointCloud)
-{
-	//Matrix which is capable of holding all points for PCA.
-	Eigen::MatrixX3d points;
-	points.resize(pointCloud.points.size(), 3);
-	for(size_t i = 0; i < pointCloud.points.size(); i++) {
-		points.row(i) = pointCloud.points[i].position;
-	}
-
-	//Do PCA to find the largest eigenvector -> main axis.
-	Eigen::MatrixXd centered = points.rowwise() - points.colwise().mean();
-	Eigen::MatrixXd cov = centered.adjoint() * centered;
-	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-	Eigen::Matrix<double, 3, N> vec = eig.eigenvectors().rightCols(N);
-	return vec;
-}
 
 BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointCloud(
 	const char* filename,
@@ -64,53 +48,27 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointClo
 	buw::Vector3d minv(0, 0, 0);
 	buw::Vector3d maxv(0, 0, 0);
 
-	pointCloud.pcdRootObject = std::make_shared<ccHObject>(QString(header.GetFileSignature().data()));
 
-	ccPointCloud* ccTempCloud = new ccPointCloud();
 
 	//Reserve the points.
-	ccTempCloud->reserve(header.GetPointRecordsCount());
-	pointCloud.points.resize(header.GetPointRecordsCount());
-	pointCloud.remainingIndices.reserve(header.GetPointRecordsCount());
+	ccPointCloud* temp = new ccPointCloud();
+	temp->reserve(header.GetPointRecordsCount());
 
 	bool first = true;
 	for(size_t i = 0; i < header.GetPointRecordsCount(); i++) {
-		if(reader.ReadNextPoint())
-		{
+		if(reader.ReadNextPoint()) {
 			liblas::Point const& p = reader.GetPoint();
 
 			float colorRange = std::numeric_limits<liblas::Color::value_type>::max();
 			double posLiblas[3] = { p.GetX(), p.GetY(), p.GetZ() };
 			uint16_t colLiblas[3] = { p.GetColor().GetRed(), p.GetColor().GetGreen(), p.GetColor().GetBlue() };
 
-			auto pos = buw::Vector3d(posLiblas[0],posLiblas[1], posLiblas[2]);
-			auto col = buw::Vector3f(colLiblas[0]/ colorRange, colLiblas[1] / colorRange, colLiblas[2] / colorRange);
-			
-			pointCloud.points[i] = { pos, col};
-			pointCloud.remainingIndices.push_back(i);
-
-			ccTempCloud->addPoint(CCVector3(pos.x(), pos.y(), pos.z()));
-			ccTempCloud->addRGBColor((ColorCompType)colLiblas[0], (ColorCompType)colLiblas[1], (ColorCompType)colLiblas[2]);
-
-			if(first) {
-				minv = maxv = pos;
-				first = false;
-			}
-			else {
-				minv = buw::minimizedVector(minv, pos);
-				maxv = buw::maximizedVector(maxv, pos);
-			}			
-		}		
+			temp->addPoint(CCVector3(posLiblas[0], posLiblas[1], posLiblas[2]));
+			temp->addRGBColor((ColorCompType)colLiblas[0], (ColorCompType)colLiblas[1], (ColorCompType)colLiblas[2]);
+		}
 	}
-
-	pointCloud.pcdRootObject->addChild(ccTempCloud);
-	pointCloud.minPos = minv;
-	pointCloud.maxPos = maxv;
-	pointCloud.mainAxes = getEigenvectors<3>(pointCloud);
+	pointCloud.addChild(temp);
 }
-
-
-
 
 BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointCloud(const char * filename, PointCloud & pointCloud)
 {
@@ -121,63 +79,39 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointClo
 	CC_FILE_ERROR err;
 	//Load the point cloud from file and store it temporarily.
 	std::shared_ptr<ccHObject> ccTempObject = std::shared_ptr<ccHObject>(FileIOFilter::LoadFromFile(QString(filename), FileIOFilter::LoadParameters(), FileIOFilter::FindBestFilterForExtension("BIN"), err));
-
 	if(err == CC_FILE_ERROR::CC_FERR_NO_ERROR) {
-		//Initialize minv and maxv for bounds as zero vectors.
-		buw::Vector3d minv(0, 0, 0), maxv(0, 0, 0);
-		bool first = true;
-		
-		//Lambda to parse a CCVector3 and insert it as point into the buw::PointCloud.
-		auto parsePoint = [&](const CCVector3* position, const ColorCompType* color) {
-			buw::LaserPoint lasPoint;
-			buw::Vector3d pos = { (double)position->x, (double)position->y, (double)position->z };
-			lasPoint.position = pos;
-			lasPoint.color = { (float)color[0], (float)color[1], (float)color[2] };
-
-			if(first) {
-				minv = maxv = pos;
-				first = false;
-			}
-			else {
-				minv = buw::minimizedVector(minv, pos);
-				maxv = buw::maximizedVector(maxv, pos);
-			}
-
-			pointCloud.points.push_back(lasPoint);
-		};
-
-		pointCloud.pcdRootObject.swap(ccTempObject);
-
-		//Iterate over all child objects to collect all point clouds.
-		for(size_t i = 0; i < pointCloud.pcdRootObject->getChildrenNumber(); i++) {
-			ccPointCloud* ccTempCloud = ccHObjectCaster::ToPointCloud(pointCloud.pcdRootObject->getChild(i));
-			//If the point cloud was cast successful, add all points to the buw::PointCloud.
-			if(ccTempCloud) {
-				const ColorCompType color[3] = { 255, 255, 255 };
-				if(ccTempCloud->hasColors()) {
-					for(size_t idx = 0; idx < ccTempCloud->size(); idx++) {
-						parsePoint(ccTempCloud->getPoint(idx), ccTempCloud->getPointColor(idx));
-						pointCloud.remainingIndices.push_back(i);
-					}
-				}
-				else {
-					for(size_t idx = 0; idx < ccTempCloud->size(); idx++) {
-						parsePoint(ccTempCloud->getPoint(idx), color);
-						pointCloud.remainingIndices.push_back(i);
-					}
-				}
+		for(size_t i = 0; i < ccTempObject->getChildrenNumber(); i++) {
+			ccPointCloud* temp = ccHObjectCaster::ToPointCloud(ccTempObject->getChild(i));
+			if(temp) {
+				pointCloud.append(temp, pointCloud.size());
 			}
 		}
-
-		//Set minPos and maxPos for offset calculation etc.
-		pointCloud.minPos = minv;
-		pointCloud.maxPos = maxv;
-		pointCloud.mainAxes = getEigenvectors<3>(pointCloud);
 	}
 
 	//Delete our temporary parrent object.
 	ccTempObject = nullptr;
 }
+
+void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float length)
+{
+	CCVector3 axis = CCVector3(getEigenvectors<1>().cast<float>().normalized().data());
+	
+	setCurrentOutScalarField(addScalarField("ProjectionAlongMainAxis"));
+	for(size_t i = 0; i < size(); i++) {
+		setPointScalarValue(i, axis.dot(*getPoint(i)));
+	}
+	getCurrentOutScalarField()->computeMinAndMax();
+
+	ScalarType start = getCurrentOutScalarField()->getMin();
+	ScalarType end = getCurrentOutScalarField()->getMax();
+	size_t count = 0;
+	while(start < end) {
+		addChild(filterPointsByScalarValue(start, start + length), DP_NONE);
+		getChild(getChildrenNumber() - 1)->setName(QString("Section#") + QString::number(count));
+		start += length;
+	}
+}
+
 
 /*
 		//Parse the point cloud.
@@ -221,8 +155,8 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointClo
 		//Determine the number of buckets where floor(prec*minLength) is the number of buckets in "negative direction" - so also negative - and this is "subtracted" from
 		//the number of buckets in "positive direction".
 		size_t numBuckets = (std::floorf(precision * maxLength) - std::floorf(precision * minLength)) + 1;
-		std::vector<std::vector<size_t>> segments = std::vector<std::vector<size_t>>(numBuckets);
-		for(auto vec : segments) {
+		std::vector<std::vector<size_t>> sections2D = std::vector<std::vector<size_t>>(numBuckets);
+		for(auto vec : sections2D) {
 			vec = std::vector<size_t>();
 		}
 
@@ -241,14 +175,14 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointClo
 
 			//Each bucket is a segment, so insert the index of the point into the corresponding bucket to avoid cloning all points etc.
 			size_t bucket = std::floorf(precision *length) - std::floorf(precision * minLength);
-			segments[bucket].push_back(i);
+			sections2D[bucket].push_back(i);
 		}
 
 		//Initialize and empty vector for the points which will be segmented.
 		std::vector<buw::LaserPoint> segmentedPoints = std::vector<buw::LaserPoint>();
 
-		//Iterate over all segments and try to segment the rail points.
-		for(auto segment : segments) {			
+		//Iterate over all sections2D and try to segment the rail points.
+		for(auto segment : sections2D) {			
 
 			//If segment has less then 2 points, we can't fit a distinct plane - we can fit infinitely many planes with 0 error.
 			if(segment.size() > 2) {
@@ -443,3 +377,4 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointClo
 	}
 }
 */
+

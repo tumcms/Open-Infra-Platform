@@ -28,6 +28,7 @@
 #include <boost/noncopyable.hpp>
 
 #include <ccHObject.h>
+#include <ccPointCloud.h>
 #include <GeometricalAnalysisTools.h>
 
 namespace OpenInfraPlatform
@@ -40,22 +41,48 @@ namespace OpenInfraPlatform
 			buw::Vector3f color;
 		};
 
-		struct FilterSettings {
+		struct FilterDescription {
 			bool bRemoveDuplicates = false, bApplyLocalDensityFiltering = false;
 			float removeDuplicatesDistanceThreshold, localDensityFilteringMinDensityThreshold;
 			CCLib::GeometricalAnalysisTools::Density eDensityMetric;
 		};
 
-		struct PointCloud
+		class PointCloud : public ccPointCloud
 		{
-			std::vector<LaserPoint> points;
-			std::vector<uint32_t>	remainingIndices, filteredIndices, segmentedIndices;
-			buw::Vector3d			minPos;
-			buw::Vector3d			maxPos;
+		public:
+			void computeSections(const float length);
 
-			buw::ReferenceCounted<ccHObject> pcdRootObject;
-			Eigen::Matrix<double, 3, 3> mainAxes;
+		private:
+			template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors()
+			{
+				//Matrix which is capable of holding all points for PCA.
+				Eigen::MatrixX3d points;
+				points.resize(this->size(), 3);
+				for(size_t i = 0; i < this->size(); i++) {
+					auto pos = this->getPoint(i);
+					points.row(i) = Eigen::Vector3d(pos->x,pos->y,pos->z);
+				}
+
+				//Do PCA to find the largest eigenvector -> main axis.
+				Eigen::MatrixXd centered = points.rowwise() - points.colwise().mean();
+				Eigen::MatrixXd cov = centered.adjoint() * centered;
+				Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+				Eigen::Matrix<double, 3, N> vec = eig.eigenvectors().rightCols(N);
+				return vec;
+			}
+
+
+		// Public attributes
+		public:
+			std::vector<uint32_t>	remainingIndices3D, filteredIndices3D, segmentedIndices3D;
+			std::vector<uint32_t>	remainingIndices2D, filteredIndices2D, segmentedIndices2D;
+
+		// Private attributes
+		private:
+
 		};
+
+
 
 		
 
@@ -70,6 +97,7 @@ namespace buw
 	using OpenInfraPlatform::Infrastructure::importBINPointCloud;
 	using OpenInfraPlatform::Infrastructure::LaserPoint;
 	using OpenInfraPlatform::Infrastructure::PointCloud;
+	using OpenInfraPlatform::Infrastructure::FilterDescription;
 }
 
 #endif // end define OpenInfraPlatform_Infrastructure_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h

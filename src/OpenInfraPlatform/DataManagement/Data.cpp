@@ -779,12 +779,12 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 		
 		if (merge_)
 		{
-			for (auto point : tempPointCloud_->points)
-			{
-				pointCloud_->points.push_back(point);
-			}
-			pointCloud_->minPos = buw::minimizedVector(pointCloud_->minPos, tempPointCloud_->minPos);
-			pointCloud_->maxPos = buw::minimizedVector(pointCloud_->maxPos, tempPointCloud_->maxPos);
+			//for (auto point : tempPointCloud_->points)
+			//{
+			//	pointCloud_->points.push_back(point);
+			//}
+			//pointCloud_->minPos = buw::minimizedVector(pointCloud_->minPos, tempPointCloud_->minPos);
+			//pointCloud_->maxPos = buw::minimizedVector(pointCloud_->maxPos, tempPointCloud_->maxPos);
 		}
 		else
 		{
@@ -1140,10 +1140,12 @@ buw::Vector3d OpenInfraPlatform::DataManagement::Data::getOffset() const
 		}
 	}
 
-	if (pointCloud_->points.size() > 0)
+	if (pointCloud_->size() > 0)
 	{
-		minPos = pointCloud_->minPos;
-		maxPos = pointCloud_->maxPos;
+		CCVector3 min, max;
+		pointCloud_->getBoundingBox(min, max);
+		minPos = buw::Vector3d(min.x, min.y, min.z);
+		maxPos = buw::Vector3d(max.x, max.y, max.z);
 	}
 
 	buw::Vector3d offsetViewArea = minPos + 0.5 * (maxPos - minPos);
@@ -1263,7 +1265,7 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::DataManagement::Data::
 
 const int OpenInfraPlatform::DataManagement::Data::getPointCloudPointCount() const
 {
-	return pointCloud_->points.size();
+	return pointCloud_->size();
 }
 
 void OpenInfraPlatform::DataManagement::Data::importLAS(const std::string& filename)

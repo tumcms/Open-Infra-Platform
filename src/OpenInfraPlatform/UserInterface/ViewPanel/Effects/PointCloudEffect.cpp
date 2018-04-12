@@ -18,6 +18,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "PointCloudEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
 #include <BlueFramework/Rasterizer/vertex.h>
+#include <ccColorTypes.h>
+#include <ccHObjectCaster.h>
 
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
@@ -135,24 +137,27 @@ void PointCloudEffect::setPointSize(const float size)
 void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset)
 {
 	buw::vertexBufferDescription vbd;
-	vbd.vertexCount = pointCloud->points.size();
+	vbd.vertexCount = pointCloud->size();
 	vbd.vertexLayout = VertexTypePointCloud::getVertexLayout();
 	
-	std::vector<VertexTypePointCloud> vertices = std::vector<VertexTypePointCloud>(pointCloud->points.size());
-
+	std::vector<VertexTypePointCloud> vertices = std::vector<VertexTypePointCloud>(pointCloud->size());
+	auto baseColor = ccColor::Rgbaf(1.0f, 1.0f, 1.0f, 1.0f);
+	
 #pragma omp parallel for
-	for(int i = 0; i < pointCloud->points.size(); i++) {
-		auto vertex = pointCloud->points[i];
-		buw::Vector3f pos = (vertex.position + offset).cast<float>();
-		buw::Vector4f col = buw::Vector4f(vertex.color.x(), vertex.color.y(), vertex.color.z(), 1.0f);
-		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos.x(),pos.z(),pos.y()), col);
+	for(int i = 0; i < pointCloud->size(); i++) {
+		auto pos = pointCloud->getPoint(i);
+		const ColorCompType* col = pointCloud->hasColors() ? pointCloud->getPointColor(i) : ccColor::FromRgbf(baseColor).rgb;
+		// Swap Z and Y coordinate for rendering!
+		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos->x + offset.x(), pos->z + offset.z(), pos->y + offset.y()), buw::Vector4f((float)col[0], (float)col[1], (float)col[2], 1.0f));
 	}
+		
+	
 	vbd.data = vertices.data();
 
 	buw::indexBufferDescription ibd;
-	ibd.indexCount = pointCloud->remainingIndices.size();
+	ibd.indexCount = pointCloud->remainingIndices3D.size();
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
-	ibd.data = pointCloud->remainingIndices.data();
+	ibd.data = pointCloud->remainingIndices3D.data();
 
 	indexBufferRemaining_ = renderSystem()->createIndexBuffer(ibd);
 
