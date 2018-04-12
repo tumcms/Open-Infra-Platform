@@ -90,26 +90,47 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointClo
 
 	//Delete our temporary parrent object.
 	ccTempObject = nullptr;
+	pointCloud.computeSections(0.1f);
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float length)
 {
 	CCVector3 axis = CCVector3(getEigenvectors<1>().cast<float>().normalized().data());
 	
-	setCurrentOutScalarField(addScalarField("ProjectionAlongMainAxis"));
-	for(size_t i = 0; i < size(); i++) {
-		setPointScalarValue(i, axis.dot(*getPoint(i)));
-	}
-	getCurrentOutScalarField()->computeMinAndMax();
+	int idx = getScalarFieldIndexByName("ProjectionLengthAlongMainAxis");
 
-	ScalarType start = getCurrentOutScalarField()->getMin();
-	ScalarType end = getCurrentOutScalarField()->getMax();
+	if(idx == -1)
+		idx = addScalarField("ProjectionLengthAlongMainAxis");
+
+	setCurrentInScalarField(idx);
+
+	auto setProjectionLengthAlongMainAxis = [&](size_t i) {
+		this->setPointScalarValue(i, axis.dot(*(this->getPoint(i))));
+	};
+
+	forEach(setProjectionLengthAlongMainAxis);
+
+	getScalarField(idx)->computeMinAndMax();
+
+	ScalarType start, end;
+	std::tie(start, end) = getScalarFieldMinAndMax(idx);
 	size_t count = 0;
+	setCurrentOutScalarField(idx);
+
 	while(start < end) {
-		addChild(filterPointsByScalarValue(start, start + length), DP_NONE);
-		getChild(getChildrenNumber() - 1)->setName(QString("Section#") + QString::number(count));
+		ccPointCloud* result = filterPointsByScalarValue(start, start + length);
+		if(result) {
+			addChild(result, DP_NONE);
+			result->setName(QString("Section#") + QString::number(count));
+		}
 		start += length;
 	}
+}
+
+const std::tuple<ScalarType, ScalarType> OpenInfraPlatform::Infrastructure::PointCloud::getScalarFieldMinAndMax(int idx) const
+{
+	CCLib::ScalarField* field = getScalarField(idx);
+	return std::tuple<ScalarType, ScalarType>(field->getMin(), field->getMax());
 }
 
 

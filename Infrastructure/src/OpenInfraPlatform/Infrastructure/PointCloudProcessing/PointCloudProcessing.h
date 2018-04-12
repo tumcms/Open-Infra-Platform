@@ -52,6 +52,14 @@ namespace OpenInfraPlatform
 		public:
 			void computeSections(const float length);
 
+			template<typename F> void forEach(const F& function)
+			{
+				for(size_t i = 0; i < size(); i++)
+					function(i);
+			}
+
+			const std::tuple<ScalarType, ScalarType> getScalarFieldMinAndMax(int idx) const;
+
 		private:
 			template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors()
 			{
@@ -70,6 +78,8 @@ namespace OpenInfraPlatform
 				Eigen::Matrix<double, 3, N> vec = eig.eigenvectors().rightCols(N);
 				return vec;
 			}
+
+			
 
 
 		// Public attributes
