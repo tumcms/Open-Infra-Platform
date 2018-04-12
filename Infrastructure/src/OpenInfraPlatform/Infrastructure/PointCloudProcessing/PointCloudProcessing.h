@@ -22,9 +22,11 @@
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
 #include <BlueFramework/ImageProcessing/color.h>
 #include <BlueFramework/Core/Math/vector.h>
+#include <BlueFramework/Core/memory.h>
 #include <BlueFramework/Rasterizer/vertex.h>
 #include <vector>
 #include <boost/noncopyable.hpp>
+#include <ccHObject.h>
 
 namespace OpenInfraPlatform
 {
@@ -40,19 +42,27 @@ namespace OpenInfraPlatform
 		struct PointCloud
 		{
 			std::vector<LaserPoint> points;
+			std::vector<uint32_t>	remainingIndices, filteredIndices, segmentedIndices;
 			buw::Vector3d			minPos;
 			buw::Vector3d			maxPos;
+
+			buw::ReferenceCounted<ccHObject> pcdRootObject;
+			Eigen::Matrix<double, 3, 3> mainAxes;
+		};
+
+		struct FilterSettings {
+
 		};
 
 		BLUEINFRASTRUCTURE_API void importLASPointCloud(const char* filename, PointCloud& pointCloud);
-		BLUEINFRASTRUCTURE_API void importCCPointCloud(const char* filename, PointCloud& pointCloud);
+		BLUEINFRASTRUCTURE_API void importBINPointCloud(const char* filename, PointCloud& pointCloud);
 	} // end namespace Infrastructure
 } // end namespace BlueFramework
 
 namespace buw
 {
 	using OpenInfraPlatform::Infrastructure::importLASPointCloud;
-	using OpenInfraPlatform::Infrastructure::importCCPointCloud;
+	using OpenInfraPlatform::Infrastructure::importBINPointCloud;
 	using OpenInfraPlatform::Infrastructure::LaserPoint;
 	using OpenInfraPlatform::Infrastructure::PointCloud;
 }

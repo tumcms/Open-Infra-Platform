@@ -73,6 +73,7 @@ namespace OpenInfraPlatform
 			void setUseUniformPointColor(const bool useUniformColor);
 			void setUseUniformPointSize(const bool useUniformSize);
 			void setPointSize(const float size);
+			void setShowPointCloud(const bool checked);
 
 			buw::Vector3d getOffset() const;
 

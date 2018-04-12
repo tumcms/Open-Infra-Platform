@@ -130,6 +130,15 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
     connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LAAL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
     connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LAAAL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
 
+	connect(&pcdUniformColorDialog_, &QColorDialog::currentColorChanged, view_->getViewport(), &Viewport::updatePointCloudUniformColor);
+	connect(&pcdUniformColorDialog_, &QColorDialog::colorSelected, view_->getViewport(), &Viewport::updatePointCloudUniformColor);
+
+	connect(&pcdFilteredPointsColorDialog_, &QColorDialog::currentColorChanged, view_->getViewport(), &Viewport::updatePointCloudFilteredPointsColor);
+	connect(&pcdFilteredPointsColorDialog_, &QColorDialog::colorSelected, view_->getViewport(), &Viewport::updatePointCloudFilteredPointsColor);
+
+	connect(&pcdSegmentedPointsColorDialog_, &QColorDialog::currentColorChanged, view_->getViewport(), &Viewport::updatePointCloudSegmentedPointsColor);
+	connect(&pcdSegmentedPointsColorDialog_, &QColorDialog::colorSelected, view_->getViewport(), &Viewport::updatePointCloudSegmentedPointsColor);
+
 #ifdef _DEBUG
     // Show debug menu only in debug mode
 
@@ -2224,6 +2233,37 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxUseUniformColor_cl
 void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxUseUniformSize_clicked(bool checked) {
     view_->setUseUniformPointSize(checked);
 }
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowPointCloud_clicked(bool checked)
+{
+	view_->setShowPointCloud(checked);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_radioButtonFiltered_toggled(bool checked)
+{
+	//TODO
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_radioButtonOriginal_toggled(bool checked)
+{
+	//TODO
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectUniformColor_clicked()
+{
+	pcdUniformColorDialog_.show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectFilteredPointsColor_clicked()
+{
+	pcdFilteredPointsColorDialog_.show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectSegmentedPointsColor_clicked()
+{
+	pcdSegmentedPointsColorDialog_.show();
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxPointSize_valueChanged(double value) {
     double spinRange = ui_->doubleSpinBoxPointSize->maximum() - ui_->doubleSpinBoxPointSize->minimum();
     int sliderRange = ui_->horizontalSliderPointSize->maximum() - ui_->horizontalSliderPointSize->minimum();

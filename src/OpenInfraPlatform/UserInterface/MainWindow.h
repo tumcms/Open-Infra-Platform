@@ -53,6 +53,7 @@
 #include <QMenuBar>
 #include <QProgressBar>
 #include <QProgressDialog>
+#include <QColorDialog>
 #include <setjmp.h>
 
 #include "PrecisionTest.h"
@@ -171,8 +172,20 @@ namespace OpenInfraPlatform
 			void on_checkBoxHighlightSelectedAlignmentSegment_clicked(bool checked);
 			void on_checkBoxShowDifferentAlignmentElements_clicked(bool checked);
 			void on_checkBoxShowMap_clicked (bool checked);
+
+			// Point Cloud
 			void on_checkBoxUseUniformColor_clicked(bool checked);
 			void on_checkBoxUseUniformSize_clicked(bool checked);
+
+			void on_checkBoxShowPointCloud_clicked(bool checked);
+
+			void on_radioButtonFiltered_toggled(bool checked);
+			void on_radioButtonOriginal_toggled(bool checked);
+
+			void on_pushButtonSelectUniformColor_clicked();
+			void on_pushButtonSelectSegmentedPointsColor_clicked();
+			void on_pushButtonSelectFilteredPointsColor_clicked();
+
 			void on_comboBoxAlignment_currentIndexChanged( int index );
 			void on_doubleSpinBoxPointSize_valueChanged(double value);
 			void on_horizontalSliderPointSize_sliderMoved(int value);
@@ -251,6 +264,8 @@ namespace OpenInfraPlatform
 			QtVariantProperty*			itemStartStation_;
 			QtVariantProperty*			itemEndStation_;
 			QtVariantProperty*			itemLength_;
+
+			QColorDialog				pcdUniformColorDialog_, pcdFilteredPointsColorDialog_, pcdSegmentedPointsColorDialog_;
 
 			// Dialogs
 			CreateArcClothoidArcDialog*					ACA_ = nullptr;

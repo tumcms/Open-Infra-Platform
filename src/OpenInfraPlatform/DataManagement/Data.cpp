@@ -1297,7 +1297,7 @@ void OpenInfraPlatform::DataManagement::Data::importBINJob(const std::string& fi
 		tempPointCloud_ = nullptr;
 
 	tempPointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
-	buw::importCCPointCloud(filename.c_str(), *tempPointCloud_);
+	buw::importBINPointCloud(filename.c_str(), *tempPointCloud_);
 }
 
 

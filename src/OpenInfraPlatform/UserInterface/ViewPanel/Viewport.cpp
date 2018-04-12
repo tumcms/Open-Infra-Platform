@@ -310,16 +310,25 @@ void Viewport::enableTerrainGradientRamp(const bool checked) {
 void OpenInfraPlatform::UserInterface::Viewport::setUseUniformPointColor(const bool useUniformColor)
 {
 	pointCloudEffect_->drawPointsWithUniformColor(useUniformColor);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setUseUniformPointSize(const bool useUniformSize)
 {
 	pointCloudEffect_->drawPointsWithUniformSize(useUniformSize);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setPointSize(const float size)
 {
 	pointCloudEffect_->setPointSize(size);
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::setShowPointCloud(const bool checked)
+{
+	pointCloudEffect_->show(checked);
+	repaint();
 }
 
 void Viewport::showCrossSection(const bool showCrossSection) {
@@ -348,6 +357,24 @@ buw::ReferenceCounted<buw::ViewCube> Viewport::getViewCube() {
 buw::ReferenceCounted<AlignmentEffect> OpenInfraPlatform::UserInterface::Viewport::getAlignmentEffect()
 {
     return alignmentEffect_;
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudUniformColor(const QColor & color)
+{
+	pointCloudEffect_->setUniformColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudFilteredPointsColor(const QColor & color)
+{
+	pointCloudEffect_->setFilteredColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudSegmentedPointsColor(const QColor & color)
+{
+	pointCloudEffect_->setSegmentedColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();
 }
 
 void Viewport::setView(eView type) {

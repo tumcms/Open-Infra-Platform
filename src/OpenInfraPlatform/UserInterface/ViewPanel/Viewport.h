@@ -111,6 +111,7 @@ namespace OpenInfraPlatform
 			void setUseUniformPointColor(const bool useUniformColor);
 			void setUseUniformPointSize(const bool useUniformSize);
 			void setPointSize(const float size);
+			void setShowPointCloud(const bool checked);
 
 
             void saveAsScreenshot(const std::string& filename);
@@ -126,6 +127,11 @@ namespace OpenInfraPlatform
 
             buw::ReferenceCounted<buw::ViewCube> getViewCube();
 			buw::ReferenceCounted<AlignmentEffect> getAlignmentEffect();
+
+		public Q_SLOTS:
+			void updatePointCloudUniformColor(const QColor &color);
+			void updatePointCloudFilteredPointsColor(const QColor &color);
+			void updatePointCloudSegmentedPointsColor(const QColor &color);
 
 		private:
 			void updateWorldBuffer();

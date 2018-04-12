@@ -278,6 +278,7 @@ include_directories(
 	external/carve/common
 	ExpressBinding/src
 	Infrastructure/src
+	${CC_INCLUDE_DIRS}
 )
 
 link_directories(
@@ -461,6 +462,7 @@ target_link_libraries( OpenInfraPlatform.UI
 	carve
 	${ZLIB_LIBRARIES}
 	Rpcrt4.lib
+	${CC_LIBRARIES}
 )
 
 

@@ -34,6 +34,7 @@ public:
 	/*Struct for possible settings*/
 	struct SettingsBuffer {
 		BlueFramework::Rasterizer::AlignedTo16Byte::Float4 positions[4];
+		BlueFramework::Rasterizer::AlignedTo16Byte::Float4 color = buw::Vector4f(1.0f,1.0f,1.0f,1.0f);
 		BlueFramework::Rasterizer::AlignedTo16Byte::Float pointSize = 3.0f;
 		BlueFramework::Rasterizer::AlignedTo16Byte::Int bUseUniformPointSize = false;
 		BlueFramework::Rasterizer::AlignedTo16Byte::Int bUseUniformColor = false;
@@ -57,8 +58,21 @@ public:
 
 	void drawPointsWithUniformSize(const bool checked);
 
+	void show(const bool checked);
+
+	void showOriginalPointCloud(const bool checked);
+	void showFilteredPointCloud(const bool checked);
+
+	void showFilteredPoints(const bool checked);
+	void showSegmentedPoints(const bool checked);
+
+	void setUniformColor(const buw::Vector4f &color);
+	void setFilteredColor(const buw::Vector4f &color);
+	void setSegmentedColor(const buw::Vector4f &color);
+
 	/*Set the point size for the geometry shader*/
 	void setPointSize(const float size);
+
 
 	/*Set the point cloud to be rendered*/
 	void setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset);
@@ -75,10 +89,13 @@ private:
 	buw::ReferenceCounted<buw::IConstantBuffer> settingsBuffer_ = nullptr;
 	buw::ReferenceCounted<buw::IConstantBuffer> viewportBuffer_ = nullptr;
 	buw::ReferenceCounted<buw::IVertexBuffer> vertexBuffer_ = nullptr;
+	buw::ReferenceCounted<buw::IIndexBuffer> indexBufferRemaining_ = nullptr, indexBufferFiltered_ = nullptr, indexBufferSegmented_ = nullptr;
 	buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA_ = nullptr;
 	buw::ReferenceCounted<buw::IPipelineState> pipelineState_ = nullptr;
 	buw::ReferenceCounted<buw::IViewport> viewport_ = nullptr;
 	SettingsBuffer settings_;
+	buw::Vector4f uniformColor_, filteredColor_, segmentedColor_;
+	bool bShow_ = true, bShowOriginalPointCloud_ = true, bShowFilteredPointCloud_ = false, bShowSegmentedPoints_ = false, bShowFilteredPoints_ = false;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END

@@ -13,9 +13,10 @@ cbuffer WorldBuffer
 cbuffer SettingsBuffer : register(b1)
 {
     float4 positions[4] : packoffset(c0);
-    float pointSize : packoffset(c4);
-    int bUseUniformPointSize : packoffset(c5);
-    int bUseUniformColor: packoffset(c6);
+    float4 color : packoffset(c4);
+    float pointSize : packoffset(c5);
+    int bUseUniformPointSize : packoffset(c6);
+    int bUseUniformColor: packoffset(c7);
 };
 
 cbuffer ViewportBuffer : register(b2)
@@ -54,7 +55,7 @@ VertexToGeometry VS_main(ApplicationToVertex app2vs)
 {
     VertexToGeometry vtf = (VertexToGeometry) 0;
     vtf.worldPosition = app2vs.position;
-    vtf.color = bUseUniformColor ? float4(1, 1, 1, 1) : app2vs.color;
+    vtf.color = bUseUniformColor ? color : app2vs.color;
     return vtf;
 }
 

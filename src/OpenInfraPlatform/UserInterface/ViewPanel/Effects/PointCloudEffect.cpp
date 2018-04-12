@@ -86,6 +86,46 @@ void PointCloudEffect::drawPointsWithUniformSize(const bool checked)
 	updateSettingsBuffer();
 }
 
+void PointCloudEffect::show(const bool checked)
+{
+	bShow_ = checked;
+}
+
+void PointCloudEffect::showOriginalPointCloud(const bool checked)
+{
+	bShowOriginalPointCloud_ = checked;
+}
+
+void PointCloudEffect::showFilteredPointCloud(const bool checked)
+{
+	bShowFilteredPointCloud_ = checked;
+}
+
+void PointCloudEffect::showFilteredPoints(const bool checked)
+{
+	bShowFilteredPoints_ = checked;
+}
+
+void PointCloudEffect::showSegmentedPoints(const bool checked)
+{
+	bShowSegmentedPoints_ = checked;
+}
+
+void PointCloudEffect::setUniformColor(const buw::Vector4f & color)
+{
+	uniformColor_ = buw::Vector4f(color);
+}
+
+void PointCloudEffect::setFilteredColor(const buw::Vector4f & color)
+{
+	filteredColor_ = buw::Vector4f(color);
+}
+
+void PointCloudEffect::setSegmentedColor(const buw::Vector4f & color)
+{
+	segmentedColor_ = buw::Vector4f(color);
+}
+
 void PointCloudEffect::setPointSize(const float size)
 {
 	settings_.pointSize = size;
@@ -109,7 +149,17 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	}
 	vbd.data = vertices.data();
 
-	vertexBuffer_ = renderSystem()->createVertexBuffer(vbd);	
+	buw::indexBufferDescription ibd;
+	ibd.indexCount = pointCloud->remainingIndices.size();
+	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
+	ibd.data = pointCloud->remainingIndices.data();
+
+	indexBufferRemaining_ = renderSystem()->createIndexBuffer(ibd);
+
+	if(vertexBuffer_)
+		vertexBuffer_->uploadData(vbd);
+	else
+		vertexBuffer_ = renderSystem()->createVertexBuffer(vbd);
 }
 
 void PointCloudEffect::v_init()
@@ -121,6 +171,7 @@ void PointCloudEffect::v_init()
 	settings_.positions[1] = buw::Vector4f(0.5, 0.5, 0, 0);
 	settings_.positions[2] = buw::Vector4f(-0.5, -0.5, 0, 0);
 	settings_.positions[3] = buw::Vector4f(0.5, -0.5, 0, 0);
+	settings_.color = uniformColor_;
 	settings_.bUseUniformColor = false;
 	settings_.bUseUniformPointSize = false;
 	settings_.pointSize = 3.0f;
@@ -129,8 +180,7 @@ void PointCloudEffect::v_init()
 	cbd.sizeInBytes = sizeof(SettingsBuffer);
 	cbd.data = &settings_;
 
-	settingsBuffer_ = renderSystem()->createConstantBuffer(cbd);
-	
+	settingsBuffer_ = renderSystem()->createConstantBuffer(cbd);	
 }
 
 void PointCloudEffect::v_render()
@@ -141,10 +191,40 @@ void PointCloudEffect::v_render()
 	setPipelineState(pipelineState_);
 	setConstantBuffer(worldBuffer_, "WorldBuffer");
 	setConstantBuffer(viewportBuffer_, "ViewportBuffer");
-	setConstantBuffer(settingsBuffer_, "SettingsBuffer");
-
 	setVertexBuffer(vertexBuffer_);
-	draw(static_cast<UINT>(vertexBuffer_->getVertexCount()));
+
+	if(bShow_) {
+
+		settings_.color = uniformColor_;
+		updateSettingsBuffer();
+		setConstantBuffer(settingsBuffer_, "SettingsBuffer");
+
+		if(bShowOriginalPointCloud_) {
+			draw(static_cast<UINT>(vertexBuffer_->getVertexCount()));
+		}
+		else if(bShowFilteredPointCloud_) {
+			setIndexBuffer(indexBufferRemaining_);
+			drawIndexed(static_cast<UINT>(indexBufferRemaining_->getIndexCount()));
+		}
+	}
+
+	if(bShowFilteredPoints_) {
+		settings_.color = filteredColor_;
+		updateSettingsBuffer();
+		setConstantBuffer(settingsBuffer_, "SettingsBuffer");
+
+		setIndexBuffer(indexBufferFiltered_);
+		drawIndexed(static_cast<UINT>(indexBufferFiltered_->getIndexCount()));
+	}
+
+	if(bShowSegmentedPoints_) {
+		settings_.color = segmentedColor_;
+		updateSettingsBuffer();
+		setConstantBuffer(settingsBuffer_, "SettingsBuffer");
+
+		setIndexBuffer(indexBufferSegmented_);
+		drawIndexed(static_cast<UINT>(indexBufferSegmented_->getIndexCount()));
+	}
 }
 
 void PointCloudEffect::updateSettingsBuffer()
