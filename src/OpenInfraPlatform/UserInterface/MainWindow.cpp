@@ -139,6 +139,21 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	connect(&pcdSegmentedPointsColorDialog_, &QColorDialog::currentColorChanged, view_->getViewport(), &Viewport::updatePointCloudSegmentedPointsColor);
 	connect(&pcdSegmentedPointsColorDialog_, &QColorDialog::colorSelected, view_->getViewport(), &Viewport::updatePointCloudSegmentedPointsColor);
 
+	connect(ui_->radioButtonRender2D, &QAbstractButton::toggled, view_->getViewport(), &Viewport::updatePointCloudProjectPoints);
+
+	// Put the buttons into these groups to avoid auto toggeling etc.
+	radioButtons2D3D_.addButton(ui_->radioButtonRender2D);
+	radioButtons2D3D_.addButton(ui_->radioButtonRender3D);
+
+	radioButtonsOriginalFiltered_.addButton(ui_->radioButtonOriginal);
+	radioButtonsOriginalFiltered_.addButton(ui_->radioButtonFiltered);
+
+	// Restore original situation.
+	ui_->radioButtonOriginal->setChecked(true);
+	ui_->radioButtonRender3D->setChecked(true);
+
+	//connect(ui_->horizontalSliderSectionSize, &QSlider::valueChanged, ui_->doubleSpinBoxSectionSize, &QDoubleSpinBox::setValue);
+
 #ifdef _DEBUG
     // Show debug menu only in debug mode
 
@@ -2239,6 +2254,16 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowPointCloud_cli
 	view_->setShowPointCloud(checked);
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyFilters_clicked()
+{
+	if(ui_->radioButtonFilter2D->isChecked()) {
+		//TODO: Apply filtering in 2D
+	}
+	else {
+		//TODO: Apply filtering in 3D
+	}
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_radioButtonFiltered_toggled(bool checked)
 {
 	//TODO
@@ -2257,6 +2282,37 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectUniformCol
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectFilteredPointsColor_clicked()
 {
 	pcdFilteredPointsColorDialog_.show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonCalculateSections_clicked()
+{
+	BLUE_LOG(trace) << "Computing sections...";
+	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud()->computeSections(100.0 / ui_->horizontalSliderSectionSize->value());
+	BLUE_LOG(trace) << "Computing sections... done!";
+
+	view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxSectionSize_valueChanged(double value)
+{
+
+	ui_->horizontalSliderSectionSize->blockSignals(true);
+	ui_->horizontalSliderSectionSize->setValue(value);
+	ui_->horizontalSliderSectionSize->blockSignals(false);
+
+	if(ui_->checkBoxPreview->checkState() == Qt::CheckState::Checked)
+		view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->doubleSpinBoxSectionSize->value());
+
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_horizontalSliderSectionSize_valueChanged(int value)
+{
+	ui_->doubleSpinBoxSectionSize->blockSignals(true);
+	ui_->doubleSpinBoxSectionSize->setValue(value);
+	ui_->doubleSpinBoxSectionSize->blockSignals(false);
+
+	if(ui_->checkBoxPreview->checkState() == Qt::CheckState::Checked)
+		view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectSegmentedPointsColor_clicked()

@@ -16,11 +16,15 @@
 */
 
 #include "PointCloudProcessing.h"
+
+
+
 #include <liblas/liblas.hpp>
 #include <BlueFramework/Core/Diagnostics/log.h>
 
 #include <FileIOFilter.h>
 #include <ccPointCloud.h>
+#include <ReferenceCloud.h>
 #include <ccHObjectCaster.h>
 #include <Neighbourhood.h>
 #include <ccScalarField.h>
@@ -29,7 +33,7 @@
 
 BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointCloud(
 	const char* filename,
-	buw::PointCloud& pointCloud)
+	OpenInfraPlatform::Infrastructure::PointCloud& pointCloud)
 {
 	// see http://www.liblas.org/tutorial/cpp.html
 	std::ifstream ifs;
@@ -48,29 +52,32 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointClo
 	buw::Vector3d minv(0, 0, 0);
 	buw::Vector3d maxv(0, 0, 0);
 
-
+	pointCloud.clear();
 
 	//Reserve the points.
-	ccPointCloud* temp = new ccPointCloud();
-	temp->reserve(header.GetPointRecordsCount());
+	pointCloud.reserve(header.GetPointRecordsCount());
+	pointCloud.reserveTheRGBTable();
 
 	bool first = true;
+	CCVector3d scale = CCVector3d(header.GetScaleX(), header.GetScaleY(), header.GetScaleZ());
 	for(size_t i = 0; i < header.GetPointRecordsCount(); i++) {
 		if(reader.ReadNextPoint()) {
 			liblas::Point const& p = reader.GetPoint();
-
 			float colorRange = std::numeric_limits<liblas::Color::value_type>::max();
-			double posLiblas[3] = { p.GetX(), p.GetY(), p.GetZ() };
-			uint16_t colLiblas[3] = { p.GetColor().GetRed(), p.GetColor().GetGreen(), p.GetColor().GetBlue() };
 
-			temp->addPoint(CCVector3(posLiblas[0], posLiblas[1], posLiblas[2]));
-			temp->addRGBColor((ColorCompType)colLiblas[0], (ColorCompType)colLiblas[1], (ColorCompType)colLiblas[2]);
+			int32_t posLiblas[3] = { p.GetRawX(), p.GetRawY(), p.GetRawZ() };
+			liblas::Color colLiblas = p.GetColor();
+			const ccColor::Rgb* color = new ccColor::Rgb(ccColor::FromRgbf(ccColor::Rgbf(colLiblas.GetRed() / colorRange, colLiblas.GetGreen() / colorRange, colLiblas.GetBlue() / colorRange)).rgb);
+			pointCloud.addPoint(CCVector3(posLiblas[0] * scale.x, posLiblas[1] * scale.y, posLiblas[2] * scale.z));
+			pointCloud.addRGBColor(color->rgb);
 		}
 	}
-	pointCloud.addChild(temp);
+
+	pointCloud.computeMainAxis();
+	pointCloud.computeSections(50.0f);
 }
 
-BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointCloud(const char * filename, PointCloud & pointCloud)
+BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointCloud(const char * filename, OpenInfraPlatform::Infrastructure::PointCloud & pointCloud)
 {
 	//Initialize the filters for file IO
 	if(FileIOFilter::GetFilters().size() == 0)
@@ -90,49 +97,9 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointClo
 
 	//Delete our temporary parrent object.
 	ccTempObject = nullptr;
-	pointCloud.computeSections(0.1f);
+	pointCloud.computeMainAxis();
+	pointCloud.computeSections(50.0f);
 }
-
-void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float length)
-{
-	CCVector3 axis = CCVector3(getEigenvectors<1>().cast<float>().normalized().data());
-	
-	int idx = getScalarFieldIndexByName("ProjectionLengthAlongMainAxis");
-
-	if(idx == -1)
-		idx = addScalarField("ProjectionLengthAlongMainAxis");
-
-	setCurrentInScalarField(idx);
-
-	auto setProjectionLengthAlongMainAxis = [&](size_t i) {
-		this->setPointScalarValue(i, axis.dot(*(this->getPoint(i))));
-	};
-
-	forEach(setProjectionLengthAlongMainAxis);
-
-	getScalarField(idx)->computeMinAndMax();
-
-	ScalarType start, end;
-	std::tie(start, end) = getScalarFieldMinAndMax(idx);
-	size_t count = 0;
-	setCurrentOutScalarField(idx);
-
-	while(start < end) {
-		ccPointCloud* result = filterPointsByScalarValue(start, start + length);
-		if(result) {
-			addChild(result, DP_NONE);
-			result->setName(QString("Section#") + QString::number(count));
-		}
-		start += length;
-	}
-}
-
-const std::tuple<ScalarType, ScalarType> OpenInfraPlatform::Infrastructure::PointCloud::getScalarFieldMinAndMax(int idx) const
-{
-	CCLib::ScalarField* field = getScalarField(idx);
-	return std::tuple<ScalarType, ScalarType>(field->getMin(), field->getMax());
-}
-
 
 /*
 		//Parse the point cloud.

@@ -16,10 +16,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "PointCloudEffect.h"
+
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudSection.h"
+
 #include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
 #include <BlueFramework/Rasterizer/vertex.h>
 #include <ccColorTypes.h>
 #include <ccHObjectCaster.h>
+
+#include <tuple>
 
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
@@ -134,6 +140,18 @@ void PointCloudEffect::setPointSize(const float size)
 	updateSettingsBuffer();
 }
 
+void PointCloudEffect::setSectionLength(const float length)
+{
+	settings_.sectionLength = length;
+	updateSettingsBuffer();
+}
+
+void PointCloudEffect::setProjectPoints(const bool checked)
+{
+	settings_.bProjectPoints = checked;
+	updateSettingsBuffer();
+}
+
 void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset)
 {
 	buw::vertexBufferDescription vbd;
@@ -141,30 +159,38 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	vbd.vertexLayout = VertexTypePointCloud::getVertexLayout();
 	
 	std::vector<VertexTypePointCloud> vertices = std::vector<VertexTypePointCloud>(pointCloud->size());
-	auto baseColor = ccColor::Rgbaf(1.0f, 1.0f, 1.0f, 1.0f);
+	auto baseColor = ccColor::Rgbaf(255.0f, 255.0f, 255.0f, 255.0f);
 	
 #pragma omp parallel for
 	for(int i = 0; i < pointCloud->size(); i++) {
 		auto pos = pointCloud->getPoint(i);
 		const ColorCompType* col = pointCloud->hasColors() ? pointCloud->getPointColor(i) : ccColor::FromRgbf(baseColor).rgb;
 		// Swap Z and Y coordinate for rendering!
-		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos->x + offset.x(), pos->z + offset.z(), pos->y + offset.y()), buw::Vector4f((float)col[0], (float)col[1], (float)col[2], 1.0f));
+		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos->x + offset.x(), pos->z + offset.z(), pos->y + offset.y()), buw::Vector4f((float)col[0], (float)col[1], (float)col[2], 255.0f)/255.0f);
 	}
-		
 	
 	vbd.data = vertices.data();
+	vertexBuffer_ = renderSystem()->createVertexBuffer(vbd);
+
+
+	std::vector<uint32_t> remainingIndices, filteredIndices, segmentedIndices;
+	std::tie(remainingIndices, filteredIndices, segmentedIndices) = pointCloud->getIndices();
 
 	buw::indexBufferDescription ibd;
-	ibd.indexCount = pointCloud->remainingIndices3D.size();
+	ibd.indexCount = remainingIndices.size();
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
-	ibd.data = pointCloud->remainingIndices3D.data();
+	ibd.data = remainingIndices.data();
 
 	indexBufferRemaining_ = renderSystem()->createIndexBuffer(ibd);
 
-	if(vertexBuffer_)
-		vertexBuffer_->uploadData(vbd);
-	else
-		vertexBuffer_ = renderSystem()->createVertexBuffer(vbd);
+	ibd.indexCount = filteredIndices.size();
+	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
+	ibd.data = filteredIndices.data();
+
+	indexBufferFiltered_ = renderSystem()->createIndexBuffer(ibd);
+
+	settings_.mainAxis = buw::Vector4f(pointCloud->getMainAxis().x, pointCloud->getMainAxis().y, pointCloud->getMainAxis().z, 0.0f);
+	settings_.sectionLength = (float) pointCloud->getSectionLength();	
 }
 
 void PointCloudEffect::v_init()

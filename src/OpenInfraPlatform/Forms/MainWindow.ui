@@ -50,7 +50,7 @@
      </size>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tabAlignment">
      <attribute name="title">
@@ -185,7 +185,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tabRendering">
          <attribute name="title">
@@ -197,10 +197,31 @@
             <x>9</x>
             <y>9</y>
             <width>251</width>
-            <height>200</height>
+            <height>254</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QRadioButton" name="radioButtonRender3D">
+               <property name="text">
+                <string>Show 3D Volume</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radioButtonRender2D">
+               <property name="text">
+                <string>Show 2D Projections</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
            <item>
             <widget class="QCheckBox" name="checkBoxUseUniformSize">
              <property name="text">
@@ -321,15 +342,8 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
-              <widget class="QPushButton" name="pushButtonSelectFilteredPointsColor">
-               <property name="text">
-                <string>Select Color</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QPushButton" name="pushButtonSelectSegmentedPointsColor">
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pushButtonSelectUniformColor">
                <property name="text">
                 <string>Select Color</string>
                </property>
@@ -342,8 +356,15 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QPushButton" name="pushButtonSelectUniformColor">
+             <item row="1" column="1">
+              <widget class="QPushButton" name="pushButtonSelectFilteredPointsColor">
+               <property name="text">
+                <string>Select Color</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QPushButton" name="pushButtonSelectSegmentedPointsColor">
                <property name="text">
                 <string>Select Color</string>
                </property>
@@ -578,7 +599,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButtonApplyFilter">
+              <widget class="QPushButton" name="pushButtonApplyFilters">
                <property name="text">
                 <string>Apply</string>
                </property>
@@ -606,16 +627,19 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
-              <widget class="QCheckBox" name="checkBoxShowSections">
+              <widget class="QCheckBox" name="checkBoxPreview">
                <property name="text">
-                <string>Show Sections</string>
+                <string>Preview</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QPushButton" name="pushButtonCalculateSections">
                <property name="text">
-                <string>Update</string>
+                <string>Compute</string>
                </property>
               </widget>
              </item>
@@ -632,13 +656,29 @@
              </item>
              <item>
               <widget class="QSlider" name="horizontalSliderSectionSize">
+               <property name="maximum">
+                <number>1000</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxSectionSize"/>
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxSectionSize">
+               <property name="maximum">
+                <double>1000.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>1.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>10.000000000000000</double>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>

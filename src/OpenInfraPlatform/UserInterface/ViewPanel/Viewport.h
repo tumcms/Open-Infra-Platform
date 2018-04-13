@@ -132,6 +132,8 @@ namespace OpenInfraPlatform
 			void updatePointCloudUniformColor(const QColor &color);
 			void updatePointCloudFilteredPointsColor(const QColor &color);
 			void updatePointCloudSegmentedPointsColor(const QColor &color);
+			void updatePointCloudSectionLength(const float length);
+			void updatePointCloudProjectPoints(const bool checked);
 
 		private:
 			void updateWorldBuffer();

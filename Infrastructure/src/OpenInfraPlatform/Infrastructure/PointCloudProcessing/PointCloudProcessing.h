@@ -20,6 +20,12 @@
 #define OpenInfraPlatform_Infrastructure_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h
 
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
+#include "OpenInfraPlatform/Infrastructure/namespace.h"
+
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudSection.h"
+
+
 #include <BlueFramework/ImageProcessing/color.h>
 #include <BlueFramework/Core/Math/vector.h>
 #include <BlueFramework/Core/memory.h>
@@ -30,6 +36,7 @@
 #include <ccHObject.h>
 #include <ccPointCloud.h>
 #include <GeometricalAnalysisTools.h>
+
 
 namespace OpenInfraPlatform
 {
@@ -45,56 +52,7 @@ namespace OpenInfraPlatform
 			bool bRemoveDuplicates = false, bApplyLocalDensityFiltering = false;
 			float removeDuplicatesDistanceThreshold, localDensityFilteringMinDensityThreshold;
 			CCLib::GeometricalAnalysisTools::Density eDensityMetric;
-		};
-
-		class PointCloud : public ccPointCloud
-		{
-		public:
-			void computeSections(const float length);
-
-			template<typename F> void forEach(const F& function)
-			{
-				for(size_t i = 0; i < size(); i++)
-					function(i);
-			}
-
-			const std::tuple<ScalarType, ScalarType> getScalarFieldMinAndMax(int idx) const;
-
-		private:
-			template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors()
-			{
-				//Matrix which is capable of holding all points for PCA.
-				Eigen::MatrixX3d points;
-				points.resize(this->size(), 3);
-				for(size_t i = 0; i < this->size(); i++) {
-					auto pos = this->getPoint(i);
-					points.row(i) = Eigen::Vector3d(pos->x,pos->y,pos->z);
-				}
-
-				//Do PCA to find the largest eigenvector -> main axis.
-				Eigen::MatrixXd centered = points.rowwise() - points.colwise().mean();
-				Eigen::MatrixXd cov = centered.adjoint() * centered;
-				Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-				Eigen::Matrix<double, 3, N> vec = eig.eigenvectors().rightCols(N);
-				return vec;
-			}
-
-			
-
-
-		// Public attributes
-		public:
-			std::vector<uint32_t>	remainingIndices3D, filteredIndices3D, segmentedIndices3D;
-			std::vector<uint32_t>	remainingIndices2D, filteredIndices2D, segmentedIndices2D;
-
-		// Private attributes
-		private:
-
-		};
-
-
-
-		
+		};		
 
 		BLUEINFRASTRUCTURE_API void importLASPointCloud(const char* filename, PointCloud& pointCloud);
 		BLUEINFRASTRUCTURE_API void importBINPointCloud(const char* filename, PointCloud& pointCloud);
@@ -106,7 +64,6 @@ namespace buw
 	using OpenInfraPlatform::Infrastructure::importLASPointCloud;
 	using OpenInfraPlatform::Infrastructure::importBINPointCloud;
 	using OpenInfraPlatform::Infrastructure::LaserPoint;
-	using OpenInfraPlatform::Infrastructure::PointCloud;
 	using OpenInfraPlatform::Infrastructure::FilterDescription;
 }
 

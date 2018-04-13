@@ -377,6 +377,18 @@ void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudSegmentedPoints
 	repaint();
 }
 
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudSectionLength(const float length)
+{
+	pointCloudEffect_->setSectionLength(length);
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudProjectPoints(const bool checked)
+{
+	pointCloudEffect_->setProjectPoints(checked);
+	repaint();
+}
+
 void Viewport::setView(eView type) {
     switch (type) {
     case eView::HorizontalAlignment: alignmentEffect_->drawFlattened(true); break;

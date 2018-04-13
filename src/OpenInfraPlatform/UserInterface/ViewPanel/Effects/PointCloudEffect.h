@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define OpenInfraPlatform_UserInterface_PointCloudEffect_C9932E98_6B4E_4E36_8B8D_5AA32D41AC0F_h
 
 #include "OpenInfraPlatform/namespace.h"
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
 
 #include <buw.Rasterizer.h>
 #include <map>
@@ -35,9 +35,12 @@ public:
 	struct SettingsBuffer {
 		BlueFramework::Rasterizer::AlignedTo16Byte::Float4 positions[4];
 		BlueFramework::Rasterizer::AlignedTo16Byte::Float4 color = buw::Vector4f(1.0f,1.0f,1.0f,1.0f);
+		BlueFramework::Rasterizer::AlignedTo16Byte::Float4 mainAxis;
+		BlueFramework::Rasterizer::AlignedTo16Byte::Float sectionLength = 10.0f;
 		BlueFramework::Rasterizer::AlignedTo16Byte::Float pointSize = 3.0f;
 		BlueFramework::Rasterizer::AlignedTo16Byte::Int bUseUniformPointSize = false;
 		BlueFramework::Rasterizer::AlignedTo16Byte::Int bUseUniformColor = false;
+		BlueFramework::Rasterizer::AlignedTo16Byte::Int bProjectPoints = false;
 	};
 
 	/*Construct by providing the renderSystem, viewport, depthStencil and worldBuffer for camera etc.*/
@@ -72,6 +75,10 @@ public:
 
 	/*Set the point size for the geometry shader*/
 	void setPointSize(const float size);
+
+	void setSectionLength(const float length);
+
+	void setProjectPoints(const bool checked);
 
 
 	/*Set the point cloud to be rendered*/

@@ -179,12 +179,18 @@ namespace OpenInfraPlatform
 
 			void on_checkBoxShowPointCloud_clicked(bool checked);
 
+			void on_pushButtonApplyFilters_clicked();
+
 			void on_radioButtonFiltered_toggled(bool checked);
 			void on_radioButtonOriginal_toggled(bool checked);
 
 			void on_pushButtonSelectUniformColor_clicked();
 			void on_pushButtonSelectSegmentedPointsColor_clicked();
 			void on_pushButtonSelectFilteredPointsColor_clicked();
+
+			void on_pushButtonCalculateSections_clicked();
+			void on_doubleSpinBoxSectionSize_valueChanged(double value);
+			void on_horizontalSliderSectionSize_valueChanged(int value);
 
 			void on_comboBoxAlignment_currentIndexChanged( int index );
 			void on_doubleSpinBoxPointSize_valueChanged(double value);
@@ -266,6 +272,7 @@ namespace OpenInfraPlatform
 			QtVariantProperty*			itemLength_;
 
 			QColorDialog				pcdUniformColorDialog_, pcdFilteredPointsColorDialog_, pcdSegmentedPointsColorDialog_;
+			QButtonGroup				radioButtons2D3D_, radioButtonsOriginalFiltered_;
 
 			// Dialogs
 			CreateArcClothoidArcDialog*					ACA_ = nullptr;

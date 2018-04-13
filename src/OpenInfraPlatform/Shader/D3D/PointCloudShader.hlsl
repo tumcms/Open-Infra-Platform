@@ -14,9 +14,12 @@ cbuffer SettingsBuffer : register(b1)
 {
     float4 positions[4] : packoffset(c0);
     float4 color : packoffset(c4);
-    float pointSize : packoffset(c5);
-    int bUseUniformPointSize : packoffset(c6);
-    int bUseUniformColor: packoffset(c7);
+    float4 mainAxis : packoffset(c5);
+    float sectionLength : packoffset(c6);
+    float pointSize : packoffset(c7);
+    int bUseUniformPointSize : packoffset(c8);
+    int bUseUniformColor : packoffset(c9);
+    int bProjectPoints : packoffset(c10);
 };
 
 cbuffer ViewportBuffer : register(b2)
@@ -54,6 +57,13 @@ struct FragmentToPixel
 VertexToGeometry VS_main(ApplicationToVertex app2vs)
 {
     VertexToGeometry vtf = (VertexToGeometry) 0;
+
+    if (bProjectPoints)
+    {
+        float diff = (floor(sectionLength * dot(mainAxis.xzy, app2vs.position)) / sectionLength) - dot(mainAxis.xzy, app2vs.position);
+        app2vs.position += diff * mainAxis.xzy;
+    }
+
     vtf.worldPosition = app2vs.position;
     vtf.color = bUseUniformColor ? color : app2vs.color;
     return vtf;

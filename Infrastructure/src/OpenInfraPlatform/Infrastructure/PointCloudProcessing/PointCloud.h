@@ -1,0 +1,96 @@
+/*
+Copyright (c) 2018 Technical University of Munich
+Chair of Computational Modeling and Simulation.
+
+TUM Open Infra Platform is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License Version 3
+as published by the Free Software Foundation.
+
+TUM Open Infra Platform is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#pragma once
+#ifndef OpenInfraPlatform_Infrastructure_PointCloudProcessing_PointCloud_C6DADDAE_D1A5_4A99_A95F_2DD5667ED977_h
+#define OpenInfraPlatform_Infrastructure_PointCloudProcessing_PointCloud_C6DADDAE_D1A5_4A99_A95F_2DD5667ED977_h
+
+#include "OpenInfraPlatform/Infrastructure/namespace.h"
+#include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
+
+#include <BlueFramework/Core/Math/vector.h>
+#include <BlueFramework/Core/memory.h>
+
+#include <ccPointCloud.h>
+
+#include <tuple>
+
+namespace OpenInfraPlatform {
+	namespace Infrastructure {
+
+		class PointCloudSection;
+
+		class BLUEINFRASTRUCTURE_API PointCloud : public ccPointCloud {
+		public:
+
+			void computeSections(const float length);
+
+			int flagDuplicatePoints(const double minDistance);
+
+			std::vector<uint32_t> getDuplicatePointIndices();
+
+			const std::tuple<ScalarType, ScalarType> getScalarFieldMinAndMax(int idx) const;
+
+			const CCVector3 getMainAxis() const;
+
+			const double getSectionLength() const;
+
+			template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors()
+			{
+				//Matrix which is capable of holding all points for PCA.
+				Eigen::MatrixX3d points;
+				points.resize(this->size(), 3);
+				for(size_t i = 0; i < this->size(); i++) {
+					auto pos = this->getPoint(i);
+					points.row(i) = Eigen::Vector3d(pos->x, pos->y, pos->z);
+				}
+
+				//Do PCA to find the largest eigenvector -> main axis.
+				Eigen::MatrixXd centered = points.rowwise() - points.colwise().mean();
+				Eigen::MatrixXd cov = centered.adjoint() * centered;
+				Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+				Eigen::Matrix<double, 3, N> vec = eig.eigenvectors().rightCols(N);
+				return vec;
+			}
+
+			template<typename F> void for_each(const F& function)
+			{
+				for(size_t i = 0; i < size(); i++)
+					function(i);
+			}
+
+			const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> getIndices();
+			void computeMainAxis();
+
+		private:
+
+		public:
+
+		private:
+			CCVector3 mainAxis_;
+			std::vector<uint32_t> remainingIndices_, filteredIndices_, segmentedIndices_;
+			std::vector<buw::ReferenceCounted<PointCloudSection>> sections_;
+			buw::ReferenceCounted<CCLib::DgmOctree> octree_;
+		};
+	}
+}
+
+namespace buw {
+	using OpenInfraPlatform::Infrastructure::PointCloud;
+}
+
+#endif
