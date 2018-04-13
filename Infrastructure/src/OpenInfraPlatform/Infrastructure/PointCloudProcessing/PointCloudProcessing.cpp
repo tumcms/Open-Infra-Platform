@@ -74,7 +74,7 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointClo
 	}
 
 	pointCloud.computeMainAxis();
-	pointCloud.computeSections(50.0f);
+	pointCloud.computeSections(10.0f);
 }
 
 BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointCloud(const char * filename, OpenInfraPlatform::Infrastructure::PointCloud & pointCloud)
@@ -98,7 +98,7 @@ BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointClo
 	//Delete our temporary parrent object.
 	ccTempObject = nullptr;
 	pointCloud.computeMainAxis();
-	pointCloud.computeSections(50.0f);
+	pointCloud.computeSections(10.0f);
 }
 
 /*

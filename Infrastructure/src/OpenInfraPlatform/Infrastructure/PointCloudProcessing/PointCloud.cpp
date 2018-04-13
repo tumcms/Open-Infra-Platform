@@ -20,6 +20,43 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudSection.h"
 
 #include <ccScalarField.h>
+#include <FileIOFilter.h>
+
+buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointCloud::FromFile(const char * filename)
+{
+	buw::ReferenceCounted<buw::PointCloud> pointCloud = buw::makeReferenceCounted<buw::PointCloud>(QString(filename));
+
+	// Initialize the filters for file IO.
+	if(FileIOFilter::GetFilters().size() == 0)
+		FileIOFilter::InitInternalFilters();
+
+	// Get file extension and try to find the best filter for it.
+	QString extension = QString(filename).split(".").last().toUpper();
+	auto filter = FileIOFilter::FindBestFilterForExtension(extension);
+
+	if(filter) {
+		CC_FILE_ERROR err;
+		// Load the point cloud from file and store it temporarily.
+		std::shared_ptr<ccHObject> ccTempObject = std::shared_ptr<ccHObject>(FileIOFilter::LoadFromFile(QString(filename), FileIOFilter::LoadParameters(), FileIOFilter::FindBestFilterForExtension("BIN"), err));
+		if(err == CC_FILE_ERROR::CC_FERR_NO_ERROR) {
+			for(size_t i = 0; i < ccTempObject->getChildrenNumber(); i++) {
+				ccPointCloud* temp = ccHObjectCaster::ToPointCloud(ccTempObject->getChild(i));
+				if(temp) {
+					pointCloud->append(temp, pointCloud->size());
+				}
+			}
+		}
+
+		//Delete our temporary parrent object.
+		ccTempObject = nullptr;
+		pointCloud->computeMainAxis();
+		pointCloud->computeSections(10.0f);
+	}
+	else {
+		//TODO
+	}
+	return pointCloud;
+}
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float length)
 {

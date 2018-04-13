@@ -37,6 +37,12 @@ namespace OpenInfraPlatform {
 		class BLUEINFRASTRUCTURE_API PointCloud : public ccPointCloud {
 		public:
 
+			static buw::ReferenceCounted<PointCloud> FromFile(const char* filename);
+
+			PointCloud() : ccPointCloud() { }
+
+			PointCloud(QString name) : ccPointCloud(name) { }
+
 			void computeSections(const float length);
 
 			int flagDuplicatePoints(const double minDistance);
