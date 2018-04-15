@@ -104,10 +104,6 @@ void PointCloudEffect::showOriginalPointCloud(const bool checked)
 	bShowOriginalPointCloud_ = checked;
 }
 
-void PointCloudEffect::showFilteredPointCloud(const bool checked)
-{
-	bShowFilteredPointCloud_ = checked;
-}
 
 void PointCloudEffect::showFilteredPoints(const bool checked)
 {
@@ -148,8 +144,34 @@ void PointCloudEffect::setSectionLength(const float length)
 
 void PointCloudEffect::setProjectPoints(const bool checked)
 {
-	settings_.bProjectPoints = checked;
+	bProjectPoints_ = checked;
+	settings_.bProjectPoints = bProjectPoints_;
 	updateSettingsBuffer();
+}
+
+void PointCloudEffect::updateIndexBuffers(const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> indices)
+{
+	std::vector<uint32_t> remainingIndices, filteredIndices, segmentedIndices;
+	std::tie(remainingIndices, filteredIndices, segmentedIndices) = indices;
+
+	buw::indexBufferDescription ibd;
+	ibd.indexCount = remainingIndices.size();
+	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
+	ibd.data = remainingIndices.data();
+
+	indexBufferRemaining_ = renderSystem()->createIndexBuffer(ibd);
+
+	ibd.indexCount = filteredIndices.size();
+	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
+	ibd.data = filteredIndices.data();
+
+	indexBufferFiltered_ = renderSystem()->createIndexBuffer(ibd);
+
+	ibd.indexCount = segmentedIndices.size();
+	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
+	ibd.data = segmentedIndices.data();
+
+	indexBufferSegmented_ = renderSystem()->createIndexBuffer(ibd);
 }
 
 void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset)
@@ -189,8 +211,14 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 
 	indexBufferFiltered_ = renderSystem()->createIndexBuffer(ibd);
 
+	ibd.indexCount = segmentedIndices.size();
+	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
+	ibd.data = segmentedIndices.data();
+
+	indexBufferSegmented_ = renderSystem()->createIndexBuffer(ibd);
+
 	settings_.mainAxis = buw::Vector4f(pointCloud->getMainAxis().x, pointCloud->getMainAxis().y, pointCloud->getMainAxis().z, 0.0f);
-	settings_.sectionLength = (float) pointCloud->getSectionLength();	
+	settings_.sectionLength = (float) pointCloud->getSectionLength();
 }
 
 void PointCloudEffect::v_init()
@@ -233,7 +261,7 @@ void PointCloudEffect::v_render()
 		if(bShowOriginalPointCloud_) {
 			draw(static_cast<UINT>(vertexBuffer_->getVertexCount()));
 		}
-		else if(bShowFilteredPointCloud_) {
+		else {
 			setIndexBuffer(indexBufferRemaining_);
 			drawIndexed(static_cast<UINT>(indexBufferRemaining_->getIndexCount()));
 		}

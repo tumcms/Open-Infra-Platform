@@ -331,6 +331,12 @@ void OpenInfraPlatform::UserInterface::Viewport::setShowPointCloud(const bool ch
 	repaint();
 }
 
+void OpenInfraPlatform::UserInterface::Viewport::setPointCloudIndices(std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> indices)
+{
+	pointCloudEffect_->updateIndexBuffers(indices);
+	repaint();
+}
+
 void Viewport::showCrossSection(const bool showCrossSection) {
     alignmentEffect_->showCrossSections(showCrossSection);
 }
@@ -388,6 +394,25 @@ void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudProjectPoints(c
 	pointCloudEffect_->setProjectPoints(checked);
 	repaint();
 }
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudRenderOriginalCloud(const bool checked)
+{
+	pointCloudEffect_->showOriginalPointCloud(checked);
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudShowSegmentedPoints(const bool checked)
+{
+	pointCloudEffect_->showSegmentedPoints(checked);
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudShowFilteredPoints(const bool checked)
+{
+	pointCloudEffect_->showFilteredPoints(checked);
+	repaint();
+}
+
 
 void Viewport::setView(eView type) {
     switch (type) {

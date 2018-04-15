@@ -20,6 +20,7 @@
 #include "ColorPicker/colorpickerwidget.h"
 #include "OpenInfraPlatform/Benchmark.h"
 #include "OpenInfraPlatform/DataManagement/AsyncJob.h"
+#include "OpenInfraPlatform/DataManagement/ProgressCallback.h"
 #include "OpenInfraPlatform/DataManagement/Command/CommandCreateClothoid.h"
 #include "OpenInfraPlatform/DataManagement/Command/DeleteAlignment.h"
 #include "OpenInfraPlatform/DataManagement/Command/DeleteSurface.h"
@@ -140,6 +141,17 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	connect(&pcdSegmentedPointsColorDialog_, &QColorDialog::colorSelected, view_->getViewport(), &Viewport::updatePointCloudSegmentedPointsColor);
 
 	connect(ui_->radioButtonRender2D, &QAbstractButton::toggled, view_->getViewport(), &Viewport::updatePointCloudProjectPoints);
+	connect(ui_->radioButtonOriginal, &QAbstractButton::toggled, view_->getViewport(), &Viewport::updatePointCloudRenderOriginalCloud);
+
+	connect(ui_->checkBoxShowSegmentedPoints, &QAbstractButton::clicked, view_->getViewport(), &Viewport::updatePointCloudShowSegmentedPoints);
+	connect(ui_->checkBoxShowFilteredPoints, &QAbstractButton::clicked, view_->getViewport(), &Viewport::updatePointCloudShowFilteredPoints);
+
+	connect(ui_->horizontalSliderRemoveDuplicatesThreshold, &QSlider::valueChanged, ui_->doubleSpinBoxRemoveDuplicatesThreshold, &QDoubleSpinBox::setValue);
+
+	ui_->comboBoxFilterDensityMetric->addItem("kNN", QVariant(0));
+	ui_->comboBoxFilterDensityMetric->addItem("2D", QVariant(1));
+	ui_->comboBoxFilterDensityMetric->addItem("3D", QVariant(2));
+	ui_->comboBoxFilterDensityMetric->setCurrentIndex(0);
 
 	// Put the buttons into these groups to avoid auto toggeling etc.
 	radioButtons2D3D_.addButton(ui_->radioButtonRender2D);
@@ -2254,25 +2266,6 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowPointCloud_cli
 	view_->setShowPointCloud(checked);
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyFilters_clicked()
-{
-	if(ui_->radioButtonFilter2D->isChecked()) {
-		//TODO: Apply filtering in 2D
-	}
-	else {
-		//TODO: Apply filtering in 3D
-	}
-}
-
-void OpenInfraPlatform::UserInterface::MainWindow::on_radioButtonFiltered_toggled(bool checked)
-{
-	//TODO
-}
-
-void OpenInfraPlatform::UserInterface::MainWindow::on_radioButtonOriginal_toggled(bool checked)
-{
-	//TODO
-}
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectUniformColor_clicked()
 {
@@ -2284,11 +2277,74 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectFilteredPo
 	pcdFilteredPointsColorDialog_.show();
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDuplicateFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	double distanceInMeters = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
+
+	ui_->progressBarPointCloudProcessing->setVisible(true);
+
+	auto func = [&](float percent) {
+		ui_->progressBarPointCloudProcessing->setValue(percent);
+	};
+
+	auto callback = buw::makeReferenceCounted<OpenInfraPlatform::DataManagement::ProgressCallback<decltype(func)>>(func);
+
+	if(ui_->radioButtonRender3D->isChecked()) {
+		pointCloud->flagDuplicatePoints(distanceInMeters, callback);
+	}
+	else {
+		auto sections = pointCloud->getSections();
+		for(size_t i = 0; i < sections.size(); i++) {
+			sections[i]->flagDuplicatePoints(distanceInMeters);
+			ui_->progressBarPointCloudProcessing->setValue(100.0* ((double)i/ (double)sections.size()));
+		}
+	}
+	pointCloud->computeIndices();
+
+	ui_->progressBarPointCloudProcessing->setVisible(false);
+
+	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDuplicateFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	pointCloud->unflagDuplicatePoints();
+	pointCloud->computeIndices();
+	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDensityFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+
+	// Initialize the filter parameters
+	float kernelRadius = (float)(ui_->horizontalSliderFilterDensityKernelRadius->value()) / 100.0f;
+	float threshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
+	int metric = ui_->comboBoxFilterDensityMetric->currentData().toInt();
+	
+	// TODO: Fix callbackto update the UI
+	int err = pointCloud->applyLocalDensityFilter(threshold, metric, kernelRadius, nullptr);	
+
+	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDensityFilter_clicked()
+{
+	//TODO
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value)
+{
+	ui_->horizontalSliderRemoveDuplicatesThreshold->blockSignals(true);
+	ui_->horizontalSliderRemoveDuplicatesThreshold->setValue(value);
+	ui_->horizontalSliderRemoveDuplicatesThreshold->blockSignals(false);
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonCalculateSections_clicked()
 {
-	BLUE_LOG(trace) << "Computing sections...";
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud()->computeSections(100.0 / ui_->horizontalSliderSectionSize->value());
-	BLUE_LOG(trace) << "Computing sections... done!";
 
 	view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
 }

@@ -179,14 +179,17 @@ namespace OpenInfraPlatform
 
 			void on_checkBoxShowPointCloud_clicked(bool checked);
 
-			void on_pushButtonApplyFilters_clicked();
-
-			void on_radioButtonFiltered_toggled(bool checked);
-			void on_radioButtonOriginal_toggled(bool checked);
-
 			void on_pushButtonSelectUniformColor_clicked();
 			void on_pushButtonSelectSegmentedPointsColor_clicked();
 			void on_pushButtonSelectFilteredPointsColor_clicked();
+
+			void on_pushButtonApplyDuplicateFilter_clicked();
+			void on_pushButtonResetDuplicateFilter_clicked();
+
+			void on_pushButtonApplyDensityFilter_clicked();
+			void on_pushButtonResetDensityFilter_clicked();
+
+			void on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value);
 
 			void on_pushButtonCalculateSections_clicked();
 			void on_doubleSpinBoxSectionSize_valueChanged(double value);

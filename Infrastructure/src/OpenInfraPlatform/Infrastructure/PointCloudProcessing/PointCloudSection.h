@@ -44,12 +44,11 @@ namespace OpenInfraPlatform {
 
 			PointCloudSection(GenericIndexedCloudPersist* associatedCloud) : ReferenceCloud(associatedCloud) {}
 
-			const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> getIndices();
+			// Function which flags points considered as duplicate in this projection as duplicates in the associated cloud.
+			int flagDuplicatePoints(const double minDistance);
 
 		private:
 
-			// Function which flags points considered as duplicate in this projection as duplicates in the associated cloud.
-			int flagDuplicatePoints(const double minDistance);
 
 			// Creates a point cloud where all points are projected on the plane represented by this section.
 			buw::ReferenceCounted<PointCloud> createPointCloud2D();
@@ -61,7 +60,6 @@ namespace OpenInfraPlatform {
 			}
 		public:
 		private:
-			std::vector<uint32_t>	remainingIndices_, filteredIndices_, segmentedIndices_;
 			double length_;
 		};
 	}

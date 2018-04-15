@@ -25,6 +25,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <buw.Rasterizer.h>
 #include <map>
+#include <tuple>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
 
@@ -64,7 +65,6 @@ public:
 	void show(const bool checked);
 
 	void showOriginalPointCloud(const bool checked);
-	void showFilteredPointCloud(const bool checked);
 
 	void showFilteredPoints(const bool checked);
 	void showSegmentedPoints(const bool checked);
@@ -79,6 +79,8 @@ public:
 	void setSectionLength(const float length);
 
 	void setProjectPoints(const bool checked);
+
+	void updateIndexBuffers(const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> indices);
 
 
 	/*Set the point cloud to be rendered*/
@@ -102,7 +104,7 @@ private:
 	buw::ReferenceCounted<buw::IViewport> viewport_ = nullptr;
 	SettingsBuffer settings_;
 	buw::Vector4f uniformColor_, filteredColor_, segmentedColor_;
-	bool bShow_ = true, bShowOriginalPointCloud_ = true, bShowFilteredPointCloud_ = false, bShowSegmentedPoints_ = false, bShowFilteredPoints_ = false;
+	bool bShow_ = true, bShowOriginalPointCloud_ = true, bShowSegmentedPoints_ = false, bShowFilteredPoints_ = false, bProjectPoints_ = false;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END

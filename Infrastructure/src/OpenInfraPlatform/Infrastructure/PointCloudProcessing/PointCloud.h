@@ -29,6 +29,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <tuple>
 
+class CCLib::GenericProgressCallback;
+
 namespace OpenInfraPlatform {
 	namespace Infrastructure {
 
@@ -37,17 +39,26 @@ namespace OpenInfraPlatform {
 		class BLUEINFRASTRUCTURE_API PointCloud : public ccPointCloud {
 		public:
 
+			// Dont use, prototype implementation.
 			static buw::ReferenceCounted<PointCloud> FromFile(const char* filename);
 
 			PointCloud() : ccPointCloud() { }
 
 			PointCloud(QString name) : ccPointCloud(name) { }
 
-			void computeSections(const float length);
+			void computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			int flagDuplicatePoints(const double minDistance);
+			int flagDuplicatePoints(const double minDistance, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			std::vector<uint32_t> getDuplicatePointIndices();
+			int applyLocalDensityFilter(ScalarType threshold, int metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			int computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			void unflagDuplicatePoints();
+
+			std::vector<buw::ReferenceCounted<PointCloudSection>> getSections();
+
+			void computeIndices();
 
 			const std::tuple<ScalarType, ScalarType> getScalarFieldMinAndMax(int idx) const;
 

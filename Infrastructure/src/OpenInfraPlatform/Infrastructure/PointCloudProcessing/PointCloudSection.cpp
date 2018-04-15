@@ -22,11 +22,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 int OpenInfraPlatform::Infrastructure::PointCloudSection::flagDuplicatePoints(const double minDistance)
 {
 	buw::ReferenceCounted<buw::PointCloud> cloud2D = createPointCloud2D();
+	buw::PointCloud* associatedCloud = dynamic_cast<buw::PointCloud*>(getAssociatedCloud());
+
+	int idx = associatedCloud->getScalarFieldIndexByName("Duplicate");
+	if(idx == -1)
+		idx = associatedCloud->addScalarField("Duplicate");
+
+	associatedCloud->setCurrentInScalarField(idx);
+
 	cloud2D->flagDuplicatePoints(minDistance);
 	cloud2D->for_each([&](size_t i) {
-		if(cloud2D->getPointScalarValue(i) == 1) {
-			filteredIndices_.push_back(this->getPointGlobalIndex(i));
-		}		
+		associatedCloud->setPointScalarValue(this->getPointGlobalIndex(i), cloud2D->getPointScalarValue(i));
 	});
 
 	return 0;
@@ -43,10 +49,6 @@ const double OpenInfraPlatform::Infrastructure::PointCloudSection::getLength() c
 	return length_;
 }
 
-const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> OpenInfraPlatform::Infrastructure::PointCloudSection::getIndices()
-{
-	return std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>>(remainingIndices_, filteredIndices_, segmentedIndices_);
-}
 
 buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointCloudSection::createPointCloud2D()
 {

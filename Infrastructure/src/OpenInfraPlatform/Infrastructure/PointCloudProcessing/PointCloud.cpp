@@ -19,8 +19,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudSection.h"
 
+#include <BlueFramework/Core/Diagnostics/log.h>
+
 #include <ccScalarField.h>
 #include <FileIOFilter.h>
+
 
 buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointCloud::FromFile(const char * filename)
 {
@@ -58,7 +61,7 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 	return pointCloud;
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float length)
+void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	CCVector3 axis = CCVector3(getEigenvectors<1>().cast<float>().normalized().data());
 
@@ -117,7 +120,8 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float 
 	}
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::flagDuplicatePoints(const double minDistance)
+
+int OpenInfraPlatform::Infrastructure::PointCloud::flagDuplicatePoints(const double minDistance, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// Get octree or build it if not yet built.
 	if(!octree_) {
@@ -130,42 +134,110 @@ int OpenInfraPlatform::Infrastructure::PointCloud::flagDuplicatePoints(const dou
 	if(idx == -1)
 		idx = addScalarField("Duplicate");
 
-	// Set it as input scalar field to write explicitly to it - not sure if this is really necessary - and copy the values from this output scalar field to it.
-	setCurrentInScalarField(idx);
-		
-	CCLib::GeometricalAnalysisTools::flagDuplicatePoints(this, minDistance, nullptr, octree_.get());
-
+	// Set it as input scalar field to write explicitly to it - not sure if this is really necessary..
 	// Set it to be the current output scalar field to avoid overriding another one since flagDuplicatePoints uses this field.
+	setCurrentInScalarField(idx);
 	setCurrentOutScalarField(idx);
 
-	for_each([&](size_t i) {
-		setPointScalarValue(i, getPointScalarValue(i));
-	});
-
-	return 0;
+	return CCLib::GeometricalAnalysisTools::flagDuplicatePoints(this, minDistance, callback.get(), octree_.get());
 }
 
-std::vector<uint32_t> OpenInfraPlatform::Infrastructure::PointCloud::getDuplicatePointIndices()
+int OpenInfraPlatform::Infrastructure::PointCloud::applyLocalDensityFilter(ScalarType threshold, int metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
-	std::vector<uint32_t> indices = std::vector<uint32_t>();
+	// Compute the local density and save the error code.
+	int err = computeLocalDensity((CCLib::GeometricalAnalysisTools::Density) metric, kernelRadius, callback);
 
-	// Get the Duplicate scalar field or if not there create it and flag nothing.
+	if(err == 0) {
+
+		// Get our scalar field. If we cant find our scalar field, something went wrong and we abort and return -1.
+		int idx = getScalarFieldIndexByName("Density");
+		if(idx == -1) {
+			err = idx;
+			return err;
+		}
+		else {
+			// Set the Density Scalar field as in and output field since we want to read it and threshold it.
+			setCurrentInScalarField(idx);
+			setCurrentOutScalarField(idx);
+
+			// Compare the scalar value for each point with the threshold and write the result into the scalar field since we're not interested in the real densities.
+			for_each([&](size_t i) {
+				setPointScalarValue(i, (int)(getPointScalarValue(i) < threshold));
+			});
+
+			// Update our indices for filtered etc.
+			computeIndices();
+		}
+	}
+	return err;
+}
+
+int OpenInfraPlatform::Infrastructure::PointCloud::computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	// Get the duplicate scalar field.
+	int idx = getScalarFieldIndexByName("Density");
+	if(idx == -1)
+		idx = addScalarField("Density");
+
+	// Set it as input scalar field to write explicitly to it - not sure if this is really necessary..
+	// Set it to be the current output scalar field to avoid overriding another one since computeLocalDensity uses this field.
+	setCurrentInScalarField(idx);
+	setCurrentOutScalarField(idx);
+
+	// Compute the local density and retirn the error code.
+	return CCLib::GeometricalAnalysisTools::computeLocalDensity(this, metric, kernelRadius, callback.get(), octree_.get());
+}
+
+void OpenInfraPlatform::Infrastructure::PointCloud::unflagDuplicatePoints()
+{
+	// Get the duplicate scalar field.
 	int idx = getScalarFieldIndexByName("Duplicate");
 	if(idx == -1)
-		flagDuplicatePoints(0.0);
+		idx = addScalarField("Duplicate");
 
-	// Set the Duplicate scalar field as output to read from it.
-	idx = getScalarFieldIndexByName("Duplicate");
-	setCurrentOutScalarField(idx);
-
-	// For each point, check whether it is a duplicate, if yes, insert it into the vector.
+	// Set Duplicate as Scalar field to write to and flag each point with duplicate 0
+	setCurrentInScalarField(idx);
 	for_each([&](size_t i) {
-		if(getPointScalarValue(i) == 1)
-			indices.push_back(i);
+		setPointScalarValue(i, 0);
 	});
-
-	return indices;
 }
+
+std::vector<buw::ReferenceCounted<buw::PointCloudSection>> OpenInfraPlatform::Infrastructure::PointCloud::getSections()
+{
+	return sections_;
+}
+
+void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices()
+{
+	remainingIndices_.clear();
+	filteredIndices_.clear();
+
+	// Get the duplicate scalar field.
+	int idx_duplicate = getScalarFieldIndexByName("Duplicate");
+	if(idx_duplicate == -1)
+		idx_duplicate = addScalarField("Duplicate");
+
+	int idx_density = getScalarFieldIndexByName("Density");
+	if(idx_density == -1)
+		idx_density = addScalarField("Density");
+
+	for_each([&](size_t i) {
+		ScalarType filtered = 0;
+		setCurrentOutScalarField(idx_duplicate);
+		filtered += getPointScalarValue(i);
+
+		setCurrentOutScalarField(idx_density);
+		filtered += getPointScalarValue(i);
+
+		if(filtered > 0) {
+			filteredIndices_.push_back(i);
+		}
+		else {
+			remainingIndices_.push_back(i);
+		}
+	});
+}
+
 
 const std::tuple<ScalarType, ScalarType> OpenInfraPlatform::Infrastructure::PointCloud::getScalarFieldMinAndMax(int idx) const
 {
