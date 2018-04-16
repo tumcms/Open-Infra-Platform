@@ -2283,20 +2283,22 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectFilteredPo
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDuplicateFilter_clicked()
 {
+	// Initialize the filter parameters.
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	buw::DuplicateFilterDescription desc;
 	desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
 	desc.minDistance = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
 
+	// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
 	pointCloud->applyDuplicateFilter(desc, callback_);
 	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDuplicateFilter_clicked()
 {
+	// Get the point cloud and reset the scalar field called "Duplicate" which holds the labeling for duplicates.
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	pointCloud->unflagDuplicatePoints();
-	pointCloud->computeIndices();
+	pointCloud->resetFilter("Duplicate");
 	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 }
 
@@ -2311,13 +2313,17 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDensityFilt
 	desc.minThreshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
 	desc.density = CCLib::GeometricalAnalysisTools::Density(ui_->comboBoxFilterDensityMetric->currentData().toInt());	
 
+	// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
 	int err = pointCloud->applyLocalDensityFilter(desc, callback_);
 	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDensityFilter_clicked()
 {
-	//TODO
+	// Get the point cloud and reset the scalar field called "Density" which holds the labeling for points which have a density below the minimum threshold.
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	pointCloud->resetFilter("Density");
+	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value)

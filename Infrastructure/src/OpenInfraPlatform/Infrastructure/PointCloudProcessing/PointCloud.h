@@ -58,19 +58,32 @@ namespace OpenInfraPlatform {
 
 			int applyDuplicateFilter(DuplicateFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			void unflagDuplicatePoints();
-
-			std::vector<buw::ReferenceCounted<PointCloudSection>> getSections();
-
-			void computeIndices();
-
-			const std::tuple<ScalarType, ScalarType> getScalarFieldMinAndMax(int idx) const;
+			void resetFilter(const char* name);	
 
 			const CCVector3 getMainAxis() const;
 
-			const double getSectionLength() const;
+			const double getSectionLength() const;			
 
-			template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors()
+			const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> getIndices() const;
+
+			template<typename F> void for_each(const F& function)
+			{
+				for(size_t i = 0; i < size(); i++)
+					function(i);
+			}
+
+		private:
+			void computeMainAxis();
+
+			void computeIndices();
+
+			void init();
+
+			std::vector<buw::ReferenceCounted<PointCloudSection>> getSections();
+
+			const std::tuple<ScalarType, ScalarType> getScalarFieldMinAndMax(int idx) const;
+
+			template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors() const
 			{
 				//Matrix which is capable of holding all points for PCA.
 				Eigen::MatrixX3d points;
@@ -88,18 +101,6 @@ namespace OpenInfraPlatform {
 				return vec;
 			}
 
-			template<typename F> void for_each(const F& function)
-			{
-				for(size_t i = 0; i < size(); i++)
-					function(i);
-			}
-
-			const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> getIndices();
-			void computeMainAxis();
-
-		private:
-
-			void init();
 		public:
 
 		private:

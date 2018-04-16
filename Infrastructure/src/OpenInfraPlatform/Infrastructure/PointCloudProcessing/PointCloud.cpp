@@ -254,6 +254,22 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyDuplicateFilter(Duplicat
 	return err;
 }
 
+void OpenInfraPlatform::Infrastructure::PointCloud::resetFilter(const char * name)
+{
+	// Get the duplicate scalar field.
+	int idx = getScalarFieldIndexByName(name);
+	if(idx == -1)
+		idx = addScalarField(name);
+
+	// Set Duplicate as Scalar field to write to and flag each point with duplicate 0
+	setCurrentInScalarField(idx);
+	for_each([&](size_t i) {
+		setPointScalarValue(i, 0);
+	});
+
+	computeIndices();
+}
+
 int OpenInfraPlatform::Infrastructure::PointCloud::computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// Get the duplicate scalar field.
@@ -279,20 +295,6 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init()
 	computeSections(10.0f);
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::unflagDuplicatePoints()
-{
-	// Get the duplicate scalar field.
-	int idx = getScalarFieldIndexByName("Duplicate");
-	if(idx == -1)
-		idx = addScalarField("Duplicate");
-
-	// Set Duplicate as Scalar field to write to and flag each point with duplicate 0
-	setCurrentInScalarField(idx);
-	for_each([&](size_t i) {
-		setPointScalarValue(i, 0);
-	});
-}
-
 std::vector<buw::ReferenceCounted<buw::PointCloudSection>> OpenInfraPlatform::Infrastructure::PointCloud::getSections()
 {
 	return sections_;
@@ -300,6 +302,7 @@ std::vector<buw::ReferenceCounted<buw::PointCloudSection>> OpenInfraPlatform::In
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices()
 {
+	// Clear the index buffers.
 	remainingIndices_.clear();
 	filteredIndices_.clear();
 
@@ -334,6 +337,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices()
 
 const std::tuple<ScalarType, ScalarType> OpenInfraPlatform::Infrastructure::PointCloud::getScalarFieldMinAndMax(int idx) const
 {
+	// Get the min and max for the scalar field and store it in the returned tuple.
 	CCLib::ScalarField* field = getScalarField(idx);
 	return std::tuple<ScalarType, ScalarType>(field->getMin(), field->getMax());
 }
@@ -345,17 +349,19 @@ const CCVector3 OpenInfraPlatform::Infrastructure::PointCloud::getMainAxis() con
 
 const double OpenInfraPlatform::Infrastructure::PointCloud::getSectionLength() const
 {
+	// If sections are initialized, return the length of the first section since all are equally long.
 	if(sections_[0]) {
 		return sections_[0]->getLength();
 	}
 }
 
-const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> OpenInfraPlatform::Infrastructure::PointCloud::getIndices()
+const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> OpenInfraPlatform::Infrastructure::PointCloud::getIndices() const
 {
 	return std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>>(remainingIndices_, filteredIndices_, segmentedIndices_);
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeMainAxis()
 {
+	// Set the main axis as the eigenvector with the largest eigenvalue.
 	mainAxis_ = CCVector3(getEigenvectors<1>().cast<float>().normalized().data());
 }
