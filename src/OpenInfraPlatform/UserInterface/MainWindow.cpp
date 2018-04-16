@@ -20,7 +20,6 @@
 #include "ColorPicker/colorpickerwidget.h"
 #include "OpenInfraPlatform/Benchmark.h"
 #include "OpenInfraPlatform/DataManagement/AsyncJob.h"
-#include "OpenInfraPlatform/DataManagement/ProgressCallback.h"
 #include "OpenInfraPlatform/DataManagement/Command/CommandCreateClothoid.h"
 #include "OpenInfraPlatform/DataManagement/Command/DeleteAlignment.h"
 #include "OpenInfraPlatform/DataManagement/Command/DeleteSurface.h"
@@ -164,7 +163,12 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	ui_->radioButtonOriginal->setChecked(true);
 	ui_->radioButtonRender3D->setChecked(true);
 
-	//connect(ui_->horizontalSliderSectionSize, &QSlider::valueChanged, ui_->doubleSpinBoxSectionSize, &QDoubleSpinBox::setValue);
+	// Create the callback for the progress bar and connect the signals.
+	callback_ = buw::makeReferenceCounted<OpenInfraPlatform::DataManagement::ProgressCallback>();
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setVisible);
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::updateSignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setValue);
+	ui_->progressBarPointCloudProcessing->setVisible(false);
+
 
 #ifdef _DEBUG
     // Show debug menu only in debug mode
@@ -2280,30 +2284,23 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectFilteredPo
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDuplicateFilter_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	double distanceInMeters = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
-
-	ui_->progressBarPointCloudProcessing->setVisible(true);
-
-	auto func = [&](float percent) {
-		ui_->progressBarPointCloudProcessing->setValue(percent);
-	};
-
-	auto callback = buw::makeReferenceCounted<OpenInfraPlatform::DataManagement::ProgressCallback<decltype(func)>>(func);
+	double distanceInMeters = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;	
 
 	if(ui_->radioButtonRender3D->isChecked()) {
-		pointCloud->flagDuplicatePoints(distanceInMeters, callback);
+		pointCloud->flagDuplicatePoints(distanceInMeters, callback_);
 	}
 	else {
+		ui_->progressBarPointCloudProcessing->setVisible(true);
+
 		auto sections = pointCloud->getSections();
 		for(size_t i = 0; i < sections.size(); i++) {
 			sections[i]->flagDuplicatePoints(distanceInMeters);
 			ui_->progressBarPointCloudProcessing->setValue(100.0* ((double)i/ (double)sections.size()));
 		}
+		ui_->progressBarPointCloudProcessing->setVisible(false);
+
 	}
 	pointCloud->computeIndices();
-
-	ui_->progressBarPointCloudProcessing->setVisible(false);
-
 	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 }
 
@@ -2320,13 +2317,13 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDensityFilt
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 
 	// Initialize the filter parameters
-	float kernelRadius = (float)(ui_->horizontalSliderFilterDensityKernelRadius->value()) / 100.0f;
-	float threshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
-	int metric = ui_->comboBoxFilterDensityMetric->currentData().toInt();
-	
-	// TODO: Fix callbackto update the UI
-	int err = pointCloud->applyLocalDensityFilter(threshold, metric, kernelRadius, nullptr);	
+	buw::LocalDensityFilterDescription desc;
+	desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
+	desc.kernelRadius = (float)(ui_->horizontalSliderFilterDensityKernelRadius->value()) / 100.0f;
+	desc.minThreshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
+	desc.density = CCLib::GeometricalAnalysisTools::Density(ui_->comboBoxFilterDensityMetric->currentData().toInt());	
 
+	int err = pointCloud->applyLocalDensityFilter(desc, callback_);
 	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 }
 

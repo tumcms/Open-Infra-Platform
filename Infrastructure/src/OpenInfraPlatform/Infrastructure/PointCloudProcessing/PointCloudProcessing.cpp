@@ -18,7 +18,6 @@
 #include "PointCloudProcessing.h"
 
 
-
 #include <liblas/liblas.hpp>
 #include <BlueFramework/Core/Diagnostics/log.h>
 
@@ -30,76 +29,6 @@
 #include <ccScalarField.h>
 #include <algorithm>
 
-
-BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importLASPointCloud(
-	const char* filename,
-	OpenInfraPlatform::Infrastructure::PointCloud& pointCloud)
-{
-	// see http://www.liblas.org/tutorial/cpp.html
-	std::ifstream ifs;
-
-	ifs.open(filename, std::ios::in | std::ios::binary);
-
-	liblas::ReaderFactory f;
-	liblas::Reader reader = f.CreateWithStream(ifs);
-
-	liblas::Header const& header = reader.GetHeader();
-
-	BLUE_LOG(info) << "Compressed: " << ((header.Compressed() == true) ? "true" : "false");
-	BLUE_LOG(info) << "Signature: " << header.GetFileSignature();
-	BLUE_LOG(info) << "Points count: " << header.GetPointRecordsCount();
-
-	buw::Vector3d minv(0, 0, 0);
-	buw::Vector3d maxv(0, 0, 0);
-
-	pointCloud.clear();
-
-	//Reserve the points.
-	pointCloud.reserve(header.GetPointRecordsCount());
-	pointCloud.reserveTheRGBTable();
-
-	bool first = true;
-	CCVector3d scale = CCVector3d(header.GetScaleX(), header.GetScaleY(), header.GetScaleZ());
-	for(size_t i = 0; i < header.GetPointRecordsCount(); i++) {
-		if(reader.ReadNextPoint()) {
-			liblas::Point const& p = reader.GetPoint();
-			float colorRange = std::numeric_limits<liblas::Color::value_type>::max();
-
-			int32_t posLiblas[3] = { p.GetRawX(), p.GetRawY(), p.GetRawZ() };
-			liblas::Color colLiblas = p.GetColor();
-			const ccColor::Rgb* color = new ccColor::Rgb(ccColor::FromRgbf(ccColor::Rgbf(colLiblas.GetRed() / colorRange, colLiblas.GetGreen() / colorRange, colLiblas.GetBlue() / colorRange)).rgb);
-			pointCloud.addPoint(CCVector3(posLiblas[0] * scale.x, posLiblas[1] * scale.y, posLiblas[2] * scale.z));
-			pointCloud.addRGBColor(color->rgb);
-		}
-	}
-
-	pointCloud.computeMainAxis();
-	pointCloud.computeSections(10.0f);
-}
-
-BLUEINFRASTRUCTURE_API void OpenInfraPlatform::Infrastructure::importBINPointCloud(const char * filename, OpenInfraPlatform::Infrastructure::PointCloud & pointCloud)
-{
-	//Initialize the filters for file IO
-	if(FileIOFilter::GetFilters().size() == 0)
-		FileIOFilter::InitInternalFilters();
-
-	CC_FILE_ERROR err;
-	//Load the point cloud from file and store it temporarily.
-	std::shared_ptr<ccHObject> ccTempObject = std::shared_ptr<ccHObject>(FileIOFilter::LoadFromFile(QString(filename), FileIOFilter::LoadParameters(), FileIOFilter::FindBestFilterForExtension("BIN"), err));
-	if(err == CC_FILE_ERROR::CC_FERR_NO_ERROR) {
-		for(size_t i = 0; i < ccTempObject->getChildrenNumber(); i++) {
-			ccPointCloud* temp = ccHObjectCaster::ToPointCloud(ccTempObject->getChild(i));
-			if(temp) {
-				pointCloud.append(temp, pointCloud.size());
-			}
-		}
-	}
-
-	//Delete our temporary parrent object.
-	ccTempObject = nullptr;
-	pointCloud.computeMainAxis();
-	pointCloud.computeSections(10.0f);
-}
 
 /*
 		//Parse the point cloud.

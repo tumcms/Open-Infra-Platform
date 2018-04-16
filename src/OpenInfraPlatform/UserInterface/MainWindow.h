@@ -31,6 +31,7 @@
 #include "OpenInfraPlatform/UserInterface/View2DWindow/VerticalAlignmentWindow.h"
 #include "OpenInfraPlatform/UserInterface/View2DWindow/CurvatureWindow.h"
 #include "OpenInfraPlatform/DataManagement/Data.h"
+#include "OpenInfraPlatform/DataManagement/ProgressCallback.h"
 #include "OpenInfraPlatform/UnitTesting/ImageTester.h"
 #include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidArcMeth2Dialog.h"
 #include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcMeth2Dialog.h"
@@ -276,6 +277,7 @@ namespace OpenInfraPlatform
 
 			QColorDialog				pcdUniformColorDialog_, pcdFilteredPointsColorDialog_, pcdSegmentedPointsColorDialog_;
 			QButtonGroup				radioButtons2D3D_, radioButtonsOriginalFiltered_;
+			buw::ReferenceCounted<DataManagement::ProgressCallback> callback_ = nullptr;
 
 			// Dialogs
 			CreateArcClothoidArcDialog*					ACA_ = nullptr;

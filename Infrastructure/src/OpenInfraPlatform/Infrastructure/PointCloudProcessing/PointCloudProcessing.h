@@ -22,10 +22,6 @@
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
 #include "OpenInfraPlatform/Infrastructure/namespace.h"
 
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudSection.h"
-
-
 #include <BlueFramework/ImageProcessing/color.h>
 #include <BlueFramework/Core/Math/vector.h>
 #include <BlueFramework/Core/memory.h>
@@ -48,23 +44,36 @@ namespace OpenInfraPlatform
 			buw::Vector3f color;
 		};
 
-		struct FilterDescription {
-			bool bRemoveDuplicates = false, bApplyLocalDensityFiltering = false;
-			float removeDuplicatesDistanceThreshold, localDensityFilteringMinDensityThreshold;
-			CCLib::GeometricalAnalysisTools::Density eDensityMetric;
-		};		
+		enum ePointCloudFilterDimension {
+			None,
+			Volume3D,
+			Sections2D
+		};
 
-		BLUEINFRASTRUCTURE_API void importLASPointCloud(const char* filename, PointCloud& pointCloud);
-		BLUEINFRASTRUCTURE_API void importBINPointCloud(const char* filename, PointCloud& pointCloud);
+		struct DuplicateFilterDescription {
+			ePointCloudFilterDimension dim;
+			double minDistance = 0.0;			
+		};
+
+		struct LocalDensityFilterDescription {
+			ePointCloudFilterDimension dim;
+			float minThreshold, kernelRadius;
+			CCLib::GeometricalAnalysisTools::Density density;
+		};
+
+		//BLUEINFRASTRUCTURE_API void importLASPointCloud(const char* filename, PointCloud& pointCloud);
+		//BLUEINFRASTRUCTURE_API void importBINPointCloud(const char* filename, PointCloud& pointCloud);
 	} // end namespace Infrastructure
 } // end namespace BlueFramework
 
 namespace buw
 {
-	using OpenInfraPlatform::Infrastructure::importLASPointCloud;
-	using OpenInfraPlatform::Infrastructure::importBINPointCloud;
+	//using OpenInfraPlatform::Infrastructure::importLASPointCloud;
+	//using OpenInfraPlatform::Infrastructure::importBINPointCloud;
 	using OpenInfraPlatform::Infrastructure::LaserPoint;
-	using OpenInfraPlatform::Infrastructure::FilterDescription;
+	using OpenInfraPlatform::Infrastructure::ePointCloudFilterDimension;
+	using OpenInfraPlatform::Infrastructure::DuplicateFilterDescription;
+	using OpenInfraPlatform::Infrastructure::LocalDensityFilterDescription;
 }
 
 #endif // end define OpenInfraPlatform_Infrastructure_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h

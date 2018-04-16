@@ -29,7 +29,7 @@
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
 #include <BlueFramework/Application/DataManagement/DocumentManager.h>
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
 #include <BlueFramework/ImageProcessing/color.h>
 #include <BlueFramework/Core/Math/vector.h>
 #include <boost/signals2.hpp>

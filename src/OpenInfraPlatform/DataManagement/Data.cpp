@@ -1287,8 +1287,7 @@ void OpenInfraPlatform::DataManagement::Data::importLASJob(const std::string& fi
 	if (tempPointCloud_)
 		tempPointCloud_ = nullptr;
 
-	tempPointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
-	buw::importLASPointCloud(filename.c_str(), *tempPointCloud_);
+	tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
 }
 
 void OpenInfraPlatform::DataManagement::Data::importBINJob(const std::string& filename)
@@ -1298,8 +1297,7 @@ void OpenInfraPlatform::DataManagement::Data::importBINJob(const std::string& fi
 	if(tempPointCloud_)
 		tempPointCloud_ = nullptr;
 
-	tempPointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
-	buw::importBINPointCloud(filename.c_str(), *tempPointCloud_);
+	tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
 }
 
 

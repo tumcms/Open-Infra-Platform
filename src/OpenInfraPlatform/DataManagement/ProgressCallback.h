@@ -20,18 +20,19 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define OpenInfraPlatform_DataManagement_ProgressCallback_D84F130D_FBD7_45E0_93AF_9CA3EC9CB915_h
 
 #include <GenericProgressCallback.h>
+#include <QObject>
 
 namespace OpenInfraPlatform {
 	namespace DataManagement {
-		template <typename Function> class ProgressCallback :  public CCLib::GenericProgressCallback
+		class ProgressCallback : public QObject,  public CCLib::GenericProgressCallback
 		{
+		Q_OBJECT;
 		public:
+			ProgressCallback(): CCLib::GenericProgressCallback(), QObject() {}
 
-		ProgressCallback(const Function &f): CCLib::GenericProgressCallback(), func_(f) {}
-	
 		virtual void update(float percent) override
 		{
-			func_(percent);
+			Q_EMIT updateSignal(percent);
 		}
 	
 		virtual void setMethodTitle(const char* methodTitle)
@@ -41,16 +42,16 @@ namespace OpenInfraPlatform {
 		
 		virtual void setInfo(const char* infoStr)
 		{
-	
 		}
 	
 		virtual void start()
 		{
-	
+			Q_EMIT activitySignal(true);
 		}
 	
 		virtual void stop()
 		{
+			Q_EMIT activitySignal(false);
 	
 		}	
 		virtual bool isCancelRequested()
@@ -58,8 +59,10 @@ namespace OpenInfraPlatform {
 			return false;
 		}
 
-		private:
-			Function func_;
+	Q_SIGNALS:
+		void updateSignal(float percent);
+		void activitySignal(bool isActive);
+
 		};
 	}
 }

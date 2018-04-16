@@ -22,6 +22,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "OpenInfraPlatform/Infrastructure/namespace.h"
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
 
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
+
 #include <BlueFramework/Core/Math/vector.h>
 #include <BlueFramework/Core/memory.h>
 
@@ -50,9 +52,8 @@ namespace OpenInfraPlatform {
 
 			int flagDuplicatePoints(const double minDistance, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			int applyLocalDensityFilter(ScalarType threshold, int metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			int applyLocalDensityFilter(LocalDensityFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			int computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			void unflagDuplicatePoints();
 
@@ -94,7 +95,9 @@ namespace OpenInfraPlatform {
 			void computeMainAxis();
 
 		private:
+			int computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			void init();
 		public:
 
 		private:
