@@ -76,7 +76,7 @@ source_group(OpenInfraPlatform\\Infrastructure\\PointCloudProcessing				FILES ${
 include_directories(
 	${Boost_INCLUDE_DIR} 
 	#${PYTHON_INCLUDE_DIRS}
-	${VLD_INCLUDE_DIR}
+	#${VLD_INCLUDE_DIR}
 	${BLUEFRAMEWORK_INCLUDE_DIR}
 	${EIGEN3_INCLUDE_DIR}
 	src
