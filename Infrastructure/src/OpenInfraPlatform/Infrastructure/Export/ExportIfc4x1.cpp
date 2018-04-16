@@ -15,13 +15,14 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportIfc4x1.h"
 
 #include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Entities.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntityEnums.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Types.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/guid/CreateGuid_64.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Exception.h"
+#include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/model/UnitConverter.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
 #include "OpenInfraPlatform/IfcAlignment1x1/reader/Reader.h"
@@ -35,20 +36,22 @@
 
 using namespace OpenInfraPlatform::IfcAlignment1x1;
 
-class OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::IfcAlignment1x1ExportImpl : public Export {
+class OpenInfraPlatform::Infrastructure::ExportIfc4x1::IfcAlignment1x1ExportImpl : public Export {
 public:
     IfcAlignment1x1ExportImpl(const ifcAlignmentExportDescription& desc,
                               buw::ReferenceCounted<buw::AlignmentModel> am,
                               buw::ReferenceCounted<buw::DigitalElevationModel> dem,
                               const std::string& filename)
         : Export(am, dem, nullptr, filename), entityId_(1), model_(nullptr) {
-
         // create model
 		createModel(desc);
-
-		writeStepFile(filename);
-
+		wirteStepFile(filename);       
     }
+
+	std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> getIfcAlignment1x1Model()
+	{
+		return model_;
+	}
 
 	void createModel(const OpenInfraPlatform::Infrastructure::ifcAlignmentExportDescription & desc)
 	{
@@ -255,6 +258,7 @@ public:
 
                 // set name of alignment
                 std::string name = alignments[ai]->getName().toStdString();
+				ifcAlignment->m_Name = std::make_shared<IfcLabel>(name);
                 ifcAlignment->m_Description = std::make_shared<IfcText>(name);
                 ifcAlignment->m_ObjectPlacement = site_localPlacement;
 
@@ -302,7 +306,7 @@ public:
         }
     }
 
-    void writeStepFile(const std::string& filename) {
+    void wirteStepFile(const std::string& filename) {
         // writer
         shared_ptr<IfcStepWriter> step_writer = shared_ptr<IfcStepWriter>(new IfcStepWriter());
         std::stringstream stream;
@@ -364,11 +368,6 @@ public:
         std::ofstream textFile(filename.c_str());
         textFile << stream.str().c_str();
     }
-
-	std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> getIfcAlignment1x1Model()
-	{
-		return model_;
-	}
 
 private:
     void convertVerticalAlignment(buw::ReferenceCounted<buw::Alignment2DBased3D> alignment,
@@ -1224,7 +1223,7 @@ private:
 private:
     shared_ptr<IfcLocalPlacement> site_localPlacement;
 
-    std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> model_;
+    std::shared_ptr<IfcAlignment1x1Model> model_;
     int entityId_;
     ifcAlignmentExportDescription settings_;
 
@@ -1237,17 +1236,17 @@ void OpenInfraPlatform::Infrastructure::exportIfcAlignment1x1(buw::ReferenceCoun
                                                               const std::string& filename) {
 }
 
-OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::ExportIfcAlignment1x1(const ifcAlignmentExportDescription& desc,
+OpenInfraPlatform::Infrastructure::ExportIfc4x1::ExportIfc4x1(const ifcAlignmentExportDescription& desc,
                                                                                 buw::ReferenceCounted<buw::AlignmentModel> am,
                                                                                 buw::ReferenceCounted<buw::DigitalElevationModel> dem,
                                                                                 const std::string& filename)
     : Export(am, dem, filename), impl_(new IfcAlignment1x1ExportImpl(desc, am, dem, filename)) {
 }
 
-buw::ReferenceCounted<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::getIfcAlignment1x1Model()
-{
-	return impl_->getIfcAlignment1x1Model();
+OpenInfraPlatform::Infrastructure::ExportIfc4x1::~ExportIfc4x1() {
 }
 
-OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1::~ExportIfcAlignment1x1() {
+buw::ReferenceCounted<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> OpenInfraPlatform::Infrastructure::ExportIfc4x1::getIfcAlignment1x1Model() const
+{
+	return impl_->getIfcAlignment1x1Model();
 }

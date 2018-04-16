@@ -20,12 +20,9 @@
 #include "OpenInfraPlatform/Infrastructure/Export/Export.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/Alignment2DBased3D.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
-
 #include <BlueFramework/Core/memory.h>
 #include <vector>
 #include <memory>
-
 
 namespace OpenInfraPlatform {
 	namespace Infrastructure {
@@ -34,16 +31,15 @@ namespace OpenInfraPlatform {
 			buw::ReferenceCounted<buw::DigitalElevationModel> dem,
 			const std::string& filename);
 
-		class BLUEINFRASTRUCTURE_API ExportIfcAlignment1x1 : public Export {
+		class BLUEINFRASTRUCTURE_API ExportIfc4x1 : public Export {
 		public:
-			ExportIfcAlignment1x1(const ifcAlignmentExportDescription& desc,
+			ExportIfc4x1(const ifcAlignmentExportDescription& desc,
 				buw::ReferenceCounted<buw::AlignmentModel> am,
 				buw::ReferenceCounted<buw::DigitalElevationModel> dem,
 				const std::string& filename);
-			
-			buw::ReferenceCounted<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Model> getIfcAlignment1x1Model();
 
-			virtual ~ExportIfcAlignment1x1();
+			virtual ~ExportIfc4x1();
+			buw::ReferenceCounted<IfcAlignment1x1::IfcAlignment1x1Model> getIfcAlignment1x1Model() const;
 
 		private:
 			class IfcAlignment1x1ExportImpl;						// Forward declaration of internal class
@@ -54,5 +50,5 @@ namespace OpenInfraPlatform {
 
 namespace buw {
 	using OpenInfraPlatform::Infrastructure::exportIfcAlignment1x1;
-	using OpenInfraPlatform::Infrastructure::ExportIfcAlignment1x1;
+	using OpenInfraPlatform::Infrastructure::ExportIfc4x1;
 }

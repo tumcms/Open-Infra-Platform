@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "ui_ExportIfcAlignment1x1Dialog.h"
+#include "ui_ExportIfc4x1Dialog.h"
 #include "OpenInfraPlatform/DataManagement/IfcZipper.h"
 #include <QDialog>
 #include <iostream>
@@ -26,15 +26,15 @@ namespace OpenInfraPlatform
 {
 	namespace UserInterface
 	{
-		class ExportIfcAlignment1x1Dialog : public QDialog
+		class ExportIfc4x1Dialog : public QDialog
 		{
 			Q_OBJECT;
 
 		public:
-			ExportIfcAlignment1x1Dialog(QWidget *parent = nullptr);
+			ExportIfc4x1Dialog(QWidget *parent = nullptr);
 
 			//! Virtual destructor.
-			virtual ~ExportIfcAlignment1x1Dialog();
+			virtual ~ExportIfc4x1Dialog();
 
 		protected:
 			virtual void changeEvent(QEvent* evt) override;
@@ -45,12 +45,12 @@ namespace OpenInfraPlatform
 			void on_pushButtonExport_clicked();
 
 		private:
-			Ui::ExportIfcAlignment1x1Dialog*	ui_;
+			Ui::ExportIfc4x1Dialog*	ui_;
 		}; // end class ExportP6AlginmentDialog
 	} // end namespace UserInterface
 } // end namespace OpenInfraPlatform
 
 namespace buw
 {
-	using OpenInfraPlatform::UserInterface::ExportIfcAlignment1x1Dialog;
+	using OpenInfraPlatform::UserInterface::ExportIfc4x1Dialog;
 }

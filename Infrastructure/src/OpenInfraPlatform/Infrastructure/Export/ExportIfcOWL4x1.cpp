@@ -17,7 +17,7 @@
 */
 
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"
-#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportIfc4x1.h"
 #include "OpenInfraPlatform/ExpressBinding/Meta/Schema.h"
 #include "raptor2/raptor2.h"
 #include <boost/algorithm/string/predicate.hpp>
@@ -43,7 +43,7 @@ public:
 		temp.append(boost::uuids::to_string(uuid));
 		temp.append(".ifc");
 
-		auto ifcExporter = buw::makeReferenceCounted<buw::ExportIfcAlignment1x1>(ifcAlignmentExportDescription(),am, dem, temp);
+		auto ifcExporter = buw::makeReferenceCounted<buw::ExportIfc4x1>(ifcAlignmentExportDescription(),am, dem, temp);
 		boost::filesystem::remove(temp);
 		
 		auto model = ifcExporter->getIfcAlignment1x1Model();

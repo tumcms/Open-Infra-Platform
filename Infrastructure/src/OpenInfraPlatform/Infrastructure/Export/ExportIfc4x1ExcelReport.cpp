@@ -15,7 +15,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "IfcAlignment1x1ExcelReport.h"
+#include "ExportIfc4x1ExcelReport.h"
 
 #include "OpenInfraPlatform/Infrastructure/Import/ImportLandXml.h"
 #include "OpenInfraPlatform/Infrastructure/Import/ImportIfcAlignment1x0.h"
@@ -48,12 +48,12 @@ namespace OpenInfraPlatform
 {
 	namespace Infrastructure
 	{
-		class IfcAlignment1x1DataBuilder
+		class Ifc4x1DataBuilder
 		{
 		public:
-			IfcAlignment1x1DataBuilder() {}
+			Ifc4x1DataBuilder() {}
 
-			virtual ~IfcAlignment1x1DataBuilder() {}
+			virtual ~Ifc4x1DataBuilder() {}
 
 			virtual void createGeoreferencingOffset(const buw::Vector3d& offset) {};
 
@@ -84,10 +84,10 @@ namespace OpenInfraPlatform
 			virtual void createIfcAlignment2DVerSegParabolicArc(std::shared_ptr<IfcAlignment2DVerSegParabolicArc> segment) {}
 		};
 
-		class IfcAlignment1x1ImportDirector
+		class Ifc4x1ImportDirector
 		{
 		public:
-			IfcAlignment1x1ImportDirector(const char* filename, IfcAlignment1x1DataBuilder* builder) :
+			Ifc4x1ImportDirector(const char* filename, Ifc4x1DataBuilder* builder) :
 				builder_(builder)
 			{
 				shared_ptr<IfcStepReader> m_step_reader = shared_ptr<IfcStepReader>(new IfcStepReader());
@@ -284,19 +284,19 @@ namespace OpenInfraPlatform
 			
 		private:
 			buw::Vector3d				offset_;
-			IfcAlignment1x1DataBuilder*	builder_;
+			Ifc4x1DataBuilder*	builder_;
 		};
 
-		void constructIfcAlignment1x1Data(
+		void constructIfc4x1Data(
 			const char* filename,
-			IfcAlignment1x1DataBuilder* builder)
+			Ifc4x1DataBuilder* builder)
 		{
-			IfcAlignment1x1ImportDirector director(filename, builder);
+			Ifc4x1ImportDirector director(filename, builder);
 		}
 	} // end namespace Infrastructure
 } // end namespace BlueFramework
 
-class AlignmentExcelSheetReport : public buw::LandXMLDataBuilder, public OpenInfraPlatform::Infrastructure::IfcAlignment1x1DataBuilder
+class AlignmentExcelSheetReport : public buw::LandXMLDataBuilder, public OpenInfraPlatform::Infrastructure::Ifc4x1DataBuilder
 {
 public:
 	AlignmentExcelSheetReport(
@@ -1582,7 +1582,7 @@ private:
 	QXlsx::Document			xlsx_;
 };
 
-class OpenInfraPlatform::Infrastructure::IfcAlignment1x1ExcelReport::ExcelReportImpl
+class OpenInfraPlatform::Infrastructure::ExportIfc4x1ExcelReport::ExcelReportImpl
 {
 public:
 	ExcelReportImpl(
@@ -1595,13 +1595,13 @@ public:
 		IfcAlignment1x0VerticalAlignmentReportSettings ifcVSettings;
 		AlignmentExcelSheetReport esk(excelExportFilename, settings, ifcHSettings, ifcVSettings);
 		OpenInfraPlatform::Infrastructure::constructLandXMLData(landXMLFilename, &esk);
-		OpenInfraPlatform::Infrastructure::constructIfcAlignment1x1Data(ifcP6ExportFilename, &esk);
+		OpenInfraPlatform::Infrastructure::constructIfc4x1Data(ifcP6ExportFilename, &esk);
 		esk.writeIFCOffset();
 		esk.save();
 	}
 };
 
-OpenInfraPlatform::Infrastructure::IfcAlignment1x1ExcelReport::IfcAlignment1x1ExcelReport(
+OpenInfraPlatform::Infrastructure::ExportIfc4x1ExcelReport::ExportIfc4x1ExcelReport(
 	const char* excelExportFilename,
 	const char* landXMLFilename,
 	const char* ifcP6ExportFilename) :

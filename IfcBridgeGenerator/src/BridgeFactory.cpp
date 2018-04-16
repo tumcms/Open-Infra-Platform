@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2017 Technical University of Munich
+    Copyright (c) 2018 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -22,7 +22,8 @@
 #include <math.h> 
 #include <cmath>  
 
-#include "buw.BlueCore.h"
+#include <BlueFramework/Core/string.h>
+//#include "buw.BlueCore.h"
 
 using namespace OpenInfraPlatform::IfcBridge;
 

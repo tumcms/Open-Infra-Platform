@@ -291,11 +291,11 @@ add_subdirectory(ExpressBinding)
 add_subdirectory(Infrastructure)
 add_subdirectory(UnitTests)
 add_subdirectory(oip)
+add_subdirectory(IfcBridgeGenerator)
 
 # Do currently not work
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)
-#add_subdirectory(IfcBridgeGenerator)
 #add_subdirectory(IfcTunnelGenerator)
 
 
@@ -344,7 +344,7 @@ set(OpenInfraPlatform_UIS
 	src/OpenInfraPlatform/Forms/CreateLineClothoidClothoidLine.ui
 	src/OpenInfraPlatform/Forms/CurvatureWindow.ui
 	src/OpenInfraPlatform/Forms/ExportExcel.ui
-	src/OpenInfraPlatform/Forms/ExportIfcAlignment1x1Dialog.ui
+	src/OpenInfraPlatform/Forms/ExportIfc4x1Dialog.ui
 	src/OpenInfraPlatform/Forms/ExportIfcAlignmentDialog.ui
 	src/OpenInfraPlatform/Forms/ExportIfcZipDialog.ui
 	src/OpenInfraPlatform/Forms/GenerateTerrain.ui
@@ -614,7 +614,7 @@ set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "Ope
 #set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
 set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.IfcTunnelGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.Infrastructure		 PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.LandXMLViewer		 PROPERTIES FOLDER "OpenInfraPlatform")

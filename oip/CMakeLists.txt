@@ -35,9 +35,5 @@ add_executable(OpenInfraPlatform.CommandLineUtilities main.cpp)
 target_link_libraries(OpenInfraPlatform.CommandLineUtilities
 	OpenInfraPlatform.Infrastructure
 	# BlueFramework
-	${BLUEFRAMEWORK_BLUECORE_LIBRARY}
-	${BLUEFRAMEWORK_BLUEIMAGEPROCESSING_LIBRARY}
-	${BLUEFRAMEWORK_BLUERASTERIZER_LIBRARY}
-	${BLUEFRAMEWORK_BLUEENGINE_LIBRARY}
-	${BLUEFRAMEWORK_BLUEAPPLICATION_LIBRARY}
+	${BLUEFRAMEWORK_LIBRARIES}
 )
