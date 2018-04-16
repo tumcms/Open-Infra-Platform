@@ -107,27 +107,26 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
-	CCVector3 axis = CCVector3(getEigenvectors<1>().cast<float>().normalized().data());
+	// Get the main axis and compute the length of the projection along this axis for each point.
+	CCVector3 axis = mainAxis_;
 
 	int idx_plamn = getScalarFieldIndexByName("ProjectionLengthAlongMainAxis");
-
 	if(idx_plamn == -1)
 		idx_plamn = addScalarField("ProjectionLengthAlongMainAxis");
 
 	setCurrentInScalarField(idx_plamn);
-
 	auto setProjectionLengthAlongMainAxis = [&](size_t i) {
 		this->setPointScalarValue(i, axis.dot(*(this->getPoint(i))));
 	};
 
 	for_each(setProjectionLengthAlongMainAxis);
 
+	// Compute and get the scalar fields min and max value.
 	getScalarField(idx_plamn)->computeMinAndMax();
-
 	ScalarType min, max;
 	std::tie(min, max) = getScalarFieldMinAndMax(idx_plamn);
 
-
+	// Compute the number of sections and initialize the variable.
 	size_t numSections = (std::floorf(length * max) - std::floorf(length * min)) + 1;
 	sections_ = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>(numSections);
 	setCurrentOutScalarField(idx_plamn);
@@ -190,23 +189,22 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyLocalDensityFilter(Local
 {
 	int err = 0;
 
+	// Compute the density, either for the volume or the sections.
 	if(desc.dim == ePointCloudFilterDimension::Volume3D) {
 		err = computeLocalDensity((CCLib::GeometricalAnalysisTools::Density) desc.density, desc.kernelRadius, callback);
 	}
 	else {
+		// Start the callback and set the progress as percentage of sections processed.
 		callback->start();
 		for(size_t i = 0; i < sections_.size(); i++) {
-			if(err == 0) {
-				err = sections_[i]->computeLocalDensity(desc.density, desc.kernelRadius, nullptr);
-				callback->update(100.0* ((double)i / (double)sections_.size()));
-			}
-			else {
-				break;
-			}
+			// We don't save the error code since it sometimes fails with sparse sections.
+			sections_[i]->computeLocalDensity(desc.density, desc.kernelRadius, nullptr);
+			callback->update(100.0* ((double)i / (double)sections_.size()));
 		}
 		callback->stop();
 	}
 
+	// If everything worked - at least for 3D volume.
 	if(err == 0) {
 
 		// Get our scalar field. If we cant find our scalar field, something went wrong and we abort and return -1.
@@ -236,23 +234,21 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyDuplicateFilter(Duplicat
 {
 	int err = 0;
 
+	// Call flagDuplicatePoints on this or on all sections.
 	if(desc.dim == buw::ePointCloudFilterDimension::Volume3D) {
 		err = flagDuplicatePoints(desc.minDistance, callback);
 	}
 	else {
+		// Start the callback and set the progress as percentage of sections processed.
 		callback->start();
 		for(size_t i = 0; i < sections_.size(); i++) {
-			if(err == 0) {
-				err = sections_[i]->flagDuplicatePoints(desc.minDistance);
-				callback->update(100.0* ((double)i / (double)sections_.size()));
-			}
-			else {
-				break;
-			}
+			err = sections_[i]->flagDuplicatePoints(desc.minDistance);
+			callback->update(100.0* ((double)i / (double)sections_.size()));						
 		}
 		callback->stop();
 	}
 	
+	// Update the indices about which points are filtered or not.
 	computeIndices();
 
 	return err;
@@ -271,11 +267,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeLocalDensity(CCLib::Ge
 	setCurrentOutScalarField(idx);
 
 	// Compute the local density and retirn the error code.
-	return CCLib::GeometricalAnalysisTools::computeLocalDensity(this, metric, kernelRadius, callback.get(), octree_.get());
+	return CCLib::GeometricalAnalysisTools::computeLocalDensity(this, metric, kernelRadius, callback ? callback.get() : nullptr, octree_ ? octree_.get() : nullptr);
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::init()
 {
+	// Initialize our point cloud for usage - compute main axis, octree and sections.
 	computeMainAxis();
 	octree_ = buw::makeReferenceCounted<CCLib::DgmOctree>(this);
 	octree_->build();
@@ -311,10 +308,12 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices()
 	if(idx_duplicate == -1)
 		idx_duplicate = addScalarField("Duplicate");
 
+	// Get the density scalar field
 	int idx_density = getScalarFieldIndexByName("Density");
 	if(idx_density == -1)
 		idx_density = addScalarField("Density");
 
+	// For each point, check it's Density and Duplicate field and if one of them is true, filter the point.
 	for_each([&](size_t i) {
 		ScalarType filtered = 0;
 		setCurrentOutScalarField(idx_duplicate);
