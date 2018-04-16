@@ -2284,23 +2284,11 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectFilteredPo
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDuplicateFilter_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	double distanceInMeters = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;	
+	buw::DuplicateFilterDescription desc;
+	desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
+	desc.minDistance = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
 
-	if(ui_->radioButtonRender3D->isChecked()) {
-		pointCloud->flagDuplicatePoints(distanceInMeters, callback_);
-	}
-	else {
-		ui_->progressBarPointCloudProcessing->setVisible(true);
-
-		auto sections = pointCloud->getSections();
-		for(size_t i = 0; i < sections.size(); i++) {
-			sections[i]->flagDuplicatePoints(distanceInMeters);
-			ui_->progressBarPointCloudProcessing->setValue(100.0* ((double)i/ (double)sections.size()));
-		}
-		ui_->progressBarPointCloudProcessing->setVisible(false);
-
-	}
-	pointCloud->computeIndices();
+	pointCloud->applyDuplicateFilter(desc, callback_);
 	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 }
 

@@ -38,6 +38,26 @@ int OpenInfraPlatform::Infrastructure::PointCloudSection::flagDuplicatePoints(co
 	return 0;
 }
 
+int OpenInfraPlatform::Infrastructure::PointCloudSection::computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	buw::ReferenceCounted<buw::PointCloud> cloud2D = createPointCloud2D();
+	buw::PointCloud* associatedCloud = dynamic_cast<buw::PointCloud*>(getAssociatedCloud());
+
+	int idx = associatedCloud->getScalarFieldIndexByName("Density");
+	if(idx == -1)
+		idx = associatedCloud->addScalarField("Density");
+
+	associatedCloud->setCurrentInScalarField(idx);
+
+	int err = cloud2D->computeLocalDensity(metric, kernelRadius, nullptr);
+	if(err == 0) {
+		cloud2D->for_each([&](size_t i) {
+			associatedCloud->setPointScalarValue(this->getPointGlobalIndex(i), cloud2D->getPointScalarValue(i));
+		});
+	}
+	return err;
+}
+
 
 void OpenInfraPlatform::Infrastructure::PointCloudSection::setLength(double length)
 {

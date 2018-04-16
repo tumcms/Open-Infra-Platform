@@ -47,6 +47,8 @@ namespace OpenInfraPlatform {
 			// Function which flags points considered as duplicate in this projection as duplicates in the associated cloud.
 			int flagDuplicatePoints(const double minDistance);
 
+			int computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
 		private:
 
 

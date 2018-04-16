@@ -26,6 +26,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <liblas/liblas.hpp>
 
+#include <GenericProgressCallback.h>
+
 
 buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointCloud::FromFile(const char * filename)
 {
@@ -188,8 +190,22 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyLocalDensityFilter(Local
 {
 	int err = 0;
 
-	if(desc.dim == ePointCloudFilterDimension::Volume3D)
+	if(desc.dim == ePointCloudFilterDimension::Volume3D) {
 		err = computeLocalDensity((CCLib::GeometricalAnalysisTools::Density) desc.density, desc.kernelRadius, callback);
+	}
+	else {
+		callback->start();
+		for(size_t i = 0; i < sections_.size(); i++) {
+			if(err == 0) {
+				err = sections_[i]->computeLocalDensity(desc.density, desc.kernelRadius, nullptr);
+				callback->update(100.0* ((double)i / (double)sections_.size()));
+			}
+			else {
+				break;
+			}
+		}
+		callback->stop();
+	}
 
 	if(err == 0) {
 
@@ -213,6 +229,32 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyLocalDensityFilter(Local
 			computeIndices();
 		}
 	}
+	return err;
+}
+
+int OpenInfraPlatform::Infrastructure::PointCloud::applyDuplicateFilter(DuplicateFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	int err = 0;
+
+	if(desc.dim == buw::ePointCloudFilterDimension::Volume3D) {
+		err = flagDuplicatePoints(desc.minDistance, callback);
+	}
+	else {
+		callback->start();
+		for(size_t i = 0; i < sections_.size(); i++) {
+			if(err == 0) {
+				err = sections_[i]->flagDuplicatePoints(desc.minDistance);
+				callback->update(100.0* ((double)i / (double)sections_.size()));
+			}
+			else {
+				break;
+			}
+		}
+		callback->stop();
+	}
+	
+	computeIndices();
+
 	return err;
 }
 

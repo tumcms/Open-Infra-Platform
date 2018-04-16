@@ -52,8 +52,11 @@ namespace OpenInfraPlatform {
 
 			int flagDuplicatePoints(const double minDistance, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			int computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
 			int applyLocalDensityFilter(LocalDensityFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			int applyDuplicateFilter(DuplicateFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			void unflagDuplicatePoints();
 
@@ -95,7 +98,6 @@ namespace OpenInfraPlatform {
 			void computeMainAxis();
 
 		private:
-			int computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			void init();
 		public:
