@@ -905,6 +905,18 @@ void OpenInfraPlatform::DataManagement::Data::export3DAlignmentAsTextfile(const 
 	currentJobID_ = AsyncJob::getInstance().startJob(&Data::export3DAlignmentAsTextfileJob, this, filename);
 }
 
+void OpenInfraPlatform::DataManagement::Data::exportPointCloud(const std::string & filename)
+{
+	auto exportPointCloudJob = [](OpenInfraPlatform::DataManagement::Data* data, const std::string &filename) {
+		OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Point Cloud ").append(filename));
+		auto filter = FileIOFilter::FindBestFilterForExtension("BIN");
+		auto pointCloud = data->getPointCloud();
+		int error = FileIOFilter::SaveToFile(std::static_pointer_cast<ccHObject>(pointCloud).get(), QString(filename.data()), FileIOFilter::SaveParameters(), filter);
+	};
+
+	currentJobID_ = AsyncJob::getInstance().startJob(std::ref(exportPointCloudJob), this, filename);
+}
+
 void OpenInfraPlatform::DataManagement::Data::export3DAlignmentAsTextfileJob(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Textfile ").append(filename));

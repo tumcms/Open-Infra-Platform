@@ -39,6 +39,7 @@
 #include <QLineEdit>
 #include <QSettings>
 #include <QUuid>
+#include <QMessageBox>
 #include <boost/filesystem.hpp>
 #include <iostream>
 
@@ -146,6 +147,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	connect(ui_->checkBoxShowFilteredPoints, &QAbstractButton::clicked, view_->getViewport(), &Viewport::updatePointCloudShowFilteredPoints);
 
 	connect(ui_->horizontalSliderRemoveDuplicatesThreshold, &QSlider::valueChanged, ui_->doubleSpinBoxRemoveDuplicatesThreshold, &QDoubleSpinBox::setValue);
+	connect(ui_->horizontalSliderPercentileSegmentationKernelRadius, &QSlider::valueChanged, ui_->doubleSpinBoxPercentileSegmentationKernelRadius, &QDoubleSpinBox::setValue);
 
 	ui_->comboBoxFilterDensityMetric->addItem("kNN", QVariant(0));
 	ui_->comboBoxFilterDensityMetric->addItem("2D", QVariant(1));
@@ -756,6 +758,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportLandInfra_trig
     if (!filename.isNull()) {
         OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportLandInfra(filename.toStdString());
     }
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportPointCloud_triggered()
+{
+	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin"));
+	if(!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportCurvature_triggered() {
@@ -2309,7 +2319,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDensityFilt
 	// Initialize the filter parameters
 	buw::LocalDensityFilterDescription desc;
 	desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
-	desc.kernelRadius = (float)(ui_->horizontalSliderFilterDensityKernelRadius->value()) / 100.0f;
+	desc.kernelRadius = (float)(ui_->doubleSpinBoxFilterDensityKernelRadius->value()) / 100.0f;
 	desc.minThreshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
 	desc.density = CCLib::GeometricalAnalysisTools::Density(ui_->comboBoxFilterDensityMetric->currentData().toInt());	
 
@@ -2324,6 +2334,77 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDensityFilt
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	pointCloud->resetFilter("Density");
 	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonFilterOriginal_clicked()
+{
+	QMessageBox dialog;	
+	dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+	dialog.setIcon(QMessageBox::Icon::Question);
+	dialog.setText("This will remove the filtered points from the cloud and can only be undone by reloading the original file.\nDo you want to continue?");
+	dialog.setWindowTitle(tr("Disclaimer"));
+	dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+
+	if(dialog.exec() == QMessageBox::StandardButton::Yes) {
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+		pointCloud->removeFilteredPoints(callback_);
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonRestoreOriginal_clicked()
+{
+	QMessageBox dialog;
+	dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+	dialog.setIcon(QMessageBox::Icon::Question);
+	dialog.setText("This will load the original file and discard all unsaved changes.\nDo you want to continue?");
+	dialog.setWindowTitle(tr("Disclaimer"));
+	dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+	if(dialog.exec() == QMessageBox::StandardButton::Yes) {
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import(pointCloud->getName().toStdString());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonExtractSegmentation_clicked()
+{
+	QMessageBox dialog;
+	dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+	dialog.setIcon(QMessageBox::Icon::Question);
+	dialog.setText("This will extract the segmented points from the cloud and can not be reversed.\nDo you want to continue?");
+	dialog.setWindowTitle(tr("Disclaimer"));
+	dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+
+	if(dialog.exec() == QMessageBox::StandardButton::Yes) {
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+		pointCloud->removeNotSegmentedPoints();
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonUndoSegmentation_clicked()
+{
+	on_pushButtonRestoreOriginal_clicked();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyPercentileSegmentation_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	float kernelRadius = ui_->doubleSpinBoxPercentileSegmentationKernelRadius->value() / 100.0f;
+	pointCloud->computePercentiles(kernelRadius, callback_);
+	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetPercentileSegmentation_clicked()
+{
+	//TODO
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxPercentileSegmentationKernelRadius_valueChanged(double value)
+{
+	ui_->horizontalSliderPercentileSegmentationKernelRadius->blockSignals(true);
+	ui_->horizontalSliderPercentileSegmentationKernelRadius->setValue(value);
+	ui_->horizontalSliderPercentileSegmentationKernelRadius->blockSignals(false);
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value)

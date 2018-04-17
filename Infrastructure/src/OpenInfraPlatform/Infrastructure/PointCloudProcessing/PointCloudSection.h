@@ -49,6 +49,8 @@ namespace OpenInfraPlatform {
 
 			int computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			int computePercentiles(float kernelRadius);
+
 		private:
 
 

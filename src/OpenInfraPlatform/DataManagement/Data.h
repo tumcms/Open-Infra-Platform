@@ -149,6 +149,7 @@ namespace OpenInfraPlatform
 			void exportIfcOWL4x1(const std::string& filename);
 			void exportOkstraOWL(const std::string& filename);
 			void export3DAlignmentAsTextfile(const std::string& filename);
+			void exportPointCloud(const std::string& filename);
 			void createExcelReport(const std::string& filename, bool useDegree);
 			
 			//---------------------------------------------------------------------------//

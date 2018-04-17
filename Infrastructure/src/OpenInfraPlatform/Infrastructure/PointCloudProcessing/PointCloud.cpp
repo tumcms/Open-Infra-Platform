@@ -23,10 +23,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <ccScalarField.h>
 #include <FileIOFilter.h>
+#include <GenericProgressCallback.h>
+#include <ScalarFieldTools.h>
 
 #include <liblas/liblas.hpp>
 
-#include <GenericProgressCallback.h>
+#include <algorithm>
 
 
 buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointCloud::FromFile(const char * filename)
@@ -101,6 +103,7 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 			// TODO
 		}
 	}
+	pointCloud->setName(filename);
 	pointCloud->init();
 	return pointCloud;
 }
@@ -210,8 +213,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyLocalDensityFilter(Local
 		// Get our scalar field. If we cant find our scalar field, something went wrong and we abort and return -1.
 		int idx = getScalarFieldIndexByName("Density");
 		if(idx == -1) {
-			err = idx;
-			return err;
+			err = idx;			
 		}
 		else {
 			// Set the Density Scalar field as in and output field since we want to read it and threshold it.
@@ -237,6 +239,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyDuplicateFilter(Duplicat
 	// Call flagDuplicatePoints on this or on all sections.
 	if(desc.dim == buw::ePointCloudFilterDimension::Volume3D) {
 		err = flagDuplicatePoints(desc.minDistance, callback);
+
+		// Manually stop the callback if one has been passed.
+		if(callback)
+			callback->stop();
 	}
 	else {
 		// Start the callback and set the progress as percentage of sections processed.
@@ -289,6 +295,13 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeLocalDensity(CCLib::Ge
 void OpenInfraPlatform::Infrastructure::PointCloud::init()
 {
 	// Initialize our point cloud for usage - compute main axis, octree and sections.
+	remainingIndices_ = std::vector<uint32_t>(size());
+	#pragma omp parallel for
+	for(long i = 0; i < size(); i++) {
+		remainingIndices_[(uint32_t)i] = i;
+	}
+	filteredIndices_ = std::vector<uint32_t>(0);
+	segmentedIndices_ = std::vector<uint32_t>(0);
 	computeMainAxis();
 	octree_ = buw::makeReferenceCounted<CCLib::DgmOctree>(this);
 	octree_->build();
@@ -306,6 +319,12 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices()
 	remainingIndices_.clear();
 	filteredIndices_.clear();
 
+	int idx_filtered = getScalarFieldIndexByName("Filtered");
+	if(idx_filtered == -1)
+		idx_filtered = addScalarField("Filtered");		
+	
+	setCurrentInScalarField(idx_filtered);
+	
 	// Get the duplicate scalar field.
 	int idx_duplicate = getScalarFieldIndexByName("Duplicate");
 	if(idx_duplicate == -1)
@@ -324,6 +343,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices()
 
 		setCurrentOutScalarField(idx_density);
 		filtered += getPointScalarValue(i);
+		setPointScalarValue(i, filtered);
 
 		if(filtered > 0) {
 			filteredIndices_.push_back(i);
@@ -340,6 +360,168 @@ const std::tuple<ScalarType, ScalarType> OpenInfraPlatform::Infrastructure::Poin
 	// Get the min and max for the scalar field and store it in the returned tuple.
 	CCLib::ScalarField* field = getScalarField(idx);
 	return std::tuple<ScalarType, ScalarType>(field->getMin(), field->getMax());
+}
+
+int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(float kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	// If we have a callback, call start to init the GUI.
+	if(callback)
+		callback->start();
+
+	// Clear all segmented indices -> should be changed to work with scalar fields to allow multiple segmentation methods, same as in filtering.
+	segmentedIndices_.clear();
+
+	// Get the filtered scalar field.
+	int idx_filtered = getScalarFieldIndexByName("Filtered");
+	if(idx_filtered == -1)
+		idx_filtered = addScalarField("Filtered");		
+	setCurrentOutScalarField(idx_filtered);
+
+	// Get the segmented scalar field.
+	int idx_segmented = getScalarFieldIndexByName("Segmented");
+	if(idx_segmented == -1)
+		idx_segmented = addScalarField("Segmented");
+	setCurrentInScalarField(idx_segmented);
+
+	// Call this once to find the best level for the radius.
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(kernelRadius);
+
+	// Start OpenMP parallel region and pass callback as firstprivate to the master thread.
+	int tid = 0;
+	#pragma omp parallel private(tid) firstprivate(callback)
+	{
+		// Get the OpenMP thread id and initialize variables for progress update.
+		tid = omp_get_thread_num();
+		float totalPoints = remainingIndices_.size() / omp_get_num_threads();
+		float processedPoints = 0;
+
+		// Initialize a thread local index buffer and octree as copy of the original one.
+		auto indices = std::vector<uint32_t>();
+		auto octree = CCLib::DgmOctree(*octree_);
+
+		#pragma omp for
+		for(long i = 0; i < remainingIndices_.size(); i++) {
+			uint32_t index = remainingIndices_[i];
+			
+			// Compute the neighbouring points using the octree for the query point.
+			CCLib::DgmOctree::NeighboursSet neighbours = CCLib::DgmOctree::NeighboursSet();
+			int numPoints = octree.getPointsInSphericalNeighbourhood(*getPoint(index), kernelRadius, neighbours, level);
+
+			// Sort points in neighbourhood according to height.
+			std::sort(neighbours.begin(), neighbours.end(), [](const CCLib::DgmOctree::PointDescriptor &lhs, const CCLib::DgmOctree::PointDescriptor &rhs) -> bool { return lhs.point->z < rhs.point->z; });
+
+			// Remove points which have actually been removed due to filtering.
+			auto isFilteredPoint = [&](const CCLib::DgmOctree::PointDescriptor point) -> bool {
+				return getPointScalarValue(point.pointIndex) > 0;
+			};
+
+			auto end = std::remove_if(neighbours.begin(), neighbours.end(), isFilteredPoint);
+			neighbours.erase(end, neighbours.end());
+			numPoints = neighbours.size();
+
+			// Calculate the 98 percentile as the index of the 98th % point after sorting in ascending order, same for the 10th % point.
+			float percentile_98 = neighbours[(int)std::floor(0.98 * numPoints)].point->z;
+			float percentile_10 = neighbours[(int)std::floor(0.1 * numPoints)].point->z;
+
+			// Calculate the absolute difference between the percentiles and if it is larger than 10cm segment the point as rail point.
+			float diff = std::fabsf(percentile_10 - percentile_98);
+			if(diff >= 0.1f) {
+				setPointScalarValue(index, 1.0f);
+				indices.push_back(index);
+			}
+			
+
+			// Update the number of processed points and update the callback if we are on the main thread.
+			processedPoints++;
+			if(tid == 0 && callback) {
+				callback->update(100.0f * processedPoints / totalPoints);
+			}
+		}
+
+		// Reduce the individual buffers in the global buffer.
+		#pragma omp critical
+		{
+			segmentedIndices_.insert(segmentedIndices_.end(), indices.begin(), indices.end());
+		}
+	}
+	
+	// Tell the callback that we're done.
+	if(callback)
+		callback->stop();
+
+	return 0;
+}
+
+void OpenInfraPlatform::Infrastructure::PointCloud::removeNotSegmentedPoints()
+{
+	int idx_segmented = getScalarFieldIndexByName("Segmented");
+
+	// Abort if we have no filtered points.
+	if(idx_segmented == -1)
+		return;
+
+	// Set the scalar field to read from and filter all points with non 0 value, choose 0.1f due to accuracy issues.
+	setCurrentOutScalarField(idx_segmented);
+	float epsilon = 0.0001f;
+	ccPointCloud* segmented = filterPointsByScalarValue(0, epsilon, true);
+
+	// Clear all points from the point cloud.
+	clear();
+
+	// Clear the index buffers.
+	remainingIndices_.clear();
+	filteredIndices_.clear();
+	segmentedIndices_.clear();
+
+	// Clear all sections.
+	sections_.clear();
+
+	// Remove all scalar fields.
+	deleteAllScalarFields();
+
+	// Append the filtered cloud and initialize the cloud.
+	append(segmented, 0);
+
+	init();
+}
+
+void OpenInfraPlatform::Infrastructure::PointCloud::removeFilteredPoints(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	if(callback)
+		callback->start();
+
+	int idx_filtered = getScalarFieldIndexByName("Filtered");
+
+	// Abort if we have no filtered points.
+	if(idx_filtered == -1)
+		return;
+
+	// Set the scalar field to read from and filter all points with non 0 value, choose 0.1f due to accuracy issues.
+	setCurrentOutScalarField(idx_filtered);
+	float epsilon = 0.0001f;
+	ccPointCloud* filtered = filterPointsByScalarValue(0, epsilon);	
+	
+	// Clear all points from the point cloud.
+	clear();
+
+	// Clear the index buffers.
+	remainingIndices_.clear();
+	filteredIndices_.clear();
+	segmentedIndices_.clear();
+
+	// Clear all sections.
+	sections_.clear();
+
+	// Remove all scalar fields.
+	deleteAllScalarFields();
+
+	// Append the filtered cloud and initialize the cloud.
+	append(filtered, 0);
+
+	init();
+
+	if(callback)
+		callback->stop();
 }
 
 const CCVector3 OpenInfraPlatform::Infrastructure::PointCloud::getMainAxis() const

@@ -19,6 +19,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
 
+#include <ccScalarField.h>
+
 int OpenInfraPlatform::Infrastructure::PointCloudSection::flagDuplicatePoints(const double minDistance)
 {
 	buw::ReferenceCounted<buw::PointCloud> cloud2D = createPointCloud2D();
@@ -56,6 +58,11 @@ int OpenInfraPlatform::Infrastructure::PointCloudSection::computeLocalDensity(CC
 		});
 	}
 	return err;
+}
+
+int OpenInfraPlatform::Infrastructure::PointCloudSection::computePercentiles(float kernelRadius)
+{
+	return 0;
 }
 
 

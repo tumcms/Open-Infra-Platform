@@ -122,6 +122,7 @@ namespace OpenInfraPlatform
 			void on_actionExportIIfcRoad_triggered();
 			void on_actionExportVerticalAlignment_triggered();
 			void on_actionExportLandInfra_triggered();
+			void on_actionExportPointCloud_triggered();
 			void on_actionHorizontal_alignment_triggered();
 			void on_actionIfcAlignment_buildingSMART_P6_Excel_Comparison_triggered();
 
@@ -189,6 +190,17 @@ namespace OpenInfraPlatform
 
 			void on_pushButtonApplyDensityFilter_clicked();
 			void on_pushButtonResetDensityFilter_clicked();
+
+			void on_pushButtonFilterOriginal_clicked();
+			void on_pushButtonRestoreOriginal_clicked();
+
+			void on_pushButtonExtractSegmentation_clicked();
+			void on_pushButtonUndoSegmentation_clicked();
+
+			void on_pushButtonApplyPercentileSegmentation_clicked();
+			void on_pushButtonResetPercentileSegmentation_clicked();
+
+			void on_doubleSpinBoxPercentileSegmentationKernelRadius_valueChanged(double value);
 
 			void on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value);
 

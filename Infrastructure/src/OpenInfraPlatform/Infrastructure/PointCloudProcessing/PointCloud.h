@@ -28,7 +28,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <BlueFramework/Core/memory.h>
 
 #include <ccPointCloud.h>
-
+#include <FileIOFilter.h>
 #include <tuple>
 
 class CCLib::GenericProgressCallback;
@@ -57,6 +57,12 @@ namespace OpenInfraPlatform {
 			int applyLocalDensityFilter(LocalDensityFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			int applyDuplicateFilter(DuplicateFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			int computePercentiles(float kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			void removeNotSegmentedPoints();
+
+			void removeFilteredPoints(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			void resetFilter(const char* name);	
 
