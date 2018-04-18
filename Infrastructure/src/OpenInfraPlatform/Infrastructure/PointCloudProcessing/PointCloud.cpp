@@ -222,7 +222,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyLocalDensityFilter(Local
 
 			// Compare the scalar value for each point with the threshold and write the result into the scalar field since we're not interested in the real densities.
 			for_each([&](size_t i) {
-				setPointScalarValue(i, (int)(getPointScalarValue(i) < desc.minThreshold));
+				ScalarType density = getPointScalarValue(i);
+				setPointScalarValue(i, (int)(density < desc.minThreshold));
 			});
 
 			// Update our indices for filtered etc.
@@ -286,7 +287,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeLocalDensity(CCLib::Ge
 	// Set it as input scalar field to write explicitly to it - not sure if this is really necessary..
 	// Set it to be the current output scalar field to avoid overriding another one since computeLocalDensity uses this field.
 	setCurrentInScalarField(idx);
-	setCurrentOutScalarField(idx);
+	//setCurrentOutScalarField(idx);
 
 	// Compute the local density and retirn the error code.
 	return CCLib::GeometricalAnalysisTools::computeLocalDensity(this, metric, kernelRadius, callback ? callback.get() : nullptr, octree_ ? octree_.get() : nullptr);
