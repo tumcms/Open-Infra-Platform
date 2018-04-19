@@ -189,12 +189,9 @@ void OpenInfraPlatform::Infrastructure::PointCloud::alignOnMainAxis()
 	Eigen::Quaternion<double> q = rollAngle * yawAngle * pitchAngle;
 	Eigen::Matrix3d rotationMatrix = q.matrix();
 
-	for_each([&](size_t i) {
-		auto pos = getPoint(i);
-		buw::Vector3d transformed = buw::Vector3d(pos->x, pos->y, pos->z);
-		transformed.applyOnTheLeft(rotationMatrix);
-		//TODO:: Insert transformed point
-	});
+	ccGLMatrix rotation;
+	rotation.initFromParameters(roll, 0, 0, CCVector3(0, 0, 0));
+	applyRigidTransformation(rotation);
 }
 
 
@@ -338,6 +335,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init()
 	grid_ = std::map<std::pair<int, int>, std::vector<uint32_t>>();
 
 	computeMainAxis();
+	alignOnMainAxis();
 	octree_ = buw::makeReferenceCounted<CCLib::DgmOctree>(this);
 	octree_->build();
 	computeSections(10.0f);
