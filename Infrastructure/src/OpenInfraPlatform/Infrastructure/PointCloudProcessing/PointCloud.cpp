@@ -166,6 +166,37 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float 
 	}
 }
 
+void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid()
+{
+	grid_.clear();
+	grid_ = std::map<std::pair<int, int>, std::vector<uint32_t>>();
+	for_each([&](size_t i) {
+		auto pos = getPoint(i);
+		std::pair<int, int> key = std::pair<int, int>((int)pos->x, (int)pos->y);
+		grid_[key].push_back(i);
+	});
+}
+
+void OpenInfraPlatform::Infrastructure::PointCloud::alignOnMainAxis()
+{
+	
+	auto roll = buw::calculateAngleBetweenVectors(buw::Vector3d(mainAxis_.x, mainAxis_.y, mainAxis_.z), buw::Vector3d(1.0, 0.0, 0.0));
+
+	Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitZ());
+	Eigen::AngleAxisd yawAngle(0, Eigen::Vector3d::UnitY());
+	Eigen::AngleAxisd pitchAngle(0, Eigen::Vector3d::UnitX());
+
+	Eigen::Quaternion<double> q = rollAngle * yawAngle * pitchAngle;
+	Eigen::Matrix3d rotationMatrix = q.matrix();
+
+	for_each([&](size_t i) {
+		auto pos = getPoint(i);
+		buw::Vector3d transformed = buw::Vector3d(pos->x, pos->y, pos->z);
+		transformed.applyOnTheLeft(rotationMatrix);
+		//TODO:: Insert transformed point
+	});
+}
+
 
 int OpenInfraPlatform::Infrastructure::PointCloud::flagDuplicatePoints(const double minDistance, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
@@ -303,6 +334,9 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init()
 	}
 	filteredIndices_ = std::vector<uint32_t>(0);
 	segmentedIndices_ = std::vector<uint32_t>(0);
+
+	grid_ = std::map<std::pair<int, int>, std::vector<uint32_t>>();
+
 	computeMainAxis();
 	octree_ = buw::makeReferenceCounted<CCLib::DgmOctree>(this);
 	octree_->build();
@@ -446,6 +480,84 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(float kern
 		}
 	}
 	
+	// Tell the callback that we're done.
+	if(callback)
+		callback->stop();
+
+	return 0;
+}
+
+int OpenInfraPlatform::Infrastructure::PointCloud::computePercentilesOnGrid(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	// If we have a callback, call start to init the GUI.
+	if(callback)
+		callback->start();
+
+	computeGrid();
+
+	// Clear all segmented indices -> should be changed to work with scalar fields to allow multiple segmentation methods, same as in filtering.
+	segmentedIndices_.clear();
+
+	// Get the filtered scalar field.
+	int idx_filtered = getScalarFieldIndexByName("Filtered");
+	if(idx_filtered == -1)
+		idx_filtered = addScalarField("Filtered");
+	setCurrentOutScalarField(idx_filtered);
+
+	// Get the segmented scalar field.
+	int idx_segmented = getScalarFieldIndexByName("Segmented");
+	if(idx_segmented == -1)
+		idx_segmented = addScalarField("Segmented");
+	setCurrentInScalarField(idx_segmented);
+
+	auto isFilteredPoint = [&](const uint32_t &idx) -> bool {
+		return getPointScalarValue(idx) > 0;
+	};
+
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(0.1f);
+	size_t processedCells = 0;
+	size_t numCells = grid_.size();
+
+	for(auto cell : grid_) {
+		auto end = std::remove_if(cell.second.begin(), cell.second.end(), isFilteredPoint);
+		cell.second.erase(end, cell.second.end());
+		int numPoints = cell.second.size();
+
+
+		std::sort(cell.second.begin(), cell.second.end(), [&](const uint32_t &lhs, const uint32_t &rhs)-> bool {
+			return getPoint(lhs)->z < getPoint(rhs)->z;
+		});
+
+		// Calculate the 98 percentile as the index of the 98th % point after sorting in ascending order, same for the 10th % point.
+		int idx98 = (int)std::floor(0.98 * numPoints);
+		int idx10 = (int)std::floor(0.1 * numPoints);
+		float percentile_98 = getPoint(cell.second[idx98])->z;
+		float percentile_10 = getPoint(cell.second[idx10])->z;
+
+		// Calculate the absolute difference between the percentiles and if it is larger than 10cm segment the point as rail point.
+		float diff = std::fabsf(percentile_10 - percentile_98);
+		if(diff >= 0.1f) {
+			std::set<uint32_t> indices;
+			for(int i = idx98; i < numPoints; i++) {
+				CCLib::DgmOctree::NeighboursSet neighbours = CCLib::DgmOctree::NeighboursSet();
+				int numNeighbours = octree_->getPointsInSphericalNeighbourhood(*getPoint(cell.second[i]), 0.1f, neighbours, level);
+
+				for(auto elem : neighbours) {
+					indices.insert(elem.pointIndex);
+					setPointScalarValue(elem.pointIndex, 1.0f);
+				}
+				indices.insert(i);
+				setPointScalarValue(i, 1.0f);
+			}
+			segmentedIndices_.insert(segmentedIndices_.end(), indices.begin(), indices.end());
+		}
+
+		processedCells++;
+		if(callback) {
+			callback->update(100.0f * processedCells / numCells);
+		}
+	}
+
 	// Tell the callback that we're done.
 	if(callback)
 		callback->stop();

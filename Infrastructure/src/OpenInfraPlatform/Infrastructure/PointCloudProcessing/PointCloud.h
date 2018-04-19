@@ -50,6 +50,10 @@ namespace OpenInfraPlatform {
 
 			void computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			void computeGrid();
+
+			void alignOnMainAxis();
+
 			int flagDuplicatePoints(const double minDistance, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			int computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
@@ -59,6 +63,8 @@ namespace OpenInfraPlatform {
 			int applyDuplicateFilter(DuplicateFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			int computePercentiles(float kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			int computePercentilesOnGrid(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			void removeNotSegmentedPoints();
 
@@ -113,6 +119,7 @@ namespace OpenInfraPlatform {
 			CCVector3 mainAxis_;
 			std::vector<uint32_t> remainingIndices_, filteredIndices_, segmentedIndices_;
 			std::vector<buw::ReferenceCounted<PointCloudSection>> sections_;
+			std::map<std::pair<int, int>, std::vector<uint32_t>> grid_;
 			buw::ReferenceCounted<CCLib::DgmOctree> octree_;
 		};
 	}

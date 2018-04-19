@@ -2407,6 +2407,13 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxPercentileSeg
 	ui_->horizontalSliderPercentileSegmentationKernelRadius->blockSignals(false);
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePercentilesOnGrid_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	pointCloud->computePercentilesOnGrid(callback_);
+	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value)
 {
 	ui_->horizontalSliderRemoveDuplicatesThreshold->blockSignals(true);

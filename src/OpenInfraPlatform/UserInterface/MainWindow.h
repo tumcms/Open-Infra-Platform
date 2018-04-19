@@ -199,8 +199,9 @@ namespace OpenInfraPlatform
 
 			void on_pushButtonApplyPercentileSegmentation_clicked();
 			void on_pushButtonResetPercentileSegmentation_clicked();
-
 			void on_doubleSpinBoxPercentileSegmentationKernelRadius_valueChanged(double value);
+
+			void on_pushButtonComputePercentilesOnGrid_clicked();
 
 			void on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value);
 
