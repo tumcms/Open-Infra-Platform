@@ -180,7 +180,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid()
 void OpenInfraPlatform::Infrastructure::PointCloud::alignOnMainAxis()
 {
 	
-	auto roll = buw::calculateAngleBetweenVectors(buw::Vector3d(mainAxis_.x, mainAxis_.y, mainAxis_.z), buw::Vector3d(1.0, 0.0, 0.0));
+	auto roll = buw::calculateAngleBetweenVectors(buw::Vector3d(1.0, 0.0, 0.0), buw::Vector3d(mainAxis_.x, mainAxis_.y, mainAxis_.z).normalized());
 
 	Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitZ());
 	Eigen::AngleAxisd yawAngle(0, Eigen::Vector3d::UnitY());
@@ -190,7 +190,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::alignOnMainAxis()
 	Eigen::Matrix3d rotationMatrix = q.matrix();
 
 	ccGLMatrix rotation;
-	rotation.initFromParameters(roll, 0, 0, CCVector3(0, 0, 0));
+	rotation.initFromParameters(-roll, 0, 0, CCVector3(0, 0, 0));
 	applyRigidTransformation(rotation);
 }
 
@@ -335,7 +335,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init()
 	grid_ = std::map<std::pair<int, int>, std::vector<uint32_t>>();
 
 	computeMainAxis();
-	alignOnMainAxis();
+	//alignOnMainAxis();
 	octree_ = buw::makeReferenceCounted<CCLib::DgmOctree>(this);
 	octree_->build();
 	computeSections(10.0f);
@@ -421,7 +421,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(float kern
 
 	// Start OpenMP parallel region and pass callback as firstprivate to the master thread.
 	int tid = 0;
-	#pragma omp parallel private(tid) firstprivate(callback)
+	#pragma omp parallel private(tid) firstprivate(callback) shared(level)
 	{
 		// Get the OpenMP thread id and initialize variables for progress update.
 		tid = omp_get_thread_num();
@@ -429,7 +429,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(float kern
 		float processedPoints = 0;
 
 		// Initialize a thread local index buffer and octree as copy of the original one.
-		auto indices = std::vector<uint32_t>();
+		auto indices = std::set<uint32_t>();
 		auto octree = CCLib::DgmOctree(*octree_);
 
 		#pragma omp for
@@ -453,14 +453,21 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(float kern
 			numPoints = neighbours.size();
 
 			// Calculate the 98 percentile as the index of the 98th % point after sorting in ascending order, same for the 10th % point.
-			float percentile_98 = neighbours[(int)std::floor(0.98 * numPoints)].point->z;
-			float percentile_10 = neighbours[(int)std::floor(0.1 * numPoints)].point->z;
+			int idx98 = (int)std::floor(0.98 * numPoints);
+			int idx10 = (int)std::floor(0.1 * numPoints);
+			float percentile_98 = neighbours[idx98].point->z;
+			float percentile_10 = neighbours[idx10].point->z;
 
 			// Calculate the absolute difference between the percentiles and if it is larger than 10cm segment the point as rail point.
 			float diff = std::fabsf(percentile_10 - percentile_98);
+			float totalDiff = std::fabsf((neighbours.front().point->z) - (neighbours.back().point->z));
+			// Edited to exclude points if total diff in neigbourhood is larger than 25cm
 			if(diff >= 0.1f) {
-				setPointScalarValue(index, 1.0f);
-				indices.push_back(index);
+				for(int ii = idx98; ii < neighbours.size(); ii++) {
+					int index_ii = neighbours[ii].pointIndex;
+					setPointScalarValue(index_ii, 1.0f);
+					indices.insert(index_ii);
+				}
 			}
 			
 
