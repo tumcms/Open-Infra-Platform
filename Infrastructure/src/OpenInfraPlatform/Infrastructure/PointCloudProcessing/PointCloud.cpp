@@ -570,6 +570,57 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentilesOnGrid(buw:
 	return 0;
 }
 
+int OpenInfraPlatform::Infrastructure::PointCloud::computeDeltaZ(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	// If we have a callback, call start to init the GUI.
+	if(callback)
+		callback->start();
+
+	// Get the octree cell indices to iterate over the cells.
+	std::vector<uint32_t> dgmOctreeCells;
+	octree_->getCellIndexes(10, dgmOctreeCells);
+
+	// Create and initialize the nearest neighbour search struct as far as possible. Level is 10 and max search distance 2cm.
+	CCLib::DgmOctree::NearestNeighboursSearchStruct nss;
+	nss.level = 10;
+	nss.maxSearchSquareDistd = 0.02;
+
+	int processedCells = 0;
+	int numCells = dgmOctreeCells.size();
+	for(auto cell : dgmOctreeCells) {
+		auto code = octree_->getCellCode(cell);
+
+		// Get the points in the cell specified by the index and store them in points.
+		std::shared_ptr<CCLib::ReferenceCloud> points = std::shared_ptr<CCLib::ReferenceCloud>();
+		bool success = octree_->getPointsInCellByCellIndex(points.get(), cell, 10);
+		octree_->getCellPos(code, 10, nss.cellPos, false);
+		octree_->computeCellCenter(nss.cellPos, 10, nss.cellCenter);
+
+		if(success) {			
+			for(int i = 0; i < points->size(); i++) {
+				nss.queryPoint = *(points->getPoint(i));
+				octree_->findNearestNeighborsStartingFromCell(nss);
+				float diff = 0.0f;
+				for(auto neighbour : nss.pointsInNeighbourhood) {
+					diff += std::fabsf(nss.queryPoint.z - neighbour.point->z);
+				}
+
+				if(diff <= 0.02) {
+					segmentedIndices_.push_back(points->getPointGlobalIndex(i));
+				}
+			}
+		}
+
+		if(callback)
+			callback->update(100.0f * (double)processedCells / (double)numCells);
+	}
+
+	if(callback)
+		callback->stop();
+
+	return 0;
+}
+
 void OpenInfraPlatform::Infrastructure::PointCloud::removeNotSegmentedPoints()
 {
 	int idx_segmented = getScalarFieldIndexByName("Segmented");

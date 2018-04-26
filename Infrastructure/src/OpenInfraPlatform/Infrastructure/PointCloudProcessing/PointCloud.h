@@ -66,6 +66,8 @@ namespace OpenInfraPlatform {
 
 			int computePercentilesOnGrid(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			int computeDeltaZ(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
 			void removeNotSegmentedPoints();
 
 			void removeFilteredPoints(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);

@@ -2414,6 +2414,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePercentil
 	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRateOfChangeSegmentation_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	pointCloud->computeDeltaZ(callback_);
+	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+}
+
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value)
 {
 	ui_->horizontalSliderRemoveDuplicatesThreshold->blockSignals(true);
