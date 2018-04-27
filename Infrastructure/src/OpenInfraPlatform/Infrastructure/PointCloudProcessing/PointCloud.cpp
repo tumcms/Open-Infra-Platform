@@ -583,7 +583,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeDeltaZ(buw::ReferenceC
 	// Create and initialize the nearest neighbour search struct as far as possible. Level is 10 and max search distance 2cm.
 	CCLib::DgmOctree::NearestNeighboursSearchStruct nss;
 	nss.level = 10;
-	nss.maxSearchSquareDistd = 0.02;
+	nss.maxSearchSquareDistd = std::pow(0.02, 2);
 
 	int processedCells = 0;
 	int numCells = dgmOctreeCells.size();
@@ -591,7 +591,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeDeltaZ(buw::ReferenceC
 		auto code = octree_->getCellCode(cell);
 
 		// Get the points in the cell specified by the index and store them in points.
-		std::shared_ptr<CCLib::ReferenceCloud> points = std::shared_ptr<CCLib::ReferenceCloud>();
+		std::shared_ptr<CCLib::ReferenceCloud> points = std::make_shared<CCLib::ReferenceCloud>(this);
 		bool success = octree_->getPointsInCellByCellIndex(points.get(), cell, 10);
 		octree_->getCellPos(code, 10, nss.cellPos, false);
 		octree_->computeCellCenter(nss.cellPos, 10, nss.cellCenter);
@@ -600,17 +600,21 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeDeltaZ(buw::ReferenceC
 			for(int i = 0; i < points->size(); i++) {
 				nss.queryPoint = *(points->getPoint(i));
 				octree_->findNearestNeighborsStartingFromCell(nss);
+
+				// Calculate the mean difference.
 				float diff = 0.0f;
 				for(auto neighbour : nss.pointsInNeighbourhood) {
-					diff += std::fabsf(nss.queryPoint.z - neighbour.point->z);
+					if(neighbour.squareDistd <= nss.maxSearchSquareDistd)
+						diff += std::fabsf(nss.queryPoint.z - neighbour.point->z);
 				}
 
-				if(diff <= 0.02) {
+				if(diff <= 0.001) {
 					segmentedIndices_.push_back(points->getPointGlobalIndex(i));
 				}
 			}
 		}
 
+		processedCells++;
 		if(callback)
 			callback->update(100.0f * (double)processedCells / (double)numCells);
 	}
