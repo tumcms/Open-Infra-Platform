@@ -929,10 +929,30 @@
               <widget class="QComboBox" name="comboBoxRateOfChangeDimension"/>
              </item>
              <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxRateOfChangeNeighbourDistance"/>
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxRateOfChangeNeighbourDistance">
+               <property name="decimals">
+                <number>4</number>
+               </property>
+               <property name="singleStep">
+                <double>0.010000000000000</double>
+               </property>
+               <property name="value">
+                <double>0.020000000000000</double>
+               </property>
+              </widget>
              </item>
              <item row="1" column="2">
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxRateOfChangeMaxDiff"/>
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxRateOfChangeMaxDiff">
+               <property name="decimals">
+                <number>4</number>
+               </property>
+               <property name="singleStep">
+                <double>0.001000000000000</double>
+               </property>
+               <property name="value">
+                <double>0.005000000000000</double>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>

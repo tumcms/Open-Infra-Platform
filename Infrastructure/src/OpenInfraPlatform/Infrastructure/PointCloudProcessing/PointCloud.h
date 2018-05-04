@@ -66,7 +66,9 @@ namespace OpenInfraPlatform {
 
 			int computePercentilesOnGrid(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			int computeDeltaZ(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			int applyRateOfChangeSegmentation(RateOfChangeSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			int segmentRailways(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			void removeNotSegmentedPoints();
 

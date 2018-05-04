@@ -154,6 +154,11 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	ui_->comboBoxFilterDensityMetric->addItem("3D", QVariant(2));
 	ui_->comboBoxFilterDensityMetric->setCurrentIndex(0);
 
+	ui_->comboBoxRateOfChangeDimension->addItem("X", QVariant(0));
+	ui_->comboBoxRateOfChangeDimension->addItem("Y", QVariant(1));
+	ui_->comboBoxRateOfChangeDimension->addItem("Z", QVariant(2));
+	ui_->comboBoxRateOfChangeDimension->setCurrentIndex(2);
+
 	// Put the buttons into these groups to avoid auto toggeling etc.
 	radioButtons2D3D_.addButton(ui_->radioButtonRender2D);
 	radioButtons2D3D_.addButton(ui_->radioButtonRender3D);
@@ -2417,8 +2422,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePercentil
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRateOfChangeSegmentation_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	pointCloud->computeDeltaZ(callback_);
-	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	buw::RateOfChangeSegmentationDescription desc;
+	desc.dim = ui_->comboBoxRateOfChangeDimension->currentData().toInt();
+	desc.maxNeighbourDistance = ui_->doubleSpinBoxRateOfChangeNeighbourDistance->value();
+	desc.maxRateOfChangeThreshold = ui_->doubleSpinBoxRateOfChangeMaxDiff->value();
+	pointCloud->applyRateOfChangeSegmentation(desc, callback_);
+	pointCloud->segmentRailways(callback_);
+	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+	//view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 }
 
 

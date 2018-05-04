@@ -570,55 +570,169 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentilesOnGrid(buw:
 	return 0;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::computeDeltaZ(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation(RateOfChangeSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// If we have a callback, call start to init the GUI.
 	if(callback)
 		callback->start();
 
-	// Get the octree cell indices to iterate over the cells.
+	bool success = false;
+
+	// Get the octree cell indices to iterate over the cells, return -1 if an error occurs.
 	std::vector<uint32_t> dgmOctreeCells;
-	octree_->getCellIndexes(10, dgmOctreeCells);
+	success = octree_->getCellIndexes(10, dgmOctreeCells);
+	if(!success)
+		return -1;
 
-	// Create and initialize the nearest neighbour search struct as far as possible. Level is 10 and max search distance 2cm.
-	CCLib::DgmOctree::NearestNeighboursSearchStruct nss;
-	nss.level = 10;
-	nss.maxSearchSquareDistd = std::pow(0.02, 2);
-
+	// Initialize counter variables for our callback update.
 	int processedCells = 0;
 	int numCells = dgmOctreeCells.size();
+
+	// Iterate over all cells to call our nearest neighbour search on consecutive points in a cell for performance reasons.
+	// TODO: Use OpenMP to do this in parallel.
 	for(auto cell : dgmOctreeCells) {
 		auto code = octree_->getCellCode(cell);
 
-		// Get the points in the cell specified by the index and store them in points.
+		// Create and initialize the nearest neighbour search struct as far as possible. Level is 10, maxSearchSquareDistance is calculated from the description parameter.
+		CCLib::DgmOctree::NearestNeighboursSearchStruct nss;
+		nss.level = 10;
+		nss.maxSearchSquareDistd = std::pow(desc.maxNeighbourDistance, 2);
+
+		// Get the points in the cell specified by the index and store them in points. Compute the cell position and center.
 		std::shared_ptr<CCLib::ReferenceCloud> points = std::make_shared<CCLib::ReferenceCloud>(this);
-		bool success = octree_->getPointsInCellByCellIndex(points.get(), cell, 10);
+		success = octree_->getPointsInCellByCellIndex(points.get(), cell, 10);
 		octree_->getCellPos(code, 10, nss.cellPos, false);
 		octree_->computeCellCenter(nss.cellPos, 10, nss.cellCenter);
 
 		if(success) {			
+			// If the points were successfully selected, iterate over all points in the cell and search the nearest neighbours.
 			for(int i = 0; i < points->size(); i++) {
 				nss.queryPoint = *(points->getPoint(i));
-				octree_->findNearestNeighborsStartingFromCell(nss);
+				int numNeighbours = octree_->findNearestNeighborsStartingFromCell(nss);
 
-				// Calculate the mean difference.
+				// Initialize the diff variable and the number of neighbours which are selected for the computation.
 				float diff = 0.0f;
+				int numSelectedNeighbours = 0;
+
+				// Calculate the mean difference in the specified dimension for all points in the neighbourhood which fulfill the conditions.
 				for(auto neighbour : nss.pointsInNeighbourhood) {
-					if(neighbour.squareDistd <= nss.maxSearchSquareDistd)
-						diff += std::fabsf(nss.queryPoint.z - neighbour.point->z);
+					if(neighbour.squareDistd <= nss.maxSearchSquareDistd && neighbour.squareDistd != 0.0) {
+						diff += std::fabsf(nss.queryPoint[desc.dim] - (*neighbour.point)[desc.dim]);
+						numSelectedNeighbours++;
+					}
 				}
 
-				if(diff <= 0.001) {
-					segmentedIndices_.push_back(points->getPointGlobalIndex(i));
+				// If we found at least one neighbour, compute the average diff and compare with the threshold.
+				if(numSelectedNeighbours > 0) {
+					diff /= numSelectedNeighbours;
+					if(diff <= desc.maxRateOfChangeThreshold) {
+						segmentedIndices_.push_back(points->getPointGlobalIndex(i));
+					}
 				}
+			}
+
+			// Update our callback.
+			processedCells++;
+			if(callback)
+				callback->update(100.0f * (double)processedCells / (double)numCells);
+		}
+		else {
+			// Stop the callback if we abort our function.
+			if(callback)
+				callback->stop();
+
+			return -2;
+		}		
+	}
+
+	if(callback)
+		callback->stop();
+
+	return 0;
+}
+
+int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	// If we have a callback, call start to init the GUI.
+	if(callback)
+		callback->start();
+
+	// Initialize the kernel radius with 5cm.
+	double kernelRadius = 0.05;
+
+	// Get the segmented scalar field.
+	int idx_segmented = getScalarFieldIndexByName("Segmented");
+	if(idx_segmented == -1)
+		idx_segmented = addScalarField("Segmented");
+	setCurrentOutScalarField(idx_segmented);
+
+	auto isNotSegmentedPoint = [&](const CCLib::DgmOctree::PointDescriptor point) -> bool {
+		return !(getPointScalarValue(point.pointIndex) > 0);
+	};
+	
+	// Call this once to find the best level for the radius..
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(kernelRadius);
+
+	// Reserve new storage for points -> is number of segmentedIndices and memory for colors.
+	this->reserve(this->size() + segmentedIndices_.size());
+	this->reserveTheRGBTable();
+
+	// Start OpenMP parallel region and pass callback as firstprivate to the master thread.
+	int tid = 0;
+#pragma omp parallel private(tid) firstprivate(callback) shared(level)
+	{
+		// Get the OpenMP thread id and initialize variables for progress update.
+		tid = omp_get_thread_num();
+		float totalPoints = segmentedIndices_.size() / omp_get_num_threads();
+		float processedPoints = 0;
+
+		// Initialize a thread local index buffer and octree as copy of the original one.
+		auto indices = std::set<uint32_t>();
+		auto octree = CCLib::DgmOctree(*octree_);
+
+#pragma omp for
+		for(long i = 0; i < segmentedIndices_.size(); i++) {
+			uint32_t index = segmentedIndices_[i];
+
+			// Compute the neighbouring points using the octree for the query point.
+			CCLib::DgmOctree::NeighboursSet neighbours = CCLib::DgmOctree::NeighboursSet();
+			int numPoints = octree.getPointsInSphericalNeighbourhood(*getPoint(index), kernelRadius, neighbours, level);
+
+			auto end = std::remove_if(neighbours.begin(), neighbours.end(), isNotSegmentedPoint);
+			neighbours.erase(end, neighbours.end());
+			numPoints = neighbours.size();
+
+			// Compute center of mass.
+			CCVector3 center;
+			for(auto it : neighbours) {
+				center += *(it.point);
+			}
+			center /= numPoints;
+
+			//TODO: Add center to points and set the color to red and add the index to the segmented points.
+#pragma omp critical
+			{
+				this->addPoint(center);
+				this->addRGBColor(255, 0, 0);
+				indices.insert(this->size() - 1);
+			}
+
+
+			// Update the number of processed points and update the callback if we are on the main thread.
+			processedPoints++;
+			if(tid == 0 && callback) {
+				callback->update(100.0f * processedPoints / totalPoints);
 			}
 		}
 
-		processedCells++;
-		if(callback)
-			callback->update(100.0f * (double)processedCells / (double)numCells);
+		// Reduce the individual buffers in the global buffer.
+#pragma omp critical
+		{
+			segmentedIndices_.insert(segmentedIndices_.end(), indices.begin(), indices.end());
+		}
 	}
 
+	// Tell the callback that we're done.
 	if(callback)
 		callback->stop();
 

@@ -61,6 +61,12 @@ namespace OpenInfraPlatform
 			CCLib::GeometricalAnalysisTools::Density density;
 		};
 
+		struct RateOfChangeSegmentationDescription {
+			int dim;
+			float maxNeighbourDistance;
+			float maxRateOfChangeThreshold;
+		};
+
 		//BLUEINFRASTRUCTURE_API void importLASPointCloud(const char* filename, PointCloud& pointCloud);
 		//BLUEINFRASTRUCTURE_API void importBINPointCloud(const char* filename, PointCloud& pointCloud);
 	} // end namespace Infrastructure
@@ -74,6 +80,7 @@ namespace buw
 	using OpenInfraPlatform::Infrastructure::ePointCloudFilterDimension;
 	using OpenInfraPlatform::Infrastructure::DuplicateFilterDescription;
 	using OpenInfraPlatform::Infrastructure::LocalDensityFilterDescription;
+	using OpenInfraPlatform::Infrastructure::RateOfChangeSegmentationDescription;
 }
 
 #endif // end define OpenInfraPlatform_Infrastructure_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h
