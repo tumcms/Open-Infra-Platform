@@ -30,7 +30,7 @@ static const std::string	NAME         		= std::string("TUM Open Infra Platfrom")
 static const int      		VERSION_MAJOR		= 1;
 static const int      		VERSION_MINOR		= 0;
 static const int            VERSION_BUILD 		= 0; // 0 for alpha, 1 for beta, 2 for release candidate, 3 for (final) release
-static const int			VERSION_REVISION    = 222;
+static const int			VERSION_REVISION    = 223;
 
 static const std::string	VERSION_STR = std::string { 
                                         std::to_string(VERSION_MAJOR) + "." + 

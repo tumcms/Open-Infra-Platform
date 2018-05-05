@@ -205,6 +205,9 @@ namespace OpenInfraPlatform
 
 			void on_pushButtonApplyRateOfChangeSegmentation_clicked();
 
+			void on_pushButtonApplySegmentRailways_clicked();
+			void on_pushButtonResetSegmentRailways_clicked();
+
 			void on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value);
 
 			void on_pushButtonCalculateSections_clicked();

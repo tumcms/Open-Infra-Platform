@@ -62,7 +62,7 @@ namespace OpenInfraPlatform {
 
 			int applyDuplicateFilter(DuplicateFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			int computePercentiles(float kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			int computePercentiles(buw::PercentileSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			int computePercentilesOnGrid(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 

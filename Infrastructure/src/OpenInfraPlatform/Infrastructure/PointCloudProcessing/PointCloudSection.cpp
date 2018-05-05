@@ -62,6 +62,27 @@ int OpenInfraPlatform::Infrastructure::PointCloudSection::computeLocalDensity(CC
 
 int OpenInfraPlatform::Infrastructure::PointCloudSection::computePercentiles(float kernelRadius)
 {
+	//TODO
+	return 0;
+}
+
+int OpenInfraPlatform::Infrastructure::PointCloudSection::computeClusters()
+{
+	// Project all points in this section onto the LS plane to get 2D coordinates.
+	CCLib::Neighbourhood neighbourhood = CCLib::Neighbourhood(this);
+	std::vector<CCVector2> points2D = std::vector<CCVector2>();
+	neighbourhood.projectPointsOn2DPlane(points2D);	
+
+	std::vector<std::pair<int, int>> pairs = std::vector<std::pair<int, int>>();
+	float epsilon = 0.01f;
+	for(int i = 0; i < points2D.size(); i++) {
+		for(int ii = 0; ii < points2D.size(); ii++) {
+			if(std::fabsf((points2D[i].x + 1.435f) - points2D[ii].x) < epsilon && std::fabsf(points2D[i].y - points2D[ii].y) < epsilon) {
+				pairs.push_back(std::pair<int, int>(i, ii));
+			}
+		}
+	}
+
 	return 0;
 }
 

@@ -395,7 +395,7 @@ const std::tuple<ScalarType, ScalarType> OpenInfraPlatform::Infrastructure::Poin
 	return std::tuple<ScalarType, ScalarType>(field->getMin(), field->getMax());
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(float kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(buw::PercentileSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// If we have a callback, call start to init the GUI.
 	if(callback)
@@ -417,7 +417,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(float kern
 	setCurrentInScalarField(idx_segmented);
 
 	// Call this once to find the best level for the radius.
-	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(kernelRadius);
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(desc.kernelRadius);
 
 	// Start OpenMP parallel region and pass callback as firstprivate to the master thread.
 	int tid = 0;
@@ -438,7 +438,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(float kern
 			
 			// Compute the neighbouring points using the octree for the query point.
 			CCLib::DgmOctree::NeighboursSet neighbours = CCLib::DgmOctree::NeighboursSet();
-			int numPoints = octree.getPointsInSphericalNeighbourhood(*getPoint(index), kernelRadius, neighbours, level);
+			int numPoints = octree.getPointsInSphericalNeighbourhood(*getPoint(index), desc.kernelRadius, neighbours, level);
 
 			// Sort points in neighbourhood according to height.
 			std::sort(neighbours.begin(), neighbours.end(), [](const CCLib::DgmOctree::PointDescriptor &lhs, const CCLib::DgmOctree::PointDescriptor &rhs) -> bool { return lhs.point->z < rhs.point->z; });
@@ -453,17 +453,17 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(float kern
 			numPoints = neighbours.size();
 
 			// Calculate the 98 percentile as the index of the 98th % point after sorting in ascending order, same for the 10th % point.
-			int idx98 = (int)std::floor(0.98 * numPoints);
-			int idx10 = (int)std::floor(0.1 * numPoints);
-			float percentile_98 = neighbours[idx98].point->z;
-			float percentile_10 = neighbours[idx10].point->z;
+			int idxUpper = (int)std::floor(desc.upperPercentile * numPoints);
+			int idxLower = (int)std::floor(desc.lowerPercentile * numPoints);
+			float percentile_98 = neighbours[idxUpper].point->z;
+			float percentile_10 = neighbours[idxLower].point->z;
 
 			// Calculate the absolute difference between the percentiles and if it is larger than 10cm segment the point as rail point.
 			float diff = std::fabsf(percentile_10 - percentile_98);
 			float totalDiff = std::fabsf((neighbours.front().point->z) - (neighbours.back().point->z));
 			// Edited to exclude points if total diff in neigbourhood is larger than 25cm
-			if(diff >= 0.1f) {
-				for(int ii = idx98; ii < neighbours.size(); ii++) {
+			if(diff >= desc.minThreshold && totalDiff < desc.maxThreshold) {
+				for(int ii = idxUpper; ii < neighbours.size(); ii++) {
 					int index_ii = neighbours[ii].pointIndex;
 					setPointScalarValue(index_ii, 1.0f);
 					indices.insert(index_ii);
@@ -576,6 +576,18 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 	if(callback)
 		callback->start();
 
+	// Get the segmented scalar field.
+	int idx_segmented = getScalarFieldIndexByName("Segmented");
+	if(idx_segmented == -1)
+		idx_segmented = addScalarField("Segmented");
+	setCurrentInScalarField(idx_segmented);
+
+	// Reset the segmentedIndices and the scalar field for segmentation.
+	segmentedIndices_.clear();
+	for_each([&](size_t i) {
+		this->setPointScalarValue(i, 0);
+	});
+
 	bool success = false;
 
 	// Get the octree cell indices to iterate over the cells, return -1 if an error occurs.
@@ -627,6 +639,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 					diff /= numSelectedNeighbours;
 					if(diff <= desc.maxRateOfChangeThreshold) {
 						segmentedIndices_.push_back(points->getPointGlobalIndex(i));
+						this->setPointScalarValue(points->getPointGlobalIndex(i), 1.0f);
 					}
 				}
 			}
@@ -660,30 +673,22 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::Referenc
 	// Initialize the kernel radius with 5cm.
 	double kernelRadius = 0.05;
 
-	// Get the segmented scalar field.
-	int idx_segmented = getScalarFieldIndexByName("Segmented");
-	if(idx_segmented == -1)
-		idx_segmented = addScalarField("Segmented");
-	setCurrentOutScalarField(idx_segmented);
-
-	auto isNotSegmentedPoint = [&](const CCLib::DgmOctree::PointDescriptor point) -> bool {
-		return !(getPointScalarValue(point.pointIndex) > 0);
-	};
+	segmentedIndices_.clear();
 	
 	// Call this once to find the best level for the radius..
 	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(kernelRadius);
 
 	// Reserve new storage for points -> is number of segmentedIndices and memory for colors.
-	this->reserve(this->size() + segmentedIndices_.size());
+	this->reserve(2 * this->size());
 	this->reserveTheRGBTable();
 
 	// Start OpenMP parallel region and pass callback as firstprivate to the master thread.
 	int tid = 0;
-#pragma omp parallel private(tid) firstprivate(callback) shared(level)
+#pragma omp parallel private(tid) firstprivate(callback) shared(level, kernelRadius)
 	{
 		// Get the OpenMP thread id and initialize variables for progress update.
 		tid = omp_get_thread_num();
-		float totalPoints = segmentedIndices_.size() / omp_get_num_threads();
+		float totalPoints = this->size() / omp_get_num_threads();
 		float processedPoints = 0;
 
 		// Initialize a thread local index buffer and octree as copy of the original one.
@@ -691,23 +696,19 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::Referenc
 		auto octree = CCLib::DgmOctree(*octree_);
 
 #pragma omp for
-		for(long i = 0; i < segmentedIndices_.size(); i++) {
-			uint32_t index = segmentedIndices_[i];
+		for(long i = 0; i < this->size(); i++) {
+			uint32_t index = i;
 
 			// Compute the neighbouring points using the octree for the query point.
 			CCLib::DgmOctree::NeighboursSet neighbours = CCLib::DgmOctree::NeighboursSet();
-			int numPoints = octree.getPointsInSphericalNeighbourhood(*getPoint(index), kernelRadius, neighbours, level);
-
-			auto end = std::remove_if(neighbours.begin(), neighbours.end(), isNotSegmentedPoint);
-			neighbours.erase(end, neighbours.end());
-			numPoints = neighbours.size();
-
+			int numPoints = octree.getPointsInSphericalNeighbourhood(*(getPoint(index)), kernelRadius, neighbours, level);
+			
 			// Compute center of mass.
-			CCVector3 center;
+			CCVector3 center = *(getPoint(index));
 			for(auto it : neighbours) {
 				center += *(it.point);
 			}
-			center /= numPoints;
+			center /= numPoints + 1;
 
 			//TODO: Add center to points and set the color to red and add the index to the segmented points.
 #pragma omp critical

@@ -2395,8 +2395,15 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonUndoSegmentation
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyPercentileSegmentation_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	float kernelRadius = ui_->doubleSpinBoxPercentileSegmentationKernelRadius->value() / 100.0f;
-	pointCloud->computePercentiles(kernelRadius, callback_);
+
+	buw::PercentileSegmentationDescription desc;
+	desc.kernelRadius = ui_->doubleSpinBoxPercentileSegmentationKernelRadius->value() / 100.0f;
+	desc.lowerPercentile = ui_->doubleSpinBoxPercentileSegmentationLowerBound->value() / 100.0;
+	desc.upperPercentile = ui_->doubleSpinBoxPercentileSegmentationUpperBound->value() / 100.0;
+	desc.minThreshold = ui_->doubleSpinBoxPercentileSegmentationMinThreshold->value() / 100.0f;
+	desc.maxThreshold = ui_->doubleSpinBoxPercentileSegmentationMaxThreshold->value() / 100.0f;
+
+	pointCloud->computePercentiles(desc, callback_);
 	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 }
 
@@ -2426,12 +2433,26 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRateOfChang
 	desc.dim = ui_->comboBoxRateOfChangeDimension->currentData().toInt();
 	desc.maxNeighbourDistance = ui_->doubleSpinBoxRateOfChangeNeighbourDistance->value();
 	desc.maxRateOfChangeThreshold = ui_->doubleSpinBoxRateOfChangeMaxDiff->value();
-	pointCloud->applyRateOfChangeSegmentation(desc, callback_);
-	pointCloud->segmentRailways(callback_);
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
-	//view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	int err = pointCloud->applyRateOfChangeSegmentation(desc, callback_);
+	if(err != 0) {
+		BLUE_LOG(warning) << "Rate of change segmentation failed. Error Code: " << err;
+	}
+	else {
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRailways_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	pointCloud->segmentRailways(callback_);
+	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetSegmentRailways_clicked()
+{
+	//TODO
+}
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value)
 {
@@ -2442,8 +2463,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplica
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonCalculateSections_clicked()
 {
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud()->computeSections(100.0 / ui_->horizontalSliderSectionSize->value());
-
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	pointCloud->computeSections(100.0 / ui_->horizontalSliderSectionSize->value());
+	
 	view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
 }
 
