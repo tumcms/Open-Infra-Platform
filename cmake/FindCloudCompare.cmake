@@ -72,4 +72,4 @@ function(CLOUDCOMPARE_COPY_BINARIES TargetDirectory)
 		COMMAND ${CMAKE_COMMAND} -E copy ${CC_DEBUG_BINARIES} ${TargetDirectory}/Debug
 		COMMAND ${CMAKE_COMMAND} -E copy ${CC_RELEASE_BINARIES} ${TargetDirectory}/Release		
 	)
-endfunction(BLUEFRAMEWORK_COPY_BINARIES)
+endfunction(CLOUDCOMPARE_COPY_BINARIES)
