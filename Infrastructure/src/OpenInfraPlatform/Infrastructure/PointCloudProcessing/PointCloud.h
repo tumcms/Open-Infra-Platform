@@ -62,9 +62,9 @@ namespace OpenInfraPlatform {
 
 			int applyDuplicateFilter(DuplicateFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			int computePercentiles(buw::PercentileSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			int applyPercentilesSegmentation(buw::PercentileSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			int computePercentilesOnGrid(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			int applyPercentilesOnGridSegmentation(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			int applyRateOfChangeSegmentation(RateOfChangeSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
@@ -74,7 +74,7 @@ namespace OpenInfraPlatform {
 
 			void removeFilteredPoints(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			void resetFilter(const char* name);	
+			void resetScalarField(const char* name);	
 
 			const CCVector3 getMainAxis() const;
 

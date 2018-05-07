@@ -2298,47 +2298,54 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectFilteredPo
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDuplicateFilter_clicked()
 {
-	// Initialize the filter parameters.
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	buw::DuplicateFilterDescription desc;
-	desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
-	desc.minDistance = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
+	if(pointCloud) {
+		// Initialize the filter parameters.
+		buw::DuplicateFilterDescription desc;
+		desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
+		desc.minDistance = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
 
-	// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
-	pointCloud->applyDuplicateFilter(desc, callback_);
-	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
+		pointCloud->applyDuplicateFilter(desc, callback_);
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDuplicateFilter_clicked()
 {
 	// Get the point cloud and reset the scalar field called "Duplicate" which holds the labeling for duplicates.
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	pointCloud->resetFilter("Duplicate");
-	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	if(pointCloud) {
+		pointCloud->resetScalarField("Duplicate");
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDensityFilter_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		// Initialize the filter parameters
+		buw::LocalDensityFilterDescription desc;
+		desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
+		desc.kernelRadius = (float)(ui_->doubleSpinBoxFilterDensityKernelRadius->value()) / 100.0f;
+		desc.minThreshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
+		desc.density = CCLib::GeometricalAnalysisTools::Density(ui_->comboBoxFilterDensityMetric->currentData().toInt());
 
-	// Initialize the filter parameters
-	buw::LocalDensityFilterDescription desc;
-	desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
-	desc.kernelRadius = (float)(ui_->doubleSpinBoxFilterDensityKernelRadius->value()) / 100.0f;
-	desc.minThreshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
-	desc.density = CCLib::GeometricalAnalysisTools::Density(ui_->comboBoxFilterDensityMetric->currentData().toInt());	
-
-	// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
-	int err = pointCloud->applyLocalDensityFilter(desc, callback_);
-	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
+		int err = pointCloud->applyLocalDensityFilter(desc, callback_);
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDensityFilter_clicked()
 {
 	// Get the point cloud and reset the scalar field called "Density" which holds the labeling for points which have a density below the minimum threshold.
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	pointCloud->resetFilter("Density");
-	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	if(pointCloud) {
+		pointCloud->resetScalarField("Density");
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonFilterOriginal_clicked()
@@ -2352,8 +2359,10 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonFilterOriginal_c
 
 	if(dialog.exec() == QMessageBox::StandardButton::Yes) {
 		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-		pointCloud->removeFilteredPoints(callback_);
-		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		if(pointCloud) {
+			pointCloud->removeFilteredPoints(callback_);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
 	}
 }
 
@@ -2382,8 +2391,10 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonExtractSegmentat
 
 	if(dialog.exec() == QMessageBox::StandardButton::Yes) {
 		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-		pointCloud->removeNotSegmentedPoints();
-		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		if(pointCloud) {
+			pointCloud->removeNotSegmentedPoints();
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
 	}
 }
 
@@ -2395,21 +2406,26 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonUndoSegmentation
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyPercentileSegmentation_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::PercentileSegmentationDescription desc;
+		desc.kernelRadius = ui_->doubleSpinBoxPercentileSegmentationKernelRadius->value() / 100.0f;
+		desc.lowerPercentile = ui_->doubleSpinBoxPercentileSegmentationLowerBound->value() / 100.0;
+		desc.upperPercentile = ui_->doubleSpinBoxPercentileSegmentationUpperBound->value() / 100.0;
+		desc.minThreshold = ui_->doubleSpinBoxPercentileSegmentationMinThreshold->value() / 100.0f;
+		desc.maxThreshold = ui_->doubleSpinBoxPercentileSegmentationMaxThreshold->value() / 100.0f;
 
-	buw::PercentileSegmentationDescription desc;
-	desc.kernelRadius = ui_->doubleSpinBoxPercentileSegmentationKernelRadius->value() / 100.0f;
-	desc.lowerPercentile = ui_->doubleSpinBoxPercentileSegmentationLowerBound->value() / 100.0;
-	desc.upperPercentile = ui_->doubleSpinBoxPercentileSegmentationUpperBound->value() / 100.0;
-	desc.minThreshold = ui_->doubleSpinBoxPercentileSegmentationMinThreshold->value() / 100.0f;
-	desc.maxThreshold = ui_->doubleSpinBoxPercentileSegmentationMaxThreshold->value() / 100.0f;
-
-	pointCloud->computePercentiles(desc, callback_);
-	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		pointCloud->applyPercentilesSegmentation(desc, callback_);
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetPercentileSegmentation_clicked()
 {
-	//TODO
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->resetScalarField("SegmentedPercentile");
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxPercentileSegmentationKernelRadius_valueChanged(double value)
@@ -2422,22 +2438,35 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxPercentileSeg
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePercentilesOnGrid_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	pointCloud->computePercentilesOnGrid(callback_);
-	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	if(pointCloud) {
+		pointCloud->applyPercentilesOnGridSegmentation(callback_);
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRateOfChangeSegmentation_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	buw::RateOfChangeSegmentationDescription desc;
-	desc.dim = ui_->comboBoxRateOfChangeDimension->currentData().toInt();
-	desc.maxNeighbourDistance = ui_->doubleSpinBoxRateOfChangeNeighbourDistance->value();
-	desc.maxRateOfChangeThreshold = ui_->doubleSpinBoxRateOfChangeMaxDiff->value();
-	int err = pointCloud->applyRateOfChangeSegmentation(desc, callback_);
-	if(err != 0) {
-		BLUE_LOG(warning) << "Rate of change segmentation failed. Error Code: " << err;
+	if(pointCloud) {
+		buw::RateOfChangeSegmentationDescription desc;
+		desc.dim = ui_->comboBoxRateOfChangeDimension->currentData().toInt();
+		desc.maxNeighbourDistance = ui_->doubleSpinBoxRateOfChangeNeighbourDistance->value();
+		desc.maxRateOfChangeThreshold = ui_->doubleSpinBoxRateOfChangeMaxDiff->value();
+		int err = pointCloud->applyRateOfChangeSegmentation(desc, callback_);
+		if(err != 0) {
+			BLUE_LOG(warning) << "Rate of change segmentation failed. Error Code: " << err;
+		}
+		else {
+			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		}
 	}
-	else {
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetRateOfChangeSegmentation_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->resetScalarField("SegmentedRateOfChange");
 		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 	}
 }
@@ -2445,11 +2474,10 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRateOfChang
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRailways_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//pointCloud->segmentRailways(callback_);
-	for(auto section : pointCloud->getSections()) {
-		section->computeClusters();
+	if(pointCloud) {
+		pointCloud->segmentRailways(callback_);
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 	}
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetSegmentRailways_clicked()
@@ -2467,9 +2495,10 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplica
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonCalculateSections_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	pointCloud->computeSections(100.0 / ui_->horizontalSliderSectionSize->value());
-	
-	view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
+	if(pointCloud) {
+		pointCloud->computeSections(100.0 / ui_->horizontalSliderSectionSize->value());
+		view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxSectionSize_valueChanged(double value)

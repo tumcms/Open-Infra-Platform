@@ -42,7 +42,7 @@ namespace OpenInfraPlatform {
 			void setLength(double length);
 			const double getLength() const;
 
-			PointCloudSection(GenericIndexedCloudPersist* associatedCloud) : ReferenceCloud(associatedCloud) { computeClusters(); }
+			PointCloudSection(GenericIndexedCloudPersist* associatedCloud) : ReferenceCloud(associatedCloud) { }
 
 			// Function which flags points considered as duplicate in this projection as duplicates in the associated cloud.
 			int flagDuplicatePoints(const double minDistance);
@@ -51,7 +51,7 @@ namespace OpenInfraPlatform {
 
 			int computePercentiles(float kernelRadius);
 
-			int computeClusters();
+			std::set<std::pair<size_t, size_t>> computePairs();
 
 		private:
 

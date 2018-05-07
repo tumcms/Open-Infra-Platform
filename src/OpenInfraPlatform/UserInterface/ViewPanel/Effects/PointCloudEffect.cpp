@@ -159,19 +159,22 @@ void PointCloudEffect::updateIndexBuffers(const std::tuple<std::vector<uint32_t>
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
 	ibd.data = remainingIndices.data();
 
-	indexBufferRemaining_ = renderSystem()->createIndexBuffer(ibd);
+	if(ibd.indexCount > 0)
+		indexBufferRemaining_ = renderSystem()->createIndexBuffer(ibd);
 
 	ibd.indexCount = filteredIndices.size();
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
 	ibd.data = filteredIndices.data();
 
-	indexBufferFiltered_ = renderSystem()->createIndexBuffer(ibd);
+	if(ibd.indexCount > 0)
+		indexBufferFiltered_ = renderSystem()->createIndexBuffer(ibd);
 
 	ibd.indexCount = segmentedIndices.size();
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
 	ibd.data = segmentedIndices.data();
 
-	indexBufferSegmented_ = renderSystem()->createIndexBuffer(ibd);
+	if(ibd.indexCount > 0)
+		indexBufferSegmented_ = renderSystem()->createIndexBuffer(ibd);
 }
 
 void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset)
@@ -186,7 +189,7 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 #pragma omp parallel for
 	for(int i = 0; i < pointCloud->size(); i++) {
 		auto pos = pointCloud->getPoint(i);
-		const ColorCompType* col = pointCloud->hasColors() ? pointCloud->getPointColor(i) : ccColor::FromRgbf(baseColor).rgb;
+		const ColorCompType* col = pointCloud->rgbColors() ? pointCloud->getPointColor(i) : ccColor::FromRgbf(baseColor).rgb;
 		// Swap Z and Y coordinate for rendering!
 		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos->x + offset.x(), pos->z + offset.z(), pos->y + offset.y()), buw::Vector4f((float)col[0], (float)col[1], (float)col[2], 255.0f)/255.0f);
 	}
@@ -203,19 +206,28 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
 	ibd.data = remainingIndices.data();
 
-	indexBufferRemaining_ = renderSystem()->createIndexBuffer(ibd);
+	if(ibd.indexCount > 0)
+		indexBufferRemaining_ = renderSystem()->createIndexBuffer(ibd);
+	else
+		indexBufferRemaining_ = nullptr;
 
 	ibd.indexCount = filteredIndices.size();
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
 	ibd.data = filteredIndices.data();
 
-	indexBufferFiltered_ = renderSystem()->createIndexBuffer(ibd);
+	if(ibd.indexCount > 0)
+		indexBufferFiltered_ = renderSystem()->createIndexBuffer(ibd);
+	else
+		indexBufferFiltered_ = nullptr;
 
 	ibd.indexCount = segmentedIndices.size();
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
 	ibd.data = segmentedIndices.data();
 
-	indexBufferSegmented_ = renderSystem()->createIndexBuffer(ibd);
+	if(ibd.indexCount > 0)
+		indexBufferSegmented_ = renderSystem()->createIndexBuffer(ibd);
+	else
+		indexBufferSegmented_ = nullptr;
 
 	settings_.mainAxis = buw::Vector4f(pointCloud->getMainAxis().x, pointCloud->getMainAxis().y, pointCloud->getMainAxis().z, 0.0f);
 	settings_.sectionLength = (float) pointCloud->getSectionLength();
@@ -262,8 +274,10 @@ void PointCloudEffect::v_render()
 			draw(static_cast<UINT>(vertexBuffer_->getVertexCount()));
 		}
 		else {
-			setIndexBuffer(indexBufferRemaining_);
-			drawIndexed(static_cast<UINT>(indexBufferRemaining_->getIndexCount()));
+			if(indexBufferRemaining_ && indexBufferRemaining_->getIndexCount()) {
+				setIndexBuffer(indexBufferRemaining_);
+				drawIndexed(static_cast<UINT>(indexBufferRemaining_->getIndexCount()));
+			}
 		}
 	}
 
@@ -272,8 +286,10 @@ void PointCloudEffect::v_render()
 		updateSettingsBuffer();
 		setConstantBuffer(settingsBuffer_, "SettingsBuffer");
 
-		setIndexBuffer(indexBufferFiltered_);
-		drawIndexed(static_cast<UINT>(indexBufferFiltered_->getIndexCount()));
+		if(indexBufferFiltered_ && indexBufferFiltered_->getIndexCount() > 0) {
+			setIndexBuffer(indexBufferFiltered_);
+			drawIndexed(static_cast<UINT>(indexBufferFiltered_->getIndexCount()));
+		}
 	}
 
 	if(bShowSegmentedPoints_) {
@@ -281,8 +297,10 @@ void PointCloudEffect::v_render()
 		updateSettingsBuffer();
 		setConstantBuffer(settingsBuffer_, "SettingsBuffer");
 
-		setIndexBuffer(indexBufferSegmented_);
-		drawIndexed(static_cast<UINT>(indexBufferSegmented_->getIndexCount()));
+		if(indexBufferSegmented_ && indexBufferSegmented_->getIndexCount() > 0) {
+			setIndexBuffer(indexBufferSegmented_);
+			drawIndexed(static_cast<UINT>(indexBufferSegmented_->getIndexCount()));
+		}
 	}
 }
 

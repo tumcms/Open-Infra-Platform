@@ -105,6 +105,15 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 	}
 	pointCloud->setName(filename);
 	pointCloud->init();
+
+	if(pointCloud->rgbColors() == nullptr) {
+		if(pointCloud->reserveTheRGBTable()) {
+			pointCloud->for_each([&](size_t i) {
+				pointCloud->addRGBColor(255, 255, 255);
+			});
+		}
+	}
+
 	return pointCloud;
 }
 
@@ -289,19 +298,23 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyDuplicateFilter(Duplicat
 	return err;
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::resetFilter(const char * name)
+void OpenInfraPlatform::Infrastructure::PointCloud::resetScalarField(const char * name)
 {
-	// Get the duplicate scalar field.
+	// Get the specified scalar field.
 	int idx = getScalarFieldIndexByName(name);
 	if(idx == -1)
 		idx = addScalarField(name);
 
-	// Set Duplicate as Scalar field to write to and flag each point with duplicate 0
+	// Set all values in the scalar field to 0.
 	setCurrentInScalarField(idx);
 	for_each([&](size_t i) {
 		setPointScalarValue(i, 0);
 	});
 
+	// Delete the scalar field.
+	deleteScalarField(idx);
+
+	// Recompute our indices.
 	computeIndices();
 }
 
@@ -385,6 +398,58 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices()
 			remainingIndices_.push_back(i);
 		}
 	});
+
+	// Clear the segmented indices buffer.
+	segmentedIndices_.clear();
+
+	// Get the base segmented sclar field and set is as the write active one.
+	int idx_segmented = getScalarFieldIndexByName("Segmented");
+	if(idx_segmented == -1)
+		idx_segmented = addScalarField("Segmented");
+	setCurrentInScalarField(idx_segmented);
+
+	// Reset the base scalar field for segmented 
+	for_each([&](size_t i) {
+		setPointScalarValue(i, 0);
+	});
+
+	// Get the specific segmentations: percentile, grid and rate of change.
+	int idx_percentile = getScalarFieldIndexByName("SegmentedPercentile");
+	int idx_grid = getScalarFieldIndexByName("SegmentedGrid");
+	int idx_rof = getScalarFieldIndexByName("SegmentedRateOfChange");	
+	
+	// For each point, set as segmented if all enabled segmentations apply.
+	for_each([&](size_t i) {
+		int numFilters = 0;
+		int numValidFilters = 0;
+		auto updateSegmentedValue = [&](size_t i, int index) {
+			if(index != -1) {
+				numFilters++;
+				this->setCurrentOutScalarField(index);
+				if(this->getPointScalarValue(i) > 0) {
+					numValidFilters++;
+				}
+			}
+		};
+
+		updateSegmentedValue(i, idx_percentile);
+		updateSegmentedValue(i, idx_grid);
+		updateSegmentedValue(i, idx_rof);
+
+		if(numFilters == numValidFilters && numFilters != 0)
+			setPointScalarValue(i, 1);
+		else
+			setPointScalarValue(i, 0);
+	});
+
+	// Set the segmented scalar field to read from and insert the points into the buffer.
+	setCurrentOutScalarField(idx_segmented);
+
+	for_each([&](size_t i) {
+		if(getPointScalarValue(i) > 0) {
+			segmentedIndices_.push_back(i);
+		}
+	});
 }
 
 
@@ -395,26 +460,27 @@ const std::tuple<ScalarType, ScalarType> OpenInfraPlatform::Infrastructure::Poin
 	return std::tuple<ScalarType, ScalarType>(field->getMin(), field->getMax());
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(buw::PercentileSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentation(buw::PercentileSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// If we have a callback, call start to init the GUI.
 	if(callback)
 		callback->start();
-
-	// Clear all segmented indices -> should be changed to work with scalar fields to allow multiple segmentation methods, same as in filtering.
-	segmentedIndices_.clear();
-
+	
 	// Get the filtered scalar field.
 	int idx_filtered = getScalarFieldIndexByName("Filtered");
 	if(idx_filtered == -1)
 		idx_filtered = addScalarField("Filtered");		
 	setCurrentOutScalarField(idx_filtered);
 
-	// Get the segmented scalar field.
-	int idx_segmented = getScalarFieldIndexByName("Segmented");
+	// Get the segmented percentile scalar field.
+	int idx_segmented = getScalarFieldIndexByName("SegmentedPercentile");
 	if(idx_segmented == -1)
-		idx_segmented = addScalarField("Segmented");
+		idx_segmented = addScalarField("SegmentedPercentile");
 	setCurrentInScalarField(idx_segmented);
+
+	for_each([&](size_t i) {
+		this->setPointScalarValue(i, 0);
+	});
 
 	// Call this once to find the best level for the radius.
 	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(desc.kernelRadius);
@@ -428,8 +494,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(buw::Perce
 		float totalPoints = remainingIndices_.size() / omp_get_num_threads();
 		float processedPoints = 0;
 
-		// Initialize a thread local index buffer and octree as copy of the original one.
-		auto indices = std::set<uint32_t>();
+		// Initialize octree as copy of the original one.
 		auto octree = CCLib::DgmOctree(*octree_);
 
 		#pragma omp for
@@ -447,26 +512,25 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(buw::Perce
 			auto isFilteredPoint = [&](const CCLib::DgmOctree::PointDescriptor point) -> bool {
 				return getPointScalarValue(point.pointIndex) > 0;
 			};
-
 			auto end = std::remove_if(neighbours.begin(), neighbours.end(), isFilteredPoint);
 			neighbours.erase(end, neighbours.end());
 			numPoints = neighbours.size();
 
-			// Calculate the 98 percentile as the index of the 98th % point after sorting in ascending order, same for the 10th % point.
+			// Calculate the 98 percentile as the index of the upper % point after sorting in ascending order, same for the lower % point.
 			int idxUpper = (int)std::floor(desc.upperPercentile * numPoints);
 			int idxLower = (int)std::floor(desc.lowerPercentile * numPoints);
-			float percentile_98 = neighbours[idxUpper].point->z;
-			float percentile_10 = neighbours[idxLower].point->z;
+			float percentileUpper = neighbours[idxUpper].point->z;
+			float percentileLower = neighbours[idxLower].point->z;
 
 			// Calculate the absolute difference between the percentiles and if it is larger than 10cm segment the point as rail point.
-			float diff = std::fabsf(percentile_10 - percentile_98);
+			float diff = std::fabsf(percentileLower - percentileUpper);
 			float totalDiff = std::fabsf((neighbours.front().point->z) - (neighbours.back().point->z));
-			// Edited to exclude points if total diff in neigbourhood is larger than 25cm
+
+			// If the diff is larger than the minThreshold and the totalDiff smaller than the maxThreshold, mark all points in the upper percentile.
 			if(diff >= desc.minThreshold && totalDiff < desc.maxThreshold) {
 				for(int ii = idxUpper; ii < neighbours.size(); ii++) {
 					int index_ii = neighbours[ii].pointIndex;
 					setPointScalarValue(index_ii, 1.0f);
-					indices.insert(index_ii);
 				}
 			}
 			
@@ -476,14 +540,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(buw::Perce
 			if(tid == 0 && callback) {
 				callback->update(100.0f * processedPoints / totalPoints);
 			}
-		}
-
-		// Reduce the individual buffers in the global buffer.
-		#pragma omp critical
-		{
-			segmentedIndices_.insert(segmentedIndices_.end(), indices.begin(), indices.end());
-		}
+		}		
 	}
+
+	computeIndices();
 	
 	// Tell the callback that we're done.
 	if(callback)
@@ -492,17 +552,14 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentiles(buw::Perce
 	return 0;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::computePercentilesOnGrid(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesOnGridSegmentation(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// If we have a callback, call start to init the GUI.
 	if(callback)
 		callback->start();
 
 	computeGrid();
-
-	// Clear all segmented indices -> should be changed to work with scalar fields to allow multiple segmentation methods, same as in filtering.
-	segmentedIndices_.clear();
-
+	
 	// Get the filtered scalar field.
 	int idx_filtered = getScalarFieldIndexByName("Filtered");
 	if(idx_filtered == -1)
@@ -510,10 +567,14 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentilesOnGrid(buw:
 	setCurrentOutScalarField(idx_filtered);
 
 	// Get the segmented scalar field.
-	int idx_segmented = getScalarFieldIndexByName("Segmented");
+	int idx_segmented = getScalarFieldIndexByName("SegmentedGrid");
 	if(idx_segmented == -1)
-		idx_segmented = addScalarField("Segmented");
+		idx_segmented = addScalarField("SegmentedGrid");
 	setCurrentInScalarField(idx_segmented);
+
+	for_each([&](size_t i) {
+		this->setPointScalarValue(i, 0);
+	});
 
 	auto isFilteredPoint = [&](const uint32_t &idx) -> bool {
 		return getPointScalarValue(idx) > 0;
@@ -548,13 +609,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentilesOnGrid(buw:
 				int numNeighbours = octree_->getPointsInSphericalNeighbourhood(*getPoint(cell.second[i]), 0.1f, neighbours, level);
 
 				for(auto elem : neighbours) {
-					indices.insert(elem.pointIndex);
 					setPointScalarValue(elem.pointIndex, 1.0f);
 				}
-				indices.insert(i);
 				setPointScalarValue(i, 1.0f);
 			}
-			segmentedIndices_.insert(segmentedIndices_.end(), indices.begin(), indices.end());
 		}
 
 		processedCells++;
@@ -562,6 +620,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computePercentilesOnGrid(buw:
 			callback->update(100.0f * processedCells / numCells);
 		}
 	}
+
+	computeIndices();
 
 	// Tell the callback that we're done.
 	if(callback)
@@ -577,13 +637,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 		callback->start();
 
 	// Get the segmented scalar field.
-	int idx_segmented = getScalarFieldIndexByName("Segmented");
+	int idx_segmented = getScalarFieldIndexByName("SegmentedRateOfChange");
 	if(idx_segmented == -1)
-		idx_segmented = addScalarField("Segmented");
+		idx_segmented = addScalarField("SegmentedRateOfChange");
 	setCurrentInScalarField(idx_segmented);
 
-	// Reset the segmentedIndices and the scalar field for segmentation.
-	segmentedIndices_.clear();
+	// Initialize our scalar field.
 	for_each([&](size_t i) {
 		this->setPointScalarValue(i, 0);
 	});
@@ -638,7 +697,6 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 				if(numSelectedNeighbours > 0) {
 					diff /= numSelectedNeighbours;
 					if(diff <= desc.maxRateOfChangeThreshold) {
-						segmentedIndices_.push_back(points->getPointGlobalIndex(i));
 						this->setPointScalarValue(points->getPointGlobalIndex(i), 1.0f);
 					}
 				}
@@ -658,6 +716,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 		}		
 	}
 
+	computeIndices();
+
 	if(callback)
 		callback->stop();
 
@@ -670,68 +730,48 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::Referenc
 	if(callback)
 		callback->start();
 
-	// Initialize the kernel radius with 5cm.
-	double kernelRadius = 0.05;
+	// Create a global list of all point pairs.
+	std::vector<std::pair<size_t, size_t>> rails = std::vector<std::pair<size_t, size_t>>();
+	for(long i = 0; i < sections_.size(); i++) {
+		auto pairs = sections_[i]->computePairs();
+		rails.insert(rails.end(), pairs.begin(), pairs.end());
+	}
 
-	segmentedIndices_.clear();
-	
-	// Call this once to find the best level for the radius..
-	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(kernelRadius);
-
-	// Reserve new storage for points -> is number of segmentedIndices and memory for colors.
-	this->reserve(2 * this->size());
+	// Reserve space for the centerline points and color them blue.
+	this->reserve(this->size() + rails.size());
 	this->reserveTheRGBTable();
+	const ColorCompType blue[3] = { 0,0,255 };
 
-	// Start OpenMP parallel region and pass callback as firstprivate to the master thread.
-	int tid = 0;
-#pragma omp parallel private(tid) firstprivate(callback) shared(level, kernelRadius)
-	{
-		// Get the OpenMP thread id and initialize variables for progress update.
-		tid = omp_get_thread_num();
-		float totalPoints = this->size() / omp_get_num_threads();
-		float processedPoints = 0;
+	// For each pair, insert the point in the middle as centerline point.
+	std::vector<CCVector3> centerline = std::vector<CCVector3>(rails.size());
+	for(auto pair : rails) {
+		CCVector3 start = *(getPoint(pair.first));
+		CCVector3 end = *(getPoint(pair.second));
+		CCVector3 center = start + 0.5f * (end - start);
+		centerline.push_back(center);
+	}
 
-		// Initialize a thread local index buffer and octree as copy of the original one.
-		auto indices = std::set<uint32_t>();
-		auto octree = CCLib::DgmOctree(*octree_);
+	std::sort(centerline.begin(), centerline.end(), [&](CCVector3 lhs, CCVector3 rhs)->bool { return mainAxis_.dot(lhs) < mainAxis_.dot(rhs); });
 
-#pragma omp for
-		for(long i = 0; i < this->size(); i++) {
-			uint32_t index = i;
-
-			// Compute the neighbouring points using the octree for the query point.
-			CCLib::DgmOctree::NeighboursSet neighbours = CCLib::DgmOctree::NeighboursSet();
-			int numPoints = octree.getPointsInSphericalNeighbourhood(*(getPoint(index)), kernelRadius, neighbours, level);
-			
-			// Compute center of mass.
-			CCVector3 center = *(getPoint(index));
-			for(auto it : neighbours) {
-				center += *(it.point);
-			}
-			center /= numPoints + 1;
-
-			//TODO: Add center to points and set the color to red and add the index to the segmented points.
-#pragma omp critical
-			{
-				this->addPoint(center);
-				this->addRGBColor(255, 0, 0);
-				indices.insert(this->size() - 1);
-			}
-
-
-			// Update the number of processed points and update the callback if we are on the main thread.
-			processedPoints++;
-			if(tid == 0 && callback) {
-				callback->update(100.0f * processedPoints / totalPoints);
-			}
-		}
-
-		// Reduce the individual buffers in the global buffer.
-#pragma omp critical
+	int startIndex = 0, endIndex = 0;
+	for(size_t i = 0; i < centerline.size() - 1; i++) {
+		float s0 = mainAxis_.dot(centerline[i]), s1 = mainAxis_.dot(centerline[i + 1]);
+		if(std::fabsf(s0 - s1) > 0.005f)
 		{
-			segmentedIndices_.insert(segmentedIndices_.end(), indices.begin(), indices.end());
+			endIndex = i + 1;
+			int numPoints = (endIndex - startIndex);
+			CCVector3 center = CCVector3(0, 0, 0);
+			for(; startIndex < endIndex; startIndex++) {
+				center += centerline[startIndex];
+				center /= numPoints;
+			}
+
+			this->addPoint(center);
+			this->addRGBColor(blue);
 		}
 	}
+
+	computeIndices();
 
 	// Tell the callback that we're done.
 	if(callback)
