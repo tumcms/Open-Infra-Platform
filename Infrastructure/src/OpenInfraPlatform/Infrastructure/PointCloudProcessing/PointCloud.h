@@ -88,6 +88,8 @@ namespace OpenInfraPlatform {
 					function(i);
 			}
 
+			std::vector<buw::ReferenceCounted<PointCloudSection>> getSections();
+
 		private:
 			void computeMainAxis();
 
@@ -95,7 +97,6 @@ namespace OpenInfraPlatform {
 
 			void init();
 
-			std::vector<buw::ReferenceCounted<PointCloudSection>> getSections();
 
 			const std::tuple<ScalarType, ScalarType> getScalarFieldMinAndMax(int idx) const;
 

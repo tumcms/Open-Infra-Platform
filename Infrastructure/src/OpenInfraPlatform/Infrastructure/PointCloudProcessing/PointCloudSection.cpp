@@ -70,6 +70,7 @@ int OpenInfraPlatform::Infrastructure::PointCloudSection::computeClusters()
 {
 	// Project all points in this section onto the LS plane to get 2D coordinates.
 	CCLib::Neighbourhood neighbourhood = CCLib::Neighbourhood(this);
+	buw::PointCloud* associatedCloud = dynamic_cast<buw::PointCloud*>(getAssociatedCloud());
 	std::vector<CCVector2> points2D = std::vector<CCVector2>();
 	neighbourhood.projectPointsOn2DPlane(points2D);	
 
@@ -79,6 +80,11 @@ int OpenInfraPlatform::Infrastructure::PointCloudSection::computeClusters()
 		for(int ii = 0; ii < points2D.size(); ii++) {
 			if(std::fabsf((points2D[i].x + 1.435f) - points2D[ii].x) < epsilon && std::fabsf(points2D[i].y - points2D[ii].y) < epsilon) {
 				pairs.push_back(std::pair<int, int>(i, ii));
+
+				const ColorCompType red[3] = { 255,0,0 };
+				const ColorCompType green[3] = { 0,255,0 };
+				associatedCloud->setPointColor(i, red);
+				associatedCloud->setPointColor(ii, green);
 			}
 		}
 	}

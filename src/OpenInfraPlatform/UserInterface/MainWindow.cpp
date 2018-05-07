@@ -2445,7 +2445,10 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRateOfChang
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRailways_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	pointCloud->segmentRailways(callback_);
+	//pointCloud->segmentRailways(callback_);
+	for(auto section : pointCloud->getSections()) {
+		section->computeClusters();
+	}
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 }
 
