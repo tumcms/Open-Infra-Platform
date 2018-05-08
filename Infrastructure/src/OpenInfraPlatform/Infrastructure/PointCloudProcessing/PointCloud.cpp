@@ -737,41 +737,166 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::Referenc
 		rails.insert(rails.end(), pairs.begin(), pairs.end());
 	}
 
-	// Reserve space for the centerline points and color them blue.
+	// Reserve space for the centerpoints points and color them blue.
 	this->reserve(this->size() + rails.size());
 	this->reserveTheRGBTable();
 	const ColorCompType blue[3] = { 0,0,255 };
 
-	// For each pair, insert the point in the middle as centerline point.
-	std::vector<CCVector3> centerline = std::vector<CCVector3>(rails.size());
+	// For each pair, insert the point in the middle as centerpoints point.
+	std::vector<CCVector3> centerpoints = std::vector<CCVector3>(rails.size());
 	for(auto pair : rails) {
 		CCVector3 start = *(getPoint(pair.first));
 		CCVector3 end = *(getPoint(pair.second));
 		CCVector3 center = start + 0.5f * (end - start);
-		centerline.push_back(center);
+		centerpoints.push_back(center);
 	}
 
-	std::sort(centerline.begin(), centerline.end(), [&](CCVector3 lhs, CCVector3 rhs)->bool { return mainAxis_.dot(lhs) < mainAxis_.dot(rhs); });
+	// Sort the centerpoints along the main axis.
+	std::sort(centerpoints.begin(), centerpoints.end(), [&](const CCVector3 &lhs, const CCVector3 &rhs)->bool { return mainAxis_.dot(lhs) < mainAxis_.dot(rhs); });
 
-	int startIndex = 0, endIndex = 0;
-	for(size_t i = 0; i < centerline.size() - 1; i++) {
-		float s0 = mainAxis_.dot(centerline[i]), s1 = mainAxis_.dot(centerline[i + 1]);
-		if(std::fabsf(s0 - s1) > 0.005f)
-		{
-			endIndex = i + 1;
-			int numPoints = (endIndex - startIndex);
-			CCVector3 center = CCVector3(0, 0, 0);
-			for(; startIndex < endIndex; startIndex++) {
-				center += centerline[startIndex];
-				center /= numPoints;
+	// Split the centerpoints into different rails and recognize different rails. Only store indices to save memory.
+	std::vector<std::vector<size_t>> centerlines = std::vector<std::vector<size_t>>();
+	centerlines.push_back(std::vector<size_t>());
+	centerlines[0].push_back(0);
+		
+	auto dist = [](const CCVector3 &lhs, const CCVector3 &rhs) ->float {
+		return (rhs - lhs).norm();
+	};
+
+	// TODO: Start OpenMP parallel region and pass callback as firstprivate to the master thread. Initialize parameters properly.
+	int tid = 0;
+	{
+		
+
+		tid = omp_get_thread_num();
+		float totalPoints = centerpoints.size() / omp_get_num_threads();
+		float processedPoints = 0;
+		for(size_t i = 1; i < centerpoints.size(); i++) {
+			auto point = centerpoints[i];
+			bool inserted = false;
+
+			// Initialize the pair min with index and distance
+			std::pair<size_t, float> min = std::pair<size_t, float>(centerlines.size(), LONG_MAX);
+
+			for(size_t ii = 0; ii < centerlines.size(); ii++) {
+				auto &line = centerlines[ii];
+				auto endpoint = centerpoints[line.back()];
+				float distance = dist(point, endpoint);
+
+				if(distance < 0.16f) {
+					inserted = true;
+
+					// If we found a new minimum distance insert the index.
+					if(distance < min.second)
+						min = std::pair<size_t, float>(ii, distance);
+
+					// If the distance is less equal 2cm, abort since it doesnt matter where we add it if we find a closer one.
+					if(distance <= 0.02f)
+						break;
+				}
 			}
 
-			this->addPoint(center);
-			this->addRGBColor(blue);
+			if(inserted) {
+				centerlines[min.first].push_back(i);
+			}
+			else {
+				// If no matching line has been found, add a new one with this one as the starting point.				
+				centerlines.push_back(std::vector<size_t>());
+				centerlines.back().push_back(i);				
+			}
+
+			if(tid == 0 && callback)
+				callback->update(100.0 * ++processedPoints / totalPoints);
+		}
+	}
+	// Clear all lines having less then 100 points -> probably noise or something.
+	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool { return line.size() < 10 || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < 1.0f; });
+	centerlines.erase(end, centerlines.end());
+
+	// Add a scalar field for railway and encode the left/right railway index as -1 and 1.
+	int idx = getScalarFieldIndexByName("Railway");
+	if(idx == -1)
+		idx = addScalarField("Railway");
+	setCurrentInScalarField(idx);
+
+	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>(centerlines.size());
+	// Iterate over all segments and combine the centers of each projection section.
+	for(size_t idx = 0; idx < centerlines.size(); idx++) {
+		auto &line = centerlines[idx];
+		int startIndex = 0, endIndex = 0;
+
+		for(size_t i = 0; i < line.size() - 1; i++) {
+			float length = mainAxis_.dot(centerpoints[line[i + 1]]) - mainAxis_.dot(centerpoints[line[startIndex]]);
+			if(length >= (1.0f / sections_[0]->getLength())) {
+				endIndex = i + 1;
+				int numPoints = (endIndex - startIndex);
+				CCVector3 &center = CCVector3(0, 0, 0);
+				for(; startIndex < endIndex; startIndex++) {
+					center += (centerpoints[line[startIndex]] / (float)numPoints);
+				}
+
+				alignments[idx].push_back(center);
+
+				this->addPoint(center);
+				this->addRGBColor(255 * (float)idx /(float) centerlines.size(),0,255);
+			}
 		}
 	}
 
 	computeIndices();
+
+	// Compute the bearing and write it to a file which we want to plot then.
+	for(size_t idx = 0; idx < alignments.size(); idx++) {
+		auto &alignment = alignments[idx];
+		QFile file("Alignment#" + QString::number(idx) + ".txt");
+		if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+			return -1;
+
+
+		auto getPCA = [](std::vector<CCVector3> alignment, size_t start, size_t end)->CCVector3 {
+			//Matrix which is capable of holding all points for PCA.
+			Eigen::MatrixX3d mat;
+			mat.resize(end - start, 3);
+			for(size_t i = start; i < end; i++) {
+				auto pos = alignment[i];
+				mat.row(i - start) = Eigen::Vector3d(pos.x, pos.y, pos.z);
+			}
+
+			//Do PCA to find the largest eigenvector -> main axis.
+			Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
+			Eigen::MatrixXd cov = centered.adjoint() * centered;
+			Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+			Eigen::Matrix<double, 3, 1> vec = eig.eigenvectors().rightCols(1);
+			return CCVector3(vec.x(), vec.y(), vec.z());
+		};
+
+		const size_t START = 100;
+		const CCVector3 NORTH(0., 1., 0.);
+		const int halbe = START / 2;
+
+		if(alignment.size() > START) {
+			std::vector<float> angles = std::vector<float>();
+
+			for(int i = 0; i < halbe; i++) angles.push_back(0);
+
+			for(size_t i = halbe; i < alignment.size() - halbe; i++) {
+
+				CCVector3 axis = getPCA(alignment, i - halbe, i + halbe);
+				axis.normalize();
+				angles.push_back(axis.dot(NORTH) * 180.0 / M_PI);
+			}
+
+			for(int i = halbe; i < START; i++) angles.push_back(0);
+
+			for(size_t i = halbe; i < angles.size() - halbe; i++) {
+				float curvature = (angles[i + 1] - angles[i]) / std::fabsf(mainAxis_.dot(alignment[i + 1]) - mainAxis_.dot(alignment[i]));
+				QString text = QString::number(i).append("\t").append(QString::number(curvature)).append("\t").append(QString::number(angles[i])).append("\n");
+				file.write(text.toStdString().data());
+			}
+		}
+
+		file.close();		
+	}
 
 	// Tell the callback that we're done.
 	if(callback)

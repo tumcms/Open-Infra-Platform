@@ -101,6 +101,9 @@ std::set<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointClou
 		float epsilon = 0.01f;
 		float gauge = 1.435f;
 		float head = 0.067f;
+
+		const ColorCompType red[3] = { 255,0,0 };
+		const ColorCompType green[3] = { 0,255,0 };
 		
 		// Iterate over all pairs of points, we iterate fully since points are not sorted in x direction.
 		for(size_t i = 0; i < points2D.size(); i++) {
@@ -110,8 +113,7 @@ std::set<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointClou
 				if(std::fabsf((points2D[i].x + gauge + head) - points2D[ii].x) < epsilon && std::fabsf(points2D[i].y - points2D[ii].y) < 0.01f) {
 					pairs.insert(std::pair<size_t, size_t>(getPointGlobalIndex(i), getPointGlobalIndex(ii)));
 
-					const ColorCompType red[3] = { 255,0,0 };
-					const ColorCompType green[3] = { 0,255,0 };
+					
 
 					if(!associatedCloud->rgbColors()) {
 						if(!associatedCloud->reserveTheRGBTable()) {
@@ -119,10 +121,10 @@ std::set<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointClou
 						}
 					}
 
-					if(associatedCloud->rgbColors() != nullptr) {
-						associatedCloud->setPointColor(this->getPointGlobalIndex(i), red);
-						associatedCloud->setPointColor(this->getPointGlobalIndex(ii), green);
-					}
+					//if(associatedCloud->rgbColors() != nullptr) {
+					//	associatedCloud->setPointColor(this->getPointGlobalIndex(i), red);
+					//	associatedCloud->setPointColor(this->getPointGlobalIndex(ii), green);
+					//}
 
 					associatedCloud->setPointScalarValue(this->getPointGlobalIndex(i), -1);
 					associatedCloud->setPointScalarValue(this->getPointGlobalIndex(ii), 1);
@@ -140,11 +142,15 @@ std::set<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointClou
 			for_each([&](size_t i) {
 				int track = getPointScalarValue(i);
 
-				if(track == -1)
+				if(track == -1) {
 					left.push_back(i);
+					associatedCloud->setPointColor(this->getPointGlobalIndex(i), red);
+				}
 
-				if(track == 1)
+				if(track == 1) {
 					right.push_back(i);
+					associatedCloud->setPointColor(this->getPointGlobalIndex(i), green);
+				}
 			});
 
 
