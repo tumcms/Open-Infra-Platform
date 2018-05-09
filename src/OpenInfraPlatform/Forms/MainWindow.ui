@@ -397,6 +397,8 @@
     <addaction name="actionCreate_Arc_Clothoid_Clothoid_Arc2"/>
     <addaction name="separator"/>
     <addaction name="actionCreateClothoid"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_Georeference"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -1177,6 +1179,11 @@
   <action name="actionCreate_Accident_Report">
    <property name="text">
     <string>Create Accident Report</string>
+   </property>
+  </action>
+  <action name="actionAdd_Georeference">
+   <property name="text">
+    <string>Add Georeference</string>
    </property>
   </action>
  </widget>
