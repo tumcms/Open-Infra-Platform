@@ -355,6 +355,7 @@ set(OpenInfraPlatform_UIS
 	src/OpenInfraPlatform/Forms/XYZImportDialog.ui
 	src/OpenInfraPlatform/Forms/LicenseAndCopyrightInformation.ui
 	src/OpenInfraPlatform/Forms/CreateAccidentReport.ui
+	src/OpenInfraPlatform/Forms/AddGeoreferenceDialog.ui
 )
 
 # Collect RC files
