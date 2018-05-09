@@ -176,7 +176,6 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::updateSignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setValue);
 	ui_->progressBarPointCloudProcessing->setVisible(false);
 
-
 #ifdef _DEBUG
     // Show debug menu only in debug mode
 
@@ -2475,14 +2474,64 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRail
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
-		pointCloud->segmentRailways(callback_);
-		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		buw::RailwaySegmentationDescription desc;
+		desc.distanceForPCA = ui_->doubleSpinBoxDistanceForPCA->value();
+		desc.numPointsForPCA = ui_->spinBoxNumPointsForPCA->value();
+		desc.centerlinePointDistance = ui_->doubleSpinBoxDistanceForPCA->value() / (float)ui_->spinBoxNumPointsForPCA->value();
+		desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
+		desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
+		
+
+		int numAlignments = pointCloud->segmentRailways(desc, callback_);
+		if(numAlignments > 0) {
+			for(int idx = 0; idx < numAlignments; idx++) {
+				ui_->comboBoxSelectAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
+			}
+			ui_->pushButtonPlotAlignment->setEnabled(true);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+		else if(numAlignments == 0) {
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+			BLUE_LOG(info) << "No railways detected.";
+		}
+		else {
+			BLUE_LOG(warning) << "Error in railway segmentation occurred. Code: " << numAlignments;
+			on_pushButtonResetSegmentRailways_clicked();
+		}
 	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetSegmentRailways_clicked()
 {
-	//TODO
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		BLUE_LOG(info) << "Resetting railway segmentation.";
+		if(pointCloud->resetRailwaySegmentation() == 0) {
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+		else {
+			BLUE_LOG(warning) << "Resetting railway segmentaiton failed";
+		}
+		// Clear our plotting combo box since we only want to plot the latest results.
+		ui_->comboBoxSelectAlignment->clear();
+		ui_->pushButtonPlotAlignment->setDisabled(true);
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_clicked()
+{
+	QString parameter = QDir::currentPath().append("/Alignment#").append(ui_->comboBoxSelectAlignment->currentData().toString()).append(".txt");
+	
+	//setup converter
+	std::wstring_convert<convert_type, wchar_t> converter;
+	auto wparameter = converter.from_bytes(parameter.toStdString().data());
+	auto filename = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/plotAlignment.cmd";
+	auto directory = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/";
+	std::wstring script = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/plot.py";
+
+	putenv("PYTHONPATH=%PYTHONPATH%;C:\Users\ga38fih\dev\python\packages");
+
+	ShellExecute(0, 0, filename, wparameter.c_str(), directory, SW_SHOWDEFAULT);
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value)

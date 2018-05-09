@@ -72,6 +72,11 @@ namespace OpenInfraPlatform
 			double lowerPercentile, upperPercentile;
 		};
 
+		struct RailwaySegmentationDescription {
+			int minSegmentPoints, numPointsForPCA;
+			float distanceForPCA, minSegmentLength, centerlinePointDistance;
+		};
+
 		//BLUEINFRASTRUCTURE_API void importLASPointCloud(const char* filename, PointCloud& pointCloud);
 		//BLUEINFRASTRUCTURE_API void importBINPointCloud(const char* filename, PointCloud& pointCloud);
 	} // end namespace Infrastructure
@@ -87,6 +92,7 @@ namespace buw
 	using OpenInfraPlatform::Infrastructure::LocalDensityFilterDescription;
 	using OpenInfraPlatform::Infrastructure::RateOfChangeSegmentationDescription;
 	using OpenInfraPlatform::Infrastructure::PercentileSegmentationDescription;
+	using OpenInfraPlatform::Infrastructure::RailwaySegmentationDescription;
 }
 
 #endif // end define OpenInfraPlatform_Infrastructure_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h

@@ -68,7 +68,9 @@ namespace OpenInfraPlatform {
 
 			int applyRateOfChangeSegmentation(RateOfChangeSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			int segmentRailways(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			int segmentRailways(buw::RailwaySegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			int resetRailwaySegmentation();
 
 			void removeNotSegmentedPoints();
 

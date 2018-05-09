@@ -724,7 +724,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 	return 0;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::RailwaySegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// If we have a callback, call start to init the GUI.
 	if(callback)
@@ -809,15 +809,20 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::Referenc
 				callback->update(100.0 * ++processedPoints / totalPoints);
 		}
 	}
+
 	// Clear all lines having less then 100 points -> probably noise or something.
-	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool { return line.size() < 10 || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < 1.0f; });
+	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool { return line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength; });
 	centerlines.erase(end, centerlines.end());
 
-	// Add a scalar field for railway and encode the left/right railway index as -1 and 1.
-	int idx = getScalarFieldIndexByName("Railway");
+	// Add a scalar field for centerline so that we can delete them again when we do the reset.
+	int idx = getScalarFieldIndexByName("Centerline");
 	if(idx == -1)
-		idx = addScalarField("Railway");
+		idx = addScalarField("Centerline");
 	setCurrentInScalarField(idx);
+
+	for_each([&](size_t i) {
+		setPointScalarValue(i, 0);
+	});
 
 	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>(centerlines.size());
 	// Iterate over all segments and combine the centers of each projection section.
@@ -826,8 +831,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::Referenc
 		int startIndex = 0, endIndex = 0;
 
 		for(size_t i = 0; i < line.size() - 1; i++) {
-			float length = mainAxis_.dot(centerpoints[line[i + 1]]) - mainAxis_.dot(centerpoints[line[startIndex]]);
-			if(length >= (1.0f / sections_[0]->getLength())) {
+			float length = std::fabsf(mainAxis_.dot(centerpoints[line[i + 1]]) - mainAxis_.dot(centerpoints[line[startIndex]]));
+			if(length >= desc.centerlinePointDistance) {
 				endIndex = i + 1;
 				int numPoints = (endIndex - startIndex);
 				CCVector3 &center = CCVector3(0, 0, 0);
@@ -837,9 +842,23 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::Referenc
 
 				alignments[idx].push_back(center);
 
-				this->addPoint(center);
-				this->addRGBColor(255 * (float)idx /(float) centerlines.size(),0,255);
+				//this->addPoint(center);
+				//this->addRGBColor(255 * (float)idx /(float) centerlines.size(),0,255);
 			}
+		}
+	}
+
+	// Clear all alignments having less then points required for PCA to make visualization better.
+	auto endAlignments = std::remove_if(alignments.begin(), alignments.end(), [&](std::vector<CCVector3> &line) -> bool { return line.size() <= desc.numPointsForPCA; });
+	alignments.erase(endAlignments, alignments.end());
+
+	// Only add centerpoints for alignments which are also exported.
+	for(size_t idx = 0; idx < alignments.size(); idx++) {
+		auto &segment = alignments[idx];
+		for(auto point : segment) {
+			this->addPoint(point);
+			this->addRGBColor(255 * (float)idx / (float)alignments.size(), 0, 255);
+			this->setPointScalarValue(this->size() - 1, 1);
 		}
 	}
 
@@ -852,6 +871,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::Referenc
 		if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
 			return -1;
 
+		auto filestart = file.pos();
 
 		auto getPCA = [](std::vector<CCVector3> alignment, size_t start, size_t end)->CCVector3 {
 			//Matrix which is capable of holding all points for PCA.
@@ -870,38 +890,119 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::Referenc
 			return CCVector3(vec.x(), vec.y(), vec.z());
 		};
 
-		const size_t START = 100;
-		const CCVector3 NORTH(0., 1., 0.);
-		const int halbe = START / 2;
+		// Implementation with offset by Stefan Markic.
+		if(false) {
+			const size_t START = 100;
+			const CCVector3 NORTH(0., 1., 0.);
+			const int halbe = START / 2;
 
-		if(alignment.size() > START) {
-			std::vector<float> angles = std::vector<float>();
+			if(alignment.size() > START) {
+				std::vector<float> angles = std::vector<float>();
 
-			for(int i = 0; i < halbe; i++) angles.push_back(0);
+				for(int i = 0; i < halbe; i++) angles.push_back(0);
 
-			for(size_t i = halbe; i < alignment.size() - halbe; i++) {
+				for(size_t i = halbe; i < alignment.size() - halbe; i++) {
 
-				CCVector3 axis = getPCA(alignment, i - halbe, i + halbe);
-				axis.normalize();
-				angles.push_back(axis.dot(NORTH) * 180.0 / M_PI);
-			}
+					CCVector3 axis = getPCA(alignment, i - halbe, i + halbe);
+					axis.normalize();
+					angles.push_back(axis.dot(NORTH) * 180.0 / M_PI);
+				}
 
-			for(int i = halbe; i < START; i++) angles.push_back(0);
+				for(int i = halbe; i < START; i++) angles.push_back(0);
 
-			for(size_t i = halbe; i < angles.size() - halbe; i++) {
-				float curvature = (angles[i + 1] - angles[i]) / std::fabsf(mainAxis_.dot(alignment[i + 1]) - mainAxis_.dot(alignment[i]));
-				QString text = QString::number(i).append("\t").append(QString::number(curvature)).append("\t").append(QString::number(angles[i])).append("\n");
-				file.write(text.toStdString().data());
+				for(size_t i = halbe; i < angles.size() - halbe; i++) {
+					float curvature = (angles[i + 1] - angles[i]) / std::fabsf(mainAxis_.dot(alignment[i + 1]) - mainAxis_.dot(alignment[i]));
+					QString text = QString::number(i).append("\t").append(QString::number(curvature)).append("\t").append(QString::number(angles[i])).append("\n");
+					file.write(text.toStdString().data());
+				}
 			}
 		}
 
-		file.close();		
+		// Implementation without offset but with other stuff by Helge Hecht.
+		if(true) {
+
+			// Initialize number of points to use for PCA and and the NORTH direction.
+			const CCVector3 NORTH(0., 1., 0.);
+
+			// Check if our alignment has enough points.
+			if(alignment.size() > desc.numPointsForPCA) {
+
+				// Initialize the container to hold our angles of the direction vectors
+				std::vector<float> bearings = std::vector<float>();
+
+				// Compute the bearing for all points as the angle between the principal axis of numPointsForPCA consecutive centerline points and the NORTH direction.
+				for(size_t i = 0; i < alignment.size() - desc.numPointsForPCA; i++) {
+					CCVector3 axis = getPCA(alignment, i, i + desc.numPointsForPCA);
+					axis.normalize();
+					bearings.push_back(axis.dot(NORTH) * 180.0 / M_PI);
+				}
+
+				for(size_t i = 0; i < bearings.size() - 1; i++) {
+					// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
+					float curvature = (bearings[i + 1] - bearings[i]) / std::fabsf(mainAxis_.dot(alignment[i + 1]) - mainAxis_.dot(alignment[i]));
+					QString text = QString::number(i).append("\t").append(QString::number(curvature)).append("\t").append(QString::number(bearings[i])).append("\n");
+					file.write(text.toStdString().data());
+				}
+			}
+		}
+
+		// TODO:If the file is empty we delete it.		
+		file.close();
+		
 	}
 
 	// Tell the callback that we're done.
 	if(callback)
 		callback->stop();
 
+	return alignments.size();
+}
+
+
+int OpenInfraPlatform::Infrastructure::PointCloud::resetRailwaySegmentation()
+{
+	// Reset the railway points color to white.
+	int idx_railway = getScalarFieldIndexByName("Railway");
+	if(idx_railway == -1)
+		return -1;
+
+	setCurrentOutScalarField(idx_railway);
+	const ColorCompType white[3] = { 255,255,255 };
+	for_each([&](size_t i) {
+		if(getPointScalarValue(i) != 0)
+			setPointColor(i, white);
+	});
+
+	int idx_centerline = getScalarFieldIndexByName("Centerline");
+
+	// Abort if we have no filtered points.
+	if(idx_centerline == -1)
+		return -1;
+
+
+	// Set the scalar field to read from and filter all points with non 0 value, choose 0.1f due to accuracy issues.
+	setCurrentOutScalarField(idx_centerline);
+	float epsilon = 0.0001f;
+	ccPointCloud* original = filterPointsByScalarValue(0, epsilon);
+
+	// Clear all points from the point cloud.
+	clear();
+
+	// Clear the index buffers.
+	remainingIndices_.clear();
+	filteredIndices_.clear();
+	segmentedIndices_.clear();
+
+	// Clear all sections.
+	sections_.clear();
+
+	// Remove all scalar fields.
+	deleteAllScalarFields();
+
+	// Append the filtered cloud and initialize the cloud.
+	append(original, 0);
+
+	init();
 	return 0;
 }
 
