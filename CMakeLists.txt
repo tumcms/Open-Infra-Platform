@@ -125,7 +125,8 @@ add_definitions(-D_UNICODE 			# Unicode rules
 
 if (WIN32)
 	# Standard:          /DWIN32 /D_WINDOWS /W3 /Zm1000 /EHsc /GR
-	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR /MP /openmp /bigobj")
+	#set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR /MP /openmp /bigobj")
+	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W3 /Zi /EHsc /GR /MP /openmp /bigobj")
 endif (WIN32)
 
 #------------------------------------------------------------------------------
@@ -162,7 +163,6 @@ set(QT5_COMPONENTS
 	Positioning
 	Location
 	OpenGL
-	OpenGLExtensions
 )
 
 # Loop over all components, find them and initialize the corresponding variables
@@ -703,7 +703,7 @@ installData(${CMAKE_BINARY_DIR}/res)
 installData(${CMAKE_BINARY_DIR}/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES}
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${ZLIB_ROOT}/build/Release/zlib.dll
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 	

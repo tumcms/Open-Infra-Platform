@@ -25,6 +25,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <FileIOFilter.h>
 #include <GenericProgressCallback.h>
 #include <ScalarFieldTools.h>
+#include <CloudSamplingTools.h>
 
 #include <liblas/liblas.hpp>
 
@@ -43,6 +44,7 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 	QString extension = QString(filename).split(".").last().toUpper();
 	auto filter = FileIOFilter::FindBestFilterForExtension(extension);
 
+	BLUE_LOG(trace) << "Importing " << extension.toStdString() << " point cloud " << filename << ".";
 	if(filter) {
 		CC_FILE_ERROR err;
 		// Load the point cloud from file and store it temporarily.
@@ -103,22 +105,21 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 			// TODO
 		}
 	}
+
+	BLUE_LOG(trace) << "Finished importing " << filename << ".";
+
+
 	pointCloud->setName(filename);
 	pointCloud->init();
 
-	if(pointCloud->rgbColors() == nullptr) {
-		if(pointCloud->reserveTheRGBTable()) {
-			pointCloud->for_each([&](size_t i) {
-				pointCloud->addRGBColor(255, 255, 255);
-			});
-		}
-	}
+	
 
 	return pointCloud;
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
+	BLUE_LOG(trace) << "Start computing sections. Length:" << length;
 	// Get the main axis and compute the length of the projection along this axis for each point.
 	CCVector3 axis = mainAxis_;
 
@@ -173,6 +174,8 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float 
 			section = buw::makeReferenceCounted<buw::PointCloudSection>(static_cast<GenericIndexedCloudPersist*>(this));
 		section->setLength(length);
 	}
+
+	BLUE_LOG(trace) << "Finished computing sections.";
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid()
@@ -336,6 +339,17 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeLocalDensity(CCLib::Ge
 
 void OpenInfraPlatform::Infrastructure::PointCloud::init()
 {
+	BLUE_LOG(trace) << "Start initializing point cloud.";
+
+	// If we have no colors, we add white as color to all points.
+	if(rgbColors() == nullptr) {
+		if(reserveTheRGBTable()) {
+			for_each([&](size_t i) {
+				addRGBColor(255, 255, 255);
+			});
+		}
+	}
+
 	// Initialize our point cloud for usage - compute main axis, octree and sections.
 	remainingIndices_ = std::vector<uint32_t>(size());
 	#pragma omp parallel for
@@ -349,14 +363,22 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init()
 
 	computeMainAxis();
 	//alignOnMainAxis();
+	BLUE_LOG(trace) << "Start building octree.";
 	octree_ = buw::makeReferenceCounted<CCLib::DgmOctree>(this);
 	octree_->build();
+	BLUE_LOG(trace) << "Finished building octree.";
+
 	computeSections(10.0f);
 }
 
 std::vector<buw::ReferenceCounted<buw::PointCloudSection>> OpenInfraPlatform::Infrastructure::PointCloud::getSections()
 {
 	return sections_;
+}
+
+buw::ReferenceCounted<CCLib::ReferenceCloud> OpenInfraPlatform::Infrastructure::PointCloud::subsample(size_t size)
+{	
+	return buw::ReferenceCounted<CCLib::ReferenceCloud>(CCLib::CloudSamplingTools::subsampleCloudWithOctree(this, size, CCLib::CloudSamplingTools::SUBSAMPLING_CELL_METHOD::NEAREST_POINT_TO_CELL_CENTER, nullptr, octree_.get()));
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices()
@@ -821,7 +843,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::RailwayS
 	setCurrentInScalarField(idx);
 
 	for_each([&](size_t i) {
-		setPointScalarValue(i, 0);
+		setPointScalarValue(i, -1);
 	});
 
 	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>(centerlines.size());
@@ -858,7 +880,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::RailwayS
 		for(auto point : segment) {
 			this->addPoint(point);
 			this->addRGBColor(255 * (float)idx / (float)alignments.size(), 0, 255);
-			this->setPointScalarValue(this->size() - 1, 1);
+			this->setPointScalarValue(this->size() - 1, idx);
 		}
 	}
 
@@ -1098,6 +1120,8 @@ const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint3
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeMainAxis()
 {
+	BLUE_LOG(trace) << "Start computing main axis.";
 	// Set the main axis as the eigenvector with the largest eigenvalue.
 	mainAxis_ = CCVector3(getEigenvectors<1>().cast<float>().normalized().data());
+	BLUE_LOG(trace) << "Finished computing main axis.";
 }

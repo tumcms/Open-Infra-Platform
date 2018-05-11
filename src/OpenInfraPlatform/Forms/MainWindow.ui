@@ -368,17 +368,17 @@
            </item>
            <item>
             <layout class="QGridLayout" name="gridLayout_2">
-             <item row="1" column="0">
-              <widget class="QCheckBox" name="checkBoxShowFilteredPoints">
-               <property name="text">
-                <string>Show filtered points</string>
-               </property>
-              </widget>
-             </item>
              <item row="2" column="0">
               <widget class="QCheckBox" name="checkBoxShowSegmentedPoints">
                <property name="text">
                 <string>Show segmented points</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="checkBoxShowFilteredPoints">
+               <property name="text">
+                <string>Show filtered points</string>
                </property>
               </widget>
              </item>
@@ -407,6 +407,26 @@
               <widget class="QPushButton" name="pushButtonSelectSegmentedPointsColor">
                <property name="text">
                 <string>Select Color</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QCheckBox" name="checkBoxRenderingSelectAlignment">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Show alignment</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QComboBox" name="comboBoxShowAlignment">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="currentText">
+                <string/>
                </property>
               </widget>
              </item>
@@ -1203,7 +1223,7 @@
               </widget>
              </item>
              <item row="3" column="1">
-              <widget class="QComboBox" name="comboBoxSelectAlignment"/>
+              <widget class="QComboBox" name="comboBoxPlotSelectAlignment"/>
              </item>
              <item row="3" column="2">
               <widget class="QPushButton" name="pushButtonPlotAlignment">

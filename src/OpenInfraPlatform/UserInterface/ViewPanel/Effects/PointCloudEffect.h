@@ -102,9 +102,10 @@ private:
 	buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA_ = nullptr;
 	buw::ReferenceCounted<buw::IPipelineState> pipelineState_ = nullptr;
 	buw::ReferenceCounted<buw::IViewport> viewport_ = nullptr;
+	buw::ReferenceCounted<CCLib::ReferenceCloud> subsampledPointCloud_ = nullptr;
 	SettingsBuffer settings_;
 	buw::Vector4f uniformColor_, filteredColor_, segmentedColor_;
-	bool bShow_ = true, bShowOriginalPointCloud_ = true, bShowSegmentedPoints_ = false, bShowFilteredPoints_ = false, bProjectPoints_ = false;
+	bool bShow_ = true, bShowOriginalPointCloud_ = true, bShowSegmentedPoints_ = false, bShowFilteredPoints_ = false, bProjectPoints_ = false, bUseSubsampledCloud_ = false;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END

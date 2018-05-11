@@ -92,6 +92,8 @@ namespace OpenInfraPlatform {
 
 			std::vector<buw::ReferenceCounted<PointCloudSection>> getSections();
 
+			buw::ReferenceCounted<CCLib::ReferenceCloud> subsample(size_t size);
+
 		private:
 			void computeMainAxis();
 
@@ -104,20 +106,26 @@ namespace OpenInfraPlatform {
 
 			template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors() const
 			{
-				//Matrix which is capable of holding all points for PCA.
-				Eigen::MatrixX3d points;
-				points.resize(this->size(), 3);
-				for(size_t i = 0; i < this->size(); i++) {
-					auto pos = this->getPoint(i);
-					points.row(i) = Eigen::Vector3d(pos->x, pos->y, pos->z);
-				}
+				try {
+					//Matrix which is capable of holding all points for PCA.
+					Eigen::MatrixX3d points;
+					points.resize(this->size(), 3);
+					for(size_t i = 0; i < this->size(); i++) {
+						auto pos = this->getPoint(i);
+						points.row(i) = Eigen::Vector3d(pos->x, pos->y, pos->z);
+					}
 
-				//Do PCA to find the largest eigenvector -> main axis.
-				Eigen::MatrixXd centered = points.rowwise() - points.colwise().mean();
-				Eigen::MatrixXd cov = centered.adjoint() * centered;
-				Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-				Eigen::Matrix<double, 3, N> vec = eig.eigenvectors().rightCols(N);
-				return vec;
+					//Do PCA to find the largest eigenvector -> main axis.
+					Eigen::MatrixXd centered = points.rowwise() - points.colwise().mean();
+					Eigen::MatrixXd cov = centered.adjoint() * centered;
+					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+					Eigen::Matrix<double, 3, N> vec = eig.eigenvectors().rightCols(N);
+					return vec;
+				}
+				catch(buw::Exception e) {
+					BLUE_LOG(warning) << "Exception in Eigenvector computation. " << e.what();
+					return Eigen::Matrix<double, 3, N>();
+				}
 			}
 
 		public:

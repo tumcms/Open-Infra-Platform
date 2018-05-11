@@ -154,6 +154,30 @@ void PointCloudEffect::updateIndexBuffers(const std::tuple<std::vector<uint32_t>
 	std::vector<uint32_t> remainingIndices, filteredIndices, segmentedIndices;
 	std::tie(remainingIndices, filteredIndices, segmentedIndices) = indices;
 
+	// If we use a subsampled cloud, we're only interested in the indices which are in our subsampled cloud.
+	if(bUseSubsampledCloud_) {
+		std::vector<uint32_t> subsampledIndices = std::vector<uint32_t>(subsampledPointCloud_->size());
+
+		// Get the real indices and store them to filter the other vectors.
+#pragma omp parallel for
+		for(long i = 0; i < subsampledIndices.size(); i++) {
+			subsampledIndices[i] = subsampledPointCloud_->getPointGlobalIndex(i);
+		}
+
+		auto reduceToIntersection = [](std::vector<uint32_t> &vector, const std::vector<uint32_t> &filter) {
+			auto end = std::remove_if(vector.begin(), vector.end(), [&](const uint32_t &elem)->bool { return std::find(filter.begin(), filter.end(), elem) == filter.end(); });
+			vector.erase(end, vector.end());
+		};
+
+		auto threadRemainingIndices = std::thread(reduceToIntersection, remainingIndices, subsampledIndices);
+		auto threadfilteredIndices = std::thread(reduceToIntersection, filteredIndices, subsampledIndices);
+		auto threadSegmentedIndices = std::thread(reduceToIntersection, segmentedIndices, subsampledIndices);
+
+		threadRemainingIndices.join();
+		threadfilteredIndices.join();
+		threadSegmentedIndices.join();
+	}
+
 	buw::indexBufferDescription ibd;
 	ibd.indexCount = remainingIndices.size();
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
@@ -179,27 +203,139 @@ void PointCloudEffect::updateIndexBuffers(const std::tuple<std::vector<uint32_t>
 
 void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset)
 {
+	BLUE_LOG(trace) << "Start initializing GPU side buffers.";
 	buw::vertexBufferDescription vbd;
-	vbd.vertexCount = pointCloud->size();
 	vbd.vertexLayout = VertexTypePointCloud::getVertexLayout();
 	
+	// Initialize the vector to hold our data and out base color.
 	std::vector<VertexTypePointCloud> vertices = std::vector<VertexTypePointCloud>(pointCloud->size());
 	auto baseColor = ccColor::Rgbaf(255.0f, 255.0f, 255.0f, 255.0f);
 	
+	// If the cloud is too large to be held in gpu memory, subsample the cloud. We require 32 bytes per point due to 16 byte alignment on gpu.
+	size_t vbDataByteSize = pointCloud->size() * 32;
+	size_t vbMaxCapacity = 2 * 1024 * 1024 * 32;
+	bUseSubsampledCloud_ = false;
+	subsampledPointCloud_ = nullptr;
+	size_t vbNumPoints = pointCloud->size();
+
+	// If we would need more than 4GiB, we subsample the cloud. TODO: Make gpu memory amount queryable.
+	if(vbDataByteSize > (2 * 1024 * 1024 * 1024)) {
+		BLUE_LOG(warning) << "Not enough GPU memory available. Using a subsampled point cloud with " << QString::number(vbMaxCapacity).toStdString() << " points.";
+		subsampledPointCloud_ = pointCloud->subsample(vbMaxCapacity);
+		bUseSubsampledCloud_ = true;
+		vbNumPoints = subsampledPointCloud_->size();
+	}
+
 #pragma omp parallel for
-	for(int i = 0; i < pointCloud->size(); i++) {
+	for(long ii = 0; ii < vbNumPoints; ii++) {
+		size_t i;
+		if(bUseSubsampledCloud_)
+			i = subsampledPointCloud_->getPointGlobalIndex(ii);
+		else
+			i = ii;
+
 		auto pos = pointCloud->getPoint(i);
 		const ColorCompType* col = pointCloud->rgbColors() ? pointCloud->getPointColor(i) : ccColor::FromRgbf(baseColor).rgb;
 		// Swap Z and Y coordinate for rendering!
-		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos->x + offset.x(), pos->z + offset.z(), pos->y + offset.y()), buw::Vector4f((float)col[0], (float)col[1], (float)col[2], 255.0f)/255.0f);
+		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos->x + offset.x(), pos->z + offset.z(), pos->y + offset.y()), buw::Vector4f((float)col[0], (float)col[1], (float)col[2], 255.0f) / 255.0f);
 	}
 	
+	vbd.vertexCount = vbNumPoints;
 	vbd.data = vertices.data();
 	vertexBuffer_ = renderSystem()->createVertexBuffer(vbd);
+	BLUE_LOG(trace) << "Done creating vertex buffer.";
+
+	std::vector<uint32_t> remainingIndices = std::vector<uint32_t>(), filteredIndices = std::vector<uint32_t>(), segmentedIndices = std::vector<uint32_t>();
+
+	// If we use a subsampled cloud, we're only interested in the indices which are in our subsampled cloud.
+	if(bUseSubsampledCloud_) {
+		bool filtered = false, segmented = false;
+
+#pragma omp parallel shared(filtered,segmented)
+		{
+			std::vector<uint32_t> remainingIndicesLocal = std::vector<uint32_t>(), filteredIndicesLocal = std::vector<uint32_t>(), segmentedIndicesLocal = std::vector<uint32_t>();
 
 
-	std::vector<uint32_t> remainingIndices, filteredIndices, segmentedIndices;
-	std::tie(remainingIndices, filteredIndices, segmentedIndices) = pointCloud->getIndices();
+#pragma omp single
+			// Let one thread check if we have a filtered scalar field, if yes, set it as readable field.
+			{
+				int idx_filtered = pointCloud->getScalarFieldIndexByName("Filtered");
+				if(idx_filtered != -1) {
+					pointCloud->setCurrentOutScalarField(idx_filtered);
+					filtered = true;
+				}				
+			}
+
+			if(filtered) {
+				// If we have a filter, we have to split and read the scalar value to insert our points.
+#pragma omp for
+				for(long i = 0; i < subsampledPointCloud_->size(); i++) {
+					if(subsampledPointCloud_->getPointScalarValue(i) > 0) {
+						filteredIndicesLocal.push_back(subsampledPointCloud_->getPointGlobalIndex(i));
+					}
+					else {
+						remainingIndicesLocal.push_back(subsampledPointCloud_->getPointGlobalIndex(i));
+					}
+				}
+			}
+			else {
+#pragma omp for
+				for(long i = 0; i < subsampledPointCloud_->size(); i++) {
+					remainingIndicesLocal.push_back(subsampledPointCloud_->getPointGlobalIndex(i));
+				}
+			}
+#pragma omp barrier
+
+#pragma omp single
+			// Let one thread check if we have a segmented scalar field, if yes, set it as readable field.
+			{
+				int idx_segmented = pointCloud->getScalarFieldIndexByName("Segmented");
+				if(idx_segmented != -1) {
+					pointCloud->setCurrentOutScalarField(idx_segmented);
+					segmented = true;
+				}
+			}
+
+			if(segmented) {
+#pragma omp for
+				for(long i = 0; i < subsampledPointCloud_->size(); i++) {
+					if(subsampledPointCloud_->getPointScalarValue(i) > 0) {
+						segmentedIndicesLocal.push_back(subsampledPointCloud_->getPointGlobalIndex(i));
+					}
+				}
+#pragma omp barrier
+			}
+
+#pragma omp critical
+			{
+				remainingIndices.insert(remainingIndices.end(), remainingIndicesLocal.begin(), remainingIndicesLocal.end());
+				filteredIndices.insert(filteredIndices.end(), filteredIndicesLocal.begin(), filteredIndicesLocal.end());
+				segmentedIndices.insert(segmentedIndices.end(), segmentedIndicesLocal.begin(), segmentedIndicesLocal.end());
+			}
+
+		}
+
+		{
+			// Get the real indices and store them to filter the other vectors.
+
+
+			//auto reduceToIntersection = [](std::vector<uint32_t> &vector, const std::vector<uint32_t> &filter) {
+			//	auto end = std::remove_if(vector.begin(), vector.end(), [&](const uint32_t &elem)->bool { return std::find(filter.begin(), filter.end(), elem) == filter.end(); });
+			//	vector.erase(end, vector.end());
+			//};
+			//
+			//auto threadRemainingIndices = std::thread(reduceToIntersection, remainingIndices, subsampledIndices);
+			//auto threadFilteredIndices = std::thread(reduceToIntersection, filteredIndices, subsampledIndices);
+			//auto threadSegmentedIndices = std::thread(reduceToIntersection, segmentedIndices, subsampledIndices);
+			//
+			//threadRemainingIndices.join();
+			//threadFilteredIndices.join();
+			//threadSegmentedIndices.join();
+		}
+	}
+	else {
+		std::tie(remainingIndices, filteredIndices, segmentedIndices) = pointCloud->getIndices();
+	}
 
 	buw::indexBufferDescription ibd;
 	ibd.indexCount = remainingIndices.size();
@@ -229,8 +365,12 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	else
 		indexBufferSegmented_ = nullptr;
 
+	BLUE_LOG(trace) << "Done creating index buffers.";
+
 	settings_.mainAxis = buw::Vector4f(pointCloud->getMainAxis().x, pointCloud->getMainAxis().y, pointCloud->getMainAxis().z, 0.0f);
 	settings_.sectionLength = (float) pointCloud->getSectionLength();
+
+	BLUE_LOG(trace) << "Finished initializing GPU side buffers.";
 }
 
 void PointCloudEffect::v_init()
@@ -256,6 +396,7 @@ void PointCloudEffect::v_init()
 
 void PointCloudEffect::v_render()
 {
+	BLUE_LOG(trace) << "Start rendering.";
 	buw::ReferenceCounted<buw::ITexture2D> renderTarget = renderSystem()->getBackBufferTarget();
 	setRenderTarget(renderTarget, depthStencilMSAA_);
 	setViewport(viewport_);
@@ -302,6 +443,7 @@ void PointCloudEffect::v_render()
 			drawIndexed(static_cast<UINT>(indexBufferSegmented_->getIndexCount()));
 		}
 	}
+	BLUE_LOG(trace) << "Done rendering.";
 }
 
 void PointCloudEffect::updateSettingsBuffer()
