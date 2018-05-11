@@ -97,97 +97,69 @@ std::set<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointClou
 		// Set up our pairs as set so that every pair is only contained once.
 		std::set<std::pair<size_t, size_t>> pairs = std::set<std::pair<size_t, size_t>>();
 		
-		// Allow 1cm of error, standard gauge witdth is 1.435m and the width of the track head itself is 67mm.
-		float epsilon = 0.01f;
+		// Allow 0.1cm of error, standard gauge witdth is 1.435m and the width of the track head itself is 67mm.
+		float epsilon = 0.005f;
 		float gauge = 1.435f;
-		float head = 0.067f;
-
-		const ColorCompType red[3] = { 255,0,0 };
-		const ColorCompType green[3] = { 0,255,0 };
+		float head = 0.067f;		
 		
 		// Iterate over all pairs of points, we iterate fully since points are not sorted in x direction.
-		for(size_t i = 0; i < points2D.size(); i++) {
-			for(size_t ii = 0; ii < points2D.size(); ii++) {
+		for(size_t i = 0; i < points2D.size() - 1; i++) {
+			for(size_t ii = i + 1; ii < points2D.size(); ii++) {
 
 				// If first point.x + gauge + head - second point.x < 1cm and difference in y direction is less than 1cm, we have found a pair of matching rail points.
-				if(std::fabsf((points2D[i].x + gauge + head) - points2D[ii].x) < epsilon && std::fabsf(points2D[i].y - points2D[ii].y) < 0.01f) {
+				float distance = (points2D[i] - points2D[ii]).norm();
+				float error = std::fabsf(distance - gauge - head);
+				if(error < epsilon && std::fabsf(points2D[i].y - points2D[ii].y) < 0.05f) {
 					pairs.insert(std::pair<size_t, size_t>(getPointGlobalIndex(i), getPointGlobalIndex(ii)));
-
-					
-
-					if(!associatedCloud->rgbColors()) {
-						if(!associatedCloud->reserveTheRGBTable()) {
-							BLUE_LOG(warning) << "Failed to reserve the RGB table.";
-						}
-					}
-
-					//if(associatedCloud->rgbColors() != nullptr) {
-					//	associatedCloud->setPointColor(this->getPointGlobalIndex(i), red);
-					//	associatedCloud->setPointColor(this->getPointGlobalIndex(ii), green);
-					//}
-
-					associatedCloud->setPointScalarValue(this->getPointGlobalIndex(i), -1);
-					associatedCloud->setPointScalarValue(this->getPointGlobalIndex(ii), 1);
 				}
 			}
 		}
-		
 
-		{
-			//TODO: Move this part to segment railways.
+		// Do some postprocessing on our points to avoid false pairs.
+		// This has become obsolete due to symmetrical distances
+		if(false) {
+			// First of all, a point should always only be on one side of a pair, it should never appear on both sides.
+			for(auto elem : pairs) {
+				size_t confusionMatrix[2][2] = { {0,0},{0,0} };
 
-			// Sort our indices into left and right railway.
-			std::vector<size_t> left = std::vector<size_t>(), right = std::vector<size_t>();
-			associatedCloud->setCurrentOutScalarField(idx);
-			for_each([&](size_t i) {
-				int track = getPointScalarValue(i);
+				for(auto other : pairs) {
+					// Counts how often we find our left index on the left side.
+					if(elem.first == other.first)
+						confusionMatrix[0][0]++;
 
-				if(track == -1) {
-					left.push_back(i);
-					associatedCloud->setPointColor(this->getPointGlobalIndex(i), red);
+					// Counts how often we find our left index on the right side.
+					if(elem.first == other.second)
+						confusionMatrix[0][1]++;
+
+					// Counts how often we find our right index on the left side.
+					if(elem.second == other.first)
+						confusionMatrix[1][0]++;
+
+					// Counts how often we find our right index on the right side.
+					if(elem.second == other.second)
+						confusionMatrix[1][1]++;
 				}
 
-				if(track == 1) {
-					right.push_back(i);
-					associatedCloud->setPointColor(this->getPointGlobalIndex(i), green);
-				}
-			});
-
-
-			// Initialize the number of railways in this section to 0 for both sides.
-			int numRailwaysLeft = 0, numRailwaysRight = 0;
-
-			// If neither left nor right track buffers are empty, we set both to 1.
-			if(!left.empty() && !right.empty()) {
-				numRailwaysLeft = 1;
-				numRailwaysRight = 1;
-
-				std::sort(left.begin(), left.end(), [&](size_t lhs, size_t rhs)->bool { return getPoint(lhs)->x < getPoint(rhs)->x; });
-				std::sort(right.begin(), right.end(), [&](size_t lhs, size_t rhs)->bool { return getPoint(lhs)->x < getPoint(rhs)->x; });
-
-				for(size_t i = 0; i < left.size() - 1; i++) {
-					if(std::fabsf(getPoint(left[i])->x - getPoint(left[i + 1])->x) > 0.05f) {
-						numRailwaysLeft++;
-					}
-				}
-
-				for(size_t i = 0; i < right.size() - 1; i++) {
-					if(std::fabsf(getPoint(right[i])->x - getPoint(right[i + 1])->x) > 0.05f) {
-						numRailwaysRight++;
-					}
-				}
-				// Compare the number of railways found on left and right side
-				if(numRailwaysLeft == numRailwaysRight) {
-					int numRailways = numRailwaysLeft;
-
-					// Setup railways.
-					std::vector<std::pair<std::vector<size_t>, std::vector<size_t>>> railways = std::vector<std::pair<std::vector<size_t>, std::vector<size_t>>>();
-
+				// If this pair is ambiguous - meaning the left side appears more often on the right side and so on, erase it.
+				if(!(confusionMatrix[0][0] > confusionMatrix[0][1] && confusionMatrix[1][1] > confusionMatrix[1][0])) {
+					pairs.erase(elem);
 				}
 			}
-			else {
+		}
 
+		// Color the pair points and set the scalar value.
+		const ColorCompType red[3] = { 255,0,0 };
+		const ColorCompType green[3] = { 0,255,0 };
+		const ColorCompType yellow[3] = { 255, 255, 0 };
+
+		for(auto pair : pairs) {
+			if(associatedCloud->rgbColors() != nullptr) {
+				associatedCloud->setPointColor(pair.first, yellow);
+				associatedCloud->setPointColor(pair.second, yellow);
 			}
+			
+			associatedCloud->setPointScalarValue(pair.first, -1);
+			associatedCloud->setPointScalarValue(pair.second, 1);
 		}
 
 		return pairs;

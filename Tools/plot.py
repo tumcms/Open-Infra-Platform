@@ -12,7 +12,7 @@ def main(argv):
 	parser.add_argument("file")
 
 	args = parser.parse_args()
-	indices, curvatures, bearings = np.loadtxt(args.file, delimiter='\t',unpack=True)
+	indices, curvatures, bearings, distances = np.loadtxt(args.file, delimiter='\t',unpack=True)
 	
 	f, axarr = ply.subplots(2, sharex=True)
 	axarr[0].plot(indices, curvatures)

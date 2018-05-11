@@ -1140,10 +1140,13 @@
              <item row="2" column="1">
               <widget class="QSpinBox" name="spinBoxNumPointsForPCA">
                <property name="maximum">
-                <number>10000</number>
+                <number>100000000</number>
+               </property>
+               <property name="singleStep">
+                <number>1000</number>
                </property>
                <property name="value">
-                <number>100</number>
+                <number>1000</number>
                </property>
               </widget>
              </item>
@@ -1163,8 +1166,14 @@
              </item>
              <item row="1" column="1">
               <widget class="QSpinBox" name="spinBoxMinSegmentPoints">
+               <property name="maximum">
+                <number>10000000</number>
+               </property>
+               <property name="singleStep">
+                <number>1000</number>
+               </property>
                <property name="value">
-                <number>10</number>
+                <number>1000</number>
                </property>
               </widget>
              </item>
@@ -1177,8 +1186,20 @@
              </item>
              <item row="1" column="2">
               <widget class="QDoubleSpinBox" name="doubleSpinBoxMinSegmentLength">
+               <property name="decimals">
+                <number>3</number>
+               </property>
+               <property name="minimum">
+                <double>0.001000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>10000.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>10.000000000000000</double>
+               </property>
                <property name="value">
-                <double>1.000000000000000</double>
+                <double>10.000000000000000</double>
                </property>
               </widget>
              </item>

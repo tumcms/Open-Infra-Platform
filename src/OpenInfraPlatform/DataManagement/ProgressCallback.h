@@ -47,10 +47,12 @@ namespace OpenInfraPlatform {
 		virtual void start()
 		{
 			Q_EMIT activitySignal(true);
+			Q_EMIT updateSignal(0);
 		}
 	
 		virtual void stop()
 		{
+			Q_EMIT updateSignal(100);
 			Q_EMIT activitySignal(false);
 	
 		}	

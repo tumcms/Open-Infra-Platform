@@ -2485,7 +2485,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRail
 		int numAlignments = pointCloud->segmentRailways(desc, callback_);
 		if(numAlignments > 0) {
 			for(int idx = 0; idx < numAlignments; idx++) {
-				ui_->comboBoxSelectAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
+				ui_->comboBoxPlotSelectAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
 			}
 			ui_->pushButtonPlotAlignment->setEnabled(true);
 			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
@@ -2513,14 +2513,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetSegmentRail
 			BLUE_LOG(warning) << "Resetting railway segmentaiton failed";
 		}
 		// Clear our plotting combo box since we only want to plot the latest results.
-		ui_->comboBoxSelectAlignment->clear();
+		ui_->comboBoxPlotSelectAlignment->clear();
 		ui_->pushButtonPlotAlignment->setDisabled(true);
 	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_clicked()
 {
-	QString parameter = QDir::currentPath().append("/Alignment#").append(ui_->comboBoxSelectAlignment->currentData().toString()).append(".txt");
+	QString parameter = QDir::currentPath().append("/Alignment#").append(ui_->comboBoxPlotSelectAlignment->currentData().toString()).append(".txt");
 	
 	//setup converter
 	std::wstring_convert<convert_type, wchar_t> converter;

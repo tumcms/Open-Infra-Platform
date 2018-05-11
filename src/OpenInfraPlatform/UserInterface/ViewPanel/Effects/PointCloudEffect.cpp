@@ -396,7 +396,6 @@ void PointCloudEffect::v_init()
 
 void PointCloudEffect::v_render()
 {
-	BLUE_LOG(trace) << "Start rendering.";
 	buw::ReferenceCounted<buw::ITexture2D> renderTarget = renderSystem()->getBackBufferTarget();
 	setRenderTarget(renderTarget, depthStencilMSAA_);
 	setViewport(viewport_);
@@ -443,7 +442,6 @@ void PointCloudEffect::v_render()
 			drawIndexed(static_cast<UINT>(indexBufferSegmented_->getIndexCount()));
 		}
 	}
-	BLUE_LOG(trace) << "Done rendering.";
 }
 
 void PointCloudEffect::updateSettingsBuffer()
