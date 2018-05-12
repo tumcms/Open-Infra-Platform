@@ -2480,6 +2480,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRail
 		desc.centerlinePointDistance = ui_->doubleSpinBoxDistanceForPCA->value() / (float)ui_->spinBoxNumPointsForPCA->value();
 		desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
 		desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
+		desc.curvatureStepSize = ui_->spinBoxCurvatureStepSize->value();
+		desc.numPointsForMeanCurvature = ui_->spinBoxNumPointsForMeanCurvature->value();
 		
 
 		int numAlignments = pointCloud->segmentRailways(desc, callback_);
@@ -2510,11 +2512,59 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetSegmentRail
 			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 		}
 		else {
-			BLUE_LOG(warning) << "Resetting railway segmentaiton failed";
+			BLUE_LOG(warning) << "Resetting railway segmentation failed.";
 		}
 		// Clear our plotting combo box since we only want to plot the latest results.
 		ui_->comboBoxPlotSelectAlignment->clear();
 		ui_->pushButtonPlotAlignment->setDisabled(true);
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCenterlines_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::CenterlineComputationDescription desc;		
+		desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
+		desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
+		desc.maxDistance = ui_->doubleSpinBoxCenterlineMaxDistance->value();
+		int numAlignments = pointCloud->computeCenterlines(desc, callback_);
+		if(numAlignments > 0) {
+			for(int idx = 0; idx < numAlignments; idx++) {
+				ui_->comboBoxShowAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
+				ui_->comboBoxComputeCurvature->addItem(QString::number(idx), QVariant(QString::number(idx)));
+			}
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+		else
+			BLUE_LOG(warning) << "Computing centerlines failed.";		
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetCenterlines_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		ui_->comboBoxShowAlignment->clear();
+		ui_->comboBoxComputeCurvature->clear();
+
+		if(pointCloud->resetCenterlines() == 0)
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		else
+			BLUE_LOG(warning) << "Resetting centerlines failed.";
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCurvature_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::CenterlineCurvatureComputationDescription desc;
+		desc.numPointsForPCA = ui_->spinBoxNumPointsForPCA->value();
+		desc.curvatureStepSize = ui_->spinBoxCurvatureStepSize->value();
+		desc.numPointsForMeanCurvature = ui_->spinBoxNumPointsForMeanCurvature->value();
+		desc.centerlineIndex = ui_->comboBoxComputeCurvature->currentData().toString().toInt();
+		pointCloud->computeCenterlineCurvature(desc, callback_);
 	}
 }
 

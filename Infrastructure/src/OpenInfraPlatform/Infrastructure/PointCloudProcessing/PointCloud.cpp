@@ -746,6 +746,323 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 	return 0;
 }
 
+int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(buw::CenterlineComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	// If we have a callback, call start to init the GUI.
+	if(callback)
+		callback->start();
+
+	// Add a scalar field for railway and encode the left/right railway index as -1 and 1.
+	int idx_railway = getScalarFieldIndexByName("Railway");
+	if(idx_railway == -1)
+		idx_railway = addScalarField("Railway");
+	setCurrentInScalarField(idx_railway);
+
+	for_each([&](size_t i) {
+		setPointScalarValue(i, 0);
+	});
+
+	// Create a global list of all point pairs.
+	std::vector<std::pair<size_t, size_t>> rails = std::vector<std::pair<size_t, size_t>>();
+#pragma omp parallel for
+	for(long i = 0; i < sections_.size(); i++) {
+		auto pairs = sections_[i]->computePairs();
+
+
+#pragma omp critical
+		rails.insert(rails.end(), pairs.begin(), pairs.end());
+	}
+
+	// Reserve space for the centerpoints points and color them blue.
+	this->reserve(this->size() + rails.size());
+	this->reserveTheRGBTable();
+	const ColorCompType blue[3] = { 0,0,255 };
+
+	// For each pair, insert the point in the middle as centerpoints point.
+	std::vector<CCVector3> centerpoints = std::vector<CCVector3>(rails.size());
+	for(auto pair : rails) {
+		CCVector3 start = *(getPoint(pair.first));
+		CCVector3 end = *(getPoint(pair.second));
+		CCVector3 center = 0.5f * (end + start);
+		centerpoints.push_back(center);
+	}
+
+	// Sort the centerpoints along the main axis.
+	std::sort(centerpoints.begin(), centerpoints.end(), [&](const CCVector3 &lhs, const CCVector3 &rhs)->bool { return mainAxis_.dot(lhs) < mainAxis_.dot(rhs); });
+
+	// Split the centerpoints into different rails and recognize different rails. Only store indices to save memory.
+	std::vector<std::vector<size_t>> centerlines = std::vector<std::vector<size_t>>();
+	centerlines.push_back(std::vector<size_t>());
+	centerlines[0].push_back(0);
+
+	auto dist = [](const CCVector3 &lhs, const CCVector3 &rhs) ->float {
+		return (rhs - lhs).norm();
+	};
+
+	float totalPoints = centerpoints.size();
+	float processedPoints = 0;
+	for(size_t i = 1; i < centerpoints.size(); i++) {
+		// Store the point to be checked and whether we have inserted it or whether it is ambiguous or not.
+		auto point = centerpoints[i];
+		bool inserted = false;
+		bool ambiguous = false;
+
+		// Initialize the pair min with index and distance
+		std::pair<size_t, float> min = std::pair<size_t, float>(centerlines.size(), LONG_MAX);
+
+		// Iterate over all centerlines.
+		for(size_t ii = 0; ii < centerlines.size(); ii++) {
+			auto &line = centerlines[ii];
+
+			// Calculate the distance to the endpoint
+			auto endpoint = centerpoints[line.back()];
+			float distance = dist(point, endpoint);
+
+			// If the distance is smaller than 20cm, we would add the point to this line.
+			if(distance < desc.maxDistance) {
+				// If the point would also be inserted somewhere else, it is labeled as ambiguous and is dropped.
+				if(inserted) {
+					ambiguous = true;
+					break;
+				}
+				// Otherwise the min distance is updated and inserted is set to true.
+				else {
+					inserted = true;
+					if(distance < min.second)
+						min = std::pair<size_t, float>(ii, distance);
+				}
+			}
+
+		}
+
+		// If the point is not ambiguous, we either insert it in the matching line or create a new one.
+		if(!ambiguous) {
+			if(inserted) {
+				centerlines[min.first].push_back(i);
+			}
+			else {
+				// If no matching line has been found, add a new one with this one as the starting point.				
+				centerlines.push_back(std::vector<size_t>());
+				centerlines.back().push_back(i);
+			}
+		}
+
+		//Check if we have a centerline which is very small (does not meet the minimum requirements as specified) and remove it to save some computation time.
+		if(i % 10000 == 0) {
+			for(size_t ii = 0; ii < centerlines.size(); ii++) {
+				auto &line = centerlines[ii];
+
+				// Calculate the distance to the endpoint
+				auto endpoint = centerpoints[line.back()];
+				float distance = std::fabsf(mainAxis_.dot(point) - mainAxis_.dot(endpoint));
+
+				if(distance > 1.0f && (line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength)) {
+					centerlines.erase(centerlines.begin() + ii);
+				}
+
+			}
+		}
+
+		if(callback)
+			callback->update(100.0 * ++processedPoints / totalPoints);
+	}
+
+	// Tell the callback that we're done.
+	if(callback)
+		callback->stop();
+
+
+
+	// Clear all lines having less then 100 points -> probably noise or something.
+	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool { return line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength; });
+	centerlines.erase(end, centerlines.end());
+
+	// Add a scalar field for centerline so that we can delete them again when we do the reset.
+	int idx = getScalarFieldIndexByName("Centerline");
+	if(idx == -1)
+		idx = addScalarField("Centerline");
+	setCurrentInScalarField(idx);
+
+	for_each([&](size_t i) {
+		setPointScalarValue(i, -1);
+	});
+
+	// Only add centerpoints for alignments which are also exported.
+	for(size_t idx = 0; idx < centerlines.size(); idx++) {
+		auto &segment = centerlines[idx];
+		for(auto pointIndex : segment) {
+			this->addPoint(CCVector3(centerpoints[pointIndex]));
+			this->addRGBColor(255 * (float)idx / (float)centerlines.size(), 0, 255);
+			this->setPointScalarValue(this->size() - 1, idx);
+		}
+	}
+
+	computeIndices();
+	return centerlines.size();
+}
+
+int OpenInfraPlatform::Infrastructure::PointCloud::resetCenterlines()
+{
+	return resetRailwaySegmentation();
+}
+
+int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(buw::CenterlineCurvatureComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	// Tell the callback that we're done.
+	if(callback)
+		callback->start();		
+
+	// Add a scalar field for centerline so that we can delete them again when we do the reset.
+	int idx = getScalarFieldIndexByName("Centerline");
+	if(idx == -1)
+		return -1;
+
+	setCurrentOutScalarField(idx);
+	int numAlignments = (std::get<1>(getScalarFieldMinAndMax(idx))) + 1;
+
+	BLUE_LOG(trace) << "Found " << QString::number(numAlignments).toStdString() << " alignments.";
+
+	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>((size_t) numAlignments);
+	for(int i = 0; i < alignments.size(); i++)
+		alignments.push_back(std::vector<CCVector3>());
+	
+	BLUE_LOG(trace) << "Start collecting centerline points.";
+
+	for_each([&](size_t i) {
+		int idx = (int)getPointScalarValue(i);
+		if(idx >= 0) {
+			CCVector3 &center = CCVector3(*getPoint(i));
+			alignments[idx].push_back(center);
+		}		
+	});
+
+	BLUE_LOG(trace) << "Finished collecting centerline points.";
+	std::vector<long> indices = std::vector<long>();
+
+	// Everything besides writing all alignments is not yet implemented
+	if(desc.centerlineIndex == -1) {
+		for(int i = 0; i < alignments.size(); i++)
+			indices.push_back(i);
+		
+	}
+	else {
+		indices.push_back(desc.centerlineIndex);
+	}	
+
+		// Compute the bearing and write it to a file which we want to plot then.
+	for(long idx : indices) {
+		auto &alignment = alignments[idx];
+		std::sort(alignment.begin(), alignment.end(), [&](const CCVector3 &lhs, const CCVector3 &rhs)->bool { return mainAxis_.dot(lhs) < mainAxis_.dot(rhs); });
+
+		BLUE_LOG(trace) << "Processing Alignment#" + QString::number(idx).toStdString() << ". Size:" << QString::number(alignment.size()).toStdString();
+		QFile file("Alignment#" + QString::number(idx) + ".txt");
+		if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+			return -1;
+
+		auto filestart = file.pos();
+
+		// Initialize number of points to use for PCA and and the NORTH direction.
+		const Eigen::Matrix<double, 3, 1> NORTH(0., 1., 0.);
+
+		// Check if our alignment has enough points.
+		if(alignment.size() > desc.numPointsForPCA) {
+
+			// Initialize the container to hold our angles of the direction vectors
+			std::vector<double> bearings = std::vector<double>((alignment.size() - desc.numPointsForPCA) / desc.curvatureStepSize);
+			std::vector<double> chainages = std::vector<double>((alignment.size() - desc.numPointsForPCA) / desc.curvatureStepSize);
+			std::vector<double> curvatures = std::vector<double>(bearings.size() - 1);
+			std::vector<double> curvaturesSmoothed = std::vector<double>(curvatures.size() - desc.numPointsForMeanCurvature);
+
+			int tid = 0;
+			// Compute the bearing for all points as the angle between the principal axis of numPointsForPCA consecutive centerline points and the NORTH direction.
+#pragma omp parallel private(tid) firstprivate(callback)
+			{
+				tid = omp_get_thread_num();
+				long processedPoints = 0;
+				long pointsPerThread = alignment.size() / omp_get_num_threads();
+				long pointsPerPercent = pointsPerThread / 100;
+				int percentageCompleted = 0;
+				// Pull the lambda declaration into the loop for the openmp construct
+				auto getPCA = [](std::vector<CCVector3> alignment, size_t start, size_t end)->Eigen::Matrix<double, 3, 1> {
+					//Matrix which is capable of holding all points for PCA.
+					Eigen::MatrixX3d mat;
+					mat.resize(end - start, 3);
+					for(size_t i = start; i < end; i++) {
+						auto pos = alignment[i];
+						mat.row(i - start) = Eigen::Vector3d(pos.x, pos.y, pos.z);
+					}
+
+					//Do PCA to find the largest eigenvector -> main axis.
+					Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
+					Eigen::MatrixXd cov = centered.adjoint() * centered;
+					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+					Eigen::Matrix<double, 3, 1> vec = eig.eigenvectors().rightCols(1);
+					return vec;
+				};
+
+#pragma omp for
+				for(long i = 0; i < alignment.size() - desc.numPointsForPCA; i += desc.curvatureStepSize) {
+					// Get the PCA axis and compute the bearing.
+					auto axis = getPCA(alignment, i, i + desc.numPointsForPCA);
+					axis.normalize();
+					bearings[i / desc.curvatureStepSize] = (axis.dot(NORTH) * 180.0 / M_PI);
+					chainages[i / desc.curvatureStepSize] = mainAxis_.dot(alignment[i]);
+					processedPoints += desc.curvatureStepSize;
+
+					if(processedPoints >= pointsPerPercent) {
+						percentageCompleted++;
+						processedPoints = 0;
+
+						if(tid == 0 && callback)
+							callback->update((100.0f *(float)(idx) / (float)alignments.size()) + (1.0f / (float)alignments.size()) * percentageCompleted);
+					}
+				}
+			}
+
+			// Without smoothing
+#pragma omp for
+			for(long i = 0; i < bearings.size() - 1; i++) {
+				// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
+				double deltaChainage = std::abs(chainages[i + 1] - chainages[i]);
+				curvatures[i] = ((bearings[i + 1] - bearings[i]) / deltaChainage);
+			}
+
+			int startOffset = std::floor(desc.numPointsForMeanCurvature / 2);
+			if(desc.numPointsForMeanCurvature % 2 == 0)
+				startOffset++;
+			int endOffset = std::ceil(desc.numPointsForMeanCurvature / 2);
+
+#pragma omp for
+			for(long i = startOffset; i < curvatures.size() - endOffset; i++) {
+				double curvature = 0.0;
+
+				for(int offset = -startOffset; offset < endOffset; offset++)
+					curvature += curvatures[i + offset];
+
+				curvaturesSmoothed[i - startOffset] = curvature / (double)desc.numPointsForMeanCurvature;
+			}
+
+#pragma omp single
+			{
+				for(size_t i = 0; i < curvaturesSmoothed.size(); i++) {
+					QString text = QString::number(chainages[i + startOffset]).append("\t").append(QString::number(curvaturesSmoothed[i])).append("\t").append(QString::number(bearings[i + startOffset])).append("\n");
+					file.write(text.toStdString().data());
+				}
+			}
+
+
+
+			// TODO:If the file is empty we delete it.		
+			file.close();
+		}
+	}
+
+	// Tell the callback that we're done.
+	if(callback)
+		callback->stop();
+	return 0;
+}
+
 int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::RailwaySegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// If we have a callback, call start to init the GUI.
@@ -996,7 +1313,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::RailwayS
 				if(alignment.size() > desc.numPointsForPCA) {
 
 					// Initialize the container to hold our angles of the direction vectors
-					std::vector<double> bearings = std::vector<double>((alignment.size() - desc.numPointsForPCA)/100), curvatures = std::vector<double>();
+					std::vector<double> bearings = std::vector<double>((alignment.size() - desc.numPointsForPCA) / desc.curvatureStepSize);
+					std::vector<double> chainages = std::vector<double>((alignment.size() - desc.numPointsForPCA) / desc.curvatureStepSize);
+					std::vector<double> curvatures = std::vector<double>(bearings.size() - 1);
+					std::vector<double> curvaturesSmoothed = std::vector<double>(curvatures.size() - desc.numPointsForMeanCurvature);
 
 					int tid = 0;
 					// Compute the bearing for all points as the angle between the principal axis of numPointsForPCA consecutive centerline points and the NORTH direction.
@@ -1026,13 +1346,13 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::RailwayS
 						};
 
 #pragma omp for
-						for(long i = 0; i < alignment.size() - desc.numPointsForPCA; i+=100) {
+						for(long i = 0; i < alignment.size() - desc.numPointsForPCA; i+= desc.curvatureStepSize) {
 							// Get the PCA axis and compute the bearing.
 							auto axis = getPCA(alignment, i, i + desc.numPointsForPCA);
 							axis.normalize();
-							bearings[i / 100] = (axis.dot(NORTH) * 180.0 / M_PI);
-
-							processedPoints+=100;
+							bearings[i / desc.curvatureStepSize] = (axis.dot(NORTH) * 180.0 / M_PI);
+							chainages[i / desc.curvatureStepSize] = mainAxis_.dot(alignment[i]);
+							processedPoints+= desc.curvatureStepSize;
 							
 							if(processedPoints >= pointsPerPercent) {
 								percentageCompleted++;
@@ -1042,14 +1362,35 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::RailwayS
 									callback->update((100.0f *(float)(idx) / (float)alignments.size()) + (1.0f / (float)alignments.size()) * percentageCompleted);
 							}							
 						}
+					}					
+
+					// Without smoothing
+#pragma omp for
+					for(long i = 0; i < bearings.size() - 1; i++) {
+						// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
+						double deltaChainage = std::abs(chainages[i + 1] - chainages[i]);
+						curvatures[i] = ((bearings[i + 1] - bearings[i]) / deltaChainage);						
 					}
+
+					int startOffset = std::floor(desc.numPointsForMeanCurvature / 2);
+					if(desc.numPointsForMeanCurvature % 2 == 0)
+						startOffset++;
+					int endOffset = std::ceil(desc.numPointsForMeanCurvature / 2);
+
+#pragma omp for
+					for(long i = startOffset; i < curvatures.size() - endOffset; i++) {
+						double curvature = 0.0;
+
+						for(int offset = -startOffset; offset < endOffset; offset++)
+							curvature += curvatures[i + offset];
+
+						curvaturesSmoothed[i - startOffset] = curvature / (double)desc.numPointsForMeanCurvature;
+					}
+
 #pragma omp single
 					{
-						for(size_t i = 0; i < bearings.size() - 1; i++) {
-							// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
-							double ds = std::abs(mainAxis_.dot(alignment[(i + 1) * 100]) - mainAxis_.dot(alignment[i * 100]));
-							curvatures.push_back((bearings[i + 1] - bearings[i]) / ds);
-							QString text = QString::number(i).append("\t").append(QString::number(curvatures[i])).append("\t").append(QString::number(bearings[i])).append("\t").append(QString::number(ds)).append("\n");
+						for(size_t i = 0; i < curvaturesSmoothed.size(); i++) {
+							QString text = QString::number(chainages[i + startOffset]).append("\t").append(QString::number(curvaturesSmoothed[i])).append("\t").append(QString::number(bearings[i + startOffset])).append("\n");
 							file.write(text.toStdString().data());
 						}
 					}

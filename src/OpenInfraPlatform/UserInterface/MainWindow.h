@@ -209,6 +209,11 @@ namespace OpenInfraPlatform
 			void on_pushButtonApplySegmentRailways_clicked();
 			void on_pushButtonResetSegmentRailways_clicked();
 
+			void on_pushButtonComputeCenterlines_clicked();
+			void on_pushButtonResetCenterlines_clicked();
+
+			void on_pushButtonComputeCurvature_clicked();
+
 			void on_pushButtonPlotAlignment_clicked();
 
 			void on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value);

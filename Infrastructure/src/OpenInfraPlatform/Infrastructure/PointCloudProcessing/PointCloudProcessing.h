@@ -72,8 +72,17 @@ namespace OpenInfraPlatform
 			double lowerPercentile, upperPercentile;
 		};
 
+		struct CenterlineComputationDescription {
+			int minSegmentPoints;
+			float minSegmentLength, maxDistance;
+		};
+
+		struct CenterlineCurvatureComputationDescription {
+			int centerlineIndex, numPointsForPCA, curvatureStepSize, numPointsForMeanCurvature;
+		};
+
 		struct RailwaySegmentationDescription {
-			int minSegmentPoints, numPointsForPCA;
+			int minSegmentPoints, numPointsForPCA, curvatureStepSize, numPointsForMeanCurvature;
 			float distanceForPCA, minSegmentLength, centerlinePointDistance;
 		};
 
@@ -93,6 +102,8 @@ namespace buw
 	using OpenInfraPlatform::Infrastructure::RateOfChangeSegmentationDescription;
 	using OpenInfraPlatform::Infrastructure::PercentileSegmentationDescription;
 	using OpenInfraPlatform::Infrastructure::RailwaySegmentationDescription;
+	using OpenInfraPlatform::Infrastructure::CenterlineComputationDescription;
+	using OpenInfraPlatform::Infrastructure::CenterlineCurvatureComputationDescription;
 }
 
 #endif // end define OpenInfraPlatform_Infrastructure_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h

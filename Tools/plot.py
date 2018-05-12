@@ -12,11 +12,13 @@ def main(argv):
 	parser.add_argument("file")
 
 	args = parser.parse_args()
-	indices, curvatures, bearings, distances = np.loadtxt(args.file, delimiter='\t',unpack=True)
+	indices, curvatures, bearings = np.loadtxt(args.file, delimiter='\t',unpack=True)
 	
 	f, axarr = ply.subplots(2, sharex=True)
 	axarr[0].plot(indices, curvatures)
 	axarr[1].plot(indices, bearings)
+	#axarr[0][1].plot(indices, dStationing)
+	#axarr[1][1].plot(indices, distances)
 	ply.suptitle(args.file)
 	
 	#ply.plotfile(args.file, delimiter='\t', cols=(0, 2), names=('index','curvature','bearing'))

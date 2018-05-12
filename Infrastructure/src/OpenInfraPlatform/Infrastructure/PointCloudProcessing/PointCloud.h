@@ -68,6 +68,12 @@ namespace OpenInfraPlatform {
 
 			int applyRateOfChangeSegmentation(RateOfChangeSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			int computeCenterlines(buw::CenterlineComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			int resetCenterlines();
+
+			int computeCenterlineCurvature(buw::CenterlineCurvatureComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
 			int segmentRailways(buw::RailwaySegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			int resetRailwaySegmentation();
