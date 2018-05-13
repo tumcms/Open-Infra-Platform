@@ -479,6 +479,7 @@ const std::tuple<ScalarType, ScalarType> OpenInfraPlatform::Infrastructure::Poin
 {
 	// Get the min and max for the scalar field and store it in the returned tuple.
 	CCLib::ScalarField* field = getScalarField(idx);
+	field->computeMinAndMax();
 	return std::tuple<ScalarType, ScalarType>(field->getMin(), field->getMax());
 }
 
@@ -877,24 +878,31 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(buw::Cente
 	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool { return line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength; });
 	centerlines.erase(end, centerlines.end());
 
-	// Add a scalar field for centerline so that we can delete them again when we do the reset.
-	int idx = getScalarFieldIndexByName("Centerline");
-	if(idx == -1)
-		idx = addScalarField("Centerline");
-	setCurrentInScalarField(idx);
-
-	for_each([&](size_t i) {
-		setPointScalarValue(i, -1);
-	});
+	std::vector<std::vector<size_t>> centerlinePointIndices = std::vector<std::vector<size_t>>(centerlines.size());
 
 	// Only add centerpoints for alignments which are also exported.
 	for(size_t idx = 0; idx < centerlines.size(); idx++) {
 		auto &segment = centerlines[idx];
 		for(auto pointIndex : segment) {
-			this->addPoint(CCVector3(centerpoints[pointIndex]));
-			this->addRGBColor(255 * (float)idx / (float)centerlines.size(), 0, 255);
-			this->setPointScalarValue(this->size() - 1, idx);
+			addPoint(CCVector3(centerpoints[pointIndex]));
+			addRGBColor(255 * (float)idx / (float)centerlines.size(), 0, 255);
+			centerlinePointIndices[idx].push_back(this->size() - 1);
 		}
+	}
+
+	// Add a scalar field for centerline so that we can delete them again when we do the reset.
+	int idx_centerline = getScalarFieldIndexByName("Centerline");
+	if(idx_centerline == -1)
+		idx_centerline = addScalarField("Centerline");
+	setCurrentInScalarField(idx_centerline);
+
+	for_each([&](size_t i) {
+		setPointScalarValue(i, -1);
+	});
+
+	for(size_t idx = 0; idx < centerlinePointIndices.size(); idx++) {
+		for(auto pointIndex : centerlinePointIndices[idx])
+			setPointScalarValue(pointIndex, idx);
 	}
 
 	computeIndices();
@@ -913,18 +921,21 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(bu
 		callback->start();		
 
 	// Add a scalar field for centerline so that we can delete them again when we do the reset.
-	int idx = getScalarFieldIndexByName("Centerline");
-	if(idx == -1)
+	int idx_centerline = getScalarFieldIndexByName("Centerline");
+	if(idx_centerline == -1)
 		return -1;
 
-	setCurrentOutScalarField(idx);
-	int numAlignments = (std::get<1>(getScalarFieldMinAndMax(idx))) + 1;
+	ScalarType min, max;
+	std::tie(min, max) = getScalarFieldMinAndMax(idx_centerline);
+	size_t numAlignments = max + 1;
+
+	setCurrentOutScalarField(idx_centerline);
 
 	BLUE_LOG(trace) << "Found " << QString::number(numAlignments).toStdString() << " alignments.";
 
-	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>((size_t) numAlignments);
-	for(int i = 0; i < alignments.size(); i++)
-		alignments.push_back(std::vector<CCVector3>());
+	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>(numAlignments);
+	for(int i = 0; i < numAlignments; i++)
+		alignments[i] = std::vector<CCVector3>();
 	
 	BLUE_LOG(trace) << "Start collecting centerline points.";
 
