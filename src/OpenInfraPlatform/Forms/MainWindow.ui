@@ -231,7 +231,7 @@
          <enum>QTabWidget::North</enum>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>1</number>
         </property>
         <property name="elideMode">
          <enum>Qt::ElideNone</enum>
@@ -572,15 +572,8 @@
            </property>
            <item>
             <layout class="QGridLayout" name="gridLayout_6">
-             <item row="0" column="2">
-              <widget class="QPushButton" name="pushButtonApplyDuplicateFilter">
-               <property name="text">
-                <string>Apply</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QPushButton" name="pushButtonResetDensityFilter">
+             <item row="7" column="1">
+              <widget class="QPushButton" name="pushButtonResetPositionFilter">
                <property name="text">
                 <string>Reset</string>
                </property>
@@ -606,23 +599,17 @@
                </property>
               </widget>
              </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="labelFilterDensity">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
+             <item row="3" column="1">
+              <widget class="QPushButton" name="pushButtonResetDensityFilter">
                <property name="text">
-                <string>Filter density</string>
+                <string>Reset</string>
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QPushButton" name="pushButtonResetDuplicatesFilter">
+             <item row="0" column="2">
+              <widget class="QPushButton" name="pushButtonApplyDuplicateFilter">
                <property name="text">
-                <string>Reset</string>
+                <string>Apply</string>
                </property>
               </widget>
              </item>
@@ -652,6 +639,26 @@
                </property>
               </widget>
              </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="labelFilterDensity">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Filter density</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pushButtonResetDuplicatesFilter">
+               <property name="text">
+                <string>Reset</string>
+               </property>
+              </widget>
+             </item>
              <item row="1" column="1">
               <widget class="QSlider" name="horizontalSliderRemoveDuplicatesThreshold">
                <property name="value">
@@ -662,10 +669,16 @@
                </property>
               </widget>
              </item>
-             <item row="6" column="2">
-              <widget class="Line" name="line_4">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Metric</string>
                </property>
               </widget>
              </item>
@@ -695,13 +708,6 @@
                </property>
               </widget>
              </item>
-             <item row="6" column="1">
-              <widget class="Line" name="line_3">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
              <item row="2" column="2">
               <widget class="Line" name="line_7">
                <property name="orientation">
@@ -709,56 +715,10 @@
                </property>
               </widget>
              </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_3">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Metric</string>
-               </property>
-              </widget>
-             </item>
              <item row="2" column="1">
               <widget class="Line" name="line_6">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="Line" name="line_5">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="0">
-              <widget class="Line" name="line_2">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QLabel" name="label_5">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Radius (cm)</string>
                </property>
               </widget>
              </item>
@@ -791,6 +751,90 @@
                </property>
                <property name="value">
                 <double>10.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="Line" name="line_5">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLabel" name="label_5">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Radius (cm)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="Line" name="line_2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="2">
+              <widget class="Line" name="line_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="2">
+              <widget class="QPushButton" name="pushButtonApplyPositionFilter">
+               <property name="text">
+                <string>Apply</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="Line" name="line_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="0">
+              <widget class="QLabel" name="labelFilterPosition">
+               <property name="text">
+                <string>Filter position</string>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="2">
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxFilterPositionMax">
+               <property name="minimum">
+                <double>-100000.000000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>100000.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="0">
+              <widget class="QComboBox" name="comboBoxFilterPositionDimension"/>
+             </item>
+             <item row="8" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxFilterPositionMin">
+               <property name="minimum">
+                <double>-1000000.000000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>1000000.000000000000000</double>
                </property>
               </widget>
              </item>
@@ -1289,7 +1333,7 @@
                 <number>3</number>
                </property>
                <property name="minimum">
-                <double>0.200000000000000</double>
+                <double>0.001000000000000</double>
                </property>
                <property name="singleStep">
                 <double>0.100000000000000</double>
@@ -1312,6 +1356,9 @@
              </item>
              <item row="7" column="2">
               <widget class="QPushButton" name="pushButtonComputeCurvature">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string>Compute</string>
                </property>
@@ -1357,6 +1404,9 @@
              </item>
              <item row="0" column="2">
               <widget class="QPushButton" name="pushButtonApplySegmentRailways">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -1377,6 +1427,9 @@
              </item>
              <item row="0" column="1">
               <widget class="QPushButton" name="pushButtonResetSegmentRailways">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string>Reset</string>
                </property>

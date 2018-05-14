@@ -31,6 +31,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
 
+#include <QDateTime>
+#include <QDir>
+
 
 buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointCloud::FromFile(const char * filename)
 {
@@ -50,13 +53,36 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 		// Load the point cloud from file and store it temporarily.
 		std::shared_ptr<ccHObject> ccTempObject = std::shared_ptr<ccHObject>(FileIOFilter::LoadFromFile(QString(filename), FileIOFilter::LoadParameters(), FileIOFilter::FindBestFilterForExtension("BIN"), err));
 		if(err == CC_FILE_ERROR::CC_FERR_NO_ERROR) {
+			BLUE_LOG(trace) << "Number of child objects:" << QString::number(ccTempObject->getChildrenNumber()).toStdString() << ".";
 			for(size_t i = 0; i < ccTempObject->getChildrenNumber(); i++) {
-				ccPointCloud* temp = ccHObjectCaster::ToPointCloud(ccTempObject->getChild(i));
+				auto child = ccTempObject->getChild(i);
+				ccPointCloud* temp = ccHObjectCaster::ToPointCloud(child);
+				BLUE_LOG(trace) << "Processing child #" << QString::number(i).toStdString() << ". Name:" << child->getName().toStdString();
+				
 				if(temp) {
-					pointCloud->append(temp, pointCloud->size());
+					BLUE_LOG(trace) << "Size:" << QString::number(temp->size()).toStdString() << ".";
+					size_t sizeBefore = pointCloud->size();
+
+					pointCloud->reserve(sizeBefore + temp->size());
+					for(size_t ii = 0; ii < temp->size(); ii++) {
+						pointCloud->addPoint(CCVector3(*(temp->getPoint(ii))));
+					}
+
+					//pointCloud->append(temp, sizeBefore);
+
+					if(sizeBefore == pointCloud->size())
+						BLUE_LOG(warning) << "No points added. Size:" << QString::number(sizeBefore).toStdString();
+				}
+				else {
+					if(child)
+						BLUE_LOG(warning) << "Cast to point cloud failed for child object " << child->getName().toStdString() << ".";
+					else
+						BLUE_LOG(error) << "Something went terribly wrong...";
 				}
 			}
 		}
+
+		BLUE_LOG(trace) << "Finished processing child objects. Total size:" << QString::number(pointCloud->size()).toStdString() << ".";
 
 		//Delete our temporary parrent object.
 		ccTempObject = nullptr;	
@@ -301,6 +327,65 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyDuplicateFilter(Duplicat
 	return err;
 }
 
+int OpenInfraPlatform::Infrastructure::PointCloud::applyPositionFilter(const buw::PositionFilterDescription & desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	int err = 0;
+
+	if(callback)
+		callback->start();
+
+	if(desc.dimension >= 0 && desc.dimension < 3) {		
+		int idx = -1;
+		switch(desc.dimension) {
+		case 0: idx = addScalarField("Coord. X"); break;
+		case 1: idx = addScalarField("Coord. Y"); break;
+		case 2: idx = addScalarField("Coord. Z"); break;
+		default:
+			err = -1;
+			break;
+		}
+
+		if(idx != -1) {
+			setCurrentScalarField(idx);
+		}
+		else {
+			BLUE_LOG(warning) << "No scalar field found.";
+			err = -3;
+		}
+		for_each([&](size_t i) {
+			ScalarType value = (*(getPoint(i)))[desc.dimension];
+			if(value < desc.minValue || value > desc.maxValue)
+				setPointScalarValue(i, 1.0f);
+			else
+				setPointScalarValue(i, 0.0f);
+
+			if(callback)
+				callback->update(100.0f * ((float)i / (float)size()));
+		});
+
+		computeIndices();
+	}
+	else {
+		BLUE_LOG(warning) << "Invalid dimension number " << QString::number(desc.dimension).toStdString() << " specified. Choose X=0, Y=1 or Z=2.";
+		err = -1;
+	}
+
+	if(callback)
+		callback->stop();
+
+	return err;
+}
+
+int OpenInfraPlatform::Infrastructure::PointCloud::resetPositionFilter()
+{
+	deleteScalarField(getScalarFieldIndexByName("Coord. X"));
+	deleteScalarField(getScalarFieldIndexByName("Coord. Y"));
+	deleteScalarField(getScalarFieldIndexByName("Coord. Z"));
+
+	computeIndices();
+	return 0;
+}
+
 void OpenInfraPlatform::Infrastructure::PointCloud::resetScalarField(const char * name)
 {
 	// Get the specified scalar field.
@@ -343,17 +428,21 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init()
 
 	// If we have no colors, we add white as color to all points.
 	if(rgbColors() == nullptr) {
+		BLUE_LOG(warning) << "No colors found. Adding color white to each point.";
 		if(reserveTheRGBTable()) {
 			for_each([&](size_t i) {
 				addRGBColor(255, 255, 255);
 			});
+			BLUE_LOG(trace) << "Successfully added colors.";
+		}
+		else {
+			BLUE_LOG(warning) << "Reserving the color table failed.";
 		}
 	}
 
 	// Initialize our point cloud for usage - compute main axis, octree and sections.
-	remainingIndices_ = std::vector<uint32_t>(size());
-	#pragma omp parallel for
-	for(long i = 0; i < size(); i++) {
+	remainingIndices_ = std::vector<uint32_t>(this->size());
+	for(uint32_t i = 0; i < this->size(); i++) {
 		remainingIndices_[(uint32_t)i] = i;
 	}
 	filteredIndices_ = std::vector<uint32_t>(0);
@@ -377,7 +466,8 @@ std::vector<buw::ReferenceCounted<buw::PointCloudSection>> OpenInfraPlatform::In
 }
 
 buw::ReferenceCounted<CCLib::ReferenceCloud> OpenInfraPlatform::Infrastructure::PointCloud::subsample(size_t size)
-{	
+{
+	BLUE_LOG(fatal) << "This function should never be called right now.";
 	return buw::ReferenceCounted<CCLib::ReferenceCloud>(CCLib::CloudSamplingTools::subsampleCloudWithOctree(this, size, CCLib::CloudSamplingTools::SUBSAMPLING_CELL_METHOD::NEAREST_POINT_TO_CELL_CENTER, nullptr, octree_.get()));
 }
 
@@ -403,14 +493,39 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices()
 	if(idx_density == -1)
 		idx_density = addScalarField("Density");
 
+	// Get the coordinate filter scalar fields.
+	int idx_coordX = getScalarFieldIndexByName("Coord. X");
+	int idx_coordY = getScalarFieldIndexByName("Coord. Y");
+	int idx_coordZ = getScalarFieldIndexByName("Coord. Z");
+
 	// For each point, check it's Density and Duplicate field and if one of them is true, filter the point.
 	for_each([&](size_t i) {
 		ScalarType filtered = 0;
-		setCurrentOutScalarField(idx_duplicate);
-		filtered += getPointScalarValue(i);
+		if(idx_duplicate != -1) {
+			setCurrentOutScalarField(idx_duplicate);
+			filtered += getPointScalarValue(i);
+		}
 
-		setCurrentOutScalarField(idx_density);
-		filtered += getPointScalarValue(i);
+		if(idx_density != -1) {
+			setCurrentOutScalarField(idx_density);
+			filtered += getPointScalarValue(i);
+		}
+
+		if(idx_coordX != -1) {
+			setCurrentOutScalarField(idx_coordX);
+			filtered += getPointScalarValue(i);
+		}
+
+		if(idx_coordY != -1) {
+			setCurrentOutScalarField(idx_coordY);
+			filtered += getPointScalarValue(i);
+		}
+
+		if(idx_coordZ != -1) {
+			setCurrentOutScalarField(idx_coordZ);
+			filtered += getPointScalarValue(i);
+		}
+
 		setPointScalarValue(i, filtered);
 
 		if(filtered > 0) {
@@ -575,6 +690,116 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentation(
 	return 0;
 }
 
+int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentationHP(buw::PercentileSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	// If we have a callback, call start to init the GUI.
+	if(callback)
+		callback->start();
+	
+	// Get the segmented percentile scalar field.
+	int idx_segmented = getScalarFieldIndexByName("SegmentedPercentile");
+	if(idx_segmented == -1)
+		idx_segmented = addScalarField("SegmentedPercentile");
+	setCurrentInScalarField(idx_segmented);
+
+	for_each([&](size_t i) {
+		this->setPointScalarValue(i, 0);
+	});
+
+	// Call this once to find the best level for the radius.
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(desc.kernelRadius);
+
+	// Get the octree cell indices to iterate over the cells, return -1 if an error occurs.
+	std::vector<uint32_t> dgmOctreeCells;
+	bool success = octree_->getCellIndexes(level, dgmOctreeCells);
+	if(!success)
+		return -1;
+
+	// Initialize counter variables for our callback update.
+	int numCells = dgmOctreeCells.size();
+	int tid = 0;
+	int err = 0;
+
+	// Iterate over all cells to call our nearest neighbour search on consecutive points in a cell for performance reasons.
+	// TODO: Use OpenMP to do this in parallel.
+#pragma omp parallel private(tid) firstprivate(callback) shared(level, dgmOctreeCells, desc, numCells, err)
+	{
+		tid = omp_get_thread_num();
+		auto octree = CCLib::DgmOctree(*octree_);
+		int numCellsPerThread = numCells / omp_get_num_threads();
+		int processedCells = 0;
+
+		
+
+#pragma omp for schedule(dynamic, 50)
+		for(long idx = 0; idx < dgmOctreeCells.size(); idx++) {
+			auto cell = dgmOctreeCells[idx];
+			auto code = octree.getCellCode(cell);
+
+			// Create and initialize the nearest neighbour search struct as far as possible.
+			CCLib::DgmOctree::NearestNeighboursSphericalSearchStruct nss;
+			nss.level = level;
+			nss.maxSearchSquareDistd = std::pow(desc.kernelRadius, 2); 
+			nss.alreadyVisitedNeighbourhoodSize = 0;
+			nss.minNumberOfNeighbors = 0;
+						
+
+			// Get the points in the cell specified by the index and store them in points. Compute the cell position and center.
+			std::shared_ptr<CCLib::ReferenceCloud> points = std::make_shared<CCLib::ReferenceCloud>(this);
+			success = octree.getPointsInCellByCellIndex(points.get(), cell, level);
+			octree.getCellPos(code, level, nss.cellPos, false);
+			octree.computeCellCenter(nss.cellPos, level, nss.cellCenter);
+
+			if(success) {
+				// If the points were successfully selected, iterate over all points in the cell and search the nearest neighbours.
+				for(int i = 0; i < points->size(); i++) {
+					nss.queryPoint = *(points->getPoint(i));
+					int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, desc.kernelRadius, false);
+
+					// Sort points in neighbourhood according to height.
+					std::sort(nss.pointsInNeighbourhood.begin(), nss.pointsInNeighbourhood.begin() + numPoints, [](const CCLib::DgmOctree::PointDescriptor &lhs, const CCLib::DgmOctree::PointDescriptor &rhs) -> bool { return lhs.point->z < rhs.point->z; });
+
+
+					// Calculate the 98 percentile as the index of the upper % point after sorting in ascending order, same for the lower % point.
+					int idxUpper = (int)std::floor(desc.upperPercentile * numPoints);
+					int idxLower = (int)std::floor(desc.lowerPercentile * numPoints);
+					float percentileUpper = nss.pointsInNeighbourhood[idxUpper].point->z;
+					float percentileLower = nss.pointsInNeighbourhood[idxLower].point->z;
+
+					// Calculate the absolute difference between the percentiles and if it is larger than 10cm segment the point as rail point.
+					float diff = std::fabsf(percentileLower - percentileUpper);
+					float totalDiff = std::fabsf((nss.pointsInNeighbourhood[0].point->z) - (nss.pointsInNeighbourhood[numPoints - 1].point->z));
+
+					// If the diff is larger than the minThreshold and the totalDiff smaller than the maxThreshold, mark all points in the upper percentile.
+					if(diff >= desc.minThreshold && totalDiff < desc.maxThreshold) {
+						for(int ii = idxUpper; ii < numPoints; ii++) {
+							size_t index_ii = nss.pointsInNeighbourhood[ii].pointIndex;
+#pragma omp critical
+							this->setPointScalarValue(index_ii, 1.0f);
+						}
+					}
+				}
+
+				// Update our callback.
+				processedCells++;
+				if(tid == 0 && callback)
+					callback->update(100.0f * (double)processedCells / (double)numCellsPerThread);
+			}
+			else {
+				// Stop the callback if we abort our function.
+				if(tid == 0 && callback)
+					callback->stop();
+#pragma omp critical
+				err = -2;
+			}
+		}
+	}
+
+	if(callback)
+		callback->stop();
+
+	return err;
+}
 int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesOnGridSegmentation(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// If we have a callback, call start to init the GUI.
@@ -747,7 +972,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 	return 0;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(buw::CenterlineComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// If we have a callback, call start to init the GUI.
 	if(callback)
@@ -914,7 +1139,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::resetCenterlines()
 	return resetRailwaySegmentation();
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(buw::CenterlineCurvatureComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(const buw::CenterlineCurvatureComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// Tell the callback that we're done.
 	if(callback)
@@ -922,8 +1147,15 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(bu
 
 	// Add a scalar field for centerline so that we can delete them again when we do the reset.
 	int idx_centerline = getScalarFieldIndexByName("Centerline");
-	if(idx_centerline == -1)
+	if(idx_centerline == -1) {
+
+		// Stop our callback.
+		if(callback)
+			callback->stop();
+
+		BLUE_LOG(warning) << "Centerline scalar field not found. Method returning with error.";
 		return -1;
+	}
 
 	ScalarType min, max;
 	std::tie(min, max) = getScalarFieldMinAndMax(idx_centerline);
@@ -931,7 +1163,13 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(bu
 
 	setCurrentOutScalarField(idx_centerline);
 
-	BLUE_LOG(trace) << "Found " << QString::number(numAlignments).toStdString() << " alignments.";
+	if(numAlignments > 0) {
+		BLUE_LOG(trace) << "Found " << QString::number(numAlignments).toStdString() << " centerlines.";
+	}
+	else {
+		BLUE_LOG(warning) << "No centerlines found. Method returning with error.";
+		return -2;
+	}
 
 	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>(numAlignments);
 	for(int i = 0; i < numAlignments; i++)
@@ -952,41 +1190,59 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(bu
 
 	// Everything besides writing all alignments is not yet implemented
 	if(desc.centerlineIndex == -1) {
-		for(int i = 0; i < alignments.size(); i++)
+		for(int i = 0; i < numAlignments; i++)
 			indices.push_back(i);
 		
 	}
 	else {
 		indices.push_back(desc.centerlineIndex);
-	}	
+	}
+
+	QString date = QDateTime::currentDateTime().date().toString(Qt::ISODate);
+	QString time = QDateTime::currentDateTime().time().toString(Qt::ISODate).replace(":", "-");
+	QDir root = QDir(QDir::currentPath());
+	QDir sub = QDir(QDir::currentPath() + "/" + date);
 
 		// Compute the bearing and write it to a file which we want to plot then.
 	for(long idx : indices) {
-		auto &alignment = alignments[idx];
-		std::sort(alignment.begin(), alignment.end(), [&](const CCVector3 &lhs, const CCVector3 &rhs)->bool { return mainAxis_.dot(lhs) < mainAxis_.dot(rhs); });
-
-		BLUE_LOG(trace) << "Processing Alignment#" + QString::number(idx).toStdString() << ". Size:" << QString::number(alignment.size()).toStdString();
-		QFile file("Alignment#" + QString::number(idx) + ".txt");
-		if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
-			return -1;
-
-		auto filestart = file.pos();
-
-		// Initialize number of points to use for PCA and and the NORTH direction.
-		const Eigen::Matrix<double, 3, 1> NORTH(0., 1., 0.);
+		auto &alignment = alignments[idx];		
 
 		// Check if our alignment has enough points.
-		if(alignment.size() > desc.numPointsForPCA) {
+		long numBearingsAndChainages = ((alignment.size() - desc.numPointsForPCA) / desc.curvatureStepSize) + 1;
+		long numCurvatures = numBearingsAndChainages - 1;
+		long numCurvaturesSmoothed = numCurvatures - desc.numPointsForMeanCurvature;
+		
+		if(alignment.size() > desc.numPointsForPCA && numCurvaturesSmoothed > 0) {
+			
+			if(!root.exists(date))
+				root.mkdir(date);
+
+			if(!sub.exists(time))
+				sub.mkdir(time);
+			
+
+			std::sort(alignment.begin(), alignment.end(), [&](const CCVector3 &lhs, const CCVector3 &rhs)->bool { return mainAxis_.dot(lhs) < mainAxis_.dot(rhs); });
+
+			BLUE_LOG(trace) << "Processing Alignment#" + QString::number(idx).toStdString() << ". Size:" << QString::number(alignment.size()).toStdString();
+			QFile file(sub.absolutePath() + "/" + time + "/" + "Alignment#" + QString::number(idx) + ".txt");
+			if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+				return -1;
+
+			auto filestart = file.pos();
+
+			// Initialize number of points to use for PCA and and the NORTH direction.
+			const Eigen::Matrix<double, 3, 1> NORTH(0., 1., 0.);
+			const Eigen::Matrix<double, 2, 1> NORTH2D(0., 1.);
 
 			// Initialize the container to hold our angles of the direction vectors
-			std::vector<double> bearings = std::vector<double>((alignment.size() - desc.numPointsForPCA) / desc.curvatureStepSize);
-			std::vector<double> chainages = std::vector<double>((alignment.size() - desc.numPointsForPCA) / desc.curvatureStepSize);
-			std::vector<double> curvatures = std::vector<double>(bearings.size() - 1);
-			std::vector<double> curvaturesSmoothed = std::vector<double>(curvatures.size() - desc.numPointsForMeanCurvature);
+			std::vector<double> bearings = std::vector<double>(numBearingsAndChainages);
+			std::vector<double> chainages = std::vector<double>(numBearingsAndChainages);
+			std::vector<double> curvatures = std::vector<double>(numCurvatures);
+			std::vector<double> curvaturesSmoothed = std::vector<double>(numCurvaturesSmoothed);
 
 			int tid = 0;
 			// Compute the bearing for all points as the angle between the principal axis of numPointsForPCA consecutive centerline points and the NORTH direction.
-#pragma omp parallel private(tid) firstprivate(callback)
+#pragma omp parallel private(tid) firstprivate(callback) shared(desc)
 			{
 				tid = omp_get_thread_num();
 				long processedPoints = 0;
@@ -994,7 +1250,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(bu
 				long pointsPerPercent = pointsPerThread / 100;
 				int percentageCompleted = 0;
 				// Pull the lambda declaration into the loop for the openmp construct
-				auto getPCA = [](std::vector<CCVector3> alignment, size_t start, size_t end)->Eigen::Matrix<double, 3, 1> {
+				auto getPCA = [](std::vector<CCVector3> alignment, size_t start, size_t end)->Eigen::Matrix<double, 2, 1> {
 					//Matrix which is capable of holding all points for PCA.
 					Eigen::MatrixX3d mat;
 					mat.resize(end - start, 3);
@@ -1007,17 +1263,17 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(bu
 					Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
 					Eigen::MatrixXd cov = centered.adjoint() * centered;
 					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-					Eigen::Matrix<double, 3, 1> vec = eig.eigenvectors().rightCols(1);
+					Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1).topRows(2);
 					return vec;
 				};
 
 #pragma omp for
-				for(long i = 0; i < alignment.size() - desc.numPointsForPCA; i += desc.curvatureStepSize) {
+				for(long i = desc.numPointsForPCA / 2; i < alignment.size() - (desc.numPointsForPCA / 2); i += desc.curvatureStepSize) {
 					// Get the PCA axis and compute the bearing.
-					auto axis = getPCA(alignment, i, i + desc.numPointsForPCA);
+					auto axis = getPCA(alignment, i - (desc.numPointsForPCA / 2), i + (desc.numPointsForPCA / 2));
 					axis.normalize();
-					bearings[i / desc.curvatureStepSize] = (axis.dot(NORTH) * 180.0 / M_PI);
-					chainages[i / desc.curvatureStepSize] = mainAxis_.dot(alignment[i]);
+					bearings[(i - (desc.numPointsForPCA / 2)) / desc.curvatureStepSize] = (std::acos(axis.dot(NORTH2D)) * 180.0 / M_PI);
+					chainages[(i - (desc.numPointsForPCA / 2)) / desc.curvatureStepSize] = mainAxis_.dot(alignment[i]);
 					processedPoints += desc.curvatureStepSize;
 
 					if(processedPoints >= pointsPerPercent) {
@@ -1025,39 +1281,43 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(bu
 						processedPoints = 0;
 
 						if(tid == 0 && callback)
-							callback->update((100.0f *(float)(idx) / (float)alignments.size()) + (1.0f / (float)alignments.size()) * percentageCompleted);
+							callback->update(((100.0f *(float)(idx) / (float)alignments.size()) + (1.0f / (float)alignments.size()) * percentageCompleted) * ((float)alignments.size() / (float)indices.size()));
 					}
 				}
-			}
+#pragma omp barrier
 
-			// Without smoothing
+
+				// Without smoothing
 #pragma omp for
-			for(long i = 0; i < bearings.size() - 1; i++) {
-				// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
-				double deltaChainage = std::abs(chainages[i + 1] - chainages[i]);
-				curvatures[i] = ((bearings[i + 1] - bearings[i]) / deltaChainage);
-			}
+				for(long i = 0; i < bearings.size() - 1; i++) {
+					// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
+					double deltaChainage = std::abs(chainages[i + 1] - chainages[i]);
+					curvatures[i] = ((bearings[i + 1] - bearings[i]) / deltaChainage);
+				}
+#pragma omp barrier
 
-			int startOffset = std::floor(desc.numPointsForMeanCurvature / 2);
-			if(desc.numPointsForMeanCurvature % 2 == 0)
-				startOffset++;
-			int endOffset = std::ceil(desc.numPointsForMeanCurvature / 2);
+				int startOffset = (int)std::floor((float)desc.numPointsForMeanCurvature / 2.0f);
+				if(desc.numPointsForMeanCurvature % 2 == 0)
+					startOffset++;
+				int endOffset = std::ceil((float)desc.numPointsForMeanCurvature / 2.0f);
 
 #pragma omp for
-			for(long i = startOffset; i < curvatures.size() - endOffset; i++) {
-				double curvature = 0.0;
+				for(long i = startOffset; i < curvatures.size() - endOffset - 1; i++) {
+					double curvature = 0.0;
 
-				for(int offset = -startOffset; offset < endOffset; offset++)
-					curvature += curvatures[i + offset];
+					for(int offset = -startOffset; offset < endOffset; offset++)
+						curvature += curvatures[i + offset];
 
-				curvaturesSmoothed[i - startOffset] = curvature / (double)desc.numPointsForMeanCurvature;
-			}
+					curvaturesSmoothed[i - startOffset] = curvature / (double)desc.numPointsForMeanCurvature;
+				}
+#pragma omp barrier
 
 #pragma omp single
-			{
-				for(size_t i = 0; i < curvaturesSmoothed.size(); i++) {
-					QString text = QString::number(chainages[i + startOffset]).append("\t").append(QString::number(curvaturesSmoothed[i])).append("\t").append(QString::number(bearings[i + startOffset])).append("\n");
-					file.write(text.toStdString().data());
+				{
+					for(size_t i = 0; i < curvaturesSmoothed.size(); i++) {
+						QString text = QString::number(chainages[i + startOffset]).append("\t").append(QString::number(curvaturesSmoothed[i])).append("\t").append(QString::number(bearings[i + startOffset])).append("\n");
+						file.write(text.toStdString().data());
+					}
 				}
 			}
 
@@ -1066,11 +1326,27 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(bu
 			// TODO:If the file is empty we delete it.		
 			file.close();
 		}
+		else {
+			BLUE_LOG(trace) << "Skipping Alignment#" + QString::number(idx).toStdString() << ". Size:" << QString::number(alignment.size()).toStdString();
+		}
+	}
+
+	if(root.exists(date) && sub.exists(time)) {
+		QFile file(sub.absolutePath() + "/" + time + "/parameters.txt");
+		if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+			return -1;
+		QStringList text = {
+			QString("NumPointsForPCA:" + QString::number(desc.numPointsForPCA)),
+			QString("CurvatureStepSize:" + QString::number(desc.curvatureStepSize)),
+			QString("NumPointsForMeanCurvature:" + QString::number(desc.numPointsForMeanCurvature)) };
+		file.write(text.join("\n").toStdString().data());
+		file.close();
 	}
 
 	// Tell the callback that we're done.
 	if(callback)
 		callback->stop();
+
 	return 0;
 }
 
@@ -1446,6 +1722,9 @@ int OpenInfraPlatform::Infrastructure::PointCloud::resetRailwaySegmentation()
 	setCurrentOutScalarField(idx_centerline);
 	float epsilon = -1 + 0.0001f;
 	ccPointCloud* original = filterPointsByScalarValue(-1, epsilon);
+
+	original->deleteScalarField(original->getScalarFieldIndexByName("Railway"));
+	original->deleteScalarField(original->getScalarFieldIndexByName("Centerline"));
 
 	// Clear all points from the point cloud.
 	clear();

@@ -153,30 +153,7 @@ void PointCloudEffect::updateIndexBuffers(const std::tuple<std::vector<uint32_t>
 {
 	std::vector<uint32_t> remainingIndices, filteredIndices, segmentedIndices;
 	std::tie(remainingIndices, filteredIndices, segmentedIndices) = indices;
-
-	// If we use a subsampled cloud, we're only interested in the indices which are in our subsampled cloud.
-	if(bUseSubsampledCloud_) {
-		std::vector<uint32_t> subsampledIndices = std::vector<uint32_t>(subsampledPointCloud_->size());
-
-		// Get the real indices and store them to filter the other vectors.
-#pragma omp parallel for
-		for(long i = 0; i < subsampledIndices.size(); i++) {
-			subsampledIndices[i] = subsampledPointCloud_->getPointGlobalIndex(i);
-		}
-
-		auto reduceToIntersection = [](std::vector<uint32_t> &vector, const std::vector<uint32_t> &filter) {
-			auto end = std::remove_if(vector.begin(), vector.end(), [&](const uint32_t &elem)->bool { return std::find(filter.begin(), filter.end(), elem) == filter.end(); });
-			vector.erase(end, vector.end());
-		};
-
-		auto threadRemainingIndices = std::thread(reduceToIntersection, remainingIndices, subsampledIndices);
-		auto threadfilteredIndices = std::thread(reduceToIntersection, filteredIndices, subsampledIndices);
-		auto threadSegmentedIndices = std::thread(reduceToIntersection, segmentedIndices, subsampledIndices);
-
-		threadRemainingIndices.join();
-		threadfilteredIndices.join();
-		threadSegmentedIndices.join();
-	}
+	
 
 	buw::indexBufferDescription ibd;
 	ibd.indexCount = remainingIndices.size();
@@ -185,6 +162,8 @@ void PointCloudEffect::updateIndexBuffers(const std::tuple<std::vector<uint32_t>
 
 	if(ibd.indexCount > 0)
 		indexBufferRemaining_ = renderSystem()->createIndexBuffer(ibd);
+	else
+		indexBufferRemaining_ = nullptr;
 
 	ibd.indexCount = filteredIndices.size();
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
@@ -192,6 +171,8 @@ void PointCloudEffect::updateIndexBuffers(const std::tuple<std::vector<uint32_t>
 
 	if(ibd.indexCount > 0)
 		indexBufferFiltered_ = renderSystem()->createIndexBuffer(ibd);
+	else
+		indexBufferFiltered_ = nullptr;
 
 	ibd.indexCount = segmentedIndices.size();
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
@@ -199,6 +180,8 @@ void PointCloudEffect::updateIndexBuffers(const std::tuple<std::vector<uint32_t>
 
 	if(ibd.indexCount > 0)
 		indexBufferSegmented_ = renderSystem()->createIndexBuffer(ibd);
+	else
+		indexBufferSegmented_ = nullptr;
 }
 
 void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset)
@@ -219,31 +202,26 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	size_t vbNumPoints = pointCloud->size();
 
 	// If we would need more than 4GiB, we subsample the cloud. TODO: Make gpu memory amount queryable.
-	if(vbDataByteSize > (2 * 1024 * 1024 * 1024)) {
-		BLUE_LOG(warning) << "Not enough GPU memory available. Using a subsampled point cloud with " << QString::number(vbMaxCapacity).toStdString() << " points.";
-		subsampledPointCloud_ = pointCloud->subsample(vbMaxCapacity);
-		bUseSubsampledCloud_ = true;
-		vbNumPoints = subsampledPointCloud_->size();
-	}
+	//if(vbDataByteSize > (2 * 1024 * 1024 * 1024)) {
+	//	BLUE_LOG(warning) << "Not enough GPU memory available. Using a subsampled point cloud with " << QString::number(vbMaxCapacity).toStdString() << " points.";
+	//	subsampledPointCloud_ = pointCloud->subsample(vbMaxCapacity);
+	//	bUseSubsampledCloud_ = true;
+	//	vbNumPoints = subsampledPointCloud_->size();
+	//}
 
-#pragma omp parallel for
-	for(long ii = 0; ii < vbNumPoints; ii++) {
-		size_t i;
-		if(bUseSubsampledCloud_)
-			i = subsampledPointCloud_->getPointGlobalIndex(ii);
-		else
-			i = ii;
-
+//#pragma omp parallel for shared(pointCloud, vertices)
+	for(long i = 0; i < pointCloud->size(); i++) {
 		auto pos = pointCloud->getPoint(i);
 		const ColorCompType* col = pointCloud->rgbColors() ? pointCloud->getPointColor(i) : ccColor::FromRgbf(baseColor).rgb;
 		// Swap Z and Y coordinate for rendering!
 		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos->x + offset.x(), pos->z + offset.z(), pos->y + offset.y()), buw::Vector4f((float)col[0], (float)col[1], (float)col[2], 255.0f) / 255.0f);
 	}
 	
-	vbd.vertexCount = vbNumPoints;
+	
+	vbd.vertexCount = vertices.size();
 	vbd.data = vertices.data();
 	vertexBuffer_ = renderSystem()->createVertexBuffer(vbd);
-	BLUE_LOG(trace) << "Done creating vertex buffer.";
+	BLUE_LOG(trace) << "Done creating vertex buffer. Size:" << QString::number(vertices.size()).toStdString();
 
 	std::vector<uint32_t> remainingIndices = std::vector<uint32_t>(), filteredIndices = std::vector<uint32_t>(), segmentedIndices = std::vector<uint32_t>();
 
@@ -347,6 +325,8 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	else
 		indexBufferRemaining_ = nullptr;
 
+	BLUE_LOG(trace) << "indexBufferRemaining_:" << indexBufferRemaining_.get() << ". Index count:" << ibd.indexCount << ".";
+
 	ibd.indexCount = filteredIndices.size();
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
 	ibd.data = filteredIndices.data();
@@ -356,6 +336,9 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	else
 		indexBufferFiltered_ = nullptr;
 
+	BLUE_LOG(trace) << "indexBufferFiltered_:" << indexBufferFiltered_.get() << ". Index count:" << ibd.indexCount << ".";
+
+
 	ibd.indexCount = segmentedIndices.size();
 	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
 	ibd.data = segmentedIndices.data();
@@ -364,6 +347,8 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 		indexBufferSegmented_ = renderSystem()->createIndexBuffer(ibd);
 	else
 		indexBufferSegmented_ = nullptr;
+
+	BLUE_LOG(trace) << "indexBufferSegmented_:" << indexBufferSegmented_.get() << ". Index count:" << ibd.indexCount << ".";
 
 	BLUE_LOG(trace) << "Done creating index buffers.";
 
@@ -414,7 +399,7 @@ void PointCloudEffect::v_render()
 			draw(static_cast<UINT>(vertexBuffer_->getVertexCount()));
 		}
 		else {
-			if(indexBufferRemaining_ && indexBufferRemaining_->getIndexCount()) {
+			if(indexBufferRemaining_ && indexBufferRemaining_->getIndexCount() > 0) {
 				setIndexBuffer(indexBufferRemaining_);
 				drawIndexed(static_cast<UINT>(indexBufferRemaining_->getIndexCount()));
 			}

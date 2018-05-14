@@ -911,6 +911,7 @@ void OpenInfraPlatform::DataManagement::Data::exportPointCloud(const std::string
 		OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Point Cloud ").append(filename));
 		auto filter = FileIOFilter::FindBestFilterForExtension("BIN");
 		auto pointCloud = data->getPointCloud();
+		pointCloud->deleteAllScalarFields();
 		int error = FileIOFilter::SaveToFile(std::static_pointer_cast<ccHObject>(pointCloud).get(), QString(filename.data()), FileIOFilter::SaveParameters(), filter);
 	};
 

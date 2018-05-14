@@ -159,6 +159,11 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	ui_->comboBoxRateOfChangeDimension->addItem("Z", QVariant(2));
 	ui_->comboBoxRateOfChangeDimension->setCurrentIndex(2);
 
+	ui_->comboBoxFilterPositionDimension->addItem("X", QVariant(0));
+	ui_->comboBoxFilterPositionDimension->addItem("Y", QVariant(1));
+	ui_->comboBoxFilterPositionDimension->addItem("Z", QVariant(2));
+	ui_->comboBoxFilterPositionDimension->setCurrentIndex(2);
+
 	// Put the buttons into these groups to avoid auto toggeling etc.
 	radioButtons2D3D_.addButton(ui_->radioButtonRender2D);
 	radioButtons2D3D_.addButton(ui_->radioButtonRender3D);
@@ -2347,6 +2352,31 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDensityFilt
 	}
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyPositionFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::PositionFilterDescription desc;
+		desc.minValue = ui_->doubleSpinBoxFilterPositionMin->value();
+		desc.maxValue = ui_->doubleSpinBoxFilterPositionMax->value();
+		desc.dimension = ui_->comboBoxFilterPositionDimension->currentData().toInt();
+
+		if(pointCloud->applyPositionFilter(desc, callback_) == 0) {
+			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		} 
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetPositionFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		if(pointCloud->resetPositionFilter() == 0) {
+			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		}
+	}
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonFilterOriginal_clicked()
 {
 	QMessageBox dialog;	
@@ -2413,7 +2443,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyPercentileS
 		desc.minThreshold = ui_->doubleSpinBoxPercentileSegmentationMinThreshold->value() / 100.0f;
 		desc.maxThreshold = ui_->doubleSpinBoxPercentileSegmentationMaxThreshold->value() / 100.0f;
 
-		pointCloud->applyPercentilesSegmentation(desc, callback_);
+		pointCloud->applyPercentilesSegmentationHP(desc, callback_);
 		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 	}
 }
@@ -2489,6 +2519,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRail
 			for(int idx = 0; idx < numAlignments; idx++) {
 				ui_->comboBoxPlotSelectAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
 			}
+			ui_->pushButtonComputeCurvature->setEnabled(true);
 			ui_->pushButtonPlotAlignment->setEnabled(true);
 			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 		}
@@ -2509,6 +2540,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetSegmentRail
 	if(pointCloud) {
 		BLUE_LOG(info) << "Resetting railway segmentation.";
 		if(pointCloud->resetRailwaySegmentation() == 0) {
+			ui_->pushButtonComputeCurvature->setDisabled(true);
 			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 		}
 		else {
@@ -2530,10 +2562,26 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCenterlin
 		desc.maxDistance = ui_->doubleSpinBoxCenterlineMaxDistance->value();
 		int numAlignments = pointCloud->computeCenterlines(desc, callback_);
 		if(numAlignments > 0) {
+
+			ui_->pushButtonComputeCurvature->setEnabled(true);
+
+			// Clear the combo boxes for plotting since we only want to plot the stuff from the latest computations.
+			ui_->comboBoxShowAlignment->clear();
+			ui_->comboBoxComputeCurvature->clear();
+			ui_->comboBoxPlotSelectAlignment->clear();
+
+			// Add the indices to the combo boxes.
 			for(int idx = 0; idx < numAlignments; idx++) {
 				ui_->comboBoxShowAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
 				ui_->comboBoxComputeCurvature->addItem(QString::number(idx), QVariant(QString::number(idx)));
 			}
+
+			ui_->comboBoxShowAlignment->addItem("All", QVariant(QString::number(-1)));
+			ui_->comboBoxComputeCurvature->addItem("All", QVariant(QString::number(-1)));
+
+			// Set the default index to 0.
+			ui_->comboBoxShowAlignment->setCurrentIndex(ui_->comboBoxShowAlignment->count() - 1);
+			ui_->comboBoxComputeCurvature->setCurrentIndex(ui_->comboBoxComputeCurvature->count() - 1);
 			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 		}
 		else
@@ -2547,9 +2595,12 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetCenterlines
 	if(pointCloud) {
 		ui_->comboBoxShowAlignment->clear();
 		ui_->comboBoxComputeCurvature->clear();
+		ui_->comboBoxPlotSelectAlignment->clear();
 
-		if(pointCloud->resetCenterlines() == 0)
+		if(pointCloud->resetCenterlines() == 0) {
+			ui_->pushButtonComputeCurvature->setDisabled(true);
 			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
 		else
 			BLUE_LOG(warning) << "Resetting centerlines failed.";
 	}
@@ -2563,14 +2614,32 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCurvature
 		desc.numPointsForPCA = ui_->spinBoxNumPointsForPCA->value();
 		desc.curvatureStepSize = ui_->spinBoxCurvatureStepSize->value();
 		desc.numPointsForMeanCurvature = ui_->spinBoxNumPointsForMeanCurvature->value();
-		desc.centerlineIndex = ui_->comboBoxComputeCurvature->currentData().toString().toInt();
-		pointCloud->computeCenterlineCurvature(desc, callback_);
+		QString comboBoxComputeCurvatureData = ui_->comboBoxComputeCurvature->currentData().toString();
+
+		if(comboBoxComputeCurvatureData == "All")
+			desc.centerlineIndex = -1;
+		else
+			desc.centerlineIndex = comboBoxComputeCurvatureData.toInt();
+
+		//desc.centerlineIndex = ui_->comboBoxComputeCurvature->currentData().toString().toInt();
+		if(pointCloud->computeCenterlineCurvature(desc, callback_) == 0) {
+			if(desc.centerlineIndex != -1)
+				ui_->comboBoxPlotSelectAlignment->addItem(QString::number(desc.centerlineIndex), QVariant(QString::number(desc.centerlineIndex)));
+			else {
+				ui_->comboBoxPlotSelectAlignment->clear();
+				for(size_t i = 0; i < ui_->comboBoxComputeCurvature->count() - 1; i++)
+					ui_->comboBoxPlotSelectAlignment->addItem(QString::number(i), QVariant(QString::number(i)));
+			}
+		}
 	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_clicked()
 {
-	QString parameter = QDir::currentPath().append("/Alignment#").append(ui_->comboBoxPlotSelectAlignment->currentData().toString()).append(".txt");
+	//QString parameter = QDir::currentPath().append("/Alignment#").append(ui_->comboBoxPlotSelectAlignment->currentData().toString()).append(".txt");
+
+	QString parameter = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("*.txt"));
+
 	
 	//setup converter
 	std::wstring_convert<convert_type, wchar_t> converter;

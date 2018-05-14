@@ -191,6 +191,9 @@ namespace OpenInfraPlatform
 			void on_pushButtonApplyDensityFilter_clicked();
 			void on_pushButtonResetDensityFilter_clicked();
 
+			void on_pushButtonApplyPositionFilter_clicked();
+			void on_pushButtonResetPositionFilter_clicked();
+
 			void on_pushButtonFilterOriginal_clicked();
 			void on_pushButtonRestoreOriginal_clicked();
 

@@ -103,13 +103,26 @@ std::set<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointClou
 		float head = 0.067f;		
 		
 		// Iterate over all pairs of points, we iterate fully since points are not sorted in x direction.
-		for(size_t i = 0; i < points2D.size() - 1; i++) {
-			for(size_t ii = i + 1; ii < points2D.size(); ii++) {
+		//for(size_t i = 0; i < points2D.size() - 1; i++) {
+		//	for(size_t ii = i + 1; ii < points2D.size(); ii++) {
+		//
+		//		// If first point.x + gauge + head - second point.x < 1cm and difference in y direction is less than 1cm, we have found a pair of matching rail points.
+		//		float distance = (points2D[i] - points2D[ii]).norm();
+		//		float error = std::fabsf(distance - gauge - head);
+		//		if(error < epsilon && std::fabsf(points2D[i].y - points2D[ii].y) < 0.05f) {
+		//			pairs.insert(std::pair<size_t, size_t>(getPointGlobalIndex(i), getPointGlobalIndex(ii)));
+		//		}
+		//	}
+		//}
+
+		// Iterate over all pairs of points, we iterate fully since points are not sorted in x direction.
+		for(size_t i = 0; i < this->size() - 1; i++) {
+			for(size_t ii = i + 1; ii < this->size(); ii++) {
 
 				// If first point.x + gauge + head - second point.x < 1cm and difference in y direction is less than 1cm, we have found a pair of matching rail points.
-				float distance = (points2D[i] - points2D[ii]).norm();
+				float distance = (*getPoint(i) - *getPoint(ii)).norm();
 				float error = std::fabsf(distance - gauge - head);
-				if(error < epsilon && std::fabsf(points2D[i].y - points2D[ii].y) < 0.05f) {
+				if(error < epsilon && std::fabsf(getPoint(i)->z - getPoint(ii)->z) < 0.05f) {
 					pairs.insert(std::pair<size_t, size_t>(getPointGlobalIndex(i), getPointGlobalIndex(ii)));
 				}
 			}

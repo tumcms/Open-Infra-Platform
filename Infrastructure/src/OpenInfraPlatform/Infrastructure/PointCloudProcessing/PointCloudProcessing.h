@@ -61,6 +61,11 @@ namespace OpenInfraPlatform
 			CCLib::GeometricalAnalysisTools::Density density;
 		};
 
+		struct PositionFilterDescription {
+			int dimension;
+			double minValue, maxValue;
+		};
+
 		struct RateOfChangeSegmentationDescription {
 			int dim;
 			float maxNeighbourDistance;
@@ -78,7 +83,7 @@ namespace OpenInfraPlatform
 		};
 
 		struct CenterlineCurvatureComputationDescription {
-			int centerlineIndex, numPointsForPCA, curvatureStepSize, numPointsForMeanCurvature;
+			int centerlineIndex, numPointsForPCA, curvatureStepSize, numPointsForMeanCurvature;			
 		};
 
 		struct RailwaySegmentationDescription {
@@ -99,6 +104,7 @@ namespace buw
 	using OpenInfraPlatform::Infrastructure::ePointCloudFilterDimension;
 	using OpenInfraPlatform::Infrastructure::DuplicateFilterDescription;
 	using OpenInfraPlatform::Infrastructure::LocalDensityFilterDescription;
+	using OpenInfraPlatform::Infrastructure::PositionFilterDescription;
 	using OpenInfraPlatform::Infrastructure::RateOfChangeSegmentationDescription;
 	using OpenInfraPlatform::Infrastructure::PercentileSegmentationDescription;
 	using OpenInfraPlatform::Infrastructure::RailwaySegmentationDescription;

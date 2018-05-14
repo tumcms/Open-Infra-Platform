@@ -767,6 +767,9 @@ void Viewport::onChange(ChangeFlag changeFlag) {
 		pointCloud->getBoundingBox(minPos, maxPos);
 		min = buw::Vector3d(minPos.x, minPos.y, minPos.z);
 		max = buw::Vector3d(maxPos.x, maxPos.y, maxPos.z);
+
+		BLUE_LOG(trace) << "min:" << min;
+		BLUE_LOG(trace) << "max:" << max;
 	}
 	
 
