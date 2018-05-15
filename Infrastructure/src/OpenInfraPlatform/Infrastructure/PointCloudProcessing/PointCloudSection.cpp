@@ -122,7 +122,7 @@ std::set<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointClou
 				// If first point.x + gauge + head - second point.x < 1cm and difference in y direction is less than 1cm, we have found a pair of matching rail points.
 				float distance = (*getPoint(i) - *getPoint(ii)).norm();
 				float error = std::fabsf(distance - gauge - head);
-				if(error < epsilon && std::fabsf(getPoint(i)->z - getPoint(ii)->z) < 0.05f) {
+				if(error < epsilon && std::fabsf(getPoint(i)->z - getPoint(ii)->z) < 0.1f) {
 					pairs.insert(std::pair<size_t, size_t>(getPointGlobalIndex(i), getPointGlobalIndex(ii)));
 				}
 			}

@@ -44,6 +44,8 @@ namespace OpenInfraPlatform {
 
 			PointCloudSection(GenericIndexedCloudPersist* associatedCloud) : ReferenceCloud(associatedCloud) { }
 
+			PointCloudSection(PointCloudSection &other) : ReferenceCloud(other) {}
+
 			// Function which flags points considered as duplicate in this projection as duplicates in the associated cloud.
 			int flagDuplicatePoints(const double minDistance);
 

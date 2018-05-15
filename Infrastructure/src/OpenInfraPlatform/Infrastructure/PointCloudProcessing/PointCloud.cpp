@@ -994,14 +994,52 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 	// Create a global list of all point pairs.
 	std::vector<std::pair<size_t, size_t>> rails = std::vector<std::pair<size_t, size_t>>();
-#pragma omp parallel for
-	for(long i = 0; i < sections_.size(); i++) {
-		auto pairs = sections_[i]->computePairs();
+	int tid = 0;
+#pragma omp parallel private(tid)
+	{
+		tid = omp_get_thread_num();
+		int numSectionsPerThread = (sections_.size() - 2) / omp_get_num_threads();
+		int numSectionsPerPercent = numSectionsPerThread / 100;
+		int processedSections = 0;
+		int percentageCompleted = 0;
+
+		std::set<std::pair<size_t, size_t>> pairs = std::set<std::pair<size_t, size_t>>();
+#pragma omp for schedule(dynamic, 20)
+		for(long i = 1; i < sections_.size() - 1; i++) {
+			auto section = PointCloudSection(this);
+
+			// Resize our section.
+			section.reserve(sections_[i]->size() + sections_[i - 1]->size() + sections_[i + 1]->size());
+
+			// Append the previous and next section.
+			section.add(*(sections_[i]));
+			section.add(*(sections_[i - 1]));
+			section.add(*(sections_[i + 1]));
+
+			auto result = section.computePairs();
+			pairs.insert(result.begin(), result.end());
+
+			processedSections++;
+			if(processedSections >= numSectionsPerPercent) {
+				percentageCompleted++;
+				processedSections = 0;
+
+				if(tid == 0 && callback) {
+					callback->update(percentageCompleted);
+				}
+			}
+
+		}
+
 
 
 #pragma omp critical
 		rails.insert(rails.end(), pairs.begin(), pairs.end());
 	}
+
+	if(callback)
+		callback->stop();
+	
 
 	// Reserve space for the centerpoints points and color them blue.
 	this->reserve(this->size() + rails.size());
@@ -1028,6 +1066,9 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	auto dist = [](const CCVector3 &lhs, const CCVector3 &rhs) ->float {
 		return (rhs - lhs).norm();
 	};
+
+	if(callback)
+		callback->start();
 
 	float totalPoints = centerpoints.size();
 	float processedPoints = 0;
@@ -1078,7 +1119,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		}
 
 		//Check if we have a centerline which is very small (does not meet the minimum requirements as specified) and remove it to save some computation time.
-		if(i % 10000 == 0) {
+		if(i % 1000 == 0) {
 			for(size_t ii = 0; ii < centerlines.size(); ii++) {
 				auto &line = centerlines[ii];
 
@@ -1107,17 +1148,53 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool { return line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength; });
 	centerlines.erase(end, centerlines.end());
 
+	// Collapse centerlines to have a uniform density.
+	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>(centerlines.size());
+
+	// Iterate over all segments and combine the centers of each projection section.
+#pragma omp parallel for
+	for(long idx = 0; idx < centerlines.size(); idx++) {
+		auto &line = centerlines[idx];
+		int startIndex = 0, endIndex = 0;
+
+		for(size_t i = 0; i < line.size() - 1; i++) {
+			float length = std::fabsf(mainAxis_.dot(centerpoints[line[i + 1]]) - mainAxis_.dot(centerpoints[line[startIndex]]));
+			if(length >= desc.centerlineDensity) {
+				endIndex = i + 1;
+				int numPoints = (endIndex - startIndex);
+				CCVector3 center = CCVector3(0, 0, 0);
+				for(; startIndex < endIndex; startIndex++) {
+					center += (centerpoints[line[startIndex]] / (float)numPoints);
+				}
+
+				alignments[idx].push_back(center);				
+			}
+		}
+	}
+	
+
+
 	std::vector<std::vector<size_t>> centerlinePointIndices = std::vector<std::vector<size_t>>(centerlines.size());
 
 	// Only add centerpoints for alignments which are also exported.
-	for(size_t idx = 0; idx < centerlines.size(); idx++) {
-		auto &segment = centerlines[idx];
-		for(auto pointIndex : segment) {
-			addPoint(CCVector3(centerpoints[pointIndex]));
-			addRGBColor(255 * (float)idx / (float)centerlines.size(), 0, 255);
+	for(size_t idx = 0; idx < alignments.size(); idx++) {
+		auto &segment = alignments[idx];
+		for(auto point : segment) {
+			addPoint(CCVector3(point));
+			addRGBColor(255 * (float)idx / (float)alignments.size(), 0, 255);
 			centerlinePointIndices[idx].push_back(this->size() - 1);
 		}
 	}
+
+	// Only add centerpoints for alignments which are also exported.
+	//for(size_t idx = 0; idx < centerlines.size(); idx++) {
+	//	auto &segment = centerlines[idx];
+	//	for(auto pointIndex : segment) {
+	//		addPoint(CCVector3(centerpoints[pointIndex]));
+	//		addRGBColor(255 * (float)idx / (float)centerlines.size(), 0, 255);
+	//		centerlinePointIndices[idx].push_back(this->size() - 1);
+	//	}
+	//}
 
 	// Add a scalar field for centerline so that we can delete them again when we do the reset.
 	int idx_centerline = getScalarFieldIndexByName("Centerline");
@@ -1134,12 +1211,15 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 			setPointScalarValue(pointIndex, idx);
 	}
 
+	centerlineDescription_ = desc;
+
 	computeIndices();
 	return centerlines.size();
 }
 
 int OpenInfraPlatform::Infrastructure::PointCloud::resetCenterlines()
 {
+	centerlineDescription_ = buw::CenterlineComputationDescription();
 	return resetRailwaySegmentation();
 }
 
@@ -1318,7 +1398,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 
 #pragma omp single
 				{
-					for(size_t i = 0; i < curvaturesSmoothed.size(); i++) {
+					for(size_t i = 0; i < curvaturesSmoothed.size() - (endOffset - startOffset) - 1; i++) {
 						QString text = QString::number(chainages[i + startOffset]).append("\t").append(QString::number(curvaturesSmoothed[i])).append("\t").append(QString::number(bearings[i + startOffset])).append("\n");
 						file.write(text.toStdString().data());
 					}
@@ -1340,6 +1420,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 		if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
 			return -1;
 		QStringList text = {
+			QString("Centerline computation"),
+			QString("CenterlineDensity:" + QString::number(centerlineDescription_.centerlineDensity)),
+			QString("MaxDistance:" + QString::number(centerlineDescription_.maxDistance)),
+			QString("MinSegmentPoints:" + QString::number(centerlineDescription_.minSegmentPoints)),
+			QString("MinSegmentLength:" + QString::number(centerlineDescription_.minSegmentLength)),
+			QString("Curvature computation"),
 			QString("NumPointsForPCA:" + QString::number(desc.numPointsForPCA)),
 			QString("CurvatureStepSize:" + QString::number(desc.curvatureStepSize)),
 			QString("NumPointsForMeanCurvature:" + QString::number(desc.numPointsForMeanCurvature)) };

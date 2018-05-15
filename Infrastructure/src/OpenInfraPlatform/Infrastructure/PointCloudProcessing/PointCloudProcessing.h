@@ -79,7 +79,9 @@ namespace OpenInfraPlatform
 
 		struct CenterlineComputationDescription {
 			int minSegmentPoints;
-			float minSegmentLength, maxDistance;
+			float minSegmentLength, maxDistance, centerlineDensity;
+
+			CenterlineComputationDescription() = default;
 		};
 
 		struct CenterlineCurvatureComputationDescription {

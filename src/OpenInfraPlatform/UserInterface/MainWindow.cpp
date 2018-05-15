@@ -2560,6 +2560,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCenterlin
 		desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
 		desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
 		desc.maxDistance = ui_->doubleSpinBoxCenterlineMaxDistance->value();
+		desc.centerlineDensity = ui_->doubleSpinBoxCenterlineDensity->value() / 1000.0;
 		int numAlignments = pointCloud->computeCenterlines(desc, callback_);
 		if(numAlignments > 0) {
 
