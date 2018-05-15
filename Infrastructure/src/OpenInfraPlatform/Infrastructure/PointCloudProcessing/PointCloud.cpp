@@ -690,7 +690,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentation(
 	return 0;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentationHP(buw::PercentileSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentationHP(const buw::PercentileSegmentationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// If we have a callback, call start to init the GUI.
 	if(callback)
@@ -728,21 +728,20 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentationH
 		auto octree = CCLib::DgmOctree(*octree_);
 		int numCellsPerThread = numCells / omp_get_num_threads();
 		int processedCells = 0;
-
-		
+		int numCellsPerPercent = numCellsPerThread / 100;
+		int percentageCompleted = 0;		
 
 #pragma omp for schedule(dynamic, 50)
 		for(long idx = 0; idx < dgmOctreeCells.size(); idx++) {
 			auto cell = dgmOctreeCells[idx];
-			auto code = octree.getCellCode(cell);
+			auto code = octree.getCellCode(cell);						
 
 			// Create and initialize the nearest neighbour search struct as far as possible.
 			CCLib::DgmOctree::NearestNeighboursSphericalSearchStruct nss;
 			nss.level = level;
-			nss.maxSearchSquareDistd = std::pow(desc.kernelRadius, 2); 
+			nss.maxSearchSquareDistd = std::pow(desc.kernelRadius, 2);
 			nss.alreadyVisitedNeighbourhoodSize = 0;
 			nss.minNumberOfNeighbors = 0;
-						
 
 			// Get the points in the cell specified by the index and store them in points. Compute the cell position and center.
 			std::shared_ptr<CCLib::ReferenceCloud> points = std::make_shared<CCLib::ReferenceCloud>(this);
@@ -774,7 +773,6 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentationH
 					if(diff >= desc.minThreshold && totalDiff < desc.maxThreshold) {
 						for(int ii = idxUpper; ii < numPoints; ii++) {
 							size_t index_ii = nss.pointsInNeighbourhood[ii].pointIndex;
-#pragma omp critical
 							this->setPointScalarValue(index_ii, 1.0f);
 						}
 					}
@@ -782,8 +780,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentationH
 
 				// Update our callback.
 				processedCells++;
-				if(tid == 0 && callback)
-					callback->update(100.0f * (double)processedCells / (double)numCellsPerThread);
+				if(processedCells >= numCellsPerPercent) {
+					percentageCompleted++;
+					processedCells = 0;
+					if(tid == 0 && callback)
+						callback->update(percentageCompleted);
+				}
 			}
 			else {
 				// Stop the callback if we abort our function.
@@ -794,6 +796,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentationH
 			}
 		}
 	}
+
+	computeIndices();
 
 	if(callback)
 		callback->stop();

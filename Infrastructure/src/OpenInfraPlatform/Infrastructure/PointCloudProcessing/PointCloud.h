@@ -68,7 +68,7 @@ namespace OpenInfraPlatform {
 
 			int applyPercentilesSegmentation(buw::PercentileSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			int applyPercentilesSegmentationHP(buw::PercentileSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			int applyPercentilesSegmentationHP(const buw::PercentileSegmentationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			int applyPercentilesOnGridSegmentation(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
