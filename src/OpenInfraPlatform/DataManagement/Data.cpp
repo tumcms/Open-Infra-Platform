@@ -1178,6 +1178,50 @@ void OpenInfraPlatform::DataManagement::Data::createTerrainFromMeshJob(
 	importer_ = new buw::MeshImport(filename, getOffset());
 }
 
+// Add Georeference
+
+double  OpenInfraPlatform::DataManagement::Data::getEastings() 
+{
+	return m_Eastings;
+}
+
+void  OpenInfraPlatform::DataManagement::Data::setEastings(double value)
+{
+	m_Eastings = value;
+}
+
+double  OpenInfraPlatform::DataManagement::Data::getNorthings()
+{
+	return m_Northings;
+}
+
+void  OpenInfraPlatform::DataManagement::Data::setNorthings(double value)
+{
+	m_Northings = value;
+}
+
+
+double  OpenInfraPlatform::DataManagement::Data::getOrthogonalHeight()
+{
+	return m_OrthogonalHeight;
+}
+
+void  OpenInfraPlatform::DataManagement::Data::setOrthogonalHeight(double value)
+{
+	m_OrthogonalHeight = value;
+}
+
+
+QString  OpenInfraPlatform::DataManagement::Data::getEPSGcodeName()
+{
+	return m_Name;
+}
+
+void  OpenInfraPlatform::DataManagement::Data::setEPSGcodeName(QString value)
+{
+	m_Name = value;
+}
+
 
 void OpenInfraPlatform::DataManagement::Data::createRandomTerrain(
 	const buw::terrainDescription& td)

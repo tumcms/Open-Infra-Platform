@@ -117,7 +117,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	preferencesDialog_ = new PreferencesDialog(view_, this);
 	verticalAlignmentWindow_ = new VerticalAlignmentWindow(ui_->actionVertical_alignment);
 	XYZImportDialog_ = new XYZImportDialog(this);
-
+	addGeoreferenceDialog_ = new AddGeoreferenceDialog(view_, this);
 	updateRecentFileActions();
 
 	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), ACA_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
@@ -1046,6 +1046,10 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionCheck_for_Updates_tr
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionPreferences_triggered() {
 	preferencesDialog_->show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionAdd_Georeference_triggered() {
+	addGeoreferenceDialog_->show();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowMap_clicked(bool checked) {

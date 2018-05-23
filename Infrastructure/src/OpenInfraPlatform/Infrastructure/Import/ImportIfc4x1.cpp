@@ -132,7 +132,17 @@ public:
                 offset_.y() = mapConversion->m_Northings->m_value;
                 offset_.z() = mapConversion->m_OrthogonalHeight->m_value;
             } break;
-            case IFCPROJECT:
+			
+			case IFCPROJECTEDCRS:
+			{
+				std::shared_ptr<IfcProjectedCRS> projectedCRS = std::static_pointer_cast<IfcProjectedCRS>(it->second);
+				BLUE_ASSERT(projectedCRS->m_Name != nullptr, "Invalid EPSG-code.");
+				//todo: Check if EPSG code is valid.
+				
+				const std::string EPSGstring = projectedCRS->m_Name->m_value;
+			} break;
+			
+			case IFCPROJECT:
                 project_ = std::static_pointer_cast<IfcProject>(it->second);
                 unitConv_.setIfcProject(project_);
                 for (auto representationContext : project_->m_RepresentationContexts)

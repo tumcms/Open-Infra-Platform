@@ -28,6 +28,7 @@
 #include "OpenInfraPlatform/UserInterface/ExportIfcZipDialog.h"
 #include "OpenInfraPlatform/UserInterface/ExportExcelDialog.h"
 #include "OpenInfraPlatform/UserInterface/GenerateTerrainDialog.h"
+#include "OpenInfraPlatform/UserInterface/AddGeoreferenceDialog.h"
 #include "OpenInfraPlatform/UserInterface/View2DWindow/VerticalAlignmentWindow.h"
 #include "OpenInfraPlatform/UserInterface/View2DWindow/CurvatureWindow.h"
 #include "OpenInfraPlatform/DataManagement/Data.h"
@@ -166,6 +167,7 @@ namespace OpenInfraPlatform
 			void on_actionVertical_alignment_3D_triggered();
 			void on_actionVertical_alignment_triggered();
 			void on_actionViewport_as_screenshot_triggered();
+			void on_actionAdd_Georeference_triggered();
 
 			void on_checkBoxDifferentColorsForVerticalAlignmentElements_clicked(bool checked);
 			void on_checkBoxHighlightSelectedAlignmentSegment_clicked(bool checked);
@@ -276,6 +278,7 @@ namespace OpenInfraPlatform
 			XYZImportDialog*							XYZImportDialog_ = nullptr;
 			LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
 			CreateAccidentReportDialog*					createAccidentReportDialog_ = nullptr;
+			AddGeoreferenceDialog*						addGeoreferenceDialog_ = nullptr;
 
 			QProgressBar*								progressBar_;
 			

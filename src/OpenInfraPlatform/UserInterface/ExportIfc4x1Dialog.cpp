@@ -86,7 +86,12 @@ void OpenInfraPlatform::UserInterface::ExportIfc4x1Dialog::on_pushButtonExport_c
 
 		desc.useFixedEntityIdForGeometry = ui_->checkBoxUseFixedEntityIdForGeometry->isChecked();
 		desc.startId = ui_->lineEditStartId->text().toInt();
-		
+
+		desc.m_Eastings = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getEastings();
+		desc.m_Northings = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getNorthings();
+		desc.m_OrthogonalHeight = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getOrthogonalHeight();
+		desc.m_Name = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getEPSGcodeName().toStdString();
+
 		if (filename.endsWith(".ifc")) 
 		{
 			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportIfc4x1(

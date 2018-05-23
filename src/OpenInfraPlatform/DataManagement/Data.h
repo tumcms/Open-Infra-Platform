@@ -255,6 +255,18 @@ namespace OpenInfraPlatform
 			int getSelectedAlignment();
 
             //---------------------------------------------------------------------------//
+			// Add Georeference
+			//---------------------------------------------------------------------------//
+			
+			double	getEastings();
+			void	setEastings(double value);
+			double	getNorthings();
+			void	setNorthings(double value);
+			double	getOrthogonalHeight();
+			void	setOrthogonalHeight(double value);
+			QString getEPSGcodeName();
+			void	setEPSGcodeName(QString value);
+			//---------------------------------------------------------------------------//
             // ViewCubeData
             //---------------------------------------------------------------------------//
 
@@ -293,8 +305,13 @@ namespace OpenInfraPlatform
 			void createTerrainFromHeightMapJob(const std::string& filename);
 			void createTerrainFromMeshJob(const std::string& filename);
 			
+			
+
 		private:
 			ChangeFlag		latestChangeFlag_;
+
+			
+
 
 			// Preferences
 			buw::Color3f	clearColor_;
@@ -324,6 +341,14 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<buw::PointCloud>							tempPointCloud_;
 
 			int																currentJobID_;
+
+			// Add Georeference
+			double m_Eastings;
+			double m_Northings;
+			double m_OrthogonalHeight;
+			QString m_Name; 
+
+
 
 			//! Determines the notification behavior of this class.
 			//BlueFramework::Application::DataManagement::NotificationState *m_pNotifiactionState;
