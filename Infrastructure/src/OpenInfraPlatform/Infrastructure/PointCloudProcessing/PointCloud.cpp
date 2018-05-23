@@ -908,64 +908,80 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 		return -1;
 
 	// Initialize counter variables for our callback update.
-	int processedCells = 0;
 	int numCells = dgmOctreeCells.size();
+	int tid = 0;
+	int err = 0;
 
-	// Iterate over all cells to call our nearest neighbour search on consecutive points in a cell for performance reasons.
-	// TODO: Use OpenMP to do this in parallel.
-	for(auto cell : dgmOctreeCells) {
-		auto code = octree_->getCellCode(cell);
+#pragma omp parallel private(tid) firstprivate(callback) shared(dgmOctreeCells, desc, numCells, err)
+	{
+		tid = omp_get_thread_num();
+		auto octree = CCLib::DgmOctree(*octree_);
+		int numCellsPerThread = numCells / omp_get_num_threads();
+		int processedCells = 0;
+		int numCellsPerPercent = numCellsPerThread / 100;
+		int percentageCompleted = 0;
 
-		// Create and initialize the nearest neighbour search struct as far as possible. Level is 10, maxSearchSquareDistance is calculated from the description parameter.
-		CCLib::DgmOctree::NearestNeighboursSearchStruct nss;
-		nss.level = 10;
-		nss.maxSearchSquareDistd = std::pow(desc.maxNeighbourDistance, 2);
+#pragma omp for schedule(dynamic, 50)
+		for(long idx = 0; idx < dgmOctreeCells.size(); idx++) {
+			auto cell = dgmOctreeCells[idx];
+			auto code = octree.getCellCode(cell);
 
-		// Get the points in the cell specified by the index and store them in points. Compute the cell position and center.
-		std::shared_ptr<CCLib::ReferenceCloud> points = std::make_shared<CCLib::ReferenceCloud>(this);
-		success = octree_->getPointsInCellByCellIndex(points.get(), cell, 10);
-		octree_->getCellPos(code, 10, nss.cellPos, false);
-		octree_->computeCellCenter(nss.cellPos, 10, nss.cellCenter);
+			// Create and initialize the nearest neighbour search struct as far as possible. Level is 10, maxSearchSquareDistance is calculated from the description parameter.
+			CCLib::DgmOctree::NearestNeighboursSearchStruct nss;
+			nss.level = 10;
+			nss.maxSearchSquareDistd = std::pow(desc.maxNeighbourDistance, 2);
 
-		if(success) {			
-			// If the points were successfully selected, iterate over all points in the cell and search the nearest neighbours.
-			for(int i = 0; i < points->size(); i++) {
-				nss.queryPoint = *(points->getPoint(i));
-				int numNeighbours = octree_->findNearestNeighborsStartingFromCell(nss);
+			// Get the points in the cell specified by the index and store them in points. Compute the cell position and center.
+			std::shared_ptr<CCLib::ReferenceCloud> points = std::make_shared<CCLib::ReferenceCloud>(this);
+			success = octree_->getPointsInCellByCellIndex(points.get(), cell, 10);
+			octree_->getCellPos(code, 10, nss.cellPos, false);
+			octree_->computeCellCenter(nss.cellPos, 10, nss.cellCenter);
 
-				// Initialize the diff variable and the number of neighbours which are selected for the computation.
-				float diff = 0.0f;
-				int numSelectedNeighbours = 0;
+			if(success) {
+				// If the points were successfully selected, iterate over all points in the cell and search the nearest neighbours.
+				for(int i = 0; i < points->size(); i++) {
+					nss.queryPoint = *(points->getPoint(i));
+					int numNeighbours = octree_->findNearestNeighborsStartingFromCell(nss);
 
-				// Calculate the mean difference in the specified dimension for all points in the neighbourhood which fulfill the conditions.
-				for(auto neighbour : nss.pointsInNeighbourhood) {
-					if(neighbour.squareDistd <= nss.maxSearchSquareDistd && neighbour.squareDistd != 0.0) {
-						diff += std::fabsf(nss.queryPoint[desc.dim] - (*neighbour.point)[desc.dim]);
-						numSelectedNeighbours++;
+					// Initialize the diff variable and the number of neighbours which are selected for the computation.
+					float diff = 0.0f;
+					int numSelectedNeighbours = 0;
+
+					// Calculate the mean difference in the specified dimension for all points in the neighbourhood which fulfill the conditions.
+					for(auto neighbour : nss.pointsInNeighbourhood) {
+						if(neighbour.squareDistd <= nss.maxSearchSquareDistd && neighbour.squareDistd != 0.0) {
+							diff += std::fabsf(nss.queryPoint[desc.dim] - (*neighbour.point)[desc.dim]);
+							numSelectedNeighbours++;
+						}
+					}
+
+					// If we found at least one neighbour, compute the average diff and compare with the threshold.
+					if(numSelectedNeighbours > 0) {
+						diff /= numSelectedNeighbours;
+						if(diff <= desc.maxRateOfChangeThreshold) {
+							this->setPointScalarValue(points->getPointGlobalIndex(i), 1.0f);
+						}
 					}
 				}
 
-				// If we found at least one neighbour, compute the average diff and compare with the threshold.
-				if(numSelectedNeighbours > 0) {
-					diff /= numSelectedNeighbours;
-					if(diff <= desc.maxRateOfChangeThreshold) {
-						this->setPointScalarValue(points->getPointGlobalIndex(i), 1.0f);
-					}
+				// Update our callback.
+				processedCells++;
+				if(processedCells >= numCellsPerPercent) {
+					percentageCompleted++;
+					processedCells = 0;
+					if(tid == 0 && callback)
+						callback->update(percentageCompleted);
 				}
 			}
+			else {
+				// Stop the callback if we abort our function.
+				if(tid == 0 && callback)
+					callback->stop();
 
-			// Update our callback.
-			processedCells++;
-			if(callback)
-				callback->update(100.0f * (double)processedCells / (double)numCells);
+				err = -2;
+			}
 		}
-		else {
-			// Stop the callback if we abort our function.
-			if(callback)
-				callback->stop();
-
-			return -2;
-		}		
+		
 	}
 
 	computeIndices();
@@ -973,7 +989,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 	if(callback)
 		callback->stop();
 
-	return 0;
+	return err;
 }
 
 int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
@@ -1003,21 +1019,20 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		int processedSections = 0;
 		int percentageCompleted = 0;
 
-		std::set<std::pair<size_t, size_t>> pairs = std::set<std::pair<size_t, size_t>>();
+		std::vector<std::pair<size_t, size_t>> pairs = std::vector<std::pair<size_t, size_t>>();
 #pragma omp for schedule(dynamic, 20)
-		for(long i = 1; i < sections_.size() - 1; i++) {
+		for(long i = 0; i < sections_.size() - 1; i++) {
 			auto section = PointCloudSection(this);
 
 			// Resize our section.
-			section.reserve(sections_[i]->size() + sections_[i - 1]->size() + sections_[i + 1]->size());
+			section.reserve(sections_[i]->size() + sections_[i + 1]->size());
 
 			// Append the previous and next section.
 			section.add(*(sections_[i]));
-			section.add(*(sections_[i - 1]));
 			section.add(*(sections_[i + 1]));
 
 			auto result = section.computePairs();
-			pairs.insert(result.begin(), result.end());
+			pairs.insert(pairs.end(), result.begin(), result.end());
 
 			processedSections++;
 			if(processedSections >= numSectionsPerPercent) {
@@ -1071,7 +1086,9 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		callback->start();
 
 	float totalPoints = centerpoints.size();
+	int pointsPerPercent = totalPoints / 100;
 	float processedPoints = 0;
+	int percentageCompleted = 0;
 	for(size_t i = 1; i < centerpoints.size(); i++) {
 		// Store the point to be checked and whether we have inserted it or whether it is ambiguous or not.
 		auto point = centerpoints[i];
@@ -1120,22 +1137,25 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 		//Check if we have a centerline which is very small (does not meet the minimum requirements as specified) and remove it to save some computation time.
 		if(i % 1000 == 0) {
-			for(size_t ii = 0; ii < centerlines.size(); ii++) {
-				auto &line = centerlines[ii];
+			for(auto line = centerlines.begin(); line != centerlines.end(); line++) {
 
 				// Calculate the distance to the endpoint
-				auto endpoint = centerpoints[line.back()];
+				auto endpoint = centerpoints[line->back()];
 				float distance = std::fabsf(mainAxis_.dot(point) - mainAxis_.dot(endpoint));
 
-				if(distance > 1.0f && (line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength)) {
-					centerlines.erase(centerlines.begin() + ii);
+				if(distance > 1.0f && (line->size() < desc.minSegmentPoints || (centerpoints[line->back()] - centerpoints[line->front()]).norm() < desc.minSegmentLength)) {					
+					centerlines.erase(line);
 				}
-
-			}
+			}			
 		}
 
-		if(callback)
-			callback->update(100.0 * ++processedPoints / totalPoints);
+		if(callback) {
+			if(++processedPoints >= pointsPerPercent) {
+				percentageCompleted++;
+				processedPoints = 0;
+				callback->update(percentageCompleted);
+			}
+		}
 	}
 
 	// Tell the callback that we're done.
