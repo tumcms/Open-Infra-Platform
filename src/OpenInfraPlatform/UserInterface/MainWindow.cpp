@@ -177,8 +177,9 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 
 	// Create the callback for the progress bar and connect the signals.
 	callback_ = buw::makeReferenceCounted<OpenInfraPlatform::DataManagement::ProgressCallback>();
-	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setVisible);
-	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::updateSignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setValue);
+	//connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setVisible);
+	//connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::updateSignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setValue);
+	
 	ui_->progressBarPointCloudProcessing->setVisible(false);
 
 #ifdef _DEBUG
@@ -222,6 +223,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
     progressBar_ = new QProgressBar(ui_->statusBar);
     ui_->statusBar->addPermanentWidget(progressBar_);
     progressBar_->hide();
+	
 
     progressDialog_ = new QProgressDialog(this);
     progressDialog_->setWindowTitle(tr("Please wait"));
@@ -232,6 +234,13 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
     progressDialog_->hide();
     QObject::connect(progressDialog_, SIGNAL(canceled()), this, SLOT(cancelJob()));
     QObject::disconnect(progressDialog_, SIGNAL(canceled()), progressDialog_, SLOT(cancel()));
+
+
+	// Connect to the common progress dialog.
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, progressDialog_, &QProgressDialog::setEnabled);
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, progressDialog_, &QProgressDialog::setVisible);
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, progressDialog_, [&](bool value) {value ? progressDialog_->setRange(0, 100) : progressDialog_->setRange(0, 0); });
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::updateSignal, progressDialog_, &QProgressDialog::setValue);
 
     ui_->doubleSpinBoxPointSize->setValue(3.0);
     on_doubleSpinBoxPointSize_valueChanged(3.0);
