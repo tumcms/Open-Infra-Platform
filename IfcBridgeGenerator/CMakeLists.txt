@@ -28,22 +28,14 @@ add_executable(OpenInfraPlatform.IfcBridgeGenerator
 	${IfcBridgeGenerator_UserInterface_Source}
 )
 
-if(OIP_USE_PREBUILD_EARLYBINDING_LIBS)
-	target_link_libraries(OpenInfraPlatform.IfcBridgeGenerator
+target_link_libraries(OpenInfraPlatform.IfcBridgeGenerator
 		Qt5::WinMain
-		${OpenInfraPlatform_IfcBridge_LIBRARY}
+		${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 		Rpcrt4.lib
 		# BlueFramework
 		${BLUEFRAMEWORK_LIBRARIES}
-	)
-else()
-	target_link_libraries(OpenInfraPlatform.IfcBridgeGenerator
-		Qt5::WinMain
-		OpenInfraPlatform.IfcBridge
-		# BlueFramework
-		${BLUEFRAMEWORK_LIBRARIES}
-	)
-endif()
+)
+	
 install(TARGETS OpenInfraPlatform.IfcBridgeGenerator   
    RUNTIME DESTINATION bin
    COMPONENT oip_runtime
