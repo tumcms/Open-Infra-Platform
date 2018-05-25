@@ -1137,16 +1137,19 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 		//Check if we have a centerline which is very small (does not meet the minimum requirements as specified) and remove it to save some computation time.
 		if(i % 1000 == 0) {
-			for(auto line = centerlines.begin(); line != centerlines.end(); line++) {
 
-				// Calculate the distance to the endpoint
-				auto endpoint = centerpoints[line->back()];
-				float distance = std::fabsf(mainAxis_.dot(point) - mainAxis_.dot(endpoint));
-
-				if(distance > 1.0f && (line->size() < desc.minSegmentPoints || (centerpoints[line->back()] - centerpoints[line->front()]).norm() < desc.minSegmentLength)) {					
-					centerlines.erase(line);
-				}
-			}			
+			auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) { return std::fabsf(mainAxis_.dot(point) - mainAxis_.dot(centerpoints[line.back()])) > 1.0f && (line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength); });
+			centerlines.erase(end, centerlines.end());
+			//for(auto &line = centerlines.begin(); line != centerlines.end(); line++) {
+			//
+			//	// Calculate the distance to the endpoint
+			//	auto endpoint = centerpoints[line->back()];
+			//	float distance = std::fabsf(mainAxis_.dot(point) - mainAxis_.dot(endpoint));
+			//
+			//	if(distance > 1.0f && (line->size() < desc.minSegmentPoints || (centerpoints[line->back()] - centerpoints[line->front()]).norm() < desc.minSegmentLength)) {					
+			//		centerlines.erase(line);
+			//	}
+			//}			
 		}
 
 		if(callback) {
@@ -1390,6 +1393,14 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 				}
 #pragma omp barrier
 
+				int nJumps = 0;
+				for(long i = 0; i < bearings.size() - 1; i++) {
+					// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
+					bearings[i] += nJumps;
+					if(std::abs(bearings[i] - (bearings[i + 1] + nJumps)) > 170)
+						nJumps += 180;
+				}
+
 
 				// Without smoothing
 #pragma omp for
@@ -1398,7 +1409,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 					double deltaChainage = std::abs(chainages[i + 1] - chainages[i]);
 					curvatures[i] = ((bearings[i + 1] - bearings[i]) / deltaChainage);
 				}
-#pragma omp barrier
+#pragma omp barrier				
 
 				int startOffset = (int)std::floor((float)desc.numPointsForMeanCurvature / 2.0f);
 				if(desc.numPointsForMeanCurvature % 2 == 0)

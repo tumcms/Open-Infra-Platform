@@ -12,11 +12,19 @@ def main(argv):
 	parser.add_argument("file")
 
 	args = parser.parse_args()
-	indices, curvatures, bearings = np.loadtxt(args.file, delimiter='\t',unpack=True)
+	chainages, curvatures, bearings = np.loadtxt(args.file, delimiter='\t',unpack=True)
 	
-	f, axarr = ply.subplots(2, sharex=True)
-	axarr[0].plot(indices, curvatures)
-	axarr[1].plot(indices, bearings)
+	N = np.size(chainages)
+	# sample spacing
+	T = (chainages[N-1] - chainages[0])
+	Ts = T / N
+	Fs = 1 / Ts
+	f, axarr = ply.subplots(3)
+	xf = np.linspace(-Fs/2,Fs/2,N)
+	yf = np.abs(np.fft.fftshift(np.fft.fft(curvatures)))
+	axarr[0].plot(chainages, curvatures)
+	axarr[1].plot(chainages, bearings)
+	axarr[2].plot(xf, yf)
 	#axarr[0][1].plot(indices, dStationing)
 	#axarr[1][1].plot(indices, distances)
 	ply.suptitle(args.file)
