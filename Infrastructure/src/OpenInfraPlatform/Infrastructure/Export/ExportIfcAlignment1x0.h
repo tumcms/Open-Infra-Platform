@@ -45,6 +45,12 @@ namespace OpenInfraPlatform
 			bool useFixedEntityIdForGeometry = false;
 			int startId = 4000;
 			bool roundOffsetMapConversion = false;
+
+			// Add Georeference
+			double m_Eastings;
+			double m_Northings;
+			double m_OrthogonalHeight;
+			std::string m_Name;
 		};
 
 		class BLUEINFRASTRUCTURE_API ExportIfcAlignment1x0 : public Export

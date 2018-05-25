@@ -139,7 +139,7 @@ namespace OpenInfraPlatform
 
 			void exportIfcRoadTUMProposal(const std::string & filename);
 			void exportIfcAlignment1x0(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
-			void exportIfcAlignment1x1(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
+			void exportIfc4x1(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
 			void exportSVGAdvanced(const std::string& filename);
 			void exportSVG( const std::string& filename );
 			void exportLandXML( const std::string& filename );
@@ -257,6 +257,18 @@ namespace OpenInfraPlatform
 			int getSelectedAlignment();
 
             //---------------------------------------------------------------------------//
+			// Add Georeference
+			//---------------------------------------------------------------------------//
+			
+			double	getEastings();
+			void	setEastings(double value);
+			double	getNorthings();
+			void	setNorthings(double value);
+			double	getOrthogonalHeight();
+			void	setOrthogonalHeight(double value);
+			QString getEPSGcodeName();
+			void	setEPSGcodeName(QString value);
+			//---------------------------------------------------------------------------//
             // ViewCubeData
             //---------------------------------------------------------------------------//
 
@@ -275,7 +287,7 @@ namespace OpenInfraPlatform
 			void importOSMJob(const std::string& filename, const std::vector<std::string>& filter, int mode);
 			void exportIfcRoadTUMProposalJob(const std::string & filename);
 			void exportIfcAlignmentJob(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
-			void exportIfcAlignment1x1Job(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
+			void exportIfc4x1Job(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
 			void exportSVGAdvancedJob(const std::string& filename);
 			void exportSVGJob(const std::string& filename);
 			void exportLandXMLJob(const std::string& filename);
@@ -296,8 +308,13 @@ namespace OpenInfraPlatform
 			void createTerrainFromHeightMapJob(const std::string& filename);
 			void createTerrainFromMeshJob(const std::string& filename);
 			
+			
+
 		private:
 			ChangeFlag		latestChangeFlag_;
+
+			
+
 
 			// Preferences
 			buw::Color3f	clearColor_;
@@ -327,6 +344,14 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<buw::PointCloud>							tempPointCloud_;
 
 			int																currentJobID_;
+
+			// Add Georeference
+			double m_Eastings;
+			double m_Northings;
+			double m_OrthogonalHeight;
+			QString m_Name; 
+
+
 
 			//! Determines the notification behavior of this class.
 			//BlueFramework::Application::DataManagement::NotificationState *m_pNotifiactionState;

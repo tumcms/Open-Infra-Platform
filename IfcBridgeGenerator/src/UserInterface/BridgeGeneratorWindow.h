@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2017 Technical University of Munich
+    Copyright (c) 2018 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -19,10 +19,10 @@
 
 #include <iostream>
 
-BLUE_DROP_COMPILER_LEVEL_TO_3
+//BLUE_DROP_COMPILER_LEVEL_TO_3
 #include <QtGui>
 #include <QMainWindow>
-BLUE_RESTORE_COMPILER_WARNING_LEVEL
+//BLUE_RESTORE_COMPILER_WARNING_LEVEL
 
 namespace Ui 
 {

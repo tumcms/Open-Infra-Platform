@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2017 Technical University of Munich
+    Copyright (c) 2018 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ void BlueIfcBridgeViewer::UserInterface::BridgeGeneratorWindow::on_pushButtonSav
 	try
 	{
 		bd.length = ui_->lineEditLength->text().toDouble();
-		bd.width = ui_->lineEditLength->text().toDouble();
+		bd.width = ui_->lineEditWidth->text().toDouble();
 	}
 	catch (...)
 	{

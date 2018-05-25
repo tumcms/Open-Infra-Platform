@@ -35,7 +35,7 @@
 #include "OpenInfraPlatform/Infrastructure/Import/ImportOkstra.h"
 #include "OpenInfraPlatform/Infrastructure/Import/OutputStreamLandXMLDataBuilder.h"
 #include "OpenInfraPlatform/Infrastructure/Import/ImportIfcAlignment1x0.h"
-#include "OpenInfraPlatform/Infrastructure/Import/ImportIfcAlignment1x1.h"
+#include "OpenInfraPlatform/Infrastructure/Import/ImportIfc4x1.h"
 #include "OpenInfraPlatform/Infrastructure/Import/ImportIfcRoad.h"
 #include "OpenInfraPlatform/Infrastructure/Import/ImportRoadXML.h"
 
@@ -45,13 +45,13 @@
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudSection.h"
 
 // Export
-#include "OpenInfraPlatform/Infrastructure/Export/IfcAlignment1x1ExcelReport.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportIfc4x1ExcelReport.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportOkstra.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportOkstraOWL.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportLandInfra.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportLandXML.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
-#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportIfc4x1.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcRoad.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportSVG.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"

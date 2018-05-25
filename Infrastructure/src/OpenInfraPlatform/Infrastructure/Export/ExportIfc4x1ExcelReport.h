@@ -108,10 +108,10 @@ namespace OpenInfraPlatform
 			bool check;
 		};
 
-		class BLUEINFRASTRUCTURE_API IfcAlignment1x1ExcelReport
+		class BLUEINFRASTRUCTURE_API ExportIfc4x1ExcelReport
 		{
 		public:
-			IfcAlignment1x1ExcelReport(
+			ExportIfc4x1ExcelReport(
 				const char* excelExportFilename, 
 				const char* landXMLFilename, 
 				const char* ifcP6ExportFilename);
@@ -128,7 +128,7 @@ namespace buw
 	using OpenInfraPlatform::Infrastructure::IfcAlignment1x0VerticalAlignmentReportSettings;
 	using OpenInfraPlatform::Infrastructure::LandXMLHorizontalAlignmentReportSettings;
 	using OpenInfraPlatform::Infrastructure::IfcAlignment1x0IfcHorizontalAlignmentReportSettings;
-	using OpenInfraPlatform::Infrastructure::IfcAlignment1x1ExcelReport;
+	using OpenInfraPlatform::Infrastructure::ExportIfc4x1ExcelReport;
 }
 
 #endif // end define OpenInfraPlatform_Infrastructure_ExcelReport2_c3889228_51c2_4ead_99cb_96ccb5cb735d_h

@@ -23,11 +23,12 @@
 #include "OpenInfraPlatform/UserInterface/XYZImportDialog.h"
 #include "OpenInfraPlatform/UserInterface/PreferencesDialog.h"
 #include "OpenInfraPlatform/UserInterface/ExportIfcAlignment1x0Dialog.h"
-#include "OpenInfraPlatform/UserInterface/ExportIfcAlignment1x1Dialog.h"
+#include "OpenInfraPlatform/UserInterface/ExportIfc4x1Dialog.h"
 #include "OpenInfraPlatform/UserInterface/LicenseAndCopyrightInformationDialog.h"
 #include "OpenInfraPlatform/UserInterface/ExportIfcZipDialog.h"
 #include "OpenInfraPlatform/UserInterface/ExportExcelDialog.h"
 #include "OpenInfraPlatform/UserInterface/GenerateTerrainDialog.h"
+#include "OpenInfraPlatform/UserInterface/AddGeoreferenceDialog.h"
 #include "OpenInfraPlatform/UserInterface/View2DWindow/VerticalAlignmentWindow.h"
 #include "OpenInfraPlatform/UserInterface/View2DWindow/CurvatureWindow.h"
 #include "OpenInfraPlatform/DataManagement/Data.h"
@@ -169,6 +170,7 @@ namespace OpenInfraPlatform
 			void on_actionVertical_alignment_3D_triggered();
 			void on_actionVertical_alignment_triggered();
 			void on_actionViewport_as_screenshot_triggered();
+			void on_actionAdd_Georeference_triggered();
 
 			void on_checkBoxDifferentColorsForVerticalAlignmentElements_clicked(bool checked);
 			void on_checkBoxHighlightSelectedAlignmentSegment_clicked(bool checked);
@@ -322,7 +324,7 @@ namespace OpenInfraPlatform
 			CurvatureWindow*							curvatureWindow_ = nullptr;
 			ExportExcelDialog*							exportExcelDialog_ = nullptr;
 			ExportIfcAlignment1x0Dialog*				exportIfcAlignment1x0Dialog_ = nullptr;
-			ExportIfcAlignment1x1Dialog*				exportIfcAlignment1x1Dialog_ = nullptr;
+			ExportIfc4x1Dialog*				exportIfcAlignment1x1Dialog_ = nullptr;
 			ExportIfcZipDialog*							exportIfcZipDialog_ = nullptr;
 			GenerateTerrainDialog*						generateTerrainDialog_ = nullptr;
 			OSMImportDialog*							osmImportDialog_ = nullptr;
@@ -332,6 +334,7 @@ namespace OpenInfraPlatform
 			XYZImportDialog*							XYZImportDialog_ = nullptr;
 			LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
 			CreateAccidentReportDialog*					createAccidentReportDialog_ = nullptr;
+			AddGeoreferenceDialog*						addGeoreferenceDialog_ = nullptr;
 
 			QProgressBar*								progressBar_;
 			

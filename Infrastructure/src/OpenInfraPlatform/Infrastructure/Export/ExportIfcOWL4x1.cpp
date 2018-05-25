@@ -16,7 +16,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"
-#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x1.h"
+#include "OpenInfraPlatform/Infrastructure/Export/ExportIfc4x1.h"
 
 #include "raptor2/raptor2.h"
 #include <boost/algorithm/string/predicate.hpp>
@@ -496,7 +496,7 @@ public:
 		temp.append(".ifc");
 
 		//Export the file temporarily as Ifc4x1 to get the model from the exporter.
-		auto ifcExporter = buw::makeReferenceCounted<buw::ExportIfcAlignment1x1>(ifcAlignmentExportDescription(),am, dem, temp);
+		auto ifcExporter = buw::makeReferenceCounted<buw::ExportIfc4x1>(ifcAlignmentExportDescription(),am, dem, temp);
 		boost::filesystem::remove(temp);		
 		auto model = ifcExporter->getIfcAlignment1x1Model();
 
