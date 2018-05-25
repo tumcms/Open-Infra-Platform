@@ -36,8 +36,9 @@ namespace OpenInfraPlatform
 		class AddGeoreferenceDialog : public QDialog
 		{
 			Q_OBJECT;
-
-		private:
+		public:
+			//Initiates values in dialogue to values stored in data and calls QWidget::show()
+			void show();
 			//New functions AddGeoreference
 			/*buttonBoxOkCancel
 
@@ -51,11 +52,8 @@ namespace OpenInfraPlatform
 			*/
 			//Prüfen ob es schon einen bestehenden EPSG-Code für das Modell gibt
 						
-
-					
-
-
-			void on_pushButtonCheck_clicked(double checked);
+		private Q_SLOTS:
+			void on_pushButtonCheck_clicked();
 			void on_doubleSpinBoxEasting_valueChanged(double value);
 
 			void on_doubleSpinBoxHeight_valueChanged(double value);
@@ -63,9 +61,10 @@ namespace OpenInfraPlatform
 
 			//Checks whether EPSG code exists and outputs area label (with setText function)
 			void on_spinBoxEPSG_valueChanged(int value);
+			void on_pushButtonCancel_clicked();
+			void on_pushButtonOk_clicked();
 
 			
-
 		public:
 			//! Default constructor.
 			AddGeoreferenceDialog(OpenInfraPlatform::UserInterface::View* view, QWidget *parent = nullptr);
@@ -73,7 +72,10 @@ namespace OpenInfraPlatform
 			//! Virtual destructor.
 			virtual ~AddGeoreferenceDialog() {};
 
-	
+			double m_Eastings;
+			double m_Northings;
+			double m_OrthogonalHeight;
+			QString m_Name;
 
 		private:
 			Ui::AddGeoreferenceDialog*	ui_;

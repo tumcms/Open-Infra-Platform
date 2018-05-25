@@ -19,62 +19,86 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "OpenInfraPlatform/DataManagement/Data.h"
 
-void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_pushButtonCheck_clicked(double checked)
+void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_pushButtonCheck_clicked()
 {
 	//TODO
 }
 
-void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_doubleSpinBoxEasting_valueChanged(double value) {
-	double m_Eastings = value;
+void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_pushButtonCancel_clicked()
+{
+	this->reject();
+	//connect(ui_->pushButtonCancel, SIGNAL(rejected()), this, SLOT(reject()));
+}
 
-	auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
+void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_pushButtonOk_clicked()
+{
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setEastings(m_Eastings);
-	auto entities = proxyModel->getIfc4x1Data();
+	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setNorthings(m_Northings);
+	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setOrthogonalHeight(m_OrthogonalHeight);
+	this->accept();
+}
 
-	for (auto it : entities) {
-		if (it.second->m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCMAPCONVERSION) {
-			std::shared_ptr<IfcMapConversion> mapConversion = std::static_pointer_cast<IfcMapConversion>(it.second);
-			mapConversion->m_Eastings = std::make_shared<IfcLengthMeasure>(m_Eastings);
-		}
-	}
+
+void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::show()
+{
+	ui_->doubleSpinBoxEasting->setValue(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getEastings());
+	ui_->doubleSpinBoxNorthing->setValue(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getNorthings());
+	ui_->doubleSpinBoxHeight->setValue(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getOrthogonalHeight());
+	((QDialog*)this)->show();
+}
+
+void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_doubleSpinBoxEasting_valueChanged(double value) {
+	OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::m_Eastings = value;
+
+	//double m_Eastings = value;
+	//auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
+	//auto entities = proxyModel->getIfc4x1Data();
+	//
+	//for (auto it : entities) {
+	//	if (it.second->m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCMAPCONVERSION) {
+	//		std::shared_ptr<IfcMapConversion> mapConversion = std::static_pointer_cast<IfcMapConversion>(it.second);
+	//		mapConversion->m_Eastings = std::make_shared<IfcLengthMeasure>(m_Eastings);
+	//	}
+	//}
 
 }
 
 void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_doubleSpinBoxNorthing_valueChanged(double value) {
-	double m_Northings = value;
-
-	auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setNorthings(m_Northings);
-	auto entities = proxyModel->getIfc4x1Data();
-
-	for (auto it : entities) {
-		if (it.second->m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCMAPCONVERSION) {
-			std::shared_ptr<IfcMapConversion> mapConversion = std::static_pointer_cast<IfcMapConversion>(it.second);
-			mapConversion->m_Northings = std::make_shared<IfcLengthMeasure>(m_Northings);
-		}
-	}
+	OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::m_Northings = value;
+	
+	//double m_Northings = value;
+	//auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
+	//auto entities = proxyModel->getIfc4x1Data();
+	//
+	//for (auto it : entities) {
+	//	if (it.second->m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCMAPCONVERSION) {
+	//		std::shared_ptr<IfcMapConversion> mapConversion = std::static_pointer_cast<IfcMapConversion>(it.second);
+	//		mapConversion->m_Northings = std::make_shared<IfcLengthMeasure>(m_Northings);
+	//	}
+	//}
 
 }
 
 void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_doubleSpinBoxHeight_valueChanged(double value) {
-	double m_OrthogonalHeight = value;
-
-	auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setOrthogonalHeight(m_OrthogonalHeight);
-	auto entities = proxyModel->getIfc4x1Data();
-
-	for (auto it : entities) {
-		if (it.second->m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCMAPCONVERSION) {
-			std::shared_ptr<IfcMapConversion> mapConversion = std::static_pointer_cast<IfcMapConversion>(it.second);
-			mapConversion->m_OrthogonalHeight = std::make_shared<IfcLengthMeasure>(m_OrthogonalHeight);
-		}
-	}
+	OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::m_OrthogonalHeight = value;
+	
+	//double m_OrthogonalHeight = value;
+	//auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
+	//auto entities = proxyModel->getIfc4x1Data();
+	//
+	//for (auto it : entities) {
+	//	if (it.second->m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCMAPCONVERSION) {
+	//		std::shared_ptr<IfcMapConversion> mapConversion = std::static_pointer_cast<IfcMapConversion>(it.second);
+	//		mapConversion->m_OrthogonalHeight = std::make_shared<IfcLengthMeasure>(m_OrthogonalHeight);
+	//	}
+	//}
 
 }
 
 void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_spinBoxEPSG_valueChanged(int value) {
-	QString m_Name = "EPSG:"+QString::number(value);
-	QString m_GeodeticDatum = "EPSG"+QString::number(value);
+ 
+	 QString m_Name = "EPSG:"+QString::number(value);
+	//QString m_GeodeticDatum = "EPSG"+QString::number(value);
 
 	auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setEPSGcodeName(m_Name);
@@ -84,7 +108,7 @@ void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_spinBoxEPSG_val
 		if (it.second->m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCPROJECTEDCRS) {
 			std::shared_ptr<IfcProjectedCRS> projectedCRS = std::static_pointer_cast<IfcProjectedCRS>(it.second);
 			projectedCRS->m_Name = std::make_shared<IfcLabel>(m_Name.toStdString());
-			projectedCRS->m_GeodeticDatum = std::make_shared<IfcIdentifier>(m_GeodeticDatum.toStdString());
+			//projectedCRS->m_GeodeticDatum = std::make_shared<IfcIdentifier>(m_GeodeticDatum.toStdString());
 		}
 	}
 //Prüfen ob der EPSG-Code existiert -> wird oben schon überprüft
