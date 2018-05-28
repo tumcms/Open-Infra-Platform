@@ -21,6 +21,7 @@ def main(argv):
 	Fs = 1 / Ts
 	f, axarr = ply.subplots(3)
 	xf = np.linspace(-Fs/2,Fs/2,N)
+	
 	yf = np.abs(np.fft.fftshift(np.fft.fft(curvatures)))
 	axarr[0].plot(chainages, curvatures)
 	axarr[1].plot(chainages, bearings)

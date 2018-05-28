@@ -1061,7 +1061,9 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 		// Merge the local vectors in the master vector.
 #pragma omp critical
-		rails.insert(rails.end(), pairs.begin(), pairs.end());
+		{
+			rails.insert(rails.end(), pairs.begin(), pairs.end());
+		}
 	}
 
 	// Stop our callback.
@@ -1182,25 +1184,49 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>(centerlines.size());
 
 	// Iterate over all segments and combine the centers of each projection section.
-#pragma omp parallel for
-	for(long idx = 0; idx < centerlines.size(); idx++) {
+#pragma omp parallel private(tid)
+	{
+		tid = omp_get_thread_num();
+#pragma omp for schedule(dynamic)
+		for(long idx = 0; idx < centerlines.size(); idx++) {
 
-		// Get the line which we are working on and store the start and end index for the section for which we want to combine all points as their center of mass.
-		auto &line = centerlines[idx];
-		int startIndex = 0, endIndex = 0;
-
-		// Iterate over the line and check how far we make our progress along the main axis. Once we are above a certain threshold, we combine all points in their center of mass.
-		for(size_t i = 0; i < line.size() - 1; i++) {
-			float length = std::fabsf(mainAxis_.dot(centerpoints[line[i + 1]]) - mainAxis_.dot(centerpoints[line[startIndex]]));
-			if(length >= desc.centerlineDensity) {
-				endIndex = i + 1;
-				int numPoints = (endIndex - startIndex);
-				CCVector3 center = CCVector3(0, 0, 0);
-				for(; startIndex < endIndex; startIndex++) {
-					center += (centerpoints[line[startIndex]] / (float)numPoints);
+			auto getPCA = [&](std::vector<size_t> alignment, size_t start, size_t end)->CCVector3 {
+				//Matrix which is capable of holding all points for PCA.
+				Eigen::MatrixX3d mat;
+				mat.resize(end - start, 3);
+				for(size_t i = start; i < end; i++) {
+					auto pos = centerpoints[alignment[i]];
+					mat.row(i - start) = Eigen::Vector3d(pos.x, pos.y, pos.z);
 				}
 
-				alignments[idx].push_back(center);				
+				//Do PCA to find the largest eigenvector -> main axis.
+				Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
+				Eigen::MatrixXd cov = centered.adjoint() * centered;
+				Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+				Eigen::Matrix<double, 3, 1> vec = eig.eigenvectors().rightCols(1);
+
+				return CCVector3(vec.x(), vec.y(), vec.z());
+			};
+
+
+			// Get the line which we are working on and store the start and end index for the section for which we want to combine all points as their center of mass.
+			auto &line = centerlines[idx];
+			int startIndex = 0, endIndex = 0;
+
+			// Iterate over the line and check how far we make our progress along the main axis. Once we are above a certain threshold, we combine all points in their center of mass.
+			for(size_t i = 1; i < line.size() - 1; i++) {
+				auto axis = getPCA(line, std::max(0, (int)i - 1000), i);
+				float length = std::fabsf(axis.dot(centerpoints[line[i + 1]]) - axis.dot(centerpoints[line[startIndex]]));
+				if(length >= desc.centerlineDensity) {
+					endIndex = i + 1;
+					int numPoints = (endIndex - startIndex);
+					CCVector3 center = CCVector3(0, 0, 0);
+					for(; startIndex < endIndex; startIndex++) {
+						center += (centerpoints[line[startIndex]] / (float)numPoints);
+					}
+
+					alignments[idx].push_back(center);
+				}
 			}
 		}
 	}
