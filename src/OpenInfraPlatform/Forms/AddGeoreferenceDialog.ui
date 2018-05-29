@@ -30,6 +30,9 @@
         <property name="decimals">
          <number>6</number>
         </property>
+        <property name="minimum">
+         <double>-1000000000.000000000000000</double>
+        </property>
         <property name="maximum">
          <double>1000000000.000000000000000</double>
         </property>
@@ -40,15 +43,8 @@
         <property name="decimals">
          <number>6</number>
         </property>
-        <property name="maximum">
-         <double>100000000.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBoxHeight">
-        <property name="decimals">
-         <number>6</number>
+        <property name="minimum">
+         <double>-100000000.000000000000000</double>
         </property>
         <property name="maximum">
          <double>100000000.000000000000000</double>
@@ -62,10 +58,16 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="labelEasting">
-        <property name="text">
-         <string>Easting</string>
+      <item row="4" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxHeight">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="minimum">
+         <double>-100000000.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>100000000.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -76,10 +78,17 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="labelAreaName">
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelEasting">
         <property name="text">
-         <string>Area name</string>
+         <string>Easting</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelHeight">
+        <property name="text">
+         <string>Height</string>
         </property>
        </widget>
       </item>
@@ -90,10 +99,10 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="labelHeight">
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelAreaName">
         <property name="text">
-         <string>Height</string>
+         <string>Area name</string>
         </property>
        </widget>
       </item>
@@ -145,6 +154,31 @@
         </property>
         <property name="maximum">
          <number>32767</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="labelMeterNorthing">
+          <property name="text">
+           <string>m</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLabel" name="labelMeterHeight">
+        <property name="text">
+         <string>m</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="labelMeterEasting">
+        <property name="text">
+         <string>m</string>
         </property>
        </widget>
       </item>
