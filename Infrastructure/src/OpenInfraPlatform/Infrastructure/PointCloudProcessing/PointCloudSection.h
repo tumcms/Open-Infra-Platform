@@ -53,6 +53,8 @@ namespace OpenInfraPlatform {
 
 			int computePercentiles(float kernelRadius);
 
+			CCVector3 computeCenter();
+
 			std::set<std::pair<size_t, size_t>> computePairs();
 
 		private:
@@ -69,6 +71,8 @@ namespace OpenInfraPlatform {
 		public:
 		private:
 			double length_;
+
+			Eigen::Vector3d mainAxis_;
 		};
 	}
 }

@@ -50,6 +50,8 @@ namespace OpenInfraPlatform {
 
 			void computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			void computeSections2(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
 			void computeGrid();
 
 			void alignOnMainAxis();
@@ -106,6 +108,35 @@ namespace OpenInfraPlatform {
 
 			buw::ReferenceCounted<CCLib::ReferenceCloud> subsample(size_t size);
 
+			template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors() const
+			{
+				try {
+					if(size() > 0) {
+						//Matrix which is capable of holding all points for PCA.
+						Eigen::MatrixX3d points;
+						points.resize(this->size(), 3);
+						for(size_t i = 0; i < this->size(); i++) {
+							auto pos = this->getPoint(i);
+							points.row(i) = Eigen::Vector3d(pos->x, pos->y, pos->z);
+						}
+
+						//Do PCA to find the largest eigenvector -> main axis.
+						Eigen::MatrixXd centered = points.rowwise() - points.colwise().mean();
+						Eigen::MatrixXd cov = centered.adjoint() * centered;
+						Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+						Eigen::Matrix<double, 3, N> vec = eig.eigenvectors().rightCols(N);
+						return vec;
+					}
+					else {
+						return Eigen::Matrix<double, 3, N>();
+					}
+				}
+				catch(buw::Exception e) {
+					BLUE_LOG(warning) << "Exception in Eigenvector computation. " << e.what();
+					return Eigen::Matrix<double, 3, N>();
+				}
+			}
+
 		private:
 			void computeMainAxis();
 
@@ -116,29 +147,7 @@ namespace OpenInfraPlatform {
 
 			const std::tuple<ScalarType, ScalarType> getScalarFieldMinAndMax(int idx) const;
 
-			template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors() const
-			{
-				try {
-					//Matrix which is capable of holding all points for PCA.
-					Eigen::MatrixX3d points;
-					points.resize(this->size(), 3);
-					for(size_t i = 0; i < this->size(); i++) {
-						auto pos = this->getPoint(i);
-						points.row(i) = Eigen::Vector3d(pos->x, pos->y, pos->z);
-					}
-
-					//Do PCA to find the largest eigenvector -> main axis.
-					Eigen::MatrixXd centered = points.rowwise() - points.colwise().mean();
-					Eigen::MatrixXd cov = centered.adjoint() * centered;
-					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-					Eigen::Matrix<double, 3, N> vec = eig.eigenvectors().rightCols(N);
-					return vec;
-				}
-				catch(buw::Exception e) {
-					BLUE_LOG(warning) << "Exception in Eigenvector computation. " << e.what();
-					return Eigen::Matrix<double, 3, N>();
-				}
-			}
+			
 
 		public:
 

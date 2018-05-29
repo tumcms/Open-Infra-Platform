@@ -69,6 +69,17 @@ int OpenInfraPlatform::Infrastructure::PointCloudSection::computePercentiles(flo
 	return 0;
 }
 
+CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeCenter()
+{
+	if(this->size() > 0) {
+		CCLib::Neighbourhood neighbourhood = CCLib::Neighbourhood(this);
+		return *neighbourhood.getGravityCenter();
+	}
+	else {
+		return CCVector3();
+	}
+}
+
 std::set<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointCloudSection::computePairs()
 {
 	if(this->size() > 0) {

@@ -202,6 +202,125 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float 
 	}
 
 	BLUE_LOG(trace) << "Finished computing sections.";
+
+	BLUE_LOG(trace) << "Start computeSections2.";
+
+	computeSections2(length, callback);
+}
+
+void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	if(callback)
+		callback->start();
+
+
+	// Get or create the scalar field Bearing.
+	int idx_bearing = getScalarFieldIndexByName("Bearing");
+	if(idx_bearing == -1)
+		idx_bearing = addScalarField("Bearing");
+	setCurrentInScalarField(idx_bearing);
+
+	// Call this once to find the best level for the radius.
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(10);
+	BLUE_LOG(trace) << "Octree Level:" << (int)level;
+	BLUE_LOG(trace) << "Octree Cell Size:" << octree_->getCellSize(level);
+
+	// Get the octree cell indices to iterate over the cells, return -1 if an error occurs.
+	std::vector<uint32_t> dgmOctreeCells;
+	bool success = octree_->getCellIndexes(level, dgmOctreeCells);	
+
+	// Initialize counter variables for our callback update.
+	int numCells = dgmOctreeCells.size();
+	int tid = 0;
+	int err = 0;
+
+#pragma omp parallel private(tid) firstprivate(callback) shared(level, dgmOctreeCells, numCells, err)
+	{
+		// Initialize our variables for callback updates.
+		tid = omp_get_thread_num();
+		auto octree = CCLib::DgmOctree(*octree_);
+		int numCellsPerThread = numCells / omp_get_num_threads();
+		int processedCells = 0;
+		int numCellsPerPercent = numCellsPerThread / 100;
+		int percentageCompleted = 0;
+
+
+		// Iterate over all cells to call our nearest neighbour search on consecutive points in a cell for performance reasons.
+#pragma omp for schedule(dynamic, 50)
+		for(long idx = 0; idx < dgmOctreeCells.size(); idx++) {
+			auto cell = dgmOctreeCells[idx];
+			auto code = octree.getCellCode(cell);
+
+			// Create and initialize the nearest neighbour search struct as far as possible.
+			CCLib::DgmOctree::NearestNeighboursSphericalSearchStruct nss;
+			nss.level = level;
+			nss.maxSearchSquareDistd = std::pow(50, 2);
+			nss.alreadyVisitedNeighbourhoodSize = 0;
+			nss.minNumberOfNeighbors = 0;
+
+			// Get the points in the cell specified by the index and store them in points. Compute the cell position and center.
+			std::shared_ptr<CCLib::ReferenceCloud> points = std::make_shared<CCLib::ReferenceCloud>(this);
+			success = octree.getPointsInCellByCellIndex(points.get(), cell, level);
+			octree.getCellPos(code, level, nss.cellPos, false);
+			octree.computeCellCenter(nss.cellPos, level, nss.cellCenter);
+
+			if(success) {
+				nss.queryPoint = nss.cellCenter;
+				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 50, false);
+
+				auto getPCA = [&]()->CCVector2 {
+					//Matrix which is capable of holding all points for PCA.
+					Eigen::MatrixX2d mat;
+					mat.resize(numPoints, 2);
+					for(size_t i = 0; i < numPoints; i++) {
+						auto pos = *nss.pointsInNeighbourhood[i].point;
+						mat.row(i) = Eigen::Vector2d(pos.x, pos.y);
+					}
+
+					//Do PCA to find the largest eigenvector -> main axis.
+					Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
+					Eigen::MatrixXd cov = centered.adjoint() * centered;
+					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+					Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1);
+
+					return CCVector2(vec.x(), vec.y());
+				};
+
+				auto axis = getPCA();
+				axis.normalize();
+				auto bearing = std::acos(axis.dot(CCVector2(mainAxis_.x, mainAxis_.y)));
+				for(int i = 0; i < points->size(); i++) {
+					auto index = points->getPointGlobalIndex(i);
+					setPointScalarValue(index, bearing);
+					const ColorCompType color[3] = { std::abs(axis.x) * 255, std::abs(axis.y) * 255, 0 };
+					setPointColor(index, color);
+				}
+
+				// Update our callback.
+				processedCells++;
+				if(processedCells >= numCellsPerPercent) {
+					percentageCompleted++;
+					processedCells = 0;
+					if(tid == 0 && callback)
+						callback->update(percentageCompleted);
+				}
+			}
+			else {
+				// Stop the callback if we abort our function.
+				if(tid == 0 && callback)
+					callback->stop();
+#pragma omp critical
+				err = -2;
+			}
+		}
+	}
+
+	if(callback)
+		callback->stop();
+
+	//TODO: Go over all points and always take the axis at the current position.
+
+	
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid()
@@ -1180,13 +1299,19 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool { return line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength; });
 	centerlines.erase(end, centerlines.end());
 
+	// Tell the callback that we're done.
+	if(callback)
+		callback->start();
+
 	// Collapse centerlines to have a uniform density.
 	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>(centerlines.size());
+	percentageCompleted = 0;
 
 	// Iterate over all segments and combine the centers of each projection section.
-#pragma omp parallel private(tid)
+#pragma omp parallel private(tid) shared(percentageCompleted)
 	{
 		tid = omp_get_thread_num();
+		int percentPerCenterline = 100 / centerlines.size();
 #pragma omp for schedule(dynamic)
 		for(long idx = 0; idx < centerlines.size(); idx++) {
 
@@ -1215,7 +1340,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 			// Iterate over the line and check how far we make our progress along the main axis. Once we are above a certain threshold, we combine all points in their center of mass.
 			for(size_t i = 1; i < line.size() - 1; i++) {
-				auto axis = getPCA(line, std::max(0, (int)i - 1000), i);
+				auto axis = getPCA(line, std::max(0, (int)i - 10000), std::min((int)line.size() - 1, (int) i + 10000));
 				float length = std::fabsf(axis.dot(centerpoints[line[i + 1]]) - axis.dot(centerpoints[line[startIndex]]));
 				if(length >= desc.centerlineDensity) {
 					endIndex = i + 1;
@@ -1228,8 +1353,22 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 					alignments[idx].push_back(center);
 				}
 			}
+
+#pragma omp critical
+			{
+				percentageCompleted += percentPerCenterline;
+			}
+
+			if(tid == 0 && callback)
+				callback->update(percentageCompleted);
+			
+
 		}
 	}
+
+	// Tell the callback that we're done.
+	if(callback)
+		callback->stop();
 	
 	// Use this vector to store the indices of the new centerline points to properliy set their scalar value.
 	std::vector<std::vector<size_t>> centerlinePointIndices = std::vector<std::vector<size_t>>(centerlines.size());

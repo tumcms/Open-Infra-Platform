@@ -30,6 +30,8 @@
 #include "OpenInfraPlatform/UserInterface/HelpBrowser.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/AlignmentEffect.h"
 #include "OpenInfraPlatform/UserInterface/resource.h"
+#include "OpenInfraPlatform/UserInterface/VectorTableModel.h"
+
 #include "buw.OIPInfrastructure.h"
 #include "ui_mainwindow.h"
 #include <BlueFramework/ImageProcessing/Image.h>
@@ -1063,6 +1065,29 @@ void OpenInfraPlatform::UserInterface::MainWindow::onChange(ChangeFlag changeFla
 			ui_->listWidgetProxies->addItem("muh");
 		}
 	}
+
+	if(changeFlag & ChangeFlag::PointCloud) {
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+		if(pointCloud) {
+			auto eigenvectorsView = new OpenInfraPlatform::UserInterface::VectorTableModel(pointCloud->getEigenvectors<3>());			
+			ui_->tableViewEigenmatrix->setModel(eigenvectorsView);
+
+			Eigen::Matrix<double, 3, 3> boundingBox = Eigen::Matrix<double, 3, 3>();
+			CCVector3 min, max;
+			pointCloud->getBoundingBox(min, max);
+			CCVector3 bbCenter = 0.5 *(min + max);
+
+			boundingBox.row(0) = Eigen::Vector3d(min.x, min.y, min.z).transpose();
+			boundingBox.row(1) = Eigen::Vector3d(max.x, max.y, max.z).transpose();
+			boundingBox.row(2) = Eigen::Vector3d(bbCenter.x, bbCenter.y, bbCenter.z).transpose();
+
+			auto boundingBoxView = new OpenInfraPlatform::UserInterface::VectorTableModel(boundingBox);
+			ui_->tableViewBoundingBox->setModel(boundingBoxView);
+
+			ui_->labelPointCloudSizeValue->setText(QString::number(pointCloud->size()));
+		}
+	}
+
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_comboBoxAlignment_currentIndexChanged(int index) {
