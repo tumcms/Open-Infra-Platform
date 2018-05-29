@@ -35,6 +35,7 @@ void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_pushButtonOk_cl
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setEastings(m_Eastings);
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setNorthings(m_Northings);
 	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setOrthogonalHeight(m_OrthogonalHeight);
+	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setEPSGcodeName(m_Name);
 	this->accept();
 }
 
@@ -44,11 +45,14 @@ void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::show()
 	ui_->doubleSpinBoxEasting->setValue(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getEastings());
 	ui_->doubleSpinBoxNorthing->setValue(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getNorthings());
 	ui_->doubleSpinBoxHeight->setValue(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getOrthogonalHeight());
+	ui_->spinBoxEPSG->setValue(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getEPSGcodeName().split(":")[1].toInt());
+	ui_->labelOutputAreaName->setText(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getEPSGcodeName());
+
 	((QDialog*)this)->show();
 }
 
 void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_doubleSpinBoxEasting_valueChanged(double value) {
-	OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::m_Eastings = value;
+	m_Eastings = value;
 
 	//double m_Eastings = value;
 	//auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
@@ -64,7 +68,7 @@ void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_doubleSpinBoxEa
 }
 
 void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_doubleSpinBoxNorthing_valueChanged(double value) {
-	OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::m_Northings = value;
+	m_Northings = value;
 	
 	//double m_Northings = value;
 	//auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
@@ -80,7 +84,7 @@ void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_doubleSpinBoxNo
 }
 
 void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_doubleSpinBoxHeight_valueChanged(double value) {
-	OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::m_OrthogonalHeight = value;
+	m_OrthogonalHeight = value;
 	
 	//double m_OrthogonalHeight = value;
 	//auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
@@ -96,24 +100,24 @@ void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_doubleSpinBoxHe
 }
 
 void OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::on_spinBoxEPSG_valueChanged(int value) {
- 
-	 QString m_Name = "EPSG:"+QString::number(value);
+	m_Name = "EPSG:" + QString::number(value);
+
 	//QString m_GeodeticDatum = "EPSG"+QString::number(value);
 
-	auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setEPSGcodeName(m_Name);
-	auto entities = proxyModel->getIfc4x1Data();
+	//auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
+	//OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setEPSGcodeName(m_Name);
+	//auto entities = proxyModel->getIfc4x1Data();
 
-	for (auto it : entities) {
-		if (it.second->m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCPROJECTEDCRS) {
-			std::shared_ptr<IfcProjectedCRS> projectedCRS = std::static_pointer_cast<IfcProjectedCRS>(it.second);
-			projectedCRS->m_Name = std::make_shared<IfcLabel>(m_Name.toStdString());
+	//for (auto it : entities) {
+		//if (it.second->m_entity_enum == OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1EntityEnum::IFCPROJECTEDCRS) {
+			//std::shared_ptr<IfcProjectedCRS> projectedCRS = std::static_pointer_cast<IfcProjectedCRS>(it.second);
+			//projectedCRS->m_Name = std::make_shared<IfcLabel>(m_Name.toStdString());
 			//projectedCRS->m_GeodeticDatum = std::make_shared<IfcIdentifier>(m_GeodeticDatum.toStdString());
-		}
-	}
+		//}
+	//}
 //Prüfen ob der EPSG-Code existiert -> wird oben schon überprüft
 	//aus library oder HTML lesen was der area name ist und die Basisdaten und Verschiebungen einlesen
-	ui_->labelOutputAreaName->setText(QString::number(ui_->spinBoxEPSG->value()) /*tr("AreaName"))hier muss die Abfrage via HTML oder von der library rein*/);
+	ui_->labelOutputAreaName->setText(m_Name);
 }
 
 OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::AddGeoreferenceDialog(OpenInfraPlatform::UserInterface::View * view, QWidget * parent)
@@ -122,38 +126,7 @@ OpenInfraPlatform::UserInterface::AddGeoreferenceDialog::AddGeoreferenceDialog(O
 	view_(view)
 {
 	ui_->setupUi(this);
-
-	auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
-
-	if (proxyModel != nullptr)
-	{
-		auto entities = proxyModel->getIfc4x1Data();
-
-		for (auto it : entities)
-		{
-			switch (it.second->m_entity_enum)
-			{
-			case IFCMAPCONVERSION:
-			{
-				std::shared_ptr<IfcMapConversion> mapConversion = std::static_pointer_cast<IfcMapConversion>(it.second);
-
-				ui_->doubleSpinBoxEasting->setValue(mapConversion->m_Eastings->m_value);
-				ui_->doubleSpinBoxNorthing->setValue(mapConversion->m_Northings->m_value);
-				ui_->doubleSpinBoxHeight->setValue(mapConversion->m_OrthogonalHeight->m_value);
-			} break;
-
-			case IFCPROJECTEDCRS:
-			{
-				std::shared_ptr<IfcProjectedCRS> projectedCRS = std::static_pointer_cast<IfcProjectedCRS>(it.second);
-				QString EPSGstring = QString(projectedCRS->m_Name->m_value.data());
-				ui_->spinBoxEPSG->setValue(EPSGstring.split(":")[1].toInt());
-
-			} break;
-
-			default: break;
-			}
-		}
-	}
+		
 }
 
 

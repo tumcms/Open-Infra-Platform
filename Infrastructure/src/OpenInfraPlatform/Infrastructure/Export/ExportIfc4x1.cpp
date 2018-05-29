@@ -109,10 +109,10 @@ public:
 			shared_ptr<IfcProjectedCRS> projectedCRS = std::make_shared<IfcProjectedCRS>(createEntityId());
 			model_->insertEntity(projectedCRS);
 			projectedCRS->m_Name = std::make_shared<IfcLabel>(desc.m_Name); // todo get EPSG code from Gau�-Krueger coordinates
-			projectedCRS->m_Description = std::make_shared<IfcText>("EPSG:31467 - DHDN / 3-Degree Gauss-Krueger Zone 3");
-			projectedCRS->m_GeodeticDatum = std::make_shared<IfcIdentifier>(desc.m_Name);
-			projectedCRS->m_MapProjection = std::make_shared<IfcIdentifier>("Gauss-Krueger");
-			projectedCRS->m_MapZone = std::make_shared<IfcIdentifier>("3");
+			projectedCRS->m_Description = std::make_shared<IfcText>("EPSG:31467 - DHDN / 3-Degree Gauss-Krueger Zone 3"); //to do, because not applicable in all cases
+			projectedCRS->m_GeodeticDatum = std::make_shared<IfcIdentifier>("EPSG:31467"); //to do, because not applicable in all cases
+			projectedCRS->m_MapProjection = std::make_shared<IfcIdentifier>("Gauss-Krueger"); //to do, because not applicable in all cases
+			projectedCRS->m_MapZone = std::make_shared<IfcIdentifier>("3");  //to do, because not applicable in all cases
 
 			shared_ptr<IfcSIUnit> lengthUnit = std::make_shared<IfcSIUnit>(createEntityId());
 			model_->insertEntity(lengthUnit);

@@ -749,6 +749,40 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 			slabFieldModel_ = importer_->getSlabFieldModel();
 			proxyModel_ = importer_->getProxyModel();
 		}
+	
+		if (proxyModel_)
+		{
+			if (proxyModel_->hasIfc4x1Data())
+			{
+				auto entities = proxyModel_->getIfc4x1Data();
+
+				for (auto it : entities)
+				{
+					switch (it.second->m_entity_enum)
+					{
+					case OpenInfraPlatform::IfcAlignment1x1::IFCMAPCONVERSION:
+					{
+						std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcMapConversion> mapConversion = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcMapConversion>(it.second);
+
+						m_Eastings = mapConversion->m_Eastings->m_value;
+						m_Northings = mapConversion->m_Northings->m_value;
+						m_OrthogonalHeight = mapConversion->m_OrthogonalHeight->m_value;
+
+					} break;
+
+					case OpenInfraPlatform::IfcAlignment1x1::IFCPROJECTEDCRS:
+					{
+						std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcProjectedCRS> projectedCRS = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcProjectedCRS>(it.second);
+						QString EPSGstring = QString(projectedCRS->m_Name->m_value.data());
+						m_Name = EPSGstring.split(":")[1].toInt();
+
+					} break;
+
+					default: break;
+					}
+				}
+			}
+		}
 
 		delete importer_;
 		importer_ = nullptr;
