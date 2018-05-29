@@ -1341,17 +1341,18 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 			// Iterate over the line and check how far we make our progress along the main axis. Once we are above a certain threshold, we combine all points in their center of mass.
 			for(size_t i = 1; i < line.size() - 1; i++) {
 				auto axis = getPCA(line, std::max(0, (int)i - 10000), std::min((int)line.size() - 1, (int) i + 10000));
-				float length = std::fabsf(axis.dot(centerpoints[line[i + 1]]) - axis.dot(centerpoints[line[startIndex]]));
-				if(length >= desc.centerlineDensity) {
-					endIndex = i + 1;
-					int numPoints = (endIndex - startIndex);
-					CCVector3 center = CCVector3(0, 0, 0);
-					for(; startIndex < endIndex; startIndex++) {
-						center += (centerpoints[line[startIndex]] / (float)numPoints);
-					}
-
-					alignments[idx].push_back(center);
+				while(std::fabsf(axis.dot(centerpoints[line[i + 1]]) - axis.dot(centerpoints[line[startIndex]])) < desc.centerlineDensity && i < line.size() - 1)
+					i++;
+				
+				endIndex = i + 1;
+				int numPoints = (endIndex - startIndex);
+				CCVector3 center = CCVector3(0, 0, 0);
+				for(; startIndex < endIndex; startIndex++) {
+					center += (centerpoints[line[startIndex]] / (float)numPoints);
 				}
+
+				alignments[idx].push_back(center);
+				
 			}
 
 #pragma omp critical
