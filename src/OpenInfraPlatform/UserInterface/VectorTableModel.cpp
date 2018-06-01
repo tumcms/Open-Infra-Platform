@@ -17,28 +17,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "VectorTableModel.h"
 
-
-
-//QVariant OpenInfraPlatform::UserInterface::VectorTableModel::headerData(int section, Qt::Orientation orientation, int role) const
-//{
-//	if(orientation == Qt::Orientation::Vertical) {
-//		QStringList labels = { "X", "Y", "Z" };
-//		return QVariant(labels[section]);
-//	}
-//	else {
-//		return ((QAbstractTableModel*)this)->headerData(section, orientation, role);
-//	}
-//}
-
 int OpenInfraPlatform::UserInterface::VectorTableModel::rowCount(const QModelIndex & parent) const
 {
-	//TODO
 	return 3;
 }
 
 int OpenInfraPlatform::UserInterface::VectorTableModel::columnCount(const QModelIndex & parent) const
 {
-	//TODO
 	return 3;
 }
 

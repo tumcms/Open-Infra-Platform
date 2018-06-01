@@ -1085,6 +1085,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::onChange(ChangeFlag changeFla
 			ui_->tableViewBoundingBox->setModel(boundingBoxView);
 
 			ui_->labelPointCloudSizeValue->setText(QString::number(pointCloud->size()));
+			ui_->labelPointCloudSectionsValue->setText(QString::number(pointCloud->getSections().size()));
 		}
 	}
 
@@ -2695,7 +2696,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonCalculateSection
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
-		pointCloud->computeSections(100.0 / ui_->horizontalSliderSectionSize->value());
+		pointCloud->computeSections2(100.0 / ui_->horizontalSliderSectionSize->value());
 		view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
 	}
 }

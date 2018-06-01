@@ -29,13 +29,8 @@ namespace OpenInfraPlatform {
 			Q_OBJECT;
 
 		public:
-			VectorTableModel(const Eigen::Matrix<double, 3, 3> &data) : QAbstractTableModel(), data_(data){
-				((QAbstractItemModel*)this)->setHeaderData(0, Qt::Orientation::Vertical, QObject::tr("X"));
-				((QAbstractItemModel*)this)->setHeaderData(1, Qt::Orientation::Vertical, QObject::tr("Y"));
-				((QAbstractItemModel*)this)->setHeaderData(2, Qt::Orientation::Vertical, QObject::tr("Z"));
-			}
+			VectorTableModel(const Eigen::Matrix<double, 3, 3> &data) : QAbstractTableModel(), data_(data){	}
 
-			//virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 			virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 			virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 			virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;

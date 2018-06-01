@@ -69,6 +69,8 @@ namespace OpenInfraPlatform {
 					function(i);
 			}
 		public:
+			CCLib::DgmOctree::CellCode cellCode_;
+
 		private:
 			double length_;
 
