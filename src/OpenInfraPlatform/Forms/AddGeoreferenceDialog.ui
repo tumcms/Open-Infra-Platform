@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>534</width>
-    <height>327</height>
+    <width>314</width>
+    <height>237</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,17 +16,26 @@
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>30</y>
-     <width>461</width>
-     <height>241</height>
+     <x>10</x>
+     <y>10</y>
+     <width>291</width>
+     <height>211</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QGridLayout" name="gridLayout_2">
+     <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,0,0">
       <item row="2" column="1">
        <widget class="QDoubleSpinBox" name="doubleSpinBoxEasting">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="suffix">
+         <string>m</string>
+        </property>
         <property name="decimals">
          <number>6</number>
         </property>
@@ -38,28 +47,37 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBoxNorthing">
-        <property name="decimals">
-         <number>6</number>
-        </property>
-        <property name="minimum">
-         <double>-100000000.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>100000000.000000000000000</double>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelEPSG">
+        <property name="text">
+         <string>EPSG code</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
        <widget class="QLabel" name="labelOutputAreaName">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>TextLabel</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBoxHeight">
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxNorthing">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="suffix">
+         <string>m</string>
+        </property>
         <property name="decimals">
          <number>6</number>
         </property>
@@ -71,10 +89,25 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelEPSG">
-        <property name="text">
-         <string>EPSG code</string>
+      <item row="4" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxHeight">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="suffix">
+         <string>m</string>
+        </property>
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="minimum">
+         <double>-100000000.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>100000000.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -85,10 +118,10 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="labelHeight">
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelAreaName">
         <property name="text">
-         <string>Height</string>
+         <string>Area name</string>
         </property>
        </widget>
       </item>
@@ -99,56 +132,21 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="labelAreaName">
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelHeight">
         <property name="text">
-         <string>Area name</string>
+         <string>Height</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButtonCheck">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Check</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButtonOk">
-          <property name="text">
-           <string>Ok</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButtonCancel">
-          <property name="text">
-           <string>Cancel</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
       <item row="0" column="1">
        <widget class="QSpinBox" name="spinBoxEPSG">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimum">
          <number>1024</number>
         </property>
@@ -157,30 +155,51 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="2">
-       <layout class="QHBoxLayout" name="horizontalLayout">
+      <item row="6" column="0">
+       <widget class="QPushButton" name="pushButtonCheck">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Check</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QLabel" name="labelMeterNorthing">
+         <widget class="QPushButton" name="pushButtonOk">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
-           <string>m</string>
+           <string>Ok</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonCancel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Cancel</string>
           </property>
          </widget>
         </item>
        </layout>
-      </item>
-      <item row="4" column="2">
-       <widget class="QLabel" name="labelMeterHeight">
-        <property name="text">
-         <string>m</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="labelMeterEasting">
-        <property name="text">
-         <string>m</string>
-        </property>
-       </widget>
       </item>
      </layout>
     </item>
