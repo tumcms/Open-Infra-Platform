@@ -1209,7 +1209,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	this->reserveTheRGBTable();
 
 	// For each pair, insert the point in the middle as centerpoints point.
-	std::vector<CCVector3> centerpoints = std::vector<CCVector3>(rails.size());
+	std::vector<CCVector3> centerpoints = std::vector<CCVector3>();
 	for(auto pair : rails) {
 		CCVector3 start = *(getPoint(pair.first));
 		CCVector3 end = *(getPoint(pair.second));
@@ -1271,11 +1271,11 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		// Initialize the pair min with index and distance
 		std::pair<size_t, float> min = std::pair<size_t, float>(centerlines.size(), LONG_MAX);
 
-#pragma omp parallel private(tid) firstprivate(callback) shared(inserted, ambiguous, unnecessary, min)
+//#pragma omp parallel private(tid) firstprivate(callback) shared(inserted, ambiguous, unnecessary, min)
 		{
 			tid = omp_get_thread_num();
 			// Iterate over all centerlines.
-#pragma omp for 
+//#pragma omp for 
 			for(long ii = 0; ii < centerlines.size(); ii++) {
 
 				if(ambiguous || unnecessary)
@@ -1288,13 +1288,14 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				float distance = dist(point, endpoint);
 
 				if(distance <= 0.001) {
-#pragma omp critical
+//#pragma omp critical
 					unnecessary = true;
 					break;
 				}
 
 				// If the distance is smaller than 20cm, we would add the point to this line.
 				if(distance < desc.maxDistance) {
+
 					long startIndex = line.size() - 1, endIndex = line.size() - 1;
 
 					while(startIndex > 0 && dist(endpoint, centerpoints[line[startIndex]]) < 1)
@@ -1306,18 +1307,17 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 					auto direction = (point - endpoint);
 					direction.normalize();
 
-					float angle = std::acos(axis.dot(direction)) * 180.0 / M_PI;
+					float angle = std::acos(axis.dot(direction));
 
-					if(angle < 5) {
-						// If the point would also be inserted somewhere else, it is labeled as ambiguous and is dropped.
+					if(angle <= M_PI / 2.0) {
 						if(inserted) {
-#pragma omp critical
+							//#pragma omp critical
 							ambiguous = true;
 							break;
 						}
 						// Otherwise the min distance is updated and inserted is set to true.
 						else {
-#pragma omp critical 
+							//#pragma omp critical 
 							{
 								inserted = true;
 								if(distance < min.second)
@@ -1327,8 +1327,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 					}
 				}
 			}
-#pragma omp barrier
-#pragma omp master
+//#pragma omp barrier
+//#pragma omp master
 			{
 
 			// If the point is not ambiguous, we either insert it in the matching line or create a new one.
@@ -1347,8 +1347,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				if(i % 1000 == 0) {
 
 					// Erase the centerlines which do not fulfill the criteria and where no more points are being added.
-					auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) { return std::fabsf(mainAxis_.dot(point) - mainAxis_.dot(centerpoints[line.back()])) > 1.0f && (line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength); });
+					auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) {
+						float distAlongMainAxis = std::fabsf(mainAxis_.dot(point) - mainAxis_.dot(centerpoints[line.back()]));
+						return distAlongMainAxis > 1.0f && (line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength);
+					});
 					centerlines.erase(end, centerlines.end());
+					std::sort(centerlines.begin(), centerlines.end(), [](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {return lhs.size() > rhs.size(); });
 				}
 
 				// Update the callback.
