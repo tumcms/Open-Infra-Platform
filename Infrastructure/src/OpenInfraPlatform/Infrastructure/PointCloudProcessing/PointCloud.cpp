@@ -1147,6 +1147,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		setPointScalarValue(i, 0);
 	});
 
+	BLUE_LOG(trace) << "Computing pairs.";
+
 	// Create a global list of all point pairs.
 	std::vector<std::pair<size_t, size_t>> rails = std::vector<std::pair<size_t, size_t>>();
 	int tid = 0;
@@ -1202,6 +1204,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	// Stop our callback.
 	if(callback)
 		callback->stop();
+
+	BLUE_LOG(trace) << "Done.";
+	BLUE_LOG(trace) << "Computing centerpoints.";
+
 	
 
 	// Reserve space for the centerpoints points and color them blue.
@@ -1216,6 +1222,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		CCVector3 center = 0.5f * (end + start);
 		centerpoints.push_back(center);
 	}
+
+	BLUE_LOG(trace) << "Done.";
 
 	// Delete the pairs since we dont need them anymore.
 	rails.clear();
@@ -1236,6 +1244,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	if(callback)
 		callback->start();
 
+	BLUE_LOG(trace) << "Sorting centerpoints into centerlines.";
+
 	// Initialize variables for callback update.
 	float totalPoints = centerpoints.size();
 	int pointsPerPercent = totalPoints / 100;
@@ -1250,26 +1260,26 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		bool ambiguous = false;
 		bool unnecessary = false;
 
-		auto getPCA = [&](std::vector<size_t> alignment, size_t start, size_t end)->CCVector3 {
+		auto getPCA = [&](std::vector<size_t> alignment, size_t start, size_t end)->CCVector2 {
 				//Matrix which is capable of holding all points for PCA.
-				Eigen::MatrixX3d mat;
-				mat.resize(end - start, 3);
+				Eigen::MatrixX2d mat;
+				mat.resize(end - start, 2);
 				for(size_t i = start; i < end; i++) {
 					auto pos = centerpoints[alignment[i]];
-					mat.row(i - start) = Eigen::Vector3d(pos.x, pos.y, pos.z);
+					mat.row(i - start) = Eigen::Vector2d(pos.x, pos.y);
 				}
 
 				//Do PCA to find the largest eigenvector -> main axis.
 				Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
 				Eigen::MatrixXd cov = centered.adjoint() * centered;
 				Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-				Eigen::Matrix<double, 3, 1> vec = eig.eigenvectors().rightCols(1);
+				Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1);
 
-				return CCVector3(vec.x(), vec.y(), vec.z());
+				return CCVector2(vec.x(), vec.y());
 			};
 
 		// Initialize the pair min with index and distance
-		std::pair<size_t, float> min = std::pair<size_t, float>(centerlines.size(), LONG_MAX);
+		std::tuple<size_t,float, float> min = std::tuple<size_t, float, float>(centerlines.size(), 0 , LONG_MAX);
 
 //#pragma omp parallel private(tid) firstprivate(callback) shared(inserted, ambiguous, unnecessary, min)
 		{
@@ -1295,37 +1305,52 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 				// If the distance is smaller than 20cm, we would add the point to this line.
 				if(distance < desc.maxDistance) {
+					auto v0 = CCVector2(0.5f, 0.5f);
+					v0.normalize();
+					float thresholdAngle = 0.9;//CCVector2(1.0f, 0.0f).dot(v0);
 
-					long startIndex = line.size() - 1, endIndex = line.size() - 1;
+					// Set it to the threshold angle so that every point which is added to another existing line with a better angle is prefered
+					float angle = thresholdAngle;
+					float minCenterlineLength = 0.2f;
+					// Only compute the angle if the line is longer than 1m, otherwise just accept it.
+					if(dist(endpoint, centerpoints[line.front()]) > minCenterlineLength) {
 
-					while(startIndex > 0 && dist(endpoint, centerpoints[line[startIndex]]) < 1)
-						startIndex--;
+						long startIndex = line.size() - 1, endIndex = line.size() - 1;
 
-					auto axis = startIndex != endIndex ? getPCA(line, startIndex, endIndex) : (point - endpoint);
-					axis.normalize();
+						while(startIndex > 0 && dist(endpoint, centerpoints[line[startIndex]]) < minCenterlineLength)
+							startIndex--;
 
-					auto direction = (point - endpoint);
-					direction.normalize();
+						auto axis = getPCA(line, startIndex, endIndex);
+						axis.normalize();
 
-					float angle = std::acos(axis.dot(direction));
+						line.push_back(i);
+						auto direction = getPCA(line, startIndex + 1, endIndex + 1);
+						direction.normalize();
+						line.pop_back();
 
-					if(angle <= M_PI / 2.0) {
-						if(inserted) {
-							//#pragma omp critical
-							ambiguous = true;
-							break;
-						}
-						// Otherwise the min distance is updated and inserted is set to true.
-						else {
+						angle = std::abs(axis.dot(direction));
+					}
+
+					
+
+					if(angle >= thresholdAngle) {
+						//if(inserted) {
+						//	//#pragma omp critical
+						//	ambiguous = true;
+						//	break;
+						//}
+						//// Otherwise the min distance is updated and inserted is set to true.
+						//else {
 							//#pragma omp critical 
 							{
-								inserted = true;
-								if(distance < min.second)
-									min = std::pair<size_t, float>(ii, distance);
+								if(angle > std::get<1>(min) && distance < std::get<2>(min)) {
+									inserted = true;
+									min = std::tuple<size_t,float, float>(ii,angle, distance);
+								}
 							}
-						}
-					}
-				}
+						//}
+					}					
+				}				
 			}
 //#pragma omp barrier
 //#pragma omp master
@@ -1334,12 +1359,24 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 			// If the point is not ambiguous, we either insert it in the matching line or create a new one.
 				if(!ambiguous && !unnecessary) {
 					if(inserted) {
-						centerlines[min.first].push_back(i);
+						centerlines[std::get<0>(min)].push_back(i);
 					}
+					// Only add this as a new line currently if it far enough away!
 					else {
-						// If no matching line has been found, add a new one with this one as the starting point.				
-						centerlines.push_back(std::vector<size_t>());
-						centerlines.back().push_back(i);
+						bool hasMinDistanceThreshold = true;
+
+#pragma omp parallel for shared(point, hasMinDistanceThreshold) schedule(dynamic)
+						for(long line_idx = 0; line_idx < centerlines.size(); line_idx++) {
+							auto line = centerlines[line_idx];
+							if(dist(point, centerpoints[line.back()]) < 0.16f)
+								hasMinDistanceThreshold = false;
+						}
+						
+						if(hasMinDistanceThreshold) {
+							// If no matching line has been found, add a new one with this one as the starting point.				
+							centerlines.push_back(std::vector<size_t>());
+							centerlines.back().push_back(i);
+						}
 					}
 				}
 
@@ -1349,7 +1386,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 					// Erase the centerlines which do not fulfill the criteria and where no more points are being added.
 					auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) {
 						float distAlongMainAxis = std::fabsf(mainAxis_.dot(point) - mainAxis_.dot(centerpoints[line.back()]));
-						return distAlongMainAxis > 1.0f && (line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength);
+						return distAlongMainAxis > 10.0f && (line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength);
 					});
 					centerlines.erase(end, centerlines.end());
 					std::sort(centerlines.begin(), centerlines.end(), [](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {return lhs.size() > rhs.size(); });
@@ -1371,14 +1408,21 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	if(callback)
 		callback->stop();
 
-
+	BLUE_LOG(trace) << "Done.";
 
 	// Clear all lines having less then 100 points -> probably noise or something.
 	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool { return line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength; });
 	centerlines.erase(end, centerlines.end());
+
+	if(centerlines.empty()) {
+		BLUE_LOG(trace) << "No centerlines remaining after sorting. Choose a lower \"minSegmentPoints\" threshold and/or lower \"minSegmentLength\" threshold.";
+		return 0;
+	}
 	
 	if(callback)
 		callback->start();
+
+	BLUE_LOG(trace) << "Smoothing centerlines.";
 
 	// Collapse centerlines to have a uniform density.
 	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>(centerlines.size());
@@ -1426,11 +1470,11 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 				long startIndexPCA = startIndex, endIndexPCA = startIndex;
 
-				while((startIndexPCA > 100) && dist(centerpoints[line[startIndexPCA]], startPoint) < 10)
-					startIndexPCA-=100;
+				while((startIndexPCA > 0) && dist(centerpoints[line[startIndexPCA]], startPoint) < 10)
+					startIndexPCA-=1;
 
-				while((endIndexPCA < lineSize - 101) && dist(centerpoints[line[endIndexPCA]], startPoint) < 10)
-					endIndexPCA+=100;
+				while((endIndexPCA < lineSize - 1) && dist(centerpoints[line[endIndexPCA]], startPoint) < 10)
+					endIndexPCA+=1;
 
 				auto axis = getPCA(line, startIndexPCA, endIndexPCA);
 
@@ -1465,6 +1509,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	// Tell the callback that we're done.
 	if(callback)
 		callback->stop();
+
+	BLUE_LOG(trace) << "Done.";
 
 	// Delete the centerlines buffer since we dont need it anymore.
 	std::for_each(centerlines.begin(), centerlines.end(), [](std::vector<size_t> &line) { line.clear(); });
