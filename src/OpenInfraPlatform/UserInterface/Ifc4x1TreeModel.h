@@ -24,7 +24,12 @@ namespace OpenInfraPlatform {
 	namespace UserInterface {
 
 		class Ifc4x1TreeModel : public QAbstractItemModel {
+
+			Q_OBJECT;
+
 		public:
+			//explicit TreeModel(const QString &data, QObject *parent = 0); from Qt documentation
+			//~TreeModel(); from Qt documentation
 			Ifc4x1TreeModel(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& entities);
 		// Geerbt über QAbstractItemModel
 			virtual Q_INVOKABLE QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const override;
@@ -34,7 +39,37 @@ namespace OpenInfraPlatform {
 			virtual Q_INVOKABLE QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
 		
 		private:
-			std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;			
+			std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;
+			
+		
+		
+		//private:
+			//void setupModelData(const QStringList &lines, TreeItem *parent);
+
+			//TreeItem *rootItem;
+		};
+
+
+		//from Qt documentation http://doc.qt.io/qt-5/qtwidgets-itemviews-simpletreemodel-example.html
+		class TreeItem
+		{
+		public:
+			explicit TreeItem(const QList<QVariant> &data, TreeItem *parentItem = 0);
+			//~TreeItem();
+
+			//void appendChild(TreeItem *child);
+
+			TreeItem *child(int row);
+			//int childCount() const;
+			//int columnCount() const;
+			//QVariant data(int column) const;
+			//int row() const;
+			//TreeItem *parentItem();
+
+		private:
+			QList<TreeItem*> childItems_;
+			QList<QVariant> itemData_;
+			TreeItem *parentItem_;
 		};
 	}
 }

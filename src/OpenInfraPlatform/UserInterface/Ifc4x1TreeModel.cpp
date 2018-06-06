@@ -22,6 +22,12 @@ OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::Ifc4x1TreeModel(std::map<int,
 	QAbstractItemModel()
 {
 	data_ = entities;
+
+	//represent an imaginary parent of top-level items in the model:
+	//QList<QVariant> rootData;
+	//rootData << "Title" << "Summary";
+	//rootItem = new TreeItem(rootData);
+	//setupModelData(data.split(QString("\n")), rootItem);
 }
 
 Q_INVOKABLE QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::index(int row, int column, const QModelIndex & parent) const
@@ -31,10 +37,29 @@ Q_INVOKABLE QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::index
 
 Q_INVOKABLE QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::parent(const QModelIndex & child) const
 {
-	for (auto it : data_) {
+	//QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::parent(const QModelIndex &index) const
+	//{
+	//	if (!index.isValid())
+	//		return QModelIndex();
+
+	//	TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
+	//	TreeItem *parentItem = childItem->parentItem();
+
+	//	if (parentItem == rootItem)
+	//		return QModelIndex();
+
+	//	return createIndex(parentItem->row(), 0, parentItem);
+	//}
+	
+	/*TreeItem *TreeItem::parentItem()
+	{
+		return m_parentItem;
+	}
+	/*for (auto it : data_) {
 		  
 		}
-	return Q_INVOKABLE QModelIndex();
+	return Q_INVOKABLE QModelIndex();*/
+	return QModelIndex();
 }
 
 Q_INVOKABLE int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(const QModelIndex & parent) const
@@ -44,10 +69,30 @@ Q_INVOKABLE int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(cons
 
 Q_INVOKABLE int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::columnCount(const QModelIndex & parent) const
 {
-	return 1;
+	return 10;
 }
 
 Q_INVOKABLE QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelIndex & index, int role) const
 {
-	return QVariant() data_.find(index);
+	if (!index.isValid())
+		return QVariant();
+
+	if (role != Qt::DisplayRole)
+		return QVariant();	
+
+	return QVariant(data_.find(index.row()+1)->second->classname());
+	//return QVariant () data_.find(index) ;
 }
+
+
+
+// from Qt documentation 
+//TreeItem::TreeItem(const QList<QVariant> &data, TreeItem *parent)
+//{
+//	parentItem_ = parent;
+//	itemData_ = data;
+//}
+//TreeItem *TreeItem::child(int row)
+//{
+//	return childItems_.value(row);
+//}
