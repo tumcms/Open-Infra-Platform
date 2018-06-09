@@ -24,6 +24,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
 
 #include <buw.Rasterizer.h>
+#include <buw.Engine.h>
 #include <map>
 #include <tuple>
 
@@ -97,15 +98,18 @@ private:
 	buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer_ = nullptr;
 	buw::ReferenceCounted<buw::IConstantBuffer> settingsBuffer_ = nullptr;
 	buw::ReferenceCounted<buw::IConstantBuffer> viewportBuffer_ = nullptr;
-	buw::ReferenceCounted<buw::IVertexBuffer> vertexBuffer_ = nullptr;
-	buw::ReferenceCounted<buw::IIndexBuffer> indexBufferRemaining_ = nullptr, indexBufferFiltered_ = nullptr, indexBufferSegmented_ = nullptr;
+	buw::ReferenceCounted<buw::IVertexBuffer> vertexBufferPointCloud_ = nullptr, vertexBufferOctree_ = nullptr;
+	buw::ReferenceCounted<buw::IIndexBuffer> indexBufferRemaining_ = nullptr, indexBufferFiltered_ = nullptr, indexBufferSegmented_ = nullptr, indexBufferOctree_ = nullptr;
 	buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA_ = nullptr;
-	buw::ReferenceCounted<buw::IPipelineState> pipelineState_ = nullptr;
+	buw::ReferenceCounted<buw::IPipelineState> pipelineStatePointCloud_ = nullptr, pipelineStateOctree_ = nullptr;
 	buw::ReferenceCounted<buw::IViewport> viewport_ = nullptr;
 	buw::ReferenceCounted<CCLib::ReferenceCloud> subsampledPointCloud_ = nullptr;
 	SettingsBuffer settings_;
 	buw::Vector4f uniformColor_, filteredColor_, segmentedColor_;
-	bool bShow_ = true, bShowOriginalPointCloud_ = true, bShowSegmentedPoints_ = false, bShowFilteredPoints_ = false, bProjectPoints_ = false, bUseSubsampledCloud_ = false;
+	int octreeLevel_ = 0;
+	bool bShow_ = true, bShowOriginalPointCloud_ = true, bShowSegmentedPoints_ = false, bShowFilteredPoints_ = false, bProjectPoints_ = false, bUseSubsampledCloud_ = false, bShowOctree_ = true;
+	buw::ReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>> vertexCacheLine_ = nullptr;
+
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END

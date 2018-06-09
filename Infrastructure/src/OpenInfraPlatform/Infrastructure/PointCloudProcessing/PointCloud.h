@@ -137,6 +137,8 @@ namespace OpenInfraPlatform {
 				}
 			}
 
+			buw::ReferenceCounted<CCLib::DgmOctree> getDGMOctree() const;
+
 		private:
 			void computeMainAxis();
 

@@ -257,30 +257,33 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 				nss.queryPoint = *getPoint(cell);
 				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 50, false);
 
-				auto getPCA = [&]()->CCVector3 {
+				auto getPCA = [&]()->CCVector2 {
 					//Matrix which is capable of holding all points for PCA.
-					Eigen::MatrixX3d mat;
-					mat.resize(numPoints, 3);
+					Eigen::MatrixX2d mat;
+					mat.resize(numPoints, 2);
 					for(size_t i = 0; i < numPoints; i++) {
 						auto pos = *nss.pointsInNeighbourhood[i].point;
-						mat.row(i) = Eigen::Vector3d(pos.x, pos.y, pos.z);
+						mat.row(i) = Eigen::Vector2d(pos.x, pos.y);
 					}
 
 					//Do PCA to find the largest eigenvector -> main axis.
 					Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
 					Eigen::MatrixXd cov = centered.adjoint() * centered;
 					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-					Eigen::Matrix<double, 3, 1> vec = eig.eigenvectors().rightCols(1).normalized();
+					Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1).normalized();
 
-					return CCVector3(vec.x(), vec.y(), vec.z());
+					return CCVector2(vec.x(), vec.y());
 				};
 
 				auto axis = getPCA();
 
 				std::vector<std::pair<size_t, double>> indexedProjectionLength = std::vector<std::pair<size_t, double>>();
 
-				for(size_t i = 0; i < points->size(); i++)
-					indexedProjectionLength.push_back(std::pair<size_t, double>(points->getPointGlobalIndex(i), axis.dot(*points->getPoint(i))));
+				for(size_t i = 0; i < points->size(); i++) {
+					auto point3d = *points->getPoint(i);
+					CCVector2 point2d = CCVector2(point3d.x, point3d.y);
+					indexedProjectionLength.push_back(std::pair<size_t, double>(points->getPointGlobalIndex(i), axis.dot(point2d)));
+				}
 
 				std::sort(indexedProjectionLength.begin(), indexedProjectionLength.end(), [](const std::pair<size_t, double> &lhs, const std::pair<size_t, double> &rhs) -> bool {
 					return lhs.second < rhs.second;
@@ -1307,7 +1310,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				if(distance < desc.maxDistance) {
 					auto v0 = CCVector2(0.5f, 0.5f);
 					v0.normalize();
-					float thresholdAngle = 0.9;//CCVector2(1.0f, 0.0f).dot(v0);
+					float thresholdAngle = 0.7;//CCVector2(1.0f, 0.0f).dot(v0);
 
 					// Set it to the threshold angle so that every point which is added to another existing line with a better angle is prefered
 					float angle = thresholdAngle;
@@ -2272,6 +2275,11 @@ const double OpenInfraPlatform::Infrastructure::PointCloud::getSectionLength() c
 const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> OpenInfraPlatform::Infrastructure::PointCloud::getIndices() const
 {
 	return std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>>(remainingIndices_, filteredIndices_, segmentedIndices_);
+}
+
+buw::ReferenceCounted<CCLib::DgmOctree> OpenInfraPlatform::Infrastructure::PointCloud::getDGMOctree() const
+{
+	return octree_;
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeMainAxis()

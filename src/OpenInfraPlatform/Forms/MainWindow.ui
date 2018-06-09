@@ -231,7 +231,7 @@
          <enum>QTabWidget::North</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <property name="elideMode">
          <enum>Qt::ElideNone</enum>
@@ -446,7 +446,7 @@
             <x>9</x>
             <y>9</y>
             <width>261</width>
-            <height>322</height>
+            <height>341</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -559,13 +559,6 @@
            </item>
            <item>
             <layout class="QGridLayout" name="gridLayout_2">
-             <item row="2" column="0">
-              <widget class="QCheckBox" name="checkBoxShowSegmentedPoints">
-               <property name="text">
-                <string>Show segmented points</string>
-               </property>
-              </widget>
-             </item>
              <item row="1" column="0">
               <widget class="QCheckBox" name="checkBoxShowFilteredPoints">
                <property name="text">
@@ -580,17 +573,10 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="0">
-              <widget class="QCheckBox" name="checkBoxUseUniformColor">
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="checkBoxShowSegmentedPoints">
                <property name="text">
-                <string>Use uniform color</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QPushButton" name="pushButtonSelectFilteredPointsColor">
-               <property name="text">
-                <string>Select Color</string>
+                <string>Show segmented points</string>
                </property>
               </widget>
              </item>
@@ -611,6 +597,20 @@
                </property>
               </widget>
              </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="checkBoxUseUniformColor">
+               <property name="text">
+                <string>Use uniform color</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QPushButton" name="pushButtonSelectFilteredPointsColor">
+               <property name="text">
+                <string>Select Color</string>
+               </property>
+              </widget>
+             </item>
              <item row="3" column="1">
               <widget class="QComboBox" name="comboBoxShowAlignment">
                <property name="enabled">
@@ -618,6 +618,27 @@
                </property>
                <property name="currentText">
                 <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <item>
+                <widget class="QCheckBox" name="checkBoxShowOctree">
+                 <property name="text">
+                  <string>Show Octree</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="spinBox"/>
+               </item>
+              </layout>
+             </item>
+             <item row="4" column="1">
+              <widget class="QPushButton" name="pushButtonSelectOctreeColor">
+               <property name="text">
+                <string>Select Color</string>
                </property>
               </widget>
              </item>
