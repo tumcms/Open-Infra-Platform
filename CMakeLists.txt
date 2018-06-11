@@ -349,6 +349,7 @@ set(OpenInfraPlatform_UIS
 	src/OpenInfraPlatform/Forms/CreateLineClothoidArcClothoidLine.ui
 	src/OpenInfraPlatform/Forms/CreateLineClothoidClothoidLine.ui
 	src/OpenInfraPlatform/Forms/CurvatureWindow.ui
+	src/OpenInfraPlatform/Forms/ShowIFCtree.ui
 	src/OpenInfraPlatform/Forms/ExportExcel.ui
 	src/OpenInfraPlatform/Forms/ExportIfc4x1Dialog.ui
 	src/OpenInfraPlatform/Forms/ExportIfcAlignmentDialog.ui
