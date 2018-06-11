@@ -143,7 +143,7 @@ target_link_libraries( OpenInfraPlatform.Infrastructure
 	)
 
 # Use the Widgets module from Qt 5.
-qt5_use_modules(OpenInfraPlatform.Infrastructure Xml XmlPatterns OpenGL OpenGLExtensions)
+target_link_libraries(OpenInfraPlatform.Infrastructure Qt5::Xml Qt5::XmlPatterns Qt5::OpenGL Qt5::OpenGLExtensions)
 
 install(TARGETS OpenInfraPlatform.Infrastructure   
    RUNTIME DESTINATION bin

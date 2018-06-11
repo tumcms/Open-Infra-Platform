@@ -293,11 +293,11 @@ link_directories(
 add_subdirectory(external/QtXlsxWriter)
 add_subdirectory(external/QSimpleUpdater)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
-add_subdirectory(ExpressBinding)
 add_subdirectory(Infrastructure)
 add_subdirectory(UnitTests)
 add_subdirectory(oip)
 add_subdirectory(IfcBridgeGenerator)
+add_subdirectory(ExpressBinding)
 
 # Do currently not work
 #add_subdirectory(RoadXMLViewer)
@@ -449,7 +449,7 @@ add_executable(OpenInfraPlatform.UI
 #------------------------------------------------------------------------------
 
 # Use the Widgets module from Qt 5.
-qt5_use_modules(OpenInfraPlatform.UI Widgets Xml XmlPatterns Svg PrintSupport Quick Qml Location Positioning)
+target_link_libraries(OpenInfraPlatform.UI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::XmlPatterns Qt5::Svg Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Location Qt5::Positioning)
 
 target_link_libraries( OpenInfraPlatform.UI
 	OpenInfraPlatform.Infrastructure
