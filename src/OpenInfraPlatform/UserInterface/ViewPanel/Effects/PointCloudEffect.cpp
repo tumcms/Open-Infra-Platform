@@ -78,10 +78,10 @@ void PointCloudEffect::loadShader()
 
 		pipelineStatePointCloud_ = createPipelineState(psd);	
 
-		psd.effectFilename = buw::Singleton<RenderResources>::instance().getResourceRootDir() + "/Shader/UIElementsEffect.be";
-		psd.pipelineStateName = "";
-		psd.vertexLayout = vertexCacheLine_->vertexLayout();
-		psd.primitiveTopology = vertexCacheLine_->topology();
+		psd.effectFilename = buw::Singleton<RenderResources>::instance().getResourceRootDir() + "/Shader/OctreeEffect.be";
+		psd.pipelineStateName = "main";
+		psd.vertexLayout = buw::VertexPosition3::getVertexLayout();
+		psd.primitiveTopology = buw::ePrimitiveTopology::LineList;
 		psd.renderTargetFormats = { buw::eTextureFormat::R8G8B8A8_UnsignedNormalizedInt_SRGB };
 		psd.useDepth = true;
 		psd.useMSAA = true;
@@ -372,8 +372,9 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	if(octree) {
 
 		// Create the octree vertex and index buffer.
-		BLUE_LOG(trace) << "Start creating octree buffers.";// Just use this for now.
-		octreeLevel_ = 4;
+		BLUE_LOG(trace) << "Start creating octree buffers.";
+		// Just use this for now.
+		octreeLevel_ = 3;
 
 		std::vector<uint32_t> dgmOctreeCells;
 		std::vector<buw::VertexPosition3> octreeVertices = std::vector<buw::VertexPosition3>();
@@ -391,7 +392,7 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 			octree->computeCellCenter(cellpos, octreeLevel_, cellCenter);
 
 			float cellSize = octree->getCellSize(octreeLevel_);
-			buw::createBoundingBox(octreeVertices, octreeIndices, cellCenter.x, cellCenter.z, cellCenter.y, cellSize / 2.0f, cellSize / 2.0f, cellSize / 2.0f);
+			buw::createBoundingBox(octreeVertices, octreeIndices, cellCenter.x + offset.x(), cellCenter.y + offset.y(), cellCenter.z + offset.z(), cellSize / 2.0f, cellSize / 2.0f, cellSize / 2.0f);
 		}
 
 		ibd.indexCount = octreeIndices.size();
@@ -406,13 +407,13 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 		BLUE_LOG(trace) << "vertexBufferOctree_:" << vertexBufferOctree_.get() << ". Vertex count:" << vbd.vertexCount << ".";
 		BLUE_LOG(trace) << "Done creating octree buffers.";
 
-		vertexCacheLine_ = buw::makeReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>>(renderSystem(), 100000);
-
-		for(int i = 0; i < octreeIndices.size() - 1; i+=2)
-			vertexCacheLine_->drawLine(buw::VertexPosition3Color3Size1(buw::Vector3f(octreeVertices[octreeIndices[i]].position.data), buw::Vector3f(0,1,0),10), buw::VertexPosition3Color3Size1(buw::Vector3f(octreeVertices[octreeIndices[i + 1]].position.data), buw::Vector3f(0, 1, 0), 1));
-		
-
-		vertexCacheLine_->flush();
+		//vertexCacheLine_ = buw::makeReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>>(renderSystem(), 100000);
+		//
+		//for(int i = 0; i < octreeIndices.size() - 1; i+=2)
+		//	vertexCacheLine_->drawLine(buw::VertexPosition3Color3Size1(buw::Vector3f(octreeVertices[octreeIndices[i]].position.data), buw::Vector3f(0,1,0),10), buw::VertexPosition3Color3Size1(buw::Vector3f(octreeVertices[octreeIndices[i + 1]].position.data), buw::Vector3f(0, 1, 0), 10));
+		//
+		//
+		//vertexCacheLine_->flush();
 	}
 
 	BLUE_LOG(trace) << "Finished initializing GPU side buffers.";
@@ -420,7 +421,7 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 
 void PointCloudEffect::v_init()
 {
-	vertexCacheLine_ = buw::makeReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>>(renderSystem());
+	//vertexCacheLine_ = buw::makeReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>>(renderSystem());
 
 	loadShader();
 	
@@ -449,7 +450,8 @@ void PointCloudEffect::v_render()
 	
 	setPipelineState(pipelineStatePointCloud_);
 	setRenderTarget(renderTarget, depthStencilMSAA_);
-	setViewport(viewport_);	setConstantBuffer(worldBuffer_, "WorldBuffer");
+	setViewport(viewport_);
+	setConstantBuffer(worldBuffer_, "WorldBuffer");
 	setConstantBuffer(viewportBuffer_, "ViewportBuffer");
 	setVertexBuffer(vertexBufferPointCloud_);
 
@@ -493,21 +495,22 @@ void PointCloudEffect::v_render()
 	}
 
 	if(bShowOctree_) {
-		//setPipelineState(pipelineStatePointCloud_);
-		//setRenderTarget(renderTarget, depthStencilMSAA_);
-		//setViewport(viewport_); 
-		//setConstantBuffer(worldBuffer_, "WorldBuffer");
-		//setVertexBuffer(vertexBufferOctree_);
-		//setIndexBuffer(indexBufferOctree_);
-		//drawIndexed(static_cast<UINT>(indexBufferOctree_->getIndexCount()));
-		setPipelineState(pipelineStatePointCloud_);
+		setPipelineState(pipelineStateOctree_);
 		setRenderTarget(renderTarget, depthStencilMSAA_);
 		setViewport(viewport_); 
 		setConstantBuffer(worldBuffer_, "WorldBuffer");
 		setConstantBuffer(viewportBuffer_, "ViewportBuffer");
-
-		setVertexBuffer(vertexCacheLine_->vertexBuffer());
-		draw(vertexCacheLine_->getSize());
+		setVertexBuffer(vertexBufferOctree_);
+		setIndexBuffer(indexBufferOctree_);
+		drawIndexed(static_cast<UINT>(indexBufferOctree_->getIndexCount()));
+		//setPipelineState(pipelineStateOctree_);
+		//setRenderTarget(renderTarget, depthStencilMSAA_);
+		//setViewport(viewport_); 
+		//setConstantBuffer(worldBuffer_, "WorldBuffer");
+		//setConstantBuffer(viewportBuffer_, "ViewportBuffer");
+		//
+		//setVertexBuffer(vertexCacheLine_->vertexBuffer());
+		//draw(vertexCacheLine_->getSize());
 	}
 }
 
