@@ -211,6 +211,11 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 			
 	// Call this once to find the best level for the radius.
 	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(100);
+
+	// If the level is to low, we can't get the indices etc. so we manually increase it.
+	while(octree_->getCellSize(level) == 0)
+		level++;
+
 	BLUE_LOG(trace) << "Octree Level:" << (int)level;
 	BLUE_LOG(trace) << "Octree Cell Size:" << octree_->getCellSize(level);
 
