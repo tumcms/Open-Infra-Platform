@@ -31,6 +31,7 @@
 #include "OpenInfraPlatform/UserInterface/AddGeoreferenceDialog.h"
 #include "OpenInfraPlatform/UserInterface/View2DWindow/VerticalAlignmentWindow.h"
 #include "OpenInfraPlatform/UserInterface/View2DWindow/CurvatureWindow.h"
+#include "OpenInfraPlatform/UserInterface/ShowIFCtree.h"
 #include "OpenInfraPlatform/DataManagement/Data.h"
 #include "OpenInfraPlatform/DataManagement/ProgressCallback.h"
 #include "OpenInfraPlatform/UnitTesting/ImageTester.h"
@@ -115,6 +116,7 @@ namespace OpenInfraPlatform
 			void on_actionCreate_Line_Clothoid_triggered();
 			void on_actionCreateClothoid_triggered();
 			void on_actionCurvature_triggered();
+			void on_actionShow_IFC_tree_triggered();
 			void on_actionDraw_Road_Texture_triggered(bool checked);
 			void on_actionExit_triggered();
 			void on_actionExport_Terrain_As_Heightmap_triggered();
@@ -323,6 +325,7 @@ namespace OpenInfraPlatform
 			CreateLineClothoidArcClothoidLineDialog*	LCACL_ = nullptr;
 			CreateLineClothoidClothoidLineDialog*		LCCL_ = nullptr;
 			CurvatureWindow*							curvatureWindow_ = nullptr;
+			ShowIFCtree*								showIFCtree_ = nullptr;
 			ExportExcelDialog*							exportExcelDialog_ = nullptr;
 			ExportIfcAlignment1x0Dialog*				exportIfcAlignment1x0Dialog_ = nullptr;
 			ExportIfc4x1Dialog*				exportIfcAlignment1x1Dialog_ = nullptr;
