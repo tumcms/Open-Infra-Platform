@@ -55,6 +55,7 @@
 #include <QMenuBar>
 #include <QProgressBar>
 #include <QProgressDialog>
+#include <QButtonGroup>
 #include <QColorDialog>
 #include <setjmp.h>
 

@@ -125,8 +125,7 @@ add_definitions(-D_UNICODE 			# Unicode rules
 
 if (WIN32)
 	# Standard:          /DWIN32 /D_WINDOWS /W3 /Zm1000 /EHsc /GR
-	#set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR /MP /openmp /bigobj")
-	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W3 /Zi /EHsc /GR /MP /openmp /bigobj")
+	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR /MP /openmp /bigobj")
 endif (WIN32)
 
 #------------------------------------------------------------------------------
@@ -147,10 +146,11 @@ find_package(raptor2 REQUIRED)
 find_package(CloudCompare REQUIRED)
 find_path(visit_struct_INCLUDE_DIR REQUIRED)
 
-
 # Find the Qt components
 set(QT5_COMPONENTS
-	Core 
+	Core
+	Gui
+	OpenGL
 	Xml
 	XmlPatterns
 	Widgets
@@ -162,12 +162,11 @@ set(QT5_COMPONENTS
 	Quick
 	Positioning
 	Location
-	OpenGL
 )
 
 # Loop over all components, find them and initialize the corresponding variables
 foreach(Component ${QT5_COMPONENTS})
-	find_package( Qt5 5.10.0 COMPONENTS ${Component}	REQUIRED)
+	find_package( Qt5 5.11.0 COMPONENTS ${Component}	REQUIRED)
 	if(TARGET ${Qt5${Component}_LIBRARIES})
 		get_target_property(Qt5${Component}_location ${Qt5${Component}_LIBRARIES} LOCATION_Release)
 		set(QT5_DLLS_RELEASE ${QT5_DLLS_RELEASE} ${Qt5${Component}_location})
@@ -231,7 +230,6 @@ macro(addQt5PluginDll plugin output)
 	list(APPEND ${output} ${_loc})
 endmacro()
 
-addQt5Dll(Concurrent)
 addQt5Dll(Gui)
 addQt5Dll(Multimedia)
 addQt5Dll(MultimediaWidgets)
@@ -239,6 +237,7 @@ addQt5Dll(OpenGL)
 addQt5Dll(Sensors)
 addQt5Dll(Sql)
 addQt5Dll(WebChannel)
+addQt5Dll(Concurrent)
 
 foreach(plugin ${Qt5_PLATFORMS_PLUGINS})
 	addQt5PluginDll(${plugin} Qt5_PLATFORMS_PLUGINS_DLLS)
@@ -475,11 +474,11 @@ target_link_libraries( OpenInfraPlatform.UI
 # BlueFramework Copy Binaries
 BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
+# CloudCompare Copy Binaries
+CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
+
 # Oklabi Copy Binaries
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
-
-#CloudCompare copy binaries
-CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 # QtCopyBinaries
 add_custom_target(Qt5CopyBinaries
@@ -617,12 +616,11 @@ set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
 set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
+set_target_properties(CloudCompareCopyBinaries 				PROPERTIES FOLDER "Copy")
 set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
 set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(CloudCompareCopyBinaries					PROPERTIES FOLDER "Copy")
-
 set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 #set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
@@ -704,7 +702,7 @@ installData(${CMAKE_BINARY_DIR}/res)
 installData(${CMAKE_BINARY_DIR}/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${ZLIB_ROOT}/build/Release/zlib.dll
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${CC_RELEASE_BINARIES}
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 	
