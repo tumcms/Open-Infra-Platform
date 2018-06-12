@@ -80,7 +80,10 @@ int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(const QModelInde
 
 int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::columnCount(const QModelIndex & parent) const
 {
-	return 1;
+	if(!parent.isValid())
+		return 1;
+	else
+		return 3;
 }
 
 QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelIndex & index, int role) const
