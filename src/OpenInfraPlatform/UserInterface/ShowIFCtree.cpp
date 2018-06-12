@@ -26,6 +26,7 @@ OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::Us
 {
 	ui_->setupUi(this);
 	ui_->treeView->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
+	ui_->treeView->setAutoExpandDelay(-1);
 	QObject::connect(ui_->treeView, &QTreeView::activated, this, &ShowIFCtree::on_treeView_expanded);
 }
 
