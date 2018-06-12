@@ -32,11 +32,11 @@ namespace OpenInfraPlatform {
 			//~TreeModel(); from Qt documentation
 			Ifc4x1TreeModel(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& entities);
 		// Geerbt über QAbstractItemModel
-			virtual Q_INVOKABLE QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const override;
-			virtual Q_INVOKABLE QModelIndex parent(const QModelIndex & child) const override;
-			virtual Q_INVOKABLE int rowCount(const QModelIndex & parent = QModelIndex()) const override;
-			virtual Q_INVOKABLE int columnCount(const QModelIndex & parent = QModelIndex()) const override;
-			virtual Q_INVOKABLE QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+			virtual QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const override;
+			virtual QModelIndex parent(const QModelIndex & child) const override;
+			virtual int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+			virtual int columnCount(const QModelIndex & parent = QModelIndex()) const override;
+			virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
 		
 		private:
 			std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;

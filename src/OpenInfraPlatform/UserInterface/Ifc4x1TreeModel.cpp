@@ -30,12 +30,20 @@ OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::Ifc4x1TreeModel(std::map<int,
 	//setupModelData(data.split(QString("\n")), rootItem);
 }
 
-Q_INVOKABLE QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::index(int row, int column, const QModelIndex & parent) const
+QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::index(int row, int column, const QModelIndex & parent) const
 {	
-	return this->createIndex(row, column, nullptr);
+	if(!hasIndex(row, column, parent))
+		return QModelIndex();
+
+	if(!parent.isValid())
+		return this->createIndex(row, column, std::static_pointer_cast<void>(data_.find(row + 1)->second).get());
+	else {
+		//TODO: Return the index relative to the parent index!
+		return QModelIndex();
+	}
 }
 
-Q_INVOKABLE QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::parent(const QModelIndex & child) const
+QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::parent(const QModelIndex & child) const
 {
 	//QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::parent(const QModelIndex &index) const
 	//{
@@ -62,17 +70,20 @@ Q_INVOKABLE QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::paren
 	return QModelIndex();
 }
 
-Q_INVOKABLE int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(const QModelIndex & parent) const
+int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(const QModelIndex & parent) const
 {
-	return data_.size();
+	if(!parent.isValid())
+		return data_.size();
+	else
+		return 1;
 }
 
-Q_INVOKABLE int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::columnCount(const QModelIndex & parent) const
+int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::columnCount(const QModelIndex & parent) const
 {
-	return 10;
+	return 1;
 }
 
-Q_INVOKABLE QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelIndex & index, int role) const
+QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelIndex & index, int role) const
 {
 	if (!index.isValid())
 		return QVariant();
