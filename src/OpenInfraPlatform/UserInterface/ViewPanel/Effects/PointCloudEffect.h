@@ -70,6 +70,10 @@ public:
 	void showFilteredPoints(const bool checked);
 	void showSegmentedPoints(const bool checked);
 
+	void showOctree(const bool checked);
+
+	void setOctreeLevel(const size_t level);
+
 	void setUniformColor(const buw::Vector4f &color);
 	void setFilteredColor(const buw::Vector4f &color);
 	void setSegmentedColor(const buw::Vector4f &color);
@@ -86,7 +90,8 @@ public:
 
 	/*Set the point cloud to be rendered*/
 	void setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset);
-
+	
+	void setOctree(buw::ReferenceCounted<CCLib::DgmOctree> octree, buw::Vector3d offset);
 
 private:
 	void v_init();
@@ -103,12 +108,12 @@ private:
 	buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA_ = nullptr;
 	buw::ReferenceCounted<buw::IPipelineState> pipelineStatePointCloud_ = nullptr, pipelineStateOctree_ = nullptr;
 	buw::ReferenceCounted<buw::IViewport> viewport_ = nullptr;
-	buw::ReferenceCounted<CCLib::ReferenceCloud> subsampledPointCloud_ = nullptr;
+	buw::ReferenceCounted<buw::PointCloud> pointCloud_ = nullptr;
 	SettingsBuffer settings_;
 	buw::Vector4f uniformColor_, filteredColor_, segmentedColor_;
-	int octreeLevel_ = 0;
-	bool bShow_ = true, bShowOriginalPointCloud_ = true, bShowSegmentedPoints_ = false, bShowFilteredPoints_ = false, bProjectPoints_ = false, bUseSubsampledCloud_ = false, bShowOctree_ = true;
-	buw::ReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>> vertexCacheLine_ = nullptr;
+	buw::Vector3d offset_;
+	int octreeLevel_ = 1;
+	bool bShow_ = true, bShowOriginalPointCloud_ = true, bShowSegmentedPoints_ = false, bShowFilteredPoints_ = false, bProjectPoints_ = false, bShowOctree_ = false;
 
 };
 

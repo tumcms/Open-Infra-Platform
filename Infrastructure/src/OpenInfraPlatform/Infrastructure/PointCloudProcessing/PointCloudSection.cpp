@@ -109,7 +109,7 @@ std::set<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointClou
 		std::set<std::pair<size_t, size_t>> pairs = std::set<std::pair<size_t, size_t>>();
 		
 		// Allow 0.1cm of error, standard gauge witdth is 1.435m and the width of the track head itself is 67mm.
-		float epsilon = 0.005f;
+		float epsilon = 0.01f;
 		float gauge = 1.435f;
 		float head = 0.067f;		
 		
@@ -133,7 +133,7 @@ std::set<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointClou
 				// If first point.x + gauge + head - second point.x < 1cm and difference in y direction is less than 1cm, we have found a pair of matching rail points.
 				float distance = (*getPoint(i) - *getPoint(ii)).norm();
 				float error = std::fabsf(distance - gauge - head);
-				if(error < epsilon && std::fabsf(getPoint(i)->z - getPoint(ii)->z) < 0.1f) {
+				if(error < epsilon && std::fabsf(getPoint(i)->z - getPoint(ii)->z) < 0.2f) {
 					pairs.insert(std::pair<size_t, size_t>(getPointGlobalIndex(i), getPointGlobalIndex(ii)));
 				}
 			}

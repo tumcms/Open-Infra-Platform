@@ -139,10 +139,13 @@ namespace OpenInfraPlatform {
 
 			buw::ReferenceCounted<CCLib::DgmOctree> getDGMOctree() const;
 
+			
 		private:
 			void computeMainAxis();
 
 			void computeIndices();
+
+			void computePairs(std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			void init();
 

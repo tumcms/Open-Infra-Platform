@@ -240,7 +240,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 
 
 		// Iterate over all cells to call our nearest neighbour search on consecutive points in a cell for performance reasons.
-#pragma omp for schedule(dynamic, 50)
+#pragma omp for schedule(dynamic, 20)
 		for(long idx = 0; idx < dgmOctreeCells.size(); idx++) {
 			auto cell = dgmOctreeCells[idx];
 			auto code = octree.getCellCode(cell);
@@ -260,7 +260,8 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 
 			if(success) {
 				nss.queryPoint = *getPoint(cell);
-				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 50, false);
+				//nss.prepare(50, octree.getCellSize(level));
+				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 100, false);
 
 				auto getPCA = [&]()->CCVector2 {
 					//Matrix which is capable of holding all points for PCA.
@@ -312,6 +313,8 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 				}
 
 				auto end = std::remove_if(sections.begin(), sections.end(), [](const buw::ReferenceCounted<buw::PointCloudSection> &section) -> bool { return section == nullptr; });
+				//std::for_each(sections.begin(), end, [](buw::ReferenceCounted<buw::PointCloudSection> &section) { section->resize(section->size()); });
+
 
 #pragma omp critical
 				{
@@ -726,6 +729,61 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices()
 			segmentedIndices_.push_back(i);
 		}
 	});
+}
+
+void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std::pair<size_t, size_t>>& o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	BLUE_LOG(trace) << "Computing pairs.";
+
+	// Create a global list of all point pairs.
+	int tid = 0;
+#pragma omp parallel private(tid)
+	{
+		// Setup callback update variables.
+		tid = omp_get_thread_num();
+		int numSectionsPerThread = (sections_.size() - 2) / omp_get_num_threads();
+		int numSectionsPerPercent = numSectionsPerThread / 100;
+		int processedSections = 0;
+		int percentageCompleted = 0;
+
+		// We iterate over all sections and calculate the pairs of matching points.
+		std::vector<std::pair<size_t, size_t>> pairs = std::vector<std::pair<size_t, size_t>>();
+#pragma omp for schedule(dynamic, 20)
+		for(long i = 0; i < sections_.size(); i++) {
+
+			// Create a new local section. Resize it to be able to hold this and the next section.
+			//auto section = sections_[i];
+
+			// Insert all pairs in our local vector.
+			auto result = sections_[i]->computePairs();
+			pairs.insert(pairs.end(), result.begin(), result.end());
+
+			// Update our callback.
+			processedSections++;
+			if(processedSections >= numSectionsPerPercent) {
+				percentageCompleted++;
+				processedSections = 0;
+
+				if(tid == 0 && callback) {
+					callback->update(percentageCompleted);
+				}
+			}
+
+		}
+
+
+		// Merge the local vectors in the master vector.
+#pragma omp critical
+		{
+			o_pairs.insert(o_pairs.end(), pairs.begin(), pairs.end());
+		}
+	}
+
+	// Stop our callback.
+	if(callback)
+		callback->stop();
+
+	BLUE_LOG(trace) << "Done.";
 }
 
 
@@ -1155,120 +1213,69 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		setPointScalarValue(i, 0);
 	});
 
-	BLUE_LOG(trace) << "Computing pairs.";
 
 	// Create a global list of all point pairs.
 	std::vector<std::pair<size_t, size_t>> rails = std::vector<std::pair<size_t, size_t>>();
+
+	computePairs(rails, callback);
 	int tid = 0;
-#pragma omp parallel private(tid)
-	{
-		// Setup callback update variables.
-		tid = omp_get_thread_num();
-		int numSectionsPerThread = (sections_.size() - 2) / omp_get_num_threads();
-		int numSectionsPerPercent = numSectionsPerThread / 100;
-		int processedSections = 0;
-		int percentageCompleted = 0;
 
-		// We iterate over all sections and calculate the pairs of matching points.
-		std::vector<std::pair<size_t, size_t>> pairs = std::vector<std::pair<size_t, size_t>>();
-#pragma omp for schedule(dynamic, 20)
-		for(long i = 0; i < sections_.size() - 1; i++) {
+	auto computeCenterpoints = [&](const std::vector<std::pair<size_t, size_t>> rails, std::vector<CCVector3> &o_centerpoints) {
+		BLUE_LOG(trace) << "Computing centerpoints.";
 
-			// Create a new local section. Resize it to be able to hold this and the next section.
-			auto section = sections_[i];
-			
-			//auto section = PointCloudSection(this);
-			//section.reserve(sections_[i]->size() + sections_[i + 1]->size());
+		// Reserve space for the centerpoints points and color them blue.
+		this->reserve(this->size() + rails.size());
+		this->reserveTheRGBTable();
 
-			// Append the next section.
-			//section.add(*(sections_[i]));
-			//section.add(*(sections_[i + 1]));
-
-			// Insert all pairs in our local vector.
-			auto result = section->computePairs();
-			pairs.insert(pairs.end(), result.begin(), result.end());
-
-			// Update our callback.
-			processedSections++;
-			if(processedSections >= numSectionsPerPercent) {
-				percentageCompleted++;
-				processedSections = 0;
-
-				if(tid == 0 && callback) {
-					callback->update(percentageCompleted);
-				}
-			}
-
+		// For each pair, insert the point in the middle as centerpoints point.
+		for(auto pair : rails) {
+			CCVector3 start = *(getPoint(pair.first));
+			CCVector3 end = *(getPoint(pair.second));
+			CCVector3 center = 0.5f * (end + start);
+			o_centerpoints.push_back(center);
 		}
 
-
-		// Merge the local vectors in the master vector.
-#pragma omp critical
-		{
-			rails.insert(rails.end(), pairs.begin(), pairs.end());
-		}
-	}
-
-	// Stop our callback.
-	if(callback)
-		callback->stop();
-
-	BLUE_LOG(trace) << "Done.";
-	BLUE_LOG(trace) << "Computing centerpoints.";
+		BLUE_LOG(trace) << "Done.";
+	};
 
 	
 
-	// Reserve space for the centerpoints points and color them blue.
-	this->reserve(this->size() + rails.size());
-	this->reserveTheRGBTable();
-
 	// For each pair, insert the point in the middle as centerpoints point.
 	std::vector<CCVector3> centerpoints = std::vector<CCVector3>();
-	for(auto pair : rails) {
-		CCVector3 start = *(getPoint(pair.first));
-		CCVector3 end = *(getPoint(pair.second));
-		CCVector3 center = 0.5f * (end + start);
-		centerpoints.push_back(center);
-	}
-
-	BLUE_LOG(trace) << "Done.";
+	computeCenterpoints(rails, centerpoints);
 
 	// Delete the pairs since we dont need them anymore.
 	rails.clear();
 
-	// Sort the centerpoints along the main axis.
-	std::sort(centerpoints.begin(), centerpoints.end(), [&](const CCVector3 &lhs, const CCVector3 &rhs)->bool { return mainAxis_.dot(lhs) < mainAxis_.dot(rhs); });
+	auto sortCenterpointsIntoCenterlines = [&](const std::vector<CCVector3> &centerpoints, std::vector<std::vector<size_t>> &centerlines) {
+		centerlines.push_back(std::vector<size_t>());
+		centerlines[0].push_back(0);
 
-	// Split the centerpoints into different rails and recognize different rails. Only store indices to save memory.
-	std::vector<std::vector<size_t>> centerlines = std::vector<std::vector<size_t>>();
-	centerlines.push_back(std::vector<size_t>());
-	centerlines[0].push_back(0);
+		auto dist = [](const CCVector3 &lhs, const CCVector3 &rhs) ->float {
+			return (rhs - lhs).norm();
+		};
 
-	auto dist = [](const CCVector3 &lhs, const CCVector3 &rhs) ->float {
-		return (rhs - lhs).norm();
-	};
+		// Start our callback if we have one.
+		if(callback)
+			callback->start();
 
-	// Start our callback if we have one.
-	if(callback)
-		callback->start();
+		BLUE_LOG(trace) << "Sorting centerpoints into centerlines.";
 
-	BLUE_LOG(trace) << "Sorting centerpoints into centerlines.";
-
-	// Initialize variables for callback update.
-	float totalPoints = centerpoints.size();
-	int pointsPerPercent = totalPoints / 100;
-	float processedPoints = 0;
-	int percentageCompleted = 0;
+		// Initialize variables for callback update.
+		float totalPoints = centerpoints.size();
+		int pointsPerPercent = totalPoints / 100;
+		float processedPoints = 0;
+		int percentageCompleted = 0;
 
 
-	for(size_t i = 1; i < centerpoints.size(); i++) {
-		// Store the point to be checked and whether we have inserted it or whether it is ambiguous or not.
-		auto point = centerpoints[i];
-		bool inserted = false;
-		bool ambiguous = false;
-		bool unnecessary = false;
+		for(size_t i = 1; i < centerpoints.size(); i++) {
+			// Store the point to be checked and whether we have inserted it or whether it is ambiguous or not.
+			auto point = centerpoints[i];
+			bool inserted = false;
+			bool ambiguous = false;
+			bool unnecessary = false;
 
-		auto getPCA = [&](std::vector<size_t> alignment, size_t start, size_t end)->CCVector2 {
+			auto getPCA = [&](std::vector<size_t> alignment, size_t start, size_t end)->CCVector2 {
 				//Matrix which is capable of holding all points for PCA.
 				Eigen::MatrixX2d mat;
 				mat.resize(end - start, 2);
@@ -1286,141 +1293,150 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				return CCVector2(vec.x(), vec.y());
 			};
 
-		// Initialize the pair min with index and distance
-		std::tuple<size_t,float, float> min = std::tuple<size_t, float, float>(centerlines.size(), 0 , LONG_MAX);
+			// Initialize the pair min with index and distance
+			std::tuple<size_t, float, float> min = std::tuple<size_t, float, float>(centerlines.size(), 0, LONG_MAX);
 
-//#pragma omp parallel private(tid) firstprivate(callback) shared(inserted, ambiguous, unnecessary, min)
-		{
-			tid = omp_get_thread_num();
-			// Iterate over all centerlines.
-//#pragma omp for 
-			for(long ii = 0; ii < centerlines.size(); ii++) {
+			//#pragma omp parallel private(tid) firstprivate(callback) shared(inserted, ambiguous, unnecessary, min)
+			{
+				tid = omp_get_thread_num();
+				// Iterate over all centerlines.
+				//#pragma omp for 
+				for(long ii = 0; ii < centerlines.size(); ii++) {
 
-				if(ambiguous || unnecessary)
-					break;
+					if(ambiguous || unnecessary)
+						break;
 
-				auto &line = centerlines[ii];
-				
-				// Calculate the distance to the endpoint
-				auto endpoint = centerpoints[line.back()];
-				float distance = dist(point, endpoint);
+					auto &line = centerlines[ii];
 
-				if(distance <= 0.001) {
-//#pragma omp critical
-					unnecessary = true;
-					break;
-				}
+					// Calculate the distance to the endpoint
+					auto endpoint = centerpoints[line.back()];
+					float distance = dist(point, endpoint);
 
-				// If the distance is smaller than 20cm, we would add the point to this line.
-				if(distance < desc.maxDistance) {
-					auto v0 = CCVector2(0.5f, 0.5f);
-					v0.normalize();
-					float thresholdAngle = 0.7;//CCVector2(1.0f, 0.0f).dot(v0);
-
-					// Set it to the threshold angle so that every point which is added to another existing line with a better angle is prefered
-					float angle = thresholdAngle;
-					float minCenterlineLength = 0.2f;
-					// Only compute the angle if the line is longer than 1m, otherwise just accept it.
-					if(dist(endpoint, centerpoints[line.front()]) > minCenterlineLength) {
-
-						long startIndex = line.size() - 1, endIndex = line.size() - 1;
-
-						while(startIndex > 0 && dist(endpoint, centerpoints[line[startIndex]]) < minCenterlineLength)
-							startIndex--;
-
-						auto axis = getPCA(line, startIndex, endIndex);
-						axis.normalize();
-
-						line.push_back(i);
-						auto direction = getPCA(line, startIndex + 1, endIndex + 1);
-						direction.normalize();
-						line.pop_back();
-
-						angle = std::abs(axis.dot(direction));
+					if(distance <= 0.001) {
+						//#pragma omp critical
+						unnecessary = true;
+						break;
 					}
 
-					
+					// If the distance is smaller than 20cm, we would add the point to this line.
+					if(distance < desc.maxDistance) {
+						auto v0 = CCVector2(0.5f, 0.5f);
+						v0.normalize();
+						float thresholdAngle = 0.7;//CCVector2(1.0f, 0.0f).dot(v0);
 
-					if(angle >= thresholdAngle) {
-						//if(inserted) {
-						//	//#pragma omp critical
-						//	ambiguous = true;
-						//	break;
-						//}
-						//// Otherwise the min distance is updated and inserted is set to true.
-						//else {
+												   // Set it to the threshold angle so that every point which is added to another existing line with a better angle is prefered
+						float angle = thresholdAngle;
+						float minCenterlineLength = 0.2f;
+						// Only compute the angle if the line is longer than 1m, otherwise just accept it.
+						if(dist(endpoint, centerpoints[line.front()]) > minCenterlineLength) {
+
+							long startIndex = line.size() - 1, endIndex = line.size() - 1;
+
+							while(startIndex > 0 && dist(endpoint, centerpoints[line[startIndex]]) < minCenterlineLength)
+								startIndex--;
+
+							auto axis = getPCA(line, startIndex, endIndex);
+							axis.normalize();
+
+							line.push_back(i);
+							auto direction = getPCA(line, startIndex + 1, endIndex + 1);
+							direction.normalize();
+							line.pop_back();
+
+							angle = std::abs(axis.dot(direction));
+						}
+
+
+
+						if(angle >= thresholdAngle) {
+							//if(inserted) {
+							//	//#pragma omp critical
+							//	ambiguous = true;
+							//	break;
+							//}
+							//// Otherwise the min distance is updated and inserted is set to true.
+							//else {
 							//#pragma omp critical 
 							{
 								if(angle > std::get<1>(min) && distance < std::get<2>(min)) {
 									inserted = true;
-									min = std::tuple<size_t,float, float>(ii,angle, distance);
+									min = std::tuple<size_t, float, float>(ii, angle, distance);
 								}
 							}
-						//}
-					}					
-				}				
-			}
-//#pragma omp barrier
-//#pragma omp master
-			{
-
-			// If the point is not ambiguous, we either insert it in the matching line or create a new one.
-				if(!ambiguous && !unnecessary) {
-					if(inserted) {
-						centerlines[std::get<0>(min)].push_back(i);
+							//}
+						}
 					}
-					// Only add this as a new line currently if it far enough away!
-					else {
-						bool hasMinDistanceThreshold = true;
+				}
+				//#pragma omp barrier
+				//#pragma omp master
+				{
+
+					// If the point is not ambiguous, we either insert it in the matching line or create a new one.
+					if(!ambiguous && !unnecessary) {
+						if(inserted) {
+							centerlines[std::get<0>(min)].push_back(i);
+						}
+						// Only add this as a new line currently if it far enough away!
+						else {
+							bool hasMinDistanceThreshold = true;
 
 #pragma omp parallel for shared(point, hasMinDistanceThreshold) schedule(dynamic)
-						for(long line_idx = 0; line_idx < centerlines.size(); line_idx++) {
-							auto line = centerlines[line_idx];
-							if(dist(point, centerpoints[line.back()]) < 0.16f)
-								hasMinDistanceThreshold = false;
-						}
-						
-						if(hasMinDistanceThreshold) {
-							// If no matching line has been found, add a new one with this one as the starting point.				
-							centerlines.push_back(std::vector<size_t>());
-							centerlines.back().push_back(i);
+							for(long line_idx = 0; line_idx < centerlines.size(); line_idx++) {
+								auto line = centerlines[line_idx];
+								if(dist(point, centerpoints[line.back()]) < 0.16f)
+									hasMinDistanceThreshold = false;
+							}
+
+							if(hasMinDistanceThreshold) {
+								// If no matching line has been found, add a new one with this one as the starting point.				
+								centerlines.push_back(std::vector<size_t>());
+								centerlines.back().push_back(i);
+							}
 						}
 					}
-				}
 
-				//Check if we have a centerline which is very small (does not meet the minimum requirements as specified) and remove it to save some computation time.
-				if(i % 1000 == 0) {
+					//Check if we have a centerline which is very small (does not meet the minimum requirements as specified) and remove it to save some computation time.
+					if(i % 1000 == 0) {
 
-					// Erase the centerlines which do not fulfill the criteria and where no more points are being added.
-					auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) {
-						float distAlongMainAxis = std::fabsf(mainAxis_.dot(point) - mainAxis_.dot(centerpoints[line.back()]));
-						return distAlongMainAxis > 10.0f && (line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength);
-					});
-					centerlines.erase(end, centerlines.end());
-					std::sort(centerlines.begin(), centerlines.end(), [](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {return lhs.size() > rhs.size(); });
-				}
+						// Erase the centerlines which do not fulfill the criteria and where no more points are being added.
+						auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) {
+							float distAlongMainAxis = std::fabsf(mainAxis_.dot(point) - mainAxis_.dot(centerpoints[line.back()]));
+							return distAlongMainAxis > 10.0f && (line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength);
+						});
+						centerlines.erase(end, centerlines.end());
+						std::sort(centerlines.begin(), centerlines.end(), [](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {return lhs.size() > rhs.size(); });
+					}
 
-				// Update the callback.
-				if(callback) {
-					if(++processedPoints >= pointsPerPercent) {
-						percentageCompleted++;
-						processedPoints = 0;
-						callback->update(percentageCompleted);
+					// Update the callback.
+					if(callback) {
+						if(++processedPoints >= pointsPerPercent) {
+							percentageCompleted++;
+							processedPoints = 0;
+							callback->update(percentageCompleted);
+						}
 					}
 				}
 			}
 		}
-	}
 
-	// Tell the callback that we're done.
-	if(callback)
-		callback->stop();
+		// Tell the callback that we're done.
+		if(callback)
+			callback->stop();
 
-	BLUE_LOG(trace) << "Done.";
+		// Clear all lines having less then 100 points -> probably noise or something.
+		auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool { return line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength; });
+		centerlines.erase(end, centerlines.end());
 
-	// Clear all lines having less then 100 points -> probably noise or something.
-	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool { return line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength; });
-	centerlines.erase(end, centerlines.end());
+		BLUE_LOG(trace) << "Done.";
+	};
+
+	// Sort the centerpoints along the main axis.
+	std::sort(centerpoints.begin(), centerpoints.end(), [&](const CCVector3 &lhs, const CCVector3 &rhs)->bool { return mainAxis_.dot(lhs) < mainAxis_.dot(rhs); });
+
+	// Split the centerpoints into different rails and recognize different rails. Only store indices to save memory.
+	std::vector<std::vector<size_t>> centerlines = std::vector<std::vector<size_t>>();
+	sortCenterpointsIntoCenterlines(centerpoints, centerlines);
+
 
 	if(centerlines.empty()) {
 		BLUE_LOG(trace) << "No centerlines remaining after sorting. Choose a lower \"minSegmentPoints\" threshold and/or lower \"minSegmentLength\" threshold.";
@@ -1434,7 +1450,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 	// Collapse centerlines to have a uniform density.
 	std::vector<std::vector<CCVector3>> alignments = std::vector<std::vector<CCVector3>>(centerlines.size());
-	percentageCompleted = 0;
+	int percentageCompleted = 0;
 	bool update = true;
 
 	// Iterate over all segments and combine the centers of each projection section.
@@ -1443,6 +1459,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		tid = omp_get_thread_num();
 		int percentPerCenterline = 100 / centerlines.size();
 		update = true;
+
+		auto dist = [](const CCVector3 &lhs, const CCVector3 &rhs) ->float {
+			return (rhs - lhs).norm();
+		};
 
 #pragma omp for schedule(dynamic)
 		for(long idx = 0; idx < centerlines.size(); idx++) {

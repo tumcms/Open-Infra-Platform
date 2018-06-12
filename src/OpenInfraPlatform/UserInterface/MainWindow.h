@@ -233,6 +233,10 @@ namespace OpenInfraPlatform
 			void on_comboBoxAlignment_currentIndexChanged( int index );
 			void on_doubleSpinBoxPointSize_valueChanged(double value);
 			void on_horizontalSliderPointSize_sliderMoved(int value);
+
+			void on_spinBoxOctreeLevel_valueChanged(int value);
+			void on_checkBoxShowOctree_clicked(bool checked);
+
 			void on_pushButtonDeleteSelectedAlignment_clicked();
 			void on_pushButtonDeleteSurface_clicked();
 			void on_variantEditor_currentItemChanged(QtBrowserItem * item);

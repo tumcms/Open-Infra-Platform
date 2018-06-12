@@ -331,6 +331,18 @@ void OpenInfraPlatform::UserInterface::Viewport::setShowPointCloud(const bool ch
 	repaint();
 }
 
+void OpenInfraPlatform::UserInterface::Viewport::setShowOctree(const bool checked)
+{
+	pointCloudEffect_->showOctree(checked);
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::setOctreeLevel(int value)
+{
+	pointCloudEffect_->setOctreeLevel(value);
+	repaint();
+}
+
 void OpenInfraPlatform::UserInterface::Viewport::setPointCloudIndices(std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> indices)
 {
 	pointCloudEffect_->updateIndexBuffers(indices);

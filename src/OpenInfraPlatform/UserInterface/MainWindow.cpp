@@ -2176,6 +2176,16 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstraOWL_triggered(
 	}
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_spinBoxOctreeLevel_valueChanged(int value)
+{
+	view_->getViewport()->setOctreeLevel(value);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowOctree_clicked(bool checked)
+{
+	view_->getViewport()->setShowOctree(checked);
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonDeleteSelectedAlignment_clicked() {
 	int index = ui_->comboBoxAlignment->currentIndex();
 
@@ -2594,6 +2604,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetSegmentRail
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCenterlines_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	
 	if(pointCloud) {
 		buw::CenterlineComputationDescription desc;		
 		desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
@@ -2602,23 +2613,23 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCenterlin
 		desc.centerlineDensity = ui_->doubleSpinBoxCenterlineDensity->value() / 1000.0;
 		int numAlignments = pointCloud->computeCenterlines(desc, callback_);
 		if(numAlignments > 0) {
-
+	
 			ui_->pushButtonComputeCurvature->setEnabled(true);
-
+	
 			// Clear the combo boxes for plotting since we only want to plot the stuff from the latest computations.
 			ui_->comboBoxShowAlignment->clear();
 			ui_->comboBoxComputeCurvature->clear();
 			ui_->comboBoxPlotSelectAlignment->clear();
-
+	
 			// Add the indices to the combo boxes.
 			for(int idx = 0; idx < numAlignments; idx++) {
 				ui_->comboBoxShowAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
 				ui_->comboBoxComputeCurvature->addItem(QString::number(idx), QVariant(QString::number(idx)));
 			}
-
+	
 			ui_->comboBoxShowAlignment->addItem("All", QVariant(QString::number(-1)));
 			ui_->comboBoxComputeCurvature->addItem("All", QVariant(QString::number(-1)));
-
+	
 			// Set the default index to 0.
 			ui_->comboBoxShowAlignment->setCurrentIndex(ui_->comboBoxShowAlignment->count() - 1);
 			ui_->comboBoxComputeCurvature->setCurrentIndex(ui_->comboBoxComputeCurvature->count() - 1);

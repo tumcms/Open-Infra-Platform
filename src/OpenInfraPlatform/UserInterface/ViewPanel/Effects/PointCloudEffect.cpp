@@ -127,6 +127,17 @@ void PointCloudEffect::showSegmentedPoints(const bool checked)
 	bShowSegmentedPoints_ = checked;
 }
 
+void PointCloudEffect::showOctree(const bool checked)
+{
+	bShowOctree_ = checked;
+}
+
+void PointCloudEffect::setOctreeLevel(const size_t level)
+{
+	octreeLevel_ = level;
+	setOctree(pointCloud_->getDGMOctree(), offset_);
+}
+
 void PointCloudEffect::setUniformColor(const buw::Vector4f & color)
 {
 	uniformColor_ = buw::Vector4f(color);
@@ -198,28 +209,16 @@ void PointCloudEffect::updateIndexBuffers(const std::tuple<std::vector<uint32_t>
 
 void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset)
 {
+	pointCloud_ = pointCloud;
+	offset_ = offset;
+
 	BLUE_LOG(trace) << "Start initializing GPU side buffers.";
-	buw::vertexBufferDescription vbd;
-	vbd.vertexLayout = VertexTypePointCloud::getVertexLayout();
+	
 	
 	// Initialize the vector to hold our data and out base color.
 	std::vector<VertexTypePointCloud> vertices = std::vector<VertexTypePointCloud>(pointCloud->size());
-	auto baseColor = ccColor::Rgbaf(255.0f, 255.0f, 255.0f, 255.0f);
-	
-	// If the cloud is too large to be held in gpu memory, subsample the cloud. We require 32 bytes per point due to 16 byte alignment on gpu.
-	size_t vbDataByteSize = pointCloud->size() * 32;
-	size_t vbMaxCapacity = 2 * 1024 * 1024 * 32;
-	bUseSubsampledCloud_ = false;
-	subsampledPointCloud_ = nullptr;
-	size_t vbNumPoints = pointCloud->size();
-
-	// If we would need more than 4GiB, we subsample the cloud. TODO: Make gpu memory amount queryable.
-	//if(vbDataByteSize > (2 * 1024 * 1024 * 1024)) {
-	//	BLUE_LOG(warning) << "Not enough GPU memory available. Using a subsampled point cloud with " << QString::number(vbMaxCapacity).toStdString() << " points.";
-	//	subsampledPointCloud_ = pointCloud->subsample(vbMaxCapacity);
-	//	bUseSubsampledCloud_ = true;
-	//	vbNumPoints = subsampledPointCloud_->size();
-	//}
+	auto baseColor = ccColor::Rgbaf(255.0f, 255.0f, 255.0f, 255.0f);	
+		
 
 //#pragma omp parallel for shared(pointCloud, vertices)
 	for(long i = 0; i < pointCloud->size(); i++) {
@@ -230,199 +229,74 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	}
 	
 	
+	buw::vertexBufferDescription vbd;
+	vbd.vertexLayout = VertexTypePointCloud::getVertexLayout(); 
 	vbd.vertexCount = vertices.size();
 	vbd.data = vertices.data();
 	vertexBufferPointCloud_ = renderSystem()->createVertexBuffer(vbd);
 	BLUE_LOG(trace) << "Done creating point cloud vertex buffer. Size:" << QString::number(vertices.size()).toStdString();
 
-	std::vector<uint32_t> remainingIndices = std::vector<uint32_t>(), filteredIndices = std::vector<uint32_t>(), segmentedIndices = std::vector<uint32_t>();
 
-	// If we use a subsampled cloud, we're only interested in the indices which are in our subsampled cloud.
-	if(bUseSubsampledCloud_) {
-		bool filtered = false, segmented = false;
-
-#pragma omp parallel shared(filtered,segmented)
-		{
-			std::vector<uint32_t> remainingIndicesLocal = std::vector<uint32_t>(), filteredIndicesLocal = std::vector<uint32_t>(), segmentedIndicesLocal = std::vector<uint32_t>();
-
-
-#pragma omp single
-			// Let one thread check if we have a filtered scalar field, if yes, set it as readable field.
-			{
-				int idx_filtered = pointCloud->getScalarFieldIndexByName("Filtered");
-				if(idx_filtered != -1) {
-					pointCloud->setCurrentOutScalarField(idx_filtered);
-					filtered = true;
-				}				
-			}
-
-			if(filtered) {
-				// If we have a filter, we have to split and read the scalar value to insert our points.
-#pragma omp for
-				for(long i = 0; i < subsampledPointCloud_->size(); i++) {
-					if(subsampledPointCloud_->getPointScalarValue(i) > 0) {
-						filteredIndicesLocal.push_back(subsampledPointCloud_->getPointGlobalIndex(i));
-					}
-					else {
-						remainingIndicesLocal.push_back(subsampledPointCloud_->getPointGlobalIndex(i));
-					}
-				}
-			}
-			else {
-#pragma omp for
-				for(long i = 0; i < subsampledPointCloud_->size(); i++) {
-					remainingIndicesLocal.push_back(subsampledPointCloud_->getPointGlobalIndex(i));
-				}
-			}
-#pragma omp barrier
-
-#pragma omp single
-			// Let one thread check if we have a segmented scalar field, if yes, set it as readable field.
-			{
-				int idx_segmented = pointCloud->getScalarFieldIndexByName("Segmented");
-				if(idx_segmented != -1) {
-					pointCloud->setCurrentOutScalarField(idx_segmented);
-					segmented = true;
-				}
-			}
-
-			if(segmented) {
-#pragma omp for
-				for(long i = 0; i < subsampledPointCloud_->size(); i++) {
-					if(subsampledPointCloud_->getPointScalarValue(i) > 0) {
-						segmentedIndicesLocal.push_back(subsampledPointCloud_->getPointGlobalIndex(i));
-					}
-				}
-#pragma omp barrier
-			}
-
-#pragma omp critical
-			{
-				remainingIndices.insert(remainingIndices.end(), remainingIndicesLocal.begin(), remainingIndicesLocal.end());
-				filteredIndices.insert(filteredIndices.end(), filteredIndicesLocal.begin(), filteredIndicesLocal.end());
-				segmentedIndices.insert(segmentedIndices.end(), segmentedIndicesLocal.begin(), segmentedIndicesLocal.end());
-			}
-
-		}
-
-		{
-			// Get the real indices and store them to filter the other vectors.
-
-
-			//auto reduceToIntersection = [](std::vector<uint32_t> &vector, const std::vector<uint32_t> &filter) {
-			//	auto end = std::remove_if(vector.begin(), vector.end(), [&](const uint32_t &elem)->bool { return std::find(filter.begin(), filter.end(), elem) == filter.end(); });
-			//	vector.erase(end, vector.end());
-			//};
-			//
-			//auto threadRemainingIndices = std::thread(reduceToIntersection, remainingIndices, subsampledIndices);
-			//auto threadFilteredIndices = std::thread(reduceToIntersection, filteredIndices, subsampledIndices);
-			//auto threadSegmentedIndices = std::thread(reduceToIntersection, segmentedIndices, subsampledIndices);
-			//
-			//threadRemainingIndices.join();
-			//threadFilteredIndices.join();
-			//threadSegmentedIndices.join();
-		}
-	}
-	else {
-		std::tie(remainingIndices, filteredIndices, segmentedIndices) = pointCloud->getIndices();
-	}
-
-	buw::indexBufferDescription ibd;
-	ibd.indexCount = remainingIndices.size();
-	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
-	ibd.data = remainingIndices.data();
-
-	if(ibd.indexCount > 0)
-		indexBufferRemaining_ = renderSystem()->createIndexBuffer(ibd);
-	else
-		indexBufferRemaining_ = nullptr;
-
-	BLUE_LOG(trace) << "indexBufferRemaining_:" << indexBufferRemaining_.get() << ". Index count:" << ibd.indexCount << ".";
-
-	ibd.indexCount = filteredIndices.size();
-	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
-	ibd.data = filteredIndices.data();
-
-	if(ibd.indexCount > 0)
-		indexBufferFiltered_ = renderSystem()->createIndexBuffer(ibd);
-	else
-		indexBufferFiltered_ = nullptr;
-
-	BLUE_LOG(trace) << "indexBufferFiltered_:" << indexBufferFiltered_.get() << ". Index count:" << ibd.indexCount << ".";
-
-
-	ibd.indexCount = segmentedIndices.size();
-	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
-	ibd.data = segmentedIndices.data();
-
-	if(ibd.indexCount > 0)
-		indexBufferSegmented_ = renderSystem()->createIndexBuffer(ibd);
-	else
-		indexBufferSegmented_ = nullptr;
-
-	BLUE_LOG(trace) << "indexBufferSegmented_:" << indexBufferSegmented_.get() << ". Index count:" << ibd.indexCount << ".";
-
-	BLUE_LOG(trace) << "Done creating index buffers.";
+	updateIndexBuffers(pointCloud->getIndices());
+		
 
 	settings_.mainAxis = buw::Vector4f(pointCloud->getMainAxis().x, pointCloud->getMainAxis().y, pointCloud->getMainAxis().z, 0.0f);
 	settings_.sectionLength = (float) pointCloud->getSectionLength();
-
+	
 	auto octree = pointCloud->getDGMOctree();
 
-	if(octree) {
-
-		// Create the octree vertex and index buffer.
-		BLUE_LOG(trace) << "Start creating octree buffers.";
-		// Just use this for now.
-		octreeLevel_ = 3;
-
-		std::vector<uint32_t> dgmOctreeCells;
-		std::vector<buw::VertexPosition3> octreeVertices = std::vector<buw::VertexPosition3>();
-		std::vector<uint32_t> octreeIndices = std::vector<uint32_t>();
-		bool success = octree->getCellIndexes(octreeLevel_, dgmOctreeCells);
-
-		for(long idx = 0; idx < dgmOctreeCells.size(); idx++) {
-			auto cell = dgmOctreeCells[idx];
-			auto code = octree->getCellCode(cell);
-
-			//  Compute the cell position and center.
-			Tuple3i cellpos;
-			CCVector3 cellCenter;
-			octree->getCellPos(code, octreeLevel_, cellpos, false);
-			octree->computeCellCenter(cellpos, octreeLevel_, cellCenter);
-
-			float cellSize = octree->getCellSize(octreeLevel_);
-			buw::createBoundingBox(octreeVertices, octreeIndices, cellCenter.x + offset.x(), cellCenter.y + offset.y(), cellCenter.z + offset.z(), cellSize / 2.0f, cellSize / 2.0f, cellSize / 2.0f);
-		}
-
-		ibd.indexCount = octreeIndices.size();
-		ibd.data = octreeIndices.data();
-		indexBufferOctree_ = renderSystem()->createIndexBuffer(ibd);
-		BLUE_LOG(trace) << "indexBufferOctree_:" << indexBufferOctree_.get() << ". Index count:" << ibd.indexCount << ".";
-
-		vbd.vertexCount = octreeVertices.size();
-		vbd.vertexLayout = buw::VertexPosition3::getVertexLayout();
-		vbd.data = octreeVertices.data();
-		vertexBufferOctree_ = renderSystem()->createVertexBuffer(vbd);
-		BLUE_LOG(trace) << "vertexBufferOctree_:" << vertexBufferOctree_.get() << ". Vertex count:" << vbd.vertexCount << ".";
-		BLUE_LOG(trace) << "Done creating octree buffers.";
-
-		//vertexCacheLine_ = buw::makeReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>>(renderSystem(), 100000);
-		//
-		//for(int i = 0; i < octreeIndices.size() - 1; i+=2)
-		//	vertexCacheLine_->drawLine(buw::VertexPosition3Color3Size1(buw::Vector3f(octreeVertices[octreeIndices[i]].position.data), buw::Vector3f(0,1,0),10), buw::VertexPosition3Color3Size1(buw::Vector3f(octreeVertices[octreeIndices[i + 1]].position.data), buw::Vector3f(0, 1, 0), 10));
-		//
-		//
-		//vertexCacheLine_->flush();
-	}
+	if(octree)
+		setOctree(octree, offset);
 
 	BLUE_LOG(trace) << "Finished initializing GPU side buffers.";
 }
 
+void PointCloudEffect::setOctree(buw::ReferenceCounted<CCLib::DgmOctree> octree, buw::Vector3d offset)
+{
+	// Create the octree vertex and index buffer.
+	BLUE_LOG(trace) << "Start creating octree buffers.";
+
+	std::vector<uint32_t> dgmOctreeCells;
+	std::vector<buw::VertexPosition3> octreeVertices = std::vector<buw::VertexPosition3>();
+	std::vector<uint32_t> octreeIndices = std::vector<uint32_t>();
+	bool success = octree->getCellIndexes(octreeLevel_, dgmOctreeCells);
+
+	for(long idx = 0; idx < dgmOctreeCells.size(); idx++) {
+		auto cell = dgmOctreeCells[idx];
+		auto code = octree->getCellCode(cell);
+
+		//  Compute the cell position and center.
+		Tuple3i cellpos;
+		CCVector3 cellCenter;
+		octree->getCellPos(code, octreeLevel_, cellpos, false);
+		octree->computeCellCenter(cellpos, octreeLevel_, cellCenter);
+
+		float cellSize = octree->getCellSize(octreeLevel_);
+		buw::createBoundingBox(octreeVertices, octreeIndices, cellCenter.x + offset.x(), cellCenter.y + offset.y(), cellCenter.z + offset.z(), cellSize / 2.0f, cellSize / 2.0f, cellSize / 2.0f);
+	}
+
+	// Fill index buffer description and create index buffer.
+	buw::indexBufferDescription ibd;
+	ibd.indexCount = octreeIndices.size();
+	ibd.data = octreeIndices.data();
+	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
+	indexBufferOctree_ = renderSystem()->createIndexBuffer(ibd);
+
+	BLUE_LOG(trace) << "indexBufferOctree_:" << indexBufferOctree_.get() << ". Index count:" << ibd.indexCount << ".";
+
+	// Fill vertex buffer description and create vertex buffer.
+	buw::vertexBufferDescription vbd;
+	vbd.vertexCount = octreeVertices.size();
+	vbd.vertexLayout = buw::VertexPosition3::getVertexLayout();
+	vbd.data = octreeVertices.data();
+	vertexBufferOctree_ = renderSystem()->createVertexBuffer(vbd);
+
+	BLUE_LOG(trace) << "vertexBufferOctree_:" << vertexBufferOctree_.get() << ". Vertex count:" << vbd.vertexCount << ".";
+	BLUE_LOG(trace) << "Done creating octree buffers.";
+}
+
 void PointCloudEffect::v_init()
 {
-	//vertexCacheLine_ = buw::makeReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>>(renderSystem());
-
 	loadShader();
 	
 	/*Create the settings buffer.*/
@@ -502,15 +376,7 @@ void PointCloudEffect::v_render()
 		setConstantBuffer(viewportBuffer_, "ViewportBuffer");
 		setVertexBuffer(vertexBufferOctree_);
 		setIndexBuffer(indexBufferOctree_);
-		drawIndexed(static_cast<UINT>(indexBufferOctree_->getIndexCount()));
-		//setPipelineState(pipelineStateOctree_);
-		//setRenderTarget(renderTarget, depthStencilMSAA_);
-		//setViewport(viewport_); 
-		//setConstantBuffer(worldBuffer_, "WorldBuffer");
-		//setConstantBuffer(viewportBuffer_, "ViewportBuffer");
-		//
-		//setVertexBuffer(vertexCacheLine_->vertexBuffer());
-		//draw(vertexCacheLine_->getSize());
+		drawIndexed(static_cast<UINT>(indexBufferOctree_->getIndexCount()));		
 	}
 }
 

@@ -112,6 +112,10 @@ namespace OpenInfraPlatform
 			void setUseUniformPointSize(const bool useUniformSize);
 			void setPointSize(const float size);
 			void setShowPointCloud(const bool checked);
+			void setShowOctree(const bool checked);
+
+			void setOctreeLevel(int value);
+
 			void setPointCloudIndices(std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> indices);
 
 
