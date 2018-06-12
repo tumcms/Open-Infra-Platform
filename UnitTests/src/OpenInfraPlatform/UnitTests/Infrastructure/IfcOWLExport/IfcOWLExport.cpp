@@ -255,7 +255,7 @@ namespace
 		
 		buw::ImportLandXml landXMLImporter("../../../../../../testdata/LandXML/Mainbruecke_Klingenberg.xml");
 		//buw::ImportLandXml landXMLImporter("testdata/LandXML/Mainbruecke_Klingenberg.xml");
-		buw::ExportIfcAlignment1x1(buw::ifcAlignmentExportDescription(), landXMLImporter.getAlignmentModel(), landXMLImporter.getDigitalElevationModel(), "export_ifcowl_test.ifc");
+		buw::ExportIfc4x1(buw::ifcAlignmentExportDescription(), landXMLImporter.getAlignmentModel(), landXMLImporter.getDigitalElevationModel(), "export_ifcowl_test.ifc");
 		buw::ExportIfcOWL4x1(landXMLImporter.getAlignmentModel(), landXMLImporter.getDigitalElevationModel(), "export_ifcowl_test.ttl");
 	}
 }

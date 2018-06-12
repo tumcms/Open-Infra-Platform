@@ -119,7 +119,7 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE       ${CMAKE_BINARY_DIR}/Release)
 #------------------------------------------------------------------------------
 
 add_definitions(-D_UNICODE 			# Unicode rules
-				-DQT_NO_KEYWORDS 	# No qt keywords
+				#-DQT_NO_KEYWORDS 	# No qt keywords
 				-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
 ) # -DNOMINMAX does not work because GDI+ needs these macros
 
@@ -143,11 +143,14 @@ find_package(ZLIB 1.2.10 REQUIRED)
 find_package(libLAS REQUIRED)
 find_package(qhull REQUIRED)
 find_package(raptor2 REQUIRED)
+find_package(CloudCompare REQUIRED)
 find_path(visit_struct_INCLUDE_DIR REQUIRED)
 
 # Find the Qt components
 set(QT5_COMPONENTS
-	Core 
+	Core
+	Gui
+	OpenGL
 	Xml
 	XmlPatterns
 	Widgets
@@ -163,7 +166,7 @@ set(QT5_COMPONENTS
 
 # Loop over all components, find them and initialize the corresponding variables
 foreach(Component ${QT5_COMPONENTS})
-	find_package( Qt5 5.10.0 COMPONENTS ${Component}	REQUIRED)
+	find_package( Qt5 5.11.0 COMPONENTS ${Component}	REQUIRED)
 	if(TARGET ${Qt5${Component}_LIBRARIES})
 		get_target_property(Qt5${Component}_location ${Qt5${Component}_LIBRARIES} LOCATION_Release)
 		set(QT5_DLLS_RELEASE ${QT5_DLLS_RELEASE} ${Qt5${Component}_location})
@@ -234,6 +237,7 @@ addQt5Dll(OpenGL)
 addQt5Dll(Sensors)
 addQt5Dll(Sql)
 addQt5Dll(WebChannel)
+addQt5Dll(Concurrent)
 
 foreach(plugin ${Qt5_PLATFORMS_PLUGINS})
 	addQt5PluginDll(${plugin} Qt5_PLATFORMS_PLUGINS_DLLS)
@@ -273,6 +277,7 @@ include_directories(
 	external/carve/common
 	ExpressBinding/src
 	Infrastructure/src
+	${CC_INCLUDE_DIRS}
 )
 
 link_directories(
@@ -458,6 +463,7 @@ target_link_libraries( OpenInfraPlatform.UI
 	carve
 	${ZLIB_LIBRARIES}
 	Rpcrt4.lib
+	${CC_LIBRARIES}
 )
 
 
@@ -468,6 +474,9 @@ target_link_libraries( OpenInfraPlatform.UI
 
 # BlueFramework Copy Binaries
 BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
+
+# CloudCompare Copy Binaries
+CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 # Oklabi Copy Binaries
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
@@ -608,6 +617,7 @@ set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
 set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
+set_target_properties(CloudCompareCopyBinaries 				PROPERTIES FOLDER "Copy")
 set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
 set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
@@ -693,7 +703,7 @@ installData(${CMAKE_BINARY_DIR}/res)
 installData(${CMAKE_BINARY_DIR}/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES}
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${CC_RELEASE_BINARIES}
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 	

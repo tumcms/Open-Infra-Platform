@@ -30,6 +30,7 @@
 #include "OpenInfraPlatform/UserInterface/HelpBrowser.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/AlignmentEffect.h"
 #include "OpenInfraPlatform/UserInterface/resource.h"
+#include "OpenInfraPlatform/UserInterface/VectorTableModel.h"
 #include "OpenInfraPlatform/UserInterface/Ifc4x1TreeModel.h"
 
 #include "buw.OIPInfrastructure.h"
@@ -41,6 +42,7 @@
 #include <QLineEdit>
 #include <QSettings>
 #include <QUuid>
+#include <QMessageBox>
 #include <boost/filesystem.hpp>
 #include <iostream>
 
@@ -133,6 +135,57 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LAAL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
 	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LAAAL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
 
+	connect(&pcdUniformColorDialog_, &QColorDialog::currentColorChanged, view_->getViewport(), &Viewport::updatePointCloudUniformColor);
+	connect(&pcdUniformColorDialog_, &QColorDialog::colorSelected, view_->getViewport(), &Viewport::updatePointCloudUniformColor);
+
+	connect(&pcdFilteredPointsColorDialog_, &QColorDialog::currentColorChanged, view_->getViewport(), &Viewport::updatePointCloudFilteredPointsColor);
+	connect(&pcdFilteredPointsColorDialog_, &QColorDialog::colorSelected, view_->getViewport(), &Viewport::updatePointCloudFilteredPointsColor);
+
+	connect(&pcdSegmentedPointsColorDialog_, &QColorDialog::currentColorChanged, view_->getViewport(), &Viewport::updatePointCloudSegmentedPointsColor);
+	connect(&pcdSegmentedPointsColorDialog_, &QColorDialog::colorSelected, view_->getViewport(), &Viewport::updatePointCloudSegmentedPointsColor);
+
+	connect(ui_->radioButtonRender2D, &QAbstractButton::toggled, view_->getViewport(), &Viewport::updatePointCloudProjectPoints);
+	connect(ui_->radioButtonOriginal, &QAbstractButton::toggled, view_->getViewport(), &Viewport::updatePointCloudRenderOriginalCloud);
+
+	connect(ui_->checkBoxShowSegmentedPoints, &QAbstractButton::clicked, view_->getViewport(), &Viewport::updatePointCloudShowSegmentedPoints);
+	connect(ui_->checkBoxShowFilteredPoints, &QAbstractButton::clicked, view_->getViewport(), &Viewport::updatePointCloudShowFilteredPoints);
+
+	connect(ui_->horizontalSliderRemoveDuplicatesThreshold, &QSlider::valueChanged, ui_->doubleSpinBoxRemoveDuplicatesThreshold, &QDoubleSpinBox::setValue);
+	connect(ui_->horizontalSliderPercentileSegmentationKernelRadius, &QSlider::valueChanged, ui_->doubleSpinBoxPercentileSegmentationKernelRadius, &QDoubleSpinBox::setValue);
+
+	ui_->comboBoxFilterDensityMetric->addItem("kNN", QVariant(0));
+	ui_->comboBoxFilterDensityMetric->addItem("2D", QVariant(1));
+	ui_->comboBoxFilterDensityMetric->addItem("3D", QVariant(2));
+	ui_->comboBoxFilterDensityMetric->setCurrentIndex(0);
+
+	ui_->comboBoxRateOfChangeDimension->addItem("X", QVariant(0));
+	ui_->comboBoxRateOfChangeDimension->addItem("Y", QVariant(1));
+	ui_->comboBoxRateOfChangeDimension->addItem("Z", QVariant(2));
+	ui_->comboBoxRateOfChangeDimension->setCurrentIndex(2);
+
+	ui_->comboBoxFilterPositionDimension->addItem("X", QVariant(0));
+	ui_->comboBoxFilterPositionDimension->addItem("Y", QVariant(1));
+	ui_->comboBoxFilterPositionDimension->addItem("Z", QVariant(2));
+	ui_->comboBoxFilterPositionDimension->setCurrentIndex(2);
+
+	// Put the buttons into these groups to avoid auto toggeling etc.
+	radioButtons2D3D_.addButton(ui_->radioButtonRender2D);
+	radioButtons2D3D_.addButton(ui_->radioButtonRender3D);
+
+	radioButtonsOriginalFiltered_.addButton(ui_->radioButtonOriginal);
+	radioButtonsOriginalFiltered_.addButton(ui_->radioButtonFiltered);
+
+	// Restore original situation.
+	ui_->radioButtonOriginal->setChecked(true);
+	ui_->radioButtonRender3D->setChecked(true);
+
+	// Create the callback for the progress bar and connect the signals.
+	callback_ = buw::makeReferenceCounted<OpenInfraPlatform::DataManagement::ProgressCallback>();
+	//connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setVisible);
+	//connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::updateSignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setValue);
+	
+	ui_->progressBarPointCloudProcessing->setVisible(false);
+
 #ifdef _DEBUG
 	// Show debug menu only in debug mode
 
@@ -174,6 +227,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	progressBar_ = new QProgressBar(ui_->statusBar);
 	ui_->statusBar->addPermanentWidget(progressBar_);
 	progressBar_->hide();
+	
 
 	progressDialog_ = new QProgressDialog(this);
 	progressDialog_->setWindowTitle(tr("Please wait"));
@@ -184,6 +238,13 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	progressDialog_->hide();
 	QObject::connect(progressDialog_, SIGNAL(canceled()), this, SLOT(cancelJob()));
 	QObject::disconnect(progressDialog_, SIGNAL(canceled()), progressDialog_, SLOT(cancel()));
+
+
+	// Connect to the common progress dialog.
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, progressDialog_, &QProgressDialog::setEnabled);
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, progressDialog_, &QProgressDialog::setVisible);
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, progressDialog_, [&](bool value) {value ? progressDialog_->setRange(0, 100) : progressDialog_->setRange(0, 0); });
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::updateSignal, progressDialog_, &QProgressDialog::setValue);
 
 	ui_->doubleSpinBoxPointSize->setValue(3.0);
 	on_doubleSpinBoxPointSize_valueChanged(3.0);
@@ -717,6 +778,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportLandInfra_trig
 	}
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportPointCloud_triggered()
+{
+	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin"));
+	if(!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
+	}
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportCurvature_triggered() {
 	curvatureWindow_->exportToFile();
 }
@@ -1004,6 +1073,30 @@ void OpenInfraPlatform::UserInterface::MainWindow::onChange(ChangeFlag changeFla
 			ui_->listWidgetProxies->addItem("muh");
 		}
 	}
+
+	if(changeFlag & ChangeFlag::PointCloud) {
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+		if(pointCloud) {
+			auto eigenvectorsView = new OpenInfraPlatform::UserInterface::VectorTableModel(pointCloud->getEigenvectors<3>());			
+			ui_->tableViewEigenmatrix->setModel(eigenvectorsView);
+
+			Eigen::Matrix<double, 3, 3> boundingBox = Eigen::Matrix<double, 3, 3>();
+			CCVector3 min, max;
+			pointCloud->getBoundingBox(min, max);
+			CCVector3 bbCenter = 0.5 *(min + max);
+
+			boundingBox.row(0) = Eigen::Vector3d(min.x, min.y, min.z).transpose();
+			boundingBox.row(1) = Eigen::Vector3d(max.x, max.y, max.z).transpose();
+			boundingBox.row(2) = Eigen::Vector3d(bbCenter.x, bbCenter.y, bbCenter.z).transpose();
+
+			auto boundingBoxView = new OpenInfraPlatform::UserInterface::VectorTableModel(boundingBox);
+			ui_->tableViewBoundingBox->setModel(boundingBoxView);
+
+			ui_->labelPointCloudSizeValue->setText(QString::number(pointCloud->size()));
+			ui_->labelPointCloudSectionsValue->setText(QString::number(pointCloud->getSections().size()));
+		}
+	}
+
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_comboBoxAlignment_currentIndexChanged(int index) {
@@ -2229,6 +2322,420 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxUseUniformColor_cl
 void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxUseUniformSize_clicked(bool checked) {
 	view_->setUseUniformPointSize(checked);
 }
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowPointCloud_clicked(bool checked)
+{
+	view_->setShowPointCloud(checked);
+}
+
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectUniformColor_clicked()
+{
+	pcdUniformColorDialog_.show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectFilteredPointsColor_clicked()
+{
+	pcdFilteredPointsColorDialog_.show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDuplicateFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		// Initialize the filter parameters.
+		buw::DuplicateFilterDescription desc;
+		desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
+		desc.minDistance = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
+
+		// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
+		pointCloud->applyDuplicateFilter(desc, callback_);
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDuplicateFilter_clicked()
+{
+	// Get the point cloud and reset the scalar field called "Duplicate" which holds the labeling for duplicates.
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->resetScalarField("Duplicate");
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDensityFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		// Initialize the filter parameters
+		buw::LocalDensityFilterDescription desc;
+		desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
+		desc.kernelRadius = (float)(ui_->doubleSpinBoxFilterDensityKernelRadius->value()) / 100.0f;
+		desc.minThreshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
+		desc.density = CCLib::GeometricalAnalysisTools::Density(ui_->comboBoxFilterDensityMetric->currentData().toInt());
+
+		// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
+		int err = pointCloud->applyLocalDensityFilter(desc, callback_);
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDensityFilter_clicked()
+{
+	// Get the point cloud and reset the scalar field called "Density" which holds the labeling for points which have a density below the minimum threshold.
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->resetScalarField("Density");
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyPositionFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::PositionFilterDescription desc;
+		desc.minValue = ui_->doubleSpinBoxFilterPositionMin->value();
+		desc.maxValue = ui_->doubleSpinBoxFilterPositionMax->value();
+		desc.dimension = ui_->comboBoxFilterPositionDimension->currentData().toInt();
+
+		if(pointCloud->applyPositionFilter(desc, callback_) == 0) {
+			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		} 
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetPositionFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		if(pointCloud->resetPositionFilter() == 0) {
+			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		}
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonFilterOriginal_clicked()
+{
+	QMessageBox dialog;	
+	dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+	dialog.setIcon(QMessageBox::Icon::Question);
+	dialog.setText("This will remove the filtered points from the cloud and can only be undone by reloading the original file.\nDo you want to continue?");
+	dialog.setWindowTitle(tr("Disclaimer"));
+	dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+
+	if(dialog.exec() == QMessageBox::StandardButton::Yes) {
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+		if(pointCloud) {
+			pointCloud->removeFilteredPoints(callback_);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonRestoreOriginal_clicked()
+{
+	QMessageBox dialog;
+	dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+	dialog.setIcon(QMessageBox::Icon::Question);
+	dialog.setText("This will load the original file and discard all unsaved changes.\nDo you want to continue?");
+	dialog.setWindowTitle(tr("Disclaimer"));
+	dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+	if(dialog.exec() == QMessageBox::StandardButton::Yes) {
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import(pointCloud->getName().toStdString());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonExtractSegmentation_clicked()
+{
+	QMessageBox dialog;
+	dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+	dialog.setIcon(QMessageBox::Icon::Question);
+	dialog.setText("This will extract the segmented points from the cloud and can not be reversed.\nDo you want to continue?");
+	dialog.setWindowTitle(tr("Disclaimer"));
+	dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+
+	if(dialog.exec() == QMessageBox::StandardButton::Yes) {
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+		if(pointCloud) {
+			pointCloud->removeNotSegmentedPoints();
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonUndoSegmentation_clicked()
+{
+	on_pushButtonRestoreOriginal_clicked();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyPercentileSegmentation_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::PercentileSegmentationDescription desc;
+		desc.kernelRadius = ui_->doubleSpinBoxPercentileSegmentationKernelRadius->value() / 100.0f;
+		desc.lowerPercentile = ui_->doubleSpinBoxPercentileSegmentationLowerBound->value() / 100.0;
+		desc.upperPercentile = ui_->doubleSpinBoxPercentileSegmentationUpperBound->value() / 100.0;
+		desc.minThreshold = ui_->doubleSpinBoxPercentileSegmentationMinThreshold->value() / 100.0f;
+		desc.maxThreshold = ui_->doubleSpinBoxPercentileSegmentationMaxThreshold->value() / 100.0f;
+
+		pointCloud->applyPercentilesSegmentationHP(desc, callback_);
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetPercentileSegmentation_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->resetScalarField("SegmentedPercentile");
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxPercentileSegmentationKernelRadius_valueChanged(double value)
+{
+	ui_->horizontalSliderPercentileSegmentationKernelRadius->blockSignals(true);
+	ui_->horizontalSliderPercentileSegmentationKernelRadius->setValue(value);
+	ui_->horizontalSliderPercentileSegmentationKernelRadius->blockSignals(false);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePercentilesOnGrid_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->applyPercentilesOnGridSegmentation(callback_);
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRateOfChangeSegmentation_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::RateOfChangeSegmentationDescription desc;
+		desc.dim = ui_->comboBoxRateOfChangeDimension->currentData().toInt();
+		desc.maxNeighbourDistance = ui_->doubleSpinBoxRateOfChangeNeighbourDistance->value();
+		desc.maxRateOfChangeThreshold = ui_->doubleSpinBoxRateOfChangeMaxDiff->value();
+		int err = pointCloud->applyRateOfChangeSegmentation(desc, callback_);
+		if(err != 0) {
+			BLUE_LOG(warning) << "Rate of change segmentation failed. Error Code: " << err;
+		}
+		else {
+			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		}
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetRateOfChangeSegmentation_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->resetScalarField("SegmentedRateOfChange");
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRailways_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::RailwaySegmentationDescription desc;
+		desc.distanceForPCA = ui_->doubleSpinBoxDistanceForPCA->value();
+		desc.numPointsForPCA = ui_->spinBoxNumPointsForPCA->value();
+		desc.centerlinePointDistance = ui_->doubleSpinBoxDistanceForPCA->value() / (float)ui_->spinBoxNumPointsForPCA->value();
+		desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
+		desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
+		desc.curvatureStepSize = ui_->spinBoxCurvatureStepSize->value();
+		desc.numPointsForMeanCurvature = ui_->spinBoxNumPointsForMeanCurvature->value();
+		
+
+		int numAlignments = pointCloud->segmentRailways(desc, callback_);
+		if(numAlignments > 0) {
+			for(int idx = 0; idx < numAlignments; idx++) {
+				ui_->comboBoxPlotSelectAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
+			}
+			ui_->pushButtonComputeCurvature->setEnabled(true);
+			ui_->pushButtonPlotAlignment->setEnabled(true);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+		else if(numAlignments == 0) {
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+			BLUE_LOG(info) << "No railways detected.";
+		}
+		else {
+			BLUE_LOG(warning) << "Error in railway segmentation occurred. Code: " << numAlignments;
+			on_pushButtonResetSegmentRailways_clicked();
+		}
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetSegmentRailways_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		BLUE_LOG(info) << "Resetting railway segmentation.";
+		if(pointCloud->resetRailwaySegmentation() == 0) {
+			ui_->pushButtonComputeCurvature->setDisabled(true);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+		else {
+			BLUE_LOG(warning) << "Resetting railway segmentation failed.";
+		}
+		// Clear our plotting combo box since we only want to plot the latest results.
+		ui_->comboBoxPlotSelectAlignment->clear();
+		ui_->pushButtonPlotAlignment->setDisabled(true);
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCenterlines_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::CenterlineComputationDescription desc;		
+		desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
+		desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
+		desc.maxDistance = ui_->doubleSpinBoxCenterlineMaxDistance->value();
+		desc.centerlineDensity = ui_->doubleSpinBoxCenterlineDensity->value() / 1000.0;
+		int numAlignments = pointCloud->computeCenterlines(desc, callback_);
+		if(numAlignments > 0) {
+
+			ui_->pushButtonComputeCurvature->setEnabled(true);
+
+			// Clear the combo boxes for plotting since we only want to plot the stuff from the latest computations.
+			ui_->comboBoxShowAlignment->clear();
+			ui_->comboBoxComputeCurvature->clear();
+			ui_->comboBoxPlotSelectAlignment->clear();
+
+			// Add the indices to the combo boxes.
+			for(int idx = 0; idx < numAlignments; idx++) {
+				ui_->comboBoxShowAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
+				ui_->comboBoxComputeCurvature->addItem(QString::number(idx), QVariant(QString::number(idx)));
+			}
+
+			ui_->comboBoxShowAlignment->addItem("All", QVariant(QString::number(-1)));
+			ui_->comboBoxComputeCurvature->addItem("All", QVariant(QString::number(-1)));
+
+			// Set the default index to 0.
+			ui_->comboBoxShowAlignment->setCurrentIndex(ui_->comboBoxShowAlignment->count() - 1);
+			ui_->comboBoxComputeCurvature->setCurrentIndex(ui_->comboBoxComputeCurvature->count() - 1);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+		else
+			BLUE_LOG(warning) << "Computing centerlines failed.";		
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetCenterlines_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		ui_->comboBoxShowAlignment->clear();
+		ui_->comboBoxComputeCurvature->clear();
+		ui_->comboBoxPlotSelectAlignment->clear();
+
+		if(pointCloud->resetCenterlines() == 0) {
+			ui_->pushButtonComputeCurvature->setDisabled(true);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+		else
+			BLUE_LOG(warning) << "Resetting centerlines failed.";
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCurvature_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::CenterlineCurvatureComputationDescription desc;
+		desc.numPointsForPCA = ui_->spinBoxNumPointsForPCA->value();
+		desc.curvatureStepSize = ui_->spinBoxCurvatureStepSize->value();
+		desc.numPointsForMeanCurvature = ui_->spinBoxNumPointsForMeanCurvature->value();
+		QString comboBoxComputeCurvatureData = ui_->comboBoxComputeCurvature->currentData().toString();
+
+		if(comboBoxComputeCurvatureData == "All")
+			desc.centerlineIndex = -1;
+		else
+			desc.centerlineIndex = comboBoxComputeCurvatureData.toInt();
+
+		//desc.centerlineIndex = ui_->comboBoxComputeCurvature->currentData().toString().toInt();
+		if(pointCloud->computeCenterlineCurvature(desc, callback_) == 0) {
+			if(desc.centerlineIndex != -1)
+				ui_->comboBoxPlotSelectAlignment->addItem(QString::number(desc.centerlineIndex), QVariant(QString::number(desc.centerlineIndex)));
+			else {
+				ui_->comboBoxPlotSelectAlignment->clear();
+				for(size_t i = 0; i < ui_->comboBoxComputeCurvature->count() - 1; i++)
+					ui_->comboBoxPlotSelectAlignment->addItem(QString::number(i), QVariant(QString::number(i)));
+			}
+		}
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_clicked()
+{
+	//QString parameter = QDir::currentPath().append("/Alignment#").append(ui_->comboBoxPlotSelectAlignment->currentData().toString()).append(".txt");
+
+	QString parameter = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("*.txt"));
+
+	
+	//setup converter
+	std::wstring_convert<convert_type, wchar_t> converter;
+	auto wparameter = converter.from_bytes(parameter.toStdString().data());
+	auto filename = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/plotAlignment.cmd";
+	auto directory = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/";
+	std::wstring script = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/plot.py";
+
+	putenv("PYTHONPATH=%PYTHONPATH%;C:\Users\ga38fih\dev\python\packages");
+
+	ShellExecute(0, 0, filename, wparameter.c_str(), directory, SW_SHOWDEFAULT);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value)
+{
+	ui_->horizontalSliderRemoveDuplicatesThreshold->blockSignals(true);
+	ui_->horizontalSliderRemoveDuplicatesThreshold->setValue(value);
+	ui_->horizontalSliderRemoveDuplicatesThreshold->blockSignals(false);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonCalculateSections_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->computeSections2(100.0 / ui_->horizontalSliderSectionSize->value());
+		view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxSectionSize_valueChanged(double value)
+{
+
+	ui_->horizontalSliderSectionSize->blockSignals(true);
+	ui_->horizontalSliderSectionSize->setValue(value);
+	ui_->horizontalSliderSectionSize->blockSignals(false);
+
+	if(ui_->checkBoxPreview->checkState() == Qt::CheckState::Checked)
+		view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->doubleSpinBoxSectionSize->value());
+
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_horizontalSliderSectionSize_valueChanged(int value)
+{
+	ui_->doubleSpinBoxSectionSize->blockSignals(true);
+	ui_->doubleSpinBoxSectionSize->setValue(value);
+	ui_->doubleSpinBoxSectionSize->blockSignals(false);
+
+	if(ui_->checkBoxPreview->checkState() == Qt::CheckState::Checked)
+		view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectSegmentedPointsColor_clicked()
+{
+	pcdSegmentedPointsColorDialog_.show();
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxPointSize_valueChanged(double value) {
 	double spinRange = ui_->doubleSpinBoxPointSize->maximum() - ui_->doubleSpinBoxPointSize->minimum();
 	int sliderRange = ui_->horizontalSliderPointSize->maximum() - ui_->horizontalSliderPointSize->minimum();

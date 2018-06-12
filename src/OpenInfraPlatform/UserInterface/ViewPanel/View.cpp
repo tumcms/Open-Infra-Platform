@@ -306,6 +306,11 @@ void OpenInfraPlatform::UserInterface::View::setPointSize(const float pointSize)
 	viewport_->setPointSize(pointSize);
 }
 
+void OpenInfraPlatform::UserInterface::View::setShowPointCloud(const bool checked)
+{
+	viewport_->setShowPointCloud(checked);
+}
+
 
 std::vector<buw::Vector3d> OpenInfraPlatform::UserInterface::View::getAlignmentPoints()
 {

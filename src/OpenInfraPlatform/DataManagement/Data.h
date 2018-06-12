@@ -29,7 +29,7 @@
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
 #include <BlueFramework/Application/DataManagement/DocumentManager.h>
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
 #include <BlueFramework/ImageProcessing/color.h>
 #include <BlueFramework/Core/Math/vector.h>
 #include <boost/signals2.hpp>
@@ -135,7 +135,8 @@ namespace OpenInfraPlatform
 			void importOSM(const std::string& filename, const std::vector<std::string>& filter, int mode);
 			
 			void importLAS(const std::string& filename);
-			
+			void importBIN(const std::string& filename);
+
 			void exportIfcRoadTUMProposal(const std::string & filename);
 			void exportIfcAlignment1x0(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
 			void exportIfc4x1(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
@@ -148,6 +149,7 @@ namespace OpenInfraPlatform
 			void exportIfcOWL4x1(const std::string& filename);
 			void exportOkstraOWL(const std::string& filename);
 			void export3DAlignmentAsTextfile(const std::string& filename);
+			void exportPointCloud(const std::string& filename);
 			void createExcelReport(const std::string& filename, bool useDegree);
 			
 			//---------------------------------------------------------------------------//
@@ -299,6 +301,7 @@ namespace OpenInfraPlatform
 
 
 			void importLASJob(const std::string& filename);
+			void importBINJob(const std::string& filename);
 
 			void importXYZJob(const std::string& filename, const buw::Vector2d& start, const buw::Vector2d& end);
 			void createRandomTerrainJob(const buw::terrainDescription& td);

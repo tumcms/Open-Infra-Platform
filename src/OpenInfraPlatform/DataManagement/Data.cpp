@@ -666,6 +666,9 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 	else if(buwstrFilename.toLower().endsWith(".las")) {
 		importLASJob(filename);
 	}
+	else if(buwstrFilename.toLower().endsWith(".bin")) {
+		importBINJob(filename);
+	}
 	else if (buwstrFilename.toLower().endsWith(".d40"))
 	{
 		importer_ = new buw::ImportD40Import(filename);
@@ -810,12 +813,12 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 		
 		if (merge_)
 		{
-			for (auto point : tempPointCloud_->points)
-			{
-				pointCloud_->points.push_back(point);
-			}
-			pointCloud_->minPos = buw::minimizedVector(pointCloud_->minPos, tempPointCloud_->minPos);
-			pointCloud_->maxPos = buw::minimizedVector(pointCloud_->maxPos, tempPointCloud_->maxPos);
+			//for (auto point : tempPointCloud_->points)
+			//{
+			//	pointCloud_->points.push_back(point);
+			//}
+			//pointCloud_->minPos = buw::minimizedVector(pointCloud_->minPos, tempPointCloud_->minPos);
+			//pointCloud_->maxPos = buw::minimizedVector(pointCloud_->maxPos, tempPointCloud_->maxPos);
 		}
 		else
 		{
@@ -934,6 +937,19 @@ void OpenInfraPlatform::DataManagement::Data::exportIfcOWL4x1Job(const std::stri
 void OpenInfraPlatform::DataManagement::Data::export3DAlignmentAsTextfile(const std::string& filename)
 {
 	currentJobID_ = AsyncJob::getInstance().startJob(&Data::export3DAlignmentAsTextfileJob, this, filename);
+}
+
+void OpenInfraPlatform::DataManagement::Data::exportPointCloud(const std::string & filename)
+{
+	auto exportPointCloudJob = [](OpenInfraPlatform::DataManagement::Data* data, const std::string &filename) {
+		OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Point Cloud ").append(filename));
+		auto filter = FileIOFilter::FindBestFilterForExtension("BIN");
+		auto pointCloud = data->getPointCloud();
+		pointCloud->deleteAllScalarFields();
+		int error = FileIOFilter::SaveToFile(std::static_pointer_cast<ccHObject>(pointCloud).get(), QString(filename.data()), FileIOFilter::SaveParameters(), filter);
+	};
+
+	currentJobID_ = AsyncJob::getInstance().startJob(std::ref(exportPointCloudJob), this, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::export3DAlignmentAsTextfileJob(const std::string& filename)
@@ -1171,10 +1187,12 @@ buw::Vector3d OpenInfraPlatform::DataManagement::Data::getOffset() const
 		}
 	}
 
-	if (pointCloud_->points.size() > 0)
+	if (pointCloud_->size() > 0)
 	{
-		minPos = pointCloud_->minPos;
-		maxPos = pointCloud_->maxPos;
+		CCVector3 min, max;
+		pointCloud_->getBoundingBox(min, max);
+		minPos = buw::Vector3d(min.x, min.y, min.z);
+		maxPos = buw::Vector3d(max.x, max.y, max.z);
 	}
 
 	buw::Vector3d offsetViewArea = minPos + 0.5 * (maxPos - minPos);
@@ -1338,13 +1356,19 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::DataManagement::Data::
 
 const int OpenInfraPlatform::DataManagement::Data::getPointCloudPointCount() const
 {
-	return pointCloud_->points.size();
+	return pointCloud_->size();
 }
 
 void OpenInfraPlatform::DataManagement::Data::importLAS(const std::string& filename)
 {
 	merge_ = false;
 	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importLASJob, this, filename);
+}
+
+void OpenInfraPlatform::DataManagement::Data::importBIN(const std::string& filename)
+{
+	merge_ = false;
+	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importBINJob, this, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::importLASJob(const std::string& filename)
@@ -1354,8 +1378,17 @@ void OpenInfraPlatform::DataManagement::Data::importLASJob(const std::string& fi
 	if (tempPointCloud_)
 		tempPointCloud_ = nullptr;
 
-	tempPointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
-	buw::importLASPointCloud(filename.c_str(), *tempPointCloud_);
+	tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
+}
+
+void OpenInfraPlatform::DataManagement::Data::importBINJob(const std::string& filename)
+{
+	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing laserscan ").append(filename));
+
+	if(tempPointCloud_)
+		tempPointCloud_ = nullptr;
+
+	tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
 }
 
 

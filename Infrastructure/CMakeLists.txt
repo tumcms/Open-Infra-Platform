@@ -90,6 +90,7 @@ include_directories(
 	#Experimental
 	${visit_struct_INCLUDE_DIR}
 	${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR}
+	${CC_INCLUDE_DIRS}
 )
 
 # Create a target for the library
@@ -138,10 +139,11 @@ target_link_libraries( OpenInfraPlatform.Infrastructure
 		# EXPRESS Binding for Meta model
 		OpenInfraPlatform.ExpressBinding
 		Rpcrt4.lib
+		${CC_LIBRARIES}
 	)
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(OpenInfraPlatform.Infrastructure Qt5::Xml Qt5::XmlPatterns)
+target_link_libraries(OpenInfraPlatform.Infrastructure Qt5::Xml Qt5::XmlPatterns Qt5::Gui Qt5::OpenGL)
 
 install(TARGETS OpenInfraPlatform.Infrastructure   
    RUNTIME DESTINATION bin

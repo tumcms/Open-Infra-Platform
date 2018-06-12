@@ -310,16 +310,31 @@ void Viewport::enableTerrainGradientRamp(const bool checked) {
 void OpenInfraPlatform::UserInterface::Viewport::setUseUniformPointColor(const bool useUniformColor)
 {
 	pointCloudEffect_->drawPointsWithUniformColor(useUniformColor);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setUseUniformPointSize(const bool useUniformSize)
 {
 	pointCloudEffect_->drawPointsWithUniformSize(useUniformSize);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setPointSize(const float size)
 {
 	pointCloudEffect_->setPointSize(size);
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::setShowPointCloud(const bool checked)
+{
+	pointCloudEffect_->show(checked);
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::setPointCloudIndices(std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> indices)
+{
+	pointCloudEffect_->updateIndexBuffers(indices);
+	repaint();
 }
 
 void Viewport::showCrossSection(const bool showCrossSection) {
@@ -349,6 +364,55 @@ buw::ReferenceCounted<AlignmentEffect> OpenInfraPlatform::UserInterface::Viewpor
 {
     return alignmentEffect_;
 }
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudUniformColor(const QColor & color)
+{
+	pointCloudEffect_->setUniformColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudFilteredPointsColor(const QColor & color)
+{
+	pointCloudEffect_->setFilteredColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudSegmentedPointsColor(const QColor & color)
+{
+	pointCloudEffect_->setSegmentedColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudSectionLength(const float length)
+{
+	pointCloudEffect_->setSectionLength(length);
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudProjectPoints(const bool checked)
+{
+	pointCloudEffect_->setProjectPoints(checked);
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudRenderOriginalCloud(const bool checked)
+{
+	pointCloudEffect_->showOriginalPointCloud(checked);
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudShowSegmentedPoints(const bool checked)
+{
+	pointCloudEffect_->showSegmentedPoints(checked);
+	repaint();
+}
+
+void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudShowFilteredPoints(const bool checked)
+{
+	pointCloudEffect_->showFilteredPoints(checked);
+	repaint();
+}
+
 
 void Viewport::setView(eView type) {
     switch (type) {
@@ -699,8 +763,13 @@ void Viewport::onChange(ChangeFlag changeFlag) {
         min = bb.getMinimum();
         max = bb.getMaximum();
 	} else if(pointCloud && data.getPointCloudPointCount() > 0) {
-		min = pointCloud->minPos;
-		max = pointCloud->maxPos;
+		CCVector3 minPos, maxPos;
+		pointCloud->getBoundingBox(minPos, maxPos);
+		min = buw::Vector3d(minPos.x, minPos.y, minPos.z);
+		max = buw::Vector3d(maxPos.x, maxPos.y, maxPos.z);
+
+		BLUE_LOG(trace) << "min:" << min;
+		BLUE_LOG(trace) << "max:" << max;
 	}
 	
 
@@ -747,7 +816,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
         alignmentEffect_->setCurrentSelectedAlignment(selectedAlignmentIndex_);
     }
 
-	if(changeFlag & ChangeFlag::PointCloud && pointCloud && !pointCloud->points.empty()) {
+	if(changeFlag & ChangeFlag::PointCloud && pointCloud && pointCloud->size() > 0) {
 		pointCloudEffect_->setPointCloud(pointCloud, offset);
 		activeEffects_.push_back(pointCloudEffect_);
 	}
