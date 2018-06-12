@@ -61,20 +61,23 @@ include_directories(
 	# Support for Qt 5.10.1
     ${Qt5Gui_DIR}/../../../include/QtGui/5.10.1
     ${Qt5Core_DIR}/../../../include/QtCore/5.10.1
+	# Support for Qt 5.11.0
+    ${Qt5Gui_DIR}/../../../include/QtGui/5.11.0
+    ${Qt5Core_DIR}/../../../include/QtCore/5.11.0
 )
 
 ADD_LIBRARY(QtXlsxWriter SHARED
     ${QtXlsxWriter_Source}
 )
 
-target_link_libraries(QtXlsxWriter
-    # Qt5
-    ${Qt5Core_QTMAIN_LIBRARIES}  # <-- New target available via find_package ( Qt5Core ) 
-)
+#target_link_libraries(QtXlsxWriter
+#    # Qt5
+#    ${Qt5Core_QTMAIN_LIBRARIES}  # <-- New target available via find_package ( Qt5Core ) 
+#)
 
 install(TARGETS QtXlsxWriter
     RUNTIME DESTINATION bin
     COMPONENT oip_thirdparty)
 
 # Use the Widgets module from Qt 5.
-qt5_use_modules(QtXlsxWriter Xml XmlPatterns Widgets)
+target_link_libraries(QtXlsxWriter Qt5::Core Qt5::Gui Qt5::Xml Qt5::XmlPatterns Qt5::Widgets)
