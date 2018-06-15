@@ -16,12 +16,21 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "Ifc4x1TreeModel.h"
+#include "OpenInfraPlatform/Infrastructure/Export/IfcAlignment1x1Caster.h"
+
+#include <type_traits>
+#include <cstdlib>
 
 OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::Ifc4x1TreeModel(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>>& entities)
 	:
 	QAbstractItemModel()
 {
 	data_ = entities;
+	//was machen folgende?
+	//data_._Get_data
+	//data_._Parent
+	//data_[4].get()
+
 
 	//represent an imaginary parent of top-level items in the model:
 	//QList<QVariant> rootData;
@@ -31,15 +40,15 @@ OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::Ifc4x1TreeModel(std::map<int,
 }
 
 QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::index(int row, int column, const QModelIndex & parent) const
-{	
-	if(!hasIndex(row, column, parent))
+{
+	if (!hasIndex(row, column, parent))
 		return QModelIndex();
 
-	if(!parent.isValid())
+	if (!parent.isValid())
 		return this->createIndex(row, column, std::static_pointer_cast<void>(data_.find(row + 1)->second).get());
 	else {
 		//TODO: Return the index relative to the parent index!
-		return QModelIndex();
+		return this->createIndex(row, column, nullptr);
 	}
 }
 
@@ -58,29 +67,40 @@ QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::parent(const QMod
 
 	//	return createIndex(parentItem->row(), 0, parentItem);
 	//}
-	
+
 	/*TreeItem *TreeItem::parentItem()
 	{
-		return m_parentItem;
+	return m_parentItem;
 	}
 	/*for (auto it : data_) {
-		  
-		}
+
+	}
 	return Q_INVOKABLE QModelIndex();*/
 	return QModelIndex();
 }
+struct countRows {
+	
+	
+};
 
 int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(const QModelIndex & parent) const
 {
-	if(!parent.isValid())
+	
+	if (!parent.isValid())
 		return data_.size();
-	else
-		return 1;
+	else {
+		auto entity = data_.find(parent.row() + 1)->second;
+		int rows = 0;
+		OpenInfraPlatform::IfcAlignment1x1::castAndCall(entity, countRows{});
+		return rows;
+	}
+
+	//Menge der Attribute des Objekts data_.size(index) oder data_[parent].size()?oder mit visit struct?
 }
 
 int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::columnCount(const QModelIndex & parent) const
 {
-	if(!parent.isValid())
+	if (!parent.isValid())
 		return 1;
 	else
 		return 3;
@@ -92,13 +112,51 @@ QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelInd
 		return QVariant();
 
 	if (role != Qt::DisplayRole)
-		return QVariant();	
+		return QVariant();
 
-	return QVariant(data_.find(index.row()+1)->second->classname());
+	if (!index.parent().isValid())
+		return QVariant(data_.find(index.row() + 1)->second->classname());
+	else
+		return QVariant("test");
 	//return QVariant () data_.find(index) ;
 }
 
+bool OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::insertRows(int row, int count, const QModelIndex & parent)
+{
+	beginInsertRows(parent, row, row + count);
+	endInsertRows();
+	return true;
+}
 
+/*template <class T, class R, class E>
+struct OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::my_type {
+	T a;
+	R b;
+	E c;
+	std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;
+};
+
+
+
+VISITABLE_STRUCT(OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::my_type, a, b, c, data_);
+
+
+
+struct debug_printer {
+	template <typename T>
+	void operator()(const char * name, const T & value) {
+		std::cerr << name << ": " << value << std::endl;
+	}
+};
+
+void debug_print(const my_type & my_struct) {
+	visit_struct::for_each(my_struct, debug_printer{});
+}
+
+visit_struct::get<i>(s);
+visit_struct::field_count(s);
+visit_struct::get_name<i>(s);
+*/
 
 // from Qt documentation 
 //TreeItem::TreeItem(const QList<QVariant> &data, TreeItem *parent)
@@ -110,3 +168,4 @@ QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelInd
 //{
 //	return childItems_.value(row);
 //}
+

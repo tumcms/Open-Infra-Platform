@@ -27,13 +27,13 @@ OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::Us
 	ui_->setupUi(this);
 	ui_->treeView->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
 	ui_->treeView->setAutoExpandDelay(-1);
-	QObject::connect(ui_->treeView, &QTreeView::activated, this, &ShowIFCtree::on_treeView_expanded);
+	QObject::connect(ui_->treeView, &QTreeView::expanded, this, &ShowIFCtree::on_treeView_expanded);
 }
 
 void OpenInfraPlatform::UserInterface::ShowIFCtree::on_treeView_expanded(const QModelIndex &index)
 {
-	if (true)
-		std::printf("blub");
+	auto model = ui_->treeView->model();
+	model->insertRows(0, model->rowCount(index), index);
 }
 
 
