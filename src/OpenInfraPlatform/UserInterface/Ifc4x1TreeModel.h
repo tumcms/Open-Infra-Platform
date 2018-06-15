@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include <QAbstractItemModel>
+#include <type_traits>
 
 namespace OpenInfraPlatform {
 	namespace UserInterface {
@@ -43,7 +44,8 @@ namespace OpenInfraPlatform {
 		private:
 			std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;
 			
-			
+			struct countRows;
+			struct getName;
 
 		
 		//private:
