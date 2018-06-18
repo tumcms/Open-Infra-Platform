@@ -43,6 +43,7 @@ namespace OpenInfraPlatform {
 		
 		private:
 			std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;
+
 			
 			struct countRows;
 			struct getName;
@@ -54,27 +55,5 @@ namespace OpenInfraPlatform {
 			//TreeItem *rootItem;
 		};
 
-
-		//from Qt documentation http://doc.qt.io/qt-5/qtwidgets-itemviews-simpletreemodel-example.html
-		class TreeItem
-		{
-		public:
-			explicit TreeItem(const QList<QVariant> &data, TreeItem *parentItem = 0);
-			//~TreeItem();
-
-			//void appendChild(TreeItem *child);
-
-			TreeItem *child(int row);
-			//int childCount() const;
-			//int columnCount() const;
-			//QVariant data(int column) const;
-			//int row() const;
-			//TreeItem *parentItem();
-
-		private:
-			QList<TreeItem*> childItems_;
-			QList<QVariant> itemData_;
-			TreeItem *parentItem_;
-		};
 	}
 }
