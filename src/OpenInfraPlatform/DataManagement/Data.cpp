@@ -34,6 +34,7 @@
 
 #include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h"
 #include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h"
+#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h"
 #include "OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h"
 
 #include "OpenInfraPlatform/DataManagement/IfcZipper.h"
@@ -645,7 +646,9 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4x1)
 		{
 			OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing IfcAlignment ").append(filename));
-			//importer_ = new buw::ImportIfcAlignment1x0(filename);
+			using namespace OpenInfraPlatform::IfcAlignment1x1;
+			importIfcGeometry<emt::Ifc4x1EntityTypes, UnitConverter, IfcAlignment1x1Model, IfcStepReader,
+				IfcAlignment1x1Exception, IfcAlignment1x1Entity>(tempIfcGeometryModel_, filename);
 			importer_ = new buw::ImportIfc4x1(filename);
 		}
 		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_ROAD)
