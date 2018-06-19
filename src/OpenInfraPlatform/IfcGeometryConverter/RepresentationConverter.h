@@ -272,28 +272,28 @@ namespace OpenInfraPlatform
 
 				if (m_handle_layer_assignments)
 				{
-					std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcPresentationLayerAssignment>>& LayerAssignments_inverse =
-						representation->m_LayerAssignments_inverse;
-
-					typename std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcPresentationLayerAssignment>>::iterator it_LayerAssignments_inverse;
-					for (it_LayerAssignments_inverse = LayerAssignments_inverse.begin();
-						it_LayerAssignments_inverse != LayerAssignments_inverse.end();
-						++it_LayerAssignments_inverse)
-					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcPresentationLayerAssignment> layer_assignment((*it_LayerAssignments_inverse));
-
-						std::shared_ptr<typename IfcEntityTypesT::IfcPresentationLayerWithStyle> layer_assignment_with_style =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcPresentationLayerWithStyle>(layer_assignment);
-						if (layer_assignment_with_style)
-						{
-							// deactivated by now due to compability issues
-							/*std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcPresentationStyleSelect> >& vec_presentation_styles = layer_assignment_with_style->m_LayerStyles;
-							for (int i = 0; i<vec_presentation_styles.size(); ++i)
-							{
-								std::shared_ptr<typename IfcEntityTypesT::IfcPresentationStyleSelect>&  presentation_style = vec_presentation_styles[i];
-							}*/
-						}
-					}
+					//std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcPresentationLayerAssignment>>& LayerAssignments_inverse =
+					//	representation->m_LayerAssignments_inverse;
+					//
+					//typename std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcPresentationLayerAssignment>>::iterator it_LayerAssignments_inverse;
+					//for (it_LayerAssignments_inverse = LayerAssignments_inverse.begin();
+					//	it_LayerAssignments_inverse != LayerAssignments_inverse.end();
+					//	++it_LayerAssignments_inverse)
+					//{
+					//	std::shared_ptr<typename IfcEntityTypesT::IfcPresentationLayerAssignment> layer_assignment((*it_LayerAssignments_inverse));
+					//
+					//	std::shared_ptr<typename IfcEntityTypesT::IfcPresentationLayerWithStyle> layer_assignment_with_style =
+					//		dynamic_pointer_cast<typename IfcEntityTypesT::IfcPresentationLayerWithStyle>(layer_assignment);
+					//	if (layer_assignment_with_style)
+					//	{
+					//		// deactivated by now due to compability issues
+					//		/*std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcPresentationStyleSelect> >& vec_presentation_styles = layer_assignment_with_style->m_LayerStyles;
+					//		for (int i = 0; i<vec_presentation_styles.size(); ++i)
+					//		{
+					//			std::shared_ptr<typename IfcEntityTypesT::IfcPresentationStyleSelect>&  presentation_style = vec_presentation_styles[i];
+					//		}*/
+					//	}
+					//}
 				}
 			}
 

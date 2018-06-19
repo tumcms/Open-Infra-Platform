@@ -26,6 +26,7 @@
 
 #include "CarveHeaders.h"
 
+
 /**********************************************************************************************/
 
 namespace OpenInfraPlatform
@@ -354,7 +355,12 @@ namespace OpenInfraPlatform
 					if (trans_operator_2d->m_Scale == trans_operator_2d->m_Scale)
 					{
 						// transOperator2D->m_Scale is not NAN
-						scale = trans_operator_2d->m_Scale;
+						// Magic: Markic & Hecht 19.06.18
+						if(std::is_same<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D, OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2D>::value)
+							scale = dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2D>(trans_operator_2d)->m_Scale->m_value;
+						else 
+							scale = *(double*)(&(trans_operator_2d->m_Scale));
+						// end magic
 					}
 					scale_y = scale;
 					scale_z = scale;
