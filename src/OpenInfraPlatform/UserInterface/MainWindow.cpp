@@ -2657,6 +2657,30 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetCenterlines
 	}
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePairs_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->computePairs(std::vector<std::pair<size_t, size_t>>(), callback_);
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+	}
+	else {
+		BLUE_LOG(trace) << "No point cloud available.";
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetPairs_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->resetPairs();
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+	}
+	else {
+		BLUE_LOG(trace) << "No point cloud available.";
+	}
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCurvature_clicked()
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();

@@ -220,6 +220,9 @@ namespace OpenInfraPlatform
 			void on_pushButtonComputeCenterlines_clicked();
 			void on_pushButtonResetCenterlines_clicked();
 
+			void on_pushButtonComputePairs_clicked();
+			void on_pushButtonResetPairs_clicked();
+
 			void on_pushButtonComputeCurvature_clicked();
 
 			void on_pushButtonPlotAlignment_clicked();

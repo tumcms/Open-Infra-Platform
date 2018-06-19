@@ -143,6 +143,25 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 	return pointCloud;
 }
 
+OpenInfraPlatform::Infrastructure::PointCloud::~PointCloud()
+{
+	if(!remainingIndices_.empty())
+		remainingIndices_.clear();
+	if(!segmentedIndices_.empty())
+		segmentedIndices_.clear();
+	if(!filteredIndices_.empty())
+		filteredIndices_.clear();
+
+	if(!sections_.empty())
+		sections_.clear();
+
+	if(!grid_.empty())
+		grid_.clear();
+
+	if(octree_)
+		octree_ = nullptr;
+}
+
 void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	BLUE_LOG(trace) << "Start computing sections. Length:" << length;
@@ -240,7 +259,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 
 
 		// Iterate over all cells to call our nearest neighbour search on consecutive points in a cell for performance reasons.
-#pragma omp for schedule(dynamic, 20)
+#pragma omp for schedule(dynamic)
 		for(long idx = 0; idx < dgmOctreeCells.size(); idx++) {
 			auto cell = dgmOctreeCells[idx];
 			auto code = octree.getCellCode(cell);
@@ -298,7 +317,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 				ScalarType min = indexedProjectionLength.front().second, max = indexedProjectionLength.back().second;
 				size_t numSections = (std::floorf(length * max) - std::floorf(length * min)) + 1;
 				auto sections = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>(numSections);
-				const float base = std::floorf(length * min);
+				int base = std::floorf(length * min);
 
 				for(auto it : indexedProjectionLength) {
 					size_t sectionId = std::floorf(length * it.second) - base;
@@ -550,6 +569,10 @@ void OpenInfraPlatform::Infrastructure::PointCloud::resetScalarField(const char 
 
 int OpenInfraPlatform::Infrastructure::PointCloud::computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
+	if(!isScalarFieldEnabled())
+		if(enableScalarField() != true)
+			return -1;
+
 	// Get the duplicate scalar field.
 	int idx = getScalarFieldIndexByName("Density");
 	if(idx == -1)
@@ -733,57 +756,81 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices()
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std::pair<size_t, size_t>>& o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
-	BLUE_LOG(trace) << "Computing pairs.";
+	if(sections_.size() > 0) {
+		BLUE_LOG(trace) << "Computing pairs.";
 
-	// Create a global list of all point pairs.
-	int tid = 0;
-#pragma omp parallel private(tid)
-	{
-		// Setup callback update variables.
-		tid = omp_get_thread_num();
-		int numSectionsPerThread = (sections_.size() - 2) / omp_get_num_threads();
-		int numSectionsPerPercent = numSectionsPerThread / 100;
-		int processedSections = 0;
-		int percentageCompleted = 0;
+		// If we have a callback, call start to init the GUI.
+		if(callback)
+			callback->start();
 
-		// We iterate over all sections and calculate the pairs of matching points.
-		std::vector<std::pair<size_t, size_t>> pairs = std::vector<std::pair<size_t, size_t>>();
-#pragma omp for schedule(dynamic, 20)
-		for(long i = 0; i < sections_.size(); i++) {
 
-			// Create a new local section. Resize it to be able to hold this and the next section.
-			//auto section = sections_[i];
+		// Add a scalar field for railway and encode the left/right railway index as -1 and 1.
+		int idx = getScalarFieldIndexByName("Railway");
+		if(idx == -1)
+			idx = addScalarField("Railway");
+		setCurrentInScalarField(idx);
 
-			// Insert all pairs in our local vector.
-			auto result = sections_[i]->computePairs();
-			pairs.insert(pairs.end(), result.begin(), result.end());
+		// Create a global list of all point pairs.
+		int tid = 0;
+//#pragma omp parallel private(tid)
+		{
+			// Setup callback update variables.
+			tid = omp_get_thread_num();
+			int numSectionsPerThread = (sections_.size()) / omp_get_num_threads();
+			int numSectionsPerPercent = numSectionsPerThread / 100;
+			int processedSections = 0;
+			int percentageCompleted = 0;
 
-			// Update our callback.
-			processedSections++;
-			if(processedSections >= numSectionsPerPercent) {
-				percentageCompleted++;
-				processedSections = 0;
-
-				if(tid == 0 && callback) {
-					callback->update(percentageCompleted);
+			// We iterate over all sections and calculate the pairs of matching points.
+			std::vector<std::pair<size_t, size_t>> pairs = std::vector<std::pair<size_t, size_t>>();
+//#pragma omp for
+			for(long i = 0; i < sections_.size(); i++) {
+				if(sections_[i]) {
+					// Insert all pairs in our local vector.
+					auto result = sections_[i]->computePairs();
+					if(result.size() > 0) {
+						pairs.insert(pairs.end(), result.begin(), result.end());
+					}
 				}
+				else {
+					BLUE_LOG(warning) << "Null section detected. Nr: " << i;
+				}
+
+				// Update our callback.
+				processedSections++;
+				if(processedSections >= numSectionsPerPercent) {
+					percentageCompleted++;
+					processedSections = 0;
+
+					if(tid == 0 && callback) {
+						callback->update(percentageCompleted);
+					}
+				}
+
 			}
 
-		}
 
-
-		// Merge the local vectors in the master vector.
+			// Merge the local vectors in the master vector.
 #pragma omp critical
-		{
-			o_pairs.insert(o_pairs.end(), pairs.begin(), pairs.end());
+			{
+				if(pairs.size() > 0) {
+					o_pairs.insert(o_pairs.end(), pairs.begin(), pairs.end());
+				}
+				else {
+					//BLUE_LOG(info) << "No pairs by thread #" << omp_get_thread_num() << " detected.";
+				}
+			}
 		}
+
+		// Stop our callback.
+		if(callback)
+			callback->stop();
+
+		BLUE_LOG(trace) << "Done.";
 	}
-
-	// Stop our callback.
-	if(callback)
-		callback->stop();
-
-	BLUE_LOG(trace) << "Done.";
+	else {
+		BLUE_LOG(warning) << "Aborting. No sections found.";
+	}
 }
 
 
@@ -1199,9 +1246,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 
 int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
-	// If we have a callback, call start to init the GUI.
-	if(callback)
-		callback->start();
+	
 
 	// Add a scalar field for railway and encode the left/right railway index as -1 and 1. Initialize it to 0 and set it as input scalar field.
 	int idx_railway = getScalarFieldIndexByName("Railway");
@@ -1247,7 +1292,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	// Delete the pairs since we dont need them anymore.
 	rails.clear();
 
-	auto sortCenterpointsIntoCenterlines = [&](const std::vector<CCVector3> &centerpoints, std::vector<std::vector<size_t>> &centerlines) {
+	auto sortCenterpointsIntoCenterlines = [&](const std::vector<CCVector3> &centerpoints, std::vector<std::vector<size_t>> &centerlines, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr) {
 		centerlines.push_back(std::vector<size_t>());
 		centerlines[0].push_back(0);
 
@@ -1295,12 +1340,13 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 			// Initialize the pair min with index and distance
 			std::tuple<size_t, float, float> min = std::tuple<size_t, float, float>(centerlines.size(), 0, LONG_MAX);
+			int tid = 0;
 
-			//#pragma omp parallel private(tid) firstprivate(callback) shared(inserted, ambiguous, unnecessary, min)
+			#pragma omp parallel private(tid) firstprivate(callback) shared(inserted, ambiguous, unnecessary, min)
 			{
 				tid = omp_get_thread_num();
 				// Iterate over all centerlines.
-				//#pragma omp for 
+				#pragma omp for 
 				for(long ii = 0; ii < centerlines.size(); ii++) {
 
 					if(ambiguous || unnecessary)
@@ -1320,55 +1366,55 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 					// If the distance is smaller than 20cm, we would add the point to this line.
 					if(distance < desc.maxDistance) {
-						auto v0 = CCVector2(0.5f, 0.5f);
-						v0.normalize();
-						float thresholdAngle = 0.7;//CCVector2(1.0f, 0.0f).dot(v0);
+						
+						float thresholdAngle = 0.7f;
 
-												   // Set it to the threshold angle so that every point which is added to another existing line with a better angle is prefered
+						// Set it to the threshold angle so that every point which is added to another existing line with a better angle is prefered
 						float angle = thresholdAngle;
 						float minCenterlineLength = 0.2f;
+
 						// Only compute the angle if the line is longer than 1m, otherwise just accept it.
-						if(dist(endpoint, centerpoints[line.front()]) > minCenterlineLength) {
-
-							long startIndex = line.size() - 1, endIndex = line.size() - 1;
-
-							while(startIndex > 0 && dist(endpoint, centerpoints[line[startIndex]]) < minCenterlineLength)
-								startIndex--;
-
-							auto axis = getPCA(line, startIndex, endIndex);
-							axis.normalize();
-
-							line.push_back(i);
-							auto direction = getPCA(line, startIndex + 1, endIndex + 1);
-							direction.normalize();
-							line.pop_back();
-
-							angle = std::abs(axis.dot(direction));
-						}
+						//if(dist(endpoint, centerpoints[line.front()]) > minCenterlineLength) {
+						//
+						//	long startIndex = line.size() - 1, endIndex = line.size() - 1;
+						//
+						//	while(startIndex > 0 && dist(endpoint, centerpoints[line[startIndex]]) < minCenterlineLength)
+						//		startIndex--;
+						//
+						//	auto axis = getPCA(line, startIndex, endIndex);
+						//	axis.normalize();
+						//
+						//	line.push_back(i);
+						//	auto direction = getPCA(line, startIndex + 1, endIndex + 1);
+						//	direction.normalize();
+						//	line.pop_back();
+						//
+						//	angle = std::abs(axis.dot(direction));
+						//}
 
 
 
 						if(angle >= thresholdAngle) {
-							//if(inserted) {
-							//	//#pragma omp critical
-							//	ambiguous = true;
-							//	break;
-							//}
-							//// Otherwise the min distance is updated and inserted is set to true.
-							//else {
-							//#pragma omp critical 
+							if(inserted) {
+								#pragma omp critical
+								ambiguous = true;
+								break;
+							}
+							// Otherwise the min distance is updated and inserted is set to true.
+							else {
+							#pragma omp critical 
 							{
 								if(angle > std::get<1>(min) && distance < std::get<2>(min)) {
 									inserted = true;
 									min = std::tuple<size_t, float, float>(ii, angle, distance);
 								}
 							}
-							//}
+							}
 						}
 					}
 				}
-				//#pragma omp barrier
-				//#pragma omp master
+				#pragma omp barrier
+				#pragma omp master
 				{
 
 					// If the point is not ambiguous, we either insert it in the matching line or create a new one.
@@ -1383,8 +1429,9 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 #pragma omp parallel for shared(point, hasMinDistanceThreshold) schedule(dynamic)
 							for(long line_idx = 0; line_idx < centerlines.size(); line_idx++) {
 								auto line = centerlines[line_idx];
-								if(dist(point, centerpoints[line.back()]) < 0.16f)
-									hasMinDistanceThreshold = false;
+								for(auto point_idx: line)
+									if(dist(point, centerpoints[point_idx]) < 0.16f)
+										hasMinDistanceThreshold = false;
 							}
 
 							if(hasMinDistanceThreshold) {
@@ -1403,6 +1450,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 							float distAlongMainAxis = std::fabsf(mainAxis_.dot(point) - mainAxis_.dot(centerpoints[line.back()]));
 							return distAlongMainAxis > 10.0f && (line.size() < desc.minSegmentPoints || (centerpoints[line.back()] - centerpoints[line.front()]).norm() < desc.minSegmentLength);
 						});
+
 						centerlines.erase(end, centerlines.end());
 						std::sort(centerlines.begin(), centerlines.end(), [](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {return lhs.size() > rhs.size(); });
 					}
@@ -1435,7 +1483,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 	// Split the centerpoints into different rails and recognize different rails. Only store indices to save memory.
 	std::vector<std::vector<size_t>> centerlines = std::vector<std::vector<size_t>>();
-	sortCenterpointsIntoCenterlines(centerpoints, centerlines);
+	sortCenterpointsIntoCenterlines(centerpoints, centerlines, callback);
 
 
 	if(centerlines.empty()) {
@@ -1544,35 +1592,39 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	std::for_each(centerlines.begin(), centerlines.end(), [](std::vector<size_t> &line) { line.clear(); });
 	centerlines.clear();
 	
-	// Use this vector to store the indices of the new centerline points to properliy set their scalar value.
-	std::vector<std::vector<size_t>> centerlinePointIndices = std::vector<std::vector<size_t>>(alignments.size());
+	auto addAlignmentPoints = [&]() {
+		// Use this vector to store the indices of the new centerline points to properliy set their scalar value.
+		std::vector<std::vector<size_t>> centerlinePointIndices = std::vector<std::vector<size_t>>(alignments.size());
 
-	// Only add centerpoints for alignments which are also exported.
-	for(size_t idx = 0; idx < alignments.size(); idx++) {
-		auto &segment = alignments[idx];
-		for(auto point : segment) {
-			addPoint(CCVector3(point));
-			addRGBColor(255 * (float)idx / (float)alignments.size(), 0, 255);
-			centerlinePointIndices[idx].push_back(this->size() - 1);
+		// Only add centerpoints for alignments which are also exported.
+		for(size_t idx = 0; idx < alignments.size(); idx++) {
+			auto &segment = alignments[idx];
+			for(auto point : segment) {
+				addPoint(CCVector3(point));
+				addRGBColor(255 * (float)idx / (float)alignments.size(), 0, 255);
+				centerlinePointIndices[idx].push_back(this->size() - 1);
+			}
 		}
-	}	
 
-	// Add a scalar field for centerline so that we can delete them again when we do the reset.
-	int idx_centerline = getScalarFieldIndexByName("Centerline");
-	if(idx_centerline == -1)
-		idx_centerline = addScalarField("Centerline");
-	setCurrentInScalarField(idx_centerline);
+		// Add a scalar field for centerline so that we can delete them again when we do the reset.
+		int idx_centerline = getScalarFieldIndexByName("Centerline");
+		if(idx_centerline == -1)
+			idx_centerline = addScalarField("Centerline");
+		setCurrentInScalarField(idx_centerline);
 
-	// Initialize all centerline scalar values to -1.
-	for_each([&](size_t i) {
-		setPointScalarValue(i, -1);
-	});
+		// Initialize all centerline scalar values to -1.
+		for_each([&](size_t i) {
+			setPointScalarValue(i, -1);
+		});
 
-	// Set the index of the centerline as the scalar value.
-	for(size_t idx = 0; idx < centerlinePointIndices.size(); idx++) {
-		for(auto pointIndex : centerlinePointIndices[idx])
-			setPointScalarValue(pointIndex, idx);
-	}
+		// Set the index of the centerline as the scalar value.
+		for(size_t idx = 0; idx < centerlinePointIndices.size(); idx++) {
+			for(auto pointIndex : centerlinePointIndices[idx])
+				setPointScalarValue(pointIndex, idx);
+		}
+	};
+
+	addAlignmentPoints();
 
 	// Update the centerline description so that we know how the centerlines were generated when we export the curvatures etc. from the measurement.
 	centerlineDescription_ = desc;
@@ -1588,6 +1640,24 @@ int OpenInfraPlatform::Infrastructure::PointCloud::resetCenterlines()
 {
 	centerlineDescription_ = buw::CenterlineComputationDescription();
 	return resetRailwaySegmentation();
+}
+
+int OpenInfraPlatform::Infrastructure::PointCloud::resetPairs()
+{
+	// Reset the railway points color to white.
+	int idx_railway = getScalarFieldIndexByName("Railway");
+	if(idx_railway == -1)
+		return -1;
+
+	setCurrentOutScalarField(idx_railway);
+	const ColorCompType white[3] = { 255,255,255 };
+	for_each([&](size_t i) {
+		if(getPointScalarValue(i) != 0)
+			setPointColor(i, white);
+	});
+
+	resetScalarField("Railway");
+	return 0;
 }
 
 int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(const buw::CenterlineCurvatureComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
@@ -2302,8 +2372,10 @@ const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint3
 	return std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>>(remainingIndices_, filteredIndices_, segmentedIndices_);
 }
 
-buw::ReferenceCounted<CCLib::DgmOctree> OpenInfraPlatform::Infrastructure::PointCloud::getDGMOctree() const
+buw::ReferenceCounted<CCLib::DgmOctree> OpenInfraPlatform::Infrastructure::PointCloud::getDGMOctree()
 {
+	if(!octree_)
+		octree_ = std::make_shared<CCLib::DgmOctree>(this);
 	return octree_;
 }
 

@@ -44,9 +44,11 @@ namespace OpenInfraPlatform {
 			// Dont use, prototype implementation.
 			static buw::ReferenceCounted<PointCloud> FromFile(const char* filename);
 
-			PointCloud() : ccPointCloud() { }
+			PointCloud() : ccPointCloud(), octree_(std::make_shared<CCLib::DgmOctree>(this)) { }
 
 			PointCloud(QString name) : ccPointCloud(name) { }
+
+			~PointCloud();
 
 			void computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
@@ -78,7 +80,11 @@ namespace OpenInfraPlatform {
 
 			int computeCenterlines(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			void computePairs(std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			
 			int resetCenterlines();
+
+			int resetPairs();
 
 			int computeCenterlineCurvature(const buw::CenterlineCurvatureComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
@@ -137,7 +143,7 @@ namespace OpenInfraPlatform {
 				}
 			}
 
-			buw::ReferenceCounted<CCLib::DgmOctree> getDGMOctree() const;
+			buw::ReferenceCounted<CCLib::DgmOctree> getDGMOctree();
 
 			
 		private:
@@ -145,7 +151,6 @@ namespace OpenInfraPlatform {
 
 			void computeIndices();
 
-			void computePairs(std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			void init();
 
@@ -161,7 +166,7 @@ namespace OpenInfraPlatform {
 			std::vector<uint32_t> remainingIndices_, filteredIndices_, segmentedIndices_;
 			std::vector<buw::ReferenceCounted<PointCloudSection>> sections_;
 			std::map<std::pair<int, int>, std::vector<uint32_t>> grid_;
-			buw::ReferenceCounted<CCLib::DgmOctree> octree_;
+			buw::ReferenceCounted<CCLib::DgmOctree> octree_ = nullptr;
 
 			buw::CenterlineComputationDescription centerlineDescription_;
 		};

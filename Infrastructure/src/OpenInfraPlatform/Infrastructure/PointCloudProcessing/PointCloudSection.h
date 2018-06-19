@@ -46,6 +46,8 @@ namespace OpenInfraPlatform {
 
 			PointCloudSection(PointCloudSection &other) : ReferenceCloud(other) {}
 
+			~PointCloudSection();
+
 			// Function which flags points considered as duplicate in this projection as duplicates in the associated cloud.
 			int flagDuplicatePoints(const double minDistance);
 
@@ -55,13 +57,15 @@ namespace OpenInfraPlatform {
 
 			CCVector3 computeCenter();
 
-			std::set<std::pair<size_t, size_t>> computePairs();
+			std::vector<std::pair<size_t, size_t>> computePairs();
 
 		private:
 
 
 			// Creates a point cloud where all points are projected on the plane represented by this section.
 			buw::ReferenceCounted<PointCloud> createPointCloud2D();
+
+			buw::ReferenceCounted<PointCloud> createPointCloud3D();
 
 			template<typename F> void for_each(const F& function)
 			{
