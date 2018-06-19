@@ -17,6 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "Ifc4x1TreeModel.h"
 #include "OpenInfraPlatform/Infrastructure/Export/IfcAlignment1x1Caster.h"
+#include "Ifc4x1TreeItem.h"
 
 #include <BlueFramework\Core\Exception.h>
 #include <BlueFramework\Core\memory.h>
@@ -53,6 +54,20 @@ QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::index(int row, in
 	else {
 		return this->createIndex(row, column, std::static_pointer_cast<void>(data_.find(parent.row() + 1)->second).get());
 	}
+
+	TreeItem *parentItem;
+
+	if (!parent.isValid())
+		parentItem = rootItem;
+	else
+		parentItem = static_cast<TreeItem*>(parent.internalPointer());
+
+	TreeItem *childItem = parentItem->child(row);
+	if (childItem)
+		return createIndex(row, column, childItem);
+	else
+		return QModelIndex();
+}
 }
 
 QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::parent(const QModelIndex & child) const
@@ -118,7 +133,9 @@ struct OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::getName {
 	template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
 		operator()(T entity)
 	{
-		visit_struct::for_each(entity, [&](const char* name, const auto &value) {names_.push_back(name); });
+		visit_struct::for_each(entity, [&](const char* name, const auto &value) {
+			names_.push_back(name);
+		});
 	}
 
 	//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
@@ -207,3 +224,4 @@ visit_struct::get_name<i>(s);
 //	return childItems_.value(row);
 //}
 
+//parentItem_.child(row) oder parentItem_->child(row) sowas in der art? warum erkennt er parentItem_ nicht?

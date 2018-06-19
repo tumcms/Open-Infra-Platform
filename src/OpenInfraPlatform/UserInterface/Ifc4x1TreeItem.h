@@ -21,25 +21,32 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <QList>
 #include <QVariant>
 
-class Ifc4x1TreeItem
-{
-public:
-	explicit Ifc4x1TreeItem(std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data, Ifc4x1TreeItem *parentItem = 0);
-	~Ifc4x1TreeItem();
+namespace OpenInfraPlatform {
+	namespace UserInterface {
 
-	void appendChild(Ifc4x1TreeItem *child);
+		class Ifc4x1TreeItem
+		{
+		public:
+			explicit Ifc4x1TreeItem(std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data, Ifc4x1TreeItem *parentItem = 0);
+			~Ifc4x1TreeItem();
 
-	Ifc4x1TreeItem *child(int row);
-	int childCount() const;
-	int columnCount() const;
-	QVariant data(int column) const;
-	int row() const;
-	Ifc4x1TreeItem *parentItem();
+			void appendChild(Ifc4x1TreeItem *child);
 
-private:
-	QList<Ifc4x1TreeItem*> childItems_;
-	std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;
-	Ifc4x1TreeItem *parentItem_;
-};
+			Ifc4x1TreeItem *child(int row);
+			int childCount() const;
+			int columnCount() const;
+			QVariant data(int column, int row) const;
+			int row() const;
+			Ifc4x1TreeItem *parentItem();
+
+		private:
+			QList<Ifc4x1TreeItem*> childItems_;
+			std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;
+			Ifc4x1TreeItem *parentItem_;
+
+			struct getAttributeDescription;
+		};
 
 #endif // TREEITEM_H
+	}
+}

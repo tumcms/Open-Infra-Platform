@@ -15,53 +15,102 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <QStringList>
 #include "Ifc4x1TreeItem.h"
+#include "Ifc4x1TreeModel.h"
 
-Ifc4x1TreeItem::Ifc4x1TreeItem(std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data; , TreeItem *parent)
+OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::Ifc4x1TreeItem(std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>> data, Ifc4x1TreeItem * parentItem)
 {
-	parentItem_ = parent;
+	parentItem_ = parentItem;
 	data_ = data;
 }
 
-Ifc4x1TreeItem::~Ifc4x1TreeItem()
+struct OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::getAttributeDescription {
+
+	template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
+		operator()(T entity)
+	{
+		visit_struct::for_each(entity, [&](const char* name, const auto &value) {
+			names_.push_back(name);
+			typename_= typeid(T).name();
+			value_.push_back(value);
+			
+		});
+	}
+
+	//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
+	template <class T> typename std::enable_if<!std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
+		operator()(T& entity) const
+	{
+		std::string message = "Invalid function call. " + std::string(typeid(entity).name()) + " isn't a member of IfcAlignment1x1Entity.";
+		throw buw::Exception(message.data());
+	}
+
+	//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
+	void operator()(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity& entity) const
+	{
+		std::string message = "Invalid function call.";
+		throw buw::Exception(message.data());
+	}
+
+	std::vector<const char*> names_;
+	std::vector<const char*> typename_;
+	std::vector <QVariant> value_;
+
+};
+
+OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::~Ifc4x1TreeItem()
 {
 	qDeleteAll(childItems_);
 }
 
-void Ifc4x1TreeItem::appendChild(Ifc4x1TreeItem *item)
+void OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::appendChild(Ifc4x1TreeItem *item)
 {
 	childItems_.append(item);
 }
 
-Ifc4x1TreeItem *Ifc4x1TreeItem::child(int row)
+OpenInfraPlatform::UserInterface::Ifc4x1TreeItem *OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::child(int row)
 {
 	return childItems_.value(row);
 }
 
-int Ifc4x1TreeItem::childCount() const
+int OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::childCount() const
 {
 	return childItems_.count();
 }
 
-int Ifc4x1TreeItem::columnCount() const
+int OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::columnCount() const
 {
-	return m_itemData.count();
+	return 3;
 }
 
-QVariant Ifc4x1TreeItem::data(int column) const
+QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::data(int column, int row) const
 {
-	return m_itemData.value(column);
+	switch (column)
+		case 0:
+			return QVariant names_[row];
+			break;
+		case 1:
+			return value_[row];//data_.value(column);//value of the object
+				break; 
+		case 2:
+			return type_[row];//type of the object 
+				break;
+
 }
 
-Ifc4x1TreeItem *Ifc4x1TreeItem::parentItem()
+OpenInfraPlatform::UserInterface::Ifc4x1TreeItem *OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::parentItem()
 {
-	return m_parentItem;
+	if (parentItem_)
+		return parentItem_;
+
+	return 0;
 }
 
-int Ifc4x1TreeItem::row() const
+int OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::row() const
 {
-	if (m_parentItem)
-		return m_parentItem->childItems_.indexOf(const_cast<Ifc4x1TreeItem*>(this));
+	if (parentItem_)
+		return parentItem_->childItems_.indexOf(const_cast<Ifc4x1TreeItem*>(this));
 
 	return 0;
 }
