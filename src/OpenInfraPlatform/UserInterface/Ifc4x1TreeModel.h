@@ -20,10 +20,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include <QAbstractItemModel>
 #include <type_traits>
+#include <QModelIndex>
+#include <QVariant>
+
 
 namespace OpenInfraPlatform {
 	namespace UserInterface {
 
+		class Ifc4x1TreeItem;
+		
 		class Ifc4x1TreeModel : public QAbstractItemModel {
 
 			Q_OBJECT;
@@ -42,8 +47,7 @@ namespace OpenInfraPlatform {
 
 		
 		private:
-			std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;
-			//std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;
+			std::vector<shared_ptr<Ifc4x1TreeItem>> data_;
 			
 			struct countRows;
 			struct getName;
@@ -52,7 +56,7 @@ namespace OpenInfraPlatform {
 		//private:
 			//void setupModelData(const QStringList &lines, TreeItem *parent);
 
-			//TreeItem *rootItem;
+			//shared_ptr<Ifc4x1TreeItem> rootItem;
 		};
 
 	}

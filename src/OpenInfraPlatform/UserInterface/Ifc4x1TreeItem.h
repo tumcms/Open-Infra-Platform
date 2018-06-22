@@ -20,6 +20,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <QList>
 #include <QVariant>
+#include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
+#include "OpenInfraPlatform\IfcAlignment1x1\model\Model.h"
 
 namespace OpenInfraPlatform {
 	namespace UserInterface {
@@ -27,26 +29,31 @@ namespace OpenInfraPlatform {
 		class Ifc4x1TreeItem
 		{
 		public:
-			explicit Ifc4x1TreeItem(std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data, Ifc4x1TreeItem *parentItem = 0);
+			explicit Ifc4x1TreeItem(std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data, std::shared_ptr<Ifc4x1TreeItem> parentItem = nullptr);
 			~Ifc4x1TreeItem();
 
-			void appendChild(Ifc4x1TreeItem *child);
+			void appendChild(shared_ptr<Ifc4x1TreeItem> child);
 
-			Ifc4x1TreeItem *child(int row);
+			shared_ptr<Ifc4x1TreeItem> child(int row);
 			int childCount() const;
 			int columnCount() const;
 			QVariant data(int column, int row) const;
 			int row() const;
-			Ifc4x1TreeItem *parentItem();
+			shared_ptr<Ifc4x1TreeItem> parentItem();
 
 		private:
-			QList<Ifc4x1TreeItem*> childItems_;
+			QList<shared_ptr<Ifc4x1TreeItem>> childItems_;
 			std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;
-			Ifc4x1TreeItem *parentItem_;
+			shared_ptr<Ifc4x1TreeItem> parentItem_;
 
 			struct getAttributeDescription;
 		};
 
 #endif // TREEITEM_H
 	}
+}
+
+namespace buw
+{
+	using OpenInfraPlatform::UserInterface::Ifc4x1TreeItem;
 }

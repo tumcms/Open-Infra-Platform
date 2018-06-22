@@ -25,12 +25,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <type_traits>
 #include <cstdlib>
+#include <QStringList>
 
 OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::Ifc4x1TreeModel(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>>& entities)
 	:
 	QAbstractItemModel()
 {
 	data_ = entities;
+	
+	
+	//geht nicht mehr: über die entities iterieren und jedes objekt aus der obersten ebene zu einem treeitem machen
 	//was machen folgende?
 	//data_._Get_data
 	//data_._Parent
@@ -38,9 +42,9 @@ OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::Ifc4x1TreeModel(std::map<int,
 
 
 	//represent an imaginary parent of top-level items in the model:
-	//QList<QVariant> rootData;
-	//rootData << "Title" << "Summary";
-	//rootItem = new TreeItem(rootData);
+	//std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>>  rootData;
+	//rootData << "IFC Tree";
+	//rootItem = new Ifc4x1TreeItem(rootData);
 	//setupModelData(data.split(QString("\n")), rootItem);
 }
 
@@ -53,22 +57,24 @@ QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::index(int row, in
 		return this->createIndex(row, column, nullptr);
 	else {
 		return this->createIndex(row, column, std::static_pointer_cast<void>(data_.find(parent.row() + 1)->second).get());
+		
 	}
 
-	TreeItem *parentItem;
-
+	//from Qt documentation
+	
+	shared_ptr<Ifc4x1TreeItem> parentItem;
 	if (!parent.isValid())
-		parentItem = rootItem;
+		parentItem = nullptr;
 	else
-		parentItem = static_cast<TreeItem*>(parent.internalPointer());
+		parentItem = static_cast<shared_ptr<Ifc4x1TreeItem>>(parent.internalPointer());
 
-	TreeItem *childItem = parentItem->child(row);
-	if (childItem)
-		return createIndex(row, column, childItem);
-	else
+	shared_ptr<Ifc4x1TreeItem> childItem = parentItem->child(row);
+	//if (childItem)
+		//return createIndex(row, column, childItem);
+	//else
 		return QModelIndex();
 }
-}
+
 
 QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::parent(const QModelIndex & child) const
 {
@@ -78,6 +84,15 @@ QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::parent(const QMod
 	else {
 		return QModelIndex();
 	}
+
+	//from Qt documentation
+	shared_ptr<Ifc4x1TreeItem> childItem = static_cast<shared_ptr<Ifc4x1TreeItem>>(child.internalPointer());
+	shared_ptr<Ifc4x1TreeItem> parentItem = childItem->parentItem();
+
+	if (parentItem==nullptr)
+		return QModelIndex();
+
+//	return createIndex(parentItem->row(), 0, parentItem);
 }
 
 struct OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::countRows
@@ -118,6 +133,7 @@ int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(const QModelInde
 	}
 
 	//Menge der Attribute des Objekts data_.size(index) oder data_[parent].size()?oder mit visit struct?
+	//würde das hier auch mit childCount() gehen?
 }
 
 int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::columnCount(const QModelIndex & parent) const
