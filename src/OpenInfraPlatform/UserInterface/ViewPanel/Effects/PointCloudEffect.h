@@ -23,6 +23,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "OpenInfraPlatform/namespace.h"
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
 
+#include "BoxEffect.h"
+
 #include <buw.Rasterizer.h>
 #include <buw.Engine.h>
 #include <map>
@@ -93,6 +95,10 @@ public:
 	
 	void setOctree(buw::ReferenceCounted<CCLib::DgmOctree> octree, buw::Vector3d offset);
 
+	void setSections(std::vector<buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloudSection>> sections, buw::Vector3d offset);
+
+	buw::ReferenceCounted<BoxEffect> sectionsBoundingBoxEffect_ = nullptr;
+
 private:
 	void v_init();
 	void v_render();
@@ -109,6 +115,7 @@ private:
 	buw::ReferenceCounted<buw::IPipelineState> pipelineStatePointCloud_ = nullptr, pipelineStateOctree_ = nullptr;
 	buw::ReferenceCounted<buw::IViewport> viewport_ = nullptr;
 	buw::ReferenceCounted<buw::PointCloud> pointCloud_ = nullptr;
+
 	SettingsBuffer settings_;
 	buw::Vector4f uniformColor_, filteredColor_, segmentedColor_;
 	buw::Vector3d offset_;

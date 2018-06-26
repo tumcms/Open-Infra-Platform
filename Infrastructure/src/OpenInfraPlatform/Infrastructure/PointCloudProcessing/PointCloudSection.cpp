@@ -76,8 +76,13 @@ int OpenInfraPlatform::Infrastructure::PointCloudSection::computePercentiles(flo
 CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeCenter()
 {
 	if(this->size() > 0) {
-		CCLib::Neighbourhood neighbourhood = CCLib::Neighbourhood(this);
-		return *neighbourhood.getGravityCenter();
+		CCVector3 center = CCVector3(0, 0, 0);
+		for(size_t i = 0; i < this->size(); i++) {
+			center += ((*getPoint(i)) / ((float)this->size()));
+		}
+		//CCLib::Neighbourhood neighbourhood = CCLib::Neighbourhood(this);
+		//return *neighbourhood.getGravityCenter();
+		return center;
 	}
 	else {
 		return CCVector3();

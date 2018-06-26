@@ -16,6 +16,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "PointCloudEffect.h"
+#include "BoxEffect.h"
 
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudSection.h"
@@ -42,18 +43,32 @@ PointCloudEffect::PointCloudEffect(
 	buw::ReferenceCounted<buw::IConstantBuffer> viewportBuffer)
 	: buw::Effect(renderSystem), viewport_(viewport), worldBuffer_(worldBuffer), depthStencilMSAA_(depthStencilMSAA), viewportBuffer_(viewportBuffer)
 {
-
 }
 
 PointCloudEffect::~PointCloudEffect()
 {
+	// Clear constant buffers.
 	worldBuffer_ = nullptr;
 	settingsBuffer_ = nullptr;
 	viewportBuffer_ = nullptr;
-	vertexBufferPointCloud_ = nullptr;
-	depthStencilMSAA_ = nullptr;
-	pipelineStatePointCloud_ = nullptr;
 	viewport_ = nullptr;
+
+	//Clear vertex buffers.
+	vertexBufferPointCloud_ = nullptr;
+	vertexBufferOctree_ = nullptr;
+
+	//Clear index buffers.
+	indexBufferFiltered_ = nullptr;
+	indexBufferOctree_ = nullptr;
+	indexBufferRemaining_ = nullptr;
+	indexBufferSegmented_ = nullptr;
+	
+	// Clear textures.
+	depthStencilMSAA_ = nullptr;
+
+	// Clear pipeline states.
+	pipelineStatePointCloud_ = nullptr;
+	pipelineStateOctree_ = nullptr;
 }
 
 void PointCloudEffect::loadShader()
@@ -248,6 +263,8 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	if(octree)
 		setOctree(octree, offset);
 
+	setSections(pointCloud->getSections(), offset);
+
 	BLUE_LOG(trace) << "Finished initializing GPU side buffers.";
 }
 
@@ -295,6 +312,42 @@ void PointCloudEffect::setOctree(buw::ReferenceCounted<CCLib::DgmOctree> octree,
 	BLUE_LOG(trace) << "Done creating octree buffers.";
 }
 
+void PointCloudEffect::setSections(std::vector<buw::ReferenceCounted<buw::PointCloudSection>> sections, buw::Vector3d offset)
+{
+	std::vector<buw::VertexPosition3> sectionVertices = std::vector<buw::VertexPosition3>();
+	std::vector<uint32_t> sectionIndices = std::vector<uint32_t>();
+
+	for(int i = 0; i < sections.size(); i++) {
+		auto section = sections[i];
+		if(section->size() > 0) {
+			CCVector3 center = section->computeCenter();
+			CCVector3 min, max;
+			section->getBoundingBox(min, max);
+			CCVector3 size = (max - min) / 2.0f;
+
+			buw::createBoundingBox(sectionVertices, sectionIndices, center.x + offset.x(), center.y + offset.y(), center.z + offset.z(), size.x, size.y, size.z);
+		}
+	}
+
+	//std::vector<buw::VertexPosition3Color3Size1> vertices = std::vector<buw::VertexPosition3Color3Size1>();
+	//for(auto vertex : sectionVertices) {
+	//	vertices.push_back(buw::VertexPosition3Color3Size1(buw::Vector3f(vertex.position[0], vertex.position[1], vertex.position[2]), buw::Vector3f(0, 0, 1), 1.0f));
+	//}
+
+	buw::indexBufferDescription ibd;
+	ibd.indexCount = sectionIndices.size();
+	ibd.data = sectionIndices.data();
+	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
+	sectionsBoundingBoxEffect_->assignIndexBuffer(renderSystem()->createIndexBuffer(ibd));
+	
+	// Fill vertex buffer description and create vertex buffer.
+	buw::vertexBufferDescription vbd;
+	vbd.vertexCount = sectionVertices.size();
+	vbd.vertexLayout = buw::VertexPosition3::getVertexLayout();
+	vbd.data = sectionVertices.data();
+	sectionsBoundingBoxEffect_->assignVertexBuffer(renderSystem()->createVertexBuffer(vbd));
+}
+
 void PointCloudEffect::v_init()
 {
 	loadShader();
@@ -314,7 +367,6 @@ void PointCloudEffect::v_init()
 	cbd.data = &settings_;
 
 	settingsBuffer_ = renderSystem()->createConstantBuffer(cbd);
-
 	
 }
 

@@ -166,7 +166,7 @@ set(QT5_COMPONENTS
 
 # Loop over all components, find them and initialize the corresponding variables
 foreach(Component ${QT5_COMPONENTS})
-	find_package( Qt5 5.11.0 COMPONENTS ${Component}	REQUIRED)
+	find_package( Qt5 5.10.0 COMPONENTS ${Component}	REQUIRED)
 	if(TARGET ${Qt5${Component}_LIBRARIES})
 		get_target_property(Qt5${Component}_location ${Qt5${Component}_LIBRARIES} LOCATION_Release)
 		set(QT5_DLLS_RELEASE ${QT5_DLLS_RELEASE} ${Qt5${Component}_location})

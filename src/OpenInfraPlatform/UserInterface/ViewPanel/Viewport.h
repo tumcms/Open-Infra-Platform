@@ -53,6 +53,7 @@ namespace OpenInfraPlatform
 		class BoundingBoxEffect;
 		class PointCloudEffect;
 		class BillboardEffect;
+		class BoxEffect;
 
 		class Viewport : public QWidget
 		{
@@ -194,6 +195,7 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<BoundingBoxEffect> boundingBoxEffect_;
             buw::ReferenceCounted<SkyboxEffect> skyboxEffect_;
 			buw::ReferenceCounted<PointCloudEffect> pointCloudEffect_;
+			buw::ReferenceCounted<BoxEffect> sectionsBoundingBoxEffect_ = nullptr;
 			buw::ReferenceCounted<BillboardEffect> billboardEffect_;
             std::vector<buw::ReferenceCounted<buw::Effect>> activeEffects_;
 

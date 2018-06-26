@@ -622,7 +622,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init()
 	octree_->build();
 	BLUE_LOG(trace) << "Finished building octree.";
 
-	computeSections2(10.0f);
+	computeSections(10.0f);
 }
 
 std::vector<buw::ReferenceCounted<buw::PointCloudSection>> OpenInfraPlatform::Infrastructure::PointCloud::getSections()

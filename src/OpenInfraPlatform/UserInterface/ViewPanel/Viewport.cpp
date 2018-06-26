@@ -33,6 +33,7 @@
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/IfcGeometryEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/SkyboxEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/PointCloudEffect.h"
+#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/BoxEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/BillboardEffect.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
 
@@ -164,6 +165,12 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 	pointCloudEffect_->init();
 
 	BLUE_LOG(trace) << "Creating effects (10)";
+	sectionsBoundingBoxEffect_ = buw::makeReferenceCounted<BoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+	sectionsBoundingBoxEffect_->init();
+
+	pointCloudEffect_->sectionsBoundingBoxEffect_ = sectionsBoundingBoxEffect_;
+
+	BLUE_LOG(trace) << "Creating effects (11)";
 	billboardEffect_ = buw::makeReferenceCounted<BillboardEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
 	billboardEffect_->init();
 
@@ -831,6 +838,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
 	if(changeFlag & ChangeFlag::PointCloud && pointCloud && pointCloud->size() > 0) {
 		pointCloudEffect_->setPointCloud(pointCloud, offset);
 		activeEffects_.push_back(pointCloudEffect_);
+		activeEffects_.push_back(sectionsBoundingBoxEffect_);
 	}
 
 	if (/*changeFlag & ChangeFlag::ProxyModel && */proxyModel && proxyModel->getAccidentReportCount()) {
