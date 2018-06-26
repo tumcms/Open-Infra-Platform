@@ -31,21 +31,15 @@ OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::Ifc4x1TreeModel(std::map<int,
 	:
 	QAbstractItemModel()
 {
-	data_ = entities;
-	
-	
-	//geht nicht mehr: über die entities iterieren und jedes objekt aus der obersten ebene zu einem treeitem machen
-	//was machen folgende?
-	//data_._Get_data
-	//data_._Parent
-	//data_[4].get()
+	for (auto it : entities) {
+		shared_ptr<Ifc4x1TreeItem> item = std::make_shared<Ifc4x1TreeItem>(it);
+		data_.push_back(item);
+	}
+}
 
-
-	//represent an imaginary parent of top-level items in the model:
-	//std::pair<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>>  rootData;
-	//rootData << "IFC Tree";
-	//rootItem = new Ifc4x1TreeItem(rootData);
-	//setupModelData(data.split(QString("\n")), rootItem);
+OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::~Ifc4x1TreeModel()
+{
+	data_.clear();
 }
 
 QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::index(int row, int column, const QModelIndex & parent) const
@@ -56,7 +50,7 @@ QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::index(int row, in
 	if (!parent.isValid())
 		return this->createIndex(row, column, nullptr);
 	else {
-		return this->createIndex(row, column, std::static_pointer_cast<void>(data_.find(parent.row() + 1)->second).get());
+		return this->createIndex(row, column, nullptr);
 		
 	}
 
@@ -65,8 +59,8 @@ QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::index(int row, in
 	shared_ptr<Ifc4x1TreeItem> parentItem;
 	if (!parent.isValid())
 		parentItem = nullptr;
-	else
-		parentItem = static_cast<shared_ptr<Ifc4x1TreeItem>>(parent.internalPointer());
+	//else
+	//	parentItem = static_cast<shared_ptr<Ifc4x1TreeItem>>(parent.internalPointer());
 
 	shared_ptr<Ifc4x1TreeItem> childItem = parentItem->child(row);
 	//if (childItem)
@@ -79,57 +73,29 @@ QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::index(int row, in
 QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::parent(const QModelIndex & child) const
 {
 	if(child.internalPointer() != nullptr) {
-		return this->createIndex(((OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity*) child.internalPointer())->getId() - 1, 0, nullptr);
+		return this->createIndex(0, 0, nullptr);
 	}
 	else {
 		return QModelIndex();
 	}
 
 	//from Qt documentation
-	shared_ptr<Ifc4x1TreeItem> childItem = static_cast<shared_ptr<Ifc4x1TreeItem>>(child.internalPointer());
-	shared_ptr<Ifc4x1TreeItem> parentItem = childItem->parentItem();
+	//shared_ptr<Ifc4x1TreeItem> childItem = static_cast<shared_ptr<Ifc4x1TreeItem>>(child.internalPointer());
+	//shared_ptr<Ifc4x1TreeItem> parentItem = childItem->parentItem();
 
-	if (parentItem==nullptr)
-		return QModelIndex();
+	//if (parentItem==nullptr)
+	//	return QModelIndex();
 
 //	return createIndex(parentItem->row(), 0, parentItem);
 }
 
-struct OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::countRows
-{
-	template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
-	operator()(T entity)
-	{
-		rows_ = visit_struct::field_count(entity);
-	}
-
-	//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
-	template <class T> typename std::enable_if<!std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
-		operator()(T& entity) const
-	{
-		std::string message = "Invalid function call. " + std::string(typeid(entity).name()) + " isn't a member of IfcAlignment1x1Entity.";
-		throw buw::Exception(message.data());
-	}
-
-	//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
-	void operator()(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity& entity) const
-	{
-		std::string message = "Invalid function call.";
-		throw buw::Exception(message.data());
-	}
-
-	size_t rows_ = 0;
-};
 
 int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(const QModelIndex & parent) const
 {	
 	if (!parent.isValid())
 		return data_.size();
 	else {
-		auto entity = data_.find(parent.row() + 1)->second;
-		auto counter = countRows {};
-		OpenInfraPlatform::IfcAlignment1x1::castAndCall(entity, counter);
-		return counter.rows_;
+		return 0;
 	}
 
 	//Menge der Attribute des Objekts data_.size(index) oder data_[parent].size()?oder mit visit struct?
@@ -144,34 +110,6 @@ int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::columnCount(const QModelI
 		return 3;
 }
 
-struct OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::getName {
-		
-	template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
-		operator()(T entity)
-	{
-		visit_struct::for_each(entity, [&](const char* name, const auto &value) {
-			names_.push_back(name);
-		});
-	}
-
-	//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
-	template <class T> typename std::enable_if<!std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
-		operator()(T& entity) const
-	{
-		std::string message = "Invalid function call. " + std::string(typeid(entity).name()) + " isn't a member of IfcAlignment1x1Entity.";
-		throw buw::Exception(message.data());
-	}
-
-	//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
-	void operator()(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity& entity) const
-	{
-		std::string message = "Invalid function call.";
-		throw buw::Exception(message.data());
-	}
-
-	std::vector<const char*> names_;
-};
-
 
 QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelIndex & index, int role) const
 {
@@ -182,12 +120,10 @@ QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelInd
 		return QVariant();
 
 	if (!index.parent().isValid())
-		return QVariant(data_.find(index.row() + 1)->second->classname());
+		return QVariant(data_[index.row()]->getIfcClassName().data());
 	else {
-		auto ptr = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(buw::claimOwnership(index.internalPointer()));
-		auto name = getName();
-		OpenInfraPlatform::IfcAlignment1x1::castAndCall(ptr, name);
-		return QVariant(name.names_[index.row()]);
+		
+		return QVariant(data_[index.parent().row()]->data(index.column(), index.row()));
 	}
 }
 
@@ -198,46 +134,3 @@ bool OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::insertRows(int row, int 
 	endInsertRows();
 	return true;
 }
-
-/*template <class T, class R, class E>
-struct OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::my_type {
-	T a;
-	R b;
-	E c;
-	std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;
-};
-
-
-
-VISITABLE_STRUCT(OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::my_type, a, b, c, data_);
-
-
-
-struct debug_printer {
-	template <typename T>
-	void operator()(const char * name, const T & value) {
-		std::cerr << name << ": " << value << std::endl;
-	}
-};
-
-void debug_print(const my_type & my_struct) {
-	visit_struct::for_each(my_struct, debug_printer{});
-}
-
-visit_struct::get<i>(s);
-visit_struct::field_count(s);
-visit_struct::get_name<i>(s);
-*/
-
-// from Qt documentation 
-//TreeItem::TreeItem(const QList<QVariant> &data, TreeItem *parent)
-//{
-//	parentItem_ = parent;
-//	itemData_ = data;
-//}
-//TreeItem *TreeItem::child(int row)
-//{
-//	return childItems_.value(row);
-//}
-
-//parentItem_.child(row) oder parentItem_->child(row) sowas in der art? warum erkennt er parentItem_ nicht?

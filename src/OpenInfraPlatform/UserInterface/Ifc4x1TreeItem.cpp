@@ -126,6 +126,12 @@ std::shared_ptr<OpenInfraPlatform::UserInterface::Ifc4x1TreeItem> OpenInfraPlatf
 	return std::shared_ptr<OpenInfraPlatform::UserInterface::Ifc4x1TreeItem>();
 }
 
+std::string OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::getIfcClassName()
+{
+	return std::string(data_.second->classname());
+}
+
+
 int OpenInfraPlatform::UserInterface::Ifc4x1TreeItem::row() const
 {
 //	if (parentItem_)

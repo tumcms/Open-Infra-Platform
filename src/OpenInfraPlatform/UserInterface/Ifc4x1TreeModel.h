@@ -34,9 +34,9 @@ namespace OpenInfraPlatform {
 			Q_OBJECT;
 
 		public:
-			//explicit TreeModel(const QString &data, QObject *parent = 0); from Qt documentation
-			//~TreeModel(); from Qt documentation
 			Ifc4x1TreeModel(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& entities);
+			~Ifc4x1TreeModel();
+
 		// Inherited from QAbstractItemModel
 			virtual QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const override;
 			virtual QModelIndex parent(const QModelIndex & child) const override;
@@ -47,16 +47,7 @@ namespace OpenInfraPlatform {
 
 		
 		private:
-			std::vector<shared_ptr<Ifc4x1TreeItem>> data_;
-			
-			struct countRows;
-			struct getName;
-
-		
-		//private:
-			//void setupModelData(const QStringList &lines, TreeItem *parent);
-
-			//shared_ptr<Ifc4x1TreeItem> rootItem;
+			std::vector<shared_ptr<Ifc4x1TreeItem>> data_;		
 		};
 
 	}

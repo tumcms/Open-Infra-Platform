@@ -40,6 +40,7 @@ namespace OpenInfraPlatform {
 			QVariant data(int column, int row) const;
 			int row() const;
 			shared_ptr<Ifc4x1TreeItem> parentItem();
+			std::string getIfcClassName();
 
 		private:
 			QList<shared_ptr<Ifc4x1TreeItem>> childItems_;
