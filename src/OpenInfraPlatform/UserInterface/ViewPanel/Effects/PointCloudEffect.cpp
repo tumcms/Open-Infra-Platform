@@ -317,12 +317,12 @@ void PointCloudEffect::setSections(std::vector<buw::ReferenceCounted<buw::PointC
 	std::vector<buw::VertexPosition3> sectionVertices = std::vector<buw::VertexPosition3>();
 	std::vector<uint32_t> sectionIndices = std::vector<uint32_t>();
 
-	for(int i = 0; i < sections.size(); i++) {
+	for(int i = 0; i < sections.size(); i+=50) {
 		auto section = sections[i];
 		if(section->size() > 0) {
 			CCVector3 center = section->computeCenter();
 			CCVector3 min, max;
-			section->getBoundingBox(min, max);
+			section->getObjectOrientedBoundingBox(min, max);
 			CCVector3 size = (max - min) / 2.0f;
 
 			buw::createBoundingBox(sectionVertices, sectionIndices, center.x + offset.x(), center.y + offset.y(), center.z + offset.z(), size.x, size.y, size.z);

@@ -55,13 +55,15 @@ namespace OpenInfraPlatform {
 
 			int computePercentiles(float kernelRadius);
 
-			CCVector3 computeCenter();
+			CCVector3 computeCenterOfMass();
 
 			std::vector<std::pair<size_t, size_t>> computePairs();
 
+			void getAxisAlignedBoundingBox(CCVector3 &min, CCVector3 &max);
+
+			void getObjectOrientedBoundingBox(CCVector3 &min, CCVector3 &max);
+
 		private:
-
-
 			// Creates a point cloud where all points are projected on the plane represented by this section.
 			buw::ReferenceCounted<PointCloud> createPointCloud2D();
 
