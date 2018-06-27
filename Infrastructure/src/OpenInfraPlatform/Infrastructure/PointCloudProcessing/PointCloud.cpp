@@ -377,20 +377,38 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid()
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::alignOnMainAxis()
-{
+{	
+
+	auto orientation = getEigenvectors<3>();
+	bool isOrthgonal = true;
+	for(int i = 0; i < 2; i++) {
+		for(int ii = i + 1; ii < 3; ii++) {
+			double epsilon = 0.000001;
+			double error = std::abs(orientation.col(i).dot(orientation.col(ii)));
+			if(error > epsilon)
+				isOrthgonal = false;
+		}
+	}
+
+	if(!isOrthgonal) {
+		BLUE_LOG(warning) << "Aborting. Eigenvectors are not orthogonal!";
+		return;
+	}
+
+	auto roll = std::acos(Eigen::Vector3d::UnitY().dot(orientation.col(1)));
+	auto yaw = std::acos(Eigen::Vector3d::UnitZ().dot(orientation.col(0)));
+	auto pitch = std::acos(Eigen::Vector3d::UnitX().dot(orientation.col(2)));
+		
+	Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitX());
+	Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitY());
+	Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitZ());
+
+	Eigen::Quaternion<double> q = Eigen::Quaternion<double>(rollAngle);
+	applyRigidTransformation(ccGLMatrix::FromQuaternion((std::vector<double>({ q.x(), q.y(),q.z(),q.w() })).data()));
+
 	
-	auto roll = buw::calculateAngleBetweenVectors(buw::Vector3d(1.0, 0.0, 0.0), buw::Vector3d(mainAxis_.x, mainAxis_.y, mainAxis_.z).normalized());
-
-	Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitZ());
-	Eigen::AngleAxisd yawAngle(0, Eigen::Vector3d::UnitY());
-	Eigen::AngleAxisd pitchAngle(0, Eigen::Vector3d::UnitX());
-
-	Eigen::Quaternion<double> q = rollAngle * yawAngle * pitchAngle;
-	Eigen::Matrix3d rotationMatrix = q.matrix();
-
-	ccGLMatrix rotation;
-	rotation.initFromParameters(-roll, 0, 0, CCVector3(0, 0, 0));
-	applyRigidTransformation(rotation);
+	//buw::Vector3f fromX = orientation.col(2).cast<float>();	
+	//applyRigidTransformation(ccGLMatrix::FromToRotation(CCVector3(fromX.data()), CCVector3(1.0f, 0.0f, 0.0f)));	
 }
 
 
@@ -616,13 +634,16 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init()
 	grid_ = std::map<std::pair<int, int>, std::vector<uint32_t>>();
 
 	computeMainAxis();
-	//alignOnMainAxis();
+	alignOnMainAxis();
+	// Main axis has changed!
+	computeMainAxis();
+
 	BLUE_LOG(trace) << "Start building octree.";
 	octree_ = buw::makeReferenceCounted<CCLib::DgmOctree>(this);
 	octree_->build();
 	BLUE_LOG(trace) << "Finished building octree.";
 
-	computeSections(10.0f);
+	computeSections2(10.0f);
 }
 
 std::vector<buw::ReferenceCounted<buw::PointCloudSection>> OpenInfraPlatform::Infrastructure::PointCloud::getSections()

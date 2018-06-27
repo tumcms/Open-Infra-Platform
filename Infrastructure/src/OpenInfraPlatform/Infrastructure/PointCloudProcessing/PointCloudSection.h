@@ -57,6 +57,10 @@ namespace OpenInfraPlatform {
 
 			CCVector3 computeCenterOfMass();
 
+			CCVector3 computeCenter();
+
+			Eigen::Matrix3d getOrientation();
+
 			std::vector<std::pair<size_t, size_t>> computePairs();
 
 			void getAxisAlignedBoundingBox(CCVector3 &min, CCVector3 &max);

@@ -322,10 +322,20 @@ void PointCloudEffect::setSections(std::vector<buw::ReferenceCounted<buw::PointC
 		if(section->size() > 0) {
 			CCVector3 center = section->computeCenter();
 			CCVector3 min, max;
-			section->getObjectOrientedBoundingBox(min, max);
+			section->getAxisAlignedBoundingBox(min, max);
 			CCVector3 size = (max - min) / 2.0f;
-
+			size_t startIndex = sectionVertices.size();
 			buw::createBoundingBox(sectionVertices, sectionIndices, center.x + offset.x(), center.y + offset.y(), center.z + offset.z(), size.x, size.y, size.z);
+
+			size_t endIndex = sectionVertices.size();
+			//auto rotation = section->getOrientation();
+			//buw::Vector3f centerGlobal = buw::Vector3f(center.x + offset.x(), center.y + offset.y(), center.z + offset.z());
+			//for(startIndex; startIndex < endIndex; startIndex++)
+			//{
+			//	auto newpos = buw::Vector3f(sectionVertices[startIndex].position.data) - centerGlobal;
+			//	sectionVertices[startIndex] = buw::VertexPosition3((rotation.cast<float>() * newpos) + centerGlobal);
+			//}
+
 		}
 	}
 

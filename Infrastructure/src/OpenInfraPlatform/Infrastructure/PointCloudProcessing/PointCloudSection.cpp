@@ -89,6 +89,44 @@ CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeCenterOfM
 	}
 }
 
+CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeCenter()
+{
+	CCVector3 min, max;
+	getBoundingBox(min, max);
+	return min + ((max-min)/2.0f);
+}
+
+Eigen::Matrix3d OpenInfraPlatform::Infrastructure::PointCloudSection::getOrientation()
+{
+	auto orientation = createPointCloud3D()->getEigenvectors<3>();
+
+	//auto roll = buw::calculateAngleBetweenVectors(buw::Vector3d(1.0, 0.0, 0.0), orientation.col(2).normalized());
+	//auto yaw = buw::calculateAngleBetweenVectors(buw::Vector3d(0.0, 0.0, 1.0), orientation.col(1).normalized());
+	//auto pitch = buw::calculateAngleBetweenVectors(buw::Vector3d(0.0, 1.0, 0.0), orientation.col(0).normalized());
+	
+	double maxX = 0, maxY = 0, maxZ = 0;
+	for(int c = 0; c < 3; c++) {
+		maxX = std::abs(maxX) < std::abs(Eigen::Vector3d::UnitZ().dot(orientation.col(c))) ? Eigen::Vector3d::UnitZ().dot(orientation.col(c)) : maxX;
+		maxY = std::abs(maxY) < std::abs(Eigen::Vector3d::UnitY().dot(orientation.col(c))) ? Eigen::Vector3d::UnitY().dot(orientation.col(c)) : maxY;
+		maxZ = std::abs(maxZ) < std::abs(Eigen::Vector3d::UnitX().dot(orientation.col(c))) ? Eigen::Vector3d::UnitX().dot(orientation.col(c)) : maxZ;
+	}
+
+	//auto roll = std::acos(Eigen::Vector3d::UnitZ().dot(orientation.col(2)));
+	//auto yaw = std::acos(Eigen::Vector3d::UnitY().dot(orientation.col(1)));
+	//auto pitch = std::acos(Eigen::Vector3d::UnitX().dot(orientation.col(0)));
+
+	auto roll = std::acos(maxX);
+	auto yaw = std::acos(maxY);
+	auto pitch = std::acos(maxZ);
+
+	Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitX());
+	Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitY());
+	Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitZ());
+
+	Eigen::Quaternion<double> q = (rollAngle * yawAngle) * pitchAngle;
+	return q.matrix();
+}
+
 std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointCloudSection::computePairs()
 {
 	if(this->size() > 0) {
@@ -213,27 +251,15 @@ void OpenInfraPlatform::Infrastructure::PointCloudSection::getObjectOrientedBoun
 	min = CCVector3(LONG_MAX, LONG_MAX, LONG_MAX);
 	max = CCVector3(LONG_MIN, LONG_MIN, LONG_MIN);
 
-	auto orientation = createPointCloud3D()->getEigenvectors<3>();
+	
+	Eigen::Matrix3d rotationMatrix = getOrientation();	
 
-	auto roll = buw::calculateAngleBetweenVectors(buw::Vector3d(1.0, 0.0, 0.0), orientation.col(2).normalized());
-	auto yaw = buw::calculateAngleBetweenVectors(buw::Vector3d(0.0, 0.0, 1.0), orientation.col(1).normalized());
-	auto pitch = buw::calculateAngleBetweenVectors(buw::Vector3d(0.0, 1.0, 0.0), orientation.col(0).normalized());
-
-	Eigen::AngleAxisd rollAngle(roll, Eigen::Vector3d::UnitZ());
-	Eigen::AngleAxisd yawAngle(yaw, Eigen::Vector3d::UnitY());
-	Eigen::AngleAxisd pitchAngle(pitch, Eigen::Vector3d::UnitX());
-
-	Eigen::Quaternion<double> q = (rollAngle * yawAngle) * pitchAngle;
-	Eigen::Matrix3d rotationMatrix = q.matrix();
-
-	//ccGLMatrix rotation;
-	//rotation.initFromParameters(-roll, -pitch, -yaw, CCVector3(0, 0, 0));
-
+	auto center = computeCenter();
 	for_each([&](size_t i) {
-		auto ccPoint = getPoint(i);
-		auto point = buw::Vector3d(ccPoint->x, ccPoint->y, ccPoint->z);
+		auto ccPoint = *getPoint(i) - center;
+		auto point = buw::Vector3d(ccPoint.x, ccPoint.y, ccPoint.z);
 
-		auto rotated = (rotationMatrix * point).cast<float>();
+		buw::Vector3f rotated = (rotationMatrix * point).cast<float>();
 
 		min.x = std::min(min.x, rotated.x());
 		min.y = std::min(min.y, rotated.y());
@@ -243,6 +269,9 @@ void OpenInfraPlatform::Infrastructure::PointCloudSection::getObjectOrientedBoun
 		max.y = std::max(max.y, rotated.y());
 		max.z = std::max(max.z, rotated.z());
 	});
+
+	min += center;
+	max += center;
 }
 
 
