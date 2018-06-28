@@ -229,7 +229,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 	sections_ = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>();
 			
 	// Call this once to find the best level for the radius.
-	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(100);
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(50);
 
 	// If the level is to low, we can't get the indices etc. so we manually increase it.
 	while(octree_->getCellSize(level) == 0)
@@ -267,7 +267,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 			// Create and initialize the nearest neighbour search struct as far as possible.
 			CCLib::DgmOctree::NearestNeighboursSphericalSearchStruct nss;
 			nss.level = level;
-			nss.maxSearchSquareDistd = std::pow(100, 2);
+			nss.maxSearchSquareDistd = std::pow(50, 2);
 			nss.alreadyVisitedNeighbourhoodSize = 0;
 			nss.minNumberOfNeighbors = 0;
 
@@ -278,9 +278,9 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 			octree.computeCellCenter(nss.cellPos, level, nss.cellCenter);
 
 			if(success) {
-				nss.queryPoint = *getPoint(cell);
+				nss.queryPoint = *CCLib::Neighbourhood(points.get()).getGravityCenter();
 				//nss.prepare(50, octree.getCellSize(level));
-				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 100, false);
+				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 50, false);
 
 				auto getPCA = [&]()->CCVector2 {
 					//Matrix which is capable of holding all points for PCA.
@@ -634,9 +634,9 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init()
 	grid_ = std::map<std::pair<int, int>, std::vector<uint32_t>>();
 
 	computeMainAxis();
-	alignOnMainAxis();
-	// Main axis has changed!
-	computeMainAxis();
+	//alignOnMainAxis();
+	//// Main axis has changed!
+	//computeMainAxis();
 
 	BLUE_LOG(trace) << "Start building octree.";
 	octree_ = buw::makeReferenceCounted<CCLib::DgmOctree>(this);
