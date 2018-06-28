@@ -279,7 +279,6 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 
 			if(success) {
 				nss.queryPoint = *CCLib::Neighbourhood(points.get()).getGravityCenter();
-				//nss.prepare(50, octree.getCellSize(level));
 				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 50, false);
 
 				auto getPCA = [&]()->CCVector2 {
@@ -362,7 +361,20 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 	if(callback)
 		callback->stop();
 
-	
+	// Color all points which are not in a section red.
+	const ColorCompType red[3] = { 255,0,0 };
+	const ColorCompType white[3] = { 255,255,255 };
+
+	for_each([&](size_t i) {
+		setPointColor(i, red);
+	});
+
+#pragma omp parallel for
+	for(long i = 0; i < sections_.size(); i++) {
+		for(long ii = 0; ii < sections_[i]->size(); ii++) {
+			setPointColor(sections_[i]->getPointGlobalIndex(ii), white);
+		}
+	}	
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid()

@@ -231,14 +231,14 @@ void OpenInfraPlatform::Infrastructure::PointCloudSection::getObjectOrientedBoun
 	max = CCVector3(LONG_MIN, LONG_MIN, LONG_MIN);
 
 	
-	Eigen::Matrix3d rotationMatrix = getOrientation();	
+	Eigen::Matrix3d rotationMatrix = getOrientation().inverse();	
 
 	auto center = computeCenter();
 	for_each([&](size_t i) {
 		auto ccPoint = *getPoint(i) - center;
 		auto point = buw::Vector3d(ccPoint.x, ccPoint.y, ccPoint.z);
 
-		buw::Vector3f rotated = (rotationMatrix.inverse() * point).cast<float>();
+		buw::Vector3f rotated = (rotationMatrix * point).cast<float>();
 
 		min.x = std::min(min.x, rotated.x());
 		min.y = std::min(min.y, rotated.y());

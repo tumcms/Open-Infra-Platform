@@ -232,7 +232,7 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	
 	// Initialize the vector to hold our data and out base color.
 	std::vector<VertexTypePointCloud> vertices = std::vector<VertexTypePointCloud>(pointCloud->size());
-	auto baseColor = ccColor::Rgbaf(255.0f, 255.0f, 255.0f, 255.0f);	
+	auto baseColor = ccColor::Rgbaf(0, 0, 0, 0);
 		
 
 //#pragma omp parallel for shared(pointCloud, vertices)
@@ -317,7 +317,7 @@ void PointCloudEffect::setSections(std::vector<buw::ReferenceCounted<buw::PointC
 	std::vector<buw::VertexPosition3> sectionVertices = std::vector<buw::VertexPosition3>();
 	std::vector<uint32_t> sectionIndices = std::vector<uint32_t>();
 
-	for(int i = 0; i < sections.size(); i++) {
+	for(long i = 0; i < sections.size(); i++) {
 		auto section = sections[i];
 		if(section->size() > 0) {
 			CCVector3 center = section->computeCenter();
