@@ -249,8 +249,10 @@ void OpenInfraPlatform::Infrastructure::PointCloudSection::getObjectOrientedBoun
 		max.z = std::max(max.z, rotated.z());
 	});
 
-	min += center;
-	max += center;
+	//CCVector3 shiftedCenter = min + ((max - min) / 2.0f);
+	//
+	//min -= shiftedCenter;
+	//max -= shiftedCenter;	
 }
 
 
