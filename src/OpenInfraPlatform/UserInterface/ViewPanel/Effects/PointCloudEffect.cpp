@@ -184,6 +184,7 @@ void PointCloudEffect::setProjectPoints(const bool checked)
 {
 	bProjectPoints_ = checked;
 	settings_.bProjectPoints = bProjectPoints_;
+	sectionsBoundingBoxEffect_->show(checked);
 	updateSettingsBuffer();
 }
 
