@@ -517,11 +517,51 @@ namespace OpenInfraPlatform
 					return;
 				}
 
+
+				shared_ptr<typename IfcEntityTypesT::IfcSectionedSolidHorizontal> ssh =
+					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>(solidModel);
+				if (ssh)
+				{
+
+					//	ENTITY IfcRepresentationItem;
+					//	INVERSE
+					//		LayerAssignments	 : 	SET OF IfcPresentationLayerAssignment FOR AssignedItems;
+					//		StyledByItem	 : 	SET [0:1] OF IfcStyledItem FOR Item;
+					//	ENTITY IfcGeometricRepresentationItem;
+					//	ENTITY IfcSolidModel;
+					//		DERIVE
+					//		Dim	 : 	IfcDimensionCount :=  3;
+					// ENTITY IfcSectionedSolid
+					//	    Directrix: IfcCurve;
+					//	    CrossSections: LIST[2:? ] OF IfcProfileDef;					
+					// ENTITY IfcSectionedSolidHorizontal
+					//      CrossSectionPositions: LIST[2:? ] OF IfcDistanceExpression;
+					//      FixedAxisVertical: IfcBoolean;
+					// END_ENTITY;
+					
+						shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrixCurve = ssh->m_Directrix; 
+						shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& crossSections = ssh->m_CrossSections;
+						shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression>& crossSectionPositions = ssh->m_CrossSectionPositions;
+						shared_ptr<typename IfcEntityTypesT::IfcBooleanT>& fixedAxisVertical = ssh->m_FixedAxisVertical;
+
+						convertIfcSectionedSolidHorizontal(directrixCurve, crossSections, crossSectionPositions, fixedAxisVertical); 
+
+					return;
+				}
+
 				convertIfcSpecificSolidModel(solidModel, pos, itemData, err);
 
 				err << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname() << std::endl;
 			}
 
+			void convertIfcSectionedSolidHorizontal(
+				shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrixCurve,						
+				shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& crossSections,					
+				shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression>& crossSectionPositions,	
+				shared_ptr<typename IfcEntityTypesT::IfcBooleanT>& fixedAxisVertical 				
+			)
+			{} //to do
+			
 			void convertIfcExtrudedAreaSolid(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcExtrudedAreaSolid>& extrudedArea,
 				const carve::math::Matrix& pos,
