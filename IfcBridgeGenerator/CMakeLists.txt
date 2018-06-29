@@ -49,4 +49,4 @@ install(TARGETS OpenInfraPlatform.IfcBridgeGenerator
    COMPONENT oip_runtime
 )
 # Use the Widgets module from Qt 5.
-qt5_use_modules(OpenInfraPlatform.IfcBridgeGenerator Widgets Xml XmlPatterns)
+target_link_libraries(OpenInfraPlatform.IfcBridgeGenerator Qt5::Widgets Qt5::Xml Qt5::XmlPatterns)

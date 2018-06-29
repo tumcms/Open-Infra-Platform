@@ -30,6 +30,8 @@
 #include "OpenInfraPlatform/UserInterface/HelpBrowser.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/AlignmentEffect.h"
 #include "OpenInfraPlatform/UserInterface/resource.h"
+#include "OpenInfraPlatform/UserInterface/Ifc4x1TreeModel.h"
+
 #include "buw.OIPInfrastructure.h"
 #include "ui_mainwindow.h"
 #include <BlueFramework/ImageProcessing/Image.h>
@@ -118,6 +120,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	verticalAlignmentWindow_ = new VerticalAlignmentWindow(ui_->actionVertical_alignment);
 	XYZImportDialog_ = new XYZImportDialog(this);
 	addGeoreferenceDialog_ = new AddGeoreferenceDialog(view_, this);
+	showIFCtree_ = new ShowIFCtree(view_, this);
 	updateRecentFileActions();
 
 	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), ACA_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
@@ -636,6 +639,12 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionCurvature_triggered(
 	curvatureWindow_->show();
 	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, curvatureWindow_);
 }
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_IFC_tree_triggered()
+{
+	showIFCtree_->show();
+}
+
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionTerrain_Hide_triggered(bool checked) {
 	view_->enableHideTerrain(checked);
