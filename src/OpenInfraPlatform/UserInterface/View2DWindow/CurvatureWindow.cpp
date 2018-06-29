@@ -20,6 +20,7 @@
 #include "OpenInfraPlatform\Infrastructure\Alignment\HorizontalAlignment\HorizontalAlignmentElement2DArc.h"
 #include "OpenInfraPlatform\Infrastructure\Alignment\HorizontalAlignment\HorizontalAlignmentElement2DClothoid.h"
 #include "OpenInfraPlatform\Infrastructure\Alignment\HorizontalAlignment\HorizontalAlignmentElement2DBlossCurve.h"
+#include <QAction>
 #include <QGraphicsTextItem>
 #include <QGraphicsSceneWheelEvent>
 #include <QPrinter>

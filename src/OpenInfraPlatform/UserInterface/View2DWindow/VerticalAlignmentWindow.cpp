@@ -16,6 +16,7 @@
 */
 
 #include "VerticalAlignmentWindow.h"
+#include <QAction>
 #include <QGraphicsSceneWheelEvent>
 #include <QGraphicsTextItem>
 #include <QPrintDialog>

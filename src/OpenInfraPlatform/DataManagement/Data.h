@@ -343,10 +343,10 @@ namespace OpenInfraPlatform
 			int																currentJobID_;
 
 			// Add Georeference
-			double m_Eastings;
-			double m_Northings;
-			double m_OrthogonalHeight;
-			QString m_Name; 
+			double m_Eastings = 0.0;
+			double m_Northings = 0.0;
+			double m_OrthogonalHeight = 0.0;
+			QString m_Name = "EPSG:31467";
 
 
 

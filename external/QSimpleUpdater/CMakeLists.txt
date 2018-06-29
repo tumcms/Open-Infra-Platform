@@ -39,4 +39,4 @@ include_directories(
 add_library(QSimpleUpdater STATIC ${SOURCES} ${MOC_HEADERS} ${MOC_SOURCES} ${UIS})
 
 # Use the Widgets module from Qt 5.
-qt5_use_modules(QSimpleUpdater Widgets Network)
+target_link_libraries(QSimpleUpdater Qt5::Widgets Qt5::Network)
