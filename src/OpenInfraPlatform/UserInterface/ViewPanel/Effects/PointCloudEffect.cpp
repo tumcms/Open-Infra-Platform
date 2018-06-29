@@ -321,19 +321,21 @@ void PointCloudEffect::setSections(std::vector<buw::ReferenceCounted<buw::PointC
 	for(long i = 0; i < sections.size(); i++) {
 		auto section = sections[i];
 		if(section->size() > 0) {
-			CCVector3 center = section->computeCenter();
 			CCVector3 min, max;
 			section->getObjectOrientedBoundingBox(min, max);
 			CCVector3 size = (max - min) / 2.0f;
+			CCVector3 center = min + ((max - min) / 2.0f);
+			center = section->computeCenter();
 			size_t startIndex = sectionVertices.size();
-			buw::createBoundingBox(sectionVertices, sectionIndices, center.x + offset.x(), center.y + offset.y(), center.z + offset.z(), size.x, size.y, size.z);
-
+			CCVector3 shiftedCenter = min + ((max - min) / 2.0f);
+			//buw::createBoundingBox(sectionVertices, sectionIndices, center.x + offset.x(), center.y + offset.y(), center.z + offset.z(), size.x, size.y, size.z);
+			buw::createBoundingBox(sectionVertices, sectionIndices, 0, 0, 0, size.x, size.y, size.z);
 			size_t endIndex = sectionVertices.size();
 			auto rotation = section->getOrientation();
 			buw::Vector3f centerGlobal = buw::Vector3f(center.x + offset.x(), center.y + offset.y(), center.z + offset.z());
 			for(startIndex; startIndex < endIndex; startIndex++)
 			{
-				auto newpos = buw::Vector3f(sectionVertices[startIndex].position.data) - centerGlobal;
+				auto newpos = buw::Vector3f(sectionVertices[startIndex].position.data) + buw::Vector3f(shiftedCenter.x, shiftedCenter.y, shiftedCenter.z);
 				sectionVertices[startIndex] = buw::VertexPosition3((rotation.cast<float>() * newpos) + centerGlobal);
 			}
 
