@@ -225,7 +225,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 	sections_ = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>();
 
 	// Call this once to find the best level for the radius.
-	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(50);
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(20);
 
 	// If the level is to low, we can't get the indices etc. so we manually increase it.
 	while (octree_->getCellSize(level) == 0)
@@ -1661,23 +1661,33 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 		centerpointsPointCloud->setPointScalarValue(i, chainage);
 	}
 
+	// Remove points closer than 1mm to avoid "black holes" of insane density.
+	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 	buw::DuplicateFilterDescription dfd;
 	dfd.dim = buw::ePointCloudFilterDimension::Volume3D;
-	dfd.minDistance = 0.001;
+	dfd.minDistance = 0.002;
 	centerpointsPointCloud->applyDuplicateFilter(dfd, callback);
+	centerpointsPointCloud->computeIndices();
 	centerpointsPointCloud->removeFilteredPoints(callback);
 
-	// Add centerline scalar field to stay 
-	int idxCPC_centerline = centerpointsPointCloud->addScalarField("Centerline");
-	if(idxCPC_centerline == -1) {
-		return -6;
-	}
-	centerpointsPointCloud->setCurrentInScalarField(idxCPC_centerline);
+	// Remove centerline points which are outliers.
+	centerpointsPointCloud->getDGMOctree()->build(callback.get());
+	buw::LocalDensityFilterDescription ldfd;
+	ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
+	ldfd.dim = buw::ePointCloudFilterDimension::Volume3D;
+	ldfd.kernelRadius = 0.05f;
+	ldfd.minThreshold = 25;
+	centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
+	centerpointsPointCloud->computeIndices();
+	centerpointsPointCloud->removeFilteredPoints(callback);
 
+	
+	
 	// Append the centerpointsPointCloud to this one.
 	this->append(centerpointsPointCloud.get(), this->size());
+	computeIndices();
 
-	return 0;
+	return 1;
 }
 int OpenInfraPlatform::Infrastructure::PointCloud::resetCenterlines() {
 	centerlineDescription_ = buw::CenterlineComputationDescription();
