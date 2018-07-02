@@ -80,6 +80,8 @@ namespace OpenInfraPlatform {
 
 			int computeCenterlines(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			int computeCenterlines2(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
 			void computePairs(std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 			
 			int resetCenterlines();

@@ -301,19 +301,19 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 				for (size_t i = 0; i < points->size(); i++) {
 					auto point3d = *points->getPoint(i);
 					CCVector2 point2d = CCVector2(point3d.x, point3d.y);
-					//indexedProjectionLength.push_back(std::pair<size_t, double>(points->getPointGlobalIndex(i), axis.dot(point2d)));
+					// indexedProjectionLength.push_back(std::pair<size_t, double>(points->getPointGlobalIndex(i), axis.dot(point2d)));
 					setPointScalarValue(points->getPointGlobalIndex(i), axis.dot(point2d));
 				}
 
-				//std::sort(indexedProjectionLength.begin(), indexedProjectionLength.end(),
+				// std::sort(indexedProjectionLength.begin(), indexedProjectionLength.end(),
 				//          [](const std::pair<size_t, double> &lhs, const std::pair<size_t, double> &rhs) -> bool { return lhs.second < rhs.second; });
 				//
-				//ScalarType min = indexedProjectionLength.front().second, max = indexedProjectionLength.back().second;
-				//size_t numSections = (std::floorf(length * max) - std::floorf(length * min)) + 1;
-				//auto sections = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>(numSections);
-				//int base = std::floorf(length * min);
+				// ScalarType min = indexedProjectionLength.front().second, max = indexedProjectionLength.back().second;
+				// size_t numSections = (std::floorf(length * max) - std::floorf(length * min)) + 1;
+				// auto sections = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>(numSections);
+				// int base = std::floorf(length * min);
 				//
-				//for (auto it : indexedProjectionLength) {
+				// for (auto it : indexedProjectionLength) {
 				//	size_t sectionId = std::floorf(length * it.second) - base;
 				//
 				//	if (!sections[sectionId]) {
@@ -325,16 +325,16 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 				//	sections[sectionId]->addPointIndex(it.first);
 				//}
 				//
-				//auto end =
+				// auto end =
 				//  std::remove_if(sections.begin(), sections.end(), [](const buw::ReferenceCounted<buw::PointCloudSection> &section) -> bool { return section == nullptr; });
 				// std::for_each(sections.begin(), end, [](buw::ReferenceCounted<buw::PointCloudSection> &section) { section->resize(section->size()); });
 
-//#pragma omp critical
+				//#pragma omp critical
 				//{ sections_.insert(sections_.end(), sections.begin(), end); }
 				//
 				//// Update our callback.
-				//processedCells++;
-				//if (processedCells >= numCellsPerPercent) {
+				// processedCells++;
+				// if (processedCells >= numCellsPerPercent) {
 				//	percentageCompleted++;
 				//	processedCells = 0;
 				//	if (tid == 0 && callback)
@@ -344,7 +344,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 				// Stop the callback if we abort our function.
 				if (tid == 0 && callback)
 					callback->stop();
-//#pragma omp critical
+				//#pragma omp critical
 				err = -2;
 			}
 		}
@@ -377,8 +377,8 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 
 	auto end = std::remove_if(sections_.begin(), sections_.end(), [](const buw::ReferenceCounted<buw::PointCloudSection> &section) -> bool { return section == nullptr; });
 	sections_.erase(end, sections_.end());
-	  // Color all points which are not in a section red.
-	 const ColorCompType red[3] = {255, 0, 0};
+	// Color all points which are not in a section red.
+	const ColorCompType red[3] = {255, 0, 0};
 	const ColorCompType white[3] = {255, 255, 255};
 
 	for_each([&](size_t i) { setPointColor(i, red); });
@@ -1233,12 +1233,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw::CenterlineComputationDescription &desc,
                                                                       buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	// Add a scalar field for railway and encode the left/right railway index as -1 and 1. Initialize it to 0 and set it as input scalar field.
-	int idx_railway = getScalarFieldIndexByName("Railway");
-	if (idx_railway == -1)
-		idx_railway = addScalarField("Railway");
-	setCurrentInScalarField(idx_railway);
+	// int idx_railway = getScalarFieldIndexByName("Railway");
+	// if (idx_railway == -1)
+	//	idx_railway = addScalarField("Railway");
+	// setCurrentInScalarField(idx_railway);
 
-	for_each([&](size_t i) { setPointScalarValue(i, 0); });
+	// for_each([&](size_t i) { setPointScalarValue(i, 0); });
 
 	// Create a global list of all point pairs.
 	std::vector<std::pair<size_t, size_t>> rails = std::vector<std::pair<size_t, size_t>>();
@@ -1246,6 +1246,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	computePairs(rails, callback);
 	int tid = 0;
 
+	
 	auto computeCenterpoints = [&](const std::vector<std::pair<size_t, size_t>> rails, std::vector<CCVector3> &o_centerpoints) {
 		BLUE_LOG(trace) << "Computing centerpoints.";
 
@@ -1605,6 +1606,79 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	return alignments.size();
 }
 
+int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw::CenterlineComputationDescription &desc,
+                                                                       buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+	// Get the rail pair points.
+	std::vector<std::pair<size_t, size_t>> pointPairs = std::vector<std::pair<size_t, size_t>>();
+	computePairs(pointPairs, callback);
+
+	
+	
+	// Create a Point Cloud for the centerline points.
+	buw::ReferenceCounted<PointCloud> centerpointsPointCloud = buw::makeReferenceCounted<PointCloud>();
+	bool success = true;
+
+	// Reserve the memory for the point data.
+	success &= centerpointsPointCloud->reserve(pointPairs.size());
+	if(!success)
+		return -3;
+
+	// Enable scalar fields.
+	success &= centerpointsPointCloud->enableScalarField();
+	if(!success)
+		return -4;
+	
+	// Reserve the color table.
+	success &= centerpointsPointCloud->reserveTheRGBTable();
+	if(!success)
+		return -5;
+
+	// Initialize the chainage scalar field to write to.
+	int idxCPC_chainage = centerpointsPointCloud->addScalarField("Chainage");
+	if(idxCPC_chainage == -1) {
+		return -1;
+	}
+	centerpointsPointCloud->setCurrentInScalarField(idxCPC_chainage);
+
+	// Get chainage scalar field from original point cloud to read from.
+	int idx_chainage = getScalarFieldIndexByName("Chainage");
+	if (idx_chainage == -1) {
+		return -2;
+	}
+	setCurrentOutScalarField(idx_chainage);
+
+	// Compute centerpoints witch chanaige and add the computed points to the centerpointsPointCloud.
+	for(long i = 0; i < pointPairs.size(); i++) {
+		auto pair = pointPairs[i];
+
+		CCVector3 start = *(getPoint(pair.first));
+		CCVector3 end = *(getPoint(pair.second));
+		ScalarType chainage = 0.5f * (getPointScalarValue(pair.first) + getPointScalarValue(pair.first));
+		CCVector3 center = 0.5f * (end + start);
+
+		centerpointsPointCloud->addPoint(center);
+		centerpointsPointCloud->addRGBColor(255, 0, 0);
+		centerpointsPointCloud->setPointScalarValue(i, chainage);
+	}
+
+	buw::DuplicateFilterDescription dfd;
+	dfd.dim = buw::ePointCloudFilterDimension::Volume3D;
+	dfd.minDistance = 0.001;
+	centerpointsPointCloud->applyDuplicateFilter(dfd, callback);
+	centerpointsPointCloud->removeFilteredPoints(callback);
+
+	// Add centerline scalar field to stay 
+	int idxCPC_centerline = centerpointsPointCloud->addScalarField("Centerline");
+	if(idxCPC_centerline == -1) {
+		return -6;
+	}
+	centerpointsPointCloud->setCurrentInScalarField(idxCPC_centerline);
+
+	// Append the centerpointsPointCloud to this one.
+	this->append(centerpointsPointCloud.get(), this->size());
+
+	return 0;
+}
 int OpenInfraPlatform::Infrastructure::PointCloud::resetCenterlines() {
 	centerlineDescription_ = buw::CenterlineComputationDescription();
 	return resetRailwaySegmentation();
