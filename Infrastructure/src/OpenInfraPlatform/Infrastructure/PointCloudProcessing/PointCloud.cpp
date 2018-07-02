@@ -301,50 +301,50 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 				for (size_t i = 0; i < points->size(); i++) {
 					auto point3d = *points->getPoint(i);
 					CCVector2 point2d = CCVector2(point3d.x, point3d.y);
-					indexedProjectionLength.push_back(std::pair<size_t, double>(points->getPointGlobalIndex(i), axis.dot(point2d)));
-					setPointScalarValue(indexedProjectionLength.back().first, indexedProjectionLength.back().second);
+					//indexedProjectionLength.push_back(std::pair<size_t, double>(points->getPointGlobalIndex(i), axis.dot(point2d)));
+					setPointScalarValue(points->getPointGlobalIndex(i), axis.dot(point2d));
 				}
 
-				std::sort(indexedProjectionLength.begin(), indexedProjectionLength.end(),
-				          [](const std::pair<size_t, double> &lhs, const std::pair<size_t, double> &rhs) -> bool { return lhs.second < rhs.second; });
-
-				ScalarType min = indexedProjectionLength.front().second, max = indexedProjectionLength.back().second;
-				size_t numSections = (std::floorf(length * max) - std::floorf(length * min)) + 1;
-				auto sections = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>(numSections);
-				int base = std::floorf(length * min);
-
-				for (auto it : indexedProjectionLength) {
-					size_t sectionId = std::floorf(length * it.second) - base;
-
-					if (!sections[sectionId]) {
-						sections[sectionId] = buw::makeReferenceCounted<buw::PointCloudSection>(static_cast<GenericIndexedCloudPersist *>(this));
-						sections[sectionId]->setLength(length);
-						sections[sectionId]->cellCode_ = code;
-					}
-
-					sections[sectionId]->addPointIndex(it.first);
-				}
-
-				auto end =
-				  std::remove_if(sections.begin(), sections.end(), [](const buw::ReferenceCounted<buw::PointCloudSection> &section) -> bool { return section == nullptr; });
+				//std::sort(indexedProjectionLength.begin(), indexedProjectionLength.end(),
+				//          [](const std::pair<size_t, double> &lhs, const std::pair<size_t, double> &rhs) -> bool { return lhs.second < rhs.second; });
+				//
+				//ScalarType min = indexedProjectionLength.front().second, max = indexedProjectionLength.back().second;
+				//size_t numSections = (std::floorf(length * max) - std::floorf(length * min)) + 1;
+				//auto sections = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>(numSections);
+				//int base = std::floorf(length * min);
+				//
+				//for (auto it : indexedProjectionLength) {
+				//	size_t sectionId = std::floorf(length * it.second) - base;
+				//
+				//	if (!sections[sectionId]) {
+				//		sections[sectionId] = buw::makeReferenceCounted<buw::PointCloudSection>(static_cast<GenericIndexedCloudPersist *>(this));
+				//		sections[sectionId]->setLength(length);
+				//		sections[sectionId]->cellCode_ = code;
+				//	}
+				//
+				//	sections[sectionId]->addPointIndex(it.first);
+				//}
+				//
+				//auto end =
+				//  std::remove_if(sections.begin(), sections.end(), [](const buw::ReferenceCounted<buw::PointCloudSection> &section) -> bool { return section == nullptr; });
 				// std::for_each(sections.begin(), end, [](buw::ReferenceCounted<buw::PointCloudSection> &section) { section->resize(section->size()); });
 
-#pragma omp critical
-				{ sections_.insert(sections_.end(), sections.begin(), end); }
-
-				// Update our callback.
-				processedCells++;
-				if (processedCells >= numCellsPerPercent) {
-					percentageCompleted++;
-					processedCells = 0;
-					if (tid == 0 && callback)
-						callback->update(percentageCompleted);
-				}
+//#pragma omp critical
+				//{ sections_.insert(sections_.end(), sections.begin(), end); }
+				//
+				//// Update our callback.
+				//processedCells++;
+				//if (processedCells >= numCellsPerPercent) {
+				//	percentageCompleted++;
+				//	processedCells = 0;
+				//	if (tid == 0 && callback)
+				//		callback->update(percentageCompleted);
+				//}
 			} else {
 				// Stop the callback if we abort our function.
 				if (tid == 0 && callback)
 					callback->stop();
-#pragma omp critical
+//#pragma omp critical
 				err = -2;
 			}
 		}
@@ -378,7 +378,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 	auto end = std::remove_if(sections_.begin(), sections_.end(), [](const buw::ReferenceCounted<buw::PointCloudSection> &section) -> bool { return section == nullptr; });
 	sections_.erase(end, sections_.end());
 	  // Color all points which are not in a section red.
-	  const ColorCompType red[3] = {255, 0, 0};
+	 const ColorCompType red[3] = {255, 0, 0};
 	const ColorCompType white[3] = {255, 255, 255};
 
 	for_each([&](size_t i) { setPointColor(i, red); });
@@ -428,9 +428,6 @@ void OpenInfraPlatform::Infrastructure::PointCloud::alignOnMainAxis() {
 
 	Eigen::Quaternion<double> q = Eigen::Quaternion<double>(rollAngle);
 	applyRigidTransformation(ccGLMatrix::FromQuaternion((std::vector<double>({q.x(), q.y(), q.z(), q.w()})).data()));
-
-	// buw::Vector3f fromX = orientation.col(2).cast<float>();
-	// applyRigidTransformation(ccGLMatrix::FromToRotation(CCVector3(fromX.data()), CCVector3(1.0f, 0.0f, 0.0f)));
 }
 
 int OpenInfraPlatform::Infrastructure::PointCloud::flagDuplicatePoints(const double minDistance, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {

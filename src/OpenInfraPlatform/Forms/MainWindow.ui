@@ -231,7 +231,7 @@
          <enum>QTabWidget::North</enum>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>1</number>
         </property>
         <property name="elideMode">
          <enum>Qt::ElideNone</enum>
@@ -446,7 +446,7 @@
             <x>9</x>
             <y>9</y>
             <width>261</width>
-            <height>341</height>
+            <height>368</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -559,13 +559,6 @@
            </item>
            <item>
             <layout class="QGridLayout" name="gridLayout_2">
-             <item row="1" column="0">
-              <widget class="QCheckBox" name="checkBoxShowFilteredPoints">
-               <property name="text">
-                <string>Show filtered points</string>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="1">
               <widget class="QPushButton" name="pushButtonSelectUniformColor">
                <property name="text">
@@ -597,17 +590,17 @@
                </property>
               </widget>
              </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="checkBoxShowFilteredPoints">
+               <property name="text">
+                <string>Show filtered points</string>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="0">
               <widget class="QCheckBox" name="checkBoxUseUniformColor">
                <property name="text">
                 <string>Use uniform color</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QPushButton" name="pushButtonSelectFilteredPointsColor">
-               <property name="text">
-                <string>Select Color</string>
                </property>
               </widget>
              </item>
@@ -642,8 +635,32 @@
                </item>
               </layout>
              </item>
+             <item row="1" column="1">
+              <widget class="QPushButton" name="pushButtonSelectFilteredPointsColor">
+               <property name="text">
+                <string>Select Color</string>
+               </property>
+              </widget>
+             </item>
              <item row="4" column="1">
               <widget class="QPushButton" name="pushButtonSelectOctreeColor">
+               <property name="text">
+                <string>Select Color</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QCheckBox" name="checkBoxShowSectionOOBB">
+               <property name="text">
+                <string>Show Section OOBB</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QPushButton" name="pushButtonSelectSectionOOBBColor">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string>Select Color</string>
                </property>
@@ -665,6 +682,9 @@
              </item>
              <item>
               <widget class="QRadioButton" name="radioButtonRender2D">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string>Show 2D Projections</string>
                </property>
@@ -753,6 +773,9 @@
              </item>
              <item row="0" column="1">
               <widget class="QCheckBox" name="checkBoxPreview">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -1393,7 +1416,7 @@
            <rect>
             <x>10</x>
             <y>30</y>
-            <width>271</width>
+            <width>278</width>
             <height>265</height>
            </rect>
           </property>

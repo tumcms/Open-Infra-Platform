@@ -19,11 +19,11 @@
 #ifndef OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
 #define OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
 
-#include "OpenInfraPlatform/UserInterface/ViewPanel/eView.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
-#include "OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Tool.h"
 #include "OpenInfraPlatform/DataManagement/Data.h"
+#include "OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.h"
+#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
+#include "OpenInfraPlatform/UserInterface/ViewPanel/Tool.h"
+#include "OpenInfraPlatform/UserInterface/ViewPanel/eView.h"
 
 //#include <BlueFramework/Engine/ViewCube/ViewCubeRefactored.h>
 //#include <BlueFramework/Engine/ViewCube/Compass.h>
@@ -32,15 +32,13 @@
 //#include <BlueFramework/Engine/Camera/InfraCameraController.h>
 //#include <BlueFramework/Engine/Camera/SpectatorCamera.h>
 
-#include <buw.h>
-#include <QWidget>
 #include <QMouseEvent>
 #include <QQuickItem>
+#include <QWidget>
+#include <buw.h>
 
-namespace OpenInfraPlatform
-{
-	namespace UserInterface
-	{
+namespace OpenInfraPlatform {
+	namespace UserInterface {
 		class GradientClearEffect;
 		class DEMEffect;
 		class TrafficSignEffect;
@@ -48,15 +46,14 @@ namespace OpenInfraPlatform
 		class GirderEffect;
 		class SlabFieldEffect;
 		class IfcGeometryEffect;
-        class SkyboxEffect;
+		class SkyboxEffect;
 		class UIElements;
 		class BoundingBoxEffect;
 		class PointCloudEffect;
 		class BillboardEffect;
 		class BoxEffect;
 
-		class Viewport : public QWidget
-		{
+		class Viewport : public QWidget {
 			Q_OBJECT;
 			typedef DataManagement::ChangeFlag ChangeFlag;
 
@@ -66,22 +63,22 @@ namespace OpenInfraPlatform
 			~Viewport();
 
 			buw::Vector2i getSize() const;
-			
+
 			void goHome();
 
-            void toggleSnow();
+			void toggleSnow();
 
 			void toggleCameraMode();
 			void setCameraMode(buw::CameraController::eState mode);
 			buw::CameraController::eState getCameraMode() const;
 
-			void paintEvent(QPaintEvent * paintEvent);
-			void resizeEvent(QResizeEvent *);
-            
-			void mousePressEvent(QMouseEvent *event) override;
-			void mouseMoveEvent(QMouseEvent *event) override;
-			void wheelEvent(QWheelEvent *event) override;
-			void leaveEvent(QEvent *event) override;
+			void paintEvent(QPaintEvent* paintEvent);
+			void resizeEvent(QResizeEvent*);
+
+			void mousePressEvent(QMouseEvent* event) override;
+			void mouseMoveEvent(QMouseEvent* event) override;
+			void wheelEvent(QWheelEvent* event) override;
+			void leaveEvent(QEvent* event) override;
 
 			void keyPressEvent(QKeyEvent* event) override;
 			void keyReleaseEvent(QKeyEvent* event) override;
@@ -100,11 +97,11 @@ namespace OpenInfraPlatform
 
 			void setHideTerrain(const bool checked);
 			void setDrawTerrainWireframe(const bool enable);
-            void setDifferentColorsForAlignmentElements(const bool checked);
-            void setHighlightSelectedAlignmentSegment(const bool checked);
+			void setDifferentColorsForAlignmentElements(const bool checked);
+			void setHighlightSelectedAlignmentSegment(const bool checked);
 			void enableMap(const bool checked);
 			void enableTerrainTextured(const bool checked);
-            void enableRoadBodyTextured(const bool checked);
+			void enableRoadBodyTextured(const bool checked);
 			void enableIsoLines(const bool checked);
 			void enableTerrainGradientRamp(const bool checked);
 
@@ -113,31 +110,31 @@ namespace OpenInfraPlatform
 			void setUseUniformPointSize(const bool useUniformSize);
 			void setPointSize(const float size);
 			void setShowPointCloud(const bool checked);
-			void setShowOctree(const bool checked);
+			void setShowSectionOOBB(const bool checked);
 
+			void setShowOctree(const bool checked);
 			void setOctreeLevel(int value);
 
 			void setPointCloudIndices(std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> indices);
 
-
-            void saveAsScreenshot(const std::string& filename);
-            void storeGBuffer();
+			void saveAsScreenshot(const std::string& filename);
+			void storeGBuffer();
 
 			void viewDirection(const buw::Vector3f& direction);
 
-            void setView(eView type);
+			void setView(eView type);
 			void showCrossSection(const bool showCrossSection);
-            void showDesignCrossSection(const bool showDesignCrossSections);
-            void showRoadBodyWireframe(const bool connectCrossSections);
-            void showRoadBodySolid(const bool checked);
+			void showDesignCrossSection(const bool showDesignCrossSections);
+			void showRoadBodyWireframe(const bool connectCrossSections);
+			void showRoadBodySolid(const bool checked);
 
-            buw::ReferenceCounted<buw::ViewCube> getViewCube();
+			buw::ReferenceCounted<buw::ViewCube> getViewCube();
 			buw::ReferenceCounted<AlignmentEffect> getAlignmentEffect();
 
 		public Q_SLOTS:
-			void updatePointCloudUniformColor(const QColor &color);
-			void updatePointCloudFilteredPointsColor(const QColor &color);
-			void updatePointCloudSegmentedPointsColor(const QColor &color);
+			void updatePointCloudUniformColor(const QColor& color);
+			void updatePointCloudFilteredPointsColor(const QColor& color);
+			void updatePointCloudSegmentedPointsColor(const QColor& color);
 			void updatePointCloudSectionLength(const float length);
 			void updatePointCloudProjectPoints(const bool checked);
 			void updatePointCloudRenderOriginalCloud(const bool checked);
@@ -162,7 +159,7 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<buw::Camera> camera_;
 			buw::ReferenceCounted<buw::CameraController> cameraController_;
 
-            buw::ReferenceCounted<buw::ViewCube> viewCube_;
+			buw::ReferenceCounted<buw::ViewCube> viewCube_;
 
 			buw::Vector2f lastMousePos_;
 			buw::Vector3f minExtend_;
@@ -174,13 +171,12 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<buw::ITexture2D> terrainTexture_;
 
 			buw::ReferenceCounted<buw::IRenderSystem> renderSystem_;
-            buw::ReferenceCounted<buw::IViewport> viewport_;
+			buw::ReferenceCounted<buw::IViewport> viewport_;
 
 			buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA_;
 
-            buw::ReferenceCounted<buw::ITexture2D> pickBuffer_;
-            buw::ReferenceCounted<buw::ITexture2D> depthStencil_;
-
+			buw::ReferenceCounted<buw::ITexture2D> pickBuffer_;
+			buw::ReferenceCounted<buw::ITexture2D> depthStencil_;
 
 			buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer_, viewportBuffer_, pickIdBuffer_;
 
@@ -190,40 +186,40 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<AlignmentEffect> alignmentEffect_;
 			buw::ReferenceCounted<GirderEffect> girderEffect_;
 			buw::ReferenceCounted<SlabFieldEffect> slabFieldEffect_;
-            buw::ReferenceCounted<IfcGeometryEffect> ifcGeometryEffect_;
+			buw::ReferenceCounted<IfcGeometryEffect> ifcGeometryEffect_;
 			buw::ReferenceCounted<UIElements> uiElements_;
 			buw::ReferenceCounted<BoundingBoxEffect> boundingBoxEffect_;
-            buw::ReferenceCounted<SkyboxEffect> skyboxEffect_;
+			buw::ReferenceCounted<SkyboxEffect> skyboxEffect_;
 			buw::ReferenceCounted<PointCloudEffect> pointCloudEffect_;
 			buw::ReferenceCounted<BoxEffect> sectionsBoundingBoxEffect_ = nullptr;
 			buw::ReferenceCounted<BillboardEffect> billboardEffect_;
-            std::vector<buw::ReferenceCounted<buw::Effect>> activeEffects_;
+			std::vector<buw::ReferenceCounted<buw::Effect>> activeEffects_;
 
 			// Clear
 			bool gradientClear_ = true;
-            bool snow_ = false;
+			bool snow_ = false;
 			buw::Color3f clearColor_;
 
 			int selectedAlignmentIndex_;
-            UINT currentPickId_ = -1;
+			UINT currentPickId_ = -1;
 			buw::Image4b pickIdImage_;
 		};
 
-		//class Viewport : public QWidget
+		// class Viewport : public QWidget
 		//{
 		//	Q_OBJECT;
 
 		//	typedef DataManagement::ChangeFlag ChangeFlag;
 
-		//public:			
+		// public:
 		//	//---------------------------------------------------------------------------//
 		//	// Events
 		//	//---------------------------------------------------------------------------//
 
 		//	boost::signals2::signal<void(buw::eViewCubeOrientation::Enum)> ViewCubeSelectionChanged;
-  //          boost::signals2::signal<void(buw::Vector2f)> Rotate;
+		//          boost::signals2::signal<void(buw::Vector2f)> Rotate;
 
-		//public:
+		// public:
 		//	Viewport(const buw::renderWindowsDescription& rwd, QWidget* parent);
 
 		//	virtual ~Viewport();
@@ -242,7 +238,7 @@ namespace OpenInfraPlatform
 		//	void	forceRepaint();
 		//	void    startContinuousRendering();
 		//	void	stopContinuousRendering();
-		//	
+		//
 		//	eView	getView() const;
 		//	void	setView(eView val);
 
@@ -274,7 +270,7 @@ namespace OpenInfraPlatform
 
 		//	void	setHighlightDifferentAlignmentElements( const bool enable );
 		//	void	setHighlightSelectedAlignmentSegment( const bool enable );
-		//	
+		//
 		//	//---------------------------------------------------------------------------//
 		//	// Terrain
 		//	//---------------------------------------------------------------------------//
@@ -289,7 +285,7 @@ namespace OpenInfraPlatform
 		//	//---------------------------------------------------------------------------//
 		//	// LaserScan
 		//	//---------------------------------------------------------------------------//
-		//	
+		//
 		//	void	setUseUniformPointColor(const bool useUniformColor);
 		//	void	setUseUniformPointSize(const bool useUniformSize);
 		//	void	setPointSize(const float size);
@@ -304,7 +300,7 @@ namespace OpenInfraPlatform
 		//	// Clear
 		//	//---------------------------------------------------------------------------//
 
-		//	void	setClearColor(const buw::Color3f& color);	
+		//	void	setClearColor(const buw::Color3f& color);
 
 		//	//---------------------------------------------------------------------------//
 		//	// Common
@@ -318,22 +314,22 @@ namespace OpenInfraPlatform
 
 		//	void showFrameTimes(const bool show);
 
-  //          //---------------------------------------------------------------------------//
-  //          // ViewCube, Compass, RotationArrows and PickIdGenerator
-  //          //---------------------------------------------------------------------------//
-  //          int updateViewCube(const std::string &filename);
+		//          //---------------------------------------------------------------------------//
+		//          // ViewCube, Compass, RotationArrows and PickIdGenerator
+		//          //---------------------------------------------------------------------------//
+		//          int updateViewCube(const std::string &filename);
 
-  //          void updateCompass();
+		//          void updateCompass();
 
-  //          void updateRotationArrows();
+		//          void updateRotationArrows();
 
-  //          void setUseLegacy(bool value);
+		//          void setUseLegacy(bool value);
 
-  //          void setShowViewCube(bool value);
+		//          void setShowViewCube(bool value);
 
-  //          void setShowCompass(bool value);
+		//          void setShowCompass(bool value);
 
-  //          void setShowRotationArrows(bool value);
+		//          void setShowRotationArrows(bool value);
 
 		//	//---------------------------------------------------------------------------//
 		//	// Control
@@ -344,11 +340,11 @@ namespace OpenInfraPlatform
 		//	void setInfraCameraController(buw::ReferenceCounted<buw::InfraCameraController> controller);
 		//	buw::ReferenceCounted<buw::InfraCameraController> getInfraCameraController();
 
-		//public Q_SLOTS:
+		// public Q_SLOTS:
 
 		//	void drawNextFrame();
 
-		//protected:
+		// protected:
 		//	void leaveEvent ( QEvent * );
 
 		//	//! Receive mouse press events for the widget.
@@ -356,7 +352,7 @@ namespace OpenInfraPlatform
 
 		//	//! Receives wheel events for the widget.
 		//	void wheelEvent(QWheelEvent  * event);
-		//	
+		//
 		//	void mouseMoveEvent(QMouseEvent *event);
 
 		//	//! Called whenever a key is pressed.
@@ -371,7 +367,7 @@ namespace OpenInfraPlatform
 		//	*/
 		//	void mouseReleaseEvent(QMouseEvent *event);
 
-		//private:		
+		// private:
 		//	void			updateFrustumProjection();
 		//	void			createGraphicResources();
 		//	void			createSkyboxResources();
@@ -408,38 +404,38 @@ namespace OpenInfraPlatform
 		//	void			fillGBuffer();
 
 		//	void			createCpuReadTexture();;
-  //          void            createCpuReadTextureBuffer();
+		//          void            createCpuReadTextureBuffer();
 
-  //          void            createCpuReadPickBuffer();
+		//          void            createCpuReadPickBuffer();
 
 		//	//buw::Vector4f	getPickBufferColor(const int x, const int y);
-  //          buw::uint32     getPickBufferColor(const int x, const int y);
-  //          buw::Vector4f   getLegacyPickBufferColor(const int x, const int y);
+		//          buw::uint32     getPickBufferColor(const int x, const int y);
+		//          buw::Vector4f   getLegacyPickBufferColor(const int x, const int y);
 		//	buw::Vector4f	getGBufferColor(const int x, const int y);
 
 		//	void			storePickBuffer();
 
 		//	void			onViewCubeSelectionChanged(buw::eViewCubeOrientation::Enum state);
 
-  //          void            onRotationArrowsClicked(buw::Vector2f value);
+		//          void            onRotationArrowsClicked(buw::Vector2f value);
 
 		//	// road body
 		//	buw::matrix44d getGlobalRotationMatrixOnStation(
-		//		buw::ReferenceCounted<buw::Alignment2DBased3D> alignment, 
+		//		buw::ReferenceCounted<buw::Alignment2DBased3D> alignment,
 		//		buw::Stationing station);
 
 		//	void drawCrossSection(
 		//		buw::ReferenceCounted<buw::Alignment2DBased3D> alignment,
-		//		buw::ReferenceCounted<buw::CrossSectionStatic> cs, 
+		//		buw::ReferenceCounted<buw::CrossSectionStatic> cs,
 		//		buw::Vector3d offsetViewArea);
 
 		//	void drawRoadBodyBetweenStation(
-		//		buw::ReferenceCounted<buw::Alignment2DBased3D> alignment, 
-		//		buw::ReferenceCounted<buw::CrossSectionStatic> cs, 
-		//		buw::ReferenceCounted<buw::CrossSectionStatic> nextCs, 
+		//		buw::ReferenceCounted<buw::Alignment2DBased3D> alignment,
+		//		buw::ReferenceCounted<buw::CrossSectionStatic> cs,
+		//		buw::ReferenceCounted<buw::CrossSectionStatic> nextCs,
 		//		buw::Vector3d offsetViewArea);
 
-		//private:
+		// private:
 		//	buw::ReferenceCounted<buw::SkinnedMesh>				mesh_;
 
 		//	buw::ReferenceCounted<ToolManager>					toolManager_;
@@ -449,35 +445,33 @@ namespace OpenInfraPlatform
 
 		//	// ViewCube
 		//	buw::ReferenceCounted<buw::ViewCube>					viewCubeLegacy_;
-  //          buw::ReferenceCounted<buw::ViewCube2>			        viewCube_;
-  //          buw::ReferenceCounted<buw::Compass>				        compass_;
-  //          buw::ReferenceCounted<buw::RotationArrows>              rotationArrows_;
+		//          buw::ReferenceCounted<buw::ViewCube2>			        viewCube_;
+		//          buw::ReferenceCounted<buw::Compass>				        compass_;
+		//          buw::ReferenceCounted<buw::RotationArrows>              rotationArrows_;
 
-  //          buw::ReferenceCounted<buw::PickIdGenerator>		        generator_;
+		//          buw::ReferenceCounted<buw::PickIdGenerator>		        generator_;
 
 		//	buw::ReferenceCounted<buw::IDepthStencilState>		    ddsDisableDepthTest_;
 		//	buw::ReferenceCounted<buw::IRasterizerState>            rsDefault_;
 		//	buw::ReferenceCounted<buw::IRasterizerState>			rsCullBackFaces_;
 
 		//	bool								                    bShowViewCube_;
-		//	bool								                    bContinuousRendering_;            
-  //          bool                                                    bShowLegacy_;
-  //          bool                                                    bShowCompass_;
-  //          bool                                                    bShowRotationArrows_;
-
+		//	bool								                    bContinuousRendering_;
+		//          bool                                                    bShowLegacy_;
+		//          bool                                                    bShowCompass_;
+		//          bool                                                    bShowRotationArrows_;
 
 		//	buw::ReferenceCounted<buw::ITexture2D>				cpuReadTexture_;
 
-		//	// PickBuffer			
+		//	// PickBuffer
 		//	buw::Vector4f						clearPickColor;
 		//	buw::ReferenceCounted<buw::IRenderTargetTexture2D>	renderTargetPickBuffer_;
 
-  //          buw::uint32										pickColor_;	// is updated by each mouse move event
-  //          buw::Vector4f                                   pickColorLegacy_;
-  //         
-  //          buw::ReferenceCounted<buw::ITexture2D>				cpuReadTextureBuffer_;
-  //          buw::ReferenceCounted<buw::ITexture2D>				cpuReadPickBuffer_;
-
+		//          buw::uint32										pickColor_;	// is updated by each mouse move event
+		//          buw::Vector4f                                   pickColorLegacy_;
+		//
+		//          buw::ReferenceCounted<buw::ITexture2D>				cpuReadTextureBuffer_;
+		//          buw::ReferenceCounted<buw::ITexture2D>				cpuReadPickBuffer_;
 
 		//	// GBuffer
 		//	buw::ReferenceCounted<buw::IShader>					gBufferShader_;
@@ -490,7 +484,7 @@ namespace OpenInfraPlatform
 
 		//	// BlueMap
 		//	buw::ReferenceCounted<buw::OpenInfraMap>	blueMap_;
-		//	
+		//
 		//	buw::ReferenceCounted<Hud>							hud_;
 		//	static const bool					bShowHud = false;
 
@@ -515,7 +509,7 @@ namespace OpenInfraPlatform
 
 		//	eView								view_;
 		//	buw::eProjectionType::Enum			projectionType_;
-		//	
+		//
 		//	buw::ReferenceCounted<buw::IRenderSystem>				renderSystem_;
 		//	buw::ReferenceCounted<buw::IRenderContext>			renderContext_;
 
@@ -530,7 +524,7 @@ namespace OpenInfraPlatform
 		//	buw::ReferenceCounted<buw::VertexCacheLine>			vertexCacheLineUIElements;
 		//	buw::ReferenceCounted<buw::VertexCachePoint>			vertexCachePointDebug_;
 		//	buw::ReferenceCounted<buw::VertexCacheLine>			vertexCacheLineDebug_;
-		//	
+		//
 		//	std::vector<buw::ReferenceCounted<buw::VertexCacheLine>>	vertexCacheLineBreakLines_;
 
 		//	buw::ReferenceCounted<buw::IRasterizerState>			rsSolidFill_;
@@ -548,7 +542,7 @@ namespace OpenInfraPlatform
 		//	buw::Vector2f						heightRange_;
 
 		//	buw::ReferenceCounted<buw::ISamplerState>				colorRampSampler_;
-		//	
+		//
 		//	std::vector<buw::ReferenceCounted<buw::IndexedMesh>>	meshesDigitalElevationModel_;
 		//	buw::ReferenceCounted<buw::IShader>					shaderDigitalElevationModel_;
 		//	buw::ReferenceCounted<buw::IShader>					shaderDigitalElevationModelColorRamp_;
@@ -595,10 +589,10 @@ namespace OpenInfraPlatform
 	} // end namespace UserInterface
 } // end namespace OpenInfraPlatform
 
-//namespace buw
-//{
-//	using OpenInfraPlatform::UserInterface::eView;
-//	using OpenInfraPlatform::UserInterface::Viewport;
-//}
+	// namespace buw
+	//{
+	//	using OpenInfraPlatform::UserInterface::eView;
+	//	using OpenInfraPlatform::UserInterface::Viewport;
+	//}
 
 #endif // end define OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h

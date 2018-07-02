@@ -237,6 +237,8 @@ namespace OpenInfraPlatform
 			void on_doubleSpinBoxPointSize_valueChanged(double value);
 			void on_horizontalSliderPointSize_sliderMoved(int value);
 
+			void on_checkBoxShowSectionOOBB_clicked(bool checked);
+
 			void on_spinBoxOctreeLevel_valueChanged(int value);
 			void on_checkBoxShowOctree_clicked(bool checked);
 

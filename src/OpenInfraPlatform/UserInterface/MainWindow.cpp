@@ -2796,6 +2796,10 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_horizontalSliderPointSize_
 	view_->setPointSize((float)spinVal);
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowSectionOOBB_clicked(bool checked) {
+	view_->getViewport()->setShowSectionOOBB(checked);
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionLoad_Bridge() {
 	view_->LoadBridge();
 }

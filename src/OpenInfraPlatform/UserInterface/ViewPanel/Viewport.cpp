@@ -338,6 +338,11 @@ void OpenInfraPlatform::UserInterface::Viewport::setShowPointCloud(const bool ch
 	repaint();
 }
 
+void OpenInfraPlatform::UserInterface::Viewport::setShowSectionOOBB(const bool checked) {
+	sectionsBoundingBoxEffect_->show(checked);
+	repaint();
+}
+
 void OpenInfraPlatform::UserInterface::Viewport::setShowOctree(const bool checked)
 {
 	pointCloudEffect_->showOctree(checked);
