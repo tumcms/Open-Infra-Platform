@@ -165,6 +165,8 @@ namespace OpenInfraPlatform
 					return;
 				}
 
+				//endif swept_area_solid
+
 				shared_ptr<typename IfcEntityTypesT::IfcManifoldSolidBrep> manifoldSolidBrep =
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcManifoldSolidBrep>(solidModel);
 				if (manifoldSolidBrep)
@@ -214,6 +216,8 @@ namespace OpenInfraPlatform
 					return;
 				}
 
+				//endif manifoldSolidBrep
+
 				shared_ptr<typename IfcEntityTypesT::IfcCsgSolid> csg_solid = 
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgSolid>(solidModel);
 				if (csg_solid)
@@ -242,6 +246,8 @@ namespace OpenInfraPlatform
 					return;
 				}*/
 
+				//endif csg_solid
+
 				shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolid> swept_disp_solid = 
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolid>(solidModel);
 				if (swept_disp_solid)
@@ -264,9 +270,9 @@ namespace OpenInfraPlatform
 					//END_ENTITY;	
 
 					shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = swept_disp_solid->m_Directrix;
-					const int nvc = m_geomSettings->m_num_vertices_per_circle;
-					double length_in_meter = m_unitConverter->getLengthInMeterFactor();
-					double radius = 0.0;
+					const int nvc = m_geomSettings->m_num_vertices_per_circle; 
+					double length_in_meter = m_unitConverter->getLengthInMeterFactor(); 
+					double radius = 0.0; 
 					shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure> sweptRadius =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(swept_disp_solid->m_Radius);
 					if (sweptRadius)
@@ -517,6 +523,7 @@ namespace OpenInfraPlatform
 					return;
 				}
 
+				//endif swept_disp_solid
 
 				shared_ptr<typename IfcEntityTypesT::IfcSectionedSolidHorizontal> ssh =
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>(solidModel);
@@ -555,7 +562,8 @@ namespace OpenInfraPlatform
 				err << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname() << std::endl;
 
 			}            
-			
+			//end convertIfcSolidModel
+
 			void convertIfcSectionedSolidHorizontal(
 				shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrixCurve,
 				shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& crossSections,
@@ -565,10 +573,21 @@ namespace OpenInfraPlatform
 				std::stringstream& err)
 			{
 
-			// Validate data
+				//give crossSections of type ProfileDef to ProfileConverter
+				shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
+					m_profileCache->getProfileConverter(crossSections);
+
+				//get unit conversion factor (todo: multiply by value to convert units)
+				double length_in_meter = m_unitConverter->getLengthInMeterFactor();
+
+			// Validate data: only necessary if we accept entire IfcSSH as parameter. Function can't be called without all parameters.
 			// Get positions
 			// Tesselation?
 			// Compute the normal according to axis
+
+
+
+				// Is it better to include the entire IfcSectionedSolidHorizontal as a parameter, as in convertIfcExtrudedAreaSolid?
 
 			}
 
@@ -633,7 +652,7 @@ namespace OpenInfraPlatform
 				}
 
 				itemData->closed_polyhedrons.push_back(poly_data);
-			}
+			}//end convertIfcExtrudedAreaSolid()
 
 			void convertIfcRevolvedAreaSolid(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcRevolvedAreaSolid>& revolvedArea,
