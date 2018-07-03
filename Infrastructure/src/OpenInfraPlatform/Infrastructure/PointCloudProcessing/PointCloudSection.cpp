@@ -131,17 +131,30 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 		
 		// Iterate over all pairs of points, we iterate fully since points are not sorted in x direction.
 		for(size_t i = 0; i < this->size() - 1; i++) {
+			std::vector<std::pair<size_t, size_t>> pairsForPoint = std::vector<std::pair<size_t, size_t>>();
 			for(size_t ii = i + 1; ii < this->size(); ii++) {
 
 				// If first point.x + gauge + head - second point.x < 1cm and difference in y direction is less than 1cm, we have found a pair of matching rail points.
 				float distance = (*getPoint(i) - *getPoint(ii)).norm();
 				float error = std::fabsf(distance - gauge - head);
 				if(error < epsilon && std::fabsf(getPoint(i)->z - getPoint(ii)->z) < 0.2f) {
-					pairs.push_back(std::pair<size_t, size_t>(getPointGlobalIndex(i), getPointGlobalIndex(ii)));
-					break;
+
+					// If we already have a pair where the second point is close to this one, skip it. Otherwise add.
+					bool hasPointInProximity = false;
+					for(auto pair : pairsForPoint) {
+						if((*getPoint(pair.second) - *getPoint(ii)).norm() < 0.1) {
+							hasPointInProximity = true;
+							break;
+						}
+					}
+					if(!hasPointInProximity)
+						pairsForPoint.push_back(std::pair<size_t, size_t>(getPointGlobalIndex(i), ii));
 				}
 			}
+			pairs.insert(pairs.end(), pairsForPoint.begin(), pairsForPoint.end());
 		}
+
+		std::for_each(pairs.begin(), pairs.end(), [&](std::pair<size_t, size_t> &pair) {pair.second = getPointGlobalIndex(pair.second); });
 
 		// Do some postprocessing on our points to avoid false pairs.
 
@@ -157,7 +170,7 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 			//	cloud3D->addPoint(*(associatedCloud->getPoint(pair.second)));
 			//}
 			//
-			//int error = CCLib::GeometricalAnalysisTools::computeLocalDensity(cloud3D.get(), CCLib::GeometricalAnalysisTools::Density::DENSITY_KNN, gauge/2.0f, nullptr, nullptr);
+			//int error = CCLib::GeometricalAnalysisTools::computeLocalDensity(cloud3D.get(), CCLib::GeometricalAnalysisTools::Density::DENSITY_KNN, (gauge/2.0f) - 0.05f, nullptr, nullptr);
 			//
 			//if(error == 0) {
 			//	ScalarType mean;

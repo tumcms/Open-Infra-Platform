@@ -169,6 +169,7 @@ namespace OpenInfraPlatform {
 			std::vector<buw::ReferenceCounted<PointCloudSection>> sections_;
 			std::map<std::pair<int, int>, std::vector<uint32_t>> grid_;
 			buw::ReferenceCounted<CCLib::DgmOctree> octree_ = nullptr;
+			bool bHasPairs_ = false, bHasCenterline_ = false;
 
 			buw::CenterlineComputationDescription centerlineDescription_;
 		};

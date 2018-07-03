@@ -225,7 +225,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 	sections_ = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>();
 
 	// Call this once to find the best level for the radius.
-	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(20);
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(10);
 
 	// If the level is to low, we can't get the indices etc. so we manually increase it.
 	while (octree_->getCellSize(level) == 0)
@@ -332,14 +332,14 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 				//#pragma omp critical
 				//{ sections_.insert(sections_.end(), sections.begin(), end); }
 				//
-				//// Update our callback.
-				// processedCells++;
-				// if (processedCells >= numCellsPerPercent) {
-				//	percentageCompleted++;
-				//	processedCells = 0;
-				//	if (tid == 0 && callback)
-				//		callback->update(percentageCompleted);
-				//}
+				// Update our callback.
+				 processedCells++;
+				 if (processedCells >= numCellsPerPercent) {
+					percentageCompleted++;
+					processedCells = 0;
+					if (tid == 0 && callback)
+						callback->update(percentageCompleted);
+				}
 			} else {
 				// Stop the callback if we abort our function.
 				if (tid == 0 && callback)
@@ -1610,9 +1610,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
                                                                        buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	// Get the rail pair points.
 	std::vector<std::pair<size_t, size_t>> pointPairs = std::vector<std::pair<size_t, size_t>>();
-	computePairs(pointPairs, callback);
-
-	
+	computePairs(pointPairs, callback);	
 	
 	// Create a Point Cloud for the centerline points.
 	buw::ReferenceCounted<PointCloud> centerpointsPointCloud = buw::makeReferenceCounted<PointCloud>();
@@ -1676,11 +1674,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 	ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
 	ldfd.dim = buw::ePointCloudFilterDimension::Volume3D;
 	ldfd.kernelRadius = 0.05f;
-	ldfd.minThreshold = 25;
+	ldfd.minThreshold = 15;
 	centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
 	centerpointsPointCloud->computeIndices();
 	centerpointsPointCloud->removeFilteredPoints(callback);
-
 	
 	
 	// Append the centerpointsPointCloud to this one.
