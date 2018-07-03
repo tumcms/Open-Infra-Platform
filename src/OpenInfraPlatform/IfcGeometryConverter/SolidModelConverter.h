@@ -34,6 +34,8 @@
 #include "OpenInfraPlatform/IfcBridge/model/IfcBridgeModel.h"
 #include "EMTIfc4EntityTypes.h"
 #include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
+#include "EMTIfc4x1EntityTypes.h"
+#include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
 
 namespace OpenInfraPlatform
 {
@@ -523,37 +525,37 @@ namespace OpenInfraPlatform
 					return;
 				}
 
-				//endif swept_disp_solid
 
-				shared_ptr<typename IfcEntityTypesT::IfcSectionedSolidHorizontal> ssh =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>(solidModel);
-
+				shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh =
+					dynamic_pointer_cast<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
 				if (ssh)
-					{                    
-									//    ENTITY IfcRepresentationItem;
-									 //    INVERSE
-									 //        LayerAssignments     :     SET OF IfcPresentationLayerAssignment FOR AssignedItems;
-									 //        StyledByItem     :     SET [0:1] OF IfcStyledItem FOR Item;
-									 //    ENTITY IfcGeometricRepresentationItem;
-									 //    ENTITY IfcSolidModel;
-									//        DERIVE
-									 //        Dim     :     IfcDimensionCount :=  3;
-									 // ENTITY IfcSectionedSolid
-									 //        Directrix: IfcCurve;
-									 //        CrossSections: LIST[2:? ] OF IfcProfileDef;                    
-									 // ENTITY IfcSectionedSolidHorizontal
-									 //      CrossSectionPositions: LIST[2:? ] OF IfcDistanceExpression;
-									 //      FixedAxisVertical: IfcBoolean;
-									 // END_ENTITY;
+				{
 
-					shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrixCurve = ssh->m_Directrix;
-					shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& crossSections = ssh->m_CrossSections;
-					shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression>& crossSectionPositions = ssh->m_CrossSectionPositions;
-					shared_ptr<typename IfcEntityTypesT::IfcBooleanT>& fixedAxisVertical = ssh->m_FixedAxisVertical;    
-
-					convertIfcSectionedSolidHorizontal(directrixCurve, crossSections, crossSectionPositions, fixedAxisVertical, itemData, err);                     
+					//	ENTITY IfcRepresentationItem;
+					//	INVERSE
+					//		LayerAssignments	 : 	SET OF IfcPresentationLayerAssignment FOR AssignedItems;
+					//		StyledByItem	 : 	SET [0:1] OF IfcStyledItem FOR Item;
+					//	ENTITY IfcGeometricRepresentationItem;
+					//	ENTITY IfcSolidModel;
+					//		DERIVE
+					//		Dim	 : 	IfcDimensionCount :=  3;
+					// ENTITY IfcSectionedSolid
+					//	    Directrix: IfcCurve;
+					//	    CrossSections: LIST[2:? ] OF IfcProfileDef;					
+					// ENTITY IfcSectionedSolidHorizontal
+					//      CrossSectionPositions: LIST[2:? ] OF IfcDistanceExpression;
+					//      FixedAxisVertical: IfcBoolean;
+					// END_ENTITY;
 					
+						shared_ptr<emt::Ifc4x1EntityTypes::IfcCurve>& directrixCurve = ssh->m_Directrix; 
+						std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcProfileDef>>& crossSections = ssh->m_CrossSections;
+						std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcDistanceExpression>>& crossSectionPositions = ssh->m_CrossSectionPositions;
+						shared_ptr<emt::Ifc4x1EntityTypes::IfcBoolean>& fixedAxisVertical = ssh->m_FixedAxisVertical;
+
+						convertIfcSectionedSolidHorizontal(directrixCurve, crossSections, crossSectionPositions, fixedAxisVertical, itemData, err); 
+
 					return;
+				}
 
 				}                
 				
@@ -563,17 +565,17 @@ namespace OpenInfraPlatform
 
 			}            
 			//end convertIfcSolidModel
+			
 
 			void convertIfcSectionedSolidHorizontal(
-				shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrixCurve,
-				shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& crossSections,
-				shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression>& crossSectionPositions,
-				shared_ptr<typename IfcEntityTypesT::IfcBooleanT>& fixedAxisVertical,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				shared_ptr<emt::Ifc4x1EntityTypes::IfcCurve>& directrixCurve,
+				std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcProfileDef>>& crossSections,
+				std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcDistanceExpression>>& crossSectionPositions,
+				shared_ptr<emt::Ifc4x1EntityTypes::IfcBoolean>& fixedAxisVertical,
+		std::shared_ptr<ItemData> itemData,
+				std::stringstream& err	)
 			{
-
-				//give crossSections of type ProfileDef to ProfileConverter
+			//give crossSections of type ProfileDef to ProfileConverter
 				shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
 					m_profileCache->getProfileConverter(crossSections);
 
@@ -589,9 +591,8 @@ namespace OpenInfraPlatform
 
 				// Is it better to include the entire IfcSectionedSolidHorizontal as a parameter, as in convertIfcExtrudedAreaSolid?
 
-			}
-
-
+			} //to do
+			
 			void convertIfcExtrudedAreaSolid(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcExtrudedAreaSolid>& extrudedArea,
 				const carve::math::Matrix& pos,
