@@ -34,6 +34,8 @@
 #include "OpenInfraPlatform/IfcBridge/model/IfcBridgeModel.h"
 #include "EMTIfc4EntityTypes.h"
 #include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
+#include "EMTIfc4x1EntityTypes.h"
+#include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
 
 namespace OpenInfraPlatform
 {
@@ -518,8 +520,8 @@ namespace OpenInfraPlatform
 				}
 
 
-				shared_ptr<typename IfcEntityTypesT::IfcSectionedSolidHorizontal> ssh =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>(solidModel);
+				shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh =
+					dynamic_pointer_cast<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
 				if (ssh)
 				{
 
@@ -539,10 +541,10 @@ namespace OpenInfraPlatform
 					//      FixedAxisVertical: IfcBoolean;
 					// END_ENTITY;
 					
-						shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrixCurve = ssh->m_Directrix; 
-						shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& crossSections = ssh->m_CrossSections;
-						shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression>& crossSectionPositions = ssh->m_CrossSectionPositions;
-						shared_ptr<typename IfcEntityTypesT::IfcBooleanT>& fixedAxisVertical = ssh->m_FixedAxisVertical;
+						shared_ptr<emt::Ifc4x1EntityTypes::IfcCurve>& directrixCurve = ssh->m_Directrix; 
+						std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcProfileDef>>& crossSections = ssh->m_CrossSections;
+						std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcDistanceExpression>>& crossSectionPositions = ssh->m_CrossSectionPositions;
+						shared_ptr<emt::Ifc4x1EntityTypes::IfcBoolean>& fixedAxisVertical = ssh->m_FixedAxisVertical;
 
 						convertIfcSectionedSolidHorizontal(directrixCurve, crossSections, crossSectionPositions, fixedAxisVertical); 
 
@@ -555,10 +557,10 @@ namespace OpenInfraPlatform
 			}
 
 			void convertIfcSectionedSolidHorizontal(
-				shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrixCurve,						
-				shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& crossSections,					
-				shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression>& crossSectionPositions,	
-				shared_ptr<typename IfcEntityTypesT::IfcBooleanT>& fixedAxisVertical 				
+				shared_ptr<emt::Ifc4x1EntityTypes::IfcCurve>& directrixCurve,
+				std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcProfileDef>>& crossSections,
+				std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcDistanceExpression>>& crossSectionPositions,
+				shared_ptr<emt::Ifc4x1EntityTypes::IfcBoolean>& fixedAxisVertical
 			)
 			{} //to do
 			
