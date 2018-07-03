@@ -26,6 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <GenericProgressCallback.h>
 #include <ScalarFieldTools.h>
 #include <ccScalarField.h>
+#include <AutoSegmentationTools.h>
 
 #include <liblas/liblas.hpp>
 
@@ -262,7 +263,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 			// Create and initialize the nearest neighbour search struct as far as possible.
 			CCLib::DgmOctree::NearestNeighboursSphericalSearchStruct nss;
 			nss.level = level;
-			nss.maxSearchSquareDistd = std::pow(50, 2);
+			nss.maxSearchSquareDistd = std::pow(30, 2);
 			nss.alreadyVisitedNeighbourhoodSize = 0;
 			nss.minNumberOfNeighbors = 0;
 
@@ -274,13 +275,13 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 
 			if (success) {
 				nss.queryPoint = *CCLib::Neighbourhood(points.get()).getGravityCenter();
-				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 50, false);
+				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 30, false);
 
 				auto getPCA = [&]() -> CCVector2 {
 					// Matrix which is capable of holding all points for PCA.
 					Eigen::MatrixX2d mat;
 					mat.resize(numPoints, 2);
-					for (size_t i = 0; i < numPoints; i++) {
+					for(size_t i = 0; i < numPoints; i++) {
 						auto pos = *nss.pointsInNeighbourhood[i].point;
 						mat.row(i) = Eigen::Vector2d(pos.x, pos.y);
 					}
@@ -296,12 +297,10 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 
 				auto axis = getPCA();
 
-				std::vector<std::pair<size_t, double>> indexedProjectionLength = std::vector<std::pair<size_t, double>>();
 
 				for (size_t i = 0; i < points->size(); i++) {
 					auto point3d = *points->getPoint(i);
 					CCVector2 point2d = CCVector2(point3d.x, point3d.y);
-					// indexedProjectionLength.push_back(std::pair<size_t, double>(points->getPointGlobalIndex(i), axis.dot(point2d)));
 					setPointScalarValue(points->getPointGlobalIndex(i), axis.dot(point2d));
 				}
 
@@ -1669,6 +1668,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 	centerpointsPointCloud->removeFilteredPoints(callback);
 
 	// Remove centerline points which are outliers.
+	centerpointsPointCloud->getDGMOctree()->clear();
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 	buw::LocalDensityFilterDescription ldfd;
 	ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
@@ -1678,13 +1678,28 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 	centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
 	centerpointsPointCloud->computeIndices();
 	centerpointsPointCloud->removeFilteredPoints(callback);
+
+	centerpointsPointCloud->getDGMOctree()->clear();
+	centerpointsPointCloud->getDGMOctree()->build(callback.get());
+
+	char level = centerpointsPointCloud->getDGMOctree()->findBestLevelForAGivenNeighbourhoodSizeExtraction(0.7);
+	int numComponents = CCLib::AutoSegmentationTools::labelConnectedComponents(centerpointsPointCloud.get(), level, false, callback.get(), centerpointsPointCloud->getDGMOctree().get());
 	
+	if(numComponents > 0) {
+		CCLib::ReferenceCloudContainer container = CCLib::ReferenceCloudContainer(numComponents);
+		CCLib::AutoSegmentationTools::extractConnectedComponents(centerpointsPointCloud.get(), container);
+	}
+
 	
+
 	// Append the centerpointsPointCloud to this one.
+	if(!hasColors() || !centerpointsPointCloud->hasColors())
+		BLUE_LOG(warning) << "Appending cloud without colors.";
+
 	this->append(centerpointsPointCloud.get(), this->size());
 	computeIndices();
 
-	return 1;
+	return numComponents;
 }
 int OpenInfraPlatform::Infrastructure::PointCloud::resetCenterlines() {
 	centerlineDescription_ = buw::CenterlineComputationDescription();
