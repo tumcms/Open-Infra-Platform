@@ -63,7 +63,7 @@ private:
 	buw::ReferenceCounted<buw::IPipelineState> pipelineState_ = nullptr;
 	buw::ReferenceCounted<buw::IViewport> viewport_ = nullptr;
 	
-	bool bShow_ = true;
+	bool bShow_ = false;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END

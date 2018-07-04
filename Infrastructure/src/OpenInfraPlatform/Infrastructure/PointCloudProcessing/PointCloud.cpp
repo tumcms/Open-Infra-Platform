@@ -156,63 +156,134 @@ OpenInfraPlatform::Infrastructure::PointCloud::~PointCloud() {
 		octree_ = nullptr;
 }
 
+int OpenInfraPlatform::Infrastructure::PointCloud::add(const buw::ReferenceCounted<ccPointCloud>& other, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	if(callback)
+		callback->start();
+
+	bool result = true;
+	result &= this->reserve(this->size() + other->size());
+
+	// If we have an error, return -1.
+	if(!result)
+		return -1;
+
+	result &= this->reserveTheRGBTable();
+
+	// If we have an error, return -2.
+	if(!result)
+		return -2;
+
+	std::vector<std::pair<int, int>> commonScalarFields = std::vector<std::pair<int, int>>();
+	uint numScalarFields = this->getNumberOfScalarFields();
+	for(size_t idxThis = 0; idxThis < numScalarFields; idxThis++) {
+		std::string name = getScalarFieldName(idxThis);
+		int idxOther = other->getScalarFieldIndexByName(name.data());
+		if(idxOther != -1)
+			commonScalarFields.push_back(std::pair<int, int>(idxThis, idxOther));
+	}
+
+
+
+	long processedPoints = 0;
+	long numPoints = other->size();
+	long pointsPerPercent = std::max(1l, numPoints / 100);
+	short percentageCompleted = 0;
+	size_t startIndex = this->size();
+	ColorCompType red[3] = { 255,0,0 };
+	for(long i = 0; i < numPoints; i++) {
+		this->addPoint(*other->getPoint(i));
+		this->addRGBColor(other->getPointColor(i));		
+		this->setPointColor(startIndex + i, red);
+		processedPoints++;
+		if(processedPoints % pointsPerPercent == 0) {
+			percentageCompleted++;
+			if(callback)
+				callback->update(percentageCompleted);
+		}
+	}
+
+	this->resize(startIndex + processedPoints);
+
+	for(auto indices : commonScalarFields) {
+		this->setCurrentInScalarField(indices.first);
+		other->setCurrentOutScalarField(indices.second);
+
+		for(long i = 0; i < processedPoints; i++) {
+			ScalarType value = other->getPointScalarValue(i);
+			this->setPointScalarValue(startIndex + i, value);
+		}
+	}
+
+	if(callback)
+		callback->stop();
+
+	return 0;
+}
+
 void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
-	BLUE_LOG(trace) << "Start computing sections. Length:" << length;
-	// Get the main axis and compute the length of the projection along this axis for each point.
-	CCVector3 axis = mainAxis_;
 
-	int idx_plamn = getScalarFieldIndexByName("ProjectionLengthAlongMainAxis");
-	if (idx_plamn == -1)
-		idx_plamn = addScalarField("ProjectionLengthAlongMainAxis");
+	if(callback)
+		callback->start();
 
-	setCurrentInScalarField(idx_plamn);
-	auto setProjectionLengthAlongMainAxis = [&](size_t i) { this->setPointScalarValue(i, axis.dot(*(this->getPoint(i)))); };
+	int idx_chainage = getScalarFieldIndexByName("Chainage");
 
-	for_each(setProjectionLengthAlongMainAxis);
-
-	// Compute and get the scalar fields min and max value.
-	getScalarField(idx_plamn)->computeMinAndMax();
+	// Try new approach
+	sections_.clear();
+	setCurrentOutScalarField(idx_chainage);
 	ScalarType min, max;
-	std::tie(min, max) = getScalarFieldMinAndMax(idx_plamn);
-
-	// Compute the number of sections and initialize the variable.
+	getCurrentOutScalarField()->computeMinAndMax();
+	std::tie(min, max) = getScalarFieldMinAndMax(idx_chainage);
 	size_t numSections = (std::floorf(length * max) - std::floorf(length * min)) + 1;
+	int base = std::floorf(length * min);
+
 	sections_ = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>(numSections);
-	setCurrentOutScalarField(idx_plamn);
 
-	// Get or create the scalar field SectionId.
-	int idx_sid = getScalarFieldIndexByName("SectionId");
-	if (idx_sid == -1)
-		idx_sid = addScalarField("SectionId");
+	long processedPoints = 0;
+	long numPoints = this->size();
+	long pointsPerPercent = numPoints / 100;
+	int percentageCompleted = 0;
 
-	// Assign the sectionId depending on the projection length.
-	setCurrentInScalarField(idx_sid);
-	const float base = std::floorf(length * min);
 	for_each([&](size_t i) {
-
-		// Calculate the sectionId and add it as ScalarValue.
 		size_t sectionId = std::floorf(length * getPointScalarValue(i)) - base;
-		setPointScalarValue(i, sectionId);
 
-		// Create the sections reference cloud if it doesn't exist.
-		if (!sections_[sectionId]) {
+		if(!sections_[sectionId]) {
 			sections_[sectionId] = buw::makeReferenceCounted<buw::PointCloudSection>(static_cast<GenericIndexedCloudPersist *>(this));
 			sections_[sectionId]->setLength(length);
 		}
 
 		sections_[sectionId]->addPointIndex(i);
 
+		processedPoints++;
+
+		if(processedPoints == pointsPerPercent) {
+			percentageCompleted++;
+			processedPoints = 0;
+			if(callback)
+				callback->update(percentageCompleted);
+		}
 	});
 
-	// Create empty sections to avoid nullptrs.
-	for (auto &section : sections_) {
-		if (!section)
-			section = buw::makeReferenceCounted<buw::PointCloudSection>(static_cast<GenericIndexedCloudPersist *>(this));
-		section->setLength(length);
+	auto end = std::remove_if(sections_.begin(), sections_.end(), [](const buw::ReferenceCounted<buw::PointCloudSection> &section) -> bool { return section == nullptr; });
+	sections_.erase(end, sections_.end());
+	// Color all points which are not in a section red.
+	const ColorCompType black[3] = { 0, 0, 0 };
+	const ColorCompType white[3] = { 255, 255, 255 };
+
+	for_each([&](size_t i) { setPointColor(i, black); });
+
+#pragma omp parallel for
+	for(long i = 0; i < sections_.size(); i++) {
+		for(long ii = 0; ii < sections_[i]->size(); ii++) {
+			setPointColor(sections_[i]->getPointGlobalIndex(ii), white);
+		}
 	}
+
+	if(callback)
+		callback->stop();
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	if (callback)
 		callback->start();
 
@@ -350,44 +421,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections2(const float
 	}
 
 	if (callback)
-		callback->stop();
-
-	// Try new approach
-	sections_.clear();
-	setCurrentOutScalarField(idx_chainage);
-	ScalarType min, max;
-	getCurrentOutScalarField()->computeMinAndMax();
-	std::tie(min, max) = getScalarFieldMinAndMax(idx_chainage);
-	size_t numSections = (std::floorf(length * max) - std::floorf(length * min)) + 1;
-	int base = std::floorf(length * min);
-
-	sections_ = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>(numSections);
-
-	for_each([&](size_t i) {
-		size_t sectionId = std::floorf(length * getPointScalarValue(i)) - base;
-
-		if (!sections_[sectionId]) {
-			sections_[sectionId] = buw::makeReferenceCounted<buw::PointCloudSection>(static_cast<GenericIndexedCloudPersist *>(this));
-			sections_[sectionId]->setLength(length);
-		}
-
-		sections_[sectionId]->addPointIndex(i);
-	});
-
-	auto end = std::remove_if(sections_.begin(), sections_.end(), [](const buw::ReferenceCounted<buw::PointCloudSection> &section) -> bool { return section == nullptr; });
-	sections_.erase(end, sections_.end());
-	// Color all points which are not in a section red.
-	const ColorCompType red[3] = {255, 0, 0};
-	const ColorCompType white[3] = {255, 255, 255};
-
-	for_each([&](size_t i) { setPointColor(i, red); });
-
-#pragma omp parallel for
-	for (long i = 0; i < sections_.size(); i++) {
-		for (long ii = 0; ii < sections_[i]->size(); ii++) {
-			setPointColor(sections_[i]->getPointGlobalIndex(ii), white);
-		}
-	}
+		callback->stop();	
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid() {
@@ -641,7 +675,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init() {
 	octree_->build();
 	BLUE_LOG(trace) << "Finished building octree.";
 
-	computeSections2(10.0f);
+	computeChainage();
 }
 
 std::vector<buw::ReferenceCounted<buw::PointCloudSection>> OpenInfraPlatform::Infrastructure::PointCloud::getSections() {
@@ -784,7 +818,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std
 
 		// Create a global list of all point pairs.
 		int tid = 0;
-		//#pragma omp parallel private(tid)
+		#pragma omp parallel private(tid)
 		{
 			// Setup callback update variables.
 			tid = omp_get_thread_num();
@@ -795,7 +829,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std
 
 			// We iterate over all sections and calculate the pairs of matching points.
 			std::vector<std::pair<size_t, size_t>> pairs = std::vector<std::pair<size_t, size_t>>();
-			//#pragma omp for
+			#pragma omp for
 			for (long i = 0; i < sections_.size(); i++) {
 				if (sections_[i]) {
 					// Insert all pairs in our local vector.
@@ -1644,6 +1678,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 	}
 	setCurrentOutScalarField(idx_chainage);
 
+	const ColorCompType red[3] = { 255,0,0 };
+
 	// Compute centerpoints witch chanaige and add the computed points to the centerpointsPointCloud.
 	for(long i = 0; i < pointPairs.size(); i++) {
 		auto pair = pointPairs[i];
@@ -1654,7 +1690,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 		CCVector3 center = 0.5f * (end + start);
 
 		centerpointsPointCloud->addPoint(center);
-		centerpointsPointCloud->addRGBColor(255, 0, 0);
+		centerpointsPointCloud->setPointColor(i, red);
 		centerpointsPointCloud->setPointScalarValue(i, chainage);
 	}
 
@@ -1684,20 +1720,23 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 
 	char level = centerpointsPointCloud->getDGMOctree()->findBestLevelForAGivenNeighbourhoodSizeExtraction(0.7);
 	int numComponents = CCLib::AutoSegmentationTools::labelConnectedComponents(centerpointsPointCloud.get(), level, false, callback.get(), centerpointsPointCloud->getDGMOctree().get());
-	
+	CCLib::ReferenceCloudContainer container = CCLib::ReferenceCloudContainer(numComponents);
+
 	if(numComponents > 0) {
-		CCLib::ReferenceCloudContainer container = CCLib::ReferenceCloudContainer(numComponents);
 		CCLib::AutoSegmentationTools::extractConnectedComponents(centerpointsPointCloud.get(), container);
+
+		std::sort(container.begin(), container.end(), [](CCLib::ReferenceCloud* &lhs, CCLib::ReferenceCloud* &rhs) { return lhs->size() > rhs->size(); });
+
+		// Append the centerpointsPointCloud to this one.
+		if(!hasColors() || !centerpointsPointCloud->hasColors())
+			BLUE_LOG(warning) << "Appending cloud without colors.";
+
+		add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[0])), callback);
+
+		computeIndices();
+		octree_->clear();
+		octree_->build();
 	}
-
-	
-
-	// Append the centerpointsPointCloud to this one.
-	if(!hasColors() || !centerpointsPointCloud->hasColors())
-		BLUE_LOG(warning) << "Appending cloud without colors.";
-
-	this->append(centerpointsPointCloud.get(), this->size());
-	computeIndices();
 
 	return numComponents;
 }
@@ -2406,8 +2445,11 @@ const CCVector3 OpenInfraPlatform::Infrastructure::PointCloud::getMainAxis() con
 
 const double OpenInfraPlatform::Infrastructure::PointCloud::getSectionLength() const {
 	// If sections are initialized, return the length of the first section since all are equally long.
-	if (sections_[0]) {
+	if (sections_.size() > 0 && sections_[0]) {
 		return sections_[0]->getLength();
+	}
+	else {
+		return 0;
 	}
 }
 

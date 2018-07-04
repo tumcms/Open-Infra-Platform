@@ -315,50 +315,47 @@ void PointCloudEffect::setOctree(buw::ReferenceCounted<CCLib::DgmOctree> octree,
 
 void PointCloudEffect::setSections(std::vector<buw::ReferenceCounted<buw::PointCloudSection>> sections, buw::Vector3d offset)
 {
-	std::vector<buw::VertexPosition3> sectionVertices = std::vector<buw::VertexPosition3>();
-	std::vector<uint32_t> sectionIndices = std::vector<uint32_t>();
+	if(sections.size() > 0) {
+		std::vector<buw::VertexPosition3> sectionVertices = std::vector<buw::VertexPosition3>();
+		std::vector<uint32_t> sectionIndices = std::vector<uint32_t>();
 
-	for(long i = 0; i < sections.size(); i++) {
-		auto section = sections[i];
-		if(section->size() > 0) {
-			CCVector3 min, max;
-			section->getObjectOrientedBoundingBox(min, max);
-			CCVector3 size = (max - min) / 2.0f;
-			CCVector3 center = min + ((max - min) / 2.0f);
-			center = section->computeCenter();
-			size_t startIndex = sectionVertices.size();
-			CCVector3 shiftedCenter = min + ((max - min) / 2.0f);
-			//buw::createBoundingBox(sectionVertices, sectionIndices, center.x + offset.x(), center.y + offset.y(), center.z + offset.z(), size.x, size.y, size.z);
-			buw::createBoundingBox(sectionVertices, sectionIndices, 0, 0, 0, size.x, size.y, size.z);
-			size_t endIndex = sectionVertices.size();
-			auto rotation = section->getOrientation();
-			buw::Vector3f centerGlobal = buw::Vector3f(center.x + offset.x(), center.y + offset.y(), center.z + offset.z());
-			for(startIndex; startIndex < endIndex; startIndex++)
-			{
-				auto newpos = buw::Vector3f(sectionVertices[startIndex].position.data) + buw::Vector3f(shiftedCenter.x, shiftedCenter.y, shiftedCenter.z);
-				sectionVertices[startIndex] = buw::VertexPosition3((rotation.cast<float>() * newpos) + centerGlobal);
+		for(long i = 0; i < sections.size(); i++) {
+			auto section = sections[i];
+			if(section->size() > 0) {
+				CCVector3 min, max;
+				section->getObjectOrientedBoundingBox(min, max);
+				CCVector3 size = (max - min) / 2.0f;
+				CCVector3 center = min + ((max - min) / 2.0f);
+				center = section->computeCenter();
+				size_t startIndex = sectionVertices.size();
+				CCVector3 shiftedCenter = min + ((max - min) / 2.0f);
+				//buw::createBoundingBox(sectionVertices, sectionIndices, center.x + offset.x(), center.y + offset.y(), center.z + offset.z(), size.x, size.y, size.z);
+				buw::createBoundingBox(sectionVertices, sectionIndices, 0, 0, 0, size.x, size.y, size.z);
+				size_t endIndex = sectionVertices.size();
+				auto rotation = section->getOrientation();
+				buw::Vector3f centerGlobal = buw::Vector3f(center.x + offset.x(), center.y + offset.y(), center.z + offset.z());
+				for(startIndex; startIndex < endIndex; startIndex++) {
+					auto newpos = buw::Vector3f(sectionVertices[startIndex].position.data) + buw::Vector3f(shiftedCenter.x, shiftedCenter.y, shiftedCenter.z);
+					sectionVertices[startIndex] = buw::VertexPosition3((rotation.cast<float>() * newpos) + centerGlobal);
+				}
+
 			}
-
 		}
+
+
+		buw::indexBufferDescription ibd;
+		ibd.indexCount = sectionIndices.size();
+		ibd.data = sectionIndices.data();
+		ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
+		sectionsBoundingBoxEffect_->assignIndexBuffer(renderSystem()->createIndexBuffer(ibd));
+
+		// Fill vertex buffer description and create vertex buffer.
+		buw::vertexBufferDescription vbd;
+		vbd.vertexCount = sectionVertices.size();
+		vbd.vertexLayout = buw::VertexPosition3::getVertexLayout();
+		vbd.data = sectionVertices.data();
+		sectionsBoundingBoxEffect_->assignVertexBuffer(renderSystem()->createVertexBuffer(vbd));
 	}
-
-	//std::vector<buw::VertexPosition3Color3Size1> vertices = std::vector<buw::VertexPosition3Color3Size1>();
-	//for(auto vertex : sectionVertices) {
-	//	vertices.push_back(buw::VertexPosition3Color3Size1(buw::Vector3f(vertex.position[0], vertex.position[1], vertex.position[2]), buw::Vector3f(0, 0, 1), 1.0f));
-	//}
-
-	buw::indexBufferDescription ibd;
-	ibd.indexCount = sectionIndices.size();
-	ibd.data = sectionIndices.data();
-	ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
-	sectionsBoundingBoxEffect_->assignIndexBuffer(renderSystem()->createIndexBuffer(ibd));
-	
-	// Fill vertex buffer description and create vertex buffer.
-	buw::vertexBufferDescription vbd;
-	vbd.vertexCount = sectionVertices.size();
-	vbd.vertexLayout = buw::VertexPosition3::getVertexLayout();
-	vbd.data = sectionVertices.data();
-	sectionsBoundingBoxEffect_->assignVertexBuffer(renderSystem()->createVertexBuffer(vbd));
 }
 
 void PointCloudEffect::v_init()

@@ -50,9 +50,11 @@ namespace OpenInfraPlatform {
 
 			~PointCloud();
 
+			int add(const buw::ReferenceCounted<ccPointCloud> &other, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
 			void computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			void computeSections2(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			void computeChainage(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			void computeGrid();
 

@@ -2739,7 +2739,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonCalculateSection
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
-		pointCloud->computeSections2(100.0 / ui_->horizontalSliderSectionSize->value(), callback_);
+		pointCloud->computeSections(100.0 / ui_->horizontalSliderSectionSize->value(), callback_);
 		view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
 		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 	}
