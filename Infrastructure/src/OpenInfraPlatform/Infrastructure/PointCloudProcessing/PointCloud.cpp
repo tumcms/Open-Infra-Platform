@@ -156,10 +156,14 @@ OpenInfraPlatform::Infrastructure::PointCloud::~PointCloud() {
 		octree_ = nullptr;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::add(const buw::ReferenceCounted<ccPointCloud>& other, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::Infrastructure::PointCloud::add(const buw::ReferenceCounted<ccPointCloud>& other, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback, ColorCompType* color)
 {
 	if(callback)
 		callback->start();
+
+	ColorCompType white[3] = { 255,255,255 };
+	if(!color)
+		color = white;
 
 	bool result = true;
 	result &= this->reserve(this->size() + other->size());
@@ -194,7 +198,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::add(const buw::ReferenceCount
 	for(long i = 0; i < numPoints; i++) {
 		this->addPoint(*other->getPoint(i));
 		this->addRGBColor(other->getPointColor(i));		
-		this->setPointColor(startIndex + i, red);
+		this->setPointColor(startIndex + i, color);
 		processedPoints++;
 		if(processedPoints % pointsPerPercent == 0) {
 			percentageCompleted++;
@@ -297,7 +301,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 	sections_ = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>();
 
 	// Call this once to find the best level for the radius.
-	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(10);
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(40);
 
 	// If the level is to low, we can't get the indices etc. so we manually increase it.
 	while (octree_->getCellSize(level) == 0)
@@ -315,7 +319,9 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 	int tid = 0;
 	int err = 0;
 
-#pragma omp parallel private(tid) firstprivate(callback) shared(level, dgmOctreeCells, numCells, err)
+	std::map<uint32_t, std::tuple<Tuple3i, CCVector2>> octreeCellMap = std::map<uint32_t, std::tuple<Tuple3i, CCVector2>>();
+
+#pragma omp parallel private(tid) firstprivate(callback) shared(level, dgmOctreeCells, numCells, err, octreeCellMap)
 	{
 		// Initialize our variables for callback updates.
 		tid = omp_get_thread_num();
@@ -324,6 +330,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 		int processedCells = 0;
 		int numCellsPerPercent = numCellsPerThread / 100;
 		int percentageCompleted = 0;
+
 
 		// Iterate over all cells to call our nearest neighbour search on consecutive points in a cell for performance reasons.
 #pragma omp for schedule(dynamic)
@@ -334,7 +341,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 			// Create and initialize the nearest neighbour search struct as far as possible.
 			CCLib::DgmOctree::NearestNeighboursSphericalSearchStruct nss;
 			nss.level = level;
-			nss.maxSearchSquareDistd = std::pow(30, 2);
+			nss.maxSearchSquareDistd = std::pow(50, 2);
 			nss.alreadyVisitedNeighbourhoodSize = 0;
 			nss.minNumberOfNeighbors = 0;
 
@@ -346,7 +353,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 
 			if (success) {
 				nss.queryPoint = *CCLib::Neighbourhood(points.get()).getGravityCenter();
-				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 30, false);
+				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 50, false);
 
 				auto getPCA = [&]() -> CCVector2 {
 					// Matrix which is capable of holding all points for PCA.
@@ -368,13 +375,21 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 
 				auto axis = getPCA();
 
+//#pragma omp critical
+				//TODO fill in the cell map.
 
-				for (size_t i = 0; i < points->size(); i++) {
-					auto point3d = *points->getPoint(i);
-					CCVector2 point2d = CCVector2(point3d.x, point3d.y);
-					setPointScalarValue(points->getPointGlobalIndex(i), axis.dot(point2d));
-				}
+				//std::vector<std::pair<size_t, double>> indexedProjectionLength;
 
+				//for (size_t i = 0; i < points->size(); i++) {
+				//	auto point3d = *points->getPoint(i);
+				//	CCVector2 point2d = CCVector2(point3d.x, point3d.y);
+				//	ScalarType value = axis.dot(point2d);
+				//	size_t index = points->getPointGlobalIndex(i);
+				//	setPointScalarValue(index, value);
+				//	//indexedProjectionLength.push_back(std::pair<size_t, double>(index, value));
+				//}
+
+				//float length = 10.0f;
 				// std::sort(indexedProjectionLength.begin(), indexedProjectionLength.end(),
 				//          [](const std::pair<size_t, double> &lhs, const std::pair<size_t, double> &rhs) -> bool { return lhs.second < rhs.second; });
 				//
@@ -398,10 +413,10 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 				// auto end =
 				//  std::remove_if(sections.begin(), sections.end(), [](const buw::ReferenceCounted<buw::PointCloudSection> &section) -> bool { return section == nullptr; });
 				// std::for_each(sections.begin(), end, [](buw::ReferenceCounted<buw::PointCloudSection> &section) { section->resize(section->size()); });
-
+				//
 				//#pragma omp critical
 				//{ sections_.insert(sections_.end(), sections.begin(), end); }
-				//
+				
 				// Update our callback.
 				 processedCells++;
 				 if (processedCells >= numCellsPerPercent) {
@@ -1718,7 +1733,14 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 	centerpointsPointCloud->getDGMOctree()->clear();
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 
-	char level = centerpointsPointCloud->getDGMOctree()->findBestLevelForAGivenNeighbourhoodSizeExtraction(0.7);
+	char level = centerpointsPointCloud->getDGMOctree()->findBestLevelForAGivenNeighbourhoodSizeExtraction(2.0);
+	BLUE_LOG(trace) << "Level:" << (int)level;
+	float cellSize = centerpointsPointCloud->getDGMOctree()->getCellSize(level);
+	BLUE_LOG(trace) << "Cell Size:" << cellSize;
+
+	if(cellSize < 2.0f)
+		level--;
+
 	int numComponents = CCLib::AutoSegmentationTools::labelConnectedComponents(centerpointsPointCloud.get(), level, false, callback.get(), centerpointsPointCloud->getDGMOctree().get());
 	CCLib::ReferenceCloudContainer container = CCLib::ReferenceCloudContainer(numComponents);
 
@@ -1731,7 +1753,13 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 		if(!hasColors() || !centerpointsPointCloud->hasColors())
 			BLUE_LOG(warning) << "Appending cloud without colors.";
 
-		add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[0])), callback);
+		ColorCompType red[3] = { 255,0,0 };
+		ColorCompType blue[3] = { 0,255,0 };
+		ColorCompType green[3] = { 0,0,255 };
+
+		add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[0])), callback, red);
+		add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[1])), callback, blue);
+		add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[2])), callback, green);
 
 		computeIndices();
 		octree_->clear();

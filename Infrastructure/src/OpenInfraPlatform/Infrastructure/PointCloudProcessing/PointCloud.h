@@ -50,7 +50,7 @@ namespace OpenInfraPlatform {
 
 			~PointCloud();
 
-			int add(const buw::ReferenceCounted<ccPointCloud> &other, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			int add(const buw::ReferenceCounted<ccPointCloud> &other, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr, ColorCompType* color = nullptr);
 
 			void computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
