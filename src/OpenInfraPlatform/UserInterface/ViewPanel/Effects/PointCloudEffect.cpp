@@ -269,7 +269,7 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 	BLUE_LOG(trace) << "Finished initializing GPU side buffers.";
 }
 
-void PointCloudEffect::setOctree(buw::ReferenceCounted<CCLib::DgmOctree> octree, buw::Vector3d offset)
+void PointCloudEffect::setOctree(buw::ReferenceCounted<buw::Octree> octree, buw::Vector3d offset)
 {
 	// Create the octree vertex and index buffer.
 	BLUE_LOG(trace) << "Start creating octree buffers.";

@@ -93,7 +93,7 @@ public:
 	/*Set the point cloud to be rendered*/
 	void setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset);
 	
-	void setOctree(buw::ReferenceCounted<CCLib::DgmOctree> octree, buw::Vector3d offset);
+	void setOctree(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::Octree> octree, buw::Vector3d offset);
 
 	void setSections(std::vector<buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloudSection>> sections, buw::Vector3d offset);
 

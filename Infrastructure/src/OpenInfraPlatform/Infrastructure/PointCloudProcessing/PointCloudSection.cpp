@@ -132,17 +132,25 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 		// Iterate over all pairs of points, we iterate fully since points are not sorted in x direction.
 		for(size_t i = 0; i < this->size() - 1; i++) {
 			std::vector<std::pair<size_t, size_t>> pairsForPoint = std::vector<std::pair<size_t, size_t>>();
+			std::pair<size_t, float> minErrorPoint = std::pair<size_t, float>(i, LONG_MAX);
+			auto firstPoint = *getPoint(i);
 			for(size_t ii = i + 1; ii < this->size(); ii++) {
-
+				auto secondPoint = *getPoint(ii);
 				// If first point.x + gauge + head - second point.x < 1cm and difference in y direction is less than 1cm, we have found a pair of matching rail points.
-				float distance = (*getPoint(i) - *getPoint(ii)).norm();
+				float distance = (firstPoint - secondPoint).norm();
 				float error = std::fabsf(distance - gauge - head);
-				if(error < epsilon && std::fabsf(getPoint(i)->z - getPoint(ii)->z) < 0.2f) {
+				float elevationChange = std::fabsf(firstPoint.z - secondPoint.z);
+				if(error < epsilon && elevationChange < 0.2f) {
+					//float totalError = elevationChange + 2.0f*error;
+					//
+					//if(totalError < minErrorPoint.second)
+					//	minErrorPoint = std::pair<size_t, float>(ii, totalError);
+				
 
 					// If we already have a pair where the second point is close to this one, skip it. Otherwise add.
 					bool hasPointInProximity = false;
 					for(auto pair : pairsForPoint) {
-						if((*getPoint(pair.second) - *getPoint(ii)).norm() < 0.1) {
+						if((*getPoint(pair.second) - secondPoint).norm() < 0.1) {
 							hasPointInProximity = true;
 							break;
 						}
@@ -151,6 +159,7 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 						pairsForPoint.push_back(std::pair<size_t, size_t>(getPointGlobalIndex(i), ii));
 				}
 			}
+			//pairs.push_back(std::pair<size_t, size_t>(getPointGlobalIndex(i), getPointGlobalIndex(minErrorPoint.first)));
 			pairs.insert(pairs.end(), pairsForPoint.begin(), pairsForPoint.end());
 		}
 
@@ -160,40 +169,45 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 
 		// Create a 3D cloud from the pairs to filter it after density and other metrics.
 		if(pairs.size() > 0) {
+			// Do mean density filtering.
+			buw::ReferenceCounted<buw::PointCloud> cloud3D = buw::makeReferenceCounted<buw::PointCloud>();
+			cloud3D->enableScalarField();
+			cloud3D->reserve(pairs.size() * 2);
 			
-			//buw::ReferenceCounted<buw::PointCloud> cloud3D = buw::makeReferenceCounted<buw::PointCloud>();
-			//cloud3D->enableScalarField();
-			//cloud3D->reserve(pairs.size() * 2);
-			//
-			//for(auto pair : pairs) {
-			//	cloud3D->addPoint(*(associatedCloud->getPoint(pair.first)));
-			//	cloud3D->addPoint(*(associatedCloud->getPoint(pair.second)));
-			//}
-			//
+			for(auto pair : pairs) {
+				cloud3D->addPoint(*(associatedCloud->getPoint(pair.first)));
+				cloud3D->addPoint(*(associatedCloud->getPoint(pair.second)));
+			}
+			
 			//int error = CCLib::GeometricalAnalysisTools::computeLocalDensity(cloud3D.get(), CCLib::GeometricalAnalysisTools::Density::DENSITY_KNN, (gauge/2.0f) - 0.05f, nullptr, nullptr);
-			//
-			//if(error == 0) {
-			//	ScalarType mean;
-			//	cloud3D->getCurrentInScalarField()->computeMinAndMax();
-			//	cloud3D->getCurrentInScalarField()->computeMeanAndVariance(mean);
-			//	cloud3D->setCurrentOutScalarField(cloud3D->getCurrentInScalarFieldIndex());
-			//	
-			//	// Vector to store the indices of invalid pairs to delete them later;
-			//	std::vector<size_t> invalidPairIndices = std::vector<size_t>();
-			//	for(int i = 0; i < cloud3D->size() - 1; i += 2) {
-			//		if(cloud3D->getPointScalarValue(i) < 0.75f * mean || cloud3D->getPointScalarValue(i + 1) < 0.75f * mean)
-			//			invalidPairIndices.push_back(i / 2);
-			//	}
-			//	
-			//	size_t offset = 0;
-			//	for(auto index : invalidPairIndices) {
-			//		pairs.erase(pairs.begin() + (index - offset));
-			//		offset++;
-			//	}
-			//
-			//}
-			//
-			//cloud3D = nullptr;
+			
+			int error = CCLib::GeometricalAnalysisTools::computeLocalDensity(cloud3D.get(), CCLib::GeometricalAnalysisTools::Density::DENSITY_KNN, head/2.0f, nullptr, nullptr);
+
+			if(error == 0) {
+				ScalarType mean;
+				cloud3D->getCurrentInScalarField()->computeMinAndMax();
+				cloud3D->getCurrentInScalarField()->computeMeanAndVariance(mean);
+				cloud3D->setCurrentOutScalarField(cloud3D->getCurrentInScalarFieldIndex());
+				
+				// Vector to store the indices of invalid pairs to delete them later;
+				std::vector<size_t> invalidPairIndices = std::vector<size_t>();
+				for(int i = 0; i < cloud3D->size() - 1; i += 2) {
+					//if(cloud3D->getPointScalarValue(i) < 0.75f * mean || cloud3D->getPointScalarValue(i + 1) < 0.75f * mean)
+					//	invalidPairIndices.push_back(i / 2);
+
+					if(cloud3D->getPointScalarValue(i) < 20 || cloud3D->getPointScalarValue(i + 1) < 20)
+						invalidPairIndices.push_back(i / 2);
+				}
+				
+				size_t offset = 0;
+				for(auto index : invalidPairIndices) {
+					pairs.erase(pairs.begin() + (index - offset));
+					offset++;
+				}
+			
+			}
+			
+			cloud3D = nullptr;
 
 			// Color the pair points and set the scalar value.
 			const ColorCompType red[3] = { 255,0,0 };

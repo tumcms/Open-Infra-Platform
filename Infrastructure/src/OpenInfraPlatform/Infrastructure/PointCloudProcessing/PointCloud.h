@@ -23,6 +23,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
 
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/Octree.h"
 
 #include <BlueFramework/Core/Math/vector.h>
 #include <BlueFramework/Core/memory.h>
@@ -44,7 +45,7 @@ namespace OpenInfraPlatform {
 			// Dont use, prototype implementation.
 			static buw::ReferenceCounted<PointCloud> FromFile(const char* filename);
 
-			PointCloud() : ccPointCloud(), octree_(std::make_shared<CCLib::DgmOctree>(this)) { }
+			PointCloud() : ccPointCloud(), octree_(std::make_shared<Octree>(this)) { }
 
 			PointCloud(QString name) : ccPointCloud(name) { }
 
@@ -116,6 +117,8 @@ namespace OpenInfraPlatform {
 
 			std::vector<buw::ReferenceCounted<PointCloudSection>> getSections();
 
+			buw::ReferenceCounted<buw::Octree> getDGMOctree();
+
 			buw::ReferenceCounted<CCLib::ReferenceCloud> subsample(size_t size);
 
 			template<unsigned int N> Eigen::Matrix<double, 3, N> getEigenvectors() const
@@ -145,11 +148,7 @@ namespace OpenInfraPlatform {
 					BLUE_LOG(warning) << "Exception in Eigenvector computation. " << e.what();
 					return Eigen::Matrix<double, 3, N>();
 				}
-			}
-
-			buw::ReferenceCounted<CCLib::DgmOctree> getDGMOctree();
-
-			
+			}			
 		private:
 			void computeMainAxis();
 
@@ -170,7 +169,7 @@ namespace OpenInfraPlatform {
 			std::vector<uint32_t> remainingIndices_, filteredIndices_, segmentedIndices_;
 			std::vector<buw::ReferenceCounted<PointCloudSection>> sections_;
 			std::map<std::pair<int, int>, std::vector<uint32_t>> grid_;
-			buw::ReferenceCounted<CCLib::DgmOctree> octree_ = nullptr;
+			buw::ReferenceCounted<Octree> octree_ = nullptr;
 			bool bHasPairs_ = false, bHasCenterline_ = false;
 
 			buw::CenterlineComputationDescription centerlineDescription_;

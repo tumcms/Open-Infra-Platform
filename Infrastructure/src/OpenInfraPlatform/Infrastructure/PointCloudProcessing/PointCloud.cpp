@@ -301,7 +301,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 	sections_ = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>();
 
 	// Call this once to find the best level for the radius.
-	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(40);
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(200);
 
 	// If the level is to low, we can't get the indices etc. so we manually increase it.
 	while (octree_->getCellSize(level) == 0)
@@ -311,21 +311,21 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 	BLUE_LOG(trace) << "Octree Cell Size:" << octree_->getCellSize(level);
 
 	// Get the octree cell indices to iterate over the cells, return -1 if an error occurs.
-	std::vector<uint32_t> dgmOctreeCells;
-	bool success = octree_->getCellIndexes(level, dgmOctreeCells);
+	CCLib::DgmOctree::cellsContainer dgmOctreeCells;
+	bool success = octree_->getCellCodesAndIndexes(level, dgmOctreeCells, true);
 
 	// Initialize counter variables for our callback update.
 	int numCells = dgmOctreeCells.size();
 	int tid = 0;
 	int err = 0;
 
-	std::map<uint32_t, std::tuple<Tuple3i, CCVector2>> octreeCellMap = std::map<uint32_t, std::tuple<Tuple3i, CCVector2>>();
+	std::map<CCLib::DgmOctree::CellCode, std::tuple<CCVector3, float, CCVector2, float>> octreeCellMap = std::map<CCLib::DgmOctree::CellCode, std::tuple<CCVector3, float, CCVector2, float>>();
 
 #pragma omp parallel private(tid) firstprivate(callback) shared(level, dgmOctreeCells, numCells, err, octreeCellMap)
 	{
 		// Initialize our variables for callback updates.
 		tid = omp_get_thread_num();
-		auto octree = CCLib::DgmOctree(*octree_);
+		auto octree = buw::Octree(*octree_);
 		int numCellsPerThread = numCells / omp_get_num_threads();
 		int processedCells = 0;
 		int numCellsPerPercent = numCellsPerThread / 100;
@@ -335,25 +335,25 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 		// Iterate over all cells to call our nearest neighbour search on consecutive points in a cell for performance reasons.
 #pragma omp for schedule(dynamic)
 		for (long idx = 0; idx < dgmOctreeCells.size(); idx++) {
-			auto cell = dgmOctreeCells[idx];
-			auto code = octree.getCellCode(cell);
+			auto cell = dgmOctreeCells[idx].theIndex;
+			auto code = dgmOctreeCells[idx].theCode;
 
 			// Create and initialize the nearest neighbour search struct as far as possible.
 			CCLib::DgmOctree::NearestNeighboursSphericalSearchStruct nss;
 			nss.level = level;
-			nss.maxSearchSquareDistd = std::pow(50, 2);
+			nss.maxSearchSquareDistd = std::pow(100, 2);
 			nss.alreadyVisitedNeighbourhoodSize = 0;
 			nss.minNumberOfNeighbors = 0;
 
 			// Get the points in the cell specified by the index and store them in points. Compute the cell position and center.
 			std::shared_ptr<CCLib::ReferenceCloud> points = std::make_shared<CCLib::ReferenceCloud>(this);
 			success = octree.getPointsInCellByCellIndex(points.get(), cell, level);
-			octree.getCellPos(code, level, nss.cellPos, false);
+			octree.getCellPos(code, level, nss.cellPos, true);
 			octree.computeCellCenter(nss.cellPos, level, nss.cellCenter);
 
 			if (success) {
 				nss.queryPoint = *CCLib::Neighbourhood(points.get()).getGravityCenter();
-				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 50, false);
+				int numPoints = octree.findNeighborsInASphereStartingFromCell(nss, 100, false);
 
 				auto getPCA = [&]() -> CCVector2 {
 					// Matrix which is capable of holding all points for PCA.
@@ -375,8 +375,10 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 
 				auto axis = getPCA();
 
-//#pragma omp critical
 				//TODO fill in the cell map.
+				std::tuple<CCVector3, float, CCVector2, float> cellCenterWithProjectionLengthAlongAxis = std::tuple<CCVector3, float, CCVector2, float>(nss.queryPoint, axis.dot(CCVector2(nss.queryPoint.x, nss.queryPoint.y)), axis, points->size());
+#pragma omp critical
+				octreeCellMap.insert(std::pair<CCLib::DgmOctree::CellCode, std::tuple<CCVector3, float, CCVector2, float>>(code, cellCenterWithProjectionLengthAlongAxis));
 
 				//std::vector<std::pair<size_t, double>> indexedProjectionLength;
 
@@ -436,7 +438,73 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 	}
 
 	if (callback)
-		callback->stop();	
+		callback->stop();
+
+	if(callback)
+		callback->start();
+
+	long processedPoints = 0;
+	long pointsPerPercent = this->size() / 100;
+	int percentageCompleted = 0;
+
+	// Interpolate the chainages.
+	for(long i = 0; i < this->size(); i++) {
+		// Get the cell pos and code which contain the point.
+		const CCVector3* point = getPoint(i);
+		Tuple3i cellPos;
+		octree_->getTheCellPosWhichIncludesThePoint(point, cellPos, level);
+		auto code = octree_->getTruncatedCellCode(cellPos, level);
+
+		// Get the triple of center, projectionlength and axis.
+		CCVector3 cellCenter;
+		float projectionLength;
+		CCVector2 axis;
+		float density;
+		std::tie<CCVector3, float, CCVector2, float>(cellCenter, projectionLength, axis, density) = octreeCellMap[code];
+
+		// Get all neigthbouring cells.
+		std::vector<Tuple3i> neighbouringCells = octree_->getNeighborCellPositionsAround(cellPos, 1, level);
+		double meanDensity = octree_->computeMeanOctreeDensity(level);
+
+		// Interate over the neighbours to find the code of the closest center.
+		std::pair<float, CCLib::DgmOctree::CellCode> minDistCode = std::pair<float, CCLib::DgmOctree::CellCode>(LONG_MAX, code);
+		for(auto cell : neighbouringCells) {
+			auto neighbourCode = octree_->getTruncatedCellCode(cell, level);			
+			auto cellDesc = octreeCellMap[neighbourCode];
+			if(std::get<3>(cellDesc) >= 0.1 * meanDensity) {
+				float distance = (*point - std::get<0>(cellDesc)).norm();
+				if(distance < minDistCode.first) {
+					minDistCode.first = distance;
+					minDistCode.second = neighbourCode;
+				}
+			}
+		}
+		// Get the triple of center, projectionLength and axis from the map.
+		std::tuple<CCVector3, float, CCVector2, float> nearestCell = octreeCellMap[minDistCode.second];
+
+		// Compute center to point and center to neighbour to interpolate the chainage value.
+		CCVector3 centerToPoint = (*point - cellCenter);
+		
+		CCVector3 centerToNeighbour = std::get<0>(nearestCell) - cellCenter;
+
+		float scalarProjection = centerToPoint.dot(centerToNeighbour/centerToNeighbour.norm());
+		float interpolation = scalarProjection / centerToNeighbour.norm();
+
+		CCVector2 point2D = CCVector2(point->x, point->y);
+		setPointScalarValue(i, interpolation * std::get<2>(nearestCell).dot(point2D) + (1.0f - interpolation) * axis.dot(point2D));
+
+		// Update the callback.
+		processedPoints++;
+		if(processedPoints == pointsPerPercent) {
+			percentageCompleted++;
+			processedPoints = 0;
+			if(callback)
+				callback->update(percentageCompleted);
+		}
+	}
+
+	if(callback)
+		callback->stop();
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid() {
@@ -481,7 +549,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::alignOnMainAxis() {
 int OpenInfraPlatform::Infrastructure::PointCloud::flagDuplicatePoints(const double minDistance, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	// Get octree or build it if not yet built.
 	if (!octree_) {
-		octree_ = buw::makeReferenceCounted<CCLib::DgmOctree>(this);
+		octree_ = buw::makeReferenceCounted<buw::Octree> (this);
 		octree_->build();
 	}
 
@@ -686,7 +754,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init() {
 	// computeMainAxis();
 
 	BLUE_LOG(trace) << "Start building octree.";
-	octree_ = buw::makeReferenceCounted<CCLib::DgmOctree>(this);
+	octree_ = buw::makeReferenceCounted<buw::Octree>(this);
 	octree_->build();
 	BLUE_LOG(trace) << "Finished building octree.";
 
@@ -833,7 +901,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std
 
 		// Create a global list of all point pairs.
 		int tid = 0;
-		#pragma omp parallel private(tid)
+		//#pragma omp parallel private(tid)
 		{
 			// Setup callback update variables.
 			tid = omp_get_thread_num();
@@ -844,7 +912,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std
 
 			// We iterate over all sections and calculate the pairs of matching points.
 			std::vector<std::pair<size_t, size_t>> pairs = std::vector<std::pair<size_t, size_t>>();
-			#pragma omp for
+			//#pragma omp for
 			for (long i = 0; i < sections_.size(); i++) {
 				if (sections_[i]) {
 					// Insert all pairs in our local vector.
@@ -869,7 +937,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std
 			}
 
 				// Merge the local vectors in the master vector.
-#pragma omp critical
+//#pragma omp critical
 			{
 				if (pairs.size() > 0) {
 					o_pairs.insert(o_pairs.end(), pairs.begin(), pairs.end());
@@ -929,7 +997,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentation(
 		float processedPoints = 0;
 
 		// Initialize octree as copy of the original one.
-		auto octree = CCLib::DgmOctree(*octree_);
+		auto octree = buw::Octree(*octree_);
 
 #pragma omp for
 		for (long i = 0; i < remainingIndices_.size(); i++) {
@@ -1017,7 +1085,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentationH
 	{
 		// Initialize our variables for callback updates.
 		tid = omp_get_thread_num();
-		auto octree = CCLib::DgmOctree(*octree_);
+		auto octree = buw::Octree(*octree_);
 		int numCellsPerThread = numCells / omp_get_num_threads();
 		int processedCells = 0;
 		int numCellsPerPercent = numCellsPerThread / 100;
@@ -1202,7 +1270,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 	{
 		// Initialize our variables for callback updates.
 		tid = omp_get_thread_num();
-		auto octree = CCLib::DgmOctree(*octree_);
+		auto octree = buw::Octree(*octree_);
 		int numCellsPerThread = numCells / omp_get_num_threads();
 		int processedCells = 0;
 		int numCellsPerPercent = numCellsPerThread / 100;
@@ -1717,10 +1785,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 	centerpointsPointCloud->applyDuplicateFilter(dfd, callback);
 	centerpointsPointCloud->computeIndices();
 	centerpointsPointCloud->removeFilteredPoints(callback);
-
-	// Remove centerline points which are outliers.
 	centerpointsPointCloud->getDGMOctree()->clear();
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
+
+	// Remove centerline points which are outliers.	
 	buw::LocalDensityFilterDescription ldfd;
 	ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
 	ldfd.dim = buw::ePointCloudFilterDimension::Volume3D;
@@ -1729,17 +1797,24 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 	centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
 	centerpointsPointCloud->computeIndices();
 	centerpointsPointCloud->removeFilteredPoints(callback);
-
 	centerpointsPointCloud->getDGMOctree()->clear();
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 
-	char level = centerpointsPointCloud->getDGMOctree()->findBestLevelForAGivenNeighbourhoodSizeExtraction(2.0);
+	char level = centerpointsPointCloud->getDGMOctree()->findBestLevelForAGivenNeighbourhoodSizeExtraction(1.43);
 	BLUE_LOG(trace) << "Level:" << (int)level;
 	float cellSize = centerpointsPointCloud->getDGMOctree()->getCellSize(level);
 	BLUE_LOG(trace) << "Cell Size:" << cellSize;
 
-	if(cellSize < 2.0f)
-		level--;
+	if(cellSize < 0.35f) {
+		BLUE_LOG(warning) << "Cell size below 0.7m, adjusting.";
+
+		while(centerpointsPointCloud->getDGMOctree()->getCellSize(level) < 0.35f)
+			level--;
+
+		BLUE_LOG(trace) << "Level:" << (int)level;
+		float cellSize = centerpointsPointCloud->getDGMOctree()->getCellSize(level);
+		BLUE_LOG(trace) << "Cell Size:" << cellSize;
+	}
 
 	int numComponents = CCLib::AutoSegmentationTools::labelConnectedComponents(centerpointsPointCloud.get(), level, false, callback.get(), centerpointsPointCloud->getDGMOctree().get());
 	CCLib::ReferenceCloudContainer container = CCLib::ReferenceCloudContainer(numComponents);
@@ -1757,9 +1832,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 		ColorCompType blue[3] = { 0,255,0 };
 		ColorCompType green[3] = { 0,0,255 };
 
-		add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[0])), callback, red);
-		add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[1])), callback, blue);
-		add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[2])), callback, green);
+		auto centerline = std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[0]));
+		
+
+		add(centerline, callback, red);
+		//add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[1])), callback, blue);
+		//add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[2])), callback, green);
 
 		computeIndices();
 		octree_->clear();
@@ -2485,9 +2563,9 @@ const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint3
 	return std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>>(remainingIndices_, filteredIndices_, segmentedIndices_);
 }
 
-buw::ReferenceCounted<CCLib::DgmOctree> OpenInfraPlatform::Infrastructure::PointCloud::getDGMOctree() {
+buw::ReferenceCounted<buw::Octree> OpenInfraPlatform::Infrastructure::PointCloud::getDGMOctree() {
 	if (!octree_)
-		octree_ = std::make_shared<CCLib::DgmOctree>(this);
+		octree_ = std::make_shared<Octree>(this);
 	return octree_;
 }
 
