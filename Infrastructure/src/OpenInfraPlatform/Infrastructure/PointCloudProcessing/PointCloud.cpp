@@ -1800,51 +1800,150 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 	centerpointsPointCloud->getDGMOctree()->clear();
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 
-	char level = centerpointsPointCloud->getDGMOctree()->findBestLevelForAGivenNeighbourhoodSizeExtraction(1.43);
-	BLUE_LOG(trace) << "Level:" << (int)level;
-	float cellSize = centerpointsPointCloud->getDGMOctree()->getCellSize(level);
-	BLUE_LOG(trace) << "Cell Size:" << cellSize;
+	// Extract the connected component based on chainage.
+	centerpointsPointCloud->setCurrentOutScalarField(idxCPC_chainage);
 
-	if(cellSize < 0.35f) {
-		BLUE_LOG(warning) << "Cell size below 0.7m, adjusting.";
+	// Add a component scalar field to label connected components.
+	int idxCPC_component = centerpointsPointCloud->addScalarField("Component");
+	centerpointsPointCloud->setCurrentInScalarField(idxCPC_component);
+	centerpointsPointCloud->for_each([&](size_t i) { centerpointsPointCloud->setPointScalarValue(i, -1); });
 
-		while(centerpointsPointCloud->getDGMOctree()->getCellSize(level) < 0.35f)
-			level--;
+	// Get min and max chainage.
+	//centerpointsPointCloud->getCurrentOutScalarField()->computeMinAndMax();
+	//ScalarType minChainage, maxChainage;
+	//std::tie<ScalarType, ScalarType>(minChainage, maxChainage) = centerpointsPointCloud->getScalarFieldMinAndMax(idxCPC_chainage);
 
-		BLUE_LOG(trace) << "Level:" << (int)level;
-		float cellSize = centerpointsPointCloud->getDGMOctree()->getCellSize(level);
-		BLUE_LOG(trace) << "Cell Size:" << cellSize;
-	}
+	//auto cpcOctree = centerpointsPointCloud->getDGMOctree();
+	//char level = cpcOctree->findBestLevelForAGivenNeighbourhoodSizeExtraction(0.7);
+	//
+	//std::vector<size_t> border = std::vector<size_t>();
+	//border.push_back(0);
+	//
+	//// Get the octree cell indices to iterate over the cells, return -1 if an error occurs.
+	//CCLib::DgmOctree::cellsContainer dgmOctreeCells;
+	//bool success = octree_->getCellCodesAndIndexes(level, dgmOctreeCells, true);
+	//
+	//// Initialize counter variables for our callback update.
+	//int numCells = dgmOctreeCells.size();
+	//int tid = 0;
+	//int err = 0;
+	//
+	//while(!border.empty()) {
+	//	//Start at random point, get points in neighbourhood.
+	//	//Add points which fulfill chainage criterion to border.
+	//	//Expand all points in border in the same way.
+	//	//Maybe recompute chainage on the centerline cloud.
+	//	//Maybe use Box neighbourhood with the cells axis.
+	//
+	//}
 
-	int numComponents = CCLib::AutoSegmentationTools::labelConnectedComponents(centerpointsPointCloud.get(), level, false, callback.get(), centerpointsPointCloud->getDGMOctree().get());
-	CCLib::ReferenceCloudContainer container = CCLib::ReferenceCloudContainer(numComponents);
+//	{
+//#pragma omp parallel private(tid) firstprivate(callback) shared(level, dgmOctreeCells, numCells, err)
+//		{
+//			// Initialize our variables for callback updates.
+//			tid = omp_get_thread_num();
+//			auto octree = buw::Octree(*cpcOctree);
+//			int numCellsPerThread = numCells / omp_get_num_threads();
+//			int processedCells = 0;
+//			int numCellsPerPercent = numCellsPerThread / 100;
+//			int percentageCompleted = 0;
+//
+//
+//			// Iterate over all cells to call our nearest neighbour search on consecutive points in a cell for performance reasons.
+//#pragma omp for schedule(dynamic)
+//			for(long idx = 0; idx < dgmOctreeCells.size(); idx++) {
+//				auto cell = dgmOctreeCells[idx].theIndex;
+//				auto code = dgmOctreeCells[idx].theCode;
+//
+//				// Create and initialize the nearest neighbour search struct as far as possible.
+//				CCLib::DgmOctree::NearestNeighboursSphericalSearchStruct nss;
+//				nss.level = level;
+//				nss.maxSearchSquareDistd = std::pow(0.7, 2);
+//				nss.alreadyVisitedNeighbourhoodSize = 0;
+//				nss.minNumberOfNeighbors = 0;
+//
+//				// Get the points in the cell specified by the index and store them in points. Compute the cell position and center.
+//				std::shared_ptr<CCLib::ReferenceCloud> points = std::make_shared<CCLib::ReferenceCloud>(this);
+//				octree.getPointsInCellByCellIndex(points.get(), cell, level);
+//				octree.getCellPos(code, level, nss.cellPos, true);
+//				octree.computeCellCenter(nss.cellPos, level, nss.cellCenter);
+//
+//
+//
+//
+//				processedCells++;
+//				if(processedCells >= numCellsPerPercent) {
+//					percentageCompleted++;
+//					processedCells = 0;
+//					if(tid == 0 && callback)
+//						callback->update(percentageCompleted);
+//				}
+//
+//			}
+//		}
+//	}
+	
+	//char level = centerpointsPointCloud->getDGMOctree()->findBestLevelForAGivenNeighbourhoodSizeExtraction(0.7);
+	//BLUE_LOG(trace) << "Level:" << (int)level;
+	//float cellSize = centerpointsPointCloud->getDGMOctree()->getCellSize(level);
+	//BLUE_LOG(trace) << "Cell Size:" << cellSize;
+	//
+	//if(cellSize < 0.7f) {
+	//	BLUE_LOG(warning) << "Cell size below 0.7m, adjusting.";
+	//
+	//	while(centerpointsPointCloud->getDGMOctree()->getCellSize(level) < 0.7f)
+	//		level--;
+	//
+	//	BLUE_LOG(trace) << "Level:" << (int)level;
+	//	float cellSize = centerpointsPointCloud->getDGMOctree()->getCellSize(level);
+	//	BLUE_LOG(trace) << "Cell Size:" << cellSize;
+	//}
+	//
+	//int numComponents = CCLib::AutoSegmentationTools::labelConnectedComponents(centerpointsPointCloud.get(), level, false, callback.get(), centerpointsPointCloud->getDGMOctree().get());
+	//CCLib::ReferenceCloudContainer container = CCLib::ReferenceCloudContainer(numComponents);
+	//
+	//if(numComponents > 0) {
+	//	CCLib::AutoSegmentationTools::extractConnectedComponents(centerpointsPointCloud.get(), container);
+	//
+	//	std::sort(container.begin(), container.end(), [](CCLib::ReferenceCloud* &lhs, CCLib::ReferenceCloud* &rhs) { return lhs->size() > rhs->size(); });
+	//
+	//	// Append the centerpointsPointCloud to this one.
+	//	if(!hasColors() || !centerpointsPointCloud->hasColors())
+	//		BLUE_LOG(warning) << "Appending cloud without colors.";
+	//
+	//	ColorCompType red[3] = { 255,0,0 };
+	//	ColorCompType blue[3] = { 0,255,0 };
+	//	ColorCompType green[3] = { 0,0,255 };
+	//
+	//	auto centerline = std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[0]));
+	//	
+	//
+	//	add(centerline, callback, red);
+	//	//add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[1])), callback, blue);
+	//	//add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[2])), callback, green);
+	//
+	//	computeIndices();
+	//	octree_->clear();
+	//	octree_->build();
+	//}
 
-	if(numComponents > 0) {
-		CCLib::AutoSegmentationTools::extractConnectedComponents(centerpointsPointCloud.get(), container);
+	add(centerpointsPointCloud, callback, const_cast<ColorCompType*>(red));
 
-		std::sort(container.begin(), container.end(), [](CCLib::ReferenceCloud* &lhs, CCLib::ReferenceCloud* &rhs) { return lhs->size() > rhs->size(); });
+	// Get min and max chainage.
+	getScalarField(idx_chainage)->computeMinAndMax();
+	ScalarType minChainage, maxChainage;
+	std::tie<ScalarType, ScalarType>(minChainage, maxChainage) = getScalarFieldMinAndMax(idx_chainage);
 
-		// Append the centerpointsPointCloud to this one.
-		if(!hasColors() || !centerpointsPointCloud->hasColors())
-			BLUE_LOG(warning) << "Appending cloud without colors.";
+	// Use chainage to apply coloring.
+	for_each([&](size_t i) {
+		ScalarType chainage = getPointScalarValue(i);
+		//TODO: Get the color from the chainage.
+		ScalarType colorValue = (chainage - minChainage) / (maxChainage - minChainage);
+		ColorCompType color[3] = { colorValue * 255.0f, colorValue * 255.0f, colorValue * 255.0f };
+		this->setPointColor(i, color);
+	});
 
-		ColorCompType red[3] = { 255,0,0 };
-		ColorCompType blue[3] = { 0,255,0 };
-		ColorCompType green[3] = { 0,0,255 };
-
-		auto centerline = std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[0]));
-		
-
-		add(centerline, callback, red);
-		//add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[1])), callback, blue);
-		//add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[2])), callback, green);
-
-		computeIndices();
-		octree_->clear();
-		octree_->build();
-	}
-
-	return numComponents;
+	return 1;
 }
 int OpenInfraPlatform::Infrastructure::PointCloud::resetCenterlines() {
 	centerlineDescription_ = buw::CenterlineComputationDescription();

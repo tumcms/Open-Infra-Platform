@@ -141,29 +141,32 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 				float error = std::fabsf(distance - gauge - head);
 				float elevationChange = std::fabsf(firstPoint.z - secondPoint.z);
 				if(error < epsilon && elevationChange < 0.2f) {
-					//float totalError = elevationChange + 2.0f*error;
+					float totalError = elevationChange + 2.0f*error;
 					//
 					//if(totalError < minErrorPoint.second)
 					//	minErrorPoint = std::pair<size_t, float>(ii, totalError);
 				
 
-					// If we already have a pair where the second point is close to this one, skip it. Otherwise add.
+					// If we already have a pair where the second point is close to this one, compare the error. If this one is better, change it, otherwise skip. Otherwise add.
 					bool hasPointInProximity = false;
-					for(auto pair : pairsForPoint) {
-						if((*getPoint(pair.second) - secondPoint).norm() < 0.1) {
+					for(auto &pair : pairsForPoint) {
+						if((*getPoint(pair.second) - secondPoint).norm() < 0.1) {							
 							hasPointInProximity = true;
-							break;
+							break;							
 						}
 					}
 					if(!hasPointInProximity)
-						pairsForPoint.push_back(std::pair<size_t, size_t>(getPointGlobalIndex(i), ii));
+						pairsForPoint.push_back(std::pair<size_t, size_t>(i, ii));
 				}
 			}
 			//pairs.push_back(std::pair<size_t, size_t>(getPointGlobalIndex(i), getPointGlobalIndex(minErrorPoint.first)));
 			pairs.insert(pairs.end(), pairsForPoint.begin(), pairsForPoint.end());
 		}
 
-		std::for_each(pairs.begin(), pairs.end(), [&](std::pair<size_t, size_t> &pair) {pair.second = getPointGlobalIndex(pair.second); });
+		std::for_each(pairs.begin(), pairs.end(), [&](std::pair<size_t, size_t> &pair) {
+			pair.first = getPointGlobalIndex(pair.first);
+			pair.second = getPointGlobalIndex(pair.second);
+		});
 
 		// Do some postprocessing on our points to avoid false pairs.
 
