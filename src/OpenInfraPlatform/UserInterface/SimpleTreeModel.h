@@ -13,6 +13,7 @@ namespace OpenInfraPlatform {
 			Q_OBJECT;
 
 		public:
+			
 			explicit TreeModel(const QString &data, QObject *parent = 0);
 			~TreeModel();
 

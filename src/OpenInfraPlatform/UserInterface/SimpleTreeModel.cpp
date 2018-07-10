@@ -2,6 +2,7 @@
 #include "SimpleTreeModel.h"
 
 #include <QStringList>
+#include <sstream>
 
 OpenInfraPlatform::UserInterface::TreeModel::TreeModel(const QString &data, QObject *parent)
 	: QAbstractItemModel(parent)
@@ -34,8 +35,14 @@ QVariant OpenInfraPlatform::UserInterface::TreeModel::data(const QModelIndex &in
 		return QVariant();
 
 	TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+	std::stringstream ss;
+	ss << item;
+	std::string internalPointerString = ss.str();
 
-	return item->data(index.column());
+	QString text = QString::number(index.row()) + " " + QString::number(index.column()) + " parent row: " + QString::number(index.parent().row()) + " parent column: " + QString::number(index.parent().column()) +"internalPointer " + QString::fromStdString(internalPointerString);
+	return QVariant(text);
+	//return item->data(index.column());
+	
 }
 
 Qt::ItemFlags OpenInfraPlatform::UserInterface::TreeModel::flags(const QModelIndex &index) const
@@ -73,6 +80,7 @@ const
 		return createIndex(row, column, childItem);
 	else
 		return QModelIndex();
+	
 }
 
 QModelIndex OpenInfraPlatform::UserInterface::TreeModel::parent(const QModelIndex &index) const

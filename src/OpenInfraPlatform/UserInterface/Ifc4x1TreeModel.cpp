@@ -34,6 +34,7 @@ OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::Ifc4x1TreeModel(std::map<int,
 	for (auto it : entities) {
 		shared_ptr<Ifc4x1TreeItem> item = std::make_shared<Ifc4x1TreeItem>(it);
 		data_.push_back(item);
+	
 	}
 }
 
