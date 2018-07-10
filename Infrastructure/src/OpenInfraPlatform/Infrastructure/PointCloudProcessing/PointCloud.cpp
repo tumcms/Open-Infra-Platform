@@ -270,7 +270,19 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float 
 
 	auto end = std::remove_if(sections_.begin(), sections_.end(), [](const buw::ReferenceCounted<buw::PointCloudSection> &section) -> bool { return section == nullptr; });
 	sections_.erase(end, sections_.end());
-	// Color all points which are not in a section red.
+
+	for(auto &section : sections_) {
+		auto median = section->computeMedianCenter();
+
+		section->for_each([&](size_t i) {
+			auto height = section->getPoint(i)->z;
+			if(std::abs(median.z - height) > 0.25f) {
+				section->removePointGlobalIndex(i);
+			}
+		});
+	}
+
+	// Color all points which are not in a section black.
 	const ColorCompType black[3] = { 0, 0, 0 };
 	const ColorCompType white[3] = { 255, 255, 255 };
 
@@ -464,6 +476,12 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 
 		// Get all neigthbouring cells.
 		std::vector<Tuple3i> neighbouringCells = octree_->getNeighborCellPositionsAround(cellPos, 1, level);
+		auto end = std::remove_if(neighbouringCells.begin(), neighbouringCells.end(), [&](Tuple3i cell) {
+			return cell.x == cellPos.x && cell.z != cellPos.z && cell.y == cellPos.y;
+		});
+
+		neighbouringCells.erase(end, neighbouringCells.end());
+
 		double meanDensity = octree_->computeMeanOctreeDensity(level);
 
 		// Interate over the neighbours to find the code of the closest center.
@@ -471,7 +489,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 		for(auto cell : neighbouringCells) {
 			auto neighbourCode = octree_->getTruncatedCellCode(cell, level);			
 			auto cellDesc = octreeCellMap[neighbourCode];
-			if(std::get<3>(cellDesc) >= 0.1 * meanDensity) {
+			if(std::get<3>(cellDesc) >= 0.2 * meanDensity) {
 				float distance = (*point - std::get<0>(cellDesc)).norm();
 				if(distance < minDistCode.first) {
 					minDistCode.first = distance;
@@ -1773,9 +1791,14 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 		CCVector3 center = 0.5f * (end + start);
 
 		centerpointsPointCloud->addPoint(center);
-		centerpointsPointCloud->setPointColor(i, red);
 		centerpointsPointCloud->setPointScalarValue(i, chainage);
 	}
+
+	centerpointsPointCloud->resizeTheRGBTable(centerpointsPointCloud->size());
+
+	centerpointsPointCloud->for_each([&](size_t i) {
+		centerpointsPointCloud->setPointColor(i, red);
+	});
 
 	// Remove points closer than 1mm to avoid "black holes" of insane density.
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
@@ -1807,141 +1830,140 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 	int idxCPC_component = centerpointsPointCloud->addScalarField("Component");
 	centerpointsPointCloud->setCurrentInScalarField(idxCPC_component);
 	centerpointsPointCloud->for_each([&](size_t i) { centerpointsPointCloud->setPointScalarValue(i, -1); });
+	centerpointsPointCloud->getCurrentInScalarField()->computeMinAndMax();
 
 	// Get min and max chainage.
-	//centerpointsPointCloud->getCurrentOutScalarField()->computeMinAndMax();
-	//ScalarType minChainage, maxChainage;
-	//std::tie<ScalarType, ScalarType>(minChainage, maxChainage) = centerpointsPointCloud->getScalarFieldMinAndMax(idxCPC_chainage);
-
-	//auto cpcOctree = centerpointsPointCloud->getDGMOctree();
-	//char level = cpcOctree->findBestLevelForAGivenNeighbourhoodSizeExtraction(0.7);
-	//
-	//std::vector<size_t> border = std::vector<size_t>();
-	//border.push_back(0);
-	//
-	//// Get the octree cell indices to iterate over the cells, return -1 if an error occurs.
-	//CCLib::DgmOctree::cellsContainer dgmOctreeCells;
-	//bool success = octree_->getCellCodesAndIndexes(level, dgmOctreeCells, true);
-	//
-	//// Initialize counter variables for our callback update.
-	//int numCells = dgmOctreeCells.size();
-	//int tid = 0;
-	//int err = 0;
-	//
-	//while(!border.empty()) {
-	//	//Start at random point, get points in neighbourhood.
-	//	//Add points which fulfill chainage criterion to border.
-	//	//Expand all points in border in the same way.
-	//	//Maybe recompute chainage on the centerline cloud.
-	//	//Maybe use Box neighbourhood with the cells axis.
-	//
-	//}
-
-//	{
-//#pragma omp parallel private(tid) firstprivate(callback) shared(level, dgmOctreeCells, numCells, err)
-//		{
-//			// Initialize our variables for callback updates.
-//			tid = omp_get_thread_num();
-//			auto octree = buw::Octree(*cpcOctree);
-//			int numCellsPerThread = numCells / omp_get_num_threads();
-//			int processedCells = 0;
-//			int numCellsPerPercent = numCellsPerThread / 100;
-//			int percentageCompleted = 0;
-//
-//
-//			// Iterate over all cells to call our nearest neighbour search on consecutive points in a cell for performance reasons.
-//#pragma omp for schedule(dynamic)
-//			for(long idx = 0; idx < dgmOctreeCells.size(); idx++) {
-//				auto cell = dgmOctreeCells[idx].theIndex;
-//				auto code = dgmOctreeCells[idx].theCode;
-//
-//				// Create and initialize the nearest neighbour search struct as far as possible.
-//				CCLib::DgmOctree::NearestNeighboursSphericalSearchStruct nss;
-//				nss.level = level;
-//				nss.maxSearchSquareDistd = std::pow(0.7, 2);
-//				nss.alreadyVisitedNeighbourhoodSize = 0;
-//				nss.minNumberOfNeighbors = 0;
-//
-//				// Get the points in the cell specified by the index and store them in points. Compute the cell position and center.
-//				std::shared_ptr<CCLib::ReferenceCloud> points = std::make_shared<CCLib::ReferenceCloud>(this);
-//				octree.getPointsInCellByCellIndex(points.get(), cell, level);
-//				octree.getCellPos(code, level, nss.cellPos, true);
-//				octree.computeCellCenter(nss.cellPos, level, nss.cellCenter);
-//
-//
-//
-//
-//				processedCells++;
-//				if(processedCells >= numCellsPerPercent) {
-//					percentageCompleted++;
-//					processedCells = 0;
-//					if(tid == 0 && callback)
-//						callback->update(percentageCompleted);
-//				}
-//
-//			}
-//		}
-//	}
-	
-	//char level = centerpointsPointCloud->getDGMOctree()->findBestLevelForAGivenNeighbourhoodSizeExtraction(0.7);
-	//BLUE_LOG(trace) << "Level:" << (int)level;
-	//float cellSize = centerpointsPointCloud->getDGMOctree()->getCellSize(level);
-	//BLUE_LOG(trace) << "Cell Size:" << cellSize;
-	//
-	//if(cellSize < 0.7f) {
-	//	BLUE_LOG(warning) << "Cell size below 0.7m, adjusting.";
-	//
-	//	while(centerpointsPointCloud->getDGMOctree()->getCellSize(level) < 0.7f)
-	//		level--;
-	//
-	//	BLUE_LOG(trace) << "Level:" << (int)level;
-	//	float cellSize = centerpointsPointCloud->getDGMOctree()->getCellSize(level);
-	//	BLUE_LOG(trace) << "Cell Size:" << cellSize;
-	//}
-	//
-	//int numComponents = CCLib::AutoSegmentationTools::labelConnectedComponents(centerpointsPointCloud.get(), level, false, callback.get(), centerpointsPointCloud->getDGMOctree().get());
-	//CCLib::ReferenceCloudContainer container = CCLib::ReferenceCloudContainer(numComponents);
-	//
-	//if(numComponents > 0) {
-	//	CCLib::AutoSegmentationTools::extractConnectedComponents(centerpointsPointCloud.get(), container);
-	//
-	//	std::sort(container.begin(), container.end(), [](CCLib::ReferenceCloud* &lhs, CCLib::ReferenceCloud* &rhs) { return lhs->size() > rhs->size(); });
-	//
-	//	// Append the centerpointsPointCloud to this one.
-	//	if(!hasColors() || !centerpointsPointCloud->hasColors())
-	//		BLUE_LOG(warning) << "Appending cloud without colors.";
-	//
-	//	ColorCompType red[3] = { 255,0,0 };
-	//	ColorCompType blue[3] = { 0,255,0 };
-	//	ColorCompType green[3] = { 0,0,255 };
-	//
-	//	auto centerline = std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[0]));
-	//	
-	//
-	//	add(centerline, callback, red);
-	//	//add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[1])), callback, blue);
-	//	//add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[2])), callback, green);
-	//
-	//	computeIndices();
-	//	octree_->clear();
-	//	octree_->build();
-	//}
-
-	add(centerpointsPointCloud, callback, const_cast<ColorCompType*>(red));
-
-	// Get min and max chainage.
-	getScalarField(idx_chainage)->computeMinAndMax();
+	centerpointsPointCloud->getCurrentOutScalarField()->computeMinAndMax();
 	ScalarType minChainage, maxChainage;
-	std::tie<ScalarType, ScalarType>(minChainage, maxChainage) = getScalarFieldMinAndMax(idx_chainage);
+	std::tie<ScalarType, ScalarType>(minChainage, maxChainage) = centerpointsPointCloud->getScalarFieldMinAndMax(idxCPC_chainage);
 
-	// Use chainage to apply coloring.
-	for_each([&](size_t i) {
-		ScalarType chainage = getPointScalarValue(i);
-		//TODO: Get the color from the chainage.
-		ScalarType colorValue = (chainage - minChainage) / (maxChainage - minChainage);
-		ColorCompType color[3] = { colorValue * 255.0f, colorValue * 255.0f, colorValue * 255.0f };
-		this->setPointColor(i, color);
-	});
+	auto cpcOctree = centerpointsPointCloud->getDGMOctree();
+	char level = cpcOctree->findBestLevelForAGivenNeighbourhoodSizeExtraction(0.7);	
+	
+	// Get the octree cell indices to iterate over the cells, return -1 if an error occurs.
+	CCLib::DgmOctree::cellsContainer dgmOctreeCells;
+	success = cpcOctree->getCellCodesAndIndexes(level, dgmOctreeCells, true);
+	
+	// Initialize counter variables for our callback update.
+	int numCells = dgmOctreeCells.size();
+	int tid = 0;
+	int err = 0;
+	
+	// Create and initialize the nearest neighbour search struct as far as possible.
+	CCLib::DgmOctree::NearestNeighboursSphericalSearchStruct nss;
+	nss.level = level;
+	nss.maxSearchSquareDistd = std::pow(0.7, 2);
+	
+	int component = 0;
+
+	while(false/*std::get<0>(centerpointsPointCloud->getScalarFieldMinAndMax(idxCPC_component)) == -1*/) {
+		std::set<size_t> border = std::set<size_t>();
+
+		// Get the first point which does not have a component.
+		centerpointsPointCloud->setCurrentOutScalarField(idxCPC_component);
+		centerpointsPointCloud->for_each([&](size_t i) {
+			if(border.size() == 0) {
+				if(centerpointsPointCloud->getPointScalarValue(i) == -1) {
+					border.insert(i);
+					return;
+				}
+			}
+			else {
+				return;
+			}
+		});
+
+		centerpointsPointCloud->setCurrentOutScalarField(idxCPC_chainage);
+
+		while(!border.empty()) {
+			//Start at random point, get points in neighbourhood.
+			//Add points which fulfill chainage criterion to border.
+			//Expand all points in border in the same way.
+			//Maybe recompute chainage on the centerline cloud.
+			//Maybe use Box neighbourhood with the cells axis.
+			auto startIndex = *border.begin();
+			auto startPoint = centerpointsPointCloud->getPoint(startIndex);
+			ScalarType startChainage = centerpointsPointCloud->getPointScalarValue(startIndex);
+
+			cpcOctree->getTheCellPosWhichIncludesThePoint(startPoint, nss.cellPos, level);
+			auto code = cpcOctree->getTruncatedCellCode(nss.cellPos, level);
+			nss.alreadyVisitedNeighbourhoodSize = 0;
+			nss.minNumberOfNeighbors = 0;
+			nss.queryPoint = *startPoint;
+			cpcOctree->computeCellCenter(nss.cellPos, level, nss.cellCenter);
+
+			int numPoints = cpcOctree->findNeighborsInASphereStartingFromCell(nss, 0.7);
+
+			for(int i = 0; i < numPoints; i++) {
+				auto point = nss.pointsInNeighbourhood[i];
+				float dChainage = centerpointsPointCloud->getPointScalarValue(point.pointIndex) - startChainage;
+				float distance = std::sqrt(point.squareDistd);
+				centerpointsPointCloud->setCurrentOutScalarField(idxCPC_component);
+				bool explored = centerpointsPointCloud->getPointScalarValue(point.pointIndex) != -1;
+
+				if(!explored && (std::abs(dChainage / distance) > 0.7 || distance < 0.067)) {
+					border.insert(point.pointIndex);
+					centerpointsPointCloud->setPointScalarValue(point.pointIndex, component);
+				}
+
+				centerpointsPointCloud->setCurrentOutScalarField(idxCPC_chainage);
+			}
+
+			// Remove the point that we just explored
+			border.erase(startIndex);
+			centerpointsPointCloud->setPointScalarValue(startIndex, component);
+
+			BLUE_LOG(trace) <<"Component #" << component << ". Explored point #" << startIndex << ". " << border.size() << " points in border.";
+		}
+
+		component++;
+		centerpointsPointCloud->getCurrentInScalarField()->computeMinAndMax();
+	}
+
+	
+	level = centerpointsPointCloud->getDGMOctree()->findBestLevelForAGivenNeighbourhoodSizeExtraction(0.7);
+	BLUE_LOG(trace) << "Level:" << (int)level;
+	float cellSize = centerpointsPointCloud->getDGMOctree()->getCellSize(level);
+	BLUE_LOG(trace) << "Cell Size:" << cellSize;
+	
+	if(cellSize < 0.7f) {
+		BLUE_LOG(warning) << "Cell size below 0.7m, adjusting.";
+	
+		while(centerpointsPointCloud->getDGMOctree()->getCellSize(level) < 0.7f)
+			level--;
+	
+		BLUE_LOG(trace) << "Level:" << (int)level;
+		float cellSize = centerpointsPointCloud->getDGMOctree()->getCellSize(level);
+		BLUE_LOG(trace) << "Cell Size:" << cellSize;
+	}
+	
+	int numComponents = CCLib::AutoSegmentationTools::labelConnectedComponents(centerpointsPointCloud.get(), level, false, callback.get(), centerpointsPointCloud->getDGMOctree().get());
+	CCLib::ReferenceCloudContainer container = CCLib::ReferenceCloudContainer(numComponents);
+	
+	if(numComponents > 0) {
+		CCLib::AutoSegmentationTools::extractConnectedComponents(centerpointsPointCloud.get(), container);
+	
+		std::sort(container.begin(), container.end(), [](CCLib::ReferenceCloud* &lhs, CCLib::ReferenceCloud* &rhs) { return lhs->size() > rhs->size(); });
+	
+		// Append the centerpointsPointCloud to this one.
+		if(!hasColors() || !centerpointsPointCloud->hasColors())
+			BLUE_LOG(warning) << "Appending cloud without colors.";
+	
+		ColorCompType red[3] = { 255,0,0 };
+		ColorCompType blue[3] = { 0,255,0 };
+		ColorCompType green[3] = { 0,0,255 };
+	
+		auto centerline = std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[0]));
+		
+	
+		add(centerline, callback, red);
+		//add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[1])), callback, blue);
+		//add(std::shared_ptr<ccPointCloud>(centerpointsPointCloud->partialClone(container[2])), callback, green);
+	
+		computeIndices();
+		octree_->clear();
+		octree_->build();
+	}		
 
 	return 1;
 }

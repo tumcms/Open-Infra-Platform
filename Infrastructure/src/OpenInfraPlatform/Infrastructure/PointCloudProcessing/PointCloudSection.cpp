@@ -21,9 +21,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <ccScalarField.h>
 
-extern const ccColor::Rgba red;
-extern const ccColor::Rgba green;
-
 OpenInfraPlatform::Infrastructure::PointCloudSection::~PointCloudSection()
 {
 }
@@ -94,6 +91,24 @@ CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeCenter()
 	CCVector3 min, max;
 	getBoundingBox(min, max);
 	return min + ((max-min)/2.0f);
+}
+
+CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeMedianCenter()
+{
+	std::vector<float> x,y,z;
+
+	for_each([&](size_t i) {
+		auto point = getPoint(i);
+		x.push_back(point->x);
+		y.push_back(point->y);
+		z.push_back(point->z);
+	});
+
+	std::sort(x.begin(),x.end());
+	std::sort(y.begin(), y.end());
+	std::sort(z.begin(), z.end());
+
+	return CCVector3(x[x.size() / 2], y[y.size() / 2], z[z.size() / 2]);
 }
 
 Eigen::Matrix3d OpenInfraPlatform::Infrastructure::PointCloudSection::getOrientation()

@@ -59,6 +59,8 @@ namespace OpenInfraPlatform {
 
 			CCVector3 computeCenter();
 
+			CCVector3 computeMedianCenter();
+
 			Eigen::Matrix3d getOrientation();
 
 			std::vector<std::pair<size_t, size_t>> computePairs();
@@ -67,17 +69,19 @@ namespace OpenInfraPlatform {
 
 			void getObjectOrientedBoundingBox(CCVector3 &min, CCVector3 &max);
 
+			template<typename F> void for_each(const F& function)
+			{
+				for(size_t i = 0; i < size(); i++)
+					function(i);
+			}
+
 		private:
 			// Creates a point cloud where all points are projected on the plane represented by this section.
 			buw::ReferenceCounted<PointCloud> createPointCloud2D();
 
 			buw::ReferenceCounted<PointCloud> createPointCloud3D();
 
-			template<typename F> void for_each(const F& function)
-			{
-				for(size_t i = 0; i < size(); i++)
-					function(i);
-			}
+			
 		public:
 			CCLib::DgmOctree::CellCode cellCode_;
 
