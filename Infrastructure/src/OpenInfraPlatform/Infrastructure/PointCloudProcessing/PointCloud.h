@@ -57,6 +57,8 @@ namespace OpenInfraPlatform {
 
 			void computeChainage(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			std::vector<std::pair<CCVector3, ScalarType>> getAllPointsAndScalarFieldValue(int index);
+
 			void computeGrid();
 
 			void alignOnMainAxis();
@@ -86,6 +88,8 @@ namespace OpenInfraPlatform {
 			int computeCenterlines2(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			void computePairs(std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			std::vector<buw::ReferenceCounted<CCLib::ReferenceCloud>> extractConnectedComponents(ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 			
 			int resetCenterlines();
 

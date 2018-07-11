@@ -2611,7 +2611,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCenterlin
 		desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
 		desc.maxDistance = ui_->doubleSpinBoxCenterlineMaxDistance->value();
 		desc.centerlineDensity = ui_->doubleSpinBoxCenterlineDensity->value() / 1000.0;
-		int numAlignments = pointCloud->computeCenterlines2(desc, callback_);
+		int numAlignments = pointCloud->computeCenterlines(desc, callback_);
 		if(numAlignments > 0) {
 	
 			ui_->pushButtonComputeCurvature->setEnabled(true);

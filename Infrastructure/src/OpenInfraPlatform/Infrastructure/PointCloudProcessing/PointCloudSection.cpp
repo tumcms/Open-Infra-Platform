@@ -104,11 +104,11 @@ CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeMedianCen
 		z.push_back(point->z);
 	});
 
-	std::sort(x.begin(),x.end());
+	std::sort(x.begin(), x.end());
 	std::sort(y.begin(), y.end());
 	std::sort(z.begin(), z.end());
 
-	return CCVector3(x[x.size() / 2], y[y.size() / 2], z[z.size() / 2]);
+	return CCVector3(x[std::floor(x.size() / 2.0)], y[std::floor(y.size() / 2.0)], z[std::floor(z.size() / 2.0)]);
 }
 
 Eigen::Matrix3d OpenInfraPlatform::Infrastructure::PointCloudSection::getOrientation()
