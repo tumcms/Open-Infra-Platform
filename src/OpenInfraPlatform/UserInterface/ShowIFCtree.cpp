@@ -16,8 +16,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ShowIFCtree.h"
-#include "Ifc4x1TreeModel.h"
+//#include "Ifc4x1TreeModel.h"   
 #include "OpenInfraPlatform/DataManagement/Data.h"
+#include "SimpleTreeModel.h"
 
 OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::UserInterface::View * view, QWidget * parent)
 	:ui_(new Ui::ShowIFCtree),
@@ -41,8 +42,23 @@ void OpenInfraPlatform::UserInterface::ShowIFCtree::show()
 {
 	auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
 	auto entities = proxyModel->getIfc4x1Data();
-	ui_->treeView->setModel(new Ifc4x1TreeModel(entities));
+	ui_->treeView->setModel(new TreeModel(entities));
 
+
+	//QApplication app(argc, argv);
+
+	//QFile file("default.txt");
+	//file.open(QIODevice::ReadOnly);
+	//TreeModel* model = new TreeModel(file.readAll());
+	//file.close();
+	//
+	////QTreeView view;
+	//ui_->treeView->setModel(model);
+	//view.setModel(&model);
+	//view.setWindowTitle(QObject::tr("Simple Tree Model"));
+	//view.show();
+	//return app.exec();
 
 	((QDialog*)this)->show();
+
 }

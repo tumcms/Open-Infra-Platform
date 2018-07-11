@@ -98,7 +98,7 @@ int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(const QModelInde
 	else {
 		auto entity = data_.find(parent.row() + 1)->second;
 		auto counter = countRows {};
-		OpenInfraPlatform::IfcAlignment1x1::castAndCall(entity, counter);
+		OpenInfraPlatform::IfcAlignment1x1::castAndCall<countRows, void>(entity, counter);
 		return counter.rows_;
 	}
 
@@ -153,7 +153,7 @@ QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelInd
 	else {
 		auto ptr = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(buw::claimOwnership(index.internalPointer()));
 		auto name = getName();
-		OpenInfraPlatform::IfcAlignment1x1::castAndCall(ptr, name);
+		OpenInfraPlatform::IfcAlignment1x1::castAndCall<getName, void>(ptr, name);
 		return QVariant(name.names_[index.row()]);
 	}
 }

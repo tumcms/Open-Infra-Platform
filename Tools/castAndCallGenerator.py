@@ -43,22 +43,28 @@ textHeader = """/*
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
+#include <memory>
+#include <typeinfo>
+#include <OpenInfraPlatform\IfcAlignment1x1\IfcAlignment1x1Entities.h>
+#include <OpenInfraPlatform\IfcAlignment1x1\IfcAlignment1x1Types.h>
 """
 
 
 header = """
-using namespace OpenInfraPlatform::IfcAlignment1x1;
-template <typename F, typename T> bool castAndCall(std::shared_ptr<T> ptr, F &f) {
-	std::string name = std::string(typeid(T).name());"""
+namespace OpenInfraPlatform {
+	namespace IfcAlignment1x1 {
+		template <typename F, typename T> T castAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
+			std::string name = std::string(typeid(*ptr).name());"""
 
 pattern = """
-	if (name == "class OpenInfraPlatform::IfcAlignment1x1::__classname__") {
-		f(*(std::dynamic_pointer_cast<__classname__>(ptr)));
-		return true;
-	}"""
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::__classname__") {
+				return f(*(std::dynamic_pointer_cast<__classname__>(ptr)));				
+			}"""
 
 ending = """		
-	return false;
+		}
+	}
 }
 """
 def main(argv):
@@ -67,7 +73,8 @@ def main(argv):
 
 	args = parser.parse_args()
 	
-	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f))]
+	
+	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f)) and not "// abstract class" in open(join(args.directory, f)).read()]
 			
 	print(textHeader)	
 	print(header)
