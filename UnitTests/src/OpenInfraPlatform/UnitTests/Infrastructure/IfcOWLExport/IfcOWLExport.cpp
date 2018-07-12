@@ -121,7 +121,7 @@ struct DerivedIfcEntityParser {
 //#include <boost/preprocessor/iteration/local.hpp>
 //
 //template <unsigned N> struct unrolled_dynamic_visitor {
-//	template <typename F, typename P> static void castAndCall(std::shared_ptr<P> ptr, F const& f)
+//	template <typename F, typename P> static void castToDerivedAndCall(std::shared_ptr<P> ptr, F const& f)
 //	{
 //	}
 //};
@@ -130,14 +130,14 @@ struct DerivedIfcEntityParser {
 //
 //#define CREATE_SPECIALIZATION(n)\
 //	template <> struct unrolled_dynamic_visitor<n> {\
-//		template <typename F, typename P> static void castAndCall(std::shared_ptr<P> ptr, F const& f)\
+//		template <typename F, typename P> static void castToDerivedAndCall(std::shared_ptr<P> ptr, F const& f)\
 //		{\
 //			if(typeid(GET_IFC_ENTITY_TYPE(n)) == typeid(*(ptr.get()))) {\
 //				GET_IFC_ENTITY_TYPE(n) entity = *(std::dynamic_pointer_cast<GET_IFC_ENTITY_TYPE(n)>(ptr)); \
 //				f(entity); \
 //			}\
 //			else {\
-//				unrolled_dynamic_visitor<n - 1>::castAndCall(ptr,f);\
+//				unrolled_dynamic_visitor<n - 1>::castToDerivedAndCall(ptr,f);\
 //			}\
 //		}\
 //	};\
@@ -163,7 +163,7 @@ namespace
 		//};
 		//
 		//std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> entity = std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(new OpenInfraPlatform::IfcAlignment1x1::IfcPerson());
-		//unrolled_dynamic_visitor<2>::castAndCall(b, myGenericLambda);
+		//unrolled_dynamic_visitor<2>::castToDerivedAndCall(b, myGenericLambda);
 		//std::shared_ptr<A> a_ptr = std::shared_ptr<A>(&CREATE(0));
 		//const std::type_info& t = (typeid(A));
 

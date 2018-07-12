@@ -465,7 +465,7 @@ private:
 		//Function operator which takes the IfcAlignment1x1Entity and calls a function that performs a cast to its runtime type and calls a struct that parses the derived object.
 		void operator()(std::pair<const int, std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>> pair)
 		{
-			OpenInfraPlatform::IfcAlignment1x1::castAndCall<DerivedIfcEntityParser, void>(pair.second, DerivedIfcEntityParser {});
+			OpenInfraPlatform::IfcAlignment1x1::castToDerivedAndCall<DerivedIfcEntityParser, void>(pair.second, DerivedIfcEntityParser {});
 		}
 	};
 

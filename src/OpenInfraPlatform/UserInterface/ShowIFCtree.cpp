@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //#include "Ifc4x1TreeModel.h"   
 #include "OpenInfraPlatform/DataManagement/Data.h"
 #include "SimpleTreeModel.h"
+#include "SimpleTreeItem.h"
 
 OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::UserInterface::View * view, QWidget * parent)
 	:ui_(new Ui::ShowIFCtree),
@@ -33,8 +34,10 @@ OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::Us
 
 void OpenInfraPlatform::UserInterface::ShowIFCtree::on_treeView_expanded(const QModelIndex &index)
 {
-	auto model = ui_->treeView->model();
-	model->insertRows(0, model->rowCount(index), index);
+	TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+	for(int i = 0; i < item->childCount(); i++) {
+		item->child(i)->createChildren();
+	}
 }
 
 

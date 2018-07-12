@@ -48,13 +48,17 @@ textHeader = """/*
 #include <typeinfo>
 #include <OpenInfraPlatform\IfcAlignment1x1\IfcAlignment1x1Entities.h>
 #include <OpenInfraPlatform\IfcAlignment1x1\IfcAlignment1x1Types.h>
-"""
 
-
-header = """
 namespace OpenInfraPlatform {
-	namespace IfcAlignment1x1 {
-		template <typename F, typename T> T castAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
+	namespace IfcAlignment1x1 {"""
+
+
+headerCastToDerivedAndCall = """
+		template <typename F, typename T> T castToDerivedAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
+			std::string name = std::string(typeid(*ptr).name());"""
+			
+headerCastToVisitableAndCall = """
+		template <typename F, typename T> T castToVisitableAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
 			std::string name = std::string(typeid(*ptr).name());"""
 
 pattern = """
@@ -62,8 +66,10 @@ pattern = """
 				return f(*(std::dynamic_pointer_cast<__classname__>(ptr)));				
 			}"""
 
-ending = """		
-		}
+endFunction = """
+			}"""
+
+endFile = """		
 	}
 }
 """
@@ -74,18 +80,30 @@ def main(argv):
 	args = parser.parse_args()
 	
 	
-	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f)) and not "// abstract class" in open(join(args.directory, f)).read()]
-			
+	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f))]
+	notAbstractClass = [f for f in listdir(args.directory) if not "// abstract class" in open(join(args.directory, f)).read()]
+	visitableClass = [f for f in listdir(args.directory) if "VISITABLE_STRUCT" in open(join(args.directory, f)).read()]
 	print(textHeader)	
-	print(header)
+	print(headerCastToDerivedAndCall)
 	
-	for file in onlyfiles:
-		classname = file[0:len(file) - 2]			
+	for elem in notAbstractClass:
+		classname = elem[0:len(elem) - 2]			
 		text = pattern
 		text = text.replace("__classname__",classname)
 		print(text)
 	
-	print(ending)	
+	print(endFunction)
+	
+	print(headerCastToVisitableAndCall)
+
+	for elem in visitableClass:
+		classname = elem[0:len(elem) - 2]			
+		text = pattern
+		text = text.replace("__classname__",classname)
+		print(text)
+	
+	print(endFunction)
+	print(endFile)
 		
 if __name__ == "__main__":
    main(sys.argv[1:])

@@ -8,21 +8,26 @@
 //OpenInfraPlatform::UserInterface::TreeModel::TreeModel(const QString &data, QObject *parent)
 //	: QAbstractItemModel(parent)
 
+template <typename T, typename S> T cast(S s)
+{
+	return dynamic_cast<T>(s);
+}
 
 OpenInfraPlatform::UserInterface::TreeModel::TreeModel(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>> &data, QObject *parent)
 	: QAbstractItemModel(parent) 
 {
-	rootItem = new TreeItem(nullptr);
-
+	std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+	rootItem = new TreeItem (ptr, nullptr);
 	
 	for(auto entity : data) {
-		auto func = [&](auto ptr)->void {
-			if(!std::is_abstract<decltype(ptr)>::value)
-				rootItem->appendChild(new TreeItemT<decltype(ptr)>(ptr, rootItem));
-		};
+		TreeItem* child = new TreeItem(std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object>(entity.second), rootItem);
+		QList<QVariant> itemData;
+		itemData << QVariant(entity.first) << QVariant(entity.second->classname()) << QVariant("");
+		child->setItemData(itemData);
+		child->createChildren();
+		rootItem->appendChild(child);
+	}
 
-		OpenInfraPlatform::IfcAlignment1x1::castAndCall<decltype(func), void>(entity.second, func);
-	}	
 }
 
 OpenInfraPlatform::UserInterface::TreeModel::~TreeModel()
