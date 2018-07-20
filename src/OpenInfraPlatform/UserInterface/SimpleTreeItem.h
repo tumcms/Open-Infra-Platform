@@ -54,7 +54,6 @@ namespace OpenInfraPlatform {
 							//Function operator() which creates a statement from a boolean value.
 							void operator()(const char* name, bool value)
 							{
-
 							}
 
 							void operator()(const char* name, std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> value)

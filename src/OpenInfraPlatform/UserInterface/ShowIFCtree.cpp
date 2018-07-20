@@ -36,7 +36,7 @@ void OpenInfraPlatform::UserInterface::ShowIFCtree::on_treeView_expanded(const Q
 {
 	TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
 	for(int i = 0; i < item->childCount(); i++) {
-	item->child(i)->createChildren();
+		item->child(i)->createChildren();
 	}
 }
 
