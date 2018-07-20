@@ -54,16 +54,53 @@ namespace OpenInfraPlatform {
 				//Function operator() which creates a statement from a boolean value.
 				void operator()(const char* name, bool value)
 				{
+					std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+					TreeItem* child = new TreeItem(ptr, thisPtr);
+					QList<QVariant> itemData;
+					itemData << QVariant(name) << QVariant(value) << QVariant("bool");
+					child->setItemData(itemData);
+					thisPtr->appendChild(child);
 				}
 
 				void operator()(const char* name, std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> value)
 				{
 					TreeItem* child = new TreeItem(std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object>(value), thisPtr);
 					QList<QVariant> itemData;
-					itemData << QVariant(name) << QVariant(value->getId()) << QVariant(value->classname());
+					itemData << QVariant(name) << QVariant(value ? value->getId() : -1) << QVariant(value ? value->classname() : "nullptr");
 					child->setItemData(itemData);
 					thisPtr->appendChild(child);
 				}
+
+				//TODO: Get value stored in type
+				void operator()(const char* name, std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Type> value)
+				{
+					TreeItem* child = new TreeItem(std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object>(value), thisPtr);
+					QList<QVariant> itemData;
+					itemData << QVariant(name) << QVariant("m_type") << QVariant(value ? value->classname() : "nullptr");
+					child->setItemData(itemData);
+					thisPtr->appendChild(child);
+				}
+
+				template <class T> typename std::enable_if<std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1AbstractSelect, T>::value && !std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
+				operator()(const char* name, std::shared_ptr<T> value)
+				{
+					std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+					TreeItem* child = new TreeItem(ptr, thisPtr);
+					QList<QVariant> itemData;
+					itemData << QVariant(name) << QVariant("m_select") << QVariant(typeid(T).name());
+					child->setItemData(itemData);
+					thisPtr->appendChild(child);
+				}
+
+				//void operator()(const char* name, std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1AbstractEnum> value)
+				//{
+				//	std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+				//	TreeItem* child = new TreeItem(ptr, thisPtr);
+				//	QList<QVariant> itemData;
+				//	itemData << QVariant(name) << QVariant("m_enum") << QVariant(value->classname());
+				//	child->setItemData(itemData);
+				//	thisPtr->appendChild(child);
+				//}
 
 				template <class T> typename std::enable_if<std::is_same<T, float>::value || std::is_same<T, double>::value || std::is_same<T, int>::value, void>::type
 					operator()(const char* name, T value)
@@ -78,28 +115,42 @@ namespace OpenInfraPlatform {
 								
 
 				//Function operator() which covers std::shared_ptr<T>.
-				//This is a dummy function required by the compiler but which mustn't be called. Throws an exception.
-				template <typename T>
-				void operator()(const char* name, std::shared_ptr<T> &ptr)
-				{
-
-				}
+				//template <typename T>
+				//void operator()(const char* name, std::shared_ptr<T> &ptr)
+				//{
+				//	//Ist das dann der Fall wenn eine weitere Entity ausgeklappt werden soll?
+				//}
 
 				//Function operator() which covers std::vector<T>.
-				//This is a function required by the compiler but is not implemented and mustn't be called. Throws an exception.
 				template <typename T>
 				void operator()(const char* name, std::vector<T> vector)
 				{
+					std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+					TreeItem* child = new TreeItem(ptr, thisPtr);
+					QList<QVariant> itemData;
+					itemData << QVariant(name) << QVariant("vector") << QVariant(typeid(T).name());
+					child->setItemData(itemData);
+					thisPtr->appendChild(child);
 
+					int i = 0;
+					for(T it : vector) {
+						TreeItem* vectorChild = new TreeItem(ptr, child);
+						QList<QVariant> vectorData;
+						//doesn't work yet since it is of type T and that requires the parser again (rekusiver aufruf)
+						
+						vectorData << QVariant(i++) << QVariant("") << QVariant("");
+						vectorChild->setItemData(vectorData);
+						child->appendChild(vectorChild);
+					}
 				}
 
 				//Function operator() which covers everything that is not an int, float/double, string, boolean, pointer or vector.
 				//This function also takes enums, since alot of classes derived from IfcAlignment1x1Type have a corresponding enum class, which is derived from it.
-				template <class T> typename std::enable_if<!std::is_floating_point<T>::value && !std::is_same<T, int>::value, void>::type
-					operator()(const char* name, T t)
-				{
-
-				}
+				//template <class T> typename std::enable_if<!std::is_floating_point<T>::value && !std::is_same<T, int>::value, void>::type
+				//	operator()(const char* name, T t)
+				//{
+				//
+				//}
 
 				TreeItem* thisPtr = nullptr;
 

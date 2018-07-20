@@ -91,20 +91,20 @@ QModelIndex OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::parent(const QMod
 }
 
 
-int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(const QModelIndex & parent) const
-{	
-	if (!parent.isValid())
-		return data_.size();
-	else {
-		auto entity = data_.find(parent.row() + 1)->second;
-		auto counter = countRows {};
-		OpenInfraPlatform::IfcAlignment1x1::castToDerivedAndCall<countRows, void>(entity, counter);
-		return counter.rows_;
-	}
-
-	//Menge der Attribute des Objekts data_.size(index) oder data_[parent].size()?oder mit visit struct?
-	//würde das hier auch mit childCount() gehen?
-}
+//int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(const QModelIndex & parent) const
+//{	
+//	if (!parent.isValid())
+//		return data_.size();
+//	else {
+//		auto entity = data_.find(parent.row() + 1)->second;
+//		auto counter = countRows {};
+//		OpenInfraPlatform::IfcAlignment1x1::castToDerivedAndCall<countRows, void>(entity, counter);
+//		return counter.rows_;
+//	}
+//
+//	//Menge der Attribute des Objekts data_.size(index) oder data_[parent].size()?oder mit visit struct?
+//	//würde das hier auch mit childCount() gehen?
+//}
 	
 
 int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::columnCount(const QModelIndex & parent) const
@@ -116,24 +116,24 @@ int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::columnCount(const QModelI
 }
 
 
-QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelIndex & index, int role) const
-{
-	if (!index.isValid())
-		return QVariant();
-
-	if (role != Qt::DisplayRole)
-		return QVariant();
-
-	if (!index.parent().isValid())
-		return QVariant(data_[index.row()]->getIfcClassName().data());
-	else {
-		
-		auto ptr = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(buw::claimOwnership(index.internalPointer()));
-		auto name = getName();
-		OpenInfraPlatform::IfcAlignment1x1::castToDerivedAndCall<getName, void>(ptr, name);
-		return QVariant(name.names_[index.row()]);
-	}
-}
+//QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelIndex & index, int role) const
+//{
+//	if (!index.isValid())
+//		return QVariant();
+//
+//	if (role != Qt::DisplayRole)
+//		return QVariant();
+//
+//	if (!index.parent().isValid())
+//		return QVariant(data_[index.row()]->getIfcClassName().data());
+//	else {
+//		
+//		auto ptr = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(buw::claimOwnership(index.internalPointer()));
+//		auto name = getName();
+//		OpenInfraPlatform::IfcAlignment1x1::castToDerivedAndCall<getName, void>(ptr, name);
+//		return QVariant(name.names_[index.row()]);
+//	}
+//}
 
 bool OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::insertRows(int row, int count, const QModelIndex & parent)
 {

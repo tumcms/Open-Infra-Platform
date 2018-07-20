@@ -35,8 +35,14 @@ OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::Us
 void OpenInfraPlatform::UserInterface::ShowIFCtree::on_treeView_expanded(const QModelIndex &index)
 {
 	TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+
+	if(item->childCount() == 0)
+		item->createChildren();
+
 	for(int i = 0; i < item->childCount(); i++) {
-		item->child(i)->createChildren();
+		auto child = item->child(i);
+		if(child->childCount() == 0)
+			child->createChildren();
 	}
 }
 
