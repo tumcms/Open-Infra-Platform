@@ -34,7 +34,6 @@ OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::Ifc4x1TreeModel(std::map<int,
 	for (auto it : entities) {
 		shared_ptr<Ifc4x1TreeItem> item = std::make_shared<Ifc4x1TreeItem>(it);
 		data_.push_back(item);
-	
 	}
 }
 
@@ -96,16 +95,12 @@ int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::rowCount(const QModelInde
 	if (!parent.isValid())
 		return data_.size();
 	else {
-		auto entity = data_.find(parent.row() + 1)->second;
-		auto counter = countRows {};
-		OpenInfraPlatform::IfcAlignment1x1::castToDerivedAndCall<countRows, void>(entity, counter);
-		return counter.rows_;
+		return 0;
 	}
 
 	//Menge der Attribute des Objekts data_.size(index) oder data_[parent].size()?oder mit visit struct?
 	//würde das hier auch mit childCount() gehen?
 }
-	
 
 int OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::columnCount(const QModelIndex & parent) const
 {
@@ -128,10 +123,7 @@ QVariant OpenInfraPlatform::UserInterface::Ifc4x1TreeModel::data(const QModelInd
 		return QVariant(data_[index.row()]->getIfcClassName().data());
 	else {
 		
-		auto ptr = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(buw::claimOwnership(index.internalPointer()));
-		auto name = getName();
-		OpenInfraPlatform::IfcAlignment1x1::castToDerivedAndCall<getName, void>(ptr, name);
-		return QVariant(name.names_[index.row()]);
+		return QVariant(data_[index.parent().row()]->data(index.column(), index.row()));
 	}
 }
 

@@ -15,14 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef Ifc4X1TREEITEM_H
-#define Ifc4X1TREEITEM_H
+#ifndef TREEITEM_H
+#define TREEITEM_H
 
 #include <QList>
 #include <QVariant>
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include "OpenInfraPlatform\IfcAlignment1x1\model\Model.h"
-
 
 namespace OpenInfraPlatform {
 	namespace UserInterface {
@@ -51,9 +50,9 @@ namespace OpenInfraPlatform {
 			struct getAttributeDescription;
 		};
 
+#endif // TREEITEM_H
 	}
 }
-#endif  // TREEITEM_H
 
 namespace buw
 {
