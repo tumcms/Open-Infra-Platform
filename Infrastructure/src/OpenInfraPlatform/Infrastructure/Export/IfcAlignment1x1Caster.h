@@ -1,18 +1,18 @@
 /*
-	Copyright (c) 2018 Technical University of Munich
-	Chair of Computational Modeling and Simulation.
+    Copyright (c) 2018 Technical University of Munich
+    Chair of Computational Modeling and Simulation.
 
-	TUM Open Infra Platform is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License Version 3
-	as published by the Free Software Foundation.
+    TUM Open Infra Platform is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License Version 3
+    as published by the Free Software Foundation.
 
-	TUM Open Infra Platform is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-	GNU General Public License for more details.
+    TUM Open Infra Platform is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program. If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <memory>
@@ -22,6031 +22,9050 @@
 
 namespace OpenInfraPlatform {
 	namespace IfcAlignment1x1 {
-		template <typename F> bool castAndCall(std::shared_ptr<IfcAlignment1x1Entity> &ptr, F &f)
-		{
+
+		template <typename F, typename T> T castToDerivedAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
 			std::string name = std::string(typeid(*ptr).name());
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAbsorbedDoseMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcAbsorbedDoseMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAbsorbedDoseMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAbsorbedDoseMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAccelerationMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcAccelerationMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAccelerationMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAccelerationMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionRequest") {
-				f(*(std::dynamic_pointer_cast<IfcActionRequest>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionRequest") {
+				return f(*(std::dynamic_pointer_cast<IfcActionRequest>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionRequestTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcActionRequestTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionRequestTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcActionRequestTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionSourceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcActionSourceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionSourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcActionSourceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcActionTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcActionTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActor") {
-				f(*(std::dynamic_pointer_cast<IfcActor>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActor") {
+				return f(*(std::dynamic_pointer_cast<IfcActor>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActorRole") {
-				f(*(std::dynamic_pointer_cast<IfcActorRole>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActorRole") {
+				return f(*(std::dynamic_pointer_cast<IfcActorRole>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActorSelect") {
-				f(*(std::dynamic_pointer_cast<IfcActorSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActuator") {
+				return f(*(std::dynamic_pointer_cast<IfcActuator>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActuator") {
-				f(*(std::dynamic_pointer_cast<IfcActuator>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActuatorType") {
+				return f(*(std::dynamic_pointer_cast<IfcActuatorType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActuatorType") {
-				f(*(std::dynamic_pointer_cast<IfcActuatorType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActuatorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcActuatorTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActuatorTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcActuatorTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAddress") {
+				return f(*(std::dynamic_pointer_cast<IfcAddress>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAddress") {
-				f(*(std::dynamic_pointer_cast<IfcAddress>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAddressTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAddressTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAddressTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcAddressTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAdvancedBrep") {
+				return f(*(std::dynamic_pointer_cast<IfcAdvancedBrep>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAdvancedBrep") {
-				f(*(std::dynamic_pointer_cast<IfcAdvancedBrep>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAdvancedBrepWithVoids") {
+				return f(*(std::dynamic_pointer_cast<IfcAdvancedBrepWithVoids>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAdvancedBrepWithVoids") {
-				f(*(std::dynamic_pointer_cast<IfcAdvancedBrepWithVoids>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAdvancedFace") {
+				return f(*(std::dynamic_pointer_cast<IfcAdvancedFace>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAdvancedFace") {
-				f(*(std::dynamic_pointer_cast<IfcAdvancedFace>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminal>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminal") {
-				f(*(std::dynamic_pointer_cast<IfcAirTerminal>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalBox") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminalBox>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalBox") {
-				f(*(std::dynamic_pointer_cast<IfcAirTerminalBox>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalBoxType") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminalBoxType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalBoxType") {
-				f(*(std::dynamic_pointer_cast<IfcAirTerminalBoxType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalBoxTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminalBoxTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalBoxTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcAirTerminalBoxTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminalType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalType") {
-				f(*(std::dynamic_pointer_cast<IfcAirTerminalType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminalTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcAirTerminalTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirToAirHeatRecovery") {
+				return f(*(std::dynamic_pointer_cast<IfcAirToAirHeatRecovery>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirToAirHeatRecovery") {
-				f(*(std::dynamic_pointer_cast<IfcAirToAirHeatRecovery>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirToAirHeatRecoveryType") {
+				return f(*(std::dynamic_pointer_cast<IfcAirToAirHeatRecoveryType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirToAirHeatRecoveryType") {
-				f(*(std::dynamic_pointer_cast<IfcAirToAirHeatRecoveryType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirToAirHeatRecoveryTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAirToAirHeatRecoveryTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirToAirHeatRecoveryTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcAirToAirHeatRecoveryTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlarm") {
+				return f(*(std::dynamic_pointer_cast<IfcAlarm>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlarm") {
-				f(*(std::dynamic_pointer_cast<IfcAlarm>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlarmType") {
+				return f(*(std::dynamic_pointer_cast<IfcAlarmType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlarmType") {
-				f(*(std::dynamic_pointer_cast<IfcAlarmType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlarmTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAlarmTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlarmTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcAlarmTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment") {
-				f(*(std::dynamic_pointer_cast<IfcAlignment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DHorizontal") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DHorizontal>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DHorizontal") {
-				f(*(std::dynamic_pointer_cast<IfcAlignment2DHorizontal>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DHorizontalSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DHorizontalSegment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DHorizontalSegment") {
-				f(*(std::dynamic_pointer_cast<IfcAlignment2DHorizontalSegment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DSegment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DSegment") {
-				f(*(std::dynamic_pointer_cast<IfcAlignment2DSegment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerSegCircularArc") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DVerSegCircularArc>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerSegCircularArc") {
-				f(*(std::dynamic_pointer_cast<IfcAlignment2DVerSegCircularArc>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerSegLine") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DVerSegLine>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerSegLine") {
-				f(*(std::dynamic_pointer_cast<IfcAlignment2DVerSegLine>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerSegParabolicArc") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DVerSegParabolicArc>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerSegParabolicArc") {
-				f(*(std::dynamic_pointer_cast<IfcAlignment2DVerSegParabolicArc>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVertical") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DVertical>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVertical") {
-				f(*(std::dynamic_pointer_cast<IfcAlignment2DVertical>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerticalSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DVerticalSegment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerticalSegment") {
-				f(*(std::dynamic_pointer_cast<IfcAlignment2DVerticalSegment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignmentCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignmentCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignmentCurve") {
-				f(*(std::dynamic_pointer_cast<IfcAlignmentCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignmentTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignmentTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcAlignmentTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAmountOfSubstanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAmountOfSubstanceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAmountOfSubstanceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcAmountOfSubstanceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnalysisModelTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAnalysisModelTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnalysisModelTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcAnalysisModelTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnalysisTheoryTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAnalysisTheoryTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnalysisTheoryTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcAnalysisTheoryTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAngularVelocityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAngularVelocityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAngularVelocityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcAngularVelocityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnnotation") {
+				return f(*(std::dynamic_pointer_cast<IfcAnnotation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnnotation") {
-				f(*(std::dynamic_pointer_cast<IfcAnnotation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnnotationFillArea") {
+				return f(*(std::dynamic_pointer_cast<IfcAnnotationFillArea>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnnotationFillArea") {
-				f(*(std::dynamic_pointer_cast<IfcAnnotationFillArea>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcApplication") {
+				return f(*(std::dynamic_pointer_cast<IfcApplication>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcApplication") {
-				f(*(std::dynamic_pointer_cast<IfcApplication>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAppliedValue") {
+				return f(*(std::dynamic_pointer_cast<IfcAppliedValue>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAppliedValue") {
-				f(*(std::dynamic_pointer_cast<IfcAppliedValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcApproval") {
+				return f(*(std::dynamic_pointer_cast<IfcApproval>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAppliedValueSelect") {
-				f(*(std::dynamic_pointer_cast<IfcAppliedValueSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcApprovalRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcApprovalRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcApproval") {
-				f(*(std::dynamic_pointer_cast<IfcApproval>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArbitraryClosedProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcArbitraryClosedProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcApprovalRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcApprovalRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArbitraryOpenProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcArbitraryOpenProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArbitraryClosedProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcArbitraryClosedProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArbitraryProfileDefWithVoids") {
+				return f(*(std::dynamic_pointer_cast<IfcArbitraryProfileDefWithVoids>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArbitraryOpenProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcArbitraryOpenProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArcIndex") {
+				return f(*(std::dynamic_pointer_cast<IfcArcIndex>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArbitraryProfileDefWithVoids") {
-				f(*(std::dynamic_pointer_cast<IfcArbitraryProfileDefWithVoids>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAreaDensityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAreaDensityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArcIndex") {
-				f(*(std::dynamic_pointer_cast<IfcArcIndex>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAreaMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAreaMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAreaDensityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcAreaDensityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArithmeticOperatorEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcArithmeticOperatorEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAreaMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcAreaMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAssemblyPlaceEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAssemblyPlaceEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArithmeticOperatorEnum") {
-				f(*(std::dynamic_pointer_cast<IfcArithmeticOperatorEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAsset") {
+				return f(*(std::dynamic_pointer_cast<IfcAsset>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAssemblyPlaceEnum") {
-				f(*(std::dynamic_pointer_cast<IfcAssemblyPlaceEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAsymmetricIShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcAsymmetricIShapeProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAsset") {
-				f(*(std::dynamic_pointer_cast<IfcAsset>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAudioVisualAppliance") {
+				return f(*(std::dynamic_pointer_cast<IfcAudioVisualAppliance>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAsymmetricIShapeProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcAsymmetricIShapeProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAudioVisualApplianceType") {
+				return f(*(std::dynamic_pointer_cast<IfcAudioVisualApplianceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAudioVisualAppliance") {
-				f(*(std::dynamic_pointer_cast<IfcAudioVisualAppliance>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAudioVisualApplianceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAudioVisualApplianceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAudioVisualApplianceType") {
-				f(*(std::dynamic_pointer_cast<IfcAudioVisualApplianceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAxis1Placement") {
+				return f(*(std::dynamic_pointer_cast<IfcAxis1Placement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAudioVisualApplianceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcAudioVisualApplianceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAxis2Placement2D") {
+				return f(*(std::dynamic_pointer_cast<IfcAxis2Placement2D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAxis1Placement") {
-				f(*(std::dynamic_pointer_cast<IfcAxis1Placement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAxis2Placement3D") {
+				return f(*(std::dynamic_pointer_cast<IfcAxis2Placement3D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAxis2Placement") {
-				f(*(std::dynamic_pointer_cast<IfcAxis2Placement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeam") {
+				return f(*(std::dynamic_pointer_cast<IfcBeam>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAxis2Placement2D") {
-				f(*(std::dynamic_pointer_cast<IfcAxis2Placement2D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeamStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcBeamStandardCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAxis2Placement3D") {
-				f(*(std::dynamic_pointer_cast<IfcAxis2Placement3D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeamType") {
+				return f(*(std::dynamic_pointer_cast<IfcBeamType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeam") {
-				f(*(std::dynamic_pointer_cast<IfcBeam>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeamTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBeamTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeamStandardCase") {
-				f(*(std::dynamic_pointer_cast<IfcBeamStandardCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBenchmarkEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBenchmarkEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeamType") {
-				f(*(std::dynamic_pointer_cast<IfcBeamType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBinary") {
+				return f(*(std::dynamic_pointer_cast<IfcBinary>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeamTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcBeamTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBlobTexture") {
+				return f(*(std::dynamic_pointer_cast<IfcBlobTexture>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBenchmarkEnum") {
-				f(*(std::dynamic_pointer_cast<IfcBenchmarkEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBlock") {
+				return f(*(std::dynamic_pointer_cast<IfcBlock>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBendingParameterSelect") {
-				f(*(std::dynamic_pointer_cast<IfcBendingParameterSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoiler") {
+				return f(*(std::dynamic_pointer_cast<IfcBoiler>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBinary") {
-				f(*(std::dynamic_pointer_cast<IfcBinary>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoilerType") {
+				return f(*(std::dynamic_pointer_cast<IfcBoilerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBlobTexture") {
-				f(*(std::dynamic_pointer_cast<IfcBlobTexture>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoilerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBoilerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBlock") {
-				f(*(std::dynamic_pointer_cast<IfcBlock>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoolean") {
+				return f(*(std::dynamic_pointer_cast<IfcBoolean>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoiler") {
-				f(*(std::dynamic_pointer_cast<IfcBoiler>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBooleanClippingResult") {
+				return f(*(std::dynamic_pointer_cast<IfcBooleanClippingResult>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoilerType") {
-				f(*(std::dynamic_pointer_cast<IfcBoilerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBooleanOperator") {
+				return f(*(std::dynamic_pointer_cast<IfcBooleanOperator>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoilerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcBoilerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBooleanResult") {
+				return f(*(std::dynamic_pointer_cast<IfcBooleanResult>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoolean") {
-				f(*(std::dynamic_pointer_cast<IfcBoolean>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryCondition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBooleanClippingResult") {
-				f(*(std::dynamic_pointer_cast<IfcBooleanClippingResult>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBooleanOperand") {
-				f(*(std::dynamic_pointer_cast<IfcBooleanOperand>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryEdgeCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryEdgeCondition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBooleanOperator") {
-				f(*(std::dynamic_pointer_cast<IfcBooleanOperator>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryFaceCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryFaceCondition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBooleanResult") {
-				f(*(std::dynamic_pointer_cast<IfcBooleanResult>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryNodeCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryNodeCondition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryCondition") {
-				f(*(std::dynamic_pointer_cast<IfcBoundaryCondition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryNodeConditionWarping") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryNodeConditionWarping>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryCurve") {
-				f(*(std::dynamic_pointer_cast<IfcBoundaryCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundedCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundedCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryEdgeCondition") {
-				f(*(std::dynamic_pointer_cast<IfcBoundaryEdgeCondition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundedSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundedSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryFaceCondition") {
-				f(*(std::dynamic_pointer_cast<IfcBoundaryFaceCondition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundingBox") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundingBox>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryNodeCondition") {
-				f(*(std::dynamic_pointer_cast<IfcBoundaryNodeCondition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoxAlignment") {
+				return f(*(std::dynamic_pointer_cast<IfcBoxAlignment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryNodeConditionWarping") {
-				f(*(std::dynamic_pointer_cast<IfcBoundaryNodeConditionWarping>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoxedHalfSpace") {
+				return f(*(std::dynamic_pointer_cast<IfcBoxedHalfSpace>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundedCurve") {
-				f(*(std::dynamic_pointer_cast<IfcBoundedCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundedSurface") {
-				f(*(std::dynamic_pointer_cast<IfcBoundedSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineCurveForm") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineCurveForm>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundingBox") {
-				f(*(std::dynamic_pointer_cast<IfcBoundingBox>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineCurveWithKnots") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineCurveWithKnots>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoxAlignment") {
-				f(*(std::dynamic_pointer_cast<IfcBoxAlignment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoxedHalfSpace") {
-				f(*(std::dynamic_pointer_cast<IfcBoxedHalfSpace>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineSurfaceForm") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineSurfaceForm>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineCurve") {
-				f(*(std::dynamic_pointer_cast<IfcBSplineCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineSurfaceWithKnots") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineSurfaceWithKnots>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineCurveForm") {
-				f(*(std::dynamic_pointer_cast<IfcBSplineCurveForm>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuilding") {
+				return f(*(std::dynamic_pointer_cast<IfcBuilding>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineCurveWithKnots") {
-				f(*(std::dynamic_pointer_cast<IfcBSplineCurveWithKnots>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElement") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineSurface") {
-				f(*(std::dynamic_pointer_cast<IfcBSplineSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementPart") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementPart>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineSurfaceForm") {
-				f(*(std::dynamic_pointer_cast<IfcBSplineSurfaceForm>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementPartType") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementPartType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineSurfaceWithKnots") {
-				f(*(std::dynamic_pointer_cast<IfcBSplineSurfaceWithKnots>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementPartTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementPartTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuilding") {
-				f(*(std::dynamic_pointer_cast<IfcBuilding>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementProxy") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementProxy>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElement") {
-				f(*(std::dynamic_pointer_cast<IfcBuildingElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementProxyType") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementProxyType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementPart") {
-				f(*(std::dynamic_pointer_cast<IfcBuildingElementPart>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementProxyTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementProxyTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementPartType") {
-				f(*(std::dynamic_pointer_cast<IfcBuildingElementPartType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementPartTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcBuildingElementPartTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingStorey") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingStorey>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementProxy") {
-				f(*(std::dynamic_pointer_cast<IfcBuildingElementProxy>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingSystem") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingSystem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementProxyType") {
-				f(*(std::dynamic_pointer_cast<IfcBuildingElementProxyType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingSystemTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingSystemTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementProxyTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcBuildingElementProxyTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBurner") {
+				return f(*(std::dynamic_pointer_cast<IfcBurner>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementType") {
-				f(*(std::dynamic_pointer_cast<IfcBuildingElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBurnerType") {
+				return f(*(std::dynamic_pointer_cast<IfcBurnerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingStorey") {
-				f(*(std::dynamic_pointer_cast<IfcBuildingStorey>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBurnerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBurnerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingSystem") {
-				f(*(std::dynamic_pointer_cast<IfcBuildingSystem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierFitting") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierFitting>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingSystemTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcBuildingSystemTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierFittingType") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierFittingType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBurner") {
-				f(*(std::dynamic_pointer_cast<IfcBurner>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierFittingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierFittingTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBurnerType") {
-				f(*(std::dynamic_pointer_cast<IfcBurnerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierSegment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBurnerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcBurnerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierSegmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierSegmentType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierFitting") {
-				f(*(std::dynamic_pointer_cast<IfcCableCarrierFitting>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierSegmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierSegmentTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierFittingType") {
-				f(*(std::dynamic_pointer_cast<IfcCableCarrierFittingType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableFitting") {
+				return f(*(std::dynamic_pointer_cast<IfcCableFitting>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierFittingTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCableCarrierFittingTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableFittingType") {
+				return f(*(std::dynamic_pointer_cast<IfcCableFittingType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierSegment") {
-				f(*(std::dynamic_pointer_cast<IfcCableCarrierSegment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableFittingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCableFittingTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierSegmentType") {
-				f(*(std::dynamic_pointer_cast<IfcCableCarrierSegmentType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcCableSegment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierSegmentTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCableCarrierSegmentTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableSegmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcCableSegmentType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableFitting") {
-				f(*(std::dynamic_pointer_cast<IfcCableFitting>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableSegmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCableSegmentTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableFittingType") {
-				f(*(std::dynamic_pointer_cast<IfcCableFittingType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCardinalPointReference") {
+				return f(*(std::dynamic_pointer_cast<IfcCardinalPointReference>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableFittingTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCableFittingTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPoint") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianPoint>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableSegment") {
-				f(*(std::dynamic_pointer_cast<IfcCableSegment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPointList") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianPointList>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableSegmentType") {
-				f(*(std::dynamic_pointer_cast<IfcCableSegmentType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPointList2D") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianPointList2D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableSegmentTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCableSegmentTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPointList2DLabelled") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianPointList2DLabelled>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCardinalPointReference") {
-				f(*(std::dynamic_pointer_cast<IfcCardinalPointReference>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPointList3D") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianPointList3D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPoint") {
-				f(*(std::dynamic_pointer_cast<IfcCartesianPoint>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPointList") {
-				f(*(std::dynamic_pointer_cast<IfcCartesianPointList>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2D") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator2D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPointList2D") {
-				f(*(std::dynamic_pointer_cast<IfcCartesianPointList2D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2DnonUniform") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator2DnonUniform>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPointList2DLabelled") {
-				f(*(std::dynamic_pointer_cast<IfcCartesianPointList2DLabelled>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator3D") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator3D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPointList3D") {
-				f(*(std::dynamic_pointer_cast<IfcCartesianPointList3D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator3DnonUniform") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator3DnonUniform>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator") {
-				f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCenterLineProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcCenterLineProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2D") {
-				f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator2D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChangeActionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcChangeActionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2DnonUniform") {
-				f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator2DnonUniform>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChiller") {
+				return f(*(std::dynamic_pointer_cast<IfcChiller>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator3D") {
-				f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator3D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChillerType") {
+				return f(*(std::dynamic_pointer_cast<IfcChillerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator3DnonUniform") {
-				f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator3DnonUniform>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChillerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcChillerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCenterLineProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcCenterLineProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChimney") {
+				return f(*(std::dynamic_pointer_cast<IfcChimney>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChangeActionEnum") {
-				f(*(std::dynamic_pointer_cast<IfcChangeActionEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChimneyType") {
+				return f(*(std::dynamic_pointer_cast<IfcChimneyType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChiller") {
-				f(*(std::dynamic_pointer_cast<IfcChiller>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChimneyTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcChimneyTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChillerType") {
-				f(*(std::dynamic_pointer_cast<IfcChillerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircle") {
+				return f(*(std::dynamic_pointer_cast<IfcCircle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChillerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcChillerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircleHollowProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcCircleHollowProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChimney") {
-				f(*(std::dynamic_pointer_cast<IfcChimney>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircleProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcCircleProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChimneyType") {
-				f(*(std::dynamic_pointer_cast<IfcChimneyType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircularArcSegment2D") {
+				return f(*(std::dynamic_pointer_cast<IfcCircularArcSegment2D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChimneyTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcChimneyTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCivilElement") {
+				return f(*(std::dynamic_pointer_cast<IfcCivilElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircle") {
-				f(*(std::dynamic_pointer_cast<IfcCircle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCivilElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcCivilElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircleHollowProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcCircleHollowProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClassification") {
+				return f(*(std::dynamic_pointer_cast<IfcClassification>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircleProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcCircleProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClassificationReference") {
+				return f(*(std::dynamic_pointer_cast<IfcClassificationReference>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircularArcSegment2D") {
-				f(*(std::dynamic_pointer_cast<IfcCircularArcSegment2D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClosedShell") {
+				return f(*(std::dynamic_pointer_cast<IfcClosedShell>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCivilElement") {
-				f(*(std::dynamic_pointer_cast<IfcCivilElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClothoidalArcSegment2D") {
+				return f(*(std::dynamic_pointer_cast<IfcClothoidalArcSegment2D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCivilElementType") {
-				f(*(std::dynamic_pointer_cast<IfcCivilElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoil") {
+				return f(*(std::dynamic_pointer_cast<IfcCoil>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClassification") {
-				f(*(std::dynamic_pointer_cast<IfcClassification>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoilType") {
+				return f(*(std::dynamic_pointer_cast<IfcCoilType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClassificationReference") {
-				f(*(std::dynamic_pointer_cast<IfcClassificationReference>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoilTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCoilTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClassificationReferenceSelect") {
-				f(*(std::dynamic_pointer_cast<IfcClassificationReferenceSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColourRgb") {
+				return f(*(std::dynamic_pointer_cast<IfcColourRgb>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClassificationSelect") {
-				f(*(std::dynamic_pointer_cast<IfcClassificationSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColourRgbList") {
+				return f(*(std::dynamic_pointer_cast<IfcColourRgbList>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClosedShell") {
-				f(*(std::dynamic_pointer_cast<IfcClosedShell>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColourSpecification") {
+				return f(*(std::dynamic_pointer_cast<IfcColourSpecification>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClothoidalArcSegment2D") {
-				f(*(std::dynamic_pointer_cast<IfcClothoidalArcSegment2D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumn") {
+				return f(*(std::dynamic_pointer_cast<IfcColumn>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoil") {
-				f(*(std::dynamic_pointer_cast<IfcCoil>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumnStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcColumnStandardCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoilType") {
-				f(*(std::dynamic_pointer_cast<IfcCoilType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumnType") {
+				return f(*(std::dynamic_pointer_cast<IfcColumnType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoilTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCoilTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumnTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcColumnTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColour") {
-				f(*(std::dynamic_pointer_cast<IfcColour>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCommunicationsAppliance") {
+				return f(*(std::dynamic_pointer_cast<IfcCommunicationsAppliance>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColourOrFactor") {
-				f(*(std::dynamic_pointer_cast<IfcColourOrFactor>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCommunicationsApplianceType") {
+				return f(*(std::dynamic_pointer_cast<IfcCommunicationsApplianceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColourRgb") {
-				f(*(std::dynamic_pointer_cast<IfcColourRgb>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCommunicationsApplianceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCommunicationsApplianceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColourRgbList") {
-				f(*(std::dynamic_pointer_cast<IfcColourRgbList>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexNumber") {
+				return f(*(std::dynamic_pointer_cast<IfcComplexNumber>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColourSpecification") {
-				f(*(std::dynamic_pointer_cast<IfcColourSpecification>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexProperty") {
+				return f(*(std::dynamic_pointer_cast<IfcComplexProperty>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumn") {
-				f(*(std::dynamic_pointer_cast<IfcColumn>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexPropertyTemplate") {
+				return f(*(std::dynamic_pointer_cast<IfcComplexPropertyTemplate>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumnStandardCase") {
-				f(*(std::dynamic_pointer_cast<IfcColumnStandardCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexPropertyTemplateTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcComplexPropertyTemplateTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumnType") {
-				f(*(std::dynamic_pointer_cast<IfcColumnType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcCompositeCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumnTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcColumnTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeCurveOnSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcCompositeCurveOnSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCommunicationsAppliance") {
-				f(*(std::dynamic_pointer_cast<IfcCommunicationsAppliance>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeCurveSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcCompositeCurveSegment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCommunicationsApplianceType") {
-				f(*(std::dynamic_pointer_cast<IfcCommunicationsApplianceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcCompositeProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCommunicationsApplianceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCommunicationsApplianceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompoundPlaneAngleMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcCompoundPlaneAngleMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexNumber") {
-				f(*(std::dynamic_pointer_cast<IfcComplexNumber>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompressor") {
+				return f(*(std::dynamic_pointer_cast<IfcCompressor>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexProperty") {
-				f(*(std::dynamic_pointer_cast<IfcComplexProperty>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompressorType") {
+				return f(*(std::dynamic_pointer_cast<IfcCompressorType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexPropertyTemplate") {
-				f(*(std::dynamic_pointer_cast<IfcComplexPropertyTemplate>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompressorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCompressorTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexPropertyTemplateTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcComplexPropertyTemplateTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCondenser") {
+				return f(*(std::dynamic_pointer_cast<IfcCondenser>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeCurve") {
-				f(*(std::dynamic_pointer_cast<IfcCompositeCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCondenserType") {
+				return f(*(std::dynamic_pointer_cast<IfcCondenserType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeCurveOnSurface") {
-				f(*(std::dynamic_pointer_cast<IfcCompositeCurveOnSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCondenserTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCondenserTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeCurveSegment") {
-				f(*(std::dynamic_pointer_cast<IfcCompositeCurveSegment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConic") {
+				return f(*(std::dynamic_pointer_cast<IfcConic>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcCompositeProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectedFaceSet") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectedFaceSet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompoundPlaneAngleMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcCompoundPlaneAngleMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionCurveGeometry") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionCurveGeometry>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompressor") {
-				f(*(std::dynamic_pointer_cast<IfcCompressor>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionGeometry") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionGeometry>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompressorType") {
-				f(*(std::dynamic_pointer_cast<IfcCompressorType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionPointEccentricity") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionPointEccentricity>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompressorTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCompressorTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionPointGeometry") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionPointGeometry>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCondenser") {
-				f(*(std::dynamic_pointer_cast<IfcCondenser>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionSurfaceGeometry") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionSurfaceGeometry>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCondenserType") {
-				f(*(std::dynamic_pointer_cast<IfcCondenserType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCondenserTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCondenserTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionVolumeGeometry") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionVolumeGeometry>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConic") {
-				f(*(std::dynamic_pointer_cast<IfcConic>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstraint") {
+				return f(*(std::dynamic_pointer_cast<IfcConstraint>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectedFaceSet") {
-				f(*(std::dynamic_pointer_cast<IfcConnectedFaceSet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstraintEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcConstraintEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionCurveGeometry") {
-				f(*(std::dynamic_pointer_cast<IfcConnectionCurveGeometry>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionEquipmentResource") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionEquipmentResource>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionGeometry") {
-				f(*(std::dynamic_pointer_cast<IfcConnectionGeometry>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionEquipmentResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionEquipmentResourceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionPointEccentricity") {
-				f(*(std::dynamic_pointer_cast<IfcConnectionPointEccentricity>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionEquipmentResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionEquipmentResourceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionPointGeometry") {
-				f(*(std::dynamic_pointer_cast<IfcConnectionPointGeometry>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionMaterialResource") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionMaterialResource>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionSurfaceGeometry") {
-				f(*(std::dynamic_pointer_cast<IfcConnectionSurfaceGeometry>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionMaterialResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionMaterialResourceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcConnectionTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionMaterialResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionMaterialResourceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionVolumeGeometry") {
-				f(*(std::dynamic_pointer_cast<IfcConnectionVolumeGeometry>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionProductResource") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionProductResource>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstraint") {
-				f(*(std::dynamic_pointer_cast<IfcConstraint>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionProductResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionProductResourceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstraintEnum") {
-				f(*(std::dynamic_pointer_cast<IfcConstraintEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionProductResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionProductResourceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionEquipmentResource") {
-				f(*(std::dynamic_pointer_cast<IfcConstructionEquipmentResource>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionResource") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionResource>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionEquipmentResourceType") {
-				f(*(std::dynamic_pointer_cast<IfcConstructionEquipmentResourceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionResourceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionEquipmentResourceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcConstructionEquipmentResourceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcContext") {
+				return f(*(std::dynamic_pointer_cast<IfcContext>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionMaterialResource") {
-				f(*(std::dynamic_pointer_cast<IfcConstructionMaterialResource>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcContextDependentMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcContextDependentMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionMaterialResourceType") {
-				f(*(std::dynamic_pointer_cast<IfcConstructionMaterialResourceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcContextDependentUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcContextDependentUnit>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionMaterialResourceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcConstructionMaterialResourceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcControl") {
+				return f(*(std::dynamic_pointer_cast<IfcControl>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionProductResource") {
-				f(*(std::dynamic_pointer_cast<IfcConstructionProductResource>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcController") {
+				return f(*(std::dynamic_pointer_cast<IfcController>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionProductResourceType") {
-				f(*(std::dynamic_pointer_cast<IfcConstructionProductResourceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcControllerType") {
+				return f(*(std::dynamic_pointer_cast<IfcControllerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionProductResourceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcConstructionProductResourceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcControllerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcControllerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionResource") {
-				f(*(std::dynamic_pointer_cast<IfcConstructionResource>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConversionBasedUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcConversionBasedUnit>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionResourceType") {
-				f(*(std::dynamic_pointer_cast<IfcConstructionResourceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConversionBasedUnitWithOffset") {
+				return f(*(std::dynamic_pointer_cast<IfcConversionBasedUnitWithOffset>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcContext") {
-				f(*(std::dynamic_pointer_cast<IfcContext>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCooledBeam") {
+				return f(*(std::dynamic_pointer_cast<IfcCooledBeam>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcContextDependentMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcContextDependentMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCooledBeamType") {
+				return f(*(std::dynamic_pointer_cast<IfcCooledBeamType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcContextDependentUnit") {
-				f(*(std::dynamic_pointer_cast<IfcContextDependentUnit>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCooledBeamTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCooledBeamTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcControl") {
-				f(*(std::dynamic_pointer_cast<IfcControl>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoolingTower") {
+				return f(*(std::dynamic_pointer_cast<IfcCoolingTower>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcController") {
-				f(*(std::dynamic_pointer_cast<IfcController>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoolingTowerType") {
+				return f(*(std::dynamic_pointer_cast<IfcCoolingTowerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcControllerType") {
-				f(*(std::dynamic_pointer_cast<IfcControllerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoolingTowerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCoolingTowerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcControllerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcControllerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoordinateOperation") {
+				return f(*(std::dynamic_pointer_cast<IfcCoordinateOperation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConversionBasedUnit") {
-				f(*(std::dynamic_pointer_cast<IfcConversionBasedUnit>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoordinateReferenceSystem") {
+				return f(*(std::dynamic_pointer_cast<IfcCoordinateReferenceSystem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConversionBasedUnitWithOffset") {
-				f(*(std::dynamic_pointer_cast<IfcConversionBasedUnitWithOffset>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostItem") {
+				return f(*(std::dynamic_pointer_cast<IfcCostItem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCooledBeam") {
-				f(*(std::dynamic_pointer_cast<IfcCooledBeam>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostItemTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCostItemTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCooledBeamType") {
-				f(*(std::dynamic_pointer_cast<IfcCooledBeamType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostSchedule") {
+				return f(*(std::dynamic_pointer_cast<IfcCostSchedule>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCooledBeamTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCooledBeamTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostScheduleTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCostScheduleTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoolingTower") {
-				f(*(std::dynamic_pointer_cast<IfcCoolingTower>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostValue") {
+				return f(*(std::dynamic_pointer_cast<IfcCostValue>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoolingTowerType") {
-				f(*(std::dynamic_pointer_cast<IfcCoolingTowerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCountMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcCountMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoolingTowerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCoolingTowerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCovering") {
+				return f(*(std::dynamic_pointer_cast<IfcCovering>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoordinateOperation") {
-				f(*(std::dynamic_pointer_cast<IfcCoordinateOperation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoveringType") {
+				return f(*(std::dynamic_pointer_cast<IfcCoveringType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoordinateReferenceSystem") {
-				f(*(std::dynamic_pointer_cast<IfcCoordinateReferenceSystem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoveringTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCoveringTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoordinateReferenceSystemSelect") {
-				f(*(std::dynamic_pointer_cast<IfcCoordinateReferenceSystemSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCrewResource") {
+				return f(*(std::dynamic_pointer_cast<IfcCrewResource>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostItem") {
-				f(*(std::dynamic_pointer_cast<IfcCostItem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCrewResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcCrewResourceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostItemTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCostItemTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCrewResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCrewResourceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostSchedule") {
-				f(*(std::dynamic_pointer_cast<IfcCostSchedule>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCsgPrimitive3D") {
+				return f(*(std::dynamic_pointer_cast<IfcCsgPrimitive3D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostScheduleTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCostScheduleTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCsgSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcCsgSolid>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostValue") {
-				f(*(std::dynamic_pointer_cast<IfcCostValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcCShapeProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCountMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcCountMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurrencyRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcCurrencyRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCovering") {
-				f(*(std::dynamic_pointer_cast<IfcCovering>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurtainWall") {
+				return f(*(std::dynamic_pointer_cast<IfcCurtainWall>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoveringType") {
-				f(*(std::dynamic_pointer_cast<IfcCoveringType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurtainWallType") {
+				return f(*(std::dynamic_pointer_cast<IfcCurtainWallType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoveringTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCoveringTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurtainWallTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCurtainWallTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCrewResource") {
-				f(*(std::dynamic_pointer_cast<IfcCrewResource>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurvatureMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcCurvatureMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCrewResourceType") {
-				f(*(std::dynamic_pointer_cast<IfcCrewResourceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCrewResourceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCrewResourceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveBoundedPlane") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveBoundedPlane>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCsgPrimitive3D") {
-				f(*(std::dynamic_pointer_cast<IfcCsgPrimitive3D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveBoundedSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveBoundedSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCsgSelect") {
-				f(*(std::dynamic_pointer_cast<IfcCsgSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveInterpolationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveInterpolationEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCsgSolid") {
-				f(*(std::dynamic_pointer_cast<IfcCsgSolid>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveSegment2D") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveSegment2D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCShapeProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcCShapeProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurrencyRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcCurrencyRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyleFont") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveStyleFont>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurtainWall") {
-				f(*(std::dynamic_pointer_cast<IfcCurtainWall>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyleFontAndScaling") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveStyleFontAndScaling>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurtainWallType") {
-				f(*(std::dynamic_pointer_cast<IfcCurtainWallType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyleFontPattern") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveStyleFontPattern>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurtainWallTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCurtainWallTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCylindricalSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcCylindricalSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurvatureMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcCurvatureMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDamper") {
+				return f(*(std::dynamic_pointer_cast<IfcDamper>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurve") {
-				f(*(std::dynamic_pointer_cast<IfcCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDamperType") {
+				return f(*(std::dynamic_pointer_cast<IfcDamperType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveBoundedPlane") {
-				f(*(std::dynamic_pointer_cast<IfcCurveBoundedPlane>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDamperTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDamperTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveBoundedSurface") {
-				f(*(std::dynamic_pointer_cast<IfcCurveBoundedSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDataOriginEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDataOriginEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveFontOrScaledCurveFontSelect") {
-				f(*(std::dynamic_pointer_cast<IfcCurveFontOrScaledCurveFontSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDate") {
+				return f(*(std::dynamic_pointer_cast<IfcDate>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveInterpolationEnum") {
-				f(*(std::dynamic_pointer_cast<IfcCurveInterpolationEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDateTime") {
+				return f(*(std::dynamic_pointer_cast<IfcDateTime>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveOnSurface") {
-				f(*(std::dynamic_pointer_cast<IfcCurveOnSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDayInMonthNumber") {
+				return f(*(std::dynamic_pointer_cast<IfcDayInMonthNumber>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveOrEdgeCurve") {
-				f(*(std::dynamic_pointer_cast<IfcCurveOrEdgeCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDayInWeekNumber") {
+				return f(*(std::dynamic_pointer_cast<IfcDayInWeekNumber>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveSegment2D") {
-				f(*(std::dynamic_pointer_cast<IfcCurveSegment2D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcDerivedProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyle") {
-				f(*(std::dynamic_pointer_cast<IfcCurveStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcDerivedUnit>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyleFont") {
-				f(*(std::dynamic_pointer_cast<IfcCurveStyleFont>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedUnitElement") {
+				return f(*(std::dynamic_pointer_cast<IfcDerivedUnitElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyleFontAndScaling") {
-				f(*(std::dynamic_pointer_cast<IfcCurveStyleFontAndScaling>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedUnitEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDerivedUnitEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyleFontPattern") {
-				f(*(std::dynamic_pointer_cast<IfcCurveStyleFontPattern>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDescriptiveMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcDescriptiveMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyleFontSelect") {
-				f(*(std::dynamic_pointer_cast<IfcCurveStyleFontSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDimensionalExponents") {
+				return f(*(std::dynamic_pointer_cast<IfcDimensionalExponents>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCylindricalSurface") {
-				f(*(std::dynamic_pointer_cast<IfcCylindricalSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDimensionCount") {
+				return f(*(std::dynamic_pointer_cast<IfcDimensionCount>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDamper") {
-				f(*(std::dynamic_pointer_cast<IfcDamper>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDirection") {
+				return f(*(std::dynamic_pointer_cast<IfcDirection>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDamperType") {
-				f(*(std::dynamic_pointer_cast<IfcDamperType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDirectionSenseEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDirectionSenseEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDamperTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDamperTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDiscreteAccessory") {
+				return f(*(std::dynamic_pointer_cast<IfcDiscreteAccessory>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDataOriginEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDataOriginEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDiscreteAccessoryType") {
+				return f(*(std::dynamic_pointer_cast<IfcDiscreteAccessoryType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDate") {
-				f(*(std::dynamic_pointer_cast<IfcDate>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDiscreteAccessoryTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDiscreteAccessoryTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDateTime") {
-				f(*(std::dynamic_pointer_cast<IfcDateTime>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistanceExpression") {
+				return f(*(std::dynamic_pointer_cast<IfcDistanceExpression>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDayInMonthNumber") {
-				f(*(std::dynamic_pointer_cast<IfcDayInMonthNumber>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionChamberElement") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionChamberElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDayInWeekNumber") {
-				f(*(std::dynamic_pointer_cast<IfcDayInWeekNumber>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionChamberElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionChamberElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDefinitionSelect") {
-				f(*(std::dynamic_pointer_cast<IfcDefinitionSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionChamberElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionChamberElementTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedMeasureValue") {
-				f(*(std::dynamic_pointer_cast<IfcDerivedMeasureValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionCircuit") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionCircuit>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcDerivedProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionControlElement") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionControlElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedUnit") {
-				f(*(std::dynamic_pointer_cast<IfcDerivedUnit>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionControlElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionControlElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedUnitElement") {
-				f(*(std::dynamic_pointer_cast<IfcDerivedUnitElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionElement") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedUnitEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDerivedUnitEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDescriptiveMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcDescriptiveMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionFlowElement") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionFlowElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDimensionalExponents") {
-				f(*(std::dynamic_pointer_cast<IfcDimensionalExponents>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionFlowElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionFlowElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDimensionCount") {
-				f(*(std::dynamic_pointer_cast<IfcDimensionCount>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionPort") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionPort>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDirection") {
-				f(*(std::dynamic_pointer_cast<IfcDirection>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionPortTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionPortTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDirectionSenseEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDirectionSenseEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionSystem") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionSystem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDiscreteAccessory") {
-				f(*(std::dynamic_pointer_cast<IfcDiscreteAccessory>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionSystemEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionSystemEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDiscreteAccessoryType") {
-				f(*(std::dynamic_pointer_cast<IfcDiscreteAccessoryType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentConfidentialityEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDocumentConfidentialityEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDiscreteAccessoryTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDiscreteAccessoryTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentInformation") {
+				return f(*(std::dynamic_pointer_cast<IfcDocumentInformation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistanceExpression") {
-				f(*(std::dynamic_pointer_cast<IfcDistanceExpression>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentInformationRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcDocumentInformationRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionChamberElement") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionChamberElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentReference") {
+				return f(*(std::dynamic_pointer_cast<IfcDocumentReference>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionChamberElementType") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionChamberElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentStatusEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDocumentStatusEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionChamberElementTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionChamberElementTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoor") {
+				return f(*(std::dynamic_pointer_cast<IfcDoor>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionCircuit") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionCircuit>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorLiningProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorLiningProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionControlElement") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionControlElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorPanelOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorPanelOperationEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionControlElementType") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionControlElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorPanelPositionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorPanelPositionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionElement") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorPanelProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorPanelProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionElementType") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorStandardCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionFlowElement") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionFlowElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionFlowElementType") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionFlowElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStyleConstructionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorStyleConstructionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionPort") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionPort>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStyleOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorStyleOperationEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionPortTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionPortTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorType") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionSystem") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionSystem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionSystemEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDistributionSystemEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorTypeOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorTypeOperationEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentConfidentialityEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDocumentConfidentialityEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoseEquivalentMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcDoseEquivalentMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentInformation") {
-				f(*(std::dynamic_pointer_cast<IfcDocumentInformation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDraughtingPreDefinedColour") {
+				return f(*(std::dynamic_pointer_cast<IfcDraughtingPreDefinedColour>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentInformationRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcDocumentInformationRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDraughtingPreDefinedCurveFont") {
+				return f(*(std::dynamic_pointer_cast<IfcDraughtingPreDefinedCurveFont>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentReference") {
-				f(*(std::dynamic_pointer_cast<IfcDocumentReference>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctFitting") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctFitting>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentSelect") {
-				f(*(std::dynamic_pointer_cast<IfcDocumentSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctFittingType") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctFittingType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentStatusEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDocumentStatusEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctFittingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctFittingTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoor") {
-				f(*(std::dynamic_pointer_cast<IfcDoor>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSegment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorLiningProperties") {
-				f(*(std::dynamic_pointer_cast<IfcDoorLiningProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSegmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSegmentType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorPanelOperationEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDoorPanelOperationEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSegmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSegmentTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorPanelPositionEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDoorPanelPositionEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSilencer") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSilencer>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorPanelProperties") {
-				f(*(std::dynamic_pointer_cast<IfcDoorPanelProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSilencerType") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSilencerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStandardCase") {
-				f(*(std::dynamic_pointer_cast<IfcDoorStandardCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSilencerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSilencerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStyle") {
-				f(*(std::dynamic_pointer_cast<IfcDoorStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuration") {
+				return f(*(std::dynamic_pointer_cast<IfcDuration>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStyleConstructionEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDoorStyleConstructionEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDynamicViscosityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcDynamicViscosityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStyleOperationEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDoorStyleOperationEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEdge") {
+				return f(*(std::dynamic_pointer_cast<IfcEdge>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorType") {
-				f(*(std::dynamic_pointer_cast<IfcDoorType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEdgeCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcEdgeCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDoorTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEdgeLoop") {
+				return f(*(std::dynamic_pointer_cast<IfcEdgeLoop>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorTypeOperationEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDoorTypeOperationEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricAppliance") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricAppliance>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoseEquivalentMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcDoseEquivalentMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricApplianceType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricApplianceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDraughtingPreDefinedColour") {
-				f(*(std::dynamic_pointer_cast<IfcDraughtingPreDefinedColour>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricApplianceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricApplianceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDraughtingPreDefinedCurveFont") {
-				f(*(std::dynamic_pointer_cast<IfcDraughtingPreDefinedCurveFont>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricCapacitanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricCapacitanceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctFitting") {
-				f(*(std::dynamic_pointer_cast<IfcDuctFitting>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricChargeMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricChargeMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctFittingType") {
-				f(*(std::dynamic_pointer_cast<IfcDuctFittingType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricConductanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricConductanceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctFittingTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDuctFittingTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricCurrentMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricCurrentMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSegment") {
-				f(*(std::dynamic_pointer_cast<IfcDuctSegment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricDistributionBoard") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricDistributionBoard>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSegmentType") {
-				f(*(std::dynamic_pointer_cast<IfcDuctSegmentType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricDistributionBoardType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricDistributionBoardType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSegmentTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDuctSegmentTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricDistributionBoardTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricDistributionBoardTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSilencer") {
-				f(*(std::dynamic_pointer_cast<IfcDuctSilencer>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricFlowStorageDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricFlowStorageDevice>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSilencerType") {
-				f(*(std::dynamic_pointer_cast<IfcDuctSilencerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricFlowStorageDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricFlowStorageDeviceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSilencerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcDuctSilencerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricFlowStorageDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricFlowStorageDeviceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuration") {
-				f(*(std::dynamic_pointer_cast<IfcDuration>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricGenerator") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricGenerator>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDynamicViscosityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcDynamicViscosityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricGeneratorType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricGeneratorType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEdge") {
-				f(*(std::dynamic_pointer_cast<IfcEdge>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricGeneratorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricGeneratorTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEdgeCurve") {
-				f(*(std::dynamic_pointer_cast<IfcEdgeCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricMotor") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricMotor>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEdgeLoop") {
-				f(*(std::dynamic_pointer_cast<IfcEdgeLoop>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricMotorType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricMotorType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricAppliance") {
-				f(*(std::dynamic_pointer_cast<IfcElectricAppliance>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricMotorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricMotorTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricApplianceType") {
-				f(*(std::dynamic_pointer_cast<IfcElectricApplianceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricResistanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricResistanceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricApplianceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcElectricApplianceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricTimeControl") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricTimeControl>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricCapacitanceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcElectricCapacitanceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricTimeControlType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricTimeControlType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricChargeMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcElectricChargeMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricTimeControlTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricTimeControlTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricConductanceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcElectricConductanceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricVoltageMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricVoltageMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricCurrentMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcElectricCurrentMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElement") {
+				return f(*(std::dynamic_pointer_cast<IfcElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricDistributionBoard") {
-				f(*(std::dynamic_pointer_cast<IfcElectricDistributionBoard>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementarySurface") {
+				return f(*(std::dynamic_pointer_cast<IfcElementarySurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricDistributionBoardType") {
-				f(*(std::dynamic_pointer_cast<IfcElectricDistributionBoardType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementAssembly") {
+				return f(*(std::dynamic_pointer_cast<IfcElementAssembly>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricDistributionBoardTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcElectricDistributionBoardTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementAssemblyType") {
+				return f(*(std::dynamic_pointer_cast<IfcElementAssemblyType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricFlowStorageDevice") {
-				f(*(std::dynamic_pointer_cast<IfcElectricFlowStorageDevice>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementAssemblyTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElementAssemblyTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricFlowStorageDeviceType") {
-				f(*(std::dynamic_pointer_cast<IfcElectricFlowStorageDeviceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementComponent") {
+				return f(*(std::dynamic_pointer_cast<IfcElementComponent>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricFlowStorageDeviceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcElectricFlowStorageDeviceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementComponentType") {
+				return f(*(std::dynamic_pointer_cast<IfcElementComponentType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricGenerator") {
-				f(*(std::dynamic_pointer_cast<IfcElectricGenerator>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementCompositionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElementCompositionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricGeneratorType") {
-				f(*(std::dynamic_pointer_cast<IfcElectricGeneratorType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementQuantity") {
+				return f(*(std::dynamic_pointer_cast<IfcElementQuantity>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricGeneratorTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcElectricGeneratorTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricMotor") {
-				f(*(std::dynamic_pointer_cast<IfcElectricMotor>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEllipse") {
+				return f(*(std::dynamic_pointer_cast<IfcEllipse>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricMotorType") {
-				f(*(std::dynamic_pointer_cast<IfcElectricMotorType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEllipseProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcEllipseProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricMotorTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcElectricMotorTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEnergyConversionDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcEnergyConversionDevice>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricResistanceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcElectricResistanceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEnergyConversionDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcEnergyConversionDeviceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricTimeControl") {
-				f(*(std::dynamic_pointer_cast<IfcElectricTimeControl>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEnergyMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcEnergyMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricTimeControlType") {
-				f(*(std::dynamic_pointer_cast<IfcElectricTimeControlType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEngine") {
+				return f(*(std::dynamic_pointer_cast<IfcEngine>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricTimeControlTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcElectricTimeControlTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEngineType") {
+				return f(*(std::dynamic_pointer_cast<IfcEngineType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricVoltageMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcElectricVoltageMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEngineTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcEngineTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElement") {
-				f(*(std::dynamic_pointer_cast<IfcElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporativeCooler") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporativeCooler>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementarySurface") {
-				f(*(std::dynamic_pointer_cast<IfcElementarySurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporativeCoolerType") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporativeCoolerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementAssembly") {
-				f(*(std::dynamic_pointer_cast<IfcElementAssembly>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporativeCoolerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporativeCoolerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementAssemblyType") {
-				f(*(std::dynamic_pointer_cast<IfcElementAssemblyType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporator") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporator>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementAssemblyTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcElementAssemblyTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporatorType") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporatorType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementComponent") {
-				f(*(std::dynamic_pointer_cast<IfcElementComponent>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporatorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporatorTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementComponentType") {
-				f(*(std::dynamic_pointer_cast<IfcElementComponentType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvent") {
+				return f(*(std::dynamic_pointer_cast<IfcEvent>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementCompositionEnum") {
-				f(*(std::dynamic_pointer_cast<IfcElementCompositionEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventTime") {
+				return f(*(std::dynamic_pointer_cast<IfcEventTime>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementQuantity") {
-				f(*(std::dynamic_pointer_cast<IfcElementQuantity>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventTriggerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcEventTriggerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementType") {
-				f(*(std::dynamic_pointer_cast<IfcElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventType") {
+				return f(*(std::dynamic_pointer_cast<IfcEventType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEllipse") {
-				f(*(std::dynamic_pointer_cast<IfcEllipse>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcEventTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEllipseProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcEllipseProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExtendedProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcExtendedProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEnergyConversionDevice") {
-				f(*(std::dynamic_pointer_cast<IfcEnergyConversionDevice>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalInformation") {
+				return f(*(std::dynamic_pointer_cast<IfcExternalInformation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEnergyConversionDeviceType") {
-				f(*(std::dynamic_pointer_cast<IfcEnergyConversionDeviceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternallyDefinedHatchStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcExternallyDefinedHatchStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEnergyMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcEnergyMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternallyDefinedSurfaceStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcExternallyDefinedSurfaceStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEngine") {
-				f(*(std::dynamic_pointer_cast<IfcEngine>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternallyDefinedTextFont") {
+				return f(*(std::dynamic_pointer_cast<IfcExternallyDefinedTextFont>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEngineType") {
-				f(*(std::dynamic_pointer_cast<IfcEngineType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalReference") {
+				return f(*(std::dynamic_pointer_cast<IfcExternalReference>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEngineTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcEngineTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalReferenceRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcExternalReferenceRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporativeCooler") {
-				f(*(std::dynamic_pointer_cast<IfcEvaporativeCooler>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalSpatialElement") {
+				return f(*(std::dynamic_pointer_cast<IfcExternalSpatialElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporativeCoolerType") {
-				f(*(std::dynamic_pointer_cast<IfcEvaporativeCoolerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalSpatialElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcExternalSpatialElementTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporativeCoolerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcEvaporativeCoolerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalSpatialStructureElement") {
+				return f(*(std::dynamic_pointer_cast<IfcExternalSpatialStructureElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporator") {
-				f(*(std::dynamic_pointer_cast<IfcEvaporator>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExtrudedAreaSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcExtrudedAreaSolid>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporatorType") {
-				f(*(std::dynamic_pointer_cast<IfcEvaporatorType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExtrudedAreaSolidTapered") {
+				return f(*(std::dynamic_pointer_cast<IfcExtrudedAreaSolidTapered>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporatorTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcEvaporatorTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFace") {
+				return f(*(std::dynamic_pointer_cast<IfcFace>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvent") {
-				f(*(std::dynamic_pointer_cast<IfcEvent>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceBasedSurfaceModel") {
+				return f(*(std::dynamic_pointer_cast<IfcFaceBasedSurfaceModel>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventTime") {
-				f(*(std::dynamic_pointer_cast<IfcEventTime>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceBound") {
+				return f(*(std::dynamic_pointer_cast<IfcFaceBound>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventTriggerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcEventTriggerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceOuterBound") {
+				return f(*(std::dynamic_pointer_cast<IfcFaceOuterBound>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventType") {
-				f(*(std::dynamic_pointer_cast<IfcEventType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcFaceSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcEventTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFacetedBrep") {
+				return f(*(std::dynamic_pointer_cast<IfcFacetedBrep>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExtendedProperties") {
-				f(*(std::dynamic_pointer_cast<IfcExtendedProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFacetedBrepWithVoids") {
+				return f(*(std::dynamic_pointer_cast<IfcFacetedBrepWithVoids>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalInformation") {
-				f(*(std::dynamic_pointer_cast<IfcExternalInformation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFailureConnectionCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcFailureConnectionCondition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternallyDefinedHatchStyle") {
-				f(*(std::dynamic_pointer_cast<IfcExternallyDefinedHatchStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFan") {
+				return f(*(std::dynamic_pointer_cast<IfcFan>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternallyDefinedSurfaceStyle") {
-				f(*(std::dynamic_pointer_cast<IfcExternallyDefinedSurfaceStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFanType") {
+				return f(*(std::dynamic_pointer_cast<IfcFanType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternallyDefinedTextFont") {
-				f(*(std::dynamic_pointer_cast<IfcExternallyDefinedTextFont>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFanTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFanTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalReference") {
-				f(*(std::dynamic_pointer_cast<IfcExternalReference>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFastener") {
+				return f(*(std::dynamic_pointer_cast<IfcFastener>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalReferenceRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcExternalReferenceRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFastenerType") {
+				return f(*(std::dynamic_pointer_cast<IfcFastenerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalSpatialElement") {
-				f(*(std::dynamic_pointer_cast<IfcExternalSpatialElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFastenerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFastenerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalSpatialElementTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcExternalSpatialElementTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFeatureElement") {
+				return f(*(std::dynamic_pointer_cast<IfcFeatureElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalSpatialStructureElement") {
-				f(*(std::dynamic_pointer_cast<IfcExternalSpatialStructureElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFeatureElementAddition") {
+				return f(*(std::dynamic_pointer_cast<IfcFeatureElementAddition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExtrudedAreaSolid") {
-				f(*(std::dynamic_pointer_cast<IfcExtrudedAreaSolid>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFeatureElementSubtraction") {
+				return f(*(std::dynamic_pointer_cast<IfcFeatureElementSubtraction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExtrudedAreaSolidTapered") {
-				f(*(std::dynamic_pointer_cast<IfcExtrudedAreaSolidTapered>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFillAreaStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcFillAreaStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFace") {
-				f(*(std::dynamic_pointer_cast<IfcFace>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFillAreaStyleHatching") {
+				return f(*(std::dynamic_pointer_cast<IfcFillAreaStyleHatching>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceBasedSurfaceModel") {
-				f(*(std::dynamic_pointer_cast<IfcFaceBasedSurfaceModel>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFillAreaStyleTiles") {
+				return f(*(std::dynamic_pointer_cast<IfcFillAreaStyleTiles>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceBound") {
-				f(*(std::dynamic_pointer_cast<IfcFaceBound>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFilter") {
+				return f(*(std::dynamic_pointer_cast<IfcFilter>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceOuterBound") {
-				f(*(std::dynamic_pointer_cast<IfcFaceOuterBound>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFilterType") {
+				return f(*(std::dynamic_pointer_cast<IfcFilterType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceSurface") {
-				f(*(std::dynamic_pointer_cast<IfcFaceSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFilterTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFilterTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFacetedBrep") {
-				f(*(std::dynamic_pointer_cast<IfcFacetedBrep>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFireSuppressionTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcFireSuppressionTerminal>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFacetedBrepWithVoids") {
-				f(*(std::dynamic_pointer_cast<IfcFacetedBrepWithVoids>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFireSuppressionTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcFireSuppressionTerminalType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFailureConnectionCondition") {
-				f(*(std::dynamic_pointer_cast<IfcFailureConnectionCondition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFireSuppressionTerminalTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFireSuppressionTerminalTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFan") {
-				f(*(std::dynamic_pointer_cast<IfcFan>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFixedReferenceSweptAreaSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcFixedReferenceSweptAreaSolid>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFanType") {
-				f(*(std::dynamic_pointer_cast<IfcFanType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowController") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowController>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFanTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcFanTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowControllerType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowControllerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFastener") {
-				f(*(std::dynamic_pointer_cast<IfcFastener>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowDirectionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowDirectionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFastenerType") {
-				f(*(std::dynamic_pointer_cast<IfcFastenerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowFitting") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowFitting>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFastenerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcFastenerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowFittingType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowFittingType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFeatureElement") {
-				f(*(std::dynamic_pointer_cast<IfcFeatureElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowInstrument") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowInstrument>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFeatureElementAddition") {
-				f(*(std::dynamic_pointer_cast<IfcFeatureElementAddition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowInstrumentType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowInstrumentType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFeatureElementSubtraction") {
-				f(*(std::dynamic_pointer_cast<IfcFeatureElementSubtraction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowInstrumentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowInstrumentTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFillAreaStyle") {
-				f(*(std::dynamic_pointer_cast<IfcFillAreaStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMeter") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowMeter>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFillAreaStyleHatching") {
-				f(*(std::dynamic_pointer_cast<IfcFillAreaStyleHatching>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMeterType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowMeterType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFillAreaStyleTiles") {
-				f(*(std::dynamic_pointer_cast<IfcFillAreaStyleTiles>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMeterTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowMeterTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFillStyleSelect") {
-				f(*(std::dynamic_pointer_cast<IfcFillStyleSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMovingDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowMovingDevice>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFilter") {
-				f(*(std::dynamic_pointer_cast<IfcFilter>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMovingDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowMovingDeviceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFilterType") {
-				f(*(std::dynamic_pointer_cast<IfcFilterType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowSegment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFilterTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcFilterTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowSegmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowSegmentType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFireSuppressionTerminal") {
-				f(*(std::dynamic_pointer_cast<IfcFireSuppressionTerminal>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowStorageDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowStorageDevice>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFireSuppressionTerminalType") {
-				f(*(std::dynamic_pointer_cast<IfcFireSuppressionTerminalType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowStorageDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowStorageDeviceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFireSuppressionTerminalTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcFireSuppressionTerminalTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowTerminal>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFixedReferenceSweptAreaSolid") {
-				f(*(std::dynamic_pointer_cast<IfcFixedReferenceSweptAreaSolid>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowTerminalType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowController") {
-				f(*(std::dynamic_pointer_cast<IfcFlowController>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTreatmentDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowTreatmentDevice>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowControllerType") {
-				f(*(std::dynamic_pointer_cast<IfcFlowControllerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTreatmentDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowTreatmentDeviceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowDirectionEnum") {
-				f(*(std::dynamic_pointer_cast<IfcFlowDirectionEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFontStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcFontStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowFitting") {
-				f(*(std::dynamic_pointer_cast<IfcFlowFitting>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFontVariant") {
+				return f(*(std::dynamic_pointer_cast<IfcFontVariant>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowFittingType") {
-				f(*(std::dynamic_pointer_cast<IfcFlowFittingType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFontWeight") {
+				return f(*(std::dynamic_pointer_cast<IfcFontWeight>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowInstrument") {
-				f(*(std::dynamic_pointer_cast<IfcFlowInstrument>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFooting") {
+				return f(*(std::dynamic_pointer_cast<IfcFooting>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowInstrumentType") {
-				f(*(std::dynamic_pointer_cast<IfcFlowInstrumentType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFootingType") {
+				return f(*(std::dynamic_pointer_cast<IfcFootingType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowInstrumentTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcFlowInstrumentTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFootingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFootingTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMeter") {
-				f(*(std::dynamic_pointer_cast<IfcFlowMeter>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcForceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcForceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMeterType") {
-				f(*(std::dynamic_pointer_cast<IfcFlowMeterType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFrequencyMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcFrequencyMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMeterTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcFlowMeterTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnishingElement") {
+				return f(*(std::dynamic_pointer_cast<IfcFurnishingElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMovingDevice") {
-				f(*(std::dynamic_pointer_cast<IfcFlowMovingDevice>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnishingElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcFurnishingElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMovingDeviceType") {
-				f(*(std::dynamic_pointer_cast<IfcFlowMovingDeviceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurniture") {
+				return f(*(std::dynamic_pointer_cast<IfcFurniture>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowSegment") {
-				f(*(std::dynamic_pointer_cast<IfcFlowSegment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnitureType") {
+				return f(*(std::dynamic_pointer_cast<IfcFurnitureType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowSegmentType") {
-				f(*(std::dynamic_pointer_cast<IfcFlowSegmentType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnitureTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFurnitureTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowStorageDevice") {
-				f(*(std::dynamic_pointer_cast<IfcFlowStorageDevice>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeographicElement") {
+				return f(*(std::dynamic_pointer_cast<IfcGeographicElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowStorageDeviceType") {
-				f(*(std::dynamic_pointer_cast<IfcFlowStorageDeviceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeographicElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcGeographicElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTerminal") {
-				f(*(std::dynamic_pointer_cast<IfcFlowTerminal>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeographicElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcGeographicElementTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTerminalType") {
-				f(*(std::dynamic_pointer_cast<IfcFlowTerminalType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricCurveSet") {
+				return f(*(std::dynamic_pointer_cast<IfcGeometricCurveSet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTreatmentDevice") {
-				f(*(std::dynamic_pointer_cast<IfcFlowTreatmentDevice>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricProjectionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcGeometricProjectionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTreatmentDeviceType") {
-				f(*(std::dynamic_pointer_cast<IfcFlowTreatmentDeviceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricRepresentationContext") {
+				return f(*(std::dynamic_pointer_cast<IfcGeometricRepresentationContext>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFontStyle") {
-				f(*(std::dynamic_pointer_cast<IfcFontStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricRepresentationItem") {
+				return f(*(std::dynamic_pointer_cast<IfcGeometricRepresentationItem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFontVariant") {
-				f(*(std::dynamic_pointer_cast<IfcFontVariant>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricRepresentationSubContext") {
+				return f(*(std::dynamic_pointer_cast<IfcGeometricRepresentationSubContext>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFontWeight") {
-				f(*(std::dynamic_pointer_cast<IfcFontWeight>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricSet") {
+				return f(*(std::dynamic_pointer_cast<IfcGeometricSet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFooting") {
-				f(*(std::dynamic_pointer_cast<IfcFooting>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGloballyUniqueId") {
+				return f(*(std::dynamic_pointer_cast<IfcGloballyUniqueId>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFootingType") {
-				f(*(std::dynamic_pointer_cast<IfcFootingType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGlobalOrLocalEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcGlobalOrLocalEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFootingTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcFootingTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGrid") {
+				return f(*(std::dynamic_pointer_cast<IfcGrid>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcForceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcForceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGridAxis") {
+				return f(*(std::dynamic_pointer_cast<IfcGridAxis>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFrequencyMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcFrequencyMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGridPlacement") {
+				return f(*(std::dynamic_pointer_cast<IfcGridPlacement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnishingElement") {
-				f(*(std::dynamic_pointer_cast<IfcFurnishingElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGridTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcGridTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnishingElementType") {
-				f(*(std::dynamic_pointer_cast<IfcFurnishingElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGroup") {
+				return f(*(std::dynamic_pointer_cast<IfcGroup>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurniture") {
-				f(*(std::dynamic_pointer_cast<IfcFurniture>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHalfSpaceSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcHalfSpaceSolid>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnitureType") {
-				f(*(std::dynamic_pointer_cast<IfcFurnitureType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatExchanger") {
+				return f(*(std::dynamic_pointer_cast<IfcHeatExchanger>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnitureTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcFurnitureTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatExchangerType") {
+				return f(*(std::dynamic_pointer_cast<IfcHeatExchangerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeographicElement") {
-				f(*(std::dynamic_pointer_cast<IfcGeographicElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatExchangerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcHeatExchangerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeographicElementType") {
-				f(*(std::dynamic_pointer_cast<IfcGeographicElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatFluxDensityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcHeatFluxDensityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeographicElementTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcGeographicElementTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatingValueMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcHeatingValueMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricCurveSet") {
-				f(*(std::dynamic_pointer_cast<IfcGeometricCurveSet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHumidifier") {
+				return f(*(std::dynamic_pointer_cast<IfcHumidifier>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricProjectionEnum") {
-				f(*(std::dynamic_pointer_cast<IfcGeometricProjectionEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHumidifierType") {
+				return f(*(std::dynamic_pointer_cast<IfcHumidifierType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricRepresentationContext") {
-				f(*(std::dynamic_pointer_cast<IfcGeometricRepresentationContext>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHumidifierTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcHumidifierTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricRepresentationItem") {
-				f(*(std::dynamic_pointer_cast<IfcGeometricRepresentationItem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIdentifier") {
+				return f(*(std::dynamic_pointer_cast<IfcIdentifier>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricRepresentationSubContext") {
-				f(*(std::dynamic_pointer_cast<IfcGeometricRepresentationSubContext>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIlluminanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcIlluminanceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricSet") {
-				f(*(std::dynamic_pointer_cast<IfcGeometricSet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcImageTexture") {
+				return f(*(std::dynamic_pointer_cast<IfcImageTexture>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricSetSelect") {
-				f(*(std::dynamic_pointer_cast<IfcGeometricSetSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedColourMap") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedColourMap>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGloballyUniqueId") {
-				f(*(std::dynamic_pointer_cast<IfcGloballyUniqueId>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedPolyCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedPolyCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGlobalOrLocalEnum") {
-				f(*(std::dynamic_pointer_cast<IfcGlobalOrLocalEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedPolygonalFace") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedPolygonalFace>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGrid") {
-				f(*(std::dynamic_pointer_cast<IfcGrid>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedPolygonalFaceWithVoids") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedPolygonalFaceWithVoids>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGridAxis") {
-				f(*(std::dynamic_pointer_cast<IfcGridAxis>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedTextureMap") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedTextureMap>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGridPlacement") {
-				f(*(std::dynamic_pointer_cast<IfcGridPlacement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedTriangleTextureMap") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedTriangleTextureMap>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGridPlacementDirectionSelect") {
-				f(*(std::dynamic_pointer_cast<IfcGridPlacementDirectionSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInductanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcInductanceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGridTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcGridTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInteger") {
+				return f(*(std::dynamic_pointer_cast<IfcInteger>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGroup") {
-				f(*(std::dynamic_pointer_cast<IfcGroup>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIntegerCountRateMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcIntegerCountRateMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHalfSpaceSolid") {
-				f(*(std::dynamic_pointer_cast<IfcHalfSpaceSolid>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInterceptor") {
+				return f(*(std::dynamic_pointer_cast<IfcInterceptor>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHatchLineDistanceSelect") {
-				f(*(std::dynamic_pointer_cast<IfcHatchLineDistanceSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInterceptorType") {
+				return f(*(std::dynamic_pointer_cast<IfcInterceptorType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatExchanger") {
-				f(*(std::dynamic_pointer_cast<IfcHeatExchanger>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInterceptorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcInterceptorTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatExchangerType") {
-				f(*(std::dynamic_pointer_cast<IfcHeatExchangerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInternalOrExternalEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcInternalOrExternalEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatExchangerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcHeatExchangerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIntersectionCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcIntersectionCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatFluxDensityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcHeatFluxDensityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInventory") {
+				return f(*(std::dynamic_pointer_cast<IfcInventory>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatingValueMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcHeatingValueMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInventoryTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcInventoryTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHumidifier") {
-				f(*(std::dynamic_pointer_cast<IfcHumidifier>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIonConcentrationMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcIonConcentrationMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHumidifierType") {
-				f(*(std::dynamic_pointer_cast<IfcHumidifierType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIrregularTimeSeries") {
+				return f(*(std::dynamic_pointer_cast<IfcIrregularTimeSeries>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHumidifierTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcHumidifierTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIrregularTimeSeriesValue") {
+				return f(*(std::dynamic_pointer_cast<IfcIrregularTimeSeriesValue>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIdentifier") {
-				f(*(std::dynamic_pointer_cast<IfcIdentifier>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcIShapeProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIlluminanceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcIlluminanceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIsothermalMoistureCapacityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcIsothermalMoistureCapacityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcImageTexture") {
-				f(*(std::dynamic_pointer_cast<IfcImageTexture>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcJunctionBox") {
+				return f(*(std::dynamic_pointer_cast<IfcJunctionBox>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedColourMap") {
-				f(*(std::dynamic_pointer_cast<IfcIndexedColourMap>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcJunctionBoxType") {
+				return f(*(std::dynamic_pointer_cast<IfcJunctionBoxType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedPolyCurve") {
-				f(*(std::dynamic_pointer_cast<IfcIndexedPolyCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcJunctionBoxTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcJunctionBoxTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedPolygonalFace") {
-				f(*(std::dynamic_pointer_cast<IfcIndexedPolygonalFace>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcKinematicViscosityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcKinematicViscosityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedPolygonalFaceWithVoids") {
-				f(*(std::dynamic_pointer_cast<IfcIndexedPolygonalFaceWithVoids>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcKnotType") {
+				return f(*(std::dynamic_pointer_cast<IfcKnotType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedTextureMap") {
-				f(*(std::dynamic_pointer_cast<IfcIndexedTextureMap>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLabel") {
+				return f(*(std::dynamic_pointer_cast<IfcLabel>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedTriangleTextureMap") {
-				f(*(std::dynamic_pointer_cast<IfcIndexedTriangleTextureMap>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLaborResource") {
+				return f(*(std::dynamic_pointer_cast<IfcLaborResource>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInductanceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcInductanceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLaborResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcLaborResourceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInteger") {
-				f(*(std::dynamic_pointer_cast<IfcInteger>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLaborResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLaborResourceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIntegerCountRateMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcIntegerCountRateMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLagTime") {
+				return f(*(std::dynamic_pointer_cast<IfcLagTime>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInterceptor") {
-				f(*(std::dynamic_pointer_cast<IfcInterceptor>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLamp") {
+				return f(*(std::dynamic_pointer_cast<IfcLamp>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInterceptorType") {
-				f(*(std::dynamic_pointer_cast<IfcInterceptorType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLampType") {
+				return f(*(std::dynamic_pointer_cast<IfcLampType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInterceptorTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcInterceptorTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLampTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLampTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInternalOrExternalEnum") {
-				f(*(std::dynamic_pointer_cast<IfcInternalOrExternalEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLanguageId") {
+				return f(*(std::dynamic_pointer_cast<IfcLanguageId>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIntersectionCurve") {
-				f(*(std::dynamic_pointer_cast<IfcIntersectionCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLayerSetDirectionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLayerSetDirectionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInventory") {
-				f(*(std::dynamic_pointer_cast<IfcInventory>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLengthMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLengthMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInventoryTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcInventoryTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLibraryInformation") {
+				return f(*(std::dynamic_pointer_cast<IfcLibraryInformation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIonConcentrationMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcIonConcentrationMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLibraryReference") {
+				return f(*(std::dynamic_pointer_cast<IfcLibraryReference>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIrregularTimeSeries") {
-				f(*(std::dynamic_pointer_cast<IfcIrregularTimeSeries>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightDistributionCurveEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLightDistributionCurveEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIrregularTimeSeriesValue") {
-				f(*(std::dynamic_pointer_cast<IfcIrregularTimeSeriesValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightDistributionData") {
+				return f(*(std::dynamic_pointer_cast<IfcLightDistributionData>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIShapeProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcIShapeProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightEmissionSourceEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLightEmissionSourceEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIsothermalMoistureCapacityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcIsothermalMoistureCapacityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightFixture") {
+				return f(*(std::dynamic_pointer_cast<IfcLightFixture>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcJunctionBox") {
-				f(*(std::dynamic_pointer_cast<IfcJunctionBox>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightFixtureType") {
+				return f(*(std::dynamic_pointer_cast<IfcLightFixtureType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcJunctionBoxType") {
-				f(*(std::dynamic_pointer_cast<IfcJunctionBoxType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightFixtureTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLightFixtureTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcJunctionBoxTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcJunctionBoxTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightIntensityDistribution") {
+				return f(*(std::dynamic_pointer_cast<IfcLightIntensityDistribution>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcKinematicViscosityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcKinematicViscosityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSource") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSource>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcKnotType") {
-				f(*(std::dynamic_pointer_cast<IfcKnotType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceAmbient") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSourceAmbient>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLabel") {
-				f(*(std::dynamic_pointer_cast<IfcLabel>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceDirectional") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSourceDirectional>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLaborResource") {
-				f(*(std::dynamic_pointer_cast<IfcLaborResource>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceGoniometric") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSourceGoniometric>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLaborResourceType") {
-				f(*(std::dynamic_pointer_cast<IfcLaborResourceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourcePositional") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSourcePositional>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLaborResourceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcLaborResourceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceSpot") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSourceSpot>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLagTime") {
-				f(*(std::dynamic_pointer_cast<IfcLagTime>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLine") {
+				return f(*(std::dynamic_pointer_cast<IfcLine>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLamp") {
-				f(*(std::dynamic_pointer_cast<IfcLamp>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearForceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearForceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLampType") {
-				f(*(std::dynamic_pointer_cast<IfcLampType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearMomentMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearMomentMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLampTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcLampTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearPlacement") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearPlacement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLanguageId") {
-				f(*(std::dynamic_pointer_cast<IfcLanguageId>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearPositioningElement") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearPositioningElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLayeredItem") {
-				f(*(std::dynamic_pointer_cast<IfcLayeredItem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearStiffnessMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearStiffnessMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLayerSetDirectionEnum") {
-				f(*(std::dynamic_pointer_cast<IfcLayerSetDirectionEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearVelocityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearVelocityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLengthMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcLengthMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLineIndex") {
+				return f(*(std::dynamic_pointer_cast<IfcLineIndex>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLibraryInformation") {
-				f(*(std::dynamic_pointer_cast<IfcLibraryInformation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLineSegment2D") {
+				return f(*(std::dynamic_pointer_cast<IfcLineSegment2D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLibraryReference") {
-				f(*(std::dynamic_pointer_cast<IfcLibraryReference>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLoadGroupTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLoadGroupTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLibrarySelect") {
-				f(*(std::dynamic_pointer_cast<IfcLibrarySelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLocalPlacement") {
+				return f(*(std::dynamic_pointer_cast<IfcLocalPlacement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightDistributionCurveEnum") {
-				f(*(std::dynamic_pointer_cast<IfcLightDistributionCurveEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLogical") {
+				return f(*(std::dynamic_pointer_cast<IfcLogical>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightDistributionData") {
-				f(*(std::dynamic_pointer_cast<IfcLightDistributionData>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLogicalOperatorEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLogicalOperatorEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightDistributionDataSourceSelect") {
-				f(*(std::dynamic_pointer_cast<IfcLightDistributionDataSourceSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLoop") {
+				return f(*(std::dynamic_pointer_cast<IfcLoop>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightEmissionSourceEnum") {
-				f(*(std::dynamic_pointer_cast<IfcLightEmissionSourceEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcLShapeProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightFixture") {
-				f(*(std::dynamic_pointer_cast<IfcLightFixture>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLuminousFluxMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLuminousFluxMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightFixtureType") {
-				f(*(std::dynamic_pointer_cast<IfcLightFixtureType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLuminousIntensityDistributionMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLuminousIntensityDistributionMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightFixtureTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcLightFixtureTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLuminousIntensityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLuminousIntensityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightIntensityDistribution") {
-				f(*(std::dynamic_pointer_cast<IfcLightIntensityDistribution>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMagneticFluxDensityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMagneticFluxDensityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSource") {
-				f(*(std::dynamic_pointer_cast<IfcLightSource>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMagneticFluxMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMagneticFluxMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceAmbient") {
-				f(*(std::dynamic_pointer_cast<IfcLightSourceAmbient>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcManifoldSolidBrep") {
+				return f(*(std::dynamic_pointer_cast<IfcManifoldSolidBrep>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceDirectional") {
-				f(*(std::dynamic_pointer_cast<IfcLightSourceDirectional>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMapConversion") {
+				return f(*(std::dynamic_pointer_cast<IfcMapConversion>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceGoniometric") {
-				f(*(std::dynamic_pointer_cast<IfcLightSourceGoniometric>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMappedItem") {
+				return f(*(std::dynamic_pointer_cast<IfcMappedItem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourcePositional") {
-				f(*(std::dynamic_pointer_cast<IfcLightSourcePositional>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassDensityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMassDensityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceSpot") {
-				f(*(std::dynamic_pointer_cast<IfcLightSourceSpot>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassFlowRateMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMassFlowRateMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLine") {
-				f(*(std::dynamic_pointer_cast<IfcLine>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMassMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearForceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcLinearForceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassPerLengthMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMassPerLengthMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearMomentMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcLinearMomentMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterial") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterial>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearPlacement") {
-				f(*(std::dynamic_pointer_cast<IfcLinearPlacement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialClassificationRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialClassificationRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearPositioningElement") {
-				f(*(std::dynamic_pointer_cast<IfcLinearPositioningElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialConstituent") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialConstituent>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearStiffnessMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcLinearStiffnessMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialConstituentSet") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialConstituentSet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearVelocityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcLinearVelocityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialDefinition") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialDefinition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLineIndex") {
-				f(*(std::dynamic_pointer_cast<IfcLineIndex>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialDefinitionRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialDefinitionRepresentation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLineSegment2D") {
-				f(*(std::dynamic_pointer_cast<IfcLineSegment2D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayer") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialLayer>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLoadGroupTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcLoadGroupTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayerSet") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialLayerSet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLocalPlacement") {
-				f(*(std::dynamic_pointer_cast<IfcLocalPlacement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayerSetUsage") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialLayerSetUsage>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLogical") {
-				f(*(std::dynamic_pointer_cast<IfcLogical>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayerWithOffsets") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialLayerWithOffsets>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLogicalOperatorEnum") {
-				f(*(std::dynamic_pointer_cast<IfcLogicalOperatorEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialList") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialList>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLoop") {
-				f(*(std::dynamic_pointer_cast<IfcLoop>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfile") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProfile>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLShapeProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcLShapeProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileSet") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProfileSet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLuminousFluxMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcLuminousFluxMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileSetUsage") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProfileSetUsage>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLuminousIntensityDistributionMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcLuminousIntensityDistributionMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileSetUsageTapering") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProfileSetUsageTapering>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLuminousIntensityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcLuminousIntensityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileWithOffsets") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProfileWithOffsets>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMagneticFluxDensityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcMagneticFluxDensityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMagneticFluxMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcMagneticFluxMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcManifoldSolidBrep") {
-				f(*(std::dynamic_pointer_cast<IfcManifoldSolidBrep>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialUsageDefinition") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialUsageDefinition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMapConversion") {
-				f(*(std::dynamic_pointer_cast<IfcMapConversion>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMeasureWithUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcMeasureWithUnit>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMappedItem") {
-				f(*(std::dynamic_pointer_cast<IfcMappedItem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMechanicalFastener") {
+				return f(*(std::dynamic_pointer_cast<IfcMechanicalFastener>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassDensityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcMassDensityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMechanicalFastenerType") {
+				return f(*(std::dynamic_pointer_cast<IfcMechanicalFastenerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassFlowRateMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcMassFlowRateMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMechanicalFastenerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcMechanicalFastenerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcMassMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMedicalDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcMedicalDevice>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassPerLengthMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcMassPerLengthMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMedicalDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcMedicalDeviceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterial") {
-				f(*(std::dynamic_pointer_cast<IfcMaterial>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMedicalDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcMedicalDeviceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialClassificationRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialClassificationRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMember") {
+				return f(*(std::dynamic_pointer_cast<IfcMember>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialConstituent") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialConstituent>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMemberStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcMemberStandardCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialConstituentSet") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialConstituentSet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMemberType") {
+				return f(*(std::dynamic_pointer_cast<IfcMemberType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialDefinition") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialDefinition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMemberTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcMemberTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialDefinitionRepresentation") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialDefinitionRepresentation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMetric") {
+				return f(*(std::dynamic_pointer_cast<IfcMetric>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayer") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialLayer>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMirroredProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcMirroredProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayerSet") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialLayerSet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfElasticityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcModulusOfElasticityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayerSetUsage") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialLayerSetUsage>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfLinearSubgradeReactionMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcModulusOfLinearSubgradeReactionMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayerWithOffsets") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialLayerWithOffsets>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfRotationalSubgradeReactionMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcModulusOfRotationalSubgradeReactionMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialList") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialList>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfSubgradeReactionMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcModulusOfSubgradeReactionMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfile") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialProfile>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMoistureDiffusivityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMoistureDiffusivityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileSet") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialProfileSet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMolecularWeightMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMolecularWeightMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileSetUsage") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialProfileSetUsage>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMomentOfInertiaMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMomentOfInertiaMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileSetUsageTapering") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialProfileSetUsageTapering>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMonetaryMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMonetaryMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileWithOffsets") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialProfileWithOffsets>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMonetaryUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcMonetaryUnit>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProperties") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMonthInYearNumber") {
+				return f(*(std::dynamic_pointer_cast<IfcMonthInYearNumber>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMotorConnection") {
+				return f(*(std::dynamic_pointer_cast<IfcMotorConnection>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialSelect") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMotorConnectionType") {
+				return f(*(std::dynamic_pointer_cast<IfcMotorConnectionType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialUsageDefinition") {
-				f(*(std::dynamic_pointer_cast<IfcMaterialUsageDefinition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMotorConnectionTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcMotorConnectionTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMeasureValue") {
-				f(*(std::dynamic_pointer_cast<IfcMeasureValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNamedUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcNamedUnit>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMeasureWithUnit") {
-				f(*(std::dynamic_pointer_cast<IfcMeasureWithUnit>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNonNegativeLengthMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcNonNegativeLengthMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMechanicalFastener") {
-				f(*(std::dynamic_pointer_cast<IfcMechanicalFastener>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNormalisedRatioMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcNormalisedRatioMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMechanicalFastenerType") {
-				f(*(std::dynamic_pointer_cast<IfcMechanicalFastenerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNullStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcNullStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMechanicalFastenerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcMechanicalFastenerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNumericMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcNumericMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMedicalDevice") {
-				f(*(std::dynamic_pointer_cast<IfcMedicalDevice>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObject") {
+				return f(*(std::dynamic_pointer_cast<IfcObject>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMedicalDeviceType") {
-				f(*(std::dynamic_pointer_cast<IfcMedicalDeviceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectDefinition") {
+				return f(*(std::dynamic_pointer_cast<IfcObjectDefinition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMedicalDeviceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcMedicalDeviceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjective") {
+				return f(*(std::dynamic_pointer_cast<IfcObjective>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMember") {
-				f(*(std::dynamic_pointer_cast<IfcMember>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectiveEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcObjectiveEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMemberStandardCase") {
-				f(*(std::dynamic_pointer_cast<IfcMemberStandardCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectPlacement") {
+				return f(*(std::dynamic_pointer_cast<IfcObjectPlacement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMemberType") {
-				f(*(std::dynamic_pointer_cast<IfcMemberType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcObjectTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMemberTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcMemberTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOccupant") {
+				return f(*(std::dynamic_pointer_cast<IfcOccupant>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMetric") {
-				f(*(std::dynamic_pointer_cast<IfcMetric>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOccupantTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcOccupantTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMetricValueSelect") {
-				f(*(std::dynamic_pointer_cast<IfcMetricValueSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcOffsetCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMirroredProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcMirroredProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurve2D") {
+				return f(*(std::dynamic_pointer_cast<IfcOffsetCurve2D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfElasticityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcModulusOfElasticityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurve3D") {
+				return f(*(std::dynamic_pointer_cast<IfcOffsetCurve3D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfLinearSubgradeReactionMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcModulusOfLinearSubgradeReactionMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurveByDistances") {
+				return f(*(std::dynamic_pointer_cast<IfcOffsetCurveByDistances>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfRotationalSubgradeReactionMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcModulusOfRotationalSubgradeReactionMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpeningElement") {
+				return f(*(std::dynamic_pointer_cast<IfcOpeningElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfRotationalSubgradeReactionSelect") {
-				f(*(std::dynamic_pointer_cast<IfcModulusOfRotationalSubgradeReactionSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpeningElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcOpeningElementTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfSubgradeReactionMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcModulusOfSubgradeReactionMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpeningStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcOpeningStandardCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfSubgradeReactionSelect") {
-				f(*(std::dynamic_pointer_cast<IfcModulusOfSubgradeReactionSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpenShell") {
+				return f(*(std::dynamic_pointer_cast<IfcOpenShell>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfTranslationalSubgradeReactionSelect") {
-				f(*(std::dynamic_pointer_cast<IfcModulusOfTranslationalSubgradeReactionSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrganization") {
+				return f(*(std::dynamic_pointer_cast<IfcOrganization>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMoistureDiffusivityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcMoistureDiffusivityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrganizationRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcOrganizationRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMolecularWeightMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcMolecularWeightMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrientationExpression") {
+				return f(*(std::dynamic_pointer_cast<IfcOrientationExpression>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMomentOfInertiaMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcMomentOfInertiaMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrientedEdge") {
+				return f(*(std::dynamic_pointer_cast<IfcOrientedEdge>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMonetaryMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcMonetaryMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOuterBoundaryCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcOuterBoundaryCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMonetaryUnit") {
-				f(*(std::dynamic_pointer_cast<IfcMonetaryUnit>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOutlet") {
+				return f(*(std::dynamic_pointer_cast<IfcOutlet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMonthInYearNumber") {
-				f(*(std::dynamic_pointer_cast<IfcMonthInYearNumber>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOutletType") {
+				return f(*(std::dynamic_pointer_cast<IfcOutletType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMotorConnection") {
-				f(*(std::dynamic_pointer_cast<IfcMotorConnection>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOutletTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcOutletTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMotorConnectionType") {
-				f(*(std::dynamic_pointer_cast<IfcMotorConnectionType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOwnerHistory") {
+				return f(*(std::dynamic_pointer_cast<IfcOwnerHistory>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMotorConnectionTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcMotorConnectionTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcParameterizedProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcParameterizedProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNamedUnit") {
-				f(*(std::dynamic_pointer_cast<IfcNamedUnit>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcParameterValue") {
+				return f(*(std::dynamic_pointer_cast<IfcParameterValue>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNonNegativeLengthMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcNonNegativeLengthMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPath") {
+				return f(*(std::dynamic_pointer_cast<IfcPath>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNormalisedRatioMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcNormalisedRatioMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPcurve") {
+				return f(*(std::dynamic_pointer_cast<IfcPcurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNullStyle") {
-				f(*(std::dynamic_pointer_cast<IfcNullStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPerformanceHistory") {
+				return f(*(std::dynamic_pointer_cast<IfcPerformanceHistory>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNumericMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcNumericMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPerformanceHistoryTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPerformanceHistoryTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObject") {
-				f(*(std::dynamic_pointer_cast<IfcObject>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermeableCoveringOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPermeableCoveringOperationEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectDefinition") {
-				f(*(std::dynamic_pointer_cast<IfcObjectDefinition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermeableCoveringProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcPermeableCoveringProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjective") {
-				f(*(std::dynamic_pointer_cast<IfcObjective>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermit") {
+				return f(*(std::dynamic_pointer_cast<IfcPermit>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectiveEnum") {
-				f(*(std::dynamic_pointer_cast<IfcObjectiveEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermitTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPermitTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectPlacement") {
-				f(*(std::dynamic_pointer_cast<IfcObjectPlacement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPerson") {
+				return f(*(std::dynamic_pointer_cast<IfcPerson>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectReferenceSelect") {
-				f(*(std::dynamic_pointer_cast<IfcObjectReferenceSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPersonAndOrganization") {
+				return f(*(std::dynamic_pointer_cast<IfcPersonAndOrganization>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcObjectTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPHMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPHMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOccupant") {
-				f(*(std::dynamic_pointer_cast<IfcOccupant>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalComplexQuantity") {
+				return f(*(std::dynamic_pointer_cast<IfcPhysicalComplexQuantity>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOccupantTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcOccupantTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalOrVirtualEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPhysicalOrVirtualEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurve") {
-				f(*(std::dynamic_pointer_cast<IfcOffsetCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalQuantity") {
+				return f(*(std::dynamic_pointer_cast<IfcPhysicalQuantity>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurve2D") {
-				f(*(std::dynamic_pointer_cast<IfcOffsetCurve2D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalSimpleQuantity") {
+				return f(*(std::dynamic_pointer_cast<IfcPhysicalSimpleQuantity>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurve3D") {
-				f(*(std::dynamic_pointer_cast<IfcOffsetCurve3D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPile") {
+				return f(*(std::dynamic_pointer_cast<IfcPile>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurveByDistances") {
-				f(*(std::dynamic_pointer_cast<IfcOffsetCurveByDistances>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPileConstructionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPileConstructionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpeningElement") {
-				f(*(std::dynamic_pointer_cast<IfcOpeningElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPileType") {
+				return f(*(std::dynamic_pointer_cast<IfcPileType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpeningElementTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcOpeningElementTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPileTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPileTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpeningStandardCase") {
-				f(*(std::dynamic_pointer_cast<IfcOpeningStandardCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeFitting") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeFitting>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpenShell") {
-				f(*(std::dynamic_pointer_cast<IfcOpenShell>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeFittingType") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeFittingType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrganization") {
-				f(*(std::dynamic_pointer_cast<IfcOrganization>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeFittingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeFittingTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrganizationRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcOrganizationRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeSegment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrientationExpression") {
-				f(*(std::dynamic_pointer_cast<IfcOrientationExpression>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeSegmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeSegmentType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrientedEdge") {
-				f(*(std::dynamic_pointer_cast<IfcOrientedEdge>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeSegmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeSegmentTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOuterBoundaryCurve") {
-				f(*(std::dynamic_pointer_cast<IfcOuterBoundaryCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPixelTexture") {
+				return f(*(std::dynamic_pointer_cast<IfcPixelTexture>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOutlet") {
-				f(*(std::dynamic_pointer_cast<IfcOutlet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlacement") {
+				return f(*(std::dynamic_pointer_cast<IfcPlacement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOutletType") {
-				f(*(std::dynamic_pointer_cast<IfcOutletType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlanarBox") {
+				return f(*(std::dynamic_pointer_cast<IfcPlanarBox>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOutletTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcOutletTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlanarExtent") {
+				return f(*(std::dynamic_pointer_cast<IfcPlanarExtent>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOwnerHistory") {
-				f(*(std::dynamic_pointer_cast<IfcOwnerHistory>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlanarForceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPlanarForceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcParameterizedProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcParameterizedProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlane") {
+				return f(*(std::dynamic_pointer_cast<IfcPlane>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcParameterValue") {
-				f(*(std::dynamic_pointer_cast<IfcParameterValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlaneAngleMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPlaneAngleMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPath") {
-				f(*(std::dynamic_pointer_cast<IfcPath>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlate") {
+				return f(*(std::dynamic_pointer_cast<IfcPlate>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPcurve") {
-				f(*(std::dynamic_pointer_cast<IfcPcurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlateStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcPlateStandardCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPerformanceHistory") {
-				f(*(std::dynamic_pointer_cast<IfcPerformanceHistory>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlateType") {
+				return f(*(std::dynamic_pointer_cast<IfcPlateType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPerformanceHistoryTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcPerformanceHistoryTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlateTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPlateTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermeableCoveringOperationEnum") {
-				f(*(std::dynamic_pointer_cast<IfcPermeableCoveringOperationEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPoint") {
+				return f(*(std::dynamic_pointer_cast<IfcPoint>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermeableCoveringProperties") {
-				f(*(std::dynamic_pointer_cast<IfcPermeableCoveringProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPointOnCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcPointOnCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermit") {
-				f(*(std::dynamic_pointer_cast<IfcPermit>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPointOnSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcPointOnSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermitTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcPermitTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolygonalBoundedHalfSpace") {
+				return f(*(std::dynamic_pointer_cast<IfcPolygonalBoundedHalfSpace>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPerson") {
-				f(*(std::dynamic_pointer_cast<IfcPerson>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolygonalFaceSet") {
+				return f(*(std::dynamic_pointer_cast<IfcPolygonalFaceSet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPersonAndOrganization") {
-				f(*(std::dynamic_pointer_cast<IfcPersonAndOrganization>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolyline") {
+				return f(*(std::dynamic_pointer_cast<IfcPolyline>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPHMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcPHMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolyLoop") {
+				return f(*(std::dynamic_pointer_cast<IfcPolyLoop>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalComplexQuantity") {
-				f(*(std::dynamic_pointer_cast<IfcPhysicalComplexQuantity>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPort") {
+				return f(*(std::dynamic_pointer_cast<IfcPort>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalOrVirtualEnum") {
-				f(*(std::dynamic_pointer_cast<IfcPhysicalOrVirtualEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPositioningElement") {
+				return f(*(std::dynamic_pointer_cast<IfcPositioningElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalQuantity") {
-				f(*(std::dynamic_pointer_cast<IfcPhysicalQuantity>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPositiveInteger") {
+				return f(*(std::dynamic_pointer_cast<IfcPositiveInteger>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalSimpleQuantity") {
-				f(*(std::dynamic_pointer_cast<IfcPhysicalSimpleQuantity>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPositiveLengthMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPositiveLengthMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPile") {
-				f(*(std::dynamic_pointer_cast<IfcPile>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPositivePlaneAngleMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPositivePlaneAngleMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPileConstructionEnum") {
-				f(*(std::dynamic_pointer_cast<IfcPileConstructionEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPositiveRatioMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPositiveRatioMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPileType") {
-				f(*(std::dynamic_pointer_cast<IfcPileType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPostalAddress") {
+				return f(*(std::dynamic_pointer_cast<IfcPostalAddress>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPileTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcPileTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPowerMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPowerMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeFitting") {
-				f(*(std::dynamic_pointer_cast<IfcPipeFitting>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedColour") {
+				return f(*(std::dynamic_pointer_cast<IfcPreDefinedColour>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeFittingType") {
-				f(*(std::dynamic_pointer_cast<IfcPipeFittingType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedCurveFont") {
+				return f(*(std::dynamic_pointer_cast<IfcPreDefinedCurveFont>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeFittingTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcPipeFittingTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedItem") {
+				return f(*(std::dynamic_pointer_cast<IfcPreDefinedItem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeSegment") {
-				f(*(std::dynamic_pointer_cast<IfcPipeSegment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcPreDefinedProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeSegmentType") {
-				f(*(std::dynamic_pointer_cast<IfcPipeSegmentType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedPropertySet") {
+				return f(*(std::dynamic_pointer_cast<IfcPreDefinedPropertySet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeSegmentTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcPipeSegmentTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedTextFont") {
+				return f(*(std::dynamic_pointer_cast<IfcPreDefinedTextFont>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPixelTexture") {
-				f(*(std::dynamic_pointer_cast<IfcPixelTexture>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreferredSurfaceCurveRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcPreferredSurfaceCurveRepresentation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlacement") {
-				f(*(std::dynamic_pointer_cast<IfcPlacement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentableText") {
+				return f(*(std::dynamic_pointer_cast<IfcPresentableText>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlanarBox") {
-				f(*(std::dynamic_pointer_cast<IfcPlanarBox>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationItem") {
+				return f(*(std::dynamic_pointer_cast<IfcPresentationItem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlanarExtent") {
-				f(*(std::dynamic_pointer_cast<IfcPlanarExtent>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationLayerAssignment") {
+				return f(*(std::dynamic_pointer_cast<IfcPresentationLayerAssignment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlanarForceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcPlanarForceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationLayerWithStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcPresentationLayerWithStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlane") {
-				f(*(std::dynamic_pointer_cast<IfcPlane>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcPresentationStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlaneAngleMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcPlaneAngleMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationStyleAssignment") {
+				return f(*(std::dynamic_pointer_cast<IfcPresentationStyleAssignment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlate") {
-				f(*(std::dynamic_pointer_cast<IfcPlate>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPressureMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPressureMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlateStandardCase") {
-				f(*(std::dynamic_pointer_cast<IfcPlateStandardCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcedure") {
+				return f(*(std::dynamic_pointer_cast<IfcProcedure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlateType") {
-				f(*(std::dynamic_pointer_cast<IfcPlateType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcedureType") {
+				return f(*(std::dynamic_pointer_cast<IfcProcedureType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlateTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcPlateTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcedureTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProcedureTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPoint") {
-				f(*(std::dynamic_pointer_cast<IfcPoint>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcess") {
+				return f(*(std::dynamic_pointer_cast<IfcProcess>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPointOnCurve") {
-				f(*(std::dynamic_pointer_cast<IfcPointOnCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProduct") {
+				return f(*(std::dynamic_pointer_cast<IfcProduct>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPointOnSurface") {
-				f(*(std::dynamic_pointer_cast<IfcPointOnSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProductDefinitionShape") {
+				return f(*(std::dynamic_pointer_cast<IfcProductDefinitionShape>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPointOrVertexPoint") {
-				f(*(std::dynamic_pointer_cast<IfcPointOrVertexPoint>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProductRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcProductRepresentation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolygonalBoundedHalfSpace") {
-				f(*(std::dynamic_pointer_cast<IfcPolygonalBoundedHalfSpace>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolygonalFaceSet") {
-				f(*(std::dynamic_pointer_cast<IfcPolygonalFaceSet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProfileProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcProfileProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolyline") {
-				f(*(std::dynamic_pointer_cast<IfcPolyline>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProfileTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProfileTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolyLoop") {
-				f(*(std::dynamic_pointer_cast<IfcPolyLoop>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProject") {
+				return f(*(std::dynamic_pointer_cast<IfcProject>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPort") {
-				f(*(std::dynamic_pointer_cast<IfcPort>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectedCRS") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectedCRS>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPositioningElement") {
-				f(*(std::dynamic_pointer_cast<IfcPositioningElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectedOrTrueLengthEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectedOrTrueLengthEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPositiveInteger") {
-				f(*(std::dynamic_pointer_cast<IfcPositiveInteger>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectionElement") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectionElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPositiveLengthMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcPositiveLengthMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectionElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectionElementTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPositivePlaneAngleMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcPositivePlaneAngleMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectLibrary") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectLibrary>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPositiveRatioMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcPositiveRatioMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectOrder") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectOrder>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPostalAddress") {
-				f(*(std::dynamic_pointer_cast<IfcPostalAddress>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectOrderTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectOrderTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPowerMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcPowerMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProperty") {
+				return f(*(std::dynamic_pointer_cast<IfcProperty>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedColour") {
-				f(*(std::dynamic_pointer_cast<IfcPreDefinedColour>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyAbstraction") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyAbstraction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedCurveFont") {
-				f(*(std::dynamic_pointer_cast<IfcPreDefinedCurveFont>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyBoundedValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyBoundedValue>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedItem") {
-				f(*(std::dynamic_pointer_cast<IfcPreDefinedItem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyDefinition") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyDefinition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedProperties") {
-				f(*(std::dynamic_pointer_cast<IfcPreDefinedProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyDependencyRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyDependencyRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedPropertySet") {
-				f(*(std::dynamic_pointer_cast<IfcPreDefinedPropertySet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyEnumeratedValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyEnumeratedValue>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedTextFont") {
-				f(*(std::dynamic_pointer_cast<IfcPreDefinedTextFont>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyEnumeration") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyEnumeration>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreferredSurfaceCurveRepresentation") {
-				f(*(std::dynamic_pointer_cast<IfcPreferredSurfaceCurveRepresentation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyListValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyListValue>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentableText") {
-				f(*(std::dynamic_pointer_cast<IfcPresentableText>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyReferenceValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyReferenceValue>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationItem") {
-				f(*(std::dynamic_pointer_cast<IfcPresentationItem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySet") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertySet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationLayerAssignment") {
-				f(*(std::dynamic_pointer_cast<IfcPresentationLayerAssignment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetDefinition") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertySetDefinition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationLayerWithStyle") {
-				f(*(std::dynamic_pointer_cast<IfcPresentationLayerWithStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetDefinitionSet") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertySetDefinitionSet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationStyle") {
-				f(*(std::dynamic_pointer_cast<IfcPresentationStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetTemplate") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertySetTemplate>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationStyleAssignment") {
-				f(*(std::dynamic_pointer_cast<IfcPresentationStyleAssignment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetTemplateTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertySetTemplateTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationStyleSelect") {
-				f(*(std::dynamic_pointer_cast<IfcPresentationStyleSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySingleValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertySingleValue>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPressureMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcPressureMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyTableValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyTableValue>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcedure") {
-				f(*(std::dynamic_pointer_cast<IfcProcedure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyTemplate") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyTemplate>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcedureType") {
-				f(*(std::dynamic_pointer_cast<IfcProcedureType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyTemplateDefinition") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyTemplateDefinition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcedureTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcProcedureTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDevice>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcess") {
-				f(*(std::dynamic_pointer_cast<IfcProcess>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTrippingUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTrippingUnit>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcessSelect") {
-				f(*(std::dynamic_pointer_cast<IfcProcessSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTrippingUnitType") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTrippingUnitType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProduct") {
-				f(*(std::dynamic_pointer_cast<IfcProduct>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTrippingUnitTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTrippingUnitTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProductDefinitionShape") {
-				f(*(std::dynamic_pointer_cast<IfcProductDefinitionShape>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProductRepresentation") {
-				f(*(std::dynamic_pointer_cast<IfcProductRepresentation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProductRepresentationSelect") {
-				f(*(std::dynamic_pointer_cast<IfcProductRepresentationSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProxy") {
+				return f(*(std::dynamic_pointer_cast<IfcProxy>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProductSelect") {
-				f(*(std::dynamic_pointer_cast<IfcProductSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPump") {
+				return f(*(std::dynamic_pointer_cast<IfcPump>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPumpType") {
+				return f(*(std::dynamic_pointer_cast<IfcPumpType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProfileProperties") {
-				f(*(std::dynamic_pointer_cast<IfcProfileProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPumpTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPumpTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProfileTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcProfileTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityArea") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityArea>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProject") {
-				f(*(std::dynamic_pointer_cast<IfcProject>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityCount") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityCount>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectedCRS") {
-				f(*(std::dynamic_pointer_cast<IfcProjectedCRS>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityLength") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityLength>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectedOrTrueLengthEnum") {
-				f(*(std::dynamic_pointer_cast<IfcProjectedOrTrueLengthEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantitySet") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantitySet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectionElement") {
-				f(*(std::dynamic_pointer_cast<IfcProjectionElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityTime") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityTime>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectionElementTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcProjectionElementTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityVolume") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityVolume>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectLibrary") {
-				f(*(std::dynamic_pointer_cast<IfcProjectLibrary>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityWeight") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityWeight>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectOrder") {
-				f(*(std::dynamic_pointer_cast<IfcProjectOrder>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRadioActivityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcRadioActivityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectOrderTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcProjectOrderTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRailing") {
+				return f(*(std::dynamic_pointer_cast<IfcRailing>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProperty") {
-				f(*(std::dynamic_pointer_cast<IfcProperty>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRailingType") {
+				return f(*(std::dynamic_pointer_cast<IfcRailingType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyAbstraction") {
-				f(*(std::dynamic_pointer_cast<IfcPropertyAbstraction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRailingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRailingTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyBoundedValue") {
-				f(*(std::dynamic_pointer_cast<IfcPropertyBoundedValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRamp") {
+				return f(*(std::dynamic_pointer_cast<IfcRamp>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyDefinition") {
-				f(*(std::dynamic_pointer_cast<IfcPropertyDefinition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampFlight") {
+				return f(*(std::dynamic_pointer_cast<IfcRampFlight>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyDependencyRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcPropertyDependencyRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampFlightType") {
+				return f(*(std::dynamic_pointer_cast<IfcRampFlightType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyEnumeratedValue") {
-				f(*(std::dynamic_pointer_cast<IfcPropertyEnumeratedValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampFlightTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRampFlightTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyEnumeration") {
-				f(*(std::dynamic_pointer_cast<IfcPropertyEnumeration>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampType") {
+				return f(*(std::dynamic_pointer_cast<IfcRampType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyListValue") {
-				f(*(std::dynamic_pointer_cast<IfcPropertyListValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRampTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyReferenceValue") {
-				f(*(std::dynamic_pointer_cast<IfcPropertyReferenceValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRatioMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcRatioMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySet") {
-				f(*(std::dynamic_pointer_cast<IfcPropertySet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRationalBSplineCurveWithKnots") {
+				return f(*(std::dynamic_pointer_cast<IfcRationalBSplineCurveWithKnots>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetDefinition") {
-				f(*(std::dynamic_pointer_cast<IfcPropertySetDefinition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRationalBSplineSurfaceWithKnots") {
+				return f(*(std::dynamic_pointer_cast<IfcRationalBSplineSurfaceWithKnots>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetDefinitionSelect") {
-				f(*(std::dynamic_pointer_cast<IfcPropertySetDefinitionSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReal") {
+				return f(*(std::dynamic_pointer_cast<IfcReal>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetDefinitionSet") {
-				f(*(std::dynamic_pointer_cast<IfcPropertySetDefinitionSet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangleHollowProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcRectangleHollowProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetTemplate") {
-				f(*(std::dynamic_pointer_cast<IfcPropertySetTemplate>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangleProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcRectangleProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetTemplateTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcPropertySetTemplateTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangularPyramid") {
+				return f(*(std::dynamic_pointer_cast<IfcRectangularPyramid>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySingleValue") {
-				f(*(std::dynamic_pointer_cast<IfcPropertySingleValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangularTrimmedSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcRectangularTrimmedSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyTableValue") {
-				f(*(std::dynamic_pointer_cast<IfcPropertyTableValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRecurrencePattern") {
+				return f(*(std::dynamic_pointer_cast<IfcRecurrencePattern>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyTemplate") {
-				f(*(std::dynamic_pointer_cast<IfcPropertyTemplate>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRecurrenceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRecurrenceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyTemplateDefinition") {
-				f(*(std::dynamic_pointer_cast<IfcPropertyTemplateDefinition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReference") {
+				return f(*(std::dynamic_pointer_cast<IfcReference>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDevice") {
-				f(*(std::dynamic_pointer_cast<IfcProtectiveDevice>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReferent") {
+				return f(*(std::dynamic_pointer_cast<IfcReferent>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTrippingUnit") {
-				f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTrippingUnit>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReferentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReferentTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTrippingUnitType") {
-				f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTrippingUnitType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReflectanceMethodEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReflectanceMethodEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTrippingUnitTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTrippingUnitTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRegularTimeSeries") {
+				return f(*(std::dynamic_pointer_cast<IfcRegularTimeSeries>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceType") {
-				f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcementBarProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcementBarProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcementDefinitionProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcementDefinitionProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProxy") {
-				f(*(std::dynamic_pointer_cast<IfcProxy>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBar") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingBar>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPump") {
-				f(*(std::dynamic_pointer_cast<IfcPump>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarRoleEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingBarRoleEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPumpType") {
-				f(*(std::dynamic_pointer_cast<IfcPumpType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarSurfaceEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingBarSurfaceEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPumpTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcPumpTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarType") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingBarType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityArea") {
-				f(*(std::dynamic_pointer_cast<IfcQuantityArea>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingBarTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityCount") {
-				f(*(std::dynamic_pointer_cast<IfcQuantityCount>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingElement") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityLength") {
-				f(*(std::dynamic_pointer_cast<IfcQuantityLength>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantitySet") {
-				f(*(std::dynamic_pointer_cast<IfcQuantitySet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingMesh") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingMesh>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityTime") {
-				f(*(std::dynamic_pointer_cast<IfcQuantityTime>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingMeshType") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingMeshType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityVolume") {
-				f(*(std::dynamic_pointer_cast<IfcQuantityVolume>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingMeshTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingMeshTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityWeight") {
-				f(*(std::dynamic_pointer_cast<IfcQuantityWeight>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAggregates") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAggregates>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRadioActivityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcRadioActivityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssigns") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssigns>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRailing") {
-				f(*(std::dynamic_pointer_cast<IfcRailing>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToActor") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToActor>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRailingType") {
-				f(*(std::dynamic_pointer_cast<IfcRailingType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToControl") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToControl>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRailingTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcRailingTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToGroup") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToGroup>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRamp") {
-				f(*(std::dynamic_pointer_cast<IfcRamp>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToGroupByFactor") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToGroupByFactor>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampFlight") {
-				f(*(std::dynamic_pointer_cast<IfcRampFlight>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToProcess") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToProcess>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampFlightType") {
-				f(*(std::dynamic_pointer_cast<IfcRampFlightType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToProduct") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToProduct>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampFlightTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcRampFlightTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToResource") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToResource>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampType") {
-				f(*(std::dynamic_pointer_cast<IfcRampType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociates") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociates>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcRampTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesApproval") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesApproval>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRatioMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcRatioMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesClassification") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesClassification>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRationalBSplineCurveWithKnots") {
-				f(*(std::dynamic_pointer_cast<IfcRationalBSplineCurveWithKnots>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesConstraint") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesConstraint>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRationalBSplineSurfaceWithKnots") {
-				f(*(std::dynamic_pointer_cast<IfcRationalBSplineSurfaceWithKnots>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesDocument") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesDocument>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReal") {
-				f(*(std::dynamic_pointer_cast<IfcReal>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesLibrary") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesLibrary>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangleHollowProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcRectangleHollowProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesMaterial") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesMaterial>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangleProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcRectangleProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangularPyramid") {
-				f(*(std::dynamic_pointer_cast<IfcRectangularPyramid>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnects") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnects>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangularTrimmedSurface") {
-				f(*(std::dynamic_pointer_cast<IfcRectangularTrimmedSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsElements>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRecurrencePattern") {
-				f(*(std::dynamic_pointer_cast<IfcRecurrencePattern>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsPathElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsPathElements>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRecurrenceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcRecurrenceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsPorts") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsPorts>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReference") {
-				f(*(std::dynamic_pointer_cast<IfcReference>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsPortToElement") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsPortToElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReferent") {
-				f(*(std::dynamic_pointer_cast<IfcReferent>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsStructuralActivity") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsStructuralActivity>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReferentTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcReferentTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsStructuralMember") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsStructuralMember>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReflectanceMethodEnum") {
-				f(*(std::dynamic_pointer_cast<IfcReflectanceMethodEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsWithEccentricity") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsWithEccentricity>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRegularTimeSeries") {
-				f(*(std::dynamic_pointer_cast<IfcRegularTimeSeries>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsWithRealizingElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsWithRealizingElements>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcementBarProperties") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcementBarProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelContainedInSpatialStructure") {
+				return f(*(std::dynamic_pointer_cast<IfcRelContainedInSpatialStructure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcementDefinitionProperties") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcementDefinitionProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelCoversBldgElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelCoversBldgElements>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBar") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcingBar>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelCoversSpaces") {
+				return f(*(std::dynamic_pointer_cast<IfcRelCoversSpaces>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarRoleEnum") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcingBarRoleEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDeclares") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDeclares>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarSurfaceEnum") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcingBarSurfaceEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDecomposes") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDecomposes>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarType") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcingBarType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefines") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDefines>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcingBarTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByObject") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDefinesByObject>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingElement") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcingElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDefinesByProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingElementType") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcingElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByTemplate") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDefinesByTemplate>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingMesh") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcingMesh>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByType") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDefinesByType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingMeshType") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcingMeshType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelFillsElement") {
+				return f(*(std::dynamic_pointer_cast<IfcRelFillsElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingMeshTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcReinforcingMeshTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelFlowControlElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelFlowControlElements>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAggregates") {
-				f(*(std::dynamic_pointer_cast<IfcRelAggregates>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelInterferesElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelInterferesElements>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssigns") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssigns>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelNests") {
+				return f(*(std::dynamic_pointer_cast<IfcRelNests>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToActor") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssignsToActor>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelProjectsElement") {
+				return f(*(std::dynamic_pointer_cast<IfcRelProjectsElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToControl") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssignsToControl>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelReferencedInSpatialStructure") {
+				return f(*(std::dynamic_pointer_cast<IfcRelReferencedInSpatialStructure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToGroup") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssignsToGroup>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSequence") {
+				return f(*(std::dynamic_pointer_cast<IfcRelSequence>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToGroupByFactor") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssignsToGroupByFactor>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelServicesBuildings") {
+				return f(*(std::dynamic_pointer_cast<IfcRelServicesBuildings>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToProcess") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssignsToProcess>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSpaceBoundary") {
+				return f(*(std::dynamic_pointer_cast<IfcRelSpaceBoundary>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToProduct") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssignsToProduct>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSpaceBoundary1stLevel") {
+				return f(*(std::dynamic_pointer_cast<IfcRelSpaceBoundary1stLevel>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToResource") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssignsToResource>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSpaceBoundary2ndLevel") {
+				return f(*(std::dynamic_pointer_cast<IfcRelSpaceBoundary2ndLevel>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociates") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssociates>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelVoidsElement") {
+				return f(*(std::dynamic_pointer_cast<IfcRelVoidsElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesApproval") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssociatesApproval>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReparametrisedCompositeCurveSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcReparametrisedCompositeCurveSegment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesClassification") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssociatesClassification>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcRepresentation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesConstraint") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssociatesConstraint>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRepresentationContext") {
+				return f(*(std::dynamic_pointer_cast<IfcRepresentationContext>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesDocument") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssociatesDocument>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRepresentationItem") {
+				return f(*(std::dynamic_pointer_cast<IfcRepresentationItem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesLibrary") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssociatesLibrary>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRepresentationMap") {
+				return f(*(std::dynamic_pointer_cast<IfcRepresentationMap>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesMaterial") {
-				f(*(std::dynamic_pointer_cast<IfcRelAssociatesMaterial>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResource") {
+				return f(*(std::dynamic_pointer_cast<IfcResource>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceApprovalRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcResourceApprovalRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnects") {
-				f(*(std::dynamic_pointer_cast<IfcRelConnects>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceConstraintRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcResourceConstraintRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsElements") {
-				f(*(std::dynamic_pointer_cast<IfcRelConnectsElements>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceLevelRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcResourceLevelRelationship>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsPathElements") {
-				f(*(std::dynamic_pointer_cast<IfcRelConnectsPathElements>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceTime") {
+				return f(*(std::dynamic_pointer_cast<IfcResourceTime>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsPorts") {
-				f(*(std::dynamic_pointer_cast<IfcRelConnectsPorts>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRevolvedAreaSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcRevolvedAreaSolid>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsPortToElement") {
-				f(*(std::dynamic_pointer_cast<IfcRelConnectsPortToElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRevolvedAreaSolidTapered") {
+				return f(*(std::dynamic_pointer_cast<IfcRevolvedAreaSolidTapered>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsStructuralActivity") {
-				f(*(std::dynamic_pointer_cast<IfcRelConnectsStructuralActivity>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRightCircularCone") {
+				return f(*(std::dynamic_pointer_cast<IfcRightCircularCone>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsStructuralMember") {
-				f(*(std::dynamic_pointer_cast<IfcRelConnectsStructuralMember>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRightCircularCylinder") {
+				return f(*(std::dynamic_pointer_cast<IfcRightCircularCylinder>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsWithEccentricity") {
-				f(*(std::dynamic_pointer_cast<IfcRelConnectsWithEccentricity>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoleEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRoleEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsWithRealizingElements") {
-				f(*(std::dynamic_pointer_cast<IfcRelConnectsWithRealizingElements>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoof") {
+				return f(*(std::dynamic_pointer_cast<IfcRoof>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelContainedInSpatialStructure") {
-				f(*(std::dynamic_pointer_cast<IfcRelContainedInSpatialStructure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoofType") {
+				return f(*(std::dynamic_pointer_cast<IfcRoofType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelCoversBldgElements") {
-				f(*(std::dynamic_pointer_cast<IfcRelCoversBldgElements>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoofTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRoofTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelCoversSpaces") {
-				f(*(std::dynamic_pointer_cast<IfcRelCoversSpaces>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoot") {
+				return f(*(std::dynamic_pointer_cast<IfcRoot>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDeclares") {
-				f(*(std::dynamic_pointer_cast<IfcRelDeclares>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRotationalFrequencyMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcRotationalFrequencyMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDecomposes") {
-				f(*(std::dynamic_pointer_cast<IfcRelDecomposes>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRotationalMassMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcRotationalMassMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefines") {
-				f(*(std::dynamic_pointer_cast<IfcRelDefines>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRotationalStiffnessMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcRotationalStiffnessMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByObject") {
-				f(*(std::dynamic_pointer_cast<IfcRelDefinesByObject>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoundedRectangleProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcRoundedRectangleProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByProperties") {
-				f(*(std::dynamic_pointer_cast<IfcRelDefinesByProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSanitaryTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcSanitaryTerminal>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByTemplate") {
-				f(*(std::dynamic_pointer_cast<IfcRelDefinesByTemplate>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSanitaryTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcSanitaryTerminalType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByType") {
-				f(*(std::dynamic_pointer_cast<IfcRelDefinesByType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSanitaryTerminalTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSanitaryTerminalTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelFillsElement") {
-				f(*(std::dynamic_pointer_cast<IfcRelFillsElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSchedulingTime") {
+				return f(*(std::dynamic_pointer_cast<IfcSchedulingTime>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelFlowControlElements") {
-				f(*(std::dynamic_pointer_cast<IfcRelFlowControlElements>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSeamCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcSeamCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelInterferesElements") {
-				f(*(std::dynamic_pointer_cast<IfcRelInterferesElements>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionalAreaIntegralMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionalAreaIntegralMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelNests") {
-				f(*(std::dynamic_pointer_cast<IfcRelNests>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionedSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionedSolid>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelProjectsElement") {
-				f(*(std::dynamic_pointer_cast<IfcRelProjectsElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionedSolidHorizontal") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionedSolidHorizontal>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelReferencedInSpatialStructure") {
-				f(*(std::dynamic_pointer_cast<IfcRelReferencedInSpatialStructure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionedSpine") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionedSpine>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSequence") {
-				f(*(std::dynamic_pointer_cast<IfcRelSequence>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionModulusMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionModulusMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelServicesBuildings") {
-				f(*(std::dynamic_pointer_cast<IfcRelServicesBuildings>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSpaceBoundary") {
-				f(*(std::dynamic_pointer_cast<IfcRelSpaceBoundary>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionReinforcementProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionReinforcementProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSpaceBoundary1stLevel") {
-				f(*(std::dynamic_pointer_cast<IfcRelSpaceBoundary1stLevel>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSpaceBoundary2ndLevel") {
-				f(*(std::dynamic_pointer_cast<IfcRelSpaceBoundary2ndLevel>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSensor") {
+				return f(*(std::dynamic_pointer_cast<IfcSensor>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelVoidsElement") {
-				f(*(std::dynamic_pointer_cast<IfcRelVoidsElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSensorType") {
+				return f(*(std::dynamic_pointer_cast<IfcSensorType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReparametrisedCompositeCurveSegment") {
-				f(*(std::dynamic_pointer_cast<IfcReparametrisedCompositeCurveSegment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSensorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSensorTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRepresentation") {
-				f(*(std::dynamic_pointer_cast<IfcRepresentation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSequenceEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSequenceEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRepresentationContext") {
-				f(*(std::dynamic_pointer_cast<IfcRepresentationContext>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShadingDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcShadingDevice>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRepresentationItem") {
-				f(*(std::dynamic_pointer_cast<IfcRepresentationItem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShadingDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcShadingDeviceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRepresentationMap") {
-				f(*(std::dynamic_pointer_cast<IfcRepresentationMap>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShadingDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcShadingDeviceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResource") {
-				f(*(std::dynamic_pointer_cast<IfcResource>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShapeAspect") {
+				return f(*(std::dynamic_pointer_cast<IfcShapeAspect>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceApprovalRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcResourceApprovalRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShapeModel") {
+				return f(*(std::dynamic_pointer_cast<IfcShapeModel>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceConstraintRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcResourceConstraintRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShapeRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcShapeRepresentation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceLevelRelationship") {
-				f(*(std::dynamic_pointer_cast<IfcResourceLevelRelationship>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShearModulusMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcShearModulusMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceObjectSelect") {
-				f(*(std::dynamic_pointer_cast<IfcResourceObjectSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShellBasedSurfaceModel") {
+				return f(*(std::dynamic_pointer_cast<IfcShellBasedSurfaceModel>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceSelect") {
-				f(*(std::dynamic_pointer_cast<IfcResourceSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSimpleProperty") {
+				return f(*(std::dynamic_pointer_cast<IfcSimpleProperty>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceTime") {
-				f(*(std::dynamic_pointer_cast<IfcResourceTime>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSimplePropertyTemplate") {
+				return f(*(std::dynamic_pointer_cast<IfcSimplePropertyTemplate>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRevolvedAreaSolid") {
-				f(*(std::dynamic_pointer_cast<IfcRevolvedAreaSolid>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSimplePropertyTemplateTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSimplePropertyTemplateTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRevolvedAreaSolidTapered") {
-				f(*(std::dynamic_pointer_cast<IfcRevolvedAreaSolidTapered>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSIPrefix") {
+				return f(*(std::dynamic_pointer_cast<IfcSIPrefix>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRightCircularCone") {
-				f(*(std::dynamic_pointer_cast<IfcRightCircularCone>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSite") {
+				return f(*(std::dynamic_pointer_cast<IfcSite>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRightCircularCylinder") {
-				f(*(std::dynamic_pointer_cast<IfcRightCircularCylinder>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSIUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcSIUnit>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoleEnum") {
-				f(*(std::dynamic_pointer_cast<IfcRoleEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSIUnitName") {
+				return f(*(std::dynamic_pointer_cast<IfcSIUnitName>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoof") {
-				f(*(std::dynamic_pointer_cast<IfcRoof>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlab") {
+				return f(*(std::dynamic_pointer_cast<IfcSlab>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoofType") {
-				f(*(std::dynamic_pointer_cast<IfcRoofType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabElementedCase") {
+				return f(*(std::dynamic_pointer_cast<IfcSlabElementedCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoofTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcRoofTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcSlabStandardCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoot") {
-				f(*(std::dynamic_pointer_cast<IfcRoot>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabType") {
+				return f(*(std::dynamic_pointer_cast<IfcSlabType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRotationalFrequencyMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcRotationalFrequencyMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSlabTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRotationalMassMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcRotationalMassMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlippageConnectionCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcSlippageConnectionCondition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRotationalStiffnessMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcRotationalStiffnessMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolarDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcSolarDevice>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRotationalStiffnessSelect") {
-				f(*(std::dynamic_pointer_cast<IfcRotationalStiffnessSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolarDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcSolarDeviceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoundedRectangleProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcRoundedRectangleProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolarDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSolarDeviceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSanitaryTerminal") {
-				f(*(std::dynamic_pointer_cast<IfcSanitaryTerminal>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolidAngleMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSolidAngleMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSanitaryTerminalType") {
-				f(*(std::dynamic_pointer_cast<IfcSanitaryTerminalType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolidModel") {
+				return f(*(std::dynamic_pointer_cast<IfcSolidModel>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSanitaryTerminalTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSanitaryTerminalTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPowerLevelMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSoundPowerLevelMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSchedulingTime") {
-				f(*(std::dynamic_pointer_cast<IfcSchedulingTime>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPowerMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSoundPowerMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSeamCurve") {
-				f(*(std::dynamic_pointer_cast<IfcSeamCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPressureLevelMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSoundPressureLevelMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionalAreaIntegralMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcSectionalAreaIntegralMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPressureMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSoundPressureMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionedSolid") {
-				f(*(std::dynamic_pointer_cast<IfcSectionedSolid>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpace") {
+				return f(*(std::dynamic_pointer_cast<IfcSpace>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionedSolidHorizontal") {
-				f(*(std::dynamic_pointer_cast<IfcSectionedSolidHorizontal>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceHeater") {
+				return f(*(std::dynamic_pointer_cast<IfcSpaceHeater>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionedSpine") {
-				f(*(std::dynamic_pointer_cast<IfcSectionedSpine>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceHeaterType") {
+				return f(*(std::dynamic_pointer_cast<IfcSpaceHeaterType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionModulusMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcSectionModulusMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceHeaterTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSpaceHeaterTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionProperties") {
-				f(*(std::dynamic_pointer_cast<IfcSectionProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceType") {
+				return f(*(std::dynamic_pointer_cast<IfcSpaceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionReinforcementProperties") {
-				f(*(std::dynamic_pointer_cast<IfcSectionReinforcementProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSpaceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSectionTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialElement") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSegmentIndexSelect") {
-				f(*(std::dynamic_pointer_cast<IfcSegmentIndexSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSensor") {
-				f(*(std::dynamic_pointer_cast<IfcSensor>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialStructureElement") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialStructureElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSensorType") {
-				f(*(std::dynamic_pointer_cast<IfcSensorType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialStructureElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialStructureElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSensorTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSensorTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialZone") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialZone>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSequenceEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSequenceEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialZoneType") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialZoneType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShadingDevice") {
-				f(*(std::dynamic_pointer_cast<IfcShadingDevice>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialZoneTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialZoneTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShadingDeviceType") {
-				f(*(std::dynamic_pointer_cast<IfcShadingDeviceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpecificHeatCapacityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSpecificHeatCapacityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShadingDeviceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcShadingDeviceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpecularExponent") {
+				return f(*(std::dynamic_pointer_cast<IfcSpecularExponent>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShapeAspect") {
-				f(*(std::dynamic_pointer_cast<IfcShapeAspect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpecularRoughness") {
+				return f(*(std::dynamic_pointer_cast<IfcSpecularRoughness>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShapeModel") {
-				f(*(std::dynamic_pointer_cast<IfcShapeModel>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSphere") {
+				return f(*(std::dynamic_pointer_cast<IfcSphere>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShapeRepresentation") {
-				f(*(std::dynamic_pointer_cast<IfcShapeRepresentation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSphericalSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcSphericalSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShearModulusMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcShearModulusMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStackTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcStackTerminal>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShell") {
-				f(*(std::dynamic_pointer_cast<IfcShell>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStackTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcStackTerminalType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShellBasedSurfaceModel") {
-				f(*(std::dynamic_pointer_cast<IfcShellBasedSurfaceModel>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStackTerminalTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStackTerminalTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSimpleProperty") {
-				f(*(std::dynamic_pointer_cast<IfcSimpleProperty>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStair") {
+				return f(*(std::dynamic_pointer_cast<IfcStair>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSimplePropertyTemplate") {
-				f(*(std::dynamic_pointer_cast<IfcSimplePropertyTemplate>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairFlight") {
+				return f(*(std::dynamic_pointer_cast<IfcStairFlight>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSimplePropertyTemplateTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSimplePropertyTemplateTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairFlightType") {
+				return f(*(std::dynamic_pointer_cast<IfcStairFlightType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSimpleValue") {
-				f(*(std::dynamic_pointer_cast<IfcSimpleValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairFlightTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStairFlightTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSIPrefix") {
-				f(*(std::dynamic_pointer_cast<IfcSIPrefix>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairType") {
+				return f(*(std::dynamic_pointer_cast<IfcStairType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSite") {
-				f(*(std::dynamic_pointer_cast<IfcSite>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStairTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSIUnit") {
-				f(*(std::dynamic_pointer_cast<IfcSIUnit>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStateEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStateEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSIUnitName") {
-				f(*(std::dynamic_pointer_cast<IfcSIUnitName>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStrippedOptional") {
+				return f(*(std::dynamic_pointer_cast<IfcStrippedOptional>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSizeSelect") {
-				f(*(std::dynamic_pointer_cast<IfcSizeSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralAction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlab") {
-				f(*(std::dynamic_pointer_cast<IfcSlab>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralActivity") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralActivity>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabElementedCase") {
-				f(*(std::dynamic_pointer_cast<IfcSlabElementedCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralAnalysisModel") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralAnalysisModel>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabStandardCase") {
-				f(*(std::dynamic_pointer_cast<IfcSlabStandardCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralConnection") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralConnection>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabType") {
-				f(*(std::dynamic_pointer_cast<IfcSlabType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralConnectionCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralConnectionCondition>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSlabTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveAction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlippageConnectionCondition") {
-				f(*(std::dynamic_pointer_cast<IfcSlippageConnectionCondition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveActivityTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveActivityTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolarDevice") {
-				f(*(std::dynamic_pointer_cast<IfcSolarDevice>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveConnection") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveConnection>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolarDeviceType") {
-				f(*(std::dynamic_pointer_cast<IfcSolarDeviceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveMember") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveMember>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolarDeviceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSolarDeviceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveMemberTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveMemberTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolidAngleMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcSolidAngleMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveMemberVarying") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveMemberVarying>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolidModel") {
-				f(*(std::dynamic_pointer_cast<IfcSolidModel>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveReaction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveReaction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolidOrShell") {
-				f(*(std::dynamic_pointer_cast<IfcSolidOrShell>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralItem") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralItem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPowerLevelMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcSoundPowerLevelMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLinearAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLinearAction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPowerMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcSoundPowerMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoad") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoad>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPressureLevelMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcSoundPressureLevelMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadCase") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPressureMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcSoundPressureMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadConfiguration") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadConfiguration>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpace") {
-				f(*(std::dynamic_pointer_cast<IfcSpace>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadGroup") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadGroup>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceBoundarySelect") {
-				f(*(std::dynamic_pointer_cast<IfcSpaceBoundarySelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadLinearForce") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadLinearForce>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceHeater") {
-				f(*(std::dynamic_pointer_cast<IfcSpaceHeater>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadOrResult") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadOrResult>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceHeaterType") {
-				f(*(std::dynamic_pointer_cast<IfcSpaceHeaterType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadPlanarForce") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadPlanarForce>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceHeaterTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSpaceHeaterTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleDisplacement") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleDisplacement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceType") {
-				f(*(std::dynamic_pointer_cast<IfcSpaceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleDisplacementDistortion") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleDisplacementDistortion>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSpaceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleForce") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleForce>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialElement") {
-				f(*(std::dynamic_pointer_cast<IfcSpatialElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleForceWarping") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleForceWarping>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialElementType") {
-				f(*(std::dynamic_pointer_cast<IfcSpatialElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadStatic") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadStatic>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialStructureElement") {
-				f(*(std::dynamic_pointer_cast<IfcSpatialStructureElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadTemperature") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadTemperature>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialStructureElementType") {
-				f(*(std::dynamic_pointer_cast<IfcSpatialStructureElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralMember") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralMember>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialZone") {
-				f(*(std::dynamic_pointer_cast<IfcSpatialZone>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPlanarAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralPlanarAction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialZoneType") {
-				f(*(std::dynamic_pointer_cast<IfcSpatialZoneType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPointAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralPointAction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialZoneTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSpatialZoneTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPointConnection") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralPointConnection>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpecificHeatCapacityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcSpecificHeatCapacityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPointReaction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralPointReaction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpecularExponent") {
-				f(*(std::dynamic_pointer_cast<IfcSpecularExponent>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralReaction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralReaction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpecularHighlightSelect") {
-				f(*(std::dynamic_pointer_cast<IfcSpecularHighlightSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralResultGroup") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralResultGroup>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpecularRoughness") {
-				f(*(std::dynamic_pointer_cast<IfcSpecularRoughness>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceAction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSphere") {
-				f(*(std::dynamic_pointer_cast<IfcSphere>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceActivityTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceActivityTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSphericalSurface") {
-				f(*(std::dynamic_pointer_cast<IfcSphericalSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceConnection") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceConnection>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStackTerminal") {
-				f(*(std::dynamic_pointer_cast<IfcStackTerminal>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceMember") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceMember>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStackTerminalType") {
-				f(*(std::dynamic_pointer_cast<IfcStackTerminalType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceMemberTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceMemberTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStackTerminalTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcStackTerminalTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceMemberVarying") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceMemberVarying>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStair") {
-				f(*(std::dynamic_pointer_cast<IfcStair>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceReaction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceReaction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairFlight") {
-				f(*(std::dynamic_pointer_cast<IfcStairFlight>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStyledItem") {
+				return f(*(std::dynamic_pointer_cast<IfcStyledItem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairFlightType") {
-				f(*(std::dynamic_pointer_cast<IfcStairFlightType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStyledRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcStyledRepresentation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairFlightTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcStairFlightTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStyleModel") {
+				return f(*(std::dynamic_pointer_cast<IfcStyleModel>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairType") {
-				f(*(std::dynamic_pointer_cast<IfcStairType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubContractResource") {
+				return f(*(std::dynamic_pointer_cast<IfcSubContractResource>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcStairTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubContractResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcSubContractResourceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStateEnum") {
-				f(*(std::dynamic_pointer_cast<IfcStateEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubContractResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSubContractResourceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStrippedOptional") {
-				f(*(std::dynamic_pointer_cast<IfcStrippedOptional>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubedge") {
+				return f(*(std::dynamic_pointer_cast<IfcSubedge>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralAction") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralAction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralActivity") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralActivity>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralActivityAssignmentSelect") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralActivityAssignmentSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceCurveSweptAreaSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceCurveSweptAreaSolid>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralAnalysisModel") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralAnalysisModel>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceFeature") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceFeature>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralConnection") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralConnection>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceFeatureTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceFeatureTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralConnectionCondition") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralConnectionCondition>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceOfLinearExtrusion") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceOfLinearExtrusion>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveAction") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralCurveAction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceOfRevolution") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceOfRevolution>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveActivityTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralCurveActivityTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceReinforcementArea") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceReinforcementArea>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveConnection") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralCurveConnection>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceSide") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceSide>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveMember") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralCurveMember>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveMemberTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralCurveMemberTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleLighting") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyleLighting>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveMemberVarying") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralCurveMemberVarying>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleRefraction") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyleRefraction>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveReaction") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralCurveReaction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleRendering") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyleRendering>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralItem") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralItem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleShading") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyleShading>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLinearAction") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLinearAction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleWithTextures") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyleWithTextures>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoad") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoad>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceTexture") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceTexture>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadCase") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptAreaSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcSweptAreaSolid>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadConfiguration") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadConfiguration>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptDiskSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcSweptDiskSolid>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadGroup") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadGroup>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptDiskSolidPolygonal") {
+				return f(*(std::dynamic_pointer_cast<IfcSweptDiskSolidPolygonal>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadLinearForce") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadLinearForce>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcSweptSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadOrResult") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadOrResult>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSwitchingDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcSwitchingDevice>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadPlanarForce") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadPlanarForce>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSwitchingDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcSwitchingDeviceType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleDisplacement") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleDisplacement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSwitchingDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSwitchingDeviceTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleDisplacementDistortion") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleDisplacementDistortion>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystem") {
+				return f(*(std::dynamic_pointer_cast<IfcSystem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleForce") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleForce>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystemFurnitureElement") {
+				return f(*(std::dynamic_pointer_cast<IfcSystemFurnitureElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleForceWarping") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleForceWarping>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystemFurnitureElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcSystemFurnitureElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadStatic") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadStatic>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystemFurnitureElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSystemFurnitureElementTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadTemperature") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralLoadTemperature>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTable") {
+				return f(*(std::dynamic_pointer_cast<IfcTable>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralMember") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralMember>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTableColumn") {
+				return f(*(std::dynamic_pointer_cast<IfcTableColumn>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPlanarAction") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralPlanarAction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTableRow") {
+				return f(*(std::dynamic_pointer_cast<IfcTableRow>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPointAction") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralPointAction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTank") {
+				return f(*(std::dynamic_pointer_cast<IfcTank>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPointConnection") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralPointConnection>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTankType") {
+				return f(*(std::dynamic_pointer_cast<IfcTankType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPointReaction") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralPointReaction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTankTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTankTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralReaction") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralReaction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTask") {
+				return f(*(std::dynamic_pointer_cast<IfcTask>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralResultGroup") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralResultGroup>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskDurationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTaskDurationEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceAction") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceAction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskTime") {
+				return f(*(std::dynamic_pointer_cast<IfcTaskTime>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceActivityTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceActivityTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskTimeRecurring") {
+				return f(*(std::dynamic_pointer_cast<IfcTaskTimeRecurring>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceConnection") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceConnection>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskType") {
+				return f(*(std::dynamic_pointer_cast<IfcTaskType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceMember") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceMember>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTaskTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceMemberTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceMemberTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTelecomAddress") {
+				return f(*(std::dynamic_pointer_cast<IfcTelecomAddress>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceMemberVarying") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceMemberVarying>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTemperatureGradientMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcTemperatureGradientMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceReaction") {
-				f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceReaction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTemperatureRateOfChangeMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcTemperatureRateOfChangeMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStyleAssignmentSelect") {
-				f(*(std::dynamic_pointer_cast<IfcStyleAssignmentSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendon") {
+				return f(*(std::dynamic_pointer_cast<IfcTendon>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStyledItem") {
-				f(*(std::dynamic_pointer_cast<IfcStyledItem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonAnchor") {
+				return f(*(std::dynamic_pointer_cast<IfcTendonAnchor>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStyledRepresentation") {
-				f(*(std::dynamic_pointer_cast<IfcStyledRepresentation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonAnchorType") {
+				return f(*(std::dynamic_pointer_cast<IfcTendonAnchorType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStyleModel") {
-				f(*(std::dynamic_pointer_cast<IfcStyleModel>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonAnchorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTendonAnchorTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubContractResource") {
-				f(*(std::dynamic_pointer_cast<IfcSubContractResource>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonType") {
+				return f(*(std::dynamic_pointer_cast<IfcTendonType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubContractResourceType") {
-				f(*(std::dynamic_pointer_cast<IfcSubContractResourceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTendonTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubContractResourceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSubContractResourceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTessellatedFaceSet") {
+				return f(*(std::dynamic_pointer_cast<IfcTessellatedFaceSet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubedge") {
-				f(*(std::dynamic_pointer_cast<IfcSubedge>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTessellatedItem") {
+				return f(*(std::dynamic_pointer_cast<IfcTessellatedItem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurface") {
-				f(*(std::dynamic_pointer_cast<IfcSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcText") {
+				return f(*(std::dynamic_pointer_cast<IfcText>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceCurve") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextAlignment") {
+				return f(*(std::dynamic_pointer_cast<IfcTextAlignment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceCurveSweptAreaSolid") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceCurveSweptAreaSolid>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextDecoration") {
+				return f(*(std::dynamic_pointer_cast<IfcTextDecoration>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceFeature") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceFeature>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextFontName") {
+				return f(*(std::dynamic_pointer_cast<IfcTextFontName>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceFeatureTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceFeatureTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextLiteral") {
+				return f(*(std::dynamic_pointer_cast<IfcTextLiteral>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceOfLinearExtrusion") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceOfLinearExtrusion>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextLiteralWithExtent") {
+				return f(*(std::dynamic_pointer_cast<IfcTextLiteralWithExtent>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceOfRevolution") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceOfRevolution>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextPath") {
+				return f(*(std::dynamic_pointer_cast<IfcTextPath>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceOrFaceSurface") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceOrFaceSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcTextStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceReinforcementArea") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceReinforcementArea>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyleFontModel") {
+				return f(*(std::dynamic_pointer_cast<IfcTextStyleFontModel>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceSide") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceSide>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyleForDefinedFont") {
+				return f(*(std::dynamic_pointer_cast<IfcTextStyleForDefinedFont>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyle") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyleTextModel") {
+				return f(*(std::dynamic_pointer_cast<IfcTextStyleTextModel>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleElementSelect") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceStyleElementSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextTransformation") {
+				return f(*(std::dynamic_pointer_cast<IfcTextTransformation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleLighting") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceStyleLighting>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureCoordinate") {
+				return f(*(std::dynamic_pointer_cast<IfcTextureCoordinate>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleRefraction") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceStyleRefraction>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureCoordinateGenerator") {
+				return f(*(std::dynamic_pointer_cast<IfcTextureCoordinateGenerator>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleRendering") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceStyleRendering>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureMap") {
+				return f(*(std::dynamic_pointer_cast<IfcTextureMap>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleShading") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceStyleShading>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureVertex") {
+				return f(*(std::dynamic_pointer_cast<IfcTextureVertex>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleWithTextures") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceStyleWithTextures>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureVertexList") {
+				return f(*(std::dynamic_pointer_cast<IfcTextureVertexList>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceTexture") {
-				f(*(std::dynamic_pointer_cast<IfcSurfaceTexture>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalAdmittanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermalAdmittanceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptAreaSolid") {
-				f(*(std::dynamic_pointer_cast<IfcSweptAreaSolid>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalConductivityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermalConductivityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptDiskSolid") {
-				f(*(std::dynamic_pointer_cast<IfcSweptDiskSolid>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalExpansionCoefficientMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermalExpansionCoefficientMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptDiskSolidPolygonal") {
-				f(*(std::dynamic_pointer_cast<IfcSweptDiskSolidPolygonal>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalResistanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermalResistanceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptSurface") {
-				f(*(std::dynamic_pointer_cast<IfcSweptSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalTransmittanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermalTransmittanceMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSwitchingDevice") {
-				f(*(std::dynamic_pointer_cast<IfcSwitchingDevice>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermodynamicTemperatureMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermodynamicTemperatureMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSwitchingDeviceType") {
-				f(*(std::dynamic_pointer_cast<IfcSwitchingDeviceType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTime") {
+				return f(*(std::dynamic_pointer_cast<IfcTime>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSwitchingDeviceTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSwitchingDeviceTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcTimeMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystem") {
-				f(*(std::dynamic_pointer_cast<IfcSystem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimePeriod") {
+				return f(*(std::dynamic_pointer_cast<IfcTimePeriod>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystemFurnitureElement") {
-				f(*(std::dynamic_pointer_cast<IfcSystemFurnitureElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeSeries") {
+				return f(*(std::dynamic_pointer_cast<IfcTimeSeries>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystemFurnitureElementType") {
-				f(*(std::dynamic_pointer_cast<IfcSystemFurnitureElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeSeriesDataTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTimeSeriesDataTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystemFurnitureElementTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcSystemFurnitureElementTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeSeriesValue") {
+				return f(*(std::dynamic_pointer_cast<IfcTimeSeriesValue>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTable") {
-				f(*(std::dynamic_pointer_cast<IfcTable>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeStamp") {
+				return f(*(std::dynamic_pointer_cast<IfcTimeStamp>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTableColumn") {
-				f(*(std::dynamic_pointer_cast<IfcTableColumn>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTopologicalRepresentationItem") {
+				return f(*(std::dynamic_pointer_cast<IfcTopologicalRepresentationItem>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTableRow") {
-				f(*(std::dynamic_pointer_cast<IfcTableRow>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTopologyRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcTopologyRepresentation>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTank") {
-				f(*(std::dynamic_pointer_cast<IfcTank>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcToroidalSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcToroidalSurface>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTankType") {
-				f(*(std::dynamic_pointer_cast<IfcTankType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTorqueMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcTorqueMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTankTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcTankTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransformer") {
+				return f(*(std::dynamic_pointer_cast<IfcTransformer>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTask") {
-				f(*(std::dynamic_pointer_cast<IfcTask>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransformerType") {
+				return f(*(std::dynamic_pointer_cast<IfcTransformerType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskDurationEnum") {
-				f(*(std::dynamic_pointer_cast<IfcTaskDurationEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransformerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTransformerTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskTime") {
-				f(*(std::dynamic_pointer_cast<IfcTaskTime>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransitionCode") {
+				return f(*(std::dynamic_pointer_cast<IfcTransitionCode>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskTimeRecurring") {
-				f(*(std::dynamic_pointer_cast<IfcTaskTimeRecurring>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransitionCurveSegment2D") {
+				return f(*(std::dynamic_pointer_cast<IfcTransitionCurveSegment2D>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskType") {
-				f(*(std::dynamic_pointer_cast<IfcTaskType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransitionCurveType") {
+				return f(*(std::dynamic_pointer_cast<IfcTransitionCurveType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcTaskTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransportElement") {
+				return f(*(std::dynamic_pointer_cast<IfcTransportElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTelecomAddress") {
-				f(*(std::dynamic_pointer_cast<IfcTelecomAddress>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransportElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcTransportElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTemperatureGradientMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcTemperatureGradientMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransportElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTransportElementTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTemperatureRateOfChangeMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcTemperatureRateOfChangeMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTrapeziumProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcTrapeziumProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendon") {
-				f(*(std::dynamic_pointer_cast<IfcTendon>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTriangulatedFaceSet") {
+				return f(*(std::dynamic_pointer_cast<IfcTriangulatedFaceSet>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonAnchor") {
-				f(*(std::dynamic_pointer_cast<IfcTendonAnchor>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTriangulatedIrregularNetwork") {
+				return f(*(std::dynamic_pointer_cast<IfcTriangulatedIrregularNetwork>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonAnchorType") {
-				f(*(std::dynamic_pointer_cast<IfcTendonAnchorType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTrimmedCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcTrimmedCurve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonAnchorTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcTendonAnchorTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTrimmingPreference") {
+				return f(*(std::dynamic_pointer_cast<IfcTrimmingPreference>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonType") {
-				f(*(std::dynamic_pointer_cast<IfcTendonType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcTShapeProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcTendonTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTubeBundle") {
+				return f(*(std::dynamic_pointer_cast<IfcTubeBundle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTessellatedFaceSet") {
-				f(*(std::dynamic_pointer_cast<IfcTessellatedFaceSet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTubeBundleType") {
+				return f(*(std::dynamic_pointer_cast<IfcTubeBundleType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTessellatedItem") {
-				f(*(std::dynamic_pointer_cast<IfcTessellatedItem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTubeBundleTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTubeBundleTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcText") {
-				f(*(std::dynamic_pointer_cast<IfcText>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeObject") {
+				return f(*(std::dynamic_pointer_cast<IfcTypeObject>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextAlignment") {
-				f(*(std::dynamic_pointer_cast<IfcTextAlignment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeProcess") {
+				return f(*(std::dynamic_pointer_cast<IfcTypeProcess>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextDecoration") {
-				f(*(std::dynamic_pointer_cast<IfcTextDecoration>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeProduct") {
+				return f(*(std::dynamic_pointer_cast<IfcTypeProduct>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextFontName") {
-				f(*(std::dynamic_pointer_cast<IfcTextFontName>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeResource") {
+				return f(*(std::dynamic_pointer_cast<IfcTypeResource>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextFontSelect") {
-				f(*(std::dynamic_pointer_cast<IfcTextFontSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryControlElement") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryControlElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextLiteral") {
-				f(*(std::dynamic_pointer_cast<IfcTextLiteral>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryControlElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryControlElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextLiteralWithExtent") {
-				f(*(std::dynamic_pointer_cast<IfcTextLiteralWithExtent>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryControlElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryControlElementTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextPath") {
-				f(*(std::dynamic_pointer_cast<IfcTextPath>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryEquipment") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryEquipment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyle") {
-				f(*(std::dynamic_pointer_cast<IfcTextStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryEquipmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryEquipmentType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyleFontModel") {
-				f(*(std::dynamic_pointer_cast<IfcTextStyleFontModel>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryEquipmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryEquipmentTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyleForDefinedFont") {
-				f(*(std::dynamic_pointer_cast<IfcTextStyleForDefinedFont>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitAssignment") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitAssignment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyleTextModel") {
-				f(*(std::dynamic_pointer_cast<IfcTextStyleTextModel>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextTransformation") {
-				f(*(std::dynamic_pointer_cast<IfcTextTransformation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcURIReference") {
+				return f(*(std::dynamic_pointer_cast<IfcURIReference>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureCoordinate") {
-				f(*(std::dynamic_pointer_cast<IfcTextureCoordinate>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcUShapeProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureCoordinateGenerator") {
-				f(*(std::dynamic_pointer_cast<IfcTextureCoordinateGenerator>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcValve") {
+				return f(*(std::dynamic_pointer_cast<IfcValve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureMap") {
-				f(*(std::dynamic_pointer_cast<IfcTextureMap>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcValveType") {
+				return f(*(std::dynamic_pointer_cast<IfcValveType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureVertex") {
-				f(*(std::dynamic_pointer_cast<IfcTextureVertex>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcValveTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcValveTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureVertexList") {
-				f(*(std::dynamic_pointer_cast<IfcTextureVertexList>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVaporPermeabilityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcVaporPermeabilityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalAdmittanceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcThermalAdmittanceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVector") {
+				return f(*(std::dynamic_pointer_cast<IfcVector>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalConductivityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcThermalConductivityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVertex") {
+				return f(*(std::dynamic_pointer_cast<IfcVertex>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalExpansionCoefficientMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcThermalExpansionCoefficientMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVertexLoop") {
+				return f(*(std::dynamic_pointer_cast<IfcVertexLoop>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalResistanceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcThermalResistanceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVertexPoint") {
+				return f(*(std::dynamic_pointer_cast<IfcVertexPoint>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalTransmittanceMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcThermalTransmittanceMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVibrationIsolator") {
+				return f(*(std::dynamic_pointer_cast<IfcVibrationIsolator>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermodynamicTemperatureMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcThermodynamicTemperatureMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVibrationIsolatorType") {
+				return f(*(std::dynamic_pointer_cast<IfcVibrationIsolatorType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTime") {
-				f(*(std::dynamic_pointer_cast<IfcTime>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVibrationIsolatorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcVibrationIsolatorTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcTimeMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVirtualElement") {
+				return f(*(std::dynamic_pointer_cast<IfcVirtualElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeOrRatioSelect") {
-				f(*(std::dynamic_pointer_cast<IfcTimeOrRatioSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVirtualGridIntersection") {
+				return f(*(std::dynamic_pointer_cast<IfcVirtualGridIntersection>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimePeriod") {
-				f(*(std::dynamic_pointer_cast<IfcTimePeriod>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVoidingFeature") {
+				return f(*(std::dynamic_pointer_cast<IfcVoidingFeature>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeSeries") {
-				f(*(std::dynamic_pointer_cast<IfcTimeSeries>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVoidingFeatureTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcVoidingFeatureTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeSeriesDataTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcTimeSeriesDataTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVolumeMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcVolumeMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeSeriesValue") {
-				f(*(std::dynamic_pointer_cast<IfcTimeSeriesValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVolumetricFlowRateMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcVolumetricFlowRateMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeStamp") {
-				f(*(std::dynamic_pointer_cast<IfcTimeStamp>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWall") {
+				return f(*(std::dynamic_pointer_cast<IfcWall>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTopologicalRepresentationItem") {
-				f(*(std::dynamic_pointer_cast<IfcTopologicalRepresentationItem>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallElementedCase") {
+				return f(*(std::dynamic_pointer_cast<IfcWallElementedCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTopologyRepresentation") {
-				f(*(std::dynamic_pointer_cast<IfcTopologyRepresentation>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcWallStandardCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcToroidalSurface") {
-				f(*(std::dynamic_pointer_cast<IfcToroidalSurface>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallType") {
+				return f(*(std::dynamic_pointer_cast<IfcWallType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTorqueMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcTorqueMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWallTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransformer") {
-				f(*(std::dynamic_pointer_cast<IfcTransformer>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWarpingConstantMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcWarpingConstantMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransformerType") {
-				f(*(std::dynamic_pointer_cast<IfcTransformerType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWarpingMomentMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcWarpingMomentMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransformerTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcTransformerTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWasteTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcWasteTerminal>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransitionCode") {
-				f(*(std::dynamic_pointer_cast<IfcTransitionCode>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWasteTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcWasteTerminalType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransitionCurveSegment2D") {
-				f(*(std::dynamic_pointer_cast<IfcTransitionCurveSegment2D>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWasteTerminalTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWasteTerminalTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransitionCurveType") {
-				f(*(std::dynamic_pointer_cast<IfcTransitionCurveType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindow") {
+				return f(*(std::dynamic_pointer_cast<IfcWindow>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTranslationalStiffnessSelect") {
-				f(*(std::dynamic_pointer_cast<IfcTranslationalStiffnessSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowLiningProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowLiningProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransportElement") {
-				f(*(std::dynamic_pointer_cast<IfcTransportElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowPanelOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowPanelOperationEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransportElementType") {
-				f(*(std::dynamic_pointer_cast<IfcTransportElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowPanelPositionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowPanelPositionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransportElementTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcTransportElementTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowPanelProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowPanelProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTrapeziumProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcTrapeziumProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowStandardCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTriangulatedFaceSet") {
-				f(*(std::dynamic_pointer_cast<IfcTriangulatedFaceSet>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTriangulatedIrregularNetwork") {
-				f(*(std::dynamic_pointer_cast<IfcTriangulatedIrregularNetwork>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStyleConstructionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowStyleConstructionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTrimmedCurve") {
-				f(*(std::dynamic_pointer_cast<IfcTrimmedCurve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStyleOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowStyleOperationEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTrimmingPreference") {
-				f(*(std::dynamic_pointer_cast<IfcTrimmingPreference>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowType") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTrimmingSelect") {
-				f(*(std::dynamic_pointer_cast<IfcTrimmingSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTShapeProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcTShapeProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowTypePartitioningEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowTypePartitioningEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTubeBundle") {
-				f(*(std::dynamic_pointer_cast<IfcTubeBundle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkCalendar") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkCalendar>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTubeBundleType") {
-				f(*(std::dynamic_pointer_cast<IfcTubeBundleType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkCalendarTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkCalendarTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTubeBundleTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcTubeBundleTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkControl") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkControl>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeObject") {
-				f(*(std::dynamic_pointer_cast<IfcTypeObject>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkPlan") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkPlan>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeProcess") {
-				f(*(std::dynamic_pointer_cast<IfcTypeProcess>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkPlanTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkPlanTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeProduct") {
-				f(*(std::dynamic_pointer_cast<IfcTypeProduct>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkSchedule") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkSchedule>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeResource") {
-				f(*(std::dynamic_pointer_cast<IfcTypeResource>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkScheduleTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkScheduleTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnit") {
-				f(*(std::dynamic_pointer_cast<IfcUnit>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkTime") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkTime>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryControlElement") {
-				f(*(std::dynamic_pointer_cast<IfcUnitaryControlElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcZone") {
+				return f(*(std::dynamic_pointer_cast<IfcZone>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryControlElementType") {
-				f(*(std::dynamic_pointer_cast<IfcUnitaryControlElementType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcZShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcZShapeProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryControlElementTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcUnitaryControlElementTypeEnum>(ptr)));
-				return true;
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryEquipment") {
-				f(*(std::dynamic_pointer_cast<IfcUnitaryEquipment>(ptr)));
-				return true;
+		template <typename F, typename T> T castToVisitableAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
+			std::string name = std::string(typeid(*ptr).name());
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAbsorbedDoseMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAbsorbedDoseMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAccelerationMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAccelerationMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionRequest") {
+				return f(*(std::dynamic_pointer_cast<IfcActionRequest>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionRequestTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcActionRequestTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionSourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcActionSourceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcActionTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActor") {
+				return f(*(std::dynamic_pointer_cast<IfcActor>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActorRole") {
+				return f(*(std::dynamic_pointer_cast<IfcActorRole>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActuator") {
+				return f(*(std::dynamic_pointer_cast<IfcActuator>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActuatorType") {
+				return f(*(std::dynamic_pointer_cast<IfcActuatorType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActuatorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcActuatorTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAddress") {
+				return f(*(std::dynamic_pointer_cast<IfcAddress>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAddressTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAddressTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAdvancedBrep") {
+				return f(*(std::dynamic_pointer_cast<IfcAdvancedBrep>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAdvancedBrepWithVoids") {
+				return f(*(std::dynamic_pointer_cast<IfcAdvancedBrepWithVoids>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAdvancedFace") {
+				return f(*(std::dynamic_pointer_cast<IfcAdvancedFace>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminal>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalBox") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminalBox>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalBoxType") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminalBoxType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalBoxTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminalBoxTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminalType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirTerminalTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAirTerminalTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirToAirHeatRecovery") {
+				return f(*(std::dynamic_pointer_cast<IfcAirToAirHeatRecovery>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirToAirHeatRecoveryType") {
+				return f(*(std::dynamic_pointer_cast<IfcAirToAirHeatRecoveryType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAirToAirHeatRecoveryTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAirToAirHeatRecoveryTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlarm") {
+				return f(*(std::dynamic_pointer_cast<IfcAlarm>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlarmType") {
+				return f(*(std::dynamic_pointer_cast<IfcAlarmType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlarmTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAlarmTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DHorizontal") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DHorizontal>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DHorizontalSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DHorizontalSegment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DSegment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerSegCircularArc") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DVerSegCircularArc>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerSegLine") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DVerSegLine>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerSegParabolicArc") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DVerSegParabolicArc>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVertical") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DVertical>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignment2DVerticalSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignment2DVerticalSegment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignmentCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignmentCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAlignmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAlignmentTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAmountOfSubstanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAmountOfSubstanceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnalysisModelTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAnalysisModelTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnalysisTheoryTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAnalysisTheoryTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAngularVelocityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAngularVelocityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnnotation") {
+				return f(*(std::dynamic_pointer_cast<IfcAnnotation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAnnotationFillArea") {
+				return f(*(std::dynamic_pointer_cast<IfcAnnotationFillArea>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcApplication") {
+				return f(*(std::dynamic_pointer_cast<IfcApplication>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAppliedValue") {
+				return f(*(std::dynamic_pointer_cast<IfcAppliedValue>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcApproval") {
+				return f(*(std::dynamic_pointer_cast<IfcApproval>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcApprovalRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcApprovalRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArbitraryClosedProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcArbitraryClosedProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArbitraryOpenProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcArbitraryOpenProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArbitraryProfileDefWithVoids") {
+				return f(*(std::dynamic_pointer_cast<IfcArbitraryProfileDefWithVoids>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArcIndex") {
+				return f(*(std::dynamic_pointer_cast<IfcArcIndex>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAreaDensityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAreaDensityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAreaMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcAreaMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcArithmeticOperatorEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcArithmeticOperatorEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAssemblyPlaceEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAssemblyPlaceEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAsset") {
+				return f(*(std::dynamic_pointer_cast<IfcAsset>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAsymmetricIShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcAsymmetricIShapeProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAudioVisualAppliance") {
+				return f(*(std::dynamic_pointer_cast<IfcAudioVisualAppliance>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAudioVisualApplianceType") {
+				return f(*(std::dynamic_pointer_cast<IfcAudioVisualApplianceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAudioVisualApplianceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcAudioVisualApplianceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAxis1Placement") {
+				return f(*(std::dynamic_pointer_cast<IfcAxis1Placement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAxis2Placement2D") {
+				return f(*(std::dynamic_pointer_cast<IfcAxis2Placement2D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAxis2Placement3D") {
+				return f(*(std::dynamic_pointer_cast<IfcAxis2Placement3D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeam") {
+				return f(*(std::dynamic_pointer_cast<IfcBeam>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeamStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcBeamStandardCase>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeamType") {
+				return f(*(std::dynamic_pointer_cast<IfcBeamType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBeamTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBeamTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBenchmarkEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBenchmarkEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBinary") {
+				return f(*(std::dynamic_pointer_cast<IfcBinary>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBlobTexture") {
+				return f(*(std::dynamic_pointer_cast<IfcBlobTexture>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBlock") {
+				return f(*(std::dynamic_pointer_cast<IfcBlock>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoiler") {
+				return f(*(std::dynamic_pointer_cast<IfcBoiler>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoilerType") {
+				return f(*(std::dynamic_pointer_cast<IfcBoilerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoilerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBoilerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoolean") {
+				return f(*(std::dynamic_pointer_cast<IfcBoolean>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBooleanClippingResult") {
+				return f(*(std::dynamic_pointer_cast<IfcBooleanClippingResult>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBooleanOperator") {
+				return f(*(std::dynamic_pointer_cast<IfcBooleanOperator>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBooleanResult") {
+				return f(*(std::dynamic_pointer_cast<IfcBooleanResult>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryCondition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryEdgeCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryEdgeCondition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryFaceCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryFaceCondition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryNodeCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryNodeCondition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundaryNodeConditionWarping") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundaryNodeConditionWarping>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoundingBox") {
+				return f(*(std::dynamic_pointer_cast<IfcBoundingBox>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBoxedHalfSpace") {
+				return f(*(std::dynamic_pointer_cast<IfcBoxedHalfSpace>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineCurveForm") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineCurveForm>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineCurveWithKnots") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineCurveWithKnots>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineSurface>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineSurfaceForm") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineSurfaceForm>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBSplineSurfaceWithKnots") {
+				return f(*(std::dynamic_pointer_cast<IfcBSplineSurfaceWithKnots>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuilding") {
+				return f(*(std::dynamic_pointer_cast<IfcBuilding>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElement") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementPart") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementPart>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementPartType") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementPartType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementPartTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementPartTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementProxy") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementProxy>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementProxyType") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementProxyType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementProxyTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementProxyTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingStorey") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingStorey>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingSystem") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingSystem>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBuildingSystemTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBuildingSystemTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBurner") {
+				return f(*(std::dynamic_pointer_cast<IfcBurner>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBurnerType") {
+				return f(*(std::dynamic_pointer_cast<IfcBurnerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcBurnerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcBurnerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierFitting") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierFitting>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierFittingType") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierFittingType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierFittingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierFittingTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierSegment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierSegmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierSegmentType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableCarrierSegmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCableCarrierSegmentTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableFitting") {
+				return f(*(std::dynamic_pointer_cast<IfcCableFitting>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableFittingType") {
+				return f(*(std::dynamic_pointer_cast<IfcCableFittingType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableFittingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCableFittingTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcCableSegment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableSegmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcCableSegmentType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCableSegmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCableSegmentTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCardinalPointReference") {
+				return f(*(std::dynamic_pointer_cast<IfcCardinalPointReference>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPoint") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianPoint>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPointList2D") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianPointList2D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPointList2DLabelled") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianPointList2DLabelled>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianPointList3D") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianPointList3D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2D") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator2D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2DnonUniform") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator2DnonUniform>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator3D") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator3D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator3DnonUniform") {
+				return f(*(std::dynamic_pointer_cast<IfcCartesianTransformationOperator3DnonUniform>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCenterLineProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcCenterLineProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChangeActionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcChangeActionEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChiller") {
+				return f(*(std::dynamic_pointer_cast<IfcChiller>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChillerType") {
+				return f(*(std::dynamic_pointer_cast<IfcChillerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChillerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcChillerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChimney") {
+				return f(*(std::dynamic_pointer_cast<IfcChimney>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChimneyType") {
+				return f(*(std::dynamic_pointer_cast<IfcChimneyType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcChimneyTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcChimneyTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircle") {
+				return f(*(std::dynamic_pointer_cast<IfcCircle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircleHollowProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcCircleHollowProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircleProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcCircleProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCircularArcSegment2D") {
+				return f(*(std::dynamic_pointer_cast<IfcCircularArcSegment2D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCivilElement") {
+				return f(*(std::dynamic_pointer_cast<IfcCivilElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCivilElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcCivilElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClassification") {
+				return f(*(std::dynamic_pointer_cast<IfcClassification>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClassificationReference") {
+				return f(*(std::dynamic_pointer_cast<IfcClassificationReference>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClosedShell") {
+				return f(*(std::dynamic_pointer_cast<IfcClosedShell>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcClothoidalArcSegment2D") {
+				return f(*(std::dynamic_pointer_cast<IfcClothoidalArcSegment2D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoil") {
+				return f(*(std::dynamic_pointer_cast<IfcCoil>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoilType") {
+				return f(*(std::dynamic_pointer_cast<IfcCoilType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoilTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCoilTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColourRgb") {
+				return f(*(std::dynamic_pointer_cast<IfcColourRgb>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColourRgbList") {
+				return f(*(std::dynamic_pointer_cast<IfcColourRgbList>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColourSpecification") {
+				return f(*(std::dynamic_pointer_cast<IfcColourSpecification>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumn") {
+				return f(*(std::dynamic_pointer_cast<IfcColumn>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumnStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcColumnStandardCase>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumnType") {
+				return f(*(std::dynamic_pointer_cast<IfcColumnType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcColumnTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcColumnTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCommunicationsAppliance") {
+				return f(*(std::dynamic_pointer_cast<IfcCommunicationsAppliance>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCommunicationsApplianceType") {
+				return f(*(std::dynamic_pointer_cast<IfcCommunicationsApplianceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCommunicationsApplianceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCommunicationsApplianceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexNumber") {
+				return f(*(std::dynamic_pointer_cast<IfcComplexNumber>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexProperty") {
+				return f(*(std::dynamic_pointer_cast<IfcComplexProperty>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexPropertyTemplate") {
+				return f(*(std::dynamic_pointer_cast<IfcComplexPropertyTemplate>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcComplexPropertyTemplateTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcComplexPropertyTemplateTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcCompositeCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeCurveOnSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcCompositeCurveOnSurface>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeCurveSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcCompositeCurveSegment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompositeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcCompositeProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompoundPlaneAngleMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcCompoundPlaneAngleMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompressor") {
+				return f(*(std::dynamic_pointer_cast<IfcCompressor>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompressorType") {
+				return f(*(std::dynamic_pointer_cast<IfcCompressorType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCompressorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCompressorTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCondenser") {
+				return f(*(std::dynamic_pointer_cast<IfcCondenser>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCondenserType") {
+				return f(*(std::dynamic_pointer_cast<IfcCondenserType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCondenserTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCondenserTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConic") {
+				return f(*(std::dynamic_pointer_cast<IfcConic>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectedFaceSet") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectedFaceSet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionCurveGeometry") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionCurveGeometry>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionPointEccentricity") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionPointEccentricity>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionPointGeometry") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionPointGeometry>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionSurfaceGeometry") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionSurfaceGeometry>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConnectionVolumeGeometry") {
+				return f(*(std::dynamic_pointer_cast<IfcConnectionVolumeGeometry>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstraint") {
+				return f(*(std::dynamic_pointer_cast<IfcConstraint>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstraintEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcConstraintEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionEquipmentResource") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionEquipmentResource>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionEquipmentResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionEquipmentResourceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionEquipmentResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionEquipmentResourceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionMaterialResource") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionMaterialResource>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionMaterialResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionMaterialResourceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionMaterialResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionMaterialResourceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionProductResource") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionProductResource>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionProductResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionProductResourceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionProductResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionProductResourceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionResource") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionResource>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConstructionResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcConstructionResourceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcContext") {
+				return f(*(std::dynamic_pointer_cast<IfcContext>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcContextDependentMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcContextDependentMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcContextDependentUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcContextDependentUnit>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcControl") {
+				return f(*(std::dynamic_pointer_cast<IfcControl>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcController") {
+				return f(*(std::dynamic_pointer_cast<IfcController>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcControllerType") {
+				return f(*(std::dynamic_pointer_cast<IfcControllerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcControllerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcControllerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConversionBasedUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcConversionBasedUnit>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcConversionBasedUnitWithOffset") {
+				return f(*(std::dynamic_pointer_cast<IfcConversionBasedUnitWithOffset>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCooledBeam") {
+				return f(*(std::dynamic_pointer_cast<IfcCooledBeam>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCooledBeamType") {
+				return f(*(std::dynamic_pointer_cast<IfcCooledBeamType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCooledBeamTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCooledBeamTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoolingTower") {
+				return f(*(std::dynamic_pointer_cast<IfcCoolingTower>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoolingTowerType") {
+				return f(*(std::dynamic_pointer_cast<IfcCoolingTowerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoolingTowerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCoolingTowerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoordinateOperation") {
+				return f(*(std::dynamic_pointer_cast<IfcCoordinateOperation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoordinateReferenceSystem") {
+				return f(*(std::dynamic_pointer_cast<IfcCoordinateReferenceSystem>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostItem") {
+				return f(*(std::dynamic_pointer_cast<IfcCostItem>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostItemTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCostItemTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostSchedule") {
+				return f(*(std::dynamic_pointer_cast<IfcCostSchedule>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostScheduleTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCostScheduleTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCostValue") {
+				return f(*(std::dynamic_pointer_cast<IfcCostValue>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCountMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcCountMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCovering") {
+				return f(*(std::dynamic_pointer_cast<IfcCovering>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoveringType") {
+				return f(*(std::dynamic_pointer_cast<IfcCoveringType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCoveringTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCoveringTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCrewResource") {
+				return f(*(std::dynamic_pointer_cast<IfcCrewResource>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCrewResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcCrewResourceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCrewResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCrewResourceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCsgPrimitive3D") {
+				return f(*(std::dynamic_pointer_cast<IfcCsgPrimitive3D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCsgSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcCsgSolid>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcCShapeProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurrencyRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcCurrencyRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurtainWall") {
+				return f(*(std::dynamic_pointer_cast<IfcCurtainWall>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurtainWallType") {
+				return f(*(std::dynamic_pointer_cast<IfcCurtainWallType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurtainWallTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCurtainWallTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurvatureMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcCurvatureMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveBoundedPlane") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveBoundedPlane>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveBoundedSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveBoundedSurface>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveInterpolationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveInterpolationEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveSegment2D") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveSegment2D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveStyle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyleFont") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveStyleFont>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyleFontAndScaling") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveStyleFontAndScaling>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCurveStyleFontPattern") {
+				return f(*(std::dynamic_pointer_cast<IfcCurveStyleFontPattern>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcCylindricalSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcCylindricalSurface>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDamper") {
+				return f(*(std::dynamic_pointer_cast<IfcDamper>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDamperType") {
+				return f(*(std::dynamic_pointer_cast<IfcDamperType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDamperTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDamperTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDataOriginEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDataOriginEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDate") {
+				return f(*(std::dynamic_pointer_cast<IfcDate>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDateTime") {
+				return f(*(std::dynamic_pointer_cast<IfcDateTime>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDayInMonthNumber") {
+				return f(*(std::dynamic_pointer_cast<IfcDayInMonthNumber>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDayInWeekNumber") {
+				return f(*(std::dynamic_pointer_cast<IfcDayInWeekNumber>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcDerivedProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcDerivedUnit>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedUnitElement") {
+				return f(*(std::dynamic_pointer_cast<IfcDerivedUnitElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDerivedUnitEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDerivedUnitEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDescriptiveMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcDescriptiveMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDimensionalExponents") {
+				return f(*(std::dynamic_pointer_cast<IfcDimensionalExponents>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDimensionCount") {
+				return f(*(std::dynamic_pointer_cast<IfcDimensionCount>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDirection") {
+				return f(*(std::dynamic_pointer_cast<IfcDirection>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDirectionSenseEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDirectionSenseEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDiscreteAccessory") {
+				return f(*(std::dynamic_pointer_cast<IfcDiscreteAccessory>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDiscreteAccessoryType") {
+				return f(*(std::dynamic_pointer_cast<IfcDiscreteAccessoryType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDiscreteAccessoryTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDiscreteAccessoryTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistanceExpression") {
+				return f(*(std::dynamic_pointer_cast<IfcDistanceExpression>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionChamberElement") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionChamberElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionChamberElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionChamberElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionChamberElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionChamberElementTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionCircuit") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionCircuit>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionControlElement") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionControlElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionControlElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionControlElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionElement") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionFlowElement") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionFlowElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionFlowElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionFlowElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionPort") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionPort>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionPortTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionPortTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionSystem") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionSystem>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDistributionSystemEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDistributionSystemEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentConfidentialityEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDocumentConfidentialityEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentInformation") {
+				return f(*(std::dynamic_pointer_cast<IfcDocumentInformation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentInformationRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcDocumentInformationRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentReference") {
+				return f(*(std::dynamic_pointer_cast<IfcDocumentReference>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDocumentStatusEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDocumentStatusEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoor") {
+				return f(*(std::dynamic_pointer_cast<IfcDoor>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorLiningProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorLiningProperties>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorPanelOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorPanelOperationEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorPanelPositionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorPanelPositionEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorPanelProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorPanelProperties>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorStandardCase>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorStyle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStyleConstructionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorStyleConstructionEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorStyleOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorStyleOperationEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorType") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoorTypeOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDoorTypeOperationEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDoseEquivalentMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcDoseEquivalentMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDraughtingPreDefinedColour") {
+				return f(*(std::dynamic_pointer_cast<IfcDraughtingPreDefinedColour>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDraughtingPreDefinedCurveFont") {
+				return f(*(std::dynamic_pointer_cast<IfcDraughtingPreDefinedCurveFont>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctFitting") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctFitting>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctFittingType") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctFittingType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctFittingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctFittingTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSegment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSegmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSegmentType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSegmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSegmentTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSilencer") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSilencer>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSilencerType") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSilencerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuctSilencerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcDuctSilencerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDuration") {
+				return f(*(std::dynamic_pointer_cast<IfcDuration>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcDynamicViscosityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcDynamicViscosityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEdge") {
+				return f(*(std::dynamic_pointer_cast<IfcEdge>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEdgeCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcEdgeCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEdgeLoop") {
+				return f(*(std::dynamic_pointer_cast<IfcEdgeLoop>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricAppliance") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricAppliance>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricApplianceType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricApplianceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricApplianceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricApplianceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricCapacitanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricCapacitanceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricChargeMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricChargeMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricConductanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricConductanceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricCurrentMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricCurrentMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricDistributionBoard") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricDistributionBoard>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricDistributionBoardType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricDistributionBoardType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricDistributionBoardTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricDistributionBoardTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricFlowStorageDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricFlowStorageDevice>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricFlowStorageDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricFlowStorageDeviceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricFlowStorageDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricFlowStorageDeviceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricGenerator") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricGenerator>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricGeneratorType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricGeneratorType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricGeneratorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricGeneratorTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricMotor") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricMotor>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricMotorType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricMotorType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricMotorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricMotorTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricResistanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricResistanceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricTimeControl") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricTimeControl>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricTimeControlType") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricTimeControlType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricTimeControlTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricTimeControlTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElectricVoltageMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcElectricVoltageMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElement") {
+				return f(*(std::dynamic_pointer_cast<IfcElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementarySurface") {
+				return f(*(std::dynamic_pointer_cast<IfcElementarySurface>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementAssembly") {
+				return f(*(std::dynamic_pointer_cast<IfcElementAssembly>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementAssemblyType") {
+				return f(*(std::dynamic_pointer_cast<IfcElementAssemblyType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementAssemblyTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElementAssemblyTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementComponent") {
+				return f(*(std::dynamic_pointer_cast<IfcElementComponent>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementComponentType") {
+				return f(*(std::dynamic_pointer_cast<IfcElementComponentType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementCompositionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcElementCompositionEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementQuantity") {
+				return f(*(std::dynamic_pointer_cast<IfcElementQuantity>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEllipse") {
+				return f(*(std::dynamic_pointer_cast<IfcEllipse>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEllipseProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcEllipseProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEnergyConversionDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcEnergyConversionDevice>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEnergyConversionDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcEnergyConversionDeviceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEnergyMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcEnergyMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEngine") {
+				return f(*(std::dynamic_pointer_cast<IfcEngine>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEngineType") {
+				return f(*(std::dynamic_pointer_cast<IfcEngineType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEngineTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcEngineTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporativeCooler") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporativeCooler>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporativeCoolerType") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporativeCoolerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporativeCoolerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporativeCoolerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporator") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporator>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporatorType") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporatorType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvaporatorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcEvaporatorTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEvent") {
+				return f(*(std::dynamic_pointer_cast<IfcEvent>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventTime") {
+				return f(*(std::dynamic_pointer_cast<IfcEventTime>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventTriggerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcEventTriggerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventType") {
+				return f(*(std::dynamic_pointer_cast<IfcEventType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcEventTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcEventTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExtendedProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcExtendedProperties>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternallyDefinedHatchStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcExternallyDefinedHatchStyle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternallyDefinedSurfaceStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcExternallyDefinedSurfaceStyle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternallyDefinedTextFont") {
+				return f(*(std::dynamic_pointer_cast<IfcExternallyDefinedTextFont>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalReference") {
+				return f(*(std::dynamic_pointer_cast<IfcExternalReference>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalReferenceRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcExternalReferenceRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalSpatialElement") {
+				return f(*(std::dynamic_pointer_cast<IfcExternalSpatialElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalSpatialElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcExternalSpatialElementTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExternalSpatialStructureElement") {
+				return f(*(std::dynamic_pointer_cast<IfcExternalSpatialStructureElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExtrudedAreaSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcExtrudedAreaSolid>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcExtrudedAreaSolidTapered") {
+				return f(*(std::dynamic_pointer_cast<IfcExtrudedAreaSolidTapered>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFace") {
+				return f(*(std::dynamic_pointer_cast<IfcFace>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceBasedSurfaceModel") {
+				return f(*(std::dynamic_pointer_cast<IfcFaceBasedSurfaceModel>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceBound") {
+				return f(*(std::dynamic_pointer_cast<IfcFaceBound>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceOuterBound") {
+				return f(*(std::dynamic_pointer_cast<IfcFaceOuterBound>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFaceSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcFaceSurface>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFacetedBrep") {
+				return f(*(std::dynamic_pointer_cast<IfcFacetedBrep>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFacetedBrepWithVoids") {
+				return f(*(std::dynamic_pointer_cast<IfcFacetedBrepWithVoids>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFailureConnectionCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcFailureConnectionCondition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFan") {
+				return f(*(std::dynamic_pointer_cast<IfcFan>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFanType") {
+				return f(*(std::dynamic_pointer_cast<IfcFanType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFanTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFanTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFastener") {
+				return f(*(std::dynamic_pointer_cast<IfcFastener>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFastenerType") {
+				return f(*(std::dynamic_pointer_cast<IfcFastenerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFastenerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFastenerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFeatureElement") {
+				return f(*(std::dynamic_pointer_cast<IfcFeatureElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFeatureElementAddition") {
+				return f(*(std::dynamic_pointer_cast<IfcFeatureElementAddition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFeatureElementSubtraction") {
+				return f(*(std::dynamic_pointer_cast<IfcFeatureElementSubtraction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFillAreaStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcFillAreaStyle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFillAreaStyleHatching") {
+				return f(*(std::dynamic_pointer_cast<IfcFillAreaStyleHatching>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFillAreaStyleTiles") {
+				return f(*(std::dynamic_pointer_cast<IfcFillAreaStyleTiles>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFilter") {
+				return f(*(std::dynamic_pointer_cast<IfcFilter>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFilterType") {
+				return f(*(std::dynamic_pointer_cast<IfcFilterType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFilterTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFilterTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFireSuppressionTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcFireSuppressionTerminal>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFireSuppressionTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcFireSuppressionTerminalType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFireSuppressionTerminalTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFireSuppressionTerminalTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFixedReferenceSweptAreaSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcFixedReferenceSweptAreaSolid>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowController") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowController>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowControllerType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowControllerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowDirectionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowDirectionEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowFitting") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowFitting>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowFittingType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowFittingType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowInstrument") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowInstrument>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowInstrumentType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowInstrumentType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowInstrumentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowInstrumentTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMeter") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowMeter>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMeterType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowMeterType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMeterTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowMeterTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMovingDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowMovingDevice>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowMovingDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowMovingDeviceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowSegment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowSegmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowSegmentType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowStorageDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowStorageDevice>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowStorageDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowStorageDeviceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowTerminal>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowTerminalType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTreatmentDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowTreatmentDevice>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFlowTreatmentDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcFlowTreatmentDeviceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFontStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcFontStyle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFontVariant") {
+				return f(*(std::dynamic_pointer_cast<IfcFontVariant>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFontWeight") {
+				return f(*(std::dynamic_pointer_cast<IfcFontWeight>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFooting") {
+				return f(*(std::dynamic_pointer_cast<IfcFooting>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFootingType") {
+				return f(*(std::dynamic_pointer_cast<IfcFootingType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFootingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFootingTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcForceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcForceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFrequencyMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcFrequencyMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnishingElement") {
+				return f(*(std::dynamic_pointer_cast<IfcFurnishingElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnishingElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcFurnishingElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurniture") {
+				return f(*(std::dynamic_pointer_cast<IfcFurniture>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnitureType") {
+				return f(*(std::dynamic_pointer_cast<IfcFurnitureType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcFurnitureTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcFurnitureTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeographicElement") {
+				return f(*(std::dynamic_pointer_cast<IfcGeographicElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeographicElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcGeographicElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeographicElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcGeographicElementTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricCurveSet") {
+				return f(*(std::dynamic_pointer_cast<IfcGeometricCurveSet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricProjectionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcGeometricProjectionEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricRepresentationContext") {
+				return f(*(std::dynamic_pointer_cast<IfcGeometricRepresentationContext>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricRepresentationSubContext") {
+				return f(*(std::dynamic_pointer_cast<IfcGeometricRepresentationSubContext>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGeometricSet") {
+				return f(*(std::dynamic_pointer_cast<IfcGeometricSet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGloballyUniqueId") {
+				return f(*(std::dynamic_pointer_cast<IfcGloballyUniqueId>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGlobalOrLocalEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcGlobalOrLocalEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGrid") {
+				return f(*(std::dynamic_pointer_cast<IfcGrid>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGridAxis") {
+				return f(*(std::dynamic_pointer_cast<IfcGridAxis>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGridPlacement") {
+				return f(*(std::dynamic_pointer_cast<IfcGridPlacement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGridTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcGridTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcGroup") {
+				return f(*(std::dynamic_pointer_cast<IfcGroup>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHalfSpaceSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcHalfSpaceSolid>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatExchanger") {
+				return f(*(std::dynamic_pointer_cast<IfcHeatExchanger>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatExchangerType") {
+				return f(*(std::dynamic_pointer_cast<IfcHeatExchangerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatExchangerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcHeatExchangerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatFluxDensityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcHeatFluxDensityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHeatingValueMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcHeatingValueMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHumidifier") {
+				return f(*(std::dynamic_pointer_cast<IfcHumidifier>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHumidifierType") {
+				return f(*(std::dynamic_pointer_cast<IfcHumidifierType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcHumidifierTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcHumidifierTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIdentifier") {
+				return f(*(std::dynamic_pointer_cast<IfcIdentifier>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIlluminanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcIlluminanceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcImageTexture") {
+				return f(*(std::dynamic_pointer_cast<IfcImageTexture>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedColourMap") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedColourMap>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedPolyCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedPolyCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedPolygonalFace") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedPolygonalFace>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedPolygonalFaceWithVoids") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedPolygonalFaceWithVoids>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedTextureMap") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedTextureMap>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIndexedTriangleTextureMap") {
+				return f(*(std::dynamic_pointer_cast<IfcIndexedTriangleTextureMap>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInductanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcInductanceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInteger") {
+				return f(*(std::dynamic_pointer_cast<IfcInteger>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIntegerCountRateMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcIntegerCountRateMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInterceptor") {
+				return f(*(std::dynamic_pointer_cast<IfcInterceptor>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInterceptorType") {
+				return f(*(std::dynamic_pointer_cast<IfcInterceptorType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInterceptorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcInterceptorTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInternalOrExternalEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcInternalOrExternalEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIntersectionCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcIntersectionCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInventory") {
+				return f(*(std::dynamic_pointer_cast<IfcInventory>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcInventoryTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcInventoryTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIonConcentrationMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcIonConcentrationMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIrregularTimeSeries") {
+				return f(*(std::dynamic_pointer_cast<IfcIrregularTimeSeries>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIrregularTimeSeriesValue") {
+				return f(*(std::dynamic_pointer_cast<IfcIrregularTimeSeriesValue>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcIShapeProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcIsothermalMoistureCapacityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcIsothermalMoistureCapacityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcJunctionBox") {
+				return f(*(std::dynamic_pointer_cast<IfcJunctionBox>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcJunctionBoxType") {
+				return f(*(std::dynamic_pointer_cast<IfcJunctionBoxType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcJunctionBoxTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcJunctionBoxTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcKinematicViscosityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcKinematicViscosityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcKnotType") {
+				return f(*(std::dynamic_pointer_cast<IfcKnotType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLabel") {
+				return f(*(std::dynamic_pointer_cast<IfcLabel>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLaborResource") {
+				return f(*(std::dynamic_pointer_cast<IfcLaborResource>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLaborResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcLaborResourceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLaborResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLaborResourceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLagTime") {
+				return f(*(std::dynamic_pointer_cast<IfcLagTime>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLamp") {
+				return f(*(std::dynamic_pointer_cast<IfcLamp>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLampType") {
+				return f(*(std::dynamic_pointer_cast<IfcLampType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLampTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLampTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLayerSetDirectionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLayerSetDirectionEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLengthMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLengthMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLibraryInformation") {
+				return f(*(std::dynamic_pointer_cast<IfcLibraryInformation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLibraryReference") {
+				return f(*(std::dynamic_pointer_cast<IfcLibraryReference>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightDistributionCurveEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLightDistributionCurveEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightDistributionData") {
+				return f(*(std::dynamic_pointer_cast<IfcLightDistributionData>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightEmissionSourceEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLightEmissionSourceEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightFixture") {
+				return f(*(std::dynamic_pointer_cast<IfcLightFixture>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightFixtureType") {
+				return f(*(std::dynamic_pointer_cast<IfcLightFixtureType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightFixtureTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLightFixtureTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightIntensityDistribution") {
+				return f(*(std::dynamic_pointer_cast<IfcLightIntensityDistribution>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSource") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSource>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceAmbient") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSourceAmbient>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceDirectional") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSourceDirectional>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceGoniometric") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSourceGoniometric>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourcePositional") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSourcePositional>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLightSourceSpot") {
+				return f(*(std::dynamic_pointer_cast<IfcLightSourceSpot>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLine") {
+				return f(*(std::dynamic_pointer_cast<IfcLine>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearForceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearForceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearMomentMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearMomentMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearPlacement") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearPlacement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearPositioningElement") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearPositioningElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearStiffnessMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearStiffnessMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLinearVelocityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLinearVelocityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLineIndex") {
+				return f(*(std::dynamic_pointer_cast<IfcLineIndex>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLineSegment2D") {
+				return f(*(std::dynamic_pointer_cast<IfcLineSegment2D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLoadGroupTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLoadGroupTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLocalPlacement") {
+				return f(*(std::dynamic_pointer_cast<IfcLocalPlacement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLogical") {
+				return f(*(std::dynamic_pointer_cast<IfcLogical>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLogicalOperatorEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcLogicalOperatorEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcLShapeProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLuminousFluxMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLuminousFluxMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLuminousIntensityDistributionMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLuminousIntensityDistributionMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcLuminousIntensityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcLuminousIntensityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMagneticFluxDensityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMagneticFluxDensityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMagneticFluxMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMagneticFluxMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcManifoldSolidBrep") {
+				return f(*(std::dynamic_pointer_cast<IfcManifoldSolidBrep>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMapConversion") {
+				return f(*(std::dynamic_pointer_cast<IfcMapConversion>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMappedItem") {
+				return f(*(std::dynamic_pointer_cast<IfcMappedItem>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassDensityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMassDensityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassFlowRateMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMassFlowRateMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMassMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMassPerLengthMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMassPerLengthMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterial") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterial>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialClassificationRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialClassificationRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialConstituent") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialConstituent>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialConstituentSet") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialConstituentSet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialDefinitionRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialDefinitionRepresentation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayer") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialLayer>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayerSet") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialLayerSet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayerSetUsage") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialLayerSetUsage>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialLayerWithOffsets") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialLayerWithOffsets>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialList") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialList>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfile") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProfile>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileSet") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProfileSet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileSetUsage") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProfileSetUsage>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileSetUsageTapering") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProfileSetUsageTapering>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProfileWithOffsets") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProfileWithOffsets>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialProperties>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMaterialRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcMaterialRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMeasureWithUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcMeasureWithUnit>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMechanicalFastener") {
+				return f(*(std::dynamic_pointer_cast<IfcMechanicalFastener>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMechanicalFastenerType") {
+				return f(*(std::dynamic_pointer_cast<IfcMechanicalFastenerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMechanicalFastenerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcMechanicalFastenerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMedicalDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcMedicalDevice>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMedicalDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcMedicalDeviceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMedicalDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcMedicalDeviceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMember") {
+				return f(*(std::dynamic_pointer_cast<IfcMember>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMemberStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcMemberStandardCase>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMemberType") {
+				return f(*(std::dynamic_pointer_cast<IfcMemberType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMemberTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcMemberTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMetric") {
+				return f(*(std::dynamic_pointer_cast<IfcMetric>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMirroredProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcMirroredProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfElasticityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcModulusOfElasticityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfLinearSubgradeReactionMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcModulusOfLinearSubgradeReactionMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfRotationalSubgradeReactionMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcModulusOfRotationalSubgradeReactionMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcModulusOfSubgradeReactionMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcModulusOfSubgradeReactionMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMoistureDiffusivityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMoistureDiffusivityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMolecularWeightMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMolecularWeightMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMomentOfInertiaMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMomentOfInertiaMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMonetaryMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcMonetaryMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMonetaryUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcMonetaryUnit>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMonthInYearNumber") {
+				return f(*(std::dynamic_pointer_cast<IfcMonthInYearNumber>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMotorConnection") {
+				return f(*(std::dynamic_pointer_cast<IfcMotorConnection>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMotorConnectionType") {
+				return f(*(std::dynamic_pointer_cast<IfcMotorConnectionType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcMotorConnectionTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcMotorConnectionTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNamedUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcNamedUnit>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNullStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcNullStyle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcNumericMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcNumericMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObject") {
+				return f(*(std::dynamic_pointer_cast<IfcObject>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectDefinition") {
+				return f(*(std::dynamic_pointer_cast<IfcObjectDefinition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjective") {
+				return f(*(std::dynamic_pointer_cast<IfcObjective>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectiveEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcObjectiveEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcObjectTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcObjectTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOccupant") {
+				return f(*(std::dynamic_pointer_cast<IfcOccupant>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOccupantTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcOccupantTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcOffsetCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurve2D") {
+				return f(*(std::dynamic_pointer_cast<IfcOffsetCurve2D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurve3D") {
+				return f(*(std::dynamic_pointer_cast<IfcOffsetCurve3D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOffsetCurveByDistances") {
+				return f(*(std::dynamic_pointer_cast<IfcOffsetCurveByDistances>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpeningElement") {
+				return f(*(std::dynamic_pointer_cast<IfcOpeningElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpeningElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcOpeningElementTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpeningStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcOpeningStandardCase>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOpenShell") {
+				return f(*(std::dynamic_pointer_cast<IfcOpenShell>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrganization") {
+				return f(*(std::dynamic_pointer_cast<IfcOrganization>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrganizationRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcOrganizationRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrientationExpression") {
+				return f(*(std::dynamic_pointer_cast<IfcOrientationExpression>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOrientedEdge") {
+				return f(*(std::dynamic_pointer_cast<IfcOrientedEdge>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOuterBoundaryCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcOuterBoundaryCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOutlet") {
+				return f(*(std::dynamic_pointer_cast<IfcOutlet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOutletType") {
+				return f(*(std::dynamic_pointer_cast<IfcOutletType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOutletTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcOutletTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcOwnerHistory") {
+				return f(*(std::dynamic_pointer_cast<IfcOwnerHistory>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcParameterizedProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcParameterizedProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcParameterValue") {
+				return f(*(std::dynamic_pointer_cast<IfcParameterValue>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPath") {
+				return f(*(std::dynamic_pointer_cast<IfcPath>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPcurve") {
+				return f(*(std::dynamic_pointer_cast<IfcPcurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPerformanceHistory") {
+				return f(*(std::dynamic_pointer_cast<IfcPerformanceHistory>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPerformanceHistoryTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPerformanceHistoryTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermeableCoveringOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPermeableCoveringOperationEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermeableCoveringProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcPermeableCoveringProperties>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermit") {
+				return f(*(std::dynamic_pointer_cast<IfcPermit>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPermitTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPermitTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPerson") {
+				return f(*(std::dynamic_pointer_cast<IfcPerson>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPersonAndOrganization") {
+				return f(*(std::dynamic_pointer_cast<IfcPersonAndOrganization>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPHMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPHMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalComplexQuantity") {
+				return f(*(std::dynamic_pointer_cast<IfcPhysicalComplexQuantity>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalOrVirtualEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPhysicalOrVirtualEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalQuantity") {
+				return f(*(std::dynamic_pointer_cast<IfcPhysicalQuantity>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPhysicalSimpleQuantity") {
+				return f(*(std::dynamic_pointer_cast<IfcPhysicalSimpleQuantity>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPile") {
+				return f(*(std::dynamic_pointer_cast<IfcPile>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPileConstructionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPileConstructionEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPileType") {
+				return f(*(std::dynamic_pointer_cast<IfcPileType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPileTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPileTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeFitting") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeFitting>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeFittingType") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeFittingType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeFittingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeFittingTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeSegment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeSegmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeSegmentType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPipeSegmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPipeSegmentTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPixelTexture") {
+				return f(*(std::dynamic_pointer_cast<IfcPixelTexture>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlacement") {
+				return f(*(std::dynamic_pointer_cast<IfcPlacement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlanarBox") {
+				return f(*(std::dynamic_pointer_cast<IfcPlanarBox>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlanarExtent") {
+				return f(*(std::dynamic_pointer_cast<IfcPlanarExtent>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlanarForceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPlanarForceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlane") {
+				return f(*(std::dynamic_pointer_cast<IfcPlane>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlaneAngleMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPlaneAngleMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlate") {
+				return f(*(std::dynamic_pointer_cast<IfcPlate>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlateStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcPlateStandardCase>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlateType") {
+				return f(*(std::dynamic_pointer_cast<IfcPlateType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPlateTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPlateTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPointOnCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcPointOnCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPointOnSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcPointOnSurface>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolygonalBoundedHalfSpace") {
+				return f(*(std::dynamic_pointer_cast<IfcPolygonalBoundedHalfSpace>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolygonalFaceSet") {
+				return f(*(std::dynamic_pointer_cast<IfcPolygonalFaceSet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolyline") {
+				return f(*(std::dynamic_pointer_cast<IfcPolyline>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPolyLoop") {
+				return f(*(std::dynamic_pointer_cast<IfcPolyLoop>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPort") {
+				return f(*(std::dynamic_pointer_cast<IfcPort>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPositioningElement") {
+				return f(*(std::dynamic_pointer_cast<IfcPositioningElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPostalAddress") {
+				return f(*(std::dynamic_pointer_cast<IfcPostalAddress>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPowerMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPowerMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedColour") {
+				return f(*(std::dynamic_pointer_cast<IfcPreDefinedColour>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedCurveFont") {
+				return f(*(std::dynamic_pointer_cast<IfcPreDefinedCurveFont>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedItem") {
+				return f(*(std::dynamic_pointer_cast<IfcPreDefinedItem>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedPropertySet") {
+				return f(*(std::dynamic_pointer_cast<IfcPreDefinedPropertySet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreDefinedTextFont") {
+				return f(*(std::dynamic_pointer_cast<IfcPreDefinedTextFont>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPreferredSurfaceCurveRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcPreferredSurfaceCurveRepresentation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentableText") {
+				return f(*(std::dynamic_pointer_cast<IfcPresentableText>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationLayerAssignment") {
+				return f(*(std::dynamic_pointer_cast<IfcPresentationLayerAssignment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationLayerWithStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcPresentationLayerWithStyle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcPresentationStyle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPresentationStyleAssignment") {
+				return f(*(std::dynamic_pointer_cast<IfcPresentationStyleAssignment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPressureMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcPressureMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcedure") {
+				return f(*(std::dynamic_pointer_cast<IfcProcedure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcedureType") {
+				return f(*(std::dynamic_pointer_cast<IfcProcedureType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcedureTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProcedureTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProcess") {
+				return f(*(std::dynamic_pointer_cast<IfcProcess>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProduct") {
+				return f(*(std::dynamic_pointer_cast<IfcProduct>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProductDefinitionShape") {
+				return f(*(std::dynamic_pointer_cast<IfcProductDefinitionShape>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProductRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcProductRepresentation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProfileProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcProfileProperties>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProfileTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProfileTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProject") {
+				return f(*(std::dynamic_pointer_cast<IfcProject>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectedCRS") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectedCRS>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectedOrTrueLengthEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectedOrTrueLengthEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectionElement") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectionElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectionElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectionElementTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectLibrary") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectLibrary>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectOrder") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectOrder>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProjectOrderTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProjectOrderTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProperty") {
+				return f(*(std::dynamic_pointer_cast<IfcProperty>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyBoundedValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyBoundedValue>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyDefinition") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyDefinition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyDependencyRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyDependencyRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyEnumeratedValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyEnumeratedValue>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyEnumeration") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyEnumeration>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyListValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyListValue>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyReferenceValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyReferenceValue>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySet") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertySet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetDefinition") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertySetDefinition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetTemplate") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertySetTemplate>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySetTemplateTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertySetTemplateTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertySingleValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertySingleValue>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyTableValue") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyTableValue>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyTemplate") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyTemplate>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPropertyTemplateDefinition") {
+				return f(*(std::dynamic_pointer_cast<IfcPropertyTemplateDefinition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDevice>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTrippingUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTrippingUnit>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTrippingUnitType") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTrippingUnitType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTrippingUnitTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTrippingUnitTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProtectiveDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcProtectiveDeviceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcProxy") {
+				return f(*(std::dynamic_pointer_cast<IfcProxy>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPump") {
+				return f(*(std::dynamic_pointer_cast<IfcPump>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPumpType") {
+				return f(*(std::dynamic_pointer_cast<IfcPumpType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcPumpTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcPumpTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityArea") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityArea>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityCount") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityCount>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityLength") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityLength>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantitySet") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantitySet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityTime") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityTime>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityVolume") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityVolume>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcQuantityWeight") {
+				return f(*(std::dynamic_pointer_cast<IfcQuantityWeight>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRadioActivityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcRadioActivityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRailing") {
+				return f(*(std::dynamic_pointer_cast<IfcRailing>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRailingType") {
+				return f(*(std::dynamic_pointer_cast<IfcRailingType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRailingTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRailingTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRamp") {
+				return f(*(std::dynamic_pointer_cast<IfcRamp>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampFlight") {
+				return f(*(std::dynamic_pointer_cast<IfcRampFlight>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampFlightType") {
+				return f(*(std::dynamic_pointer_cast<IfcRampFlightType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampFlightTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRampFlightTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampType") {
+				return f(*(std::dynamic_pointer_cast<IfcRampType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRampTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRampTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRatioMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcRatioMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRationalBSplineCurveWithKnots") {
+				return f(*(std::dynamic_pointer_cast<IfcRationalBSplineCurveWithKnots>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRationalBSplineSurfaceWithKnots") {
+				return f(*(std::dynamic_pointer_cast<IfcRationalBSplineSurfaceWithKnots>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReal") {
+				return f(*(std::dynamic_pointer_cast<IfcReal>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangleHollowProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcRectangleHollowProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangleProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcRectangleProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangularPyramid") {
+				return f(*(std::dynamic_pointer_cast<IfcRectangularPyramid>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRectangularTrimmedSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcRectangularTrimmedSurface>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRecurrencePattern") {
+				return f(*(std::dynamic_pointer_cast<IfcRecurrencePattern>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRecurrenceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRecurrenceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReference") {
+				return f(*(std::dynamic_pointer_cast<IfcReference>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReferent") {
+				return f(*(std::dynamic_pointer_cast<IfcReferent>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReferentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReferentTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReflectanceMethodEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReflectanceMethodEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRegularTimeSeries") {
+				return f(*(std::dynamic_pointer_cast<IfcRegularTimeSeries>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcementBarProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcementBarProperties>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcementDefinitionProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcementDefinitionProperties>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBar") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingBar>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarRoleEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingBarRoleEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarSurfaceEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingBarSurfaceEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarType") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingBarType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingBarTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingBarTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingElement") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingMesh") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingMesh>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingMeshType") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingMeshType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReinforcingMeshTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcReinforcingMeshTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAggregates") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAggregates>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssigns") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssigns>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToActor") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToActor>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToControl") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToControl>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToGroup") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToGroup>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToGroupByFactor") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToGroupByFactor>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToProcess") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToProcess>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToProduct") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToProduct>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssignsToResource") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssignsToResource>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociates") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociates>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesApproval") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesApproval>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesClassification") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesClassification>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesConstraint") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesConstraint>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesDocument") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesDocument>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesLibrary") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesLibrary>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelAssociatesMaterial") {
+				return f(*(std::dynamic_pointer_cast<IfcRelAssociatesMaterial>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnects") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnects>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsElements>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsPathElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsPathElements>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsPorts") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsPorts>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsPortToElement") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsPortToElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsStructuralActivity") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsStructuralActivity>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsStructuralMember") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsStructuralMember>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsWithEccentricity") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsWithEccentricity>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelConnectsWithRealizingElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelConnectsWithRealizingElements>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelContainedInSpatialStructure") {
+				return f(*(std::dynamic_pointer_cast<IfcRelContainedInSpatialStructure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelCoversBldgElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelCoversBldgElements>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelCoversSpaces") {
+				return f(*(std::dynamic_pointer_cast<IfcRelCoversSpaces>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDeclares") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDeclares>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDecomposes") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDecomposes>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefines") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDefines>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByObject") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDefinesByObject>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDefinesByProperties>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByTemplate") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDefinesByTemplate>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelDefinesByType") {
+				return f(*(std::dynamic_pointer_cast<IfcRelDefinesByType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelFillsElement") {
+				return f(*(std::dynamic_pointer_cast<IfcRelFillsElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelFlowControlElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelFlowControlElements>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelInterferesElements") {
+				return f(*(std::dynamic_pointer_cast<IfcRelInterferesElements>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelNests") {
+				return f(*(std::dynamic_pointer_cast<IfcRelNests>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelProjectsElement") {
+				return f(*(std::dynamic_pointer_cast<IfcRelProjectsElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelReferencedInSpatialStructure") {
+				return f(*(std::dynamic_pointer_cast<IfcRelReferencedInSpatialStructure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSequence") {
+				return f(*(std::dynamic_pointer_cast<IfcRelSequence>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelServicesBuildings") {
+				return f(*(std::dynamic_pointer_cast<IfcRelServicesBuildings>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSpaceBoundary") {
+				return f(*(std::dynamic_pointer_cast<IfcRelSpaceBoundary>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSpaceBoundary1stLevel") {
+				return f(*(std::dynamic_pointer_cast<IfcRelSpaceBoundary1stLevel>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelSpaceBoundary2ndLevel") {
+				return f(*(std::dynamic_pointer_cast<IfcRelSpaceBoundary2ndLevel>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRelVoidsElement") {
+				return f(*(std::dynamic_pointer_cast<IfcRelVoidsElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcReparametrisedCompositeCurveSegment") {
+				return f(*(std::dynamic_pointer_cast<IfcReparametrisedCompositeCurveSegment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcRepresentation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRepresentationContext") {
+				return f(*(std::dynamic_pointer_cast<IfcRepresentationContext>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRepresentationMap") {
+				return f(*(std::dynamic_pointer_cast<IfcRepresentationMap>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResource") {
+				return f(*(std::dynamic_pointer_cast<IfcResource>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceApprovalRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcResourceApprovalRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceConstraintRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcResourceConstraintRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceLevelRelationship") {
+				return f(*(std::dynamic_pointer_cast<IfcResourceLevelRelationship>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcResourceTime") {
+				return f(*(std::dynamic_pointer_cast<IfcResourceTime>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRevolvedAreaSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcRevolvedAreaSolid>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRevolvedAreaSolidTapered") {
+				return f(*(std::dynamic_pointer_cast<IfcRevolvedAreaSolidTapered>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRightCircularCone") {
+				return f(*(std::dynamic_pointer_cast<IfcRightCircularCone>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRightCircularCylinder") {
+				return f(*(std::dynamic_pointer_cast<IfcRightCircularCylinder>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoleEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRoleEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoof") {
+				return f(*(std::dynamic_pointer_cast<IfcRoof>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoofType") {
+				return f(*(std::dynamic_pointer_cast<IfcRoofType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoofTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcRoofTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoot") {
+				return f(*(std::dynamic_pointer_cast<IfcRoot>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRotationalFrequencyMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcRotationalFrequencyMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRotationalMassMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcRotationalMassMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRotationalStiffnessMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcRotationalStiffnessMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcRoundedRectangleProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcRoundedRectangleProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSanitaryTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcSanitaryTerminal>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSanitaryTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcSanitaryTerminalType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSanitaryTerminalTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSanitaryTerminalTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSchedulingTime") {
+				return f(*(std::dynamic_pointer_cast<IfcSchedulingTime>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSeamCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcSeamCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionalAreaIntegralMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionalAreaIntegralMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionedSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionedSolid>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionedSolidHorizontal") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionedSolidHorizontal>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionedSpine") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionedSpine>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionModulusMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionModulusMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionProperties>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionReinforcementProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionReinforcementProperties>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSectionTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSectionTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSensor") {
+				return f(*(std::dynamic_pointer_cast<IfcSensor>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSensorType") {
+				return f(*(std::dynamic_pointer_cast<IfcSensorType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSensorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSensorTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSequenceEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSequenceEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShadingDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcShadingDevice>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShadingDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcShadingDeviceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShadingDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcShadingDeviceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShapeAspect") {
+				return f(*(std::dynamic_pointer_cast<IfcShapeAspect>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShapeModel") {
+				return f(*(std::dynamic_pointer_cast<IfcShapeModel>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShapeRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcShapeRepresentation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShearModulusMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcShearModulusMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcShellBasedSurfaceModel") {
+				return f(*(std::dynamic_pointer_cast<IfcShellBasedSurfaceModel>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSimpleProperty") {
+				return f(*(std::dynamic_pointer_cast<IfcSimpleProperty>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSimplePropertyTemplate") {
+				return f(*(std::dynamic_pointer_cast<IfcSimplePropertyTemplate>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSimplePropertyTemplateTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSimplePropertyTemplateTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSIPrefix") {
+				return f(*(std::dynamic_pointer_cast<IfcSIPrefix>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSite") {
+				return f(*(std::dynamic_pointer_cast<IfcSite>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSIUnit") {
+				return f(*(std::dynamic_pointer_cast<IfcSIUnit>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSIUnitName") {
+				return f(*(std::dynamic_pointer_cast<IfcSIUnitName>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlab") {
+				return f(*(std::dynamic_pointer_cast<IfcSlab>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabElementedCase") {
+				return f(*(std::dynamic_pointer_cast<IfcSlabElementedCase>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcSlabStandardCase>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabType") {
+				return f(*(std::dynamic_pointer_cast<IfcSlabType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlabTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSlabTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSlippageConnectionCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcSlippageConnectionCondition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolarDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcSolarDevice>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolarDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcSolarDeviceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolarDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSolarDeviceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSolidAngleMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSolidAngleMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPowerLevelMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSoundPowerLevelMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPowerMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSoundPowerMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPressureLevelMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSoundPressureLevelMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSoundPressureMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSoundPressureMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpace") {
+				return f(*(std::dynamic_pointer_cast<IfcSpace>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceHeater") {
+				return f(*(std::dynamic_pointer_cast<IfcSpaceHeater>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceHeaterType") {
+				return f(*(std::dynamic_pointer_cast<IfcSpaceHeaterType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceHeaterTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSpaceHeaterTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceType") {
+				return f(*(std::dynamic_pointer_cast<IfcSpaceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpaceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSpaceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialElement") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialStructureElement") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialStructureElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialStructureElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialStructureElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialZone") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialZone>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialZoneType") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialZoneType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpatialZoneTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSpatialZoneTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpecificHeatCapacityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcSpecificHeatCapacityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpecularExponent") {
+				return f(*(std::dynamic_pointer_cast<IfcSpecularExponent>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSpecularRoughness") {
+				return f(*(std::dynamic_pointer_cast<IfcSpecularRoughness>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSphere") {
+				return f(*(std::dynamic_pointer_cast<IfcSphere>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSphericalSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcSphericalSurface>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStackTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcStackTerminal>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStackTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcStackTerminalType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStackTerminalTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStackTerminalTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStair") {
+				return f(*(std::dynamic_pointer_cast<IfcStair>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairFlight") {
+				return f(*(std::dynamic_pointer_cast<IfcStairFlight>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairFlightType") {
+				return f(*(std::dynamic_pointer_cast<IfcStairFlightType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairFlightTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStairFlightTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairType") {
+				return f(*(std::dynamic_pointer_cast<IfcStairType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStairTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStairTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStateEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStateEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStrippedOptional") {
+				return f(*(std::dynamic_pointer_cast<IfcStrippedOptional>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralAction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralActivity") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralActivity>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralAnalysisModel") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralAnalysisModel>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralConnection") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralConnection>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralConnectionCondition") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralConnectionCondition>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveAction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveActivityTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveActivityTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveConnection") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveConnection>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveMember") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveMember>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveMemberTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveMemberTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveMemberVarying") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveMemberVarying>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralCurveReaction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralCurveReaction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralItem") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralItem>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLinearAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLinearAction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoad") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoad>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadCase") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadCase>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadConfiguration") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadConfiguration>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadGroup") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadGroup>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadLinearForce") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadLinearForce>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadOrResult") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadOrResult>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadPlanarForce") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadPlanarForce>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleDisplacement") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleDisplacement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleDisplacementDistortion") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleDisplacementDistortion>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleForce") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleForce>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadSingleForceWarping") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadSingleForceWarping>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadStatic") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadStatic>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralLoadTemperature") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralLoadTemperature>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralMember") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralMember>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPlanarAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralPlanarAction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPointAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralPointAction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPointConnection") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralPointConnection>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralPointReaction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralPointReaction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralReaction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralReaction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralResultGroup") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralResultGroup>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceAction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceAction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceActivityTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceActivityTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceConnection") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceConnection>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceMember") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceMember>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceMemberTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceMemberTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceMemberVarying") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceMemberVarying>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStructuralSurfaceReaction") {
+				return f(*(std::dynamic_pointer_cast<IfcStructuralSurfaceReaction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStyledItem") {
+				return f(*(std::dynamic_pointer_cast<IfcStyledItem>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStyledRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcStyledRepresentation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcStyleModel") {
+				return f(*(std::dynamic_pointer_cast<IfcStyleModel>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubContractResource") {
+				return f(*(std::dynamic_pointer_cast<IfcSubContractResource>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubContractResourceType") {
+				return f(*(std::dynamic_pointer_cast<IfcSubContractResourceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubContractResourceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSubContractResourceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSubedge") {
+				return f(*(std::dynamic_pointer_cast<IfcSubedge>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceCurveSweptAreaSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceCurveSweptAreaSolid>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceFeature") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceFeature>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceFeatureTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceFeatureTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceOfLinearExtrusion") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceOfLinearExtrusion>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceOfRevolution") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceOfRevolution>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceReinforcementArea") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceReinforcementArea>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceSide") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceSide>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleLighting") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyleLighting>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleRefraction") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyleRefraction>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleRendering") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyleRendering>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleShading") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyleShading>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceStyleWithTextures") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceStyleWithTextures>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSurfaceTexture") {
+				return f(*(std::dynamic_pointer_cast<IfcSurfaceTexture>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptAreaSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcSweptAreaSolid>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptDiskSolid") {
+				return f(*(std::dynamic_pointer_cast<IfcSweptDiskSolid>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptDiskSolidPolygonal") {
+				return f(*(std::dynamic_pointer_cast<IfcSweptDiskSolidPolygonal>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSweptSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcSweptSurface>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSwitchingDevice") {
+				return f(*(std::dynamic_pointer_cast<IfcSwitchingDevice>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSwitchingDeviceType") {
+				return f(*(std::dynamic_pointer_cast<IfcSwitchingDeviceType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSwitchingDeviceTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSwitchingDeviceTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystem") {
+				return f(*(std::dynamic_pointer_cast<IfcSystem>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystemFurnitureElement") {
+				return f(*(std::dynamic_pointer_cast<IfcSystemFurnitureElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystemFurnitureElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcSystemFurnitureElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcSystemFurnitureElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcSystemFurnitureElementTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTable") {
+				return f(*(std::dynamic_pointer_cast<IfcTable>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTableColumn") {
+				return f(*(std::dynamic_pointer_cast<IfcTableColumn>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTableRow") {
+				return f(*(std::dynamic_pointer_cast<IfcTableRow>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTank") {
+				return f(*(std::dynamic_pointer_cast<IfcTank>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTankType") {
+				return f(*(std::dynamic_pointer_cast<IfcTankType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTankTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTankTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTask") {
+				return f(*(std::dynamic_pointer_cast<IfcTask>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskDurationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTaskDurationEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskTime") {
+				return f(*(std::dynamic_pointer_cast<IfcTaskTime>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskTimeRecurring") {
+				return f(*(std::dynamic_pointer_cast<IfcTaskTimeRecurring>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskType") {
+				return f(*(std::dynamic_pointer_cast<IfcTaskType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTaskTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTaskTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTelecomAddress") {
+				return f(*(std::dynamic_pointer_cast<IfcTelecomAddress>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTemperatureGradientMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcTemperatureGradientMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTemperatureRateOfChangeMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcTemperatureRateOfChangeMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendon") {
+				return f(*(std::dynamic_pointer_cast<IfcTendon>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonAnchor") {
+				return f(*(std::dynamic_pointer_cast<IfcTendonAnchor>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonAnchorType") {
+				return f(*(std::dynamic_pointer_cast<IfcTendonAnchorType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonAnchorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTendonAnchorTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonType") {
+				return f(*(std::dynamic_pointer_cast<IfcTendonType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTendonTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTendonTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTessellatedFaceSet") {
+				return f(*(std::dynamic_pointer_cast<IfcTessellatedFaceSet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcText") {
+				return f(*(std::dynamic_pointer_cast<IfcText>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextAlignment") {
+				return f(*(std::dynamic_pointer_cast<IfcTextAlignment>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextDecoration") {
+				return f(*(std::dynamic_pointer_cast<IfcTextDecoration>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextFontName") {
+				return f(*(std::dynamic_pointer_cast<IfcTextFontName>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextLiteral") {
+				return f(*(std::dynamic_pointer_cast<IfcTextLiteral>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextLiteralWithExtent") {
+				return f(*(std::dynamic_pointer_cast<IfcTextLiteralWithExtent>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextPath") {
+				return f(*(std::dynamic_pointer_cast<IfcTextPath>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcTextStyle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyleFontModel") {
+				return f(*(std::dynamic_pointer_cast<IfcTextStyleFontModel>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyleForDefinedFont") {
+				return f(*(std::dynamic_pointer_cast<IfcTextStyleForDefinedFont>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextStyleTextModel") {
+				return f(*(std::dynamic_pointer_cast<IfcTextStyleTextModel>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextTransformation") {
+				return f(*(std::dynamic_pointer_cast<IfcTextTransformation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureCoordinate") {
+				return f(*(std::dynamic_pointer_cast<IfcTextureCoordinate>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureCoordinateGenerator") {
+				return f(*(std::dynamic_pointer_cast<IfcTextureCoordinateGenerator>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureMap") {
+				return f(*(std::dynamic_pointer_cast<IfcTextureMap>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureVertex") {
+				return f(*(std::dynamic_pointer_cast<IfcTextureVertex>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTextureVertexList") {
+				return f(*(std::dynamic_pointer_cast<IfcTextureVertexList>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalAdmittanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermalAdmittanceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalConductivityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermalConductivityMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalExpansionCoefficientMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermalExpansionCoefficientMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalResistanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermalResistanceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermalTransmittanceMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermalTransmittanceMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcThermodynamicTemperatureMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcThermodynamicTemperatureMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTime") {
+				return f(*(std::dynamic_pointer_cast<IfcTime>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcTimeMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimePeriod") {
+				return f(*(std::dynamic_pointer_cast<IfcTimePeriod>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeSeries") {
+				return f(*(std::dynamic_pointer_cast<IfcTimeSeries>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeSeriesDataTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTimeSeriesDataTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeSeriesValue") {
+				return f(*(std::dynamic_pointer_cast<IfcTimeSeriesValue>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTimeStamp") {
+				return f(*(std::dynamic_pointer_cast<IfcTimeStamp>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTopologyRepresentation") {
+				return f(*(std::dynamic_pointer_cast<IfcTopologyRepresentation>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcToroidalSurface") {
+				return f(*(std::dynamic_pointer_cast<IfcToroidalSurface>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTorqueMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcTorqueMeasure>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransformer") {
+				return f(*(std::dynamic_pointer_cast<IfcTransformer>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransformerType") {
+				return f(*(std::dynamic_pointer_cast<IfcTransformerType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransformerTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTransformerTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransitionCode") {
+				return f(*(std::dynamic_pointer_cast<IfcTransitionCode>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransitionCurveSegment2D") {
+				return f(*(std::dynamic_pointer_cast<IfcTransitionCurveSegment2D>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransitionCurveType") {
+				return f(*(std::dynamic_pointer_cast<IfcTransitionCurveType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransportElement") {
+				return f(*(std::dynamic_pointer_cast<IfcTransportElement>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransportElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcTransportElementType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTransportElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTransportElementTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTrapeziumProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcTrapeziumProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTriangulatedFaceSet") {
+				return f(*(std::dynamic_pointer_cast<IfcTriangulatedFaceSet>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTriangulatedIrregularNetwork") {
+				return f(*(std::dynamic_pointer_cast<IfcTriangulatedIrregularNetwork>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTrimmedCurve") {
+				return f(*(std::dynamic_pointer_cast<IfcTrimmedCurve>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTrimmingPreference") {
+				return f(*(std::dynamic_pointer_cast<IfcTrimmingPreference>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcTShapeProfileDef>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTubeBundle") {
+				return f(*(std::dynamic_pointer_cast<IfcTubeBundle>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTubeBundleType") {
+				return f(*(std::dynamic_pointer_cast<IfcTubeBundleType>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTubeBundleTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcTubeBundleTypeEnum>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeObject") {
+				return f(*(std::dynamic_pointer_cast<IfcTypeObject>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeProcess") {
+				return f(*(std::dynamic_pointer_cast<IfcTypeProcess>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeProduct") {
+				return f(*(std::dynamic_pointer_cast<IfcTypeProduct>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcTypeResource") {
+				return f(*(std::dynamic_pointer_cast<IfcTypeResource>(ptr)));				
+			}
+
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryControlElement") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryControlElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryEquipmentType") {
-				f(*(std::dynamic_pointer_cast<IfcUnitaryEquipmentType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryControlElementType") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryControlElementType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryEquipmentTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcUnitaryEquipmentTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryControlElementTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryControlElementTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitAssignment") {
-				f(*(std::dynamic_pointer_cast<IfcUnitAssignment>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryEquipment") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryEquipment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitEnum") {
-				f(*(std::dynamic_pointer_cast<IfcUnitEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryEquipmentType") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryEquipmentType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcURIReference") {
-				f(*(std::dynamic_pointer_cast<IfcURIReference>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitaryEquipmentTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitaryEquipmentTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUShapeProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcUShapeProfileDef>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitAssignment") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitAssignment>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcValue") {
-				f(*(std::dynamic_pointer_cast<IfcValue>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUnitEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcUnitEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcValve") {
-				f(*(std::dynamic_pointer_cast<IfcValve>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcURIReference") {
+				return f(*(std::dynamic_pointer_cast<IfcURIReference>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcValveType") {
-				f(*(std::dynamic_pointer_cast<IfcValveType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcUShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcUShapeProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcValveTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcValveTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcValve") {
+				return f(*(std::dynamic_pointer_cast<IfcValve>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVaporPermeabilityMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcVaporPermeabilityMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcValveType") {
+				return f(*(std::dynamic_pointer_cast<IfcValveType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVector") {
-				f(*(std::dynamic_pointer_cast<IfcVector>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcValveTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcValveTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVectorOrDirection") {
-				f(*(std::dynamic_pointer_cast<IfcVectorOrDirection>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVaporPermeabilityMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcVaporPermeabilityMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVertex") {
-				f(*(std::dynamic_pointer_cast<IfcVertex>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVector") {
+				return f(*(std::dynamic_pointer_cast<IfcVector>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVertexLoop") {
-				f(*(std::dynamic_pointer_cast<IfcVertexLoop>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVertexLoop") {
+				return f(*(std::dynamic_pointer_cast<IfcVertexLoop>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVertexPoint") {
-				f(*(std::dynamic_pointer_cast<IfcVertexPoint>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVertexPoint") {
+				return f(*(std::dynamic_pointer_cast<IfcVertexPoint>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVibrationIsolator") {
-				f(*(std::dynamic_pointer_cast<IfcVibrationIsolator>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVibrationIsolator") {
+				return f(*(std::dynamic_pointer_cast<IfcVibrationIsolator>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVibrationIsolatorType") {
-				f(*(std::dynamic_pointer_cast<IfcVibrationIsolatorType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVibrationIsolatorType") {
+				return f(*(std::dynamic_pointer_cast<IfcVibrationIsolatorType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVibrationIsolatorTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcVibrationIsolatorTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVibrationIsolatorTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcVibrationIsolatorTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVirtualElement") {
-				f(*(std::dynamic_pointer_cast<IfcVirtualElement>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVirtualElement") {
+				return f(*(std::dynamic_pointer_cast<IfcVirtualElement>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVirtualGridIntersection") {
-				f(*(std::dynamic_pointer_cast<IfcVirtualGridIntersection>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVirtualGridIntersection") {
+				return f(*(std::dynamic_pointer_cast<IfcVirtualGridIntersection>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVoidingFeature") {
-				f(*(std::dynamic_pointer_cast<IfcVoidingFeature>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVoidingFeature") {
+				return f(*(std::dynamic_pointer_cast<IfcVoidingFeature>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVoidingFeatureTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcVoidingFeatureTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVoidingFeatureTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcVoidingFeatureTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVolumeMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcVolumeMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVolumeMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcVolumeMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVolumetricFlowRateMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcVolumetricFlowRateMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcVolumetricFlowRateMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcVolumetricFlowRateMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWall") {
-				f(*(std::dynamic_pointer_cast<IfcWall>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWall") {
+				return f(*(std::dynamic_pointer_cast<IfcWall>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallElementedCase") {
-				f(*(std::dynamic_pointer_cast<IfcWallElementedCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallElementedCase") {
+				return f(*(std::dynamic_pointer_cast<IfcWallElementedCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallStandardCase") {
-				f(*(std::dynamic_pointer_cast<IfcWallStandardCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcWallStandardCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallType") {
-				f(*(std::dynamic_pointer_cast<IfcWallType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallType") {
+				return f(*(std::dynamic_pointer_cast<IfcWallType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcWallTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWallTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWallTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWarpingConstantMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcWarpingConstantMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWarpingConstantMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcWarpingConstantMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWarpingMomentMeasure") {
-				f(*(std::dynamic_pointer_cast<IfcWarpingMomentMeasure>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWarpingMomentMeasure") {
+				return f(*(std::dynamic_pointer_cast<IfcWarpingMomentMeasure>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWarpingStiffnessSelect") {
-				f(*(std::dynamic_pointer_cast<IfcWarpingStiffnessSelect>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWasteTerminal") {
+				return f(*(std::dynamic_pointer_cast<IfcWasteTerminal>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWasteTerminal") {
-				f(*(std::dynamic_pointer_cast<IfcWasteTerminal>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWasteTerminalType") {
+				return f(*(std::dynamic_pointer_cast<IfcWasteTerminalType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWasteTerminalType") {
-				f(*(std::dynamic_pointer_cast<IfcWasteTerminalType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWasteTerminalTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWasteTerminalTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWasteTerminalTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcWasteTerminalTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindow") {
+				return f(*(std::dynamic_pointer_cast<IfcWindow>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindow") {
-				f(*(std::dynamic_pointer_cast<IfcWindow>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowLiningProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowLiningProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowLiningProperties") {
-				f(*(std::dynamic_pointer_cast<IfcWindowLiningProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowPanelOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowPanelOperationEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowPanelOperationEnum") {
-				f(*(std::dynamic_pointer_cast<IfcWindowPanelOperationEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowPanelPositionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowPanelPositionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowPanelPositionEnum") {
-				f(*(std::dynamic_pointer_cast<IfcWindowPanelPositionEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowPanelProperties") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowPanelProperties>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowPanelProperties") {
-				f(*(std::dynamic_pointer_cast<IfcWindowPanelProperties>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStandardCase") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowStandardCase>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStandardCase") {
-				f(*(std::dynamic_pointer_cast<IfcWindowStandardCase>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStyle") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowStyle>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStyle") {
-				f(*(std::dynamic_pointer_cast<IfcWindowStyle>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStyleConstructionEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowStyleConstructionEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStyleConstructionEnum") {
-				f(*(std::dynamic_pointer_cast<IfcWindowStyleConstructionEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStyleOperationEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowStyleOperationEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowStyleOperationEnum") {
-				f(*(std::dynamic_pointer_cast<IfcWindowStyleOperationEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowType") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowType>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowType") {
-				f(*(std::dynamic_pointer_cast<IfcWindowType>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcWindowTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowTypePartitioningEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWindowTypePartitioningEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWindowTypePartitioningEnum") {
-				f(*(std::dynamic_pointer_cast<IfcWindowTypePartitioningEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkCalendar") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkCalendar>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkCalendar") {
-				f(*(std::dynamic_pointer_cast<IfcWorkCalendar>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkCalendarTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkCalendarTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkCalendarTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcWorkCalendarTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkControl") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkControl>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkControl") {
-				f(*(std::dynamic_pointer_cast<IfcWorkControl>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkPlan") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkPlan>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkPlan") {
-				f(*(std::dynamic_pointer_cast<IfcWorkPlan>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkPlanTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkPlanTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkPlanTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcWorkPlanTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkSchedule") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkSchedule>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkSchedule") {
-				f(*(std::dynamic_pointer_cast<IfcWorkSchedule>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkScheduleTypeEnum") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkScheduleTypeEnum>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkScheduleTypeEnum") {
-				f(*(std::dynamic_pointer_cast<IfcWorkScheduleTypeEnum>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkTime") {
+				return f(*(std::dynamic_pointer_cast<IfcWorkTime>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcWorkTime") {
-				f(*(std::dynamic_pointer_cast<IfcWorkTime>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcZone") {
+				return f(*(std::dynamic_pointer_cast<IfcZone>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcZone") {
-				f(*(std::dynamic_pointer_cast<IfcZone>(ptr)));
-				return true;
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcZShapeProfileDef") {
+				return f(*(std::dynamic_pointer_cast<IfcZShapeProfileDef>(ptr)));				
 			}
 
-			if(name == "class OpenInfraPlatform::IfcAlignment1x1::IfcZShapeProfileDef") {
-				f(*(std::dynamic_pointer_cast<IfcZShapeProfileDef>(ptr)));
-				return true;
 			}
 
-			return false;
-		}
+		
 	}
 }
+

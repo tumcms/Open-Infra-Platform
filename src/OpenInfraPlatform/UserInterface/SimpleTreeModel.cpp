@@ -17,16 +17,17 @@ OpenInfraPlatform::UserInterface::TreeModel::TreeModel(std::map<int, shared_ptr<
 	: QAbstractItemModel(parent) 
 {
 	std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
-	rootItem = new TreeItem(ptr, nullptr);
-
+	rootItem = new TreeItem (ptr, nullptr);
+	
 	for(auto entity : data) {
-		TreeItem* child=new TreeItem(std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object>(entity.second), rootItem);
+		TreeItem* child = new TreeItem(std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object>(entity.second), rootItem);
 		QList<QVariant> itemData;
 		itemData << QVariant(entity.first) << QVariant(entity.second->classname()) << QVariant("");
 		child->setItemData(itemData);
 		child->createChildren();
 		rootItem->appendChild(child);
 	}
+
 }
 
 OpenInfraPlatform::UserInterface::TreeModel::~TreeModel()
@@ -44,6 +45,7 @@ QVariant OpenInfraPlatform::UserInterface::TreeModel::data(const QModelIndex & i
 
 	TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 	return item->data(index.column());
+
 }
 
 Qt::ItemFlags OpenInfraPlatform::UserInterface::TreeModel::flags(const QModelIndex &index) const
@@ -80,6 +82,7 @@ QModelIndex OpenInfraPlatform::UserInterface::TreeModel::index(int row, int colu
 		return createIndex(row, column, childItem);
 	else
 		return QModelIndex();
+
 }
 
 QModelIndex OpenInfraPlatform::UserInterface::TreeModel::parent(const QModelIndex & index) const

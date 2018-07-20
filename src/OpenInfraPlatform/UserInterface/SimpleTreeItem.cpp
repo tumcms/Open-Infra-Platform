@@ -12,8 +12,11 @@
 #include <BlueFramework\Core\memory.h>
 
 //OpenInfraPlatform::UserInterface::TreeItem::TreeItem(const QList<QVariant> &data, TreeItem *parent)
+
+
+
 OpenInfraPlatform::UserInterface::TreeItem::TreeItem(std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> &data, TreeItem * parent)
-		: m_managedData(data), m_parentItem(parent), parser_()
+	: m_managedData(data), m_parentItem(parent), parser_()
 {
 	parser_.thisPtr = this;
 }
@@ -22,6 +25,7 @@ OpenInfraPlatform::UserInterface::TreeItem::~TreeItem()
 {
 	qDeleteAll(m_childItems);
 }
+
 
 void OpenInfraPlatform::UserInterface::TreeItem::appendChild(TreeItem *item)
 {
@@ -46,7 +50,7 @@ int OpenInfraPlatform::UserInterface::TreeItem::columnCount() const
 //QVariant OpenInfraPlatform::UserInterface::TreeItem::data(int column) const
 QVariant OpenInfraPlatform::UserInterface::TreeItem::data(int column) const
 {
-	return m_itemData.value(column);
+	return m_itemData.value(column);	
 }
 
 OpenInfraPlatform::UserInterface::TreeItem *OpenInfraPlatform::UserInterface::TreeItem::parentItem()
@@ -61,31 +65,31 @@ void OpenInfraPlatform::UserInterface::TreeItem::setItemData(QList<QVariant> ite
 
 void OpenInfraPlatform::UserInterface::TreeItem::createChildren()
 {
-		auto func = [&](auto item)->void {
-			visit_struct::for_each(item, [&](const char* name, auto &value) {
-				TreeItem* child;
-				//if(std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object, decltype(value)>::value) {
-				//	child = new TreeItem(value, this);
-				//}
-				//else {
-				//	child = new TreeItem(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object(), this);
-				//}
-				std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
-				child = new TreeItem(ptr, this);
-				QList<QVariant> itemData;
-				itemData << QVariant(name) << QVariant("") << QVariant(typeid(value).name());
-				this->appendChild(child);
-				});
-		};
+	auto func = [&](auto item)->void {
+		visit_struct::for_each(item, [&](const char* name, auto &value) {
+			TreeItem* child;
+			//if(std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object, decltype(value)>::value) {
+			//	child = new TreeItem(value, this);
+			//}
+			//else {
+			//	child = new TreeItem(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object(), this);
+			//}
+			std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+			child = new TreeItem(ptr, this);
+			QList<QVariant> itemData;
+			itemData << QVariant(name) << QVariant("") << QVariant(typeid(value).name());
+			this->appendChild(child);			
+		});
+	};
 
-		auto parse = [&](auto item) {
-			visit_struct::for_each(item, parser_);
-		};
+	auto parse = [&](auto item) {
+		visit_struct::for_each(item, parser_);
+	};
 
-		if(m_managedData && m_managedData.get() != nullptr) {
-			if(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(m_managedData))
-				OpenInfraPlatform::IfcAlignment1x1::castToVisitableAndCall<decltype(parse), void>(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(m_managedData), parse);
-		}
+	if(m_managedData && m_managedData.get() != nullptr) {
+		if(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(m_managedData))
+			OpenInfraPlatform::IfcAlignment1x1::castToVisitableAndCall<decltype(parse), void>(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(m_managedData), parse);
+	}
 }
 
 int OpenInfraPlatform::UserInterface::TreeItem::row() const

@@ -43,22 +43,34 @@ textHeader = """/*
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-"""
+
+#include <memory>
+#include <typeinfo>
+#include <OpenInfraPlatform\IfcAlignment1x1\IfcAlignment1x1Entities.h>
+#include <OpenInfraPlatform\IfcAlignment1x1\IfcAlignment1x1Types.h>
+
+namespace OpenInfraPlatform {
+	namespace IfcAlignment1x1 {"""
 
 
-header = """
-using namespace OpenInfraPlatform::IfcAlignment1x1;
-template <typename F, typename T> bool castAndCall(std::shared_ptr<T> ptr, F &f) {
-	std::string name = std::string(typeid(T).name());"""
+headerCastToDerivedAndCall = """
+		template <typename F, typename T> T castToDerivedAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
+			std::string name = std::string(typeid(*ptr).name());"""
+			
+headerCastToVisitableAndCall = """
+		template <typename F, typename T> T castToVisitableAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
+			std::string name = std::string(typeid(*ptr).name());"""
 
 pattern = """
-	if (name == "class OpenInfraPlatform::IfcAlignment1x1::__classname__") {
-		f(*(std::dynamic_pointer_cast<__classname__>(ptr)));
-		return true;
-	}"""
+			if (name == "class OpenInfraPlatform::IfcAlignment1x1::__classname__") {
+				return f(*(std::dynamic_pointer_cast<__classname__>(ptr)));				
+			}"""
 
-ending = """		
-	return false;
+endFunction = """
+			}"""
+
+endFile = """		
+	}
 }
 """
 def main(argv):
@@ -67,18 +79,31 @@ def main(argv):
 
 	args = parser.parse_args()
 	
-	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f))]
-			
-	print(textHeader)	
-	print(header)
 	
-	for file in onlyfiles:
-		classname = file[0:len(file) - 2]			
+	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f))]
+	notAbstractClass = [f for f in listdir(args.directory) if not "// abstract class" in open(join(args.directory, f)).read()]
+	visitableClass = [f for f in listdir(args.directory) if "VISITABLE_STRUCT" in open(join(args.directory, f)).read()]
+	print(textHeader)	
+	print(headerCastToDerivedAndCall)
+	
+	for elem in notAbstractClass:
+		classname = elem[0:len(elem) - 2]			
 		text = pattern
 		text = text.replace("__classname__",classname)
 		print(text)
 	
-	print(ending)	
+	print(endFunction)
+	
+	print(headerCastToVisitableAndCall)
+
+	for elem in visitableClass:
+		classname = elem[0:len(elem) - 2]			
+		text = pattern
+		text = text.replace("__classname__",classname)
+		print(text)
+	
+	print(endFunction)
+	print(endFile)
 		
 if __name__ == "__main__":
    main(sys.argv[1:])
