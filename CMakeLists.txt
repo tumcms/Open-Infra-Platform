@@ -278,6 +278,7 @@ include_directories(
 	ExpressBinding/src
 	Infrastructure/src
 	${CC_INCLUDE_DIRS}
+	external/qcustomplot
 )
 
 link_directories(
@@ -332,6 +333,7 @@ file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			src/OpenInfraPlatf
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source 	src/OpenInfraPlatform/UserInterface/ViewPanel/Effects/*.*)
 
 file(GLOB OpenInfraPlatform_QtPropertyBrowser_Source 				src/QtPropertyBrowser/*.*)
+file(GLOB OpenInfraPlatform_QCustomPlot_Source 						external/qcustomplot/*.*)
 
 # Collect Qt related stuff and UI files
 set(OpenInfraPlatform_UIS
@@ -401,6 +403,7 @@ source_group(OpenInfraPlatform\\UserInterface\\ViewPanel\\Effects	FILES ${OpenIn
 source_group(OpenInfraPlatform\\UserInterface\\Forms				FILES ${OpenInfraPlatform_UIS})
 
 source_group(QtPropertyBrowser										FILES ${OpenInfraPlatform_QtPropertyBrowser_Source})
+source_group(QCustomPlot											FILES ${OpenInfraPlatform_QCustomPlot_Source})
 
 #------------------------------------------------------------------------------
 # Set source group properties
@@ -442,6 +445,7 @@ add_executable(OpenInfraPlatform.UI
 	${OpenInfraPlatform_UserInterface_View2DWindow}	
 	${OpenInfraPlatform_Shader_Source}
 	${OpenInfraPlatform_Shader_D3D_Source}
+	${OpenInfraPlatform_QCustomPlot_Source}
 )
 
 #------------------------------------------------------------------------------

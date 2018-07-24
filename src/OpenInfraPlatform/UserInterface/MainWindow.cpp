@@ -43,6 +43,8 @@
 #include <QSettings>
 #include <QUuid>
 #include <QMessageBox>
+#include <qcustomplot.h>
+
 #include <boost/filesystem.hpp>
 #include <iostream>
 
@@ -2713,19 +2715,62 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 {
 	//QString parameter = QDir::currentPath().append("/Alignment#").append(ui_->comboBoxPlotSelectAlignment->currentData().toString()).append(".txt");
 
-	QString parameter = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("*.txt"));
+	//QString parameter = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("*.txt"));
+	//
+	//
+	////setup converter
+	//std::wstring_convert<convert_type, wchar_t> converter;
+	//auto wparameter = converter.from_bytes(parameter.toStdString().data());
+	//auto filename = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/plotAlignment.cmd";
+	//auto directory = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/";
+	//std::wstring script = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/plot.py";
 
+	//putenv("PYTHONPATH=%PYTHONPATH%;C:\Users\ga38fih\dev\python\packages");
+	//
+	//ShellExecute(0, 0, filename, wparameter.c_str(), directory, SW_SHOWDEFAULT);
+
+	QCustomPlot* customPlot = new QCustomPlot(nullptr);
+	customPlot->resize(400, 400);
+	customPlot->setInteraction(QCP::iRangeDrag, true);
+	QVector<double> chainages, curvatures, bearings;
+
+	QString filename = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("*.txt"));
+	QFile inputFile(filename);
+	if(inputFile.open(QIODevice::ReadOnly)) {
+		QTextStream in(&inputFile);
+		while(!in.atEnd()) {
+			QString line = in.readLine();
+			QStringList tokens = line.split('\t');
+			chainages.append(tokens[0].toDouble());
+			curvatures.append(tokens[1].toDouble());
+			bearings.append(tokens[2].toDouble());
+		}
+		inputFile.close();
+	}
+		
+	// create graph and assign data to it:
+	customPlot->addGraph(customPlot->xAxis, customPlot->yAxis);
+	customPlot->graph(0)->setData(chainages, bearings);
+	customPlot->graph(0)->setPen(QPen(Qt::blue));
+
+	customPlot->addGraph(customPlot->xAxis, customPlot->yAxis2);
+	customPlot->graph(1)->setData(chainages, curvatures);
+	customPlot->graph(1)->setPen(QPen(Qt::red));
+
+	// give the axes some labels:
+	customPlot->xAxis->setLabel("Chainage");
+	customPlot->yAxis->setLabel("Bearing");
+	customPlot->yAxis2->setLabel("Curvature");
+	customPlot->yAxis2->setVisible(true);
+
+	// set axes ranges, so we see all data:
+	customPlot->xAxis->setRange(chainages.first(), chainages.last());
+	customPlot->yAxis->rescale();
+	customPlot->yAxis2->rescale();
 	
-	//setup converter
-	std::wstring_convert<convert_type, wchar_t> converter;
-	auto wparameter = converter.from_bytes(parameter.toStdString().data());
-	auto filename = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/plotAlignment.cmd";
-	auto directory = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/";
-	std::wstring script = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/plot.py";
-
-	putenv("PYTHONPATH=%PYTHONPATH%;C:\Users\ga38fih\dev\python\packages");
-
-	ShellExecute(0, 0, filename, wparameter.c_str(), directory, SW_SHOWDEFAULT);
+	
+	customPlot->replot();
+	customPlot->show();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value)

@@ -57,9 +57,11 @@ namespace OpenInfraPlatform {
 
 			void computeChainage(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			void computeChainage2(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			
 			std::vector<std::pair<CCVector3, ScalarType>> getAllPointsAndScalarFieldValue(int index);
 
-			void computeGrid();
+			void computeGrid(int size = 1);
 
 			void alignOnMainAxis();
 
@@ -86,6 +88,8 @@ namespace OpenInfraPlatform {
 			int computeCenterlines(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			int computeCenterlines2(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			int computeCenterlines3(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			void computePairs(std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
@@ -164,7 +168,8 @@ namespace OpenInfraPlatform {
 
 			const std::tuple<ScalarType, ScalarType> getScalarFieldMinAndMax(int idx) const;
 
-			
+			const std::tuple<size_t, size_t> getScalarFieldMinAndMaxIndex(int idx);
+
 
 		public:
 

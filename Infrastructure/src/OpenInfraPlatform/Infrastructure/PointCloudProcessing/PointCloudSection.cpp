@@ -232,10 +232,23 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 			const ColorCompType green[3] = { 0,255,0 };
 			const ColorCompType yellow[3] = { 255, 255, 0 };
 
+			auto orientation = getOrientation();
+			CCVector3 mainAxis = CCVector3(orientation.col(0)[0], orientation.col(0)[1], orientation.col(0)[2]);
+
+			std::for_each(pairs.begin(), pairs.end(), [&](std::pair<size_t, size_t> &pair) {
+				if(mainAxis.dot(*associatedCloud->getPoint(pair.first)) < mainAxis.dot(*associatedCloud->getPoint(pair.second))) {
+					auto temp = pair.first;
+					pair.first = pair.second;
+					pair.second = temp;
+
+					//std::swap(pair.first, pair.second);
+				}
+			});
+
 			for(auto pair : pairs) {
 				if(associatedCloud->rgbColors() != nullptr) {
-					associatedCloud->setPointColor(pair.first, yellow);
-					associatedCloud->setPointColor(pair.second, yellow);
+					associatedCloud->setPointColor(pair.first, green);
+					associatedCloud->setPointColor(pair.second, red);
 				}
 
 				associatedCloud->setPointScalarValue(pair.first, -1);
