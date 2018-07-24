@@ -76,21 +76,27 @@ namespace OpenInfraPlatform {
 				{
 					TreeItem* child = new TreeItem(std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object>(value), thisPtr);
 					QList<QVariant> itemData;
-
-					auto classname = value->classname(); //Gibt z.B. IfcLabel o.ä. zurück
-					auto castedValue = value.m_value; //gibt m_value zurück aus IfcLabel, also den eigentlichen Wert, der als String o.ö. gespeichert ist
-					auto castedType = typeid(castedValue).name(); //gibt den Typ von m_value zurück, also z.B. String
 					
-					if (castedType == "string" || "char")
-						QVariant value2 = QVariant(castedValue.data());
-						return value2;
-					if (castedType == "bool" || "int" || "float" || "double")
-						QVariant value2 = QVariant(castedValue);
-						return value2;
+					std::stringstream ss;
+					if(value)
+						value->getStepData(ss);
 					
-					itemData << QVariant(name) << value2 << QVariant(value ? value->classname() : "nullptr");
 
-					itemData << QVariant(name) << QVariant("m_type") << QVariant(value ? value->classname() : "nullptr");
+					//auto classname = value->classname(); //Gibt z.B. IfcLabel o.ä. zurück
+					////static_cast<classname>(value);
+					//auto castedValue = value.m_value; //gibt m_value zurück aus IfcLabel, also den eigentlichen Wert, der als String o.ö. gespeichert ist
+					//auto castedType = typeid(castedValue).name(); //gibt den Typ von m_value zurück, also z.B. String
+					//
+					//if (castedType == "string" || "char")
+					//	QVariant value2 = QVariant(castedValue.data());
+					//	return value2;
+					//if (castedType == "bool" || "int" || "float" || "double")
+					//	QVariant value2 = QVariant(castedValue);
+					//	return value2;
+					
+					itemData << QVariant(name) << QVariant(ss.str().data()) << QVariant(value ? value->classname() : "nullptr");
+
+					//itemData << QVariant(name) << QVariant("m_type") << QVariant(value ? value->classname() : "nullptr");
 					child->setItemData(itemData);
 					thisPtr->appendChild(child);
 				}
@@ -101,7 +107,10 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
 					TreeItem* child = new TreeItem(ptr, thisPtr);
 					QList<QVariant> itemData;
-					itemData << QVariant(name) << QVariant("m_select") << QVariant(typeid(T).name());
+					std::stringstream ss;
+					if(value)
+						value->getStepData(ss);
+					itemData << QVariant(name) << QVariant(ss.str().data()) << QVariant(typeid(T).name());
 					child->setItemData(itemData);
 					thisPtr->appendChild(child);
 				}
