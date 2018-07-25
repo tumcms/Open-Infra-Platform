@@ -34,13 +34,12 @@ OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::Us
 
 void OpenInfraPlatform::UserInterface::ShowIFCtree::on_treeView_expanded(const QModelIndex &index)
 {
-	//if(!index.isValid()) {
-	//	std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+	//std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+	//if(!index.isValid()) 
 	//	TreeItem* item = new TreeItem(ptr, nullptr);
-	//}
-	//else {
+	//else 
 		TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-	//}
+
 
 	if(item->childCount() == 0)
 		item->createChildren();
@@ -50,11 +49,11 @@ void OpenInfraPlatform::UserInterface::ShowIFCtree::on_treeView_expanded(const Q
 		if(child->childCount() == 0)
 			child->createChildren();
 
-		//for(int i = 0; i < child->childCount(); i++) {
-		//	auto grandchild = child->child(i);
-		//	if(grandchild->childCount() == 0)
-		//		grandchild->createChildren();
-		//}
+		for(int i = 0; i < child->childCount(); i++) {
+			auto grandchild = child->child(i);
+			if(grandchild->childCount() == 0)
+				grandchild->createChildren();
+		}
 	}
 }
 

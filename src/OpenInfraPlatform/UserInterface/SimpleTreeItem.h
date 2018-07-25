@@ -79,6 +79,7 @@ namespace OpenInfraPlatform {
 					
 					std::stringstream ss;
 					if(value)
+						//readStepData(std::string& arg)
 						value->getStepData(ss);
 					
 
@@ -95,22 +96,40 @@ namespace OpenInfraPlatform {
 					//	return value2;
 					
 					itemData << QVariant(name) << QVariant(ss.str().data()) << QVariant(value ? value->classname() : "nullptr");
-
 					//itemData << QVariant(name) << QVariant("m_type") << QVariant(value ? value->classname() : "nullptr");
+
 					child->setItemData(itemData);
 					thisPtr->appendChild(child);
 				}
 
-				template <class T> typename std::enable_if<std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1AbstractSelect, T>::value && !std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
-				operator()(const char* name, std::shared_ptr<T> value)
+				//template <class T> typename std::enable_if<std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1AbstractSelect, T>::value && !std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
+				//operator()(const char* name, std::shared_ptr<T> value)
+				//{
+				//	std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+				//	TreeItem* child = new TreeItem(ptr, thisPtr);
+				//	QList<QVariant> itemData;
+				//	itemData << QVariant(name) << QVariant("m_select") << QVariant(typeid(T).name());
+				//	child->setItemData(itemData);
+				//	thisPtr->appendChild(child);
+				//}
+
+				template <class T> typename std::enable_if<std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1AbstractSelect, T>::value && !std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Type, T>::value && !std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
+					operator()(const char* name, std::shared_ptr<T> value)
 				{
 					std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
 					TreeItem* child = new TreeItem(ptr, thisPtr);
 					QList<QVariant> itemData;
-					std::stringstream ss;
-					if(value)
-						value->getStepData(ss);
-					itemData << QVariant(name) << QVariant(ss.str().data()) << QVariant(typeid(T).name());
+				
+					//if !std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Type, T>::value, void>::type
+					//{ 
+					//std::stringstream ss;
+					//if(value)
+					//	value->getStepData(ss);
+					//return ss;
+					//}
+				
+					//itemData << QVariant(name) << QVariant(ss.str().data()) << QVariant(typeid(T).name());
+					itemData << QVariant(name) << QVariant("m_select") << QVariant(typeid(T).name());
 					child->setItemData(itemData);
 					thisPtr->appendChild(child);
 				}
