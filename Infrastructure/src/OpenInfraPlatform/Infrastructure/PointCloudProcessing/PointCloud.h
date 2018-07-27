@@ -75,6 +75,8 @@ namespace OpenInfraPlatform {
 
 			int applyPositionFilter(const buw::PositionFilterDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
+			int filterRelativeHeightWithGrid(const float lowerBound, const float upperBound, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
 			int resetPositionFilter();
 
 			int applyPercentilesSegmentation(buw::PercentileSegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);

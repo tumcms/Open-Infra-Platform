@@ -542,39 +542,49 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage2(buw::Refere
 	if(callback)
 		callback->start();
 
-	computeGrid(10);
+	computeGrid(1);
 	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(100);
 	std::map<std::pair<int, int>, CCVector2> axes;
-	
-	for(auto cell : grid_) {
-		if(cell.second.size() > 0) {	
-			CCVector3 center = CCVector3(0, 0, 0);
-			for(auto idx : cell.second) {
-				center += (*getPoint(idx) / (float) cell.second.size());
-			}
-			std::vector<CCLib::DgmOctree::PointDescriptor> neighbours;
-			int numPoints = octree_->getPointsInSphericalNeighbourhood(center,100,neighbours,level);
+	int tid = 0;
 
-			auto getPCA = [&]() -> CCVector2 {
-				// Matrix which is capable of holding all points for PCA.
-				Eigen::MatrixX2d mat;
-				mat.resize(numPoints, 2);
-				for(size_t i = 0; i < numPoints; i++) {
-					auto pos = *neighbours[i].point;
-					mat.row(i) = Eigen::Vector2d(pos.x, pos.y);
+#pragma omp parallel private(tid) shared(level,axes)
+	{
+		tid = omp_get_thread_num();
+		auto octree = buw::Octree(*octree_);
+#pragma omp for
+		for(int i = 0; i < grid_.size(); i++) {
+			auto &cell = grid_.begin();
+			advance(cell, i);
+			if(cell->second.size() > 0) {
+				CCVector3 center = CCVector3(0, 0, 0);
+				for(auto idx : cell->second) {
+					center += (*getPoint(idx) / (float)cell->second.size());
 				}
+				std::vector<CCLib::DgmOctree::PointDescriptor> neighbours;
+				int numPoints = octree.getPointsInSphericalNeighbourhood(center, 100, neighbours, level);
 
-				// Do PCA to find the largest eigenvector -> main axis.
-				Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
-				Eigen::MatrixXd cov = centered.adjoint() * centered;
-				Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-				Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1).normalized();
+				auto getPCA = [&]() -> CCVector2 {
+					// Matrix which is capable of holding all points for PCA.
+					Eigen::MatrixX2d mat;
+					mat.resize(numPoints, 2);
+					for(size_t i = 0; i < numPoints; i++) {
+						auto pos = *neighbours[i].point;
+						mat.row(i) = Eigen::Vector2d(pos.x, pos.y);
+					}
 
-				return CCVector2(vec.x(), vec.y());
-			};
+					// Do PCA to find the largest eigenvector -> main axis.
+					Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
+					Eigen::MatrixXd cov = centered.adjoint() * centered;
+					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+					Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1).normalized();
 
-			auto axis = getPCA();
-			axes.insert(std::pair<std::pair<int, int>, CCVector2>(cell.first, axis));
+					return CCVector2(vec.x(), vec.y());
+				};
+
+				auto axis = getPCA();
+#pragma omp critical
+				axes.insert(std::pair<std::pair<int, int>, CCVector2>(cell->first, axis));
+			}
 		}
 	}
 
@@ -780,6 +790,54 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPositionFilter(const buw
 	return err;
 }
 
+int OpenInfraPlatform::Infrastructure::PointCloud::filterRelativeHeightWithGrid(const float lowerBound, const float upperBound, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	if(callback)
+		callback->start();
+
+	int idx_coordz = getScalarFieldIndexByName("Coord. Z");
+	if(idx_coordz == -1)
+		idx_coordz = addScalarField("Coord. Z");
+
+	setCurrentInScalarField(idx_coordz);
+
+	int processedCells = 0;
+	int totalCells = grid_.size();
+	int cellsPerPercent = totalCells / 100;
+	int percentageCompleted = 0;
+
+	for(auto &cell : grid_) {
+		if(cell.second.size() > 0) {
+			std::sort(cell.second.begin(), cell.second.end(), [&](const size_t &lhs, const size_t &rhs)->bool {
+				return getPoint(lhs)->z < getPoint(rhs)->z;
+			});
+
+			auto center = getPoint(cell.second[cell.second.size() / 2]);
+			std::for_each(cell.second.begin(), cell.second.end(), [&](const size_t &i) {
+				auto point = getPoint(i);
+				if(point->z < (center->z - lowerBound) || point->z >(center->z + upperBound))
+					setPointScalarValue(i, 1);
+				else
+					setPointScalarValue(i, 0);
+			});
+		}
+
+		processedCells++;
+		if(processedCells == cellsPerPercent) {
+			percentageCompleted++;
+			processedCells = 0;
+
+			if(callback)
+				callback->update(percentageCompleted);
+		}
+	}
+
+	if(callback)
+		callback->stop();
+
+	return 0;
+}
+
 int OpenInfraPlatform::Infrastructure::PointCloud::resetPositionFilter() {
 	deleteScalarField(getScalarFieldIndexByName("Coord. X"));
 	deleteScalarField(getScalarFieldIndexByName("Coord. Y"));
@@ -862,6 +920,8 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init() {
 	BLUE_LOG(trace) << "Finished building octree.";
 
 	computeChainage2();
+	//filterRelativeHeightWithGrid(0.5, 0.5, nullptr);
+	//computeIndices();
 }
 
 std::vector<buw::ReferenceCounted<buw::PointCloudSection>> OpenInfraPlatform::Infrastructure::PointCloud::getSections() {
@@ -1546,17 +1606,17 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	centerpointsPointCloud->getDGMOctree()->clear();
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 
-	// Remove centerline points which are outliers.	
-	buw::LocalDensityFilterDescription ldfd;
-	ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
-	ldfd.dim = buw::ePointCloudFilterDimension::Volume3D;
-	ldfd.kernelRadius = 0.05f;
-	ldfd.minThreshold = 15;
-	centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
-	centerpointsPointCloud->computeIndices();
-	centerpointsPointCloud->removeFilteredPoints(callback);
-	centerpointsPointCloud->getDGMOctree()->clear();
-	centerpointsPointCloud->getDGMOctree()->build(callback.get());
+	//// Remove centerline points which are outliers.	
+	//buw::LocalDensityFilterDescription ldfd;
+	//ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
+	//ldfd.dim = buw::ePointCloudFilterDimension::Volume3D;
+	//ldfd.kernelRadius = 0.1f;
+	//ldfd.minThreshold = 15;
+	//centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
+	//centerpointsPointCloud->computeIndices();
+	//centerpointsPointCloud->removeFilteredPoints(callback);
+	//centerpointsPointCloud->getDGMOctree()->clear();
+	//centerpointsPointCloud->getDGMOctree()->build(callback.get());
 
 	auto centerpoints = centerpointsPointCloud->getAllPointsAndScalarFieldValue(idxCPC_chainage);
 	
@@ -1664,24 +1724,40 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 						// Compute the ratio between chainage change and distance.
 						float dChainage = chainage - endpointChainage;
 						float ratio = dChainage / distance;
-
-						if(ratio > 0.9f && distance < 2.0f) {
-							inserted = true;
-							line.push_back(i);
-							break;
-						}
-						else if(distance < desc.maxDistance && ratio > 0.7f) {
-							inserted = true;
-							line.push_back(i);
-							break;
-						}
-						else if(distance < desc.maxDistance && ratio < 0.7f) {
-							discarded = true;
-							break;
+						if(distance < 5) {
+							if(ratio > 0.9 || distance < desc.maxDistance) {
+								inserted = true;
+								discarded = false;
+								line.push_back(i);
+								break;
+							}
+							else {
+								continue;
+							}
 						}
 						else {
-							continue;
+							break;
 						}
+
+						//if(ratio > 0.9f && distance < 2.0f) {
+						//	inserted = true;
+						//	discarded = false;
+						//	line.push_back(i);
+						//	break;
+						//}
+						//else if(distance < desc.maxDistance && ratio > 0.7f) {
+						//	inserted = true;
+						//	discarded = false;
+						//	line.push_back(i);
+						//	break;
+						//}
+						//else if(distance < desc.maxDistance && ratio < 0.5f) {
+						//	discarded = true;
+						//	continue;
+						//}
+						//else {
+						//	continue;
+						//}
 					}
 					if(discarded || inserted)
 						break;
@@ -1802,6 +1878,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	// Split the centerpoints into different rails and recognize different rails. Only store indices to save memory.
 	std::vector<std::vector<size_t>> centerlines = std::vector<std::vector<size_t>>();
 	sortCenterpointsIntoCenterlines(centerpoints, centerlines, callback);
+
+	auto fuseCenterlines = [&](std::vector<std::vector<size_t>> &centerlines) {
+
+	};
 
 	if (centerlines.empty()) {
 		BLUE_LOG(trace) << "No centerlines remaining after sorting. Choose a lower \"minSegmentPoints\" threshold and/or lower \"minSegmentLength\" threshold.";
