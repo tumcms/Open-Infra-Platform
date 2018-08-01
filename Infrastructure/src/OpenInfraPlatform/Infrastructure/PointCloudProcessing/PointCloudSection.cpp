@@ -121,7 +121,7 @@ Eigen::Matrix3d OpenInfraPlatform::Infrastructure::PointCloudSection::getOrienta
 	return orientation;
 }
 
-std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointCloudSection::computePairs()
+std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointCloudSection::computePairs(buw::ReferenceCounted<PointCloudSection> nextSection)
 {
 	if(this->size() > 0) {
 		// Project all points in this section onto the LS plane to get 2D coordinates.
@@ -149,6 +149,7 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 			std::vector<std::pair<size_t, size_t>> pairsForPoint = std::vector<std::pair<size_t, size_t>>();
 			std::pair<size_t, float> minErrorPoint = std::pair<size_t, float>(i, LONG_MAX);
 			auto firstPoint = *getPoint(i);
+
 			for(size_t ii = i + 1; ii < this->size(); ii++) {
 				auto secondPoint = *getPoint(ii);
 				// If first point.x + gauge + head - second point.x < 1cm and difference in y direction is less than 1cm, we have found a pair of matching rail points.
@@ -174,13 +175,55 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 						pairsForPoint.push_back(std::pair<size_t, size_t>(i, ii));
 				}
 			}
+
+			if(nextSection) {
+				std::vector<std::pair<size_t, size_t>> pairsForPointWithNextSection = std::vector<std::pair<size_t, size_t>>();
+
+				for(size_t ii = 0; ii < nextSection->size(); ii++) {
+					auto secondPoint = *nextSection->getPoint(ii);
+					// If first point.x + gauge + head - second point.x < 1cm and difference in y direction is less than 1cm, we have found a pair of matching rail points.
+					float distance = (firstPoint - secondPoint).norm();
+					float error = std::fabsf(distance - gauge - head);
+					float elevationChange = std::fabsf(firstPoint.z - secondPoint.z);
+					if(error < epsilon && elevationChange < 0.2f) {
+						float totalError = elevationChange + 2.0f*error;
+						
+						// If we already have a pair where the second point is close to this one, compare the error. If this one is better, change it, otherwise skip. Otherwise add.
+						bool hasPointInProximity = false;
+						for(auto &pair : pairsForPoint) {
+							if((*getPoint(pair.second) - secondPoint).norm() < 0.1) {
+								hasPointInProximity = true;
+								break;
+							}
+						}
+
+						for(auto &pair : pairsForPointWithNextSection) {
+							if((*nextSection->getPoint(pair.second) - secondPoint).norm() < 0.1) {
+								hasPointInProximity = true;
+								break;
+							}
+						}
+						if(!hasPointInProximity)
+							pairsForPointWithNextSection.push_back(std::pair<size_t, size_t>(i, ii));
+					}
+				}
+
+				std::for_each(pairsForPointWithNextSection.begin(), pairsForPointWithNextSection.end(), [&](std::pair<size_t, size_t> &pair) {
+					pair.second += this->size();
+				});
+
+				pairs.insert(pairs.end(), pairsForPointWithNextSection.begin(), pairsForPointWithNextSection.end());
+			}
 			//pairs.push_back(std::pair<size_t, size_t>(getPointGlobalIndex(i), getPointGlobalIndex(minErrorPoint.first)));
 			pairs.insert(pairs.end(), pairsForPoint.begin(), pairsForPoint.end());
 		}
 
 		std::for_each(pairs.begin(), pairs.end(), [&](std::pair<size_t, size_t> &pair) {
 			pair.first = getPointGlobalIndex(pair.first);
-			pair.second = getPointGlobalIndex(pair.second);
+			if(nextSection && pair.second >= this->size())
+				pair.second = nextSection->getPointGlobalIndex(pair.second - this->size());
+			else
+				pair.second = getPointGlobalIndex(pair.second);
 		});
 
 		// Do some postprocessing on our points to avoid false pairs.

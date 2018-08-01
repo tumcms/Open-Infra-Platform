@@ -63,7 +63,7 @@ namespace OpenInfraPlatform {
 
 			Eigen::Matrix3d getOrientation();
 
-			std::vector<std::pair<size_t, size_t>> computePairs();
+			std::vector<std::pair<size_t, size_t>> computePairs(buw::ReferenceCounted<PointCloudSection> nextSection = nullptr);
 
 			void getAxisAlignedBoundingBox(CCVector3 &min, CCVector3 &max);
 

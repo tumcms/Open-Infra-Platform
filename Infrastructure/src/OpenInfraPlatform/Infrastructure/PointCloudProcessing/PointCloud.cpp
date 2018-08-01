@@ -543,50 +543,83 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage2(buw::Refere
 		callback->start();
 
 	computeGrid(1);
-	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(100);
-	std::map<std::pair<int, int>, CCVector2> axes;
-	int tid = 0;
+//	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(100);
+//	std::map<std::pair<int, int>, CCVector2> axes;
+//	int tid = 0;
+//
+//#pragma omp parallel private(tid) shared(level,axes)
+//	{
+//		tid = omp_get_thread_num();
+//		auto octree = buw::Octree(*octree_);
+//#pragma omp for
+//		for(int i = 0; i < grid_.size(); i++) {
+//			auto &cell = grid_.begin();
+//			advance(cell, i);
+//			if(cell->second.size() > 0) {
+//				CCVector3 center = CCVector3(0, 0, 0);
+//				for(auto idx : cell->second) {
+//					center += (*getPoint(idx) / (float)cell->second.size());
+//				}
+//				std::vector<CCLib::DgmOctree::PointDescriptor> neighbours;
+//				int numPoints = octree.getPointsInSphericalNeighbourhood(center, 100, neighbours, level);
+//
+//				auto getPCA = [&]() -> CCVector2 {
+//					// Matrix which is capable of holding all points for PCA.
+//					Eigen::MatrixX2d mat;
+//					mat.resize(numPoints, 2);
+//					for(size_t i = 0; i < numPoints; i++) {
+//						auto pos = *neighbours[i].point;
+//						mat.row(i) = Eigen::Vector2d(pos.x, pos.y);
+//					}
+//
+//					// Do PCA to find the largest eigenvector -> main axis.
+//					Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
+//					Eigen::MatrixXd cov = centered.adjoint() * centered;
+//					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+//					Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1).normalized();
+//
+//					return CCVector2(vec.x(), vec.y());
+//				};
+//
+//				auto axis = getPCA();
+//#pragma omp critical
+//				axes.insert(std::pair<std::pair<int, int>, CCVector2>(cell->first, axis));
+//			}
+//		}
+//	}
+//	
+//	auto computeCenter = [&](std::vector<uint32_t> indices)->CCVector3 {
+//		CCVector3 center = CCVector3(0, 0, 0);
+//		for(auto idx : indices) {
+//			center += (*getPoint(idx) / (float)indices.size());
+//		}
+//		return center;
+//	};
 
-#pragma omp parallel private(tid) shared(level,axes)
+	//TODO: Insert map into a vector, sort it and then use this.
+	std::vector<std::pair<int, int>> grid = std::vector<std::pair<int, int>>();
+	
+	for(auto &it : grid_)
+		grid.push_back(it.first);
+
+	std::sort(grid.begin(), grid.end(), [&](std::pair<int, int> &lhs, std::pair<int, int> &rhs)->bool {		
+		return mainAxis_.dot(std::get<1>(grid_[lhs])) < mainAxis_.dot(std::get<1>(grid_[rhs]));
+	});
+
+	auto barycentric = [](CCVector3 p, CCVector3 a, CCVector3 b, CCVector3 c) ->std::tuple<float, float, float>
 	{
-		tid = omp_get_thread_num();
-		auto octree = buw::Octree(*octree_);
-#pragma omp for
-		for(int i = 0; i < grid_.size(); i++) {
-			auto &cell = grid_.begin();
-			advance(cell, i);
-			if(cell->second.size() > 0) {
-				CCVector3 center = CCVector3(0, 0, 0);
-				for(auto idx : cell->second) {
-					center += (*getPoint(idx) / (float)cell->second.size());
-				}
-				std::vector<CCLib::DgmOctree::PointDescriptor> neighbours;
-				int numPoints = octree.getPointsInSphericalNeighbourhood(center, 100, neighbours, level);
-
-				auto getPCA = [&]() -> CCVector2 {
-					// Matrix which is capable of holding all points for PCA.
-					Eigen::MatrixX2d mat;
-					mat.resize(numPoints, 2);
-					for(size_t i = 0; i < numPoints; i++) {
-						auto pos = *neighbours[i].point;
-						mat.row(i) = Eigen::Vector2d(pos.x, pos.y);
-					}
-
-					// Do PCA to find the largest eigenvector -> main axis.
-					Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
-					Eigen::MatrixXd cov = centered.adjoint() * centered;
-					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-					Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1).normalized();
-
-					return CCVector2(vec.x(), vec.y());
-				};
-
-				auto axis = getPCA();
-#pragma omp critical
-				axes.insert(std::pair<std::pair<int, int>, CCVector2>(cell->first, axis));
-			}
-		}
-	}
+		CCVector3 v0 = b - a, v1 = c - a, v2 = p - a;
+		float d00 = v0.dot(v0);
+		float d01 = v0.dot(v1);
+		float d11 = v1.dot(v1);
+		float d20 = v2.dot(v0);
+		float d21 = v2.dot(v1);
+		float denom = d00 * d11 - d01 * d01;
+		float v = (d11 * d20 - d01 * d21) / denom;
+		float w = (d00 * d21 - d01 * d20) / denom;
+		float u = 1.0f - v - w;
+		return { u,v,w };
+	};
 
 	// Init Chainage Scalar Field.
 	int idx_chainage = getScalarFieldIndexByName("Chainage");
@@ -595,12 +628,75 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage2(buw::Refere
 
 	setCurrentInScalarField(idx_chainage);
 
-	for(auto cell : grid_) {
-		for(auto idx : cell.second) {
+	// Initialize origin and initial chainage to move from.
+	auto origin = CCVector3(0, 0, 0);
+	float chainage = 0.0f;
+
+	for(int i = 0; i < grid.size(); i++) {
+		auto &cell = grid.begin();
+		advance(cell, i);
+
+		auto indices = std::get<0>(grid_[*cell]);
+#pragma omp parallel for
+		for(long ii = 0; ii < indices.size(); ii++) {
+			auto idx = indices[ii];
 			CCVector3 point3D = *getPoint(idx);
-			setPointScalarValue(idx, axes[cell.first].dot(CCVector2(point3D.x, point3D.y)));
+
+			float fmax = std::numeric_limits<float>::max();
+			std::pair<std::pair<int, int>, float> nearestNeighbours[3] = { { {0,0}, fmax }, { { 0,0 }, fmax } , { { 0,0 }, fmax } };
+			//float distances[3] = { LONG_MAX, LONG_MAX, LONG_MAX };
+
+			for(int dx = -1; dx < 2; dx++) {
+				for(int dy = -1; dy < 2; dy++) {
+					auto cellIdx = std::pair<int, int>(cell->first + dx, cell->second + dy);
+					if(grid_.count(cellIdx) > 0) {
+						float dist = (std::get<1>(grid_[cellIdx]) - point3D).norm();
+						if(dist < nearestNeighbours[0].second) {
+							nearestNeighbours[2] = nearestNeighbours[1];
+							nearestNeighbours[1] = nearestNeighbours[0];
+							nearestNeighbours[0] = { cellIdx,dist };
+						}
+						else if(dist < nearestNeighbours[1].second) {
+							nearestNeighbours[2] = nearestNeighbours[1];
+							nearestNeighbours[1] = { cellIdx,dist };
+						}
+						else if(dist < nearestNeighbours[2].second) {
+							nearestNeighbours[2] = { cellIdx,dist };
+						}
+					}
+				}
+			}
+
+			float w0, w1, w2;
+			CCVector3 v0 = std::get<1>(grid_[nearestNeighbours[0].first]);
+			CCVector3 v1 = std::get<1>(grid_[nearestNeighbours[1].first]);
+			CCVector3 v2 = std::get<1>(grid_[nearestNeighbours[2].first]);
+
+			std::tie<float, float, float>(w0, w1, w2) = barycentric(point3D, v0, v1, v2);
+
+			point3D -= origin;
+
+			CCVector2 point2D = CCVector2(point3D.x, point3D.y);
+			float p0 = std::get<2>(grid_[nearestNeighbours[0].first]).dot(point2D);
+			float p1 = std::get<2>(grid_[nearestNeighbours[1].first]).dot(point2D);
+			float p2 = std::get<2>(grid_[nearestNeighbours[2].first]).dot(point2D);
+
+
+			auto localChainage = w0 * p0 + w1 * p1 + w2 * p2;
+#pragma omp critical
+			setPointScalarValue(idx, chainage + localChainage);
 		}
+		
+		origin = std::get<1>(grid_[*cell]);
+		chainage = std::get<2>(grid_[*cell]).dot(CCVector2(origin.x, origin.y));
 	}
+
+	//for(auto cell : grid_) {
+	//	for(auto idx : cell.second) {
+	//		CCVector3 point3D = *getPoint(idx);
+	//		setPointScalarValue(idx, axes[cell.first].dot(CCVector2(point3D.x, point3D.y)));
+	//	}
+	//}
 
 	setCurrentOutScalarField(idx_chainage);
 	CCLib::ScalarFieldTools::applyScalarFieldGaussianFilter(2, this, -1, callback.get(), octree_.get());
@@ -622,12 +718,64 @@ std::vector<std::pair<CCVector3, ScalarType>> OpenInfraPlatform::Infrastructure:
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid(int size) {
 	grid_.clear();
-	grid_ = std::map<std::pair<int, int>, std::vector<uint32_t>>();
+	grid_ = std::map<std::pair<int, int>, std::tuple<std::vector<uint32_t>,CCVector3, CCVector2>>();
 	for_each([&](size_t i) {
 		auto pos = getPoint(i);
 		std::pair<int, int> key = std::pair<int, int>((int)(pos->x / size), (int)(pos->y / size));
-		grid_[key].push_back(i);
+		std::get<0>(grid_[key]).push_back(i);
 	});
+
+	auto computeCenter = [&](std::vector<uint32_t> indices)->CCVector3 {
+		CCVector3 center = CCVector3(0, 0, 0);
+		for(auto idx : indices) {
+			center += (*getPoint(idx) / (float)indices.size());
+		}
+		return center;
+	};
+
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(100);
+	int tid = 0;
+
+#pragma omp parallel private(tid) shared(level)
+	{
+		tid = omp_get_thread_num();
+		auto octree = buw::Octree(*octree_);
+#pragma omp for
+		for(int i = 0; i < grid_.size(); i++) {
+			auto &cell = grid_.begin();
+			advance(cell, i);
+			long cellSize = std::get<0>(cell->second).size();
+
+			if(cellSize > 0) {
+				CCVector3 center = computeCenter(std::get<0>(cell->second));
+				std::get<1>(cell->second) = center;
+
+				std::vector<CCLib::DgmOctree::PointDescriptor> neighbours;
+				int numPoints = octree.getPointsInSphericalNeighbourhood(center, 100, neighbours, level);
+
+				auto getPCA = [&]() -> CCVector2 {
+					// Matrix which is capable of holding all points for PCA.
+					Eigen::MatrixX2d mat;
+					mat.resize(numPoints, 2);
+					for(size_t i = 0; i < numPoints; i++) {
+						auto pos = *neighbours[i].point;
+						mat.row(i) = Eigen::Vector2d(pos.x, pos.y);
+					}
+
+					// Do PCA to find the largest eigenvector -> main axis.
+					Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
+					Eigen::MatrixXd cov = centered.adjoint() * centered;
+					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+					Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1).normalized();
+
+					return CCVector2(vec.x(), vec.y());
+				};
+//				auto axis = getPCA();
+//#pragma omp critical
+				std::get<2>(cell->second) = getPCA();
+			}
+		}
+	}
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::alignOnMainAxis() {
@@ -806,14 +954,15 @@ int OpenInfraPlatform::Infrastructure::PointCloud::filterRelativeHeightWithGrid(
 	int cellsPerPercent = totalCells / 100;
 	int percentageCompleted = 0;
 
-	for(auto &cell : grid_) {
-		if(cell.second.size() > 0) {
-			std::sort(cell.second.begin(), cell.second.end(), [&](const size_t &lhs, const size_t &rhs)->bool {
+	for(auto &gridCell : grid_) {
+		auto cell = std::get<0>(gridCell.second);
+		if(cell.size() > 0) {
+			std::sort(cell.begin(), cell.end(), [&](const size_t &lhs, const size_t &rhs)->bool {
 				return getPoint(lhs)->z < getPoint(rhs)->z;
 			});
 
-			auto center = getPoint(cell.second[cell.second.size() / 2]);
-			std::for_each(cell.second.begin(), cell.second.end(), [&](const size_t &i) {
+			auto center = getPoint(cell[cell.size() / 2]);
+			std::for_each(cell.begin(), cell.end(), [&](const size_t &i) {
 				auto point = getPoint(i);
 				if(point->z < (center->z - lowerBound) || point->z >(center->z + upperBound))
 					setPointScalarValue(i, 1);
@@ -907,7 +1056,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init() {
 	filteredIndices_ = std::vector<uint32_t>(0);
 	segmentedIndices_ = std::vector<uint32_t>(0);
 
-	grid_ = std::map<std::pair<int, int>, std::vector<uint32_t>>();
+	grid_ = std::map<std::pair<int, int>, std::tuple<std::vector<uint32_t>, CCVector3, CCVector2>>();
 
 	computeMainAxis();
 	// alignOnMainAxis();
@@ -1076,10 +1225,10 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std
 			// We iterate over all sections and calculate the pairs of matching points.
 			std::vector<std::pair<size_t, size_t>> pairs = std::vector<std::pair<size_t, size_t>>();
 			//#pragma omp for
-			for (long i = 0; i < sections_.size(); i++) {
+			for (long i = 0; i < sections_.size() - 1; i++) {
 				if (sections_[i]) {
 					// Insert all pairs in our local vector.
-					auto result = sections_[i]->computePairs();
+					auto result = sections_[i+1] ? sections_[i]->computePairs(sections_[i + 1]): sections_[i]->computePairs();
 					if (result.size() > 0) {
 						pairs.insert(pairs.end(), result.begin(), result.end());
 					}
@@ -1386,18 +1535,19 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesOnGridSegment
 	size_t processedCells = 0;
 	size_t numCells = grid_.size();
 
-	for (auto cell : grid_) {
-		auto end = std::remove_if(cell.second.begin(), cell.second.end(), isFilteredPoint);
-		cell.second.erase(end, cell.second.end());
-		int numPoints = cell.second.size();
+	for (auto gridCell : grid_) {
+		auto cell = std::get<0>(gridCell.second);
+		auto end = std::remove_if(cell.begin(), cell.end(), isFilteredPoint);
+		cell.erase(end, cell.end());
+		int numPoints = cell.size();
 
-		std::sort(cell.second.begin(), cell.second.end(), [&](const uint32_t &lhs, const uint32_t &rhs) -> bool { return getPoint(lhs)->z < getPoint(rhs)->z; });
+		std::sort(cell.begin(), cell.end(), [&](const uint32_t &lhs, const uint32_t &rhs) -> bool { return getPoint(lhs)->z < getPoint(rhs)->z; });
 
 		// Calculate the 98 percentile as the index of the 98th % point after sorting in ascending order, same for the 10th % point.
 		int idx98 = (int)std::floor(0.98 * numPoints);
 		int idx10 = (int)std::floor(0.1 * numPoints);
-		float percentile_98 = getPoint(cell.second[idx98])->z;
-		float percentile_10 = getPoint(cell.second[idx10])->z;
+		float percentile_98 = getPoint(cell[idx98])->z;
+		float percentile_10 = getPoint(cell[idx10])->z;
 
 		// Calculate the absolute difference between the percentiles and if it is larger than 10cm segment the point as rail point.
 		float diff = std::fabsf(percentile_10 - percentile_98);
@@ -1405,7 +1555,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesOnGridSegment
 			std::set<uint32_t> indices;
 			for (int i = idx98; i < numPoints; i++) {
 				CCLib::DgmOctree::NeighboursSet neighbours = CCLib::DgmOctree::NeighboursSet();
-				int numNeighbours = octree_->getPointsInSphericalNeighbourhood(*getPoint(cell.second[i]), 0.1f, neighbours, level);
+				int numNeighbours = octree_->getPointsInSphericalNeighbourhood(*getPoint(cell[i]), 0.1f, neighbours, level);
 
 				for (auto elem : neighbours) {
 					setPointScalarValue(elem.pointIndex, 1.0f);
@@ -1826,22 +1976,26 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 //						}
 //					}
 
-					// Check if we have a centerline which is very small (does not meet the minimum requirements as specified) and remove it to save some computation time.
-					if (i % 1000 == 0) {
-						// Erase the tracks which do not fulfill the criteria and where no more points are being added.
-						auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) {
-							float dChainage = std::fabsf(chainage -centerpoints[line.back()].second);
-							//float centerlineLength = (centerpoints[line.back()].first - centerpoints[line.front()].first).norm();
-							float centerlineLength = std::fabsf(centerpoints[line.back()].second - centerpoints[line.front()].second);
-							size_t numCenterlinePoints = line.size();
-							return dChainage > 10.0f  && (numCenterlinePoints < desc.minSegmentPoints || centerlineLength < desc.minSegmentLength);
-						});
+					//std::sort(centerlines.begin(), centerlines.end(), [](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {
+					//	return lhs.size() > rhs.size();
+					//});
 
-						centerlines.erase(end, centerlines.end());
-						std::sort(centerlines.begin(), centerlines.end(), [](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {
-							return lhs.size() > rhs.size();
-						});
-					}
+					// Check if we have a centerline which is very small (does not meet the minimum requirements as specified) and remove it to save some computation time.
+					//if (i % 1000 == 0) {
+					//	// Erase the tracks which do not fulfill the criteria and where no more points are being added.
+					//	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) {
+					//		float dChainage = std::fabsf(chainage -centerpoints[line.back()].second);
+					//		//float centerlineLength = (centerpoints[line.back()].first - centerpoints[line.front()].first).norm();
+					//		float centerlineLength = std::fabsf(centerpoints[line.back()].second - centerpoints[line.front()].second);
+					//		size_t numCenterlinePoints = line.size();
+					//		return dChainage > 10.0f  && (numCenterlinePoints < desc.minSegmentPoints || centerlineLength < desc.minSegmentLength);
+					//	});
+					//
+					//	centerlines.erase(end, centerlines.end());
+					//	std::sort(centerlines.begin(), centerlines.end(), [](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {
+					//		return lhs.size() > rhs.size();
+					//	});
+					//}
 
 					// Update the callback.
 					if (callback) {
@@ -1860,14 +2014,14 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 			callback->stop();
 
 		// Clear all lines having less then 100 points -> probably noise or something.
-		auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool {
-			//float centerlineLength = (centerpoints[line.back()].first - centerpoints[line.front()].first).norm();
-			float centerlineLength = std::fabsf(centerpoints[line.back()].second - centerpoints[line.front()].second);
-			size_t numCenterlinePoints = line.size();
-			return numCenterlinePoints < desc.minSegmentPoints || centerlineLength < desc.minSegmentLength;
-		});
-
-		centerlines.erase(end, centerlines.end());
+		//auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool {
+		//	//float centerlineLength = (centerpoints[line.back()].first - centerpoints[line.front()].first).norm();
+		//	float centerlineLength = std::fabsf(centerpoints[line.back()].second - centerpoints[line.front()].second);
+		//	size_t numCenterlinePoints = line.size();
+		//	return numCenterlinePoints < desc.minSegmentPoints || centerlineLength < desc.minSegmentLength;
+		//});
+		//
+		//centerlines.erase(end, centerlines.end());
 
 		BLUE_LOG(trace) << "Done.";
 	};
@@ -1879,15 +2033,50 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	std::vector<std::vector<size_t>> centerlines = std::vector<std::vector<size_t>>();
 	sortCenterpointsIntoCenterlines(centerpoints, centerlines, callback);
 
-	auto fuseCenterlines = [&](std::vector<std::vector<size_t>> &centerlines) {
+	std::sort(centerlines.begin(), centerlines.end(), [&](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {
+		return centerpoints[lhs.front()].second < centerpoints[rhs.front()].second;
+	});
 
+	auto fuseCenterlines = [&](std::vector<std::vector<size_t>> &centerlines) {
+		for(int idx_line = 0; idx_line < centerlines.size() - 1; idx_line++) {
+			auto &line = centerlines[idx_line];
+			auto &nextline = centerlines[idx_line + 1];
+
+			// Get the respective start and end points.
+			auto endpoint = centerpoints[line.back()];
+			auto startpoint = centerpoints[nextline.front()];
+
+			float distance = (startpoint.first - endpoint.first).norm();
+			// Compute the ratio between chainage change and distance.
+			float dChainage = endpoint.second - startpoint.second;
+			float ratio = dChainage / distance;
+			if(distance < desc.maxDistance || (distance <= 0.7f && ratio > 0.5f)) {
+				line.insert(line.end(), nextline.begin(), nextline.end());
+
+				nextline.clear();
+				centerlines.erase(centerlines.begin() + idx_line + 1);
+				idx_line--;
+			}
+		}
 	};
+
+	//TODO: CHange this to alignments.
+	fuseCenterlines(centerlines);
+
+	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool {
+		//float centerlineLength = (centerpoints[line.back()].first - centerpoints[line.front()].first).norm();
+		float centerlineLength = std::fabsf(centerpoints[line.back()].second - centerpoints[line.front()].second);
+		size_t numCenterlinePoints = line.size();
+		return numCenterlinePoints < desc.minSegmentPoints || centerlineLength < desc.minSegmentLength;
+	});
+
+	centerlines.erase(end, centerlines.end());
 
 	if (centerlines.empty()) {
 		BLUE_LOG(trace) << "No centerlines remaining after sorting. Choose a lower \"minSegmentPoints\" threshold and/or lower \"minSegmentLength\" threshold.";
 		return 0;
 	}
-
+	
 	if (callback)
 		callback->start();
 
@@ -1921,13 +2110,41 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				}
 
 				int numPoints = (endIndex - startIndex);
-				CCVector3 center = CCVector3(0, 0, 0);
-				ScalarType chainage = 0;
-				for(; startIndex < endIndex; startIndex++) {
-					center += (centerpoints[line[startIndex]].first / (float)numPoints);
-					chainage += (centerpoints[line[startIndex]].second / (float)numPoints);
+				if(true) {
+					CCVector3 center = CCVector3(0, 0, 0);
+					ScalarType chainage = 0;
+					for(; startIndex < endIndex; startIndex++) {
+						center += (centerpoints[line[startIndex]].first / (float)numPoints);
+						chainage += (centerpoints[line[startIndex]].second / (float)numPoints);
+					}
+					alignments[idx_line].push_back(std::pair<CCVector3, ScalarType>(center, chainage));
 				}
-				alignments[idx_line].push_back(std::pair<CCVector3, ScalarType>(center, chainage));
+
+				if(false) {
+					CCVector3 center = CCVector3(0, 0, 0);
+					ScalarType chainage = 0;
+					for(long i = startIndex; i < endIndex; i++) {
+						center += (centerpoints[line[i]].first / (float)numPoints);
+						chainage += (centerpoints[line[i]].second / (float)numPoints);
+					}
+					alignments[idx_line].push_back(std::pair<CCVector3, ScalarType>(center, chainage));
+					startIndex++;
+					endIndex = startIndex;
+				}
+
+				if(false) {
+					std::vector<std::pair<CCVector3, ScalarType>> points = std::vector<std::pair<CCVector3, ScalarType>>();
+					for(long i = startIndex; i < endIndex; i++) {
+						points.push_back(centerpoints[line[startIndex]]);
+					}
+					std::sort(points.begin(), points.end(), [](std::pair<CCVector3, ScalarType> &lhs, std::pair<CCVector3, ScalarType> &rhs)->bool {
+						return lhs.first.norm() < rhs.first.norm();
+					});
+
+					alignments[idx_line].push_back(points[points.size()/2]);
+					startIndex++;
+					endIndex = startIndex;
+				}
 
 				if(tid == 0 && callback && update) {
 					callback->update(percentageCompleted);

@@ -2749,18 +2749,20 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 	}
 		
 	// create graph and assign data to it:
-	customPlot->addGraph(customPlot->xAxis, customPlot->yAxis);
+	customPlot->addGraph(customPlot->xAxis, customPlot->yAxis2);
+	customPlot->setInteraction(QCP::iRangeZoom);
+	customPlot->setInteraction(QCP::iRangeDrag);
 	customPlot->graph(0)->setData(chainages, bearings);
 	customPlot->graph(0)->setPen(QPen(Qt::blue));
 
-	customPlot->addGraph(customPlot->xAxis, customPlot->yAxis2);
+	customPlot->addGraph(customPlot->xAxis, customPlot->yAxis);
 	customPlot->graph(1)->setData(chainages, curvatures);
 	customPlot->graph(1)->setPen(QPen(Qt::red));
 
 	// give the axes some labels:
 	customPlot->xAxis->setLabel("Chainage");
-	customPlot->yAxis->setLabel("Bearing");
-	customPlot->yAxis2->setLabel("Curvature");
+	customPlot->yAxis2->setLabel("Bearing");
+	customPlot->yAxis->setLabel("Curvature");
 	customPlot->yAxis2->setVisible(true);
 
 	// set axes ranges, so we see all data:

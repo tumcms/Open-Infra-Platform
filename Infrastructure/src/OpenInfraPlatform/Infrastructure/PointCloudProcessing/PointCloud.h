@@ -179,7 +179,7 @@ namespace OpenInfraPlatform {
 			CCVector3 mainAxis_;
 			std::vector<uint32_t> remainingIndices_, filteredIndices_, segmentedIndices_;
 			std::vector<buw::ReferenceCounted<PointCloudSection>> sections_;
-			std::map<std::pair<int, int>, std::vector<uint32_t>> grid_;
+			std::map<std::pair<int, int>, std::tuple<std::vector<uint32_t>, CCVector3, CCVector2>> grid_;
 			buw::ReferenceCounted<Octree> octree_ = nullptr;
 			bool bHasPairs_ = false, bHasCenterline_ = false;
 
