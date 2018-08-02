@@ -687,8 +687,9 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage2(buw::Refere
 			setPointScalarValue(idx, chainage + localChainage);
 		}
 		
-		origin = std::get<1>(grid_[*cell]);
-		chainage = std::get<2>(grid_[*cell]).dot(CCVector2(origin.x, origin.y));
+		auto shift = std::get<1>(grid_[*cell]) - origin;
+		origin += shift;
+		chainage += std::get<2>(grid_[*cell]).dot(CCVector2(shift.x, shift.y));
 	}
 
 	//for(auto cell : grid_) {
@@ -1703,10 +1704,13 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	// Get the rail pair points.
 	std::vector<std::pair<size_t, size_t>> pointPairs = std::vector<std::pair<size_t, size_t>>();
 	computePairs(pointPairs, callback);
+	bool success = !pointPairs.empty();
+
+	if(!success)
+		return 0;
 
 	// Create a Point Cloud for the centerline points.
 	buw::ReferenceCounted<PointCloud> centerpointsPointCloud = buw::makeReferenceCounted<PointCloud>();
-	bool success = true;
 
 	// Reserve the memory for the point data.
 	success &= centerpointsPointCloud->reserve(pointPairs.size());
@@ -1756,17 +1760,17 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	centerpointsPointCloud->getDGMOctree()->clear();
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 
-	//// Remove centerline points which are outliers.	
-	//buw::LocalDensityFilterDescription ldfd;
-	//ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
-	//ldfd.dim = buw::ePointCloudFilterDimension::Volume3D;
-	//ldfd.kernelRadius = 0.1f;
-	//ldfd.minThreshold = 15;
-	//centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
-	//centerpointsPointCloud->computeIndices();
-	//centerpointsPointCloud->removeFilteredPoints(callback);
-	//centerpointsPointCloud->getDGMOctree()->clear();
-	//centerpointsPointCloud->getDGMOctree()->build(callback.get());
+	// Remove centerline points which are outliers.	
+	buw::LocalDensityFilterDescription ldfd;
+	ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
+	ldfd.dim = buw::ePointCloudFilterDimension::Volume3D;
+	ldfd.kernelRadius = 0.1f;
+	ldfd.minThreshold = 15;
+	centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
+	centerpointsPointCloud->computeIndices();
+	centerpointsPointCloud->removeFilteredPoints(callback);
+	centerpointsPointCloud->getDGMOctree()->clear();
+	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 
 	auto centerpoints = centerpointsPointCloud->getAllPointsAndScalarFieldValue(idxCPC_chainage);
 	
@@ -1874,7 +1878,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 						// Compute the ratio between chainage change and distance.
 						float dChainage = chainage - endpointChainage;
 						float ratio = dChainage / distance;
-						if(distance < 5) {
+						if(distance < 0.7) {
 							if(ratio > 0.9 || distance < desc.maxDistance) {
 								inserted = true;
 								discarded = false;
@@ -2033,45 +2037,41 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	std::vector<std::vector<size_t>> centerlines = std::vector<std::vector<size_t>>();
 	sortCenterpointsIntoCenterlines(centerpoints, centerlines, callback);
 
-	std::sort(centerlines.begin(), centerlines.end(), [&](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {
+	std::sort(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &lhs, std::vector<size_t> &rhs) -> bool {
 		return centerpoints[lhs.front()].second < centerpoints[rhs.front()].second;
 	});
 
 	auto fuseCenterlines = [&](std::vector<std::vector<size_t>> &centerlines) {
-		for(int idx_line = 0; idx_line < centerlines.size() - 1; idx_line++) {
+		for(int idx_line = 0; idx_line < centerlines.size(); idx_line++) {
 			auto &line = centerlines[idx_line];
-			auto &nextline = centerlines[idx_line + 1];
 
-			// Get the respective start and end points.
-			auto endpoint = centerpoints[line.back()];
-			auto startpoint = centerpoints[nextline.front()];
+			for(int offset = 1; offset < centerlines.size() - idx_line; offset++) {
+				auto &nextline = centerlines[idx_line + offset];				
+				// Get the respective start and end points.
+				auto endpoint = centerpoints[line.back()];
+				auto startpoint = centerpoints[nextline.front()];
 
-			float distance = (startpoint.first - endpoint.first).norm();
-			// Compute the ratio between chainage change and distance.
-			float dChainage = endpoint.second - startpoint.second;
-			float ratio = dChainage / distance;
-			if(distance < desc.maxDistance || (distance <= 0.7f && ratio > 0.5f)) {
-				line.insert(line.end(), nextline.begin(), nextline.end());
+				float distance = (startpoint.first - endpoint.first).norm();
+				// Compute the ratio between chainage change and distance.
+				float dChainage = std::abs(endpoint.second - startpoint.second);
+				float ratio = dChainage / distance;
+				if(distance < desc.maxDistance || (distance <= 0.7f && ratio > 0.9f)) {
+					line.insert(line.end(), nextline.begin(), nextline.end());
 
-				nextline.clear();
-				centerlines.erase(centerlines.begin() + idx_line + 1);
-				idx_line--;
+					nextline.clear();
+					centerlines.erase(centerlines.begin() + idx_line + offset);
+					offset--;
+				}
 			}
 		}
 	};
 
-	//TODO: CHange this to alignments.
+	BLUE_LOG(trace) << "Fusing centerlines";
+
 	fuseCenterlines(centerlines);
 
-	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool {
-		//float centerlineLength = (centerpoints[line.back()].first - centerpoints[line.front()].first).norm();
-		float centerlineLength = std::fabsf(centerpoints[line.back()].second - centerpoints[line.front()].second);
-		size_t numCenterlinePoints = line.size();
-		return numCenterlinePoints < desc.minSegmentPoints || centerlineLength < desc.minSegmentLength;
-	});
-
-	centerlines.erase(end, centerlines.end());
-
+	BLUE_LOG(trace) << "Done.";
+	
 	if (centerlines.empty()) {
 		BLUE_LOG(trace) << "No centerlines remaining after sorting. Choose a lower \"minSegmentPoints\" threshold and/or lower \"minSegmentLength\" threshold.";
 		return 0;
@@ -2164,6 +2164,67 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		callback->stop();
 	
 	BLUE_LOG(trace) << "Done.";
+
+	std::sort(alignments.begin(), alignments.end(), [&](std::vector<std::pair<CCVector3, ScalarType>> &lhs, std::vector<std::pair<CCVector3, ScalarType>> &rhs) -> bool {
+		return lhs.front().second < rhs.front().second;
+	});
+
+	std::for_each(alignments.begin(), alignments.end(), [](std::vector<std::pair<CCVector3, ScalarType>> &line) {
+		std::sort(line.begin(), line.end(), [&](std::pair<CCVector3, ScalarType> &lhs, std::pair<CCVector3, ScalarType> &rhs) -> bool {
+			return lhs.second < rhs.second;
+		});
+	});
+
+	BLUE_LOG(trace) << "Fusing Alignments.";
+
+	auto fuseAlignments = [desc](std::vector<std::vector<std::pair<CCVector3, ScalarType>>> &alignments) {
+		for(int idx_line = 0; idx_line < alignments.size(); idx_line++) {
+			auto &line = alignments[idx_line];
+
+			for(int offset = 1; offset < alignments.size() - idx_line; offset++) {
+				auto endpoint = line.back();
+				auto &nextline = alignments[idx_line + offset];
+
+				// Get the respective start and end points.
+				auto startpoint = nextline.front();
+
+				float distance = (startpoint.first - endpoint.first).norm();
+				// Compute the ratio between chainage change and distance.
+				float dChainage = std::abs(startpoint.second - endpoint.second);
+				float ratio = dChainage / distance;
+				if(distance < 0.5f || (distance <= 0.7f && ratio > 0.5f)) {
+					line.insert(line.end(), nextline.begin(), nextline.end());
+
+					nextline.clear();
+					alignments.erase(alignments.begin() + idx_line + offset);
+					offset--;
+				}
+			}
+		}
+	};
+
+	fuseAlignments(alignments);
+
+	BLUE_LOG(trace) << "Done.";	
+
+	auto end = std::remove_if(alignments.begin(), alignments.end(), [&](std::vector<std::pair<CCVector3, ScalarType>> &line) -> bool {
+		//float centerlineLength = (centerpoints[line.back()].first - centerpoints[line.front()].first).norm();
+		float centerlineLength = std::fabsf(line.back().second - line.front().second);
+		size_t numCenterlinePoints = line.size();
+		return numCenterlinePoints < desc.minSegmentPoints || centerlineLength < desc.minSegmentLength;
+	});
+
+	alignments.erase(end, alignments.end());
+
+	std::sort(alignments.begin(), alignments.end(), [&](std::vector<std::pair<CCVector3, ScalarType>> &lhs, std::vector<std::pair<CCVector3, ScalarType>> &rhs) -> bool {
+		return lhs.front().second < rhs.front().second;
+	});
+
+	std::for_each(alignments.begin(), alignments.end(), [](std::vector<std::pair<CCVector3, ScalarType>> &line) {
+		std::sort(line.begin(), line.end(), [&](std::pair<CCVector3, ScalarType> &lhs, std::pair<CCVector3, ScalarType> &rhs) -> bool {
+			return lhs.second < rhs.second;
+		});
+	});
 
 	// Reserve space for the centerpoints points and color them blue.
 	long totalPoints = 0;

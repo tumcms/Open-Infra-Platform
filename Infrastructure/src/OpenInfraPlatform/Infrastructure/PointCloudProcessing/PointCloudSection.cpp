@@ -256,7 +256,7 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 					//if(cloud3D->getPointScalarValue(i) < 0.75f * mean || cloud3D->getPointScalarValue(i + 1) < 0.75f * mean)
 					//	invalidPairIndices.push_back(i / 2);
 
-					if(cloud3D->getPointScalarValue(i) < 20 || cloud3D->getPointScalarValue(i + 1) < 20)
+					if(cloud3D->getPointScalarValue(i) < 15 || cloud3D->getPointScalarValue(i + 1) < 15)
 						invalidPairIndices.push_back(i / 2);
 				}
 				
