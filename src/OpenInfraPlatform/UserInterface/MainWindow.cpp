@@ -2799,8 +2799,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxSectionSize_v
 	ui_->horizontalSliderSectionSize->setValue(value);
 	ui_->horizontalSliderSectionSize->blockSignals(false);
 
-	if(ui_->checkBoxPreview->checkState() == Qt::CheckState::Checked)
-		view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->doubleSpinBoxSectionSize->value());
+	//if(ui_->checkBoxPreview->checkState() == Qt::CheckState::Checked)
+	//	view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->doubleSpinBoxSectionSize->value());
 
 }
 
@@ -2810,8 +2810,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_horizontalSliderSectionSiz
 	ui_->doubleSpinBoxSectionSize->setValue(value);
 	ui_->doubleSpinBoxSectionSize->blockSignals(false);
 
-	if(ui_->checkBoxPreview->checkState() == Qt::CheckState::Checked)
-		view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
+	//if(ui_->checkBoxPreview->checkState() == Qt::CheckState::Checked)
+	//	view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectSegmentedPointsColor_clicked()

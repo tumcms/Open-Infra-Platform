@@ -1879,7 +1879,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 						float dChainage = chainage - endpointChainage;
 						float ratio = dChainage / distance;
 						if(distance < 0.7) {
-							if(ratio > 0.9 || distance < desc.maxDistance) {
+							if(ratio > 0.9 || (distance < desc.maxDistance && ratio > 0.7f)) {
 								inserted = true;
 								discarded = false;
 								line.push_back(i);
@@ -2055,7 +2055,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				// Compute the ratio between chainage change and distance.
 				float dChainage = std::abs(endpoint.second - startpoint.second);
 				float ratio = dChainage / distance;
-				if(distance < desc.maxDistance || (distance <= 0.7f && ratio > 0.9f)) {
+				if(distance < desc.maxDistance || (distance <= 0.7f && ratio > 0.9f) || (startpoint.second < endpoint.second && distance <=4.0f && ratio > 0.8f)) {
 					line.insert(line.end(), nextline.begin(), nextline.end());
 
 					nextline.clear();
@@ -2192,8 +2192,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				// Compute the ratio between chainage change and distance.
 				float dChainage = std::abs(startpoint.second - endpoint.second);
 				float ratio = dChainage / distance;
-				if(distance < 0.5f || (distance <= 0.7f && ratio > 0.5f)) {
+				if(distance < 0.5f || (distance <= 0.7f && ratio > 0.5f) || (startpoint.second < endpoint.second && distance <= 2.0f && ratio > 0.9f)) {
 					line.insert(line.end(), nextline.begin(), nextline.end());
+
+					std::sort(line.begin(), line.end(), [&](std::pair<CCVector3, ScalarType> &lhs, std::pair<CCVector3, ScalarType> &rhs) -> bool {
+						return lhs.second < rhs.second;
+					});
 
 					nextline.clear();
 					alignments.erase(alignments.begin() + idx_line + offset);
