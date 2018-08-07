@@ -84,7 +84,7 @@ namespace OpenInfraPlatform {
 					
 
 					//auto classname = value->classname(); //Gibt z.B. IfcLabel o.ä. zurück
-					////static_cast<classname>(value);
+					//static_cast<classname>(value);
 					//auto castedValue = value.m_value; //gibt m_value zurück aus IfcLabel, also den eigentlichen Wert, der als String o.ö. gespeichert ist
 					//auto castedType = typeid(castedValue).name(); //gibt den Typ von m_value zurück, also z.B. String
 					//
@@ -95,7 +95,8 @@ namespace OpenInfraPlatform {
 					//	QVariant value2 = QVariant(castedValue);
 					//	return value2;
 					
-					itemData << QVariant(name) << QVariant(ss.str().data()) << QVariant(value ? value->classname() : "nullptr");
+					//itemData << QVariant(name) << QVariant(ss.str().data()) << QVariant(value ? value->classname() : "nullptr");
+					itemData << QVariant(name) << QVariant("m_type") << QVariant(value ? value->classname() : "nullptr");
 					//itemData << QVariant(name) << QVariant("m_type") << QVariant(value ? value->classname() : "nullptr");
 
 					child->setItemData(itemData);
@@ -178,7 +179,17 @@ namespace OpenInfraPlatform {
 						TreeItem* vectorChild = new TreeItem(ptr, child);
 						QList<QVariant> vectorData;
 						//doesn't work yet since it is of type T and that requires the parser again (rekusiver aufruf)
-						
+						//T value = it;
+						//
+						//auto parse = [&](auto item) {
+						//	visit_struct::for_each(item, parser_);
+						//};
+						//
+						//if(ptr && ptr.get() != nullptr) {
+						//	if(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(ptr))
+						//		OpenInfraPlatform::IfcAlignment1x1::castToVisitableAndCall<decltype(parse), void>(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(ptr), parse);
+						//}
+						//vectorData << QVariant(i++) << QVariant(value) << QVariant(typeid(value).name());
 						vectorData << QVariant(i++) << QVariant("") << QVariant("");
 						vectorChild->setItemData(vectorData);
 						child->appendChild(vectorChild);
