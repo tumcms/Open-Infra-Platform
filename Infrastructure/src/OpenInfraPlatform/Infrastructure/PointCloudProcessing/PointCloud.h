@@ -22,8 +22,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "OpenInfraPlatform/Infrastructure/namespace.h"
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
 
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/Octree.h"
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
 
 #include <BlueFramework/Core/Math/vector.h>
 #include <BlueFramework/Core/memory.h>
@@ -55,13 +55,13 @@ namespace OpenInfraPlatform {
 
 			void computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			void computeChainage(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
-
-			void computeChainage2(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
-			
+			void computeChainage(ChainageComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+						
 			std::vector<std::pair<CCVector3, ScalarType>> getAllPointsAndScalarFieldValue(int index);
 
-			void computeGrid(int size = 1);
+			void computeGrid(GridComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			void resetGrid();
 
 			void alignOnMainAxis();
 
@@ -163,9 +163,12 @@ namespace OpenInfraPlatform {
 			void computeMainAxis();
 
 			void computeIndices();
-
-
+			
 			void init();
+
+			void computeChainageOctreeBased(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+
+			void computeChainageGridBased(Enums::eChainageComputationInterpolationMethod method, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 
 			const std::tuple<ScalarType, ScalarType> getScalarFieldMinAndMax(int idx) const;

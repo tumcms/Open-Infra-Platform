@@ -155,6 +155,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	connect(ui_->horizontalSliderRemoveDuplicatesThreshold, &QSlider::valueChanged, ui_->doubleSpinBoxRemoveDuplicatesThreshold, &QDoubleSpinBox::setValue);
 	connect(ui_->horizontalSliderPercentileSegmentationKernelRadius, &QSlider::valueChanged, ui_->doubleSpinBoxPercentileSegmentationKernelRadius, &QDoubleSpinBox::setValue);
 
+	// Add items to railway combo boxes.
 	ui_->comboBoxFilterDensityMetric->addItem("kNN", QVariant(0));
 	ui_->comboBoxFilterDensityMetric->addItem("2D", QVariant(1));
 	ui_->comboBoxFilterDensityMetric->addItem("3D", QVariant(2));
@@ -169,6 +170,15 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	ui_->comboBoxFilterPositionDimension->addItem("Y", QVariant(1));
 	ui_->comboBoxFilterPositionDimension->addItem("Z", QVariant(2));
 	ui_->comboBoxFilterPositionDimension->setCurrentIndex(2);
+
+	ui_->comboBoxInterpolationBase->addItem("Grid", QVariant(0));
+	ui_->comboBoxInterpolationBase->addItem("Octree", QVariant(1));
+	ui_->comboBoxInterpolationBase->setCurrentIndex(0);
+
+	ui_->comboBoxInterpolationMethod->addItem("None", QVariant(0));
+	ui_->comboBoxInterpolationMethod->addItem("Barycentric", QVariant(1));
+	ui_->comboBoxInterpolationMethod->addItem("Linear", QVariant(2));
+	ui_->comboBoxInterpolationMethod->setCurrentIndex(0);
 
 	// Put the buttons into these groups to avoid auto toggeling etc.
 	radioButtons2D3D_.addButton(ui_->radioButtonRender2D);
@@ -187,6 +197,20 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	//connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::updateSignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setValue);
 	
 	ui_->progressBarPointCloudProcessing->setVisible(false);
+
+
+	// Make railways tab scrollable
+	QScrollArea* scrollArea = new QScrollArea(this);
+	QWidget* page = new QWidget(this);
+
+	page->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+	page->setLayout(ui_->verticalLayout_6);
+	scrollArea->setWidget(page);
+	scrollArea->setWidgetResizable(true);
+	int idx = ui_->tabPointCloudProcessing->indexOf(ui_->tabRailways);
+	ui_->tabPointCloudProcessing->removeTab(idx);
+	ui_->tabPointCloudProcessing->addTab(scrollArea, tr("Railways"));
+	
 
 #ifdef _DEBUG
 	// Show debug menu only in debug mode
@@ -2357,7 +2381,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDuplicateFi
 	if(pointCloud) {
 		// Initialize the filter parameters.
 		buw::DuplicateFilterDescription desc;
-		desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
+		desc.dim = ui_->radioButtonRender3D->isChecked() ? 
+			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Volume3D :
+			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Sections2D;
 		desc.minDistance = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
 
 		// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
@@ -2382,7 +2408,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDensityFilt
 	if(pointCloud) {
 		// Initialize the filter parameters
 		buw::LocalDensityFilterDescription desc;
-		desc.dim = ui_->radioButtonRender3D->isChecked() ? buw::ePointCloudFilterDimension::Volume3D : buw::ePointCloudFilterDimension::Sections2D;
+		desc.dim = ui_->radioButtonRender3D->isChecked() ?
+			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Volume3D :
+			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Sections2D;
 		desc.kernelRadius = (float)(ui_->doubleSpinBoxFilterDensityKernelRadius->value()) / 100.0f;
 		desc.minThreshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
 		desc.density = CCLib::GeometricalAnalysisTools::Density(ui_->comboBoxFilterDensityMetric->currentData().toInt());
@@ -2549,6 +2577,49 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetRateOfChang
 		pointCloud->resetScalarField("SegmentedRateOfChange");
 		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeGrid_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::GridComputationDescription desc;
+		desc.size = ui_->spinBoxGridSize->value();
+		desc.kernelRadius = ui_->doubleSpinBoxGridKernelRadius->value();
+		pointCloud->computeGrid(desc, callback_);
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetGrid_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->resetGrid();
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeChainage_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::ChainageComputationDescription desc;
+		desc.base = (Infrastructure::Enums::eChainageComputationBase) ui_->comboBoxInterpolationBase->currentData().toInt();
+		desc.bUseInterpolation = ui_->checkBoxInterpolation->isChecked();
+		desc.interpolation = (Infrastructure::Enums::eChainageComputationInterpolationMethod) ui_->comboBoxInterpolationMethod->currentData().toInt();
+		desc.bUseSmoothing = ui_->checkBoxSmoothing->isChecked();
+		desc.sigma = ui_->doubleSpinBoxSmoothingSigma->value();
+		desc.sigmaSF = ui_->doubleSpinBoxSmoothingSigmaSF->value();
+
+		pointCloud->computeChainage(desc, callback_);
+
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetChainage_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud)
+		pointCloud->resetScalarField("Chainage");
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRailways_clicked()

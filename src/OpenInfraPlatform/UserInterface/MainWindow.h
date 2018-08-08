@@ -214,6 +214,12 @@ namespace OpenInfraPlatform
 			void on_pushButtonApplyRateOfChangeSegmentation_clicked();
 			void on_pushButtonResetRateOfChangeSegmentation_clicked();
 			
+			void on_pushButtonComputeGrid_clicked();
+			void on_pushButtonResetGrid_clicked();
+
+			void on_pushButtonComputeChainage_clicked();
+			void on_pushButtonResetChainage_clicked();
+
 			void on_pushButtonApplySegmentRailways_clicked();
 			void on_pushButtonResetSegmentRailways_clicked();
 

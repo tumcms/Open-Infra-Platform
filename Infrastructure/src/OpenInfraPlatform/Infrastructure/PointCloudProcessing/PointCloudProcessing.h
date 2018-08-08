@@ -38,25 +38,55 @@ namespace OpenInfraPlatform
 {
 	namespace Infrastructure
 	{
+		namespace Enums {
+			enum ePointCloudFilterDimension {
+				NoDimension,
+				Volume3D,
+				Sections2D
+			};
+
+			enum eChainageComputationBase {
+				Grid = 0,
+				Octree = 1
+			};
+
+			enum eChainageComputationInterpolationMethod {
+				NoInterpolation = 0,
+				Barycentric = 1,
+				Linear = 2
+			};
+		}
+
 		struct LaserPoint
 		{
 			buw::Vector3d position;
 			buw::Vector3f color;
 		};
+		struct GridComputationDescription {
+			int size = 1;
+			float kernelRadius = 100.0f;
 
-		enum ePointCloudFilterDimension {
-			None,
-			Volume3D,
-			Sections2D
+			GridComputationDescription() = default;
+		};
+
+		struct ChainageComputationDescription {
+			bool bUseSmoothing = true, bUseInterpolation = true;
+
+			Enums::eChainageComputationBase base;
+			Enums::eChainageComputationInterpolationMethod interpolation;
+
+			float sigma = 1.0f , sigmaSF = -1.0f;
+
+			ChainageComputationDescription() = default;
 		};
 
 		struct DuplicateFilterDescription {
-			ePointCloudFilterDimension dim;
+			Enums::ePointCloudFilterDimension dim;
 			double minDistance = 0.0;			
 		};
 
 		struct LocalDensityFilterDescription {
-			ePointCloudFilterDimension dim;
+			Enums::ePointCloudFilterDimension dim;
 			float minThreshold, kernelRadius;
 			CCLib::GeometricalAnalysisTools::Density density;
 		};
@@ -103,7 +133,6 @@ namespace buw
 	//using OpenInfraPlatform::Infrastructure::importLASPointCloud;
 	//using OpenInfraPlatform::Infrastructure::importBINPointCloud;
 	using OpenInfraPlatform::Infrastructure::LaserPoint;
-	using OpenInfraPlatform::Infrastructure::ePointCloudFilterDimension;
 	using OpenInfraPlatform::Infrastructure::DuplicateFilterDescription;
 	using OpenInfraPlatform::Infrastructure::LocalDensityFilterDescription;
 	using OpenInfraPlatform::Infrastructure::PositionFilterDescription;
@@ -112,6 +141,8 @@ namespace buw
 	using OpenInfraPlatform::Infrastructure::RailwaySegmentationDescription;
 	using OpenInfraPlatform::Infrastructure::CenterlineComputationDescription;
 	using OpenInfraPlatform::Infrastructure::CenterlineCurvatureComputationDescription;
+	using OpenInfraPlatform::Infrastructure::GridComputationDescription;
+	using OpenInfraPlatform::Infrastructure::ChainageComputationDescription;
 }
 
 #endif // end define OpenInfraPlatform_Infrastructure_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h

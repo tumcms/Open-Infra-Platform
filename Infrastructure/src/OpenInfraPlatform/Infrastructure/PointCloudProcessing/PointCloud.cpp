@@ -301,7 +301,27 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float 
 		callback->stop();
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(ChainageComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	switch(desc.base) {
+	case OpenInfraPlatform::Infrastructure::Enums::eChainageComputationBase::Octree:
+		this->computeChainageOctreeBased(callback);
+		break;
+	case OpenInfraPlatform::Infrastructure::Enums::eChainageComputationBase::Grid:
+		this->computeChainageGridBased(desc.interpolation, callback);
+		break;
+	default:
+		BLUE_LOG(error) << "No base method for chainage computation selected.";
+	}
+
+	if(desc.bUseSmoothing) {
+		int idx_chainage = getScalarFieldIndexByName("Chainage");
+		setCurrentOutScalarField(idx_chainage);
+		CCLib::ScalarFieldTools::applyScalarFieldGaussianFilter(desc.sigma, this, desc.sigmaSF, callback.get(), octree_.get());
+	}
+}
+
+void OpenInfraPlatform::Infrastructure::PointCloud::computeChainageOctreeBased(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	if (callback)
 		callback->start();
 
@@ -393,46 +413,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 				std::tuple<CCVector3, float, CCVector2, float> cellCenterWithProjectionLengthAlongAxis = std::tuple<CCVector3, float, CCVector2, float>(nss.queryPoint, axis.dot(CCVector2(nss.queryPoint.x, nss.queryPoint.y)), axis, points->size());
 #pragma omp critical
 				octreeCellMap.insert(std::pair<CCLib::DgmOctree::CellCode, std::tuple<CCVector3, float, CCVector2, float>>(code, cellCenterWithProjectionLengthAlongAxis));
-
-				//std::vector<std::pair<size_t, double>> indexedProjectionLength;
-
-				//for (size_t i = 0; i < points->size(); i++) {
-				//	auto point3d = *points->getPoint(i);
-				//	CCVector2 point2d = CCVector2(point3d.x, point3d.y);
-				//	ScalarType value = axis.dot(point2d);
-				//	size_t index = points->getPointGlobalIndex(i);
-				//	setPointScalarValue(index, value);
-				//	//indexedProjectionLength.push_back(std::pair<size_t, double>(index, value));
-				//}
-
-				//float length = 10.0f;
-				// std::sort(indexedProjectionLength.begin(), indexedProjectionLength.end(),
-				//          [](const std::pair<size_t, double> &lhs, const std::pair<size_t, double> &rhs) -> bool { return lhs.second < rhs.second; });
-				//
-				// ScalarType min = indexedProjectionLength.front().second, max = indexedProjectionLength.back().second;
-				// size_t numSections = (std::floorf(length * max) - std::floorf(length * min)) + 1;
-				// auto sections = std::vector<buw::ReferenceCounted<buw::PointCloudSection>>(numSections);
-				// int base = std::floorf(length * min);
-				//
-				// for (auto it : indexedProjectionLength) {
-				//	size_t sectionId = std::floorf(length * it.second) - base;
-				//
-				//	if (!sections[sectionId]) {
-				//		sections[sectionId] = buw::makeReferenceCounted<buw::PointCloudSection>(static_cast<GenericIndexedCloudPersist *>(this));
-				//		sections[sectionId]->setLength(length);
-				//		sections[sectionId]->cellCode_ = code;
-				//	}
-				//
-				//	sections[sectionId]->addPointIndex(it.first);
-				//}
-				//
-				// auto end =
-				//  std::remove_if(sections.begin(), sections.end(), [](const buw::ReferenceCounted<buw::PointCloudSection> &section) -> bool { return section == nullptr; });
-				// std::for_each(sections.begin(), end, [](buw::ReferenceCounted<buw::PointCloudSection> &section) { section->resize(section->size()); });
-				//
-				//#pragma omp critical
-				//{ sections_.insert(sections_.end(), sections.begin(), end); }
-				
+								
 				// Update our callback.
 				 processedCells++;
 				 if (processedCells >= numCellsPerPercent) {
@@ -445,7 +426,6 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 				// Stop the callback if we abort our function.
 				if (tid == 0 && callback)
 					callback->stop();
-				//#pragma omp critical
 				err = -2;
 			}
 		}
@@ -524,77 +504,14 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(buw::Referen
 	}
 
 	if(callback)
-		callback->stop();
-
-	//Smooth chainage scalar field.
-	if(callback)
-		callback->start();
-	
-	setCurrentOutScalarField(idx_chainage);
-	CCLib::ScalarFieldTools::applyScalarFieldGaussianFilter(2, this, -1, callback.get(), octree_.get());
-	
-	if(callback)
-		callback->stop();
+		callback->stop();	
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage2(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+void OpenInfraPlatform::Infrastructure::PointCloud::computeChainageGridBased(OpenInfraPlatform::Infrastructure::Enums::eChainageComputationInterpolationMethod method, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
+	//TODO: Use different and implement different interpolation methods.
 	if(callback)
-		callback->start();
-
-	computeGrid(1);
-//	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(100);
-//	std::map<std::pair<int, int>, CCVector2> axes;
-//	int tid = 0;
-//
-//#pragma omp parallel private(tid) shared(level,axes)
-//	{
-//		tid = omp_get_thread_num();
-//		auto octree = buw::Octree(*octree_);
-//#pragma omp for
-//		for(int i = 0; i < grid_.size(); i++) {
-//			auto &cell = grid_.begin();
-//			advance(cell, i);
-//			if(cell->second.size() > 0) {
-//				CCVector3 center = CCVector3(0, 0, 0);
-//				for(auto idx : cell->second) {
-//					center += (*getPoint(idx) / (float)cell->second.size());
-//				}
-//				std::vector<CCLib::DgmOctree::PointDescriptor> neighbours;
-//				int numPoints = octree.getPointsInSphericalNeighbourhood(center, 100, neighbours, level);
-//
-//				auto getPCA = [&]() -> CCVector2 {
-//					// Matrix which is capable of holding all points for PCA.
-//					Eigen::MatrixX2d mat;
-//					mat.resize(numPoints, 2);
-//					for(size_t i = 0; i < numPoints; i++) {
-//						auto pos = *neighbours[i].point;
-//						mat.row(i) = Eigen::Vector2d(pos.x, pos.y);
-//					}
-//
-//					// Do PCA to find the largest eigenvector -> main axis.
-//					Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
-//					Eigen::MatrixXd cov = centered.adjoint() * centered;
-//					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-//					Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1).normalized();
-//
-//					return CCVector2(vec.x(), vec.y());
-//				};
-//
-//				auto axis = getPCA();
-//#pragma omp critical
-//				axes.insert(std::pair<std::pair<int, int>, CCVector2>(cell->first, axis));
-//			}
-//		}
-//	}
-//	
-//	auto computeCenter = [&](std::vector<uint32_t> indices)->CCVector3 {
-//		CCVector3 center = CCVector3(0, 0, 0);
-//		for(auto idx : indices) {
-//			center += (*getPoint(idx) / (float)indices.size());
-//		}
-//		return center;
-//	};
+		callback->start();	
 
 	//TODO: Insert map into a vector, sort it and then use this.
 	std::vector<std::pair<int, int>> grid = std::vector<std::pair<int, int>>();
@@ -644,7 +561,6 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage2(buw::Refere
 
 			float fmax = std::numeric_limits<float>::max();
 			std::pair<std::pair<int, int>, float> nearestNeighbours[3] = { { {0,0}, fmax }, { { 0,0 }, fmax } , { { 0,0 }, fmax } };
-			//float distances[3] = { LONG_MAX, LONG_MAX, LONG_MAX };
 
 			for(int dx = -1; dx < 2; dx++) {
 				for(int dy = -1; dy < 2; dy++) {
@@ -690,17 +606,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage2(buw::Refere
 		auto shift = std::get<1>(grid_[*cell]) - origin;
 		origin += shift;
 		chainage += std::get<2>(grid_[*cell]).dot(CCVector2(shift.x, shift.y));
-	}
-
-	//for(auto cell : grid_) {
-	//	for(auto idx : cell.second) {
-	//		CCVector3 point3D = *getPoint(idx);
-	//		setPointScalarValue(idx, axes[cell.first].dot(CCVector2(point3D.x, point3D.y)));
-	//	}
-	//}
-
-	setCurrentOutScalarField(idx_chainage);
-	CCLib::ScalarFieldTools::applyScalarFieldGaussianFilter(2, this, -1, callback.get(), octree_.get());
+	}	
 
 	if(callback)
 		callback->stop();
@@ -717,15 +623,18 @@ std::vector<std::pair<CCVector3, ScalarType>> OpenInfraPlatform::Infrastructure:
 	return pointsAndScalarValues;
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid(int size) {
+void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid(buw::GridComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	grid_.clear();
 	grid_ = std::map<std::pair<int, int>, std::tuple<std::vector<uint32_t>,CCVector3, CCVector2>>();
+
+	// Sort all points into the grid given their position.
 	for_each([&](size_t i) {
 		auto pos = getPoint(i);
-		std::pair<int, int> key = std::pair<int, int>((int)(pos->x / size), (int)(pos->y / size));
+		std::pair<int, int> key = std::pair<int, int>((int)(pos->x / desc.size), (int)(pos->y / desc.size));
 		std::get<0>(grid_[key]).push_back(i);
 	});
 
+	// Lambda function which computes the center of mass of the given indices.
 	auto computeCenter = [&](std::vector<uint32_t> indices)->CCVector3 {
 		CCVector3 center = CCVector3(0, 0, 0);
 		for(auto idx : indices) {
@@ -734,28 +643,48 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid(int size) {
 		return center;
 	};
 
-	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(100);
+	// Find the best level for extraction given kernel radius.
+	unsigned char level = octree_->findBestLevelForAGivenNeighbourhoodSizeExtraction(desc.kernelRadius);
 	int tid = 0;
 
-#pragma omp parallel private(tid) shared(level)
+	if(callback)
+		callback->start();
+
+#pragma omp parallel private(tid) shared(level, desc)
 	{
+		// Setup variables for progress callback.
 		tid = omp_get_thread_num();
+		long numCells = grid_.size();
+		long numCellsPerThread = numCells / omp_get_num_threads();
+		long numCellsPerPercent = numCellsPerThread / 100;
+
+		int percentageCompleted = 0;
+		long processedCells = 0;
+
+		// Clone the octree for parallelization.
 		auto octree = buw::Octree(*octree_);
-#pragma omp for
+
+#pragma omp for schedule(dynamic, 20)
 		for(int i = 0; i < grid_.size(); i++) {
+
+			// Move the iterator to the cell processed by this thread.
 			auto &cell = grid_.begin();
 			advance(cell, i);
+
+			//Number of points in the cell.
 			long cellSize = std::get<0>(cell->second).size();
 
 			if(cellSize > 0) {
+				// Center of mass of the cell.
 				CCVector3 center = computeCenter(std::get<0>(cell->second));
 				std::get<1>(cell->second) = center;
 
+				// Points in spherical neighbourhood around the center.
 				std::vector<CCLib::DgmOctree::PointDescriptor> neighbours;
-				int numPoints = octree.getPointsInSphericalNeighbourhood(center, 100, neighbours, level);
+				int numPoints = octree.getPointsInSphericalNeighbourhood(center, desc.kernelRadius, neighbours, level);
 
+				// Lambda to compute PCA of all points in the spherical neighbourhood.
 				auto getPCA = [&]() -> CCVector2 {
-					// Matrix which is capable of holding all points for PCA.
 					Eigen::MatrixX2d mat;
 					mat.resize(numPoints, 2);
 					for(size_t i = 0; i < numPoints; i++) {
@@ -763,7 +692,6 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid(int size) {
 						mat.row(i) = Eigen::Vector2d(pos.x, pos.y);
 					}
 
-					// Do PCA to find the largest eigenvector -> main axis.
 					Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
 					Eigen::MatrixXd cov = centered.adjoint() * centered;
 					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
@@ -771,12 +699,32 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid(int size) {
 
 					return CCVector2(vec.x(), vec.y());
 				};
-//				auto axis = getPCA();
-//#pragma omp critical
+
+				// Store the axis in the grid.
 				std::get<2>(cell->second) = getPCA();
+			}
+
+			processedCells++;
+
+			if(tid == 0 && callback) {
+				if(processedCells == numCellsPerPercent) {
+					processedCells = 0;
+					percentageCompleted++;
+
+					callback->update(percentageCompleted);
+				}
 			}
 		}
 	}
+
+	if(callback)
+		callback->stop();
+}
+
+void OpenInfraPlatform::Infrastructure::PointCloud::resetGrid()
+{
+	if(!grid_.empty())
+		grid_.clear();
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloud::alignOnMainAxis() {
@@ -832,7 +780,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyLocalDensityFilter(Local
 	int err = 0;
 
 	// Compute the density, either for the volume or the sections.
-	if (desc.dim == ePointCloudFilterDimension::Volume3D) {
+	if (desc.dim == Enums::ePointCloudFilterDimension::Volume3D) {
 		err = computeLocalDensity((CCLib::GeometricalAnalysisTools::Density)desc.density, desc.kernelRadius, callback);
 	} else {
 		// Start the callback and set the progress as percentage of sections processed.
@@ -873,7 +821,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyDuplicateFilter(Duplicat
 	int err = 0;
 
 	// Call flagDuplicatePoints on this or on all sections.
-	if (desc.dim == buw::ePointCloudFilterDimension::Volume3D) {
+	if (desc.dim == Enums::ePointCloudFilterDimension::Volume3D) {
 		err = flagDuplicatePoints(desc.minDistance, callback);
 
 		// Manually stop the callback if one has been passed.
@@ -1069,7 +1017,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init() {
 	octree_->build();
 	BLUE_LOG(trace) << "Finished building octree.";
 
-	computeChainage2();
+	//computeChainageGridBased();
 	//filterRelativeHeightWithGrid(0.5, 0.5, nullptr);
 	//computeIndices();
 }
@@ -1514,7 +1462,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesOnGridSegment
 	if (callback)
 		callback->start();
 
-	computeGrid();
+	computeGrid({});
 
 	// Get the filtered scalar field.
 	int idx_filtered = getScalarFieldIndexByName("Filtered");
@@ -1752,7 +1700,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	// Remove points closer than 1mm to avoid "black holes" of insane density.
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 	buw::DuplicateFilterDescription dfd;
-	dfd.dim = buw::ePointCloudFilterDimension::Volume3D;
+	dfd.dim = Enums::ePointCloudFilterDimension::Volume3D;
 	dfd.minDistance = 0.002;
 	centerpointsPointCloud->applyDuplicateFilter(dfd, callback);
 	centerpointsPointCloud->computeIndices();
@@ -1763,7 +1711,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	// Remove centerline points which are outliers.	
 	buw::LocalDensityFilterDescription ldfd;
 	ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
-	ldfd.dim = buw::ePointCloudFilterDimension::Volume3D;
+	ldfd.dim = Enums::ePointCloudFilterDimension::Volume3D;
 	ldfd.kernelRadius = 0.1f;
 	ldfd.minThreshold = 15;
 	centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
@@ -2439,7 +2387,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 	// Remove points closer than 1mm to avoid "black holes" of insane density.
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 	buw::DuplicateFilterDescription dfd;
-	dfd.dim = buw::ePointCloudFilterDimension::Volume3D;
+	dfd.dim = Enums::ePointCloudFilterDimension::Volume3D;
 	dfd.minDistance = 0.002;
 	centerpointsPointCloud->applyDuplicateFilter(dfd, callback);
 	centerpointsPointCloud->computeIndices();
@@ -2450,7 +2398,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines2(const buw
 	// Remove centerline points which are outliers.	
 	buw::LocalDensityFilterDescription ldfd;
 	ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
-	ldfd.dim = buw::ePointCloudFilterDimension::Volume3D;
+	ldfd.dim = Enums::ePointCloudFilterDimension::Volume3D;
 	ldfd.kernelRadius = 0.05f;
 	ldfd.minThreshold = 15;
 	centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
@@ -3396,7 +3344,7 @@ const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint3
 
 buw::ReferenceCounted<buw::Octree> OpenInfraPlatform::Infrastructure::PointCloud::getDGMOctree() {
 	if (!octree_)
-		octree_ = std::make_shared<Octree>(this);
+		octree_ = std::make_shared<buw::Octree>(this);
 	return octree_;
 }
 
