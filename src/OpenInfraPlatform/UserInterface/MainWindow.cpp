@@ -2915,7 +2915,31 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_horizontalSliderPointSize_
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowSectionOOBB_clicked(bool checked) {
-	view_->getViewport()->setShowSectionOOBB(checked);
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		auto sections = pointCloud->getSections();
+		if(!sections.empty()) {
+			view_->getViewport()->setShowSectionOOBB(checked);
+		}
+		else {
+			// Open dialog and ask if sections should be computed.
+			QMessageBox dialog;
+			dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+			dialog.setIcon(QMessageBox::Icon::Question);
+			dialog.setText("No sections found. Do you want to compute sections now?");
+			dialog.setWindowTitle(tr("Disclaimer"));
+			dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+
+			if(dialog.exec() == QMessageBox::StandardButton::Yes) {
+				on_pushButtonCalculateSections_clicked();
+				
+				sections = pointCloud->getSections();
+				if(!sections.empty()) {
+					view_->getViewport()->setShowSectionOOBB(checked);
+				}
+			}
+		}
+	}			
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionLoad_Bridge() {

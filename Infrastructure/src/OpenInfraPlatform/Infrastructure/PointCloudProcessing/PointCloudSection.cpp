@@ -288,17 +288,79 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 				}
 			});
 
-			for(auto pair : pairs) {
-				if(associatedCloud->rgbColors() != nullptr) {
-					associatedCloud->setPointColor(pair.first, green);
-					associatedCloud->setPointColor(pair.second, red);
-				}
+			std::sort(pairs.begin(), pairs.end(), [&](std::pair<size_t, size_t> &lhs, std::pair<size_t, size_t> &rhs)->bool {
+				return mainAxis.dot(*associatedCloud->getPoint(lhs.first)) < mainAxis.dot(*associatedCloud->getPoint(rhs.first));
+			});
 
-				associatedCloud->setPointScalarValue(pair.first, -1);
-				associatedCloud->setPointScalarValue(pair.second, 1);
+			int current = 0;
+			std::vector<std::vector<size_t>> clusters = std::vector<std::vector<size_t>>();
+			clusters.push_back(std::vector<size_t>());			
+			
+			for(int i = 0; i < pairs.size(); i++) {
+				clusters[current].push_back(i);
+			
+				if(i < pairs.size() - 1) {
+					auto point = *associatedCloud->getPoint(pairs[i].first);
+					auto nextPoint = *associatedCloud->getPoint(pairs[i + 1].first);
+					if((CCVector2(point.x,point.y) - CCVector2(nextPoint.x, nextPoint.y)).norm() > 0.15f) {
+						clusters.push_back(std::vector<size_t>());
+						current++;
+					}
+				}
+			}
+			
+			std::for_each(clusters.begin(), clusters.end(), [&](std::vector<size_t> &vec) {
+				std::sort(vec.begin(), vec.end(), [&](size_t &lhs, size_t &rhs)->bool {
+					return associatedCloud->getPoint(pairs[lhs].first)->z < associatedCloud->getPoint(pairs[rhs].first)->z;
+				});
+			});
+
+			std::set<size_t> invalidPairIndices = std::set<size_t>();
+
+			for(auto it : clusters) {
+				if(it.size() > 0) {
+					auto endPoint = associatedCloud->getPoint(pairs[it[it.size() - 1]].first);
+					auto startPoint = associatedCloud->getPoint(pairs[it[0]].first);
+
+					if(std::abs(endPoint->z - startPoint->z) > 0.05f) {
+						float heightLimit = endPoint->z - 0.05f;
+
+						std::for_each(it.begin(), it.end(), [&](size_t &index) {
+							auto point = associatedCloud->getPoint(pairs[index].first);
+							if(point->z < heightLimit)
+								invalidPairIndices.insert(index);
+						});			
+					}
+				}
+			}
+			
+			std::vector<size_t> invalidPairIndicesSorted = std::vector<size_t>();
+			for(auto index : invalidPairIndices) {
+				invalidPairIndicesSorted.push_back(index);
+			}
+			
+			std::sort(invalidPairIndicesSorted.begin(), invalidPairIndicesSorted.end(), [&](size_t &lhs, size_t &rhs)->bool {
+				return lhs < rhs;
+			});
+
+			size_t offset = 0;
+			for(auto index : invalidPairIndicesSorted) {
+				pairs.erase(pairs.begin() + (index - offset));
+				offset++;
+			}
+
+			if(!pairs.empty()) {
+				for(auto pair : pairs) {
+					if(associatedCloud->rgbColors() != nullptr) {
+						associatedCloud->setPointColor(pair.first, green);
+						associatedCloud->setPointColor(pair.second, red);
+					}
+
+					associatedCloud->setPointScalarValue(pair.first, -1);
+					associatedCloud->setPointScalarValue(pair.second, 1);
+				}
 			}
 		}
-
 		return pairs;
 	}
 	else {

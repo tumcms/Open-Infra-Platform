@@ -49,7 +49,7 @@ namespace OpenInfraPlatform {
 
 			PointCloud(QString name) : ccPointCloud(name) { }
 
-			~PointCloud();
+			virtual ~PointCloud();
 
 			int add(const buw::ReferenceCounted<ccPointCloud> &other, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr, ColorCompType* color = nullptr);
 

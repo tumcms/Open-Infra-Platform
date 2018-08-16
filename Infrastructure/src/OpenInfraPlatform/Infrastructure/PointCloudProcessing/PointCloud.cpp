@@ -139,6 +139,9 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 }
 
 OpenInfraPlatform::Infrastructure::PointCloud::~PointCloud() {
+
+	this->deleteAllScalarFields();
+
 	if (!remainingIndices_.empty())
 		remainingIndices_.clear();
 	if (!segmentedIndices_.empty())
@@ -507,6 +510,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainageOctreeBased(b
 		callback->stop();	
 }
 
+
 void OpenInfraPlatform::Infrastructure::PointCloud::computeChainageGridBased(OpenInfraPlatform::Infrastructure::Enums::eChainageComputationInterpolationMethod method, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	//TODO: Use different and implement different interpolation methods.
@@ -519,13 +523,78 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainageGridBased(Ope
 	for(auto &it : grid_)
 		grid.push_back(it.first);
 
+	// Sort grid cells along main axis.
 	std::sort(grid.begin(), grid.end(), [&](std::pair<int, int> &lhs, std::pair<int, int> &rhs)->bool {		
 		return mainAxis_.dot(std::get<1>(grid_[lhs])) < mainAxis_.dot(std::get<1>(grid_[rhs]));
 	});
 
-	auto barycentric = [](CCVector3 p, CCVector3 a, CCVector3 b, CCVector3 c) ->std::tuple<float, float, float>
+	if(false) {
+		for(int i = 1; i < grid.size(); i++) {
+			auto &start = grid.begin();
+			advance(start, i - 1);
+
+			auto axis = std::get<2>(grid_[*start]);
+			auto center = std::get<1>(grid_[*start]);
+
+			std::map<std::pair<int, int>, float> indexedProjections;
+
+#pragma omp parallel for
+			for(long ii = i; ii < grid.size(); ii++) {
+				auto &pair = grid.begin();
+				advance(pair, ii);
+
+				auto pos = std::get<1>(grid_[*pair]) - center;
+				auto value = axis.dot(CCVector2(pos.x, pos.y));
+				indexedProjections.insert({ *pair, value });
+			}
+
+			//std::for_each(grid.begin() + i, grid.end(), [&](std::pair<int, int> &pair) {
+			//	auto pos = std::get<1>(grid_[pair]) - center;
+			//	auto value = axis.dot(CCVector2(pos.x, pos.y));
+			//	indexedProjections.insert({ pair, value });
+			//});
+
+			//auto compare = [&](std::pair<int, int> &lhs, std::pair<int, int> &rhs)->bool {
+			//	auto axis = std::get<2>(grid_[*start]);
+			//	auto center = std::get<1>(grid_[*start]);
+			//	auto lhsCenter = std::get<1>(grid_[lhs]) - center;
+			//	auto rhsCenter = std::get<1>(grid_[rhs]) - center;
+			//	return axis.dot(CCVector2(lhsCenter.x, lhsCenter.y)) < axis.dot(CCVector2(rhsCenter.x, rhsCenter.y));
+			//};
+
+
+			std::sort(grid.begin() + i, grid.end(), [&](std::pair<int, int> &lhs, std::pair<int, int> &rhs)->bool {
+				return indexedProjections[lhs] < indexedProjections[rhs];
+			});
+
+			if(callback) {
+				callback->update(100.0f * (float)((float)i / (float)grid.size()));
+			}
+		}
+
+		// Reset the callback.
+		if(callback)
+			callback->update(0);
+	}
+
+	auto barycentric3D = [](CCVector3 p, CCVector3 a, CCVector3 b, CCVector3 c) ->std::tuple<float, float, float>
 	{
 		CCVector3 v0 = b - a, v1 = c - a, v2 = p - a;
+		float d00 = v0.dot(v0);
+		float d01 = v0.dot(v1);
+		float d11 = v1.dot(v1);
+		float d20 = v2.dot(v0);
+		float d21 = v2.dot(v1);
+		float denom = d00 * d11 - d01 * d01;
+		float v = (d11 * d20 - d01 * d21) / denom;
+		float w = (d00 * d21 - d01 * d20) / denom;
+		float u = 1.0f - v - w;
+		return { u,v,w };
+	};
+
+	auto barycentric2D = [](CCVector2 p, CCVector2 a, CCVector2 b, CCVector2 c) ->std::tuple<float, float, float>
+	{
+		CCVector2 v0 = b - a, v1 = c - a, v2 = p - a;
 		float d00 = v0.dot(v0);
 		float d01 = v0.dot(v1);
 		float d11 = v1.dot(v1);
@@ -549,64 +618,210 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainageGridBased(Ope
 	auto origin = CCVector3(0, 0, 0);
 	float chainage = 0.0f;
 
+	long numCells = grid.size();
+	long numCellsPerPercent = std::max(1, (int) numCells / 100);
+	long processedCells = 0;
+	float percentageCompleted = 0.0f;
+
+	if(callback)
+		callback->update(percentageCompleted);
+
+	// Iterate over all cells in the grid
 	for(int i = 0; i < grid.size(); i++) {
+
+		// Move to the correct position in the container
 		auto &cell = grid.begin();
 		advance(cell, i);
 
+		// Get the indices of all points in the cell
 		auto indices = std::get<0>(grid_[*cell]);
-#pragma omp parallel for
+
+		// Iterate over all points in the grid in parallel
+#pragma omp parallel for shared(origin, chainage, method)
 		for(long ii = 0; ii < indices.size(); ii++) {
+
+			// Get the current index and the corresponding point.
 			auto idx = indices[ii];
 			CCVector3 point3D = *getPoint(idx);
 
-			float fmax = std::numeric_limits<float>::max();
-			std::pair<std::pair<int, int>, float> nearestNeighbours[3] = { { {0,0}, fmax }, { { 0,0 }, fmax } , { { 0,0 }, fmax } };
+			// Lambda to compute chainage without interpolation.
+			auto computeChainageWithoutInterpolation = [&]() {
 
-			for(int dx = -1; dx < 2; dx++) {
-				for(int dy = -1; dy < 2; dy++) {
-					auto cellIdx = std::pair<int, int>(cell->first + dx, cell->second + dy);
-					if(grid_.count(cellIdx) > 0) {
-						float dist = (std::get<1>(grid_[cellIdx]) - point3D).norm();
-						if(dist < nearestNeighbours[0].second) {
-							nearestNeighbours[2] = nearestNeighbours[1];
-							nearestNeighbours[1] = nearestNeighbours[0];
-							nearestNeighbours[0] = { cellIdx,dist };
-						}
-						else if(dist < nearestNeighbours[1].second) {
-							nearestNeighbours[2] = nearestNeighbours[1];
-							nearestNeighbours[1] = { cellIdx,dist };
-						}
-						else if(dist < nearestNeighbours[2].second) {
-							nearestNeighbours[2] = { cellIdx,dist };
+				// Get the shifted 2D point.
+				CCVector2 pointShifted2D = CCVector2(point3D.x - origin.x, point3D.y - origin.y);
+
+				// Get the grid cells axis.
+				auto axis = std::get<2>(grid_[*cell]);
+
+				auto localChainage = axis.dot(pointShifted2D);
+#pragma omp critical
+				setPointScalarValue(idx, chainage + localChainage);
+			};
+
+			// Lambda to compute chainage with linear interpolation.
+			auto computeChainageWithLinearInterpolation = [&]() {
+				// Get the max floating point value and initialize the nearestNeighbour as (0,0) and fmax as distance.
+				float fmax = std::numeric_limits<float>::max();
+				std::pair<std::pair<int, int>, float> nearestNeighbour = { { 0,0 }, fmax };
+
+				// Iterate over the neighbouring cells in x and y dimension.
+				for(int dx = -1; dx < 2; dx += 2) {
+					for(int dy = -1; dy < 2; dy += 2) {
+
+						// Get the neighbouring cell index as "current + dx + dy".
+						auto cellIdx = std::pair<int, int>(cell->first + dx, cell->second + dy);
+
+						// Check if the cell exists in the grid.
+						if(grid_.count(cellIdx) > 0) {
+
+							// Distance from the point to the neighbouring cell center.
+							float dist = (std::get<1>(grid_[cellIdx]) - point3D).norm();
+
+							// Insert the distance among the neighbouring distances.
+							if(dist < nearestNeighbour.second) {
+								nearestNeighbour = { cellIdx,dist };
+							}
 						}
 					}
 				}
-			}
 
-			float w0, w1, w2;
-			CCVector3 v0 = std::get<1>(grid_[nearestNeighbours[0].first]);
-			CCVector3 v1 = std::get<1>(grid_[nearestNeighbours[1].first]);
-			CCVector3 v2 = std::get<1>(grid_[nearestNeighbours[2].first]);
+				if(!(nearestNeighbour.first == std::pair<int, int>(0, 0) && nearestNeighbour.second == fmax)) {
+					// Compute center to point and center to neighbour to interpolate the chainage value.
+					auto cellCenter = std::get<1>(grid_[*cell]);
+					auto neighbouringCellCenter = std::get<1>(grid_[nearestNeighbour.first]);
 
-			std::tie<float, float, float>(w0, w1, w2) = barycentric(point3D, v0, v1, v2);
+					CCVector3 centerToPoint = point3D - cellCenter;
+					CCVector3 centerToNeighbour = neighbouringCellCenter - cellCenter;
 
-			point3D -= origin;
+					float scalarProjection = centerToPoint.dot(centerToNeighbour / centerToNeighbour.norm());
+					float w0 = scalarProjection / centerToNeighbour.norm();
 
-			CCVector2 point2D = CCVector2(point3D.x, point3D.y);
-			float p0 = std::get<2>(grid_[nearestNeighbours[0].first]).dot(point2D);
-			float p1 = std::get<2>(grid_[nearestNeighbours[1].first]).dot(point2D);
-			float p2 = std::get<2>(grid_[nearestNeighbours[2].first]).dot(point2D);
-
-
-			auto localChainage = w0 * p0 + w1 * p1 + w2 * p2;
+					// Get a 2D version of the point having only X and Y coordinate.
+					CCVector2 pointShifted2D = CCVector2(point3D.x - origin.x, point3D.y - origin.y);
+					float w1 = 1.0f - w0;
+					auto a0 = std::get<2>(grid_[nearestNeighbour.first]);
+					auto a1 = std::get<2>(grid_[*cell]);
+					auto axis = a0 * w0 + a1 * w1;
+					auto localChainage = axis.dot(pointShifted2D);
 #pragma omp critical
-			setPointScalarValue(idx, chainage + localChainage);
+					setPointScalarValue(idx, chainage + localChainage);
+				}
+				else {
+					//BLUE_LOG(warning) << "(" << idx << "): Linear interpolation failed, switching to no interpolation.";
+					computeChainageWithoutInterpolation();
+				}
+			};
+
+			// Lambda to compute chainage with barycentric interpolation.
+			auto computeChainageWithBarycentricInterpolation = [&]() {
+				// Get the max floating point value and initialize the nearestNeighbour grids as (0,0) and fmax as distance.
+				float fmax = std::numeric_limits<float>::max();
+				std::pair<std::pair<int, int>, float> nearestNeighbours[3] = { { { 0,0 }, fmax }, { { 0,0 }, fmax } , { { 0,0 }, fmax } };
+
+				// Iterate over the neighbouring cells in x and y dimension.
+				for(int dx = -1; dx < 2; dx++) {
+					for(int dy = -1; dy < 2; dy++) {
+
+						// Get the neighbouring cell index as "current + dx + dy".
+						auto cellIdx = std::pair<int, int>(cell->first + dx, cell->second + dy);
+
+						// Check if the cell exists in the grid.
+						if(grid_.count(cellIdx) > 0) {
+
+							// Distance from the point to the neighbouring cell center.
+							float dist = (std::get<1>(grid_[cellIdx]) - point3D).norm();
+
+							// Insert the distance among the neighbouring distances.
+							if(dist < nearestNeighbours[0].second) {
+								nearestNeighbours[2] = nearestNeighbours[1];
+								nearestNeighbours[1] = nearestNeighbours[0];
+								nearestNeighbours[0] = { cellIdx,dist };
+							}
+							else if(dist < nearestNeighbours[1].second) {
+								nearestNeighbours[2] = nearestNeighbours[1];
+								nearestNeighbours[1] = { cellIdx,dist };
+							}
+							else if(dist < nearestNeighbours[2].second) {
+								nearestNeighbours[2] = { cellIdx,dist };
+							}
+						}
+					}
+				}
+
+				bool hasSufficientNeighbours = true;
+				for(auto neighbour : nearestNeighbours) {
+					if(neighbour.first == std::pair<int, int>(0, 0) && neighbour.second == fmax) {
+						hasSufficientNeighbours = false;
+					}
+				}
+
+				if(hasSufficientNeighbours) {
+
+					// Initialize the weights for barycentric3D interpolation w0, w1 and w2.
+					float w0, w1, w2;
+
+					// Get the points to interpolate in between into c0,c1 and c2.
+					CCVector3 c0 = std::get<1>(grid_[nearestNeighbours[0].first]);
+					CCVector3 c1 = std::get<1>(grid_[nearestNeighbours[1].first]);
+					CCVector3 c2 = std::get<1>(grid_[nearestNeighbours[2].first]);
+
+					// Get the 2D versions of c points.
+					CCVector2 v0 = CCVector2(c0.x, c0.y);
+					CCVector2 v1 = CCVector2(c1.x, c1.y);
+					CCVector2 v2 = CCVector2(c2.x, c2.y);
+
+					// Get a 2D version of the point having only X and Y coordinate.
+					CCVector2 point2D = CCVector2(point3D.x, point3D.y);
+
+					// Compute the barycentric3D interpolation for the point.
+					std::tie<float, float, float>(w0, w1, w2) = barycentric2D(point2D, v0, v1, v2);
+
+					// Get a 2D version of the point having only X and Y coordinate.
+					CCVector2 pointShifted2D = CCVector2(point3D.x - origin.x, point3D.y - origin.y);
+
+
+					// Get the neighbouring cell axes.
+					auto a0 = std::get<2>(grid_[nearestNeighbours[0].first]);
+					auto a1 = std::get<2>(grid_[nearestNeighbours[1].first]);
+					auto a2 = std::get<2>(grid_[nearestNeighbours[2].first]);
+
+					// Get the global axis as interpolated axis with the barycentric weights.
+					auto axis = (a0 * w0) + (a1 * w1) + (a2 * w2);
+
+					// Compute the chainage projection of the 2D point along the interpolated axes.
+					auto localChainage = axis.dot(pointShifted2D);
+
+#pragma omp critical
+					setPointScalarValue(idx, chainage + localChainage);
+				}
+				else {
+					//BLUE_LOG(warning) << "(" << idx << "): Barycentric interpolation failed, switching to linear interpolation.";
+					computeChainageWithLinearInterpolation();
+				}
+			};
+
+			if(method == Enums::eChainageComputationInterpolationMethod::Barycentric) {
+				computeChainageWithBarycentricInterpolation();
+			}
+			else if(method == Enums::eChainageComputationInterpolationMethod::Linear) {
+				computeChainageWithLinearInterpolation();
+			}
+			else {
+				computeChainageWithoutInterpolation();
+			}
 		}
-		
+
 		auto shift = std::get<1>(grid_[*cell]) - origin;
 		origin += shift;
 		chainage += std::get<2>(grid_[*cell]).dot(CCVector2(shift.x, shift.y));
-	}	
+
+		processedCells++;
+		if(callback && processedCells == numCellsPerPercent) {
+			percentageCompleted++;
+			processedCells = 0;
+			callback->update(percentageCompleted);
+		}
+	}
 
 	if(callback)
 		callback->stop();
@@ -631,14 +846,19 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid(buw::GridComputa
 	for_each([&](size_t i) {
 		auto pos = getPoint(i);
 		std::pair<int, int> key = std::pair<int, int>((int)(pos->x / desc.size), (int)(pos->y / desc.size));
-		std::get<0>(grid_[key]).push_back(i);
+		if(grid_.count(key) == 0) {
+			std::tuple<std::vector<uint32_t>, CCVector3, CCVector2> value = { std::vector<uint32_t>(), CCVector3(0,0,0), CCVector2(0,0) };
+			grid_.insert({ key, value });
+		}
+		
+		std::get<0>(grid_[key]).push_back(i);		
 	});
 
 	// Lambda function which computes the center of mass of the given indices.
 	auto computeCenter = [&](std::vector<uint32_t> indices)->CCVector3 {
 		CCVector3 center = CCVector3(0, 0, 0);
 		for(auto idx : indices) {
-			center += (*getPoint(idx) / (float)indices.size());
+			center += ((*getPoint(idx)) / (float)indices.size());
 		}
 		return center;
 	};
@@ -681,7 +901,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid(buw::GridComputa
 
 				// Points in spherical neighbourhood around the center.
 				std::vector<CCLib::DgmOctree::PointDescriptor> neighbours;
-				int numPoints = octree.getPointsInSphericalNeighbourhood(center, desc.kernelRadius, neighbours, level);
+				long numPoints = octree.getPointsInSphericalNeighbourhood(center, desc.kernelRadius, neighbours, level);
 
 				// Lambda to compute PCA of all points in the spherical neighbourhood.
 				auto getPCA = [&]() -> CCVector2 {
@@ -1827,7 +2047,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 						float dChainage = chainage - endpointChainage;
 						float ratio = dChainage / distance;
 						if(distance < 0.7) {
-							if(ratio > 0.9 || (distance < desc.maxDistance && ratio > 0.7f)) {
+							if(ratio > 0.9 || (distance < desc.maxDistance && ratio > 0.8f)) {
 								inserted = true;
 								discarded = false;
 								line.push_back(i);
@@ -2741,6 +2961,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 			std::vector<double> bearings = std::vector<double>(numBearingsAndChainages);
 			std::vector<double> chainages = std::vector<double>(numBearingsAndChainages);
 			std::vector<double> curvatures = std::vector<double>(numCurvatures);
+			std::vector<double> curvaturesFiltered = std::vector<double>(numCurvatures);
 			std::vector<double> curvaturesSmoothed = std::vector<double>(numCurvaturesSmoothed);
 
 			int tid = 0;
@@ -2807,6 +3028,22 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 				}
 #pragma omp barrier
 
+				curvaturesFiltered[0] = curvatures[0];
+				curvaturesFiltered[1] = curvatures[1];
+				curvaturesFiltered[numCurvatures - 1] = curvatures[numCurvatures - 1];
+				curvaturesFiltered[numCurvatures - 2] = curvatures[numCurvatures - 2];
+				// Sliding median filtering.
+#pragma omp for
+				for(long i = 2; i < curvatures.size() - 2; i++) {
+					std::vector<double> neighbours = { curvatures[i - 2], curvatures[i - 1], curvatures[i], curvatures[i + 1], curvatures[i + 2] };
+					std::sort(neighbours.begin(), neighbours.end());
+
+					// Choose the median value.
+					curvaturesFiltered[i] = neighbours[2];
+				}
+#pragma omp barrier
+
+
 				int startOffset = (int)std::floor((float)desc.numPointsForMeanCurvature / 2.0f);
 				if (desc.numPointsForMeanCurvature % 2 == 0)
 					startOffset++;
@@ -2817,7 +3054,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 					double curvature = 0.0;
 
 					for (int offset = -startOffset; offset < endOffset; offset++)
-						curvature += curvatures[i + offset];
+						curvature += curvaturesFiltered[i + offset];
 
 					curvaturesSmoothed[i - startOffset] = curvature / (double)desc.numPointsForMeanCurvature;
 				}
