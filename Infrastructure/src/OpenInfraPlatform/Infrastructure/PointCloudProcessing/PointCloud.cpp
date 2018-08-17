@@ -2375,7 +2375,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		}
 	};
 
-	fuseAlignments(alignments);
+	//fuseAlignments(alignments);
 
 	BLUE_LOG(trace) << "Done.";	
 
@@ -2931,21 +2931,28 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 	for (long idx : indices) {
 		auto &alignment = alignments[idx];
 
-		// Check if our alignment has enough points.
-		long numBearingsAndChainages = ((alignment.size() - desc.numPointsForPCA) / desc.curvatureStepSize) + 1;
+		// Sort the alignment points after increasing chainage values.
+		std::sort(alignment.begin(), alignment.end(), [&](const size_t &lhs, const size_t &rhs) -> bool { return getPointScalarValue(lhs) < getPointScalarValue(rhs); });
+
+		// We take bearing and chainage for each point.
+		long numBearingsAndChainages = alignment.size();// Old value: ((alignment.size() - desc.bearingComputationSegmentLength) / desc.curvatureStepSize) + 1;
+		// We have one less value since we take the change between the current and the next or last element.
 		long numCurvatures = numBearingsAndChainages - 1;
+
 		long numCurvaturesSmoothed = numCurvatures - desc.numPointsForMeanCurvature;
 
-		if (alignment.size() > desc.numPointsForPCA && numCurvaturesSmoothed > 0) {
+		double alignmentLength = std::abs(getPointScalarValue(alignment.back()) - getPointScalarValue(alignment.front()));
+
+		if (alignmentLength > desc.bearingComputationSegmentLength) {
+
+			// Create and initialize the necessary folders.
 			if (!root.exists(date))
 				root.mkdir(date);
 
 			if (!sub.exists(time))
 				sub.mkdir(time);
 
-			//std::sort(alignment.begin(), alignment.end(), [&](const CCVector3 &lhs, const CCVector3 &rhs) -> bool { return mainAxis_.dot(lhs) < mainAxis_.dot(rhs); });
-			std::sort(alignment.begin(), alignment.end(), [&](const size_t &lhs, const size_t &rhs) -> bool { return getPointScalarValue(lhs) < getPointScalarValue(rhs); });
-
+			// Open the file to write the data to.
 			BLUE_LOG(trace) << "Processing Alignment#" + QString::number(idx).toStdString() << ". Size:" << QString::number(alignment.size()).toStdString();
 			QFile file(sub.absolutePath() + "/" + time + "/" + "Alignment#" + QString::number(idx) + ".txt");
 			if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -2965,22 +2972,24 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 			std::vector<double> curvaturesSmoothed = std::vector<double>(numCurvaturesSmoothed);
 
 			int tid = 0;
-			// Compute the bearing for all points as the angle between the principal axis of numPointsForPCA consecutive centerline points and the NORTH direction.
-#pragma omp parallel private(tid) firstprivate(callback) shared(desc)
+			// Compute the bearing for all points as the angle between the principal axis of bearingComputationSegmentLength consecutive centerline points and the NORTH direction.
+#pragma omp parallel private(tid) firstprivate(callback) shared(bearings, curvatures, chainages)
 			{
 				tid = omp_get_thread_num();
 				long processedPoints = 0;
 				long pointsPerThread = alignment.size() / omp_get_num_threads();
 				long pointsPerPercent = pointsPerThread / 100;
 				int percentageCompleted = 0;
+				//buw::CenterlineCurvatureComputationDescription desc = buw::CenterlineCurvatureComputationDescription(description);
+
 				// Pull the lambda declaration into the loop for the openmp construct
 				auto getPCA = [&](std::vector<size_t> alignment, size_t start, size_t end) -> Eigen::Matrix<double, 2, 1> {
 					// Matrix which is capable of holding all points for PCA.
 					Eigen::MatrixX3d mat;
 					mat.resize(end - start, 3);
-					for (size_t i = start; i < end; i++) {
-						auto pos = *getPoint(alignment[i]);
-						mat.row(i - start) = Eigen::Vector3d(pos.x, pos.y, pos.z);
+					for(size_t ii = start; ii < end; ii++) {
+						auto pos = *getPoint(alignment[ii]);
+						mat.row(ii - start) = Eigen::Vector3d(pos.x, pos.y, pos.z);
 					}
 
 					// Do PCA to find the largest eigenvector -> main axis.
@@ -2991,87 +3000,242 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 					return vec;
 				};
 
-#pragma omp for
-				for (long i = desc.numPointsForPCA / 2; i < alignment.size() - (desc.numPointsForPCA / 2); i += desc.curvatureStepSize) {
-					// Get the PCA axis and compute the bearing.
-					auto axis = getPCA(alignment, i - (desc.numPointsForPCA / 2), i + (desc.numPointsForPCA / 2));
-					axis.normalize();
-					bearings[(i - (desc.numPointsForPCA / 2)) / desc.curvatureStepSize] = (std::acos(axis.dot(NORTH2D)) * 180.0 / M_PI);
-					chainages[(i - (desc.numPointsForPCA / 2)) / desc.curvatureStepSize] = getPointScalarValue(alignment[i]);// mainAxis_.dot(alignment[i]);
-					processedPoints += desc.curvatureStepSize;
+				double segmentLength = desc.bearingComputationSegmentLength / 2.0;
 
-					if (processedPoints >= pointsPerPercent) {
+
+				// Old for loop: for (long i = desc.bearingComputationSegmentLength / 2; i < alignment.size() - (desc.bearingComputationSegmentLength / 2); i += desc.curvatureStepSize) {
+#pragma omp for
+				for(long i = 0; i < alignment.size(); i++) {
+
+					float chainage = getPointScalarValue(alignment[i]);
+
+					// Lambda to compute the difference in chainage
+					auto diff = [&](long index)->double {
+						return std::abs(getPointScalarValue(alignment[index]) - chainage);
+					};
+
+					// Old computation method: auto axis = getPCA(alignment, i - (desc.bearingComputationSegmentLength / 2), i + (desc.bearingComputationSegmentLength / 2));
+					long startIndex = i, endIndex = i;
+
+					while(startIndex > 0 && diff(startIndex) < segmentLength)
+						startIndex--;
+
+					while(endIndex < alignment.size() - 1 && diff(endIndex) < segmentLength)
+						endIndex++;
+
+					// Get the PCA axis and compute the bearing.
+					auto axis = getPCA(alignment, startIndex, endIndex);
+					axis.normalize();
+
+					// Old versions: bearings[(i - (desc.bearingComputationSegmentLength / 2)) / desc.curvatureStepSize] = (std::acos(axis.dot(NORTH2D)) * 180.0 / M_PI);
+					// Old versions: chainages[(i - (desc.bearingComputationSegmentLength / 2)) / desc.curvatureStepSize] = getPointScalarValue(alignment[i]);// mainAxis_.dot(alignment[i]);
+					// Old versions: processedPoints += desc.curvatureStepSize;
+
+					bearings[i] = (std::acos(axis.dot(NORTH2D)) * 180.0 / M_PI);
+					chainages[i] = chainage;
+					processedPoints++;
+
+					if(processedPoints >= pointsPerPercent) {
 						percentageCompleted++;
 						processedPoints = 0;
 
-						if (tid == 0 && callback)
+						if(tid == 0 && callback)
 							callback->update(((100.0f * (float)(idx) / (float)alignments.size()) + (1.0f / (float)alignments.size()) * percentageCompleted)
-							                 * ((float)alignments.size() / (float)indices.size()));
+								* ((float)alignments.size() / (float)indices.size()));
 					}
 				}
 #pragma omp barrier
+			}
 
 				int nJumps = 0;
-				for (long i = 0; i < bearings.size() - 1; i++) {
+				for (long i = 0; i < bearings.size(); i++) {
 					// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
 					bearings[i] += nJumps;
-					if (std::abs(bearings[i] - (bearings[i + 1] + nJumps)) > 170)
-						nJumps += 180;
+					if(i < bearings.size() - 1) {
+						if(std::abs(bearings[i] - (bearings[i + 1] + nJumps)) > 170)
+							nJumps += 180;
+					}
+				}
+
+
+				if(desc.numPointsForMedianBearing > 1) {
+					// Copy bearings values to allow for median filtering.
+					std::vector<double> bearingsOld = std::vector<double>(bearings.size());
+					std::copy(bearings.begin(), bearings.end(), bearingsOld.begin());
+									
+					long startOffset = (long)std::floor((float)desc.numPointsForMedianBearing / 2.0f);
+
+					if(desc.numPointsForMedianBearing % 2 == 0)
+						startOffset--;
+
+					long endOffset = (long)std::floor((float)desc.numPointsForMedianBearing / 2.0f);
+
+					BLUE_LOG(trace) << startOffset << " " << endOffset;
+#pragma omp parallel for
+					for(long i = 0; i < bearings.size(); i++) {
+						std::vector<double> values = std::vector<double>();
+
+						for(long ii = std::max(0L, i - startOffset); ii <= std::min(((long)bearings.size()) - 1L, i + endOffset); ii++) {
+							values.push_back(bearingsOld[ii]);
+						}
+						
+						std::sort(values.begin(), values.end(), [](const double &lhs, const double &rhs)->bool { return lhs < rhs; });
+
+						bearings[i] = values[(int) std::ceilf((float)values.size() / 2.0f) - 1];
+					}
+					
+				}
+				
+
+				if(desc.numPointsForMeanBearing > 1) {
+					// Copy bearings values to allow for averaging smoothing.
+					std::vector<double> bearingsOld = std::vector<double>(bearings.size());
+					std::copy(bearings.begin(), bearings.end(), bearingsOld.begin());
+
+					// Copy bearings values to allow for averaging smoothing.
+					std::vector<double> chainagesOld = std::vector<double>(chainages.size());
+					std::copy(chainages.begin(), chainages.end(), chainagesOld.begin());
+					
+					long startOffset = (long)std::floor((float)desc.numPointsForMeanBearing / 2.0f);
+					if(desc.numPointsForMeanBearing % 2 == 0)
+						startOffset--;
+					long endOffset = (long)std::floor((float)desc.numPointsForMeanBearing / 2.0f);
+
+#pragma omp parallel for
+					for(long i = 0; i < bearings.size(); i++) {
+						double bearing = 0.0;
+						double chainage = 0.0;
+						double numPoints = 0.0;
+
+						for(long ii = std::max(0L, i - startOffset); ii <= std::min((long)bearings.size() - 1L, i + endOffset); ii++) {
+							bearing += bearingsOld[ii];
+							chainage += chainagesOld[ii];
+							numPoints++;
+						}
+						bearing /= numPoints;
+						chainage /= numPoints;
+
+						bearings[i] = bearing;
+						chainages[i] = chainage;
+					}
+					
 				}
 
 					// Without smoothing
-#pragma omp for
-				for (long i = 0; i < bearings.size() - 1; i++) {
+#pragma omp parallel for
+				for (long i = 0; i < curvatures.size(); i++) {
 					// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
 					double deltaChainage = std::abs(chainages[i + 1] - chainages[i]);
 					curvatures[i] = ((bearings[i + 1] - bearings[i]) / deltaChainage);
 				}
-#pragma omp barrier
 
-				curvaturesFiltered[0] = curvatures[0];
-				curvaturesFiltered[1] = curvatures[1];
-				curvaturesFiltered[numCurvatures - 1] = curvatures[numCurvatures - 1];
-				curvaturesFiltered[numCurvatures - 2] = curvatures[numCurvatures - 2];
-				// Sliding median filtering.
-#pragma omp for
-				for(long i = 2; i < curvatures.size() - 2; i++) {
-					std::vector<double> neighbours = { curvatures[i - 2], curvatures[i - 1], curvatures[i], curvatures[i + 1], curvatures[i + 2] };
-					std::sort(neighbours.begin(), neighbours.end());
+				if(desc.numPointsForMedianCurvature > 1) {
+					// Copy bearings values to allow for median filtering.
+					std::vector<double> curvaturesOld = std::vector<double>(curvatures.size());
+					std::copy(curvatures.begin(), curvatures.end(), curvaturesOld.begin());
+					
+					long startOffset = (long)std::floor((float)desc.numPointsForMedianCurvature / 2.0f);
+					if(desc.numPointsForMedianCurvature % 2 == 0)
+						startOffset--;
 
-					// Choose the median value.
-					curvaturesFiltered[i] = neighbours[2];
-				}
-#pragma omp barrier
+					long endOffset = (long)std::floor((float)desc.numPointsForMedianCurvature / 2.0f);
 
+#pragma omp parallel for
+					for(long i = 0; i < curvatures.size(); i++) {
+						std::vector<double> values = std::vector<double>();
 
-				int startOffset = (int)std::floor((float)desc.numPointsForMeanCurvature / 2.0f);
-				if (desc.numPointsForMeanCurvature % 2 == 0)
-					startOffset++;
-				int endOffset = std::ceil((float)desc.numPointsForMeanCurvature / 2.0f);
+						for(long ii = std::max(0L, i - startOffset); ii <= std::min((long)curvatures.size() - 1L, i + endOffset); ii++) {
+							values.push_back(curvaturesOld[ii]);
+						}
 
-#pragma omp for
-				for (long i = startOffset; i < curvatures.size() - endOffset - 1; i++) {
-					double curvature = 0.0;
+						std::sort(values.begin(), values.end(), [](const double &lhs, const double &rhs)->bool { return lhs < rhs; });
 
-					for (int offset = -startOffset; offset < endOffset; offset++)
-						curvature += curvaturesFiltered[i + offset];
-
-					curvaturesSmoothed[i - startOffset] = curvature / (double)desc.numPointsForMeanCurvature;
-				}
-#pragma omp barrier
-
-#pragma omp single
-				{
-					for (size_t i = 0; i < curvaturesSmoothed.size() - (endOffset - startOffset) - 1; i++) {
-						QString text = QString::number(chainages[i + startOffset], 'g',10)
-						                 .append("\t")
-						                 .append(QString::number(curvaturesSmoothed[i],'g', 10))
-						                 .append("\t")
-						                 .append(QString::number(bearings[i + startOffset], 'g', 10))
-						                 .append("\n");
-						file.write(text.toStdString().data());
+						curvatures[i] = values[(int)std::ceilf((float)values.size() / 2.0f) - 1];
 					}
+					
 				}
+
+				if(desc.numPointsForMeanCurvature > 1) {
+					// Copy bearings values to allow for averaging smoothing.
+					std::vector<double> curvaturesOld = std::vector<double>(curvatures.size());
+					std::copy(curvatures.begin(), curvatures.end(), curvaturesOld.begin());
+					
+					long startOffset = (long)std::floor((float)desc.numPointsForMeanCurvature / 2.0f);
+					if(desc.numPointsForMeanCurvature % 2 == 0)
+						startOffset--;
+					long endOffset = (long)std::floor((float)desc.numPointsForMeanCurvature / 2.0f);
+
+#pragma omp parallel for
+					for(long i = 0; i < curvatures.size(); i++) {
+						double value = 0.0;
+						double numPoints = 0.0;
+
+						for(long ii = std::max(0L, i - startOffset); ii <= std::min((long)curvatures.size() - 1L, i + endOffset); ii++) {
+							value += curvaturesOld[ii];
+							numPoints++;
+						}
+						value /= numPoints;
+
+						curvatures[i] = value;
+					}
+					
+				}
+
+				// Old version for median curvature filtering.
+//				curvaturesFiltered[0] = curvatures[0];
+//				curvaturesFiltered[1] = curvatures[1];
+//				curvaturesFiltered[numCurvatures - 1] = curvatures[numCurvatures - 1];
+//				curvaturesFiltered[numCurvatures - 2] = curvatures[numCurvatures - 2];
+//				// Sliding median filtering.
+//#pragma omp for
+//				for(long i = 2; i < curvatures.size() - 2; i++) {
+//					std::vector<double> neighbours = { curvatures[i - 2], curvatures[i - 1], curvatures[i], curvatures[i + 1], curvatures[i + 2] };
+//					std::sort(neighbours.begin(), neighbours.end());
+//
+//					// Choose the median value.
+//					curvaturesFiltered[i] = neighbours[2];
+//				}
+//#pragma omp barrier
+
+				// Old version for mean curvature computation.
+//				if(desc.numPointsForMeanCurvature > 1) {
+//					int startOffset = (int)std::floor((float)desc.numPointsForMeanCurvature / 2.0f);
+//					if(desc.numPointsForMeanCurvature % 2 == 0)
+//						startOffset++;
+//					int endOffset = std::ceil((float)desc.numPointsForMeanCurvature / 2.0f);
+//
+//#pragma omp for
+//					for(long i = startOffset; i < curvatures.size() - endOffset - 1; i++) {
+//						double curvature = 0.0;
+//
+//						for(int offset = -startOffset; offset < endOffset; offset++)
+//							curvature += curvaturesFiltered[i + offset];
+//
+//						curvaturesSmoothed[i - startOffset] = curvature / (double)desc.numPointsForMeanCurvature;
+//					}
+//#pragma omp barrier
+//				}
+
+				
+					// Old version of writing stuff to file.
+					//for (size_t i = 0; i < curvaturesSmoothed.size() - (endOffset - startOffset) - 1; i++) {
+					//	QString text = QString::number(chainages[i + startOffset], 'g',10)
+					//	                 .append("\t")
+					//	                 .append(QString::number(curvaturesSmoothed[i],'g', 10))
+					//	                 .append("\t")
+					//	                 .append(QString::number(bearings[i + startOffset], 'g', 10))
+					//	                 .append("\n");
+					//	file.write(text.toStdString().data());
+					//}
+
+			for(size_t i = 0; i < curvatures.size(); i++) {
+				QString text = QString::number(chainages[i], 'g', 20)
+					.append("\t")
+					.append(QString::number(curvatures[i], 'g', 20))
+					.append("\t")
+					.append(QString::number(bearings[i], 'g', 20))
+					.append("\n");
+				file.write(text.toStdString().data());
 			}
 
 			// TODO:If the file is empty we delete it.
@@ -3091,9 +3255,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 		                    QString("MinSegmentPoints:" + QString::number(centerlineDescription_.minSegmentPoints)),
 		                    QString("MinSegmentLength:" + QString::number(centerlineDescription_.minSegmentLength)),
 		                    QString("Curvature computation"),
-		                    QString("NumPointsForPCA:" + QString::number(desc.numPointsForPCA)),
+		                    QString("SegmentLengthForPCA:" + QString::number(desc.bearingComputationSegmentLength)),
 		                    QString("CurvatureStepSize:" + QString::number(desc.curvatureStepSize)),
-		                    QString("NumPointsForMeanCurvature:" + QString::number(desc.numPointsForMeanCurvature))};
+		                    QString("NumPointsForMedianBearing:" + QString::number(desc.numPointsForMedianBearing)),
+							QString("NumPointsForMeanBearing:" + QString::number(desc.numPointsForMeanBearing)),
+							QString("NumPointsForMedianCurvature:" + QString::number(desc.numPointsForMedianCurvature)),
+							QString("NumPointsForMeanCurvature:" + QString::number(desc.numPointsForMeanCurvature)) };
 		file.write(text.join("\n").toStdString().data());
 		file.close();
 	}
@@ -3348,7 +3515,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::segmentRailways(buw::RailwayS
 					std::vector<double> curvaturesSmoothed = std::vector<double>(curvatures.size() - desc.numPointsForMeanCurvature);
 
 					int tid = 0;
-					// Compute the bearing for all points as the angle between the principal axis of numPointsForPCA consecutive centerline points and the NORTH direction.
+					// Compute the bearing for all points as the angle between the principal axis of bearingComputationSegmentLength consecutive centerline points and the NORTH direction.
 #pragma omp parallel private(tid) firstprivate(callback)
 					{
 						tid = omp_get_thread_num();

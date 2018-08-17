@@ -2626,33 +2626,33 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRail
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
-		buw::RailwaySegmentationDescription desc;
-		desc.distanceForPCA = ui_->doubleSpinBoxDistanceForPCA->value();
-		desc.numPointsForPCA = ui_->spinBoxNumPointsForPCA->value();
-		desc.centerlinePointDistance = ui_->doubleSpinBoxDistanceForPCA->value() / (float)ui_->spinBoxNumPointsForPCA->value();
-		desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
-		desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
-		desc.curvatureStepSize = ui_->spinBoxCurvatureStepSize->value();
-		desc.numPointsForMeanCurvature = ui_->spinBoxNumPointsForMeanCurvature->value();
-		
-
-		int numAlignments = pointCloud->segmentRailways(desc, callback_);
-		if(numAlignments > 0) {
-			for(int idx = 0; idx < numAlignments; idx++) {
-				ui_->comboBoxPlotSelectAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
-			}
-			ui_->pushButtonComputeCurvature->setEnabled(true);
-			ui_->pushButtonPlotAlignment->setEnabled(true);
-			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
-		}
-		else if(numAlignments == 0) {
-			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
-			BLUE_LOG(info) << "No railways detected.";
-		}
-		else {
-			BLUE_LOG(warning) << "Error in railway segmentation occurred. Code: " << numAlignments;
-			on_pushButtonResetSegmentRailways_clicked();
-		}
+		//buw::RailwaySegmentationDescription desc;
+		//desc.distanceForPCA = ui_->doubleSpinBoxDistanceForPCA->value();
+		//desc.numPointsForPCA = ui_->spinBoxNumPointsForPCA->value();
+		//desc.centerlinePointDistance = ui_->doubleSpinBoxDistanceForPCA->value() / (float)ui_->spinBoxNumPointsForPCA->value();
+		//desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
+		//desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
+		//desc.curvatureStepSize = ui_->spinBoxCurvatureStepSize->value();
+		//desc.numPointsForMeanCurvature = ui_->spinBoxNumPointsForMeanCurvature->value();
+		//
+		//
+		//int numAlignments = pointCloud->segmentRailways(desc, callback_);
+		//if(numAlignments > 0) {
+		//	for(int idx = 0; idx < numAlignments; idx++) {
+		//		ui_->comboBoxPlotSelectAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
+		//	}
+		//	ui_->pushButtonComputeCurvature->setEnabled(true);
+		//	ui_->pushButtonPlotAlignment->setEnabled(true);
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		//}
+		//else if(numAlignments == 0) {
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		//	BLUE_LOG(info) << "No railways detected.";
+		//}
+		//else {
+		//	BLUE_LOG(warning) << "Error in railway segmentation occurred. Code: " << numAlignments;
+		//	on_pushButtonResetSegmentRailways_clicked();
+		//}
 	}
 }
 
@@ -2759,9 +2759,12 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCurvature
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		buw::CenterlineCurvatureComputationDescription desc;
-		desc.numPointsForPCA = ui_->spinBoxNumPointsForPCA->value();
+		desc.bearingComputationSegmentLength = ui_->doubleSpinBoxDistanceForPCA->value();
 		desc.curvatureStepSize = ui_->spinBoxCurvatureStepSize->value();
 		desc.numPointsForMeanCurvature = ui_->spinBoxNumPointsForMeanCurvature->value();
+		desc.numPointsForMedianCurvature = ui_->spinBoxNumPointsForMedianCurvature->value();
+		desc.numPointsForMeanBearing = ui_->spinBoxNumPointsForMeanBearing->value();
+		desc.numPointsForMedianBearing = ui_->spinBoxNumPointsForMedianBearing->value();
 		QString comboBoxComputeCurvatureData = ui_->comboBoxComputeCurvature->currentData().toString();
 
 		if(comboBoxComputeCurvatureData == "All")

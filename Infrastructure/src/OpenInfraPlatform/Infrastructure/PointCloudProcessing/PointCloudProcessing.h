@@ -115,7 +115,10 @@ namespace OpenInfraPlatform
 		};
 
 		struct CenterlineCurvatureComputationDescription {
-			int centerlineIndex, numPointsForPCA, curvatureStepSize, numPointsForMeanCurvature;			
+			int centerlineIndex,  curvatureStepSize, numPointsForMeanCurvature, numPointsForMedianCurvature, numPointsForMeanBearing, numPointsForMedianBearing;
+			double bearingComputationSegmentLength;
+
+			CenterlineCurvatureComputationDescription() = default;
 		};
 
 		struct RailwaySegmentationDescription {

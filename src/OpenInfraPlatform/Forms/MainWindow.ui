@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>947</width>
-    <height>573</height>
+    <width>980</width>
+    <height>570</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1328,8 +1328,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>261</width>
-            <height>493</height>
+            <width>274</width>
+            <height>519</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -1632,8 +1632,33 @@
              <property name="sizeConstraint">
               <enum>QLayout::SetDefaultConstraint</enum>
              </property>
+             <item row="5" column="2">
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxMinSegmentLength">
+               <property name="toolTip">
+                <string>Minimum length in m for an alignment.</string>
+               </property>
+               <property name="decimals">
+                <number>3</number>
+               </property>
+               <property name="minimum">
+                <double>0.001000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>10000.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>10.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>10.000000000000000</double>
+               </property>
+              </widget>
+             </item>
              <item row="5" column="1">
               <widget class="QSpinBox" name="spinBoxMinSegmentPoints">
+               <property name="toolTip">
+                <string>Minimum number of points for an alignment.</string>
+               </property>
                <property name="maximum">
                 <number>10000000</number>
                </property>
@@ -1652,37 +1677,25 @@
                </property>
               </widget>
              </item>
-             <item row="5" column="2">
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxMinSegmentLength">
-               <property name="decimals">
-                <number>3</number>
-               </property>
-               <property name="minimum">
-                <double>0.001000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>10000.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>10.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>10.000000000000000</double>
+             <item row="8" column="0">
+              <widget class="QLabel" name="labelPCAParameters">
+               <property name="text">
+                <string>Parameters</string>
                </property>
               </widget>
              </item>
-             <item row="8" column="1">
-              <widget class="QSpinBox" name="spinBoxNumPointsForPCA">
-               <property name="maximum">
-                <number>100000000</number>
+             <item row="11" column="2">
+              <widget class="QPushButton" name="pushButtonPlotAlignment">
+               <property name="enabled">
+                <bool>true</bool>
                </property>
-               <property name="singleStep">
-                <number>1000</number>
-               </property>
-               <property name="value">
-                <number>1000</number>
+               <property name="text">
+                <string>Plot</string>
                </property>
               </widget>
+             </item>
+             <item row="11" column="1">
+              <widget class="QComboBox" name="comboBoxPlotSelectAlignment"/>
              </item>
              <item row="3" column="0">
               <widget class="QLabel" name="labelSegmentRailways">
@@ -1697,14 +1710,7 @@
                </property>
               </widget>
              </item>
-             <item row="8" column="0">
-              <widget class="QLabel" name="labelPCAParameters">
-               <property name="text">
-                <string>PCA Parameters</string>
-               </property>
-              </widget>
-             </item>
-             <item row="10" column="0">
+             <item row="11" column="0">
               <widget class="QLabel" name="labelPlotAlignment">
                <property name="text">
                 <string>Plot</string>
@@ -1712,32 +1718,35 @@
               </widget>
              </item>
              <item row="10" column="2">
-              <widget class="QPushButton" name="pushButtonPlotAlignment">
-               <property name="enabled">
-                <bool>true</bool>
+              <widget class="QSpinBox" name="spinBoxNumPointsForMeanCurvature">
+               <property name="toolTip">
+                <string>Number of points to use for the averaging curvature filter.</string>
                </property>
-               <property name="text">
-                <string>Plot</string>
-               </property>
-              </widget>
-             </item>
-             <item row="9" column="1">
-              <widget class="QSpinBox" name="spinBoxCurvatureStepSize">
                <property name="minimum">
                 <number>1</number>
                </property>
                <property name="maximum">
-                <number>10000</number>
+                <number>1000000000</number>
                </property>
                <property name="value">
-                <number>200</number>
+                <number>1</number>
                </property>
               </widget>
              </item>
-             <item row="10" column="1">
-              <widget class="QComboBox" name="comboBoxPlotSelectAlignment"/>
+             <item row="8" column="2">
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxDistanceForPCA">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="minimum">
+                <double>0.010000000000000</double>
+               </property>
+               <property name="value">
+                <double>10.000000000000000</double>
+               </property>
+              </widget>
              </item>
-             <item row="9" column="0">
+             <item row="10" column="0">
               <widget class="QLabel" name="label_7">
                <property name="text">
                 <string>Curvature</string>
@@ -1753,6 +1762,9 @@
              </item>
              <item row="4" column="2">
               <widget class="QDoubleSpinBox" name="doubleSpinBoxCenterlineMaxDistance">
+               <property name="toolTip">
+                <string>Maximum length for region growing to combine centerlines.</string>
+               </property>
                <property name="decimals">
                 <number>3</number>
                </property>
@@ -1762,54 +1774,13 @@
                <property name="singleStep">
                 <double>0.100000000000000</double>
                </property>
-              </widget>
-             </item>
-             <item row="9" column="2">
-              <widget class="QSpinBox" name="spinBoxNumPointsForMeanCurvature">
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>1000000000</number>
-               </property>
                <property name="value">
-                <number>5</number>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="2">
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxDistanceForPCA">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="value">
-                <double>10.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="1">
-              <widget class="Line" name="line_12">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="0">
-              <widget class="QLabel" name="label_8">
-               <property name="text">
-                <string>Compute curvature</string>
+                <double>0.150000000000000</double>
                </property>
               </widget>
              </item>
              <item row="1" column="2">
               <widget class="Line" name="line_16">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="Line" name="line_14">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -1822,13 +1793,37 @@
                </property>
               </widget>
              </item>
+             <item row="7" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Compute curvature</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="Line" name="line_12">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="Line" name="line_14">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
              <item row="7" column="1">
               <widget class="QComboBox" name="comboBoxComputeCurvature"/>
              </item>
-             <item row="6" column="2">
-              <widget class="Line" name="line_13">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pushButtonResetSegmentRailways">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Reset</string>
                </property>
               </widget>
              </item>
@@ -1842,8 +1837,8 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
-              <widget class="Line" name="line_15">
+             <item row="6" column="2">
+              <widget class="Line" name="line_13">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -1856,6 +1851,13 @@
                </property>
               </widget>
              </item>
+             <item row="1" column="1">
+              <widget class="Line" name="line_15">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="0">
               <widget class="QLabel" name="label_10">
                <property name="text">
@@ -1863,13 +1865,37 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QPushButton" name="pushButtonResetSegmentRailways">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_11">
                <property name="text">
-                <string>Reset</string>
+                <string>Pairs</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QPushButton" name="pushButtonComputeCenterlines">
+               <property name="text">
+                <string>Compute</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxCenterlineDensity">
+               <property name="toolTip">
+                <string>Length in mm for combining points on the centerline.</string>
+               </property>
+               <property name="maximum">
+                <double>10000.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>10.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QPushButton" name="pushButtonComputePairs">
+               <property name="text">
+                <string>Compute</string>
                </property>
               </widget>
              </item>
@@ -1889,34 +1915,29 @@
                </property>
               </widget>
              </item>
-             <item row="3" column="2">
-              <widget class="QPushButton" name="pushButtonComputeCenterlines">
-               <property name="text">
-                <string>Compute</string>
+             <item row="10" column="1">
+              <widget class="QSpinBox" name="spinBoxNumPointsForMedianCurvature">
+               <property name="toolTip">
+                <string>Number of points to use for sliding median filter on the curvature.</string>
                </property>
-              </widget>
-             </item>
-             <item row="2" column="2">
-              <widget class="QPushButton" name="pushButtonComputePairs">
-               <property name="text">
-                <string>Compute</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxCenterlineDensity">
-               <property name="maximum">
-                <double>10000.000000000000000</double>
+               <property name="minimum">
+                <number>1</number>
                </property>
                <property name="value">
-                <double>10.000000000000000</double>
+                <number>1</number>
                </property>
               </widget>
              </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_11">
-               <property name="text">
-                <string>Pairs</string>
+             <item row="8" column="1">
+              <widget class="QSpinBox" name="spinBoxCurvatureStepSize">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>10000</number>
+               </property>
+               <property name="value">
+                <number>1</number>
                </property>
               </widget>
              </item>
@@ -1924,6 +1945,33 @@
               <widget class="QPushButton" name="pushButtonResetPairs">
                <property name="text">
                 <string>Reset</string>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="1">
+              <widget class="QSpinBox" name="spinBoxNumPointsForMedianBearing">
+               <property name="toolTip">
+                <string>Number of points to use for sliding median filter for bearing values.</string>
+               </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="2">
+              <widget class="QSpinBox" name="spinBoxNumPointsForMeanBearing">
+               <property name="toolTip">
+                <string>Number of points to use for averaging bearing values.</string>
+               </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="0">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Bearing</string>
                </property>
               </widget>
              </item>
@@ -1970,7 +2018,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>947</width>
+     <width>980</width>
      <height>21</height>
     </rect>
    </property>
