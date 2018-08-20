@@ -295,3 +295,7 @@
 }
 */
 
+std::array<double, 4> OpenInfraPlatform::Infrastructure::fitHarmonicOscilation(const std::vector<double>& x, const std::vector<double>& y)
+{
+	return std::array<double, 4>();
+}

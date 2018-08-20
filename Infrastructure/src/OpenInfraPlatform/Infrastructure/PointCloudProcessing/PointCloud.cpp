@@ -1366,17 +1366,20 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices() {
 	});
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
-	if (sections_.size() > 0) {
+void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+{
+	if(sections_.size() > 0) {
 		BLUE_LOG(trace) << "Computing pairs.";
 
 		// If we have a callback, call start to init the GUI.
-		if (callback)
+		if(callback) {
 			callback->start();
+			callback->setMethodTitle("Computing pairs...");
+		}
 
 		// Add a scalar field for railway and encode the left/right railway index as -1 and 1.
 		int idx = getScalarFieldIndexByName("Railway");
-		if (idx == -1)
+		if(idx == -1)
 			idx = addScalarField("Railway");
 		setCurrentInScalarField(idx);
 
@@ -1394,46 +1397,49 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std
 			// We iterate over all sections and calculate the pairs of matching points.
 			std::vector<std::pair<size_t, size_t>> pairs = std::vector<std::pair<size_t, size_t>>();
 			//#pragma omp for
-			for (long i = 0; i < sections_.size() - 1; i++) {
-				if (sections_[i]) {
+			for(long i = 0; i < sections_.size() - 1; i++) {
+				if(sections_[i]) {
 					// Insert all pairs in our local vector.
-					auto result = sections_[i+1] ? sections_[i]->computePairs(sections_[i + 1]): sections_[i]->computePairs();
-					if (result.size() > 0) {
+					auto result = sections_[i + 1] ? sections_[i]->computePairs(sections_[i + 1]) : sections_[i]->computePairs();
+					if(result.size() > 0) {
 						pairs.insert(pairs.end(), result.begin(), result.end());
 					}
-				} else {
+				}
+				else {
 					BLUE_LOG(warning) << "Null section detected. Nr: " << i;
 				}
 
 				// Update our callback.
 				processedSections++;
-				if (processedSections >= numSectionsPerPercent) {
+				if(processedSections >= numSectionsPerPercent) {
 					percentageCompleted++;
 					processedSections = 0;
 
-					if (tid == 0 && callback) {
+					if(tid == 0 && callback) {
 						callback->update(percentageCompleted);
 					}
 				}
 			}
 
-				// Merge the local vectors in the master vector.
+			// Merge the local vectors in the master vector.
 //#pragma omp critical
 			{
-				if (pairs.size() > 0) {
+				if(pairs.size() > 0) {
 					o_pairs.insert(o_pairs.end(), pairs.begin(), pairs.end());
-				} else {
+				}
+				else {
 					// BLUE_LOG(info) << "No pairs by thread #" << omp_get_thread_num() << " detected.";
 				}
 			}
 		}
 
 		// Stop our callback.
-		if (callback)
+		if(callback)
 			callback->stop();
 
 		BLUE_LOG(trace) << "Done.";
-	} else {
+	}
+	else {
 		BLUE_LOG(warning) << "Aborting. No sections found.";
 	}
 }
@@ -1982,8 +1988,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		auto dist = [](const CCVector3 &lhs, const CCVector3 &rhs) -> float { return (rhs - lhs).norm(); };
 
 		// Start our callback if we have one.
-		if (callback)
+		if(callback) {
 			callback->start();
+			callback->setMethodTitle("Sorting centerpoints into centerlines...");
+		}
 
 		BLUE_LOG(trace) << "Sorting centerpoints into centerlines.";
 
@@ -2223,7 +2231,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				// Compute the ratio between chainage change and distance.
 				float dChainage = std::abs(endpoint.second - startpoint.second);
 				float ratio = dChainage / distance;
-				if(distance < desc.maxDistance || (distance <= 0.7f && ratio > 0.9f) || (startpoint.second < endpoint.second && distance <=4.0f && ratio > 0.8f)) {
+				if(distance < desc.maxDistance || (distance <= 0.7f && ratio > 0.9f)) {// Old additional condition: || (startpoint.second < endpoint.second && distance <= 4.0f && ratio > 0.8f)) {
 					line.insert(line.end(), nextline.begin(), nextline.end());
 
 					nextline.clear();
@@ -2245,8 +2253,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		return 0;
 	}
 	
-	if (callback)
+	if(callback) {
 		callback->start();
+		callback->setMethodTitle("Smoothing centerlines...");
+	}
 
 	BLUE_LOG(trace) << "Smoothing centerlines.";
 
@@ -3062,7 +3072,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 					// Copy bearings values to allow for median filtering.
 					std::vector<double> bearingsOld = std::vector<double>(bearings.size());
 					std::copy(bearings.begin(), bearings.end(), bearingsOld.begin());
-									
+														
 					long startOffset = (long)std::floor((float)desc.numPointsForMedianBearing / 2.0f);
 
 					if(desc.numPointsForMedianBearing % 2 == 0)
@@ -3081,7 +3091,9 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 						
 						std::sort(values.begin(), values.end(), [](const double &lhs, const double &rhs)->bool { return lhs < rhs; });
 
-						bearings[i] = values[(int) std::ceilf((float)values.size() / 2.0f) - 1];
+						double bearing = values[(int)std::ceilf((float)values.size() / 2.0f) - 1];
+						
+						bearings[i] = bearing;							
 					}
 					
 				}

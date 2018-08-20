@@ -126,6 +126,8 @@ namespace OpenInfraPlatform
 			float distanceForPCA, minSegmentLength, centerlinePointDistance;
 		};
 
+		std::array<double, 4> fitHarmonicOscilation(const std::vector<double> &x, const std::vector<double> &y);
+
 		//BLUEINFRASTRUCTURE_API void importLASPointCloud(const char* filename, PointCloud& pointCloud);
 		//BLUEINFRASTRUCTURE_API void importBINPointCloud(const char* filename, PointCloud& pointCloud);
 	} // end namespace Infrastructure

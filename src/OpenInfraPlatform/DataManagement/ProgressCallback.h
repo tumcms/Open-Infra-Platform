@@ -37,7 +37,7 @@ namespace OpenInfraPlatform {
 	
 		virtual void setMethodTitle(const char* methodTitle)
 		{
-	
+			Q_EMIT setMethodTitleSignal(QString(methodTitle));
 		}
 		
 		virtual void setInfo(const char* infoStr)
@@ -46,12 +46,14 @@ namespace OpenInfraPlatform {
 	
 		virtual void start()
 		{
+			Q_EMIT setMethodTitleSignal(QString("Processing..."));
 			Q_EMIT activitySignal(true);
 			Q_EMIT updateSignal(0);
 		}
 	
 		virtual void stop()
 		{
+			Q_EMIT setMethodTitleSignal(QString("Done"));
 			Q_EMIT updateSignal(100);
 			Q_EMIT activitySignal(false);
 	
@@ -64,7 +66,7 @@ namespace OpenInfraPlatform {
 	Q_SIGNALS:
 		void updateSignal(float percent);
 		void activitySignal(bool isActive);
-
+		void setMethodTitleSignal(QString title);
 		};
 	}
 }

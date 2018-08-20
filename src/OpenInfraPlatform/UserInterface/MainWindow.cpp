@@ -271,6 +271,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, progressDialog_, &QProgressDialog::setVisible);
 	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, progressDialog_, [&](bool value) {value ? progressDialog_->setRange(0, 100) : progressDialog_->setRange(0, 0); });
 	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::updateSignal, progressDialog_, &QProgressDialog::setValue);
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::setMethodTitleSignal, progressDialog_, &QProgressDialog::setLabelText);
 
 	ui_->doubleSpinBoxPointSize->setValue(3.0);
 	on_doubleSpinBoxPointSize_valueChanged(3.0);
@@ -2821,7 +2822,10 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 		}
 		inputFile.close();
 	}
-		
+	
+	// Set window title
+	customPlot->setWindowTitle(filename);
+	
 	// create graph and assign data to it:
 	customPlot->addGraph(customPlot->xAxis, customPlot->yAxis2);
 	customPlot->setInteraction(QCP::iRangeZoom);
