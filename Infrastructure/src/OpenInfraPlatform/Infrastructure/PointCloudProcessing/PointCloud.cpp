@@ -2247,6 +2247,22 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	fuseCenterlines(centerlines);
 
 	BLUE_LOG(trace) << "Done.";
+
+	std::for_each(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) {
+		std::sort(line.begin(), line.end(), [&](size_t &lhs, size_t &rhs) -> bool {
+			return centerpoints[lhs].second < centerpoints[rhs].second;
+		});
+	});
+
+	// Clear all lines having less then 100 points -> probably noise or something.
+	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool {
+		//float centerlineLength = (centerpoints[line.back()].first - centerpoints[line.front()].first).norm();
+		float centerlineLength = std::fabsf(centerpoints[line.back()].second - centerpoints[line.front()].second);
+		size_t numCenterlinePoints = line.size();
+		return numCenterlinePoints < desc.minSegmentPoints || centerlineLength < desc.minSegmentLength;
+	});
+	
+	centerlines.erase(end, centerlines.end());
 	
 	if (centerlines.empty()) {
 		BLUE_LOG(trace) << "No centerlines remaining after sorting. Choose a lower \"minSegmentPoints\" threshold and/or lower \"minSegmentLength\" threshold.";
@@ -2265,75 +2281,165 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	int percentageCompleted = 0;
 	bool update = true;
 
+	// Set this to true which means create alignments by smoothing the centerpoints.
+	if(false) {
 #pragma omp parallel private(tid) firstprivate(callback) shared(percentageCompleted, update, alignments, centerlines, centerpoints)
-	{
-		tid = omp_get_thread_num();
-		int percentPerCenterline = 100 / centerlines.size();
-		update = true;
+		{
+			tid = omp_get_thread_num();
+			int percentPerCenterline = 100 / centerlines.size();
+			update = true;
 
 #pragma omp for schedule(dynamic)
-		for(long idx_line = 0; idx_line < centerlines.size(); idx_line++) {
-			auto &line = centerlines[idx_line];
+			for(long idx_line = 0; idx_line < centerlines.size(); idx_line++) {
+				auto &line = centerlines[idx_line];
 
-			long startIndex = 0, endIndex = 0;
+				long startIndex = 0, endIndex = 0;
 
-			while(endIndex < line.size()) {
+				while(endIndex < line.size()) {
 
-				auto dChainage = [&]()->float {
-					return std::fabsf(centerpoints[line[endIndex]].second - centerpoints[line[startIndex]].second);
-				};
+					auto dChainage = [&]()->float {
+						return std::fabsf(centerpoints[line[endIndex]].second - centerpoints[line[startIndex]].second);
+					};
 
-				while(endIndex < line.size() && dChainage() < desc.centerlineDensity) {
-					endIndex++;
-				}
-
-				int numPoints = (endIndex - startIndex);
-				if(true) {
-					CCVector3 center = CCVector3(0, 0, 0);
-					ScalarType chainage = 0;
-					for(; startIndex < endIndex; startIndex++) {
-						center += (centerpoints[line[startIndex]].first / (float)numPoints);
-						chainage += (centerpoints[line[startIndex]].second / (float)numPoints);
+					while(endIndex < line.size() && dChainage() < desc.centerlineDensity) {
+						endIndex++;
 					}
-					alignments[idx_line].push_back(std::pair<CCVector3, ScalarType>(center, chainage));
-				}
 
-				if(false) {
-					CCVector3 center = CCVector3(0, 0, 0);
-					ScalarType chainage = 0;
-					for(long i = startIndex; i < endIndex; i++) {
-						center += (centerpoints[line[i]].first / (float)numPoints);
-						chainage += (centerpoints[line[i]].second / (float)numPoints);
+					int numPoints = (endIndex - startIndex);
+					if(true) {
+						CCVector3 center = CCVector3(0, 0, 0);
+						ScalarType chainage = 0;
+						for(; startIndex < endIndex; startIndex++) {
+							center += (centerpoints[line[startIndex]].first / (float)numPoints);
+							chainage += (centerpoints[line[startIndex]].second / (float)numPoints);
+						}
+						alignments[idx_line].push_back(std::pair<CCVector3, ScalarType>(center, chainage));
 					}
-					alignments[idx_line].push_back(std::pair<CCVector3, ScalarType>(center, chainage));
-					startIndex++;
-					endIndex = startIndex;
-				}
 
-				if(false) {
-					std::vector<std::pair<CCVector3, ScalarType>> points = std::vector<std::pair<CCVector3, ScalarType>>();
-					for(long i = startIndex; i < endIndex; i++) {
-						points.push_back(centerpoints[line[startIndex]]);
+					if(false) {
+						CCVector3 center = CCVector3(0, 0, 0);
+						ScalarType chainage = 0;
+						for(long i = startIndex; i < endIndex; i++) {
+							center += (centerpoints[line[i]].first / (float)numPoints);
+							chainage += (centerpoints[line[i]].second / (float)numPoints);
+						}
+						alignments[idx_line].push_back(std::pair<CCVector3, ScalarType>(center, chainage));
+						startIndex++;
+						endIndex = startIndex;
 					}
-					std::sort(points.begin(), points.end(), [](std::pair<CCVector3, ScalarType> &lhs, std::pair<CCVector3, ScalarType> &rhs)->bool {
-						return lhs.first.norm() < rhs.first.norm();
-					});
 
-					alignments[idx_line].push_back(points[points.size()/2]);
-					startIndex++;
-					endIndex = startIndex;
-				}
+					if(false) {
+						std::vector<std::pair<CCVector3, ScalarType>> points = std::vector<std::pair<CCVector3, ScalarType>>();
+						for(long i = startIndex; i < endIndex; i++) {
+							points.push_back(centerpoints[line[startIndex]]);
+						}
+						std::sort(points.begin(), points.end(), [](std::pair<CCVector3, ScalarType> &lhs, std::pair<CCVector3, ScalarType> &rhs)->bool {
+							return lhs.first.norm() < rhs.first.norm();
+						});
 
-				if(tid == 0 && callback && update) {
-					callback->update(percentageCompleted);
-					update = false;
+						alignments[idx_line].push_back(points[points.size() / 2]);
+						startIndex++;
+						endIndex = startIndex;
+					}
+
+					if(tid == 0 && callback && update) {
+						callback->update(percentageCompleted);
+						update = false;
+					}
 				}
-			}			
-		}
+			}
 #pragma omp critical
+			{
+				percentageCompleted += percentPerCenterline;
+				update = true;
+			}
+		}
+	}
+	//TODO: Create alignments by sampling.
+	else {
+#pragma omp parallel private(tid) firstprivate(callback) shared(percentageCompleted, update, alignments, centerlines, centerpoints)
 		{
-			percentageCompleted += percentPerCenterline;
+			tid = omp_get_thread_num();
+			int percentPerCenterline = 100 / centerlines.size();
 			update = true;
+
+			// Pull the lambda declaration into the loop for the openmp construct
+			auto getPCA = [&](std::vector<size_t> alignment, size_t start, size_t end) -> CCVector3 {
+				// Matrix which is capable of holding all points for PCA.
+				Eigen::MatrixX3d mat;
+				mat.resize(end - start, 3);
+				for(size_t ii = start; ii < end; ii++) {
+					auto pos = centerpoints[alignment[ii]].first;
+					mat.row(ii - start) = Eigen::Vector3d(pos.x, pos.y, pos.z);
+				}
+
+				// Do PCA to find the largest eigenvector -> main axis.
+				Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
+				Eigen::MatrixXd cov = centered.adjoint() * centered;
+				Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+				Eigen::Matrix<double, 3, 1> vec = eig.eigenvectors().rightCols(1).normalized();
+				return CCVector3(vec.x(), vec.y(), vec.z());
+			};
+
+#pragma omp for schedule(dynamic)
+			for(long idx_line = 0; idx_line < centerlines.size(); idx_line++) {
+				auto &line = centerlines[idx_line];
+				double segmentLength = 1.0;
+
+				int c = 0;
+				std::pair<CCVector3,float> origin = { CCVector3(0,0,0),0 };
+				while(std::abs(centerpoints[line[c]].second - centerpoints[line[0]].second) < 2.0) {
+					origin.first += centerpoints[line[c]].first;
+					origin.second += centerpoints[line[c]].second;
+					c++;
+				}
+
+				origin.first /= (float) c;
+				origin.second /= (float)c;
+
+				double stepSize = desc.centerlineDensity;
+
+				for(long i = (c / 2); i < line.size();) {
+
+					float chainage = origin.second;
+
+					// Lambda to compute the difference in chainage
+					auto diff = [&](long index)->double {
+						return std::abs(centerpoints[line[index]].second - chainage);
+					};
+
+					// Old computation method: auto axis = getPCA(alignment, i - (desc.bearingComputationSegmentLength / 2), i + (desc.bearingComputationSegmentLength / 2));
+					long startIndex = i, endIndex = i;
+
+					while(startIndex > 0 && diff(startIndex) < segmentLength)
+						startIndex--;
+
+					while(endIndex < line.size() - 1 && diff(endIndex) < segmentLength)
+						endIndex++;
+
+					// Get the PCA axis and compute the bearing.
+					auto axis = getPCA(line, startIndex, endIndex);
+					
+					std::pair<CCVector3, ScalarType> point = { origin.first + axis * stepSize,origin.second + stepSize };
+
+					alignments[idx_line].push_back(point);
+					origin = point;
+
+					// Move our counting variable to the point which is closest to the chainage value of the point we just added.
+					while(i < line.size() && centerpoints[line[i]].second < point.second)
+						i++;
+
+					if(tid == 0 && callback && update) {
+						callback->update(percentageCompleted);
+						update = false;
+					}
+				}				
+#pragma omp critical
+				{
+					percentageCompleted += percentPerCenterline;
+					update = true;
+				}
+			}
 		}
 	}
 
@@ -2389,14 +2495,14 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 	BLUE_LOG(trace) << "Done.";	
 
-	auto end = std::remove_if(alignments.begin(), alignments.end(), [&](std::vector<std::pair<CCVector3, ScalarType>> &line) -> bool {
+	auto endAlignments = std::remove_if(alignments.begin(), alignments.end(), [&](std::vector<std::pair<CCVector3, ScalarType>> &line) -> bool {
 		//float centerlineLength = (centerpoints[line.back()].first - centerpoints[line.front()].first).norm();
 		float centerlineLength = std::fabsf(line.back().second - line.front().second);
 		size_t numCenterlinePoints = line.size();
 		return numCenterlinePoints < desc.minSegmentPoints || centerlineLength < desc.minSegmentLength;
 	});
 
-	alignments.erase(end, alignments.end());
+	alignments.erase(endAlignments, alignments.end());
 
 	std::sort(alignments.begin(), alignments.end(), [&](std::vector<std::pair<CCVector3, ScalarType>> &lhs, std::vector<std::pair<CCVector3, ScalarType>> &rhs) -> bool {
 		return lhs.front().second < rhs.front().second;
@@ -2973,6 +3079,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 			// Initialize number of points to use for PCA and and the NORTH direction.
 			const Eigen::Matrix<double, 3, 1> NORTH(0., 1., 0.);
 			const Eigen::Matrix<double, 2, 1> NORTH2D(0., 1.);
+			const Eigen::Matrix<double, 2, 1> EAST2D(1., 0.);
 
 			// Initialize the container to hold our angles of the direction vectors
 			std::vector<double> bearings = std::vector<double>(numBearingsAndChainages);
@@ -2995,18 +3102,18 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 				// Pull the lambda declaration into the loop for the openmp construct
 				auto getPCA = [&](std::vector<size_t> alignment, size_t start, size_t end) -> Eigen::Matrix<double, 2, 1> {
 					// Matrix which is capable of holding all points for PCA.
-					Eigen::MatrixX3d mat;
-					mat.resize(end - start, 3);
+					Eigen::MatrixX2d mat;
+					mat.resize(end - start, 2);
 					for(size_t ii = start; ii < end; ii++) {
 						auto pos = *getPoint(alignment[ii]);
-						mat.row(ii - start) = Eigen::Vector3d(pos.x, pos.y, pos.z);
+						mat.row(ii - start) = Eigen::Vector2d(pos.x, pos.y);
 					}
 
 					// Do PCA to find the largest eigenvector -> main axis.
 					Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
 					Eigen::MatrixXd cov = centered.adjoint() * centered;
 					Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-					Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1).topRows(2);
+					Eigen::Matrix<double, 2, 1> vec = eig.eigenvectors().rightCols(1);
 					return vec;
 				};
 
@@ -3035,13 +3142,24 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 
 					// Get the PCA axis and compute the bearing.
 					auto axis = getPCA(alignment, startIndex, endIndex);
-					axis.normalize();
+					//axis.normalize();
 
 					// Old versions: bearings[(i - (desc.bearingComputationSegmentLength / 2)) / desc.curvatureStepSize] = (std::acos(axis.dot(NORTH2D)) * 180.0 / M_PI);
 					// Old versions: chainages[(i - (desc.bearingComputationSegmentLength / 2)) / desc.curvatureStepSize] = getPointScalarValue(alignment[i]);// mainAxis_.dot(alignment[i]);
 					// Old versions: processedPoints += desc.curvatureStepSize;
 
-					bearings[i] = (std::acos(axis.dot(NORTH2D)) * 180.0 / M_PI);
+					auto northing = axis.dot(NORTH2D);
+					auto easting = axis.dot(EAST2D);
+
+					if(easting < 0)
+						northing *= -1;
+
+					auto bearing = (std::acos(northing) * 180.0 / M_PI);
+
+					if(easting < 0)
+						bearing += 180;
+
+					bearings[i] = bearing;
 					chainages[i] = chainage;
 					processedPoints++;
 
@@ -3057,15 +3175,15 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 #pragma omp barrier
 			}
 
-				int nJumps = 0;
-				for (long i = 0; i < bearings.size(); i++) {
-					// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
-					bearings[i] += nJumps;
-					if(i < bearings.size() - 1) {
-						if(std::abs(bearings[i] - (bearings[i + 1] + nJumps)) > 170)
-							nJumps += 180;
-					}
-				}
+				//int nJumps = 0;
+				//for (long i = 0; i < bearings.size(); i++) {
+				//	// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
+				//	bearings[i] += nJumps;
+				//	if(i < bearings.size() - 1) {
+				//		if(std::abs(bearings[i] - (bearings[i + 1] + nJumps)) > 170)
+				//			nJumps += 180;
+				//	}
+				//}
 
 
 				if(desc.numPointsForMedianBearing > 1) {
