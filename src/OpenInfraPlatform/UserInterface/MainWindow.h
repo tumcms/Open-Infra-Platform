@@ -50,6 +50,8 @@
 
 #include "qsimpleupdater.h"
 
+#include <qcustomplot.h>
+
 #include <BlueFramework/Application/UserInterface/MainWindow.h>
 #include "../../QtPropertyBrowser/qttreepropertybrowser.h"
 #include "../../QtPropertyBrowser/qtvariantproperty.h"
@@ -356,6 +358,8 @@ namespace OpenInfraPlatform
 			AddGeoreferenceDialog*						addGeoreferenceDialog_ = nullptr;
 
 			QProgressBar*								progressBar_;
+
+			std::vector<QCustomPlot*>					bearingPlots_, curvaturePlots_;
 			
 			int											inUnitTest_ = -1;
 			buw::ImageTester							tester_;

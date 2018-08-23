@@ -43,7 +43,6 @@
 #include <QSettings>
 #include <QUuid>
 #include <QMessageBox>
-#include <qcustomplot.h>
 
 #include <boost/filesystem.hpp>
 #include <iostream>
@@ -390,6 +389,9 @@ OpenInfraPlatform::UserInterface::MainWindow::~MainWindow() {
 	buw::safeDelete(verticalAlignmentWindow_);
 	buw::safeDelete(curvatureWindow_);
 	buw::safeDelete(ui_);
+
+	bearingPlots_.clear();
+	curvaturePlots_.clear();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::storeGBuffer() {
@@ -2683,7 +2685,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCenterlin
 		buw::CenterlineComputationDescription desc;		
 		desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
 		desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
-		desc.maxDistance = ui_->doubleSpinBoxCenterlineMaxDistance->value();
+		desc.sortingCloseDistance = ui_->doubleSpinBoxCenterlineMaxDistance->value();
 		desc.centerlineDensity = ui_->doubleSpinBoxCenterlineDensity->value() / 1000.0;
 		int numAlignments = pointCloud->computeCenterlines(desc, callback_);
 		if(numAlignments > 0) {
@@ -2787,70 +2789,86 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCurvature
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_clicked()
-{
-	//QString parameter = QDir::currentPath().append("/Alignment#").append(ui_->comboBoxPlotSelectAlignment->currentData().toString()).append(".txt");
-
-	//QString parameter = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("*.txt"));
-	//
-	//
-	////setup converter
-	//std::wstring_convert<convert_type, wchar_t> converter;
-	//auto wparameter = converter.from_bytes(parameter.toStdString().data());
-	//auto filename = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/plotAlignment.cmd";
-	//auto directory = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/";
-	//std::wstring script = L"C:/Users/ga38fih/dev/openinfraplatform/Tools/plot.py";
-
-	//putenv("PYTHONPATH=%PYTHONPATH%;C:\Users\ga38fih\dev\python\packages");
-	//
-	//ShellExecute(0, 0, filename, wparameter.c_str(), directory, SW_SHOWDEFAULT);
-
-	QCustomPlot* customPlot = new QCustomPlot(nullptr);
-	customPlot->resize(400, 400);
-	customPlot->setInteraction(QCP::iRangeDrag, true);
-	QVector<double> chainages, curvatures, bearings;
-
+{	
+	// Get the file to read.
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("*.txt"));
-	QFile inputFile(filename);
-	if(inputFile.open(QIODevice::ReadOnly)) {
-		QTextStream in(&inputFile);
-		while(!in.atEnd()) {
-			QString line = in.readLine();
-			QStringList tokens = line.split('\t');
-			chainages.append(tokens[0].toDouble());
-			curvatures.append(tokens[1].toDouble());
-			bearings.append(tokens[2].toDouble());
+
+	if(!filename.isEmpty()) {
+		QVector<double> chainages, curvatures, bearings;
+
+		QFile inputFile(filename);
+		if(inputFile.open(QIODevice::ReadOnly)) {
+			QTextStream in(&inputFile);
+			while(!in.atEnd()) {
+				QString line = in.readLine();
+				QStringList tokens = line.split('\t');
+				chainages.append(tokens[0].toDouble());
+				curvatures.append(tokens[1].toDouble());
+				bearings.append(tokens[2].toDouble());
+			}
+			inputFile.close();
 		}
-		inputFile.close();
+
+		// Create plot for bearing.
+		QCustomPlot* customPlotBearing = new QCustomPlot(nullptr);
+		connect(customPlotBearing, &QCustomPlot::close, customPlotBearing, &QObject::deleteLater);
+
+		customPlotBearing->resize(400, 400);
+		customPlotBearing->setInteraction(QCP::iRangeDrag, true);
+
+		// Set window title
+		customPlotBearing->setWindowTitle(filename);
+
+		// create graph and assign data to it:
+		customPlotBearing->addGraph(customPlotBearing->xAxis, customPlotBearing->yAxis);
+		customPlotBearing->setInteraction(QCP::iRangeZoom);
+		customPlotBearing->setInteraction(QCP::iRangeDrag);
+		customPlotBearing->graph(0)->setData(chainages, bearings);
+		customPlotBearing->graph(0)->setPen(QPen(Qt::blue));
+
+		// give the axes some labels:
+		customPlotBearing->xAxis->setLabel("Chainage");
+		customPlotBearing->yAxis->setLabel("Bearing");
+
+
+		// set axes ranges, so we see all data:
+		customPlotBearing->xAxis->setRange(chainages.first(), chainages.last());
+		customPlotBearing->yAxis->rescale();
+
+		customPlotBearing->replot();
+		customPlotBearing->show();
+		bearingPlots_.push_back(customPlotBearing);
+
+		// Create plot for bearing.
+		QCustomPlot* customPlotCurvature = new QCustomPlot(nullptr);
+		connect(customPlotCurvature, &QCustomPlot::close, customPlotCurvature, &QObject::deleteLater);
+
+		customPlotCurvature->resize(400, 400);
+		customPlotCurvature->setInteraction(QCP::iRangeDrag, true);
+
+		// Set window title
+		customPlotCurvature->setWindowTitle(filename);
+
+		// create graph and assign data to it:
+		customPlotCurvature->addGraph(customPlotCurvature->xAxis, customPlotCurvature->yAxis);
+		customPlotCurvature->setInteraction(QCP::iRangeZoom);
+		customPlotCurvature->setInteraction(QCP::iRangeDrag);
+		customPlotCurvature->graph(0)->setData(chainages, curvatures);
+		customPlotCurvature->graph(0)->setPen(QPen(Qt::red));
+
+		// give the axes some labels:
+		customPlotCurvature->xAxis->setLabel("Chainage");
+		customPlotCurvature->yAxis->setLabel("Curvature");
+
+
+		// set axes ranges, so we see all data:
+		customPlotCurvature->xAxis->setRange(chainages.first(), chainages.last());
+		customPlotCurvature->yAxis->rescale();
+
+		customPlotCurvature->replot();
+		customPlotCurvature->show();
+		curvaturePlots_.push_back(customPlotCurvature);
 	}
-	
-	// Set window title
-	customPlot->setWindowTitle(filename);
-	
-	// create graph and assign data to it:
-	customPlot->addGraph(customPlot->xAxis, customPlot->yAxis2);
-	customPlot->setInteraction(QCP::iRangeZoom);
-	customPlot->setInteraction(QCP::iRangeDrag);
-	customPlot->graph(0)->setData(chainages, bearings);
-	customPlot->graph(0)->setPen(QPen(Qt::blue));
-
-	customPlot->addGraph(customPlot->xAxis, customPlot->yAxis);
-	customPlot->graph(1)->setData(chainages, curvatures);
-	customPlot->graph(1)->setPen(QPen(Qt::red));
-
-	// give the axes some labels:
-	customPlot->xAxis->setLabel("Chainage");
-	customPlot->yAxis2->setLabel("Bearing");
-	customPlot->yAxis->setLabel("Curvature");
-	customPlot->yAxis2->setVisible(true);
-
-	// set axes ranges, so we see all data:
-	customPlot->xAxis->setRange(chainages.first(), chainages.last());
-	customPlot->yAxis->rescale();
-	customPlot->yAxis2->rescale();
-	
-	
-	customPlot->replot();
-	customPlot->show();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value)

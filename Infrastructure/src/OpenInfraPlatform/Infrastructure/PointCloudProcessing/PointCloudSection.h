@@ -42,9 +42,9 @@ namespace OpenInfraPlatform {
 			void setLength(double length);
 			const double getLength() const;
 
-			PointCloudSection(GenericIndexedCloudPersist* associatedCloud) : ReferenceCloud(associatedCloud) { }
+			PointCloudSection(GenericIndexedCloudPersist* associatedCloud);
 
-			PointCloudSection(PointCloudSection &other) : ReferenceCloud(other) {}
+			PointCloudSection(PointCloudSection &other);
 
 			virtual ~PointCloudSection();
 
@@ -64,6 +64,10 @@ namespace OpenInfraPlatform {
 			Eigen::Matrix3d getOrientation();
 
 			std::vector<std::pair<size_t, size_t>> computePairs(buw::ReferenceCounted<PointCloudSection> nextSection = nullptr);
+
+			void resetPairs();
+
+			std::vector<std::pair<size_t, size_t>> getPairs();
 
 			void getAxisAlignedBoundingBox(CCVector3 &min, CCVector3 &max);
 
@@ -89,6 +93,8 @@ namespace OpenInfraPlatform {
 			double length_;
 
 			Eigen::Vector3d mainAxis_;
+
+			std::vector<std::pair<size_t, size_t>> pairs_;
 		};
 	}
 }

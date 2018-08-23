@@ -23,6 +23,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 OpenInfraPlatform::Infrastructure::PointCloudSection::~PointCloudSection()
 {
+	pairs_.clear();
 }
 
 int OpenInfraPlatform::Infrastructure::PointCloudSection::flagDuplicatePoints(const double minDistance)
@@ -76,9 +77,7 @@ CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeCenterOfM
 		CCVector3 center = CCVector3(0, 0, 0);
 		for(size_t i = 0; i < this->size(); i++) {
 			center += ((*getPoint(i)) / ((float)this->size()));
-		}
-		//CCLib::Neighbourhood neighbourhood = CCLib::Neighbourhood(this);
-		//return *neighbourhood.getGravityCenter();
+		}		
 		return center;
 	}
 	else {
@@ -147,22 +146,17 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 		// Iterate over all pairs of points, we iterate fully since points are not sorted in x direction.
 		for(size_t i = 0; i < this->size() - 1; i++) {
 			std::vector<std::pair<size_t, size_t>> pairsForPoint = std::vector<std::pair<size_t, size_t>>();
-			std::pair<size_t, float> minErrorPoint = std::pair<size_t, float>(i, LONG_MAX);
 			auto firstPoint = *getPoint(i);
 
 			for(size_t ii = i + 1; ii < this->size(); ii++) {
 				auto secondPoint = *getPoint(ii);
+
 				// If first point.x + gauge + head - second point.x < 1cm and difference in y direction is less than 1cm, we have found a pair of matching rail points.
 				float distance = (firstPoint - secondPoint).norm();
 				float error = std::fabsf(distance - gauge - head);
 				float elevationChange = std::fabsf(firstPoint.z - secondPoint.z);
 				if(error < epsilon && elevationChange < 0.2f) {
-					float totalError = elevationChange + 2.0f*error;
-					//
-					//if(totalError < minErrorPoint.second)
-					//	minErrorPoint = std::pair<size_t, float>(ii, totalError);
-				
-
+					
 					// If we already have a pair where the second point is close to this one, compare the error. If this one is better, change it, otherwise skip. Otherwise add.
 					bool hasPointInProximity = false;
 					for(auto &pair : pairsForPoint) {
@@ -186,7 +180,6 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 					float error = std::fabsf(distance - gauge - head);
 					float elevationChange = std::fabsf(firstPoint.z - secondPoint.z);
 					if(error < epsilon && elevationChange < 0.2f) {
-						float totalError = elevationChange + 2.0f*error;
 						
 						// If we already have a pair where the second point is close to this one, compare the error. If this one is better, change it, otherwise skip. Otherwise add.
 						bool hasPointInProximity = false;
@@ -214,7 +207,7 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 
 				pairs.insert(pairs.end(), pairsForPointWithNextSection.begin(), pairsForPointWithNextSection.end());
 			}
-			//pairs.push_back(std::pair<size_t, size_t>(getPointGlobalIndex(i), getPointGlobalIndex(minErrorPoint.first)));
+
 			pairs.insert(pairs.end(), pairsForPoint.begin(), pairsForPoint.end());
 		}
 
@@ -283,8 +276,6 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 					auto temp = pair.first;
 					pair.first = pair.second;
 					pair.second = temp;
-
-					//std::swap(pair.first, pair.second);
 				}
 			});
 
@@ -311,7 +302,10 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 			
 			std::for_each(clusters.begin(), clusters.end(), [&](std::vector<size_t> &vec) {
 				std::sort(vec.begin(), vec.end(), [&](size_t &lhs, size_t &rhs)->bool {
-					return associatedCloud->getPoint(pairs[lhs].first)->z < associatedCloud->getPoint(pairs[rhs].first)->z;
+					float lhsHeight = 0.5* (associatedCloud->getPoint(pairs[lhs].first)->z + associatedCloud->getPoint(pairs[lhs].second)->z);
+					float rhsHeight = 0.5* (associatedCloud->getPoint(pairs[rhs].first)->z + associatedCloud->getPoint(pairs[rhs].second)->z);
+
+					return lhsHeight < rhsHeight;
 				});
 			});
 
@@ -319,15 +313,15 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 
 			for(auto it : clusters) {
 				if(it.size() > 0) {
-					auto endPoint = associatedCloud->getPoint(pairs[it[it.size() - 1]].first);
-					auto startPoint = associatedCloud->getPoint(pairs[it[0]].first);
+					auto upperBound = 0.5* (associatedCloud->getPoint(pairs[it[it.size() - 1]].first)->z + associatedCloud->getPoint(pairs[it[it.size() - 1]].second)->z);
+					auto lowerBound = 0.5* (associatedCloud->getPoint(pairs[it[0]].first)->z + associatedCloud->getPoint(pairs[it[0]].second)->z);
 
-					if(std::abs(endPoint->z - startPoint->z) > 0.05f) {
-						float heightLimit = endPoint->z - 0.05f;
+					if(std::abs(upperBound - lowerBound) > 0.05f) {
+						float heightLimit = upperBound - 0.05f;
 
 						std::for_each(it.begin(), it.end(), [&](size_t &index) {
-							auto point = associatedCloud->getPoint(pairs[index].first);
-							if(point->z < heightLimit)
+							auto height = 0.5* (associatedCloud->getPoint(pairs[index].first)->z + associatedCloud->getPoint(pairs[index].second)->z);
+							if(height < heightLimit)
 								invalidPairIndices.insert(index);
 						});			
 					}
@@ -361,12 +355,23 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 				}
 			}
 		}
-		return pairs;
+		pairs_ = pairs;
 	}
 	else {
 		//BLUE_LOG(warning) << "Empty section found.";
-		return std::vector<std::pair<size_t, size_t>>();
+		pairs_ = std::vector<std::pair<size_t, size_t>>();
 	}
+	return getPairs();
+}
+
+void OpenInfraPlatform::Infrastructure::PointCloudSection::resetPairs()
+{
+	pairs_.clear();
+}
+
+std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointCloudSection::getPairs()
+{
+	return pairs_;
 }
 
 void OpenInfraPlatform::Infrastructure::PointCloudSection::getAxisAlignedBoundingBox(CCVector3 & min, CCVector3 & max)
@@ -427,6 +432,14 @@ void OpenInfraPlatform::Infrastructure::PointCloudSection::setLength(double leng
 const double OpenInfraPlatform::Infrastructure::PointCloudSection::getLength() const
 {
 	return length_;
+}
+
+OpenInfraPlatform::Infrastructure::PointCloudSection::PointCloudSection(GenericIndexedCloudPersist * associatedCloud) : ReferenceCloud(associatedCloud) {
+	pairs_ = std::vector<std::pair<size_t, size_t>>();
+}
+
+OpenInfraPlatform::Infrastructure::PointCloudSection::PointCloudSection(PointCloudSection & other) : ReferenceCloud(other) {
+	pairs_ = other.pairs_;
 }
 
 

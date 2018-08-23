@@ -66,6 +66,7 @@ namespace OpenInfraPlatform
 			int size = 1;
 			float kernelRadius = 100.0f;
 
+			// Auto generated using 'GridComputationDescription() = default;'.
 			GridComputationDescription() = default;
 		};
 
@@ -77,6 +78,7 @@ namespace OpenInfraPlatform
 
 			float sigma = 1.0f , sigmaSF = -1.0f;
 
+			// Auto generated using 'ChainageComputationDescription() = default;'.
 			ChainageComputationDescription() = default;
 		};
 
@@ -109,8 +111,22 @@ namespace OpenInfraPlatform
 
 		struct CenterlineComputationDescription {
 			int minSegmentPoints;
-			float minSegmentLength, maxDistance, centerlineDensity;
+			float minSegmentLength,  centerlineDensity;
 
+			int sortingPointOffset = 100;
+			float sortingCloseDistance = 0.15f, sortingFarDistance = 0.7f;
+			float sortingCloseRatio = 0.8f, sortingFarRatio = 0.9f;
+
+			bool fuseCenterlines = true, fuseAlignments = false;
+			int fusingPointOffset = 100;
+			float fusingCloseDistance = 0.15f, fusingFarDistance = 0.7f;
+			float fusingCloseRatio = 0.8f, fusingFarRatio = 0.9f;
+
+			bool filterDuplicates = true, filterDensity = true;
+			float duplicateDistance = 0.002f;
+			float densityKernelRadius = 0.1f, densityThreshold = 15;
+
+			// Auto generated using 'CenterlineComputationDescription() = default;'.
 			CenterlineComputationDescription() = default;
 		};
 
@@ -118,12 +134,31 @@ namespace OpenInfraPlatform
 			int centerlineIndex,  curvatureStepSize, numPointsForMeanCurvature, numPointsForMedianCurvature, numPointsForMeanBearing, numPointsForMedianBearing;
 			double bearingComputationSegmentLength;
 
+			// Auto generated using 'CenterlineCurvatureComputationDescription() = default;'.
 			CenterlineCurvatureComputationDescription() = default;
 		};
 
 		struct RailwaySegmentationDescription {
 			int minSegmentPoints, numPointsForPCA, curvatureStepSize, numPointsForMeanCurvature;
 			float distanceForPCA, minSegmentLength, centerlinePointDistance;
+		};
+
+		struct PairComputationDescription {
+			bool includeNextSection = true;
+
+			float maxElevationChange = 0.2f;
+			float maxError = 0.01f;
+			float pointProximityDistance = 0.1f;
+
+			float localDensityKernelRadius = 0.067f / 2.0f; //head width is 0.067m = 6.7cm
+			size_t localDensityThreshold = 15;
+
+			float clusterDistance2D = 0.15f;
+			float clusterHeightTreshold = 0.05f;
+			float clusterHeightRange = 0.05f;
+
+			// Auto generated using 'PairComputationDescription() = default;'.
+			PairComputationDescription() = default;
 		};
 
 		std::array<double, 4> fitHarmonicOscilation(const std::vector<double> &x, const std::vector<double> &y);
@@ -148,6 +183,7 @@ namespace buw
 	using OpenInfraPlatform::Infrastructure::CenterlineCurvatureComputationDescription;
 	using OpenInfraPlatform::Infrastructure::GridComputationDescription;
 	using OpenInfraPlatform::Infrastructure::ChainageComputationDescription;
+	using OpenInfraPlatform::Infrastructure::PairComputationDescription;
 }
 
 #endif // end define OpenInfraPlatform_Infrastructure_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h

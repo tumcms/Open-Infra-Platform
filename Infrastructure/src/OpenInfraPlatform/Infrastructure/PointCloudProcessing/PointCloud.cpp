@@ -1368,6 +1368,10 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices() {
 
 void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
+	if(bHasPairs_) {
+		resetPairs();
+	}
+
 	if(sections_.size() > 0) {
 		BLUE_LOG(trace) << "Computing pairs.";
 
@@ -1438,6 +1442,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(std::vector<std
 			callback->stop();
 
 		BLUE_LOG(trace) << "Done.";
+		bHasPairs_ = true;
 	}
 	else {
 		BLUE_LOG(warning) << "Aborting. No sections found.";
@@ -1866,22 +1871,30 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 }
 
 int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw::CenterlineComputationDescription &desc,
-                                                                      buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
-	// Add a scalar field for railway and encode the left/right railway index as -1 and 1. Initialize it to 0 and set it as input scalar field.
-	// int idx_railway = getScalarFieldIndexByName("Railway");
-	// if (idx_railway == -1)
-	//	idx_railway = addScalarField("Railway");
-	// setCurrentInScalarField(idx_railway);
+                                                                      buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {	
 
-	// for_each([&](size_t i) { setPointScalarValue(i, 0); });
-
-	// Get the rail pair points.
+	// Vector holding the rail point pairs (left and right track).
 	std::vector<std::pair<size_t, size_t>> pointPairs = std::vector<std::pair<size_t, size_t>>();
-	computePairs(pointPairs, callback);
-	bool success = !pointPairs.empty();
 
-	if(!success)
-		return 0;
+	// If we have pairs, get them, otherwise compute them.
+	if(bHasPairs_) {
+		for(auto &section : sections_) {
+			auto pairs = section->getPairs();
+			if(!pairs.empty()) {
+				pointPairs.insert(pointPairs.end(), pairs.begin(), pairs.end());
+			}
+		}
+	}
+	else {
+		computePairs(pointPairs, callback);
+	}
+
+	// If we couldn't find pairs we abort and return -5;
+	bool success = !pointPairs.empty();
+	if(!success) {
+		BLUE_LOG(warning) << "No pairs found. Aborting.";
+		return -5;
+	}
 
 	// Create a Point Cloud for the centerline points.
 	buw::ReferenceCounted<PointCloud> centerpointsPointCloud = buw::makeReferenceCounted<PointCloud>();
@@ -1916,70 +1929,45 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 		CCVector3 start = *(getPoint(pair.first));
 		CCVector3 end = *(getPoint(pair.second));
-		ScalarType chainage = 0.5f * (getPointScalarValue(pair.first) + getPointScalarValue(pair.first));
+		ScalarType chainage = 0.5f * (getPointScalarValue(pair.first) + getPointScalarValue(pair.second));
 		CCVector3 center = 0.5f * (end + start);
 
 		centerpointsPointCloud->addPoint(center);
 		centerpointsPointCloud->setPointScalarValue(i, chainage);
 	}
 	
-	// Remove points closer than 1mm to avoid "black holes" of insane density.
-	centerpointsPointCloud->getDGMOctree()->build(callback.get());
-	buw::DuplicateFilterDescription dfd;
-	dfd.dim = Enums::ePointCloudFilterDimension::Volume3D;
-	dfd.minDistance = 0.002;
-	centerpointsPointCloud->applyDuplicateFilter(dfd, callback);
-	centerpointsPointCloud->computeIndices();
-	centerpointsPointCloud->removeFilteredPoints(callback);
-	centerpointsPointCloud->getDGMOctree()->clear();
-	centerpointsPointCloud->getDGMOctree()->build(callback.get());
+	if(desc.filterDuplicates) {
+		// Remove points closer than 1mm to avoid "black holes" of insane density.
+		centerpointsPointCloud->getDGMOctree()->build(callback.get());
+		buw::DuplicateFilterDescription dfd;
+		dfd.dim = Enums::ePointCloudFilterDimension::Volume3D;
+		dfd.minDistance = 0.002;
+		centerpointsPointCloud->applyDuplicateFilter(dfd, callback);
+		centerpointsPointCloud->computeIndices();
+		centerpointsPointCloud->removeFilteredPoints(callback);
+		centerpointsPointCloud->getDGMOctree()->clear();
+		centerpointsPointCloud->getDGMOctree()->build(callback.get());
+	}
 
-	// Remove centerline points which are outliers.	
-	buw::LocalDensityFilterDescription ldfd;
-	ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
-	ldfd.dim = Enums::ePointCloudFilterDimension::Volume3D;
-	ldfd.kernelRadius = 0.1f;
-	ldfd.minThreshold = 15;
-	centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
-	centerpointsPointCloud->computeIndices();
-	centerpointsPointCloud->removeFilteredPoints(callback);
-	centerpointsPointCloud->getDGMOctree()->clear();
-	centerpointsPointCloud->getDGMOctree()->build(callback.get());
+	if(desc.filterDensity) {
+		// Remove centerline points which are outliers.	
+		buw::LocalDensityFilterDescription ldfd;
+		ldfd.density = CCLib::GeometricalAnalysisTools::DENSITY_KNN;
+		ldfd.dim = Enums::ePointCloudFilterDimension::Volume3D;
+		ldfd.kernelRadius = 0.1f;
+		ldfd.minThreshold = 15;
+		centerpointsPointCloud->applyLocalDensityFilter(ldfd, callback);
+		centerpointsPointCloud->computeIndices();
+		centerpointsPointCloud->removeFilteredPoints(callback);
+		centerpointsPointCloud->getDGMOctree()->clear();
+		centerpointsPointCloud->getDGMOctree()->build(callback.get());
+	}
 
 	auto centerpoints = centerpointsPointCloud->getAllPointsAndScalarFieldValue(idxCPC_chainage);
 	
-	//// Create a global list of all point pairs.
-	//std::vector<std::pair<size_t, size_t>> rails = std::vector<std::pair<size_t, size_t>>();
-	//
-	//computePairs(rails, callback);
+	
 	int tid = 0;
-	//
-	//
-	//auto computeCenterpoints = [&](const std::vector<std::pair<size_t, size_t>> rails, std::vector<CCVector3> &o_centerpoints) {
-	//	BLUE_LOG(trace) << "Computing centerpoints.";
-	//
-	//	// Reserve space for the centerpoints points and color them blue.
-	//	this->reserve(this->size() + rails.size());
-	//	this->reserveTheRGBTable();
-	//
-	//	// For each pair, insert the point in the middle as centerpoints point.
-	//	for (auto pair : rails) {
-	//		CCVector3 start = *(getPoint(pair.first));
-	//		CCVector3 end = *(getPoint(pair.second));
-	//		CCVector3 center = 0.5f * (end + start);
-	//		o_centerpoints.push_back(center);
-	//	}
-	//
-	//	BLUE_LOG(trace) << "Done.";
-	//};
-	//
-	//// For each pair, insert the point in the middle as centerpoints point.
-	//std::vector<CCVector3> centerpoints = std::vector<CCVector3>();
-	//computeCenterpoints(rails, centerpoints);
-	//
-	//// Delete the pairs since we dont need them anymore.
-	//rails.clear();
-
+	
 	auto sortCenterpointsIntoCenterlines = [&](const std::vector<std::pair<CCVector3, ScalarType>> &centerpoints, std::vector<std::vector<size_t>> &centerlines,
 	                                           buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr) {
 		centerlines.push_back(std::vector<size_t>());
@@ -2001,21 +1989,20 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		float processedPoints = 0;
 		int percentageCompleted = 0;
 
-		for (size_t i = 1; i < centerpoints.size(); i++) {
+		for(size_t i = 1; i < centerpoints.size(); i++) {
 			// Store the point to be checked and whether we have inserted it or whether it is ambiguous or not.
 			auto point = centerpoints[i].first;
 			auto chainage = centerpoints[i].second;
 
 			bool inserted = false;
 			bool discarded = false;
-			bool ambiguous = false;
-			bool unnecessary = false;
+
 
 			auto getPCA = [&](std::vector<size_t> alignment, size_t start, size_t end) -> CCVector2 {
 				// Matrix which is capable of holding all points for PCA.
 				Eigen::MatrixX2d mat;
 				mat.resize(end - start, 2);
-				for (size_t i = start; i < end; i++) {
+				for(size_t i = start; i < end; i++) {
 					auto pos = centerpoints[alignment[i]].first;
 					mat.row(i - start) = Eigen::Vector2d(pos.x, pos.y);
 				}
@@ -2032,21 +2019,15 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 			// Initialize the pair min with index and distance
 			std::tuple<size_t, float, float> min = std::tuple<size_t, float, float>(centerlines.size(), 0, LONG_MAX);
 			int tid = 0;
-
-//#pragma omp parallel private(tid) firstprivate(callback) shared(inserted, ambiguous, unnecessary, min)
 			{
 				tid = omp_get_thread_num();
 
 				// Iterate over all tracks.
-				//#pragma omp for
 				for(long ii = 0; ii < centerlines.size(); ii++) {
-					if(ambiguous || unnecessary)
-						break;
-
 					auto &line = centerlines[ii];
 
 					// Calculate the distance to the endpoint
-					for(int offset = 1; offset < 100 && offset <= line.size(); offset++) {
+					for(int offset = 1; offset < desc.sortingPointOffset && offset <= line.size(); offset++) {
 						auto endpoint = centerpoints[line[line.size() - offset]].first;
 						float endpointChainage = centerpoints[line[line.size() - offset]].second;
 						float distance = dist(point, endpoint);
@@ -2054,8 +2035,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 						// Compute the ratio between chainage change and distance.
 						float dChainage = chainage - endpointChainage;
 						float ratio = dChainage / distance;
-						if(distance < 0.7) {
-							if(ratio > 0.9 || (distance < desc.maxDistance && ratio > 0.8f)) {
+						if(distance < desc.sortingFarDistance) {
+							if(ratio > desc.sortingFarRatio || (distance < desc.sortingCloseDistance && ratio > desc.sortingCloseRatio)) {
 								inserted = true;
 								discarded = false;
 								line.push_back(i);
@@ -2068,27 +2049,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 						else {
 							break;
 						}
-
-						//if(ratio > 0.9f && distance < 2.0f) {
-						//	inserted = true;
-						//	discarded = false;
-						//	line.push_back(i);
-						//	break;
-						//}
-						//else if(distance < desc.maxDistance && ratio > 0.7f) {
-						//	inserted = true;
-						//	discarded = false;
-						//	line.push_back(i);
-						//	break;
-						//}
-						//else if(distance < desc.maxDistance && ratio < 0.5f) {
-						//	discarded = true;
-						//	continue;
-						//}
-						//else {
-						//	continue;
-						//}
 					}
+
 					if(discarded || inserted)
 						break;
 				}
@@ -2097,97 +2059,21 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 					centerlines.push_back(std::vector<size_t>());
 					centerlines.back().push_back(i);
 				}
+
+				std::sort(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &lhs, std::vector<size_t> &rhs) -> bool {
+					return lhs.size() < rhs.size();
+				});
 			}
-
-						
-
-
-//					if (distance <= 0.001) {
-//						//#pragma omp critical
-//						unnecessary = true;
-//						break;
-//					}
-//
-//					// If the distance is smaller than 20cm, we would add the point to this line.
-//					if (distance < desc.maxDistance) {						
-//						if (inserted) {
-//#pragma omp critical
-//							ambiguous = true;
-//							break;
-//						}
-//						// Otherwise the min distance is updated and inserted is set to true.
-//						else {
-//#pragma omp critical
-//							{
-//								if (angle > std::get<1>(min) && distance < std::get<2>(min)) {
-//									inserted = true;
-//									min = std::tuple<size_t, float, float>(ii, angle, distance);
-//								}
-//							}
-//						}
-//					}
-//					
-//				}
-//#pragma omp barrier
-//#pragma omp master
-//				{
-//					// If the point is not ambiguous, we either insert it in the matching line or create a new one.
-//					if (!ambiguous && !unnecessary) {
-//						if (inserted) {
-//							tracks[std::get<0>(min)].push_back(i);
-//						}
-//						// Only add this as a new line currently if it far enough away!
-//						else {
-//							bool hasMinDistanceThreshold = true;
-//
-//#pragma omp parallel for shared(point, hasMinDistanceThreshold) schedule(dynamic)
-//							for (long line_idx = 0; line_idx < tracks.size(); line_idx++) {
-//								auto line = tracks[line_idx];
-//								for (auto point_idx : line)
-//									if (dist(point, centerpoints[point_idx].first) < 0.16f)
-//										hasMinDistanceThreshold = false;
-//							}
-//
-//							if (hasMinDistanceThreshold) {
-//								// If no matching line has been found, add a new one with this one as the starting point.
-//								tracks.push_back(std::vector<size_t>());
-//								tracks.back().push_back(i);
-//							}
-//						}
-//					}
-
-					//std::sort(centerlines.begin(), centerlines.end(), [](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {
-					//	return lhs.size() > rhs.size();
-					//});
-
-					// Check if we have a centerline which is very small (does not meet the minimum requirements as specified) and remove it to save some computation time.
-					//if (i % 1000 == 0) {
-					//	// Erase the tracks which do not fulfill the criteria and where no more points are being added.
-					//	auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) {
-					//		float dChainage = std::fabsf(chainage -centerpoints[line.back()].second);
-					//		//float centerlineLength = (centerpoints[line.back()].first - centerpoints[line.front()].first).norm();
-					//		float centerlineLength = std::fabsf(centerpoints[line.back()].second - centerpoints[line.front()].second);
-					//		size_t numCenterlinePoints = line.size();
-					//		return dChainage > 10.0f  && (numCenterlinePoints < desc.minSegmentPoints || centerlineLength < desc.minSegmentLength);
-					//	});
-					//
-					//	centerlines.erase(end, centerlines.end());
-					//	std::sort(centerlines.begin(), centerlines.end(), [](const std::vector<size_t> &lhs, const std::vector<size_t> &rhs) -> bool {
-					//		return lhs.size() > rhs.size();
-					//	});
-					//}
-
-					// Update the callback.
-					if (callback) {
-						if (++processedPoints >= pointsPerPercent) {
-							percentageCompleted++;
-							processedPoints = 0;
-							callback->update(percentageCompleted);
-						}
-					}
+			// Update the callback.
+			if(callback) {
+				if(++processedPoints >= pointsPerPercent) {
+					percentageCompleted++;
+					processedPoints = 0;
+					callback->update(percentageCompleted);
 				}
-		//	}
-		//}
+			}
+		}
+		
 
 		// Tell the callback that we're done.
 		if (callback)
@@ -2231,7 +2117,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				// Compute the ratio between chainage change and distance.
 				float dChainage = std::abs(endpoint.second - startpoint.second);
 				float ratio = dChainage / distance;
-				if(distance < desc.maxDistance || (distance <= 0.7f && ratio > 0.9f)) {// Old additional condition: || (startpoint.second < endpoint.second && distance <= 4.0f && ratio > 0.8f)) {
+				if(distance < desc.fusingCloseDistance || (distance <= desc.fusingFarDistance && ratio > desc.fusingFarRatio)) {// Old additional condition: || (startpoint.second < endpoint.second && distance <= 4.0f && ratio > 0.8f)) {
 					line.insert(line.end(), nextline.begin(), nextline.end());
 
 					nextline.clear();
@@ -2277,12 +2163,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	BLUE_LOG(trace) << "Smoothing centerlines.";
 
 	// Collapse tracks to have a uniform density.
-	std::vector<std::vector<std::pair<CCVector3, ScalarType>>> alignments = std::vector<std::vector<std::pair<CCVector3, ScalarType>>>(centerlines.size());
+	std::vector<std::vector<std::pair<CCVector3, ScalarType>>> alignments = std::vector<std::vector<std::pair<CCVector3, ScalarType>>>(centerlines.size() + 1);
 	int percentageCompleted = 0;
 	bool update = true;
 
 	// Set this to true which means create alignments by smoothing the centerpoints.
-	if(false) {
+	if(true) {
 #pragma omp parallel private(tid) firstprivate(callback) shared(percentageCompleted, update, alignments, centerlines, centerpoints)
 		{
 			tid = omp_get_thread_num();
@@ -2306,42 +2192,14 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 					}
 
 					int numPoints = (endIndex - startIndex);
-					if(true) {
-						CCVector3 center = CCVector3(0, 0, 0);
-						ScalarType chainage = 0;
-						for(; startIndex < endIndex; startIndex++) {
-							center += (centerpoints[line[startIndex]].first / (float)numPoints);
-							chainage += (centerpoints[line[startIndex]].second / (float)numPoints);
-						}
-						alignments[idx_line].push_back(std::pair<CCVector3, ScalarType>(center, chainage));
+					CCVector3 center = CCVector3(0, 0, 0);
+					ScalarType chainage = 0;
+					for(; startIndex < endIndex; startIndex++) {
+						center += (centerpoints[line[startIndex]].first / (float)numPoints);
+						chainage += (centerpoints[line[startIndex]].second / (float)numPoints);
 					}
-
-					if(false) {
-						CCVector3 center = CCVector3(0, 0, 0);
-						ScalarType chainage = 0;
-						for(long i = startIndex; i < endIndex; i++) {
-							center += (centerpoints[line[i]].first / (float)numPoints);
-							chainage += (centerpoints[line[i]].second / (float)numPoints);
-						}
-						alignments[idx_line].push_back(std::pair<CCVector3, ScalarType>(center, chainage));
-						startIndex++;
-						endIndex = startIndex;
-					}
-
-					if(false) {
-						std::vector<std::pair<CCVector3, ScalarType>> points = std::vector<std::pair<CCVector3, ScalarType>>();
-						for(long i = startIndex; i < endIndex; i++) {
-							points.push_back(centerpoints[line[startIndex]]);
-						}
-						std::sort(points.begin(), points.end(), [](std::pair<CCVector3, ScalarType> &lhs, std::pair<CCVector3, ScalarType> &rhs)->bool {
-							return lhs.first.norm() < rhs.first.norm();
-						});
-
-						alignments[idx_line].push_back(points[points.size() / 2]);
-						startIndex++;
-						endIndex = startIndex;
-					}
-
+					alignments[idx_line].push_back(std::pair<CCVector3, ScalarType>(center, chainage));
+					
 					if(tid == 0 && callback && update) {
 						callback->update(percentageCompleted);
 						update = false;
@@ -2362,6 +2220,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 			tid = omp_get_thread_num();
 			int percentPerCenterline = 100 / centerlines.size();
 			update = true;
+
+			// Init step size and segment length.
+			double stepSize = desc.centerlineDensity;
+			double segmentLength = 0.5;
 
 			// Pull the lambda declaration into the loop for the openmp construct
 			auto getPCA = [&](std::vector<size_t> alignment, size_t start, size_t end) -> CCVector3 {
@@ -2384,11 +2246,15 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 #pragma omp for schedule(dynamic)
 			for(long idx_line = 0; idx_line < centerlines.size(); idx_line++) {
 				auto &line = centerlines[idx_line];
-				double segmentLength = 1.0;
+				float lineSize = line.size();
+				long pointsPerPercent = lineSize / 100;
+				int percentageOfLineCompleted = 0;
+
+				// Origin from which we look for points to compute the direction. Is updated after each iteration.
+				std::pair<CCVector3,float> origin = { CCVector3(0,0,0),0 };
 
 				int c = 0;
-				std::pair<CCVector3,float> origin = { CCVector3(0,0,0),0 };
-				while(std::abs(centerpoints[line[c]].second - centerpoints[line[0]].second) < 2.0) {
+				while(std::abs(centerpoints[line[c]].second - centerpoints[line[0]].second) < (segmentLength * 2.0)) {
 					origin.first += centerpoints[line[c]].first;
 					origin.second += centerpoints[line[c]].second;
 					c++;
@@ -2397,7 +2263,11 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				origin.first /= (float) c;
 				origin.second /= (float)c;
 
-				double stepSize = desc.centerlineDensity;
+				// Last direction into which we moved. Init to have an initial direction which points towards the main axis.
+				auto lastDirection = getPCA(line, 0, c);
+
+				if(lastDirection.dot(mainAxis_) < 0)
+					lastDirection *= -1.0f;
 
 				for(long i = (c / 2); i < line.size();) {
 
@@ -2417,30 +2287,46 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 					while(endIndex < line.size() - 1 && diff(endIndex) < segmentLength)
 						endIndex++;
 
-					// Get the PCA axis and compute the bearing.
+					// Get the main direction of the point set using PCA to move into this direction.
 					auto axis = getPCA(line, startIndex, endIndex);
-					
-					std::pair<CCVector3, ScalarType> point = { origin.first + axis * stepSize,origin.second + stepSize };
+
+					// If the axis points into the opposite direction of the last one due to symmetry, invert it.
+					if(lastDirection.dot(axis) < 0) {
+						axis *= -1.0f;
+					}
+
+					auto directionChange = axis - lastDirection;
+					axis = axis + (directionChange * stepSize);
+					axis.normalize();
+					auto posShift = axis * stepSize;
+					auto chainageShift = stepSize;
+
+					std::pair<CCVector3, ScalarType> point = { origin.first + posShift, origin.second + chainageShift };
 
 					alignments[idx_line].push_back(point);
 					origin = point;
+					lastDirection = axis;
 
 					// Move our counting variable to the point which is closest to the chainage value of the point we just added.
 					while(i < line.size() && centerpoints[line[i]].second < point.second)
 						i++;
 
+					if(i > pointsPerPercent * percentageOfLineCompleted) {
+						percentageOfLineCompleted++;
+#pragma omp critical
+						{
+							percentageCompleted++;
+							update = true;
+						}
+					}
+
 					if(tid == 0 && callback && update) {
-						callback->update(percentageCompleted);
+						callback->update((float) percentageCompleted / (float)centerlines.size());
 						update = false;
 					}
-				}				
-#pragma omp critical
-				{
-					percentageCompleted += percentPerCenterline;
-					update = true;
 				}
 			}
-		}
+		}		
 	}
 
 	// Tell the callback that we're done.
@@ -2523,92 +2409,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 	this->reserve(this->size() + totalPoints);
 	this->reserveTheRGBTable();
-
-	// Iterate over all segments and combine the centers of each projection section.
-//#pragma omp parallel private(tid) firstprivate(callback) shared(percentageCompleted, update, alignments, tracks, centerpoints)
-//	{
-//		tid = omp_get_thread_num();
-//		int percentPerCenterline = 100 / tracks.size();
-//		update = true;
-//
-//		auto dist = [](const CCVector3 &lhs, const CCVector3 &rhs) -> float { return (rhs - lhs).norm(); };
-//
-//#pragma omp for schedule(dynamic)
-//		for (long idx = 0; idx < tracks.size(); idx++) {
-//			auto getPCA = [&](std::vector<size_t> alignment, size_t start, size_t end) -> CCVector3 {
-//				// Matrix which is capable of holding all points for PCA.
-//				Eigen::MatrixX3d mat;
-//				mat.resize(end - start, 3);
-//				for (size_t i = start; i < end; i++) {
-//					auto pos = centerpoints[alignment[i]];
-//					mat.row(i - start) = Eigen::Vector3d(pos.x, pos.y, pos.z);
-//				}
-//
-//				// Do PCA to find the largest eigenvector -> main axis.
-//				Eigen::MatrixXd centered = mat.rowwise() - mat.colwise().mean();
-//				Eigen::MatrixXd cov = centered.adjoint() * centered;
-//				Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
-//				Eigen::Matrix<double, 3, 1> vec = eig.eigenvectors().rightCols(1).normalized();
-//
-//				return CCVector3(vec.x(), vec.y(), vec.z());
-//			};
-//
-//			// Get the line which we are working on and store the start and end index for the section for which we want to combine all points as their center of mass.
-//			auto &line = tracks[idx];
-//			long startIndex = 0, endIndex = 0;
-//			long lineSize = line.size();
-//
-//			// Iterate over the line and check how far we make our progress along the main axis. Once we are above a certain threshold, we combine all points in their center of
-//			// mass.
-//			for (size_t i = 0; i < lineSize - 1; i++) {
-//				// auto axis = getPCA(line, std::max(0, (int)i - 100000), std::min((int)line.size() - 1, (int) i + 100000));
-//				auto startPoint = centerpoints[line[startIndex]];
-//				
-//				long startIndexPCA = startIndex, endIndexPCA = startIndex;
-//				
-//				while ((startIndexPCA > 0) && dist(centerpoints[line[startIndexPCA]], startPoint) < 10)
-//					startIndexPCA -= 1;
-//				
-//				while ((endIndexPCA < lineSize - 1) && dist(centerpoints[line[endIndexPCA]], startPoint) < 10)
-//					endIndexPCA += 1;
-//				
-//				auto axis = getPCA(line, startIndexPCA, endIndexPCA);
-//				
-//				float startLength = axis.dot(startPoint);
-//				
-//				while (i < lineSize - 1 && std::fabsf(axis.dot(centerpoints[line[i + 1]]) - startLength) < desc.centerlineDensity)
-//					i++;
-//				
-//
-//				endIndex = i + 1;
-//				int numPoints = (endIndex - startIndex);
-//				CCVector3 center = CCVector3(0, 0, 0);
-//				for (; startIndex < endIndex; startIndex++) {
-//					center += (centerpoints[line[startIndex]] / (float)numPoints);
-//				}
-//
-//				alignments[idx].push_back(center);
-//
-//				if (tid == 0 && callback && update) {
-//					callback->update(percentageCompleted);
-//					update = false;
-//				}
-//			}
-//
-//#pragma omp critical
-//			{
-//				percentageCompleted += percentPerCenterline;
-//				update = true;
-//			}
-//		}
-//	}
-//
-//	// Tell the callback that we're done.
-//	if (callback)
-//		callback->stop();
-//
-//	BLUE_LOG(trace) << "Done.";
-
+	
 	// Delete the tracks buffer since we dont need it anymore.
 	std::for_each(centerlines.begin(), centerlines.end(), [](std::vector<size_t> &line) { line.clear(); });
 	centerlines.clear();
@@ -2962,20 +2763,39 @@ int OpenInfraPlatform::Infrastructure::PointCloud::resetCenterlines() {
 }
 
 int OpenInfraPlatform::Infrastructure::PointCloud::resetPairs() {
-	// Reset the railway points color to white.
-	int idx_railway = getScalarFieldIndexByName("Railway");
-	if (idx_railway == -1)
-		return -1;
+	// If there are pairs, reset them. Otherwise return -2 and print trace to log.
+	if(bHasPairs_) {
+		// Get the railway scalar field and set it to read from. If not existing, abort and return -1.
+		int idx_railway = getScalarFieldIndexByName("Railway");
+		if(idx_railway == -1) {
+			return -1;
+		}
+		else {
+			setCurrentOutScalarField(idx_railway);
+		}
 
-	setCurrentOutScalarField(idx_railway);
-	const ColorCompType white[3] = {255, 255, 255};
-	for_each([&](size_t i) {
-		if (getPointScalarValue(i) != 0)
-			setPointColor(i, white);
-	});
+		// Reset the railway points color to white.
+		const ColorCompType white[3] = { 255, 255, 255 };
+		for_each([&](size_t i) {
+			if(getPointScalarValue(i) != 0)
+				setPointColor(i, white);
+		});
 
-	resetScalarField("Railway");
-	return 0;
+		// Reset the 'Railway' scalar field.
+		resetScalarField("Railway");
+
+		// Clear all pairs from the sections.
+		for(auto &section : sections_) {
+			section->resetPairs();
+		}
+
+		bHasPairs_ = false;
+		return 0;
+	}
+	else {
+		BLUE_LOG(trace) << "There are no pairs to reset.";
+		return -2;
+	}
 }
 
 int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(const buw::CenterlineCurvatureComputationDescription &desc,
@@ -3381,7 +3201,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 			return -1;
 		QStringList text = {QString("Centerline computation"),
 		                    QString("CenterlineDensity:" + QString::number(centerlineDescription_.centerlineDensity)),
-		                    QString("MaxDistance:" + QString::number(centerlineDescription_.maxDistance)),
+		                    QString("MaxDistance:" + QString::number(centerlineDescription_.sortingCloseDistance)),
 		                    QString("MinSegmentPoints:" + QString::number(centerlineDescription_.minSegmentPoints)),
 		                    QString("MinSegmentLength:" + QString::number(centerlineDescription_.minSegmentLength)),
 		                    QString("Curvature computation"),
