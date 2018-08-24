@@ -2682,11 +2682,45 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCenterlin
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	
 	if(pointCloud) {
+
 		buw::CenterlineComputationDescription desc;		
+		desc.filterDuplicates = ui_->checkBoxCenterpointsApplyDuplicateFilter->isChecked();
+		desc.duplicateDistance = ui_->doubleSpinBoxCenterpointsDuplicateDistance->value();
+
+		desc.filterDensity = ui_->checkBoxCenterpointsApplyDensityFilter->isChecked();
+		desc.densityKernelRadius = ui_->doubleSpinBoxCenterpointsDensityFilterKernelRadius->value();
+		desc.densityThreshold = ui_->spinBoxCenterpointsDensityThreshold->value();
+
+		desc.sortingFarDistance = ui_->doubleSpinBoxSortingFarDistance->value();
+		desc.sortingCloseDistance = ui_->doubleSpinBoxCenterlineMaxDistance->value();
+		desc.sortingCloseRatio = ui_->doubleSpinBoxSortingNearRatio->value();
+		desc.sortingFarRatio = ui_->doubleSpinBoxSortingFarRatio->value();
+
+		desc.fuseCenterlines = ui_->checkBoxFuseCenterlines->isChecked();
+		desc.fuseCenterlinesFarDistance = ui_->doubleSpinBoxFuseCenterlinesFarDistance->value();
+		desc.fuseCenterlinesFarRatio = ui_->doubleSpinBoxFuseCenterlinesFarRatio->value();
+		desc.fuseCenterlinesCloseDistance = ui_->doubleSpinBoxFuseCenterlinesNearDistance->value();
+		desc.fuseCenterlinesCloseRatio = ui_->doubleSpinBoxFuseCenterlinesNearRatio->value();
+
+		desc.fuseAlignments = ui_->checkBoxFuseAlignments->isChecked();
+		desc.fuseAlignmentsFarDistance = ui_->doubleSpinBoxFuseAlignmentsFarDistance->value();
+		desc.fuseAlignmentsFarRatio = ui_->doubleSpinBoxFuseAlignmentsFarRatio->value();
+		desc.fuseAlignmentsCloseDistance = ui_->doubleSpinBoxFuseAlignmentsNearDistance->value();
+		desc.fuseAlignmentsCloseRatio = ui_->doubleSpinBoxFuseAlignmentsNearRatio->value();
+
+		desc.centerlineSmoothing = ui_->checkBoxCenterlineSmoothing->isChecked();
+		desc.centerlineDensity = ui_->doubleSpinBoxCenterlineDensity->value() / 1000.0; // convert from millimeter to meter.
+
+		desc.centerlineSampling = ui_->checkBoxCenterlineSampling->isChecked();
+		desc.samplingLengthForPCA = ui_->doubleSpinBoxSamplingLengthForPCA->value();
+		desc.samplingStepSize = ui_->doubleSpinBoxSamplingStepSize->value() / 1000.0; // convert from millimeter to meter.
+
+		desc.minCenterlinePoints = ui_->spinBoxCenterlinesMinNumPoints->value();
+		desc.minCenterlineLength = ui_->doubleSpinBoxCenterlinesMinLength->value();
+
 		desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
 		desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
-		desc.sortingCloseDistance = ui_->doubleSpinBoxCenterlineMaxDistance->value();
-		desc.centerlineDensity = ui_->doubleSpinBoxCenterlineDensity->value() / 1000.0;
+
 		int numAlignments = pointCloud->computeCenterlines(desc, callback_);
 		if(numAlignments > 0) {
 	
@@ -2737,7 +2771,21 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePairs_cli
 {
 	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
-		pointCloud->computePairs(std::vector<std::pair<size_t, size_t>>(), callback_);
+		buw::PairComputationDescription desc;
+		desc.maxError = ui_->doubleSpinBoxPairsMaxError->value();
+		desc.maxElevationChange = ui_->doubleSpinBoxPairsMaxElevationDiff->value();
+		desc.pointProximityDistance = ui_->doubleSpinBoxPairsPointProximity->value();
+
+		desc.applyDensityFilter = ui_->checkBoxPairsApplyDensityFilter->isChecked();
+		desc.localDensityKernelRadius = ui_->doubleSpinBoxPairsDensityFilterKernelRadius->value();
+		desc.localDensityThreshold = ui_->spinBoxPairsDensityFilterThreshold->value();
+
+		desc.applyClusterFilter = ui_->checkBoxPairsApplyClusterFilter->isChecked();
+		desc.clusterDistance2D = ui_->doubleSpinBoxPairsClusterDistance->value() / 100.0; //Divide by 100 to scale to meters.
+		desc.clusterHeightRange = ui_->doubleSpinBoxClusterHeightRange->value();
+		desc.clusterHeightTreshold = ui_->doubleSpinBoxClusterHeightThreshold->value();
+
+		pointCloud->computePairs(desc, std::vector<std::pair<size_t, size_t>>(), callback_);
 		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 	}
 	else {
@@ -2811,7 +2859,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 
 		// Create plot for bearing.
 		QCustomPlot* customPlotBearing = new QCustomPlot(nullptr);
-		connect(customPlotBearing, &QCustomPlot::close, customPlotBearing, &QObject::deleteLater);
+
+		// TODO: Fix memory leak!
+		//connect(customPlotBearing, &QCustomPlot::close, customPlotBearing, &QObject::deleteLater);
 
 		customPlotBearing->resize(400, 400);
 		customPlotBearing->setInteraction(QCP::iRangeDrag, true);
@@ -2841,7 +2891,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 
 		// Create plot for bearing.
 		QCustomPlot* customPlotCurvature = new QCustomPlot(nullptr);
-		connect(customPlotCurvature, &QCustomPlot::close, customPlotCurvature, &QObject::deleteLater);
+
+		// TODO: Fix memory leak!
+		//connect(customPlotCurvature, &QCustomPlot::close, customPlotCurvature, &QObject::deleteLater);
 
 		customPlotCurvature->resize(400, 400);
 		customPlotCurvature->setInteraction(QCP::iRangeDrag, true);

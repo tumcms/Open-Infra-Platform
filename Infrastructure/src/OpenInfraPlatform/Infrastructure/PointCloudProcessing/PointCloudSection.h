@@ -21,6 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "OpenInfraPlatform/Infrastructure/namespace.h"
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
 
 
 #include <BlueFramework/Core/Math/vector.h>
@@ -63,7 +64,7 @@ namespace OpenInfraPlatform {
 
 			Eigen::Matrix3d getOrientation();
 
-			std::vector<std::pair<size_t, size_t>> computePairs(buw::ReferenceCounted<PointCloudSection> nextSection = nullptr);
+			std::vector<std::pair<size_t, size_t>> computePairs(buw::PairComputationDescription desc, buw::ReferenceCounted<PointCloudSection> nextSection = nullptr);
 
 			void resetPairs();
 

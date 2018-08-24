@@ -17,7 +17,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "PointCloudSection.h"
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
 
 #include <ccScalarField.h>
 
@@ -120,7 +119,7 @@ Eigen::Matrix3d OpenInfraPlatform::Infrastructure::PointCloudSection::getOrienta
 	return orientation;
 }
 
-std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointCloudSection::computePairs(buw::ReferenceCounted<PointCloudSection> nextSection)
+std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointCloudSection::computePairs(buw::PairComputationDescription desc, buw::ReferenceCounted<PointCloudSection> nextSection)
 {
 	if(this->size() > 0) {
 		// Project all points in this section onto the LS plane to get 2D coordinates.
@@ -138,7 +137,7 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 		// Set up our pairs as set so that every pair is only contained once.
 		std::vector<std::pair<size_t, size_t>> pairs = std::vector<std::pair<size_t, size_t>>();
 		// Allow 0.1cm of error, standard gauge witdth is 1.435m and the width of the track head itself is 67mm.
-		float epsilon = 0.01f;
+		float epsilon = desc.maxError;
 		float gauge = 1.435f;
 		float head = 0.067f;		
 		
@@ -155,12 +154,12 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 				float distance = (firstPoint - secondPoint).norm();
 				float error = std::fabsf(distance - gauge - head);
 				float elevationChange = std::fabsf(firstPoint.z - secondPoint.z);
-				if(error < epsilon && elevationChange < 0.2f) {
+				if(error < epsilon && elevationChange < desc.maxElevationChange) {
 					
 					// If we already have a pair where the second point is close to this one, compare the error. If this one is better, change it, otherwise skip. Otherwise add.
 					bool hasPointInProximity = false;
 					for(auto &pair : pairsForPoint) {
-						if((*getPoint(pair.second) - secondPoint).norm() < 0.1) {							
+						if((*getPoint(pair.second) - secondPoint).norm() < desc.pointProximityDistance) {							
 							hasPointInProximity = true;
 							break;							
 						}
@@ -170,7 +169,7 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 				}
 			}
 
-			if(nextSection) {
+			if(desc.includeNextSection && nextSection) {
 				std::vector<std::pair<size_t, size_t>> pairsForPointWithNextSection = std::vector<std::pair<size_t, size_t>>();
 
 				for(size_t ii = 0; ii < nextSection->size(); ii++) {
@@ -179,19 +178,19 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 					float distance = (firstPoint - secondPoint).norm();
 					float error = std::fabsf(distance - gauge - head);
 					float elevationChange = std::fabsf(firstPoint.z - secondPoint.z);
-					if(error < epsilon && elevationChange < 0.2f) {
+					if(error < epsilon && elevationChange < desc.maxElevationChange) {
 						
 						// If we already have a pair where the second point is close to this one, compare the error. If this one is better, change it, otherwise skip. Otherwise add.
 						bool hasPointInProximity = false;
 						for(auto &pair : pairsForPoint) {
-							if((*getPoint(pair.second) - secondPoint).norm() < 0.1) {
+							if((*getPoint(pair.second) - secondPoint).norm() < desc.pointProximityDistance) {
 								hasPointInProximity = true;
 								break;
 							}
 						}
 
 						for(auto &pair : pairsForPointWithNextSection) {
-							if((*nextSection->getPoint(pair.second) - secondPoint).norm() < 0.1) {
+							if((*nextSection->getPoint(pair.second) - secondPoint).norm() < desc.pointProximityDistance) {
 								hasPointInProximity = true;
 								break;
 							}
@@ -213,7 +212,7 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 
 		std::for_each(pairs.begin(), pairs.end(), [&](std::pair<size_t, size_t> &pair) {
 			pair.first = getPointGlobalIndex(pair.first);
-			if(nextSection && pair.second >= this->size())
+			if(desc.includeNextSection && nextSection && pair.second >= this->size())
 				pair.second = nextSection->getPointGlobalIndex(pair.second - this->size());
 			else
 				pair.second = getPointGlobalIndex(pair.second);
@@ -223,45 +222,43 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 
 		// Create a 3D cloud from the pairs to filter it after density and other metrics.
 		if(pairs.size() > 0) {
-			// Do mean density filtering.
-			buw::ReferenceCounted<buw::PointCloud> cloud3D = buw::makeReferenceCounted<buw::PointCloud>();
-			cloud3D->enableScalarField();
-			cloud3D->reserve(pairs.size() * 2);
-			
-			for(auto pair : pairs) {
-				cloud3D->addPoint(*(associatedCloud->getPoint(pair.first)));
-				cloud3D->addPoint(*(associatedCloud->getPoint(pair.second)));
-			}
-			
-			//int error = CCLib::GeometricalAnalysisTools::computeLocalDensity(cloud3D.get(), CCLib::GeometricalAnalysisTools::Density::DENSITY_KNN, (gauge/2.0f) - 0.05f, nullptr, nullptr);
-			
-			int error = CCLib::GeometricalAnalysisTools::computeLocalDensity(cloud3D.get(), CCLib::GeometricalAnalysisTools::Density::DENSITY_KNN, head/2.0f, nullptr, nullptr);
 
-			if(error == 0) {
-				ScalarType mean;
-				cloud3D->getCurrentInScalarField()->computeMinAndMax();
-				cloud3D->getCurrentInScalarField()->computeMeanAndVariance(mean);
-				cloud3D->setCurrentOutScalarField(cloud3D->getCurrentInScalarFieldIndex());
-				
-				// Vector to store the indices of invalid pairs to delete them later;
-				std::vector<size_t> invalidPairIndices = std::vector<size_t>();
-				for(int i = 0; i < cloud3D->size() - 1; i += 2) {
-					//if(cloud3D->getPointScalarValue(i) < 0.75f * mean || cloud3D->getPointScalarValue(i + 1) < 0.75f * mean)
-					//	invalidPairIndices.push_back(i / 2);
+			if(desc.applyDensityFilter) {
+				// Do mean density filtering.
+				buw::ReferenceCounted<buw::PointCloud> cloud3D = buw::makeReferenceCounted<buw::PointCloud>();
+				cloud3D->enableScalarField();
+				cloud3D->reserve(pairs.size() * 2);
 
-					if(cloud3D->getPointScalarValue(i) < 15 || cloud3D->getPointScalarValue(i + 1) < 15)
-						invalidPairIndices.push_back(i / 2);
+				for(auto pair : pairs) {
+					cloud3D->addPoint(*(associatedCloud->getPoint(pair.first)));
+					cloud3D->addPoint(*(associatedCloud->getPoint(pair.second)));
 				}
-				
-				size_t offset = 0;
-				for(auto index : invalidPairIndices) {
-					pairs.erase(pairs.begin() + (index - offset));
-					offset++;
+
+				int error = CCLib::GeometricalAnalysisTools::computeLocalDensity(cloud3D.get(), CCLib::GeometricalAnalysisTools::Density::DENSITY_KNN, desc.localDensityKernelRadius, nullptr, nullptr);
+
+				if(error == 0) {
+					ScalarType mean;
+					cloud3D->getCurrentInScalarField()->computeMinAndMax();
+					cloud3D->getCurrentInScalarField()->computeMeanAndVariance(mean);
+					cloud3D->setCurrentOutScalarField(cloud3D->getCurrentInScalarFieldIndex());
+
+					// Vector to store the indices of invalid pairs to delete them later;
+					std::vector<size_t> invalidPairIndices = std::vector<size_t>();
+					for(int i = 0; i < cloud3D->size() - 1; i += 2) {
+						if(cloud3D->getPointScalarValue(i) < desc.localDensityThreshold || cloud3D->getPointScalarValue(i + 1) < desc.localDensityThreshold)
+							invalidPairIndices.push_back(i / 2);
+					}
+
+					size_t offset = 0;
+					for(auto index : invalidPairIndices) {
+						pairs.erase(pairs.begin() + (index - offset));
+						offset++;
+					}
+
 				}
-			
+
+				cloud3D = nullptr;
 			}
-			
-			cloud3D = nullptr;
 
 			// Color the pair points and set the scalar value.
 			const ColorCompType red[3] = { 255,0,0 };
@@ -283,64 +280,66 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 				return mainAxis.dot(*associatedCloud->getPoint(lhs.first)) < mainAxis.dot(*associatedCloud->getPoint(rhs.first));
 			});
 
-			int current = 0;
-			std::vector<std::vector<size_t>> clusters = std::vector<std::vector<size_t>>();
-			clusters.push_back(std::vector<size_t>());			
-			
-			for(int i = 0; i < pairs.size(); i++) {
-				clusters[current].push_back(i);
-			
-				if(i < pairs.size() - 1) {
-					auto point = *associatedCloud->getPoint(pairs[i].first);
-					auto nextPoint = *associatedCloud->getPoint(pairs[i + 1].first);
-					if((CCVector2(point.x,point.y) - CCVector2(nextPoint.x, nextPoint.y)).norm() > 0.15f) {
-						clusters.push_back(std::vector<size_t>());
-						current++;
+			if(desc.applyClusterFilter) {
+				int current = 0;
+				std::vector<std::vector<size_t>> clusters = std::vector<std::vector<size_t>>();
+				clusters.push_back(std::vector<size_t>());
+
+				for(int i = 0; i < pairs.size(); i++) {
+					clusters[current].push_back(i);
+
+					if(i < pairs.size() - 1) {
+						auto point = *associatedCloud->getPoint(pairs[i].first);
+						auto nextPoint = *associatedCloud->getPoint(pairs[i + 1].first);
+						if((CCVector2(point.x, point.y) - CCVector2(nextPoint.x, nextPoint.y)).norm() > desc.clusterDistance2D) {
+							clusters.push_back(std::vector<size_t>());
+							current++;
+						}
 					}
 				}
-			}
-			
-			std::for_each(clusters.begin(), clusters.end(), [&](std::vector<size_t> &vec) {
-				std::sort(vec.begin(), vec.end(), [&](size_t &lhs, size_t &rhs)->bool {
-					float lhsHeight = 0.5* (associatedCloud->getPoint(pairs[lhs].first)->z + associatedCloud->getPoint(pairs[lhs].second)->z);
-					float rhsHeight = 0.5* (associatedCloud->getPoint(pairs[rhs].first)->z + associatedCloud->getPoint(pairs[rhs].second)->z);
 
-					return lhsHeight < rhsHeight;
+				std::for_each(clusters.begin(), clusters.end(), [&](std::vector<size_t> &vec) {
+					std::sort(vec.begin(), vec.end(), [&](size_t &lhs, size_t &rhs)->bool {
+						float lhsHeight = 0.5* (associatedCloud->getPoint(pairs[lhs].first)->z + associatedCloud->getPoint(pairs[lhs].second)->z);
+						float rhsHeight = 0.5* (associatedCloud->getPoint(pairs[rhs].first)->z + associatedCloud->getPoint(pairs[rhs].second)->z);
+
+						return lhsHeight < rhsHeight;
+					});
 				});
-			});
 
-			std::set<size_t> invalidPairIndices = std::set<size_t>();
+				std::set<size_t> invalidPairIndices = std::set<size_t>();
 
-			for(auto it : clusters) {
-				if(it.size() > 0) {
-					auto upperBound = 0.5* (associatedCloud->getPoint(pairs[it[it.size() - 1]].first)->z + associatedCloud->getPoint(pairs[it[it.size() - 1]].second)->z);
-					auto lowerBound = 0.5* (associatedCloud->getPoint(pairs[it[0]].first)->z + associatedCloud->getPoint(pairs[it[0]].second)->z);
+				for(auto it : clusters) {
+					if(it.size() > 0) {
+						auto upperBound = 0.5* (associatedCloud->getPoint(pairs[it[it.size() - 1]].first)->z + associatedCloud->getPoint(pairs[it[it.size() - 1]].second)->z);
+						auto lowerBound = 0.5* (associatedCloud->getPoint(pairs[it[0]].first)->z + associatedCloud->getPoint(pairs[it[0]].second)->z);
 
-					if(std::abs(upperBound - lowerBound) > 0.05f) {
-						float heightLimit = upperBound - 0.05f;
+						if(std::abs(upperBound - lowerBound) > desc.clusterHeightRange) {
+							float heightLimit = upperBound - desc.clusterHeightTreshold;
 
-						std::for_each(it.begin(), it.end(), [&](size_t &index) {
-							auto height = 0.5* (associatedCloud->getPoint(pairs[index].first)->z + associatedCloud->getPoint(pairs[index].second)->z);
-							if(height < heightLimit)
-								invalidPairIndices.insert(index);
-						});			
+							std::for_each(it.begin(), it.end(), [&](size_t &index) {
+								auto height = 0.5* (associatedCloud->getPoint(pairs[index].first)->z + associatedCloud->getPoint(pairs[index].second)->z);
+								if(height < heightLimit)
+									invalidPairIndices.insert(index);
+							});
+						}
 					}
 				}
-			}
-			
-			std::vector<size_t> invalidPairIndicesSorted = std::vector<size_t>();
-			for(auto index : invalidPairIndices) {
-				invalidPairIndicesSorted.push_back(index);
-			}
-			
-			std::sort(invalidPairIndicesSorted.begin(), invalidPairIndicesSorted.end(), [&](size_t &lhs, size_t &rhs)->bool {
-				return lhs < rhs;
-			});
 
-			size_t offset = 0;
-			for(auto index : invalidPairIndicesSorted) {
-				pairs.erase(pairs.begin() + (index - offset));
-				offset++;
+				std::vector<size_t> invalidPairIndicesSorted = std::vector<size_t>();
+				for(auto index : invalidPairIndices) {
+					invalidPairIndicesSorted.push_back(index);
+				}
+
+				std::sort(invalidPairIndicesSorted.begin(), invalidPairIndicesSorted.end(), [&](size_t &lhs, size_t &rhs)->bool {
+					return lhs < rhs;
+				});
+
+				size_t offset = 0;
+				for(auto index : invalidPairIndicesSorted) {
+					pairs.erase(pairs.begin() + (index - offset));
+					offset++;
+				}
 			}
 
 			if(!pairs.empty()) {

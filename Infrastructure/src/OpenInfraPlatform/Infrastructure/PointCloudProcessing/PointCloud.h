@@ -93,19 +93,13 @@ namespace OpenInfraPlatform {
 
 			int computeCenterlines(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 			int resetCenterlines();
-
 			
-			// Unused method
-			int computeCenterlines2(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
-			// Unused method
-			int computeCenterlines3(const buw::CenterlineComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
-
 			// ---------------------------------------------------------------------------------------------------------------------------------------------------
 			// Pair computation
 			// ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 			// Computes the pairs for all sections and stores the result in 'o_pairs'.
-			void computePairs(std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			void computePairs(buw::PairComputationDescription desc, std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 			// Resets the pairs for all sections.
 			int resetPairs();
 
@@ -114,8 +108,6 @@ namespace OpenInfraPlatform {
 
 
 			int computeCenterlineCurvature(const buw::CenterlineCurvatureComputationDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
-
-			int segmentRailways(buw::RailwaySegmentationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			int resetRailwaySegmentation();
 

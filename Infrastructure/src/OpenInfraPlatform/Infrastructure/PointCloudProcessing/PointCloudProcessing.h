@@ -110,21 +110,37 @@ namespace OpenInfraPlatform
 		};
 
 		struct CenterlineComputationDescription {
-			int minSegmentPoints;
-			float minSegmentLength,  centerlineDensity;
+			int minSegmentPoints = 1000;
+			float minSegmentLength = 10.0f,  centerlineDensity = 0.1f;
 
-			int sortingPointOffset = 100;
+			int minCenterlinePoints = 10;
+			float minCenterlineLength = 0.1f;
+
 			float sortingCloseDistance = 0.15f, sortingFarDistance = 0.7f;
 			float sortingCloseRatio = 0.8f, sortingFarRatio = 0.9f;
 
-			bool fuseCenterlines = true, fuseAlignments = false;
-			int fusingPointOffset = 100;
-			float fusingCloseDistance = 0.15f, fusingFarDistance = 0.7f;
-			float fusingCloseRatio = 0.8f, fusingFarRatio = 0.9f;
+			bool fuseCenterlines = true;
+			float fuseCenterlinesCloseDistance = 0.15f;
+			float fuseCenterlinesFarDistance = 0.7f;
+			float fuseCenterlinesCloseRatio = 0.8f;
+			float fuseCenterlinesFarRatio = 0.9f;
+
+			bool fuseAlignments = false;
+			float fuseAlignmentsCloseDistance = 0.15f;
+			float fuseAlignmentsFarDistance = 0.7f;
+			float fuseAlignmentsCloseRatio = 0.8f;
+			float fuseAlignmentsFarRatio = 0.9f;
+
+			bool centerlineSmoothing = false;
+
+			bool centerlineSampling = false;
+			float samplingStepSize = 0.1f;
+			float samplingLengthForPCA = 1.0f;
 
 			bool filterDuplicates = true, filterDensity = true;
 			float duplicateDistance = 0.002f;
-			float densityKernelRadius = 0.1f, densityThreshold = 15;
+			float densityKernelRadius = 0.1f;
+			int densityThreshold = 15;
 
 			// Auto generated using 'CenterlineComputationDescription() = default;'.
 			CenterlineComputationDescription() = default;
@@ -150,9 +166,11 @@ namespace OpenInfraPlatform
 			float maxError = 0.01f;
 			float pointProximityDistance = 0.1f;
 
+			bool applyDensityFilter = true;
 			float localDensityKernelRadius = 0.067f / 2.0f; //head width is 0.067m = 6.7cm
 			size_t localDensityThreshold = 15;
 
+			bool applyClusterFilter = true;
 			float clusterDistance2D = 0.15f;
 			float clusterHeightTreshold = 0.05f;
 			float clusterHeightRange = 0.05f;
