@@ -1265,14 +1265,10 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices() {
 	setCurrentInScalarField(idx_filtered);
 
 	// Get the duplicate scalar field.
-	int idx_duplicate = getScalarFieldIndexByName("Duplicate");
-	if (idx_duplicate == -1)
-		idx_duplicate = addScalarField("Duplicate");
+	int idx_duplicate = getScalarFieldIndexByName("Duplicate");	
 
 	// Get the density scalar field
-	int idx_density = getScalarFieldIndexByName("Density");
-	if (idx_density == -1)
-		idx_density = addScalarField("Density");
+	int idx_density = getScalarFieldIndexByName("Density");	
 
 	// Get the coordinate filter scalar fields.
 	int idx_coordX = getScalarFieldIndexByName("Coord. X");
