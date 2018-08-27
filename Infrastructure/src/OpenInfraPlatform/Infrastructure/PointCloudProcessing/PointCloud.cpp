@@ -2339,19 +2339,28 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 						// TODO:
 						break;
 					}
-
-					if(i > pointsPerPercent * percentageOfLineCompleted) {
-						percentageOfLineCompleted++;
+					if(pointsPerPercent > 0) {
+						if(i > pointsPerPercent * percentageOfLineCompleted) {
+							percentageOfLineCompleted++;
 #pragma omp critical
-						{
-							percentageCompleted++;
-							update = true;
+							{
+								percentageCompleted++;
+								update = true;
+							}
 						}
 					}
-
+					
 					if(tid == 0 && callback && update) {
 						callback->update((float) percentageCompleted / (float)centerlines.size());
 						update = false;
+					}
+				}
+
+				if(pointsPerPercent == 0) {
+#pragma omp critical
+					{
+						percentageCompleted++;
+						update = true;
 					}
 				}
 			}
