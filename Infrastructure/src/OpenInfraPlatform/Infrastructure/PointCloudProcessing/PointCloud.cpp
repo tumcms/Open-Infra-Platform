@@ -2162,6 +2162,16 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		BLUE_LOG(trace) << "No centerlines remaining after sorting. Choose a lower \"minCenterlinePoints\" threshold and/or lower \"minCenterlineLength\" threshold.";
 		return 0;
 	}
+
+	std::sort(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &lhs, std::vector<size_t> &rhs) -> bool {
+		return centerpoints[lhs.front()].second < centerpoints[rhs.front()].second;
+	});
+
+	std::for_each(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) {
+		std::sort(line.begin(), line.end(), [&](size_t &lhs, size_t &rhs) -> bool {
+			return centerpoints[lhs].second < centerpoints[rhs].second;
+		});
+	});
 	
 	
 	// Collapse tracks to have a uniform density.
@@ -2232,6 +2242,21 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 			callback->start();
 			callback->setMethodTitle("Sampling centerlines...");
 		}
+
+		// Clear all lines being shorter than the required segment length.
+		auto end = std::remove_if(centerlines.begin(), centerlines.end(), [&](std::vector<size_t> &line) -> bool {
+			float centerlineLength = std::fabsf(centerpoints[line.back()].second - centerpoints[line.front()].second);
+			return centerlineLength < desc.samplingLengthForPCA;
+		});
+
+		centerlines.erase(end, centerlines.end());
+
+		if(centerlines.empty()) {
+			BLUE_LOG(trace) << "No centerlines remaining after removing too short ones. Choose a lower \"minCenterlinePoints\" threshold and/or lower \"minCenterlineLength\" threshold.";
+			return 0;
+		}
+
+		alignments.resize(centerlines.size());
 		
 		int percentageCompleted = 0;
 		bool update = true;
@@ -2291,7 +2316,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				if(lastDirection.dot(mainAxis_) < 0)
 					lastDirection *= -1.0f;
 
-				for(long i = (c / 2); i < line.size();) {
+				for(long i = (c / 2); i < line.size() - 1;) {
 
 					float chainage = origin.second;
 
@@ -2303,10 +2328,10 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 					// Old computation method: auto axis = getPCA(alignment, i - (desc.bearingComputationSegmentLength / 2), i + (desc.bearingComputationSegmentLength / 2));
 					long startIndex = i, endIndex = i;
 
-					while(startIndex > 0 && diff(startIndex) < segmentLength)
+					while(startIndex > 0L && diff(startIndex) < segmentLength)
 						startIndex--;
 
-					while(endIndex < line.size() - 1 && diff(endIndex) < segmentLength)
+					while(endIndex < (long)(line.size() - 1) && diff(endIndex) < segmentLength)
 						endIndex++;
 
 					// Get the main direction of the point set using PCA to move into this direction.
@@ -2332,15 +2357,17 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 
 
 						// Move our counting variable to the point which is closest to the chainage value of the point we just added.
-						while(i < line.size() && centerpoints[line[i]].second < point.second)
+						while(i < (line.size() - 1) && centerpoints[line[i]].second < point.second)
 							i++;
 					}
 					else {
-						// TODO:
+#pragma omp critical
+						BLUE_LOG(warning) <<"diff: " << diff(i) <<", i: " << i << ", startIndex: " << startIndex << ", endIndex: " << endIndex << ", lineSize: " << lineSize << ", c: " << c;
 						break;
 					}
+
 					if(pointsPerPercent > 0) {
-						if(i > pointsPerPercent * percentageOfLineCompleted) {
+						if(i > (pointsPerPercent * percentageOfLineCompleted)) {
 							percentageOfLineCompleted++;
 #pragma omp critical
 							{
@@ -2359,10 +2386,16 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 				if(pointsPerPercent == 0) {
 #pragma omp critical
 					{
-						percentageCompleted++;
+						percentageCompleted+= 100;
 						update = true;
 					}
 				}
+			}
+#pragma omp barrier
+
+			if(tid == 0 && callback && update) {
+				callback->update((float)percentageCompleted / (float)centerlines.size());
+				update = false;
 			}
 		}
 
