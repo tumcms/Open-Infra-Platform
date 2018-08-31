@@ -523,8 +523,7 @@ namespace OpenInfraPlatform
 					}
 
 					return;
-				}
-
+				}// endif swept_disp_solid
 
 				shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh =
 					dynamic_pointer_cast<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
@@ -547,12 +546,7 @@ namespace OpenInfraPlatform
 					//      FixedAxisVertical: IfcBoolean;
 					// END_ENTITY;
 
-					shared_ptr<emt::Ifc4x1EntityTypes::IfcCurve>& directrixCurve = ssh->m_Directrix;
-					std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcProfileDef>>& crossSections = ssh->m_CrossSections;
-					std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcDistanceExpression>>& crossSectionPositions = ssh->m_CrossSectionPositions;
-					shared_ptr<emt::Ifc4x1EntityTypes::IfcBoolean>& fixedAxisVertical = ssh->m_FixedAxisVertical;
-
-					convertIfcSectionedSolidHorizontal(directrixCurve, crossSections, crossSectionPositions, fixedAxisVertical, itemData, err);
+					convertIfcSectionedSolidHorizontal(ssh, itemData, err);
 
 					return;
 				}
@@ -566,30 +560,141 @@ namespace OpenInfraPlatform
 			}
 			//end convertIfcSolidModel
 
-
 			void convertIfcSectionedSolidHorizontal(
-				shared_ptr<emt::Ifc4x1EntityTypes::IfcCurve>& directrixCurve,
-				std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcProfileDef>>& crossSections,
-				std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcDistanceExpression>>& crossSectionPositions,
-				shared_ptr<emt::Ifc4x1EntityTypes::IfcBoolean>& fixedAxisVertical,
+				shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh,
 				std::shared_ptr<ItemData> itemData,
 				std::stringstream& err)
+
 			{
-				//give crossSections of type ProfileDef to ProfileConverter
-				shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
-					m_profileCache->getProfileConverter(crossSections[0]);
+				// Validate data.
+				if (!ssh->m_Directrix)
+				{
+					err << "Invalid Directrix" << std::endl;
+					return;
+				}
 
-				//get unit conversion factor (todo: multiply by value to convert units)
+				//	    CrossSections: LIST[2:? ] OF IfcProfileDef;	
+				if ( ssh->m_CrossSections.size() < 2 )
+				{
+					err << "Invalid CrossSections" << std::endl;
+					return;
+				}
+
+				//      CrossSectionPositions: LIST[2:? ] OF IfcDistanceExpression;
+				if ( ssh->m_CrossSectionPositions.size() < 2 )
+				{
+					err << "Invalid CrossSectionPositions" << std::endl;
+					return;
+				}
+
+				if (!ssh->m_FixedAxisVertical)
+				{
+					err << "Invalid FixedAxisVertical" << std::endl;
+					return;
+				}
+
+				// Retrieve data from IfcSectionedSolidHorizontal.
+				shared_ptr<emt::Ifc4x1EntityTypes::IfcCurve>& directrixCurve = ssh->m_Directrix;
+				std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcProfileDef>>& crossSections = ssh->m_CrossSections;
+				std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcDistanceExpression>>& crossSectionPositions = ssh->m_CrossSectionPositions;
+				shared_ptr<emt::Ifc4x1EntityTypes::IfcBoolean>& fixedAxisVertical = ssh->m_FixedAxisVertical;
+
+				// Check whether the same amount of crossSections and crossSectionPositions exist. m_CrossSections and m_CrossSectionPositions are lists L[2:?]
+				int crossSectionsSize = crossSections.size();
+				int crossSectionPositionsSize = crossSectionPositions.size();
+				if (crossSectionsSize != crossSectionPositionsSize)
+				{
+					// If only one value is missing, delete the last value of the other list and continue anyway.
+					if ( abs (crossSectionsSize - crossSectionPositionsSize) > 1 )
+					{ 
+						err << "CrossSectionPositions and CrossSections are not equal in size." << std::endl; 
+						return; 
+					}
+					if (crossSectionsSize > crossSectionPositionsSize)
+					{
+						err << "CrossSections size decreased by one." << std::endl;
+						crossSections.pop_back();
+					}
+					else if(crossSectionPositionsSize > crossSectionsSize)
+					{
+						err << "CrossSectionPositions size decreased by one." << std::endl;
+						crossSectionPositions.pop_back();
+					}
+				}
+				
+				// Get unit conversion factor (to do: multiply by value to convert units)
 				double length_in_meter = m_unitConverter->getLengthInMeterFactor();
+				//double angle_factor = m_unitConverter->getAngleInRadianFactor(); (necessary?)
 
-				// Validate data: only necessary if we accept entire IfcSSH as parameter. Function can't be called without all parameters.
+				
+				// Declare vectors of doubles for every element of the distance expressions
+				std::vector< double > crossSectionDistanceAlong;
+				std::vector< double > crossSectionOffsetLateral;
+				std::vector< double > crossSectionOffsetVertical;
+				std::vector< double > crossSectionOffsetLongitudinal;
+				std::vector< bool > crossSectionAlongHorizontal;
+
+				// Iterate over all crossSectionPositions, convert units
+				for (int position = 0; position <= crossSectionPositions.size(); ++position)
+				{
+					auto distExpr = crossSectionPositions[position];
+					// Save distance expressions to vectors of doubles.
+					if (distExpr->m_DistanceAlong)
+						crossSectionDistanceAlong.push_back(distExpr->m_DistanceAlong->m_value * length_in_meter);
+					else
+					{
+						err << "Missing m_DistanceAlong." << endl;
+						return;
+					}
+
+					if (distExpr->m_OffsetLateral)
+						crossSectionOffsetLateral.push_back(distExpr->m_OffsetLateral->m_value * length_in_meter);
+					else
+						crossSectionOffsetLateral.push_back(0.);
+
+					if (distExpr->m_OffsetVertical)
+						crossSectionOffestVertical.push_back(distExpr->m_OffsetLateral->m_value * length_in_meter);
+					else
+						crossSectionOffsetVertical.push_back(0.);
+
+					if (distExpr->m_OffsetLongitudinal)
+						crossSectionOffsetLongitudinal.push_back(distExpr->m_OffsetLongitudinal->m_value * length_in_meter);
+					else
+						crossSectionOffsetLongitudinal.push_back(0.);
+
+					if (distExpr->m_AlongHorizontal)
+						crossSectionAlongHorizontal.push_back(distExpr->m_AlongHorizontal);
+					else
+						crossSectionAlongHorizontal.push_back(false);
+
+				}
+
+				// Define a vector of pointers. Revolved and Extruded only use a single profile, so they do not need vectors.
+				std::vector< shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> > profile_converter;
+				
+				// Give crossSection information (profileDefs) to profileConverter (iterator: number of CrossSectionElements)
+				for (int element = 0; element <= crossSections.size(); ++element)
+				{
+					// Fill vector profile_converter with one profileConverter per crossSection. ProfileConverter sweeps across an area within the boundaries of the profile definition (which may only be a curve).
+					//profile_converter.push_back( m_profileCache->getProfileConverter(crossSections[element]) );
+					
+					// Get profile coordinates: Vector of multiple profiles. -> Vector of multiple lines makes a profile. -> Vector of multiple coordinates make a line. -> Vector of 2 makes a pair of coordinates.
+					// const std::vector<std::vector<std::vector<carve::geom::vector<2> > > >& profile_coords = profile_converter[crossSectionElement]->getCoordinates();
+				}
+
+				// Give directrix to curveConverter. convertIfcCurve is a member function of curveConverter that returns void. (see also: surface_curve_swept_area_solid)
+				// segment_start_points and basis_curve_points are return parameters (&)
+				std::vector<carve::geom::vector<3> > segment_start_points;
+				std::vector<carve::geom::vector<3> > basis_curve_points;
+				//m_curveConverter->convertIfcCurve(directrixCurve, basis_curve_points, segment_start_points);
+
+				//IfcDistanceExpression: 4 IfcLengthMeasures of type double, usually in mm: m_DistanceAlong, m_OffsetLateral, m_OffsetVertical, m_OffsetLongitudinal. 1 IfcBoolean: m_AlongHorizontal.
+
 				// Get positions
 				// Tesselation?
 				// Compute the normal according to axis
 
-					// Is it better to include the entire IfcSectionedSolidHorizontal as a parameter, as in convertIfcExtrudedAreaSolid?
-
-			} //to do
+			}
 
 			void convertIfcExtrudedAreaSolid(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcExtrudedAreaSolid>& extrudedArea,
