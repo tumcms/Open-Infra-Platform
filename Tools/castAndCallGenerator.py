@@ -46,23 +46,23 @@ textHeader = """/*
 
 #include <memory>
 #include <typeinfo>
-#include <OpenInfraPlatform\IfcAlignment1x1\IfcAlignment1x1Entities.h>
-#include <OpenInfraPlatform\IfcAlignment1x1\IfcAlignment1x1Types.h>
+#include <OpenInfraPlatform\__schema__\__schema__Entities.h>
+#include <OpenInfraPlatform\__schema__\__schema__Types.h>
 
 namespace OpenInfraPlatform {
-	namespace IfcAlignment1x1 {"""
+	namespace __schema__ {"""
 
 
 headerCastToDerivedAndCall = """
-		template <typename F, typename T> T castToDerivedAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
+		template <typename F, typename T> T castToDerivedAndCall(std::shared_ptr<__schema__Entity> ptr, F &f) {
 			std::string name = std::string(typeid(*ptr).name());"""
 			
 headerCastToVisitableAndCall = """
-		template <typename F, typename T> T castToVisitableAndCall(std::shared_ptr<IfcAlignment1x1Entity> ptr, F &f) {
+		template <typename F, typename T> T castToVisitableAndCall(std::shared_ptr<__schema__Entity> ptr, F &f) {
 			std::string name = std::string(typeid(*ptr).name());"""
 
 pattern = """
-			if (name == "class OpenInfraPlatform::IfcAlignment1x1::__classname__") {
+			if (name == "class OpenInfraPlatform::__schema__::__classname__") {
 				return f(*(std::dynamic_pointer_cast<__classname__>(ptr)));				
 			}"""
 
@@ -79,31 +79,45 @@ def main(argv):
 
 	args = parser.parse_args()
 	
+	pathlist = args.directory.split("\\")
+	
+	if len(pathlist) == 1:
+		pathlist = args.directory.split("/")
+	
+	schema = pathlist[len(pathlist) - 2]
+	
 	
 	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f))]
 	notAbstractClass = [f for f in listdir(args.directory) if not "// abstract class" in open(join(args.directory, f)).read()]
 	visitableClass = [f for f in listdir(args.directory) if "VISITABLE_STRUCT" in open(join(args.directory, f)).read()]
-	print(textHeader)	
-	print(headerCastToDerivedAndCall)
+	
+	filename = schema + "Caster.h"
+	file = open(filename, "w")
+	
+	print(textHeader.replace("__schema__", schema), file=file)	
+	print(headerCastToDerivedAndCall.replace("__schema__", schema), file=file)
 	
 	for elem in notAbstractClass:
 		classname = elem[0:len(elem) - 2]			
 		text = pattern
 		text = text.replace("__classname__",classname)
-		print(text)
+		text = text.replace("__schema__", schema)
+		print(text, file=file)
 	
-	print(endFunction)
+	print(endFunction, file=file)
 	
-	print(headerCastToVisitableAndCall)
+	print(headerCastToVisitableAndCall.replace("__schema__", schema), file=file)
 
 	for elem in visitableClass:
 		classname = elem[0:len(elem) - 2]			
 		text = pattern
 		text = text.replace("__classname__",classname)
-		print(text)
+		text = text.replace("__schema__", schema)
+		print(text, file=file)
 	
-	print(endFunction)
-	print(endFile)
+	print(endFunction, file=file)
+	print(endFile, file=file)
+	file.close()
 		
 if __name__ == "__main__":
    main(sys.argv[1:])
