@@ -146,6 +146,9 @@ find_package(raptor2 REQUIRED)
 find_package(CloudCompare REQUIRED)
 find_path(visit_struct_INCLUDE_DIR REQUIRED)
 
+# Added 12.09.2018: FFTW3
+find_package(FFTW3 REQUIRED)
+
 # Find the Qt components
 set(QT5_COMPONENTS
 	Core
@@ -279,11 +282,13 @@ include_directories(
 	Infrastructure/src
 	${CC_INCLUDE_DIRS}
 	external/qcustomplot
+	${FFTW3_INCLUDE_DIRS}
 )
 
 link_directories(
 	${Boost_LIBRARY_DIRS}
 	${OKLABI_ROOT_DIR}
+	${FFTW3_LIBRARY_DIRS}
 )
 
 #------------------------------------------------------------------------------
@@ -468,6 +473,7 @@ target_link_libraries( OpenInfraPlatform.UI
 	${ZLIB_LIBRARIES}
 	Rpcrt4.lib
 	${CC_LIBRARIES}
+	fftw3.lib
 )
 
 

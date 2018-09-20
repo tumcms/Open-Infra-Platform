@@ -35,8 +35,10 @@
 
 #include "buw.OIPInfrastructure.h"
 #include "ui_mainwindow.h"
+
 #include <BlueFramework/ImageProcessing/Image.h>
 #include <BlueFramework/ImageProcessing/io.h>
+
 #include <QInputDialog>
 #include <QLabel>
 #include <QLineEdit>
@@ -45,8 +47,10 @@
 #include <QMessageBox>
 
 #include <boost/filesystem.hpp>
-#include <iostream>
 
+#include <fftw3.h>
+
+#include <iostream>
 #include <codecvt>
 #include <shlobj.h>
 #include <stdlib.h>
@@ -2836,6 +2840,15 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCurvature
 	}
 }
 
+template <template<typename T> class Container, typename T> Container<T> linspace(const T& min, const T& max, const size_t& N)
+{
+	T stepSize = (max - min) / (N - 1);
+	Container<T> result;
+	for(size_t i = 0; i < N; i++)
+		result.push_back(min + i * stepSize);
+	return result;
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_clicked()
 {	
 	// Get the file to read.
@@ -2856,6 +2869,66 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 			}
 			inputFile.close();
 		}
+
+		int numReal = bearings.size();
+		int numComplex = (std::floor((numReal / 2)) + 1);
+
+		double* bearingsRaw = fftw_alloc_real(numReal);
+		fftw_complex* bearingsFFT = fftw_alloc_complex(numComplex);
+
+		fftw_plan plan = fftw_plan_dft_r2c_1d(numReal, bearingsRaw, bearingsFFT, FFTW_ESTIMATE);
+		std::memcpy(bearingsRaw, bearings.data(), numReal);
+
+		fftw_execute(plan);		
+		
+		QVector<double> fftReal;
+		for(size_t i = 1; i < numComplex; i++)
+			fftReal.append(bearingsFFT[i][0]);
+
+		fftw_free(bearingsRaw);
+		fftw_free(bearingsFFT);
+		fftw_destroy_plan(plan);
+
+		fftw_cleanup();
+		
+
+		// Create plot for bearing.
+		QCustomPlot* customPlotFFT = new QCustomPlot(nullptr);
+
+		// TODO: Fix memory leak!
+		//connect(customPlotBearing, &QCustomPlot::close, customPlotBearing, &QObject::deleteLater);
+
+		customPlotFFT->resize(400, 400);
+		customPlotFFT->setInteraction(QCP::iRangeDrag, true);
+
+		// Set window title
+		customPlotFFT->setWindowTitle(filename);
+
+		// create graph and assign data to it:
+		customPlotFFT->addGraph(customPlotFFT->xAxis, customPlotFFT->yAxis);
+		customPlotFFT->setInteraction(QCP::iRangeZoom);
+		customPlotFFT->setInteraction(QCP::iRangeDrag);
+		QVector<double> freq;
+
+		for(size_t i = 0; i < numReal / 2 - 2; i++) {
+			freq.append((20.0 * i) / numReal);
+		}
+		
+		customPlotFFT->graph(0)->setData(freq, fftReal);
+		customPlotFFT->graph(0)->setPen(QPen(Qt::green));
+		
+		// give the axes some labels:
+		customPlotFFT->xAxis->setLabel("Frequency");
+		customPlotFFT->yAxis->setLabel("Amplitude");
+
+
+		// set axes ranges, so we see all data:
+		customPlotFFT->xAxis->setRange(freq.first(), freq.last());
+		customPlotFFT->yAxis->rescale();
+
+		customPlotFFT->replot();
+		customPlotFFT->show();
+		bearingPlots_.push_back(customPlotFFT);
 
 		// Create plot for bearing.
 		QCustomPlot* customPlotBearing = new QCustomPlot(nullptr);
