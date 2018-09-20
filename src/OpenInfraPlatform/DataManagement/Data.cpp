@@ -53,7 +53,7 @@
 #include "OpenInfraPlatform/IfcBridge/model/IfcBridgeException.h"
 #include "OpenInfraPlatform/IfcBridge/reader/IfcStepReader.h"
 
-#include "OpenInfraPlatform/IfcGeometryConverter/IfcImporter.h"
+//#include "OpenInfraPlatform/IfcGeometryConverter/IfcImporter.h"
 
 #include "OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.h"
 #include "OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.h"
@@ -616,31 +616,31 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 			ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4 ||
 			ifcSchema == IfcPeekStepReader::IfcSchema::IFC_BRIDGE)
 		{
-			tempIfcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
+			//tempIfcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
 
 			if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_2)
 			{
 				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Ifc2x3 ").append(filename));
 
-				using namespace OpenInfraPlatform::Ifc2x3;
-				importIfcGeometry < emt::Ifc2x3EntityTypes, UnitConverter, Ifc2x3Model, IfcStepReader,
-					Ifc2x3Exception, Ifc2x3Entity >(tempIfcGeometryModel_, filename);
+				//using namespace OpenInfraPlatform::Ifc2x3;
+				//importIfcGeometry < emt::Ifc2x3EntityTypes, UnitConverter, Ifc2x3Model, IfcStepReader,
+				//	Ifc2x3Exception, Ifc2x3Entity >(tempIfcGeometryModel_, filename);
 			}
 			else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4)
 			{
 				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Ifc4 ").append(filename));
 
-				using namespace OpenInfraPlatform::Ifc4;
-				importIfcGeometry<emt::Ifc4EntityTypes, UnitConverter, Ifc4Model, IfcStepReader,
-					Ifc4Exception, Ifc4Entity>(tempIfcGeometryModel_, filename);
+				//using namespace OpenInfraPlatform::Ifc4;
+				//importIfcGeometry<emt::Ifc4EntityTypes, UnitConverter, Ifc4Model, IfcStepReader,
+				//	Ifc4Exception, Ifc4Entity>(tempIfcGeometryModel_, filename);
 			}
 			else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_BRIDGE)
 			{
 				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing IfcBridge ").append(filename));
 
-				using namespace OpenInfraPlatform::IfcBridge;
-				importIfcGeometry<emt::IfcBridgeEntityTypes, UnitConverter, IfcBridgeModel, IfcStepReader,
-					IfcBridgeException, IfcBridgeEntity>(tempIfcGeometryModel_, filename);
+				//using namespace OpenInfraPlatform::IfcBridge;
+				//importIfcGeometry<emt::IfcBridgeEntityTypes, UnitConverter, IfcBridgeModel, IfcStepReader,
+				//	IfcBridgeException, IfcBridgeEntity>(tempIfcGeometryModel_, filename);
 			}
 		}
 		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4x1)

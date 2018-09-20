@@ -119,7 +119,7 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE       ${CMAKE_BINARY_DIR}/Release)
 #------------------------------------------------------------------------------
 
 add_definitions(-D_UNICODE 			# Unicode rules
-				-DQT_NO_KEYWORDS 	# No qt keywords
+				#-DQT_NO_KEYWORDS 	# No qt keywords
 				-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
 ) # -DNOMINMAX does not work because GDI+ needs these macros
 
@@ -143,11 +143,17 @@ find_package(ZLIB 1.2.10 REQUIRED)
 find_package(libLAS REQUIRED)
 find_package(qhull REQUIRED)
 find_package(raptor2 REQUIRED)
+find_package(CloudCompare REQUIRED)
 find_path(visit_struct_INCLUDE_DIR REQUIRED)
+
+# Added 12.09.2018: FFTW3
+find_package(FFTW3 REQUIRED)
 
 # Find the Qt components
 set(QT5_COMPONENTS
-	Core 
+	Core
+	Gui
+	OpenGL
 	Xml
 	XmlPatterns
 	Widgets
@@ -234,6 +240,7 @@ addQt5Dll(OpenGL)
 addQt5Dll(Sensors)
 addQt5Dll(Sql)
 addQt5Dll(WebChannel)
+addQt5Dll(Concurrent)
 
 foreach(plugin ${Qt5_PLATFORMS_PLUGINS})
 	addQt5PluginDll(${plugin} Qt5_PLATFORMS_PLUGINS_DLLS)
@@ -273,11 +280,15 @@ include_directories(
 	external/carve/common
 	ExpressBinding/src
 	Infrastructure/src
+	${CC_INCLUDE_DIRS}
+	external/qcustomplot
+	${FFTW3_INCLUDE_DIRS}
 )
 
 link_directories(
 	${Boost_LIBRARY_DIRS}
 	${OKLABI_ROOT_DIR}
+	${FFTW3_LIBRARY_DIRS}
 )
 
 #------------------------------------------------------------------------------
@@ -309,7 +320,25 @@ file(GLOB OpenInfraPlatform_Core_Source 							src/OpenInfraPlatform/Core/*.*)
 file(GLOB OpenInfraPlatform_Data_Source 							src/OpenInfraPlatform/Data/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Source 					src/OpenInfraPlatform/DataManagement/*.*)
-file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)
+file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			
+	#src/OpenInfraPlatform/IfcGeometryConverter/*.*
+	src/OpenInfraPlatform/IfcGeometryConverter/CarveHeaders.h
+	src/OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.*
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc2x3EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4x1EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfcBridgeEntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.*
+	src/OpenInfraPlatform/IfcGeometryConverter/GeometrySettings.*
+	src/OpenInfraPlatform/IfcGeometryConverter/GeomUtils.*
+	src/OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.*
+	src/OpenInfraPlatform/IfcGeometryConverter/RecursiveCallException.h
+	src/OpenInfraPlatform/IfcGeometryConverter/UnhandlerRepresentationException.h
+)
 
 # UnitTesting for images is currently not working but still in the code so files have to be collected
 file(GLOB OpenInfraPlatform_UnitTesting_Source						src/OpenInfraPlatform/UnitTesting/*.*)
@@ -327,6 +356,7 @@ file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			src/OpenInfraPlatf
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source 	src/OpenInfraPlatform/UserInterface/ViewPanel/Effects/*.*)
 
 file(GLOB OpenInfraPlatform_QtPropertyBrowser_Source 				src/QtPropertyBrowser/*.*)
+file(GLOB OpenInfraPlatform_QCustomPlot_Source 						external/qcustomplot/*.*)
 
 # Collect Qt related stuff and UI files
 set(OpenInfraPlatform_UIS
@@ -396,6 +426,7 @@ source_group(OpenInfraPlatform\\UserInterface\\ViewPanel\\Effects	FILES ${OpenIn
 source_group(OpenInfraPlatform\\UserInterface\\Forms				FILES ${OpenInfraPlatform_UIS})
 
 source_group(QtPropertyBrowser										FILES ${OpenInfraPlatform_QtPropertyBrowser_Source})
+source_group(QCustomPlot											FILES ${OpenInfraPlatform_QCustomPlot_Source})
 
 #------------------------------------------------------------------------------
 # Set source group properties
@@ -437,6 +468,7 @@ add_executable(OpenInfraPlatform.UI
 	${OpenInfraPlatform_UserInterface_View2DWindow}	
 	${OpenInfraPlatform_Shader_Source}
 	${OpenInfraPlatform_Shader_D3D_Source}
+	${OpenInfraPlatform_QCustomPlot_Source}
 )
 
 #------------------------------------------------------------------------------
@@ -458,6 +490,8 @@ target_link_libraries( OpenInfraPlatform.UI
 	carve
 	${ZLIB_LIBRARIES}
 	Rpcrt4.lib
+	${CC_LIBRARIES}
+	fftw3.lib
 )
 
 
@@ -468,6 +502,9 @@ target_link_libraries( OpenInfraPlatform.UI
 
 # BlueFramework Copy Binaries
 BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
+
+# CloudCompare Copy Binaries
+CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 # Oklabi Copy Binaries
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
@@ -608,6 +645,7 @@ set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
 set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
+set_target_properties(CloudCompareCopyBinaries 				PROPERTIES FOLDER "Copy")
 set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
 set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
@@ -693,7 +731,7 @@ installData(${CMAKE_BINARY_DIR}/res)
 installData(${CMAKE_BINARY_DIR}/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES}
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${CC_RELEASE_BINARIES}
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 	
