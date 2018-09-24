@@ -16,8 +16,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ShowIFCtree.h"
-#include "Ifc4x1TreeModel.h"
+//#include "Ifc4x1TreeModel.h"   
 #include "OpenInfraPlatform/DataManagement/Data.h"
+#include "SimpleTreeModel.h"
+#include "SimpleTreeItem.h"
 
 OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::UserInterface::View * view, QWidget * parent)
 	:ui_(new Ui::ShowIFCtree),
@@ -27,13 +29,32 @@ OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::Us
 	ui_->setupUi(this);
 	ui_->treeView->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
 	ui_->treeView->setAutoExpandDelay(-1);
-	QObject::connect(ui_->treeView, &QTreeView::activated, this, &ShowIFCtree::on_treeView_expanded);
+	QObject::connect(ui_->treeView, &QTreeView::expanded, this, &ShowIFCtree::on_treeView_expanded);
 }
 
 void OpenInfraPlatform::UserInterface::ShowIFCtree::on_treeView_expanded(const QModelIndex &index)
 {
-	if (true)
-		std::printf("blub");
+	//std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+	//if(!index.isValid()) 
+	//	TreeItem* item = new TreeItem(ptr, nullptr);
+	//else 
+		TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+
+
+	if(item->childCount() == 0)
+		item->createChildren();
+
+	for(int i = 0; i < item->childCount(); i++) {
+		auto child = item->child(i);
+		if(child->childCount() == 0)
+			child->createChildren();
+
+		for(int i = 0; i < child->childCount(); i++) {
+			auto grandchild = child->child(i);
+			if(grandchild->childCount() == 0)
+				grandchild->createChildren();
+		}
+	}
 }
 
 
@@ -41,8 +62,38 @@ void OpenInfraPlatform::UserInterface::ShowIFCtree::show()
 {
 	auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
 	auto entities = proxyModel->getIfc4x1Data();
-	ui_->treeView->setModel(new Ifc4x1TreeModel(entities));
-
+	ui_->treeView->setModel(new TreeModel(entities));
 
 	((QDialog*)this)->show();
 }
+
+//bool OpenInfraPlatform::UserInterface::ShowIFCtree::itemsExpandable(const QModelIndex &index) const
+//{
+//	TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+//	if(item->childCount() > 0)
+//		return true;
+//	else 
+//		return false;
+//}
+//
+//void OpenInfraPlatform::UserInterface::ShowIFCtree::setItemsExpandable(bool enable, const QModelIndex &index)
+//{
+//	if(enable == true) {
+//
+//	}
+//}
+
+
+	//QApplication app(argc, argv);
+
+	//QFile file("default.txt");
+	//file.open(QIODevice::ReadOnly);
+	//TreeModel* model = new TreeModel(file.readAll());
+	//file.close();
+
+	//QTreeView view;
+	//ui_->treeView->setModel(model);
+	//view.setModel(&model);
+	//view.setWindowTitle(QObject::tr("Simple Tree Model"));
+	//view.show();
+	//return app.exec();

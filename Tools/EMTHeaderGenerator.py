@@ -43,42 +43,14 @@ textHeader = """/*
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-#include <memory>
-#include <typeinfo>
-#include <OpenInfraPlatform\__schema__\__schema__Entities.h>
-#include <OpenInfraPlatform\__schema__\__schema__Types.h>
-
-namespace OpenInfraPlatform {
-	namespace __schema__ {"""
-
-
-headerCastToDerivedAndCall = """
-		template <typename F, typename T> T castToDerivedAndCall(std::shared_ptr<__schema__Entity> ptr, F &f) {
-			std::string name = std::string(typeid(*ptr).name());"""
-			
-headerCastToVisitableAndCall = """
-		template <typename F, typename T> T castToVisitableAndCall(std::shared_ptr<__schema__Entity> ptr, F &f) {
-			std::string name = std::string(typeid(*ptr).name());"""
-
-pattern = """
-			if (name == "class OpenInfraPlatform::__schema__::__classname__") {
-				return f(*(std::dynamic_pointer_cast<__classname__>(ptr)));				
-			}"""
-
-endFunction = """
-			}"""
-
-endFile = """		
-	}
-}
 """
+
+
 def main(argv):
 	parser = argparse.ArgumentParser()
 	parser.add_argument("directory")
 
 	args = parser.parse_args()
-	
 	pathlist = args.directory.split("\\")
 	
 	if len(pathlist) == 1:
@@ -86,39 +58,55 @@ def main(argv):
 	
 	schema = pathlist[len(pathlist) - 2]
 	
-	
 	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f))]
-	notAbstractClass = [f for f in listdir(args.directory) if not "// abstract class" in open(join(args.directory, f)).read()]
-	visitableClass = [f for f in listdir(args.directory) if "VISITABLE_STRUCT" in open(join(args.directory, f)).read()]
+			
+	dir_path = os.path.dirname(os.path.realpath(__file__))
 	
-	filename = schema + "Caster.h"
-	file = open(filename, "w")
-	
-	print(textHeader.replace("__schema__", schema), file=file)	
-	print(headerCastToDerivedAndCall.replace("__schema__", schema), file=file)
-	
-	for elem in notAbstractClass:
-		classname = elem[0:len(elem) - 2]			
-		text = pattern
-		text = text.replace("__classname__",classname)
-		text = text.replace("__schema__", schema)
-		print(text, file=file)
-	
-	print(endFunction, file=file)
-	
-	print(headerCastToVisitableAndCall.replace("__schema__", schema), file=file)
+	emtBasicFilename = "EMTBasic" + schema + "EntityTypes.h"
+	emtBasicFile = open(emtBasicFilename, "w")
+	print(textHeader, file=emtBasicFile)
+	print("#pragma once", file=emtBasicFile)
+	print("", file=emtBasicFile)
+	print("namespace emt", file=emtBasicFile)
+	print("{", file=emtBasicFile)
+	print("\ttemplate <", file=emtBasicFile)
 
-	for elem in visitableClass:
-		classname = elem[0:len(elem) - 2]			
-		text = pattern
-		text = text.replace("__classname__",classname)
-		text = text.replace("__schema__", schema)
-		print(text, file=file)
+	classnames = ["\t\ttypename " + file[0:len(file) - 2] + "T" for file in onlyfiles]
+	print(*classnames,sep=",\n",file=emtBasicFile)
+	print("\t>", file=emtBasicFile)
+	print("\tstruct Basic" + schema + "EntityTypes", file=emtBasicFile)
+	print("\t{", file=emtBasicFile)
+	classnames = ["\t\ttypedef " + file[0:len(file) - 2] + "T " + file[0:len(file) - 2] + ";" for file in onlyfiles]
+	print(*classnames,sep="\n",file=emtBasicFile)
+	print("\t};",file=emtBasicFile)
+	print("}",file=emtBasicFile)
+	emtBasicFile.close()
 	
-	print(endFunction, file=file)
-	print(endFile, file=file)
-	file.close()
+	emtFile = open("EMT" + schema + "EntityTypes.h", "w")
+	print(textHeader, file=emtFile)
+	print("#pragma once", file=emtFile)
+	print("", file=emtFile)
+	print("#include \"EMTBasic" + schema + "EntityTypes.h\"", file=emtFile)
+	print("", file=emtFile)
+	print("namespace OpenInfraPlatform", file=emtFile)
+	print("{", file=emtFile)
+	print("\tnamespace " + schema, file=emtFile)
+	print("\t{", file=emtFile)
+
+	classnames = ["\t\tclass " + file[0:len(file) - 2] + ";" for file in onlyfiles]
+	print(*classnames,sep="\n",file=emtFile)
+	print("\t}",file=emtFile)
+	print("}",file=emtFile)
+	
+	print("namespace emt", file=emtFile)
+	print("{", file=emtFile)
+	print("\ttypedef Basic" + schema + "EntityTypes<", file=emtFile)
+	classnames = ["\t\tOpenInfraPlatform::" + schema + "::" + file[0:len(file) - 2] for file in onlyfiles]
+	print(*classnames,sep=",\n",file=emtFile)
+	print("\t>",file=emtFile)
+	print("\t" + schema + "EntityTypes;",file=emtFile)
+	print("}",file=emtFile)
+	emtFile.close()	
 		
 if __name__ == "__main__":
    main(sys.argv[1:])
-	

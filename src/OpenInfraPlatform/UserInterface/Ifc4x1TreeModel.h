@@ -19,57 +19,36 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
 #include <QAbstractItemModel>
+#include <type_traits>
+#include <QModelIndex>
+#include <QVariant>
+
 
 namespace OpenInfraPlatform {
 	namespace UserInterface {
 
+		class Ifc4x1TreeItem;
+		
 		class Ifc4x1TreeModel : public QAbstractItemModel {
 
 			Q_OBJECT;
 
 		public:
-			//explicit TreeModel(const QString &data, QObject *parent = 0); from Qt documentation
-			//~TreeModel(); from Qt documentation
 			Ifc4x1TreeModel(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& entities);
-		// Geerbt über QAbstractItemModel
+			~Ifc4x1TreeModel();
+
+		// Inherited from QAbstractItemModel
 			virtual QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const override;
 			virtual QModelIndex parent(const QModelIndex & child) const override;
-			virtual int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+			//virtual int rowCount(const QModelIndex & parent = QModelIndex()) const override;
 			virtual int columnCount(const QModelIndex & parent = QModelIndex()) const override;
-			virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+			//virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+			virtual bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+
 		
 		private:
-			std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > data_;
-			
-		
-		
-		//private:
-			//void setupModelData(const QStringList &lines, TreeItem *parent);
-
-			//TreeItem *rootItem;
+			std::vector<shared_ptr<Ifc4x1TreeItem>> data_;		
 		};
 
-
-		//from Qt documentation http://doc.qt.io/qt-5/qtwidgets-itemviews-simpletreemodel-example.html
-		class TreeItem
-		{
-		public:
-			explicit TreeItem(const QList<QVariant> &data, TreeItem *parentItem = 0);
-			//~TreeItem();
-
-			//void appendChild(TreeItem *child);
-
-			TreeItem *child(int row);
-			//int childCount() const;
-			//int columnCount() const;
-			//QVariant data(int column) const;
-			//int row() const;
-			//TreeItem *parentItem();
-
-		private:
-			QList<TreeItem*> childItems_;
-			QList<QVariant> itemData_;
-			TreeItem *parentItem_;
-		};
 	}
 }

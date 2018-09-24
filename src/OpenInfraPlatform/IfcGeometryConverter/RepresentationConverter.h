@@ -30,6 +30,10 @@
 //#include "ReaderSettings.h"
 
 #include "EMTIfc4EntityTypes.h"
+#include "EMTIfc4x1EntityTypes.h"
+#include "EMTIfc2x3EntityTypes.h"
+#include "EMTIfcBridgeEntityTypes.h"
+
 #include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
 
 #include "ProfileCache.h"

@@ -320,7 +320,24 @@ file(GLOB OpenInfraPlatform_Core_Source 							src/OpenInfraPlatform/Core/*.*)
 file(GLOB OpenInfraPlatform_Data_Source 							src/OpenInfraPlatform/Data/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Source 					src/OpenInfraPlatform/DataManagement/*.*)
-file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)
+file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			#src/OpenInfraPlatform/IfcGeometryConverter/*.*)
+	src/OpenInfraPlatform/IfcGeometryConverter/CarveHeaders.h
+	src/OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.*
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc2x3EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4x1EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfcBridgeEntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h
+	src/OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.*
+	src/OpenInfraPlatform/IfcGeometryConverter/GeometrySettings.*
+	src/OpenInfraPlatform/IfcGeometryConverter/GeomUtils.*
+	src/OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.*
+	src/OpenInfraPlatform/IfcGeometryConverter/RecursiveCallException.h
+	src/OpenInfraPlatform/IfcGeometryConverter/UnhandledRepresentationException.h
+)
 
 # UnitTesting for images is currently not working but still in the code so files have to be collected
 file(GLOB OpenInfraPlatform_UnitTesting_Source						src/OpenInfraPlatform/UnitTesting/*.*)
