@@ -1107,8 +1107,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPositionFilter(const buw
 	return err;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::filterRelativeHeightWithGrid(const float lowerBound, const float upperBound, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::Infrastructure::PointCloud::applyRelativeHeightWithGridFilter(const buw::RelativeHeightFilterDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
+
+	const double lowerBound = desc.lowerBound;
+	const double upperBound = desc.upperBound;
+
 	if(callback)
 		callback->start();
 
@@ -1149,6 +1153,8 @@ int OpenInfraPlatform::Infrastructure::PointCloud::filterRelativeHeightWithGrid(
 				callback->update(percentageCompleted);
 		}
 	}
+
+	computeIndices();
 
 	if(callback)
 		callback->stop();
@@ -1236,7 +1242,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init() {
 	octree_->build();
 
 	//computeChainageGridBased();
-	//filterRelativeHeightWithGrid(0.5, 0.5, nullptr);
+	//applyRelativeHeightWithGridFilter(0.5, 0.5, nullptr);
 	//computeIndices();
 }
 

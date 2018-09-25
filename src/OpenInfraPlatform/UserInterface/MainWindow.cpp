@@ -2463,6 +2463,30 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetPositionFil
 	}
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRelativeHeightFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::RelativeHeightFilterDescription desc;
+		desc.lowerBound = ui_->doubleSpinBoxFilterHeightLowerBound->value();
+		desc.upperBound = ui_->doubleSpinBoxFilterHeightUpperBound->value();
+
+		if(pointCloud->applyRelativeHeightWithGridFilter(desc, callback_) == 0) {
+			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		}
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetRelativeHeightFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		if(pointCloud->resetPositionFilter() == 0) {
+			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		}
+	}
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonFilterOriginal_clicked()
 {
 	QMessageBox dialog;	
