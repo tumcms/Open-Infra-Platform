@@ -1914,6 +1914,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 	return err;
 }
 
+
 int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw::CenterlineComputationDescription &desc,
                                                                       buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {	
 
@@ -1976,9 +1977,33 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		centerpointsPointCloud->addPoint(center);
 		centerpointsPointCloud->setPointScalarValue(i, chainage);
 	}
+
+	//Subsample the centerpoints cloud 10 times to include more randomnness and therefore remove patterns.
+	buw::ReferenceCounted<PointCloud> subsampled = buw::makeReferenceCounted<PointCloud>();
+	subsampled->enableScalarField();
+	int idxSS_chainage = subsampled->addScalarField("Chainage");
+	subsampled->setCurrentInScalarField(idxSS_chainage);
+	centerpointsPointCloud->setCurrentOutScalarField(idxCPC_chainage);
+
+	int numIterations = 1000;
+	for(int i = 0; i < numIterations; i++) {
+		auto sampledPoints = buw::ReferenceCounted<CCLib::ReferenceCloud>(CCLib::CloudSamplingTools::subsampleCloudRandomly(centerpointsPointCloud.get(), (int)((1.0/numIterations) * centerpointsPointCloud->size()), nullptr));
+		int startIndex = subsampled->size();
+		subsampled->reserve(subsampled->size() + sampledPoints->size());
+
+		for(int idx = 0; idx < sampledPoints->size(); idx++) {			
+			subsampled->addPoint(*sampledPoints->getPoint(idx));
+			subsampled->setPointScalarValue(startIndex + idx, sampledPoints->getPointScalarValue(idx));
+		}
+	}
 	
+	centerpointsPointCloud.swap(subsampled);
+	idxCPC_chainage = idxSS_chainage;
+
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 	centerpointsPointCloud->computeIndices();
+
+	
 
 	if(desc.filterDuplicates) {
 		// Remove points closer than 1mm to avoid "black holes" of insane density.
