@@ -32,3 +32,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Inf
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/LandInfraExportImport)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/IfcOWLExport)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/TrafficSign)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/ExpressBinding/SkeletonPrototype)
+
