@@ -25,6 +25,11 @@ namespace {
 	TEST(SkeletonPrototypeTest, Test)
 	{
 		EXPRESS::IFC4_Entities::IfcApplication x("safdsa", 'a', "");
+
+		// This should not be allowed.
+		IFC4_SKELETON::IfcApplication_Skelaton<EXPRESS::IFC4_Entities::IfcReal, IfcAbsorbedDoseMeasure, std::string> y(0.0, 1.2, "");
+
+		// Using EXPRESS::IFC4_Entities::IfcReal::Value to acces the IfcApplication::ApplicationDeveloper should also not be possible.
 		std::cout << x.return_data_member<EXPRESS::IFC4_Entities::IfcReal::Value>() << std::endl;
 	}
 }
