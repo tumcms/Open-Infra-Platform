@@ -27,6 +27,12 @@ namespace Ifc {
 	struct IfcReal {
 		virtual boost::variant<float, double> getValue() = 0;
 		virtual int getVersion() = 0;
+
+		explicit operator Ifc4::IfcReal() const { 
+			Ifc4::IfcReal ifc4real;
+			ifc4real.value = this->value;
+			return ifc4real;
+		}
 				
 	};
 
@@ -43,6 +49,17 @@ namespace Ifc4 {
 		double value = 0.0;
 		virtual boost::variant<float, double> getValue() { return (value); }
 		virtual int getVersion() { return 4; }
+
+		IfcReal operator=(float other) { 
+			this->value = other;
+			return *this;
+		}
+
+		IfcReal operator=(double other)
+		{
+			this->value = other;
+			return *this;
+		}
 	};
 
 	struct IfcPerson : public Ifc::IfcPerson {
@@ -82,10 +99,10 @@ namespace {
 
 		//IFC3_SKELETON::IfcReal_Skelaton<double>a(1.0);
 		// This should not be allowed. Skeleton class shouldnt be accessible in the final application -> not possible?
-		IFC4_SKELETON::IfcApplication_Skelaton<double, IfcAbsorbedDoseMeasure, std::string> z(1.0, 1.2, "blub");
+		IFC4_SKELETON::IfcApplication_Skelaton <double, IfcAbsorbedDoseMeasure, std::string> z(1.0, 1.2, "blub");
 
 		// Using EXPRESS::IFC4_Entities::IfcReal::Value to acces the IfcApplication::ApplicationDeveloper should also not be possible.
-		std::cout << x.return_data_member<EXPRESS::IFC4_Entities::IfcReal::Value>() << std::endl;
+		std::cout << x.return_data_member[Ifc::Value] << std::endl;
 
 		Ifc::IfcReal &abstr = Ifc4::IfcReal();
 		boost::variant<float, double> val = abstr.getValue();
