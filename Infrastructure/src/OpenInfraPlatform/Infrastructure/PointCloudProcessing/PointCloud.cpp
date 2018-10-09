@@ -2792,8 +2792,11 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 
 		// We take bearing and chainage for each point.
 		long numBearingsAndChainages = alignment.size();// Old value: ((alignment.size() - desc.bearingComputationSegmentLength) / desc.curvatureStepSize) + 1;
+
 		// We have one less value since we take the change between the current and the next or last element.
 		long numCurvatures = numBearingsAndChainages - 1;
+
+		long numDeltaCurvatures = numCurvatures - 1;
 
 		long numCurvaturesSmoothed = numCurvatures - desc.numPointsForMeanCurvature;
 
@@ -2825,8 +2828,9 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 			std::vector<double> bearings = std::vector<double>(numBearingsAndChainages);
 			std::vector<double> chainages = std::vector<double>(numBearingsAndChainages);
 			std::vector<double> curvatures = std::vector<double>(numCurvatures);
-			std::vector<double> curvaturesFiltered = std::vector<double>(numCurvatures);
-			std::vector<double> curvaturesSmoothed = std::vector<double>(numCurvaturesSmoothed);
+			std::vector<double> deltaCurvatures = std::vector<double>(numDeltaCurvatures);
+			//std::vector<double> curvaturesFiltered = std::vector<double>(numCurvatures);
+			//std::vector<double> curvaturesSmoothed = std::vector<double>(numCurvaturesSmoothed);
 
 			int tid = 0;
 			// Compute the bearing for all points as the angle between the principal axis of bearingComputationSegmentLength consecutive centerline points and the NORTH direction.
@@ -3051,6 +3055,13 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 					
 				}
 
+#pragma omp parallel for
+				for(long i = 0; i < deltaCurvatures.size(); i++) {
+					// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
+					double deltaChainage = std::abs(chainages[i + 1] - chainages[i]);
+					deltaCurvatures[i] = ((curvatures[i + 1] - curvatures[i]) / deltaChainage);
+				}
+
 				// Old version for median curvature filtering.
 //				curvaturesFiltered[0] = curvatures[0];
 //				curvaturesFiltered[1] = curvatures[1];
@@ -3098,13 +3109,15 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 					//	file.write(text.toStdString().data());
 					//}
 
-			for(size_t i = 0; i < curvatures.size(); i++) {
+			for(size_t i = 0; i < deltaCurvatures.size(); i++) {
 				QString text = QString::number(chainages[i], 'g', 20)
 					.append("\t")
 					.append(QString::number(curvatures[i], 'g', 20))
 					.append("\t")
 					.append(QString::number(bearings[i], 'g', 20))
-					.append("\n");
+					.append("\n")
+					.append(QString::number(deltaCurvatures[i], 'g', 20))
+					.append("\t");
 				file.write(text.toStdString().data());
 			}
 
