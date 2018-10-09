@@ -213,7 +213,8 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	int idx = ui_->tabPointCloudProcessing->indexOf(ui_->tabRailways);
 	ui_->tabPointCloudProcessing->removeTab(idx);
 	ui_->tabPointCloudProcessing->addTab(scrollArea, tr("Railways"));
-	
+
+	//ui_->tabWidgetView->tabBar()->setContentsMargins(QMargins(0, 0, 100, 0));
 
 #ifdef _DEBUG
 	// Show debug menu only in debug mode
@@ -813,9 +814,20 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportLandInfra_trig
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportPointCloud_triggered()
 {
-	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin"));
-	if(!filename.isNull()) {
-		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
+	if(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud().get() != nullptr) {
+		QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin;;*.las"));
+		if(!filename.isNull()) {
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
+		}
+	}
+	else {
+		QMessageBox dialog;
+		dialog.setStandardButtons(QMessageBox::StandardButton::Ok);
+		dialog.setIcon(QMessageBox::Icon::Warning);
+		dialog.setText("No Point Cloud to export available.");
+		dialog.setWindowTitle(tr("Disclaimer"));
+		dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+		dialog.exec();
 	}
 }
 

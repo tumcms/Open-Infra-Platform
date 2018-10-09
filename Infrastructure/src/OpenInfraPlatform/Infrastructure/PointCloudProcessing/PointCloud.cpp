@@ -138,6 +138,32 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 	return pointCloud;
 }
 
+OpenInfraPlatform::Infrastructure::PointCloud::PointCloud(PointCloud & other)
+{
+	// Copy base class attributes.
+	other.cloneThis(this, false);
+
+	// Copy indices.
+	remainingIndices_ = other.remainingIndices_;
+	filteredIndices_ = other.filteredIndices_;
+	segmentedIndices_ = other.segmentedIndices_;
+
+	// Copy sections.
+	sections_ = std::vector<buw::ReferenceCounted<PointCloudSection>>();
+	if(other.sections_.size() > 0) {
+		for(auto elem : other.sections_) {
+			sections_.push_back(buw::makeReferenceCounted<PointCloudSection>(*elem));
+		}
+	}
+
+	// Copy other remaining members.
+	grid_ = other.grid_;
+	mainAxis_ = other.mainAxis_;
+	bHasPairs_ = other.bHasPairs_;
+	bHasCenterline_ = other.bHasCenterline_;
+	octree_ = buw::makeReferenceCounted<Octree>(this);
+}
+
 OpenInfraPlatform::Infrastructure::PointCloud::~PointCloud() {
 
 	this->deleteAllScalarFields();
