@@ -1027,14 +1027,14 @@ void OpenInfraPlatform::DataManagement::Data::exportLandXMLJob(const std::string
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandXML ").append(filename));
 
-	new buw::ExportLandXML(alignmentModel_, digitalElevationModel_, filename);
+	buw::ExportLandXML(alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::exportLandInfraJob(const std::string & filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandInfra ").append(filename));
 
-	new buw::ExportLandInfra(alignmentModel_, digitalElevationModel_, filename);
+	buw::ExportLandInfra(alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::addAlignment( buw::ReferenceCounted<buw::IAlignment3D> alignment )
