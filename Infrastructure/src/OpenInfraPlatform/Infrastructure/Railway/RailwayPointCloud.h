@@ -37,9 +37,7 @@ public:
 	virtual ~RailwayPointCloud();	
 
 private:
-	buw::CenterlineComputationDescription centerlineDescription_;
-	bool bHasPairs_ = false, bHasCenterline_ = false;
-	std::vector<buw::ReferenceCounted<PointCloudSection>> sections_;
+	
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END

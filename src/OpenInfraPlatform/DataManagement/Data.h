@@ -21,12 +21,15 @@
 
 #include "OpenInfraPlatform/Data/terrainDescription.h"
 //#include "OpenInfraPlatform/DataManagement/ViewCubeData.h"
+
 #include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
 #include "OpenInfraPlatform/Infrastructure/ProxyModel/ProxyModel.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 #include "OpenInfraPlatform/Infrastructure/Girder/GirderModel.h"
 #include "OpenInfraPlatform/Infrastructure/SlabField/SlabFieldModel.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
+#include "OpenInfraPlatform/Infrastructure/Railway/RailwayModel.h"
+
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
 #include <BlueFramework/Application/DataManagement/DocumentManager.h>
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
@@ -333,7 +336,8 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<buw::GirderModel>							girderModel_;
 			buw::ReferenceCounted<buw::SlabFieldModel>						slabFieldModel_;
 			buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel>	ifcGeometryModel_;
-			buw::ReferenceCounted<buw::PointCloud>							pointCloud_;
+			buw::ReferenceCounted<buw::PointCloud>							pointCloud_ = nullptr;
+			buw::ReferenceCounted<buw::RailwayModel>						railwayModel_ = nullptr;
 			buw::ReferenceCounted<buw::ProxyModel>							proxyModel_;
 
 
