@@ -439,6 +439,9 @@ OpenInfraPlatform::Infrastructure::PointCloudSection::PointCloudSection(GenericI
 
 OpenInfraPlatform::Infrastructure::PointCloudSection::PointCloudSection(PointCloudSection & other) : ReferenceCloud(other) {
 	pairs_ = other.pairs_;
+	length_ = other.length_;
+	mainAxis_ = other.mainAxis_;
+	cellCode_ = other.cellCode_;
 }
 
 

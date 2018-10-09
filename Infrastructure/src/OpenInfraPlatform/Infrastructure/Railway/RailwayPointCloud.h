@@ -16,38 +16,37 @@
 */
 
 #pragma once
-#ifndef OpenInfraPlatform_Infrastructure_RailwayModel_d64e83bc_9dcb_408b_bba4_09e856a9a68a_h
-#define OpenInfraPlatform_Infrastructure_RailwayModel_d64e83bc_9dcb_408b_bba4_09e856a9a68a_h
+#ifndef OpenInfraPlatform_Infrastructure_RailwayPointCloud_676ff3cf_36f7_4466_a21a_47608e9b561e_h
+#define OpenInfraPlatform_Infrastructure_RailwayPointCloud_676ff3cf_36f7_4466_a21a_47608e9b561e_h
 
 #include "OpenInfraPlatform/Infrastructure/namespace.h"
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
 
-#include <BlueFramework/Core/memory.h>
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-// Forward declarations for pointer to PointCloud and pointer to AlignmentModel.
-class RailwayPointCloud;
-class AlignmentModel;
-
-class BLUEINFRASTRUCTURE_API RailwayModel {
+class BLUEINFRASTRUCTURE_API RailwayPointCloud : public PointCloud {
 public:
-	RailwayModel() = default;
 
-	virtual ~RailwayModel();
+	// Constructors.
+	RailwayPointCloud() : PointCloud() {}
+	RailwayPointCloud(QString name) : PointCloud(name) {}
+	RailwayPointCloud(PointCloud && other) : PointCloud(std::move(other)) {}
+
+	virtual ~RailwayPointCloud();	
 
 private:
-	buw::ReferenceCounted<RailwayPointCloud> pointCloud_ = nullptr;
-
-	buw::ReferenceCounted<AlignmentModel> alignmentModel_ = nullptr;
-
+	buw::CenterlineComputationDescription centerlineDescription_;
+	bool bHasPairs_ = false, bHasCenterline_ = false;
+	std::vector<buw::ReferenceCounted<PointCloudSection>> sections_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
 
 namespace buw {
-	using OpenInfraPlatform::Infrastructure::RailwayModel;
+	using OpenInfraPlatform::Infrastructure::RailwayPointCloud;
 }
 
 
-#endif // end define OpenInfraPlatform_Infrastructure_RailwayModel_d64e83bc_9dcb_408b_bba4_09e856a9a68a_h
+#endif // end define OpenInfraPlatform_Infrastructure_RailwayPointCloud_676ff3cf_36f7_4466_a21a_47608e9b561e_h
