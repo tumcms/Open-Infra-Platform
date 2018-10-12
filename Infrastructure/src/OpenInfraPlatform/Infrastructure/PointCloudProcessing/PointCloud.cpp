@@ -122,7 +122,7 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 					const ccColor::Rgb *color =
 					  new ccColor::Rgb(ccColor::FromRgbf(ccColor::Rgbf(colLiblas.GetRed() / colorRange, colLiblas.GetGreen() / colorRange, colLiblas.GetBlue() / colorRange)).rgb);
 					pointCloud->addPoint(CCVector3(posLiblas[0] * scale.x, posLiblas[1] * scale.y, posLiblas[2] * scale.z));
-					pointCloud->addRGBColor(color->rgb);
+					pointCloud->addRGBColor(*color);
 				}
 			}
 		} else {
@@ -227,7 +227,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::add(const buw::ReferenceCount
 	for(long i = 0; i < numPoints; i++) {
 		this->addPoint(*other->getPoint(i));
 		this->addRGBColor(other->getPointColor(i));		
-		this->setPointColor(startIndex + i, color);
+		this->setPointColor(startIndex + i, ccColor::Rgb(color));
 		processedPoints++;
 		if(processedPoints % pointsPerPercent == 0) {
 			percentageCompleted++;
@@ -317,12 +317,12 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float 
 	const ColorCompType black[3] = { 0, 0, 0 };
 	const ColorCompType white[3] = { 255, 255, 255 };
 
-	for_each([&](size_t i) { setPointColor(i, black); });
+	for_each([&](size_t i) { setPointColor(i, ccColor::Rgb(black)); });
 
 #pragma omp parallel for
 	for(long i = 0; i < sections_.size(); i++) {
 		for(long ii = 0; ii < sections_[i]->size(); ii++) {
-			setPointColor(sections_[i]->getPointGlobalIndex(ii), white);
+			setPointColor(sections_[i]->getPointGlobalIndex(ii), ccColor::Rgb(white));
 		}
 	}
 
@@ -1982,7 +1982,9 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	if(idxCPC_chainage == -1) {
 		return -1;
 	}
+
 	centerpointsPointCloud->setCurrentInScalarField(idxCPC_chainage);
+	centerpointsPointCloud->getCurrentInScalarField()->resize(pointPairs.size());
 
 	// Get chainage scalar field from original point cloud to read from.
 	int idx_chainage = getScalarFieldIndexByName("Chainage");
@@ -2698,7 +2700,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::resetPairs() {
 		const ColorCompType white[3] = { 255, 255, 255 };
 		for_each([&](size_t i) {
 			if(getPointScalarValue(i) != 0)
-				setPointColor(i, white);
+				setPointColor(i, ccColor::Rgb(white));
 		});
 
 		// Reset the 'Railway' scalar field.
@@ -3166,7 +3168,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::resetRailwaySegmentation() {
 	const ColorCompType white[3] = {255, 255, 255};
 	for_each([&](size_t i) {
 		if (getPointScalarValue(i) != 0)
-			setPointColor(i, white);
+			setPointColor(i, ccColor::Rgb(white));
 	});
 
 	int idx_centerline = getScalarFieldIndexByName("Centerline");

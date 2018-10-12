@@ -345,8 +345,8 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 			if(!pairs.empty()) {
 				for(auto pair : pairs) {
 					if(associatedCloud->rgbColors() != nullptr) {
-						associatedCloud->setPointColor(pair.first, green);
-						associatedCloud->setPointColor(pair.second, red);
+						associatedCloud->setPointColor(pair.first, ccColor::Rgb(green));
+						associatedCloud->setPointColor(pair.second, ccColor::Rgb(red));
 					}
 
 					associatedCloud->setPointScalarValue(pair.first, -1);
