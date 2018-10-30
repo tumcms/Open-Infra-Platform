@@ -117,7 +117,7 @@ namespace OpenInfraPlatform
 
 						if(alignment_curve) 
 
-							// TODO 1: For errors/warnings, add segment ID (or other information) -> int m_id member of IfcAlignment1x1Entity getId()
+							// TODO 1: (finished?) For errors/warnings, add segment ID (or other information) -> int m_id member of IfcAlignment1x1Entity getId()
 							// TODO 2: Calculate coordinates
 							// Ifc4x1 = IfcAlignment1x1
 							// check if already implemented: OIP->OIP.Infrastructure->OIP->Infrastructure->Alignment
@@ -484,16 +484,25 @@ namespace OpenInfraPlatform
 									// 3. Calculate coordinates *** TO DO ***
 
 									// Iterate over all stations.
+									// To do: Use horStations and verSegments to find out where segment ends or segmentType changes? (outside of switch case?)
 									it_all = allStations.begin();
 
 										for(; it_all != allStations.end(); ++it_all) {
 										
-											// switch(it_all.segType) {
-											// case(isLine)
-											// case(isCircArc)
-											// case(isTrans)
-											// case(isParArc)
-											// }
+											switch(it_all.segType) {
+											case isLine:
+												//to do
+											break;
+											case isCircArc:
+												//to do
+											break;
+											case isTrans:
+												//to do
+											break;
+											case isParArc:
+												//to do
+											break;
+											 }
 
 										}//end of allStations iteration
 		
