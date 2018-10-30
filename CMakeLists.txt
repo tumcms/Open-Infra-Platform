@@ -531,7 +531,6 @@ add_custom_target(CopyOpenInfraPlatformUIResources
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Shader		${CMAKE_BINARY_DIR}/LandXMLViewer/Shader
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/testdata							${CMAKE_BINARY_DIR}/LandXMLViewer/testdata
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Style		${CMAKE_BINARY_DIR}/Style
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UnitTesting						${CMAKE_BINARY_DIR}/UnitTesting
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Data								${CMAKE_BINARY_DIR}/Data
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/testdata							${CMAKE_BINARY_DIR}/testdata
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Data/DesignAutomation				${CMAKE_BINARY_DIR}/UnitTests/Data/DesignAutomation

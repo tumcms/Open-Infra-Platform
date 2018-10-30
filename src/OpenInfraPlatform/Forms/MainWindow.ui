@@ -52,6 +52,9 @@
     <property name="currentIndex">
      <number>3</number>
     </property>
+    <property name="usesScrollButtons">
+     <bool>false</bool>
+    </property>
     <widget class="QWidget" name="tabAlignment">
      <attribute name="title">
       <string>Alignment</string>
@@ -227,11 +230,14 @@
         <property name="autoFillBackground">
          <bool>false</bool>
         </property>
+        <property name="locale">
+         <locale language="German" country="Germany"/>
+        </property>
         <property name="tabPosition">
          <enum>QTabWidget::North</enum>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>4</number>
         </property>
         <property name="elideMode">
          <enum>Qt::ElideNone</enum>
@@ -240,6 +246,9 @@
          <bool>true</bool>
         </property>
         <property name="documentMode">
+         <bool>false</bool>
+        </property>
+        <property name="movable">
          <bool>false</bool>
         </property>
         <property name="tabBarAutoHide">

@@ -122,7 +122,7 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 					const ccColor::Rgb *color =
 					  new ccColor::Rgb(ccColor::FromRgbf(ccColor::Rgbf(colLiblas.GetRed() / colorRange, colLiblas.GetGreen() / colorRange, colLiblas.GetBlue() / colorRange)).rgb);
 					pointCloud->addPoint(CCVector3(posLiblas[0] * scale.x, posLiblas[1] * scale.y, posLiblas[2] * scale.z));
-					pointCloud->addRGBColor(color->rgb);
+					pointCloud->addRGBColor(*color);
 				}
 			}
 		} else {
@@ -136,6 +136,32 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 	pointCloud->init();
 
 	return pointCloud;
+}
+
+OpenInfraPlatform::Infrastructure::PointCloud::PointCloud(PointCloud & other)
+{
+	// Copy base class attributes.
+	other.cloneThis(this, false);
+
+	// Copy indices.
+	remainingIndices_ = other.remainingIndices_;
+	filteredIndices_ = other.filteredIndices_;
+	segmentedIndices_ = other.segmentedIndices_;
+
+	// Copy sections.
+	sections_ = std::vector<buw::ReferenceCounted<PointCloudSection>>();
+	if(other.sections_.size() > 0) {
+		for(auto elem : other.sections_) {
+			sections_.push_back(buw::makeReferenceCounted<PointCloudSection>(*elem));
+		}
+	}
+
+	// Copy other remaining members.
+	grid_ = other.grid_;
+	mainAxis_ = other.mainAxis_;
+	bHasPairs_ = other.bHasPairs_;
+	bHasCenterline_ = other.bHasCenterline_;
+	octree_ = buw::makeReferenceCounted<Octree>(this);
 }
 
 OpenInfraPlatform::Infrastructure::PointCloud::~PointCloud() {
@@ -201,7 +227,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::add(const buw::ReferenceCount
 	for(long i = 0; i < numPoints; i++) {
 		this->addPoint(*other->getPoint(i));
 		this->addRGBColor(other->getPointColor(i));		
-		this->setPointColor(startIndex + i, color);
+		this->setPointColor(startIndex + i, ccColor::Rgb(color));
 		processedPoints++;
 		if(processedPoints % pointsPerPercent == 0) {
 			percentageCompleted++;
@@ -291,12 +317,12 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float 
 	const ColorCompType black[3] = { 0, 0, 0 };
 	const ColorCompType white[3] = { 255, 255, 255 };
 
-	for_each([&](size_t i) { setPointColor(i, black); });
+	for_each([&](size_t i) { setPointColor(i, ccColor::Rgb(black)); });
 
 #pragma omp parallel for
 	for(long i = 0; i < sections_.size(); i++) {
 		for(long ii = 0; ii < sections_[i]->size(); ii++) {
-			setPointColor(sections_[i]->getPointGlobalIndex(ii), white);
+			setPointColor(sections_[i]->getPointGlobalIndex(ii), ccColor::Rgb(white));
 		}
 	}
 
@@ -1956,7 +1982,9 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 	if(idxCPC_chainage == -1) {
 		return -1;
 	}
+
 	centerpointsPointCloud->setCurrentInScalarField(idxCPC_chainage);
+	centerpointsPointCloud->getCurrentInScalarField()->resize(pointPairs.size());
 
 	// Get chainage scalar field from original point cloud to read from.
 	int idx_chainage = getScalarFieldIndexByName("Chainage");
@@ -1978,27 +2006,32 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 		centerpointsPointCloud->setPointScalarValue(i, chainage);
 	}
 
-	//Subsample the centerpoints cloud 10 times to include more randomnness and therefore remove patterns.
-	buw::ReferenceCounted<PointCloud> subsampled = buw::makeReferenceCounted<PointCloud>();
-	subsampled->enableScalarField();
-	int idxSS_chainage = subsampled->addScalarField("Chainage");
-	subsampled->setCurrentInScalarField(idxSS_chainage);
-	centerpointsPointCloud->setCurrentOutScalarField(idxCPC_chainage);
+	// Defaults to false.
+	bool useSubsampling = false;
 
-	int numIterations = 1000;
-	for(int i = 0; i < numIterations; i++) {
-		auto sampledPoints = buw::ReferenceCounted<CCLib::ReferenceCloud>(CCLib::CloudSamplingTools::subsampleCloudRandomly(centerpointsPointCloud.get(), (int)((1.0/numIterations) * centerpointsPointCloud->size()), nullptr));
-		int startIndex = subsampled->size();
-		subsampled->reserve(subsampled->size() + sampledPoints->size());
+	if(useSubsampling) {
+		//Subsample the centerpoints cloud 10 times to include more randomnness and therefore remove patterns.
+		buw::ReferenceCounted<PointCloud> subsampled = buw::makeReferenceCounted<PointCloud>();
+		subsampled->enableScalarField();
+		int idxSS_chainage = subsampled->addScalarField("Chainage");
+		subsampled->setCurrentInScalarField(idxSS_chainage);
+		centerpointsPointCloud->setCurrentOutScalarField(idxCPC_chainage);
 
-		for(int idx = 0; idx < sampledPoints->size(); idx++) {			
-			subsampled->addPoint(*sampledPoints->getPoint(idx));
-			subsampled->setPointScalarValue(startIndex + idx, sampledPoints->getPointScalarValue(idx));
+		int numIterations = 1000;
+		for(int i = 0; i < numIterations; i++) {
+			auto sampledPoints = buw::ReferenceCounted<CCLib::ReferenceCloud>(CCLib::CloudSamplingTools::subsampleCloudRandomly(centerpointsPointCloud.get(), (int)((1.0 / numIterations) * centerpointsPointCloud->size()), nullptr));
+			int startIndex = subsampled->size();
+			subsampled->reserve(subsampled->size() + sampledPoints->size());
+
+			for(int idx = 0; idx < sampledPoints->size(); idx++) {
+				subsampled->addPoint(*sampledPoints->getPoint(idx));
+				subsampled->setPointScalarValue(startIndex + idx, sampledPoints->getPointScalarValue(idx));
+			}
 		}
+
+		centerpointsPointCloud.swap(subsampled);
+		idxCPC_chainage = idxSS_chainage;
 	}
-	
-	centerpointsPointCloud.swap(subsampled);
-	idxCPC_chainage = idxSS_chainage;
 
 	centerpointsPointCloud->getDGMOctree()->build(callback.get());
 	centerpointsPointCloud->computeIndices();
@@ -2667,7 +2700,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::resetPairs() {
 		const ColorCompType white[3] = { 255, 255, 255 };
 		for_each([&](size_t i) {
 			if(getPointScalarValue(i) != 0)
-				setPointColor(i, white);
+				setPointColor(i, ccColor::Rgb(white));
 		});
 
 		// Reset the 'Railway' scalar field.
@@ -2761,8 +2794,11 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 
 		// We take bearing and chainage for each point.
 		long numBearingsAndChainages = alignment.size();// Old value: ((alignment.size() - desc.bearingComputationSegmentLength) / desc.curvatureStepSize) + 1;
+
 		// We have one less value since we take the change between the current and the next or last element.
 		long numCurvatures = numBearingsAndChainages - 1;
+
+		long numDeltaCurvatures = numCurvatures - 1;
 
 		long numCurvaturesSmoothed = numCurvatures - desc.numPointsForMeanCurvature;
 
@@ -2794,8 +2830,9 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 			std::vector<double> bearings = std::vector<double>(numBearingsAndChainages);
 			std::vector<double> chainages = std::vector<double>(numBearingsAndChainages);
 			std::vector<double> curvatures = std::vector<double>(numCurvatures);
-			std::vector<double> curvaturesFiltered = std::vector<double>(numCurvatures);
-			std::vector<double> curvaturesSmoothed = std::vector<double>(numCurvaturesSmoothed);
+			std::vector<double> deltaCurvatures = std::vector<double>(numDeltaCurvatures);
+			//std::vector<double> curvaturesFiltered = std::vector<double>(numCurvatures);
+			//std::vector<double> curvaturesSmoothed = std::vector<double>(numCurvaturesSmoothed);
 
 			int tid = 0;
 			// Compute the bearing for all points as the angle between the principal axis of bearingComputationSegmentLength consecutive centerline points and the NORTH direction.
@@ -3020,6 +3057,13 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 					
 				}
 
+#pragma omp parallel for
+				for(long i = 0; i < deltaCurvatures.size(); i++) {
+					// Compute the curvature as the difference between the bearings divided by the change in stationing (movement along main axis of the dataset).
+					double deltaChainage = std::abs(chainages[i + 1] - chainages[i]);
+					deltaCurvatures[i] = ((curvatures[i + 1] - curvatures[i]) / deltaChainage);
+				}
+
 				// Old version for median curvature filtering.
 //				curvaturesFiltered[0] = curvatures[0];
 //				curvaturesFiltered[1] = curvatures[1];
@@ -3067,13 +3111,15 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 					//	file.write(text.toStdString().data());
 					//}
 
-			for(size_t i = 0; i < curvatures.size(); i++) {
+			for(size_t i = 0; i < deltaCurvatures.size(); i++) {
 				QString text = QString::number(chainages[i], 'g', 20)
 					.append("\t")
 					.append(QString::number(curvatures[i], 'g', 20))
 					.append("\t")
 					.append(QString::number(bearings[i], 'g', 20))
-					.append("\n");
+					.append("\n")
+					.append(QString::number(deltaCurvatures[i], 'g', 20))
+					.append("\t");
 				file.write(text.toStdString().data());
 			}
 
@@ -3122,7 +3168,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::resetRailwaySegmentation() {
 	const ColorCompType white[3] = {255, 255, 255};
 	for_each([&](size_t i) {
 		if (getPointScalarValue(i) != 0)
-			setPointColor(i, white);
+			setPointColor(i, ccColor::Rgb(white));
 	});
 
 	int idx_centerline = getScalarFieldIndexByName("Centerline");

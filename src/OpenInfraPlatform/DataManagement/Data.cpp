@@ -96,9 +96,9 @@ alignmentLineWidth_(1.5f),
 currentJobID_(-1),
 importer_(nullptr),
 tempIfcGeometryModel_(nullptr),
-tempPointCloud_(nullptr)
+tempPointCloud_(nullptr),
+pointCloud_(nullptr)
 {
-	pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
 	clear(false);
 
 	latestChangeFlag_ = (ChangeFlag) (ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel);
@@ -473,7 +473,7 @@ void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) 
 	if (pointCloud_)
 		pointCloud_ = nullptr;
 
-	pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
+	//pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
 	
 	if (notifyObservers) {
 		// The notification state is not used here, because a clear is not executed by an action.
@@ -946,12 +946,16 @@ void OpenInfraPlatform::DataManagement::Data::exportPointCloud(const std::string
 {
 	auto exportPointCloudJob = [](OpenInfraPlatform::DataManagement::Data* data, const std::string &filename) {
 		OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Point Cloud ").append(filename));
-		auto filter = FileIOFilter::FindBestFilterForExtension("BIN");
+		QString extension = QString(filename.data()).split(".").back();
+		auto filter = FileIOFilter::FindBestFilterForExtension(extension.toUpper());
 		auto pointCloud = data->getPointCloud();
-		pointCloud->deleteAllScalarFields();
-		int error = FileIOFilter::SaveToFile(std::static_pointer_cast<ccHObject>(pointCloud).get(), QString(filename.data()), FileIOFilter::SaveParameters(), filter);
+		if(pointCloud) {
+			pointCloud->deleteAllScalarFields();
+			int error = FileIOFilter::SaveToFile(std::static_pointer_cast<ccHObject>(pointCloud).get(), QString(filename.data()), FileIOFilter::SaveParameters(), filter);
+		}
 	};
 
+	
 	currentJobID_ = AsyncJob::getInstance().startJob(std::ref(exportPointCloudJob), this, filename);
 }
 
@@ -1024,14 +1028,14 @@ void OpenInfraPlatform::DataManagement::Data::exportLandXMLJob(const std::string
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandXML ").append(filename));
 
-	new buw::ExportLandXML(alignmentModel_, digitalElevationModel_, filename);
+	buw::ExportLandXML(alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::exportLandInfraJob(const std::string & filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandInfra ").append(filename));
 
-	new buw::ExportLandInfra(alignmentModel_, digitalElevationModel_, filename);
+	buw::ExportLandInfra(alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::addAlignment( buw::ReferenceCounted<buw::IAlignment3D> alignment )
@@ -1359,7 +1363,10 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::DataManagement::Data::
 
 const int OpenInfraPlatform::DataManagement::Data::getPointCloudPointCount() const
 {
-	return pointCloud_->size();
+	if(pointCloud_)
+		return pointCloud_->size();
+	else
+		return -1;
 }
 
 void OpenInfraPlatform::DataManagement::Data::importLAS(const std::string& filename)

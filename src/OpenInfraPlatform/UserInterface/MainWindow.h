@@ -362,7 +362,7 @@ namespace OpenInfraPlatform
 
 			QProgressBar*								progressBar_;
 
-			std::vector<QCustomPlot*>					bearingPlots_, curvaturePlots_;
+			std::vector<QCustomPlot*>					plots_;
 			
 			int											inUnitTest_ = -1;
 			buw::ImageTester							tester_;
