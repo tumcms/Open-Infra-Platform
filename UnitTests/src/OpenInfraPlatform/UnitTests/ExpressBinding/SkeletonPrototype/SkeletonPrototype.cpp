@@ -15,97 +15,181 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "types.hpp"
+#include <gtest/gtest.h>
+#include "boost/variant.hpp"
+#include <array>
 #include <string>
-#include <boost/variant.hpp>
+#include <vector>
+#include <functional>
+#include <iostream>
 
-#include "gtest/gtest.h"
+using std::string;
+using std::array;
+using boost::variant;
+using namespace std;
 
+class IfcLabel {};
+class IfcText {};
+class IfcAppliedValueSelect {};
+class IfcMEasureWithUnit {};
+class IfcDate {};
 
+struct IfcAppliedValue_Common {
+	std::string supername;
+	int size;
+	double another_common_type;
 
-namespace Ifc {
-	struct IfcReal {
-		virtual boost::variant<float, double> getValue() = 0;
-		virtual int getVersion() = 0;
+	//Common member methods
+	void process() {}
+	void unified_space_func() {};
 
-		explicit operator Ifc4::IfcReal() const { 
-			Ifc4::IfcReal ifc4real;
-			ifc4real.value = this->value;
-			return ifc4real;
-		}
-				
+};
+
+namespace IFC1 {
+	struct IfcAppliedValue {
+		IfcLabel Name;
+		IfcText description;
+		IfcAppliedValueSelect AppliedValue;
+		IfcDate ApplicableDate;
 	};
+};
 
-	struct IfcPerson {
-		virtual std::string getFirstName() = 0;
-		virtual std::string getLastName() = 0;
+namespace IFC2 {
+	struct IfcAppliedValue {
+		float b;
+		string c;
+		vector<int> k;
 	};
+};
+
+namespace IFC3 {
+	struct IfcAppliedValue {
+		char a;
+		double c;
+	};
+};
+
+
+enum IFC_1 {
+	IF_1 = 0
+};
+
+enum IFC_2 {
+	IF_2 = 1
+
+};
+
+enum IFC_3 {
+	IF_3 = 2
+};
+
+struct IfcAppliedValue : public IfcAppliedValue_Common {
+	//This setup is crucial for proper initialization.
+	//Otherwise test case gives error
+	IfcAppliedValue()
+	{
+		dict[0] = IFC1::IfcAppliedValue();
+		dict[1] = IFC2::IfcAppliedValue();
+		dict[2] = IFC3::IfcAppliedValue();
+	}
+
+	IfcAppliedValue(IFC1::IfcAppliedValue &other)
+	{
+		dict[0] = other;
+	}
+
+	IFC1::IfcAppliedValue & operator[] (const IFC_1 & key)
+	{
+		return boost::get<IFC1::IfcAppliedValue>(dict[key]);
+	}
+
+	IFC2::IfcAppliedValue & operator[] (const IFC_2 & key)
+	{
+		return boost::get<IFC2::IfcAppliedValue>(dict[key]);
+	}
+
+	IFC3::IfcAppliedValue & operator[] (const IFC_3 & key)
+	{
+		return boost::get<IFC3::IfcAppliedValue>(dict[key]);
+	}
+
+	const IFC1::IfcAppliedValue & operator [] (IFC_1 & key) const
+	{
+		return boost::get< IFC1::IfcAppliedValue >(dict[key]);
+	}
+
+	const IFC2::IfcAppliedValue & operator[] (const IFC_2 & key) const
+	{
+		return boost::get<IFC2::IfcAppliedValue>(dict[key]);
+	}
+
+	const IFC3::IfcAppliedValue & operator[] (const IFC_3 & key) const
+	{
+		return boost::get<IFC3::IfcAppliedValue>(dict[key]);
+	}
+
+
+private:
+	constexpr static int SIZE = 3;
+	std::array <boost::variant<IFC1::IfcAppliedValue, IFC2::IfcAppliedValue, IFC3::IfcAppliedValue>, SIZE> dict;
+
+};
+
+void test(IfcAppliedValue obj)
+{
+	// Unified Interface Calls
+	// Everything that is shared among all specs can be gathered under the common struct.
+	obj.size;
+	obj.supername;
+	obj.process();
+	obj.unified_space_func();
+
+	// Schema specific calls
+	obj[IF_1].AppliedValue;
+	obj[IF_1].Name;
+
+	obj[IF_2].c = "Hello World!";
+	obj[IF_2].b = 0.1231;
+	obj[IF_2].k = vector<int>(10);
+
+	obj[IF_3].c = 123231.2342421;
+	obj[IF_3].a = 'c';
+
+	boost::variant<int, string> trial_1;
+	boost::variant<int, string> trial_2;
+	trial_1 = 3;
+	trial_2 = "Hello World!";
+
+	// Gives a compiler error, boost::get<>(trial_1) is necessary.
+	// That means schema specific info
+	// Thus unified interface not possible via boost::variant<>()
+	//int numm = trial_1
+	int numm = boost::get<int>(trial_1); // Okay
+										 //Error in the below line
+										 // string title = trial_2;
+	string title = boost::get<string>(trial_2); // Okay
 }
 
-namespace Ifc4 {
-	struct IfcReal : public Ifc::IfcReal {
+void test2(const IfcAppliedValue & obj)
+{
+	// Unified interface
+	cout << obj.size << endl;
+	cout << obj.another_common_type << endl;
+	cout << obj.supername << endl;
 
-		IfcReal() = default;
-		double value = 0.0;
-		virtual boost::variant<float, double> getValue() { return (value); }
-		virtual int getVersion() { return 4; }
-
-		IfcReal operator=(float other) { 
-			this->value = other;
-			return *this;
-		}
-
-		IfcReal operator=(double other)
-		{
-			this->value = other;
-			return *this;
-		}
-	};
-
-	struct IfcPerson : public Ifc::IfcPerson {
-		IfcPerson() = default;
-		std::string firstName;
-
-		virtual std::string getFirstName() { return firstName; }
-		virtual std::string getLastName() { throw std::exception("Member not supported"); }
-	};
-}
-
-namespace Ifc5 {
-	struct IfcReal : public Ifc::IfcReal {
-		IfcReal() = default;
-		float value = 0.0f;
-		virtual boost::variant<float, double> getValue() { return boost::variant<float, double>(value); }
-		//auto getValue() -> decltype(value) { return (value); }
-	};
-
-	struct IfcPerson : public Ifc::IfcPerson {
-		IfcPerson() = default;
-		std::string firstName, lastName;
-
-		virtual std::string getFirstName() { return firstName; }
-		virtual std::string getLastName() {	return lastName; }
-	};
+	//IFC specific access.
+	cout << obj[IF_2].c << endl;
+	cout << obj[IF_2].b << endl;
+	cout << obj[IF_2].k[0] << endl;
+	cout << obj[IF_3].a << endl;
 }
 
 namespace {
 	TEST(SkeletonPrototypeTest, Test)
 	{
-		EXPRESS::IFC4_Entities::IfcApplication x("safdsa", 'a', "blub");
-
-		// Using IFcReal as parameter causes error
-		EXPRESS::IFC4_Entities::IfcReal v(0.0);
-		//IFC4_SKELETON::IfcApplication_Skelaton<EXPRESS::IFC4_Entities::IfcReal, IfcAbsorbedDoseMeasure, std::string> y(v, 1.2, "blub");
-
-		//IFC3_SKELETON::IfcReal_Skelaton<double>a(1.0);
-		// This should not be allowed. Skeleton class shouldnt be accessible in the final application -> not possible?
-		IFC4_SKELETON::IfcApplication_Skelaton <double, IfcAbsorbedDoseMeasure, std::string> z(1.0, 1.2, "blub");
-
-		// Using EXPRESS::IFC4_Entities::IfcReal::Value to acces the IfcApplication::ApplicationDeveloper should also not be possible.
-		std::cout << x.return_data_member[Ifc::Value] << std::endl;
-
-		Ifc::IfcReal &abstr = Ifc4::IfcReal();
-		boost::variant<float, double> val = abstr.getValue();
-		std::cout << abstr.getValue().type().name() << std::endl;
+		IFC1::IfcAppliedValue obj;
+		IfcAppliedValue other = IfcAppliedValue(obj);
+		other.size = 5;
+		other[IF_2].b = 1.2f;
 	}
 }

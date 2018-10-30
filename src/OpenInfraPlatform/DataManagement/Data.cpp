@@ -547,6 +547,7 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 
 		// The QDomDocument class represents an XML document.
 		QDomDocument xmlBOM;
+		//blub
 		// Load xml file as raw data
 		QFile f(filename.c_str());
 		if (!f.open(QIODevice::ReadOnly))
