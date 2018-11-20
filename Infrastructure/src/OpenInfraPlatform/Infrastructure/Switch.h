@@ -1,0 +1,4 @@
+class Switch {
+public:
+	Switch();
+};
