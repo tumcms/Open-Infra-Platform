@@ -379,11 +379,11 @@ namespace OpenInfraPlatform
 							throw std::runtime_error(ss.str().c_str());
 						}
 
-						local_x.x = trans_operator_2d->m_Axis1->m_DirectionRatios[0];
-						local_x.y = trans_operator_2d->m_Axis1->m_DirectionRatios[1];
+						local_x.x = *(trans_operator_2d->m_Axis1->m_DirectionRatios[0]);
+						local_x.y = *(trans_operator_2d->m_Axis1->m_DirectionRatios[1]);
 
-						local_y.x = trans_operator_2d->m_Axis2->m_DirectionRatios[0];
-						local_y.y = trans_operator_2d->m_Axis2->m_DirectionRatios[1];
+						local_y.x = *(trans_operator_2d->m_Axis2->m_DirectionRatios[0]);
+						local_y.y = *(trans_operator_2d->m_Axis2->m_DirectionRatios[1]);
 					}
 
 					shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2DnonUniform> non_uniform = dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator2DnonUniform>(transform_operator);
@@ -451,17 +451,17 @@ namespace OpenInfraPlatform
 							ss << "IfcCartesianTransformationOperator is not valid ";// << __func__;
 							throw std::runtime_error(ss.str().c_str());
 						}
-						local_x.x = axis1->m_DirectionRatios[0];
-						local_x.y = axis1->m_DirectionRatios[1];
-						local_x.z = axis1->m_DirectionRatios[2];
-
-						local_y.x = axis2->m_DirectionRatios[0];
-						local_y.y = axis2->m_DirectionRatios[1];
-						local_y.z = axis2->m_DirectionRatios[2];
-
-						local_z.x = axis3->m_DirectionRatios[0];
-						local_z.y = axis3->m_DirectionRatios[1];
-						local_z.z = axis3->m_DirectionRatios[2];
+						local_x.x = *(axis1->m_DirectionRatios[0]);
+						local_x.y = *(axis1->m_DirectionRatios[1]);
+						local_x.z = *(axis1->m_DirectionRatios[2]);
+																 
+						local_y.x = *(axis2->m_DirectionRatios[0]);
+						local_y.y = *(axis2->m_DirectionRatios[1]);
+						local_y.z = *(axis2->m_DirectionRatios[2]);
+															 
+						local_z.x = *(axis3->m_DirectionRatios[0]);
+						local_z.y = *(axis3->m_DirectionRatios[1]);
+						local_z.z = *(axis3->m_DirectionRatios[2]);
 					}
 
 					shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator3DnonUniform> non_uniform = dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator3DnonUniform>(transform_operator);

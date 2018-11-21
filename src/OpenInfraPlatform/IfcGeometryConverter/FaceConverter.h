@@ -30,8 +30,8 @@
 #include "CurveConverter.h"
 #include "GeometryInputData.h"
 
-#include "EMTIfc4EntityTypes.h"
-#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
+//#include "EMTIfc4EntityTypes.h"
+//#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
 
 
 namespace OpenInfraPlatform
@@ -661,125 +661,125 @@ namespace OpenInfraPlatform
 			std::shared_ptr<CurveConverterT<IfcEntityTypesT, IfcUnitConverterT>> m_curveConverter;
  		};
 
-		template<>
-		inline bool FaceConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::
-			convertIfcBSplineSurface(const std::shared_ptr<emt::Ifc4EntityTypes::IfcBoundedSurface>& boundedSurface,
-			const carve::math::Matrix& pos,
-			std::shared_ptr<carve::input::PolylineSetData> polylineData)
-		{
-			
-			std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineSurface> bsplineSurface =
-				std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineSurface>(boundedSurface);
-
-			if (bsplineSurface)
-			{
-				std::vector<std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>>& points2D =
-					bsplineSurface->m_ControlPointsList;
-
-				std::vector<std::vector<carve::geom::vector<3>>> splinePoints2D;
-				splinePoints2D.reserve(points2D.size());
-				convertIfcCartesianPoint2DVector(points2D, splinePoints2D);
-
-				SplineConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::convertIfcBSplineSurface(bsplineSurface, splinePoints2D, polylineData);
-
-				return true;
-			}
-
-			return false;
-		}
-
-		template<>
-		inline void FaceConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::
-			convertIfcAdvancedFaceList(const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcFace>>& faces,
-			const carve::math::Matrix& pos,
-			std::shared_ptr<ItemData> item_data,
-			std::stringstream& strs_err)
-		{
-			// indicates if convertion has failed
-			//bool convertionFailed = false;
-			// carve polygon of the converted face list
-			std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
-			// contains polygon indices of vertices (x,y,z converted to string)
-			std::map<std::string, uint32_t> polygonIndices;
-
-			for (auto it = faces.cbegin(); it != faces.cend(); ++it)
-			{
-				std::shared_ptr<emt::Ifc4EntityTypes::IfcFace> face = (*it);
-
-				std::shared_ptr<emt::Ifc4EntityTypes::IfcAdvancedFace> advancedFace =
-					std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcAdvancedFace>(face);
-
-				if (!advancedFace)
-				{
-					strs_err << "Invalid advanced brep as face #" << face->getId() << " is not of type IfcAdvancedBrep" << std::endl;
-					continue;
-				}
-
-				std::shared_ptr<emt::Ifc4EntityTypes::IfcSurface>& faceSurface = advancedFace->m_FaceSurface;
-
-				std::shared_ptr<emt::Ifc4EntityTypes::IfcPlane> plane =
-					std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcPlane>(faceSurface);
-
-				if (plane)
-				{
-					if (!convertIfcFace(face, pos, polygon, polygonIndices, strs_err))
-					{
-						
-						std::stringstream text;
-						text << "IFC Face convertion failed with faces #"
-							<< faces.at(0)->getId() << "-" << faces.at(faces.size() - 1)->getId();
-
-						throw std::exception(text.str().c_str());
-					}
-
-					// IfcFaceList can be a closed or open shell, 
-					// so let the calling function decide where to put it
-					item_data->closed_polyhedrons.push_back(polygon);
-				}
-				else
-				{
-					std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineSurface> bsplineSurface =
-						std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineSurface>(faceSurface);
-
-					if (!bsplineSurface)
-					{
-						std::cout << "ERROR\t| IfcAdvancedFace surface type " << faceSurface->classname() << " not supported or tested, yet" << std::endl;
-						continue;
-					}
-
-					shared_ptr<carve::input::PolylineSetData> polylineData(new carve::input::PolylineSetData());
-					convertIfcSurface(faceSurface, pos, polylineData);
-
-					const size_t vertexCount = polylineData->getVertexCount();
-
-					const size_t globalIndexCount = polygon->getVertexCount();
-
-					for (unsigned int k = 0; k < vertexCount; ++k)
-					{
-						polygon->addVertex(polylineData->getVertex(k));
-					}
-
-					for (const auto& line : polylineData->polylines)
-					{
-						std::vector<int> indices = line.second;
-
-						if (indices.size() != 4)
-						{
-							std::cout << "ERROR\t| Polyline face vertex size is invalid" << std::endl;
-							continue;
-						}
-
-						polygon->addFace(indices[0] + globalIndexCount, indices[1] + globalIndexCount, indices[3] + globalIndexCount);
-						polygon->addFace(indices[3] + globalIndexCount, indices[1] + globalIndexCount, indices[2] + globalIndexCount);
-					}
-
-					item_data->closed_polyhedrons.push_back(polygon);
-
-					// Maybe draw outlines (polylines) of surfaces, as well
-					//item_data->polylines.push_back(polylineData);
-				}
-			}
-		}
+		//template<>
+		//inline bool FaceConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::
+		//	convertIfcBSplineSurface(const std::shared_ptr<emt::Ifc4EntityTypes::IfcBoundedSurface>& boundedSurface,
+		//	const carve::math::Matrix& pos,
+		//	std::shared_ptr<carve::input::PolylineSetData> polylineData)
+		//{
+		//	
+		//	std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineSurface> bsplineSurface =
+		//		std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineSurface>(boundedSurface);
+		//
+		//	if (bsplineSurface)
+		//	{
+		//		std::vector<std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>>& points2D =
+		//			bsplineSurface->m_ControlPointsList;
+		//
+		//		std::vector<std::vector<carve::geom::vector<3>>> splinePoints2D;
+		//		splinePoints2D.reserve(points2D.size());
+		//		convertIfcCartesianPoint2DVector(points2D, splinePoints2D);
+		//
+		//		SplineConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::convertIfcBSplineSurface(bsplineSurface, splinePoints2D, polylineData);
+		//
+		//		return true;
+		//	}
+		//
+		//	return false;
+		//}
+		//
+		//template<>
+		//inline void FaceConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::
+		//	convertIfcAdvancedFaceList(const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcFace>>& faces,
+		//	const carve::math::Matrix& pos,
+		//	std::shared_ptr<ItemData> item_data,
+		//	std::stringstream& strs_err)
+		//{
+		//	// indicates if convertion has failed
+		//	//bool convertionFailed = false;
+		//	// carve polygon of the converted face list
+		//	std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+		//	// contains polygon indices of vertices (x,y,z converted to string)
+		//	std::map<std::string, uint32_t> polygonIndices;
+		//
+		//	for (auto it = faces.cbegin(); it != faces.cend(); ++it)
+		//	{
+		//		std::shared_ptr<emt::Ifc4EntityTypes::IfcFace> face = (*it);
+		//
+		//		std::shared_ptr<emt::Ifc4EntityTypes::IfcAdvancedFace> advancedFace =
+		//			std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcAdvancedFace>(face);
+		//
+		//		if (!advancedFace)
+		//		{
+		//			strs_err << "Invalid advanced brep as face #" << face->getId() << " is not of type IfcAdvancedBrep" << std::endl;
+		//			continue;
+		//		}
+		//
+		//		std::shared_ptr<emt::Ifc4EntityTypes::IfcSurface>& faceSurface = advancedFace->m_FaceSurface;
+		//
+		//		std::shared_ptr<emt::Ifc4EntityTypes::IfcPlane> plane =
+		//			std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcPlane>(faceSurface);
+		//
+		//		if (plane)
+		//		{
+		//			if (!convertIfcFace(face, pos, polygon, polygonIndices, strs_err))
+		//			{
+		//				
+		//				std::stringstream text;
+		//				text << "IFC Face convertion failed with faces #"
+		//					<< faces.at(0)->getId() << "-" << faces.at(faces.size() - 1)->getId();
+		//
+		//				throw std::exception(text.str().c_str());
+		//			}
+		//
+		//			// IfcFaceList can be a closed or open shell, 
+		//			// so let the calling function decide where to put it
+		//			item_data->closed_polyhedrons.push_back(polygon);
+		//		}
+		//		else
+		//		{
+		//			std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineSurface> bsplineSurface =
+		//				std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineSurface>(faceSurface);
+		//
+		//			if (!bsplineSurface)
+		//			{
+		//				std::cout << "ERROR\t| IfcAdvancedFace surface type " << faceSurface->classname() << " not supported or tested, yet" << std::endl;
+		//				continue;
+		//			}
+		//
+		//			shared_ptr<carve::input::PolylineSetData> polylineData(new carve::input::PolylineSetData());
+		//			convertIfcSurface(faceSurface, pos, polylineData);
+		//
+		//			const size_t vertexCount = polylineData->getVertexCount();
+		//
+		//			const size_t globalIndexCount = polygon->getVertexCount();
+		//
+		//			for (unsigned int k = 0; k < vertexCount; ++k)
+		//			{
+		//				polygon->addVertex(polylineData->getVertex(k));
+		//			}
+		//
+		//			for (const auto& line : polylineData->polylines)
+		//			{
+		//				std::vector<int> indices = line.second;
+		//
+		//				if (indices.size() != 4)
+		//				{
+		//					std::cout << "ERROR\t| Polyline face vertex size is invalid" << std::endl;
+		//					continue;
+		//				}
+		//
+		//				polygon->addFace(indices[0] + globalIndexCount, indices[1] + globalIndexCount, indices[3] + globalIndexCount);
+		//				polygon->addFace(indices[3] + globalIndexCount, indices[1] + globalIndexCount, indices[2] + globalIndexCount);
+		//			}
+		//
+		//			item_data->closed_polyhedrons.push_back(polygon);
+		//
+		//			// Maybe draw outlines (polylines) of surfaces, as well
+		//			//item_data->polylines.push_back(polylineData);
+		//		}
+		//	}
+		//}
 	}
 }
 
