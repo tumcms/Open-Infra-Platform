@@ -16,11 +16,13 @@ mkdir %dest%\fftw-3.3.8\src\fftw-3.3.8\build
 %cmake_command% ^
 -DBUILD_SHARED_LIBS=OFF ^
 -DCMAKE_INSTALL_PREFIX=%dest%\fftw-3.3.8 ^
+-DCMAKE_DEBUG_POSTFIX=d ^
 -G "Visual Studio 15 2017 Win64" ^
 -H%dest%\fftw-3.3.8\src\fftw-3.3.8 ^
 -B%dest%\fftw-3.3.8\src\fftw-3.3.8\build
 
 cd %dest%\fftw-3.3.8\src\fftw-3.3.8\build
 %cmake_command% --build . --target INSTALL --config Release
+%cmake_command% --build . --target INSTALL --config Debug
 cd %dest%
 rmdir /Q /S %dest%\fftw-3.3.8\src
