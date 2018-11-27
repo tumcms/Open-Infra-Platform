@@ -110,9 +110,53 @@ namespace OpenInfraPlatform {
 
 						if(alignment_curve)
 
-
 							// Ifc4x1 = IfcAlignment1x1
 							// check if already implemented: OIP->OIP.Infrastructure->OIP->Infrastructure->Alignment
+
+							// Change struct definitions. Separate classes for Station, Segment, Horizontal, Vertical.
+							/*
+								class Station{
+								public:
+									double distAlong;	// horizontal distance along
+									double x, y, z;		// 3D-coordinates of station
+								};
+
+								class Segment{
+								public:
+									std::vector<Station> segmentStations;
+									int fragmentsCount;
+									double fragmentsLength;
+									enum segmentType { isLine, isCircArc, isTrans, is ParArc } segType;
+
+									void addStation( double );
+								};
+
+								void Segment::addStation ( double newStationDistAlong ) {
+									segmentStations.push_back(Station(newStationDistAlong, 0, 0, 0));
+								};
+
+								class verticalSegment : public Segment {
+								
+								};
+
+								class horizontalSegment : public Segment {
+									
+								};
+
+								class Horizontal{
+								public:
+									double dStartDistanceAlong;
+									std::vector<Segment> horizontalSegments;
+								};
+
+								class Vertical{
+								public:
+									std::vector<Segment> verticalSegments;
+								};
+							
+							*/
+
+
 						{
 							// Declaration of station struct
 							struct Station {
@@ -145,19 +189,17 @@ namespace OpenInfraPlatform {
 
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment> > horSegments =
 								horizontal->m_Segments;
-
 							if(horSegments.size() < 1) {
 								BLUE_LOG(error) << "Not enough segments in IfcAlignment2DHorizontal.";
 								return;
 							}
 
 							// Declaration of horizontal stations and fragments vectors.
-
 							std::vector<Station> horStations;
 							int nHorFragments = 0;
 
 							// Definition of horizontal distance along.
-							double dHorStartDistanceAlong = 0.; // todo: Add dStartDistanceAlong to DistanceAlong Vertical;
+							double dHorSegStartDistAlong = dStartDistanceAlong; // todo: Add dStartDistanceAlong to DistanceAlong Vertical;
 
 							// Iterate over horizontal segments.
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment> >::iterator it_segment =
@@ -202,7 +244,7 @@ namespace OpenInfraPlatform {
 								}
 
 								// m_SegmentLength type IfcPositiveLengthMeasure [1:1]
-								<std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> curveSegLength =
+								std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> curveSegLength =
 									horCurveGeometry->m_SegmentLength;
 								if(!curveSegLength) {
 									BLUE_LOG(error) << "No curve segment length in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
@@ -211,10 +253,10 @@ namespace OpenInfraPlatform {
 
 								// Interpret curve_seg_start_point, curve_seg_start_direction, curve_seg_length
 								double xStart = 0., yStart = 0.;
-								xStart = curveSegStartPoint->m_Coordinates[0]->m_value * length_factor;
-								yStart = curveSegStartPoint->m_Coordinates[1]->m_value * length_factor;
-								dHorStartDistanceAlong = dHorStartDistanceAlong + curveSegLength;
-								double dStartDirection = curveSegStartDirection->m_value * plane_angle_factor;
+								xStart = curveSegStartPoint->m_Coordinates[0]->m_value * length_factor; // Segment start x
+								yStart = curveSegStartPoint->m_Coordinates[1]->m_value * length_factor; // Segment start y
+								// Moved dHorSegStartDistAlong beneath segType switch. 
+								double dStartDirection = curveSegStartDirection->m_value * plane_angle_factor; // Segment start direction
 
 								// Segment types: IfcLineSegment2D, IfcCircularArcSegment2D and IfcTransitionCurveSegment2D: inherit m_StartPoint, m_StartDirection, m_SegmentLength from IfcCurveSegment2D
 								// http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifccurvesegment2d.htm
@@ -228,22 +270,31 @@ namespace OpenInfraPlatform {
 									dynamic_pointer_cast<typename IfcEntityTypesT::IfcTransitionCurveSegment2D>(horCurveGeometry);
 
 								// Set amount of fragments (number of points to be added between stations) according to segment type
-								// Vector of stations 
+								// Vector of stations
 
 								if(line_segment_2D) {
 									nHorFragments = 0;
-									horStations.push_back(Station(dHorStartDistanceAlong, xStart, yStart, 0, nHorFragments, Station::isLine));
+									// Station( distAlong, x, y, z, fragmentsCount, fragmentsLength, segmentType )
+									horStations.push_back(Station(dHorSegStartDistAlong, xStart, yStart, 0, nHorFragments, curveSegLength, Station::isLine));
+									// TODO: Also save dStartDirection
 								}
 
 								if(circular_arc_segment_2D) {
 									nHorFragments = m_geomSettings->m_min_num_vertices_per_arc;
-									horStations.push_back(Station(dHorStartDistanceAlong, xStart, yStart, 0, nHorFragments, Station::isCircArc));
+									double dHorFragmentsLength = curveSegLength / nHorFragments;
+									horStations.push_back(Station(dHorSegStartDistAlong, xStart, yStart, 0, nHorFragments, dHorFragmentsLength, Station::isCircArc));
+									// TODO: Also save dStartDirection, Radius, isCCW
 								}
 
 								if(trans_curve_segment_2D) {
 									nHorFragments = m_geomSettings->m_min_num_vertices_per_arc;
-									horStations.push_back(Station(dHorStartDistanceAlong, xStart, yStart, 0, nHorFragments, Station::isTrans);
+									double dHorFragmentsLength = curveSegLength / nHorFragments;
+									horStations.push_back(Station(dHorSegStartDistAlong, xStart, yStart, 0, nHorFragments, dHorFragmentsLength, Station::isTrans));
+									// TODO: Also save dStartDirection, StartRadius, EndRadius, IsStartRadiusCCW, IsEndRadiusCCW, TransitionCurveType
 								}
+
+								// Add curveSegLength to get to dHorSegStartDistAlong of next segment. For the first segment dHorSegStartDistAlong is dStartDistanceAlong.
+								dHorSegStartDistAlong += curveSegLength;
 
 							} // end for each horizontal segment
 
@@ -330,7 +381,6 @@ namespace OpenInfraPlatform {
 
 									// Segment types: IfcAlignment2DVerSegCircularArc, IfcAlignment2DVerSegLine, IfcAlignment2DVerSegParabolicArc (all inherit m_TangentialContinuity, m_StartTag, m_EndTag, m_StartDistAlong, m_HorizontalLength, m_StartHeight, m_StartGradient from IfcAlignment2DVerticalSegment)
 
-									//TODO: compatibility with update below (Cara text file)
 									std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc> v_seg_circ_arc_2D =
 										dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc>(it_segment);
 
@@ -345,17 +395,19 @@ namespace OpenInfraPlatform {
 
 									if(v_seg_circ_arc_2D) {
 										nVerFragments = m_geomSettings->m_min_num_vertices_per_arc;
-										verStations.push_back(Station(dVerDistAlong, 0, 0, zStart, nVerFragments, 0, Station::isCircArc));
+										double dVerFragmentsLength = dVerHorizontalLength / nVerFragments;
+										verStations.push_back(Station(dVerDistAlong, 0, 0, zStart, nVerFragments, dVerFragmentsLength, Station::isCircArc));
 									}
 
 									if(ver_seg_line_2D) {
 										nVerFragments = 0;
-										verStations.push_back(Station(dVerDistAlong, 0, 0, zStart, nVerFragments, 0, Station::isLine));
+										verStations.push_back(Station(dVerDistAlong, 0, 0, zStart, nVerFragments, dVerHorizontalLength, Station::isLine));
 									}
 
 									if(v_seg_par_arc_2D) {
 										nVerFragments = m_geomSettings->m_min_num_vertices_per_arc;
-										verStations.push_back(Station(dVerDistAlong, 0, 0, zStart, nVerFragments, 0, Station::isParArc));
+										double dVerFragmentsLength = dVerHorizontalLength / nVerFragments;
+										verStations.push_back(Station(dVerDistAlong, 0, 0, zStart, nVerFragments, dVerFragmentsLength, Station::isParArc));
 									}
 
 								} // end for each vertical segment
@@ -363,7 +415,7 @@ namespace OpenInfraPlatform {
 
 								// (C) Interpretation: Combine IfcAlignment2DHorizontal & IfcAlignment2DVertical to get 3D-coordinates
 
-								// 1. Stations: Combine h_stations, v_stations, sort and remove duplicates
+								// (C1) Stations: Combine h_stations, v_stations, sort and remove duplicates
 
 								int it_s = 0;
 								int it_h = 0;
@@ -429,163 +481,219 @@ namespace OpenInfraPlatform {
 								} //end horStations iteration
 							} //end of else (handle as horizontal + vertical alignment)
 
-							// 2. Add stations according to amount of fragments.
-							std::vector<Station> allStations;
-							allStations[0] = stations[0];
-							int nCounter = 1;
+								// (C2) Add stations according to amount of fragments.
+								std::vector<Station> allStations;
+								allStations[0] = stations[0];
+								int nCounter = 1;
 
-							for(int it_stations = 1; it_stations <= stations.size(); it_stations++) {
-								// If amount of fragments = 0 (e.g. line segment)
-								if(stations[it_stations - 1]->fragmentscount == 0) {
-									allStations[nCounter]->distAlong = stations[it_stations]->distAlong; //distance along
-									allStations[nCounter]->fragmentslength = abs(allStations[nCounter]->distAlong - allStations[nCounter - 1]->distAlong); // fragment length
-									nCounter++;
-								}
-								// If amount of fragments != 0 (e.g. circular arc, parabolic arc,...)
-								else {
-									station_length = abs(stations[it_stations]->distAlong - stations[it_stations - 1]->distAlong);
-									station_increment = station_length / stations[it_stations]->fragmentscount;
-
-									for(int it = 1; it <= stations[it_stations]->fragmentscount; it++) {
+								for(int it_stations = 1; it_stations <= stations.size(); it_stations++) {
+									// If amount of fragments = 0 (e.g. line segment)
+									if(stations[it_stations - 1]->fragmentscount == 0) {
+										allStations[nCounter]->distAlong = stations[it_stations]->distAlong; //distance along
+										allStations[nCounter]->fragmentslength = abs(allStations[nCounter]->distAlong - allStations[nCounter - 1]->distAlong); // fragment length
 										nCounter++;
-										allStations[nCounter] = 0;
-										allStations[nCounter]->distAlong = allStations[nCounter - 1]->distAlong + station_increment; // distance along
-										allStations[nCounter]->fragmentslength = station_increment; // fragment length
 									}
-								}
-							}//end of stations iteration
+									// If amount of fragments != 0 (e.g. circular arc, parabolic arc,...)
+									else {
+										station_length = abs(stations[it_stations]->distAlong - stations[it_stations - 1]->distAlong);
+										station_increment = station_length / stations[it_stations]->fragmentscount;
 
-							// 3. Calculate coordinates *** TO DO ***
-							// TODO 1: Get necessary values for all cases, calculate coordinates seperately for each case according to segment type.
-							// TODO 2:  New curve points vector at end necessary? Or just make AllStations vector, only store 
-							// the 3D-coordinates and nothing else? Then it is a vector and not a struct though?
+										for(int it = 1; it <= stations[it_stations]->fragmentscount; it++) {
+											nCounter++;
+											allStations[nCounter] = 0;
+											allStations[nCounter]->distAlong = allStations[nCounter - 1]->distAlong + station_increment; // distance along
+											allStations[nCounter]->fragmentslength = station_increment; // fragment length
+										}
+									}
+								}//end of stations iteration
+
+								// 3. Calculate coordinates *** TO DO ***
+								// TODO 1: Get necessary values for all cases, calculate coordinates seperately for each case according to segment type.
+								// TODO 2:  New curve points vector at end necessary? Or just make AllStations vector, only store 
+								// the 3D-coordinates and nothing else? Then it is a vector and not a struct though?
 							
-							// Iterate over stations and fill missing coordinates, store information in newly declared 
-							// all stations vector which only contains the 3D-coordinates (x,y,z) for each station.
+								// Iterate over stations and fill missing coordinates, store information in newly declared 
+								// all stations vector which only contains the 3D-coordinates (x,y,z) for each station.
 
-							it_stations = stations.begin();
+								it_stations = stations.begin();
 
-							for(; it_stations != stations.end(); it_stations++) {
+								for(; it_stations != stations.end(); it_stations++) {
 
-								it_all = allStations.begin();
+									it_all = allStations.begin();
 
-								// Content of stations struct: 
-								// struct Station {
-								// public:
-								// double distAlong; 	// horizontal distance along
-								// double x, y, z;	// 3D-coordinates of station
-								// int    fragmentscount; // number of fragments within a segment according to segment type (see below)
-								// double fragmentslength; // length of fragments within a segment 
-								// enum   segmentType { isLine, isCircArc, isTrans, isParArc } segType;
+									// Content of stations struct: 
+									// struct Station {
+									// public:
+									// double distAlong; 	// horizontal distance along
+									// double x, y, z;	// 3D-coordinates of station
+									// int    fragmentscount; // number of fragments within a segment according to segment type (see below)
+									// double fragmentslength; // length of fragments within a segment 
+									// enum   segmentType { isLine, isCircArc, isTrans, isParArc } segType;
 
-								m_distAlong = station[it_stations]->distAlong;
-								m_x = stations[it_stations]->x;
-								m_y = stations[it_stations]->y;
-								m_z = stations[it_stations]->z;
-								m_fragmentslength = stations[it_stations]->fragmentslength;
-								m_fragmentscount = stations[it_stations]->fragmentscount;
+									m_distAlong = station[it_stations]->distAlong;
+									m_x = stations[it_stations]->x;
+									m_y = stations[it_stations]->y;
+									m_z = stations[it_stations]->z;
+									m_fragmentslength = stations[it_stations]->fragmentslength;
+									m_fragmentscount = stations[it_stations]->fragmentscount;
 
-								// Get segment type (line / circular arc / parabolic arc / transition curve)
-								switch(segmentType) {
+									// Get segment type (line / circular arc / parabolic arc / transition curve)
+									switch(segmentType) {
 
-									// for isLine and isArc cases check if (x,y) or (z) is empty, because both can be either from horizontal or
-									// vertical alignment, then calculate missing coordinates. For isParArc and isTrans it's not necessary, because 
-									// they can only be from vertical alignment.
+										// for isLine and isArc cases check if (x,y) or (z) is empty, because both can be either from horizontal or
+										// vertical alignment, then calculate missing coordinates. For isParArc and isTrans it's not necessary, because 
+										// they can only be from vertical alignment.
 
-									case (isLine)
+										case (isLine)
 
-										// calculate z (x,y from horizontal alignment) for all fragment points within LINE segment:
-										if(m_z == {}) {
+											// calculate z (x,y from horizontal alignment) for all fragment points within LINE segment:
+											if(m_z == {}) {
 
-											// Get necessary values
+												// Get necessary values
+												// *** TODO ***
+												// Get gradient as angle/vector. Get end coordinates from next vertical alignment station in verStations?
+												// Better: get gradient from segment information.
+
+												for(m_fragmentscount) {
+													allStations[it_all]->z = allStations[it_all - 1]->z + ...;
+
+													// Copy remaining coordinates from stations:
+													allStations[it_all]->x = m_x;
+													allStations[it_all]->y = m_y;
+
+													it_all++;
+												} // end for
+
+
+												  // calculate x,y (z from vertical alignment) for all fragment points within LINE segment:
+											else
+
+												for(m_fragmentscount) {
+													allStations[it_all]->x = allStations[it_all - 1]->x + ...; // *** TODO ***
+													allStations[it_all]->y = allStations[it_all - 1]->y + ...; // *** TODO ***
+
+																											   // Copy remaining coordinate from stations:
+													allStations[it_all]->z = m_z;
+
+													it_all++; :
+												} // end for
+
+											} // end if
+
+										case (isCircArc)
+
+											// calculate z (x,y from horizontal alignment) for all fragment points within CIRCULAR ARC segment:
+											if(m_z == {}) {
+
+												// Get necessary values (radius, clockwise):
+
+												// *** TODO ***
+												// m_Radius type IfcPositiveLengthMeasure [1:1]
+												std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> circ_arc_radius =
+													circular_arc_segment_2D->m_Radius;
+												if(!circ_arc_radius) {
+													BLUE_LOG(error) << "No radius in IfcCircularArcSegment2D";
+													return;
+												}
+
+												// m_IsCCW type IfcBoolean [1:1]
+												std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> circ_arc_is_CCW =
+													circular_arc_segment_2D->m_IsCCW;
+												if(!circ_arc_is_CCW) {
+													BLUE_LOG(error) << "No direction information for IfcCircularArcSegment2D (counterclockwise/clockwise)";
+													return;
+												}
+
+												// z-coordinates:
+												for(m_fragmentscount) {
+													allStations[it_all]->z = allStations[it_all - 1]->z + ...; // *** TODO ***
+
+																												// Copy remaining coordinates from stations:
+													allStations[it_all]->x = m_x;
+													allStations[it_all]->y = m_y;
+
+													it_all++;
+												} // end for
+											}//endif m_z == {}
+
+											// calculate x,y (z from vertical alignment) for all fragment points within CIRCULAR ARC segment:
+											else {
+												// Get necessary values (radius, convex)
+
+												// *** TODO ***
+												// m_Radius type IfcPositiveLengthMeasure [1:1]
+												std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> v_seg_circ_arc_radius =
+													v_seg_circ_arc_2D->m_Radius;
+												if(!v_seg_circ_arc_radius) {
+													BLUE_LOG(error) << "No radius in IfcAlignment2DVerSegCircularArc"
+														return;
+												}
+
+												// m_IsConvex type IfcBoolean [1:1]
+												std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> v_seg_circ_arc_is_convex =
+													v_seg_circ_arc_2D->m_IsConvex;
+												if(!v_seg_circ_arc_is_convex) {
+													BLUE_LOG(error) << "No curvature information in IfcAlignment2DVerSegCircularArc (convex/concave)"
+														return;
+												}
+
+												// x- and y-coordinate:
+
+												for(m_fragmentscount) {
+													allStations[it_all]->x = allStations[it_all - 1]->x + ...; // *** TODO ***
+													allStations[it_all]->y = allStations[it_all - 1]->y + ...; // *** TODO ***
+
+																												// Copy remaining coordinate from stations:
+													allStations[it_all]->z = m_z;
+
+													it_all++; :
+												} // end for
+											} // end if/else
+									
+
+										case (isParArc)
+
+											// Calculate x,y (z from vertical alignment) for all fragment points within PARABOLIC ARC segment:
+
+											// Get necessary values (parabola constant, convex)
+
 											// *** TODO ***
-											gradient = getGradient()...;
-
-											for(m_fragmentscount) {
-												allStations[it_all]->z = allStations[it_all - 1]->z + ...;
-
-												// Copy remaining coordinates from stations:
-												allStations[it_all]->x = m_x;
-												allStations[it_all]->y = m_y;
-
-												it_all++;
-											} // end for
-
-
-											  // calculate x,y (z from vertical alignment) for all fragment points within LINE segment:
-										else
-
-											for(m_fragmentscount) {
-												allStations[it_all]->x = allStations[it_all - 1]->x + ...; // *** TODO ***
-												allStations[it_all]->y = allStations[it_all - 1]->y + ...; // *** TODO ***
-
-																										   // Copy remaining coordinate from stations:
-												allStations[it_all]->z = m_z;
-
-												it_all++; :
-											} // end for
-
-										} // end if
-
-									case (isCircArc)
-
-										// calculate z (x,y from horizontal alignment) for all fragment points within CIRCULAR ARC segment:
-										if(m_z == {}) {
-
-											// Get necessary values (radius, clockwise):
-
-											// *** TODO ***
-											// m_Radius type IfcPositiveLengthMeasure [1:1]
-											std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> circ_arc_radius =
-												circular_arc_segment_2D->m_Radius;
-											if(!circ_arc_radius) {
-												BLUE_LOG(error) << "No radius in IfcCircularArcSegment2D";
-												return;
-											}
-
-											// m_IsCCW type IfcBoolean [1:1]
-											std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> circ_arc_is_CCW =
-												circular_arc_segment_2D->m_IsCCW;
-											if(!circ_arc_is_CCW) {
-												BLUE_LOG(error) << "No direction information for IfcCircularArcSegment2D (counterclockwise/clockwise)";
-												return;
-											}
-
-											// z-coordinates:
-											for(m_fragmentscount) {
-												allStations[it_all]->z = allStations[it_all - 1]->z + ...; // *** TODO ***
-
-																											// Copy remaining coordinates from stations:
-												allStations[it_all]->x = m_x;
-												allStations[it_all]->y = m_y;
-
-												it_all++;
-											} // end for
-										}//endif m_z == {}
-
-										// calculate x,y (z from vertical alignment) for all fragment points within CIRCULAR ARC segment:
-										else {
-											// Get necessary values (radius, convex)
-
-											// *** TODO ***
-											// m_Radius type IfcPositiveLengthMeasure [1:1]
-											std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> v_seg_circ_arc_radius =
-												v_seg_circ_arc_2D->m_Radius;
-											if(!v_seg_circ_arc_radius) {
-												BLUE_LOG(error) << "No radius in IfcAlignment2DVerSegCircularArc"
+											// m_ParabolaConstant type IfcPositiveLengthMeasure [1:1]
+											std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> v_seg_par_arc_const =
+											v_seg_par_arc_2D->m_ParabolaConstant;
+											if(!v_seg_par_arc_const) {
+												BLUE_LOG(error) << "No parabola constant in IfcAlignment2DVerSegParabolicArc"
 													return;
 											}
 
 											// m_IsConvex type IfcBoolean [1:1]
-											std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> v_seg_circ_arc_is_convex =
-												v_seg_circ_arc_2D->m_IsConvex;
-											if(!v_seg_circ_arc_is_convex) {
-												BLUE_LOG(error) << "No curvature information in IfcAlignment2DVerSegCircularArc (convex/concave)"
+											std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> v_seg_par_arc_is_convex =
+												v_seg_par_arc_2D->m_IsConvex;
+											if(!v_seg_par_arc_is_convex) {
+												BLUE_LOG(error) << "No curvature information in IfcAlignment2DVerSegParabolicArc (convex/concave)"
 													return;
 											}
 
-											// x- and y-coordinate:
+											// x- and y-coordinates:
+											for(m_fragmentscount) {
+												allStations[it_all]->x = allStations[it_all - 1]->x + ...; // *** TODO ***
+												allStations[it_all]->y = allStations[it_all - 1]->y + ...; // *** TODO ***
 
+																											// Copy remaining coordinate from stations:
+												allStations[it_all]->z = m_z;
+                                                                    
+												it_all++; :
+											} // end for
+
+										case (isTrans)
+
+											// Calculate x,y (z from vertical alignment) for all fragment points within TRANSITION CURVE segment:
+
+											// Get necessary values
+
+											// *** TODO ***
+
+											// x- and y-coordinates:
 											for(m_fragmentscount) {
 												allStations[it_all]->x = allStations[it_all - 1]->x + ...; // *** TODO ***
 												allStations[it_all]->y = allStations[it_all - 1]->y + ...; // *** TODO ***
@@ -595,83 +703,28 @@ namespace OpenInfraPlatform {
 
 												it_all++; :
 											} // end for
-										} // end if/else
-									
-
-									case (isParArc)
-
-										// Calculate x,y (z from vertical alignment) for all fragment points within PARABOLIC ARC segment:
-
-										// Get necessary values (parabola constant, convex)
-
-										// *** TODO ***
-										// m_ParabolaConstant type IfcPositiveLengthMeasure [1:1]
-										std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> v_seg_par_arc_const =
-										v_seg_par_arc_2D->m_ParabolaConstant;
-										if(!v_seg_par_arc_const) {
-											BLUE_LOG(error) << "No parabola constant in IfcAlignment2DVerSegParabolicArc"
-												return;
-										}
-
-										// m_IsConvex type IfcBoolean [1:1]
-										std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> v_seg_par_arc_is_convex =
-											v_seg_par_arc_2D->m_IsConvex;
-										if(!v_seg_par_arc_is_convex) {
-											BLUE_LOG(error) << "No curvature information in IfcAlignment2DVerSegParabolicArc (convex/concave)"
-												return;
-										}
-
-										// x- and y-coordinates:
-										for(m_fragmentscount) {
-											allStations[it_all]->x = allStations[it_all - 1]->x + ...; // *** TODO ***
-											allStations[it_all]->y = allStations[it_all - 1]->y + ...; // *** TODO ***
-
-																										// Copy remaining coordinate from stations:
-											allStations[it_all]->z = m_z;
-                                                                    
-											it_all++; :
-										} // end for
-
-									case (isTrans)
-
-										// Calculate x,y (z from vertical alignment) for all fragment points within TRANSITION CURVE segment:
-
-										// Get necessary values
-
-										// *** TODO ***
-
-										// x- and y-coordinates:
-										for(m_fragmentscount) {
-											allStations[it_all]->x = allStations[it_all - 1]->x + ...; // *** TODO ***
-											allStations[it_all]->y = allStations[it_all - 1]->y + ...; // *** TODO ***
-
-																										// Copy remaining coordinate from stations:
-											allStations[it_all]->z = m_z;
-
-											it_all++; :
-										} // end for
 
 
-								} // end switch case on segment types
+									} // end switch case on segment types
 
-									} // end for loop over stations
+										} // end for loop over stations
 
-										// Create curve points vector to store coordinates (x,y,z) for each station
-									std::vector< carve::geom::vector<3> > curve_points = carve::geom::VECTOR(x, y, z);
-									curve_points[0] = allStations->x;
-									curve_points[1] = allStations->y;
-									curve_points[2] = allStations->z;
+											// Create curve points vector to store coordinates (x,y,z) for each station
+										std::vector< carve::geom::vector<3> > curve_points = carve::geom::VECTOR(x, y, z);
+										curve_points[0] = allStations->x;
+										curve_points[1] = allStations->y;
+										curve_points[2] = allStations->z;
 
-									// 4. Add points to curve
-									segmentStartPoints.push_back(curve_points[0]);
-									GeomUtils::appendPointsToCurve(curve_points, targetVec);
+										// 4. Add points to curve
+										segmentStartPoints.push_back(curve_points[0]);
+										GeomUtils::appendPointsToCurve(curve_points, targetVec);
 
 
 									
 
-							return;
+								return;
 
-						} // end if(alignment)
+							} // end if(alignment)
 
 								// IfcPolyline (SUBTYPE OF (IfcBoundedCurve)) 
 								std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> poly_line =
