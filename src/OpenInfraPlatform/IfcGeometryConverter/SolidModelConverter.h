@@ -718,12 +718,15 @@ namespace OpenInfraPlatform
 				double length_factor = m_unitConverter->getLengthInMeterFactor();
 
 				// direction and length of extrusion
-				shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure> areaDepth =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(extrudedArea->m_Depth);
-				const double depth = areaDepth->m_value * length_factor;
+				const double depth = (typename IfcEntityTypesT::IfcLengthMeasure)(extrudedArea->m_Depth) * length_factor;
 				//const double depth = extrudedArea->m_Depth->m_value*length_factor;
 				carve::geom::vector<3>  extrusion_vector;
-				std::vector<double>& vec_direction = extrudedArea->m_ExtrudedDirection->m_DirectionRatios;
+				std::vector<double>& vec_direction = std::vector<double>(extrudedArea->m_ExtrudedDirection->m_DirectionRatios.size());
+				std::transform(extrudedArea->m_ExtrudedDirection->m_DirectionRatios.begin(), extrudedArea->m_ExtrudedDirection->m_DirectionRatios.end(),
+					vec_direction.begin(),
+					[](const std::shared_ptr<typename IfcEntityTypesT::IfcReal>& val){
+					return val->m_value;
+				});
 
 				if (vec_direction.size() > 2)
 				{
@@ -774,7 +777,7 @@ namespace OpenInfraPlatform
 				// angle and axis
 				double angle_factor = m_unitConverter->getAngleInRadianFactor();
 				shared_ptr<typename IfcEntityTypesT::IfcProfileDef> swept_area_profile = revolvedArea->m_SweptArea;
-				double revolution_angle = revolvedArea->m_Angle->m_value * angle_factor;
+				double revolution_angle = revolvedArea->m_Angle * angle_factor;
 
 				carve::geom::vector<3>  axis_location;
 				carve::geom::vector<3>  axis_direction;
@@ -791,9 +794,9 @@ namespace OpenInfraPlatform
 					if (axis_placement->m_Axis)
 					{
 						shared_ptr<typename IfcEntityTypesT::IfcDirection> axis = axis_placement->m_Axis;
-						axis_direction = carve::geom::VECTOR(axis->m_DirectionRatios[0],
-							axis->m_DirectionRatios[1],
-							axis->m_DirectionRatios[2]);
+						axis_direction = carve::geom::VECTOR(*(axis->m_DirectionRatios[0]),
+							*(axis->m_DirectionRatios[1]),
+							*(axis->m_DirectionRatios[2]));
 					}
 				}
 

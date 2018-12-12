@@ -516,8 +516,12 @@ namespace OpenInfraPlatform
 				if (axis2placement3d->m_Axis)
 				{
 					// local z-axis
-					std::vector<double>& axis = axis2placement3d->m_Axis->m_DirectionRatios;
-
+					std::vector<double>& axis = std::vector<double>(axis2placement3d->m_Axis->m_DirectionRatios.size());
+					std::transform(axis2placement3d->m_Axis->m_DirectionRatios.begin(), axis2placement3d->m_Axis->m_DirectionRatios.end(),
+						axis.begin(),
+						[](const std::shared_ptr<typename IfcEntityTypesT::IfcReal>& val) {
+						return val->m_value;
+					});
 					if (axis.size() > 2)
 					{
 						local_z = carve::geom::VECTOR(axis[0], axis[1], axis[2]);
