@@ -638,66 +638,66 @@ namespace OpenInfraPlatform
 				std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> >& vecOpeningData,
 				std::stringstream& err)
 			{
-				std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcRelVoidsElement>> vec_rel_voids(
-					ifcElement->m_HasOpenings_inverse);
-				if (vec_rel_voids.size() == 0)
-				{
-					return;
-				}
-				const int product_id = ifcElement->getId();
-				const double length_factor = m_unitConverter->getLengthInMeterFactor();
-
-				// convert opening representation
-				for (int i_void = 0; i_void<vec_rel_voids.size(); ++i_void)
-				{
-					std::weak_ptr<typename IfcEntityTypesT::IfcRelVoidsElement>& rel_voids_weak = vec_rel_voids[i_void];
-					if (rel_voids_weak.expired())
-					{
-						continue;
-					}
-					std::shared_ptr<typename IfcEntityTypesT::IfcRelVoidsElement> rel_voids(rel_voids_weak);
-					std::shared_ptr<typename IfcEntityTypesT::IfcFeatureElementSubtraction> opening = rel_voids->m_RelatedOpeningElement;
-					if (!opening)
-					{
-						continue;
-					}
-					if (!opening->m_Representation)
-					{
-						continue;
-					}
-
-					const int opening_id = opening->getId();
-
-					// opening can have its own relative placement
-					std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement> opening_placement = opening->m_ObjectPlacement;			//optional
-					carve::math::Matrix opening_placement_matrix(carve::math::Matrix::IDENT());
-					if (opening_placement)
-					{
-						std::set<int> opening_placements_applied;
-						PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(opening_placement,
-							opening_placement_matrix, length_factor, opening_placements_applied);
-					}
-
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>>& vec_opening_representations =
-						opening->m_Representation->m_Representations;
-
-					for (typename std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>>::iterator
-						it_representations = vec_opening_representations.begin();
-						it_representations != vec_opening_representations.end(); ++it_representations)
-					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation> ifc_opening_representation = (*it_representations);
-						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> opening_representation_data(new ShapeInputDataT<IfcEntityTypesT>());
-
-						opening_representation_data->representation = ifc_opening_representation;
-
-						// TODO: Representation caching, one element could be used for several openings
-						convertIfcRepresentation(ifc_opening_representation, opening_placement_matrix,
-							opening_representation_data, err);
-
-
-						vecOpeningData.push_back(opening_representation_data);
-					}
-				}
+			//	std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcRelVoidsElement>> vec_rel_voids(
+			//		ifcElement->m_HasOpenings_inverse);
+			//	if (vec_rel_voids.size() == 0)
+			//	{
+			//		return;
+			//	}
+			//	const int product_id = ifcElement->getId();
+			//	const double length_factor = m_unitConverter->getLengthInMeterFactor();
+			//
+			//	// convert opening representation
+			//	for (int i_void = 0; i_void<vec_rel_voids.size(); ++i_void)
+			//	{
+			//		std::weak_ptr<typename IfcEntityTypesT::IfcRelVoidsElement>& rel_voids_weak = vec_rel_voids[i_void];
+			//		if (rel_voids_weak.expired())
+			//		{
+			//			continue;
+			//		}
+			//		std::shared_ptr<typename IfcEntityTypesT::IfcRelVoidsElement> rel_voids(rel_voids_weak);
+			//		std::shared_ptr<typename IfcEntityTypesT::IfcFeatureElementSubtraction> opening = rel_voids->m_RelatedOpeningElement;
+			//		if (!opening)
+			//		{
+			//			continue;
+			//		}
+			//		if (!opening->m_Representation)
+			//		{
+			//			continue;
+			//		}
+			//
+			//		const int opening_id = opening->getId();
+			//
+			//		// opening can have its own relative placement
+			//		std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement> opening_placement = opening->m_ObjectPlacement;			//optional
+			//		carve::math::Matrix opening_placement_matrix(carve::math::Matrix::IDENT());
+			//		if (opening_placement)
+			//		{
+			//			std::set<int> opening_placements_applied;
+			//			PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(opening_placement,
+			//				opening_placement_matrix, length_factor, opening_placements_applied);
+			//		}
+			//
+			//		std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>>& vec_opening_representations =
+			//			opening->m_Representation->m_Representations;
+			//
+			//		for (typename std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>>::iterator
+			//			it_representations = vec_opening_representations.begin();
+			//			it_representations != vec_opening_representations.end(); ++it_representations)
+			//		{
+			//			std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation> ifc_opening_representation = (*it_representations);
+			//			std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> opening_representation_data(new ShapeInputDataT<IfcEntityTypesT>());
+			//
+			//			opening_representation_data->representation = ifc_opening_representation;
+			//
+			//			// TODO: Representation caching, one element could be used for several openings
+			//			convertIfcRepresentation(ifc_opening_representation, opening_placement_matrix,
+			//				opening_representation_data, err);
+			//
+			//
+			//			vecOpeningData.push_back(opening_representation_data);
+			//		}
+			//	}
 			}
 
 			void subtractOpenings(const std::shared_ptr<typename IfcEntityTypesT::IfcElement>& ifcElement,
