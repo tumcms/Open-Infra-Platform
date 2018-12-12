@@ -1092,17 +1092,17 @@ namespace OpenInfraPlatform
 					double y_length = length_factor;
 					double z_length = length_factor;
 
-					if (block->m_XLength)
+					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->m_XLength)
 					{
-						x_length = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(block->m_XLength)->m_value*0.5*length_factor;
+						x_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->m_XLength)*0.5*length_factor;
 					}
-					if (block->m_YLength)
+					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->m_YLength)
 					{
-						y_length = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(block->m_YLength)->m_value*0.5*length_factor;
+						y_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->m_YLength)*0.5*length_factor;
 					}
-					if (block->m_ZLength)
+					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->m_ZLength)
 					{
-						z_length = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(block->m_ZLength)->m_value*0.5*length_factor;
+						z_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->m_ZLength)*0.5*length_factor;
 					}
 
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(x_length, y_length, z_length));
@@ -1144,17 +1144,17 @@ namespace OpenInfraPlatform
 					double y_length = length_factor;
 					double height = length_factor;
 
-					if (rectangular_pyramid->m_XLength)
+					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->m_XLength)
 					{
-						x_length = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(rectangular_pyramid->m_XLength)->m_value*0.5*length_factor;
+						x_length = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->m_XLength)*0.5*length_factor;
 					}
-					if (rectangular_pyramid->m_YLength)
+					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->m_YLength)
 					{
-						y_length = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(rectangular_pyramid->m_YLength)->m_value*0.5*length_factor;
+						y_length = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->m_YLength)*0.5*length_factor;
 					}
-					if (rectangular_pyramid->m_Height)
+					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->m_Height)
 					{
-						height = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(rectangular_pyramid->m_Height)->m_value*0.5*length_factor;
+						height = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->m_Height)*0.5*length_factor;
 					}
 
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0, 0, height));
@@ -1189,8 +1189,8 @@ namespace OpenInfraPlatform
 						return;
 					}
 
-					double height = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(right_circular_cone->m_Height)->m_value*length_factor;
-					double radius = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(right_circular_cone->m_BottomRadius)->m_value*length_factor;
+					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cone->m_Height)*length_factor;
+					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cone->m_BottomRadius)*length_factor;
 
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
@@ -1241,8 +1241,8 @@ namespace OpenInfraPlatform
 					double rad = 0;
 
 					//carve::mesh::MeshSet<3> * cylinder_mesh = makeCylinder( slices, rad, height, primitive_placement_matrix);
-					double height = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(right_circular_cylinder->m_Height)->m_value*length_factor;
-					double radius = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(right_circular_cylinder->m_Radius)->m_value*length_factor;
+					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->m_Height)*length_factor;
+					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->m_Radius)*length_factor;
 
 					double angle = 0;
 					double d_angle = 2.0*M_PI / double(m_geomSettings->m_num_vertices_per_circle);	// TODO: adapt to model size and complexity
@@ -1275,7 +1275,7 @@ namespace OpenInfraPlatform
 						return;
 					}
 
-					double radius = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(sphere->m_Radius)->m_value;
+					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(sphere->m_Radius);
 
 					//        \   |   /
 					//         2- 1 -nvc
@@ -1404,10 +1404,10 @@ namespace OpenInfraPlatform
 							err << ": IfcBoxedHalfSpace: Enclosure not valid" << std::endl;
 							return;
 						}
-						shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>		bbox_corner = bbox->m_Corner;
-						typename IfcEntityTypesT::IfcLengthMeasure>	bbox_x_dim = bbox->m_XDim;
-						typename IfcEntityTypesT::IfcLengthMeasure>	bbox_y_dim = bbox->m_YDim;
-						typename IfcEntityTypesT::IfcLengthMeasure>	bbox_z_dim = bbox->m_ZDim;
+						shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>	bbox_corner = bbox->m_Corner;
+						typename IfcEntityTypesT::IfcLengthMeasure	bbox_x_dim = bbox->m_XDim;
+						typename IfcEntityTypesT::IfcLengthMeasure	bbox_y_dim = bbox->m_YDim;
+						typename IfcEntityTypesT::IfcLengthMeasure	bbox_z_dim = bbox->m_ZDim;
 
 						carve::geom::vector<3> corner;
 						m_curveConverter->convertIfcCartesianPoint(bbox_corner, corner);
@@ -1415,14 +1415,14 @@ namespace OpenInfraPlatform
 
 						// else, its an unbounded half space solid, create simple box
 						shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
-						polyhedron_data->addVertex(carve::geom::VECTOR(bbox_x_dim->m_value, bbox_y_dim->m_value, bbox_z_dim->m_value));
-						polyhedron_data->addVertex(carve::geom::VECTOR(-bbox_x_dim->m_value, bbox_y_dim->m_value, bbox_z_dim->m_value));
-						polyhedron_data->addVertex(carve::geom::VECTOR(-bbox_x_dim->m_value, -bbox_y_dim->m_value, bbox_z_dim->m_value));
-						polyhedron_data->addVertex(carve::geom::VECTOR(bbox_x_dim->m_value, -bbox_y_dim->m_value, bbox_z_dim->m_value));
-						polyhedron_data->addVertex(carve::geom::VECTOR(bbox_x_dim->m_value, bbox_y_dim->m_value, -bbox_z_dim->m_value));
-						polyhedron_data->addVertex(carve::geom::VECTOR(-bbox_x_dim->m_value, bbox_y_dim->m_value, -bbox_z_dim->m_value));
-						polyhedron_data->addVertex(carve::geom::VECTOR(-bbox_x_dim->m_value, -bbox_y_dim->m_value, -bbox_z_dim->m_value));
-						polyhedron_data->addVertex(carve::geom::VECTOR(bbox_x_dim->m_value, -bbox_y_dim->m_value, -bbox_z_dim->m_value));
+						polyhedron_data->addVertex(carve::geom::VECTOR(bbox_x_dim.m_value, bbox_y_dim.m_value, bbox_z_dim.m_value));
+						polyhedron_data->addVertex(carve::geom::VECTOR(-bbox_x_dim.m_value, bbox_y_dim.m_value, bbox_z_dim.m_value));
+						polyhedron_data->addVertex(carve::geom::VECTOR(-bbox_x_dim.m_value, -bbox_y_dim.m_value, bbox_z_dim.m_value));
+						polyhedron_data->addVertex(carve::geom::VECTOR(bbox_x_dim.m_value, -bbox_y_dim.m_value, bbox_z_dim.m_value));
+						polyhedron_data->addVertex(carve::geom::VECTOR(bbox_x_dim.m_value, bbox_y_dim.m_value, -bbox_z_dim.m_value));
+						polyhedron_data->addVertex(carve::geom::VECTOR(-bbox_x_dim.m_value, bbox_y_dim.m_value, -bbox_z_dim.m_value));
+						polyhedron_data->addVertex(carve::geom::VECTOR(-bbox_x_dim.m_value, -bbox_y_dim.m_value, -bbox_z_dim.m_value));
+						polyhedron_data->addVertex(carve::geom::VECTOR(bbox_x_dim.m_value, -bbox_y_dim.m_value, -bbox_z_dim.m_value));
 
 						polyhedron_data->addFace(0, 1, 2);
 						polyhedron_data->addFace(2, 3, 0);
