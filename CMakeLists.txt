@@ -72,6 +72,16 @@ if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
 	return()
 endif()
 
+
+#------------------------------------------------------------------------------
+# Fix for MSVC 1915 / Visual Studio 2017 15.8
+#------------------------------------------------------------------------------
+
+if(MSVC_VERSION GREATER_EQUAL 1915)
+	add_compile_definitions(_ENABLE_EXTENDED_ALIGNED_STORAGE)
+endif()
+
+
 #------------------------------------------------------------------------------
 # Look for thirdparty libraries in some predefined locations.
 #------------------------------------------------------------------------------

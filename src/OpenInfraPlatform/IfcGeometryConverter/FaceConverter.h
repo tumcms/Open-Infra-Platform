@@ -33,6 +33,8 @@
 //#include "EMTIfc4EntityTypes.h"
 //#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
 
+#include "OpenInfraPlatform/IFC4X2_DRAFT_1/model/Model.h"
+#include "OpenInfraPlatform/IFC4X2_DRAFT_1/entity/IfcBoolean.h"
 
 namespace OpenInfraPlatform
 {
@@ -123,12 +125,12 @@ namespace OpenInfraPlatform
 							convertIfcSurface(basis_surface, pos, polyline_data);
 						}
 
-						shared_ptr<typename IfcEntityTypesT::IfcParameterValue>& u1 = rectengular_trimmed_surface->m_U1;
-						shared_ptr<typename IfcEntityTypesT::IfcParameterValue>& v1 = rectengular_trimmed_surface->m_V1;
-						shared_ptr<typename IfcEntityTypesT::IfcParameterValue>& u2 = rectengular_trimmed_surface->m_U2;
-						shared_ptr<typename IfcEntityTypesT::IfcParameterValue>& v2 = rectengular_trimmed_surface->m_V2;
-						bool u_sense = rectengular_trimmed_surface->m_Usense;
-						bool v_sense = rectengular_trimmed_surface->m_Vsense;
+						typename IfcEntityTypesT::IfcParameterValue& u1 = rectengular_trimmed_surface->m_U1;
+						typename IfcEntityTypesT::IfcParameterValue& v1 = rectengular_trimmed_surface->m_V1;
+						typename IfcEntityTypesT::IfcParameterValue& u2 = rectengular_trimmed_surface->m_U2;
+						typename IfcEntityTypesT::IfcParameterValue& v2 = rectengular_trimmed_surface->m_V2;
+						typename IfcEntityTypesT::IfcBoolean& u_sense = *(rectengular_trimmed_surface->m_Usense);
+						typename IfcEntityTypesT::IfcBoolean& v_sense = *(rectengular_trimmed_surface->m_Vsense);
 						// TODO: implement
 #ifdef _DEBUG
 						std::cout << "Warning\t| IfcRectangularTrimmedSurface not implemented." << std::endl;
@@ -208,7 +210,7 @@ namespace OpenInfraPlatform
 					{
 						shared_ptr<typename IfcEntityTypesT::IfcDirection>& linear_extrusion_direction =
 							linear_extrusion->m_ExtrudedDirection;
-						shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>& linear_extrusion_depth = linear_extrusion->m_Depth;
+						typename IfcEntityTypesT::IfcLengthMeasure& linear_extrusion_depth = linear_extrusion->m_Depth;
 						// TODO: implement
 #ifdef _DEBUG
 						std::cout << "Warning\t| IfcSurfaceOfLinearExtrusion not implemented." << std::endl;
@@ -318,7 +320,7 @@ namespace OpenInfraPlatform
 					/*********************************************************************************/
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcLoop>& loop = bound->m_Bound;
-					const bool polyOrientation = bound->m_Orientation;
+					typename IfcEntityTypesT::IfcBoolean& polyOrientation = *(bound->m_Orientation);
 
 					if (!loop)
 					{

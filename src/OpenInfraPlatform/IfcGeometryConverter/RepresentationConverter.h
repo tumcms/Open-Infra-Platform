@@ -34,7 +34,7 @@
 #include "EMTIfc2x3EntityTypes.h"
 #include "EMTIfcBridgeEntityTypes.h"
 
-#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
+//#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
 
 #include "ProfileCache.h"
 #include "ProfileConverter.h"
@@ -314,16 +314,17 @@ namespace OpenInfraPlatform
 				//	IfcGeometricSet, IfcHalfSpaceSolid, IfcLightSource, IfcOneDirectionRepeatFactor, IfcPlacement, IfcPlanarExtent, IfcPoint, IfcSectionedSpine,
 				//	IfcShellBasedSurfaceModel, IfcSolidModel, IfcSurface, IfcTextLiteral, IfcTextureCoordinate, IfcTextureVertex, IfcVector))
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcBoundingBox> bbox =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundingBox>(geomItem);
-				if (bbox)
-				{
-					std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> corner = bbox->m_Corner;
-					std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> x_dim = bbox->m_XDim;
-					std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> y_dim = bbox->m_YDim;
-					std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> z_dim = bbox->m_ZDim;
-					return;
-				}
+				/// Removed at 02.12.2018 due to being useless.
+				//std::shared_ptr<typename IfcEntityTypesT::IfcBoundingBox> bbox =
+				//	dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundingBox>(geomItem);
+				//if (bbox)
+				//{
+				//	std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> corner = bbox->m_Corner;
+				//	std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> x_dim = bbox->m_XDim;
+				//	std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> y_dim = bbox->m_YDim;
+				//	std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> z_dim = bbox->m_ZDim;
+				//	return;
+				//}
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel> surface_model =
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>(geomItem);
@@ -854,64 +855,64 @@ namespace OpenInfraPlatform
 
 		};
 
-		template <>
-		inline bool RepresentationConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter,
-		OpenInfraPlatform::Ifc4::Ifc4Entity>::convertVersionSpecificIfcGeometricRepresentationItem(
-			const std::shared_ptr<emt::Ifc4EntityTypes::IfcGeometricRepresentationItem>& geomItem,
-			const carve::math::Matrix& pos,
-			std::shared_ptr<ItemData> itemData,
-			std::stringstream& err)
-		{
-			const double lengthFactor = m_unitConverter->getLengthInMeterFactor();
-
-			std::shared_ptr<emt::Ifc4EntityTypes::IfcTessellatedItem>  tessellatedItem =
-				std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcTessellatedItem>(geomItem);
-
-			if (tessellatedItem)
-			{
-				std::shared_ptr<emt::Ifc4EntityTypes::IfcTriangulatedFaceSet> faceSet =
-					std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcTriangulatedFaceSet>(tessellatedItem);
-
-				if (faceSet)
-				{
-					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
-
-					std::vector<std::vector<int>>& coordinatesIndices = faceSet->m_CoordIndex;
-					std::vector<std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcLengthMeasure>>>& pointList = faceSet->m_Coordinates->m_CoordList;
-
-					// obtain vertices from coordination list and add them to the new polygon
-					for (const auto& point : pointList)
-					{
-						carve::geom::vector<3> vertex = 
-							carve::geom::VECTOR(point[0]->m_value * lengthFactor, 
-							point[1]->m_value * lengthFactor,
-							point[2]->m_value * lengthFactor);
-
-						// apply transformation
-						vertex = pos * vertex;
-
-						polygon->addVertex(vertex);
-					}
-
-					// read coordinates index list and create faces
-					for (const std::vector<int>& indices : coordinatesIndices)
-					{
-						if (indices.size() < 3)
-						{
-							throw std::exception("invalid size of coordIndex of tessellated item.");
-						}
-
-						polygon->addFace(indices[0] - 1, indices[1] - 1, indices[2] - 1);
-					}
-
-					itemData->open_or_closed_polyhedrons.push_back(polygon);
-
-					return true;
-				}
-			}
-
-			return false;
-		}
+		//template <>
+		//inline bool RepresentationConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter,
+		//OpenInfraPlatform::Ifc4::Ifc4Entity>::convertVersionSpecificIfcGeometricRepresentationItem(
+		//	const std::shared_ptr<emt::Ifc4EntityTypes::IfcGeometricRepresentationItem>& geomItem,
+		//	const carve::math::Matrix& pos,
+		//	std::shared_ptr<ItemData> itemData,
+		//	std::stringstream& err)
+		//{
+		//	const double lengthFactor = m_unitConverter->getLengthInMeterFactor();
+		//
+		//	std::shared_ptr<emt::Ifc4EntityTypes::IfcTessellatedItem>  tessellatedItem =
+		//		std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcTessellatedItem>(geomItem);
+		//
+		//	if (tessellatedItem)
+		//	{
+		//		std::shared_ptr<emt::Ifc4EntityTypes::IfcTriangulatedFaceSet> faceSet =
+		//			std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcTriangulatedFaceSet>(tessellatedItem);
+		//
+		//		if (faceSet)
+		//		{
+		//			std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+		//
+		//			std::vector<std::vector<int>>& coordinatesIndices = faceSet->m_CoordIndex;
+		//			std::vector<std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcLengthMeasure>>>& pointList = faceSet->m_Coordinates->m_CoordList;
+		//
+		//			// obtain vertices from coordination list and add them to the new polygon
+		//			for (const auto& point : pointList)
+		//			{
+		//				carve::geom::vector<3> vertex = 
+		//					carve::geom::VECTOR(point[0]->m_value * lengthFactor, 
+		//					point[1]->m_value * lengthFactor,
+		//					point[2]->m_value * lengthFactor);
+		//
+		//				// apply transformation
+		//				vertex = pos * vertex;
+		//
+		//				polygon->addVertex(vertex);
+		//			}
+		//
+		//			// read coordinates index list and create faces
+		//			for (const std::vector<int>& indices : coordinatesIndices)
+		//			{
+		//				if (indices.size() < 3)
+		//				{
+		//					throw std::exception("invalid size of coordIndex of tessellated item.");
+		//				}
+		//
+		//				polygon->addFace(indices[0] - 1, indices[1] - 1, indices[2] - 1);
+		//			}
+		//
+		//			itemData->open_or_closed_polyhedrons.push_back(polygon);
+		//
+		//			return true;
+		//		}
+		//	}
+		//
+		//	return false;
+		//}
 	}
 }
 

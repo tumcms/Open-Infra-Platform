@@ -47,9 +47,9 @@
 #include "OpenInfraPlatform/Ifc2x3/model/Ifc2x3Exception.h"
 #include "OpenInfraPlatform/Ifc2x3/reader/IfcStepReader.h"
 
-#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
-#include "OpenInfraPlatform/Ifc4/model/Ifc4Exception.h"
-#include "OpenInfraPlatform/Ifc4/reader/IfcStepReader.h"
+//#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
+//#include "OpenInfraPlatform/Ifc4/model/Ifc4Exception.h"
+//#include "OpenInfraPlatform/Ifc4/reader/IfcStepReader.h"
 
 #include "OpenInfraPlatform/IFC4X2_DRAFT_1/model/Model.h"
 #include "OpenInfraPlatform/IFC4X2_DRAFT_1/model/Exception.h"

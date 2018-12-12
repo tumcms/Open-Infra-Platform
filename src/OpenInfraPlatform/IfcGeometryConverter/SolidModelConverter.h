@@ -278,21 +278,19 @@ namespace OpenInfraPlatform
 					const int nvc = m_geomSettings->m_num_vertices_per_circle;
 					double length_in_meter = m_unitConverter->getLengthInMeterFactor();
 					double radius = 0.0;
-					shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure> sweptRadius =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(swept_disp_solid->m_Radius);
+					typename IfcEntityTypesT::IfcLengthMeasure& sweptRadius = swept_disp_solid->m_Radius;
 					if (sweptRadius)
 					{
-						radius = sweptRadius->m_value * length_in_meter;
+						radius = sweptRadius.m_value * length_in_meter;
 
 						//radius = swept_disp_solid->m_Radius->m_value*length_in_meter;
 					}
 
 					double radius_inner = 0.0;
-					shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure> sweptInnerRadius =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(swept_disp_solid->m_InnerRadius);
+					typename IfcEntityTypesT::IfcLengthMeasure& sweptInnerRadius = swept_disp_solid->m_InnerRadius;
 					if (swept_disp_solid->m_InnerRadius)
 					{
-						radius_inner = sweptInnerRadius->m_value * length_in_meter;
+						radius_inner = sweptInnerRadius.m_value * length_in_meter;
 						//radius_inner = swept_disp_solid->m_InnerRadius->m_value*length_in_meter;
 					}
 
@@ -528,31 +526,31 @@ namespace OpenInfraPlatform
 					return;
 				}// endif swept_disp_solid
 
-				shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh =
-					dynamic_pointer_cast<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
-				if (ssh)
-				{
-
-					//	ENTITY IfcRepresentationItem;
-					//	INVERSE
-					//		LayerAssignments	 : 	SET OF IfcPresentationLayerAssignment FOR AssignedItems;
-					//		StyledByItem	 : 	SET [0:1] OF IfcStyledItem FOR Item;
-					//	ENTITY IfcGeometricRepresentationItem;
-					//	ENTITY IfcSolidModel;
-					//		DERIVE
-					//		Dim	 : 	IfcDimensionCount :=  3;
-					// ENTITY IfcSectionedSolid
-					//	    Directrix: IfcCurve;
-					//	    CrossSections: LIST[2:? ] OF IfcProfileDef;					
-					// ENTITY IfcSectionedSolidHorizontal
-					//      CrossSectionPositions: LIST[2:? ] OF IfcDistanceExpression;
-					//      FixedAxisVertical: IfcBoolean;
-					// END_ENTITY;
-
-					convertIfcSectionedSolidHorizontal(ssh, itemData, err);
-
-					return;
-				}
+				//shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh =
+				//	dynamic_pointer_cast<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
+				//if (ssh)
+				//{
+				//
+				//	//	ENTITY IfcRepresentationItem;
+				//	//	INVERSE
+				//	//		LayerAssignments	 : 	SET OF IfcPresentationLayerAssignment FOR AssignedItems;
+				//	//		StyledByItem	 : 	SET [0:1] OF IfcStyledItem FOR Item;
+				//	//	ENTITY IfcGeometricRepresentationItem;
+				//	//	ENTITY IfcSolidModel;
+				//	//		DERIVE
+				//	//		Dim	 : 	IfcDimensionCount :=  3;
+				//	// ENTITY IfcSectionedSolid
+				//	//	    Directrix: IfcCurve;
+				//	//	    CrossSections: LIST[2:? ] OF IfcProfileDef;					
+				//	// ENTITY IfcSectionedSolidHorizontal
+				//	//      CrossSectionPositions: LIST[2:? ] OF IfcDistanceExpression;
+				//	//      FixedAxisVertical: IfcBoolean;
+				//	// END_ENTITY;
+				//
+				//	convertIfcSectionedSolidHorizontal(ssh, itemData, err);
+				//
+				//	return;
+				//}
 
 
 
@@ -1384,7 +1382,7 @@ namespace OpenInfraPlatform
 					}
 
 					// If the agreement flag is TRUE, then the subset is the one the normal points away from
-					bool agreement = half_space_solid->m_AgreementFlag;
+					bool agreement = *(half_space_solid->m_AgreementFlag);
 					if (!agreement)
 					{
 						base_surface_plane.negate();
@@ -1407,9 +1405,9 @@ namespace OpenInfraPlatform
 							return;
 						}
 						shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>		bbox_corner = bbox->m_Corner;
-						shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>	bbox_x_dim = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(bbox->m_XDim);
-						shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>	bbox_y_dim = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(bbox->m_YDim);
-						shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>	bbox_z_dim = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLengthMeasure>(bbox->m_ZDim);
+						typename IfcEntityTypesT::IfcLengthMeasure>	bbox_x_dim = bbox->m_XDim;
+						typename IfcEntityTypesT::IfcLengthMeasure>	bbox_y_dim = bbox->m_YDim;
+						typename IfcEntityTypesT::IfcLengthMeasure>	bbox_z_dim = bbox->m_ZDim;
 
 						carve::geom::vector<3> corner;
 						m_curveConverter->convertIfcCartesianPoint(bbox_corner, corner);
@@ -1602,7 +1600,7 @@ namespace OpenInfraPlatform
 								return;
 							}
 							// If the agreement flag is TRUE, then the subset is the one the normal points away from
-							bool agreement = half_space_solid->m_AgreementFlag;
+							bool agreement = *(half_space_solid->m_AgreementFlag);
 							if (!agreement)
 							{
 								std::reverse(base_surface_points.begin(), base_surface_points.end());

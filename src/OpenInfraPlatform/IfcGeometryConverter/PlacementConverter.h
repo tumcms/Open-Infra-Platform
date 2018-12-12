@@ -97,8 +97,8 @@ namespace OpenInfraPlatform
 				{
 					if (axis2placement2d->m_RefDirection->m_DirectionRatios.size() > 1)
 					{
-						ref_direction.x = axis2placement2d->m_RefDirection->m_DirectionRatios[0];
-						ref_direction.y = axis2placement2d->m_RefDirection->m_DirectionRatios[1];
+						ref_direction.x = axis2placement2d->m_RefDirection->m_DirectionRatios[0]->m_value;
+						ref_direction.y = axis2placement2d->m_RefDirection->m_DirectionRatios[1]->m_value;
 						ref_direction.z = 0;
 					}
 				}
@@ -157,11 +157,11 @@ namespace OpenInfraPlatform
 				if (axis2placement3d->m_Axis)
 				{
 					// local z-axis
-					std::vector<double>& axis = axis2placement3d->m_Axis->m_DirectionRatios;
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcReal>>& axis = axis2placement3d->m_Axis->m_DirectionRatios;
 
 					if (axis.size() > 2)
 					{
-						local_z = carve::geom::VECTOR(axis[0], axis[1], axis[2]);
+						local_z = carve::geom::VECTOR(axis[0]->m_value, axis[1]->m_value, axis[2]->m_value);
 					}
 				}
 
@@ -169,9 +169,9 @@ namespace OpenInfraPlatform
 				{
 					if (axis2placement3d->m_RefDirection->m_DirectionRatios.size() > 2)
 					{
-						ref_direction.x = axis2placement3d->m_RefDirection->m_DirectionRatios[0];
-						ref_direction.y = axis2placement3d->m_RefDirection->m_DirectionRatios[1];
-						ref_direction.z = axis2placement3d->m_RefDirection->m_DirectionRatios[2];
+						ref_direction.x = axis2placement3d->m_RefDirection->m_DirectionRatios[0]->m_value;
+						ref_direction.y = axis2placement3d->m_RefDirection->m_DirectionRatios[1]->m_value;
+						ref_direction.z = axis2placement3d->m_RefDirection->m_DirectionRatios[2]->m_value;
 					}
 				}
 
