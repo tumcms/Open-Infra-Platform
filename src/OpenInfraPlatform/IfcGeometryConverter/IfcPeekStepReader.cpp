@@ -109,6 +109,12 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 								}
 							}
 
+
+							QString schemaName = QString(schema.data());
+							if (schemaName.contains("IFC4x2") || schemaName.contains("Ifc4x2") || schemaName.contains("IFC4X2")) {
+								return IfcSchema::IFC_4x2;
+							}
+
 							// return corresponding IFC schema
 							if (schema.substr(0,4).compare("IFC2") == 0)
 							{
@@ -118,11 +124,6 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 							if (schema.substr(0,4).compare("IFC4") == 0)
 							{
 								return IfcSchema::IFC_4;
-							}
-
-							QString schemaName = QString(schema.data());
-							if(schemaName.contains("IFC4x2") || schemaName.contains("Ifc4x2") || schemaName.contains("IFC4X2")) {
-								return IfcSchema::IFC_4x2;
 							}
 							
 							throw std::exception("IFC schema is not specified or could not be determined.");
