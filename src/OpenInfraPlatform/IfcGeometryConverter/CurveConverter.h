@@ -775,27 +775,24 @@ namespace OpenInfraPlatform {
 									Station startStation = it_hor_segments.segmentStations_[0];
 									double segmentLength = it_hor_segments.segmentLength_;
 
-									// Iterate over stations in each segment.
-									std::vector<Station>::iterator it_hor_stations = horizontalAlignment.horizontalSegments_.segmentStations_.begin();
-									for(; it_hor_stations != horizontalAlignment.horizontalSegments_.segmentStations_.end(); ++it_hor_stations) {
+									// HORIZONTAL LINE SEGMENT.
+									HorizontalLineSegment horizontalLineSeg =
+										dynamic_pointer_cast<HorizontalLineSegment>(it_hor_segments);
+									if(horizontalLineSeg) {
 
-										// HORIZONTAL LINE SEGMENT.
-										HorizontalLineSegment horizontalLineSeg =
-											dynamic_pointer_cast<HorizontalLineSegment>(it_hor_segments);
-
-										if(horizontalLineSeg) {
-
+										// Iterate over stations in line segment.
+										std::vector<Station>::iterator it_hor_stations = it_segment.segmentStations_.begin();
+										for(; it_hor_stations != it_segment.segmentStations_.end(); ++it_hor_stations) {
 											if(it_hor_stations.x_ == 0) { // Skip calculation if x,y coordinate is already there.
 												it_hor_stations.x_ = startStation.x_ + segmentLength * cos(it_hor_segments.startDirection_);
 												it_hor_stations.y_ = startStation.y_ + segmentLength * sin(it_hor_segments.startDirection_);
 											}
-										}
+										} // end stations iteration
 									} // end if horizontalLineSeg
 
 									  // HORIZONTAL CIRCULAR ARC SEGMENT.
 									HorizontalCircArcSegment horizontalCircArcSeg =
 										dynamic_pointer_cast<HorizontalCircArcSegment>(it_hor_segments);
-
 									if(horizontalCircArcSeg) {
 										// Get start station x,y , startDirection, radius and isCCW.
 										double startStationX = horizontalCircArcSeg.segmentStations_[0].x_;
@@ -814,8 +811,8 @@ namespace OpenInfraPlatform {
 										double angleAlpha = atan2(startStationY - centerY, startStationX - centerX);
 										
 										// Iterate over stations in circular arc segment.
-										std::vector<Station>::iterator it_hor_stations = horizontalAlignment.horizontalSegments_.segmentStations_.begin();
-										for(; it_hor_stations != horizontalAlignment.horizontalSegments_.segmentStations_.end(); ++it_hor_stations) {
+										std::vector<Station>::iterator it_hor_stations = it_segment.segmentStations_.begin();
+										for(; it_hor_stations != it_segment.segmentStations_.end(); ++it_hor_stations) {
 
 											// Skip calculation if x,y coordinate is already there.
 											if(it_hor_stations.x_ == 0) {
@@ -855,60 +852,7 @@ namespace OpenInfraPlatform {
 											v2 = Rotate(alpha, v1);
 
 											return center_ + v2;
-											}
-
-											template <typename Scalar>
-											Scalar calculateAngleBetweenVectors(const Vector<Scalar, 2>& v1, const Vector<Scalar, 2>& v2) {
-											Scalar angle = calculateAngleBetweenVectorsHalfCircle(Vector<Scalar, 3>(v1.x(), v1.y(), 0), Vector<Scalar, 3>(v2.x(), v2.y(), 0));
-
-											if (angle < 0)
-											angle += 2.0 * buw::constants<Scalar>::pi();
-
-											return static_cast<float>(angle);
-											}
-
-											template <typename Scalar>
-											Scalar calculateAngleBetweenVectorsHalfCircle(const Vector<Scalar, 3>& v1, const Vector<Scalar, 3>& v2) {
-											if (v1 == Vector<Scalar, 3>(0, 0, 0) || v2 == Vector<Scalar, 3>(0, 0, 0)) {
-											return 0.0; // Invalid vector
-											}
-
-											Scalar a = v1.squaredNorm();
-											Scalar b = v2.squaredNorm();
-
-											if (a * b == 0) {
-											return 0; // Invalid vector
-											}
-
-											if (a > 0 && b > 0) {
-											float sign = minimalComponent(v1.cross(v2));
-
-											// prevent division by 0
-											if (a * b == 0) {
-											return 0;
-											}
-
-											if (sign < 0)
-											return -acos(v1.dot(v2) / sqrtf(a * b));
-											else
-											return acos(v1.dot(v2) / sqrtf(a * b));
-											}
-
-											return 0;
-											}
-											template <typename Scalar>
-											Scalar minimalComponent(const Vector<Scalar, 3>& v) {
-											return std::min(std::min(v.x(), v.y()), v.z());
-											}
-
-											buw::Vector2d OpenInfraPlatform::Infrastructure::HorizontalAlignmentElement2DArc::Rotate(const double angle, const buw::Vector2d& v) const {
-											return Rotate(angle, v.x(), v.y());
-											}
-
-											buw::Vector2d OpenInfraPlatform::Infrastructure::HorizontalAlignmentElement2DArc::Rotate(const double angle, const double x, const double y) const {
-											return buw::Vector2d(std::cos(angle) * x - std::sin(angle) * y, std::sin(angle) * x + std::cos(angle) * y);
-											}
-											*/
+											}*/
 
 										} // end if horizontalCircArcSeg
 
@@ -917,28 +861,63 @@ namespace OpenInfraPlatform {
 											dynamic_pointer_cast<HorizontalTransCurveSegment>(it_hor_segments);
 
 										if(horizontalTransCurveSeg) {
-											// Calculation according to transition curve type: http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm
-											l = horizontalTransCurveSeg.//distAlong;
-												L = horizontalTransCurveSeg.segmentLength_;
-											R = horizontalTransCurveSeg.endRadius_; // Could also be start radius?
+											// Calculation according to transition curve type: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm
+											double l = horizontalTransCurveSeg.segmentStations_[0].distAlong_;//distAlong;
+											double L = horizontalTransCurveSeg.segmentLength_;
+											double R = horizontalTransCurveSeg.endRadius_;
 
-											switch trans = horizontalTransCurveSeg.transCurveType_;
+											// todo: set default?
+											switch ( horizontalTransCurveSeg.transCurveType_ );
 
-											case(BIQUADRATICPARABOLA)
+											case(BIQUADRATICPARABOLA):
+												// Iterate over stations in horizontalTransCurveSegment.
+												std::vector<Station>::iterator it_hor_stations = it_segment.segmentStations_.begin();
+												for(; it_hor_stations != it_segment.segmentStations_.end(); ++it_hor_stations) {
 
-												case(BLOSSCURVE)
+													double l = it_hor_stations.distAlong_;
+													// Skip calculation if x,y coordinate is already there.
+													if(it_hor_stations.x_ == 0) {
+														// x coordinate:
+														double x = l;
+														// y coordinate:
+														if(x <= L / 2) {
+															double y = pow(x, 4) / (6 * R * L * L);
+														}
+														else if(L / 2 < x && x <= L) {
+															double y = -(pow(x, 4) / (6 * R * pow(L, 2)) + (2 * pow(x, 3)) / (3 * R * L)
+																- pow(x, 2) / (2 * R) + (L * x) / (6 * R) - pow(L, 2) / (48 * R);
+														}
+													}
+													// End coordinates.
+													it_hor_stations.x_ = x;
+													it_hor_stations.y_ = y;
+												} // end stations iteration
+												break;
+											case(BLOSSCURVE):
+												// Iterate over stations in horizontalTransCurveSegment.
+												std::vector<Station>::iterator it_hor_stations = it_segment.segmentStations_.begin();
+												for(; it_hor_stations != it_segment.segmentStations_.end(); ++it_hor_stations) {
 
-												case(CLOTHOIDCURVE)
-
-												case(COSINECURVE)
-
-												case(CUBICPARABOLA)
-
-												case(SINECURVE)
+													double l = it_hor_stations.distAlong_;
+													// Skip calculation if x,y coordinate is already there.
+													if(it_hor_stations.x_ == 0) {
+														double teta = pow(l, 3) / (R * pow(L, 2)) - pow(l, 4) / (2 * R * pow(L, 3));
+														// todo: integral? for loop
+														double x = cos(teta) * l;
+													}
+												}
+												break;
+											case(CLOTHOIDCURVE):
+												break;
+											case(COSINECURVE):
+												break;
+											case(CUBICPARABOLA):
+												break;
+											case(SINECURVE):
 												phi = (2 * //PI * l) / L;
-													it_hor_segments.x_ = l*[1 - L ^ 2 / 32 *//PI^4*R^2]-(L^3/3840*PI^5*R^2)*[3*phi^5 - 20*phi^3 + 30*phi - (240-60*phi^2)*sin(phi)+30*cos(phi)*sin(phi)+120*phi*cos(phi)];
+													it_hor_segments.x_ = l*[1 - pow(L,2) / 32 *//PI^4*R^2]-(L^3/3840*PI^5*R^2)*[3*phi^5 - 20*phi^3 + 30*phi - (240-60*phi^2)*sin(phi)+30*cos(phi)*sin(phi)+120*phi*cos(phi)];
 													it_hor_segments.y_ =
-
+													break;
 
 										} // end if horizontalTransCurveSeg
 									} // end iteration over horizontal stations
