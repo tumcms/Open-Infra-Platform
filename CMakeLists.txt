@@ -737,12 +737,16 @@ endmacro()
 installData(${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Shader)
 installData(${PROJECT_SOURCE_DIR}/Data)
 installData(${PROJECT_SOURCE_DIR}/testdata)
-installData(${CMAKE_BINARY_DIR}/schema)
-installData(${CMAKE_BINARY_DIR}/res)
-installData(${CMAKE_BINARY_DIR}/fbliste)
+installData(${CMAKE_BINARY_DIR}/$<CONFIG>/schema)
+installData(${CMAKE_BINARY_DIR}/$<CONFIG>/res)
+installData(${CMAKE_BINARY_DIR}/$<CONFIG>/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${CC_RELEASE_BINARIES}
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll
+	DESTINATION bin
+	COMPONENT oip_thirdparty)
+	
+install(TARGETS ZLIB::ZLIB LIBRARY
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 	
@@ -765,5 +769,5 @@ install(FILES ${Qt5_NETWORK_PLUGINS_DLLS}
 install(FILES ${Qt5_ICONENGINES_PLUGINS_DLLS}
 	DESTINATION bin/plugins/iconengines
 	COMPONENT oip_thirdparty)
-
+	
 include(CPack)
