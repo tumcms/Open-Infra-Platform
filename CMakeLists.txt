@@ -18,6 +18,7 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
+cmake_policy(SET CMP0074 NEW)
 project(OpenInfraPlatform)
 
 #-------------------------------------------------------------------------------------
@@ -496,7 +497,7 @@ target_link_libraries( OpenInfraPlatform.UI
 	QSimpleUpdater
 	${LIBLAS_LIBRARIES}
 	carve
-	${ZLIB_LIBRARIES}
+	ZLIB::ZLIB
 	Rpcrt4.lib
 	${CC_LIBRARIES}
 	fftw3.lib
@@ -742,11 +743,7 @@ installData(${CMAKE_BINARY_DIR}/$<CONFIG>/res)
 installData(${CMAKE_BINARY_DIR}/$<CONFIG>/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll
-	DESTINATION bin
-	COMPONENT oip_thirdparty)
-	
-install(TARGETS ZLIB::ZLIB LIBRARY
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 	

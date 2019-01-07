@@ -104,4 +104,9 @@ if(ZLIB_ROOT AND ZLIB_FOUND)
 			COMMAND ${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/bin/zlib1.dll ${TargetDirectory}/Release		
 		)
 	endfunction(ZLIB_COPY_BINARIES)
+	
+	set(ZLIB_RELEASE_BINARIES ${ZLIB_ROOT}/bin/zlib1.dll)
 endif()
+
+get_property(loc TARGET ZLIB::ZLIB PROPERTY IMPORTED_LOCATION_RELEASE)
+message(STATUS "Shared lib location:" ${loc})
