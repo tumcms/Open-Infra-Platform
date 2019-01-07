@@ -31,7 +31,6 @@
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/AlignmentEffect.h"
 #include "OpenInfraPlatform/UserInterface/resource.h"
 #include "OpenInfraPlatform/UserInterface/VectorTableModel.h"
-#include "OpenInfraPlatform/UserInterface/Ifc4x1TreeModel.h"
 
 #include "buw.OIPInfrastructure.h"
 #include "ui_mainwindow.h"

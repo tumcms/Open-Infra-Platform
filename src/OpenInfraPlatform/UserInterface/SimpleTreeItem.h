@@ -71,6 +71,22 @@ namespace OpenInfraPlatform {
 					thisPtr->appendChild(child);
 				}
 
+				template <class T> typename std::enable_if<std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Type, T>::value && !std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1AbstractEnum, T>::value && std::is_default_constructible<T>::value, void>::type
+					operator()(const char* name, std::shared_ptr<T> value) {
+				TreeItem* child = new TreeItem(std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object>(value), thisPtr);
+				QList<QVariant> itemData;
+				if (value && typeid(value->m_value).name() == "std::string") {
+					void* data = &(value->m_value);
+					itemData << QVariant(name) << QVariant(static_cast<std::string*>(data)->data()) << QVariant(value ? value->classname() : "nullptr");
+				}
+				else
+					itemData << QVariant(name) << QVariant(value ? value->m_value : "empty" ) << QVariant(value ? value->classname() : "nullptr");
+
+				child->setItemData(itemData);
+				thisPtr->appendChild(child);
+				}
+
+		
 				//TODO: Get value stored in type
 				void operator()(const char* name, std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Type> value)
 				{
@@ -96,7 +112,7 @@ namespace OpenInfraPlatform {
 					//	return value2;
 					
 					//itemData << QVariant(name) << QVariant(ss.str().data()) << QVariant(value ? value->classname() : "nullptr");
-					itemData << QVariant(name) << QVariant("m_type") << QVariant(value ? value->classname() : "nullptr");
+					itemData << QVariant(name) << QVariant("type") << QVariant(value ? value->classname() : "nullptr");
 					//itemData << QVariant(name) << QVariant("m_type") << QVariant(value ? value->classname() : "nullptr");
 
 					child->setItemData(itemData);
