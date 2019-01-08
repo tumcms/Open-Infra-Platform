@@ -659,11 +659,39 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 					IFC4X2_DRAFT_1Exception, IFC4X2_DRAFT_1Entity>>();
 				auto entities = importer.getIfcModel()->getEntities();
 				std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>> products;
-				std::for_each(entities.begin(), entities.end(), [&products](auto entity) {
+				std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>> relations;
+				std::stringstream ss;
+
+				std::for_each(entities.begin(), entities.end(), [&ss,&products](auto entity) {
 					if (std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>(entity)) {
 						products.push_back(std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>(entity));
+						entity->getStepLine(ss);
+					}
+					
+				});
+
+				std::for_each(entities.begin(), entities.end(), [&ss,&relations](auto entity) {
+					if (std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>(entity)) {
+						relations.push_back(std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>(entity));
+						entity->getStepLine(ss);
 					}
 				});
+
+				
+				std::for_each(relations.begin(), relations.end(), [&ss](std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties> rel) {					
+					auto propertySet = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcPropertySet>(rel->m_RelatingPropertyDefinition);
+					if (propertySet) {
+						for (auto prop : propertySet->m_HasProperties)
+							prop->getStepLine(ss);
+					}
+
+				});
+
+				std::ofstream file(QString(filename.data()).split('.')[0].append("_filtered").append(".ifc").toStdString().data());
+				QStringList text = QString(ss.str().data()).split(';');
+				for (auto line : text)
+					file << line.toStdString() << std::endl;
+				
 			}
 		}
 		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4x1)

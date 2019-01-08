@@ -50,7 +50,7 @@
      </size>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>2</number>
     </property>
     <property name="usesScrollButtons">
      <bool>false</bool>
@@ -3184,6 +3184,7 @@
      <string>Proxy</string>
     </property>
     <addaction name="actionCreate_Accident_Report"/>
+    <addaction name="actionFilterIfcModel"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -3937,6 +3938,14 @@
   <action name="actionExportPointCloud">
    <property name="text">
     <string>Point Cloud (*.bin)</string>
+   </property>
+  </action>
+  <action name="actionFilterIfcModel">
+   <property name="text">
+    <string>Filter</string>
+   </property>
+   <property name="toolTip">
+    <string>Filter ifc model.</string>
    </property>
   </action>
  </widget>

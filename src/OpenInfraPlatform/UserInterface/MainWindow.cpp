@@ -3204,3 +3204,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Accident_Repo
 
 	createAccidentReportDialog_->show();
 }
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionFilterIfcModel_triggered()
+{
+}
