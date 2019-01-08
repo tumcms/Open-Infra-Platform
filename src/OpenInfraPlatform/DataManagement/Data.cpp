@@ -88,7 +88,7 @@ template <
 	class IfcExceptionT,
 	class IfcEntityT
 >
-void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename);
+void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcImporterBase> &ifcImporter, buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename);
 
 OpenInfraPlatform::DataManagement::Data::Data() : 
 BlueFramework::Application::DataManagement::Data(new BlueFramework::Application::DataManagement::NotifiyAfterEachActionOnlyOnce<OpenInfraPlatform::DataManagement::Data>()),
@@ -651,9 +651,19 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 			else if(ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4x2) {
 				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing IfcBridge ").append(filename));
 
-				using namespace OpenInfraPlatform::IFC4X2_DRAFT_1;
+				using namespace OpenInfraPlatform::IFC4X2_DRAFT_1;			
 				importIfcGeometry<emt::IFC4X2_DRAFT_1EntityTypes, UnitConverter, IFC4X2_DRAFT_1Model, IfcStepReader,
-					IFC4X2_DRAFT_1Exception, IFC4X2_DRAFT_1Entity>(tempIfcGeometryModel_, filename);
+					IFC4X2_DRAFT_1Exception, IFC4X2_DRAFT_1Entity>(ifcImporter_, tempIfcGeometryModel_, filename);
+
+				auto importer = ifcImporter_->getValue<OpenInfraPlatform::IfcGeometryConverter::IfcImporterT<emt::IFC4X2_DRAFT_1EntityTypes, UnitConverter, IFC4X2_DRAFT_1Model, IfcStepReader,
+					IFC4X2_DRAFT_1Exception, IFC4X2_DRAFT_1Entity>>();
+				auto entities = importer.getIfcModel()->getEntities();
+				std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>> products;
+				std::for_each(entities.begin(), entities.end(), [&products](auto entity) {
+					if (std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>(entity)) {
+						products.push_back(std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>(entity));
+					}
+				});
 			}
 		}
 		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4x1)
@@ -1455,9 +1465,10 @@ template <
 	class IfcExceptionT,
 	class IfcEntityT
 >
-void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename)
+void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcImporterBase> &ifcImporter, buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename)
 {
 	using namespace OpenInfraPlatform::IfcGeometryConverter;
+
 	
 	IfcImporterT<IfcEntityTypesT, IfcUnitConverterT, IfcModelT, IfcStepReaderT,
 		IfcExceptionT, IfcEntityT> importer;
@@ -1466,6 +1477,10 @@ void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConve
 	{
 		importer.readStepFile(filename.c_str());
 		importer.collectGeometryData();
+
+		
+		ifcImporter = buw::makeReferenceCounted<IfcImporter<IfcImporterT<IfcEntityTypesT, IfcUnitConverterT, IfcModelT, IfcStepReaderT, IfcExceptionT, IfcEntityT>>>(importer);
+		
 	}
 	catch (std::exception& e)
 	{
