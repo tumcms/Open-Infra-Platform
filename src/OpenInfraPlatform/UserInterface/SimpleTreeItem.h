@@ -75,12 +75,13 @@ namespace OpenInfraPlatform {
 					operator()(const char* name, std::shared_ptr<T> value) {
 				TreeItem* child = new TreeItem(std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object>(value), thisPtr);
 				QList<QVariant> itemData;
-				if (value && typeid(value->m_value).name() == "std::string") {
-					void* data = &(value->m_value);
-					itemData << QVariant(name) << QVariant(static_cast<std::string*>(data)->data()) << QVariant(value ? value->classname() : "nullptr");
-				}
-				else
-					itemData << QVariant(name) << QVariant(value ? value->m_value : "empty" ) << QVariant(value ? value->classname() : "nullptr");
+				/// Fix bug related to QVariant not being able to cope with strings
+				//if (value && typeid(value->m_value).name() == "std::string") {
+				//	void* data = &(value->m_value);
+				//	itemData << QVariant(name) << QVariant(static_cast<std::string*>(data)->data()) << QVariant(value ? value->classname() : "nullptr");
+				//}
+				//else
+				//	itemData << QVariant(name) << QVariant(value ? value->m_value : "empty" ) << QVariant(value ? value->classname() : "nullptr");
 
 				child->setItemData(itemData);
 				thisPtr->appendChild(child);
