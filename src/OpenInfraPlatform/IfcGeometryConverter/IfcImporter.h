@@ -351,8 +351,9 @@ namespace OpenInfraPlatform
 					// read the stream data and convert the entities into a map
 					m_ifcStepReader->readStreamData(buffer, ifcMap);
 				}
-				catch (...)//IfcException& e)
+				catch (std::exception e)//IfcException& e)
 				{
+					std::cerr << e.what() << std::endl;
 					//std::cerr << "Exception\t| " << e.what() << std::endl;
 				}
 
