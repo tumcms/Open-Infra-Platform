@@ -90,6 +90,10 @@ template <
 >
 void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcImporterBase> &ifcImporter, buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename);
 
+template <typename T> void printSet(std::stringstream &stream, std::set<std::shared_ptr<T>> &set) {
+	std::for_each(set.begin(), set.end(), [&stream](auto elem) {elem->getStepLine(stream); });
+}
+
 OpenInfraPlatform::DataManagement::Data::Data() : 
 BlueFramework::Application::DataManagement::Data(new BlueFramework::Application::DataManagement::NotifiyAfterEachActionOnlyOnce<OpenInfraPlatform::DataManagement::Data>()),
 clearColor_(0.3f, 0.5f, 0.9f),
@@ -655,37 +659,40 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 				importIfcGeometry<emt::IFC4X2_DRAFT_1EntityTypes, UnitConverter, IFC4X2_DRAFT_1Model, IfcStepReader,
 					IFC4X2_DRAFT_1Exception, IFC4X2_DRAFT_1Entity>(ifcImporter_, tempIfcGeometryModel_, filename);
 
+				// Get the importer and all the entitites from the model.
 				auto importer = ifcImporter_->getValue<OpenInfraPlatform::IfcGeometryConverter::IfcImporterT<emt::IFC4X2_DRAFT_1EntityTypes, UnitConverter, IFC4X2_DRAFT_1Model, IfcStepReader,
 					IFC4X2_DRAFT_1Exception, IFC4X2_DRAFT_1Entity>>();
 				auto entities = importer.getIfcModel()->getEntities();
-				std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>> products;
-				std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>> relations;
+
+				// Containers for line which should be printed.
+				std::set<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>> products;
+				std::set<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>> relations;
+				std::set<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcPropertySet>> propertySets;
+				std::set<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProperty>> properties;
+
 				std::stringstream ss;
 
-				std::for_each(entities.begin(), entities.end(), [&ss,&products](auto entity) {
+				std::for_each(entities.begin(), entities.end(), [&ss,&products,&relations,&properties,&propertySets](auto entity) {
 					if (std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>(entity)) {
-						products.push_back(std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>(entity));
-						entity->getStepLine(ss);
+						products.insert(std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>(entity));
+					}
+
+					if (std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>(entity)) {
+						auto rel = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>(entity);
+						relations.insert(rel);
+						
+						auto propertySet = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcPropertySet>(rel->m_RelatingPropertyDefinition);
+						propertySets.insert(propertySet);
+						for (auto prop : propertySet->m_HasProperties)
+							properties.insert(prop);
 					}
 					
-				});
+				});				
 
-				std::for_each(entities.begin(), entities.end(), [&ss,&relations](auto entity) {
-					if (std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>(entity)) {
-						relations.push_back(std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>(entity));
-						entity->getStepLine(ss);
-					}
-				});
-
-				
-				std::for_each(relations.begin(), relations.end(), [&ss](std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties> rel) {					
-					auto propertySet = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcPropertySet>(rel->m_RelatingPropertyDefinition);
-					if (propertySet) {
-						for (auto prop : propertySet->m_HasProperties)
-							prop->getStepLine(ss);
-					}
-
-				});
+				printSet(ss, products);
+				printSet(ss, relations);
+				printSet(ss, propertySets);
+				printSet(ss, properties);
 
 				std::ofstream file(QString(filename.data()).split('.')[0].append("_filtered").append(".ifc").toStdString().data());
 				QStringList text = QString(ss.str().data()).split(';');
