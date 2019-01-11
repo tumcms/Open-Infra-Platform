@@ -32,10 +32,12 @@
 #include "OpenInfraPlatform/IfcRoad/model/IfcRoadModel.h"
 #include "OpenInfraPlatform/IfcRoad/reader/IfcStepReader.h"
 
-#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h"
-#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h"
-#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h"
-#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h"
+//#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h"
+//#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h"
+//#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h"
+//#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h"
+
+#include "OpenInfraPlatform/IfcGeometryConverter/EMTIFC4X2_DRAFT_1EntityTypes.h"
 
 #include "OpenInfraPlatform/DataManagement/IfcZipper.h"
 
@@ -45,16 +47,19 @@
 #include "OpenInfraPlatform/Ifc2x3/model/Ifc2x3Exception.h"
 #include "OpenInfraPlatform/Ifc2x3/reader/IfcStepReader.h"
 
-#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
-#include "OpenInfraPlatform/Ifc4/model/Ifc4Exception.h"
-#include "OpenInfraPlatform/Ifc4/reader/IfcStepReader.h"
+//#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
+//#include "OpenInfraPlatform/Ifc4/model/Ifc4Exception.h"
+//#include "OpenInfraPlatform/Ifc4/reader/IfcStepReader.h"
+
+#include "OpenInfraPlatform/IFC4X2_DRAFT_1/model/Model.h"
+#include "OpenInfraPlatform/IFC4X2_DRAFT_1/model/Exception.h"
+#include "OpenInfraPlatform/IFC4X2_DRAFT_1/reader/IfcStepReader.h"
 
 #include "OpenInfraPlatform/IfcBridge/model/IfcBridgeModel.h"
 #include "OpenInfraPlatform/IfcBridge/model/IfcBridgeException.h"
 #include "OpenInfraPlatform/IfcBridge/reader/IfcStepReader.h"
 
 #include "OpenInfraPlatform/IfcGeometryConverter/IfcImporter.h"
-
 #include "OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.h"
 #include "OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.h"
 
@@ -83,7 +88,11 @@ template <
 	class IfcExceptionT,
 	class IfcEntityT
 >
-void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename);
+void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcImporterBase> &ifcImporter, buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename);
+
+template <typename T> void printSet(std::stringstream &stream, std::set<std::shared_ptr<T>> &set) {
+	std::for_each(set.begin(), set.end(), [&stream](auto elem) {elem->getStepLine(stream); });
+}
 
 OpenInfraPlatform::DataManagement::Data::Data() : 
 BlueFramework::Application::DataManagement::Data(new BlueFramework::Application::DataManagement::NotifiyAfterEachActionOnlyOnce<OpenInfraPlatform::DataManagement::Data>()),
@@ -97,9 +106,9 @@ alignmentLineWidth_(1.5f),
 currentJobID_(-1),
 importer_(nullptr),
 tempIfcGeometryModel_(nullptr),
-tempPointCloud_(nullptr)
+tempPointCloud_(nullptr),
+pointCloud_(nullptr)
 {
-	pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
 	clear(false);
 
 	latestChangeFlag_ = (ChangeFlag) (ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel);
@@ -474,7 +483,7 @@ void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) 
 	if (pointCloud_)
 		pointCloud_ = nullptr;
 
-	pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
+	//pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
 	
 	if (notifyObservers) {
 		// The notification state is not used here, because a clear is not executed by an action.
@@ -614,6 +623,7 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_2 ||
 			ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4 ||
+			ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4x2 ||
 			ifcSchema == IfcPeekStepReader::IfcSchema::IFC_BRIDGE)
 		{
 			tempIfcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
@@ -622,25 +632,73 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 			{
 				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Ifc2x3 ").append(filename));
 
-				using namespace OpenInfraPlatform::Ifc2x3;
-				importIfcGeometry < emt::Ifc2x3EntityTypes, UnitConverter, Ifc2x3Model, IfcStepReader,
-					Ifc2x3Exception, Ifc2x3Entity >(tempIfcGeometryModel_, filename);
+				//using namespace OpenInfraPlatform::Ifc2x3;
+				//importIfcGeometry < emt::Ifc2x3EntityTypes, UnitConverter, Ifc2x3Model, IfcStepReader,
+				//	Ifc2x3Exception, Ifc2x3Entity >(tempIfcGeometryModel_, filename);
 			}
 			else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4)
 			{
 				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Ifc4 ").append(filename));
-
-				using namespace OpenInfraPlatform::Ifc4;
-				importIfcGeometry<emt::Ifc4EntityTypes, UnitConverter, Ifc4Model, IfcStepReader,
-					Ifc4Exception, Ifc4Entity>(tempIfcGeometryModel_, filename);
+				
+				//using namespace OpenInfraPlatform::Ifc4;
+				//importIfcGeometry<emt::Ifc4EntityTypes, UnitConverter, Ifc4Model, IfcStepReader,
+				//	Ifc4Exception, Ifc4Entity>(tempIfcGeometryModel_, filename);
 			}
 			else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_BRIDGE)
 			{
 				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing IfcBridge ").append(filename));
 
-				using namespace OpenInfraPlatform::IfcBridge;
-				importIfcGeometry<emt::IfcBridgeEntityTypes, UnitConverter, IfcBridgeModel, IfcStepReader,
-					IfcBridgeException, IfcBridgeEntity>(tempIfcGeometryModel_, filename);
+				//using namespace OpenInfraPlatform::IfcBridge;
+				//importIfcGeometry<emt::IfcBridgeEntityTypes, UnitConverter, IfcBridgeModel, IfcStepReader,
+				//	IfcBridgeException, IfcBridgeEntity>(tempIfcGeometryModel_, filename);
+			}
+			else if(ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4x2) {
+				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing IfcBridge ").append(filename));
+
+				using namespace OpenInfraPlatform::IFC4X2_DRAFT_1;			
+				importIfcGeometry<emt::IFC4X2_DRAFT_1EntityTypes, UnitConverter, IFC4X2_DRAFT_1Model, IfcStepReader,
+					IFC4X2_DRAFT_1Exception, IFC4X2_DRAFT_1Entity>(ifcImporter_, tempIfcGeometryModel_, filename);
+
+				// Get the importer and all the entitites from the model.
+				auto importer = ifcImporter_->getValue<OpenInfraPlatform::IfcGeometryConverter::IfcImporterT<emt::IFC4X2_DRAFT_1EntityTypes, UnitConverter, IFC4X2_DRAFT_1Model, IfcStepReader,
+					IFC4X2_DRAFT_1Exception, IFC4X2_DRAFT_1Entity>>();
+				auto entities = importer.getIfcModel()->getEntities();
+
+				// Containers for line which should be printed.
+				std::set<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>> products;
+				std::set<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>> relations;
+				std::set<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcPropertySet>> propertySets;
+				std::set<std::shared_ptr<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProperty>> properties;
+
+				std::stringstream ss;
+
+				std::for_each(entities.begin(), entities.end(), [&ss,&products,&relations,&properties,&propertySets](auto entity) {
+					if (std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>(entity)) {
+						products.insert(std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcProduct>(entity));
+					}
+
+					if (std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>(entity)) {
+						auto rel = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcRelDefinesByProperties>(entity);
+						relations.insert(rel);
+						
+						auto propertySet = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2_DRAFT_1::IfcPropertySet>(rel->m_RelatingPropertyDefinition);
+						propertySets.insert(propertySet);
+						for (auto prop : propertySet->m_HasProperties)
+							properties.insert(prop);
+					}
+					
+				});				
+
+				printSet(ss, products);
+				printSet(ss, relations);
+				printSet(ss, propertySets);
+				printSet(ss, properties);
+
+				std::ofstream file(QString(filename.data()).split('.')[0].append("_filtered").append(".ifc").toStdString().data());
+				QStringList text = QString(ss.str().data()).split(';');
+				for (auto line : text)
+					file << line.toStdString() << std::endl;
+				
 			}
 		}
 		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4x1)
@@ -668,6 +726,9 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 	}
 	else if(buwstrFilename.toLower().endsWith(".las")) {
 		importLASJob(filename);
+	}
+	else if(buwstrFilename.toLower().endsWith(".bin")) {
+		importBINJob(filename);
 	}
 	else if (buwstrFilename.toLower().endsWith(".d40"))
 	{
@@ -813,12 +874,12 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 		
 		if (merge_)
 		{
-			for (auto point : tempPointCloud_->points)
-			{
-				pointCloud_->points.push_back(point);
-			}
-			pointCloud_->minPos = buw::minimizedVector(pointCloud_->minPos, tempPointCloud_->minPos);
-			pointCloud_->maxPos = buw::minimizedVector(pointCloud_->maxPos, tempPointCloud_->maxPos);
+			//for (auto point : tempPointCloud_->points)
+			//{
+			//	pointCloud_->points.push_back(point);
+			//}
+			//pointCloud_->minPos = buw::minimizedVector(pointCloud_->minPos, tempPointCloud_->minPos);
+			//pointCloud_->maxPos = buw::minimizedVector(pointCloud_->maxPos, tempPointCloud_->maxPos);
 		}
 		else
 		{
@@ -939,6 +1000,23 @@ void OpenInfraPlatform::DataManagement::Data::export3DAlignmentAsTextfile(const 
 	currentJobID_ = AsyncJob::getInstance().startJob(&Data::export3DAlignmentAsTextfileJob, this, filename);
 }
 
+void OpenInfraPlatform::DataManagement::Data::exportPointCloud(const std::string & filename)
+{
+	auto exportPointCloudJob = [](OpenInfraPlatform::DataManagement::Data* data, const std::string &filename) {
+		OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Point Cloud ").append(filename));
+		QString extension = QString(filename.data()).split(".").back();
+		auto filter = FileIOFilter::FindBestFilterForExtension(extension.toUpper());
+		auto pointCloud = data->getPointCloud();
+		if(pointCloud) {
+			pointCloud->deleteAllScalarFields();
+			int error = FileIOFilter::SaveToFile(std::static_pointer_cast<ccHObject>(pointCloud).get(), QString(filename.data()), FileIOFilter::SaveParameters(), filter);
+		}
+	};
+
+	
+	currentJobID_ = AsyncJob::getInstance().startJob(std::ref(exportPointCloudJob), this, filename);
+}
+
 void OpenInfraPlatform::DataManagement::Data::export3DAlignmentAsTextfileJob(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Textfile ").append(filename));
@@ -1008,14 +1086,14 @@ void OpenInfraPlatform::DataManagement::Data::exportLandXMLJob(const std::string
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandXML ").append(filename));
 
-	new buw::ExportLandXML(alignmentModel_, digitalElevationModel_, filename);
+	buw::ExportLandXML(alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::exportLandInfraJob(const std::string & filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandInfra ").append(filename));
 
-	new buw::ExportLandInfra(alignmentModel_, digitalElevationModel_, filename);
+	buw::ExportLandInfra(alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::addAlignment( buw::ReferenceCounted<buw::IAlignment3D> alignment )
@@ -1174,10 +1252,12 @@ buw::Vector3d OpenInfraPlatform::DataManagement::Data::getOffset() const
 		}
 	}
 
-	if (pointCloud_->points.size() > 0)
+	if (pointCloud_->size() > 0)
 	{
-		minPos = pointCloud_->minPos;
-		maxPos = pointCloud_->maxPos;
+		CCVector3 min, max;
+		pointCloud_->getBoundingBox(min, max);
+		minPos = buw::Vector3d(min.x, min.y, min.z);
+		maxPos = buw::Vector3d(max.x, max.y, max.z);
 	}
 
 	buw::Vector3d offsetViewArea = minPos + 0.5 * (maxPos - minPos);
@@ -1341,13 +1421,22 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::DataManagement::Data::
 
 const int OpenInfraPlatform::DataManagement::Data::getPointCloudPointCount() const
 {
-	return pointCloud_->points.size();
+	if(pointCloud_)
+		return pointCloud_->size();
+	else
+		return -1;
 }
 
 void OpenInfraPlatform::DataManagement::Data::importLAS(const std::string& filename)
 {
 	merge_ = false;
 	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importLASJob, this, filename);
+}
+
+void OpenInfraPlatform::DataManagement::Data::importBIN(const std::string& filename)
+{
+	merge_ = false;
+	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importBINJob, this, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::importLASJob(const std::string& filename)
@@ -1357,8 +1446,17 @@ void OpenInfraPlatform::DataManagement::Data::importLASJob(const std::string& fi
 	if (tempPointCloud_)
 		tempPointCloud_ = nullptr;
 
-	tempPointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
-	buw::importLASPointCloud(filename.c_str(), *tempPointCloud_);
+	tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
+}
+
+void OpenInfraPlatform::DataManagement::Data::importBINJob(const std::string& filename)
+{
+	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing laserscan ").append(filename));
+
+	if(tempPointCloud_)
+		tempPointCloud_ = nullptr;
+
+	tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
 }
 
 
@@ -1402,9 +1500,10 @@ template <
 	class IfcExceptionT,
 	class IfcEntityT
 >
-void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename)
+void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcImporterBase> &ifcImporter, buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename)
 {
 	using namespace OpenInfraPlatform::IfcGeometryConverter;
+
 	
 	IfcImporterT<IfcEntityTypesT, IfcUnitConverterT, IfcModelT, IfcStepReaderT,
 		IfcExceptionT, IfcEntityT> importer;
@@ -1413,6 +1512,10 @@ void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConve
 	{
 		importer.readStepFile(filename.c_str());
 		importer.collectGeometryData();
+
+		
+		ifcImporter = buw::makeReferenceCounted<IfcImporter<IfcImporterT<IfcEntityTypesT, IfcUnitConverterT, IfcModelT, IfcStepReaderT, IfcExceptionT, IfcEntityT>>>(importer);
+		
 	}
 	catch (std::exception& e)
 	{

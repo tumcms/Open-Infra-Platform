@@ -30,7 +30,11 @@
 //#include "ReaderSettings.h"
 
 #include "EMTIfc4EntityTypes.h"
-#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
+#include "EMTIfc4x1EntityTypes.h"
+#include "EMTIfc2x3EntityTypes.h"
+#include "EMTIfcBridgeEntityTypes.h"
+
+//#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
 
 #include "ProfileCache.h"
 #include "ProfileConverter.h"
@@ -310,16 +314,17 @@ namespace OpenInfraPlatform
 				//	IfcGeometricSet, IfcHalfSpaceSolid, IfcLightSource, IfcOneDirectionRepeatFactor, IfcPlacement, IfcPlanarExtent, IfcPoint, IfcSectionedSpine,
 				//	IfcShellBasedSurfaceModel, IfcSolidModel, IfcSurface, IfcTextLiteral, IfcTextureCoordinate, IfcTextureVertex, IfcVector))
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcBoundingBox> bbox =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundingBox>(geomItem);
-				if (bbox)
-				{
-					std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> corner = bbox->m_Corner;
-					std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> x_dim = bbox->m_XDim;
-					std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> y_dim = bbox->m_YDim;
-					std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> z_dim = bbox->m_ZDim;
-					return;
-				}
+				/// Removed at 02.12.2018 due to being useless.
+				//std::shared_ptr<typename IfcEntityTypesT::IfcBoundingBox> bbox =
+				//	dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundingBox>(geomItem);
+				//if (bbox)
+				//{
+				//	std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> corner = bbox->m_Corner;
+				//	std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> x_dim = bbox->m_XDim;
+				//	std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> y_dim = bbox->m_YDim;
+				//	std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> z_dim = bbox->m_ZDim;
+				//	return;
+				//}
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel> surface_model =
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>(geomItem);
@@ -633,66 +638,66 @@ namespace OpenInfraPlatform
 				std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> >& vecOpeningData,
 				std::stringstream& err)
 			{
-				std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcRelVoidsElement>> vec_rel_voids(
-					ifcElement->m_HasOpenings_inverse);
-				if (vec_rel_voids.size() == 0)
-				{
-					return;
-				}
-				const int product_id = ifcElement->getId();
-				const double length_factor = m_unitConverter->getLengthInMeterFactor();
-
-				// convert opening representation
-				for (int i_void = 0; i_void<vec_rel_voids.size(); ++i_void)
-				{
-					std::weak_ptr<typename IfcEntityTypesT::IfcRelVoidsElement>& rel_voids_weak = vec_rel_voids[i_void];
-					if (rel_voids_weak.expired())
-					{
-						continue;
-					}
-					std::shared_ptr<typename IfcEntityTypesT::IfcRelVoidsElement> rel_voids(rel_voids_weak);
-					std::shared_ptr<typename IfcEntityTypesT::IfcFeatureElementSubtraction> opening = rel_voids->m_RelatedOpeningElement;
-					if (!opening)
-					{
-						continue;
-					}
-					if (!opening->m_Representation)
-					{
-						continue;
-					}
-
-					const int opening_id = opening->getId();
-
-					// opening can have its own relative placement
-					std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement> opening_placement = opening->m_ObjectPlacement;			//optional
-					carve::math::Matrix opening_placement_matrix(carve::math::Matrix::IDENT());
-					if (opening_placement)
-					{
-						std::set<int> opening_placements_applied;
-						PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(opening_placement,
-							opening_placement_matrix, length_factor, opening_placements_applied);
-					}
-
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>>& vec_opening_representations =
-						opening->m_Representation->m_Representations;
-
-					for (typename std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>>::iterator
-						it_representations = vec_opening_representations.begin();
-						it_representations != vec_opening_representations.end(); ++it_representations)
-					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation> ifc_opening_representation = (*it_representations);
-						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> opening_representation_data(new ShapeInputDataT<IfcEntityTypesT>());
-
-						opening_representation_data->representation = ifc_opening_representation;
-
-						// TODO: Representation caching, one element could be used for several openings
-						convertIfcRepresentation(ifc_opening_representation, opening_placement_matrix,
-							opening_representation_data, err);
-
-
-						vecOpeningData.push_back(opening_representation_data);
-					}
-				}
+			//	std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcRelVoidsElement>> vec_rel_voids(
+			//		ifcElement->m_HasOpenings_inverse);
+			//	if (vec_rel_voids.size() == 0)
+			//	{
+			//		return;
+			//	}
+			//	const int product_id = ifcElement->getId();
+			//	const double length_factor = m_unitConverter->getLengthInMeterFactor();
+			//
+			//	// convert opening representation
+			//	for (int i_void = 0; i_void<vec_rel_voids.size(); ++i_void)
+			//	{
+			//		std::weak_ptr<typename IfcEntityTypesT::IfcRelVoidsElement>& rel_voids_weak = vec_rel_voids[i_void];
+			//		if (rel_voids_weak.expired())
+			//		{
+			//			continue;
+			//		}
+			//		std::shared_ptr<typename IfcEntityTypesT::IfcRelVoidsElement> rel_voids(rel_voids_weak);
+			//		std::shared_ptr<typename IfcEntityTypesT::IfcFeatureElementSubtraction> opening = rel_voids->m_RelatedOpeningElement;
+			//		if (!opening)
+			//		{
+			//			continue;
+			//		}
+			//		if (!opening->m_Representation)
+			//		{
+			//			continue;
+			//		}
+			//
+			//		const int opening_id = opening->getId();
+			//
+			//		// opening can have its own relative placement
+			//		std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement> opening_placement = opening->m_ObjectPlacement;			//optional
+			//		carve::math::Matrix opening_placement_matrix(carve::math::Matrix::IDENT());
+			//		if (opening_placement)
+			//		{
+			//			std::set<int> opening_placements_applied;
+			//			PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(opening_placement,
+			//				opening_placement_matrix, length_factor, opening_placements_applied);
+			//		}
+			//
+			//		std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>>& vec_opening_representations =
+			//			opening->m_Representation->m_Representations;
+			//
+			//		for (typename std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>>::iterator
+			//			it_representations = vec_opening_representations.begin();
+			//			it_representations != vec_opening_representations.end(); ++it_representations)
+			//		{
+			//			std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation> ifc_opening_representation = (*it_representations);
+			//			std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> opening_representation_data(new ShapeInputDataT<IfcEntityTypesT>());
+			//
+			//			opening_representation_data->representation = ifc_opening_representation;
+			//
+			//			// TODO: Representation caching, one element could be used for several openings
+			//			convertIfcRepresentation(ifc_opening_representation, opening_placement_matrix,
+			//				opening_representation_data, err);
+			//
+			//
+			//			vecOpeningData.push_back(opening_representation_data);
+			//		}
+			//	}
 			}
 
 			void subtractOpenings(const std::shared_ptr<typename IfcEntityTypesT::IfcElement>& ifcElement,
@@ -850,64 +855,64 @@ namespace OpenInfraPlatform
 
 		};
 
-		template <>
-		inline bool RepresentationConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter,
-		OpenInfraPlatform::Ifc4::Ifc4Entity>::convertVersionSpecificIfcGeometricRepresentationItem(
-			const std::shared_ptr<emt::Ifc4EntityTypes::IfcGeometricRepresentationItem>& geomItem,
-			const carve::math::Matrix& pos,
-			std::shared_ptr<ItemData> itemData,
-			std::stringstream& err)
-		{
-			const double lengthFactor = m_unitConverter->getLengthInMeterFactor();
-
-			std::shared_ptr<emt::Ifc4EntityTypes::IfcTessellatedItem>  tessellatedItem =
-				std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcTessellatedItem>(geomItem);
-
-			if (tessellatedItem)
-			{
-				std::shared_ptr<emt::Ifc4EntityTypes::IfcTriangulatedFaceSet> faceSet =
-					std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcTriangulatedFaceSet>(tessellatedItem);
-
-				if (faceSet)
-				{
-					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
-
-					std::vector<std::vector<int>>& coordinatesIndices = faceSet->m_CoordIndex;
-					std::vector<std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcLengthMeasure>>>& pointList = faceSet->m_Coordinates->m_CoordList;
-
-					// obtain vertices from coordination list and add them to the new polygon
-					for (const auto& point : pointList)
-					{
-						carve::geom::vector<3> vertex = 
-							carve::geom::VECTOR(point[0]->m_value * lengthFactor, 
-							point[1]->m_value * lengthFactor,
-							point[2]->m_value * lengthFactor);
-
-						// apply transformation
-						vertex = pos * vertex;
-
-						polygon->addVertex(vertex);
-					}
-
-					// read coordinates index list and create faces
-					for (const std::vector<int>& indices : coordinatesIndices)
-					{
-						if (indices.size() < 3)
-						{
-							throw std::exception("invalid size of coordIndex of tessellated item.");
-						}
-
-						polygon->addFace(indices[0] - 1, indices[1] - 1, indices[2] - 1);
-					}
-
-					itemData->open_or_closed_polyhedrons.push_back(polygon);
-
-					return true;
-				}
-			}
-
-			return false;
-		}
+		//template <>
+		//inline bool RepresentationConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter,
+		//OpenInfraPlatform::Ifc4::Ifc4Entity>::convertVersionSpecificIfcGeometricRepresentationItem(
+		//	const std::shared_ptr<emt::Ifc4EntityTypes::IfcGeometricRepresentationItem>& geomItem,
+		//	const carve::math::Matrix& pos,
+		//	std::shared_ptr<ItemData> itemData,
+		//	std::stringstream& err)
+		//{
+		//	const double lengthFactor = m_unitConverter->getLengthInMeterFactor();
+		//
+		//	std::shared_ptr<emt::Ifc4EntityTypes::IfcTessellatedItem>  tessellatedItem =
+		//		std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcTessellatedItem>(geomItem);
+		//
+		//	if (tessellatedItem)
+		//	{
+		//		std::shared_ptr<emt::Ifc4EntityTypes::IfcTriangulatedFaceSet> faceSet =
+		//			std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcTriangulatedFaceSet>(tessellatedItem);
+		//
+		//		if (faceSet)
+		//		{
+		//			std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+		//
+		//			std::vector<std::vector<int>>& coordinatesIndices = faceSet->m_CoordIndex;
+		//			std::vector<std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcLengthMeasure>>>& pointList = faceSet->m_Coordinates->m_CoordList;
+		//
+		//			// obtain vertices from coordination list and add them to the new polygon
+		//			for (const auto& point : pointList)
+		//			{
+		//				carve::geom::vector<3> vertex = 
+		//					carve::geom::VECTOR(point[0]->m_value * lengthFactor, 
+		//					point[1]->m_value * lengthFactor,
+		//					point[2]->m_value * lengthFactor);
+		//
+		//				// apply transformation
+		//				vertex = pos * vertex;
+		//
+		//				polygon->addVertex(vertex);
+		//			}
+		//
+		//			// read coordinates index list and create faces
+		//			for (const std::vector<int>& indices : coordinatesIndices)
+		//			{
+		//				if (indices.size() < 3)
+		//				{
+		//					throw std::exception("invalid size of coordIndex of tessellated item.");
+		//				}
+		//
+		//				polygon->addFace(indices[0] - 1, indices[1] - 1, indices[2] - 1);
+		//			}
+		//
+		//			itemData->open_or_closed_polyhedrons.push_back(polygon);
+		//
+		//			return true;
+		//		}
+		//	}
+		//
+		//	return false;
+		//}
 	}
 }
 

@@ -45,17 +45,25 @@ textHeader = """/*
 */
 """
 
+
 def main(argv):
 	parser = argparse.ArgumentParser()
 	parser.add_argument("directory")
 
 	args = parser.parse_args()
+	pathlist = args.directory.split("\\")
+	
+	if len(pathlist) == 1:
+		pathlist = args.directory.split("/")
+	
+	schema = pathlist[len(pathlist) - 2]
 	
 	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f))]
 			
 	dir_path = os.path.dirname(os.path.realpath(__file__))
 	
-	emtBasicFile = open("EMTBasicIfc4x1EntityTypes.h", "w")
+	emtBasicFilename = "EMTBasic" + schema + "EntityTypes.h"
+	emtBasicFile = open(emtBasicFilename, "w")
 	print(textHeader, file=emtBasicFile)
 	print("#pragma once", file=emtBasicFile)
 	print("", file=emtBasicFile)
@@ -66,7 +74,7 @@ def main(argv):
 	classnames = ["\t\ttypename " + file[0:len(file) - 2] + "T" for file in onlyfiles]
 	print(*classnames,sep=",\n",file=emtBasicFile)
 	print("\t>", file=emtBasicFile)
-	print("\tstruct BasicIfc4x1EntityTypes", file=emtBasicFile)
+	print("\tstruct Basic" + schema + "EntityTypes", file=emtBasicFile)
 	print("\t{", file=emtBasicFile)
 	classnames = ["\t\ttypedef " + file[0:len(file) - 2] + "T " + file[0:len(file) - 2] + ";" for file in onlyfiles]
 	print(*classnames,sep="\n",file=emtBasicFile)
@@ -74,15 +82,15 @@ def main(argv):
 	print("}",file=emtBasicFile)
 	emtBasicFile.close()
 	
-	emtFile = open("EMTIfc4x1EntityTypes.h", "w")
+	emtFile = open("EMT" + schema + "EntityTypes.h", "w")
 	print(textHeader, file=emtFile)
 	print("#pragma once", file=emtFile)
 	print("", file=emtFile)
-	print("#include \"EMTBasicIfc4x1EntityTypes.h\"", file=emtFile)
+	print("#include \"EMTBasic" + schema + "EntityTypes.h\"", file=emtFile)
 	print("", file=emtFile)
 	print("namespace OpenInfraPlatform", file=emtFile)
 	print("{", file=emtFile)
-	print("\tnamespace IfcAlignment1x1", file=emtFile)
+	print("\tnamespace " + schema, file=emtFile)
 	print("\t{", file=emtFile)
 
 	classnames = ["\t\tclass " + file[0:len(file) - 2] + ";" for file in onlyfiles]
@@ -92,11 +100,11 @@ def main(argv):
 	
 	print("namespace emt", file=emtFile)
 	print("{", file=emtFile)
-	print("\ttypedef BasicIfc4x1EntityTypes<", file=emtFile)
-	classnames = ["\t\tOpenInfraPlatform::IfcAlignment1x1::" + file[0:len(file) - 2] for file in onlyfiles]
+	print("\ttypedef Basic" + schema + "EntityTypes<", file=emtFile)
+	classnames = ["\t\tOpenInfraPlatform::" + schema + "::" + file[0:len(file) - 2] for file in onlyfiles]
 	print(*classnames,sep=",\n",file=emtFile)
 	print("\t>",file=emtFile)
-	print("\tIfc4x1EntityTypes;",file=emtFile)
+	print("\t" + schema + "EntityTypes;",file=emtFile)
 	print("}",file=emtFile)
 	emtFile.close()	
 		

@@ -34,9 +34,26 @@ OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::Us
 
 void OpenInfraPlatform::UserInterface::ShowIFCtree::on_treeView_expanded(const QModelIndex &index)
 {
-	TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+	//std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+	//if(!index.isValid()) 
+	//	TreeItem* item = new TreeItem(ptr, nullptr);
+	//else 
+		TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+
+
+	if(item->childCount() == 0)
+		item->createChildren();
+
 	for(int i = 0; i < item->childCount(); i++) {
-		item->child(i)->createChildren();
+		auto child = item->child(i);
+		if(child->childCount() == 0)
+			child->createChildren();
+
+		for(int i = 0; i < child->childCount(); i++) {
+			auto grandchild = child->child(i);
+			if(grandchild->childCount() == 0)
+				grandchild->createChildren();
+		}
 	}
 }
 
@@ -47,6 +64,25 @@ void OpenInfraPlatform::UserInterface::ShowIFCtree::show()
 	auto entities = proxyModel->getIfc4x1Data();
 	ui_->treeView->setModel(new TreeModel(entities));
 
+	((QDialog*)this)->show();
+}
+
+//bool OpenInfraPlatform::UserInterface::ShowIFCtree::itemsExpandable(const QModelIndex &index) const
+//{
+//	TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+//	if(item->childCount() > 0)
+//		return true;
+//	else 
+//		return false;
+//}
+//
+//void OpenInfraPlatform::UserInterface::ShowIFCtree::setItemsExpandable(bool enable, const QModelIndex &index)
+//{
+//	if(enable == true) {
+//
+//	}
+//}
+
 
 	//QApplication app(argc, argv);
 
@@ -54,14 +90,10 @@ void OpenInfraPlatform::UserInterface::ShowIFCtree::show()
 	//file.open(QIODevice::ReadOnly);
 	//TreeModel* model = new TreeModel(file.readAll());
 	//file.close();
-	//
-	////QTreeView view;
+
+	//QTreeView view;
 	//ui_->treeView->setModel(model);
 	//view.setModel(&model);
 	//view.setWindowTitle(QObject::tr("Simple Tree Model"));
 	//view.show();
 	//return app.exec();
-
-	((QDialog*)this)->show();
-
-}

@@ -49,17 +49,6 @@ namespace emt
 		typename IfcAlarmT,
 		typename IfcAlarmTypeT,
 		typename IfcAlarmTypeEnumT,
-		typename IfcAlignmentT,
-		typename IfcAlignment2DHorizontalT,
-		typename IfcAlignment2DHorizontalSegmentT,
-		typename IfcAlignment2DSegmentT,
-		typename IfcAlignment2DVerSegCircularArcT,
-		typename IfcAlignment2DVerSegLineT,
-		typename IfcAlignment2DVerSegParabolicArcT,
-		typename IfcAlignment2DVerticalT,
-		typename IfcAlignment2DVerticalSegmentT,
-		typename IfcAlignmentCurveT,
-		typename IfcAlignmentTypeEnumT,
 		typename IfcAmountOfSubstanceMeasureT,
 		typename IfcAnalysisModelTypeEnumT,
 		typename IfcAnalysisTheoryTypeEnumT,
@@ -153,7 +142,6 @@ namespace emt
 		typename IfcCartesianPointT,
 		typename IfcCartesianPointListT,
 		typename IfcCartesianPointList2DT,
-		typename IfcCartesianPointList2DLabelledT,
 		typename IfcCartesianPointList3DT,
 		typename IfcCartesianTransformationOperatorT,
 		typename IfcCartesianTransformationOperator2DT,
@@ -171,7 +159,6 @@ namespace emt
 		typename IfcCircleT,
 		typename IfcCircleHollowProfileDefT,
 		typename IfcCircleProfileDefT,
-		typename IfcCircularArcSegment2DT,
 		typename IfcCivilElementT,
 		typename IfcCivilElementTypeT,
 		typename IfcClassificationT,
@@ -179,7 +166,6 @@ namespace emt
 		typename IfcClassificationReferenceSelectT,
 		typename IfcClassificationSelectT,
 		typename IfcClosedShellT,
-		typename IfcClothoidalArcSegment2DT,
 		typename IfcCoilT,
 		typename IfcCoilTypeT,
 		typename IfcCoilTypeEnumT,
@@ -278,7 +264,6 @@ namespace emt
 		typename IfcCurveInterpolationEnumT,
 		typename IfcCurveOnSurfaceT,
 		typename IfcCurveOrEdgeCurveT,
-		typename IfcCurveSegment2DT,
 		typename IfcCurveStyleT,
 		typename IfcCurveStyleFontT,
 		typename IfcCurveStyleFontAndScalingT,
@@ -307,7 +292,6 @@ namespace emt
 		typename IfcDiscreteAccessoryT,
 		typename IfcDiscreteAccessoryTypeT,
 		typename IfcDiscreteAccessoryTypeEnumT,
-		typename IfcDistanceExpressionT,
 		typename IfcDistributionChamberElementT,
 		typename IfcDistributionChamberElementTypeT,
 		typename IfcDistributionChamberElementTypeEnumT,
@@ -517,8 +501,6 @@ namespace emt
 		typename IfcImageTextureT,
 		typename IfcIndexedColourMapT,
 		typename IfcIndexedPolyCurveT,
-		typename IfcIndexedPolygonalFaceT,
-		typename IfcIndexedPolygonalFaceWithVoidsT,
 		typename IfcIndexedTextureMapT,
 		typename IfcIndexedTriangleTextureMapT,
 		typename IfcInductanceMeasureT,
@@ -528,7 +510,6 @@ namespace emt
 		typename IfcInterceptorTypeT,
 		typename IfcInterceptorTypeEnumT,
 		typename IfcInternalOrExternalEnumT,
-		typename IfcIntersectionCurveT,
 		typename IfcInventoryT,
 		typename IfcInventoryTypeEnumT,
 		typename IfcIonConcentrationMeasureT,
@@ -573,12 +554,9 @@ namespace emt
 		typename IfcLineT,
 		typename IfcLinearForceMeasureT,
 		typename IfcLinearMomentMeasureT,
-		typename IfcLinearPlacementT,
-		typename IfcLinearPositioningElementT,
 		typename IfcLinearStiffnessMeasureT,
 		typename IfcLinearVelocityMeasureT,
 		typename IfcLineIndexT,
-		typename IfcLineSegment2DT,
 		typename IfcLoadGroupTypeEnumT,
 		typename IfcLocalPlacementT,
 		typename IfcLogicalT,
@@ -662,17 +640,14 @@ namespace emt
 		typename IfcObjectTypeEnumT,
 		typename IfcOccupantT,
 		typename IfcOccupantTypeEnumT,
-		typename IfcOffsetCurveT,
 		typename IfcOffsetCurve2DT,
 		typename IfcOffsetCurve3DT,
-		typename IfcOffsetCurveByDistancesT,
 		typename IfcOpeningElementT,
 		typename IfcOpeningElementTypeEnumT,
 		typename IfcOpeningStandardCaseT,
 		typename IfcOpenShellT,
 		typename IfcOrganizationT,
 		typename IfcOrganizationRelationshipT,
-		typename IfcOrientationExpressionT,
 		typename IfcOrientedEdgeT,
 		typename IfcOuterBoundaryCurveT,
 		typename IfcOutletT,
@@ -722,11 +697,9 @@ namespace emt
 		typename IfcPointOnSurfaceT,
 		typename IfcPointOrVertexPointT,
 		typename IfcPolygonalBoundedHalfSpaceT,
-		typename IfcPolygonalFaceSetT,
 		typename IfcPolylineT,
 		typename IfcPolyLoopT,
 		typename IfcPortT,
-		typename IfcPositioningElementT,
 		typename IfcPositiveIntegerT,
 		typename IfcPositiveLengthMeasureT,
 		typename IfcPositivePlaneAngleMeasureT,
@@ -739,7 +712,6 @@ namespace emt
 		typename IfcPreDefinedPropertiesT,
 		typename IfcPreDefinedPropertySetT,
 		typename IfcPreDefinedTextFontT,
-		typename IfcPreferredSurfaceCurveRepresentationT,
 		typename IfcPresentableTextT,
 		typename IfcPresentationItemT,
 		typename IfcPresentationLayerAssignmentT,
@@ -826,8 +798,6 @@ namespace emt
 		typename IfcRecurrencePatternT,
 		typename IfcRecurrenceTypeEnumT,
 		typename IfcReferenceT,
-		typename IfcReferentT,
-		typename IfcReferentTypeEnumT,
 		typename IfcReflectanceMethodEnumT,
 		typename IfcRegularTimeSeriesT,
 		typename IfcReinforcementBarPropertiesT,
@@ -920,10 +890,7 @@ namespace emt
 		typename IfcSanitaryTerminalTypeT,
 		typename IfcSanitaryTerminalTypeEnumT,
 		typename IfcSchedulingTimeT,
-		typename IfcSeamCurveT,
 		typename IfcSectionalAreaIntegralMeasureT,
-		typename IfcSectionedSolidT,
-		typename IfcSectionedSolidHorizontalT,
 		typename IfcSectionedSpineT,
 		typename IfcSectionModulusMeasureT,
 		typename IfcSectionPropertiesT,
@@ -987,7 +954,6 @@ namespace emt
 		typename IfcSpecularHighlightSelectT,
 		typename IfcSpecularRoughnessT,
 		typename IfcSphereT,
-		typename IfcSphericalSurfaceT,
 		typename IfcStackTerminalT,
 		typename IfcStackTerminalTypeT,
 		typename IfcStackTerminalTypeEnumT,
@@ -1050,7 +1016,6 @@ namespace emt
 		typename IfcSubContractResourceTypeEnumT,
 		typename IfcSubedgeT,
 		typename IfcSurfaceT,
-		typename IfcSurfaceCurveT,
 		typename IfcSurfaceCurveSweptAreaSolidT,
 		typename IfcSurfaceFeatureT,
 		typename IfcSurfaceFeatureTypeEnumT,
@@ -1135,21 +1100,17 @@ namespace emt
 		typename IfcTimeStampT,
 		typename IfcTopologicalRepresentationItemT,
 		typename IfcTopologyRepresentationT,
-		typename IfcToroidalSurfaceT,
 		typename IfcTorqueMeasureT,
 		typename IfcTransformerT,
 		typename IfcTransformerTypeT,
 		typename IfcTransformerTypeEnumT,
 		typename IfcTransitionCodeT,
-		typename IfcTransitionCurveSegment2DT,
-		typename IfcTransitionCurveTypeT,
 		typename IfcTranslationalStiffnessSelectT,
 		typename IfcTransportElementT,
 		typename IfcTransportElementTypeT,
 		typename IfcTransportElementTypeEnumT,
 		typename IfcTrapeziumProfileDefT,
 		typename IfcTriangulatedFaceSetT,
-		typename IfcTriangulatedIrregularNetworkT,
 		typename IfcTrimmedCurveT,
 		typename IfcTrimmingPreferenceT,
 		typename IfcTrimmingSelectT,
@@ -1256,17 +1217,6 @@ namespace emt
 		typedef IfcAlarmT IfcAlarm;
 		typedef IfcAlarmTypeT IfcAlarmType;
 		typedef IfcAlarmTypeEnumT IfcAlarmTypeEnum;
-		typedef IfcAlignmentT IfcAlignment;
-		typedef IfcAlignment2DHorizontalT IfcAlignment2DHorizontal;
-		typedef IfcAlignment2DHorizontalSegmentT IfcAlignment2DHorizontalSegment;
-		typedef IfcAlignment2DSegmentT IfcAlignment2DSegment;
-		typedef IfcAlignment2DVerSegCircularArcT IfcAlignment2DVerSegCircularArc;
-		typedef IfcAlignment2DVerSegLineT IfcAlignment2DVerSegLine;
-		typedef IfcAlignment2DVerSegParabolicArcT IfcAlignment2DVerSegParabolicArc;
-		typedef IfcAlignment2DVerticalT IfcAlignment2DVertical;
-		typedef IfcAlignment2DVerticalSegmentT IfcAlignment2DVerticalSegment;
-		typedef IfcAlignmentCurveT IfcAlignmentCurve;
-		typedef IfcAlignmentTypeEnumT IfcAlignmentTypeEnum;
 		typedef IfcAmountOfSubstanceMeasureT IfcAmountOfSubstanceMeasure;
 		typedef IfcAnalysisModelTypeEnumT IfcAnalysisModelTypeEnum;
 		typedef IfcAnalysisTheoryTypeEnumT IfcAnalysisTheoryTypeEnum;
@@ -1360,7 +1310,6 @@ namespace emt
 		typedef IfcCartesianPointT IfcCartesianPoint;
 		typedef IfcCartesianPointListT IfcCartesianPointList;
 		typedef IfcCartesianPointList2DT IfcCartesianPointList2D;
-		typedef IfcCartesianPointList2DLabelledT IfcCartesianPointList2DLabelled;
 		typedef IfcCartesianPointList3DT IfcCartesianPointList3D;
 		typedef IfcCartesianTransformationOperatorT IfcCartesianTransformationOperator;
 		typedef IfcCartesianTransformationOperator2DT IfcCartesianTransformationOperator2D;
@@ -1378,7 +1327,6 @@ namespace emt
 		typedef IfcCircleT IfcCircle;
 		typedef IfcCircleHollowProfileDefT IfcCircleHollowProfileDef;
 		typedef IfcCircleProfileDefT IfcCircleProfileDef;
-		typedef IfcCircularArcSegment2DT IfcCircularArcSegment2D;
 		typedef IfcCivilElementT IfcCivilElement;
 		typedef IfcCivilElementTypeT IfcCivilElementType;
 		typedef IfcClassificationT IfcClassification;
@@ -1386,7 +1334,6 @@ namespace emt
 		typedef IfcClassificationReferenceSelectT IfcClassificationReferenceSelect;
 		typedef IfcClassificationSelectT IfcClassificationSelect;
 		typedef IfcClosedShellT IfcClosedShell;
-		typedef IfcClothoidalArcSegment2DT IfcClothoidalArcSegment2D;
 		typedef IfcCoilT IfcCoil;
 		typedef IfcCoilTypeT IfcCoilType;
 		typedef IfcCoilTypeEnumT IfcCoilTypeEnum;
@@ -1485,7 +1432,6 @@ namespace emt
 		typedef IfcCurveInterpolationEnumT IfcCurveInterpolationEnum;
 		typedef IfcCurveOnSurfaceT IfcCurveOnSurface;
 		typedef IfcCurveOrEdgeCurveT IfcCurveOrEdgeCurve;
-		typedef IfcCurveSegment2DT IfcCurveSegment2D;
 		typedef IfcCurveStyleT IfcCurveStyle;
 		typedef IfcCurveStyleFontT IfcCurveStyleFont;
 		typedef IfcCurveStyleFontAndScalingT IfcCurveStyleFontAndScaling;
@@ -1514,7 +1460,6 @@ namespace emt
 		typedef IfcDiscreteAccessoryT IfcDiscreteAccessory;
 		typedef IfcDiscreteAccessoryTypeT IfcDiscreteAccessoryType;
 		typedef IfcDiscreteAccessoryTypeEnumT IfcDiscreteAccessoryTypeEnum;
-		typedef IfcDistanceExpressionT IfcDistanceExpression;
 		typedef IfcDistributionChamberElementT IfcDistributionChamberElement;
 		typedef IfcDistributionChamberElementTypeT IfcDistributionChamberElementType;
 		typedef IfcDistributionChamberElementTypeEnumT IfcDistributionChamberElementTypeEnum;
@@ -1724,8 +1669,6 @@ namespace emt
 		typedef IfcImageTextureT IfcImageTexture;
 		typedef IfcIndexedColourMapT IfcIndexedColourMap;
 		typedef IfcIndexedPolyCurveT IfcIndexedPolyCurve;
-		typedef IfcIndexedPolygonalFaceT IfcIndexedPolygonalFace;
-		typedef IfcIndexedPolygonalFaceWithVoidsT IfcIndexedPolygonalFaceWithVoids;
 		typedef IfcIndexedTextureMapT IfcIndexedTextureMap;
 		typedef IfcIndexedTriangleTextureMapT IfcIndexedTriangleTextureMap;
 		typedef IfcInductanceMeasureT IfcInductanceMeasure;
@@ -1735,7 +1678,6 @@ namespace emt
 		typedef IfcInterceptorTypeT IfcInterceptorType;
 		typedef IfcInterceptorTypeEnumT IfcInterceptorTypeEnum;
 		typedef IfcInternalOrExternalEnumT IfcInternalOrExternalEnum;
-		typedef IfcIntersectionCurveT IfcIntersectionCurve;
 		typedef IfcInventoryT IfcInventory;
 		typedef IfcInventoryTypeEnumT IfcInventoryTypeEnum;
 		typedef IfcIonConcentrationMeasureT IfcIonConcentrationMeasure;
@@ -1780,12 +1722,9 @@ namespace emt
 		typedef IfcLineT IfcLine;
 		typedef IfcLinearForceMeasureT IfcLinearForceMeasure;
 		typedef IfcLinearMomentMeasureT IfcLinearMomentMeasure;
-		typedef IfcLinearPlacementT IfcLinearPlacement;
-		typedef IfcLinearPositioningElementT IfcLinearPositioningElement;
 		typedef IfcLinearStiffnessMeasureT IfcLinearStiffnessMeasure;
 		typedef IfcLinearVelocityMeasureT IfcLinearVelocityMeasure;
 		typedef IfcLineIndexT IfcLineIndex;
-		typedef IfcLineSegment2DT IfcLineSegment2D;
 		typedef IfcLoadGroupTypeEnumT IfcLoadGroupTypeEnum;
 		typedef IfcLocalPlacementT IfcLocalPlacement;
 		typedef IfcLogicalT IfcLogical;
@@ -1869,17 +1808,14 @@ namespace emt
 		typedef IfcObjectTypeEnumT IfcObjectTypeEnum;
 		typedef IfcOccupantT IfcOccupant;
 		typedef IfcOccupantTypeEnumT IfcOccupantTypeEnum;
-		typedef IfcOffsetCurveT IfcOffsetCurve;
 		typedef IfcOffsetCurve2DT IfcOffsetCurve2D;
 		typedef IfcOffsetCurve3DT IfcOffsetCurve3D;
-		typedef IfcOffsetCurveByDistancesT IfcOffsetCurveByDistances;
 		typedef IfcOpeningElementT IfcOpeningElement;
 		typedef IfcOpeningElementTypeEnumT IfcOpeningElementTypeEnum;
 		typedef IfcOpeningStandardCaseT IfcOpeningStandardCase;
 		typedef IfcOpenShellT IfcOpenShell;
 		typedef IfcOrganizationT IfcOrganization;
 		typedef IfcOrganizationRelationshipT IfcOrganizationRelationship;
-		typedef IfcOrientationExpressionT IfcOrientationExpression;
 		typedef IfcOrientedEdgeT IfcOrientedEdge;
 		typedef IfcOuterBoundaryCurveT IfcOuterBoundaryCurve;
 		typedef IfcOutletT IfcOutlet;
@@ -1929,11 +1865,9 @@ namespace emt
 		typedef IfcPointOnSurfaceT IfcPointOnSurface;
 		typedef IfcPointOrVertexPointT IfcPointOrVertexPoint;
 		typedef IfcPolygonalBoundedHalfSpaceT IfcPolygonalBoundedHalfSpace;
-		typedef IfcPolygonalFaceSetT IfcPolygonalFaceSet;
 		typedef IfcPolylineT IfcPolyline;
 		typedef IfcPolyLoopT IfcPolyLoop;
 		typedef IfcPortT IfcPort;
-		typedef IfcPositioningElementT IfcPositioningElement;
 		typedef IfcPositiveIntegerT IfcPositiveInteger;
 		typedef IfcPositiveLengthMeasureT IfcPositiveLengthMeasure;
 		typedef IfcPositivePlaneAngleMeasureT IfcPositivePlaneAngleMeasure;
@@ -1946,7 +1880,6 @@ namespace emt
 		typedef IfcPreDefinedPropertiesT IfcPreDefinedProperties;
 		typedef IfcPreDefinedPropertySetT IfcPreDefinedPropertySet;
 		typedef IfcPreDefinedTextFontT IfcPreDefinedTextFont;
-		typedef IfcPreferredSurfaceCurveRepresentationT IfcPreferredSurfaceCurveRepresentation;
 		typedef IfcPresentableTextT IfcPresentableText;
 		typedef IfcPresentationItemT IfcPresentationItem;
 		typedef IfcPresentationLayerAssignmentT IfcPresentationLayerAssignment;
@@ -2033,8 +1966,6 @@ namespace emt
 		typedef IfcRecurrencePatternT IfcRecurrencePattern;
 		typedef IfcRecurrenceTypeEnumT IfcRecurrenceTypeEnum;
 		typedef IfcReferenceT IfcReference;
-		typedef IfcReferentT IfcReferent;
-		typedef IfcReferentTypeEnumT IfcReferentTypeEnum;
 		typedef IfcReflectanceMethodEnumT IfcReflectanceMethodEnum;
 		typedef IfcRegularTimeSeriesT IfcRegularTimeSeries;
 		typedef IfcReinforcementBarPropertiesT IfcReinforcementBarProperties;
@@ -2127,10 +2058,7 @@ namespace emt
 		typedef IfcSanitaryTerminalTypeT IfcSanitaryTerminalType;
 		typedef IfcSanitaryTerminalTypeEnumT IfcSanitaryTerminalTypeEnum;
 		typedef IfcSchedulingTimeT IfcSchedulingTime;
-		typedef IfcSeamCurveT IfcSeamCurve;
 		typedef IfcSectionalAreaIntegralMeasureT IfcSectionalAreaIntegralMeasure;
-		typedef IfcSectionedSolidT IfcSectionedSolid;
-		typedef IfcSectionedSolidHorizontalT IfcSectionedSolidHorizontal;
 		typedef IfcSectionedSpineT IfcSectionedSpine;
 		typedef IfcSectionModulusMeasureT IfcSectionModulusMeasure;
 		typedef IfcSectionPropertiesT IfcSectionProperties;
@@ -2194,7 +2122,6 @@ namespace emt
 		typedef IfcSpecularHighlightSelectT IfcSpecularHighlightSelect;
 		typedef IfcSpecularRoughnessT IfcSpecularRoughness;
 		typedef IfcSphereT IfcSphere;
-		typedef IfcSphericalSurfaceT IfcSphericalSurface;
 		typedef IfcStackTerminalT IfcStackTerminal;
 		typedef IfcStackTerminalTypeT IfcStackTerminalType;
 		typedef IfcStackTerminalTypeEnumT IfcStackTerminalTypeEnum;
@@ -2257,7 +2184,6 @@ namespace emt
 		typedef IfcSubContractResourceTypeEnumT IfcSubContractResourceTypeEnum;
 		typedef IfcSubedgeT IfcSubedge;
 		typedef IfcSurfaceT IfcSurface;
-		typedef IfcSurfaceCurveT IfcSurfaceCurve;
 		typedef IfcSurfaceCurveSweptAreaSolidT IfcSurfaceCurveSweptAreaSolid;
 		typedef IfcSurfaceFeatureT IfcSurfaceFeature;
 		typedef IfcSurfaceFeatureTypeEnumT IfcSurfaceFeatureTypeEnum;
@@ -2342,21 +2268,17 @@ namespace emt
 		typedef IfcTimeStampT IfcTimeStamp;
 		typedef IfcTopologicalRepresentationItemT IfcTopologicalRepresentationItem;
 		typedef IfcTopologyRepresentationT IfcTopologyRepresentation;
-		typedef IfcToroidalSurfaceT IfcToroidalSurface;
 		typedef IfcTorqueMeasureT IfcTorqueMeasure;
 		typedef IfcTransformerT IfcTransformer;
 		typedef IfcTransformerTypeT IfcTransformerType;
 		typedef IfcTransformerTypeEnumT IfcTransformerTypeEnum;
 		typedef IfcTransitionCodeT IfcTransitionCode;
-		typedef IfcTransitionCurveSegment2DT IfcTransitionCurveSegment2D;
-		typedef IfcTransitionCurveTypeT IfcTransitionCurveType;
 		typedef IfcTranslationalStiffnessSelectT IfcTranslationalStiffnessSelect;
 		typedef IfcTransportElementT IfcTransportElement;
 		typedef IfcTransportElementTypeT IfcTransportElementType;
 		typedef IfcTransportElementTypeEnumT IfcTransportElementTypeEnum;
 		typedef IfcTrapeziumProfileDefT IfcTrapeziumProfileDef;
 		typedef IfcTriangulatedFaceSetT IfcTriangulatedFaceSet;
-		typedef IfcTriangulatedIrregularNetworkT IfcTriangulatedIrregularNetwork;
 		typedef IfcTrimmedCurveT IfcTrimmedCurve;
 		typedef IfcTrimmingPreferenceT IfcTrimmingPreference;
 		typedef IfcTrimmingSelectT IfcTrimmingSelect;

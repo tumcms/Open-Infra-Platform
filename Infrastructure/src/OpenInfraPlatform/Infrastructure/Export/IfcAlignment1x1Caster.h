@@ -4612,7 +4612,7 @@ namespace OpenInfraPlatform {
 			}
 
 			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcAccelerationMeasure") {
-				return f(*(std::dynamic_pointer_cast<IfcAccelerationMeasure>(ptr)));				
+				return f(*(std::dynamic_pointer_cast<IfcAccelerationMeasure>(ptr)));
 			}
 
 			if (name == "class OpenInfraPlatform::IfcAlignment1x1::IfcActionRequest") {

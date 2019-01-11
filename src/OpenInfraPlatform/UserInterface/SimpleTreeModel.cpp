@@ -24,7 +24,7 @@ OpenInfraPlatform::UserInterface::TreeModel::TreeModel(std::map<int, shared_ptr<
 		QList<QVariant> itemData;
 		itemData << QVariant(entity.first) << QVariant(entity.second->classname()) << QVariant("");
 		child->setItemData(itemData);
-		child->createChildren();
+		child->createChildren(); 
 		rootItem->appendChild(child);
 	}
 

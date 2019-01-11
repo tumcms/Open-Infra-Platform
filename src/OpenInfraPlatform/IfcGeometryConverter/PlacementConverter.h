@@ -97,8 +97,8 @@ namespace OpenInfraPlatform
 				{
 					if (axis2placement2d->m_RefDirection->m_DirectionRatios.size() > 1)
 					{
-						ref_direction.x = axis2placement2d->m_RefDirection->m_DirectionRatios[0];
-						ref_direction.y = axis2placement2d->m_RefDirection->m_DirectionRatios[1];
+						ref_direction.x = axis2placement2d->m_RefDirection->m_DirectionRatios[0]->m_value;
+						ref_direction.y = axis2placement2d->m_RefDirection->m_DirectionRatios[1]->m_value;
 						ref_direction.z = 0;
 					}
 				}
@@ -157,11 +157,11 @@ namespace OpenInfraPlatform
 				if (axis2placement3d->m_Axis)
 				{
 					// local z-axis
-					std::vector<double>& axis = axis2placement3d->m_Axis->m_DirectionRatios;
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcReal>>& axis = axis2placement3d->m_Axis->m_DirectionRatios;
 
 					if (axis.size() > 2)
 					{
-						local_z = carve::geom::VECTOR(axis[0], axis[1], axis[2]);
+						local_z = carve::geom::VECTOR(axis[0]->m_value, axis[1]->m_value, axis[2]->m_value);
 					}
 				}
 
@@ -169,9 +169,9 @@ namespace OpenInfraPlatform
 				{
 					if (axis2placement3d->m_RefDirection->m_DirectionRatios.size() > 2)
 					{
-						ref_direction.x = axis2placement3d->m_RefDirection->m_DirectionRatios[0];
-						ref_direction.y = axis2placement3d->m_RefDirection->m_DirectionRatios[1];
-						ref_direction.z = axis2placement3d->m_RefDirection->m_DirectionRatios[2];
+						ref_direction.x = axis2placement3d->m_RefDirection->m_DirectionRatios[0]->m_value;
+						ref_direction.y = axis2placement3d->m_RefDirection->m_DirectionRatios[1]->m_value;
+						ref_direction.z = axis2placement3d->m_RefDirection->m_DirectionRatios[2]->m_value;
 					}
 				}
 
@@ -379,11 +379,11 @@ namespace OpenInfraPlatform
 							throw std::runtime_error(ss.str().c_str());
 						}
 
-						local_x.x = trans_operator_2d->m_Axis1->m_DirectionRatios[0];
-						local_x.y = trans_operator_2d->m_Axis1->m_DirectionRatios[1];
+						local_x.x = *(trans_operator_2d->m_Axis1->m_DirectionRatios[0]);
+						local_x.y = *(trans_operator_2d->m_Axis1->m_DirectionRatios[1]);
 
-						local_y.x = trans_operator_2d->m_Axis2->m_DirectionRatios[0];
-						local_y.y = trans_operator_2d->m_Axis2->m_DirectionRatios[1];
+						local_y.x = *(trans_operator_2d->m_Axis2->m_DirectionRatios[0]);
+						local_y.y = *(trans_operator_2d->m_Axis2->m_DirectionRatios[1]);
 					}
 
 					shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2DnonUniform> non_uniform = dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator2DnonUniform>(transform_operator);
@@ -451,17 +451,17 @@ namespace OpenInfraPlatform
 							ss << "IfcCartesianTransformationOperator is not valid ";// << __func__;
 							throw std::runtime_error(ss.str().c_str());
 						}
-						local_x.x = axis1->m_DirectionRatios[0];
-						local_x.y = axis1->m_DirectionRatios[1];
-						local_x.z = axis1->m_DirectionRatios[2];
-
-						local_y.x = axis2->m_DirectionRatios[0];
-						local_y.y = axis2->m_DirectionRatios[1];
-						local_y.z = axis2->m_DirectionRatios[2];
-
-						local_z.x = axis3->m_DirectionRatios[0];
-						local_z.y = axis3->m_DirectionRatios[1];
-						local_z.z = axis3->m_DirectionRatios[2];
+						local_x.x = *(axis1->m_DirectionRatios[0]);
+						local_x.y = *(axis1->m_DirectionRatios[1]);
+						local_x.z = *(axis1->m_DirectionRatios[2]);
+																 
+						local_y.x = *(axis2->m_DirectionRatios[0]);
+						local_y.y = *(axis2->m_DirectionRatios[1]);
+						local_y.z = *(axis2->m_DirectionRatios[2]);
+															 
+						local_z.x = *(axis3->m_DirectionRatios[0]);
+						local_z.y = *(axis3->m_DirectionRatios[1]);
+						local_z.z = *(axis3->m_DirectionRatios[2]);
 					}
 
 					shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator3DnonUniform> non_uniform = dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator3DnonUniform>(transform_operator);
@@ -516,8 +516,12 @@ namespace OpenInfraPlatform
 				if (axis2placement3d->m_Axis)
 				{
 					// local z-axis
-					std::vector<double>& axis = axis2placement3d->m_Axis->m_DirectionRatios;
-
+					std::vector<double>& axis = std::vector<double>(axis2placement3d->m_Axis->m_DirectionRatios.size());
+					std::transform(axis2placement3d->m_Axis->m_DirectionRatios.begin(), axis2placement3d->m_Axis->m_DirectionRatios.end(),
+						axis.begin(),
+						[](const std::shared_ptr<typename IfcEntityTypesT::IfcReal>& val) {
+						return val->m_value;
+					});
 					if (axis.size() > 2)
 					{
 						local_z = carve::geom::VECTOR(axis[0], axis[1], axis[2]);

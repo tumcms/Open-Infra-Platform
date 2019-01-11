@@ -51,6 +51,8 @@ namespace OpenInfraPlatform
 
 		private Q_SLOTS:
 			void on_treeView_expanded(const QModelIndex &index);
+			//bool 	itemsExpandable(const QModelIndex &index) const;
+			//void 	setItemsExpandable(bool enable, const QModelIndex &index);
 
 
 		private:

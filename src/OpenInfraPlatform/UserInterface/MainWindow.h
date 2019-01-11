@@ -33,6 +33,7 @@
 #include "OpenInfraPlatform/UserInterface/View2DWindow/CurvatureWindow.h"
 #include "OpenInfraPlatform/UserInterface/ShowIFCtree.h"
 #include "OpenInfraPlatform/DataManagement/Data.h"
+#include "OpenInfraPlatform/DataManagement/ProgressCallback.h"
 #include "OpenInfraPlatform/UnitTesting/ImageTester.h"
 #include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidArcMeth2Dialog.h"
 #include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcMeth2Dialog.h"
@@ -49,12 +50,16 @@
 
 #include "qsimpleupdater.h"
 
+#include <qcustomplot.h>
+
 #include <BlueFramework/Application/UserInterface/MainWindow.h>
 #include "../../QtPropertyBrowser/qttreepropertybrowser.h"
 #include "../../QtPropertyBrowser/qtvariantproperty.h"
 #include <QMenuBar>
 #include <QProgressBar>
 #include <QProgressDialog>
+#include <QButtonGroup>
+#include <QColorDialog>
 #include <setjmp.h>
 
 #include "PrecisionTest.h"
@@ -123,6 +128,7 @@ namespace OpenInfraPlatform
 			void on_actionExportIIfcRoad_triggered();
 			void on_actionExportVerticalAlignment_triggered();
 			void on_actionExportLandInfra_triggered();
+			void on_actionExportPointCloud_triggered();
 			void on_actionHorizontal_alignment_triggered();
 			void on_actionIfcAlignment_buildingSMART_P6_Excel_Comparison_triggered();
 
@@ -133,7 +139,11 @@ namespace OpenInfraPlatform
 			void on_actionImport_IFC_Alignment_1_0_triggered();
 
 			void on_actionIFC_Alignment_1_1_Export_triggered();
+
+			//Proxy
 			void on_actionCreate_Accident_Report_triggered();
+			void on_actionFilterIfcModel_triggered();
+
 			void on_actionImport_OSM_File_triggered();
 			void on_actionLandXML_triggered();
 			void on_actionLoad_Bridge();
@@ -175,11 +185,78 @@ namespace OpenInfraPlatform
 			void on_checkBoxHighlightSelectedAlignmentSegment_clicked(bool checked);
 			void on_checkBoxShowDifferentAlignmentElements_clicked(bool checked);
 			void on_checkBoxShowMap_clicked (bool checked);
+
+			// Point Cloud
 			void on_checkBoxUseUniformColor_clicked(bool checked);
 			void on_checkBoxUseUniformSize_clicked(bool checked);
+
+			void on_checkBoxShowPointCloud_clicked(bool checked);
+
+			void on_pushButtonSelectUniformColor_clicked();
+			void on_pushButtonSelectSegmentedPointsColor_clicked();
+			void on_pushButtonSelectFilteredPointsColor_clicked();
+
+			void on_pushButtonApplyDuplicateFilter_clicked();
+			void on_pushButtonResetDuplicateFilter_clicked();
+
+			void on_pushButtonApplyDensityFilter_clicked();
+			void on_pushButtonResetDensityFilter_clicked();
+
+			void on_pushButtonApplyPositionFilter_clicked();
+			void on_pushButtonResetPositionFilter_clicked();
+
+			void on_pushButtonApplyRelativeHeightFilter_clicked();
+			void on_pushButtonResetRelativeHeightFilter_clicked();
+
+			void on_pushButtonFilterOriginal_clicked();
+			void on_pushButtonRestoreOriginal_clicked();
+
+			void on_pushButtonExtractSegmentation_clicked();
+			void on_pushButtonUndoSegmentation_clicked();
+
+			void on_pushButtonApplyPercentileSegmentation_clicked();
+			void on_pushButtonResetPercentileSegmentation_clicked();
+			void on_doubleSpinBoxPercentileSegmentationKernelRadius_valueChanged(double value);
+
+			void on_pushButtonComputePercentilesOnGrid_clicked();
+
+			void on_pushButtonApplyRateOfChangeSegmentation_clicked();
+			void on_pushButtonResetRateOfChangeSegmentation_clicked();
+			
+			void on_pushButtonComputeGrid_clicked();
+			void on_pushButtonResetGrid_clicked();
+
+			void on_pushButtonComputeChainage_clicked();
+			void on_pushButtonResetChainage_clicked();
+
+			void on_pushButtonApplySegmentRailways_clicked();
+			void on_pushButtonResetSegmentRailways_clicked();
+
+			void on_pushButtonComputeCenterlines_clicked();
+			void on_pushButtonResetCenterlines_clicked();
+
+			void on_pushButtonComputePairs_clicked();
+			void on_pushButtonResetPairs_clicked();
+
+			void on_pushButtonComputeCurvature_clicked();
+
+			void on_pushButtonPlotAlignment_clicked();
+
+			void on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value);
+
+			void on_pushButtonCalculateSections_clicked();
+			void on_doubleSpinBoxSectionSize_valueChanged(double value);
+			void on_horizontalSliderSectionSize_valueChanged(int value);
+
 			void on_comboBoxAlignment_currentIndexChanged( int index );
 			void on_doubleSpinBoxPointSize_valueChanged(double value);
 			void on_horizontalSliderPointSize_sliderMoved(int value);
+
+			void on_checkBoxShowSectionOOBB_clicked(bool checked);
+
+			void on_spinBoxOctreeLevel_valueChanged(int value);
+			void on_checkBoxShowOctree_clicked(bool checked);
+
 			void on_pushButtonDeleteSelectedAlignment_clicked();
 			void on_pushButtonDeleteSurface_clicked();
 			void on_variantEditor_currentItemChanged(QtBrowserItem * item);
@@ -256,6 +333,10 @@ namespace OpenInfraPlatform
 			QtVariantProperty*			itemEndStation_;
 			QtVariantProperty*			itemLength_;
 
+			QColorDialog				pcdUniformColorDialog_, pcdFilteredPointsColorDialog_, pcdSegmentedPointsColorDialog_;
+			QButtonGroup				radioButtons2D3D_, radioButtonsOriginalFiltered_;
+			buw::ReferenceCounted<DataManagement::ProgressCallback> callback_ = nullptr;
+
 			// Dialogs
 			CreateArcClothoidArcDialog*					ACA_ = nullptr;
 			CreateArcClothoidArcMeth2Dialog*			ACA2_ = nullptr;
@@ -284,6 +365,8 @@ namespace OpenInfraPlatform
 			AddGeoreferenceDialog*						addGeoreferenceDialog_ = nullptr;
 
 			QProgressBar*								progressBar_;
+
+			std::vector<QCustomPlot*>					plots_;
 			
 			int											inUnitTest_ = -1;
 			buw::ImageTester							tester_;

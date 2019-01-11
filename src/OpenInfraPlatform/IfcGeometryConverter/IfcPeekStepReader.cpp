@@ -17,6 +17,8 @@
 
 #include "IfcPeekStepReader.h"
 
+#include <QString>
+
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -105,6 +107,12 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 								{
 									return IfcSchema::IFC_BRIDGE;
 								}
+							}
+
+
+							QString schemaName = QString(schema.data());
+							if (schemaName.contains("IFC4x2") || schemaName.contains("Ifc4x2") || schemaName.contains("IFC4X2")) {
+								return IfcSchema::IFC_4x2;
 							}
 
 							// return corresponding IFC schema

@@ -38,7 +38,11 @@
 #include "OpenInfraPlatform/Infrastructure/Import/ImportIfc4x1.h"
 #include "OpenInfraPlatform/Infrastructure/Import/ImportIfcRoad.h"
 #include "OpenInfraPlatform/Infrastructure/Import/ImportRoadXML.h"
+
+// PCD
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
+#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudSection.h"
 
 // Export
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfc4x1ExcelReport.h"

@@ -35,9 +35,9 @@ void convertLandXMLtoIfcAlignment1x1ExcelComparison(const char* inputFilename, c
 	buw::ifcAlignmentExportDescription desc;
 	desc.exportAlignment = true;
 	desc.exportTerrain = true;
-	buw::ExportIfcAlignment1x1 sfc(desc, landxml_import.getAlignmentModel(), dem, "alignment.ifc");
+	buw::ExportIfc4x1 sfc(desc, landxml_import.getAlignmentModel(), dem, "alignment.ifc");
 
-	buw::IfcAlignment1x1ExcelReport ec(outputFilename, inputFilename, "alignment.ifc");
+	buw::ExportIfc4x1ExcelReport ec(outputFilename, inputFilename, "alignment.ifc");
 }
 
 void convertLandXMLtoIfcAlignment1x0(const std::string& inputFilename, const std::string& outputFilename) {
@@ -73,7 +73,7 @@ void convertLandXMLtoIfcAlignment1x1(const std::string& inputFilename, const std
 	desc.exportTerrain = true;
 	desc.exportAlignment = true;
 
-	buw::ExportIfcAlignment1x1 ifcExport(desc, parser.getAlignmentModel(), dem, outputFilename);
+	buw::ExportIfc4x1 ifcExport(desc, parser.getAlignmentModel(), dem, outputFilename);
 }
 
 void convertLandXMLtoSVG(const std::string& inputFilename, const std::string& outputFilename) {
