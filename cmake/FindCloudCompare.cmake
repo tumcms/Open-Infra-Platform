@@ -19,8 +19,43 @@
 #	CC_INCLUDE_DIRS
 #	CC_LIBRARIES
 
-find_path(CC_SOURCE_DIR NAMES CCPConfig.cmake.in CC/include/AutoSegmentationTools.h REQUIRED)
-find_path(CC_BUILD_DIR NAMES CloudCompareProjects.sln REQUIRED)
+find_path(CC_ROOT NAMES build/CloudCompareProjects.sln CC/include/AutoSegmentationTools.h HINTS "C:/thirdparty/${MSVC_VERSION_STRING}/x64/CloudCOmpare-master" REQUIRED)
+#find_path(CC_BUILD_DIR NAMES CloudCompareProjects.sln REQUIRED)
+
+if(NOT CC_ROOT)
+	set(CC_INSTALL_DIR "C:/thirdparty/${MSVC_VERSION_STRING}/x64" CACHE FILEPATH "Please specify an installation directory.")
+	option(CC_AUTOMATIC_INSTALL OFF)
+	if(CC_INSTALL_DIR AND CC_AUTOMATIC_INSTALL)
+		message(STATUS "Installing CloudCompare...")
+		set(CC_INSTALL_LOGFILE ${PROJECT_SOURCE_DIR}/external/log_install_cc.txt)
+		if(${MSVC_VERSION_STRING} STREQUAL "vs2015")
+			set(CC_BUILD_SCRIPT "Build_CloudCompare_Visual Studio 14 2015 Win64.cmd")
+		elseif(${MSVC_VERSION_STRING} STREQUAL "vs2017")
+			set(CC_BUILD_SCRIPT "Build_CloudCompare_Visual Studio 15 2017 Win64.cmd")		
+		else()
+			message(FATAL_ERROR "Couldn't determine VS version.")
+		endif()
+		execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/${CC_BUILD_SCRIPT}"
+			${CC_INSTALL_DIR}
+			"${CMAKE_COMMAND}"
+			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
+			RESULT_VARIABLE RESULT
+			ERROR_FILE "${CC_INSTALL_LOGFILE}"
+			OUTPUT_FILE "${CC_INSTALL_LOGFILE}")
+		if(RESULT EQUAL 0)
+			set(CC_ROOT ${CC_INSTALL_DIR}/CloudCompare-master CACHE PATH "CC root" FORCE)
+			set(CC_SOURCE_DIR ${CC_ROOT})
+			set(CC_BUILD_DIR ${CC_ROOT}/build)
+			message(STATUS "Successfully installed CloudCompare.")
+		else()
+			message(SEND_ERROR "Installation failed. Processes exited with code ${RESULT}. Output was written to ${CC_INSTALL_LOGFILE}")
+		endif()
+		set(CC_AUTOMATIC_INSTALL OFF CACHE BOOL "Automatically install CloudCompare" FORCE)
+	endif()
+else()
+	set(CC_SOURCE_DIR ${CC_ROOT})
+	set(CC_BUILD_DIR ${CC_ROOT}/build)
+endif()
 
 if(CC_SOURCE_DIR)
 	set(CC_INCLUDE_DIRS
@@ -28,6 +63,7 @@ if(CC_SOURCE_DIR)
 		${CC_SOURCE_DIR}/libs/qCC_db 
 		${CC_SOURCE_DIR}/libs/qCC_io
 		${CC_SOURCE_DIR}/libs/qCC_glWindow
+		CACHE STRING "CloudCompare include directories" FORCE
 	)
 endif()
 
@@ -63,7 +99,8 @@ if(CC_BUILD_DIR)
 	set(CC_DEBUG_BINARIES ${CC_DEBUG_BINARIES} ${CC_BUILD_DIR}/CC/Debug/CC_CORE_LIBd.dll)
 	set(CC_RELEASE_BINARIES ${CC_RELEASE_BINARIES} ${CC_BUILD_DIR}/CC/Release/CC_CORE_LIB.dll)
 	
-	set(CC_LIBRARIES ${CC_DB_LIBRARIES} ${CC_IO_LIBRARIES} ${CC_GL_LIBRARIES} ${CC_CORE_LIBRARIES})
+	set(CC_LIBRARIES ${CC_DB_LIBRARIES} ${CC_IO_LIBRARIES} ${CC_GL_LIBRARIES} ${CC_CORE_LIBRARIES} CACHE STRING "CloudCompare libraries" FORCE)
+	set(CC_BINARIES debug ${CC_DEBUG_BINARIES} optimized ${CC_RELEASE_BINARIES} CACHE STRING "CloudCompare shared library files" FORCE)
 endif()
 
 function(CLOUDCOMPARE_COPY_BINARIES TargetDirectory)

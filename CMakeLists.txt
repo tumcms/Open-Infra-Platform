@@ -508,6 +508,9 @@ CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
 # Oklabi Copy Binaries
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
+# zlic Copy Binaries
+ZLIB_COPY_BINARIES(${CMAKE_BINARY_DIR})
+
 # QtCopyBinaries
 add_custom_target(Qt5CopyBinaries
 	COMMAND ${CMAKE_COMMAND} -E copy ${QT5_DLLS_RELEASE} ${CMAKE_BINARY_DIR}/Release
@@ -566,11 +569,11 @@ add_custom_target(QSimpleUpdaterCopyBinaries
 )
 
 
-add_custom_target(ZLIBCopyBinaries
-  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Debug/zlibd.dll           ${CMAKE_BINARY_DIR}/Debug
-  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Release/zlib.dll          ${CMAKE_BINARY_DIR}/Release
-  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/RelWithDebInfo/zlib.dll   ${CMAKE_BINARY_DIR}/RelWithDebInfo
-)
+#add_custom_target(ZLIBCopyBinaries
+#  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Debug/zlibd.dll           ${CMAKE_BINARY_DIR}/Debug
+#  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Release/zlib.dll          ${CMAKE_BINARY_DIR}/Release
+#  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/RelWithDebInfo/zlib.dll   ${CMAKE_BINARY_DIR}/RelWithDebInfo
+#)
 
 #-------------------------------------------------------------------------------------
 # Add carve thirdparty library without corrupting our own install target.
@@ -646,7 +649,8 @@ set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
 set_target_properties(CloudCompareCopyBinaries 				PROPERTIES FOLDER "Copy")
 set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
-set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
+# Switched to static gtest on 28.11.2018 / Revision 388+
+#set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
 set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 #set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")

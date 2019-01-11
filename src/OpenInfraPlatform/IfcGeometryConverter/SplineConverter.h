@@ -29,7 +29,7 @@
 #include "GeomUtils.h"
 
 #include "EMTIfc4EntityTypes.h"
-#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
+#include "OpenInfraPlatform/Ifc4/model/Model.h"
 
 namespace OpenInfraPlatform
 {
