@@ -31,7 +31,7 @@ namespace OpenInfraPlatform
 			explicit IfcPeekStepReader();
 			virtual ~IfcPeekStepReader();
 
-			enum class IfcSchema : short { IFC_2, IFC_4, IFC_4x1, IFC_4x2, IFC_ROAD, IFC_BRIDGE, UNKNOWN };
+			enum class IfcSchema : short { IFC_2, IFC_4, IFC_4x1, IFC_4x2, IFC4X2_BIM4ROAD, IFC_ROAD, IFC_BRIDGE, UNKNOWN };
 			static IfcSchema parseIfcHeader(const std::string& filename);
 		};
 	}

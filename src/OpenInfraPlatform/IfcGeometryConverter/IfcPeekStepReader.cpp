@@ -108,9 +108,12 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 									return IfcSchema::IFC_BRIDGE;
 								}
 							}
-
-
+							
 							QString schemaName = QString(schema.data());
+
+							if (schemaName == "IFC4x2_ROAD") {
+								return IfcSchema::IFC4X2_BIM4ROAD;
+							}
 							if (schemaName.contains("IFC4x2") || schemaName.contains("Ifc4x2") || schemaName.contains("IFC4X2")) {
 								return IfcSchema::IFC_4x2;
 							}

@@ -6,6 +6,8 @@ wget.exe --no-check-certificate https://github.com/google/googletest/archive/rel
 7za.exe x  %cd%\release-1.8.0.zip -o%cd%
 del %cd%\release-1.8.0.zip
 call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
+
 C:
 cd %cd%\googletest-release-1.8.0
 %cmake_command% ^

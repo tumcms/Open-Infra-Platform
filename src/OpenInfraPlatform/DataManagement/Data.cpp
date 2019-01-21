@@ -38,6 +38,7 @@
 //#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h"
 
 #include "OpenInfraPlatform/IfcGeometryConverter/EMTIFC4X2_DRAFT_1EntityTypes.h"
+#include "OpenInfraPlatform/IfcGeometryConverter/EMTIFC4X2_BIM4ROADEntityTypes.h"
 
 #include "OpenInfraPlatform/DataManagement/IfcZipper.h"
 
@@ -54,6 +55,11 @@
 #include "OpenInfraPlatform/IFC4X2_DRAFT_1/model/Model.h"
 #include "OpenInfraPlatform/IFC4X2_DRAFT_1/model/Exception.h"
 #include "OpenInfraPlatform/IFC4X2_DRAFT_1/reader/IfcStepReader.h"
+
+//BIM4ROAD
+#include "OpenInfraPlatform/IFC4X2_BIM4ROAD/model/Model.h"
+#include "OpenInfraPlatform/IFC4X2_BIM4ROAD/model/Exception.h"
+#include "OpenInfraPlatform/IFC4X2_BIM4ROAD/reader/IfcStepReader.h"
 
 #include "OpenInfraPlatform/IfcBridge/model/IfcBridgeModel.h"
 #include "OpenInfraPlatform/IfcBridge/model/IfcBridgeException.h"
@@ -651,6 +657,11 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 				//using namespace OpenInfraPlatform::IfcBridge;
 				//importIfcGeometry<emt::IfcBridgeEntityTypes, UnitConverter, IfcBridgeModel, IfcStepReader,
 				//	IfcBridgeException, IfcBridgeEntity>(tempIfcGeometryModel_, filename);
+			}
+			else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X2_BIM4ROAD) {
+				using namespace OpenInfraPlatform::IFC4X2_BIM4ROAD;
+				importIfcGeometry<emt::IFC4X2_BIM4ROADEntityTypes, UnitConverter, IFC4X2_BIM4ROADModel, IfcStepReader,
+					IFC4X2_BIM4ROADException, IFC4X2_BIM4ROADEntity>(ifcImporter_, tempIfcGeometryModel_, filename);
 			}
 			else if(ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4x2) {
 				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing IfcBridge ").append(filename));
