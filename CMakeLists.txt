@@ -24,7 +24,7 @@ project(OpenInfraPlatform)
 #-------------------------------------------------------------------------------------
 # CMake definitions and propertiess
 #-------------------------------------------------------------------------------------
-
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_DEBUG_POSTFIX "d")

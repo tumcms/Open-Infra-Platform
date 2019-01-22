@@ -9,6 +9,7 @@
 #include "OpenInfraPlatform\IfcAlignment1x1\model\Model.h"
 
 #include <visit_struct/visit_struct.hpp>
+#include <type_traits>
 
 namespace OpenInfraPlatform {
 	namespace UserInterface {
@@ -18,9 +19,12 @@ namespace OpenInfraPlatform {
 		protected:
 			QList<IfcTreeItemBase*> m_childItems;
 			QList<QVariant> m_itemData;
-			IfcTreeItemBase *m_parentItem;
+			IfcTreeItemBase *m_parentItem = nullptr;
 
 		public:
+
+			IfcTreeItemBase() = default;
+
 			void appendChild(IfcTreeItemBase *child)
 			{
 				m_childItems.append(child);
@@ -81,7 +85,7 @@ namespace OpenInfraPlatform {
 		
 		template <typename T> class IfcTreeItem : public IfcTreeItemBase {
 		public:
-			IfcTreeItem(std::shared_ptr<T> &data, IfcTreeItemBase* parent = nullptr)
+			IfcTreeItem(T &data, IfcTreeItemBase* parent = nullptr)
 				: m_managedData(data)
 			{
 				m_parentItem = parent;
@@ -95,6 +99,18 @@ namespace OpenInfraPlatform {
 
 			void setValue(const T& rhs) { value = rhs; }
 
+			typedef struct {
+				template <typename T>
+				void operator()(const char * name, const std::shared_ptr<T> & value) {
+					std::cerr << name << ": " << *value << std::endl;
+				}
+
+				template <typename T>
+				void operator()(const char * name, const T & value) {
+					std::cerr << name << ": " << *value << std::endl;
+				}
+
+			} visitor_;
 			
 			virtual void createChildren() override
 			{
@@ -103,8 +119,9 @@ namespace OpenInfraPlatform {
 			
 			
 		private:
-			std::shared_ptr<T> m_managedData = nullptr;			
+			T m_managedData;			
 		};
+			
 
 		//Here's the trick: dynamic_cast rather than virtual
 		template<class T> const T& IfcTreeItemBase::getValue() const

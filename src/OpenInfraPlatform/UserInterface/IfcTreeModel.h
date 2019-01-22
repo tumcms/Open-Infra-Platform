@@ -18,18 +18,21 @@ namespace OpenInfraPlatform {
 			IfcTreeItemBase *rootItem;
 
 		public:
-			template <typename T> IfcTreeModel(std::map<int, shared_ptr<T>> &data, QObject *parent = 0)
+			template <typename T> IfcTreeModel(std::map<int, T> &data, QObject *parent = 0)
 				: QAbstractItemModel(parent)
-			{
-				std::shared_ptr<T> ptr = nullptr;
-				rootItem = new IfcTreeItem<T>(ptr, nullptr);
+			{				
+				rootItem = new IfcTreeItemBase();
 
 				for (auto entity : data) {
 					IfcTreeItem<T>* child = new IfcTreeItem<T>(entity.second, rootItem);
 					QList<QVariant> itemData;
-					itemData << QVariant(entity.first) << QVariant(entity.second->classname()) << QVariant("");
+
+					std::stringstream ss;
+					entity.second->getStepLine(ss);
+					std::string line = ss.str();
+
+					itemData << QVariant(entity.first) << QVariant(entity.second->classname()) << QVariant(line.data());
 					child->setItemData(itemData);
-					child->createChildren();
 					rootItem->appendChild(child);
 				}
 
