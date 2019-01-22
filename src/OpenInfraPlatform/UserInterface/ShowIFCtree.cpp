@@ -18,8 +18,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "ShowIFCtree.h"
 //#include "Ifc4x1TreeModel.h"   
 #include "OpenInfraPlatform/DataManagement/Data.h"
-#include "SimpleTreeModel.h"
-#include "SimpleTreeItem.h"
+//#include "SimpleTreeModel.h"
+//#include "SimpleTreeItem.h"
+
+#include "IfcTreeModel.h"
 
 OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::UserInterface::View * view, QWidget * parent)
 	:ui_(new Ui::ShowIFCtree),
@@ -34,13 +36,8 @@ OpenInfraPlatform::UserInterface::ShowIFCtree::ShowIFCtree(OpenInfraPlatform::Us
 
 void OpenInfraPlatform::UserInterface::ShowIFCtree::on_treeView_expanded(const QModelIndex &index)
 {
-	//std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
-	//if(!index.isValid()) 
-	//	TreeItem* item = new TreeItem(ptr, nullptr);
-	//else 
-		TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-
-
+	IfcTreeItemBase* item = static_cast<IfcTreeItemBase*>(index.internalPointer());
+	
 	if(item->childCount() == 0)
 		item->createChildren();
 
@@ -62,38 +59,7 @@ void OpenInfraPlatform::UserInterface::ShowIFCtree::show()
 {
 	auto proxyModel = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
 	auto entities = proxyModel->getIfc4x1Data();
-	ui_->treeView->setModel(new TreeModel(entities));
+	ui_->treeView->setModel(new IfcTreeModel(entities));
 
 	((QDialog*)this)->show();
 }
-
-//bool OpenInfraPlatform::UserInterface::ShowIFCtree::itemsExpandable(const QModelIndex &index) const
-//{
-//	TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
-//	if(item->childCount() > 0)
-//		return true;
-//	else 
-//		return false;
-//}
-//
-//void OpenInfraPlatform::UserInterface::ShowIFCtree::setItemsExpandable(bool enable, const QModelIndex &index)
-//{
-//	if(enable == true) {
-//
-//	}
-//}
-
-
-	//QApplication app(argc, argv);
-
-	//QFile file("default.txt");
-	//file.open(QIODevice::ReadOnly);
-	//TreeModel* model = new TreeModel(file.readAll());
-	//file.close();
-
-	//QTreeView view;
-	//ui_->treeView->setModel(model);
-	//view.setModel(&model);
-	//view.setWindowTitle(QObject::tr("Simple Tree Model"));
-	//view.show();
-	//return app.exec();
