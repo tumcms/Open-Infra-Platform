@@ -111,7 +111,7 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 							
 							QString schemaName = QString(schema.data());
 
-							if (schemaName == "IFC4x2_ROAD") {
+							if (schemaName == "IFC4X2_BIM4ROAD" || schemaName == "IFC4X2_ROAD") {
 								return IfcSchema::IFC4X2_BIM4ROAD;
 							}
 							if (schemaName.contains("IFC4x2") || schemaName.contains("Ifc4x2") || schemaName.contains("IFC4X2")) {

@@ -58,7 +58,7 @@ def main(argv):
 	
 	schema = pathlist[len(pathlist) - 2]
 	
-	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f))]
+	onlyfiles = [f for f in listdir(args.directory) if isfile(join(args.directory, f)) and join(args.directory, f).endswith(".h")]
 			
 	dir_path = os.path.dirname(os.path.realpath(__file__))
 	

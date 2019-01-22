@@ -630,6 +630,7 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_2 ||
 			ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4 ||
 			ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4x2 ||
+			ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X2_BIM4ROAD ||
 			ifcSchema == IfcPeekStepReader::IfcSchema::IFC_BRIDGE)
 		{
 			tempIfcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
@@ -659,6 +660,8 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 				//	IfcBridgeException, IfcBridgeEntity>(tempIfcGeometryModel_, filename);
 			}
 			else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X2_BIM4ROAD) {
+				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing IFC4X2_BIM4ROAD ").append(filename));
+
 				using namespace OpenInfraPlatform::IFC4X2_BIM4ROAD;
 				importIfcGeometry<emt::IFC4X2_BIM4ROADEntityTypes, UnitConverter, IFC4X2_BIM4ROADModel, IfcStepReader,
 					IFC4X2_BIM4ROADException, IFC4X2_BIM4ROADEntity>(ifcImporter_, tempIfcGeometryModel_, filename);
