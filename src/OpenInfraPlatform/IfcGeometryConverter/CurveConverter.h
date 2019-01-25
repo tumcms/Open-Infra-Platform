@@ -586,38 +586,32 @@ namespace OpenInfraPlatform {
 
 								  // HORIZONTAL.
 									
-									// (1) Get segment information.
-
 									// Iterate over horizontal segments. 
 									for(auto it_hor_segments : HorSegmentsVec) {
 
-									// Get segment information necessary for calculation via pointer to segment. 
+									// Get "global" segment information necessary for calculation via pointer to segment. 
 									std::shared_ptr<typename IfcEntityTypesT::IfcCurveSegment2D> horCurveGeometry =
 										it_hor_segments.itHorizontal_->m_CurveGeometry;
 
-									// Get segment start station and segment type.
-									Station startStation = it_hor_segments.itHorizontal_->segmentStations_[0];		
-									double segmentLength = it_hor_segments.itHorizontal_->segmentLength_;			
-									enum SegType = it_hor_segments.itHorizontal_->segmentType_;		
-									double startStationX = it_hor_segments.segmentStations_[0]->x_;
-									double startStationY = it_hor_segments.segmentStations_[0]->y_;
-									double startDirection = it_hor_segments.horizontalSegment->startDirection_;
-
+									double startStationX = it_hor_segments.itHorizontal_->segmentStations_[0]->x_;
+									double startStationY = it_hor_segments.itHorizontal_->segmentStations_[0]->y_;
+									double segmentLength = it_hor_segments.itHorizontal_->segmentLength_;
+									enum SegType = it_hor_segments.itHorizontal_->segmentType_;
 
 									// HORIZONTAL LINE SEGMENT.
 									if(segType == isLine) {
-
-									// (2) Get line segment information.
+			
 									// Iterate over stations in line segment.
-
 										for(auto it_hor_stations = it_hor_segments.itHorizontal_->segmentStations_.begin()) {
 
-										double startStationX = it_hor_segments.itHorizontal_->segmentStations_[0].x_;					
-										double startStationY = it_hor_segments.itHorizontal_->segmentStations_[0].y_;					
-										double startDirection = it_hor_segments.itHorizontal_->horizontalSegment.startDirection_;		
-											
-									// (3) Calculate x and y coordinates for each horizontal station within line segment. 
+									// (1) Get "station-specific" segment information.
 
+											double startDirection = it_hor_stations.startDirection_;
+
+									// (2) Get linesegment information.
+									// No additional information provided.
+
+									// (3) Calculate x and y coordinates for each horizontal station within line segment. 
 											if(it_hor_stations.x_ != 0) { // Skips calculation if x,y coordinate is already there.
 												it_hor_stations.x_ = startStation.x_ + segmentLength * cos(it_hor_segments.startDirection_);
 												it_hor_stations.y_ = startStation.y_ + segmentLength * sin(it_hor_segments.startDirection_);
@@ -629,11 +623,14 @@ namespace OpenInfraPlatform {
 									 // HORIZONTAL CIRCULAR ARC SEGMENT.
 									if(segType == isCircArc) {
 
-									// (2) Get circular arc segment information.
 									// Iterate over stations in circular arc segment.
 
 										for(auto it_hor_stations = it_hor_segments.itHorizontal_->segmentStations_.begin()) {
 
+											// (1) Get "station-specific" segment information.
+											double startDirection = it_hor_stations.startDirection_;
+
+											// (2) Get circular arc segment information.
 											std::shared_ptr<typename IfcEntityTypesT::IfcCircularArcSegment2D> circular_arc_segment_2D =
 												dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircularArcSegment2D>(horCurveGeometry);
 
@@ -677,8 +674,7 @@ namespace OpenInfraPlatform {
 												}
 												else {
 													angleBeta = angleAlpha + distanceStartToStation / radius;
-												}
-												
+												}	
 												it_hor_stations.x_ = centerX + radius * cos(angleBeta);
 												it_hor_stations.y_ = centerY + radius * sin(angleBeta);
 												} // end if 
@@ -690,11 +686,13 @@ namespace OpenInfraPlatform {
 
 										if(segType == isTrans) {
 
-											// (2) Get transition curve segment information.
 											// Iterate over stations in transition curve segment.
-
 											for(auto it_hor_stations = it_hor_segments.itHorizontal_->segmentStations_.begin()) {
 
+											// (1) Get "station-specific" segment information.
+												double startDirection = it_hor_stations.startDirection_;
+
+											// (2) Get transition curve segment information.
 											std::shared_ptr<typename IfcEntityTypesT::IfcTransitionCurveSegment2D> trans_curve_segment_2D =
 												dynamic_pointer_cast<typename IfcEntityTypesT::IfcTransitionCurveSegment2D>(horCurveGeometry);
 
@@ -704,10 +702,10 @@ namespace OpenInfraPlatform {
 
 											if(!trans_start_radius) {
 												BLUE_LOG(warning) << "IfcTransitionCurve: Start radius NIL, interpreted as infinite. (Segment ID: " << it_segment->getId() << ").";
-												double d_radius = 0;
+												double startRadius = 0;
 											}
 											else {
-												double d_radius = trans_start_radius->m_value * length_factor;
+												double startRadius = trans_start_radius->m_value * length_factor;
 											}
 
 											// m_EndRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
@@ -728,7 +726,7 @@ namespace OpenInfraPlatform {
 												BLUE_LOG(error) << "No direction information for start of IfcTransitionCurveSegment2D (counterclockwise/clockwise). (Segment ID: " << it_segment->getId() << ").";
 												return;
 											}
-											bool b_trans_is_start_ccw = trans_is_start_ccw->m_value;
+											bool is_start_ccw = trans_is_start_ccw->m_value;
 
 											// m_IsEndRadiusCCW type IfcBoolean
 											std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> trans_is_end_ccw =
@@ -737,7 +735,7 @@ namespace OpenInfraPlatform {
 												BLUE_LOG(error) << "No direction information for end of IfcTransitionCurveSegment2D (counterclockwise/clockwise). (Segment ID: " << it_segment->getId() << ").";
 												return;
 											}
-											bool b_trans_is_end_ccw = trans_is_end_ccw->m_value;
+											bool is_end_ccw = trans_is_end_ccw->m_value;
 
 											// m_TransitionCurveType type IfcTransitionCurveType
 											std::shared_ptr<typename IfcEntityTypesT::IfcTransitionCurveType> trans_curve_type =
@@ -774,11 +772,16 @@ namespace OpenInfraPlatform {
 												} // end stations iteration.
 												break;
 
-		/*TO DO: finish, integral*/				case(BLOSSCURVE):
+											case(BLOSSCURVE):
 													if(it_hor_stations.x_ != 0) { // Skip calculation if x,y coordinate is already there.
-														double teta = pow(l, 3) / (endRadius * pow(segmentLength, 2)) - pow(l, 4) / (2 * endRadius * pow(segmentLength, 3));
-														double x = cos(teta) * l;
-														//double y =...
+		/*TO DO: check math interpretation?*/			
+														// Integration durch Substitution(s.Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
+														double teta_up = pow(distAlong+segmentLength, 3) / (endRadius * pow(segmentLength, 2)) - pow(distAlong+segmentLength, 4) / (2 * endRadius * pow(segmentLength, 3)); //values for upper boundary of integral
+														double teta_low = pow(distAlong, 3) / (endRadius * pow(segmentLength, 2)) - pow(distAlong, 4) / (2 * endRadius * pow(segmentLength, 3)); //values for lower boundary of integral
+														double teta_derivative = 2 * pow(distAlong, 2) / endRadius*pow(segmentLength, 2) - 4 * pow(distAlong, 3) / 2 * endRadius*pow(segmentLength, 3);
+														double x = 1 / teta_derivative * (sin(teta_up) - sin(teta_low));
+														double y = 1 / teta_derivative * (-cos(teta_up) + cos(teta_low));
+														
 														it_hor_stations.x_ = x;
 														it_hor_stations.y_ = y;
 													}
@@ -801,6 +804,7 @@ namespace OpenInfraPlatform {
 															- (pow(segmentLength, 3) / (48 * pow(M_PI, 4) * pow(endRadius, 3)))
 															* (pow(psi, 4) / 4 + pow(sin(psi), 2) * cos(psi) / 3 - 16 * cos(psi) / 3 + 3 * pow(psi, 2) * cos(psi)
 																- 6 * psi * sin(psi) + 3 * pow(psi, 2) / 4 - 3 * psi * sin(2 * psi) / 4 - 3 * cos(2 * psi) / 8 + 137 / 24));
+
 													it_hor_stations.x_ = x;
 													it_hor_stations.y_ = y;
 												} 
@@ -813,13 +817,20 @@ namespace OpenInfraPlatform {
 												it_hor_stations.x_ = x;
 												it_hor_stations.y_ = y;
 												break;
-
-		/*TO DO: finish, integral*/			case (SINECURVE):
-		/*TO DO: it_hor_segments?*/				double psi = (2 * M_PI * distAlong) / segmentLength;
-												it_hor_segments.x_ = distAlong*(1 - pow(segmentLength, 2) / (32 * pow(M_PI, 4)*pow(endRadius, 2)) - (pow(segmentLength, 3) / (3840 * pow(M_PI, 5)*pow(endRadius, 2))
+							
+											case (SINECURVE):
+												double psi = (2 * M_PI * distAlong) / segmentLength;
+												double x = distAlong*(1 - pow(segmentLength, 2) / (32 * pow(M_PI, 4)*pow(endRadius, 2)) - (pow(segmentLength, 3) / (3840 * pow(M_PI, 5)*pow(endRadius, 2))
 													* (3 * pow(psi, 5) - 20 * pow(psi, 3) + 30 * psi - (240 - 60 * pow(psi, 2)*sin(psi) + 30 * cos(psi)*sin(psi) + 120 * psi*cos(psi));
-												double teta = pow(distAlong, 2) / (2 * endRadius*segmentLength) + (segmentLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*distAlong / segmentLength) - 1);
-												it_hor_segments.y_ = 0;		
+
+												// Integration durch Substitution (s. Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
+												double teta_up = pow((distAlong+segmentLength), 2) / (2 * endRadius*segmentLength) + (segmentLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(distAlong+segmentLength) / segmentLength) - 1);
+												double teta_low = pow((distAlong + segmentLength), 2) / (2 * endRadius*segmentLength) + (segmentLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(distAlong) / segmentLength) - 1);
+												double teta_derivative = 2 * distAlong / 2 * endRadius*segmentLength;
+												double y = 1 / teta_derivative * (sin(teta_up) - sin(teta_low));
+
+												it_hor_stations.x_ = x;
+												it_hor_stations.y_ = y;
 												break;
 
 										} // end if isTrans
@@ -830,35 +841,35 @@ namespace OpenInfraPlatform {
 
 								// VERTICAL.
 
-								// (1) Get segment information.
-
 								// Iterate over vertical segments. 
 								for(auto it_ver_segments : VerSegmentsVec)
 
-								// Get segment information necessary for calculation via pointer to segment. 
 								std::shared_ptr<typename IfcEntityTypesT::IfcCurveSegment2D> horCurveGeometry =
 								it_ver_segments.itVertical_->m_CurveGeometry;
 
-								// Get SEGMENT information.
-								Station startStation = it_ver_segments.itHorizontal_->segmentStations_[0];
-								double segmentLength = it_hor_segments.itHorizontal_->segmentLength_;
-								enum SegType = it_hor_segments.itHorizontal_->segmentType_;
-								
-								// Get VERTICAL SEGMENT information.	
+								// Get "global" segment information necessary for calculation via pointer to segment. 
+								double startStationX = it_ver_segments.itVertical_.segmentStations_[0]->x_;
+								double startStationY = it_ver_segments.itVertical_.segmentStations_[0]->y_;
+								enum SegType = it_ver_segments.itVertical_->segmentType_;	
 								double startDistAlong = it_ver_segments.itVertical_->segmentStations_.startDistAlong_;
-								double horizontalLength = it_ver_segments.itVertical_->segmentStations_.horizontalLength_;
-								double startHeight = it_ver_segments.itVertical_->segmentStations_.startHeight_;
-								double startGradient = it_ver_segments.itVertical_->segmentStations_.startGradient_;
-
-
+								
 									// VERTICAL LINE SEGMENT.
 									if(segType == isLine) {
 
-										// (2) Iterate over stations in line segment.
+										// Iterate over stations in line segment.
 										for(auto it_ver_stations = it_ver_segments.itVertical_->segmentStations_.begin()) {
 
+											// (1) Get "station-specific" segment information.
+											double startHeight = it_ver_stations.startHeight_;
+											double startGradient = it_ver_stations.startGradient_;
+											double horizontalLength = it_ver_stations.horizontalLength_;
+
+											// (2) Get line segment information.
+											// No additional information provided.
+
+											// (3) Calculate x and y coordinates for each vertical station within line segment. 
 											if(it_ver_stations.z_ != 0) { // Skip calculation if z coordinate is already there.
-												double distanceToStartStation = it_ver_stations.distAlong_ - it_ver_segments.startDistAlong_;
+												double distanceToStartStation = horizontalLength - startDistAlong;
 												it_ver_stations.z_ = startGradient * distanceToStartStation;
 											} // end if 
 										} // end if isLine
@@ -867,11 +878,15 @@ namespace OpenInfraPlatform {
 
 										if(segType == isCircArc) {
 
-											// (2) Get circular arc segment information.
 											// Iterate over stations in circular arc segment.
-
 											for(auto it_hor_stations = it_hor_segments.itHorizontal_->segmentStations_.begin()) {
 
+												// (1) Get "station-specific" segment information.
+												double startHeight = it_ver_stations.startHeight_;
+												double startGradient = it_ver_stations.startGradient_;
+												double horizontalLength = it_ver_stations.horizontalLength_;
+
+												// (2) Get circular arc segment information.
 												std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc> v_seg_circ_arc_2D =
 													dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc>(horCurveGeometry);
 
@@ -912,11 +927,16 @@ namespace OpenInfraPlatform {
 
 											 // PARABOLIC ARC SEGMENT
 											if(segType == isParArc) {
-
-												// (2) Get parabolic arc segment information.
+												
 												// Iterate over stations in parabolic arc segment.
 												for(auto it_hor_stations = it_hor_segments.itHorizontal_->segmentStations_.begin()) {
 
+													// (1) Get "station-specific" segment information.
+													double startHeight = it_ver_stations.startHeight_;
+													double startGradient = it_ver_stations.startGradient_;
+													double horizontalLength = it_ver_stations.horizontalLength_;
+
+													// (2) Get parabolic arc segment information.
 													std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc> v_seg_par_arc_2D =
 														dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc>(horCurveGeometry);
 
