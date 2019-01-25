@@ -135,7 +135,7 @@ namespace OpenInfraPlatform {
 								int fragmentsCount_ = 0;														// number of fragments within segment. 
 								double fragmentsLength_;														// length of one fragment within segment.
 								
-								Segment(std::vector<Station> segmentStations, segmentType segType, int fragmentsCount, double fragmentsLength)
+								Segment(std::vector<Station> segmentStations, segmentType segType, int fragmentsCount, double fragmentsLength
 									: segmentStations_(segmentStations), segType_(segType), fragmentsCount_(fragmentsCount), fragmentsLength_(fragmentsLength))
 								{
 								}
@@ -772,15 +772,18 @@ namespace OpenInfraPlatform {
 												} // end stations iteration.
 												break;
 
-											case(BLOSSCURVE):
+		/*TO DO: check math interpretation?*/	case(BLOSSCURVE):
 													if(it_hor_stations.x_ != 0) { // Skip calculation if x,y coordinate is already there.
-		/*TO DO: check math interpretation?*/			
+					
 														// Integration durch Substitution(s.Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
-														double teta_up = pow(distAlong+segmentLength, 3) / (endRadius * pow(segmentLength, 2)) - pow(distAlong+segmentLength, 4) / (2 * endRadius * pow(segmentLength, 3)); //values for upper boundary of integral
+														double teta_up = pow(distAlong + segmentLength, 3) / (endRadius * pow(segmentLength, 2)) - pow(distAlong + segmentLength, 4) / (2 * endRadius * pow(segmentLength, 3)); //values for upper boundary of integral
 														double teta_low = pow(distAlong, 3) / (endRadius * pow(segmentLength, 2)) - pow(distAlong, 4) / (2 * endRadius * pow(segmentLength, 3)); //values for lower boundary of integral
-														double teta_derivative = 2 * pow(distAlong, 2) / endRadius*pow(segmentLength, 2) - 4 * pow(distAlong, 3) / 2 * endRadius*pow(segmentLength, 3);
-														double x = 1 / teta_derivative * (sin(teta_up) - sin(teta_low));
-														double y = 1 / teta_derivative * (-cos(teta_up) + cos(teta_low));
+
+														double teta_deriv_up = 2 * pow(distAlong + segmentLength, 2) / endRadius*pow(segmentLength, 2) - 4 * pow(distAlong + segmentLength, 3) / 2 * endRadius*pow(segmentLength, 3);
+														double teta_deriv_low = 2 * pow(distAlong, 2) / endRadius*pow(segmentLength, 2) - 4 * pow(distAlong, 3) / 2 * endRadius*pow(segmentLength, 3);
+
+														double x = sin(teta_up) / teta_deriv_up - sin(teta_low) / teta_deriv_low;
+														double y = -cos(teta_up) / teta_deriv_up + cos(teta_low) / teta_deriv_low;
 														
 														it_hor_stations.x_ = x;
 														it_hor_stations.y_ = y;
@@ -818,16 +821,19 @@ namespace OpenInfraPlatform {
 												it_hor_stations.y_ = y;
 												break;
 							
-											case (SINECURVE):
+	/*TO DO: check math interpretation?*/	case (SINECURVE):
 												double psi = (2 * M_PI * distAlong) / segmentLength;
 												double x = distAlong*(1 - pow(segmentLength, 2) / (32 * pow(M_PI, 4)*pow(endRadius, 2)) - (pow(segmentLength, 3) / (3840 * pow(M_PI, 5)*pow(endRadius, 2))
 													* (3 * pow(psi, 5) - 20 * pow(psi, 3) + 30 * psi - (240 - 60 * pow(psi, 2)*sin(psi) + 30 * cos(psi)*sin(psi) + 120 * psi*cos(psi));
 
 												// Integration durch Substitution (s. Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
-												double teta_up = pow((distAlong+segmentLength), 2) / (2 * endRadius*segmentLength) + (segmentLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(distAlong+segmentLength) / segmentLength) - 1);
+												double teta_up = pow((distAlong + segmentLength), 2) / (2 * endRadius*segmentLength) + (segmentLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(distAlong + segmentLength) / segmentLength) - 1);
 												double teta_low = pow((distAlong + segmentLength), 2) / (2 * endRadius*segmentLength) + (segmentLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(distAlong) / segmentLength) - 1);
-												double teta_derivative = 2 * distAlong / 2 * endRadius*segmentLength;
-												double y = 1 / teta_derivative * (sin(teta_up) - sin(teta_low));
+
+												double teta_deriv_up = 2 * (distAlong + segmentLength) / 2 * endRadius*segmentLength;
+												double teta_deriv_low = 2 * distAlong / 2 * endRadius*segmentLength;
+
+												double y = sin(teta_up) / teta_deriv_up - sin(teta_low) / teta_deriv_low;
 
 												it_hor_stations.x_ = x;
 												it_hor_stations.y_ = y;
@@ -836,7 +842,6 @@ namespace OpenInfraPlatform {
 										} // end if isTrans
 									} // end iteration over horizontal stations
 								} // end iteration over horizontal segments
-
 
 
 								// VERTICAL.
@@ -917,9 +922,9 @@ namespace OpenInfraPlatform {
 												// Calculate z coordinate according to isConvex
 												if(it_ver_stations.z_ == 0) { // Skip calculation if z coordinate is already there.
 													if(is_convex == true) {
-														it_ver_stations.z_ = startDistAlong + sqrt(pow(radius, 2) - pow(horizontalLength - distAlongCentre, 2); // Crest (decreasing gradiant)
+														it_ver_stations.z_ = startDistAlong + sqrt( pow(radius, 2) - pow(horizontalLength - distAlongCentre, 2) ); // Crest (decreasing gradiant)
 													else
-														it_ver_stations.z_ = startDistAlong - sqrt(pow(radius, 2) - pow(horizontalLength - distAlongCentre, 2); // Sag (increasing gradiant)
+														it_ver_stations.z_ = startDistAlong - sqrt( pow(radius, 2) - pow(horizontalLength - distAlongCentre, 2) ); // Sag (increasing gradiant)
 													} // end isConvex
 												} // end if
 											} // end isCircArc
