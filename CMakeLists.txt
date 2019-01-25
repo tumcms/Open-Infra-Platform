@@ -18,6 +18,7 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
+cmake_policy(SET CMP0074 NEW)
 project(OpenInfraPlatform)
 
 #-------------------------------------------------------------------------------------
@@ -71,6 +72,16 @@ if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     message("Please switch to x64 build.")
 	return()
 endif()
+
+
+#------------------------------------------------------------------------------
+# Fix for MSVC 1915 / Visual Studio 2017 15.8
+#------------------------------------------------------------------------------
+
+if(MSVC_VERSION GREATER_EQUAL 1915)
+	add_compile_definitions(_ENABLE_EXTENDED_ALIGNED_STORAGE)
+endif()
+
 
 #------------------------------------------------------------------------------
 # Look for thirdparty libraries in some predefined locations.
@@ -320,24 +331,23 @@ file(GLOB OpenInfraPlatform_Core_Source 							src/OpenInfraPlatform/Core/*.*)
 file(GLOB OpenInfraPlatform_Data_Source 							src/OpenInfraPlatform/Data/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Source 					src/OpenInfraPlatform/DataManagement/*.*)
-file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			#src/OpenInfraPlatform/IfcGeometryConverter/*.*)
-	src/OpenInfraPlatform/IfcGeometryConverter/CarveHeaders.h
-	src/OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.*
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc2x3EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4x1EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfcBridgeEntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.*
-	src/OpenInfraPlatform/IfcGeometryConverter/GeometrySettings.*
-	src/OpenInfraPlatform/IfcGeometryConverter/GeomUtils.*
-	src/OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.*
-	src/OpenInfraPlatform/IfcGeometryConverter/RecursiveCallException.h
-	src/OpenInfraPlatform/IfcGeometryConverter/UnhandledRepresentationException.h
-)
+file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)
+	#src/OpenInfraPlatform/IfcGeometryConverter/CarveHeaders.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc2x3EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4x1EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfcBridgeEntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/GeometrySettings.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/GeomUtils.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/RecursiveCallException.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/UnhandledRepresentationException.h)
 
 # UnitTesting for images is currently not working but still in the code so files have to be collected
 file(GLOB OpenInfraPlatform_UnitTesting_Source						src/OpenInfraPlatform/UnitTesting/*.*)
@@ -487,7 +497,7 @@ target_link_libraries( OpenInfraPlatform.UI
 	QSimpleUpdater
 	${LIBLAS_LIBRARIES}
 	carve
-	${ZLIB_LIBRARIES}
+	ZLIB::ZLIB
 	Rpcrt4.lib
 	${CC_LIBRARIES}
 	fftw3.lib
@@ -728,12 +738,12 @@ endmacro()
 installData(${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Shader)
 installData(${PROJECT_SOURCE_DIR}/Data)
 installData(${PROJECT_SOURCE_DIR}/testdata)
-installData(${CMAKE_BINARY_DIR}/schema)
-installData(${CMAKE_BINARY_DIR}/res)
-installData(${CMAKE_BINARY_DIR}/fbliste)
+installData(${CMAKE_BINARY_DIR}/$<CONFIG>/schema)
+installData(${CMAKE_BINARY_DIR}/$<CONFIG>/res)
+installData(${CMAKE_BINARY_DIR}/$<CONFIG>/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${CC_RELEASE_BINARIES}
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll ${CMAKE_BINARY_DIR}/Release/tinyxml2.dll
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 	
@@ -756,5 +766,5 @@ install(FILES ${Qt5_NETWORK_PLUGINS_DLLS}
 install(FILES ${Qt5_ICONENGINES_PLUGINS_DLLS}
 	DESTINATION bin/plugins/iconengines
 	COMPONENT oip_thirdparty)
-
+	
 include(CPack)

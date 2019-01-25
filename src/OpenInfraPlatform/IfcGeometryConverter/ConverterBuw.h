@@ -31,6 +31,9 @@
 #include "CarveHeaders.h"
 #include "GeometryInputData.h"
 
+#include "EMTIFC4X2_DRAFT_1EntityTypes.h"
+#include "OpenInfraPlatform/IFC4X2_DRAFT_1/model/Model.h"
+
 /***********************************************************************************************/
 
 typedef buw::VertexPosition3Color3Normal3 VertexLayout;

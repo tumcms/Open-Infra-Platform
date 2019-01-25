@@ -39,6 +39,7 @@
 #include <map>
 
 #include "OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.h"
+#include "OpenInfraPlatform/IfcGeometryConverter/IfcImporter.h"
 
 #include "OpenInfraPlatform/Infrastructure/Import/Import.h"
 #include "OpenInfraPlatform/Infrastructure/Export/Export.h"
@@ -339,6 +340,7 @@ namespace OpenInfraPlatform
 			buw::ReferenceCounted<buw::PointCloud>							pointCloud_ = nullptr;
 			buw::ReferenceCounted<buw::RailwayModel>						railwayModel_ = nullptr;
 			buw::ReferenceCounted<buw::ProxyModel>							proxyModel_;
+			buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcImporterBase>	ifcImporter_ = nullptr;
 
 
 			// temporary data for asynchronous operations
