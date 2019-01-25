@@ -123,6 +123,12 @@ add_definitions(-D_UNICODE 			# Unicode rules
 				-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
 ) # -DNOMINMAX does not work because GDI+ needs these macros
 
+if(MSVC_VERSION GREATER 1900)
+add_definitions(-D_ENABLE_EXTENDED_ALIGNED_STORAGE)
+endif()
+set(CMAKE_CXX_STANDARD 14)
+
+
 if (WIN32)
 	# Standard:          /DWIN32 /D_WINDOWS /W3 /Zm1000 /EHsc /GR
 	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR /MP /openmp /bigobj")
