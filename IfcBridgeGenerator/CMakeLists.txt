@@ -12,6 +12,9 @@ set(IfcBridgeGenerator_UIS
 
 QT5_WRAP_UI(IfcBridgeGenerator_UIS_H ${IfcBridgeGenerator_UIS})
 
+set_property(SOURCE ${IfcBridgeGenerator_UIS_H} PROPERTY SKIP_AUTOMOC ON)
+
+
 include_directories(
 	${BLUEFRAMEWORK_INCLUDE_DIR}
 	${Boost_INCLUDE_DIR}
