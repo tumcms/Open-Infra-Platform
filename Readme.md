@@ -43,3 +43,5 @@ TUM Open Infra Platform uses several software libraries. The corresponding licen
 * qhull (http://www.qhull.org/) without modification. ({root_dir}/Licenses/qhull.COPYING.txt)
 * raptor2 (http://librdf.org/raptor/) (GPL v2 License) ({root_dir}/Licenses/raptor2.COPYING.txt)
 * libLAS 1.6 (https://www.liblas.org/) (BSD License) ({root_dir}/Licenses/liblas.LICENSE.txt)
+
+## TEST
