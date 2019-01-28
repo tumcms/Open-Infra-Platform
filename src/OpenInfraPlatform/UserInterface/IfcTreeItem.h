@@ -106,19 +106,22 @@ namespace OpenInfraPlatform {
 				}
 
 				template <typename T>
+				void operator()(const char * name, const std::vector<T> & value) {
+					std::cerr << name << ": " << "vector" << std::endl;
+				}
+
+				template <typename T>
 				void operator()(const char * name, const T & value) {
-					std::cerr << name << ": " << *value << std::endl;
+					std::cerr << name << ": " << value << std::endl;
 				}
 
 			} visitor_;
 			
 			virtual void createChildren() override
 			{
-
+				visit_struct::for_each(*m_managedData, visitor_{});
 			}
 			
-			
-		private:
 			T m_managedData;			
 		};
 			

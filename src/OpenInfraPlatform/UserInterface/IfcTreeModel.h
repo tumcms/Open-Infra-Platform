@@ -27,13 +27,17 @@ namespace OpenInfraPlatform {
 					IfcTreeItem<T>* child = new IfcTreeItem<T>(entity.second, rootItem);
 					QList<QVariant> itemData;
 
-					std::stringstream ss;
-					entity.second->getStepLine(ss);
-					std::string line = ss.str();
+					
 
-					itemData << QVariant(entity.first) << QVariant(entity.second->classname()) << QVariant(line.data());
+					itemData << QVariant(entity.first) << QVariant(entity.second->classname()) << QVariant("");
 					child->setItemData(itemData);
 					rootItem->appendChild(child);
+				}
+
+				for (int idx = 0; idx < rootItem->childCount(); idx++) {
+					auto child = (IfcTreeItem<T>*)(rootItem->child(idx));
+
+					
 				}
 
 			}
