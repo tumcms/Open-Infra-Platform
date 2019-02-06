@@ -72,28 +72,179 @@ namespace OpenInfraPlatform
 
 			}
 
+
+			/*	SolidModelConverter.h
+			For IFC4x1:
+
+			IfcCsgSolid						http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometricmodelresource/lexical/ifccsgsolid.htm
+
+			IfcManifoldSolidBrep			http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometricmodelresource/lexical/ifcmanifoldsolidbrep.htm
+				IfcAdvancedBrep*
+				IfcFacetedBrep
+
+			IfcSectionedSolid				http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometricmodelresource/lexical/ifcsectionedsolid.htm
+				IfcSectionedSolidHorizontal*
+
+			IfcSweptAreaSolid				http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometricmodelresource/lexical/ifcsweptareasolid.htm
+				IfcExtrudedAreaSolid*
+				IfcFixedReferenceSweptAreaSolid*
+				IfcRevolvedAreaSolid*
+				IfcSurfaceCurveSweptAreaSolid
+
+			IfcSweptDiskSolid				http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometricmodelresource/lexical/ifcsweptdisksolid.htm
+				IfcSweptDiskSolidPolygonal*
+
+			*: not implemented in SolidModelConverter.h
+
+			*/
+
 			void convertIfcSolidModel(const std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
 				std::stringstream& err)
 			{
+				// *****************************************************************************************************************************************//
+				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
+				// *****************************************************************************************************************************************//
+
+				shared_ptr<typename IfcEntityTypesT::IfcCsgSolid> csg_solid =
+					dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgSolid>(solidModel);
+				if(csg_solid) 
+				{
+					// Get tree root expression (attribute 1). 
+					shared_ptr<typename IfcEntityTypesT::IfcCsgSelect> csg_select = csg_solid->m_TreeRootExpression;
+
+					if(dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select)) 
+					{
+						shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> csg_select_boolean_result =
+							dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select);
+						convertIfcBooleanResult(csg_select_boolean_result, pos, itemData, err);
+					}
+					else if(dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(csg_select)) 
+					{
+						shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_select_primitive_3d =
+							dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(csg_select);
+						convertIfcCsgPrimitive3D(csg_select_primitive_3d, pos, itemData, err);
+					}
+					return;
+				} //endif csg_solid
+
+				// *****************************************************************************************************************************************//
+				//	IfcManifoldSolidBrep SUBTYPE of IfcSolidModel																							//
+				//	ABSTRACT SUPERTYPE of IfcAdvancedBrep, IfcFacetedBrep																					//
+				// *****************************************************************************************************************************************//
+
+				shared_ptr<typename IfcEntityTypesT::IfcManifoldSolidBrep> manifoldSolidBrep =
+					dynamic_pointer_cast<typename IfcEntityTypesT::IfcManifoldSolidBrep>(solidModel);
+
+				if(manifoldSolidBrep) {
+
+					// Handle IFC4 advanced boundary representations
+					if(convertAdvancedBrep(manifoldSolidBrep, pos, itemData, err)) {
+						return;
+					}
+
+					// Get outer (attribute 1).
+					std::shared_ptr<typename IfcEntityTypesT::IfcClosedShell>& outerShell = manifoldSolidBrep->m_Outer;
+
+					if(outerShell) {
+						// first convert outer shell
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace> >& facesOuterShell = outerShell->m_CfsFaces;
+						std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
+
+						try {
+							m_faceConverter->convertIfcFaceList(facesOuterShell, pos, inputDataOuterShell, err);
+						}
+						catch(...) {
+							//return;
+						}
+						std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
+							inputDataOuterShell->open_or_closed_polyhedrons.end(),
+							std::back_inserter(itemData->closed_polyhedrons));
+					} //endif outer
+
+					  // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
+					shared_ptr<typename IfcEntityTypesT::IfcAdvancedBrep> advanced_brep =
+						dynamic_pointer_cast<typename IfcEntityTypesT::IfcAdvancedBrep>(manifoldSolidBrep);
+					if(advanced_brep) 
+					{
+						// TO DO: formal proposition: every face shall be of the type IfcAdvancedFace.
+						// TO DO: implement
+
+						// IfcAdvancedBrepWithVoids SUBTYPE of IfcAdvancedBrep
+						shared_ptr<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids> advanced_brep_with_voids =
+							dynamic_pointer_cast<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids>(advanced_brep);
+						if(advanced_brep_with_voids)
+						{
+							// Get voids (attribute 2). 
+							std::shared_ptr<typename IfcEntityTypesT::IfcClosedShell> voids =
+								advanced_brep_with_voids->m_Voids;
+
+						} //endif advanced_brep_with_voids
+					} // endif advanced_brep
+
+					// (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
+					shared_ptr<typename IfcEntityTypesT::IfcFacetedBrep> faceted_brep =
+						dynamic_pointer_cast<typename IfcEntityTypesT::IfcFacetedBrep>(manifoldSolidBrep);
+					if(faceted_brep) {
+						// No additional attributes
+						// TO DO: informal propositions: all bounding loops are IfcPolyLoop, all vertices shall be referenced by all polyloops, i.e. each cartesian point referenced by at least three polyloops. 
+						return;
+					}
+
+					err << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname() << std::endl;
+					return;
+				} //endif manifoldSolidBrep
+
+				// *****************************************************************************************************************************************//
+				//	IfcSectionedSolid SUBTYPE of IfcSolidModel																							  //
+				//	ABSTRACT SUPERTYPE of IfcSectionedSolidHorizontal																					  //
+				// *****************************************************************************************************************************************//
+
+				shared_ptr<typename IfcEntityTypesT::IfcSectionedSolid> sectioned_solid =
+					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolid>(solidModel);
+
+				if(sectioned_solid) 
+				{
+					//Get directrix and cross sections (attributes 1-2).
+					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
+						sectioned_solid->m_Directrix;	// TO DO: next level
+					std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> cross_sections =
+						sectioned_solid->m_CrossSections; // TO DO: next level
+
+// TO DO: implement, check for formal propositions. 
+
+					// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
+					shared_ptr<typename IfcEntityTypesT::IfcSectionedSolidHorizontal> sectioned_solid_horizontal =
+						dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>(sectioned_solid);
+
+					if(sectioned_solid_horizontal) 						
+					{
+						// Get cross section positions and fixed axis vertical (attributes 3-4).
+						std::shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression> cross_section_positions =
+							sectioned_solid_horizontal->m_CrossSectionPositions;	
+						std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> fixed_axis_vertical =
+							sectioned_solid_horizontal->m_FixedAxisVertical; 
+
+// TO DO: implement, check for formal propositions. 
+
+					} //endif sectioned_solid_horizontal
+				} //endif sectioned_solid
+
+				// *****************************************************************************************************************************************//
+				//	IfcSweptAreaSolid SUBTYPE of IfcSolidModel																								//
+				//	ABSTRACT SUPERTYPE of IfcExtrudedAreaSolid, IfcFixedReferenceSweptAreaSolid, IfcRevolvedAreaSolid, IfcSurfaceCurveSweptAreaSolid		//
+				// *****************************************************************************************************************************************//
+
 				shared_ptr<typename IfcEntityTypesT::IfcSweptAreaSolid> swept_area_solid =
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptAreaSolid>(solidModel);
+				
 				if (swept_area_solid)
 				{
-					//ENTITY IfcSweptAreaSolid
-					//	ABSTRACT SUPERTYPE OF(ONEOF(IfcExtrudedAreaSolid, IfcFixedReferenceSweptAreaSolid, IfcRevolvedAreaSolid, IfcSurfaceCurveSweptAreaSolid))
-					//	SUBTYPE OF IfcSolidModel;
-					//	SweptArea	 :	IfcProfileDef;
-					//	Position	 :	OPTIONAL IfcAxis2Placement3D;
-					//	WHERE
-					//	SweptAreaType	 :	SweptArea.ProfileType = IfcProfileTypeEnum.Area;
-					//END_ENTITY;
-
+					// Get swept area and position (attributes 1-2). 
 					shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& swept_area = swept_area_solid->m_SweptArea;
-
-					// check if local coordinate system is specified for extrusion
-					carve::math::Matrix swept_area_pos(pos);
+					
+					carve::math::Matrix swept_area_pos(pos);	// check if local coordinate system is specified for extrusion
 					if (swept_area_solid->m_Position)
 					{
 						double length_factor = m_unitConverter->getLengthInMeterFactor();
@@ -102,51 +253,81 @@ namespace OpenInfraPlatform
 						swept_area_pos = pos*swept_area_pos;
 					}
 
+					// (1/4) IfcExtrudedAreaSolid SUBTYPE of IfcSweptAreaSolid
 					shared_ptr<typename IfcEntityTypesT::IfcExtrudedAreaSolid> extruded_area =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcExtrudedAreaSolid>(swept_area_solid);
 					if (extruded_area)
 					{
+						// Get extruded direction and depth (attributes 3-4). 
+						std::shared_ptr<typename IfcEntityTypesT::IfcDirection> extrude_direction =
+							extruded_area->m_ExtrudeDirection;
+						std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> depth =
+							extruded_area->m_Depth;
+
 						convertIfcExtrudedAreaSolid(extruded_area, swept_area_pos, itemData, err);
+						return;
+// TO DO: implement
+					}
+
+					// (2/4) IfcFixedReferenceSweptAreaSolid SUBTYPE of IfcSweptAreaSolid
+					shared_ptr<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixed_ref_swept_area_solid =
+						dynamic_pointer_cast<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>(swept_area_solid);
+					if(fixed_ref_swept_area_solid) {
+						// Get directrix, start parameter, end parameter and fixed reference (attributes 3-6).
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
+							fixed_ref_swept_area_solid->m_Directrix;	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
+						std::shared_ptr<typename IfcEntityTypesT::IfcParameterValue> start_param = 
+							fixed_ref_swept_area_solid->m_StartParam;	// TO DO: optional
+						std::shared_ptr<typename IfcEntityTypesT::IfcParameterValue> end_param =
+							fixed_ref_swept_area_solid->m_EndParam;		// TO DO: optional
+						std::shared_ptr<typename IfcEntityTypesT::IfcDirection> fixed_ref =
+							fixed_ref_swept_area_solid->m_FixedReference;
+
+// TO DO: implement//
+
 						return;
 					}
 
-					/*shared_ptr<IfcFixedReferenceSweptAreaSolid> fixed_reference_swept_area_solid = dynamic_pointer_cast<IfcFixedReferenceSweptAreaSolid>(swept_area_solid);
-					if( fixed_reference_swept_area_solid )
-					{
-					//Directrix	 : OPTIONAL IfcCurve;
-					//StartParam	 : OPTIONAL IfcParameterValue;
-					//EndParam	 : OPTIONAL IfcParameterValue;
-					//FixedReference	 : IfcDirection;
-
-
-					std::cout << "IfcFixedReferenceSweptAreaSolid not implemented" << std::endl;
-					return;
-					}*/
-
+					// (3/4) IfcRevolvedAreaSolid SUBTYPE of IfcSweptAreaSolid
 					shared_ptr<typename IfcEntityTypesT::IfcRevolvedAreaSolid> revolved_area_solid =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcRevolvedAreaSolid>(swept_area_solid);
 					if (revolved_area_solid)
 					{
+						// Get axis and angle (attributes 3-4). 
+						std::shared_ptr<typename IfcEntityTypesT::IfcAxis1Placement> axis=
+							revolved_area_solid->m_Axis;	
+						std::shared_ptr<typename IfcEntityTypesT::IfcPLaneAngleMeasure> angle =
+							revolved_area_solid->m_Angle;
+
 						convertIfcRevolvedAreaSolid(revolved_area_solid, swept_area_pos, itemData, err);
 						return;
+// TO DO: implement//
+
 					}
 
+					// (4/4) IfcSurfaceCurveSweptAreaSolid SUBTYPE of IfcSweptAreaSolid
 					shared_ptr<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid> surface_curve_swept_area_solid =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid>(swept_area_solid);
 					if (surface_curve_swept_area_solid)
 					{
-#ifdef _DEBUG
+						// Get directrix, start parameter, end paramter and reference surface (attributes 3-6).
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
+							surface_curve_swept_area_solid->m_Directrix;	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
+						std::shared_ptr<typename IfcEntityTypesT::IfcParameterValue> start_param =
+							surface_curve_swept_area_solid->m_StartParam;	// TO DO: optional
+						std::shared_ptr<typename IfcEntityTypesT::IfcParameterValue> end_param =
+							surface_curve_swept_area_solid->m_EndParam;		// TO DO: optional
+						std::shared_ptr<typename IfcEntityTypesT::IfcSurface> ref_surface =
+							surface_curve_swept_area_solid->m_ReferenceSurface;	// TO DO: next level
+
+// TO DO: implement / check current implementation //
+						#ifdef _DEBUG
 						std::cout << "Warning\t| IfcSurfaceCurveSweptAreaSolid not implemented" << std::endl;
-#endif
-						// IfcSweptAreaSolid -----------------------------------------------------------
-						// attributes:
-						//  shared_ptr<IfcProfileDef>					m_SweptArea;
-						//  shared_ptr<IfcAxis2Placement3D>				m_Position;					//optional
+						#endif
 
 						shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter = m_profileCache->getProfileConverter(swept_area);
 						const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
 						shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
-
 
 						shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = surface_curve_swept_area_solid->m_Directrix;
 						const int nvc = m_geomSettings->m_num_vertices_per_circle;
@@ -159,121 +340,24 @@ namespace OpenInfraPlatform
 						shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
 						m_faceConverter->convertIfcSurface(surface_curve_swept_area_solid->m_ReferenceSurface, swept_area_pos, polyline_data);
 
-
-						//shared_ptr<IfcParameterValue>				m_StartParam;				//optional
-						//shared_ptr<IfcParameterValue>				m_EndParam;					//optional
-
 						return;
 					}
 
 					err << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname() << std::endl;
 					return;
-				}
+				}	//endif swept_area_solid
 
-				//endif swept_area_solid
 
-				shared_ptr<typename IfcEntityTypesT::IfcManifoldSolidBrep> manifoldSolidBrep =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcManifoldSolidBrep>(solidModel);
-				if (manifoldSolidBrep)
-				{
-					//ENTITY IfcManifoldSolidBrep 
-					//	ABSTRACT SUPERTYPE OF(ONEOF(IfcAdvancedBrep, IfcFacetedBrep))
-					//	SUBTYPE OF IfcSolidModel;
-					//		Outer	 :	IfcClosedShell;
-					//END_ENTITY;
+				// *****************************************************************************************************************************************//
+				//	IfcSweptDiskSolid SUBTYPE of IfcSolidModel																								//
+				//	ABSTRACT SUPERTYPE of IfcSweptDiskSolidPolygonal																						//
+				// *****************************************************************************************************************************************//
 
-					// handle IFC4 advanced boundary representations
-					if (convertAdvancedBrep(manifoldSolidBrep, pos, itemData, err))
-					{
-						return;
-					}
-
-					std::shared_ptr<typename IfcEntityTypesT::IfcClosedShell>& outerShell = manifoldSolidBrep->m_Outer;
-
-					if (outerShell)
-					{
-						// first convert outer shell
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace> >& facesOuterShell = outerShell->m_CfsFaces;
-						std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
-
-						try
-						{
-							m_faceConverter->convertIfcFaceList(facesOuterShell, pos, inputDataOuterShell, err);
-						}
-						catch (...)
-						{
-							//return;
-						}
-						std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
-							inputDataOuterShell->open_or_closed_polyhedrons.end(),
-							std::back_inserter(itemData->closed_polyhedrons));
-					}
-
-					shared_ptr<typename IfcEntityTypesT::IfcFacetedBrep> faceted_brep =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcFacetedBrep>(manifoldSolidBrep);
-					if (faceted_brep)
-					{
-						// no additional attributes
-						return;
-					}
-
-					err << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname() << std::endl;
-					return;
-				}
-
-				//endif manifoldSolidBrep
-
-				shared_ptr<typename IfcEntityTypesT::IfcCsgSolid> csg_solid =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgSolid>(solidModel);
-				if (csg_solid)
-				{
-					shared_ptr<typename IfcEntityTypesT::IfcCsgSelect> csg_select = csg_solid->m_TreeRootExpression;
-
-					if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select))
-					{
-						shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> csg_select_boolean_result =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select);
-						convertIfcBooleanResult(csg_select_boolean_result, pos, itemData, err);
-					}
-					else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(csg_select))
-					{
-						shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_select_primitive_3d =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(csg_select);
-						convertIfcCsgPrimitive3D(csg_select_primitive_3d, pos, itemData, err);
-					}
-					return;
-				}
-
-				/*shared_ptr<typename IfcEntityTypesT::IfcReferencedSectionedSpine> spine = dynamic_pointer_cast<IfcReferencedSectionedSpine>(solidModel);
-				if( spine )
-				{
-					convertIfcReferencedSectionedSpine( spine, pos, itemData );
-					return;
-				}*/
-
-				//endif csg_solid
-
-				shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolid> swept_disp_solid =
+				shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolid> swept_disk_solid =
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolid>(solidModel);
-				if (swept_disp_solid)
+				if (swept_disk_solid)
 				{
-					//ENTITY IfcSweptDiskSolid;
-					//	ENTITY IfcRepresentationItem;
-					//	INVERSE
-					//		LayerAssignments	 : 	SET OF IfcPresentationLayerAssignment FOR AssignedItems;
-					//		StyledByItem	 : 	SET [0:1] OF IfcStyledItem FOR Item;
-					//	ENTITY IfcGeometricRepresentationItem;
-					//	ENTITY IfcSolidModel;
-					//		DERIVE
-					//		Dim	 : 	IfcDimensionCount :=  3;
-					//	ENTITY IfcSweptDiskSolid;
-					//		Directrix	 : 	IfcCurve;
-					//		Radius	 : 	IfcPositiveLengthMeasure;
-					//		InnerRadius	 : 	OPTIONAL IfcPositiveLengthMeasure;
-					//		StartParam	 : 	OPTIONAL IfcParameterValue;
-					//		EndParam	 : 	OPTIONAL IfcParameterValue;
-					//END_ENTITY;	
-
+					// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
 					shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = swept_disp_solid->m_Directrix;
 					const int nvc = m_geomSettings->m_num_vertices_per_circle;
 					double length_in_meter = m_unitConverter->getLengthInMeterFactor();
@@ -282,7 +366,6 @@ namespace OpenInfraPlatform
 					if (sweptRadius)
 					{
 						radius = sweptRadius.m_value * length_in_meter;
-
 						//radius = swept_disp_solid->m_Radius->m_value*length_in_meter;
 					}
 
@@ -294,8 +377,28 @@ namespace OpenInfraPlatform
 						//radius_inner = swept_disp_solid->m_InnerRadius->m_value*length_in_meter;
 					}
 
-					// TODO: handle inner radius, start param, end param
+					std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> inner_radius =
+						swept_disk_solid->m_InnerRadius;	
+					std::shared_ptr<typename IfcEntityTypesT::IfcParamterValue> start_param =
+						swept_disk_solid->m_StartParam;
+					std::shared_ptr<typename IfcEntityTypesT::IfcParamterValue> end_param =
+						swept_disk_solid->m_EndParam;
 
+					// TODO: handle inner radius, start param, end param and check for formal propositions!
+
+					// (1/1) IfcSweptDiskSolidPolygonal SUBTYPE of IfcSweptDiskSolid
+					shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal> swept_disk_solid_polygonal =
+						dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>(swept_disk_solid);
+					if(swept_disk_solid_polygonal) 						
+					{
+						// Get fillet radius (attribute 6). 
+						std::shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure> fillet_radius =
+							swept_disk_solid_polygonal->m_FilletRadius;
+						// TODO: implement and check for formal propositions.
+
+					} //endif swept_disk_solid_polygonal
+
+					// TO DO: understand what happens here
 					std::vector<carve::geom::vector<3> > segment_start_points;
 					std::vector<carve::geom::vector<3> > basis_curve_points;
 					m_curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);

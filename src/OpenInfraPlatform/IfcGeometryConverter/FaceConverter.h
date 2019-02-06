@@ -91,11 +91,15 @@ namespace OpenInfraPlatform
 							IfcSurfaceOfLinearExtrusion*
 							IfcSurfaceOfRevolution*
 
-						*: not implemented
+						*: not implemented in FaceConverter.h
 							
 				*/
 
-				// IfcBoundedSurface SUPTYPE of IfcSurface
+				// ************************************************************************************************************************	//
+				//	IfcBoundedSurface SUPTYPE of IfcSurface																					//
+				//	ABSTRACT SUPERTYPE of IfcBSplineSurface, IfcCurveBoundedPlane, IfcCurveBoundedSurface, IfcRectangularTrimmedSurface		//
+				// ************************************************************************************************************************	//
+
 				std::shared_ptr<typename IfcEntityTypesT::IfcBoundedSurface> bounded_surface =
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedSurface>(surface);
 
@@ -106,21 +110,21 @@ namespace OpenInfraPlatform
 						return;
 					}
 
-					// IfcBSplineSurface SUBTYPE of IfcBoundedSurface
+					// (1/4) IfcBSplineSurface SUBTYPE of IfcBoundedSurface
 					shared_ptr<typename IfcEntityTypesT::IfcBSplineSurface> bspline_surface =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurface>(bounded_surface);
 
 					if(bspline_surface) 
 					{
-// TODO: implement		// Get attributes 1-4.
+						// Get attributes 1-4.
 						shared_ptr<typename IfcEntityTypesT::IfcInteger> u_degree =
 							dynamic_pointer_cast<typename IfcEntityTypesT::IfcInteger>(bspline_surface);
 						shared_ptr<typename IfcEntityTypesT::IfcInteger> v_degree =
 							dynamic_pointer_cast<typename IfcEntityTypesT::IfcInteger>(bspline_surface);
 						shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> control_point_list =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(bspline_surface);		// TO DO: next level
+							dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(bspline_surface);		// TO DO: next level (IfcCoordinates: IfcLengthMeasure)						
 						shared_ptr<typename IfcEntityTypesT::IfcBSplineSurfaceForm> surface_form = 
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurfaceForm>(bspline_surface);	// TO DO: next level
+							dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurfaceForm>(bspline_surface);	// TO DO: next level (enum: PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED)
 
 						// Get attributes 5-7. For information only.
 						shared_ptr<typename IfcEntityTypesT::IfcLogical> u_closed =
@@ -130,28 +134,45 @@ namespace OpenInfraPlatform
 						shared_ptr<typename IfcEntityTypesT::IfcLogical> self_intersect =
 							dynamic_pointer_cast<typename IfcEntityTypesT::IfcLogical>(bspline_surface);
 
+// TODO: implement		// Interpret values and calculate.
+
 						// IfcBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurface
 						shared_ptr<typename IfcEntityTypesT::IfcBSplineSurface> bspline_surface =
 							dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurface>(bounded_surface);
 
 						if(bspline_knots) 							
 						{
-// TODO: implement		// Get attributes 8-12.
+							// Get attributes 8-12.
+							shared_ptr<typename IfcEntityTypesT::IfcInteger> u_mult =
+								dynamic_pointer_cast<typename IfcEntityTypesT::IfcInteger>(bspline_knots);	// TO DO: cardinality [2:]
+							shared_ptr<typename IfcEntityTypesT::IfcInteger> v_mult =
+								dynamic_pointer_cast<typename IfcEntityTypesT::IfcInteger>(bspline_knots);	// TO DO: cardinality [2:]
+							shared_ptr<typename IfcEntityTypesT::IfcParameterValue> u_knots =
+								dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterValue>(bspline_knots);	// TO DO: cardinality [2:]
+							shared_ptr<typename IfcEntityTypesT::IfcParameterValue> v_knots =
+								dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterValue>(bspline_knots);	// TO DO: cardinality [2:]
+							shared_ptr<typename IfcEntityTypesT::IfcKnotType> knot_type =
+								dynamic_pointer_cast<typename IfcEntityTypesT::IfcKnotType>(bspline_knots);	// TO DO: next level (enum: UNIFORM_KNOTS, QUASI_UNIFORM_KNOTS, PIECEWISE_BEZIER_KNOTS, UNSPECIFIED)
+
+// TODO: implement		// Interpret values and calculate.
+
 						}
 					}
 
-					// IfcCurveBoundedPlane SUBTYPE OF IfcBoundedSurface.
-					// http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifccurveboundedplane.htm
+					// (2/4) IfcCurveBoundedPlane SUBTYPE OF IfcBoundedSurface.
 					if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcCurveBoundedPlane>(bounded_surface))
 					{				
 						shared_ptr<typename IfcEntityTypesT::IfcCurveBoundedPlane> curve_bounded_plane =
 							dynamic_pointer_cast<typename IfcEntityTypesT::IfcCurveBoundedPlane>(bounded_surface);
-
+		
 						carve::math::Matrix curve_bounded_plane_matrix(pos);
+
+						// Get basis surface, outer boundary and inner boundaries.
 						shared_ptr<typename IfcEntityTypesT::IfcPlane>& basis_surface = curve_bounded_plane->m_BasisSurface;
 
 						if (basis_surface)
 						{
+							// Get basis surface position. 
 							shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& basis_surface_placement = basis_surface->m_Position;
 
 							if (basis_surface_placement)
@@ -166,8 +187,9 @@ namespace OpenInfraPlatform
 						shared_ptr<typename IfcEntityTypesT::IfcCurve>& outer_boundary = curve_bounded_plane->m_OuterBoundary;
 						if (outer_boundary)
 						{
-
+// TO DO: implement			
 						}
+
 						std::vector<shared_ptr<typename IfcEntityTypesT::IfcCurve> >& vec_inner_boundaries = curve_bounded_plane->m_InnerBoundaries;
 						for (unsigned int i = 0; i < vec_inner_boundaries.size(); ++i)
 						{
@@ -179,13 +201,13 @@ namespace OpenInfraPlatform
 						#endif
 					}
 
-					// IfcCurveBoundedSurface SUBTYPE of IfcBoundedSurface.
+					// (3/4) IfcCurveBoundedSurface SUBTYPE of IfcBoundedSurface.
 					shared_ptr<typename IfcEntityTypesT::IfcCurveBoundedSurface> curve_bounded_surface =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcCurveBoundedSurface>(bounded_surface);
 
 					if(curve_bounded_surface) 
 					{
-// TODO: implement		// Get basis surface, boundaries and implicit outer.
+						// Get basis surface, boundaries and implicit outer.
 						shared_ptr<typename IfcEntityTypesT::IfcSurface> basis_surface =
 							dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfacePlane>(curve_bounded_surface);
 						shared_ptr<typename IfcEntityTypesT::IfcBoundaryCurve> boundaries =
@@ -193,9 +215,10 @@ namespace OpenInfraPlatform
 						shared_ptr<typename IfcEntityTypesT::IfcBoolean> implicit_outer =
 							dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoolean>(curve_bounded_surface);
 
-						// Interpret values and calculate face.
+// TODO: implement		// Interpret values and calculate.
+
 					}
-					// IfcRectangularTrimmedSurface SUBTYPE of IfcBoundedSurface.
+					// (4/4) IfcRectangularTrimmedSurface SUBTYPE of IfcBoundedSurface.
 					else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>(bounded_surface))
 					{
 						shared_ptr<typename IfcEntityTypesT::IfcRectangularTrimmedSurface> rectangular_trimmed_surface =
@@ -215,7 +238,7 @@ namespace OpenInfraPlatform
 						typename IfcEntityTypesT::IfcBoolean& u_sense = *(rectangular_trimmed_surface->m_Usense);
 						typename IfcEntityTypesT::IfcBoolean& v_sense = *(rectangular_trimmed_surface->m_Vsense);
 
-// TODO: implement		// Interpret values and calculate face.
+// TODO: implement		// Interpret values and calculate.
 						#ifdef _DEBUG
 						std::cout << "Warning\t| IfcRectangularTrimmedSurface not implemented." << std::endl;
 						#endif
@@ -223,7 +246,11 @@ namespace OpenInfraPlatform
 					return;
 				}
 
-				// IfcElementarySurface SUBTYPE of IfcSurface
+				// ************************************************************************************************************************	//
+				//	IfcElementarySurface SUPTYPE of IfcSurface																				//
+				//	ABSTRACT SUPERTYPE of IfcCylindricalSurface, IfcPlane, IfcSphericalSurface, IfcToroidalSurface							//
+				// ************************************************************************************************************************	//
+
 				shared_ptr<typename IfcEntityTypesT::IfcElementarySurface> elementary_surface =
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcElementarySurface>(surface);
 
@@ -242,21 +269,21 @@ namespace OpenInfraPlatform
 						elementary_surface_matrix = pos * elementary_surface_matrix;
 					}
 
-					// IfcCylindricalSurface SUBTYPE of IfcElementarySurface
+					// (1/4) IfcCylindricalSurface SUBTYPE of IfcElementarySurface
 					shared_ptr<typename IfcEntityTypesT::IfcCylindricalSurface> cylindrical_surface =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcCylindricalSurface>(elementary_surface);
 
 					if(cylindrical_surface)
 					{
-// TODO: implement		// Get radius.
+						// Get radius.
 						shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure>& cylindrical_radius =
 							cylindrical_surface->m_Radius;
 
-						// Interpret values and calculate face.
+// TODO: implement		// Interpret values and calculate.
 
 					}
 
-					// IfcPlane SUBTYPE of IfcElementarySurface
+					// (2/4) IfcPlane SUBTYPE of IfcElementarySurface
 					shared_ptr<typename IfcEntityTypesT::IfcPlane> elementary_surface_plane =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlane>(elementary_surface);
 
@@ -286,40 +313,44 @@ namespace OpenInfraPlatform
 						return;
 					}
 
-					// IfcSphericalPlane SUBTYPE of IfcElementarySurface
+					// (3/4) IfcSphericalPlane SUBTYPE of IfcElementarySurface
 					shared_ptr<typename IfcEntityTypesT::IfcSphericalSurface> spherical_surface =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcSphericalSurface>(elementary_surface);
 
 					if(spherical_surface) 						
 					{
-// TODO: implement		// Get radius.
+						// Get radius.
 						shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure>& spherical_radius =
 							spherical_surface->m_Radius;
 
-						// Interpret values and calculate face.
+// TODO: implement		// Interpret values and calculate.
 
 					}
 
-					// IfcToroidalSurface SUBTYPE of IfcElementarySurface
+					// (4/4) IfcToroidalSurface SUBTYPE of IfcElementarySurface
 					shared_ptr<typename IfcEntityTypesT::IfcToroidalSurface> toroidal_surface =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcToroidalSurface>(elementary_surface);
 
 					if(toroidal_surface)
 					{
-// TODO: implement		// Get major and minor radius.
+						// Get major and minor radius.
 						shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure>& major_radius =
 							toroidal_surface->m_MajorRadius;	// TODO: Check member name
 						shared_ptr<typename IfcEntityTypesT::IfcPositiveLengthMeasure>& minor_radius =
 							toroidal_surface->m_MinorRadius;	// TODO: Check member name
+						// TODO: formal proposition: major_radius > minor_radius
 
-						// Interpret values and calculate face.
-
+// TODO: implement		// Interpret values and calculate.
 					}
 
 					throw UnhandledRepresentationException<IfcEntityTypesT>(surface);
 				}
 
-				// IfcSweptSurface SUBTYPE of IfcSurface
+				// ************************************************************************************************************************	//
+				//	IfcSweptSurface SUPTYPE of IfcSurface																					//
+				//	ABSTRACT SUPERTYPE of IfcSurfaceOfLinearExtrusion, IfcSurfaceOfRevolution												//
+				// ************************************************************************************************************************	//
+
 				shared_ptr<typename IfcEntityTypesT::IfcSweptSurface> swept_surface = dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptSurface>(surface);
 				if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptSurface>(surface))
 				{
@@ -336,7 +367,7 @@ namespace OpenInfraPlatform
 						swept_surface_matrix = pos*swept_surface_matrix;
 					}
 
-					// IfcSurfaceOfLinearExtrusion SUBTYPE of IfcSweptSurface
+					// (1/2) IfcSurfaceOfLinearExtrusion SUBTYPE of IfcSweptSurface
 					shared_ptr<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion> linear_extrusion =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>(swept_surface);
 
@@ -347,25 +378,24 @@ namespace OpenInfraPlatform
 							linear_extrusion->m_ExtrudedDirection;
 						typename IfcEntityTypesT::IfcLengthMeasure& linear_extrusion_depth = linear_extrusion->m_Depth;
 
-// TODO: implement		// Interpret values and calculate face.
+// TODO: implement		// Interpret values and calculate.
 						#ifdef _DEBUG
 						std::cout << "Warning\t| IfcSurfaceOfLinearExtrusion not implemented." << std::endl;
 						#endif
 						return;
 					}
 
-					// IfcSurfaceOfRevolution SUBTYPE of IfcSweptSurface
+					// (2/2) IfcSurfaceOfRevolution SUBTYPE of IfcSweptSurface
 					shared_ptr<typename IfcEntityTypesT::IfcSurfaceOfRevolution> surface_of_revolution =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfaceOfRevolution>(swept_surface);
 
 					if (surface_of_revolution)
 					{
-// TODO: implement		// Get axis position.
+						// Get axis position.
 						shared_ptr<typename IfcEntityTypesT::IfcAxis1Placement>& axis_position =
 							surface_of_revolution->m_AxisPosition; // TODO: check member name
 
-						// Interpret values and calculate face.
-
+// TODO: implement		// Interpret values and calculate.
 						#ifdef _DEBUG
 						std::cout << "Warning\t| IfcSurfaceOfRevolution not implemented." << std::endl;
 						#endif
