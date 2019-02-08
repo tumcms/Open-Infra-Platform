@@ -18,6 +18,9 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
+cmake_policy(SET CMP0071 NEW)
+cmake_policy(SET CMP0074 NEW)
+
 project(OpenInfraPlatform)
 
 #-------------------------------------------------------------------------------------
@@ -99,7 +102,7 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS 
 		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
 		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
-	find_path(ZLIB_ROOT NAMES zlib.h HINTS 
+	find_path(ZLIB_ROOT NAMES include/zlib.h HINTS 
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
 	find_path(RAPTOR2_ROOT_DIR include/raptor2/raptor2.h HINTS 
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\raptor2")		
@@ -120,8 +123,15 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE       ${CMAKE_BINARY_DIR}/Release)
 
 add_definitions(-D_UNICODE 			# Unicode rules
 				#-DQT_NO_KEYWORDS 	# No qt keywords
-				-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
+				#-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
 ) # -DNOMINMAX does not work because GDI+ needs these macros
+
+if(MSVC_VERSION GREATER 1900)
+add_definitions(-D_ENABLE_EXTENDED_ALIGNED_STORAGE)
+endif()
+
+set(CMAKE_CXX_STANDARD 14)
+
 
 if (WIN32)
 	# Standard:          /DWIN32 /D_WINDOWS /W3 /Zm1000 /EHsc /GR
@@ -139,7 +149,7 @@ find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
 find_package(Eigen3 3.3.2  REQUIRED)
 find_package(Oklabi REQUIRED)
 find_package(gtest REQUIRED) 
-find_package(ZLIB 1.2.10 REQUIRED)
+find_package(ZLIB 1.2.11 REQUIRED)
 find_package(libLAS REQUIRED)
 find_package(qhull REQUIRED)
 find_package(raptor2 REQUIRED)
@@ -302,7 +312,7 @@ add_subdirectory(Infrastructure)
 add_subdirectory(UnitTests)
 add_subdirectory(oip)
 add_subdirectory(IfcBridgeGenerator)
-add_subdirectory(ExpressBinding)
+#add_subdirectory(ExpressBinding)
 
 # Do currently not work
 #add_subdirectory(RoadXMLViewer)
@@ -440,6 +450,10 @@ QT5_ADD_RESOURCES(OpenInfraPlatform_RC_SRCS ${OpenInfraPlatform_RC})
 QT5_WRAP_UI(OpenInfraPlatform_UIS_H ${OpenInfraPlatform_UIS})
 QT5_ADD_TRANSLATION(OpenInfra_QMS ${Translation_TS})
 
+# Exclude automatically generated files from AUTOMOC
+set_property(SOURCE ${OpenInfraPlatform_RC_SRCS} PROPERTY SKIP_AUTOMOC ON)
+set_property(SOURCE ${OpenInfraPlatform_UIS_H} PROPERTY SKIP_AUTOMOC ON)
+
 IF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 	MESSAGE(WARNING "Could not find lrelease. Your build won't contain translations.")
 ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
@@ -479,7 +493,7 @@ target_link_libraries(OpenInfraPlatform.UI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::
 
 target_link_libraries( OpenInfraPlatform.UI
 	OpenInfraPlatform.Infrastructure
-	OpenInfraPlatform.ExpressBinding	
+	#OpenInfraPlatform.ExpressBinding	
 	${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 	Qt5::WinMain  # New target available via find_package ( Qt5Core )
 	${BLUEFRAMEWORK_LIBRARIES}
@@ -508,6 +522,9 @@ CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
 # Oklabi Copy Binaries
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
+# zlic Copy Binaries
+ZLIB_COPY_BINARIES(${CMAKE_BINARY_DIR})
+
 # QtCopyBinaries
 add_custom_target(Qt5CopyBinaries
 	COMMAND ${CMAKE_COMMAND} -E copy ${QT5_DLLS_RELEASE} ${CMAKE_BINARY_DIR}/Release
@@ -531,7 +548,6 @@ add_custom_target(CopyOpenInfraPlatformUIResources
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Shader		${CMAKE_BINARY_DIR}/LandXMLViewer/Shader
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/testdata							${CMAKE_BINARY_DIR}/LandXMLViewer/testdata
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Style		${CMAKE_BINARY_DIR}/Style
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UnitTesting						${CMAKE_BINARY_DIR}/UnitTesting
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Data								${CMAKE_BINARY_DIR}/Data
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/testdata							${CMAKE_BINARY_DIR}/testdata
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Data/DesignAutomation				${CMAKE_BINARY_DIR}/UnitTests/Data/DesignAutomation
@@ -567,11 +583,11 @@ add_custom_target(QSimpleUpdaterCopyBinaries
 )
 
 
-add_custom_target(ZLIBCopyBinaries
-  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Debug/zlibd.dll           ${CMAKE_BINARY_DIR}/Debug
-  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Release/zlib.dll          ${CMAKE_BINARY_DIR}/Release
-  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/RelWithDebInfo/zlib.dll   ${CMAKE_BINARY_DIR}/RelWithDebInfo
-)
+#add_custom_target(ZLIBCopyBinaries
+#  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Debug/zlibd.dll           ${CMAKE_BINARY_DIR}/Debug
+#  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Release/zlib.dll          ${CMAKE_BINARY_DIR}/Release
+#  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/RelWithDebInfo/zlib.dll   ${CMAKE_BINARY_DIR}/RelWithDebInfo
+#)
 
 #-------------------------------------------------------------------------------------
 # Add carve thirdparty library without corrupting our own install target.
@@ -647,9 +663,10 @@ set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
 set_target_properties(CloudCompareCopyBinaries 				PROPERTIES FOLDER "Copy")
 set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
-set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
+# Switched to static gtest on 28.11.2018 / Revision 388+
+#set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+#set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 #set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
 set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")

@@ -98,6 +98,13 @@ namespace OpenInfraPlatform
 			double minValue, maxValue;
 		};
 
+		struct RelativeHeightFilterDescription {
+			double lowerBound = 0.5, upperBound = 0.5;
+
+			// Auto generated using 'RelativeHeightFilterDescription() = default;'.
+			RelativeHeightFilterDescription() = default;
+		};
+
 		struct RateOfChangeSegmentationDescription {
 			int dim;
 			float maxNeighbourDistance;
@@ -194,6 +201,7 @@ namespace buw
 	using OpenInfraPlatform::Infrastructure::DuplicateFilterDescription;
 	using OpenInfraPlatform::Infrastructure::LocalDensityFilterDescription;
 	using OpenInfraPlatform::Infrastructure::PositionFilterDescription;
+	using OpenInfraPlatform::Infrastructure::RelativeHeightFilterDescription;
 	using OpenInfraPlatform::Infrastructure::RateOfChangeSegmentationDescription;
 	using OpenInfraPlatform::Infrastructure::PercentileSegmentationDescription;
 	using OpenInfraPlatform::Infrastructure::RailwaySegmentationDescription;

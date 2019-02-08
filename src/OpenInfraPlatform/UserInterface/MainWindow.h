@@ -201,6 +201,9 @@ namespace OpenInfraPlatform
 			void on_pushButtonApplyPositionFilter_clicked();
 			void on_pushButtonResetPositionFilter_clicked();
 
+			void on_pushButtonApplyRelativeHeightFilter_clicked();
+			void on_pushButtonResetRelativeHeightFilter_clicked();
+
 			void on_pushButtonFilterOriginal_clicked();
 			void on_pushButtonRestoreOriginal_clicked();
 
@@ -359,7 +362,7 @@ namespace OpenInfraPlatform
 
 			QProgressBar*								progressBar_;
 
-			std::vector<QCustomPlot*>					bearingPlots_, curvaturePlots_;
+			std::vector<QCustomPlot*>					plots_;
 			
 			int											inUnitTest_ = -1;
 			buw::ImageTester							tester_;

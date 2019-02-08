@@ -49,6 +49,8 @@ namespace OpenInfraPlatform {
 
 			PointCloud(QString name) : ccPointCloud(name) { }
 
+			PointCloud(PointCloud &other);
+
 			virtual ~PointCloud();
 
 			int add(const buw::ReferenceCounted<ccPointCloud> &other, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr, ColorCompType* color = nullptr);
@@ -75,7 +77,7 @@ namespace OpenInfraPlatform {
 
 			int applyPositionFilter(const buw::PositionFilterDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
-			int filterRelativeHeightWithGrid(const float lowerBound, const float upperBound, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
+			int applyRelativeHeightWithGridFilter(const buw::RelativeHeightFilterDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback = nullptr);
 
 			int resetPositionFilter();
 

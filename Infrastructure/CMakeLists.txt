@@ -48,7 +48,8 @@ file(GLOB OpenInfraPlatform_Infrastructure_EnergyConsumption_Profiles_Source 		s
 file(GLOB OpenInfraPlatform_Infrastructure_Export_Source 							src/OpenInfraPlatform/Infrastructure/Export/*.*)		
 file(GLOB OpenInfraPlatform_Infrastructure_IfcPL_Source 							src/OpenInfraPlatform/Infrastructure/IfcPL/*.*)		
 file(GLOB OpenInfraPlatform_Infrastructure_Import_Source 							src/OpenInfraPlatform/Infrastructure/Import/*.*)		
-file(GLOB OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source				src/OpenInfraPlatform/Infrastructure/PointCloudProcessing/*.*)					
+file(GLOB OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source				src/OpenInfraPlatform/Infrastructure/PointCloudProcessing/*.*)
+file(GLOB OpenInfraPlatform_Infrastructure_Railway_Source							src/OpenInfraPlatform/Infrastructure/Railway/*.*)										
 file(GLOB OpenInfraPlatform_Infrastructure_Source 									src/OpenInfraPlatform/Infrastructure/*.*)	
 
 source_group(OpenInfraPlatform\\Infrastructure										FILES ${OpenInfraPlatform_Infrastructure_Source})
@@ -72,6 +73,7 @@ source_group(OpenInfraPlatform\\Infrastructure\\Export								FILES ${OpenInfraP
 source_group(OpenInfraPlatform\\Infrastructure\\IfcPL								FILES ${OpenInfraPlatform_Infrastructure_IfcPL_Source})		
 source_group(OpenInfraPlatform\\Infrastructure\\Import								FILES ${OpenInfraPlatform_Infrastructure_Import_Source})		
 source_group(OpenInfraPlatform\\Infrastructure\\PointCloudProcessing				FILES ${OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source})				
+source_group(OpenInfraPlatform\\Infrastructure\\Railway								FILES ${OpenInfraPlatform_Infrastructure_Railway_Source})				
 
 include_directories(
 	${Boost_INCLUDE_DIR} 
@@ -115,6 +117,7 @@ add_library(OpenInfraPlatform.Infrastructure SHARED
 	${OpenInfraPlatform_Infrastructure_IfcPL_Source}
 	${OpenInfraPlatform_Infrastructure_Import_Source}
 	${OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source}
+	${OpenInfraPlatform_Infrastructure_Railway_Source}
 	${OpenInfraPlatform_Infrastructure_Source}
 )
 
@@ -137,7 +140,7 @@ target_link_libraries( OpenInfraPlatform.Infrastructure
 		# Raptor
 		${RAPTOR2_LIBRARIES}
 		# EXPRESS Binding for Meta model
-		OpenInfraPlatform.ExpressBinding
+		#OpenInfraPlatform.ExpressBinding
 		Rpcrt4.lib
 		${CC_LIBRARIES}
 	)

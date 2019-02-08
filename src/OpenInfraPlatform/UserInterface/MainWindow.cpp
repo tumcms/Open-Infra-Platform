@@ -213,7 +213,8 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	int idx = ui_->tabPointCloudProcessing->indexOf(ui_->tabRailways);
 	ui_->tabPointCloudProcessing->removeTab(idx);
 	ui_->tabPointCloudProcessing->addTab(scrollArea, tr("Railways"));
-	
+
+	//ui_->tabWidgetView->tabBar()->setContentsMargins(QMargins(0, 0, 100, 0));
 
 #ifdef _DEBUG
 	// Show debug menu only in debug mode
@@ -394,8 +395,7 @@ OpenInfraPlatform::UserInterface::MainWindow::~MainWindow() {
 	buw::safeDelete(curvatureWindow_);
 	buw::safeDelete(ui_);
 
-	bearingPlots_.clear();
-	curvaturePlots_.clear();
+	plots_.clear();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::storeGBuffer() {
@@ -813,9 +813,20 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportLandInfra_trig
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportPointCloud_triggered()
 {
-	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin"));
-	if(!filename.isNull()) {
-		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
+	if(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud().get() != nullptr) {
+		QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin;;*.las"));
+		if(!filename.isNull()) {
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
+		}
+	}
+	else {
+		QMessageBox dialog;
+		dialog.setStandardButtons(QMessageBox::StandardButton::Ok);
+		dialog.setIcon(QMessageBox::Icon::Warning);
+		dialog.setText("No Point Cloud to export available.");
+		dialog.setWindowTitle(tr("Disclaimer"));
+		dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+		dialog.exec();
 	}
 }
 
@@ -2463,6 +2474,30 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetPositionFil
 	}
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRelativeHeightFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::RelativeHeightFilterDescription desc;
+		desc.lowerBound = ui_->doubleSpinBoxFilterHeightLowerBound->value();
+		desc.upperBound = ui_->doubleSpinBoxFilterHeightUpperBound->value();
+
+		if(pointCloud->applyRelativeHeightWithGridFilter(desc, callback_) == 0) {
+			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		}
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetRelativeHeightFilter_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		if(pointCloud->resetPositionFilter() == 0) {
+			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		}
+	}
+}
+
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonFilterOriginal_clicked()
 {
 	QMessageBox dialog;	
@@ -2855,7 +2890,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("*.txt"));
 
 	if(!filename.isEmpty()) {
-		QVector<double> chainages, curvatures, bearings;
+		QVector<double> chainages, curvatures, bearings, deltaCurvatures;
 
 		QFile inputFile(filename);
 		if(inputFile.open(QIODevice::ReadOnly)) {
@@ -2866,69 +2901,75 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 				chainages.append(tokens[0].toDouble());
 				curvatures.append(tokens[1].toDouble());
 				bearings.append(tokens[2].toDouble());
+				if(tokens.size() > 3)
+					deltaCurvatures.append(tokens[3].toDouble());
 			}
 			inputFile.close();
 		}
 
-		int numReal = bearings.size();
-		int numComplex = (std::floor((numReal / 2)) + 1);
+		bool plotFourierTransform = false;
 
-		double* bearingsRaw = fftw_alloc_real(numReal);
-		fftw_complex* bearingsFFT = fftw_alloc_complex(numComplex);
+		if(plotFourierTransform) {
+			int numReal = bearings.size();
+			int numComplex = (std::floor((numReal / 2)) + 1);
 
-		fftw_plan plan = fftw_plan_dft_r2c_1d(numReal, bearingsRaw, bearingsFFT, FFTW_ESTIMATE);
-		std::memcpy(bearingsRaw, bearings.data(), numReal);
+			double* bearingsRaw = fftw_alloc_real(numReal);
+			fftw_complex* bearingsFFT = fftw_alloc_complex(numComplex);
 
-		fftw_execute(plan);		
-		
-		QVector<double> fftReal;
-		for(size_t i = 1; i < numComplex; i++)
-			fftReal.append(bearingsFFT[i][0]);
+			fftw_plan plan = fftw_plan_dft_r2c_1d(numReal, bearingsRaw, bearingsFFT, FFTW_ESTIMATE);
+			std::memcpy(bearingsRaw, bearings.data(), numReal);
 
-		fftw_free(bearingsRaw);
-		fftw_free(bearingsFFT);
-		fftw_destroy_plan(plan);
+			fftw_execute(plan);
 
-		fftw_cleanup();
-		
+			QVector<double> fftReal;
+			for(size_t i = 1; i < numComplex; i++)
+				fftReal.append(bearingsFFT[i][0]);
 
-		// Create plot for bearing.
-		QCustomPlot* customPlotFFT = new QCustomPlot(nullptr);
+			fftw_free(bearingsRaw);
+			fftw_free(bearingsFFT);
+			fftw_destroy_plan(plan);
 
-		// TODO: Fix memory leak!
-		//connect(customPlotBearing, &QCustomPlot::close, customPlotBearing, &QObject::deleteLater);
+			fftw_cleanup();
 
-		customPlotFFT->resize(400, 400);
-		customPlotFFT->setInteraction(QCP::iRangeDrag, true);
 
-		// Set window title
-		customPlotFFT->setWindowTitle(filename);
+			// Create plot for bearing.
+			QCustomPlot* customPlotFFT = new QCustomPlot(nullptr);
 
-		// create graph and assign data to it:
-		customPlotFFT->addGraph(customPlotFFT->xAxis, customPlotFFT->yAxis);
-		customPlotFFT->setInteraction(QCP::iRangeZoom);
-		customPlotFFT->setInteraction(QCP::iRangeDrag);
-		QVector<double> freq;
+			// TODO: Fix memory leak!
+			//connect(customPlotBearing, &QCustomPlot::close, customPlotBearing, &QObject::deleteLater);
 
-		for(size_t i = 0; i < numReal / 2 - 2; i++) {
-			freq.append((20.0 * i) / numReal);
+			customPlotFFT->resize(400, 400);
+			customPlotFFT->setInteraction(QCP::iRangeDrag, true);
+
+			// Set window title
+			customPlotFFT->setWindowTitle(filename);
+
+			// create graph and assign data to it:
+			customPlotFFT->addGraph(customPlotFFT->xAxis, customPlotFFT->yAxis);
+			customPlotFFT->setInteraction(QCP::iRangeZoom);
+			customPlotFFT->setInteraction(QCP::iRangeDrag);
+			QVector<double> freq;
+
+			for(size_t i = 0; i < numReal / 2 - 2; i++) {
+				freq.append((20.0 * i) / numReal);
+			}
+
+			customPlotFFT->graph(0)->setData(freq, fftReal);
+			customPlotFFT->graph(0)->setPen(QPen(Qt::green));
+
+			// give the axes some labels:
+			customPlotFFT->xAxis->setLabel("Frequency");
+			customPlotFFT->yAxis->setLabel("Amplitude");
+
+
+			// set axes ranges, so we see all data:
+			customPlotFFT->xAxis->setRange(freq.first(), freq.last());
+			customPlotFFT->yAxis->rescale();
+
+			customPlotFFT->replot();
+			customPlotFFT->show();
+			plots_.push_back(customPlotFFT);
 		}
-		
-		customPlotFFT->graph(0)->setData(freq, fftReal);
-		customPlotFFT->graph(0)->setPen(QPen(Qt::green));
-		
-		// give the axes some labels:
-		customPlotFFT->xAxis->setLabel("Frequency");
-		customPlotFFT->yAxis->setLabel("Amplitude");
-
-
-		// set axes ranges, so we see all data:
-		customPlotFFT->xAxis->setRange(freq.first(), freq.last());
-		customPlotFFT->yAxis->rescale();
-
-		customPlotFFT->replot();
-		customPlotFFT->show();
-		bearingPlots_.push_back(customPlotFFT);
 
 		// Create plot for bearing.
 		QCustomPlot* customPlotBearing = new QCustomPlot(nullptr);
@@ -2960,7 +3001,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 
 		customPlotBearing->replot();
 		customPlotBearing->show();
-		bearingPlots_.push_back(customPlotBearing);
+		plots_.push_back(customPlotBearing);
 
 		// Create plot for bearing.
 		QCustomPlot* customPlotCurvature = new QCustomPlot(nullptr);
@@ -2992,7 +3033,42 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 
 		customPlotCurvature->replot();
 		customPlotCurvature->show();
-		curvaturePlots_.push_back(customPlotCurvature);
+		plots_.push_back(customPlotCurvature);
+
+		if(deltaCurvatures.size() > 0) {
+			// Create plot for delta curvature.
+			QCustomPlot* customPlotDeltaCurvature = new QCustomPlot(nullptr);
+
+			// TODO: Fix memory leak!
+			//connect(customPlotCurvature, &QCustomPlot::close, customPlotCurvature, &QObject::deleteLater);
+
+			customPlotDeltaCurvature->resize(400, 400);
+			customPlotDeltaCurvature->setInteraction(QCP::iRangeDrag, true);
+
+			// Set window title
+			customPlotDeltaCurvature->setWindowTitle(filename);
+
+			// create graph and assign data to it:
+			customPlotDeltaCurvature->addGraph(customPlotDeltaCurvature->xAxis, customPlotDeltaCurvature->yAxis);
+			customPlotDeltaCurvature->setInteraction(QCP::iRangeZoom);
+			customPlotDeltaCurvature->setInteraction(QCP::iRangeDrag);
+			customPlotDeltaCurvature->graph(0)->setData(chainages, deltaCurvatures);
+			customPlotDeltaCurvature->graph(0)->setPen(QPen(Qt::green));
+
+			// give the axes some labels:
+			customPlotDeltaCurvature->xAxis->setLabel("Chainage");
+			customPlotDeltaCurvature->yAxis->setLabel("dCurvature");
+
+
+			// set axes ranges, so we see all data:
+			customPlotDeltaCurvature->xAxis->setRange(chainages.first(), chainages.last());
+			customPlotDeltaCurvature->yAxis->rescale();
+
+			customPlotDeltaCurvature->replot();
+			customPlotDeltaCurvature->show();
+			plots_.push_back(customPlotDeltaCurvature);
+
+		}
 	}
 }
 

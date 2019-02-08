@@ -239,7 +239,7 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::In
 //#pragma omp parallel for shared(pointCloud, vertices)
 	for(long i = 0; i < pointCloud->size(); i++) {
 		auto pos = pointCloud->getPoint(i);
-		const ColorCompType* col = pointCloud->rgbColors() ? pointCloud->getPointColor(i) : ccColor::FromRgbf(baseColor).rgb;
+		const ColorCompType* col = pointCloud->rgbColors() ? pointCloud->getPointColor(i).rgb : ccColor::FromRgbf(baseColor).rgb;
 		// Swap Z and Y coordinate for rendering!
 		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos->x + offset.x(), pos->z + offset.z(), pos->y + offset.y()), buw::Vector4f((float)col[0], (float)col[1], (float)col[2], 255.0f) / 255.0f);
 	}
