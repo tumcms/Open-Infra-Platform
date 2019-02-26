@@ -1637,6 +1637,7 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<GeometrySettings>	geomSettings;
 				std::shared_ptr<IfcUnitConverterT>	unitConverter;
 		};
-	}
+	};
 };
+
 #endif
