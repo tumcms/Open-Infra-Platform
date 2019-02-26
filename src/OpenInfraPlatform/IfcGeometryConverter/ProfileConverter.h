@@ -172,7 +172,7 @@ namespace OpenInfraPlatform
 				{
 					if (center_line_profile_def->m_Thickness)
 					{
-						const double thickness = center_line_profile_def->m_Thickness.m_value * m_unitConverter->getLengthInMeterFactor();
+						const double thickness = center_line_profile_def->m_Thickness->m_value * m_unitConverter->getLengthInMeterFactor();
 						std::vector<carve::geom::vector<3> > segment_start_points;
 						std::vector<carve::geom::vector<3> > basis_curve_points;
 						c_converter.convertIfcCurve(ifc_curve, basis_curve_points, segment_start_points);
@@ -367,8 +367,8 @@ namespace OpenInfraPlatform
 				{
 					if (rectangle_profile->m_XDim && rectangle_profile->m_YDim)
 					{
-						double x = rectangle_profile->m_XDim.m_value*length_factor;
-						double y = rectangle_profile->m_YDim.m_value*length_factor;
+						double x = rectangle_profile->m_XDim->m_value*length_factor;
+						double y = rectangle_profile->m_YDim->m_value*length_factor;
 
 						shared_ptr<typename IfcEntityTypesT::IfcRectangleHollowProfileDef> hollow =
 							dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>(rectangle_profile);
@@ -376,17 +376,17 @@ namespace OpenInfraPlatform
 						{
 							if (hollow->m_WallThickness)
 							{
-								double t = hollow->m_WallThickness.m_value*length_factor;
+								double t = hollow->m_WallThickness->m_value*length_factor;
 								double r1 = 0;
 								if (hollow->m_OuterFilletRadius)
 								{
-									r1 = hollow->m_InnerFilletRadius.m_value*length_factor;
+									r1 = hollow->m_InnerFilletRadius->m_value*length_factor;
 								}
 
 								double r2 = 0;
 								if (hollow->m_InnerFilletRadius)
 								{
-									r2 = hollow->m_InnerFilletRadius.m_value*length_factor;
+									r2 = hollow->m_InnerFilletRadius->m_value*length_factor;
 								}
 
 								// Outer
@@ -437,7 +437,7 @@ namespace OpenInfraPlatform
 
 							if (rounded_rectangle->m_RoundingRadius)
 							{
-								double rr = rounded_rectangle->m_RoundingRadius.m_value*length_factor;
+								double rr = rounded_rectangle->m_RoundingRadius->m_value*length_factor;
 								addArc(outer_loop, rr, 0, M_PI_2, x*0.5 - rr, y*0.5 - rr);
 								addArc(outer_loop, rr, M_PI_2, M_PI_2, -x*0.5 + rr, y*0.5 - rr);
 								addArc(outer_loop, rr, M_PI, M_PI_2, -x*0.5 + rr, -y*0.5 + rr);
@@ -465,10 +465,10 @@ namespace OpenInfraPlatform
 				{
 					if (trapezium->m_BottomXDim && trapezium->m_TopXDim && trapezium->m_TopXOffset && trapezium->m_YDim)
 					{
-						double xBottom = trapezium->m_BottomXDim.m_value*length_factor;
-						double xTop = trapezium->m_TopXDim.m_value*length_factor;
-						double xOffset = trapezium->m_TopXOffset.m_value*length_factor;
-						double y = trapezium->m_YDim.m_value*length_factor;
+						double xBottom = trapezium->m_BottomXDim->m_value*length_factor;
+						double xTop = trapezium->m_TopXDim->m_value*length_factor;
+						double xOffset = trapezium->m_TopXOffset->m_value*length_factor;
+						double y = trapezium->m_YDim->m_value*length_factor;
 						outer_loop.push_back(carve::geom::VECTOR(-xBottom*0.5, -y*0.5));
 						outer_loop.push_back(carve::geom::VECTOR(xBottom*0.5, -y*0.5));
 						outer_loop.push_back(carve::geom::VECTOR(-xBottom*0.5 + xOffset + xTop, y*0.5));
@@ -483,7 +483,7 @@ namespace OpenInfraPlatform
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleProfileDef>(profileDef);
 				if (circle_profile_def)
 				{
-					double radius = circle_profile_def->m_Radius.m_value*length_factor;
+					double radius = circle_profile_def->m_Radius->m_value*length_factor;
 					if (radius < 0.000001)
 					{
 						return;
@@ -504,7 +504,7 @@ namespace OpenInfraPlatform
 					if (hollow)
 					{
 						angle = 0;
-						radius -= hollow->m_WallThickness.m_value*length_factor;
+						radius -= hollow->m_WallThickness->m_value*length_factor;
 
 						int num_segments2 = m_geomSettings->m_num_vertices_per_circle; // TODO: adapt to model size and complexity
 						for (int i = 0; i<num_segments2; ++i)
@@ -526,8 +526,8 @@ namespace OpenInfraPlatform
 					{
 						if (ellipse_profile_def->m_SemiAxis2)
 						{
-							double xRadius = ellipse_profile_def->m_SemiAxis1.m_value*length_factor;
-							double yRadius = ellipse_profile_def->m_SemiAxis2.m_value*length_factor;
+							double xRadius = ellipse_profile_def->m_SemiAxis1->m_value*length_factor;
+							double yRadius = ellipse_profile_def->m_SemiAxis2->m_value*length_factor;
 							double radiusMax = std::max(xRadius, yRadius);
 							int num_segments = m_geomSettings->m_num_vertices_per_circle; // TODO: adapt to model size and complexity
 							double angle = 0;
@@ -549,14 +549,14 @@ namespace OpenInfraPlatform
 				{
 					if (i_shape->m_OverallDepth && i_shape->m_OverallWidth && i_shape->m_WebThickness && i_shape->m_FlangeThickness)
 					{
-						double h = i_shape->m_OverallDepth.m_value*length_factor;
-						double b = i_shape->m_OverallWidth.m_value*length_factor;
-						double tw = i_shape->m_WebThickness.m_value*length_factor;
-						double tf = i_shape->m_FlangeThickness.m_value*length_factor;
+						double h = i_shape->m_OverallDepth->m_value*length_factor;
+						double b = i_shape->m_OverallWidth->m_value*length_factor;
+						double tw = i_shape->m_WebThickness->m_value*length_factor;
+						double tf = i_shape->m_FlangeThickness->m_value*length_factor;
 						double r = 0;
 						if (i_shape->m_FilletRadius)
 						{
-							r = i_shape->m_FilletRadius.m_value*length_factor;
+							r = i_shape->m_FilletRadius->m_value*length_factor;
 						}
 
 						outer_loop.push_back(carve::geom::VECTOR(b*0.5, -h*0.5));
@@ -577,17 +577,17 @@ namespace OpenInfraPlatform
 						{
 							if (asym_I_profile->m_TopFlangeWidth)
 							{
-								double bTop = asym_I_profile->m_TopFlangeWidth.m_value*length_factor;
+								double bTop = asym_I_profile->m_TopFlangeWidth->m_value*length_factor;
 								double tfTop = tf;
 
 								if (asym_I_profile->m_TopFlangeThickness)
 								{
-									tfTop = asym_I_profile->m_TopFlangeThickness.m_value*length_factor;
+									tfTop = asym_I_profile->m_TopFlangeThickness->m_value*length_factor;
 								}
 								double rTop = r;
 								if (asym_I_profile->m_TopFlangeFilletRadius)
 								{
-									rTop = asym_I_profile->m_TopFlangeFilletRadius.m_value*length_factor;
+									rTop = asym_I_profile->m_TopFlangeFilletRadius->m_value*length_factor;
 								}
 
 								if (rTop != 0)
@@ -622,32 +622,32 @@ namespace OpenInfraPlatform
 				{
 					if (l_shape->m_Depth && l_shape->m_Thickness)
 					{
-						double h = l_shape->m_Depth.m_value*length_factor;
+						double h = l_shape->m_Depth->m_value*length_factor;
 						double b = h;
 
 						if (l_shape->m_Width)
 						{
-							b = l_shape->m_Width.m_value*length_factor;
+							b = l_shape->m_Width->m_value*length_factor;
 						}
 
-						double t = l_shape->m_Thickness.m_value*length_factor;
+						double t = l_shape->m_Thickness->m_value*length_factor;
 
 						double r1 = 0;
 						if (l_shape->m_FilletRadius)
 						{
-							r1 = l_shape->m_FilletRadius.m_value*length_factor;
+							r1 = l_shape->m_FilletRadius->m_value*length_factor;
 						}
 
 						double r2 = 0;
 						if (l_shape->m_EdgeRadius)
 						{
-							r2 = l_shape->m_EdgeRadius.m_value*length_factor;
+							r2 = l_shape->m_EdgeRadius->m_value*length_factor;
 						}
 
 						double ls = 0;
 						if (l_shape->m_LegSlope)
 						{
-							ls = l_shape->m_LegSlope.m_value*angle_factor;
+							ls = l_shape->m_LegSlope->m_value*angle_factor;
 						}
 
 						outer_loop.push_back(carve::geom::VECTOR(-b*0.5, -h*0.5));
@@ -697,24 +697,24 @@ namespace OpenInfraPlatform
 				{
 					if (u_shape->m_Depth && u_shape->m_FlangeWidth && u_shape->m_WebThickness && u_shape->m_FlangeThickness)
 					{
-						double h = u_shape->m_Depth.m_value*length_factor;
-						double b = u_shape->m_FlangeWidth.m_value*length_factor;
-						double tw = u_shape->m_WebThickness.m_value*length_factor;
-						double tf = u_shape->m_FlangeThickness.m_value*length_factor;
+						double h = u_shape->m_Depth->m_value*length_factor;
+						double b = u_shape->m_FlangeWidth->m_value*length_factor;
+						double tw = u_shape->m_WebThickness->m_value*length_factor;
+						double tf = u_shape->m_FlangeThickness->m_value*length_factor;
 						double r1 = 0;
 						if (u_shape->m_FilletRadius)
 						{
-							r1 = u_shape->m_FilletRadius.m_value*length_factor;
+							r1 = u_shape->m_FilletRadius->m_value*length_factor;
 						}
 						double r2 = 0;
 						if (u_shape->m_EdgeRadius)
 						{
-							r2 = u_shape->m_EdgeRadius.m_value*length_factor;
+							r2 = u_shape->m_EdgeRadius->m_value*length_factor;
 						}
 						double fs = 0;
 						if (u_shape->m_FlangeSlope)
 						{
-							fs = u_shape->m_FlangeSlope.m_value*angle_factor;
+							fs = u_shape->m_FlangeSlope->m_value*angle_factor;
 						}
 
 						outer_loop.push_back(carve::geom::VECTOR(-b*0.5, -h*0.5));
@@ -754,14 +754,14 @@ namespace OpenInfraPlatform
 				{
 					if (c_shape->m_Depth && c_shape->m_Width && c_shape->m_Girth && c_shape->m_WallThickness)
 					{
-						double h = c_shape->m_Depth.m_value*length_factor;
-						double b = c_shape->m_Width.m_value*length_factor;
-						double g = c_shape->m_Girth.m_value*length_factor;
-						double t = c_shape->m_WallThickness.m_value*length_factor;
+						double h = c_shape->m_Depth->m_value*length_factor;
+						double b = c_shape->m_Width->m_value*length_factor;
+						double g = c_shape->m_Girth->m_value*length_factor;
+						double t = c_shape->m_WallThickness->m_value*length_factor;
 						double r1 = 0;
 						if (c_shape->m_InternalFilletRadius)
 						{
-							r1 = c_shape->m_InternalFilletRadius.m_value*length_factor;
+							r1 = c_shape->m_InternalFilletRadius->m_value*length_factor;
 						}
 
 						if (r1 != 0)
@@ -817,20 +817,20 @@ namespace OpenInfraPlatform
 				{
 					if (z_shape->m_Depth && z_shape->m_FlangeWidth && z_shape->m_WebThickness && z_shape->m_FlangeThickness)
 					{
-						double h = z_shape->m_Depth.m_value*length_factor;
-						double b = z_shape->m_FlangeWidth.m_value*length_factor;
-						double tw = z_shape->m_WebThickness.m_value*length_factor;
-						double tf = z_shape->m_FlangeThickness.m_value*length_factor;
+						double h = z_shape->m_Depth->m_value*length_factor;
+						double b = z_shape->m_FlangeWidth->m_value*length_factor;
+						double tw = z_shape->m_WebThickness->m_value*length_factor;
+						double tf = z_shape->m_FlangeThickness->m_value*length_factor;
 						double r1 = 0;
 						if (z_shape->m_FilletRadius)
 						{
-							r1 = z_shape->m_FilletRadius.m_value*length_factor;
+							r1 = z_shape->m_FilletRadius->m_value*length_factor;
 						}
 
 						double r2 = 0;
 						if (z_shape->m_EdgeRadius)
 						{
-							r2 = z_shape->m_EdgeRadius.m_value*length_factor;
+							r2 = z_shape->m_EdgeRadius->m_value*length_factor;
 						}
 
 						outer_loop.push_back(carve::geom::VECTOR((-tw*0.5), -h*0.5));
@@ -866,39 +866,39 @@ namespace OpenInfraPlatform
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcTShapeProfileDef>(profileDef);
 				if (t_shape)
 				{
-					const double h = t_shape->m_Depth.m_value*length_factor;
-					const double b = t_shape->m_FlangeWidth.m_value*length_factor;
-					const double tw = t_shape->m_WebThickness.m_value*length_factor*0.5;
-					const double tf = t_shape->m_FlangeThickness.m_value*length_factor;
+					const double h = t_shape->m_Depth->m_value*length_factor;
+					const double b = t_shape->m_FlangeWidth->m_value*length_factor;
+					const double tw = t_shape->m_WebThickness->m_value*length_factor*0.5;
+					const double tf = t_shape->m_FlangeThickness->m_value*length_factor;
 
 					double r1 = 0;
 					if (t_shape->m_FilletRadius)
 					{
-						r1 = t_shape->m_FilletRadius.m_value*length_factor;
+						r1 = t_shape->m_FilletRadius->m_value*length_factor;
 					}
 
 					double r2 = 0;
 					if (t_shape->m_FlangeEdgeRadius)
 					{
-						r2 = t_shape->m_FlangeEdgeRadius.m_value*length_factor;
+						r2 = t_shape->m_FlangeEdgeRadius->m_value*length_factor;
 					}
 
 					double r3 = 0;
 					if (t_shape->m_WebEdgeRadius)
 					{
-						r3 = t_shape->m_WebEdgeRadius.m_value*length_factor;
+						r3 = t_shape->m_WebEdgeRadius->m_value*length_factor;
 					}
 					double fs = 0;
 
 					if (t_shape->m_FlangeSlope)
 					{
-						fs = t_shape->m_FlangeSlope.m_value*angle_factor;
+						fs = t_shape->m_FlangeSlope->m_value*angle_factor;
 					}
 
 					double ws = 0;
 					if (t_shape->m_WebSlope)
 					{
-						ws = t_shape->m_WebSlope.m_value*angle_factor;
+						ws = t_shape->m_WebSlope->m_value*angle_factor;
 					}
 
 					outer_loop.push_back(carve::geom::VECTOR(-b*0.5, h*0.5));

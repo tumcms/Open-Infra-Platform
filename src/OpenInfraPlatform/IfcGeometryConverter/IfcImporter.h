@@ -235,35 +235,6 @@ namespace OpenInfraPlatform
 			}
 		};
 
-		class IfcImporterBase
-		{
-		public:
-			virtual ~IfcImporterBase() {}
-			template<class T> const T& getValue() const; //to be implimented after Parameter
-			template<class T, class U> void setValue(const U& rhs); //to be implimented after Parameter
-		};
-
-		template <typename T>
-		class IfcImporter : public IfcImporterBase
-		{
-		public:
-			IfcImporter(const T& rhs) :value(rhs) {}
-			const T& getValue() const { return value; }
-			void setValue(const T& rhs) { value = rhs; }
-		private:
-			T value;
-		};
-
-		//Here's the trick: dynamic_cast rather than virtual
-		template<class T> const T& IfcImporterBase::getValue() const
-		{
-			return dynamic_cast<const IfcImporter<T>&>(*this).getValue();
-		}
-		template<class T, class U> void IfcImporterBase::setValue(const U& rhs)
-		{
-			return dynamic_cast<IfcImporter<T>&>(*this).setValue(rhs);
-		}
-
 		template <
 			class IfcEntityTypesT,
 			class IfcUnitConverterT,
@@ -289,7 +260,6 @@ namespace OpenInfraPlatform
 			{
 
 			}
-						
 
 			bool readStepFile(const char* filename)
 			{
@@ -351,9 +321,8 @@ namespace OpenInfraPlatform
 					// read the stream data and convert the entities into a map
 					m_ifcStepReader->readStreamData(buffer, ifcMap);
 				}
-				catch (std::exception e)//IfcException& e)
+				catch (...)//IfcException& e)
 				{
-					std::cerr << e.what() << std::endl;
 					//std::cerr << "Exception\t| " << e.what() << std::endl;
 				}
 

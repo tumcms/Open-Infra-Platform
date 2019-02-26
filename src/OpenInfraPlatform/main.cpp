@@ -20,7 +20,6 @@
 #define SPLASH_SCREEN
 #endif
 
-
 #include "OpenInfraPlatform/Benchmark.h"
 #include "OpenInfraPlatform/UserInterface/CodeEditorWindow.h"
 #include "OpenInfraPlatform/UserInterface/MainWindow.h"

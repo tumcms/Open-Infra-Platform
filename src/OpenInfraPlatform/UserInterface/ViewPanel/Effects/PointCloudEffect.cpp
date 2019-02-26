@@ -290,7 +290,7 @@ void PointCloudEffect::setOctree(buw::ReferenceCounted<buw::Octree> octree, buw:
 		octree->computeCellCenter(cellpos, octreeLevel_, cellCenter);
 
 		float cellSize = octree->getCellSize(octreeLevel_);
-		//buw::createBoundingBox(octreeVertices, octreeIndices, cellCenter.x + offset.x(), cellCenter.y + offset.y(), cellCenter.z + offset.z(), cellSize / 2.0f, cellSize / 2.0f, cellSize / 2.0f);
+		buw::createBoundingBox(octreeVertices, octreeIndices, cellCenter.x + offset.x(), cellCenter.y + offset.y(), cellCenter.z + offset.z(), cellSize / 2.0f, cellSize / 2.0f, cellSize / 2.0f);
 	}
 
 	// Fill index buffer description and create index buffer.
@@ -330,7 +330,7 @@ void PointCloudEffect::setSections(std::vector<buw::ReferenceCounted<buw::PointC
 				size_t startIndex = sectionVertices.size();
 				CCVector3 shiftedCenter = min + ((max - min) / 2.0f);
 				//buw::createBoundingBox(sectionVertices, sectionIndices, center.x + offset.x(), center.y + offset.y(), center.z + offset.z(), size.x, size.y, size.z);
-				//buw::createBoundingBox(sectionVertices, sectionIndices, 0, 0, 0, size.x, size.y, size.z);
+				buw::createBoundingBox(sectionVertices, sectionIndices, 0, 0, 0, size.x, size.y, size.z);
 				size_t endIndex = sectionVertices.size();
 				auto rotation = section->getOrientation();
 				buw::Vector3f centerGlobal = buw::Vector3f(center.x + offset.x(), center.y + offset.y(), center.z + offset.z());

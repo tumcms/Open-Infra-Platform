@@ -139,11 +139,7 @@ namespace OpenInfraPlatform
 			void on_actionImport_IFC_Alignment_1_0_triggered();
 
 			void on_actionIFC_Alignment_1_1_Export_triggered();
-
-			//Proxy
 			void on_actionCreate_Accident_Report_triggered();
-			void on_actionFilterIfcModel_triggered();
-
 			void on_actionImport_OSM_File_triggered();
 			void on_actionLandXML_triggered();
 			void on_actionLoad_Bridge();

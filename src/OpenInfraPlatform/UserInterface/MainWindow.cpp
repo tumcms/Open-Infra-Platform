@@ -31,6 +31,7 @@
 #include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/AlignmentEffect.h"
 #include "OpenInfraPlatform/UserInterface/resource.h"
 #include "OpenInfraPlatform/UserInterface/VectorTableModel.h"
+#include "OpenInfraPlatform/UserInterface/Ifc4x1TreeModel.h"
 
 #include "buw.OIPInfrastructure.h"
 #include "ui_mainwindow.h"
@@ -3203,8 +3204,4 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Accident_Repo
 	}
 
 	createAccidentReportDialog_->show();
-}
-
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionFilterIfcModel_triggered()
-{
 }
