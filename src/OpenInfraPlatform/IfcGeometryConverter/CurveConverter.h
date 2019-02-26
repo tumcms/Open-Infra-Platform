@@ -46,8 +46,8 @@ namespace OpenInfraPlatform {
 				CurveConverterT(std::shared_ptr<GeometrySettings> geomSettings,
 					std::shared_ptr<IfcUnitConverterT> unitConverter)
 					:
-					m_geomSettings(geomSettings),
-					m_unitConverter(unitConverter)
+					geomSettings(geomSettings),
+					unitConverter(unitConverter)
 				{
 				}
 
@@ -126,11 +126,12 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<typename IfcEntityTypesT::IfcAlignmentCurve> alignment_curve =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignmentCurve>(bounded_curve);
 					if(alignment_curve) {
+
 						//	********************************************************************************************
 						//	PART 1/4. Class Definitions.
 						//	********************************************************************************************
 
-							// Station class.
+						// Station class.
 						class Station {
 						public:
 							double distAlong_;	// horizontal distance along.
@@ -276,6 +277,7 @@ namespace OpenInfraPlatform {
 								BLUE_LOG(error) << "No curve segment start point in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
 								return;
 							}
+
 							double xStart = 0., yStart = 0.;
 							xStart = curveSegStartPoint->Coordinates[0] * length_factor;
 							yStart = curveSegStartPoint->Coordinates[1] * length_factor;
@@ -411,7 +413,7 @@ namespace OpenInfraPlatform {
 
 								// Set number of fragments (number of stations to be added within segment) according to segment type.
 								if(v_seg_circ_arc_2D) {
-									nVerFragments = m_geomSettings->m_min_num_vertices_per_arc;
+									nVerFragments = geomSettings->min_num_vertices_per_arc;
 									double nVerFragmentsLength = dVerHorizontalLength / nVerFragments;
 									VerticalSegment verticalSegment(zStart, dVerDistAlong, dVerHorizontalLength, dVerStartGradient, it_segment,
 									{ verticalStation }, isLine, nVerFragments, nVerFragmentsLength);
@@ -424,7 +426,7 @@ namespace OpenInfraPlatform {
 									VerSegmentsVec.push_back(verticalSegment);
 								}
 								if(v_seg_par_arc_2D) {
-									nVerFragments = m_geomSettings->m_min_num_vertices_per_arc;
+									nVerFragments = geomSettings->min_num_vertices_per_arc;
 									double nVerFragmentsLength = dVerHorizontalLength / nVerFragments;
 									VerticalSegment verticalSegment(zStart, dVerDistAlong, dVerHorizontalLength, dVerStartGradient, it_segment,
 									{ verticalStation }, isLine, nVerFragments, nVerFragmentsLength);
@@ -595,7 +597,7 @@ namespace OpenInfraPlatform {
 									} // end stations iteration
 								} // end if isCircArc
 
-							// HORIZONTAL TRANSITION CURVE SEGMENT.
+								// HORIZONTAL TRANSITION CURVE SEGMENT.
 								if(segType == isTrans) {
 									// Iterate over stations in transition curve segment.
 									for(auto it_hor_stations = it_hor_segments.itHorizontal_->segmentStations_.begin()) {
@@ -770,7 +772,7 @@ namespace OpenInfraPlatform {
 									} // end station iteration
 								} // endif isLine
 
-									// VERTICAL CIRCULAR ARC SEGMENT.
+								// VERTICAL CIRCULAR ARC SEGMENT.
 								if(segType == isCircArc) {
 									// Iterate over stations in circular arc segment.
 									for(auto it_hor_stations = it_hor_segments.itHorizontal_->segmentStations_.begin()) {
@@ -815,7 +817,7 @@ namespace OpenInfraPlatform {
 									} // end if
 								} // end isCircArc
 
-							// PARABOLIC ARC SEGMENT
+								// PARABOLIC ARC SEGMENT
 								if(segType == isParArc) {
 									// Iterate over stations in parabolic arc segment.
 									for(auto it_hor_stations = it_hor_segments.itHorizontal_->segmentStations_.begin()) {
@@ -1126,10 +1128,10 @@ namespace OpenInfraPlatform {
 									if(ellipse->SemiAxis2) {
 
 										double xRadius = ellipse->SemiAxis1 * length_factor;
-										double yRadius = ellipse->m_SemiAxis2 * length_factor;
+										double yRadius = ellipse->SemiAxis2 * length_factor;
 
 										double radiusMax = std::max(xRadius, yRadius);
-										int num_segments = m_geomSettings->m_num_vertices_per_circle;
+										int num_segments = geomSettings->num_vertices_per_circle;
 										// TODO: adapt to model size and complexity
 
 										// todo: implement clipping
@@ -1488,7 +1490,7 @@ namespace OpenInfraPlatform {
 				void convertIfcCartesianPoint(const std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>& ifcPoint,
 					carve::geom::vector<3> & point) const
 				{
-					double length_factor = m_unitConverter->getLengthInMeterFactor();
+					double length_factor = unitConverter->getLengthInMeterFactor();
 
 					if(ifcPoint->Coordinates.size() > 2) {
 						double x = ifcPoint->Coordinates[0] * length_factor;
@@ -1529,7 +1531,7 @@ namespace OpenInfraPlatform {
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>>& points,
 					std::vector<carve::geom::vector<3>>& loop) const
 				{
-					const double length_factor = m_unitConverter->getLengthInMeterFactor();
+					const double length_factor = unitConverter->getLengthInMeterFactor();
 					const unsigned int num_points = points.size();
 
 					for(unsigned int i_point = 0; i_point < num_points; ++i_point)  
