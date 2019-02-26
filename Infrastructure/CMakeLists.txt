@@ -140,7 +140,7 @@ target_link_libraries( OpenInfraPlatform.Infrastructure
 		# Raptor
 		${RAPTOR2_LIBRARIES}
 		# EXPRESS Binding for Meta model
-		OpenInfraPlatform.ExpressBinding
+		#OpenInfraPlatform.ExpressBinding
 		Rpcrt4.lib
 		${CC_LIBRARIES}
 	)
