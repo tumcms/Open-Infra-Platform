@@ -75,9 +75,8 @@ namespace OpenInfraPlatform {
 					double length_factor = unitConverter->getLengthInMeterFactor();
 					double plane_angle_factor = unitConverter->getAngleInRadianFactor();
 
-					/*	CurveConverter.h
-					For IFC4x1:
-					
+					/*	CurveConverter.h (IFC 4x2)
+
 					IfcCurve
 
 					IfcBoundedCurve				http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcboundedcurve.htm
