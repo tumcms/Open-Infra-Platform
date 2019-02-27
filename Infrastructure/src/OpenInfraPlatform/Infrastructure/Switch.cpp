@@ -3,7 +3,7 @@
 #include "Switch.h"
 
 
-Switch::Switch(double r, double sA, double t, std::string sb, std::string rp, switchtype st, turnoutDirection tD, tieType tT){
+Switch::Switch(double r, double sA, double t, std::string sb, std::string rp, eSwitchtype st, eTurnoutDirection tD, eTieType tT){
 	radius = r;
 	switchAngle = sA;
 	tilt = t;
@@ -32,16 +32,16 @@ void Switch::set_radius(double a) { radius = a; }
 double Switch::get_radius() { return radius; }
 void Switch::set_switchAngle(double a) { switchAngle = a; }
 double Switch::get_switchAngle() { return switchAngle; }
-void set_tilt(double a) { tilt = a; }
-double get_tilt() { return tilt; }
-void set_switchBlades(std::string s) { switchBlades = s;}
-std::string get_switchBlades() { return switchBlades; }
-void set_railprofile(std::string p) { railprofile = p; }
-std::string get_railprofile() { return railprofile; }
-void set_switchtype(switchtype s) { switchtype = s; }
-switchtype get_switchtype() { return switchtype; }
-void set_turnoutDirection(turnoutDirection d) { turnoutDirection = d; }
-turnoutDirection get_turnoutDirection() { return turnoutDirection;}
-void set_tieType(tieType t) { tieType = t; }
-tieType get_tieType() { return tieType; }
+void Switch::set_tilt(double a) { tilt = a; }
+double Switch::get_tilt() { return tilt; }
+void Switch::set_switchBlades(std::string s) { switchBlades = s;}
+std::string Switch::get_switchBlades() { return switchBlades; }
+void Switch::set_railprofile(std::string p) { railprofile = p; }
+std::string Switch::get_railprofile() { return railprofile; }
+void Switch::set_switchtype(Switch::eSwitchtype s) { switchtype = s; }
+Switch::eSwitchtype Switch::get_switchtype() { return switchtype; }
+void Switch::set_turnoutDirection(Switch::eTurnoutDirection d) { turnoutDirection = d; }
+Switch::eTurnoutDirection Switch::get_turnoutDirection() { return turnoutDirection;}
+void Switch::set_tieType(Switch::eTieType t) { tieType = t; }
+Switch::eTieType Switch::get_tieType() { return tieType; }
 

@@ -10,9 +10,9 @@ class Switch {
 	std::string switchBlades;  //depending on country's standart
 	std::string railprofile;   //depending on country's standart
 public:
-	enum switchtype {singleSlip, doubleSlip, crossover, scissorsCrossover} switchtype;
-	enum turnoutDirection {left, right} turnoutDirection;
-	enum tieType {wooden, concrete, steel, stoneBlock, plastics} tieType;
+	enum eSwitchtype {singleSlip, doubleSlip, crossover, scissorsCrossover} switchtype;
+	enum eTurnoutDirection {left, right} turnoutDirection;
+	enum eTieType {wooden, concrete, steel, stoneBlock, plastics} tieType;
 	void set_radius(double a);
 	double get_radius();
 	void set_switchAngle(double a);
@@ -23,13 +23,13 @@ public:
 	std::string get_switchBlades();
 	void set_railprofile(std::string);
 	std::string get_railprofile();
-	void set_switchtype(switchtype);
-	switchtype get_switchtype();
-	void set_turnoutDirection(turnoutDirection);
-	turnoutDirection get_turnoutDirection();
-	void set_tieType(tieType);
-	tieType get_tieType ();
-	Switch(double, double, double, std::string, std::string, switchtype, turnoutDirection, tieType);
+	void set_switchtype(eSwitchtype);
+	eSwitchtype get_switchtype();
+	void set_turnoutDirection(eTurnoutDirection);
+	eTurnoutDirection get_turnoutDirection();
+	void set_tieType(eTieType);
+	eTieType get_tieType ();
+	Switch(double, double, double, std::string, std::string, eSwitchtype, eTurnoutDirection, eTieType);
 	Switch();
 	~Switch();
 
