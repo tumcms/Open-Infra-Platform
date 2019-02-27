@@ -2334,6 +2334,8 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "" << std::endl;
 	file << "include_directories(" << std::endl;
 	file << "  src" << std::endl;
+	file << "  ${CMAKE_SOURCE_DIR}/ExpressGenerator/ExpressBinding/src" << std::endl;
+	file << "  ${visit_struct_INCLUDE_DIR}" << std::endl;
 	file << "  ${Boost_INCLUDE_DIR}" << std::endl;
 	file << ")" << std::endl;
 

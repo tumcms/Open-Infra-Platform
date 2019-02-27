@@ -22,6 +22,7 @@
 project(OpenInfraPlatform.EarlyBinding CXX)
 
 include_directories(
+  ${CMAKE_SOURCE_DIR}/ExpressGenerator/ExpressBinding/src
   ${CMAKE_SOURCE_DIR}/ExpressGenerator/ExpressBinding/src/OpenInfraPlatform/ExpressBinding/EXPRESS
   ${Boost_INCLUDE_DIR}
   ${visit_struct_INCLUDE_DIR}
@@ -40,6 +41,7 @@ add_library(OpenInfraPlatform.EarlyBinding INTERFACE)
 
 
 target_include_directories(OpenInfraPlatform.EarlyBinding
+	INTERFACE ${CMAKE_SOURCE_DIR}/ExpressGenerator/ExpressBinding/src
 	INTERFACE ${CMAKE_SOURCE_DIR}/ExpressGenerator/ExpressBinding/src/OpenInfraPlatform/ExpressBinding/EXPRESS
 	INTERFACE ${visit_struct_INCLUDE_DIR}
 	INTERFACE ${Boost_INCLUDE_DIR}

@@ -18,7 +18,6 @@
 #pragma once
 
 #include <EXPRESS.h>
-#include <IFC4X1.h>
 
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
 #include "OpenInfraPlatform/Infrastructure/namespace.h"

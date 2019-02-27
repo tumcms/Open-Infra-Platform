@@ -16,8 +16,9 @@
 */
 
 #include "CrossSectionProfile.h"
-#include <OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Types.h>
-#include <OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntityEnums.h>
+
+#include <IFC4X1.h>
+
 #include <OpenInfraPlatform/Infrastructure/Tessellation/Tessellation.h>
 #include <BlueFramework/Core/Math/Vector.h>
 #include <BlueFramework/Core/Math/Matrix.h>
@@ -31,7 +32,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 namespace
 {
 	using OpenInfraPlatform::Infrastructure::SectionedSolid::CrossSectionProfile;
-	typedef std::function<std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const&(size_t const i)> PointSource;
+	typedef std::function<std::vector<std::shared_ptr<IFC4X1::IfcLengthMeasure>> const&(size_t const i)> PointSource;
 
 	std::vector<CrossSectionProfile::Vertex> processLineStrip(
 		PointSource const& pointSource,
@@ -40,7 +41,7 @@ namespace
 	{
 		buw::Vector2d prevPosition;
 		buw::Vector2d nextPosition;
-		std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const* pNextPoint = nullptr;
+		std::vector<std::shared_ptr<IFC4X1::IfcLengthMeasure>> const* pNextPoint = nullptr;
 		std::vector<CrossSectionProfile::Vertex> segment;
 		for (size_t i = 0; i < numPnts && numPnts > 1; ++i)
 		{
@@ -58,9 +59,9 @@ namespace
 			}
 
 			// Get positions.
-			buw::Vector2d const position(point[0]->m_value, point[1]->m_value);
+			buw::Vector2d const position(point[0], point[1]);
 			if (pNextPoint)
-				nextPosition = buw::Vector2d((*pNextPoint)[0]->m_value, (*pNextPoint)[1]->m_value);
+				nextPosition = buw::Vector2d((*pNextPoint)[0], (*pNextPoint)[1]);
 
 			// Compute the normal.
 			buw::Vector2d normal;
@@ -119,7 +120,7 @@ namespace
 				BLUE_LOG(warning) << "Point data is corrupt. Cannot reliably determine polygon orientation.";
 				continue;
 			}
-			dArea += (p2[0]->m_value - p1[0]->m_value)*(p2[1]->m_value + p1[1]->m_value);
+			dArea += (p2[0] - p1[0])*(p2[1] + p1[1]);
 		}
 
 		return dArea;
@@ -131,21 +132,21 @@ namespace
 	}
 
 	bool isCCW(
-		std::vector<std::shared_ptr<IfcAlignment1x1::IfcSegmentIndexSelect>> const& segs,
-		std::shared_ptr<IfcAlignment1x1::IfcCartesianPointList2D> points)
+		std::vector<std::shared_ptr<IFC4X1::IfcSegmentIndexSelect>> const& segs,
+		std::shared_ptr<IFC4X1::IfcCartesianPointList2D> points)
 	{
 		double dArea = 0.0;
 		for (auto seg : segs)
 		{
 			if (!seg) continue;
-			if (std::dynamic_pointer_cast<IfcAlignment1x1::IfcLineIndex>(seg))
+			if (std::dynamic_pointer_cast<IFC4X1::IfcLineIndex>(seg))
 			{
-				auto lineSegment = std::static_pointer_cast<IfcAlignment1x1::IfcLineIndex>(seg);
+				auto lineSegment = std::static_pointer_cast<IFC4X1::IfcLineIndex>(seg);
 				dArea += computeGaussArea(
-					[&points, &lineSegment](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {return points->m_CoordList[lineSegment->m_vec[i]-1];},
+					[&points, &lineSegment](size_t const i)->std::vector<std::shared_ptr<IFC4X1::IfcLengthMeasure>> const& {return points->m_CoordList[lineSegment->m_vec[i]-1];},
 					lineSegment->m_vec.size());
 			}
-			else if (std::dynamic_pointer_cast<IfcAlignment1x1::IfcArcIndex>(seg))
+			else if (std::dynamic_pointer_cast<IFC4X1::IfcArcIndex>(seg))
 			{
 				throw buw::NotImplementedYetException("Arc segments not yet implemented.");
 			}
@@ -176,7 +177,7 @@ namespace
 namespace SectionedSolid
 {
 
-	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcArbitraryClosedProfileDef> csp)
+	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IFC4X1::IfcArbitraryClosedProfileDef> csp)
 		: segments()
 	{
 		if (!csp->m_OuterCurve)
@@ -186,19 +187,19 @@ namespace SectionedSolid
 
 		switch (csp->m_OuterCurve->m_entity_enum)
 		{
-		case IfcAlignment1x1::IFCINDEXEDPOLYCURVE:
+		case IFC4X1::IFCINDEXEDPOLYCURVE:
 		{
-			auto curve = std::static_pointer_cast<IfcAlignment1x1::IfcIndexedPolyCurve>(csp->m_OuterCurve);
+			auto curve = std::static_pointer_cast<IFC4X1::IfcIndexedPolyCurve>(csp->m_OuterCurve);
 			if (!curve->m_Points)
 				throw buw::Exception("Empty curve.");
-			if (curve->m_Points->m_entity_enum != IfcAlignment1x1::IFCCARTESIANPOINTLIST2D)
+			if (curve->m_Points->m_entity_enum != IFC4X1::IFCCARTESIANPOINTLIST2D)
 				throw buw::Exception("Profile curve must be 2D.");
-			auto points = std::static_pointer_cast<IfcAlignment1x1::IfcCartesianPointList2D>(curve->m_Points);
+			auto points = std::static_pointer_cast<IFC4X1::IfcCartesianPointList2D>(curve->m_Points);
 
 			// if Segments = empty -> all the points are connected using simple lines
 			if (curve->m_Segments.empty())
 			{
-				auto const& pointSource = [&points](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {
+				auto const& pointSource = [&points](size_t const i)->std::vector<std::shared_ptr<IFC4X1::IfcLengthMeasure>> const& {
 					return points->m_CoordList[i];
 				};
 				outerCurve.push_back(processLineStrip(
@@ -212,17 +213,17 @@ namespace SectionedSolid
 				for (auto segment : curve->m_Segments)
 				{
 					if (!segment) continue;
-					if (std::dynamic_pointer_cast<IfcAlignment1x1::IfcLineIndex>(segment))
+					if (std::dynamic_pointer_cast<IFC4X1::IfcLineIndex>(segment))
 					{
-						auto lineSegment = std::static_pointer_cast<IfcAlignment1x1::IfcLineIndex>(segment);
+						auto lineSegment = std::static_pointer_cast<IFC4X1::IfcLineIndex>(segment);
 						outerCurve.push_back(processLineStrip(
-							[&points, &lineSegment](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {return points->m_CoordList[lineSegment->m_vec[i]-1];},
+							[&points, &lineSegment](size_t const i)->std::vector<std::shared_ptr<IFC4X1::IfcLengthMeasure>> const& {return points->m_CoordList[lineSegment->m_vec[i]-1];},
 							lineSegment->m_vec.size(),
 							bIsCCW));
 					}
-					else if (std::dynamic_pointer_cast<IfcAlignment1x1::IfcArcIndex>(segment))
+					else if (std::dynamic_pointer_cast<IFC4X1::IfcArcIndex>(segment))
 					{
-						auto arcSegment = std::static_pointer_cast<IfcAlignment1x1::IfcArcIndex>(segment);
+						auto arcSegment = std::static_pointer_cast<IFC4X1::IfcArcIndex>(segment);
 						throw buw::NotImplementedYetException("Arc segments not yet implemented.");
 					}
 					else
@@ -232,28 +233,28 @@ namespace SectionedSolid
 				}
 			}
 		} break;
-		case IfcAlignment1x1::IFCPOLYLINE:
+		case IFC4X1::IFCPOLYLINE:
 		{
-			auto curve = std::static_pointer_cast<IfcAlignment1x1::IfcPolyline>(csp->m_OuterCurve);
+			auto curve = std::static_pointer_cast<IFC4X1::IfcPolyline>(csp->m_OuterCurve);
 			if (curve->m_Points.size() == 0)
 				throw buw::Exception("Empty polyline.");
 
 			// translate from 3d to 2d (polyline have as x = 0.0)
-			std::vector<std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint>> points2d;
+			std::vector<std::shared_ptr<IFC4X1::IfcCartesianPoint>> points2d;
 			if (curve->m_Points[0]->m_Coordinates.size() == 2)
 				points2d = curve->m_Points;
 			// translate from 3d to 2d (polyline have as x = 0.0)
 			else if (curve->m_Points[0]->m_Coordinates.size() == 3)
 				for (auto point : curve->m_Points)
 				{
-					std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> p(new IfcAlignment1x1::IfcCartesianPoint());
+					std::shared_ptr<IFC4X1::IfcCartesianPoint> p(new IFC4X1::IfcCartesianPoint());
 					p->m_Coordinates.push_back(point->m_Coordinates[1]);
 					p->m_Coordinates.push_back(point->m_Coordinates[2]);
 					points2d.push_back(p);
 				}
 			else
 				throw buw::Exception("Polyline points' coordinates number not supported.");
-			auto const& pointSource = [&points2d](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {
+			auto const& pointSource = [&points2d](size_t const i)->std::vector<std::shared_ptr<IFC4X1::IfcLengthMeasure>> const& {
 				return points2d[i]->m_Coordinates;
 			};
 
@@ -268,36 +269,36 @@ namespace SectionedSolid
 
 		segments.push_back(outerCurve);
 
-		if (csp->m_entity_enum == IfcAlignment1x1::IFCARBITRARYPROFILEDEFWITHVOIDS )
+		if (csp->m_entity_enum == IFC4X1::IFCARBITRARYPROFILEDEFWITHVOIDS )
 		{
-			auto const& profile = std::static_pointer_cast<IfcAlignment1x1::IfcArbitraryProfileDefWithVoids>(csp);
+			auto const& profile = std::static_pointer_cast<IFC4X1::IfcArbitraryProfileDefWithVoids>(csp);
 
 			for (auto& _innerCurve : profile->m_InnerCurves)
 			{
 				std::vector<std::vector<CrossSectionProfile::Vertex>> innerCurve;
 				switch (_innerCurve->m_entity_enum)
 				{
-				case IfcAlignment1x1::IFCPOLYLINE:
+				case IFC4X1::IFCPOLYLINE:
 				{
-					auto curve = std::static_pointer_cast<IfcAlignment1x1::IfcPolyline>(_innerCurve);
+					auto curve = std::static_pointer_cast<IFC4X1::IfcPolyline>(_innerCurve);
 					if (curve->m_Points.size() == 0)
 						throw buw::Exception("Empty polyline.");
 
-					std::vector<std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint>> points2d;
+					std::vector<std::shared_ptr<IFC4X1::IfcCartesianPoint>> points2d;
 					if (curve->m_Points[0]->m_Coordinates.size() == 2)
 						points2d = curve->m_Points;
 					// translate from 3d to 2d (polyline have as x = 0.0)
 					else if (curve->m_Points[0]->m_Coordinates.size() == 3)
 						for (auto point : curve->m_Points)
 						{
-							std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> p(new IfcAlignment1x1::IfcCartesianPoint());
+							std::shared_ptr<IFC4X1::IfcCartesianPoint> p(new IFC4X1::IfcCartesianPoint());
 							p->m_Coordinates.push_back(point->m_Coordinates[1]);
 							p->m_Coordinates.push_back(point->m_Coordinates[2]);
 							points2d.push_back(p);
 						}
 					else
 						throw buw::Exception("Polyline points' coordinates number not supported.");
-					auto const& pointSource = [&points2d](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {
+					auto const& pointSource = [&points2d](size_t const i)->std::vector<std::shared_ptr<IFC4X1::IfcLengthMeasure>> const& {
 						return points2d[i]->m_Coordinates;
 					};
 
@@ -315,7 +316,7 @@ namespace SectionedSolid
 		}
 	}
 
-	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcAsymmetricIShapeProfileDef> csp)
+	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IFC4X1::IfcAsymmetricIShapeProfileDef> csp)
 		: segments()
 	{
 		std::vector<std::vector<CrossSectionProfile::Vertex>> outerCurve;
@@ -328,8 +329,8 @@ namespace SectionedSolid
 			if (csp->m_Position->m_Location && csp->m_Position->m_Location->m_Coordinates.size() == 2)
 			{
 				auto const& coords = csp->m_Position->m_Location->m_Coordinates;
-				double const x = (coords[0] ? coords[0]->m_value : 0.0);
-				double const y = (coords[1] ? coords[1]->m_value : 0.0);
+				double const x = (coords[0] ? coords[0] : 0.0);
+				double const y = (coords[1] ? coords[1] : 0.0);
 				translation[0] = x;
 				translation[1] = y;
 			}
@@ -338,7 +339,7 @@ namespace SectionedSolid
 				auto const& xAxisDirection = csp->m_Position->m_RefDirection->m_DirectionRatios;
 				if (xAxisDirection[0] && xAxisDirection[1])
 				{
-					rotation = buw::createRotationMatrix(buw::Vector2d(xAxisDirection[0]->m_value, xAxisDirection[1]->m_value));
+					rotation = buw::createRotationMatrix(buw::Vector2d(xAxisDirection[0], xAxisDirection[1]));
 				}
 			}
 		}
@@ -348,23 +349,23 @@ namespace SectionedSolid
 		if (!csp->m_OverallDepth || !csp->m_BottomFlangeWidth || !csp->m_TopFlangeWidth
 			|| !csp->m_WebThickness || !csp->m_TopFlangeThickness || !csp->m_BottomFlangeThickness)
 			throw buw::Exception("Mandatory profile attribute missing.");
-		double const topWidth_2 = csp->m_TopFlangeWidth->m_value / 2.0;
-		double const bottomWidth_2 = csp->m_BottomFlangeWidth->m_value / 2.0;
-		double const height_2 = csp->m_OverallDepth->m_value / 2.0;
-		double const topThickness = csp->m_TopFlangeThickness->m_value;
-		double const bottomThickness = csp->m_BottomFlangeThickness->m_value;
-		double const webThickness_2 = csp->m_WebThickness->m_value / 2.0;
+		double const topWidth_2 = csp->m_TopFlangeWidth / 2.0;
+		double const bottomWidth_2 = csp->m_BottomFlangeWidth / 2.0;
+		double const height_2 = csp->m_OverallDepth / 2.0;
+		double const topThickness = csp->m_TopFlangeThickness;
+		double const bottomThickness = csp->m_BottomFlangeThickness;
+		double const webThickness_2 = csp->m_WebThickness / 2.0;
 		// Optionals:
-		double const bottomFilletRadius = csp->m_BottomFlangeFilletRadius ? csp->m_BottomFlangeFilletRadius->m_value : -1.0;
-		double const topFilletRadius = csp->m_TopFlangeFilletRadius ? csp->m_TopFlangeFilletRadius->m_value : -1.0;
+		double const bottomFilletRadius = csp->m_BottomFlangeFilletRadius ? csp->m_BottomFlangeFilletRadius : -1.0;
+		double const topFilletRadius = csp->m_TopFlangeFilletRadius ? csp->m_TopFlangeFilletRadius : -1.0;
 		// Not documented well enough to be supported:
-		if (csp->m_BottomFlangeEdgeRadius && csp->m_BottomFlangeEdgeRadius->m_value > 0.0)
+		if (csp->m_BottomFlangeEdgeRadius && csp->m_BottomFlangeEdgeRadius > 0.0)
 			BLUE_LOG(warning) << "BottomFlangeEdgeRadius not supported";
-		if (csp->m_TopFlangeEdgeRadius && csp->m_TopFlangeEdgeRadius->m_value > 0.0)
+		if (csp->m_TopFlangeEdgeRadius && csp->m_TopFlangeEdgeRadius > 0.0)
 			BLUE_LOG(warning) << "TopFlangeEdgeRadius not supported";
-		if (csp->m_BottomFlangeSlope && csp->m_BottomFlangeSlope->m_value > 0.0)
+		if (csp->m_BottomFlangeSlope && csp->m_BottomFlangeSlope > 0.0)
 			BLUE_LOG(warning) << "BottomFlangeSlope not supported";
-		if (csp->m_TopFlangeSlope && csp->m_TopFlangeSlope->m_value > 0.0)
+		if (csp->m_TopFlangeSlope && csp->m_TopFlangeSlope > 0.0)
 			BLUE_LOG(warning) << "TopFlangeSlope not supported";
 
 		// Right side (except first point)...
@@ -477,11 +478,11 @@ namespace SectionedSolid
 		segments.push_back(outerCurve);
 	}
 
-	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcCircleProfileDef> csp)
+	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IFC4X1::IfcCircleProfileDef> csp)
 		: segments()
 	{
 		std::vector<std::vector<CrossSectionProfile::Vertex>> outerCurve;
-		double r = csp->m_Radius->m_value;
+		double r = csp->m_Radius;
 
 		std::vector<buw::Vector2d> points;
 		points.push_back(buw::Vector2d( r,  0));
@@ -509,37 +510,37 @@ namespace SectionedSolid
 		segments.push_back(outerCurve);
 	}
 
-	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcRectangleProfileDef> csp)
+	CrossSectionProfile::CrossSectionProfile(std::shared_ptr<IFC4X1::IfcRectangleProfileDef> csp)
 		: segments()
 	{
 		std::vector<std::vector<CrossSectionProfile::Vertex>> outerCurve;
-		std::vector<std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint>> points2d;
+		std::vector<std::shared_ptr<IFC4X1::IfcCartesianPoint>> points2d;
 		
-		std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure> left (std::make_shared < IfcAlignment1x1::IfcLengthMeasure>(-0.5 * csp->m_XDim->m_value));
-		std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure> right(std::make_shared < IfcAlignment1x1::IfcLengthMeasure>( 0.5 * csp->m_XDim->m_value));
-		std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure> down (std::make_shared < IfcAlignment1x1::IfcLengthMeasure>(-0.5 * csp->m_YDim->m_value));
-		std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure> top  (std::make_shared < IfcAlignment1x1::IfcLengthMeasure>( 0.5 * csp->m_YDim->m_value));
+		std::shared_ptr<IFC4X1::IfcLengthMeasure> left (std::make_shared < IFC4X1::IfcLengthMeasure>(-0.5 * csp->m_XDim));
+		std::shared_ptr<IFC4X1::IfcLengthMeasure> right(std::make_shared < IFC4X1::IfcLengthMeasure>( 0.5 * csp->m_XDim));
+		std::shared_ptr<IFC4X1::IfcLengthMeasure> down (std::make_shared < IFC4X1::IfcLengthMeasure>(-0.5 * csp->m_YDim));
+		std::shared_ptr<IFC4X1::IfcLengthMeasure> top  (std::make_shared < IFC4X1::IfcLengthMeasure>( 0.5 * csp->m_YDim));
 
-		std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> LD(new IfcAlignment1x1::IfcCartesianPoint());
+		std::shared_ptr<IFC4X1::IfcCartesianPoint> LD(new IFC4X1::IfcCartesianPoint());
 		LD->m_Coordinates.push_back(left);
 		LD->m_Coordinates.push_back(down);
 		points2d.push_back(LD);
-		std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> LT(new IfcAlignment1x1::IfcCartesianPoint());
+		std::shared_ptr<IFC4X1::IfcCartesianPoint> LT(new IFC4X1::IfcCartesianPoint());
 		LT->m_Coordinates.push_back(left);
 		LT->m_Coordinates.push_back(top);
 		points2d.push_back(LT);
-		std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> RT(new IfcAlignment1x1::IfcCartesianPoint());
+		std::shared_ptr<IFC4X1::IfcCartesianPoint> RT(new IFC4X1::IfcCartesianPoint());
 		RT->m_Coordinates.push_back(right);
 		RT->m_Coordinates.push_back(top);
 		points2d.push_back(RT);
-		std::shared_ptr<IfcAlignment1x1::IfcCartesianPoint> RD(new IfcAlignment1x1::IfcCartesianPoint());
+		std::shared_ptr<IFC4X1::IfcCartesianPoint> RD(new IFC4X1::IfcCartesianPoint());
 		RD->m_Coordinates.push_back(right);
 		RD->m_Coordinates.push_back(down);
 		points2d.push_back(RD);
 		points2d.push_back(LD);
 
 
-		auto const& pointSource = [&points2d](size_t const i)->std::vector<std::shared_ptr<IfcAlignment1x1::IfcLengthMeasure>> const& {
+		auto const& pointSource = [&points2d](size_t const i)->std::vector<std::shared_ptr<IFC4X1::IfcLengthMeasure>> const& {
 			return points2d[i]->m_Coordinates;
 		};
 		
