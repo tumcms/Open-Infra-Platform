@@ -41,29 +41,11 @@ file(GLOB QtXlsxWriter_Source			src/xlsx/*.cpp src/xlsx/*.h)
 # Qt related stuff
 
 source_group(QtXlsxWriter	FILES ${QtXlsxWriter_Source})
+message(STATUS "Qt5 Version: ${Qt5_VERSION}")
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} # Qt generated files will be located here
-    # Support for Qt 5.9.0
-    ${Qt5Gui_DIR}/../../../include/QtGui/5.9.0
-    ${Qt5Core_DIR}/../../../include/QtCore/5.9.0
-    # Support for Qt 5.9.1
-    ${Qt5Gui_DIR}/../../../include/QtGui/5.9.1
-    ${Qt5Core_DIR}/../../../include/QtCore/5.9.1
-    # Support for Qt 5.9.1
-    ${Qt5Gui_DIR}/../../../include/QtGui/5.9.2
-    ${Qt5Core_DIR}/../../../include/QtCore/5.9.2
-    # Support for Qt 5.9.3
-    ${Qt5Gui_DIR}/../../../include/QtGui/5.9.3
-    ${Qt5Core_DIR}/../../../include/QtCore/5.9.3
-	# Support for Qt 5.10.0
-    ${Qt5Gui_DIR}/../../../include/QtGui/5.10.0
-    ${Qt5Core_DIR}/../../../include/QtCore/5.10.0
-	# Support for Qt 5.10.1
-    ${Qt5Gui_DIR}/../../../include/QtGui/5.10.1
-    ${Qt5Core_DIR}/../../../include/QtCore/5.10.1
-	# Support for Qt 5.11.0
-    ${Qt5Gui_DIR}/../../../include/QtGui/5.11.0
-    ${Qt5Core_DIR}/../../../include/QtCore/5.11.0
+    ${Qt5Gui_DIR}/../../../include/QtGui/${Qt5_VERSION}
+    ${Qt5Core_DIR}/../../../include/QtCore/${Qt5_VERSION}
 )
 
 ADD_LIBRARY(QtXlsxWriter SHARED
