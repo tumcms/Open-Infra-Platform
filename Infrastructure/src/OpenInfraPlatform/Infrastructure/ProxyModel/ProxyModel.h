@@ -17,18 +17,8 @@
 
 #pragma once
 
-#include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/model/Exception.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/writer/IfcStepWriter.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Entities.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Types.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/reader/Reader.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/model/UnitConverter.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/entity/IfcCartesianPoint.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntityEnums.h"
+#include <EXPRESS.h>
+#include <IFC4X1.h>
 
 #include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
 #include "OpenInfraPlatform/Infrastructure/namespace.h"
@@ -50,11 +40,11 @@ public:
 
 	virtual ~ProxyModel();
 	
-	void setIfc4x1Entities(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > entities);
+	void setIfc4x1Entities(std::map<int, std::shared_ptr<OpenInfraPlatform::ExpressBinding::EXPRESSEntity> > entities);
 
 	bool hasIfc4x1Data();
 
-	const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& getIfc4x1Data() const;;
+	const std::map<int, std::shared_ptr<OpenInfraPlatform::ExpressBinding::EXPRESSEntity> >& getIfc4x1Data() const;;
 
 	// Each car accident has a unique id 
 	int addAccidentReport(const accidentReportDescription& c );
@@ -69,7 +59,7 @@ private:
 	std::vector<accidentReportDescription> accidentReports_;
 
 	// IFC4x1 entities
-	std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > Ifc4x1Entities_;
+	std::map<int, std::shared_ptr<OpenInfraPlatform::ExpressBinding::EXPRESSEntity> > Ifc4x1Entities_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END

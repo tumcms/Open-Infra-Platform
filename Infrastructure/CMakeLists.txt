@@ -91,7 +91,7 @@ include_directories(
 	
 	#Experimental
 	${visit_struct_INCLUDE_DIR}
-	${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR}
+	#${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR}
 	${CC_INCLUDE_DIRS}
 )
 
@@ -123,7 +123,8 @@ add_library(OpenInfraPlatform.Infrastructure SHARED
 
 
 target_link_libraries( OpenInfraPlatform.Infrastructure
-		${OpenInfraPlatform.EarlyBinding_LIBRARIES}
+		OpenInfraPlatform.EarlyBinding
+		#${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 		# Boost
 		${Boost_LIBRARIES}		
 		# BlueFramework

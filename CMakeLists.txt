@@ -300,8 +300,13 @@ add_subdirectory(Infrastructure)
 add_subdirectory(UnitTests)
 add_subdirectory(oip)
 add_subdirectory(IfcBridgeGenerator)
-add_subdirectory(ExpressBinding)
 
+# ExpressGenerator rework revision 473.
+add_subdirectory(ExpressGenerator)
+
+if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding)
+	add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding)
+endif()
 # Do currently not work
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)
@@ -649,7 +654,9 @@ set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
 # Switched to static gtest on 28.11.2018 / Revision 388+
 #set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+set_target_properties(OpenInfraPlatform.ExpressGenerator	 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
+set_target_properties(GenerateEarlyBinding					 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
+set_target_properties(UpdateBoostMPL					 		PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
 #set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
 set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
