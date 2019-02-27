@@ -38,15 +38,15 @@ using namespace OpenInfraPlatform::IfcGeometryConverter;
 
 GeometrySettings::GeometrySettings()
 {
-	m_num_vertices_per_circle = 20; // default 20
-	m_min_num_vertices_per_arc = 6; // default 6
+	num_vertices_per_circle = 20; // default 20
+	min_num_vertices_per_arc = 6; // default 6
 
-	m_min_colinearity = 0.1; // default 0.1
-	m_min_delta_v = 1.0; // default 1.0
-	m_min_normal_angle = M_PI/180.0; // default M_PI / 180.0
-	m_min_length = 0.0002; // default 0.0002
+	min_colinearity = 0.1; // default 0.1
+	min_delta_v = 1.0; // default 1.0
+	min_normal_angle = M_PI/180.0; // default M_PI / 180.0
+	min_length = 0.0002; // default 0.0002
 
-	m_classify_type = carve::csg::CSG::CLASSIFY_EDGE;
+	classify_type = carve::csg::CSG::CLASSIFY_EDGE;
 }
 
 /**********************************************************************************************/

@@ -39,7 +39,7 @@
 
 #define GEOM_TOLERANCE  0.0000001
 #ifdef _DEBUG
-	#define HALF_SPACE_BOX_SIZE 100
+#define HALF_SPACE_BOX_SIZE 100
 #else
 	#define HALF_SPACE_BOX_SIZE 100
 #endif
@@ -55,14 +55,14 @@ namespace OpenInfraPlatform
 		public:
 			GeometrySettings();
 			~GeometrySettings();
-			int	m_num_vertices_per_circle;
-			int m_min_num_vertices_per_arc;
+			int	num_vertices_per_circle;
+			int min_num_vertices_per_arc;
 
-			double m_min_colinearity;
-			double m_min_delta_v;
-			double m_min_normal_angle;
-			double m_min_length;
-			carve::csg::CSG::CLASSIFY_TYPE m_classify_type;
+			double min_colinearity;
+			double min_delta_v;
+			double min_normal_angle;
+			double min_length;
+			carve::csg::CSG::CLASSIFY_TYPE classify_type;
 		};
 	}
 }

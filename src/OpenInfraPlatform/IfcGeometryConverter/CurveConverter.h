@@ -222,9 +222,9 @@ namespace OpenInfraPlatform {
 						//		Step 2: Get segment type information and additional members and store in horizontal segments vector.
 						// **********************************************************************************************************
 
-							// Step 1: Get segment information and store in horizontal station vector.
+						// Step 1: Get segment information and store in horizontal station vector.
 
-								// Declaration of horizontal segments vector.
+						// Declaration of horizontal segments vector.
 						std::vector<HorizontalSegment> HorSegmentsVec;
 
 						// Get information from alignment.
@@ -1638,6 +1638,7 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<IfcUnitConverterT>	unitConverter;
 		};
 	};
+};
 };
 
 #endif
