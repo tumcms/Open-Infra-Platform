@@ -38,31 +38,17 @@ namespace OpenInfraPlatform
 		class PlacementConverterT
 		{
 		public:
+
+			// **************************************************************************************************************************//
+			//	IfcPlacement (http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcplacement.htm) //
+			//	ABSTRACT SUPERTYPE OF IfcAxis1Placement, IfcAxis2Placement2D, IfcAxis2Placement3D										 //
+			// **************************************************************************************************************************//
+
 			static void convertIfcPlacement(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcPlacement> placement,
 				carve::math::Matrix& matrix,
 				double length_factor)
 			{
-
-				/*	PlacementConverter.h (IFC 4x2)
-
-				IfcPlacement				http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcplacement.htm
-
-				IfcAxis1Placement*			
-				IfcAxis2Placement2D
-				IfcAxis2Placement3D
-
-				Functions
-
-				*: not implemented in PlacementConverter.h
-
-				*/
-
-			// ************************************************************************************************************************	//
-			//	IfcPlacement																											//
-			//	ABSTRACT SUPERTYPE OF IfcAxis1Placement, IfcAxis2Placement2D, IfcAxis2Placement3D										//
-			// ************************************************************************************************************************	//
-				
 				// (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
 				if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis1Placement>(placement))
 				{
