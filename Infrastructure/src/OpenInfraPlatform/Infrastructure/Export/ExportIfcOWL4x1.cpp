@@ -16,7 +16,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"
-#include "OpenInfraPlatform/Infrastructure/Export/ExportIfc4x1.h"
 
 #include "raptor2/raptor2.h"
 #include <boost/algorithm/string/predicate.hpp>
@@ -33,8 +32,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <QRegExp>
 #include <type_traits>
 
-#include "IfcAlignment1x1Caster.h"
-#include "IfcAlignment1x1EnumStrings.h"
+#include <visit_struct/visit_struct.hpp>
+
+#include <EXPRESS.h>
+
 
 //Helper function to remove unwanted stuff from the string returned by typeid(T).name() function.
 std::string sanitize(const char* name){
@@ -113,7 +114,7 @@ private:
 	struct parseVector {
 
 		//Function operator() that covers vectors of visitable IfcAlignment1x1Type instances.
-		template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Type, T>::value, void>::type
+		template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::ExpressBinding::EXPRESSType, T>::value, void>::type
 		operator()(const char* name, std::vector<std::shared_ptr<T>> vector)
 		{
 			//If not empty, we construct a string list holding each value of the vector elements.
@@ -223,7 +224,7 @@ private:
 	struct parseAttribute {
 
 		//Function operator() which parses pointers to visitable objects derived from IfcAlignment1x1Type, so objects holding or representing flat values or vectors.
-		template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Type, T>::value, void>::type
+		template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::ExpressBinding::EXPRESSType, T>::value, void>::type
 		operator()(const char* name, std::shared_ptr<T> &ptr)
 		{
 			if(ptr) {
@@ -245,12 +246,12 @@ private:
 		}		
 		
 		//Function operator() which parses pointers to entities, so objects that have an id and should be specified in the file and shouldn't be parsed but linked as properties.
-		template <class T> typename std::enable_if<std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
+		template <class T> typename std::enable_if<std::is_base_of<OpenInfraPlatform::ExpressBinding::EXPRESSEntity, T>::value, void>::type
 		operator()(const char* name, std::shared_ptr<T> &ptr){
 			if(ptr) {
 				//If the pointer is not empty, we get the id and search for the subject in the map and create the statement.
 				//We use the attribute name, the typename on the stack and the subject on the stack.
-				auto id = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(ptr)->getId();
+				auto id = std::static_pointer_cast<OpenInfraPlatform::ExpressBinding::EXPRESSEntity>(ptr)->getId();
 				createPropertyStatementFromMap(name, id);				
 			}
 		}
@@ -258,7 +259,7 @@ private:
 		//Function operator() which parses pointers to things which are neither IfcAlignment1x1Entity nor IfcAlignment1x1Type but IfcAlignment1x1AbstractSelect.
 		//These pointers are declared to hold objects which can be abstract, so their dynamic type is either a IfcAlignment1x1Entity or IfcAlignment1x1Type.
 		//These special cases are currently handled manually since it's only 3 classes currently, which are all derived from IfcAlignment1x1Entity in their derived form.
-		template <class T> typename std::enable_if<std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1AbstractSelect, T>::value && !std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value && !std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Type, T>::value, void>::type
+		template <class T> typename std::enable_if<std::is_base_of<OpenInfraPlatform::ExpressBinding::EXPRESSType, T>::value && !std::is_base_of<OpenInfraPlatform::ExpressBinding::EXPRESSEntity, T>::value && !std::is_base_of<OpenInfraPlatform::ExpressBinding::EXPRESSType, T>::value, void>::type
 		operator()(const char* name, std::shared_ptr<T> &base_ptr)
 		{
 			if(base_ptr.get()) {
@@ -397,12 +398,12 @@ private:
 	struct DerivedIfcEntityParser {
 
 		//Creates an empty subject in the beginning and the same subject again after all attributes have been parsed to capture relationships etc. .
-		template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
+		template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::ExpressBinding::EXPRESSEntity, T>::value, void>::type
 		operator()(T& entity) const
 		{
 			//Create the subject name as "<type>_<id>" to be unique in the file.
 			auto type = sanitize(typeid(T).name());
-			auto id = QString::number(((OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity) entity).getId()).toStdString();
+			auto id = QString::number(((OpenInfraPlatform::ExpressBinding::EXPRESSEntity) entity).getId()).toStdString();
 			std::string subjectString = QString(sanitize(typeid(T).name()).data()).toLower().toStdString() + "_" + id;
 
 			//Initialize subject, predicate and object for owl statement.
@@ -444,7 +445,7 @@ private:
 		}
 		
 		//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
-		template <class T> typename std::enable_if<!std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity, T>::value, void>::type
+		template <class T> typename std::enable_if<!std::is_base_of<OpenInfraPlatform::ExpressBinding::EXPRESSEntity, T>::value, void>::type
 		operator()(T& entity) const
 		{
 			std::string message = "Invalid function call. " + sanitize(typeid(entity).name()) + " isn't a member of IfcAlignment1x1Entity.";
@@ -452,7 +453,7 @@ private:
 		}
 
 		//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
-		void operator()(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity& entity) const
+		void operator()(OpenInfraPlatform::ExpressBinding::EXPRESSEntity& entity) const
 		{
 			std::string message = "Invalid function call.";
 			throw buw::Exception(message.data());
@@ -463,7 +464,7 @@ private:
 	struct MapIfcObjectsParser {
 
 		//Function operator which takes the IfcAlignment1x1Entity and calls a function that performs a cast to its runtime type and calls a struct that parses the derived object.
-		void operator()(std::pair<const int, std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>> pair)
+		void operator()(std::pair<const int, std::shared_ptr<OpenInfraPlatform::ExpressBinding::EXPRESSEntity>> pair)
 		{
 			OpenInfraPlatform::IfcAlignment1x1::castToDerivedAndCall<DerivedIfcEntityParser, void>(pair.second, DerivedIfcEntityParser {});
 		}
@@ -473,7 +474,7 @@ private:
 	struct CreateSubjectMap {
 
 		//Function operator() to iterate over the map and create a subject for each object to capture the relationships between objects.
-		void operator()(std::pair<const int, std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>> pair)
+		void operator()(std::pair<const int, std::shared_ptr<OpenInfraPlatform::ExpressBinding::EXPRESSEntity>> pair)
 		{
 			//Create the subject name as <typename>_<id> to be somewhat unique in the file and that it can be referenced.
 			auto type = sanitize(typeid(*pair.second).name());

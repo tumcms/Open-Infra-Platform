@@ -91,22 +91,9 @@ option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to find boost, Eigen and Qt
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
-	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS 
-			  "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
-	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_0" 
-			  "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_64_0" 
-			  "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_63_0")
-	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS 
-			  "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
-	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS 
-			  "C:\\Qt\\Qt5.9.0\\5.9\\msvc${MSVC_VERSION_YEAR}_64" 
-			  "C:\\Qt\\5.9\\msvc${MSVC_VERSION_YEAR}_64" 
-			  "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\5.9.2\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\Qt5.9.3\\5.9.3\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\Qt5.10.0\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\5.10.1\\msvc${MSVC_VERSION_YEAR}_64")
+	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1")
+	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
+	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64")
 	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS 
 		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
 		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
@@ -180,7 +167,7 @@ set(QT5_COMPONENTS
 
 # Loop over all components, find them and initialize the corresponding variables
 foreach(Component ${QT5_COMPONENTS})
-	find_package( Qt5 5.10.0 COMPONENTS ${Component}	REQUIRED)
+	find_package( Qt5 5.12.1 COMPONENTS ${Component}	REQUIRED)
 	if(TARGET ${Qt5${Component}_LIBRARIES})
 		get_target_property(Qt5${Component}_location ${Qt5${Component}_LIBRARIES} LOCATION_Release)
 		set(QT5_DLLS_RELEASE ${QT5_DLLS_RELEASE} ${Qt5${Component}_location})
@@ -313,8 +300,13 @@ add_subdirectory(Infrastructure)
 add_subdirectory(UnitTests)
 add_subdirectory(oip)
 add_subdirectory(IfcBridgeGenerator)
-add_subdirectory(ExpressBinding)
 
+# ExpressGenerator rework revision 473.
+add_subdirectory(ExpressGenerator)
+
+if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding)
+	add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding)
+endif()
 # Do currently not work
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)
@@ -662,7 +654,9 @@ set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
 # Switched to static gtest on 28.11.2018 / Revision 388+
 #set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+set_target_properties(OpenInfraPlatform.ExpressGenerator	 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
+set_target_properties(GenerateEarlyBinding					 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
+set_target_properties(UpdateBoostMPL					 		PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
 #set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
 set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")

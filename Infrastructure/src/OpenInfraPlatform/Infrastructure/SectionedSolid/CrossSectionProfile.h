@@ -18,7 +18,7 @@
 #ifndef __CROSSSECTIONPROFILE_H_ED9B3EE6762342F2879261C6DDBD40A0__
 #define __CROSSSECTIONPROFILE_H_ED9B3EE6762342F2879261C6DDBD40A0__
 
-#include <OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Entities.h>
+#include <IFC4X1.h>
 #include <OpenInfraPlatform/Infrastructure/OIPInfrastructure.h>
 #include <OpenInfraPlatform/Infrastructure/namespace.h>
 
@@ -42,10 +42,10 @@ namespace SectionedSolid {
 			buw::Vector2d normal;
 		};
 
-		explicit CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcArbitraryClosedProfileDef> csp);
-		explicit CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcAsymmetricIShapeProfileDef> csp);
-		explicit CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcCircleProfileDef> csp);
-		explicit CrossSectionProfile(std::shared_ptr<IfcAlignment1x1::IfcRectangleProfileDef> csp);
+		explicit CrossSectionProfile(std::shared_ptr<IFC4X1::IfcArbitraryClosedProfileDef> csp);
+		explicit CrossSectionProfile(std::shared_ptr<IFC4X1::IfcAsymmetricIShapeProfileDef> csp);
+		explicit CrossSectionProfile(std::shared_ptr<IFC4X1::IfcCircleProfileDef> csp);
+		explicit CrossSectionProfile(std::shared_ptr<IFC4X1::IfcRectangleProfileDef> csp);
 		virtual ~CrossSectionProfile();
 
 		// the first outmost element is the outer curve, the rest the inner curves (may be non-existent)
