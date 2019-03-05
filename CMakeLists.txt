@@ -18,9 +18,7 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
-cmake_policy(SET CMP0071 NEW)
 cmake_policy(SET CMP0074 NEW)
-
 project(OpenInfraPlatform)
 
 #-------------------------------------------------------------------------------------
@@ -75,6 +73,16 @@ if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
 	return()
 endif()
 
+
+#------------------------------------------------------------------------------
+# Fix for MSVC 1915 / Visual Studio 2017 15.8
+#------------------------------------------------------------------------------
+
+if(MSVC_VERSION GREATER_EQUAL 1915)
+	add_compile_definitions(_ENABLE_EXTENDED_ALIGNED_STORAGE)
+endif()
+
+
 #------------------------------------------------------------------------------
 # Look for thirdparty libraries in some predefined locations.
 #------------------------------------------------------------------------------
@@ -102,7 +110,7 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS 
 		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
 		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
-	find_path(ZLIB_ROOT NAMES include/zlib.h HINTS 
+	find_path(ZLIB_ROOT NAMES zlib.h HINTS 
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
 	find_path(RAPTOR2_ROOT_DIR include/raptor2/raptor2.h HINTS 
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\raptor2")		
@@ -123,15 +131,8 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE       ${CMAKE_BINARY_DIR}/Release)
 
 add_definitions(-D_UNICODE 			# Unicode rules
 				#-DQT_NO_KEYWORDS 	# No qt keywords
-				#-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
+				-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
 ) # -DNOMINMAX does not work because GDI+ needs these macros
-
-if(MSVC_VERSION GREATER 1900)
-add_definitions(-D_ENABLE_EXTENDED_ALIGNED_STORAGE)
-endif()
-
-set(CMAKE_CXX_STANDARD 14)
-
 
 if (WIN32)
 	# Standard:          /DWIN32 /D_WINDOWS /W3 /Zm1000 /EHsc /GR
@@ -149,7 +150,7 @@ find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
 find_package(Eigen3 3.3.2  REQUIRED)
 find_package(Oklabi REQUIRED)
 find_package(gtest REQUIRED) 
-find_package(ZLIB 1.2.11 REQUIRED)
+find_package(ZLIB 1.2.10 REQUIRED)
 find_package(libLAS REQUIRED)
 find_package(qhull REQUIRED)
 find_package(raptor2 REQUIRED)
@@ -312,7 +313,7 @@ add_subdirectory(Infrastructure)
 add_subdirectory(UnitTests)
 add_subdirectory(oip)
 add_subdirectory(IfcBridgeGenerator)
-#add_subdirectory(ExpressBinding)
+add_subdirectory(ExpressBinding)
 
 # Do currently not work
 #add_subdirectory(RoadXMLViewer)
@@ -330,24 +331,23 @@ file(GLOB OpenInfraPlatform_Core_Source 							src/OpenInfraPlatform/Core/*.*)
 file(GLOB OpenInfraPlatform_Data_Source 							src/OpenInfraPlatform/Data/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Source 					src/OpenInfraPlatform/DataManagement/*.*)
-file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			#src/OpenInfraPlatform/IfcGeometryConverter/*.*)
-	src/OpenInfraPlatform/IfcGeometryConverter/CarveHeaders.h
-	src/OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.*
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc2x3EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4x1EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfcBridgeEntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h
-	src/OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.*
-	src/OpenInfraPlatform/IfcGeometryConverter/GeometrySettings.*
-	src/OpenInfraPlatform/IfcGeometryConverter/GeomUtils.*
-	src/OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.*
-	src/OpenInfraPlatform/IfcGeometryConverter/RecursiveCallException.h
-	src/OpenInfraPlatform/IfcGeometryConverter/UnhandledRepresentationException.h
-)
+file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)
+	#src/OpenInfraPlatform/IfcGeometryConverter/CarveHeaders.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc2x3EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4x1EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfcBridgeEntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/GeometrySettings.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/GeomUtils.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/RecursiveCallException.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/UnhandledRepresentationException.h)
 
 # UnitTesting for images is currently not working but still in the code so files have to be collected
 file(GLOB OpenInfraPlatform_UnitTesting_Source						src/OpenInfraPlatform/UnitTesting/*.*)
@@ -450,10 +450,6 @@ QT5_ADD_RESOURCES(OpenInfraPlatform_RC_SRCS ${OpenInfraPlatform_RC})
 QT5_WRAP_UI(OpenInfraPlatform_UIS_H ${OpenInfraPlatform_UIS})
 QT5_ADD_TRANSLATION(OpenInfra_QMS ${Translation_TS})
 
-# Exclude automatically generated files from AUTOMOC
-set_property(SOURCE ${OpenInfraPlatform_RC_SRCS} PROPERTY SKIP_AUTOMOC ON)
-set_property(SOURCE ${OpenInfraPlatform_UIS_H} PROPERTY SKIP_AUTOMOC ON)
-
 IF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 	MESSAGE(WARNING "Could not find lrelease. Your build won't contain translations.")
 ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
@@ -493,7 +489,7 @@ target_link_libraries(OpenInfraPlatform.UI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::
 
 target_link_libraries( OpenInfraPlatform.UI
 	OpenInfraPlatform.Infrastructure
-	#OpenInfraPlatform.ExpressBinding	
+	OpenInfraPlatform.ExpressBinding	
 	${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 	Qt5::WinMain  # New target available via find_package ( Qt5Core )
 	${BLUEFRAMEWORK_LIBRARIES}
@@ -501,7 +497,7 @@ target_link_libraries( OpenInfraPlatform.UI
 	QSimpleUpdater
 	${LIBLAS_LIBRARIES}
 	carve
-	${ZLIB_LIBRARIES}
+	ZLIB::ZLIB
 	Rpcrt4.lib
 	${CC_LIBRARIES}
 	fftw3.lib
@@ -666,7 +662,7 @@ set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
 # Switched to static gtest on 28.11.2018 / Revision 388+
 #set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
-#set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 #set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
 set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
@@ -742,12 +738,12 @@ endmacro()
 installData(${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Shader)
 installData(${PROJECT_SOURCE_DIR}/Data)
 installData(${PROJECT_SOURCE_DIR}/testdata)
-installData(${CMAKE_BINARY_DIR}/schema)
-installData(${CMAKE_BINARY_DIR}/res)
-installData(${CMAKE_BINARY_DIR}/fbliste)
+installData(${CMAKE_BINARY_DIR}/$<CONFIG>/schema)
+installData(${CMAKE_BINARY_DIR}/$<CONFIG>/res)
+installData(${CMAKE_BINARY_DIR}/$<CONFIG>/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${CC_RELEASE_BINARIES}
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll ${CMAKE_BINARY_DIR}/Release/tinyxml2.dll
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 	
@@ -770,5 +766,5 @@ install(FILES ${Qt5_NETWORK_PLUGINS_DLLS}
 install(FILES ${Qt5_ICONENGINES_PLUGINS_DLLS}
 	DESTINATION bin/plugins/iconengines
 	COMPONENT oip_thirdparty)
-
+	
 include(CPack)
