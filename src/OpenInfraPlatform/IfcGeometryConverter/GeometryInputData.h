@@ -98,11 +98,11 @@ namespace OpenInfraPlatform
 						const carve::mesh::MeshSet<3>::aabb_t& aabb = meshset->getAABB();
 
 						if (firstIteration) {
-							m_aabb = aabb;
+							aabb = aabb;
 							firstIteration = false;
 						}
 						else {
-							m_aabb.unionAABB(aabb);
+							aabb.unionAABB(aabb);
 						}
 					}
 				}
@@ -116,7 +116,7 @@ namespace OpenInfraPlatform
 			std::vector<std::shared_ptr<ItemData>>	vec_item_data;
 			bool									added_to_storey;
 
-			carve::mesh::MeshSet<3>::aabb_t			m_aabb;
+			carve::mesh::MeshSet<3>::aabb_t			aabb;
 		};
 	}
 }

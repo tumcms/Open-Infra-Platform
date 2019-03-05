@@ -31,7 +31,8 @@ namespace OpenInfraPlatform
 	namespace IfcGeometryConverter
 	{
 		class GeometrySettings;
-
+		
+		// IfcImporterUtil class with loadIfcProductsJob, convertIfcProduct, computeMeshsetsFromPolyhedrons.
 		class IfcImporterUtil
 		{
 		public:
@@ -40,12 +41,17 @@ namespace OpenInfraPlatform
 
 			static std::mutex s_productMutex;
 
+			// ***************************************
+			// 1: Load IfcProductsJob
+			// ***************************************
+
 			template <
 				class IfcEntityTypesT,
 				class IfcUnitConverterT,
 				class IfcEntityT,
 				class IfcExceptionT
 			>
+
 			static void loadIfcProductsJob(const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProduct>>& tasks, 
 				const int threadID,
 				std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>* shapeInputData,
@@ -55,6 +61,7 @@ namespace OpenInfraPlatform
 				//#ifdef _DEBUG
 				//				std::cout << "Info\t| Starting thread " << threadID << " to import IFC products" << std::endl;
 				//#endif
+
 				for (auto it = tasks.begin(); it != tasks.end(); ++it)
 				{
 					std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = *it;
@@ -108,12 +115,17 @@ namespace OpenInfraPlatform
 				//#endif
 			}
 
+			// ***************************************
+			// 2: Convert IfcProduct
+			// ***************************************
+
 			template <
 				class IfcEntityTypesT,
 				class IfcUnitConverterT,
 				class IfcEntityT,
 				class IfcExceptionT
 			>
+
 			static void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 				std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape, 
 				const std::shared_ptr<IfcUnitConverterT> unitConverter,
@@ -131,10 +143,10 @@ namespace OpenInfraPlatform
 
 				// check if there's any global object placement for this product
 				// if yes, then apply the placement
-				if (product->m_ObjectPlacement)
+				if (product->ObjectPlacement)
 				{
 					std::set<int> placementAlreadyApplied;
-					PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(product->m_ObjectPlacement,
+					PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(product->ObjectPlacement,
 						matProduct, lengthFactor,
 						placementAlreadyApplied);
 				}
@@ -143,9 +155,9 @@ namespace OpenInfraPlatform
 				std::stringstream strerr;
 
 				// go through all representations of the product
-				std::shared_ptr<typename IfcEntityTypesT::IfcProductRepresentation>& representation = product->m_Representation;
+				std::shared_ptr<typename IfcEntityTypesT::IfcProductRepresentation>& representation = product->Representation;
 				// so evaluate its geometry
-				for (auto& rep : representation->m_Representations)
+				for (auto& rep : representation->Representations)
 				{
 					// convert each shape of the represenation
 					repConverter->convertIfcRepresentation(rep, matProduct, productShape, strerr);
@@ -166,6 +178,9 @@ namespace OpenInfraPlatform
 #endif
 			}
 
+			// ***************************************
+			// 3: Compute Meshsets from Polyhedrons
+			// ***************************************
 			template <
 				class IfcEntityTypesT,
 				class IfcUnitConverterT,
@@ -180,7 +195,7 @@ namespace OpenInfraPlatform
 				// now examine the opening data of the product representation
 				std::vector<shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> openingDatas;
 
-				// check if the prodcut is an ifcElement, then it may contain opening data
+				// check if the product is an ifcElement, if so, it may contain opening data
 				shared_ptr<typename IfcEntityTypesT::IfcElement> element =
 					dynamic_pointer_cast<typename IfcEntityTypesT::IfcElement>(entity);
 
@@ -243,17 +258,19 @@ namespace OpenInfraPlatform
 			class IfcExceptionT,
 			class IfcEntityT
 		>
+
+		// IfcImporterT class with readStepFile, collectGeometryData, getter and setter. 
 		class IfcImporterT
 		{
 		public:
 			IfcImporterT()
-			: m_progress(0.0f)
+			: progress(0.0f)
 			{
-				m_ifcModel = std::make_shared<IfcModelT>();
-				m_geomSettings = std::make_shared<GeometrySettings>();
-				m_unitConverter = std::make_shared<IfcUnitConverterT>();
-				m_repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT>>(m_geomSettings, m_unitConverter);
-				m_ifcStepReader = std::make_shared<IfcStepReaderT>();
+				ifcModel = std::make_shared<IfcModelT>();
+				geomSettings = std::make_shared<GeometrySettings>();
+				unitConverter = std::make_shared<IfcUnitConverterT>();
+				repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT>>(geomSettings, unitConverter);
+				ifcStepReader = std::make_shared<IfcStepReaderT>();
 			}
 
 			virtual ~IfcImporterT()
@@ -261,10 +278,13 @@ namespace OpenInfraPlatform
 
 			}
 
+			// ***************************************
+			// 1: Read Step File
+			// ***************************************
 			bool readStepFile(const char* filename)
 			{
 				const unsigned found = std::string(filename).find_last_of("/\\");
-				m_filename = std::string(filename).substr(found + 1);
+				filename = std::string(filename).substr(found + 1);
 
 				// parse step file *.ifc or *.stp
 				std::string name(filename);
@@ -295,13 +315,13 @@ namespace OpenInfraPlatform
 				file.close();
 
 				// create a new ifc model, so clear the current model
-				m_ifcModel->clearIfcModel();
+				ifcModel->clearIfcModel();
 
 				try
 				{
 					std::cout << "Info\t| IfcGeometryConverter.Importer.StepReader: Reading IFC header" << std::endl;
 					// read the header of the step file
-					m_ifcStepReader->readStreamHeader(buffer, m_ifcModel);
+					ifcStepReader->readStreamHeader(buffer, ifcModel);
 				}
 				catch (IfcExceptionT& e)
 				{
@@ -309,9 +329,9 @@ namespace OpenInfraPlatform
 					return false;
 				}
 
-				m_version = m_ifcModel->getFileSchema();
+				version = ifcModel->getFileSchema();
 
-				std::cout << "Info\t| IfcGeometryConverter.Importer.StepReader: Detected scheme version: " << m_version << std::endl;
+				std::cout << "Info\t| IfcGeometryConverter.Importer.StepReader: Detected scheme version: " << version << std::endl;
 				std::cout << "Info\t| IfcGeometryConverter.Importer.StepReader: Parsing step file for entities" << std::endl;
 
 				std::map< int, shared_ptr<IfcEntityT>> ifcMap;
@@ -319,7 +339,7 @@ namespace OpenInfraPlatform
 				try
 				{
 					// read the stream data and convert the entities into a map
-					m_ifcStepReader->readStreamData(buffer, ifcMap);
+					ifcStepReader->readStreamData(buffer, ifcMap);
 				}
 				catch (...)//IfcException& e)
 				{
@@ -327,8 +347,8 @@ namespace OpenInfraPlatform
 				}
 
 				std::cout << "Info\t| IfcGeometryConverter.Importer: Create corresponding IFC model" << std::endl;
-				m_products.clear();
-				m_products.reserve(ifcMap.size());
+				products.clear();
+				products.reserve(ifcMap.size());
 
 				// add the parsed entities into the model
 				for (auto it = ifcMap.begin(); it != ifcMap.end(); ++it)
@@ -336,7 +356,7 @@ namespace OpenInfraPlatform
 					shared_ptr<IfcEntityT>& entity = it->second;
 					try
 					{
-						m_ifcModel->insertEntity(entity);
+						ifcModel->insertEntity(entity);
 					}
 					catch (IfcExceptionT& e)
 					{
@@ -358,7 +378,7 @@ namespace OpenInfraPlatform
 						}
 
 						// if product has no representations, then omit it
-						if (!product->m_Representation)
+						if (!product->Representation)
 						{
 #ifdef _DEBUG
 							std::cout << "Warning\t| IfcGeometryConverter.Importer: This product has no representations: " << product->classname()
@@ -367,27 +387,28 @@ namespace OpenInfraPlatform
 							continue;
 						}
 
-						m_products.push_back(product);
+						products.push_back(product);
 					}
 				}
 
 				std::cout << "Info\t| IfcGeometryConverter.Importer: Resolve inverse attributes" << std::endl;
-				m_ifcModel->resolveInverseAttributes();
-				m_ifcModel->updateCache();
+				ifcModel->resolveInverseAttributes();
+				ifcModel->updateCache();
 
 				// set unit converter and create new representation converter
-				m_unitConverter = m_ifcModel->getUnitConverter();
-				m_repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT>>(m_geomSettings, m_unitConverter);
+				unitConverter = ifcModel->getUnitConverter();
+				repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT>>(geomSettings, unitConverter);
 
 				return true;
 			}
 
-			
-
+			// ***************************************
+			// 2: Collect Geometry Data
+			// ***************************************
 			bool collectGeometryData()
 			{
 				// first get the ifc project
-				shared_ptr<typename IfcEntityTypesT::IfcProject> project = m_ifcModel->getIfcProject();
+				shared_ptr<typename IfcEntityTypesT::IfcProject> project = ifcModel->getIfcProject();
 
 				if (!project)
 				{
@@ -398,14 +419,14 @@ namespace OpenInfraPlatform
 				std::cout << "Info\t| IfcGeometryConverter.Importer: Collecting geometry data of all IFC products" << std::endl;
 
 				// clear all shape input data and cache
-				m_shapeInputData.clear();
-				m_repConverter->getProfileCache()->clearProfileCache();
+				shapeInputData.clear();
+				repConverter->getProfileCache()->clearProfileCache();
 
 				// geometry settings
-				double length_to_meter_factor = m_ifcModel->getUnitConverter()->getLengthInMeterFactor();
+				double length_to_meter_factor = ifcModel->getUnitConverter()->getLengthInMeterFactor();
 				carve::setEpsilon(1.4901161193847656e-08*length_to_meter_factor);
 
-				const std::map<int, shared_ptr<IfcEntityT>>& map = m_ifcModel->getMapIfcObjects();
+				const std::map<int, shared_ptr<IfcEntityT>>& map = ifcModel->getMapIfcObjects();
 
 				// gather tasks for all possible tasks
 				const unsigned int maxNumThreads = std::thread::hardware_concurrency();
@@ -415,12 +436,12 @@ namespace OpenInfraPlatform
 				
 				for (unsigned int n = 0; n < maxNumThreads; ++n)
 				{
-					tasks[n].reserve(m_products.size() / maxNumThreads + 1);
+					tasks[n].reserve(products.size() / maxNumThreads + 1);
 				}
 
-				for (auto m = 0; m < m_products.size(); ++m)
+				for (auto m = 0; m < products.size(); ++m)
 				{
-					tasks[m % maxNumThreads].push_back(m_products[m]);
+					tasks[m % maxNumThreads].push_back(products[m]);
 				}
 
 				// create threads and start them
@@ -429,7 +450,7 @@ namespace OpenInfraPlatform
 				for (unsigned int o = 0; o < maxNumThreads; ++o)
 				{
 					threads[o] = std::thread(&IfcImporterUtil::loadIfcProductsJob<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT, IfcExceptionT>, tasks[o], o,
-						&m_shapeInputData, m_unitConverter, m_repConverter);
+						&shapeInputData, unitConverter, repConverter);
 				}
 
 				// wait for all threads to be finished
@@ -441,41 +462,43 @@ namespace OpenInfraPlatform
 				return true;
 			}
 
-			// getter and setter
+			// ***************************************
+			// 3: Getter and Setter
+			// ***************************************
+		
 			void setIfcModel(std::shared_ptr<IfcModelT> model)
 			{
-				if (m_ifcModel)
+				if (ifcModel)
 				{
-					m_ifcModel->clearIfcModel();
+					ifcModel->clearIfcModel();
 				}
 
-				m_ifcModel = model;
-				m_unitConverter = m_ifcModel->getUnitConverter();
-				m_repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT>>(m_geomSettings, m_unitConverter);
+				ifcModel = model;
+				unitConverter = ifcModel->getUnitConverter();
+				repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT>>(geomSettings, unitConverter);
 			}
 
-			const std::string& getIfcVersion() const { return m_version; }
-
-			std::shared_ptr<IfcModelT>& getIfcModel() { return m_ifcModel; }
-			std::shared_ptr<GeometrySettings>& getGeomSettings() { return m_geomSettings; }
-			std::shared_ptr<IfcUnitConverterT>& getUnitConverter() { return m_unitConverter; }
-			std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& getShapeDatas() { return m_shapeInputData; }
+			const std::string& getIfcVersion() const { return version; }
+			std::shared_ptr<IfcModelT>& getIfcModel() { return ifcModel; }
+			std::shared_ptr<GeometrySettings>& getGeomSettings() { return geomSettings; }
+			std::shared_ptr<IfcUnitConverterT>& getUnitConverter() { return unitConverter; }
+			std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& getShapeDatas() { return shapeInputData; }
 
 		protected:
 
-			std::shared_ptr<IfcModelT>				m_ifcModel;
-			std::shared_ptr<IfcStepReaderT>			m_ifcStepReader;
-			std::shared_ptr<GeometrySettings>		m_geomSettings;
-			std::shared_ptr<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT>> m_repConverter;
-			std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProduct>> m_products;
-			std::shared_ptr<IfcUnitConverterT>		m_unitConverter;
-			std::string								m_filename;
-			std::string								m_version;
+			std::shared_ptr<IfcModelT>				ifcModel;
+			std::shared_ptr<IfcStepReaderT>			ifcStepReader;
+			std::shared_ptr<GeometrySettings>		geomSettings;
+			std::shared_ptr<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT>> repConverter;
+			std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProduct>> products;
+			std::shared_ptr<IfcUnitConverterT>		unitConverter;
+			std::string								filename;
+			std::string								version;
 
-			float									m_progress;
+			float									progress;
 
 			// shape input data of all products
-			std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> m_shapeInputData;
+			std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;
 		};
 	}
 }

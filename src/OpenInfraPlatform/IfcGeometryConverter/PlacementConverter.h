@@ -464,7 +464,7 @@ namespace OpenInfraPlatform
 					}
 					translate.x = trans_operator_3d->LocalOrigin->Coordinates[0]*length_factor;
 					translate.y = trans_operator_3d->LocalOrigin->Coordinates[1]*length_factor;
-					translate.z = trans_operator_3d->LocalOrigin->m_Coordinates[2]*length_factor;
+					translate.z = trans_operator_3d->LocalOrigin->Coordinates[2]*length_factor;
 
 					if (trans_operator_3d->Scale == trans_operator_3d->Scale)
 					{

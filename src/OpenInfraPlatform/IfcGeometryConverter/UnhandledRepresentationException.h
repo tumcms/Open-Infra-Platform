@@ -40,7 +40,7 @@ namespace OpenInfraPlatform
 			}
 			UnhandledRepresentationException(std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem> item)
 			{
-				m_item = item;
+				item = item;
 			}
 
 			~UnhandledRepresentationException() throw()
@@ -52,8 +52,8 @@ namespace OpenInfraPlatform
 				return "Unhandled IFC Representation";
 			}
 
-			std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem> m_item;
-			//std::shared_ptr<typename IfcEntityTypesT::IfcAbstractSelect> m_select;
+			std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem> item;
+			//std::shared_ptr<typename IfcEntityTypesT::IfcAbstractSelect> select;
 		};
 
 		#ifdef _DEBUG
@@ -61,10 +61,10 @@ namespace OpenInfraPlatform
 		class DebugBreakException : public std::exception
 		{
 		public:
-			DebugBreakException( std::string reason ) { m_reason = reason; }
+			DebugBreakException( std::string reason ) { reason = reason; }
 			~DebugBreakException() throw() {}
-			virtual const char* what() const throw() { return m_reason.c_str(); }
-			std::string m_reason;
+			virtual const char* what() const throw() { return reason.c_str(); }
+			std::string reason;
 		};
 
 		#endif

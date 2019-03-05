@@ -566,23 +566,23 @@ namespace OpenInfraPlatform
 					const std::shared_ptr<typename IfcEntityTypesT::IfcSlab>& slab = 
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSlab>(product);
 
-					if (slab->m_PredefinedType)
+					if (slab->PredefinedType)
 					{
 						// Dach
-						if (slab->m_PredefinedType->m_enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_ROOF)
+						if (slab->PredefinedType->enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_ROOF)
 						{
 							return buw::Vector3f(0.6f, 0.15f, 0.15f);//, 1.0f);
 						}
 
 						// Treppenabsatz
-						else if (slab->m_PredefinedType->m_enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_LANDING)
+						else if (slab->PredefinedType->enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_LANDING)
 						{
 							return buw::Vector3f(0.8f, 0.4f, 0.4f);//, 1.0f);
 						}
 
-						else if (slab->m_PredefinedType->m_enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_FLOOR ||
-							slab->m_PredefinedType->m_enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_BASESLAB ||
-							slab->m_PredefinedType->m_enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_NOTDEFINED)
+						else if (slab->PredefinedType->enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_FLOOR ||
+							slab->PredefinedType->enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_BASESLAB ||
+							slab->PredefinedType->enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_NOTDEFINED)
 						{
 							return buw::Vector3f(1.0f, 0.95f, 0.9f);//, 1.0f);
 						}

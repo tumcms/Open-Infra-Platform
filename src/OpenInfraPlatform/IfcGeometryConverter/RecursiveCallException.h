@@ -58,7 +58,7 @@ namespace BlueIfcViewer
 		public:
 			RecursiveCallException(std::shared_ptr<IfcEntityT> item)
 			{
-				m_entity = item;
+				entity = item;
 			}
 
 			~RecursiveCallException() throw()
@@ -68,12 +68,12 @@ namespace BlueIfcViewer
 			const char* what() const throw()
 			{
 				std::stringstream strs;
-				strs << "Ifc Entity with Id " << m_entity->getId() 
+				strs << "Ifc Entity with Id " << entity->getId() 
 					<< " has been applied recursively.";
 				return strs.str().c_str();
 			}
 
-			std::shared_ptr<IfcEntityT> m_entity;
+			std::shared_ptr<IfcEntityT> entity;
 		};
 
 	}
