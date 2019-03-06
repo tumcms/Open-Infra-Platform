@@ -61,6 +61,10 @@ private:
 
     void generateTypeSourceFileGetStepParameter(const Type &type, std::ofstream &out, Schema &schema);
 
+	void generateReaderFile(const Schema &schema);
+
+	void generateWriterFile(const Schema &schema);
+
     std::string convertSimpleTypeToCPPType(Schema &schema, std::string simpleType) const;
 
     void includeFile(const std::string &filename, std::ofstream &file);

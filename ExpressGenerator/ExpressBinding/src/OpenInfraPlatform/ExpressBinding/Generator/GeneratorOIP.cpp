@@ -1032,6 +1032,7 @@ void GeneratorOIP::generateREFACTORED(std::ostream & out, Schema & schema)
 	generateCMakeListsFileREFACTORED(schema);
 
 	generateSchemaHeader(schema);
+	generateReaderFile(schema);
 
 	// Types.h
 	createTypesHeaderFileREFACTORED(schema);
@@ -2122,6 +2123,53 @@ void OpenInfraPlatform::ExpressBinding::GeneratorOIP::generateTypeSourceFileGetS
 	    << "}" << std::endl;
 }
 
+void GeneratorOIP::generateReaderFile(const Schema & schema)
+{
+	std::ofstream file(sourceDirectory_ + "/" + schema.getName().append("Reader.h"));
+
+	writeLicenseAndNotice(file);
+	writeLine(file, "#pragma once");
+
+	writeInclude(file, schema.getName() + "Entities.h");
+
+	writeInclude(file, "EXPRESS.h", true);
+	writeInclude(file, "fstream", true);
+	writeInclude(file, "string", true);
+	writeInclude(file, "exception", true);
+	linebreak(file);
+
+	// Write begin namespace OpenInfraPlatform::Schema
+	writeBeginNamespace(file, schema);	
+
+	writeLine(file, "inline ExpressBinding::EXPRESSModel FromFile(const std::string &filename) {"); // begin function FromFile
+
+	writeLine(file, "std::ifstream file(filename, std::ifstream::in);");
+	writeLine(file, "if(file.is_open()) {"); // begin if(file.is_open())
+	writeLine(file, "ExpressBinding::EXPRESSModel model(\"" + schema.getName() + "\");");
+	writeLine(file, "for(std::string line; std::getline(file,line);) {"); // begin for read file
+	writeLine(file, "if(line[0] == '#') {");
+	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=')));");
+	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('='), line.find_first_of('('));");
+
+	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
+		auto entity = schema.getEntityByIndex(idx);
+		writeLine(file, "if(entityType == \"" + toUpper(entity.getName()) + "\") {");
+		writeLine(file, "std::shared_ptr<" + entity.getName() + "> entity;"); //TODO
+		writeLine(file, "continue;");
+		writeLine(file, "}");
+	}
+	writeLine(file, "}"); //end if line[0] == '#'
+	writeLine(file, "}"); //end for read file
+	writeLine(file, "}");
+	writeLine(file, "else {");
+	writeLine(file, "throw std::exception(\"Could not open file.\");");
+	writeLine(file, "}"); // end else if(file.is_open())
+	writeLine(file, "}"); // end function FromFile
+	writeEndNamespace(file, schema);
+
+	file.close();
+}
+
 std::string GeneratorOIP::convertSimpleTypeToCPPType(Schema &schema, std::string simpleType) const {
 	std::map<std::string, std::string> simpleTypeMapping;
 	simpleTypeMapping.insert(std::make_pair("INTEGER", "int"));
@@ -2960,7 +3008,8 @@ void GeneratorOIP::generateSchemaHeader(Schema & schema)
 
 	writeInclude(file, schema.getName() + "Entities.h");
 	writeInclude(file, schema.getName() + "Types.h");
-	
+	writeInclude(file, schema.getName() + "Reader.h");
+
 	file.close();	
 }
 

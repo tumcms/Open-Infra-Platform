@@ -27,10 +27,6 @@
 
 #include <tuple>
 #include <utility>
-//
-//#include <boost/preprocessor.hpp>
-//#include <boost/preprocessor/tuple.hpp>
-//#include <boost/preprocessor/seq.hpp>
 
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDING_BEGIN

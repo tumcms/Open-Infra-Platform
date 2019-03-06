@@ -25,6 +25,7 @@
 
 #include "EXPRESSEntity.h"
 
+#include <string>
 #include <map>
 #include <memory>
 #include <algorithm>
@@ -33,7 +34,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDING_BEGIN
 
 class EXPRESSModel {
 public:
-	EXPRESSModel() { };
+	EXPRESSModel(const std::string &schema) : schema(schema) { };
 
 	~EXPRESSModel() {
 		if (!entities.empty()) {
@@ -44,6 +45,7 @@ public:
 		}
 	};
 
+	const std::string schema;
 	std::map<size_t, std::shared_ptr<EXPRESSEntity>> entities;
 };
 
