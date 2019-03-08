@@ -17,10 +17,7 @@
 
 #include "Data.h"
 
-
 #include <BlueFramework/Application/DataManagement/Notification/NotifiyAfterEachActionOnlyOnce.h>
-#include "buw.OIPInfrastructure.h"
-
 
 #include "IFC2X3Reader.h"
 #include "IFC4Reader.h"
@@ -28,18 +25,15 @@
 #include "IFC4X2_BIM4ROADReader.h"
 #include "IFC4X2_DRAFT_1Reader.h"
 
-
 #include "EMTIFC2X3EntityTypes.h"
 #include "EMTIFC4EntityTypes.h"
 #include "EMTIFC4X1EntityTypes.h"
 #include "EMTIFC4X2_BIM4ROADEntityTypes.h"
 #include "EMTIFC4X2_DRAFT_1EntityTypes.h"
 
-
-#include "OpenInfraPlatform/IfcGeometryConverter/IfcImporter.h"
-#include "OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.h"
-#include "OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.h"
-
+#include "OpenInfraPlatform/Core/IfcGeometryConverter/IfcImporter.h"
+#include "OpenInfraPlatform/Core/IfcGeometryConverter/GeometryInputData.h"
+#include "OpenInfraPlatform/Core/IfcGeometryConverter/IfcPeekStepReader.h"
 
 #include <QtXml>
 #include <QtXmlPatterns>
@@ -50,15 +44,6 @@
 
 #include "AsyncJob.h"
 
-template <
-	class IfcEntityTypesT,
-	class IfcUnitConverterT,
-	class IfcModelT,
-	class IfcStepReaderT,
-	class IfcExceptionT,
-	class IfcEntityT
->
-void importIfcGeometry(buw::ReferenceCounted<oip::EXPRESSModel> expressModel, buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename)
 
 OpenInfraPlatform::DataManagement::Data::Data() : 
 BlueFramework::Application::DataManagement::Data(new BlueFramework::Application::DataManagement::NotifiyAfterEachActionOnlyOnce<OpenInfraPlatform::DataManagement::Data>()),
@@ -99,14 +84,8 @@ void OpenInfraPlatform::DataManagement::Data::open( const std::string & filename
 }
 
 
-void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) {
-    trafficSignModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::TrafficSignModel>();
-    digitalElevationModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::DigitalElevationModel>();
-	alignmentModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::AlignmentModel>();
-	girderModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::GirderModel>();
-	slabFieldModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::SlabFieldModel>();
+void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) {   
 	ifcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
-	selectedAlignmentIndex_ = 0;
 
 	if (pointCloud_)
 		pointCloud_ = nullptr;
@@ -156,72 +135,8 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing ").append(filename));
 
 	buw::String buwstrFilename = filename.c_str();
-	if (buwstrFilename.toLower().endsWith(".xml"))
-	{
-		//// could be LandXML or OKSTRA
-		//
-		//// The QDomDocument class represents an XML document.
-		//QDomDocument xmlBOM;
-		//// Load xml file as raw data
-		//QFile f(filename.c_str());
-		//if (!f.open(QIODevice::ReadOnly))
-		//{
-		//	// Error while loading file
-		//	std::cerr << "Error while loading file" << std::endl;
-		//	throw std::runtime_error("Error while loading file");
-		//}
-		//
-		//// Set data into the QDomDocument before processing
-		//xmlBOM.setContent(&f);
-		//f.close();
-		//
-		//// Extract the root markup
-		//QDomElement root = xmlBOM.documentElement();
-		//
-		//// Get root names and attributes
-		//std::string type = root.tagName().toStdString();
-		//
-		//if (boost::starts_with(type, "LandXML"))
-		//{
-		//	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing LandXML ").append(filename));
-		//	importer_ = new buw::ImportLandXml(filename);
-		//}
-		//else if (boost::starts_with(type, "LandInfra")) {
-		//	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing LandInfra ").append(filename));
-		//	importer_ = new buw::ImportLandInfra(filename);
-		//}
-		//else
-		//{
-		//	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Okstra ").append(filename));
-		//	importer_ = new buw::ImportOkstra(filename);
-		//}
-	}
-	else if (buwstrFilename.toLower().endsWith(".cte"))
-	{
 
-		//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Okstra ").append(filename));
-		//importer_ = new buw::ImportOkstra(filename);
-	}
-	else if (buwstrFilename.toLower().endsWith(".rnd"))
-	{
-
-		//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing RoadXML ").append(filename));
-		//importer_ = new buw::ImportRoadXML(filename);
-	}
-	else if (buwstrFilename.toLower().endsWith(".ifczip")) 
-	{
-		//QUuid id = QUuid::createUuid();
-		//QString tempFilename = QDir::currentPath().append(QString("/").append(id.toString().append(".ifc")));
-		//
-		//OpenInfraPlatform::DataManagement::IfcZipper* importZipper = new OpenInfraPlatform::DataManagement::IfcZipper(nullptr, QString(filename.data()), tempFilename, INFL);
-		//
-		//importZipper->run();
-		//importJob(tempFilename.toStdString());
-		//
-		//QObject::connect(&OpenInfraPlatform::AsyncJob::getInstance(), &OpenInfraPlatform::AsyncJob::finished, importZipper, &OpenInfraPlatform::DataManagement::IfcZipper::removeFile);
-		//QObject::connect(importZipper, &OpenInfraPlatform::DataManagement::IfcZipper::fileDeleted, importZipper, &QObject::deleteLater);
-	}
-	else if (buwstrFilename.toLower().endsWith(".ifc") || buwstrFilename.toLower().endsWith(".stp"))
+	if (buwstrFilename.toLower().endsWith(".ifc") || buwstrFilename.toLower().endsWith(".stp"))
 	{
 		using OpenInfraPlatform::IfcGeometryConverter::IfcPeekStepReader;
 		IfcPeekStepReader::IfcSchema ifcSchema = IfcPeekStepReader::parseIfcHeader(filename);
@@ -249,42 +164,9 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 
 		
 	}
-	else if (buwstrFilename.toLower().endsWith(".osm"))
-	{
-		importOSMJob(filename, buw::ImportOSM::getDefaultFilter(), 2);
-	}
-	else if(buwstrFilename.toLower().endsWith(".las")) {
-		importLASJob(filename);
-	}
-	else if(buwstrFilename.toLower().endsWith(".bin")) {
-		importBINJob(filename);
-	}
-	else if (buwstrFilename.toLower().endsWith(".d40"))
-	{
-		importer_ = new buw::ImportD40Import(filename);
-	}
+	
 }
 
-
-void OpenInfraPlatform::DataManagement::Data::importOSM(const std::string& filename, const std::vector<std::string>& filter, int mode)
-{
-	//BLUE_ASSERT(boost::filesystem::exists(filename))("File does not exist");
-	//
-	//buw::String buwstrFilename = filename.c_str();
-	//
-	//if (boost::filesystem::exists(filename) && buwstrFilename.toLower().endsWith(".osm"))
-	//{
-	//	clear(false);
-	//	merge_ = false;
-	//
-	//	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importOSMJob, this, filename, filter, mode);
-	//}
-}
-void OpenInfraPlatform::DataManagement::Data::importOSMJob(const std::string& filename, const std::vector<std::string>& filter, int mode)
-{
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing OpenStreetMap ").append(filename));
-	//importer_ = new buw::ImportOSM(filename, filter, mode);
-}
 
 void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool completed)
 {
@@ -306,80 +188,6 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 	}
 
 	ChangeFlag flag = (ChangeFlag)0;
-	//if (importer_)
-	//{
-	//	flag = flag | ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::Preferences | ChangeFlag::TrafficModel | ChangeFlag::GirderModel | ChangeFlag::SlabFieldModel;
-	//
-	//	if (merge_)
-	//	{
-	//		for (auto alignment : importer_->getAlignmentModel()->getAlignments())
-	//		{
-	//			alignmentModel_->addAlignment(alignment);
-	//		}
-	//		for (auto surface : importer_->getDigitalElevationModel()->getSurfaces())
-	//		{
-	//			digitalElevationModel_->addSurface(surface);
-	//		}
-	//		for (auto breakLine : importer_->getDigitalElevationModel()->getBreakLines())
-	//		{
-	//			digitalElevationModel_->addBreakLine(breakLine);
-	//		}
-	//		for (auto girder : importer_->getGirderModel()->getAllItems())
-	//		{
-	//			girderModel_->addItem(girder);
-	//		}
-	//		for (auto slabField : importer_->getSlabFieldModel()->getAllItems())
-	//		{
-	//			slabFieldModel_->addItem(slabField);
-	//		}
-	//	}
-	//	else
-	//	{
-	//		alignmentModel_ = importer_->getAlignmentModel();
-	//		digitalElevationModel_ = importer_->getDigitalElevationModel();
-	//		trafficSignModel_ = importer_->getTrafficSignModel();
-	//		girderModel_ = importer_->getGirderModel();
-	//		slabFieldModel_ = importer_->getSlabFieldModel();
-	//		proxyModel_ = importer_->getProxyModel();
-	//	}
-	//
-	//	if (proxyModel_)
-	//	{
-	//		if (proxyModel_->hasIfc4x1Data())
-	//		{
-	//			auto entities = proxyModel_->getIfc4x1Data();
-	//
-	//			for (auto it : entities)
-	//			{
-	//				switch (it.second->m_entity_enum)
-	//				{
-	//				case OpenInfraPlatform::IfcAlignment1x1::IFCMAPCONVERSION:
-	//				{
-	//					std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcMapConversion> mapConversion = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcMapConversion>(it.second);
-	//
-	//					m_Eastings = mapConversion->m_Eastings->m_value;
-	//					m_Northings = mapConversion->m_Northings->m_value;
-	//					m_OrthogonalHeight = mapConversion->m_OrthogonalHeight->m_value;
-	//
-	//				} break;
-	//
-	//				case OpenInfraPlatform::IfcAlignment1x1::IFCPROJECTEDCRS:
-	//				{
-	//					std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcProjectedCRS> projectedCRS = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcProjectedCRS>(it.second);
-	//					QString EPSGstring = QString(projectedCRS->m_Name->m_value.data());
-	//					m_Name = EPSGstring.split(":")[1].toInt();
-	//
-	//				} break;
-	//
-	//				default: break;
-	//				}
-	//			}
-	//		}
-	//	}
-	//
-	//	delete importer_;
-	//	importer_ = nullptr;
-	//}
 	if (tempIfcGeometryModel_)
 	{
 		flag = flag | ChangeFlag::IfcGeometry;
@@ -403,12 +211,7 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 		
 		if (merge_)
 		{
-			//for (auto point : tempPointCloud_->points)
-			//{
-			//	pointCloud_->points.push_back(point);
-			//}
-			//pointCloud_->minPos = buw::minimizedVector(pointCloud_->minPos, tempPointCloud_->minPos);
-			//pointCloud_->maxPos = buw::minimizedVector(pointCloud_->maxPos, tempPointCloud_->maxPos);
+			
 		}
 		else
 		{
@@ -421,171 +224,6 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 }
 
 
-void OpenInfraPlatform::DataManagement::Data::exportSVGAdvanced(const std::string& filename)
-{
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportSVGAdvancedJob, this, filename);
-}
-void OpenInfraPlatform::DataManagement::Data::exportSVGAdvancedJob(const std::string& filename)
-{
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting SVG ").append(filename));
-
-	new buw::ExportSVGEAdvanced(alignmentModel_, digitalElevationModel_, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::exportSVG( const std::string& filename )
-{
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportSVGJob, this, filename);
-}
-void OpenInfraPlatform::DataManagement::Data::exportSVGJob(const std::string& filename)
-{
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting SVG ").append(filename));
-
-	buw::ExportSVG(alignmentModel_, digitalElevationModel_, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::exportOkstra(const std::string& filename, const std::string& version)
-{
-	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportOkstraJob, this, filename, version);
-}
-void OpenInfraPlatform::DataManagement::Data::exportOkstraTranslated(const std::string& filename)
-{
-	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportOkstraJobTranslated, this, filename);
-}
-void OpenInfraPlatform::DataManagement::Data::exportIfcOWL4x1(const std::string & filename)
-{
-	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportIfcOWL4x1Job, this, filename);
-}
-void OpenInfraPlatform::DataManagement::Data::exportOkstraOWL(const std::string & filename)
-{
-	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportOkstraJobOWL, this, filename);
-}
-void OpenInfraPlatform::DataManagement::Data::exportOkstraJob(const std::string& filename, const std::string& version)
-{
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra ").append(filename));
-	//
-	//auto delimiter = version.find(".");
-	//auto major = version.substr(0, delimiter);
-	//auto minor = version.substr(delimiter + 1, version.size() - 1);
-	//
-	//buw::ExportOkstra(stoi(major), stoi(minor), alignmentModel_, digitalElevationModel_, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::exportOkstraJobTranslated(const std::string& filename)
-{
-	//std::string tmpfilename = filename + ".tmp.xml";
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra ").append(filename));
-	//buw::ExportOkstra(2, 17, alignmentModel_, digitalElevationModel_, tmpfilename);
-	//
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("translating Okstra ").append(filename));
-	//QProcess process;
-	//process.start("InstanceLevelTranslator.exe", { tmpfilename.c_str(), filename.c_str() });
-	//process.waitForFinished(-1);
-	//
-	//QFile::remove(tmpfilename.c_str());
-}
-
-void OpenInfraPlatform::DataManagement::Data::exportOkstraJobOWL(const std::string& filename)
-{
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra OWL").append(filename));
-	//buw::ExportOkstraOWL(alignmentModel_, digitalElevationModel_, proxyModel_, filename);
-}
-void OpenInfraPlatform::DataManagement::Data::exportIfcOWL4x1Job(const std::string& filename)
-{
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra OWL").append(filename));
-	//buw::ExportIfcOWL4x1(alignmentModel_, digitalElevationModel_, filename);
-}
-
-
-void OpenInfraPlatform::DataManagement::Data::exportPointCloud(const std::string & filename)
-{
-	//auto exportPointCloudJob = [](OpenInfraPlatform::DataManagement::Data* data, const std::string &filename) {
-	//	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Point Cloud ").append(filename));
-	//	QString extension = QString(filename.data()).split(".").back();
-	//	auto filter = FileIOFilter::FindBestFilterForExtension(extension.toUpper());
-	//	auto pointCloud = data->getPointCloud();
-	//	if(pointCloud) {
-	//		pointCloud->deleteAllScalarFields();
-	//		int error = FileIOFilter::SaveToFile(std::static_pointer_cast<ccHObject>(pointCloud).get(), QString(filename.data()), FileIOFilter::SaveParameters(), filter);
-	//	}
-	//};
-	//
-	//
-	//currentJobID_ = AsyncJob::getInstance().startJob(std::ref(exportPointCloudJob), this, filename);
-}
-
-
-void OpenInfraPlatform::DataManagement::Data::createExcelReport(const std::string& filename, bool useDegree)
-{
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::createExcelReportJob, this, filename, useDegree);
-}
-
-void OpenInfraPlatform::DataManagement::Data::createExcelReportJob(const std::string& filename, bool useDegree)
-{
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Creating excel report ").append(filename));
-
-	buw::ifcAlignmentExportDescription desc;
-	desc.exportAlignment = true;
-	desc.exportTerrain = true;
-	desc.useRadiansInsteadOfDegrees = !useDegree;
-
-	QUuid id = QUuid::createUuid();
-	QString tempIfcFilename = QDir::currentPath().append(QString("/").append(id.toString().append(".ifc")));
-	QString tempLandXMLFilename = QDir::currentPath().append(QString("/").append(id.toString().append(".xml")));
-
-	std::string ifcFilename = tempIfcFilename.toStdString(); // "alignment.ifc"; //"C:/Users/no68koc/Desktop/alignment.ifc";//
-	std::string landXMLFilename = tempLandXMLFilename.toStdString(); //  "alignment.xml"; //"C:/Users/no68koc/Desktop/alignment.xml";//
-
-	exportIfc4x1Job(desc, ifcFilename);
-	exportLandXMLJob(landXMLFilename);
-
-	buw::ExportIfc4x1ExcelReport ec(filename.c_str(), landXMLFilename.c_str(), ifcFilename.c_str());
-}
-
-void OpenInfraPlatform::DataManagement::Data::exportLandXML(const std::string& filename)
-{
-	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportLandXMLJob, this, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::exportLandInfra(const std::string & filename)
-{
-	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportLandInfraJob, this, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::exportLandXMLJob(const std::string& filename)
-{
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandXML ").append(filename));
-	//buw::ExportLandXML(alignmentModel_, digitalElevationModel_, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::exportLandInfraJob(const std::string & filename)
-{
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandInfra ").append(filename));
-	//buw::ExportLandInfra(alignmentModel_, digitalElevationModel_, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::addAlignment( buw::ReferenceCounted<buw::IAlignment3D> alignment )
-{
-	//alignmentModel_->addAlignment(alignment);
-	//pushChange(ChangeFlag::AlignmentModel);
-}
-
-void OpenInfraPlatform::DataManagement::Data::deleteAlignment(buw::ReferenceCounted<buw::IAlignment3D> alignment)
-{
-	//alignmentModel_->deleteAlignment(alignment);
-	//pushChange(ChangeFlag::AlignmentModel);
-}
-
-void OpenInfraPlatform::DataManagement::Data::addSurface(buw::ReferenceCounted<buw::Surface> surface)
-{
-	//digitalElevationModel_->addSurface(surface);
-	//pushChange(ChangeFlag::DigitalElevationModel);
-}
-
-void OpenInfraPlatform::DataManagement::Data::deleteSurface(buw::ReferenceCounted<buw::Surface> surface)
-{
-	//digitalElevationModel_->deleteSurface(surface);
-	//pushChange(ChangeFlag::DigitalElevationModel);
-}
 
 void OpenInfraPlatform::DataManagement::Data::setClearColor( const buw::Color3f& color )
 {
@@ -714,33 +352,6 @@ buw::Vector3d OpenInfraPlatform::DataManagement::Data::getOffset() const
 	return offsetViewArea;
 }
 
-void OpenInfraPlatform::DataManagement::Data::createTerrainFromHeightMap(
-	const std::string& filename)
-{
-	//merge_ = true;
-	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::createTerrainFromHeightMapJob, this, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::createTerrainFromHeightMapJob(
-	const std::string& filename)
-{
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Creating terrain from ").append(filename));
-	//importer_ = new buw::HeightmapImport(filename, getOffset());
-}
-
-void OpenInfraPlatform::DataManagement::Data::createTerrainFromMesh(
-	const std::string& filename)
-{
-	//merge_ = true;
-	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::createTerrainFromMeshJob, this, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::createTerrainFromMeshJob(
-	const std::string& filename)
-{
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Mesh ").append(filename));
-	//importer_ = new buw::MeshImport(filename, getOffset());
-}
 
 // Add Georeference
 
@@ -787,19 +398,6 @@ void  OpenInfraPlatform::DataManagement::Data::setEPSGcodeName(QString value)
 }
 
 
-void OpenInfraPlatform::DataManagement::Data::createRandomTerrain(
-	const buw::terrainDescription& td)
-{
-	//merge_ = true;
-	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::createRandomTerrainJob, this, td);
-}
-
-void OpenInfraPlatform::DataManagement::Data::createRandomTerrainJob(const buw::terrainDescription& td)
-{
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Creating random terrain"));
-	//importer_ = new buw::RandomTerrainImport(td, getOffset());
-}
-
 
 void OpenInfraPlatform::DataManagement::Data::showViewCube(const bool enable)
 {
@@ -840,39 +438,6 @@ const int OpenInfraPlatform::DataManagement::Data::getPointCloudPointCount() con
 		return -1;
 }
 
-void OpenInfraPlatform::DataManagement::Data::importLAS(const std::string& filename)
-{
-	//merge_ = false;
-	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::importLASJob, this, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::importBIN(const std::string& filename)
-{
-	//merge_ = false;
-	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::importBINJob, this, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::importLASJob(const std::string& filename)
-{
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing laserscan ").append(filename));
-	//
-	//if (tempPointCloud_)
-	//	tempPointCloud_ = nullptr;
-	//
-	//tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
-}
-
-void OpenInfraPlatform::DataManagement::Data::importBINJob(const std::string& filename)
-{
-	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing laserscan ").append(filename));
-	//
-	//if(tempPointCloud_)
-	//	tempPointCloud_ = nullptr;
-	//
-	//tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
-}
-
-
 
 void OpenInfraPlatform::DataManagement::Data::setShowFrameTimes(const bool enable)
 {
@@ -884,59 +449,4 @@ void OpenInfraPlatform::DataManagement::Data::setShowFrameTimes(const bool enabl
 bool OpenInfraPlatform::DataManagement::Data::showFrameTimes() const
 {
 	return bShowFrameTime_;
-}
-
-float OpenInfraPlatform::DataManagement::Data::getAlignmentLineWidth() const
-{
-	return alignmentLineWidth_;
-}
-
-
-void  OpenInfraPlatform::DataManagement::Data::setSelectedAlignment(int selectedIndex)
-{
-	if(selectedIndex != selectedAlignmentIndex_) {
-		selectedAlignmentIndex_ = selectedIndex;
-		pushChange(ChangeFlag::SelectedAlignmentIndex);
-	}
-}
-int  OpenInfraPlatform::DataManagement::Data::getSelectedAlignment()
-{
-	return selectedAlignmentIndex_;
-}
-
-
-template <
-	class IfcEntityTypesT,
-	class IfcUnitConverterT,
-	class IfcModelT,
-	class IfcStepReaderT,
-	class IfcExceptionT,
-	class IfcEntityT
->
-void importIfcGeometry(buw::ReferenceCounted<oip::EXPRESSModel> expressModel, buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename)
-{
-	using namespace OpenInfraPlatform::IfcGeometryConverter;
-	
-	IfcImporterT<IfcEntityTypesT, IfcUnitConverterT, IfcModelT, IfcStepReaderT,
-		IfcExceptionT, IfcEntityT> importer;
-
-	try
-	{
-		importer.collectGeometryData(model);
-	}
-	catch (std::exception& e)
-	{
-		throw std::runtime_error(e.what());
-	}
-
-	std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& shapeDatas = importer.getShapeDatas();
-
-	try
-	{
-		ConverterBuwT<IfcEntityTypesT>::createGeometryModel(ifcGeometryModel, shapeDatas);
-	}
-	catch (std::exception& e)
-	{
-		throw std::runtime_error(e.what());
-	}
 }

@@ -141,17 +141,12 @@ using NUMBER = ValueType<double>;
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDING_END
 
-//#define DEFINE_TYPE(name, basetype)\
-//	class name : public basetype {\
-//	using base = basetype;\
-//	public:\
-//		typedef name type;\
-//		using base::base;\
-//		using base::operator=;\
-//		virtual name* operator->() override { return this; }\
-//		virtual const name* const operator->() const override { return this; }\
-//		virtual name& operator=(const Optional<name> &other) { this->m_value = other.get_value_or(name()); return *this; };\
-//		virtual const std::string classname() const override { return #name; }\
-//	};
+EMBED_INTO_OIP_NAMESPACE(REAL)
+EMBED_INTO_OIP_NAMESPACE(INTEGER)
+EMBED_INTO_OIP_NAMESPACE(STRING)
+EMBED_INTO_OIP_NAMESPACE(BOOLEAN)
+EMBED_INTO_OIP_NAMESPACE(LOGICAL)
+EMBED_INTO_OIP_NAMESPACE(BINARY)
+EMBED_INTO_OIP_NAMESPACE(NUMBER)
 
 #endif // end define OpenInfraPlatform_ExpressBinding_EXPRESSType_102447dd_302a_4c8f_bf0d_7515bbdcfc1c_h

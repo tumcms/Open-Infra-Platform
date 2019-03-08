@@ -32,7 +32,10 @@ source_group(IfcGeometryConverter				FILES ${IfcGeometryConverter_Source})
 source_group(Import						        FILES ${Import_Source})
 source_group(Export						        FILES ${Export_Source})
 
-include_directories(${CMAKE_SOURCE_DIR}/EXPRESS)
+include_directories(
+    ${BLUEFRAMEWORK_INCLUDE_DIR}
+    src
+)
 
 add_library(OpenInfraPlatform.Core SHARED
     ${DataManagement_Source}
@@ -43,4 +46,9 @@ add_library(OpenInfraPlatform.Core SHARED
 
 target_link_libraries(OpenInfraPlatform.Core
     OpenInfraPlatform.EarlyBinding
+    Qt5::Core
+    Qt5::OpenGL
+    Qt5::Xml
+    ${BLUEFRAMEWORK_LIBRARIES}
+    carve
 )
