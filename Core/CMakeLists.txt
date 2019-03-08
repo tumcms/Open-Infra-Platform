@@ -24,21 +24,19 @@ set(CMAKE_CXX_STANDARD 14)
 
 file(GLOB DataManagement_Source 					src/OpenInfraPlatform/Core/DataManagement/*.*)
 file(GLOB IfcGeometryConverter_Source  			    src/OpenInfraPlatform/Core/IfcGeometryConverter/*.*)	
-file(GLOB EXPRESS_Source  			                src/OpenInfraPlatform/Core/EXPRESS/*.*)	
 file(GLOB Import_Source  			                src/OpenInfraPlatform/Core/Import/*.*)	
 file(GLOB Export_Source  			                src/OpenInfraPlatform/Core/Export/*.*)	
 
 source_group(DataManagement						FILES ${DataManagement_Source})
 source_group(IfcGeometryConverter				FILES ${IfcGeometryConverter_Source})
-source_group(EXPRESS						    FILES ${EXPRESS_Source})
 source_group(Import						        FILES ${Import_Source})
 source_group(Export						        FILES ${Export_Source})
 
+include_directories(${CMAKE_SOURCE_DIR}/EXPRESS)
 
 add_library(OpenInfraPlatform.Core SHARED
     ${DataManagement_Source}
     ${IfcGeometryConverter_Source}
-    ${EXPRESS_Source}
     ${Import_Source}
     ${Export_Source}
 )
