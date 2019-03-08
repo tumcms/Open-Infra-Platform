@@ -293,6 +293,7 @@ link_directories(
 # Add subdirectories.
 #------------------------------------------------------------------------------
 
+
 add_subdirectory(external/QtXlsxWriter)
 add_subdirectory(external/QSimpleUpdater)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
@@ -303,6 +304,9 @@ add_subdirectory(IfcBridgeGenerator)
 
 # ExpressGenerator rework revision 473.
 add_subdirectory(ExpressGenerator)
+
+# Core added in revision 483
+add_subdirectory(Core)
 
 if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding)
 	add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding)
@@ -321,25 +325,9 @@ endif()
 file(GLOB OpenInfraPlatform_Source									src/OpenInfraPlatform/*.*)
 file(GLOB OpenInfraPlatform_Core_Source 							src/OpenInfraPlatform/Core/*.*)
 file(GLOB OpenInfraPlatform_Data_Source 							src/OpenInfraPlatform/Data/*.*)
-file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
+#file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Source 					src/OpenInfraPlatform/DataManagement/*.*)
-file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)
-	#src/OpenInfraPlatform/IfcGeometryConverter/CarveHeaders.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.*
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc2x3EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4x1EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfcBridgeEntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.*
-	#src/OpenInfraPlatform/IfcGeometryConverter/GeometrySettings.*
-	#src/OpenInfraPlatform/IfcGeometryConverter/GeomUtils.*
-	#src/OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.*
-	#src/OpenInfraPlatform/IfcGeometryConverter/RecursiveCallException.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/UnhandledRepresentationException.h)
+file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)	
 
 # UnitTesting for images is currently not working but still in the code so files have to be collected
 file(GLOB OpenInfraPlatform_UnitTesting_Source						src/OpenInfraPlatform/UnitTesting/*.*)
@@ -407,7 +395,7 @@ source_group(OpenInfraPlatform										FILES ${OpenInfraPlatform_Source})
 source_group(OpenInfraPlatform\\Core								FILES ${OpenInfraPlatform_Core_Source})
 source_group(OpenInfraPlatform\\Data								FILES ${OpenInfraPlatform_Data_Source})
 source_group(OpenInfraPlatform\\DataManagement						FILES ${OpenInfraPlatform_DataManagement_Source})
-source_group(OpenInfraPlatform\\DataManagement\\Command				FILES ${OpenInfraPlatform_DataManagement_Command_Source})
+#source_group(OpenInfraPlatform\\DataManagement\\Command				FILES ${OpenInfraPlatform_DataManagement_Command_Source})
 source_group(OpenInfraPlatform\\IfcGeometryConverter				FILES ${OpenInfraPlatform_IfcGeometryConverter_Source})
 
 # Set Shader source groups
@@ -458,7 +446,7 @@ add_executable(OpenInfraPlatform.UI
 	${OpenInfraPlatform_Core_Source}
 	${OpenInfraPlatform_Data_Source}
 	${OpenInfraPlatform_DataManagement_Source}
-	${OpenInfraPlatform_DataManagement_Command_Source}
+	#${OpenInfraPlatform_DataManagement_Command_Source}
 	${OpenInfraPlatform_IfcGeometryConverter_Source}
 	${OpenInfraPlatform_UnitTesting_Source}
 	${OpenInfraPlatform_UserInterface_Source}
