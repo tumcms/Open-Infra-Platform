@@ -17,12 +17,24 @@
 
 #include "IfcPeekStepReader.h"
 
+#include <map>
+#include <set>
 #include <fstream>
 #include <iostream>
 #include <algorithm>
 #include <cctype>
 
 using OpenInfraPlatform::IfcGeometryConverter::IfcPeekStepReader;
+
+using MapType = std::pair< std::string, IfcPeekStepReader::IfcSchema>;
+
+std::map<std::string, IfcPeekStepReader::IfcSchema> schemata = {
+	MapType("ifc2x3", IfcPeekStepReader::IfcSchema::IFC2X3),
+	MapType("ifc4", IfcPeekStepReader::IfcSchema::IFC4),
+	MapType("ifc4x1", IfcPeekStepReader::IfcSchema::IFC4X1),
+	MapType("ifc4x2-bim4road", IfcPeekStepReader::IfcSchema::IFC4X2_BIM4ROAD),
+	MapType("ifc4x2-draft-1", IfcPeekStepReader::IfcSchema::IFC4X2_DRAFT_1)
+};
 
 IfcPeekStepReader::IfcPeekStepReader()
 {
@@ -78,48 +90,15 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 							//std::cout << "SCHEMA = " << schema << std::endl;
 							ifcFile.close();
 							
-							if (schema.length() == 6)
-							{
-								if (schema.substr(0, 6).compare("IFC4x1") == 0)
-								{
-									return IfcSchema::IFC_4x1;
-								}
-
-								if (schema.substr(0, 6).compare("IFC4X1") == 0)
-								{
-									return IfcSchema::IFC_4x1;
-								}
-							}
-
-							if (schema.length() == 7)
-							{
-								if (schema.substr(0, 7).compare("IFCROAD") == 0)
-								{
-									return IfcSchema::IFC_ROAD;
-								}
-							}
-
-							if (schema.length() == 9)
-							{
-								if (schema.substr(0, 9).compare("IFCBRIDGE") == 0)
-								{
-									return IfcSchema::IFC_BRIDGE;
-								}
-							}
-
-							// return corresponding IFC schema
-							if (schema.substr(0,4).compare("IFC2") == 0)
-							{
-								return IfcSchema::IFC_2;
-							}
-
-							if (schema.substr(0,4).compare("IFC4") == 0)
-							{
-								return IfcSchema::IFC_4;
-							}
+							std::transform(schema.begin(), schema.end(), schema.begin(), ::tolower);
 							
-							throw std::exception("IFC schema is not specified or could not be determined.");
-							//return IfcSchema::UNKNOWN;
+							if(schemata.count(schema) > 0) {
+								return schemata[schema];
+							}
+							else {
+								throw std::exception("IFC schema is not specified or could not be determined.");
+								return IfcSchema::UNKNOWN;
+							}							
 						}
 					}
 				}
