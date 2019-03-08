@@ -19,7 +19,7 @@
 #ifndef OpenInfraPlatform_DataManagement_Command_CreateRandomTerrain_h
 #define OpenInfraPlatform_DataManagement_Command_CreateRandomTerrain_h
 
-#include "OpenInfraPlatform/Data/terrainDescription.h"
+#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/terrainDescription.h"
 #include <BlueFramework/Application/DataManagement/Command/ICommand.h>
 #include <BlueFramework/Core/Math/vector.h>
 #include <boost/noncopyable.hpp>

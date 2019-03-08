@@ -18,7 +18,6 @@
 #ifndef __CROSSSECTIONPROFILE_H_ED9B3EE6762342F2879261C6DDBD40A0__
 #define __CROSSSECTIONPROFILE_H_ED9B3EE6762342F2879261C6DDBD40A0__
 
-#include <IFC4X1.h>
 #include <OpenInfraPlatform/Infrastructure/OIPInfrastructure.h>
 #include <OpenInfraPlatform/Infrastructure/namespace.h>
 
@@ -27,6 +26,15 @@
 
 #include <memory>
 #include <vector>
+
+namespace OpenInfraPlatform {
+	namespace IFC4X1 {
+		class IfcArbitraryClosedProfileDef;
+		class IfcAsymmetricIShapeProfileDef;
+		class IfcCircleProfileDef;
+		class IfcRectangleProfileDef;
+	}
+}
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 

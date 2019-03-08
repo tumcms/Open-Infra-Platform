@@ -19,29 +19,32 @@
 #ifndef OpenInfraPlatform_DataManagement_Data_3ff08224_6d48_4517_a691_b3ed20f3ca74_h
 #define OpenInfraPlatform_DataManagement_Data_3ff08224_6d48_4517_a691_b3ed20f3ca74_h
 
-#include "OpenInfraPlatform/Data/terrainDescription.h"
+//#include "OpenInfraPlatform/Data/terrainDescription.h"
 //#include "OpenInfraPlatform/DataManagement/ViewCubeData.h"
 
-#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
-#include "OpenInfraPlatform/Infrastructure/ProxyModel/ProxyModel.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
-#include "OpenInfraPlatform/Infrastructure/Girder/GirderModel.h"
-#include "OpenInfraPlatform/Infrastructure/SlabField/SlabFieldModel.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
-#include "OpenInfraPlatform/Infrastructure/Railway/RailwayModel.h"
+//#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
+//#include "OpenInfraPlatform/Infrastructure/ProxyModel/ProxyModel.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
+//#include "OpenInfraPlatform/Infrastructure/Girder/GirderModel.h"
+//#include "OpenInfraPlatform/Infrastructure/SlabField/SlabFieldModel.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
+//#include "OpenInfraPlatform/Infrastructure/Railway/RailwayModel.h"
 
-#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
-#include <BlueFramework/Application/DataManagement/DocumentManager.h>
+//#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
+
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
-#include <BlueFramework/ImageProcessing/color.h>
-#include <BlueFramework/Core/Math/vector.h>
-#include <boost/signals2.hpp>
-#include <map>
+#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/terrainDescription.h"
 
 #include "OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.h"
 
 #include "OpenInfraPlatform/Infrastructure/Import/Import.h"
 #include "OpenInfraPlatform/Infrastructure/Export/Export.h"
+
+#include <BlueFramework/Application/DataManagement/DocumentManager.h>
+#include <BlueFramework/ImageProcessing/color.h>
+#include <BlueFramework/Core/Math/vector.h>
+#include <boost/signals2.hpp>
+#include <map>
 
 namespace OpenInfraPlatform
 {
@@ -88,9 +91,7 @@ namespace OpenInfraPlatform
 			Data();
 
 			//! Virtual destructor.
-			virtual ~Data();
-				
-			void save( const std::string & filename );
+			virtual ~Data();					
 
 			//! Clears the date model
 			void clear(const bool notifyObservers);
@@ -133,16 +134,13 @@ namespace OpenInfraPlatform
 			void open(const std::string & filename);
 
 			void import(const std::string & filename);
-			void importIfcAlignment1_0(const std::string & filename);
 
 			void importOSM(const std::string& filename, const std::vector<std::string>& filter, int mode);
 			
 			void importLAS(const std::string& filename);
 			void importBIN(const std::string& filename);
 
-			void exportIfcRoadTUMProposal(const std::string & filename);
-			void exportIfcAlignment1x0(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
-			void exportIfc4x1(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
+
 			void exportSVGAdvanced(const std::string& filename);
 			void exportSVG( const std::string& filename );
 			void exportLandXML( const std::string& filename );
@@ -151,7 +149,7 @@ namespace OpenInfraPlatform
 			void exportOkstraTranslated(const std::string& filename);
 			void exportIfcOWL4x1(const std::string& filename);
 			void exportOkstraOWL(const std::string& filename);
-			void export3DAlignmentAsTextfile(const std::string& filename);
+			//void export3DAlignmentAsTextfile(const std::string& filename);
 			void exportPointCloud(const std::string& filename);
 			void createExcelReport(const std::string& filename, bool useDegree);
 			
@@ -159,9 +157,11 @@ namespace OpenInfraPlatform
 			// Alignment
 			//---------------------------------------------------------------------------//
 
+			/// Alignments disabled revision 483
+
 			void addAlignment(buw::ReferenceCounted<buw::IAlignment3D> alignment);
 			void deleteAlignment(buw::ReferenceCounted<buw::IAlignment3D> alignment);
-			void computeSurfaceProfile();
+			//void computeSurfaceProfile();
 
 			//---------------------------------------------------------------------------//
 			// Digital Elevation Model
@@ -172,46 +172,53 @@ namespace OpenInfraPlatform
 
 			buw::Vector3d getOffset() const;
 
+			/// Random Terrain Generation moved to infrastructure.
+
 			void createRandomTerrain(const buw::terrainDescription& td);
 			void createTerrainFromHeightMap(const std::string& filename);
 			void createTerrainFromMesh(const std::string& filename);
 
-			void importXYZ(const std::string& filename, const buw::Vector2d& start, const buw::Vector2d& end);
+			//void importXYZ(const std::string& filename, const buw::Vector2d& start, const buw::Vector2d& end);
 
-			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::DigitalElevationModel> getDigitalElevationModel() const;
-
-			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> getAlignmentModel() const;
+			//buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::DigitalElevationModel> getDigitalElevationModel() const;
+			
+			//buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> getAlignmentModel() const;
 
 			//---------------------------------------------------------------------------//
 			// Proxy Model
 			//---------------------------------------------------------------------------//
 
-			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::ProxyModel> getProxyModel() const {
-				return proxyModel_;
-			}
+			/// Removed in Revision 483
 
-			int createAccidentReport(const OpenInfraPlatform::Infrastructure::accidentReportDescription& ca);
-			void removeAccidentReport(const int index);
+			//buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::ProxyModel> getProxyModel() const {
+			//	return proxyModel_;
+			//}
+
+			//int createAccidentReport(const OpenInfraPlatform::Infrastructure::accidentReportDescription& ca);
+			//void removeAccidentReport(const int index);
 
 			//---------------------------------------------------------------------------//
 			// Traffic Sign Model
 			//---------------------------------------------------------------------------//
 
-			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::TrafficSignModel> getTrafficSignModel() const {
-				return trafficSignModel_;
-			}
+			/// Removed in Revision 483
+			//buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::TrafficSignModel> getTrafficSignModel() const {
+			//	return trafficSignModel_;
+			//}
 
 			//---------------------------------------------------------------------------//
 			// Girder Model
 			//---------------------------------------------------------------------------//
 
-			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::GirderModel> getGirderModel() const;
+			/// Removed in Revision 483
+			//buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::GirderModel> getGirderModel() const;
 
 			//---------------------------------------------------------------------------//
 			// Slab Field Model
 			//---------------------------------------------------------------------------//
 
-			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::SlabFieldModel> getSlabFieldModel() const;
+			/// Removed in Revision 483
+			//buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::SlabFieldModel> getSlabFieldModel() const;
 
 			//---------------------------------------------------------------------------//
 			// IFCx Model
@@ -279,37 +286,35 @@ namespace OpenInfraPlatform
             //ViewCubeData& getViewCubeData() { return viewCubeData_; }
 
 		private:
-			void createDigitalElevationModel( const buw::Vector3d& offsetViewArea );
-			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> readBICFile(const std::string & filename);
 
 			void jobFinished(int jobID, bool completed);
 
 
 			void importJob(const std::string& filename);
-			void startImportJobIfcAlignment1_0(const std::string& filename);
-			void importOSMJob(const std::string& filename, const std::vector<std::string>& filter, int mode);
-			void exportIfcRoadTUMProposalJob(const std::string & filename);
-			void exportIfcAlignmentJob(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
-			void exportIfc4x1Job(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
-			void exportSVGAdvancedJob(const std::string& filename);
-			void exportSVGJob(const std::string& filename);
-			void exportLandXMLJob(const std::string& filename);
-			void exportLandInfraJob(const std::string& filename);
-			void exportOkstraJob(const std::string& filename, const std::string& version);
-			void exportOkstraJobTranslated(const std::string& filename);
-			void exportOkstraJobOWL(const std::string& filename);
-			void exportIfcOWL4x1Job(const std::string& filename);
-			void export3DAlignmentAsTextfileJob(const std::string& filename);
+			//void startImportJobIfcAlignment1_0(const std::string& filename);
+			//void importOSMJob(const std::string& filename, const std::vector<std::string>& filter, int mode);
+			//void exportIfcRoadTUMProposalJob(const std::string & filename);
+			//void exportIfcAlignmentJob(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
+			//void exportIfc4x1Job(const buw::ifcAlignmentExportDescription& desc, const std::string & filename);
+			//void exportSVGAdvancedJob(const std::string& filename);
+			//void exportSVGJob(const std::string& filename);
+			//void exportLandXMLJob(const std::string& filename);
+			//void exportLandInfraJob(const std::string& filename);
+			//void exportOkstraJob(const std::string& filename, const std::string& version);
+			//void exportOkstraJobTranslated(const std::string& filename);
+			//void exportOkstraJobOWL(const std::string& filename);
+			//void exportIfcOWL4x1Job(const std::string& filename);
+			//void export3DAlignmentAsTextfileJob(const std::string& filename);
 			void createExcelReportJob(const std::string& filename, bool useDegree);
 
 
 			void importLASJob(const std::string& filename);
 			void importBINJob(const std::string& filename);
 
-			void importXYZJob(const std::string& filename, const buw::Vector2d& start, const buw::Vector2d& end);
-			void createRandomTerrainJob(const buw::terrainDescription& td);
-			void createTerrainFromHeightMapJob(const std::string& filename);
-			void createTerrainFromMeshJob(const std::string& filename);
+			//void importXYZJob(const std::string& filename, const buw::Vector2d& start, const buw::Vector2d& end);
+			//void createRandomTerrainJob(const buw::terrainDescription& td);
+			//void createTerrainFromHeightMapJob(const std::string& filename);
+			//void createTerrainFromMeshJob(const std::string& filename);
 			
 			
 
@@ -330,16 +335,18 @@ namespace OpenInfraPlatform
 			float			alignmentLineWidth_;
 			int				selectedAlignmentIndex_				= 0;
 			
-			buw::ReferenceCounted<buw::TrafficSignModel>					trafficSignModel_;
-			buw::ReferenceCounted<buw::DigitalElevationModel> 				digitalElevationModel_;
-			buw::ReferenceCounted<buw::AlignmentModel>						alignmentModel_;
-			buw::ReferenceCounted<buw::GirderModel>							girderModel_;
-			buw::ReferenceCounted<buw::SlabFieldModel>						slabFieldModel_;
-			buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel>	ifcGeometryModel_;
-			buw::ReferenceCounted<buw::PointCloud>							pointCloud_ = nullptr;
-			buw::ReferenceCounted<buw::RailwayModel>						railwayModel_ = nullptr;
-			buw::ReferenceCounted<buw::ProxyModel>							proxyModel_;
+			/// Removed in Revision 483
+			//buw::ReferenceCounted<buw::TrafficSignModel>					trafficSignModel_;
+			//buw::ReferenceCounted<buw::DigitalElevationModel> 				digitalElevationModel_;
+			//buw::ReferenceCounted<buw::AlignmentModel>						alignmentModel_;
+			//buw::ReferenceCounted<buw::GirderModel>							girderModel_;
+			//buw::ReferenceCounted<buw::SlabFieldModel>						slabFieldModel_;
+			//buw::ReferenceCounted<buw::RailwayModel>						railwayModel_ = nullptr;
+			//buw::ReferenceCounted<buw::ProxyModel>							proxyModel_;
 
+			buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel>	ifcGeometryModel_ = nullptr;
+			buw::ReferenceCounted<buw::PointCloud>							pointCloud_ = nullptr;
+			buw::ReferenceCounted<oip::EXPRESSModel>						expressModel_ = nullptr;
 
 			// temporary data for asynchronous operations
 			bool merge_;
