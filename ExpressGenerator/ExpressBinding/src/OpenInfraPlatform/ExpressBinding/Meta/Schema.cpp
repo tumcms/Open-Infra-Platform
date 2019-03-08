@@ -60,7 +60,7 @@ bool OpenInfraPlatform::ExpressBinding::Schema::hasEntity(const std::string& nam
 	return false;
 }
 
-std::vector<std::string> Schema::getSuperTypes(const Entity& entity) {
+std::vector<std::string> Schema::getSuperTypes(const Entity& entity) const {
 	std::vector<std::string> result;
 
 	Entity entityCopy = entity;
@@ -227,7 +227,7 @@ std::vector<std::string> Schema::getAllEntityAttributesNames(const Entity& entit
 	return result;
 }
 
-std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity) {
+std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity) const {
 	std::vector<EntityAttribute> result;
 
 	auto superTypes = getSuperTypes(entity);
@@ -247,7 +247,7 @@ std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity
 	return result;
 }
 
-bool Schema::isAbstract(const Entity & entity)
+const bool Schema::isAbstract(const Entity & entity) const
 {
 	return getAllEntityAttributes(entity).size() == 0;
 }

@@ -1033,6 +1033,7 @@ void GeneratorOIP::generateREFACTORED(std::ostream & out, Schema & schema)
 
 	generateSchemaHeader(schema);
 	generateReaderFile(schema);
+	generateEMTFiles(schema);
 
 	// Types.h
 	createTypesHeaderFileREFACTORED(schema);
@@ -2139,24 +2140,72 @@ void GeneratorOIP::generateReaderFile(const Schema & schema)
 	linebreak(file);
 
 	// Write begin namespace OpenInfraPlatform::Schema
-	writeBeginNamespace(file, schema);	
+	writeBeginNamespace(file, schema);
+
+	writeLine(file, "std::vector<std::string> parseArgs(const std::string &line) {");
+	writeLine(file, "std::vector<std::string> args;");
+	writeLine(file, "auto paramvalue = line.substr(line.find_first_of('('), line.find_last_of(')') - 1);");
+	/*
+	while (!paramvalue.empty()) {
+			auto end = paramvalue.size() - 1;
+			auto pos = paramvalue.find_first_of(',');
+			if (pos < end) {
+				ValueType type;
+				type = ValueType::readStepData(paramvalue.substr(0, pos), model);
+				result.push_back(type);
+				paramvalue.erase(0, pos + 1);
+			}
+			else {
+				ValueType type;
+				type = ValueType::readStepData(paramvalue.substr(0, pos), model);
+				result.push_back(type);
+				paramvalue.clear();
+				break;
+			}
+		}
+	*/
+	writeLine(file, "while(!paramvalue.empty()) {");
+	writeLine(file, "auto end = paramvalue.size() - 1;");
+	writeLine(file, "auto pos = paramvalue.find_first_of(',');");
+	writeLine(file, "if (pos < end) {"); // begin if
+	writeLine(file, "if(paramvalue.find_first_of('(') < pos) {"); // begin if
+	writeLine(file, "args.push_back(paramvalue.substr(0, pos));");
+	writeLine(file, "paramvalue.erase(0, pos + 1);");
+	writeLine(file, "}"); // end if
+	writeLine(file, "else {"); // begin else
+	writeLine(file, "pos = paramvalue.find_first_of(\"),\");");
+	writeLine(file, "args.push_back(paramvalue.substr(0, pos));");
+	writeLine(file, "paramvalue.erase(0, pos + 2);"); 
+	writeLine(file, "}"); // end else
+	writeLine(file, "}"); // end if
+	writeLine(file, "else {"); // begin else
+	writeLine(file, "args.push_back(paramvalue.substr(0, pos));");
+	writeLine(file, "paramvalue.clear();");
+	writeLine(file, "}"); // end else
+	writeLine(file, "}"); // end while !paramvalue.empty()
+	writeLine(file, "}"); // end function parseArgs
+	linebreak(file);
+
 
 	writeLine(file, "inline ExpressBinding::EXPRESSModel FromFile(const std::string &filename) {"); // begin function FromFile
 
 	writeLine(file, "std::ifstream file(filename, std::ifstream::in);");
 	writeLine(file, "if(file.is_open()) {"); // begin if(file.is_open())
-	writeLine(file, "ExpressBinding::EXPRESSModel model(\"" + schema.getName() + "\");");
+	writeLine(file, "std::shared_ptr<ExpressBinding::EXPRESSModel> model = std::make_shared<ExpressBinding::EXPRESSModel>(\"" + schema.getName() + "\");");
 	writeLine(file, "for(std::string line; std::getline(file,line);) {"); // begin for read file
 	writeLine(file, "if(line[0] == '#') {");
 	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=')));");
 	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('='), line.find_first_of('('));");
-
+	writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - 1);");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
 		auto entity = schema.getEntityByIndex(idx);
-		writeLine(file, "if(entityType == \"" + toUpper(entity.getName()) + "\") {");
-		writeLine(file, "std::shared_ptr<" + entity.getName() + "> entity;"); //TODO
-		writeLine(file, "continue;");
-		writeLine(file, "}");
+		if (!schema.isAbstract(entity)) {
+			writeLine(file, "if(entityType == \"" + toUpper(entity.getName()) + "\") {");
+			writeLine(file, "std::shared_ptr<" + entity.getName() + "> entity = std::make_shared<" + entity.getName() + ">(" + entity.getName() + "::readStepData(parseArgs(line), model));"); //TODO
+			writeLine(file, "model->entities.insert({id, entity});");
+			writeLine(file, "continue;");
+			writeLine(file, "}");
+		}
 	}
 	writeLine(file, "}"); //end if line[0] == '#'
 	writeLine(file, "}"); //end for read file
@@ -2167,6 +2216,55 @@ void GeneratorOIP::generateReaderFile(const Schema & schema)
 	writeLine(file, "}"); // end function FromFile
 	writeEndNamespace(file, schema);
 
+	file.close();
+}
+
+void GeneratorOIP::generateEMTFiles(const Schema & schema)
+{
+	std::ofstream file(sourceDirectory_ + "/EMT" + schema.getName().append("EntityTypes.h"));
+
+	writeLicenseAndNotice(file);
+	writeLine(file, "#pragma once");
+
+	writeInclude(file, schema.getName() + "Entities.h");
+	writeInclude(file, schema.getName() + "Types.h");
+
+	writeLine(file, "namespace emt {"); // begin namespace emt
+	writeLine(file, "template <");
+	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
+		writeLine(file, "typename " + schema.getEntityByIndex(idx).getName() + "T,");
+	}
+	for (size_t idx = 0; idx < schema.getTypeCount(); idx++) {
+		bool isLast = idx == schema.getTypeCount() - 1;
+		writeLine(file, "typename " + schema.getTypeByIndex(idx).getName() + "T" + (isLast ? "": ","));
+	}
+	writeLine(file, ">");
+	writeLine(file, "struct Basic" + schema.getName() + "EntityTypes {"); // begin struct
+	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
+		writeLine(file, "typedef " + schema.getEntityByIndex(idx).getName() + "T " + schema.getEntityByIndex(idx).getName() + ";");
+	}
+	for (size_t idx = 0; idx < schema.getTypeCount(); idx++) {
+		writeLine(file, "typedef " + schema.getTypeByIndex(idx).getName() + "T " + schema.getTypeByIndex(idx).getName() + ";");
+	}
+	writeLine(file, "};"); // end struct
+
+	writeLine(file, "typedef Basic" + schema.getName() + "EntityTypes<"); // begin typedef
+
+	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
+		writeLine(file, "OpenInfraPlatform::" + schema.getName() + "::" + schema.getEntityByIndex(idx).getName() + ",");
+	}
+	for (size_t idx = 0; idx < schema.getTypeCount(); idx++) {
+		bool isLast = idx == schema.getTypeCount() - 1;
+		writeLine(file, "OpenInfraPlatform::" + schema.getName() + "::" + schema.getTypeByIndex(idx).getName() + (isLast ? "" : ","));
+	}
+
+	writeLine(file, "> " + schema.getName() + "EntityTypes;");
+	writeLine(file, "}"); // end namespace emt
+	linebreak(file);
+
+	writeBeginNamespace(file, schema);
+
+	writeEndNamespace(file, schema);
 	file.close();
 }
 

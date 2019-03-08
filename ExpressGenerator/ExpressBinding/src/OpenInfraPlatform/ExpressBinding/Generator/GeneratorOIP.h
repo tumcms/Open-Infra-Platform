@@ -65,6 +65,8 @@ private:
 
 	void generateWriterFile(const Schema &schema);
 
+	void generateEMTFiles(const Schema &schema);
+
     std::string convertSimpleTypeToCPPType(Schema &schema, std::string simpleType) const;
 
     void includeFile(const std::string &filename, std::ofstream &file);

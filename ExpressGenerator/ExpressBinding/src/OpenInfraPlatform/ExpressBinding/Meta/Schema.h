@@ -52,9 +52,9 @@ class Schema {
 
     std::vector<std::string> getAllEntityAttributesNames(const Entity &entity);
 
-    std::vector<EntityAttribute> getAllEntityAttributes(const Entity &entity);
+    std::vector<EntityAttribute> getAllEntityAttributes(const Entity &entity) const;
 
-	bool isAbstract(const Entity &entity);
+	const bool isAbstract(const Entity &entity) const;
 
     //---------------------------------------------------------------
     // Types
@@ -81,7 +81,7 @@ class Schema {
     //---------------------------------------------------------------
 	
     // Collects all super types of the corresponding entity
-    std::vector<std::string> getSuperTypes(const Entity &entity);
+    std::vector<std::string> getSuperTypes(const Entity &entity) const;
 
     //---------------------------------------------------------------
     // Schema
