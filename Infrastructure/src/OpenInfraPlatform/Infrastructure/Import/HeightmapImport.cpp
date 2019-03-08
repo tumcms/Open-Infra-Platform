@@ -59,7 +59,5 @@ OpenInfraPlatform::DataManagement::HeightmapImport::HeightmapImport(const std::s
             s->addTriangle(indicies2);
         }
     }
-
     digitalElevationModel_->addSurface(s);
-
 }
