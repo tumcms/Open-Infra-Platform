@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "ui_AddGeoreferenceDialog.h"
 #include "OpenInfraPlatform/UserInterface/ViewPanel/View.h"
-//#include <BlueFramework/Engine/Camera/InfraCameraController.h>
+
 #include <QDialog>
 #include <boost/noncopyable.hpp>
 #include <string>
@@ -28,7 +28,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <algorithm>
 
 
-using namespace OpenInfraPlatform::IfcAlignment1x1;
 namespace OpenInfraPlatform
 {
 	namespace UserInterface
