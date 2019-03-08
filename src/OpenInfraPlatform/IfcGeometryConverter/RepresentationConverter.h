@@ -29,12 +29,6 @@
 #include "CarveHeaders.h"
 //#include "ReaderSettings.h"
 
-#include "EMTIfc4EntityTypes.h"
-#include "EMTIfc4x1EntityTypes.h"
-#include "EMTIfc2x3EntityTypes.h"
-#include "EMTIfcBridgeEntityTypes.h"
-
-//#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
 
 #include "ProfileCache.h"
 #include "ProfileConverter.h"
@@ -51,8 +45,7 @@ namespace OpenInfraPlatform {
 	namespace IfcGeometryConverter {
 		template <
 			class IfcEntityTypesT,
-			class IfcUnitConverterT,
-			class IfcEntityT
+			class IfcUnitConverterT
 		>
 			class RepresentationConverterT {
 			public:
@@ -73,7 +66,7 @@ namespace OpenInfraPlatform {
 					faceConverter = std::make_shared<FaceConverterT<IfcEntityTypesT, IfcUnitConverterT>>(geomSettings, unitConverter,
 						curveConverter);
 
-					solidConverter = std::make_shared<SolidModelConverterT<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT>>(geomSettings, unitConverter,
+					solidConverter = std::make_shared<SolidModelConverterT<IfcEntityTypesT, IfcUnitConverterT>>(geomSettings, unitConverter,
 						curveConverter, faceConverter, profileCache);
 				}
 
@@ -756,7 +749,7 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-				std::shared_ptr<SolidModelConverterT<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT>>& getSolidConverter()
+				std::shared_ptr<SolidModelConverterT<IfcEntityTypesT, IfcUnitConverterT>>& getSolidConverter()
 				{
 					return solidConverter;
 				}
@@ -777,7 +770,7 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<IfcUnitConverterT> unitConverter;
 				//std::shared_ptr<StylesConverter>	stylesConverter;
 				std::shared_ptr<CurveConverterT<IfcEntityTypesT, IfcUnitConverterT>> curveConverter;
-				std::shared_ptr<SolidModelConverterT<IfcEntityTypesT, IfcUnitConverterT, IfcEntityT>> solidConverter;
+				std::shared_ptr<SolidModelConverterT<IfcEntityTypesT, IfcUnitConverterT>> solidConverter;
 				std::shared_ptr<FaceConverterT<IfcEntityTypesT, IfcUnitConverterT>> faceConverter;
 				std::shared_ptr<ProfileCacheT<IfcEntityTypesT, IfcUnitConverterT>> profileCache;
 

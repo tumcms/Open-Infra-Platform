@@ -30,11 +30,6 @@
 #include "GeometrySettings.h"
 #include "SplineConverter.h"
 
-
-#include "OpenInfraPlatform/ExpressBinding/vectorUtilites.h"
-
-/**********************************************************************************************/
-
 namespace OpenInfraPlatform {
 	namespace IfcGeometryConverter {
 		template<
