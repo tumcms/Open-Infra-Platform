@@ -70,6 +70,7 @@ namespace OpenInfraPlatform
 				const uint8_t degree = order - 1;
 				const uint16_t numBasisFuncs = degree + numControlPoints;
 				const uint16_t numKnots = order + numControlPoints;
+
 				// create temporary basis functions of size k + n (or d + (n + 1), with d = k - 1)
 				std::vector<double> tempBasisFuncs(numBasisFuncs, 0.0);
 
@@ -223,7 +224,6 @@ namespace OpenInfraPlatform
 				}
 			}
 
-
 			// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
 			static void computeBSplineCurve(
 				const uint8_t order,
@@ -304,9 +304,9 @@ namespace OpenInfraPlatform
 		//	const std::vector<carve::geom::vector<3>>& controlPoints,
 		//	std::vector<carve::geom::vector<3>>& loops)
 		//{
-		//	const int degree = splineCurve->m_Degree;
+		//	const int degree = splineCurve->Degree;
 		//	const int order = degree + 1;
-		//	const int numControlPoints = splineCurve->m_ControlPointsList.size();
+		//	const int numControlPoints = splineCurve->ControlPointsList.size();
 		//	const int numKnots = order + numControlPoints;
 		//
 		//	std::vector<double> knots;
@@ -320,7 +320,7 @@ namespace OpenInfraPlatform
 		//	if (rationalBSplineCurve)
 		//	{
 		//		//std::cout << "ERROR: IfcRationalBSplineCurveWithKnots not implemented" << std::endl;
-		//		weights = rationalBSplineCurve->m_WeightsData;
+		//		weights = rationalBSplineCurve->WeightsData;
 		//	}
 		//
 		//	std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots> bspline =
@@ -328,9 +328,11 @@ namespace OpenInfraPlatform
 		//
 		//	if (bspline)
 		//	{
-		//		const std::vector<int>& knotMults = bspline->m_KnotMultiplicities;
-		//		const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnots = bspline->m_Knots;
-		//		//const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>& splinePoints = bspline->m_ControlPointsList;
+		//		const std::vector<int>& knotMults = bspline->KnotMultiplicities;
+
+		//		Knots type IfcParameterValue 
+		//		const std::vector<double>& splineKnots = bspline->Knots;
+		//		//const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>& splinePoints = bspline->ControlPointsList;
 		//
 		//		if (knotMults.size() != splineKnots.size()) 
 		//		{ 
@@ -341,7 +343,7 @@ namespace OpenInfraPlatform
 		//		// obtain knots
 		//		for (int i = 0; i < splineKnots.size(); ++i)
 		//		{
-		//			double knot = splineKnots[i]->m_value;
+		//			double knot = splineKnots[i]->value;
 		//			const int knotMult = knotMults[i];
 		//			// look at the multiplicity of the current knot
 		//			for (int j = 0; j < knotMult; ++j)
@@ -373,9 +375,9 @@ namespace OpenInfraPlatform
 		//	if (splineSurfaceWithKnots)
 		//	{
 		//		// obtain degree of both b-spline curves
-		//		const int degreeU = bsplineSurfaceWithKnots->m_UDegree;
+		//		const int degreeU = bsplineSurfaceWithKnots->UDegree;
 		//		const int orderU = degreeU + 1;
-		//		const int degreeV = bsplineSurfaceWithKnots->m_VDegree;
+		//		const int degreeV = bsplineSurfaceWithKnots->VDegree;
 		//		const int orderV = degreeV + 1;
 		//		// obtain number of control points
 		//		const int numControlPointsU = controlPoints.size();
@@ -385,10 +387,13 @@ namespace OpenInfraPlatform
 		//		const int numKnotsV = orderV + numControlPointsV;
 		//
 		//		// obtain knots for each direction
-		//		const std::vector<int>& knotMultsU = bsplineSurfaceWithKnots->m_UMultiplicities;
-		//		const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnotsU = bsplineSurfaceWithKnots->m_UKnots;
-		//		const std::vector<int>& knotMultsV = bsplineSurfaceWithKnots->m_VMultiplicities;
-		//		const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnotsV = bsplineSurfaceWithKnots->m_VKnots;
+		//		const std::vector<int>& knotMultsU = bsplineSurfaceWithKnots->UMultiplicities;
+
+		//		UKnots type IfcParameterValue
+		//		const std::vector<double>& splineKnotsU = bsplineSurfaceWithKnots->UKnots;
+		//		const std::vector<int>& knotMultsV = bsplineSurfaceWithKnots->VMultiplicities;
+		//		VKnots type IfcParameterValue
+		//		const std::vector<double>& splineKnotsV = bsplineSurfaceWithKnots->VKnots;
 		//
 		//		std::vector<double> knotsU;
 		//		std::vector<double> knotsV;
@@ -397,7 +402,7 @@ namespace OpenInfraPlatform
 		//
 		//		for (int i = 0; i < splineKnotsU.size(); ++i)
 		//		{
-		//			double knot = splineKnotsU[i]->m_value;
+		//			double knot = splineKnotsU[i]->value;
 		//			const int knotMult = knotMultsU[i];
 		//			// look at the multiplicity of the current knot
 		//			for (int j = 0; j < knotMult; ++j)
@@ -408,7 +413,7 @@ namespace OpenInfraPlatform
 		//
 		//		for (int i = 0; i < splineKnotsV.size(); ++i)
 		//		{
-		//			double knot = splineKnotsV[i]->m_value;
+		//			double knot = splineKnotsV[i]->value;
 		//			const int knotMult = knotMultsV[i];
 		//			// look at the multiplicity of the current knot
 		//			for (int j = 0; j < knotMult; ++j)
@@ -424,7 +429,7 @@ namespace OpenInfraPlatform
 		//
 		//		if (rationalBsplineSurfaceWithKnots)
 		//		{
-		//			weights = rationalBsplineSurfaceWithKnots->m_WeightsData;
+		//			weights = rationalBsplineSurfaceWithKnots->WeightsData;
 		//		}
 		//
 		//		// reserve memory for all surface points on b-spline surface
