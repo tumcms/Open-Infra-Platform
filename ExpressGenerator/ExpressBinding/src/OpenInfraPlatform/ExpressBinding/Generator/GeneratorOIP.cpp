@@ -3130,13 +3130,13 @@ void GeneratorOIP::generateNamespaceHeader(Schema & schema)
 
 	writeBeginNamespace(file, schema);
 
-	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::REAL;");
-	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::STRING;");
-	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::BOOLEAN;");
-	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::NUMBER;");
-	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::INTEGER;");
-	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::BINARY;");
-	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::LOGICAL;");
+	writeLine(file, "using REAL = OpenInfraPlatform::ExpressBinding::REAL;");
+	writeLine(file, "using STRING = OpenInfraPlatform::ExpressBinding::STRING;");
+	writeLine(file, "using BOOLEAN = OpenInfraPlatform::ExpressBinding::BOOLEAN;");
+	writeLine(file, "using NUMBER = OpenInfraPlatform::ExpressBinding::NUMBER;");
+	writeLine(file, "using INTEGER = OpenInfraPlatform::ExpressBinding::INTEGER;");
+	writeLine(file, "using BINARY = OpenInfraPlatform::ExpressBinding::BINARY;");
+	writeLine(file, "using LOGICAL = OpenInfraPlatform::ExpressBinding::LOGICAL;");
 
 	writeEndNamespace(file, schema);
 	file.close();

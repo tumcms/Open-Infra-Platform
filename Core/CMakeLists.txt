@@ -49,6 +49,7 @@ target_link_libraries(OpenInfraPlatform.Core
     Qt5::Core
     Qt5::OpenGL
     Qt5::Xml
+    Qt5::XmlPatterns
     ${BLUEFRAMEWORK_LIBRARIES}
     carve
 )

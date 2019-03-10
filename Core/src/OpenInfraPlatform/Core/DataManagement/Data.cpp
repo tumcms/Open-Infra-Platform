@@ -53,9 +53,7 @@ bDrawGrid_(false),
 bDrawSkybox_(false),
 bShowViewCube_(true),
 bShowReferenceCoordinateSystem(true),
-alignmentLineWidth_(1.5f),
 currentJobID_(-1),
-importer_(nullptr),
 tempIfcGeometryModel_(nullptr),
 tempPointCloud_(nullptr),
 pointCloud_(nullptr)
@@ -134,9 +132,9 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing ").append(filename));
 
-	buw::String buwstrFilename = filename.c_str();
-
-	if (buwstrFilename.toLower().endsWith(".ifc") || buwstrFilename.toLower().endsWith(".stp"))
+	std::string filetype = filename.substr(filename.find_last_of('.'), filename.size() - 1);
+	std::transform(filetype.begin(), filetype.end(), filetype.begin(), ::tolower);
+	if (filetype == ".ifc" || filetype == ".stp")
 	{
 		using OpenInfraPlatform::IfcGeometryConverter::IfcPeekStepReader;
 		IfcPeekStepReader::IfcSchema ifcSchema = IfcPeekStepReader::parseIfcHeader(filename);
@@ -159,10 +157,9 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 			expressModel_ = OpenInfraPlatform::IFC4X2_DRAFT_1::FromFile(filename);
 			break;
 		default:
-			BLUE_LOG(ERROR) << "No matching schema detected";
-		}
-
-		
+			BLUE_LOG(error) << "No matching schema detected";
+			break;
+		}		
 	}
 	
 }
