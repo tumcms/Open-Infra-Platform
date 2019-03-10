@@ -1034,6 +1034,7 @@ void GeneratorOIP::generateREFACTORED(std::ostream & out, Schema & schema)
 	generateSchemaHeader(schema);
 	generateReaderFile(schema);
 	generateEMTFiles(schema);
+	generateNamespaceHeader(schema);
 
 	// Types.h
 	createTypesHeaderFileREFACTORED(schema);
@@ -1479,6 +1480,7 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 	linebreak(out);
 
 	writeInclude(out, "EXPRESS.h", true);
+	writeInclude(out, "../" + schema.getName() + "Namespace.h");
 	
 
 	if (type.isDerivedType()) {
@@ -2928,6 +2930,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		writeInclude(out, entity.getSupertype() + ".h");
 	
 	writeInclude(out, "EXPRESS.h", true);
+	writeInclude(out, "../" + schema.getName() + "Namespace.h");
 	writeInclude(out, "visit_struct/visit_struct.hpp", true);
 	linebreak(out);
 
@@ -3104,11 +3107,39 @@ void GeneratorOIP::generateSchemaHeader(Schema & schema)
 {
 	std::ofstream file(sourceDirectory_ + "/"+ schema.getName().append(".h"));
 
+	writeLicenseAndNotice(file);
+	writeLine(file, "#pragma once");
+	linebreak(file);
+
 	writeInclude(file, schema.getName() + "Entities.h");
 	writeInclude(file, schema.getName() + "Types.h");
 	writeInclude(file, schema.getName() + "Reader.h");
+	writeInclude(file, schema.getName() + "Namespace.h");
 
 	file.close();	
+}
+
+void GeneratorOIP::generateNamespaceHeader(Schema & schema)
+{
+	std::ofstream file(sourceDirectory_ + "/" + schema.getName().append("Namespace.h"));
+
+	writeLicenseAndNotice(file);
+	writeLine(file, "#pragma once");
+	writeInclude(file, "EXPRESS.h", true);
+	linebreak(file);
+
+	writeBeginNamespace(file, schema);
+
+	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::REAL;");
+	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::STRING;");
+	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::BOOLEAN;");
+	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::NUMBER;");
+	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::INTEGER;");
+	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::BINARY;");
+	writeLine(file, "using OpenInfraPlatform::EXPRESSBinding::LOGICAL;");
+
+	writeEndNamespace(file, schema);
+	file.close();
 }
 
 void GeneratorOIP::generateEntitySourceFile(Schema &schema, const Entity &entity) {

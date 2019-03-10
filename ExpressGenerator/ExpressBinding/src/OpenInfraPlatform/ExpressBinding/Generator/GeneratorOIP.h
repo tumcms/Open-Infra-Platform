@@ -86,6 +86,8 @@ private:
 
 	void generateSchemaHeader(Schema& schema);
 
+	void generateNamespaceHeader(Schema &schema);
+
 private:
     std::string outputDirectory_;
     std::string rootDirectory_;
