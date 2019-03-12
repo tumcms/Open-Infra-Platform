@@ -152,6 +152,8 @@ namespace OpenInfraPlatform
 			void enableSkybox(const bool enable);
 			bool isSkyboxEnabled() const;
 
+			buw::Vector3d getOffset() const;
+
 			void showViewCube(const bool enable);
 
 			bool isViewCubeEnabled();

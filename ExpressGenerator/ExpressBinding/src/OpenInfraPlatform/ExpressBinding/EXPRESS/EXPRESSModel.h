@@ -45,10 +45,10 @@ public:
 		}
 	};
 
-	bool Save(const std::string &filename) {
+	const bool Save(const std::string &filename) const {
 		//TODO Implement
 		return true;
-	}
+	};
 
 	const std::string schema;
 	std::map<size_t, std::shared_ptr<EXPRESSEntity>> entities;
@@ -56,6 +56,6 @@ public:
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDING_END
 
-EMBED_INTO_OIP_NAMESPACE(EXPRESSModel)
+EMBED_INTO_OIP_NAMESPACE(EXPRESSModel);
 
 #endif // end define OpenInfraPlatform_ExpressBinding_EXPRESSModel_795d0e6a_aa9f_4804_a9ff_67beadbd82c2_h

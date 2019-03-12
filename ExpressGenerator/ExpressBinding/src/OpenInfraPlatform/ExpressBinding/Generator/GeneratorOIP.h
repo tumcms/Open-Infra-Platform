@@ -53,6 +53,8 @@ private:
 
 	void generateEntitySourceFile(Schema &schema, const Entity &entity);
 
+	void generateEntitySourceFileREFACTORED(Schema &schema, const Entity &entity);
+
     void generateTypeHeaderFile(Schema &schema, Type &type);
 
 	void generateTypeHeaderFileREFACTORED(Schema &schema, Type &type);

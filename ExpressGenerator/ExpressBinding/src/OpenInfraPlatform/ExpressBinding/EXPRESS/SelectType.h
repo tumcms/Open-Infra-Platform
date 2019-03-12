@@ -219,7 +219,7 @@ template <typename ...Args> class SelectType : public ValueType<boost::variant<A
 	using base = ValueType<boost::variant<Args...>>;
 
 	class visitor_getStepParameter
-		: public boost::static_visitor<const std::string>
+		: public boost::static_visitor<std::string>
 	{
 	public:
 		template <typename T>
@@ -232,8 +232,8 @@ template <typename ...Args> class SelectType : public ValueType<boost::variant<A
 
 	template<std::size_t I = 0, typename Function>
 	static inline typename std::enable_if<I == sizeof...(Args), void>::type
-	for_each(std::tuple<Args...> , Function) // Unused arguments are given no names.
-	{ }
+		for_each(std::tuple<Args...>, Function) // Unused arguments are given no names.
+	{ };
 	
 	template<std::size_t I = 0, typename Function>
 	static inline typename std::enable_if<I < sizeof...(Args), void>::type
@@ -241,7 +241,7 @@ template <typename ...Args> class SelectType : public ValueType<boost::variant<A
 	{
 		f(std::get<I>(t));
 		for_each<I + 1, Function>(t, f);
-	}
+	};
 
 public:
 	typedef boost::variant<Args...> Select;
@@ -278,7 +278,6 @@ public:
 			}
 		});
 		return select;
-
 	}
 };
 

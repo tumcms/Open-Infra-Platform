@@ -582,6 +582,10 @@ void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostr
 void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq, std::ostream& out) {
 	const std::string enumName = "e" + name;
 
+	std::for_each(seq.begin(), seq.end(), [](auto& elem) {
+		elem = "ENUM_" + elem;
+	});
+
 	writeLine(out, "enum class " + enumName + ": int {");
 	for (int i = 0; i < seq.size(); i++) {
 		if (i != seq.size() - 1) {
@@ -601,7 +605,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 	}
 	writeLine(out, "default: return \"unknown\";");
 	writeLine(out, "}");
-	writeLine(out, "}");
+	writeLine(out, "};");
 	linebreak(out);
 
 	const std::string basetype = "ExpressBinding::EnumType<" + enumName + "," + std::to_string(seq.size()) + ">";
@@ -1529,11 +1533,18 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 		//
 		//writeLine(out, "DEFINE_ENUMTYPE(" + type.getName() + "," + values + ")");
 		//writeEnumTypeFile(type.getName(), type.getTypes(), out);
-		writeLine(out, "#ifdef NULL");
-		writeLine(out, "#undef NULL");
-		writeLine(out, "#endif");
+		
+		//writeLine(out, "#ifdef NULL");
+		//writeLine(out, "#undef NULL");
+		//writeLine(out, "#endif");
+		//linebreak(out);
+
 		writeEnumTypeFileRefactored(type.getName(), type.getTypes(), out);
-		writeLine(out, "#define NULL 0");
+
+		//linebreak(out);
+		//writeLine(out, "#ifndef NULL");
+		//writeLine(out, "#define NULL 0");
+		//writeLine(out, "#endif");
 	}
 	else if (type.isContainerType()) {
 		//writeLine(out, "DEFINE_CONTAINERTYPE(" + type.getName() + "," + type.getContainerTypeIdentifier() + ")");
@@ -2185,16 +2196,17 @@ void GeneratorOIP::generateReaderFile(const Schema & schema)
 	writeLine(file, "paramvalue.clear();");
 	writeLine(file, "}"); // end else
 	writeLine(file, "}"); // end while !paramvalue.empty()
-	writeLine(file, "}"); // end function parseArgs
+	writeLine(file, "};"); // end function parseArgs
 	linebreak(file);
 
 
-	writeLine(file, "inline ExpressBinding::EXPRESSModel FromFile(const std::string &filename) {"); // begin function FromFile
+	writeLine(file, "inline std::shared_ptr<ExpressBinding::EXPRESSModel> FromFile(const std::string &filename) {"); // begin function FromFile
 
 	writeLine(file, "std::ifstream file(filename, std::ifstream::in);");
 	writeLine(file, "if(file.is_open()) {"); // begin if(file.is_open())
 	writeLine(file, "std::shared_ptr<ExpressBinding::EXPRESSModel> model = std::make_shared<ExpressBinding::EXPRESSModel>(\"" + schema.getName() + "\");");
-	writeLine(file, "for(std::string line; std::getline(file,line);) {"); // begin for read file
+	writeLine(file, "for(std::string line = \"\"; std::getline(file,line);) {"); // begin for read file
+	writeLine(file, "if(line == \"\") break;");
 	writeLine(file, "if(line[0] == '#') {");
 	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=')));");
 	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('='), line.find_first_of('('));");
@@ -2211,11 +2223,13 @@ void GeneratorOIP::generateReaderFile(const Schema & schema)
 	}
 	writeLine(file, "}"); //end if line[0] == '#'
 	writeLine(file, "}"); //end for read file
+	writeLine(file, "return model;");
 	writeLine(file, "}");
 	writeLine(file, "else {");
 	writeLine(file, "throw std::exception(\"Could not open file.\");");
 	writeLine(file, "}"); // end else if(file.is_open())
-	writeLine(file, "}"); // end function FromFile
+	writeLine(file, "return nullptr;");
+	writeLine(file, "};"); // end function FromFile
 	writeEndNamespace(file, schema);
 
 	file.close();
@@ -2250,7 +2264,7 @@ void GeneratorOIP::generateEMTFiles(const Schema & schema)
 	}
 	writeLine(file, "};"); // end struct
 
-	writeLine(file, "typedef Basic" + schema.getName() + "EntityTypes<"); // begin typedef
+	writeLine(file, "typedef Basic" + schema.getName() + "EntityTypes <"); // begin typedef
 
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
 		writeLine(file, "OpenInfraPlatform::" + schema.getName() + "::" + schema.getEntityByIndex(idx).getName() + ",");
@@ -3424,6 +3438,10 @@ void GeneratorOIP::generateEntitySourceFile(Schema &schema, const Entity &entity
 	writeEntityFunction(out, entity, "void", "unlinkSelf", "", "", impl);
 
 	writeEndNamespace(out, schema);
+}
+
+void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Entity & entity)
+{
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDING_END

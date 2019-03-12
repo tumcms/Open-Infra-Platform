@@ -409,14 +409,6 @@ bool OpenInfraPlatform::DataManagement::Data::isViewCubeEnabled()
 }
 
 
-void OpenInfraPlatform::DataManagement::Data::setAlignmentLineWidth(const double width)
-{
-	alignmentLineWidth_ = static_cast<float>(width);
-
-	pushChange(ChangeFlag::AlignmentModel);
-}
-
-
 buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> OpenInfraPlatform::DataManagement::Data::getIfcGeometryModel() const
 { 
 	return ifcGeometryModel_;
