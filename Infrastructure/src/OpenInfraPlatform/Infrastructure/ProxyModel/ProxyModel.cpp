@@ -38,7 +38,7 @@ int OpenInfraPlatform::Infrastructure::ProxyModel::addAccidentReport(const accid
 	return static_cast<int>(accidentReports_.size()) - 1;
 }
 
-const std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> >& OpenInfraPlatform::Infrastructure::ProxyModel::getIfc4x1Data() const
+const std::map<int, std::shared_ptr<OpenInfraPlatform::ExpressBinding::EXPRESSEntity> >& OpenInfraPlatform::Infrastructure::ProxyModel::getIfc4x1Data() const
 {
 	return Ifc4x1Entities_;
 }
@@ -48,7 +48,7 @@ bool OpenInfraPlatform::Infrastructure::ProxyModel::hasIfc4x1Data()
 	return Ifc4x1Entities_.size() > 0;
 }
 
-void OpenInfraPlatform::Infrastructure::ProxyModel::setIfc4x1Entities(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity> > entities)
+void OpenInfraPlatform::Infrastructure::ProxyModel::setIfc4x1Entities(std::map<int, std::shared_ptr<OpenInfraPlatform::ExpressBinding::EXPRESSEntity> > entities)
 {
 	Ifc4x1Entities_ = entities;
 }

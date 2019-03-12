@@ -30,15 +30,7 @@
 #include "PlacementConverter.h"
 #include "CurveConverter.h"
 
-//#include "EMTIfcBridgeEntityTypes.h"
-//#include "OpenInfraPlatform/IfcBridge/model/IfcBridgeModel.h"
-//#include "EMTIfc4EntityTypes.h"
-//#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
-//#include "EMTIfc4x1EntityTypes.h"
-//#include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
-
-#include "EMTIFC4X2_DRAFT_1EntityTypes.h"
-#include "OpenInfraPlatform/IFC4X2_DRAFT_1/model/Model.h"
+#include "OpenInfraPlatform/ExpressBinding/EXPRESS/EXPRESSEntity.h"
 
 namespace OpenInfraPlatform
 {
@@ -46,8 +38,7 @@ namespace OpenInfraPlatform
 	{
 		template <
 			class IfcEntityTypesT,
-			class IfcUnitConverterT,
-			class IfcEntityT
+			class IfcUnitConverterT
 		>
 			class SolidModelConverterT
 		{
@@ -1144,14 +1135,14 @@ namespace OpenInfraPlatform
 							shared_ptr<carve::mesh::MeshSet<3> >& second_operand_meshset = (*it_second_operands);
 
 							int id1 = 0;
-							if (dynamic_pointer_cast<IfcEntityT>(ifc_first_operand))
+							if (dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_first_operand))
 							{
-								id1 = dynamic_pointer_cast<IfcEntityT>(ifc_first_operand)->getId();
+								id1 = dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_first_operand)->getId();
 							}
 							int id2 = 0;
-							if (dynamic_pointer_cast<IfcEntityT>(ifc_second_operand))
+							if (dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_second_operand))
 							{
-								id2 = dynamic_pointer_cast<IfcEntityT>(ifc_second_operand)->getId();
+								id2 = dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_second_operand)->getId();
 							}
 
 							shared_ptr<carve::mesh::MeshSet<3> > result;

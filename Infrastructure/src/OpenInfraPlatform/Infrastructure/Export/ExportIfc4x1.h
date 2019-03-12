@@ -18,8 +18,9 @@
 #pragma once
 
 #include "OpenInfraPlatform/Infrastructure/Export/Export.h"
-#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/Alignment2DBased3D.h"
+
+#include <EXPRESSModel.h>
+
 #include <BlueFramework/Core/memory.h>
 #include <vector>
 #include <memory>

@@ -91,22 +91,9 @@ option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to find boost, Eigen and Qt
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
-	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS 
-			  "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
-	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_0" 
-			  "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_64_0" 
-			  "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_63_0")
-	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS 
-			  "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
-	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS 
-			  "C:\\Qt\\Qt5.9.0\\5.9\\msvc${MSVC_VERSION_YEAR}_64" 
-			  "C:\\Qt\\5.9\\msvc${MSVC_VERSION_YEAR}_64" 
-			  "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\5.9.2\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\Qt5.9.3\\5.9.3\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\Qt5.10.0\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64"
-			  "C:\\Qt\\5.10.1\\msvc${MSVC_VERSION_YEAR}_64")
+	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1")
+	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
+	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64")
 	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS 
 		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
 		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
@@ -306,6 +293,7 @@ link_directories(
 # Add subdirectories.
 #------------------------------------------------------------------------------
 
+
 add_subdirectory(external/QtXlsxWriter)
 add_subdirectory(external/QSimpleUpdater)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
@@ -313,8 +301,16 @@ add_subdirectory(Infrastructure)
 add_subdirectory(UnitTests)
 add_subdirectory(oip)
 add_subdirectory(IfcBridgeGenerator)
-add_subdirectory(ExpressBinding)
 
+# ExpressGenerator rework revision 473.
+add_subdirectory(ExpressGenerator)
+
+# Core added in revision 483
+add_subdirectory(Core)
+
+if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding)
+	add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding)
+endif()
 # Do currently not work
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)
@@ -329,25 +325,9 @@ add_subdirectory(ExpressBinding)
 file(GLOB OpenInfraPlatform_Source									src/OpenInfraPlatform/*.*)
 file(GLOB OpenInfraPlatform_Core_Source 							src/OpenInfraPlatform/Core/*.*)
 file(GLOB OpenInfraPlatform_Data_Source 							src/OpenInfraPlatform/Data/*.*)
-file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
+#file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Source 					src/OpenInfraPlatform/DataManagement/*.*)
-file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)
-	#src/OpenInfraPlatform/IfcGeometryConverter/CarveHeaders.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.*
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc2x3EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4x1EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfcBridgeEntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.*
-	#src/OpenInfraPlatform/IfcGeometryConverter/GeometrySettings.*
-	#src/OpenInfraPlatform/IfcGeometryConverter/GeomUtils.*
-	#src/OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.*
-	#src/OpenInfraPlatform/IfcGeometryConverter/RecursiveCallException.h
-	#src/OpenInfraPlatform/IfcGeometryConverter/UnhandledRepresentationException.h)
+file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)	
 
 # UnitTesting for images is currently not working but still in the code so files have to be collected
 file(GLOB OpenInfraPlatform_UnitTesting_Source						src/OpenInfraPlatform/UnitTesting/*.*)
@@ -415,7 +395,7 @@ source_group(OpenInfraPlatform										FILES ${OpenInfraPlatform_Source})
 source_group(OpenInfraPlatform\\Core								FILES ${OpenInfraPlatform_Core_Source})
 source_group(OpenInfraPlatform\\Data								FILES ${OpenInfraPlatform_Data_Source})
 source_group(OpenInfraPlatform\\DataManagement						FILES ${OpenInfraPlatform_DataManagement_Source})
-source_group(OpenInfraPlatform\\DataManagement\\Command				FILES ${OpenInfraPlatform_DataManagement_Command_Source})
+#source_group(OpenInfraPlatform\\DataManagement\\Command				FILES ${OpenInfraPlatform_DataManagement_Command_Source})
 source_group(OpenInfraPlatform\\IfcGeometryConverter				FILES ${OpenInfraPlatform_IfcGeometryConverter_Source})
 
 # Set Shader source groups
@@ -466,7 +446,7 @@ add_executable(OpenInfraPlatform.UI
 	${OpenInfraPlatform_Core_Source}
 	${OpenInfraPlatform_Data_Source}
 	${OpenInfraPlatform_DataManagement_Source}
-	${OpenInfraPlatform_DataManagement_Command_Source}
+	#${OpenInfraPlatform_DataManagement_Command_Source}
 	${OpenInfraPlatform_IfcGeometryConverter_Source}
 	${OpenInfraPlatform_UnitTesting_Source}
 	${OpenInfraPlatform_UserInterface_Source}
@@ -662,7 +642,9 @@ set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
 # Switched to static gtest on 28.11.2018 / Revision 388+
 #set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(OpenInfraPlatform.ExpressBinding		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+set_target_properties(OpenInfraPlatform.ExpressGenerator	 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
+set_target_properties(GenerateEarlyBinding					 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
+set_target_properties(UpdateBoostMPL					 		PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
 #set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
 set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
