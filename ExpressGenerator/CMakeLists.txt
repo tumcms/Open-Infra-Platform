@@ -67,10 +67,10 @@ macro(add_format format schema)
 endmacro()
 
 add_format(IFC2X3 IFC2X3_TC1)
-add_format(IFC4 IFC4_ADD1)
-add_format(IFC4X2_BIM4ROAD IFC4x2_BIM4ROAD)
-add_format(IFC4X1 IFC4x1_RC3)
-add_format(IFC4X2_DRAFT_1 IFC4x2_DRAFT_1)
+#add_format(IFC4 IFC4_ADD1)
+#add_format(IFC4X2_BIM4ROAD IFC4x2_BIM4ROAD)
+#add_format(IFC4X1 IFC4x1_RC3)
+#add_format(IFC4X2_DRAFT_1 IFC4x2_DRAFT_1)
 
 set(IFC_FORMATS ${IFC_FORMATS} PARENT_SCOPE)
 
@@ -122,10 +122,10 @@ add_custom_target(GenerateEarlyBinding
 	#COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_BINARY_DIR}/EarlyBinding/
 	#COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/EarlyBinding/CMakeLists.txt.in ${CMAKE_BINARY_DIR}/EarlyBinding/CMakeLists.txt
 	COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC2X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X2_BIM4ROAD_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X2_DRAFT_1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
+	#COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
+	#COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
+	#COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X2_BIM4ROAD_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
+	#COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X2_DRAFT_1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
 	
 )
 

@@ -1520,7 +1520,21 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 
 	linebreak(out);
 
-	writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESS.h");
+	//writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESS.h");
+
+	if (type.isSimpleType() || type.isDerivedType()) {
+		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/ValueType.h");
+	}
+	else if (type.isEnumeration()) {
+		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EnumType.h");
+	}
+	else if (type.isContainerType()) {
+		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSContainer.h");
+	}
+	else if (type.isSelectType()) {
+		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/SelectType.h");
+	}
+
 	writeInclude(out, "../" + schema.getName() + "Namespace.h");
 	
 
@@ -1537,24 +1551,42 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 			}
 			if (schema.hasType(select)) {
 				types.insert(select);
-			}			
+			}
 		}
 
 		// Disabled for minimal working example
-		for (auto val : types)
-			writeInclude(out,  val + ".h");
+		//if (!types.empty()) {
+		//	for (auto val : types) {
+		//		writeInclude(out, val + ".h");
+		//	}
+		//	linebreak(out);
+		//}
 
-		//for (auto entity : entities)
-		//	writeInclude(out, "../entity/" + entity + ".h");
+		//if (!entities.empty()) {
+		//	for (auto entity : entities) {
+		//		writeInclude(out, "../entity/" + entity + ".h");
+		//	}
+		//	linebreak(out);
+		//}
 	}
+	
 
-	linebreak(out);
 	writeBeginNamespace(out, schema);
 	
 	if (type.isSelectType()) {
-		// Disabled for minimal working example
-		for (auto entity : entities) {
-			writeLine(out, "class " + entity + ";");
+		if (!types.empty()) {
+			for (auto val : types) {
+				writeLine(out,"class " + val + ";");
+			}
+			linebreak(out);
+		}
+
+		if (!entities.empty()) {
+			writeLine(out, "template <typename T> class EXPRESSReference;");
+			for (auto entity : entities) {
+				writeLine(out, "template <> class EXPRESSReference<" + entity + ">;");
+			}
+			linebreak(out);
 		}
 	}
 
@@ -1961,6 +1993,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 	writeLicenseAndNotice(out);
 		
 	writeInclude(out, type.getName() + ".h");
+	linebreak(out);
 
 	std::set<std::string> types, entities;
 
@@ -1972,13 +2005,24 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 			if (schema.hasType(select)) {
 				types.insert(select);
 			}
-		}		
+		}
 
-		for (auto entity : entities)
-			writeInclude(out, "../entity/" + entity + ".h");
+		if (!types.empty()) {
+			for (auto val : types) {
+				writeInclude(out, val + ".h");
+			}
+			linebreak(out);
+		}
+
+		if (!entities.empty()) {
+			writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSReference.h");
+			for (auto entity : entities) {
+				writeInclude(out, "../entity/" + entity + ".h");
+			}
+			linebreak(out);
+		}
 	}
 	   	
-	linebreak(out);
 	writeBeginNamespace(out, schema);
 	
 	std::string name = type.getName();
@@ -2987,7 +3031,7 @@ void GeneratorOIP::generateEntityHeaderFile(OpenInfraPlatform::ExpressBinding::S
 	
 }
 
-void resolveIncludes(Schema& schema, Entity& entity, std::set<std::string>& entityAttributes, Type& type) {
+void resolveIncludes(Schema& schema, const Entity& entity, std::set<std::string>& entityAttributes, Type& type) {
 	auto possibleSelectTypes = type.getTypes();
 	for (auto value : possibleSelectTypes) {
 		if (schema.hasEntity(value)) {
@@ -3085,22 +3129,31 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		}
 	}
 
-	for (auto entityAttribute : entityAttributes) {
-		writeInclude(out, entityAttribute + ".h");
-	}
-
-	for (auto type : typeAttributes) {
-		writeInclude(out, "../type/" + type + ".h");
-	}
-
-
-	if (!entityAttributes.empty() || !typeAttributes.empty()) {
+	if (!entityAttributes.empty()) {
+		for (auto entityAttribute : entityAttributes) {
+			writeInclude(out, entityAttribute + ".h");
+		}
 		linebreak(out);
 	}
+	
+	if (!typeAttributes.empty()) {
+		for (auto type : typeAttributes) {
+			writeInclude(out, "../type/" + type + ".h");
+		}
+		linebreak(out);
+	}
+		
 
 	std::string supertype = entity.hasSupertype() ? entity.getSupertype() : "EarlyBinding::EXPRESSEntity";
 	
 	writeBeginNamespace(out, schema);
+	
+	//if (!entityAttributes.empty()) {
+	//	for (auto entityAttribute : entityAttributes) {
+	//		writeLine(out,"class " + entityAttribute + ";");
+	//	}
+	//	linebreak(out);
+	//}
 
 	writeLine(out, "class " + entity.getName() + " : public " + supertype + " {");
 	writeLine(out, "public:");
@@ -3128,7 +3181,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		//Classname function
 		writeLine(out, "virtual const std::string classname() const override;");
 		//writeLine(out, "virtual const std::string classname() const override { return \"" + entity.getName() + "\";} ");
-		linebreak(out);
+		linebreak(out); 
 
 		auto attributes = schema.getAllEntityAttributes(entity);
 
@@ -3153,7 +3206,6 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		//writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \")\";");
 		//writeLine(out, "return stepLine;");
 		//writeLine(out, "}");
-		linebreak(out);
 	};
 
 	if (!schema.isAbstract(entity)) {
@@ -3186,12 +3238,12 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 
 	writeLine(out, "};");
 	writeEndNamespace(out, schema);
-	linebreak(out);
 
 	//Make structure visitable
 	auto attributeNames = schema.getAllEntityAttributesNames(entity);
 	if (!attributeNames.empty())
 	{
+		linebreak(out);
 		out << "\n";
 		out << "VISITABLE_STRUCT(OpenInfraPlatform::" << schema.getName() << "::" << entity.getName();
 		for (auto item : attributeNames) {
@@ -3613,45 +3665,54 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 	writeInclude(out, entity.getName() + ".h");
 	linebreak(out);
 
-	// Includes for select type attributes
-	//auto attributes = schema.getAllEntityAttributes(entity);
-	//
-	//std::set<std::string> typeAttributes;
-	//
-	//for (auto attr : attributes) {
-	//	if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {			
-	//		if (schema.hasType(attr.type->toString())) {
-	//			typeAttributes.insert(attr.type->toString());
-	//		}
+	auto attributes = schema.getAllEntityAttributes(entity);
+
+	std::set<std::string> typeAttributes, entityAttributes;
+
+	for (auto attr : attributes) {
+		if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
+			if (schema.hasEntity(attr.type->toString())) {
+				entityAttributes.insert(attr.type->toString());
+			}
+			if (schema.hasType(attr.type->toString())) {
+				typeAttributes.insert(attr.type->toString());
+			}
+		}
+		else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+			auto elementType = attr.type;
+			int dim = 0;
+
+			while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+				dim++;
+				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
+			}
+
+			if (schema.hasEntity(elementType->toString())) {
+				entityAttributes.insert(elementType->toString());
+			}
+			if (schema.hasType(elementType->toString())) {
+				typeAttributes.insert(elementType->toString());
+			}
+		}
+	}
+
+	auto self = entityAttributes.find(entity.getName());
+	if (self != entityAttributes.end()) {
+		entityAttributes.erase(self);
+	}
+
+
+	for (auto typeName : typeAttributes) {
+		auto type = schema.getTypeByName(typeName);
+		if (type.isSelectType()) {
+			resolveIncludes(schema, entity, entityAttributes, type);
+		}
+	}
+
+	//if (!entityAttributes.empty()) {
+	//	for (auto entityAttribute : entityAttributes) {
+	//		writeInclude(out, entityAttribute + ".h");
 	//	}
-	//	else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-	//		auto elementType = attr.type;
-	//		int dim = 0;
-	//
-	//		while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-	//			dim++;
-	//			elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
-	//		}
-	//					
-	//		if (schema.hasType(elementType->toString())) {
-	//			typeAttributes.insert(elementType->toString());
-	//		}
-	//	}
-	//}
-	//
-	//
-	//for (auto typeName : typeAttributes) {
-	//	auto type = schema.getTypeByName(typeName);
-	//	if (type.isSelectType()) {
-	//		for (auto value : type.getTypes()) {
-	//			if (schema.hasEntity(value)) {
-	//				writeInclude(out, value + ".h");
-	//			}
-	//		}
-	//	}
-	//}
-	//
-	//if (!typeAttributes.empty()) {
 	//	linebreak(out);
 	//}
 
