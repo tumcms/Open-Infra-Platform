@@ -119,8 +119,8 @@ set_target_properties(OpenInfraPlatform.ExpressGenerator PROPERTIES FOLDER "Open
 
 add_custom_target(GenerateEarlyBinding
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_BINARY_DIR}/EarlyBinding/
-	COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/EarlyBinding/CMakeLists.txt.in ${CMAKE_BINARY_DIR}/EarlyBinding/CMakeLists.txt
+	#COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_BINARY_DIR}/EarlyBinding/
+	#COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/EarlyBinding/CMakeLists.txt.in ${CMAKE_BINARY_DIR}/EarlyBinding/CMakeLists.txt
 	COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC2X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
 	COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
 	COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding

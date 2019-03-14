@@ -51,7 +51,7 @@ const std::string EntityAttribute::toString(const Schema & schema) const {
 	if (type->getType() == eEntityAttributeParameterType::TypeNamed || type->getType() == eEntityAttributeParameterType::Simple) {
 		if (schema.hasType(typeName)) {
 			if (type->getType() == eEntityAttributeParameterType::Simple) {
-				typeName = prefix + typeName;
+				//typeName = prefix + typeName;
 			}
 			if (isOptional())
 				return "Optional<" + typeName + ">";
@@ -70,7 +70,8 @@ const std::string EntityAttribute::toString(const Schema & schema) const {
 		int dim = 0;
 		auto elementType = type;
 		while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-			attributeType.append("ExpressBinding::" + elementType->toString() + "<0," + elementType->toString() + "_MAXSIZE,");
+			//attributeType.append("ExpressBinding::" + elementType->toString() + "<0," + elementType->toString() + "_MAXSIZE,");
+			attributeType.append(elementType->toString() + "<0," + elementType->toString() + "_MAXSIZE,");
 			dim++;
 			elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
 		}
@@ -90,7 +91,8 @@ const std::string EntityAttribute::toString(const Schema & schema) const {
 		else
 			return attributeType;
 	}
-	return prefix + typeName;
+	return typeName;
+	//return prefix + typeName;
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDING_END

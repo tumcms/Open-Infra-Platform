@@ -60,10 +60,12 @@ private:
 	void generateTypeHeaderFileREFACTORED(Schema &schema, Type &type);
 
     void generateTypeSourceFile(Schema &schema, Type &type);
+    
+	void generateTypeSourceFileREFACTORED(Schema &schema, Type &type);
 
     void generateTypeSourceFileGetStepParameter(const Type &type, std::ofstream &out, Schema &schema);
 
-	void generateReaderFile(const Schema &schema);
+	void generateReaderFiles(const Schema &schema);
 
 	void generateWriterFile(const Schema &schema);
 

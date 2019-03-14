@@ -215,20 +215,20 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDING_BEGIN
 //	}
 //};
 
+
+class visitor_getStepParameter
+	: public boost::static_visitor<std::string>
+{
+public:
+	template <typename T>
+	const std::string operator()(const T& operand) const
+	{
+		return operand.classname() + "(" + operand.getStepParameter() + ")";
+	}
+};
+
 template <typename ...Args> class SelectType : public ValueType<boost::variant<Args...>> {
 	using base = ValueType<boost::variant<Args...>>;
-
-	class visitor_getStepParameter
-		: public boost::static_visitor<std::string>
-	{
-	public:
-		template <typename T>
-		const std::string operator()(const T& operand) const
-		{
-			return operand.classname() + "(" + operand.getStepParameter() + ")";
-		}
-	};
-
 
 	template<std::size_t I = 0, typename Function>
 	static inline typename std::enable_if<I == sizeof...(Args), void>::type

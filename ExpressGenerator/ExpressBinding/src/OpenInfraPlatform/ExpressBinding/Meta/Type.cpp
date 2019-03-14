@@ -50,7 +50,8 @@ void Type::setType(eType val) {
 
 
 std::string Type::getUnderlyingTypeName() const {
-	std::string prefix = "ExpressBinding::";
+	std::string prefix = "";
+	//std::string prefix = "ExpressBinding::";
 	if (isSimpleType()) {
 		if (type_ == eType::Real) {
 			return prefix + "REAL";
@@ -116,7 +117,8 @@ std::string Type::getContainerType() const {
 	std::string prefix = "ExpressBinding::";
 	std::set<std::string> prefixedTypes = { "INTEGER","REAL","NUMBER","BOOLEAN","BINARY","LOGICAL","LIST","ARRAY","SET","BAG","STRING" };
 	if (prefixedTypes.count(containerType_) > 0)
-		return prefix + containerType_;
+		return containerType_;
+		//return prefix + containerType_;
 	else
 		return containerType_;
 }

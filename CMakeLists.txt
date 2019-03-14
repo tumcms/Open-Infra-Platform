@@ -308,9 +308,10 @@ add_subdirectory(ExpressGenerator)
 # Core added in revision 483
 add_subdirectory(Core)
 
-if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding)
-	add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding)
-endif()
+#if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding)
+#	add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding)
+#endif()
+add_subdirectory(${PROJECT_SOURCE_DIR}/EarlyBinding)
 # Do currently not work
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)

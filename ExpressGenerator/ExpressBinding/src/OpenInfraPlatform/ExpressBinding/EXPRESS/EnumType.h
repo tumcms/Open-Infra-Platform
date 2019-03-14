@@ -88,8 +88,8 @@ public:
 			if (("." + arg + ".") == to_string(value)) {
 				return value;
 			}
-			return static_cast<Enum>(0);
 		}
+		return static_cast<Enum>(0);
 	}
 
 };

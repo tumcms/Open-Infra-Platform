@@ -21,15 +21,15 @@
 
 #include "IFC2X3Reader.h"
 #include "IFC4Reader.h"
-#include "IFC4X1Reader.h"
-#include "IFC4X2_BIM4ROADReader.h"
-#include "IFC4X2_DRAFT_1Reader.h"
+//#include "IFC4X1Reader.h"
+//#include "IFC4X2_BIM4ROADReader.h"
+//#include "IFC4X2_DRAFT_1Reader.h"
 
-#include "EMTIFC2X3EntityTypes.h"
-#include "EMTIFC4EntityTypes.h"
-#include "EMTIFC4X1EntityTypes.h"
-#include "EMTIFC4X2_BIM4ROADEntityTypes.h"
-#include "EMTIFC4X2_DRAFT_1EntityTypes.h"
+//#include "EMTIFC2X3EntityTypes.h"
+//#include "EMTIFC4EntityTypes.h"
+//#include "EMTIFC4X1EntityTypes.h"
+//#include "EMTIFC4X2_BIM4ROADEntityTypes.h"
+//#include "EMTIFC4X2_DRAFT_1EntityTypes.h"
 
 #include "OpenInfraPlatform/Core/IfcGeometryConverter/IfcImporter.h"
 #include "OpenInfraPlatform/Core/IfcGeometryConverter/GeometryInputData.h"
@@ -145,16 +145,16 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 			expressModel_ = OpenInfraPlatform::IFC2X3::FromFile(filename);
 			break;
 		case IfcPeekStepReader::IfcSchema::IFC4:
-			expressModel_ = OpenInfraPlatform::IFC4::FromFile(filename);
+			//expressModel_ = OpenInfraPlatform::IFC4::FromFile(filename);
 			break;
 		case IfcPeekStepReader::IfcSchema::IFC4X1:
-			expressModel_ = OpenInfraPlatform::IFC4X1::FromFile(filename);
+			//expressModel_ = OpenInfraPlatform::IFC4X1::FromFile(filename);
 			break;
 		case IfcPeekStepReader::IfcSchema::IFC4X2_BIM4ROAD:
-			expressModel_ = OpenInfraPlatform::IFC4X2_BIM4ROAD::FromFile(filename);
+			//expressModel_ = OpenInfraPlatform::IFC4X2_BIM4ROAD::FromFile(filename);
 			break;
 		case IfcPeekStepReader::IfcSchema::IFC4X2_DRAFT_1:
-			expressModel_ = OpenInfraPlatform::IFC4X2_DRAFT_1::FromFile(filename);
+			//expressModel_ = OpenInfraPlatform::IFC4X2_DRAFT_1::FromFile(filename);
 			break;
 		default:
 			BLUE_LOG(error) << "No matching schema detected";
