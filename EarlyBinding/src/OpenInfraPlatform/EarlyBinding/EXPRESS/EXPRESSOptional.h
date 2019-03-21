@@ -110,7 +110,7 @@ public:
 	friend void swap(EXPRESSOptional& first, EXPRESSOptional& second)
 	{
 		using boost::swap;
-		boost::swap(first, second);
+		first.base::swap(second);
 	}
 
 	typedef T type;

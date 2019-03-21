@@ -23,7 +23,7 @@
 
 #include "OpenInfraPlatform/EarlyBinding/namespace.h"
 
-#include "EXPRESSType.h"
+#include "ValueType.h"
 #include "EXPRESSModel.h"
 //#include "EXPRESSEntity.h"
 

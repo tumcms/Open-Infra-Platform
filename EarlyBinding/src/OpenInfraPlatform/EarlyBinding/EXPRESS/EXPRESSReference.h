@@ -48,9 +48,11 @@ public:
 	using base::base;
 	using base::operator=;
 
-	const std::string getStepParameter() const {
-		return this->base::lock()->getStepParameter();
-	}
+	const std::string getStepParameter() const;
+	//const std::string getStepParameter() const {
+	//	return this->base::lock()->getStepParameter();
+	//}
+
 
 	T* operator->() { return this->base::lock().operator->(); }
 	const T* const operator->() const { return this->base::lock().operator->(); }
@@ -63,9 +65,10 @@ public:
 		return reference;
 	}
 
-	const std::string classname() const {
-		return this->base::lock()->classname();
-	}
+	const std::string classname() const;
+	//const std::string classname() const {
+	//	return this->base::lock()->classname();
+	//}
 
 	friend void swap(EXPRESSReference& first, EXPRESSReference& second)
 	{

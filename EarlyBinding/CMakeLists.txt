@@ -28,9 +28,13 @@ include_directories(
   ${visit_struct_INCLUDE_DIR}
 )
 
-add_library(OpenInfraPlatform.EarlyBinding STATIC
-	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
-)
+#add_library(OpenInfraPlatform.EXPRESS STATIC
+#	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
+#)
+
+add_library(OpenInfraPlatform.EarlyBinding STATIC)
+
+#target_link_libraries(OpenInfraPlatform.EarlyBinding OpenInfraPlatform.EXPRESS)
 
 
 foreach(format ${IFC_FORMATS})
@@ -55,6 +59,7 @@ target_include_directories(OpenInfraPlatform.EarlyBinding
 )
 
 set_target_properties(OpenInfraPlatform.EarlyBinding PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+#set_target_properties(OpenInfraPlatform.EXPRESS PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
 
 Install(DIRECTORY ${PROJECT_SOURCE_DIR} DESTINATION include

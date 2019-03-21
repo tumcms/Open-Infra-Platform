@@ -191,7 +191,7 @@ public:
 
 	friend void swap(EXPRESSContainer& first, EXPRESSContainer& second)
 	{		
-		std::swap(first, second);
+		first.base::swap(second);
 	}
 };
 

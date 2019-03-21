@@ -460,10 +460,13 @@ void writeContainerTypeFile(Schema& schema, Type& type, std::ostream& out) {
 	writeLine(out, "using base::operator=;");
 	//writeLine(out, "using base::operator " + containertype + "<" + valuetype + ">&;");
 	linebreak(out);	
-	writeLine(out,  name + "* operator->() { return this; }");
-	writeLine(out, "const " + name + "* const operator->() const { return this; }");
+	writeLine(out,  name + "* operator->();");
+	//writeLine(out,  name + "* operator->() { return this; }");
+	writeLine(out, "const " + name + "* const operator->() const;");
+	//writeLine(out, "const " + name + "* const operator->() const { return this; }");
 	linebreak(out);
-	writeLine(out, name + "& operator=(const " + name + "& other) = default;");
+	writeLine(out, name + "& operator=(" + name + "& other);");
+	//writeLine(out, name + "& operator=(const " + name + "& other) = default;");
 	writeLine(out, name + "& operator=(const Optional<" + name + "> &other);");
 	//writeLine(out, name + "& operator=(const Optional<" + name + "> &other) { operator=(other.get_value_or(" + name + "())); return *this; };");
 	linebreak(out);
@@ -1532,6 +1535,7 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSContainer.h");
 	}
 	else if (type.isSelectType()) {
+		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSReference.h");
 		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/SelectType.h");
 	}
 
@@ -1562,33 +1566,32 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 			linebreak(out);
 		}
 
-		if (!entities.empty()) {
-			for (auto entity : entities) {
-				writeInclude(out, "../entity/" + entity + ".h");
-			}
-			linebreak(out);
-		}
+		//if (!entities.empty()) {
+		//	for (auto entity : entities) {
+		//		writeInclude(out, "../entity/" + entity + ".h");
+		//	}
+		//	linebreak(out);
+		//}
 	}
 	
 
 	writeBeginNamespace(out, schema);
 	
-	//if (type.isSelectType()) {
-	//	if (!types.empty()) {
-	//		for (auto val : types) {
-	//			writeLine(out,"class " + val + ";");
-	//		}
-	//		linebreak(out);
-	//	}
-	//
-	//	if (!entities.empty()) {
-	//		writeLine(out, "template <typename T> class EXPRESSReference;");
-	//		for (auto entity : entities) {
-	//			writeLine(out, "template <> class EXPRESSReference<" + entity + ">;");
-	//		}
-	//		linebreak(out);
-	//	}
-	//}
+	if (type.isSelectType()) {
+		//if (!types.empty()) {
+		//	for (auto val : types) {
+		//		writeLine(out,"class " + val + ";");
+		//	}
+		//	linebreak(out);
+		//}
+	
+		if (!entities.empty()) {
+			for (auto entity : entities) {
+				writeLine(out, "class " + entity + ";");
+			}
+			linebreak(out);
+		}
+	}
 
 	if (type.isSimpleType() || type.isDerivedType()) {
 		writeValueTypeFile(type, out);
@@ -2042,8 +2045,8 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 		writeLine(out, name + "* " + name + "::operator->() { return this; }");
 		writeLine(out, "const " + name + "* const " + name + "::operator->() const { return this; }");
 		linebreak(out);
-		writeLine(out, name + "& " + name + "::operator=(const " + name + "& other) = default;");
-		writeLine(out, name + "& " + name + "::operator=(const Optional<" + name + "> &other) { operator=(other.get_value_or(" + name + "())); return *this; };");
+		writeLine(out, name + "& " + name + "::operator=(" + name + "& other) { this->base::swap(other); return *this; }");
+		writeLine(out, name + "& " + name + "::operator=(const Optional<" + name + "> &other) { this->operator=(other.get_value_or(" + name + "())); return *this; };");
 		linebreak(out);
 		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; }");
 		writeLine(out, "const std::string " + name + "::getStepParameter() const { return this->base::getStepParameter(); }");
@@ -2645,6 +2648,8 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "add_library(OpenInfraPlatform." << schema.getName() << " STATIC" << std::endl;
 	file << "\t"
+		<< "${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}" << std::endl;
+	file << "\t"
 		<< "${OpenInfraPlatform_" << schema.getName() << "_Source}" << std::endl;
 	file << "\t"
 		<< "${OpenInfraPlatform_" << schema.getName() << "_entity_Source}" << std::endl;
@@ -2653,6 +2658,10 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "\t"
 		<< "${OpenInfraPlatform_" << schema.getName() << "_reader_Source}" << std::endl;
 	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	//file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + " OpenInfraPlatform.EXPRESS)" << std::endl;
 
 	file << "" << std::endl;
 
@@ -3114,13 +3123,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 				typeAttributes.insert(elementType->toString());
 			}
 		}
-	}
-
-	auto self = entityAttributes.find(entity.getName());
-	if (self != entityAttributes.end()) {
-		entityAttributes.erase(self);
-	}
-	
+	}	
 
 	for (auto typeName : typeAttributes) {
 		auto type = schema.getTypeByName(typeName);		
@@ -3129,12 +3132,17 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		}
 	}
 
-	if (!entityAttributes.empty()) {
-		for (auto entityAttribute : entityAttributes) {
-			writeInclude(out, entityAttribute + ".h");
-		}
-		linebreak(out);
+	auto self = entityAttributes.find(entity.getName());
+	if (self != entityAttributes.end()) {
+		entityAttributes.erase(self);
 	}
+
+	//if (!entityAttributes.empty()) {
+	//	for (auto entityAttribute : entityAttributes) {
+	//		writeInclude(out, entityAttribute + ".h");
+	//	}
+	//	linebreak(out);
+	//}
 	
 	if (!typeAttributes.empty()) {
 		for (auto type : typeAttributes) {
@@ -3148,12 +3156,12 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 	
 	writeBeginNamespace(out, schema);
 	
-	//if (!entityAttributes.empty()) {
-	//	for (auto entityAttribute : entityAttributes) {
-	//		writeLine(out,"class " + entityAttribute + ";");
-	//	}
-	//	linebreak(out);
-	//}
+	if (!entityAttributes.empty()) {
+		for (auto entityAttribute : entityAttributes) {
+			writeLine(out,"class " + entityAttribute + ";");
+		}
+		linebreak(out);
+	}
 
 	writeLine(out, "class " + entity.getName() + " : public " + supertype + " {");
 	writeLine(out, "public:");
@@ -3227,7 +3235,6 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		for (auto attr : attributes) {
 			writeLine(out, attr.toString(schema) + " " + attr.getName() + ";");
 		}
-		linebreak(out);		
 	}
 
 	writeLine(out, "};");
@@ -3703,12 +3710,12 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		}
 	}
 
-	//if (!entityAttributes.empty()) {
-	//	for (auto entityAttribute : entityAttributes) {
-	//		writeInclude(out, entityAttribute + ".h");
-	//	}
-	//	linebreak(out);
-	//}
+	if (!entityAttributes.empty()) {
+		for (auto entityAttribute : entityAttributes) {
+			writeInclude(out, entityAttribute + ".h");
+		}
+		linebreak(out);
+	}
 
 	writeBeginNamespace(out, schema);
 	
@@ -3788,7 +3795,9 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		initClassAsDefault();		
 	}
 		
-	writeEndNamespace(out, schema);	
+	writeEndNamespace(out, schema);
+
+	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">;");
 	out.close();
 }
 
