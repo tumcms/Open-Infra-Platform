@@ -1555,40 +1555,40 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 		}
 
 		// Disabled for minimal working example
-		//if (!types.empty()) {
-		//	for (auto val : types) {
-		//		writeInclude(out, val + ".h");
-		//	}
-		//	linebreak(out);
-		//}
-
-		//if (!entities.empty()) {
-		//	for (auto entity : entities) {
-		//		writeInclude(out, "../entity/" + entity + ".h");
-		//	}
-		//	linebreak(out);
-		//}
-	}
-	
-
-	writeBeginNamespace(out, schema);
-	
-	if (type.isSelectType()) {
 		if (!types.empty()) {
 			for (auto val : types) {
-				writeLine(out,"class " + val + ";");
+				writeInclude(out, val + ".h");
 			}
 			linebreak(out);
 		}
 
 		if (!entities.empty()) {
-			writeLine(out, "template <typename T> class EXPRESSReference;");
 			for (auto entity : entities) {
-				writeLine(out, "template <> class EXPRESSReference<" + entity + ">;");
+				writeInclude(out, "../entity/" + entity + ".h");
 			}
 			linebreak(out);
 		}
 	}
+	
+
+	writeBeginNamespace(out, schema);
+	
+	//if (type.isSelectType()) {
+	//	if (!types.empty()) {
+	//		for (auto val : types) {
+	//			writeLine(out,"class " + val + ";");
+	//		}
+	//		linebreak(out);
+	//	}
+	//
+	//	if (!entities.empty()) {
+	//		writeLine(out, "template <typename T> class EXPRESSReference;");
+	//		for (auto entity : entities) {
+	//			writeLine(out, "template <> class EXPRESSReference<" + entity + ">;");
+	//		}
+	//		linebreak(out);
+	//	}
+	//}
 
 	if (type.isSimpleType() || type.isDerivedType()) {
 		writeValueTypeFile(type, out);
@@ -3167,11 +3167,12 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 
 		// Move constructor.
 		writeLine(out, entity.getName() + "(" + entity.getName() + "&& other);");
+		linebreak(out);
 
 		// Destructor.
 		//writeLine(out, "virtual ~" + entity.getName() + "() {};");
 
-		//writeLine(out, "friend void swap(" + entity.getName() + "& first, " + entity.getName() + "& second);");
+		writeLine(out, "friend void swap(" + entity.getName() + "& first, " + entity.getName() + "& second);");
 		linebreak(out);
 
 		// Assignment operator.
@@ -3212,6 +3213,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		initClassAsDefault();
 	}
 	else {
+		//writeLine(out, "virtual " + entity.getName() + "& operator=(" + entity.getName() + " other) = 0;");
 		writeLine(out, "virtual const std::string classname() const = 0;");
 		writeLine(out, "virtual const std::string getStepLine() const = 0;");
 	}
@@ -3225,15 +3227,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		for (auto attr : attributes) {
 			writeLine(out, attr.toString(schema) + " " + attr.getName() + ";");
 		}
-		linebreak(out);
-
-		// Swap function
-		writeLine(out, "friend void swap(" + entity.getName() + "& first, " + entity.getName() + "& second) {");
-		writeLine(out, "using std::swap;");
-		for (auto attr : schema.getAllEntityAttributes(entity)) {
-			writeLine(out, "swap(first." + attr.getName() + ", second." + attr.getName() + ");");
-		}
-		writeLine(out, "}");
+		linebreak(out);		
 	}
 
 	writeLine(out, "};");
@@ -3727,6 +3721,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 
 		// Copy constructor
 		writeLine(out, entity.getName() + "::" + entity.getName() + "(const " + entity.getName() + "& other) {");
+		writeLine(out, "this->m_id = other.m_id;");
 		for (auto attr : schema.getAllEntityAttributes(entity)) {
 			writeLine(out, "this->" + attr.getName() + " = other." + attr.getName() + ";");
 		}
@@ -3780,7 +3775,17 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 	};
 
 	if (!schema.isAbstract(entity)) {
-		initClassAsDefault();
+		// Write swap function implementation
+		writeLine(out, "void swap(" + entity.getName() + "& first, " + entity.getName() + "& second) {");
+		writeLine(out, "using std::swap;");
+		writeLine(out, "swap(first.m_id, second.m_id);");
+		for (auto attr : schema.getAllEntityAttributes(entity)) {
+			writeLine(out, "swap(first." + attr.getName() + ", second." + attr.getName() + ");");
+		}
+		writeLine(out, "};");
+		linebreak(out);
+
+		initClassAsDefault();		
 	}
 		
 	writeEndNamespace(out, schema);	

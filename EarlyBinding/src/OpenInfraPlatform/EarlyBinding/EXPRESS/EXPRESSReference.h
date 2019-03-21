@@ -28,6 +28,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
@@ -67,8 +68,10 @@ public:
 	}
 
 	friend void swap(EXPRESSReference& first, EXPRESSReference& second)
-	{		
-		std::swap(first, second);
+	{
+		first.base::swap(second);
+		std::swap(first.refId, second.refId);
+		std::swap(first.model, second.model);
 	}
 
 private:
