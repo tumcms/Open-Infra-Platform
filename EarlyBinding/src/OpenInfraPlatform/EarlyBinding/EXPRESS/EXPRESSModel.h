@@ -45,10 +45,10 @@ public:
 		}
 	};
 
-	const bool Save(const std::string &filename) const {
-		//TODO Implement
-		return true;
-	};
+	//const bool Save(const std::string &filename) const {
+	//	//TODO Implement
+	//	return true;
+	//};
 
 	const std::string schema;
 	std::map<size_t, std::shared_ptr<EXPRESSEntity>> entities;

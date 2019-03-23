@@ -32,7 +32,9 @@ include_directories(
 #	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
 #)
 
-add_library(OpenInfraPlatform.EarlyBinding STATIC)
+add_library(OpenInfraPlatform.EarlyBinding STATIC
+	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
+)
 
 #target_link_libraries(OpenInfraPlatform.EarlyBinding OpenInfraPlatform.EXPRESS)
 

@@ -53,7 +53,7 @@ public:
 
 	virtual const std::string getStepParameter() const override { return "unknown"; };
 
-	static T readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model = nullptr) { return T::readStepData(value); };
+	static T readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model = nullptr) { return T::readStepData(value, model); };
 
 	virtual const std::string classname() const override { return typeid(T).name(); };
 

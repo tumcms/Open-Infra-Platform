@@ -467,7 +467,7 @@ void writeContainerTypeFile(Schema& schema, Type& type, std::ostream& out) {
 	linebreak(out);
 	writeLine(out, name + "& operator=(" + name + "& other);");
 	//writeLine(out, name + "& operator=(const " + name + "& other) = default;");
-	writeLine(out, name + "& operator=(const Optional<" + name + "> &other);");
+	//writeLine(out, name + "& operator=(const Optional<" + name + "> &other);");
 	//writeLine(out, name + "& operator=(const Optional<" + name + "> &other) { operator=(other.get_value_or(" + name + "())); return *this; };");
 	linebreak(out);
 	writeLine(out, "virtual const std::string classname() const override;");
@@ -1533,6 +1533,15 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 	}
 	else if (type.isContainerType()) {
 		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSContainer.h");
+		//writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSOptional.h");
+
+		if (schema.hasType(type.getContainerType())) {
+			writeInclude(out, type.getContainerType() + ".h");
+		}
+		else if (schema.hasEntity(type.getContainerType())) {
+			writeInclude(out, "../entity/" + type.getContainerType() + ".h");
+		}
+
 	}
 	else if (type.isSelectType()) {
 		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSReference.h");
@@ -1996,6 +2005,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 	writeLicenseAndNotice(out);
 		
 	writeInclude(out, type.getName() + ".h");
+	writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSOptional.h");
 	linebreak(out);
 
 	std::set<std::string> types, entities;
@@ -2046,7 +2056,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 		writeLine(out, "const " + name + "* const " + name + "::operator->() const { return this; }");
 		linebreak(out);
 		writeLine(out, name + "& " + name + "::operator=(" + name + "& other) { this->base::swap(other); return *this; }");
-		writeLine(out, name + "& " + name + "::operator=(const Optional<" + name + "> &other) { this->operator=(other.get_value_or(" + name + "())); return *this; };");
+		//writeLine(out, name + "& " + name + "::operator=(const Optional<" + name + "> &other) { this->operator=(other.get_value_or(" + name + "())); return *this; };");
 		linebreak(out);
 		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; }");
 		writeLine(out, "const std::string " + name + "::getStepParameter() const { return this->base::getStepParameter(); }");
@@ -2061,6 +2071,9 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 	}
 
 	writeEndNamespace(out, schema);
+
+	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::" + schema.getName() + "::" + type.getName() + ">;");
+
 	out.close();
 }
 
@@ -3125,12 +3138,12 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		}
 	}	
 
-	for (auto typeName : typeAttributes) {
-		auto type = schema.getTypeByName(typeName);		
-		if (type.isSelectType()) {
-			resolveIncludes(schema, entity, entityAttributes, type);
-		}
-	}
+	//for (auto typeName : typeAttributes) {
+	//	auto type = schema.getTypeByName(typeName);		
+	//	if (type.isSelectType()) {
+	//		resolveIncludes(schema, entity, entityAttributes, type);
+	//	}
+	//}
 
 	auto self = entityAttributes.find(entity.getName());
 	if (self != entityAttributes.end()) {
@@ -3165,6 +3178,8 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 
 	writeLine(out, "class " + entity.getName() + " : public " + supertype + " {");
 	writeLine(out, "public:");
+	
+	//writeLine(out, "typedef " + entity.getName() + " UnderlyingType;");
 	
 	auto initClassAsDefault = [&out, &entity, &schema]() {
 		// Default constructor.
@@ -3798,6 +3813,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 	writeEndNamespace(out, schema);
 
 	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">;");
+	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">" + ">;");
 	out.close();
 }
 

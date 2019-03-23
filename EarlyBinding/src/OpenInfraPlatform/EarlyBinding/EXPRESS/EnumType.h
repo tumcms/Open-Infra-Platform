@@ -31,46 +31,6 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-//#define ENUMUTLS_STR_SWITCH_CASE(r, data, elem)\
-//        case data::elem : return BOOST_PP_STRINGIZE(elem);
-//
-//#define ENUMUTLS_FROM_STR_SWITCH_CASE(r, data, elem)\
-//        if(value == BOOST_PP_STRINGIZE(elem)) return data::elem;
-//
-//#define ENUM_W_STR(name, type, seq)\
-//        enum class name : type {\
-//            BOOST_PP_SEQ_ENUM(seq)\
-//        };\
-//        inline const std::string to_string(name v)\
-//        {\
-//            switch (v)\
-//            {\
-//                BOOST_PP_SEQ_FOR_EACH(\
-//                        ENUMUTLS_STR_SWITCH_CASE,\
-//                        name,\
-//                        seq)\
-//                default: return "unknown " BOOST_PP_STRINGIZE(name);\
-//            }\
-//        }
-//
-//
-//#define EXPRESSEnum(name, seq)\
-//	ENUM_W_STR(name##Values, int, seq);\
-//	DEFINE_TYPE(name, OpenInfraPlatform::EarlyBinding::ValueType<name##Values>);\
-//	/*const std::string name::getStepParameter() const { return "." + to_string(OpenInfraPlatform::EarlyBinding::ValueType<name##Values>::m_value) + "."; };*/\
-//	name##Values name::readStepData(const std::string &value) {\
-//		auto from_string = [](const std::string &value)-> name##Values {\
-//			BOOST_PP_SEQ_FOR_EACH(\
-//				ENUMUTLS_FROM_STR_SWITCH_CASE,\
-//				name##Values,\
-//				seq)\
-//			return name##Values::BOOST_PP_SEQ_HEAD(seq);\
-//		};\
-//		return from_string(value.substr(1, value.size() - 2));\
-//	};
-
-//bool OpenInfraPlatform::EarlyBinding::ValueType<name##Values>::operator==(const name##Values& other) { return OpenInfraPlatform::EarlyBinding::ValueType<name##Values>::m_value == other; }
-
 template <typename Enum, int Count> class EnumType : public ValueType<Enum> {
 	using base = ValueType<Enum>;
 public:
