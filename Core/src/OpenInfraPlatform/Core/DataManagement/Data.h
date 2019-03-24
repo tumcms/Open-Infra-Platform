@@ -19,7 +19,7 @@
 #ifndef OpenInfraPlatform_DataManagement_Data_3ff08224_6d48_4517_a691_b3ed20f3ca74_h
 #define OpenInfraPlatform_DataManagement_Data_3ff08224_6d48_4517_a691_b3ed20f3ca74_h
 
-#include "EXPRESSModel.h"
+#include "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSModel.h"
 
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
 #include "OpenInfraPlatform/Core/IfcGeometryConverter/ConverterBuw.h"

@@ -19,8 +19,8 @@
 
 #include <BlueFramework/Application/DataManagement/Notification/NotifiyAfterEachActionOnlyOnce.h>
 
-#include "IFC2X3Reader.h"
-#include "IFC4Reader.h"
+#include "reader/IFC2X3Reader.h"
+#include "reader/IFC4Reader.h"
 //#include "IFC4X1Reader.h"
 //#include "IFC4X2_BIM4ROADReader.h"
 //#include "IFC4X2_DRAFT_1Reader.h"
@@ -142,7 +142,7 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 
 		switch (ifcSchema) {
 		case IfcPeekStepReader::IfcSchema::IFC2X3:
-			expressModel_ = OpenInfraPlatform::IFC2X3::FromFile(filename);
+			expressModel_ = OpenInfraPlatform::IFC2X3::IFC2X3Reader::FromFile(filename);
 			break;
 		case IfcPeekStepReader::IfcSchema::IFC4:
 			//expressModel_ = OpenInfraPlatform::IFC4::FromFile(filename);
