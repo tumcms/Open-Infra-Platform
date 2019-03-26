@@ -2637,9 +2637,11 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
 		<< "_reader_Source         "
 		"src/reader/*.*)" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source ${CMAKE_SOURCE_DIR}/EarlyBinding/src/OpenInfraPlatform/EarlyBinding/EXPRESS/*.*)" << std::endl;
 
 	file << "" << std::endl;
 
+	file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
 	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
 		<< "                FILES "
 		"${OpenInfraPlatform_"
