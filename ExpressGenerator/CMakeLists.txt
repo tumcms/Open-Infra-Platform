@@ -20,6 +20,9 @@
 #*/
 
 cmake_minimum_required(VERSION 3.13.0)
+cmake_policy(SET CMP0020 NEW)
+cmake_policy(SET CMP0048 NEW)
+cmake_policy(SET CMP0074 NEW)
 
 project(OpenInfraPlatform.ExpressGenerator)
 
@@ -59,6 +62,8 @@ add_custom_target(UpdateBoostMPL
 	COMMAND "${PYTHON_EXECUTABLE}" ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/fix_boost_mpl_preprocess.py ${Boost_INCLUDE_DIR}
 	COMMAND "${PYTHON_EXECUTABLE}" ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/boost_mpl_preprocess.py --sequence-type=both --num-elements=100 ${Boost_INCLUDE_DIR}
 )
+
+set_target_properties(UpdateBoostMPL PROPERTIES FOLDER "Commands")
 
 macro(add_format format schema)
 	set(IFC_FORMATS ${IFC_FORMATS} ${format})
@@ -115,7 +120,6 @@ add_executable(OpenInfraPlatform.ExpressGenerator
 	${BISON_Parser_OUTPUTS}
 )
 
-set_target_properties(OpenInfraPlatform.ExpressGenerator PROPERTIES FOLDER "OpenInfraPlatform")
 
 add_custom_target(GenerateEarlyBinding
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding
@@ -131,7 +135,7 @@ add_custom_target(GenerateEarlyBinding
 
 add_dependencies(GenerateEarlyBinding OpenInfraPlatform.ExpressGenerator)
 
-set_target_properties(GenerateEarlyBinding PROPERTIES FOLDER "OpenInfraPlatform\\ExpressGenerator")
+set_target_properties(GenerateEarlyBinding PROPERTIES FOLDER "Commands")
 
 
 #-------------------------------------------------------------------------------------

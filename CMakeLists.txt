@@ -19,6 +19,7 @@ cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0074 NEW)
+cmake_policy(SET CMP0071 OLD)
 project(OpenInfraPlatform)
 
 #-------------------------------------------------------------------------------------
@@ -118,7 +119,7 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE       ${CMAKE_BINARY_DIR}/Release)
 
 add_definitions(-D_UNICODE 			# Unicode rules
 				#-DQT_NO_KEYWORDS 	# No qt keywords
-				-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
+				#-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
 ) # -DNOMINMAX does not work because GDI+ needs these macros
 
 if (WIN32)
@@ -312,6 +313,11 @@ add_subdirectory(Core)
 #	add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding)
 #endif()
 add_subdirectory(${PROJECT_SOURCE_DIR}/EarlyBinding)
+
+foreach(format ${IFC_FORMATS})	
+	add_compile_definitions(OIP_MODULE_EARLYBINDING_${format})
+endforeach()
+
 # Do currently not work
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)
