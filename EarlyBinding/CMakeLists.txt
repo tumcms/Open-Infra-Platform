@@ -19,52 +19,18 @@
 project(OpenInfraPlatform.EarlyBinding CXX)
 
 file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source		src/OpenInfraPlatform/EarlyBinding/EXPRESS/*.*)	
-source_group(OpenInfraPlatform\\EarlyBinding\\EXPRESS		FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})
-
-
-include_directories(
-  src
-  ${Boost_INCLUDE_DIR}
-  ${visit_struct_INCLUDE_DIR}
-)
-
-#add_library(OpenInfraPlatform.EXPRESS STATIC
-#	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
-#)
-
-add_library(OpenInfraPlatform.EarlyBinding STATIC
-	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
-)
-
-#target_link_libraries(OpenInfraPlatform.EarlyBinding OpenInfraPlatform.EXPRESS)
+#source_group(OpenInfraPlatform\\EarlyBinding\\EXPRESS		FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})
 
 
 foreach(format ${IFC_FORMATS})
 	message(STATUS "Format ${format} found.")
 	if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding/${format})
 		add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding/${format} ${CMAKE_BINARY_DIR}/EarlyBinding/${format})
-		get_target_property(${format}_INCLUDE_DIRS OpenInfraPlatform.${format} INTERFACE_INCLUDE_DIRECTORIES)
+		#get_target_property(OpenInfraPlatform.${format}_INCLUDE_DIRS OpenInfraPlatform.${format} INTERFACE_INCLUDE_DIRECTORIES)
 		set_target_properties(OpenInfraPlatform.${format} PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-		target_link_libraries(OpenInfraPlatform.EarlyBinding OpenInfraPlatform.${format})
-		set(EarlyBinding_INCLUDE_DIRS ${EarlyBinding_INCLUDE_DIRS} ${${format}_INCLUDE_DIRS})
+		
+		#set(OpenInfraPlatform.EarlyBinding_INCLUDE_DIRS ${OpenInfraPlatform.EarlyBinding_INCLUDE_DIRS} ${OpenInfraPlatform.${format}_INCLUDE_DIRS})
 	elseif()
 		message(WARNING "Files for format ${format} not found.")
 	endif()
 endforeach()
-
-
-target_include_directories(OpenInfraPlatform.EarlyBinding
-	INTERFACE src
-	INTERFACE ${visit_struct_INCLUDE_DIR}
-	INTERFACE ${Boost_INCLUDE_DIR}
-	INTERFACE ${EarlyBinding_INCLUDE_DIRS}
-)
-
-set_target_properties(OpenInfraPlatform.EarlyBinding PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-#set_target_properties(OpenInfraPlatform.EXPRESS PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-
-
-Install(DIRECTORY ${PROJECT_SOURCE_DIR} DESTINATION include
-	COMPONENT EarlyBinding
-	FILES_MATCHING PATTERN "*.h"
-)
