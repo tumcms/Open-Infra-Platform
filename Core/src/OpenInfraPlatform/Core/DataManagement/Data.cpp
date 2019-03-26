@@ -25,11 +25,11 @@
 #include "reader/IFC4X2_BIM4ROADReader.h"
 #include "reader/IFC4X2_DRAFT_1Reader.h"
 
-#include "EMTIFC2X3EntityTypes.h"
-#include "EMTIFC4EntityTypes.h"
-#include "EMTIFC4X1EntityTypes.h"
-#include "EMTIFC4X2_BIM4ROADEntityTypes.h"
-#include "EMTIFC4X2_DRAFT_1EntityTypes.h"
+//#include "EMTIFC2X3EntityTypes.h"
+//#include "EMTIFC4EntityTypes.h"
+//#include "EMTIFC4X1EntityTypes.h"
+//#include "EMTIFC4X2_BIM4ROADEntityTypes.h"
+//#include "EMTIFC4X2_DRAFT_1EntityTypes.h"
 
 #include "OpenInfraPlatform/Core/IfcGeometryConverter/IfcImporter.h"
 #include "OpenInfraPlatform/Core/IfcGeometryConverter/GeometryInputData.h"
