@@ -37,7 +37,7 @@ include_directories(
     src
 )
 
-add_library(OpenInfraPlatform.Core SHARED
+add_library(OpenInfraPlatform.Core STATIC
     ${DataManagement_Source}
     ${IfcGeometryConverter_Source}
     ${Import_Source}
@@ -45,7 +45,6 @@ add_library(OpenInfraPlatform.Core SHARED
 )
 
 target_link_libraries(OpenInfraPlatform.Core
-    OpenInfraPlatform.EarlyBinding
     Qt5::Core
     Qt5::OpenGL
     Qt5::Xml
@@ -53,3 +52,7 @@ target_link_libraries(OpenInfraPlatform.Core
     ${BLUEFRAMEWORK_LIBRARIES}
     carve
 )
+
+foreach(format ${IFC_FORMATS})
+	target_link_libraries(OpenInfraPlatform.Core OpenInfraPlatform.${format})
+endforeach()
