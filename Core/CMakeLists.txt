@@ -35,6 +35,7 @@ source_group(Export						        FILES ${Export_Source})
 include_directories(
     ${BLUEFRAMEWORK_INCLUDE_DIR}
     src
+	${CMAKE_SOURCE_DIR}/EarlyBinding/src
 )
 
 add_library(OpenInfraPlatform.Core STATIC
