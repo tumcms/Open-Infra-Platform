@@ -2352,7 +2352,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 
 void GeneratorOIP::generateEMTFiles(const Schema & schema)
 {
-	std::ofstream file(sourceDirectory_ + "/EMT" + schema.getName().append("EntityTypes.h"));
+	std::ofstream file(sourceDirectory_ + "/EMTBasic" + schema.getName().append("EntityTypes.h"));
 
 	writeLicenseAndNotice(file);
 	boost::mt19937 ran;
@@ -2361,15 +2361,12 @@ void GeneratorOIP::generateEMTFiles(const Schema & schema)
 	boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
 	auto guid = boost::uuids::to_string(gen());
 	std::replace(guid.begin(), guid.end(), '-', '_');
-	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), "EMT" + schema.getName() + "EntityTypes", guid, "h" }, '_');
+	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), "EMTBasic" + schema.getName() + "EntityTypes", guid, "h" }, '_');
 
 	writeLine(file, "#pragma once");
 	writeLine(file, "#ifndef " + define);
 	writeLine(file, "#define " + define);
-
-	writeInclude(file, schema.getName() + "Entities.h");
-	writeInclude(file, schema.getName() + "Types.h");
-
+	
 	writeLine(file, "namespace emt {"); // begin namespace emt
 	writeLine(file, "template <");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
@@ -2388,6 +2385,43 @@ void GeneratorOIP::generateEMTFiles(const Schema & schema)
 		writeLine(file, "typedef " + schema.getTypeByIndex(idx).getName() + "T " + schema.getTypeByIndex(idx).getName() + ";");
 	}
 	writeLine(file, "};"); // end struct
+		
+	writeLine(file, "}"); // end namespace emt
+	
+	writeLine(file, "#endif // end define " + define);
+	file.close();
+
+	file.open(sourceDirectory_ + "/EMT" + schema.getName().append("EntityTypes.h"));
+
+	now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	ran.seed(time(&now)); // one should likely seed in a better way
+	gen = boost::uuids::basic_random_generator<boost::mt19937>(&ran);
+	guid = boost::uuids::to_string(gen());
+	std::replace(guid.begin(), guid.end(), '-', '_');
+	define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), "EMT" + schema.getName() + "EntityTypes", guid, "h" }, '_');
+	writeLicenseAndNotice(file);
+
+	writeLine(file, "#pragma once");
+	writeLine(file, "#ifndef " + define);
+	writeLine(file, "#define " + define);
+
+	writeInclude(file, "EMTBasic" + schema.getName().append("EntityTypes.h"));
+	//writeInclude(file, schema.getName() + "Entities.h");
+	//writeInclude(file, schema.getName() + "Types.h");
+
+	writeBeginNamespace(file, schema);
+
+	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
+		writeLine(file, "class " + schema.getEntityByIndex(idx).getName() + ";");
+	}
+	for (size_t idx = 0; idx < schema.getTypeCount(); idx++) {
+		writeLine(file, "class " + schema.getTypeByIndex(idx).getName() + ";");
+	}
+
+	writeEndNamespace(file, schema);
+	linebreak(file);
+
+	writeLine(file, "namespace emt {"); // begin namespace emt
 
 	writeLine(file, "typedef Basic" + schema.getName() + "EntityTypes <"); // begin typedef
 
@@ -2400,9 +2434,10 @@ void GeneratorOIP::generateEMTFiles(const Schema & schema)
 	}
 
 	writeLine(file, "> " + schema.getName() + "EntityTypes;");
+
 	writeLine(file, "}"); // end namespace emt
-	
 	writeLine(file, "#endif // end define " + define);
+
 	file.close();
 }
 

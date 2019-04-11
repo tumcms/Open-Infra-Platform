@@ -28,6 +28,8 @@
 #include "CarveHeaders.h"
 #include "RepresentationConverter.h"
 
+#include "UnitConverter.h"
+
 namespace OpenInfraPlatform
 {
 	namespace IfcGeometryConverter
@@ -191,20 +193,30 @@ namespace OpenInfraPlatform
 					
 
 			bool collectGeometryData(std::shared_ptr<oip::EXPRESSModel> model) {
-				auto project = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair) {return pair.second.classname() == "IFCPROJECT"; });
+				auto project = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair) { return pair.second.classname() == "IFCPROJECT"; });
 
 				if (project != model->entities.end()) {
-					std::for_each(model->entities.begin(), model->entities.end(), [&shapeInputData, &model](std::pair<size_t, std::shared_ptr<oip::EXPRESSEntity>> &pair) {
+					//std::for_each(model->entities.begin(), model->entities.end(), [this, &model](std::pair<size_t, std::shared_ptr<oip::EXPRESSEntity>> &pair) {
+					//	std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
+					//	if (product) {
+					//		// create new shape input data for product
+					//		shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
+					//		productShape->ifc_product = product;
+					//		IfcImporterUtil::convertIfcProduct<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, unitConverter, repConverter);
+					//		shapeInputData.insert(std::make_pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>(pair.first, productShape));
+					//	}
+					//});
+
+					for (auto pair : model->entities) {
 						std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
 						if (product) {
 							// create new shape input data for product
-							shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
+							std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
 							productShape->ifc_product = product;
 							IfcImporterUtil::convertIfcProduct<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, unitConverter, repConverter);
-							shapeInputData.insert(std::make_pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>(pair.first, productShape));
+							shapeInputData.insert(std::pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>(pair.first, productShape));
 						}
-					});
-
+					}
 				}
 				else {
 					return false;

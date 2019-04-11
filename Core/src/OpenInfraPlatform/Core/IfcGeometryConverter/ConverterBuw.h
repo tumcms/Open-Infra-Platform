@@ -124,7 +124,7 @@ namespace OpenInfraPlatform
 				buw::Vector3f normal(face->plane.N.x, face->plane.N.y, face->plane.N.z);
 
 				// omit spaces
-				if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcSpace>(product))
+				if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSpace>(product))
 				{
 					return false;//color.w() <= FullyOpaqueAlphaThreshold;
 				}
@@ -492,71 +492,71 @@ namespace OpenInfraPlatform
 			static buw::Vector3f determineColorFromBaseTypes(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product)
 			{
-				if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcWindow>(product))
+				if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcWindow>(product))
 				{
 					return buw::Vector3f(0.1f, 0.6f, 1.0f);//, 0.4f);
 				}
 
 				// Balken
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcBeam>(product)
-					|| dynamic_pointer_cast<typename IfcEntityTypesT::IfcColumn>(product))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBeam>(product)
+					|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcColumn>(product))
 				{
 					return buw::Vector3f(0.4f, 0.4f, 0.4f);//, 1.0f);
 				}
 
 				// ignore spaces!
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcSpace>(product))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSpace>(product))
 				{
 					return buw::Vector3f(0.1f, 0.2f, 1.0f);//, 1.0f);
 				}
 
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcDoor>(product))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDoor>(product))
 				{
 					return buw::Vector3f(0.8f, 0.6f, 0.2f);//, 0.5f);
 				}
 
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcRoof>(product))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRoof>(product))
 				{
 					return buw::Vector3f(0.6f, 0.15f, 0.15f);//, 1.0f);
 				}
 
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcStair>(product)
-					|| dynamic_pointer_cast<typename IfcEntityTypesT::IfcStairFlight>(product))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcStair>(product)
+					|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcStairFlight>(product))
 				{
 					return buw::Vector3f(0.8f, 0.4f, 0.4f);//, 1.0f);
 				}
 
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcRamp>(product)
-					|| dynamic_pointer_cast<typename IfcEntityTypesT::IfcRampFlight>(product))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRamp>(product)
+					|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRampFlight>(product))
 				{
 					return buw::Vector3f(0.6f, 0.6f, 0.4f);//, 1.0f);
 				}
 
 				// Geländer
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcRailing>(product))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRailing>(product))
 				{
 					return buw::Vector3f(0.7f, 0.7f, 0.2f);//, 1.0f);
 				}
 
 				// Geländer
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcPile>(product))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPile>(product))
 				{
 					return buw::Vector3f(0.15f, 0.7f, 0.0f);//, 1.0f);
 				}
 
 				// Möbel
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcFurnishingElement>(product))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFurnishingElement>(product))
 				{
 					return buw::Vector3f(0.8f, 0.6f, 0.2f);//, 1.0f);
 				}
 				// Land
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcSite>(product))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSite>(product))
 				{
 					return buw::Vector3f(0.1f, 0.5f, 0.1f);//, 1.0f);
 				}
 				// Wasser/Gas Elemente
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcFlowTerminal>(product)
-					|| dynamic_pointer_cast<typename IfcEntityTypesT::IfcDistributionFlowElement>(product))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFlowTerminal>(product)
+					|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDistributionFlowElement>(product))
 				{
 					return buw::Vector3f(0.4f, 0.4f, 0.6f);//, 1.0f);
 				}

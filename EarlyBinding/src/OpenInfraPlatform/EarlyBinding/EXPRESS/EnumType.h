@@ -34,6 +34,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 template <typename Enum, int Count> class EnumType : public ValueType<Enum> {
 	using base = ValueType<Enum>;
 public:
+	typedef Enum ENUM;
 	using base::base;
 	using base::operator=;
 	using base::operator->;

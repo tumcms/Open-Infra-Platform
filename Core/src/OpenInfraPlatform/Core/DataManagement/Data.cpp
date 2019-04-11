@@ -20,12 +20,14 @@
 #include <BlueFramework/Application/DataManagement/Notification/NotifiyAfterEachActionOnlyOnce.h>
 
 #include "reader/IFC2X3Reader.h"
-#include "reader/IFC4Reader.h"
-#include "reader/IFC4X1Reader.h"
-#include "reader/IFC4X2_BIM4ROADReader.h"
-#include "reader/IFC4X2_DRAFT_1Reader.h"
+//#include "reader/IFC4Reader.h"
+//#include "reader/IFC4X1Reader.h"
+//#include "reader/IFC4X2_BIM4ROADReader.h"
+//#include "reader/IFC4X2_DRAFT_1Reader.h"
 
-//#include "EMTIFC2X3EntityTypes.h"
+#include "EMTIFC2X3EntityTypes.h"
+#include "IFC2X3.h"
+
 //#include "EMTIFC4EntityTypes.h"
 //#include "EMTIFC4X1EntityTypes.h"
 //#include "EMTIFC4X2_BIM4ROADEntityTypes.h"
@@ -144,25 +146,35 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 		switch (ifcSchema) {
 		case IfcPeekStepReader::IfcSchema::IFC2X3:
 			expressModel_ = OpenInfraPlatform::IFC2X3::IFC2X3Reader::FromFile(filename);
+			
 			break;
-		case IfcPeekStepReader::IfcSchema::IFC4:
-			expressModel_ = OpenInfraPlatform::IFC4::IFC4Reader::FromFile(filename);
-			break;
-		case IfcPeekStepReader::IfcSchema::IFC4X1:
-			expressModel_ = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename);
-			break;
-		case IfcPeekStepReader::IfcSchema::IFC4X2_BIM4ROAD:
-			expressModel_ = OpenInfraPlatform::IFC4X2_BIM4ROAD::IFC4X2_BIM4ROADReader::FromFile(filename);
-			break;
-		case IfcPeekStepReader::IfcSchema::IFC4X2_DRAFT_1:
-			expressModel_ = OpenInfraPlatform::IFC4X2_DRAFT_1::IFC4X2_DRAFT_1Reader::FromFile(filename);
-			break;
+		//case IfcPeekStepReader::IfcSchema::IFC4:
+		//	expressModel_ = OpenInfraPlatform::IFC4::IFC4Reader::FromFile(filename);
+		//	break;
+		//case IfcPeekStepReader::IfcSchema::IFC4X1:
+		//	expressModel_ = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename);
+		//	break;
+		//case IfcPeekStepReader::IfcSchema::IFC4X2_BIM4ROAD:
+		//	expressModel_ = OpenInfraPlatform::IFC4X2_BIM4ROAD::IFC4X2_BIM4ROADReader::FromFile(filename);
+		//	break;
+		//case IfcPeekStepReader::IfcSchema::IFC4X2_DRAFT_1:
+		//	expressModel_ = OpenInfraPlatform::IFC4X2_DRAFT_1::IFC4X2_DRAFT_1Reader::FromFile(filename);
+		//	break;
 		default:
 			expressModel_ = nullptr;
 			BLUE_LOG(error) << "No matching schema detected";
 			break;
 		}
 		
+		auto importer = OpenInfraPlatform::IfcGeometryConverter::IfcImporterT<emt::IFC2X3EntityTypes, OpenInfraPlatform::IfcGeometryConverter::UnitConverter< emt::IFC2X3EntityTypes>>();
+		if (importer.collectGeometryData(expressModel_)) {
+			auto converter = IfcGeometryConverter::ConverterBuwT< emt::IFC2X3EntityTypes>();
+			if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
+				if (!tempIfcGeometryModel_->isEmpty()) {
+					ifcGeometryModel_ = tempIfcGeometryModel_;
+				}
+			}
+		}
 	}
 	
 }
