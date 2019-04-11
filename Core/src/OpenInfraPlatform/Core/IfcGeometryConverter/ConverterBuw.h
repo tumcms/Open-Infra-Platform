@@ -569,20 +569,20 @@ namespace OpenInfraPlatform
 					if (slab->PredefinedType)
 					{
 						// Dach
-						if (slab->PredefinedType->enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_ROOF)
+						if (slab->PredefinedType == IfcEntityTypesT::IfcSlabTypeEnum::ENUM::ENUM_ROOF)
 						{
 							return buw::Vector3f(0.6f, 0.15f, 0.15f);//, 1.0f);
 						}
 
 						// Treppenabsatz
-						else if (slab->PredefinedType->enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_LANDING)
+						else if (slab->PredefinedType == IfcEntityTypesT::IfcSlabTypeEnum::ENUM::ENUM_LANDING)
 						{
 							return buw::Vector3f(0.8f, 0.4f, 0.4f);//, 1.0f);
 						}
 
-						else if (slab->PredefinedType->enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_FLOOR ||
-							slab->PredefinedType->enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_BASESLAB ||
-							slab->PredefinedType->enum == IfcEntityTypesT::IfcSlabTypeEnum::ENUM_NOTDEFINED)
+						else if (slab->PredefinedType == IfcEntityTypesT::IfcSlabTypeEnum::ENUM::ENUM_FLOOR ||
+							slab->PredefinedType == IfcEntityTypesT::IfcSlabTypeEnum::ENUM::ENUM_BASESLAB ||
+							slab->PredefinedType == IfcEntityTypesT::IfcSlabTypeEnum::ENUM::ENUM_NOTDEFINED)
 						{
 							return buw::Vector3f(1.0f, 0.95f, 0.9f);//, 1.0f);
 						}
