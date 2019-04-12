@@ -132,9 +132,12 @@ endif (WIN32)
 #------------------------------------------------------------------------------
 
 set(Boost_USE_STATIC_LIBS   ON)
-find_package(Boost 1.63.0 COMPONENTS signals system filesystem REQUIRED) # we suggest Boost 1.65.1
+
+# As of revision 530, boost 1.65.1 required.
+find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
 find_package(BlueFramework COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
-find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
+# Deprecated as of Revision 530
+#find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
 find_package(Eigen3 3.3.2  REQUIRED)
 find_package(Oklabi REQUIRED)
 find_package(gtest REQUIRED) 
