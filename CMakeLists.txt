@@ -15,7 +15,8 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-cmake_minimum_required(VERSION 3.8)
+# Updated to 3.13 in revision 531
+cmake_minimum_required(VERSION 3.13)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0074 NEW)
@@ -312,9 +313,7 @@ add_subdirectory(ExpressGenerator)
 # Core added in revision 483
 add_subdirectory(Core)
 
-#if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding)
-#	add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding)
-#endif()
+# As of revision 531, replaces old OpenInfraPlatform_EarlyBinding_DIR
 add_subdirectory(${PROJECT_SOURCE_DIR}/EarlyBinding)
 
 foreach(format ${IFC_FORMATS})	
