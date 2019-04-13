@@ -27,10 +27,11 @@ project(OpenInfraPlatform)
 # CMake definitions and propertiess
 #-------------------------------------------------------------------------------------
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_DEBUG_POSTFIX "d")
 include(ProjectVersion)
+
 enable_testing()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -93,16 +94,28 @@ option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to find boost, Eigen and Qt
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
-	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1")
-	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
+	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS
+		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
+		"C:\\thirdparty\\boost_1_65_1")
+	find_path(Boost_DIR NAMES boost/version.hpp HINTS
+		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
+		"C:\\thirdparty\\boost_1_65_1")
+	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS
+		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4"
+		"C:\\thirdparty\\eigen")
 	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64")
-	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS 
-		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
-		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
+	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS
+		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest"
+		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
+		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
 	find_path(ZLIB_ROOT NAMES zlib.h HINTS 
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
 	find_path(RAPTOR2_ROOT_DIR include/raptor2/raptor2.h HINTS 
-	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\raptor2")		
+	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\raptor2"
+			  "C:\\thirdparty\\raptor2")
+	# Added to predefined path list in revision 533
+	find_path(FFTW3_DIR FFTW3Config.cmake HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\fftw-3.3.8\\lib\\cmake\\fftw3")
+	find_path(visit_struct_INCLUDE_DIR visit_struct/visit_struct.hpp HINTS "C:\\thirdparty\\visit_struct-master\\include")
 endif()
 
 #------------------------------------------------------------------------------
