@@ -1,61 +1,34 @@
-#/*
-#   This file is part of TUM Open Infra Platform Early Binding EXPRESS 
-#	Generator, a simple early binding generator for EXPRESS.
-#	Copyright (c) 2016-2017 Technical University of Munich
-#	Chair of Computational Modeling and Simulation.
 #
-#	TUM Open Infra Platform Early Binding EXPRESS Generator is free 
-#	software; you can redistribute it and/or modify it under the terms 
-#	of the GNU General Public License Version 3 as published by the Free
-#	Software Foundation.
+#    Copyright(c) 2018 Technical University of Munich
+#    Chair of Computational Modeling and Simulation.
 #
-#   TUM Open Infra Platform Early Binding EXPRESS Generator is 
-#	distributed in the hope that it will be useful, but WITHOUT ANY 
-#	WARRANTY; without even the implied warranty of MERCHANTABILITY or 
-#	FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
-#	for more details.
+#    TUM Open Infra Platform is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License Version 3
+#    as published by the Free Software Foundation.
 #
-#   You should have received a copy of the GNU General Public License
-#   along with this program. If not, see <http://www.gnu.org/licenses/>.
-#*/
-
-cmake_minimum_required(VERSION 3.13.0)
-cmake_policy(SET CMP0020 NEW)
-cmake_policy(SET CMP0048 NEW)
-cmake_policy(SET CMP0074 NEW)
+#    TUM Open Infra Platform is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.If not, see <http://www.gnu.org/licenses/>.
+#
 
 project(OpenInfraPlatform.ExpressGenerator)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_CXX_STANDARD 14)
-
-if (WIN32)
-	# Standard:          /DWIN32 /D_WINDOWS /W3 /Zm1000 /EHsc /GR
-	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR /MP /openmp /bigobj")
-endif (WIN32)
-
-
-
-#------------------------------------------------------------------------------
-# Some checks to ensure that the prerequisites are ok
-#------------------------------------------------------------------------------
-
-if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8 )
-	message("Please switch to x64 build.")
-	return()
+if(NOT Boost_FOUND)
+	find_package(Boost 1.65.1 REQUIRED)
+endif()
+if(NOT gtest_FOUND)
+	find_package(gtest REQUIRED)
 endif()
 
-#------------------------------------------------------------------------------
+find_file(BISON_EXECUTABLE win_bison.exe HINTS ${CMAKE_CURRENT_SOURCE_DIR}/Tools/win_flex_bison-2.5.5)
+find_file(FLEX_EXECUTABLE win_flex.exe HINTS ${CMAKE_CURRENT_SOURCE_DIR}/Tools/win_flex_bison-2.5.5)
 
-if (WIN32)
-	set(BISON_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/Tools/win_flex_bison-2.5.5/win_bison.exe)
-	set(FLEX_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/Tools/win_flex_bison-2.5.5/win_flex.exe)
-endif()
-
-find_package(Boost 1.65.1 REQUIRED)
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
-find_package(gtest REQUIRED)
 find_package(PythonInterp REQUIRED)
 
 add_custom_target(UpdateBoostMPL
@@ -123,13 +96,11 @@ add_executable(OpenInfraPlatform.ExpressGenerator
 
 add_custom_target(GenerateEarlyBinding
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding
-	#COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_BINARY_DIR}/EarlyBinding/
-	#COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_BINARY_DIR}/EarlyBinding/CMakeLists.txt.in ${CMAKE_BINARY_DIR}/EarlyBinding/CMakeLists.txt
-	COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC2X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	#COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	#COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	#COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X2_BIM4ROAD_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	#COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X2_DRAFT_1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
+	$<IF:$<IN_LIST:${IFC2X3_SCHEMA},${IFC_SCHEMAS}>,COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC2X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding,>
+	$<IF:$<IN_LIST:${IFC4_SCHEMA},${IFC_SCHEMAS}>,COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding,>
+	$<IF:$<IN_LIST:${IFC4X1_SCHEMA},${IFC_SCHEMAS}>,COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding,>
+	$<IF:$<IN_LIST:${IFC4X2_BIM4ROAD_SCHEMA},${IFC_SCHEMAS}>,COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X2_BIM4ROAD_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding,>
+	$<IF:$<IN_LIST:${IFC4X2_DRAFT_1_SCHEMA},${IFC_SCHEMAS}>,COMMAND OpenInfraPlatform.ExpressGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X2_DRAFT_1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding,>
 	
 )
 
