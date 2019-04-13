@@ -36,10 +36,8 @@ using namespace std;
 extern int yyparse();
 extern FILE *yyin;
 
-#include "OpenInfraPlatform/ExpressBindingGenerator/Generator/GeneratorCSharp.Net.h"
-#include "OpenInfraPlatform/ExpressBindingGenerator/Generator/GeneratorEcho.h"
+
 #include "OpenInfraPlatform/ExpressBindingGenerator/Generator/GeneratorOIP.h"
-#include "OpenInfraPlatform/ExpressBindingGenerator/Generator/GeneratorVB.Net.h"
 #include "OpenInfraPlatform/ExpressBindingGenerator/Meta/Schema.h"
 
 using namespace OpenInfraPlatform::ExpressBindingGenerator;
@@ -84,48 +82,11 @@ int main(int argc, char **argv) {
         std::ofstream ofs("test.txt", std::ofstream::out);
 
         std::ostream &out = ofs; // std::cout;
-
-        if (false) {
-            std::cout << "---------------------------" << std::endl;
-            Entity e = oip::Schema::getInstance().getEntityByName("IfcSIUnit");
-
-            std::vector<EntityAttribute> attributes = oip::Schema::getInstance().getAllEntityAttributes(e);
-            for (int i = 0; i < attributes.size(); ++i) {
-                const EntityAttribute &attribute = attributes[i];
-                std::cout << attribute.getName() << " : " << attribute.type->toString();
-
-                if (e.hasQualifiedAttribute(attribute.getName()))
-                    std::cout << " (*)";
-
-                std::cout << std::endl;
-            }
-        }
-
-        enum class eGeneratorType { Echo, OIP, VBNet, CSharp };
-
-        eGeneratorType gt = eGeneratorType::OIP;
-
-        switch (gt) {
-        case eGeneratorType::Echo: {
-            GeneratorEcho echo;
-            echo.generate(out, oip::Schema::getInstance());
-        } break;
-
-        case eGeneratorType::OIP: {
-            GeneratorOIP cppgen(outputDirectoryName);
-            cppgen.generateREFACTORED(out, oip::Schema::getInstance());
-        } break;
-
-        case eGeneratorType::VBNet: {
-            GeneratorVBNet vbnetgen;
-            vbnetgen.generate(out, oip::Schema::getInstance());
-        } break;
-
-        case eGeneratorType::CSharp: {
-            GeneratorCSharpNet vbnetgen;
-            vbnetgen.generate(out, oip::Schema::getInstance());
-        } break;
-        }
+		       
+       
+        GeneratorOIP cppgen(outputDirectoryName);
+        cppgen.generateREFACTORED(out, oip::Schema::getInstance());
+        
 
         ofs.close();
 

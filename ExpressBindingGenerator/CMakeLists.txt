@@ -32,25 +32,27 @@ find_package(BISON REQUIRED)
 find_package(PythonInterp REQUIRED)
 
 # Target which invokes a script inside boost to provide a MPL library build allowing up to 100 entries.
-add_custom_target(UpdateBoostMPL
+add_custom_target(Commands.UpdateBoostMPL
 	COMMAND "${PYTHON_EXECUTABLE}" ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/fix_boost_mpl_preprocess.py ${Boost_INCLUDE_DIR}
 	COMMAND "${PYTHON_EXECUTABLE}" ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/boost_mpl_preprocess.py --sequence-type=both --num-elements=100 ${Boost_INCLUDE_DIR}
 )
 
-set_target_properties(UpdateBoostMPL PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
+set_target_properties(Commands.UpdateBoostMPL PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
 
 # Macro to add IFC formats and the respective schemas.
-macro(add_format format schema)
-	set(IFC_FORMATS ${IFC_FORMATS} ${format})
-	set(IFC_SCHEMAS ${IFC_SCHEMAS} ${schema})
+macro(add_format format schema active)
+	if(${active})
+		set(IFC_FORMATS ${IFC_FORMATS} ${format})
+		set(IFC_SCHEMAS ${IFC_SCHEMAS} ${schema})
+	endif()
 	set(${format}_SCHEMA ${schema}.exp)
 endmacro()
 
-add_format(IFC2X3 IFC2X3_TC1)
-#add_format(IFC4 IFC4_ADD1)
-#add_format(IFC4X2_BIM4ROAD IFC4x2_BIM4ROAD)
-#add_format(IFC4X1 IFC4x1_RC3)
-#add_format(IFC4X2_DRAFT_1 IFC4x2_DRAFT_1)
+add_format(IFC2X3 			IFC2X3_TC1 		ON)
+add_format(IFC4 			IFC4_ADD1 		OFF)
+add_format(IFC4X2_BIM4ROAD 	IFC4x2_BIM4ROAD	OFF)
+add_format(IFC4X1		 	IFC4x1_RC3		OFF)
+add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)
 
 # Push to parent scope to be able to determine which folders to add in the higher level CMakeLists.txt
 set(IFC_FORMATS ${IFC_FORMATS} PARENT_SCOPE)
@@ -96,18 +98,31 @@ add_executable(OpenInfraPlatform.ExpressBindingGenerator
 
 
 # Custom target that generates the early binding library files.
-add_custom_target(GenerateEarlyBinding
+add_custom_target(Commands.GenerateEarlyBinding
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding
-	$<IF:$<IN_LIST:${IFC2X3_SCHEMA},${IFC_SCHEMAS}>,COMMAND OpenInfraPlatform.ExpressBindingGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC2X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding,>
-	$<IF:$<IN_LIST:${IFC4_SCHEMA},${IFC_SCHEMAS}>,COMMAND OpenInfraPlatform.ExpressBindingGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding,>
-	$<IF:$<IN_LIST:${IFC4X1_SCHEMA},${IFC_SCHEMAS}>,COMMAND OpenInfraPlatform.ExpressBindingGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding,>
-	$<IF:$<IN_LIST:${IFC4X2_BIM4ROAD_SCHEMA},${IFC_SCHEMAS}>,COMMAND OpenInfraPlatform.ExpressBindingGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X2_BIM4ROAD_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding,>
-	$<IF:$<IN_LIST:${IFC4X2_DRAFT_1_SCHEMA},${IFC_SCHEMAS}>,COMMAND OpenInfraPlatform.ExpressBindingGenerator ${PROJECT_SOURCE_DIR}/schemas/${IFC4X2_DRAFT_1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding,>	
+	
+	COMMAND $<IF:$<IN_LIST: ${IFC2X3_SCHEMA}, ${IFC_SCHEMAS}>, OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC2X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding, ${CMAKE_COMMAND} -E echo "${IFC2X3_SCHEMA} not selected." >
+	
+	$<IF:$<IN_LIST: ${IFC4_SCHEMA}, ${IFC_SCHEMAS}>, 
+	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding ,
+	COMMAND ${CMAKE_COMMAND} -E echo "${IFC4_SCHEMA} not selected." >
+	
+	$<IF:$<IN_LIST: ${IFC4X1_SCHEMA}, ${IFC_SCHEMAS}>, 
+	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding ,
+	COMMAND ${CMAKE_COMMAND} -E echo "${IFC4X1_SCHEMA} not selected." >
+	
+	$<IF:$<IN_LIST: ${IFC4X2_BIM4ROAD_SCHEMA}, ${IFC_SCHEMAS}>, 
+	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X2_BIM4ROAD_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding ,
+	COMMAND ${CMAKE_COMMAND} -E echo "${IFC4X2_BIM4ROAD_SCHEMA} not selected." >
+	
+	$<IF:$<IN_LIST: ${IFC4X2_DRAFT_1_SCHEMA}, ${IFC_SCHEMAS}>, 
+	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X2_DRAFT_1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding ,
+	COMMAND ${CMAKE_COMMAND} -E echo "${IFC4X2_DRAFT_1_SCHEMA} not selected." >	
 )
 
-add_dependencies(GenerateEarlyBinding OpenInfraPlatform.ExpressBindingGenerator)
+add_dependencies(Commands.GenerateEarlyBinding OpenInfraPlatform.ExpressBindingGenerator)
 
-set_target_properties(GenerateEarlyBinding PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
+set_target_properties(Commands.GenerateEarlyBinding PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
 
 
 #-------------------------------------------------------------------------------------
@@ -115,10 +130,3 @@ set_target_properties(GenerateEarlyBinding PROPERTIES FOLDER "OpenInfraPlatform/
 #-------------------------------------------------------------------------------------
 
 # TODO: Fix installation for project.
-install(TARGETS OpenInfraPlatform.ExpressBindingGenerator RUNTIME DESTINATION bin COMPONENT oip_runtime)
-
-file(WRITE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake "set(${PROJECT_NAME}_FOUND 1) \nset(oipExpress_EXE \${oipExpress_DIR}/bin/ExpressBindingGenerator.exe)")
-file(WRITE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake "set(PACKAGE_VERSION \"${CPACK_PACKAGE_VERSION}\") \nset(PACKAGE_VERSION_EXACT True) \nset(PACKAGE_VERSION_COMPATIBLE True) \nset(PACKAGE_VERSION_UNSUITABLE False)")
-
-install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake DESTINATION / COMPONENT cmake)
-install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake DESTINATION / COMPONENT cmake)
