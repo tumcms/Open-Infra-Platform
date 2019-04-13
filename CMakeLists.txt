@@ -29,6 +29,9 @@ project(OpenInfraPlatform)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
 set(CMAKE_AUTOMOC ON)
+
+# Changed C++ standard to 14 in revision 534
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_DEBUG_POSTFIX "d")
 include(ProjectVersion)
 
