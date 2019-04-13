@@ -104,18 +104,18 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4"
 		"C:\\thirdparty\\eigen")
 	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64")
+	find_path(GTEST_ROOT NAMES lib/cmake/GTest/GTestConfig.cmake HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest")
 	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest"
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
 	find_path(ZLIB_ROOT NAMES zlib.h HINTS 
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
-	find_path(RAPTOR2_ROOT_DIR include/raptor2/raptor2.h HINTS 
+	find_path(RAPTOR2_ROOT_DIR NAMES include/raptor2/raptor2.h HINTS 
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\raptor2"
 			  "C:\\thirdparty\\raptor2")
 	# Added to predefined path list in revision 533
-	find_path(FFTW3_DIR FFTW3Config.cmake HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\fftw-3.3.8\\lib\\cmake\\fftw3")
-	find_path(visit_struct_INCLUDE_DIR visit_struct/visit_struct.hpp HINTS "C:\\thirdparty\\visit_struct-master\\include")
+	find_path(FFTW3_DIR NAMES FFTW3Config.cmake HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\fftw-3.3.8\\lib\\cmake\\fftw3")
+	find_path(visit_struct_INCLUDE_DIR NAMES visit_struct/visit_struct.hpp HINTS "C:\\thirdparty\\visit_struct-master\\include")
 endif()
 
 #------------------------------------------------------------------------------
@@ -145,16 +145,17 @@ endif (WIN32)
 # Find required thirdparty libraries.
 #------------------------------------------------------------------------------
 
-set(Boost_USE_STATIC_LIBS   ON)
+set(Boost_USE_STATIC_LIBS ON)
 
 # As of revision 530, boost 1.65.1 required.
 find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
-find_package(BlueFramework COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
+find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
+
 # Deprecated as of Revision 530
 #find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
 find_package(Eigen3 3.3.2  REQUIRED)
 find_package(Oklabi REQUIRED)
-find_package(gtest REQUIRED) 
+find_package(gtest 1.9.0 REQUIRED) 
 find_package(ZLIB 1.2.10 REQUIRED)
 find_package(libLAS REQUIRED)
 find_package(qhull REQUIRED)
