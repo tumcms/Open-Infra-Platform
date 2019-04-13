@@ -325,7 +325,8 @@ add_subdirectory(oip)
 add_subdirectory(IfcBridgeGenerator)
 
 # ExpressGenerator rework revision 473.
-add_subdirectory(ExpressGenerator)
+# Renamed to ExpressBindingGenerator in revision 537
+add_subdirectory(ExpressBindingGenerator)
 
 # Core added in revision 483
 add_subdirectory(Core)
@@ -495,7 +496,6 @@ target_link_libraries(OpenInfraPlatform.UI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::
 
 target_link_libraries( OpenInfraPlatform.UI
 	OpenInfraPlatform.Infrastructure
-	OpenInfraPlatform.ExpressBinding	
 	${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 	Qt5::WinMain  # New target available via find_package ( Qt5Core )
 	${BLUEFRAMEWORK_LIBRARIES}
@@ -668,10 +668,7 @@ set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
 # Switched to static gtest on 28.11.2018 / Revision 388+
 #set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(OpenInfraPlatform.ExpressGenerator	 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
-set_target_properties(GenerateEarlyBinding					 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
-set_target_properties(UpdateBoostMPL					 		PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
-#set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+set_target_properties(OpenInfraPlatform.ExpressBindingGenerator	 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
 set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
