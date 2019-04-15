@@ -96,28 +96,23 @@ add_executable(OpenInfraPlatform.ExpressBindingGenerator
 	${BISON_Parser_OUTPUTS}
 )
 
+#message(STATUS $<IF:$<IN_LIST:${IFC2X3_SCHEMA},${IFC_SCHEMAS}>, "blub", "no blub" > )
+
+set(mess 
+add_custom_target(Commands.Message
+	COMMAND ${CMAKE_COMMAND} -E echo $<IF: 1, "${IFC2X3_SCHEMA} selected." , "${IFC2X3_SCHEMA} not selected." >
+)
+
+set_target_properties(Commands.Message PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
 
 # Custom target that generates the early binding library files.
 add_custom_target(Commands.GenerateEarlyBinding
-	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding
-	
-	COMMAND $<IF:$<IN_LIST: ${IFC2X3_SCHEMA}, ${IFC_SCHEMAS}>, OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC2X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding, ${CMAKE_COMMAND} -E echo "${IFC2X3_SCHEMA} not selected." >
-	
-	$<IF:$<IN_LIST: ${IFC4_SCHEMA}, ${IFC_SCHEMAS}>, 
-	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding ,
-	COMMAND ${CMAKE_COMMAND} -E echo "${IFC4_SCHEMA} not selected." >
-	
-	$<IF:$<IN_LIST: ${IFC4X1_SCHEMA}, ${IFC_SCHEMAS}>, 
-	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding ,
-	COMMAND ${CMAKE_COMMAND} -E echo "${IFC4X1_SCHEMA} not selected." >
-	
-	$<IF:$<IN_LIST: ${IFC4X2_BIM4ROAD_SCHEMA}, ${IFC_SCHEMAS}>, 
-	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X2_BIM4ROAD_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding ,
-	COMMAND ${CMAKE_COMMAND} -E echo "${IFC4X2_BIM4ROAD_SCHEMA} not selected." >
-	
-	$<IF:$<IN_LIST: ${IFC4X2_DRAFT_1_SCHEMA}, ${IFC_SCHEMAS}>, 
-	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X2_DRAFT_1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding ,
-	COMMAND ${CMAKE_COMMAND} -E echo "${IFC4X2_DRAFT_1_SCHEMA} not selected." >	
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding	
+	#COMMAND $<IF: $<IN_LIST: ${IFC2X3_SCHEMA}, ${IFC_SCHEMAS}>, OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC2X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding, ${CMAKE_COMMAND} -E echo "${IFC2X3_SCHEMA} not selected." >	
+	#COMMAND $<IF: $<IN_LIST: ${IFC4_SCHEMA}, ${IFC_SCHEMAS}>, OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding , ${CMAKE_COMMAND} -E echo "${IFC4_SCHEMA} not selected." >
+	#COMMAND $<IF: $<IN_LIST: ${IFC4X1_SCHEMA}, ${IFC_SCHEMAS}>, OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding , ${CMAKE_COMMAND} -E echo "${IFC4X1_SCHEMA} not selected." >
+	#COMMAND	$<IF: $<IN_LIST: ${IFC4X2_BIM4ROAD_SCHEMA}, ${IFC_SCHEMAS}>, OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X2_BIM4ROAD_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding , ${CMAKE_COMMAND} -E echo "${IFC4X2_BIM4ROAD_SCHEMA} not selected." >
+	#COMMAND	$<IF: $<IN_LIST: ${IFC4X2_DRAFT_1_SCHEMA}, ${IFC_SCHEMAS}>, OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X2_DRAFT_1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding , ${CMAKE_COMMAND} -E echo "${IFC4X2_DRAFT_1_SCHEMA} not selected." >
 )
 
 add_dependencies(Commands.GenerateEarlyBinding OpenInfraPlatform.ExpressBindingGenerator)
