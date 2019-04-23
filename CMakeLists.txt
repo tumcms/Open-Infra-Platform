@@ -152,6 +152,11 @@ set(Boost_USE_STATIC_LIBS ON)
 
 # As of revision 530, boost 1.65.1 required.
 find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
+
+#if(MSVC_VERSION LESS 1910)
+#	add_compile_definitions(BOOST_VARIANT_DO_NOT_USE_VARIADIC_TEMPLATES)
+#endif()
+
 find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
 
 # Deprecated as of Revision 530

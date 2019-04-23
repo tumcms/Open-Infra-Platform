@@ -40,6 +40,9 @@ find_file(PYTHON_2TO3_SCRIPT NAMES 2to3.py HINTS "C:\\Program Files\\Python36\\T
 
 #set(ENV{PATH} $ENV{PATH};${PYTHON_EXECUTABLE})
 
+
+message(STATUS ${CMAKE_CXX_COMPILER})
+
 get_filename_component(PYTHON_DIRECTORY ${PYTHON_EXECUTABLE} DIRECTORY)
 
 file(TO_NATIVE_PATH ${PYTHON_EXECUTABLE} PYTHON_FILEPATH)
@@ -56,7 +59,10 @@ list(JOIN CUSTOM_PATH ";" CUSTOM_PATH_JOINED)
 add_custom_target(Commands.Print COMMAND set PYTHON_PATH=${PYTHON_FILEPATH} COMMAND set PATH=%PATH%%PYTHON_PATH% COMMAND echo %PATH%) 
 set_target_properties(Commands.Print PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
 
+file(TO_NATIVE_PATH ${CMAKE_CXX_COMPILER} COMPILER)
+
 file(READ ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess.cmd PREPROCESS_CMD)
+
 string(REPLACE "gcc" "cl" PREPROCESS_CMD ${PREPROCESS_CMD})
 file(WRITE ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess_cl.cmd ${PREPROCESS_CMD})
 
