@@ -40,17 +40,39 @@ find_file(PYTHON_2TO3_SCRIPT NAMES 2to3.py HINTS "C:\\Program Files\\Python36\\T
 
 #set(ENV{PATH} $ENV{PATH};${PYTHON_EXECUTABLE})
 
-#get_filename_component(PYTHON_FILEPATH ${PYTHON_EXECUTABLE} PROGRAM)
+get_filename_component(PYTHON_DIRECTORY ${PYTHON_EXECUTABLE} DIRECTORY)
 
 file(TO_NATIVE_PATH ${PYTHON_EXECUTABLE} PYTHON_FILEPATH)
+file(TO_NATIVE_PATH ${PYTHON_DIRECTORY} PYTHON_DIRECTORY)
+
+#set(ENV{PATH} $ENV{PATH}${PYTHON_FILEPATH})
+
+#set(CUSTOM_PATH $ENV{PATH} ${PYTHON_FILEPATH})
+set(CUSTOM_PATH $ENV{PATH})
+list(APPEND CUSTOM_PATH ${PYTHON_FILEPATH})
+list(LENGTH CUSTOM_PATH CUSTOM_PATH_LENGTH)
+list(JOIN CUSTOM_PATH ";" CUSTOM_PATH_JOINED)
+
+add_custom_target(Commands.Print COMMAND set PYTHON_PATH=${PYTHON_FILEPATH} COMMAND set PATH=%PATH%%PYTHON_PATH% COMMAND echo %PATH%) 
+set_target_properties(Commands.Print PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
+
+file(READ ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess.cmd PREPROCESS_CMD)
+string(REPLACE "gcc" "cl" PREPROCESS_CMD ${PREPROCESS_CMD})
+file(WRITE ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess_cl.cmd ${PREPROCESS_CMD})
 
 add_custom_target(Commands.UpdateBoostMPL
-	COMMAND set PATH=%PATH%;${PYTHON_FILEPATH}
+	COMMAND set PYTHON_PATH=${PYTHON_DIRECTORY}
+	COMMAND set PATH=%PATH%%PYTHON_PATH%
 	COMMAND echo %PATH%
-	COMMAND ${PYTHON_EXECUTABLE} ${PYTHON_2TO3_SCRIPT} -w -n --output-dir=${CMAKE_CURRENT_BINARY_DIR} "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\fix_boost_mpl_preprocess.py"
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/fix_boost_mpl_preprocess.py ${Boost_INCLUDE_DIR}
-	COMMAND ${PYTHON_EXECUTABLE} ${PYTHON_2TO3_SCRIPT} -w -n --output-dir=${CMAKE_CURRENT_BINARY_DIR} "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\boost_mpl_preprocess.py"
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/boost_mpl_preprocess.py --sequence-type=both --num-elements=100 ${Boost_INCLUDE_DIR}
+	COMMAND ${PYTHON_EXECUTABLE} ${PYTHON_2TO3_SCRIPT} -w "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\fix_boost_mpl_preprocess.py"
+	COMMAND ${PYTHON_EXECUTABLE} ${PYTHON_2TO3_SCRIPT} -w "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\boost_mpl_preprocess.py"
+	COMMAND ${PYTHON_EXECUTABLE} ${PYTHON_2TO3_SCRIPT} -w "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\preprocess.py"
+	COMMAND ${CMAKE_COMMAND} -E rename ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess.cmd ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess_gcc.cmd
+	COMMAND ${CMAKE_COMMAND} -E rename ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess_cl.cmd ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess.cmd
+	COMMAND ${PYTHON_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/fix_boost_mpl_preprocess.py ${Boost_INCLUDE_DIR}
+	COMMAND ${PYTHON_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/boost_mpl_preprocess.py --sequence-type=both --num-elements=100 ${Boost_INCLUDE_DIR}
+	COMMAND ${CMAKE_COMMAND} -E rename ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess.cmd ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess_cl.cmd
+	COMMAND ${CMAKE_COMMAND} -E rename ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess_gcc.cmd ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess.cmd
 )
 
 set_target_properties(Commands.UpdateBoostMPL PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
