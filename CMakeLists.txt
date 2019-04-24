@@ -107,10 +107,14 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4"
 		"C:\\thirdparty\\eigen")
 	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64")
-	find_path(GTEST_ROOT NAMES lib/cmake/GTest/GTestConfig.cmake HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest")
-	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
+	find_path(GTEST_ROOT NAMES lib/cmake/GTest/GTestConfig.cmake HINTS
+		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest"
+		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-master")
+	if(NOT GTEST_ROOT)
+		find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS
+			"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
+			"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
+	endif()
 	find_path(ZLIB_ROOT NAMES zlib.h HINTS 
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
 	find_path(RAPTOR2_ROOT_DIR NAMES include/raptor2/raptor2.h HINTS 
