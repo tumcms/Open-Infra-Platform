@@ -30,7 +30,8 @@ find_file(FLEX_EXECUTABLE win_flex.exe HINTS ${CMAKE_CURRENT_SOURCE_DIR}/Tools/w
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 find_package(PythonInterp REQUIRED)
-find_file(PYTHON_2TO3_SCRIPT NAMES 2to3.py HINTS "C:\\Program Files\\Python36\\Tools\\scripts" REQUIRED)
+get_filename_component(PYTHON_DIRECTORY ${PYTHON_EXECUTABLE} DIRECTORY)
+find_file(PYTHON_2TO3_SCRIPT NAMES 2to3.py HINTS "${PYTHON_DIRECTORY}\\Tools\\scripts" REQUIRED)
 
 # Target which invokes a script inside boost to provide a MPL library build allowing up to 100 entries.
 #add_custom_target(Commands.UpdateBoostMPL
@@ -43,7 +44,6 @@ find_file(PYTHON_2TO3_SCRIPT NAMES 2to3.py HINTS "C:\\Program Files\\Python36\\T
 
 message(STATUS ${CMAKE_CXX_COMPILER})
 
-get_filename_component(PYTHON_DIRECTORY ${PYTHON_EXECUTABLE} DIRECTORY)
 
 file(TO_NATIVE_PATH ${PYTHON_EXECUTABLE} PYTHON_FILEPATH)
 file(TO_NATIVE_PATH ${PYTHON_DIRECTORY} PYTHON_DIRECTORY)
