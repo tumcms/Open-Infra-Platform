@@ -94,9 +94,10 @@ if(${Python_VERSION_MAJOR} EQUAL 3)
 		#COMMAND ${CMAKE_COMMAND} -E rename ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess.cmd ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess_cl.cmd
 		#COMMAND ${CMAKE_COMMAND} -E rename ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess_gcc.cmd ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess.cmd
 	)
+	
+	set_target_properties(Commands.UpdateBoostMPL PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
 endif()
 
-set_target_properties(Commands.UpdateBoostMPL PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
 
 # Macro to add IFC formats and the respective schemas.
 macro(add_format format schema active)
