@@ -87,7 +87,8 @@ if(${Python_VERSION_MAJOR} EQUAL 3)
 		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\fix_boost_mpl_preprocess.py"
 		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\boost_mpl_preprocess.py"
 		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\preprocess.py"
-		#COMMAND ${CMAKE_COMMAND} -E rename ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess.cmd ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess_gcc.cmd
+		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\pp.py"
+	#COMMAND ${CMAKE_COMMAND} -E rename ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess.cmd ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess_gcc.cmd
 		#COMMAND ${CMAKE_COMMAND} -E rename ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess_cl.cmd ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/preprocess.cmd
 		COMMAND ${Python_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/fix_boost_mpl_preprocess.py ${Boost_INCLUDE_DIR}
 		COMMAND ${Python_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/boost_mpl_preprocess.py --sequence-type=both --num-elements=100 ${Boost_INCLUDE_DIR}
