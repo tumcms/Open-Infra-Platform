@@ -36,6 +36,7 @@
 
 //#include <boost/preprocessor.hpp>
 #include <boost/logic/tribool.hpp>
+#include <boost/algorithm/string.hpp>    
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
@@ -117,16 +118,15 @@ double ValueType<double>::readStepData(const std::string &value, const std::shar
 int ValueType<int>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model) { return (stoi(value)); };
 
 bool ValueType<bool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model) {
-	std::string lower;
-	std::transform(value.begin(), value.end(), lower.begin(), ::tolower);
+	std::string lower = boost::algorithm::to_lower_copy(value);
 	return (lower == "true");
 };
 
 std::string ValueType<std::string>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model) { return (value); };
 
 boost::logic::tribool ValueType<boost::logic::tribool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model) {
-	std::string lower;
-	std::transform(value.begin(), value.end(), lower.begin(), ::tolower);
+	std::string lower = boost::algorithm::to_lower_copy(value);
+
 	if (lower == "true") {
 		return boost::logic::tribool::true_value;
 	}
