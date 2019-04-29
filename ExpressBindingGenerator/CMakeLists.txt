@@ -85,9 +85,8 @@ file(TO_NATIVE_PATH ${Python2_DIRECTORY} Python2_DIRECTORY)
 add_custom_target(Commands.UpdateBoostMPL
 	COMMAND set PYTHON_PATH=${Python2_DIRECTORY}
 	COMMAND set GCC_PATH=${MinGW_DIR}
-	COMMAND set PATH=%PATH%%PYTHON_PATH%
-	COMMAND set PATH=%PATH%\;
-	COMMAND set PATH=%PATH%%GCC_PATH%
+	COMMAND set PATH=%PYTHON_PATH%\;%PATH%
+	COMMAND set PATH=%GCC_PATH%\;%PATH%
 	COMMAND echo %PATH%
 	COMMAND ${Python2_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/fix_boost_mpl_preprocess.py ${Boost_INCLUDE_DIR}
 	COMMAND ${Python2_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/boost_mpl_preprocess.py --sequence-type=both --num-elements=100 ${Boost_INCLUDE_DIR}
