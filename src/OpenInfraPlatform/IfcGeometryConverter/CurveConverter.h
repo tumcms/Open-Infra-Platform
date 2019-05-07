@@ -66,6 +66,7 @@ namespace OpenInfraPlatform {
 				}
 
 				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
+
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> >& trim1Vec,
@@ -114,7 +115,7 @@ namespace OpenInfraPlatform {
 					*/
 
 				// ************************************************************************************************************************************	//
-				//	IfcBoundedCurve SUPTYPE of IfcCurve																									//
+				//	IfcBoundedCurve SUBTYPE of IfcCurve																									//
 				//	ABSTRACT SUPERTYPE of IfcAlignmentCurve, IfcBsplineCurve, IfcCompositeCurve, IfcIndexedPolycurve, IfcPolyline, IfcIfcTrimmedCurve	//
 				// ************************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve =
@@ -973,7 +974,7 @@ namespace OpenInfraPlatform {
 					} // end IfcBoundedCurve
 
 				// ************************************************************************************************************************	//
-				//	IfcConic SUPTYPE of IfcCurve																							//
+				//	IfcConic SUBTYPE of IfcCurve																							//
 				//	ABSTRACT SUPERTYPE of IfcCircle, IfcEllipse																				//
 				// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcConic> conic =
@@ -1165,7 +1166,7 @@ namespace OpenInfraPlatform {
 						}
 
 				// ************************************************************************************************************************	//
-				//	IfcLine SUPTYPE of IfcCurve																								//
+				//	IfcLine SUBTYPE of IfcCurve																								//
 				// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcLine> line =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcLine>(ifcCurve);
@@ -1275,7 +1276,7 @@ namespace OpenInfraPlatform {
 						}
 
 				// ************************************************************************************************************************	//
-				//	IfcOffsetCurve SUPTYPE of IfcCurve																						//
+				//	IfcOffsetCurve SUBTYPE of IfcCurve																						//
 				//	ABSTRACT SUPERTYPE OF IfcOffsetCurve2D, IfcOffsetCurve3D, IfcOffsetCurveByDistances										//
 				// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve> offset_curve =
@@ -1314,7 +1315,7 @@ namespace OpenInfraPlatform {
 						}
 
 				// ************************************************************************************************************************	//
-				//	IfcPcurve SUPTYPE of IfcCurve																							//
+				//	IfcPcurve SUBTYPE of IfcCurve																							//
 				// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcPcurve> p_curve =
 						dynamic_pointer_cast<typename IfcEntityTypesT::IfcPcurve>(ifcCurve);
@@ -1324,7 +1325,7 @@ namespace OpenInfraPlatform {
 					}
 
 				// ************************************************************************************************************************	//
-				//	IfcSurfaceCurve SUPTYPE of IfcCurve																						//
+				//	IfcSurfaceCurve SUBTYPE of IfcCurve																						//
 				//	ABSTRACT SUPERTYPE OF IfcIntersectionCurve, IfcSeamCurve																//
 				// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcSurfaceCurve> surface_curve =

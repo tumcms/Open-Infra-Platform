@@ -22,7 +22,7 @@ cmake_policy(SET CMP0074 NEW)
 project(OpenInfraPlatform)
 
 #-------------------------------------------------------------------------------------
-# CMake definitions and propertiess
+# CMake definitions and properties
 #-------------------------------------------------------------------------------------
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
@@ -138,10 +138,10 @@ find_package(Eigen3 3.3.2  REQUIRED)
 find_package(Oklabi REQUIRED)
 find_package(gtest REQUIRED) 
 find_package(ZLIB 1.2.10 REQUIRED)
-find_package(libLAS REQUIRED)
+# find_package(libLAS REQUIRED)	02.05.2019 moved to pcp module (coetzee)
 find_package(qhull REQUIRED)
 find_package(raptor2 REQUIRED)
-find_package(CloudCompare REQUIRED)
+# find_package(CC REQUIRED)	02.05.2019 moved to pcp module (coetzee)
 find_path(visit_struct_INCLUDE_DIR REQUIRED)
 
 # Added 12.09.2018: FFTW3
@@ -278,8 +278,8 @@ include_directories(
 	external/carve/common
 	ExpressBinding/src
 	Infrastructure/src
-	${CC_INCLUDE_DIRS}
-	external/qcustomplot
+	# ${CC_INCLUDE_DIRS}	02.05.2019 moved to pcp module (coetzee)
+	external/qcustomplot	
 	${FFTW3_INCLUDE_DIRS}
 )
 
@@ -301,12 +301,14 @@ add_subdirectory(UnitTests)
 add_subdirectory(oip)
 add_subdirectory(IfcBridgeGenerator)
 
+
 # ExpressGenerator rework revision 473.
 add_subdirectory(ExpressGenerator)
 
 if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding)
 	add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding)
 endif()
+
 # Do currently not work
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)
@@ -487,11 +489,11 @@ target_link_libraries( OpenInfraPlatform.UI
 	${BLUEFRAMEWORK_LIBRARIES}
 	QtXlsxWriter
 	QSimpleUpdater
-	${LIBLAS_LIBRARIES}
+	# ${LIBLAS_LIBRARIES}	02.05.2019 moved to pcp module (coetzee)
 	carve
 	ZLIB::ZLIB
 	Rpcrt4.lib
-	${CC_LIBRARIES}
+	# ${CC_LIBRARIES}	02.05.2019 moved to pcp module (coetzee)
 	fftw3.lib
 )
 
@@ -505,7 +507,8 @@ target_link_libraries( OpenInfraPlatform.UI
 BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 # CloudCompare Copy Binaries
-CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
+# CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
+# 02.05.2019 move to pcp module (coetzee) 
 
 # Oklabi Copy Binaries
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
@@ -648,12 +651,12 @@ set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
 set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
-set_target_properties(CloudCompareCopyBinaries 				PROPERTIES FOLDER "Copy")
+#set_target_properties(CloudCompareCopyBinaries 				PROPERTIES FOLDER "Copy")	02.05.2019 moved to pcp module (coetzee)
 set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
-# Switched to static gtest on 28.11.2018 / Revision 388+
-#set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
-set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
+#Switched to static gtest on 28.11.2018 / Revision 388+
+#set_target_properties(GTestCopyBinaries						PROPERTIES FOLDER "Copy")
+#set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")	02.05.2019 moved to pcp module (coetzee)
 set_target_properties(OpenInfraPlatform.ExpressGenerator	 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
 set_target_properties(GenerateEarlyBinding					 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
 set_target_properties(UpdateBoostMPL					 		PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
@@ -737,7 +740,9 @@ installData(${CMAKE_BINARY_DIR}/$<CONFIG>/res)
 installData(${CMAKE_BINARY_DIR}/$<CONFIG>/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll ${CMAKE_BINARY_DIR}/Release/tinyxml2.dll
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} #${LIBLAS_RELEASE_BINARIES} 02.05.2019 moved to pcp module (coetzee)
+${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} #${CC_RELEASE_BINARIES} 02.05.2019 moved to pcp module (coetzee)
+${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll ${CMAKE_BINARY_DIR}/Release/tinyxml2.dll
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 	
@@ -762,3 +767,4 @@ install(FILES ${Qt5_ICONENGINES_PLUGINS_DLLS}
 	COMPONENT oip_thirdparty)
 	
 include(CPack)
+
