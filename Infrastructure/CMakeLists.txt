@@ -33,22 +33,19 @@ add_definitions(-DRAPTOR_STATIC)
 #file(GLOB OpenInfraPlatform_Infrastructure_Alignment_Source 						src/OpenInfraPlatform/Infrastructure/Alignment/*.*)			
 #file(GLOB OpenInfraPlatform_Infrastructure_Alignment_VerticalAlignment_Source 		src/OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/*.*)			
 #file(GLOB OpenInfraPlatform_Infrastructure_Bindings_Source 							src/OpenInfraPlatform/Infrastructure/Bindings/*.*)		
-file(GLOB OpenInfraPlatform_Infrastructure_Core_Source 								src/OpenInfraPlatform/Infrastructure/Core/*.*)	
-#file(GLOB OpenInfraPlatform_Infrastructure_CrossSection_Source 						src/OpenInfraPlatform/Infrastructure/CrossSection/*.*)			
-file(GLOB OpenInfraPlatform_Infrastructure_DigitalElevationModel_Source 			src/OpenInfraPlatform/Infrastructure/DigitalElevationModel/*.*)
+#file(GLOB OpenInfraPlatform_Infrastructure_Core_Source 								src/OpenInfraPlatform/Infrastructure/Core/*.*)	
+#file(GLOB OpenInfraPlatform_Infrastructure_CrossSection_Source 						src/OpenInfraPlatform/Infrastructure/CrossSection/*.*)		
+# Changed to only surface	
+file(GLOB OpenInfraPlatform_Infrastructure_DigitalElevationModel_Source 			src/OpenInfraPlatform/Infrastructure/DigitalElevationModel/Surface.*)
 #file(GLOB OpenInfraPlatform_Infrastructure_SectionedSolid_Source 					src/OpenInfraPlatform/Infrastructure/SectionedSolid/*.*)
-file(GLOB OpenInfraPlatform_Infrastructure_Girder_Source 							src/OpenInfraPlatform/Infrastructure/Girder/*.*)
-file(GLOB OpenInfraPlatform_Infrastructure_SlabField_Source 						src/OpenInfraPlatform/Infrastructure/SlabField/*.*)
-file(GLOB OpenInfraPlatform_Infrastructure_Tessellation_Source 						src/OpenInfraPlatform/Infrastructure/Tessellation/*.*)
-file(GLOB OpenInfraPlatform_Infrastructure_ProxyModel_Source 				        src/OpenInfraPlatform/Infrastructure/ProxyModel/*.*)	
-#file(GLOB OpenInfraPlatform_Infrastructure_EnergyConsumption_Source 				src/OpenInfraPlatform/Infrastructure/EnergyConsumption/*.*)						
-#file(GLOB OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Source 	src/OpenInfraPlatform/Infrastructure/EnergyConsumption/Calculators/*.*)	
-#file(GLOB OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Parameters_Source 	src/OpenInfraPlatform/Infrastructure/EnergyConsumption/Calculators/Parameters/*.*)	
-#file(GLOB OpenInfraPlatform_Infrastructure_EnergyConsumption_Profiles_Source 		src/OpenInfraPlatform/Infrastructure/EnergyConsumption/Profiles/*.*)	
+#file(GLOB OpenInfraPlatform_Infrastructure_Girder_Source 							src/OpenInfraPlatform/Infrastructure/Girder/*.*)
+#file(GLOB OpenInfraPlatform_Infrastructure_SlabField_Source 						src/OpenInfraPlatform/Infrastructure/SlabField/*.*)
+#file(GLOB OpenInfraPlatform_Infrastructure_Tessellation_Source 						src/OpenInfraPlatform/Infrastructure/Tessellation/*.*)
+#file(GLOB OpenInfraPlatform_Infrastructure_ProxyModel_Source 				        src/OpenInfraPlatform/Infrastructure/ProxyModel/*.*)	
 #file(GLOB OpenInfraPlatform_Infrastructure_Export_Source 							src/OpenInfraPlatform/Infrastructure/Export/*.*)		
 #file(GLOB OpenInfraPlatform_Infrastructure_IfcPL_Source 							src/OpenInfraPlatform/Infrastructure/IfcPL/*.*)		
 #file(GLOB OpenInfraPlatform_Infrastructure_Import_Source 							src/OpenInfraPlatform/Infrastructure/Import/*.*)		
-#file(GLOB OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source				src/OpenInfraPlatform/Infrastructure/PointCloudProcessing/*.*)	06.05.19 moved to pcp module (coetzee)
+file(GLOB OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source				src/OpenInfraPlatform/Infrastructure/PointCloudProcessing/*.*)
 file(GLOB OpenInfraPlatform_Infrastructure_Railway_Source							src/OpenInfraPlatform/Infrastructure/Railway/*.*)										
 file(GLOB OpenInfraPlatform_Infrastructure_Source 									src/OpenInfraPlatform/Infrastructure/*.*)	
 
@@ -57,22 +54,18 @@ source_group(OpenInfraPlatform\\Infrastructure										FILES ${OpenInfraPlatfor
 #source_group(OpenInfraPlatform\\Infrastructure\\Alignment\\HorizontalAlignment		FILES ${OpenInfraPlatform_Infrastructure_Alignment_HorizontalAlignment_Source})								
 #source_group(OpenInfraPlatform\\Infrastructure\\Alignment\\VerticalAlignment		FILES ${OpenInfraPlatform_Infrastructure_Alignment_VerticalAlignment_Source})													
 #source_group(OpenInfraPlatform\\Infrastructure\\Bindings							FILES ${OpenInfraPlatform_Infrastructure_Bindings_Source})			
-source_group(OpenInfraPlatform\\Infrastructure\\Core								FILES ${OpenInfraPlatform_Infrastructure_Core_Source})		
+#source_group(OpenInfraPlatform\\Infrastructure\\Core								FILES ${OpenInfraPlatform_Infrastructure_Core_Source})		
 #source_group(OpenInfraPlatform\\Infrastructure\\CrossSection						FILES ${OpenInfraPlatform_Infrastructure_CrossSection_Source})				
 source_group(OpenInfraPlatform\\Infrastructure\\DigitalElevationModel  				FILES ${OpenInfraPlatform_Infrastructure_DigitalElevationModel_Source})						
-source_group(OpenInfraPlatform\\Infrastructure\\ProxyModel 				            FILES ${OpenInfraPlatform_Infrastructure_ProxyModel_Source})
+#source_group(OpenInfraPlatform\\Infrastructure\\ProxyModel 				            FILES ${OpenInfraPlatform_Infrastructure_ProxyModel_Source})
 #source_group(OpenInfraPlatform\\Infrastructure\\SectionedSolid						FILES ${OpenInfraPlatform_Infrastructure_SectionedSolid_Source})
-source_group(OpenInfraPlatform\\Infrastructure\\Girder  							FILES ${OpenInfraPlatform_Infrastructure_Girder_Source})
-source_group(OpenInfraPlatform\\Infrastructure\\SlabField  							FILES ${OpenInfraPlatform_Infrastructure_SlabField_Source})
-source_group(OpenInfraPlatform\\Infrastructure\\Tessellation  						FILES ${OpenInfraPlatform_Infrastructure_Tessellation_Source})
-#source_group(OpenInfraPlatform\\Infrastructure\\EnergyConsumption					FILES ${OpenInfraPlatform_Infrastructure_EnergyConsumption_Source})
-#source_group(OpenInfraPlatform\\Infrastructure\\EnergyConsumption\\Calculators 		FILES ${OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Source_Source})
-#source_group(OpenInfraPlatform\\Infrastructure\\EnergyConsumption\\Calculators\\Parameters_Source 	FILES ${OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Parameters_Source})
-#source_group(OpenInfraPlatform\\Infrastructure\\EnergyConsumption\\Profiles 		FILES ${OpenInfraPlatform_Infrastructure_EnergyConsumption_Profiles_Source})
+#source_group(OpenInfraPlatform\\Infrastructure\\Girder  							FILES ${OpenInfraPlatform_Infrastructure_Girder_Source})
+#source_group(OpenInfraPlatform\\Infrastructure\\SlabField  							FILES ${OpenInfraPlatform_Infrastructure_SlabField_Source})
+#source_group(OpenInfraPlatform\\Infrastructure\\Tessellation  						FILES ${OpenInfraPlatform_Infrastructure_Tessellation_Source})
 #source_group(OpenInfraPlatform\\Infrastructure\\Export								FILES ${OpenInfraPlatform_Infrastructure_Export_Source})		
 #source_group(OpenInfraPlatform\\Infrastructure\\IfcPL								FILES ${OpenInfraPlatform_Infrastructure_IfcPL_Source})		
 #source_group(OpenInfraPlatform\\Infrastructure\\Import								FILES ${OpenInfraPlatform_Infrastructure_Import_Source})		
-#source_group(OpenInfraPlatform\\Infrastructure\\PointCloudProcessing				FILES ${OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source})	06.05.19 moved to pcp module (coetzee)		
+source_group(OpenInfraPlatform\\Infrastructure\\PointCloudProcessing				FILES ${OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source})				
 source_group(OpenInfraPlatform\\Infrastructure\\Railway								FILES ${OpenInfraPlatform_Infrastructure_Railway_Source})				
 
 include_directories(
@@ -82,8 +75,8 @@ include_directories(
 	${BLUEFRAMEWORK_INCLUDE_DIR}
 	${EIGEN3_INCLUDE_DIR}
 	src
-	#${LIBLAS_INCLUDE_DIRS}	06.05.19 moved to pcp module (coetzee)
-	../external/QtXlsxWriter/src/xlsx	
+	${LIBLAS_INCLUDE_DIRS}
+	../external/QtXlsxWriter/src/xlsx
 	${OKLABI_ROOT_DIR}/Kern-C++
 	${OKLABI_ROOT_DIR}/Dienst
 	${QHULL_INCLUDE_DIRS}
@@ -92,7 +85,7 @@ include_directories(
 	#Experimental
 	${visit_struct_INCLUDE_DIR}
 	#${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR}
-	#${CC_INCLUDE_DIRS}	06.05.19 moved to pcp module (coetzee)
+	${CC_INCLUDE_DIRS}
 )
 
 # Create a target for the library
@@ -101,25 +94,22 @@ add_library(OpenInfraPlatform.Infrastructure SHARED
 	#${OpenInfraPlatform_Infrastructure_Alignment_Source}
 	#${OpenInfraPlatform_Infrastructure_Alignment_VerticalAlignment_Source}
 	#${OpenInfraPlatform_Infrastructure_Bindings_Source}
-	${OpenInfraPlatform_Infrastructure_Core_Source}
+	#${OpenInfraPlatform_Infrastructure_Core_Source}
 	#${OpenInfraPlatform_Infrastructure_CrossSection_Source}
 	${OpenInfraPlatform_Infrastructure_DigitalElevationModel_Source}
-	${OpenInfraPlatform_Infrastructure_ProxyModel_Source}
+	#${OpenInfraPlatform_Infrastructure_ProxyModel_Source}
 	#${OpenInfraPlatform_Infrastructure_SectionedSolid_Source}
-	${OpenInfraPlatform_Infrastructure_Girder_Source}
-	${OpenInfraPlatform_Infrastructure_SlabField_Source}
-	${OpenInfraPlatform_Infrastructure_Tessellation_Source}
-	#${OpenInfraPlatform_Infrastructure_EnergyConsumption_Source}
-	#${OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Source_Source}
-	#${OpenInfraPlatform_Infrastructure_EnergyConsumption_Calculators_Parameters_Source}
-	#${OpenInfraPlatform_Infrastructure_EnergyConsumption_Profiles_Source}
+	#${OpenInfraPlatform_Infrastructure_Girder_Source}
+	#${OpenInfraPlatform_Infrastructure_SlabField_Source}
+	#${OpenInfraPlatform_Infrastructure_Tessellation_Source}
 	#${OpenInfraPlatform_Infrastructure_Export_Source}
 	#${OpenInfraPlatform_Infrastructure_IfcPL_Source}
 	#${OpenInfraPlatform_Infrastructure_Import_Source}
-	#${OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source}	06.05.19 moved to pcp module (coetzee)
+	${OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source}
 	${OpenInfraPlatform_Infrastructure_Railway_Source}
 	${OpenInfraPlatform_Infrastructure_Source}
 )
+
 
 target_link_libraries( OpenInfraPlatform.Infrastructure
 		OpenInfraPlatform.EarlyBinding
@@ -132,7 +122,7 @@ target_link_libraries( OpenInfraPlatform.Infrastructure
 		#${PYTHON_LIBRARIES}
 		# External libs
 		QtXlsxWriter
-		#${LIBLAS_LIBRARIES}	06.05.19 moved to pcp module (coetzee)
+		${LIBLAS_LIBRARIES}
 		# Oklabi
 		${OKLABI_LIBRARIES}
 		#
@@ -142,132 +132,12 @@ target_link_libraries( OpenInfraPlatform.Infrastructure
 		# EXPRESS Binding for Meta model
 		#OpenInfraPlatform.ExpressBinding
 		Rpcrt4.lib
-		#${CC_LIBRARIES}	06.05.19 moved to pcp module (coetzee)
+		${CC_LIBRARIES}
 	)
+
 # Use the Widgets module from Qt 5.
 target_link_libraries(OpenInfraPlatform.Infrastructure Qt5::Xml Qt5::XmlPatterns Qt5::Gui Qt5::OpenGL)
 
-#----------------------------------------------------------
-# MODULES
-#----------------------------------------------------------
-
-# Group of entries below. 
-# Select all modules with necessary thirdparty libraries to be built. 
-# Otherwise only core project is built.
-
-#----------------------------------------------------------
-# (1/7) Point Cloud Processing ("pcp_module")
-#----------------------------------------------------------
-Option(MODULES_POINT_CLOUD_PROCESSING ON)
-
-If(EXISTS ${CC_DIR} ${libLAS_DIR})
-
-	# Cmake Settings.
-	find_path(CMAKE_PREFIX_PATH NAMES include/CC HINTS "C:/thirdparty/vs2015/x64/CloudCompare-master/")
-	find_path(CMAKE_PREFIX_PATH NAMES include/libLAS HINTS "C:/thirdparty/vs2015/x64/libLAS-1.6-master/")
-
-	# Find required thirdparty libraries.
-	find_package(CC REQUIRED)
-	find_package(libLAS REQUIRED)
-
-	# Set directories and add executable. 
-	add_subdirectory(OpenInfraPlatform.Infrastructure [PointCloudProcessing]
-	)	
-
-	file(GLOB OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source				src/OpenInfraPlatform/Infrastructure/PointCloudProcessing/*.*)
-	source_group(OpenInfraPlatform\\Infrastructure\\PointCloudProcessing				FILES ${OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source}
-	)
-
-	add_executable(PointCloudProcessing
-	${OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source}
-	)
-
-	# Set include directories.
-	include_directories(
-		${LIBLAS_INCLUDE_DIRS}
-		${CC_INCLUDE_DIRS}
-	)	
-
-	add_library(PointCloudProcessing	SHARED 
-		${OpenInfraPlatform_Infrastructure_PointCloudProcessing_Source}
-	)
-
-	# Link external libraries to executable.
-	target_link_libraries(PointCloudProcessing
-		${LIBLAS_LIBRARIES}
-		${CC_LIBRARIES}
-		)
-
-	# Calling copy functions to provide custom targets.
-	# Add the custom targets to copy the required binaries.
-	CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
-
-	# Set the target properties.
-	set_target_properties(CloudCompareCopyBinaries 	PROPERTIES FOLDER "Copy")
-	set_target_properties(libLASCopyBinaries	PROPERTIES FOLDER "Copy")
-
-	# Install files.
-	install(FILES ${LIBLAS_RELEASE_BINARIES} ${CC_RELEASE_BINARIES}
-		DESTINATION bin
-		COMPONENT oip_thirdparty)
-
-endif()
-
-#----------------------------------------------------------
-# (2/7) Digital Elevation Model ("dem_module")
-#----------------------------------------------------------
-Option(MODULES_DIGITAL_ELEVATION_MODEL ON)
-
-if(MODULES_DIGITAL_ELEVATION_MODEL)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (3/7) Girder ("girder_module")
-#----------------------------------------------------------
-Option(MODULES_GIRDER ON)
-
-if(MODULES_GIRDER)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (4/7) Proxy Model ("proxy_module")
-#----------------------------------------------------------
-Option(MODULES_PROXY_MODEL ON)
-
-if(MODULES_PROXY_MODEL)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (5/7) Railway ("rail_module")
-#----------------------------------------------------------
-Option(MODULES_RAILWAY ON)
-
-if(MODULES_RAILWAY)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (6/7) Slabfield ("slf_module")
-#----------------------------------------------------------
-Option(MODULES_SLABFIELD ON)
-
-if(MODULES_SLABFIELD)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (7/7) Tesselation ("tsl_module")
-#----------------------------------------------------------
-Option(MODULES_TESSELATION ON)
-
-if(MODULES_TESSELATION)
-
-ENDIF()
-
-# Install.
 install(TARGETS OpenInfraPlatform.Infrastructure   
    RUNTIME DESTINATION bin
    COMPONENT oip_runtime

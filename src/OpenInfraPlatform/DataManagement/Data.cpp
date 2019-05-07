@@ -17,53 +17,29 @@
 
 #include "Data.h"
 
-#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcOWL4x1.h"
-#include "OpenInfraPlatform/Infrastructure/Export/ExportIfc4x1.h"
-#include "OpenInfraPlatform/Infrastructure/Import/ImportIfc4x1.h"
 
 #include <BlueFramework/Application/DataManagement/Notification/NotifiyAfterEachActionOnlyOnce.h>
 #include "buw.OIPInfrastructure.h"
 
-#include "OpenInfraPlatform/Infrastructure/Export/ExportSVGEAdvanced.h"
 
-#include "OpenInfraPlatform/IfcAlignment/model/IfcAlignmentP6Model.h"
-#include "OpenInfraPlatform/IfcAlignment/reader/IfcStepReader.h"
+#include "IFC2X3Reader.h"
+#include "IFC4Reader.h"
+#include "IFC4X1Reader.h"
+#include "IFC4X2_BIM4ROADReader.h"
+#include "IFC4X2_DRAFT_1Reader.h"
 
-#include "OpenInfraPlatform/IfcRoad/model/IfcRoadModel.h"
-#include "OpenInfraPlatform/IfcRoad/reader/IfcStepReader.h"
 
-#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h"
-#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h"
-#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h"
-#include "OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h"
+#include "EMTIFC2X3EntityTypes.h"
+#include "EMTIFC4EntityTypes.h"
+#include "EMTIFC4X1EntityTypes.h"
+#include "EMTIFC4X2_BIM4ROADEntityTypes.h"
+#include "EMTIFC4X2_DRAFT_1EntityTypes.h"
 
-#include "OpenInfraPlatform/DataManagement/IfcZipper.h"
 
-#include "OpenInfraPlatform/Infrastructure/Export/ExportLandXML.h"
-
-#include "OpenInfraPlatform/Ifc2x3/model/Ifc2x3Model.h"
-#include "OpenInfraPlatform/Ifc2x3/model/Ifc2x3Exception.h"
-#include "OpenInfraPlatform/Ifc2x3/reader/IfcStepReader.h"
-
-#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
-#include "OpenInfraPlatform/Ifc4/model/Ifc4Exception.h"
-#include "OpenInfraPlatform/Ifc4/reader/IfcStepReader.h"
-
-#include "OpenInfraPlatform/IfcBridge/model/IfcBridgeModel.h"
-#include "OpenInfraPlatform/IfcBridge/model/IfcBridgeException.h"
-#include "OpenInfraPlatform/IfcBridge/reader/IfcStepReader.h"
-
-//#include "OpenInfraPlatform/IfcGeometryConverter/IfcImporter.h"
-//#include "OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.h"
+#include "OpenInfraPlatform/IfcGeometryConverter/IfcImporter.h"
+#include "OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.h"
 #include "OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.h"
 
-#include "OpenInfraPlatform/Infrastructure/Import/ImportOSM.h"
-#include "OpenInfraPlatform/Infrastructure/Import/ImportD40.h"
-
-#include "OpenInfraPlatform/DataManagement/XYZImport.h"
-#include "OpenInfraPlatform/DataManagement/RandomTerrainImport.h"
-#include "OpenInfraPlatform/DataManagement/HeightMapImport.h"
-#include "OpenInfraPlatform/DataManagement/MeshImport.h"
 
 #include <QtXml>
 #include <QtXmlPatterns>
@@ -82,7 +58,7 @@ template <
 	class IfcExceptionT,
 	class IfcEntityT
 >
-void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename);
+void importIfcGeometry(buw::ReferenceCounted<oip::EXPRESSModel> expressModel, buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename)
 
 OpenInfraPlatform::DataManagement::Data::Data() : 
 BlueFramework::Application::DataManagement::Data(new BlueFramework::Application::DataManagement::NotifiyAfterEachActionOnlyOnce<OpenInfraPlatform::DataManagement::Data>()),
@@ -112,354 +88,16 @@ OpenInfraPlatform::DataManagement::Data::~Data()
 		pointCloud_ = nullptr;
 }
 
-void OpenInfraPlatform::DataManagement::Data::save( const std::string & filename )
-{
-	QDomDocument doc;
-	QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\"" );
-	doc.appendChild( header );
-	QDomElement root = doc.createElement( getApplicationNameXML() );
-	root.setAttribute("version", getApplicationVersionString());
-	doc.appendChild( root ); 
-
-	// save entity objects
-	QDomElement xmlAlignments = doc.createElement("Alignments");
-
-	for (int i = 0; i < alignmentModel_->getAlignmentCount(); i++)
-	{	
-		buw::ReferenceCounted<buw::Alignment2DBased3D> alignment2d = std::static_pointer_cast<buw::Alignment2DBased3D>(alignmentModel_->getAlignment(i));
-		QDomElement xmlAlignment2D = doc.createElement("Alignment2D");
-		xmlAlignment2D.setAttribute("name", alignment2d->getName().toCString());
-		if (alignment2d->hasHorizontalAlignment())
-		{
-			QDomElement xmlHorizaontal = doc.createElement("Horizontal");
-			for (int horizontal_i = 0; horizontal_i < alignment2d->getHorizontalAlignment()->getAlignmentElementCount(); horizontal_i++)
-			{
-				buw::ReferenceCounted<buw::HorizontalAlignmentElement2D> horizontalElement = alignment2d->getHorizontalAlignment()->getAlignmentElementByIndex(horizontal_i);
-				//std::cout << horizontalElement->getAlignmentType();
-				if (horizontalElement->getAlignmentType() == buw::eHorizontalAlignmentType::Line)
-				{
-					buw::Vector2d start, end;
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartPosition, &start);
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::EndPosition, &end);
-					QDomElement xmlAlignmentLine = doc.createElement("Line");
-					QDomElement xmlAlignmentLineStart = doc.createElement("Start");
-					QDomElement xmlAlignmentLineEnd = doc.createElement("End");
-					xmlAlignmentLineStart.setAttribute("startX", start.x() );
-					xmlAlignmentLineStart.setAttribute("startY", start.y() );
-					xmlAlignmentLineEnd.setAttribute("endX", end.x() );
-					xmlAlignmentLineEnd.setAttribute("endY", end.y() );
-					xmlAlignmentLine.setAttribute("length", alignment2d->getLength() );
-					xmlAlignmentLine.appendChild(xmlAlignmentLineStart);
-					xmlAlignmentLine.appendChild(xmlAlignmentLineEnd);
-					xmlHorizaontal.appendChild(xmlAlignmentLine);
-				}
-
-				else if (horizontalElement->getAlignmentType() == buw::eHorizontalAlignmentType::Arc)
-				{
-					double radius;
-					bool clockwiseBool;
-					buw::Vector2d center, start, end;
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartPosition, &start);
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::EndPosition, &end);
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Center, &center);
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Radius, &radius);
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Clockwise, &clockwiseBool);
-					QDomElement xmlAlignmentArc = doc.createElement("Arc");
-					QDomElement xmlAlignmentArcStart = doc.createElement("Start");
-					QDomElement xmlAlignmentArcEnd = doc.createElement("End");
-					xmlAlignmentArc.setAttribute("centerX", center.x());
-					xmlAlignmentArc.setAttribute("centerY", center.y());
-					xmlAlignmentArc.setAttribute("radius", radius );
-					xmlAlignmentArc.setAttribute("clockwise", clockwiseBool );
-					xmlAlignmentArcStart.setAttribute("startX", start.x() );
-					xmlAlignmentArcStart.setAttribute("startY", start.y() );
-					xmlAlignmentArcEnd.setAttribute("endX", end.x() );
-					xmlAlignmentArcEnd.setAttribute("endY", end.y() );
-					xmlAlignmentArc.appendChild(xmlAlignmentArcStart);
-					xmlAlignmentArc.appendChild(xmlAlignmentArcEnd);
-					xmlHorizaontal.appendChild(xmlAlignmentArc);
-				}
-
-				else if (horizontalElement->getAlignmentType() == buw::eHorizontalAlignmentType::Clothoid)
-				{
-					double radiusStart, radiusEnd, length;
-					bool clockwiseBool;
-					buw::Vector2d start, end, pi;
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartPosition, &start);
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::EndPosition, &end);
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::RadiusStart, &radiusStart);
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::RadiusEnd, &radiusEnd);
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Clockwise, &clockwiseBool);
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::PI, &pi);
-					horizontalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Length, &length);
-					QDomElement xmlAlignmentClothoid = doc.createElement("Clothoid");
-					QDomElement xmlAlignmentClothoidStart = doc.createElement("start");
-					QDomElement xmlAlignmentClothoidEnd = doc.createElement("end");
-					QDomElement xmlAlignmentClothoidPI = doc.createElement("pi");
-					xmlAlignmentClothoid.setAttribute("length", length );
-					xmlAlignmentClothoid.setAttribute("radiusStart", radiusStart );
-					xmlAlignmentClothoid.setAttribute("radiusEnd", radiusEnd );
-					xmlAlignmentClothoid.setAttribute("clockwise", clockwiseBool );
-					xmlAlignmentClothoidStart.setAttribute("startX", start.x() );
-					xmlAlignmentClothoidStart.setAttribute("startY", start.y() );
-					xmlAlignmentClothoidEnd.setAttribute("endX", end.x() );
-					xmlAlignmentClothoidEnd.setAttribute("endY", end.y() );
-					xmlAlignmentClothoidPI.setAttribute("piX", pi.x() );
-					xmlAlignmentClothoidPI.setAttribute("piY", pi.y() );
-					xmlAlignmentClothoid.appendChild(xmlAlignmentClothoidStart);
-					xmlAlignmentClothoid.appendChild(xmlAlignmentClothoidEnd);
-					xmlAlignmentClothoid.appendChild(xmlAlignmentClothoidPI);
-					xmlHorizaontal.appendChild(xmlAlignmentClothoid);
-				}
-				else
-				{
-					std::cout << horizontalElement->getAlignmentType();
-				}
-			}
-			xmlAlignment2D.appendChild(xmlHorizaontal);
-		}
-
-		if (alignment2d->hasVerticalAlignment())
-		{
-			QDomElement xmlVertical = doc.createElement("Vertical");
-			std::vector<buw::profAlignElement> list = buw::createProfAlignElements(alignment2d->getVerticalAlignment());
-
-			for (int vertical_i = 0; vertical_i < alignment2d->getVerticalAlignment()->getAlignmentElementCount(); vertical_i++)
-			{
-				buw::ReferenceCounted<buw::VerticalAlignmentElement2D> verticalElement = alignment2d->getVerticalAlignment()->getAlignmentElementByIndex(vertical_i);
-				if (verticalElement->getAlignmentType() == buw::eVerticalAlignmentType::Parabola)
-				{
-					buw::Vector2d start, end, pvi;
-					double inP, startGradient, endGradient;
-					verticalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartPosition, &start);
-					verticalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::EndPosition, &end);
-					verticalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::IntersectionPointDistance, &inP);
-					verticalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::PVI, &pvi);
-					verticalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartGradientAsPlaneAngleMeasure, &startGradient);
-					verticalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::EndGradient, &endGradient);
-					QDomElement xmlAlignmentParabola = doc.createElement("Parabola");
-					QDomElement xmlAlignmentParabolaStart = doc.createElement("start");
-					QDomElement xmlAlignmentParabolaEnd = doc.createElement("end");
-					QDomElement xmlAlignmentParabolaPVI = doc.createElement("PVI");
-					xmlAlignmentParabola.setAttribute("IntersectionPointDistance", inP);
-					xmlAlignmentParabola.setAttribute("startGradient", startGradient);
-					xmlAlignmentParabola.setAttribute("endGradient", endGradient);
-					xmlAlignmentParabolaStart.setAttribute("startX", start.x() );
-					xmlAlignmentParabolaStart.setAttribute("startY", start.y() );
-					xmlAlignmentParabolaEnd.setAttribute("endX", end.x() );
-					xmlAlignmentParabolaEnd.setAttribute("endY", end.y() );
-					xmlAlignmentParabolaPVI.setAttribute("pviX", pvi.x() );
-					xmlAlignmentParabolaPVI.setAttribute("pviY", pvi.y() );
-					xmlAlignmentParabola.appendChild(xmlAlignmentParabolaStart);
-					xmlAlignmentParabola.appendChild(xmlAlignmentParabolaEnd);
-					xmlAlignmentParabola.appendChild(xmlAlignmentParabolaPVI);
-					xmlVertical.appendChild(xmlAlignmentParabola);
-				}
-
-				if (verticalElement->getAlignmentType() == buw::eVerticalAlignmentType::Line)
-				{
-					buw::Vector2d start, end;
-					verticalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartPosition, &start);
-					verticalElement->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::EndPosition, &end);
-					QDomElement xmlAlignmentLine = doc.createElement("VerticalLine");
-					QDomElement xmlAlignmentLineStart = doc.createElement("start");
-					QDomElement xmlAlignmentLineEnd = doc.createElement("end");
-					xmlAlignmentLineStart.setAttribute("startX", start.x() );
-					xmlAlignmentLineStart.setAttribute("startY", start.y() );
-					xmlAlignmentLineEnd.setAttribute("endX", end.x() );
-					xmlAlignmentLineEnd.setAttribute("endY", end.y() );
-					xmlAlignmentLine.appendChild(xmlAlignmentLineStart);
-					xmlAlignmentLine.appendChild(xmlAlignmentLineEnd);
-					xmlVertical.appendChild(xmlAlignmentLine);
-				}
-			}
-			xmlAlignment2D.appendChild(xmlVertical);
-		}
-		xmlAlignments.appendChild(xmlAlignment2D);
-	}
-	root.appendChild(xmlAlignments);
-
-	QFile file( filename.c_str() );
-	if( !file.open( QIODevice::WriteOnly ) )
-	{
-		//return -1;
-	}
-
-	QTextStream ts( &file );
-	ts << doc.toString();
-
-	file.close();
-}
 
 void OpenInfraPlatform::DataManagement::Data::open( const std::string & filename )
 {
 	if (boost::filesystem::exists(filename))
 	{
-		buw::String buwstrFilename = filename.c_str();
-		if (buwstrFilename.toLower().endsWith(".bic"))
-		{
-			alignmentModel_ = readBICFile(filename);
-			pushChange(ChangeFlag::AlignmentModel); // Inform observer that new data is available
-		}
-		else
-		{
-			import(filename);
-		}
+		import(filename);		
 		recentFileName = QString::fromUtf8(filename.c_str());
 	}
 }
 
-buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> OpenInfraPlatform::DataManagement::Data::readBICFile(const std::string & filename)
-{
-	buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> alignmentModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::AlignmentModel>();
-	QDomDocument domDoc;
-	QFile xmlFile(filename.c_str());
-	if(xmlFile.open(QIODevice::ReadOnly))
-	{
-		if(domDoc.setContent(&xmlFile))
-		{
-			QDomElement domElement		= domDoc.documentElement();
-			QDomNode rootNode			= domElement.firstChild();
-			QDomNodeList alignmentList	= rootNode.childNodes();
-			QDomNode domNode			= rootNode.firstChild();
-
-			for(int i=0; i<alignmentList.length(); i++)
-			{
-				buw::ReferenceCounted<buw::HorizontalAlignment2D> horizontalAlignment = std::make_shared<buw::HorizontalAlignment2D>();
-				buw::ReferenceCounted<buw::VerticalAlignment2D> verticalAlignment		= std::make_shared<buw::VerticalAlignment2D>();
-				buw::ReferenceCounted<buw::Alignment2DBased3D> alignment2D			= std::make_shared<buw::Alignment2DBased3D>();
-				std::string alignmentName;
-				if(domNode.isElement())
-				{
-					QDomElement domElement = domNode.toElement();
-					if(!domElement.isNull())
-					{
-						//std::cout << domElement.tagName().toStdString() + "\n";
-						if(domElement.tagName() == "Alignment2D")
-						{
-							//std::cout << domElement.attribute("name").toStdString() + "\n";
-							alignmentName = domElement.attribute("name").toStdString();
-							QDomNode		horiNode			= domNode.firstChild();
-							QDomNode		verNode				= domNode.lastChild();
-							QDomNodeList	horiChildNodes		= horiNode.childNodes();
-							QDomNodeList	verChildNodes		= verNode.childNodes();
-							QDomNode		domHoriChildNode	= horiNode.firstChild();
-							QDomNode		domVerChildNode		= verNode.firstChild();
-							
-							for(int i=0; i<horiChildNodes.length(); i++)
-							{
-								QDomElement domChildElement = domHoriChildNode.toElement();
-								//std::cout << domChildElement.tagName().toStdString() + "\n";
-								if(domChildElement.tagName() == "Arc")
-								{
-									//std::cout << "Arc Radius : " + domChildElement.attribute("radius").toStdString() + "\n";
-									buw::Vector2d					center, start, end;
-									bool							clockwise;
-									start.x()					=	domChildElement.firstChildElement().attribute("startX").toDouble();
-									start.y()					=	domChildElement.firstChildElement().attribute("startY").toDouble();
-									end.x()						=	domChildElement.lastChildElement().attribute("endX").toDouble();
-									end.y()						=	domChildElement.lastChildElement().attribute("endY").toDouble();
-									center.x()					=	domChildElement.attribute("centerX").toDouble();
-									center.y()					=	domChildElement.attribute("centerY").toDouble();
-									clockwise					=	domChildElement.attribute("clockwise").toInt();
-									buw::ReferenceCounted<buw::HorizontalAlignmentElement2DArc> arc			=	std::make_shared<buw::HorizontalAlignmentElement2DArc>(center, start, end, clockwise);
-									horizontalAlignment->addElement(arc);
-								}
-								else if(domChildElement.tagName() == "Line")
-								{
-									//std::cout << "Line Length : " + domChildElement.attribute("length").toStdString() + "\n";
-									//std::cout << domChildElement.firstChildElement().attribute("startX").toDouble();
-									buw::Vector2d					start;
-									buw::Vector2d					end;
-									start.x()					=	domChildElement.firstChildElement().attribute("startX").toDouble();
-									start.y()					=	domChildElement.firstChildElement().attribute("startY").toDouble();
-									end.x()						=	domChildElement.lastChildElement().attribute("endX").toDouble();
-									end.y()						=	domChildElement.lastChildElement().attribute("endY").toDouble();
-									buw::ReferenceCounted<buw::HorizontalAlignmentElement2DLine> line			=	std::make_shared<buw::HorizontalAlignmentElement2DLine>(start, end);
-									horizontalAlignment->addElement(line);
-								}
-								else
-								{
-									//std::cout << "Clothoid Length : " + domChildElement.attribute("length").toStdString() + "\n";
-									buw::Vector2d					start, end, pi;
-									double							radiusStart, radiusEnd, length;
-									bool							clockwise;
-									start.x()					=	domChildElement.firstChildElement().attribute("startX").toDouble();
-									start.y()					=	domChildElement.firstChildElement().attribute("startY").toDouble();
-									end.x()						=	domChildElement.firstChildElement().nextSiblingElement().attribute("endX").toDouble();
-									end.y()						=	domChildElement.firstChildElement().nextSiblingElement().attribute("endY").toDouble();
-									pi.x()						=	domChildElement.lastChildElement().attribute("piX").toDouble();
-									pi.y()						=	domChildElement.lastChildElement().attribute("piY").toDouble();
-									radiusStart					=	domChildElement.attribute("radiusStart").toDouble();
-									radiusEnd					=	domChildElement.attribute("radiusEnd").toDouble();
-									length						=	domChildElement.attribute("length").toDouble();
-									clockwise					=	domChildElement.attribute("clockwise").toInt();
-
-									double startCurvature = 0;
-									if (radiusStart != 0 && radiusStart != std::numeric_limits<double>::infinity())
-										startCurvature = 1 / radiusStart;
-
-									double endCurvature = 0;
-									if (radiusEnd != 0 && radiusEnd != std::numeric_limits<double>::infinity())
-										endCurvature = 1 / radiusEnd;
-
-									double startDirection = buw::HorizontalAlignmentElement2DClothoid::computeStartDirection(start, pi);									
-									double clothoidConstant = buw::HorizontalAlignmentElement2DClothoid::computeClothoidConstant(length, startCurvature, endCurvature);
-									bool entry = buw::HorizontalAlignmentElement2DClothoid::computeEntry(startCurvature, endCurvature);
-
-									buw::clothoidDescription desc(start, startDirection, startCurvature, !clockwise, clothoidConstant, entry, length);
-									buw::ReferenceCounted<buw::HorizontalAlignmentElement2DClothoid> clothoid = std::make_shared<buw::HorizontalAlignmentElement2DClothoid>(desc);
-									horizontalAlignment->addElement(clothoid);
-								}
-								domHoriChildNode = domHoriChildNode.nextSibling();
-							}
-
-							for(int i=0; i<verChildNodes.length(); i++)
-							{
-								QDomElement domChildElement = domVerChildNode.toElement();
-								//std::cout << domChildElement.tagName().toStdString() + "\n";
-								if(domChildElement.tagName() == "Parabola")
-								{
-									//std::cout << "Parabola StartX : " + domChildElement.firstChildElement().attribute("startX").toStdString() + "\n";
-									buw::Vector2d start, end;
-									double startGradient=0.0, endGradient=0.0;
-									start.x()						=	domChildElement.firstChildElement().attribute("startX").toDouble();
-									start.y()						=	domChildElement.firstChildElement().attribute("startY").toDouble();
-									end.x()							=	domChildElement.firstChildElement().nextSiblingElement().attribute("endX").toDouble();
-									end.y()							=	domChildElement.firstChildElement().nextSiblingElement().attribute("endY").toDouble();
-									startGradient					=	domChildElement.attribute("startGradient").toDouble();
-									endGradient						=	domChildElement.attribute("endGradient").toDouble();
-									buw::ReferenceCounted<buw::VerticalAlignmentElement2DParabola> parabola		=	std::make_shared<buw::VerticalAlignmentElement2DParabola>(start, end, startGradient, endGradient);
-									verticalAlignment->addElement(parabola);
-								}
-								else
-								{
-									//std::cout << "VerticalLine StartX : " + domChildElement.firstChildElement().attribute("startX").toStdString() + "\n";
-									buw::Vector2d start, end;
-									start.x()						=	domChildElement.firstChildElement().attribute("startX").toDouble();
-									start.y()						=	domChildElement.firstChildElement().attribute("startY").toDouble();
-									end.x()							=	domChildElement.lastChildElement().attribute("endX").toDouble();
-									end.y()							=	domChildElement.lastChildElement().attribute("endY").toDouble();
-									buw::ReferenceCounted<buw::VerticalAlignmentElement2DLine> vLine	=	std::make_shared<buw::VerticalAlignmentElement2DLine>(start, end);
-									verticalAlignment->addElement(vLine);
-								}
-								domVerChildNode = domVerChildNode.nextSibling();
-							}
-						}
-					}
-				}
-				alignment2D->setHorizontalAlignment(horizontalAlignment);
-				alignment2D->setVerticalAlignment(verticalAlignment);
-				std::wstring wstr(alignmentName.begin(), alignmentName.end());
-				alignment2D->setName(wstr);
-				alignmentModel_->addAlignment(alignment2D);
-				domNode = domNode.nextSibling();
-			}
-		}
-		xmlFile.close();
-	}
-	return alignmentModel_;
-}
 
 void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) {
     trafficSignModel_ = std::make_shared<OpenInfraPlatform::Infrastructure::TrafficSignModel>();
@@ -513,29 +151,6 @@ void OpenInfraPlatform::DataManagement::Data::import(const std::string & filenam
 	}
 }
 
-void OpenInfraPlatform::DataManagement::Data::importIfcAlignment1_0(const std::string & filename)
-{
-	BLUE_ASSERT(boost::filesystem::exists(filename))("File does not exist");
-
-	if (boost::filesystem::exists(filename))
-	{
-		clear(false);
-		merge_ = false;
-
-		currentJobID_ = AsyncJob::getInstance().startJob(&Data::startImportJobIfcAlignment1_0, this, filename);
-	}
-}
-
-
-void OpenInfraPlatform::DataManagement::Data::startImportJobIfcAlignment1_0(const std::string& filename)
-{
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing ").append(filename));
-
-	buw::String buwstrFilename = filename.c_str();
-	
-	importer_ = new buw::ImportIfcAlignment1x0(filename);		
-}
-
 void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing ").append(filename));
@@ -543,123 +158,96 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 	buw::String buwstrFilename = filename.c_str();
 	if (buwstrFilename.toLower().endsWith(".xml"))
 	{
-		// could be LandXML or OKSTRA
-
-		// The QDomDocument class represents an XML document.
-		QDomDocument xmlBOM;
-		// Load xml file as raw data
-		QFile f(filename.c_str());
-		if (!f.open(QIODevice::ReadOnly))
-		{
-			// Error while loading file
-			std::cerr << "Error while loading file" << std::endl;
-			throw std::runtime_error("Error while loading file");
-		}
-
-		// Set data into the QDomDocument before processing
-		xmlBOM.setContent(&f);
-		f.close();
-
-		// Extract the root markup
-		QDomElement root = xmlBOM.documentElement();
-
-		// Get root names and attributes
-		std::string type = root.tagName().toStdString();
-
-		if (boost::starts_with(type, "LandXML"))
-		{
-			OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing LandXML ").append(filename));
-			importer_ = new buw::ImportLandXml(filename);
-		}
-		else if (boost::starts_with(type, "LandInfra")) {
-			OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing LandInfra ").append(filename));
-			importer_ = new buw::ImportLandInfra(filename);
-		}
-		else
-		{
-			OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Okstra ").append(filename));
-			importer_ = new buw::ImportOkstra(filename);
-		}
+		//// could be LandXML or OKSTRA
+		//
+		//// The QDomDocument class represents an XML document.
+		//QDomDocument xmlBOM;
+		//// Load xml file as raw data
+		//QFile f(filename.c_str());
+		//if (!f.open(QIODevice::ReadOnly))
+		//{
+		//	// Error while loading file
+		//	std::cerr << "Error while loading file" << std::endl;
+		//	throw std::runtime_error("Error while loading file");
+		//}
+		//
+		//// Set data into the QDomDocument before processing
+		//xmlBOM.setContent(&f);
+		//f.close();
+		//
+		//// Extract the root markup
+		//QDomElement root = xmlBOM.documentElement();
+		//
+		//// Get root names and attributes
+		//std::string type = root.tagName().toStdString();
+		//
+		//if (boost::starts_with(type, "LandXML"))
+		//{
+		//	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing LandXML ").append(filename));
+		//	importer_ = new buw::ImportLandXml(filename);
+		//}
+		//else if (boost::starts_with(type, "LandInfra")) {
+		//	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing LandInfra ").append(filename));
+		//	importer_ = new buw::ImportLandInfra(filename);
+		//}
+		//else
+		//{
+		//	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Okstra ").append(filename));
+		//	importer_ = new buw::ImportOkstra(filename);
+		//}
 	}
 	else if (buwstrFilename.toLower().endsWith(".cte"))
 	{
 
-		OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Okstra ").append(filename));
-		importer_ = new buw::ImportOkstra(filename);
+		//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Okstra ").append(filename));
+		//importer_ = new buw::ImportOkstra(filename);
 	}
 	else if (buwstrFilename.toLower().endsWith(".rnd"))
 	{
 
-		OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing RoadXML ").append(filename));
-		importer_ = new buw::ImportRoadXML(filename);
+		//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing RoadXML ").append(filename));
+		//importer_ = new buw::ImportRoadXML(filename);
 	}
 	else if (buwstrFilename.toLower().endsWith(".ifczip")) 
 	{
-		QUuid id = QUuid::createUuid();
-		QString tempFilename = QDir::currentPath().append(QString("/").append(id.toString().append(".ifc")));
-
-		OpenInfraPlatform::DataManagement::IfcZipper* importZipper = new OpenInfraPlatform::DataManagement::IfcZipper(nullptr, QString(filename.data()), tempFilename, INFL);
-
-		importZipper->run();
-		importJob(tempFilename.toStdString());
-
-		QObject::connect(&OpenInfraPlatform::AsyncJob::getInstance(), &OpenInfraPlatform::AsyncJob::finished, importZipper, &OpenInfraPlatform::DataManagement::IfcZipper::removeFile);
-		QObject::connect(importZipper, &OpenInfraPlatform::DataManagement::IfcZipper::fileDeleted, importZipper, &QObject::deleteLater);
+		//QUuid id = QUuid::createUuid();
+		//QString tempFilename = QDir::currentPath().append(QString("/").append(id.toString().append(".ifc")));
+		//
+		//OpenInfraPlatform::DataManagement::IfcZipper* importZipper = new OpenInfraPlatform::DataManagement::IfcZipper(nullptr, QString(filename.data()), tempFilename, INFL);
+		//
+		//importZipper->run();
+		//importJob(tempFilename.toStdString());
+		//
+		//QObject::connect(&OpenInfraPlatform::AsyncJob::getInstance(), &OpenInfraPlatform::AsyncJob::finished, importZipper, &OpenInfraPlatform::DataManagement::IfcZipper::removeFile);
+		//QObject::connect(importZipper, &OpenInfraPlatform::DataManagement::IfcZipper::fileDeleted, importZipper, &QObject::deleteLater);
 	}
 	else if (buwstrFilename.toLower().endsWith(".ifc") || buwstrFilename.toLower().endsWith(".stp"))
 	{
 		using OpenInfraPlatform::IfcGeometryConverter::IfcPeekStepReader;
 		IfcPeekStepReader::IfcSchema ifcSchema = IfcPeekStepReader::parseIfcHeader(filename);
+		tempIfcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
 
-		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_2 ||
-			ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4 ||
-			ifcSchema == IfcPeekStepReader::IfcSchema::IFC_BRIDGE)
-		{
-			tempIfcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
-
-			if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_2)
-			{
-				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Ifc2x3 ").append(filename));
-
-				//using namespace OpenInfraPlatform::Ifc2x3;
-				//importIfcGeometry < emt::Ifc2x3EntityTypes, UnitConverter, Ifc2x3Model, IfcStepReader,
-				//	Ifc2x3Exception, Ifc2x3Entity >(tempIfcGeometryModel_, filename);
-			}
-			else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4)
-			{
-				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Ifc4 ").append(filename));
-				
-				//using namespace OpenInfraPlatform::Ifc4;
-				//importIfcGeometry<emt::Ifc4EntityTypes, UnitConverter, Ifc4Model, IfcStepReader,
-				//	Ifc4Exception, Ifc4Entity>(tempIfcGeometryModel_, filename);
-			}
-			else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_BRIDGE)
-			{
-				OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing IfcBridge ").append(filename));
-
-				//using namespace OpenInfraPlatform::IfcBridge;
-				//importIfcGeometry<emt::IfcBridgeEntityTypes, UnitConverter, IfcBridgeModel, IfcStepReader,
-				//	IfcBridgeException, IfcBridgeEntity>(tempIfcGeometryModel_, filename);
-			}
+		switch (ifcSchema) {
+		case IfcPeekStepReader::IfcSchema::IFC2X3:
+			expressModel_ = OpenInfraPlatform::IFC2X3::FromFile(filename);
+			break;
+		case IfcPeekStepReader::IfcSchema::IFC4:
+			expressModel_ = OpenInfraPlatform::IFC4::FromFile(filename);
+			break;
+		case IfcPeekStepReader::IfcSchema::IFC4X1:
+			expressModel_ = OpenInfraPlatform::IFC4X1::FromFile(filename);
+			break;
+		case IfcPeekStepReader::IfcSchema::IFC4X2_BIM4ROAD:
+			expressModel_ = OpenInfraPlatform::IFC4X2_BIM4ROAD::FromFile(filename);
+			break;
+		case IfcPeekStepReader::IfcSchema::IFC4X2_DRAFT_1:
+			expressModel_ = OpenInfraPlatform::IFC4X2_DRAFT_1::FromFile(filename);
+			break;
+		default:
+			BLUE_LOG(ERROR) << "No matching schema detected";
 		}
-		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_4x1)
-		{
-			OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing IfcAlignment ").append(filename));
-			//using namespace OpenInfraPlatform::IfcAlignment1x1;
-			//importIfcGeometry<emt::Ifc4x1EntityTypes, UnitConverter, IfcAlignment1x1Model, IfcStepReader,
-			//	IfcAlignment1x1Exception, IfcAlignment1x1Entity>(tempIfcGeometryModel_, filename);
-			importer_ = new buw::ImportIfc4x1(filename);
-		}
-		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC_ROAD)
-		{
 
-			OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing IfcRoad ").append(filename));
-			importer_ = new buw::ImportIfcRoad(filename);
-		}
-		else
-		{
-			throw::std::exception("IFC file schema is not support by application.");
-		}
+		
 	}
 	else if (buwstrFilename.toLower().endsWith(".osm"))
 	{
@@ -680,22 +268,22 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 
 void OpenInfraPlatform::DataManagement::Data::importOSM(const std::string& filename, const std::vector<std::string>& filter, int mode)
 {
-	BLUE_ASSERT(boost::filesystem::exists(filename))("File does not exist");
-
-	buw::String buwstrFilename = filename.c_str();
-
-	if (boost::filesystem::exists(filename) && buwstrFilename.toLower().endsWith(".osm"))
-	{
-		clear(false);
-		merge_ = false;
-
-		currentJobID_ = AsyncJob::getInstance().startJob(&Data::importOSMJob, this, filename, filter, mode);
-	}
+	//BLUE_ASSERT(boost::filesystem::exists(filename))("File does not exist");
+	//
+	//buw::String buwstrFilename = filename.c_str();
+	//
+	//if (boost::filesystem::exists(filename) && buwstrFilename.toLower().endsWith(".osm"))
+	//{
+	//	clear(false);
+	//	merge_ = false;
+	//
+	//	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importOSMJob, this, filename, filter, mode);
+	//}
 }
 void OpenInfraPlatform::DataManagement::Data::importOSMJob(const std::string& filename, const std::vector<std::string>& filter, int mode)
 {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing OpenStreetMap ").append(filename));
-	importer_ = new buw::ImportOSM(filename, filter, mode);
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing OpenStreetMap ").append(filename));
+	//importer_ = new buw::ImportOSM(filename, filter, mode);
 }
 
 void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool completed)
@@ -718,80 +306,80 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 	}
 
 	ChangeFlag flag = (ChangeFlag)0;
-	if (importer_)
-	{
-		flag = flag | ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::Preferences | ChangeFlag::TrafficModel | ChangeFlag::GirderModel | ChangeFlag::SlabFieldModel;
-
-		if (merge_)
-		{
-			for (auto alignment : importer_->getAlignmentModel()->getAlignments())
-			{
-				alignmentModel_->addAlignment(alignment);
-			}
-			for (auto surface : importer_->getDigitalElevationModel()->getSurfaces())
-			{
-				digitalElevationModel_->addSurface(surface);
-			}
-			for (auto breakLine : importer_->getDigitalElevationModel()->getBreakLines())
-			{
-				digitalElevationModel_->addBreakLine(breakLine);
-			}
-			for (auto girder : importer_->getGirderModel()->getAllItems())
-			{
-				girderModel_->addItem(girder);
-			}
-			for (auto slabField : importer_->getSlabFieldModel()->getAllItems())
-			{
-				slabFieldModel_->addItem(slabField);
-			}
-		}
-		else
-		{
-			alignmentModel_ = importer_->getAlignmentModel();
-			digitalElevationModel_ = importer_->getDigitalElevationModel();
-			trafficSignModel_ = importer_->getTrafficSignModel();
-			girderModel_ = importer_->getGirderModel();
-			slabFieldModel_ = importer_->getSlabFieldModel();
-			proxyModel_ = importer_->getProxyModel();
-		}
-	
-		if (proxyModel_)
-		{
-			if (proxyModel_->hasIfc4x1Data())
-			{
-				auto entities = proxyModel_->getIfc4x1Data();
-
-				for (auto it : entities)
-				{
-					switch (it.second->m_entity_enum)
-					{
-					case OpenInfraPlatform::IfcAlignment1x1::IFCMAPCONVERSION:
-					{
-						std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcMapConversion> mapConversion = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcMapConversion>(it.second);
-
-						m_Eastings = mapConversion->m_Eastings->m_value;
-						m_Northings = mapConversion->m_Northings->m_value;
-						m_OrthogonalHeight = mapConversion->m_OrthogonalHeight->m_value;
-
-					} break;
-
-					case OpenInfraPlatform::IfcAlignment1x1::IFCPROJECTEDCRS:
-					{
-						std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcProjectedCRS> projectedCRS = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcProjectedCRS>(it.second);
-						QString EPSGstring = QString(projectedCRS->m_Name->m_value.data());
-						m_Name = EPSGstring.split(":")[1].toInt();
-
-					} break;
-
-					default: break;
-					}
-				}
-			}
-		}
-
-		delete importer_;
-		importer_ = nullptr;
-	}
+	//if (importer_)
+	//{
+	//	flag = flag | ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::Preferences | ChangeFlag::TrafficModel | ChangeFlag::GirderModel | ChangeFlag::SlabFieldModel;
+	//
+	//	if (merge_)
+	//	{
+	//		for (auto alignment : importer_->getAlignmentModel()->getAlignments())
+	//		{
+	//			alignmentModel_->addAlignment(alignment);
+	//		}
+	//		for (auto surface : importer_->getDigitalElevationModel()->getSurfaces())
+	//		{
+	//			digitalElevationModel_->addSurface(surface);
+	//		}
+	//		for (auto breakLine : importer_->getDigitalElevationModel()->getBreakLines())
+	//		{
+	//			digitalElevationModel_->addBreakLine(breakLine);
+	//		}
+	//		for (auto girder : importer_->getGirderModel()->getAllItems())
+	//		{
+	//			girderModel_->addItem(girder);
+	//		}
+	//		for (auto slabField : importer_->getSlabFieldModel()->getAllItems())
+	//		{
+	//			slabFieldModel_->addItem(slabField);
+	//		}
+	//	}
+	//	else
+	//	{
+	//		alignmentModel_ = importer_->getAlignmentModel();
+	//		digitalElevationModel_ = importer_->getDigitalElevationModel();
+	//		trafficSignModel_ = importer_->getTrafficSignModel();
+	//		girderModel_ = importer_->getGirderModel();
+	//		slabFieldModel_ = importer_->getSlabFieldModel();
+	//		proxyModel_ = importer_->getProxyModel();
+	//	}
+	//
+	//	if (proxyModel_)
+	//	{
+	//		if (proxyModel_->hasIfc4x1Data())
+	//		{
+	//			auto entities = proxyModel_->getIfc4x1Data();
+	//
+	//			for (auto it : entities)
+	//			{
+	//				switch (it.second->m_entity_enum)
+	//				{
+	//				case OpenInfraPlatform::IfcAlignment1x1::IFCMAPCONVERSION:
+	//				{
+	//					std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcMapConversion> mapConversion = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcMapConversion>(it.second);
+	//
+	//					m_Eastings = mapConversion->m_Eastings->m_value;
+	//					m_Northings = mapConversion->m_Northings->m_value;
+	//					m_OrthogonalHeight = mapConversion->m_OrthogonalHeight->m_value;
+	//
+	//				} break;
+	//
+	//				case OpenInfraPlatform::IfcAlignment1x1::IFCPROJECTEDCRS:
+	//				{
+	//					std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcProjectedCRS> projectedCRS = std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcProjectedCRS>(it.second);
+	//					QString EPSGstring = QString(projectedCRS->m_Name->m_value.data());
+	//					m_Name = EPSGstring.split(":")[1].toInt();
+	//
+	//				} break;
+	//
+	//				default: break;
+	//				}
+	//			}
+	//		}
+	//	}
+	//
+	//	delete importer_;
+	//	importer_ = nullptr;
+	//}
 	if (tempIfcGeometryModel_)
 	{
 		flag = flag | ChangeFlag::IfcGeometry;
@@ -832,35 +420,6 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 	pushChange(flag);
 }
 
-void OpenInfraPlatform::DataManagement::Data::exportIfcRoadTUMProposal(const std::string& filename)
-{
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportIfcRoadTUMProposalJob, this, filename);
-}
-void OpenInfraPlatform::DataManagement::Data::exportIfcRoadTUMProposalJob(const std::string& filename)
-{
-	buw::IfcRoadExportDescription desc;
-	new buw::ExportIfcRoad(desc, alignmentModel_, digitalElevationModel_, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::exportIfc4x1(const buw::ifcAlignmentExportDescription& desc, const std::string & filename) {
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportIfc4x1Job, this, desc, filename);
-}
-void OpenInfraPlatform::DataManagement::Data::exportIfc4x1Job(const buw::ifcAlignmentExportDescription& desc, const std::string & filename) {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting IFC 4x1").append(filename));
-
-	new buw::ExportIfc4x1(desc, alignmentModel_, digitalElevationModel_, filename);
-}
-
-void OpenInfraPlatform::DataManagement::Data::exportIfcAlignment1x0(const buw::ifcAlignmentExportDescription& desc, const std::string & filename)
-{
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportIfcAlignmentJob, this, desc, filename);
-}
-void OpenInfraPlatform::DataManagement::Data::exportIfcAlignmentJob(const buw::ifcAlignmentExportDescription& desc, const std::string & filename)
-{
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting IfcAlignment").append(filename));
-
-	new buw::ExportIfcAlignment1x0(desc, alignmentModel_, digitalElevationModel_, filename);
-}
 
 void OpenInfraPlatform::DataManagement::Data::exportSVGAdvanced(const std::string& filename)
 {
@@ -886,105 +445,74 @@ void OpenInfraPlatform::DataManagement::Data::exportSVGJob(const std::string& fi
 
 void OpenInfraPlatform::DataManagement::Data::exportOkstra(const std::string& filename, const std::string& version)
 {
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportOkstraJob, this, filename, version);
+	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportOkstraJob, this, filename, version);
 }
 void OpenInfraPlatform::DataManagement::Data::exportOkstraTranslated(const std::string& filename)
 {
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportOkstraJobTranslated, this, filename);
+	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportOkstraJobTranslated, this, filename);
 }
 void OpenInfraPlatform::DataManagement::Data::exportIfcOWL4x1(const std::string & filename)
 {
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportIfcOWL4x1Job, this, filename);
+	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportIfcOWL4x1Job, this, filename);
 }
 void OpenInfraPlatform::DataManagement::Data::exportOkstraOWL(const std::string & filename)
 {
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportOkstraJobOWL, this, filename);
+	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportOkstraJobOWL, this, filename);
 }
 void OpenInfraPlatform::DataManagement::Data::exportOkstraJob(const std::string& filename, const std::string& version)
 {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra ").append(filename));
-
-	auto delimiter = version.find(".");
-	auto major = version.substr(0, delimiter);
-	auto minor = version.substr(delimiter + 1, version.size() - 1);
-
-	buw::ExportOkstra(stoi(major), stoi(minor), alignmentModel_, digitalElevationModel_, filename);
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra ").append(filename));
+	//
+	//auto delimiter = version.find(".");
+	//auto major = version.substr(0, delimiter);
+	//auto minor = version.substr(delimiter + 1, version.size() - 1);
+	//
+	//buw::ExportOkstra(stoi(major), stoi(minor), alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::exportOkstraJobTranslated(const std::string& filename)
 {
-	std::string tmpfilename = filename + ".tmp.xml";
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra ").append(filename));
-	buw::ExportOkstra(2, 17, alignmentModel_, digitalElevationModel_, tmpfilename);
-
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("translating Okstra ").append(filename));
-	QProcess process;
-	process.start("InstanceLevelTranslator.exe", { tmpfilename.c_str(), filename.c_str() });
-	process.waitForFinished(-1);
-
-	QFile::remove(tmpfilename.c_str());
+	//std::string tmpfilename = filename + ".tmp.xml";
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra ").append(filename));
+	//buw::ExportOkstra(2, 17, alignmentModel_, digitalElevationModel_, tmpfilename);
+	//
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("translating Okstra ").append(filename));
+	//QProcess process;
+	//process.start("InstanceLevelTranslator.exe", { tmpfilename.c_str(), filename.c_str() });
+	//process.waitForFinished(-1);
+	//
+	//QFile::remove(tmpfilename.c_str());
 }
 
 void OpenInfraPlatform::DataManagement::Data::exportOkstraJobOWL(const std::string& filename)
 {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra OWL").append(filename));
-	buw::ExportOkstraOWL(alignmentModel_, digitalElevationModel_, proxyModel_, filename);
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra OWL").append(filename));
+	//buw::ExportOkstraOWL(alignmentModel_, digitalElevationModel_, proxyModel_, filename);
 }
 void OpenInfraPlatform::DataManagement::Data::exportIfcOWL4x1Job(const std::string& filename)
 {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra OWL").append(filename));
-	buw::ExportIfcOWL4x1(alignmentModel_, digitalElevationModel_, filename);
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Okstra OWL").append(filename));
+	//buw::ExportIfcOWL4x1(alignmentModel_, digitalElevationModel_, filename);
 }
 
-void OpenInfraPlatform::DataManagement::Data::export3DAlignmentAsTextfile(const std::string& filename)
-{
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::export3DAlignmentAsTextfileJob, this, filename);
-}
 
 void OpenInfraPlatform::DataManagement::Data::exportPointCloud(const std::string & filename)
 {
-	auto exportPointCloudJob = [](OpenInfraPlatform::DataManagement::Data* data, const std::string &filename) {
-		OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Point Cloud ").append(filename));
-		QString extension = QString(filename.data()).split(".").back();
-		auto filter = FileIOFilter::FindBestFilterForExtension(extension.toUpper());
-		auto pointCloud = data->getPointCloud();
-		if(pointCloud) {
-			pointCloud->deleteAllScalarFields();
-			int error = FileIOFilter::SaveToFile(std::static_pointer_cast<ccHObject>(pointCloud).get(), QString(filename.data()), FileIOFilter::SaveParameters(), filter);
-		}
-	};
-
-	
-	currentJobID_ = AsyncJob::getInstance().startJob(std::ref(exportPointCloudJob), this, filename);
+	//auto exportPointCloudJob = [](OpenInfraPlatform::DataManagement::Data* data, const std::string &filename) {
+	//	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Point Cloud ").append(filename));
+	//	QString extension = QString(filename.data()).split(".").back();
+	//	auto filter = FileIOFilter::FindBestFilterForExtension(extension.toUpper());
+	//	auto pointCloud = data->getPointCloud();
+	//	if(pointCloud) {
+	//		pointCloud->deleteAllScalarFields();
+	//		int error = FileIOFilter::SaveToFile(std::static_pointer_cast<ccHObject>(pointCloud).get(), QString(filename.data()), FileIOFilter::SaveParameters(), filter);
+	//	}
+	//};
+	//
+	//
+	//currentJobID_ = AsyncJob::getInstance().startJob(std::ref(exportPointCloudJob), this, filename);
 }
 
-void OpenInfraPlatform::DataManagement::Data::export3DAlignmentAsTextfileJob(const std::string& filename)
-{
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting Textfile ").append(filename));
-
-	std::ofstream outfile;
-	outfile.open(filename.c_str());
-
-	outfile << "Format: X/Y/Z/stationing" << std::endl;
-
-	for (int i = 0; i < alignmentModel_->getAlignmentCount(); i++)
-	{
-		auto a = alignmentModel_->getAlignment(i);
-
-		outfile << "--------------------------------------------" << std::endl;
-		outfile << "Name         : " << a->getName().toCString() << std::endl;
-		outfile << "Start Station: " << a->getStartStation() << std::endl;
-		outfile << "End Station  : " << a->getEndStation() << std::endl;
-
-		for (double s = a->getStartStation(); s < a->getEndStation(); s += 1.0)
-		{
-			buw::Vector3d pos = a->getPosition(s);
-			outfile << std::fixed << pos << " " << s << std::endl;
-		}
-	}
-
-	outfile.close();
-}
 
 void OpenInfraPlatform::DataManagement::Data::createExcelReport(const std::string& filename, bool useDegree)
 {
@@ -1015,50 +543,48 @@ void OpenInfraPlatform::DataManagement::Data::createExcelReportJob(const std::st
 
 void OpenInfraPlatform::DataManagement::Data::exportLandXML(const std::string& filename)
 {
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportLandXMLJob, this, filename);
+	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportLandXMLJob, this, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::exportLandInfra(const std::string & filename)
 {
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportLandInfraJob, this, filename);
+	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::exportLandInfraJob, this, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::exportLandXMLJob(const std::string& filename)
 {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandXML ").append(filename));
-
-	buw::ExportLandXML(alignmentModel_, digitalElevationModel_, filename);
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandXML ").append(filename));
+	//buw::ExportLandXML(alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::exportLandInfraJob(const std::string & filename)
 {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandInfra ").append(filename));
-
-	buw::ExportLandInfra(alignmentModel_, digitalElevationModel_, filename);
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Exporting LandInfra ").append(filename));
+	//buw::ExportLandInfra(alignmentModel_, digitalElevationModel_, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::addAlignment( buw::ReferenceCounted<buw::IAlignment3D> alignment )
 {
-	alignmentModel_->addAlignment(alignment);
-	pushChange(ChangeFlag::AlignmentModel);
+	//alignmentModel_->addAlignment(alignment);
+	//pushChange(ChangeFlag::AlignmentModel);
 }
 
 void OpenInfraPlatform::DataManagement::Data::deleteAlignment(buw::ReferenceCounted<buw::IAlignment3D> alignment)
 {
-	alignmentModel_->deleteAlignment(alignment);
-	pushChange(ChangeFlag::AlignmentModel);
+	//alignmentModel_->deleteAlignment(alignment);
+	//pushChange(ChangeFlag::AlignmentModel);
 }
 
 void OpenInfraPlatform::DataManagement::Data::addSurface(buw::ReferenceCounted<buw::Surface> surface)
 {
-	digitalElevationModel_->addSurface(surface);
-	pushChange(ChangeFlag::DigitalElevationModel);
+	//digitalElevationModel_->addSurface(surface);
+	//pushChange(ChangeFlag::DigitalElevationModel);
 }
 
 void OpenInfraPlatform::DataManagement::Data::deleteSurface(buw::ReferenceCounted<buw::Surface> surface)
 {
-	digitalElevationModel_->deleteSurface(surface);
-	pushChange(ChangeFlag::DigitalElevationModel);
+	//digitalElevationModel_->deleteSurface(surface);
+	//pushChange(ChangeFlag::DigitalElevationModel);
 }
 
 void OpenInfraPlatform::DataManagement::Data::setClearColor( const buw::Color3f& color )
@@ -1127,11 +653,6 @@ const char* OpenInfraPlatform::DataManagement::Data::getApplicationNameXML()
 	return "TUMOpenInfraPlatform";
 }
 
-buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::DigitalElevationModel> 
-OpenInfraPlatform::DataManagement::Data::getDigitalElevationModel() const
-{
-	return digitalElevationModel_;
-}
 
 void OpenInfraPlatform::DataManagement::Data::enableShowReferenceCoordinateSystem( bool enable )
 {
@@ -1158,40 +679,27 @@ bool OpenInfraPlatform::DataManagement::Data::isSkyboxEnabled() const
 }
 
 
-void OpenInfraPlatform::DataManagement::Data::importXYZ(const std::string& filename, const buw::Vector2d& start, const buw::Vector2d& end)
-{
-	merge_ = true;
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importXYZJob, this, filename, start, end);
-}
-
-void OpenInfraPlatform::DataManagement::Data::importXYZJob(const std::string& filename, const buw::Vector2d& start, const buw::Vector2d& end)
-{
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing XYZ ").append(filename));
-
-	importer_ = new buw::XYZImport(filename, start, end);
-}
-
 buw::Vector3d OpenInfraPlatform::DataManagement::Data::getOffset() const
 {
 	buw::Vector3d minPos;
 	buw::Vector3d maxPos;
-	if (digitalElevationModel_)
-		digitalElevationModel_->getSurfacesExtend(minPos, maxPos);
-
-	if (alignmentModel_ && alignmentModel_->getAlignmentCount() > 0)
-	{
-		auto aabb = alignmentModel_->getExtends();
-		if (digitalElevationModel_ && digitalElevationModel_->getSurfaceCount() > 0)
-		{
-			minPos = buw::minimizedVector(minPos, aabb.getMinimum());
-			maxPos = buw::maximizedVector(maxPos, aabb.getMaximum());
-		}
-		else
-		{
-			minPos = aabb.getMinimum();
-			maxPos = aabb.getMaximum();
-		}
-	}
+	//if (digitalElevationModel_)
+	//	digitalElevationModel_->getSurfacesExtend(minPos, maxPos);
+	//
+	//if (alignmentModel_ && alignmentModel_->getAlignmentCount() > 0)
+	//{
+	//	auto aabb = alignmentModel_->getExtends();
+	//	if (digitalElevationModel_ && digitalElevationModel_->getSurfaceCount() > 0)
+	//	{
+	//		minPos = buw::minimizedVector(minPos, aabb.getMinimum());
+	//		maxPos = buw::maximizedVector(maxPos, aabb.getMaximum());
+	//	}
+	//	else
+	//	{
+	//		minPos = aabb.getMinimum();
+	//		maxPos = aabb.getMaximum();
+	//	}
+	//}
 
 	if (pointCloud_->size() > 0)
 	{
@@ -1209,31 +717,29 @@ buw::Vector3d OpenInfraPlatform::DataManagement::Data::getOffset() const
 void OpenInfraPlatform::DataManagement::Data::createTerrainFromHeightMap(
 	const std::string& filename)
 {
-	merge_ = true;
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::createTerrainFromHeightMapJob, this, filename);
+	//merge_ = true;
+	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::createTerrainFromHeightMapJob, this, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::createTerrainFromHeightMapJob(
 	const std::string& filename)
 {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Creating terrain from ").append(filename));
-
-	importer_ = new buw::HeightmapImport(filename, getOffset());
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Creating terrain from ").append(filename));
+	//importer_ = new buw::HeightmapImport(filename, getOffset());
 }
 
 void OpenInfraPlatform::DataManagement::Data::createTerrainFromMesh(
 	const std::string& filename)
 {
-	merge_ = true;
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::createTerrainFromMeshJob, this, filename);
+	//merge_ = true;
+	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::createTerrainFromMeshJob, this, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::createTerrainFromMeshJob(
 	const std::string& filename)
 {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Mesh ").append(filename));
-
-	importer_ = new buw::MeshImport(filename, getOffset());
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing Mesh ").append(filename));
+	//importer_ = new buw::MeshImport(filename, getOffset());
 }
 
 // Add Georeference
@@ -1284,13 +790,14 @@ void  OpenInfraPlatform::DataManagement::Data::setEPSGcodeName(QString value)
 void OpenInfraPlatform::DataManagement::Data::createRandomTerrain(
 	const buw::terrainDescription& td)
 {
-	merge_ = true;
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::createRandomTerrainJob, this, td);
+	//merge_ = true;
+	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::createRandomTerrainJob, this, td);
 }
+
 void OpenInfraPlatform::DataManagement::Data::createRandomTerrainJob(const buw::terrainDescription& td)
 {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Creating random terrain"));
-	importer_ = new buw::RandomTerrainImport(td, getOffset());
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Creating random terrain"));
+	//importer_ = new buw::RandomTerrainImport(td, getOffset());
 }
 
 
@@ -1306,12 +813,6 @@ bool OpenInfraPlatform::DataManagement::Data::isViewCubeEnabled()
 	return bShowViewCube_;
 }
 
-void OpenInfraPlatform::DataManagement::Data::computeSurfaceProfile()
-{
-	buw::ReferenceCounted<buw::IAlignment3D> a = alignmentModel_->getAlignment(0);
-
-	std::vector<std::pair<double, double>> surfaceProfile = digitalElevationModel_->getSurfaceProfile(a);
-}
 
 void OpenInfraPlatform::DataManagement::Data::setAlignmentLineWidth(const double width)
 {
@@ -1320,35 +821,6 @@ void OpenInfraPlatform::DataManagement::Data::setAlignmentLineWidth(const double
 	pushChange(ChangeFlag::AlignmentModel);
 }
 
-buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> OpenInfraPlatform::DataManagement::Data::getAlignmentModel() const
-{
-	return alignmentModel_;
-}
-
-void OpenInfraPlatform::DataManagement::Data::removeAccidentReport(const int index)
-{
-	proxyModel_->removeAccidentReportAt(index);
-	pushChange(ChangeFlag::ProxyModel);
-}
-
-int OpenInfraPlatform::DataManagement::Data::createAccidentReport(const OpenInfraPlatform::Infrastructure::accidentReportDescription& ca)
-{
-	int index = proxyModel_->addAccidentReport(ca);
-
-	pushChange(ChangeFlag::ProxyModel);
-
-	return index;
-}
-
-buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::GirderModel> OpenInfraPlatform::DataManagement::Data::getGirderModel() const
-{
-	return girderModel_;
-}
-
-buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::SlabFieldModel> OpenInfraPlatform::DataManagement::Data::getSlabFieldModel() const
-{
-	return slabFieldModel_;
-}
 
 buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> OpenInfraPlatform::DataManagement::Data::getIfcGeometryModel() const
 { 
@@ -1370,34 +842,34 @@ const int OpenInfraPlatform::DataManagement::Data::getPointCloudPointCount() con
 
 void OpenInfraPlatform::DataManagement::Data::importLAS(const std::string& filename)
 {
-	merge_ = false;
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importLASJob, this, filename);
+	//merge_ = false;
+	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::importLASJob, this, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::importBIN(const std::string& filename)
 {
-	merge_ = false;
-	currentJobID_ = AsyncJob::getInstance().startJob(&Data::importBINJob, this, filename);
+	//merge_ = false;
+	//currentJobID_ = AsyncJob::getInstance().startJob(&Data::importBINJob, this, filename);
 }
 
 void OpenInfraPlatform::DataManagement::Data::importLASJob(const std::string& filename)
 {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing laserscan ").append(filename));
-
-	if (tempPointCloud_)
-		tempPointCloud_ = nullptr;
-
-	tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing laserscan ").append(filename));
+	//
+	//if (tempPointCloud_)
+	//	tempPointCloud_ = nullptr;
+	//
+	//tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
 }
 
 void OpenInfraPlatform::DataManagement::Data::importBINJob(const std::string& filename)
 {
-	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing laserscan ").append(filename));
-
-	if(tempPointCloud_)
-		tempPointCloud_ = nullptr;
-
-	tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
+	//OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing laserscan ").append(filename));
+	//
+	//if(tempPointCloud_)
+	//	tempPointCloud_ = nullptr;
+	//
+	//tempPointCloud_ = buw::PointCloud::FromFile(filename.c_str());
 }
 
 
@@ -1441,7 +913,7 @@ template <
 	class IfcExceptionT,
 	class IfcEntityT
 >
-void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename)
+void importIfcGeometry(buw::ReferenceCounted<oip::EXPRESSModel> expressModel, buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const std::string& filename)
 {
 	using namespace OpenInfraPlatform::IfcGeometryConverter;
 	
@@ -1450,8 +922,7 @@ void importIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConve
 
 	try
 	{
-		importer.readStepFile(filename.c_str());
-		importer.collectGeometryData();
+		importer.collectGeometryData(model);
 	}
 	catch (std::exception& e)
 	{
