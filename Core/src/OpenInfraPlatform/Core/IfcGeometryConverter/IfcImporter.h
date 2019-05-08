@@ -67,8 +67,10 @@ namespace OpenInfraPlatform
 				// if yes, then apply the placement
 				if (product->ObjectPlacement)
 				{
+					decltype(product->ObjectPlacement)::type &objectPlacement = product->ObjectPlacement;
+					
 					std::set<int> placementAlreadyApplied;
-					PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(product->ObjectPlacement,
+					PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(objectPlacement.lock(),
 						matProduct, lengthFactor,
 						placementAlreadyApplied);
 				}
@@ -77,15 +79,19 @@ namespace OpenInfraPlatform
 				std::stringstream strerr;
 
 				// go through all representations of the product
-				std::shared_ptr<typename IfcEntityTypesT::IfcProductRepresentation>& representation = product->Representation;
-				// so evaluate its geometry
-				for (auto& rep : representation->Representations)
-				{
-					// convert each shape of the represenation
-					repConverter->convertIfcRepresentation(rep, matProduct, productShape, strerr);
-				}
+				if (product->Representation) {
+					auto& representation = product->Representation;
+					// so evaluate its geometry
+					for (auto rep : representation->Representations)
+					{
+						// convert each shape of the represenation
+						repConverter->convertIfcRepresentation(rep.lock(), matProduct, productShape, strerr);
+					}
 
-				IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, strerr, repConverter);
+					IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, strerr, repConverter);
+				}
+				
+
 
 #ifdef _DEBUG
 				if (strerr.tellp() <= 0) return;
