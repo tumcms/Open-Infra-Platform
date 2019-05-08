@@ -276,10 +276,11 @@ namespace OpenInfraPlatform
 					if (grid_intersection)
 					{
 						// IntersectingAxes type IfcGridAxis L[2:2]
-	/*Syntax?*/			std::vector<carve::geom::vector<2>>& vec_grid_axis = grid_intersection->IntersectingAxes;
+						/*Syntax?*/			
+						//std::vector<carve::geom::vector<2>>& vec_grid_axis = grid_intersection->IntersectingAxes;
 
 						// OffsetDistances type IfcLengthMeasure L[2:3]
-						std::vector<double>& vec_offsets = grid_intersection->OffsetDistances;
+						//std::vector<double>& vec_offsets = grid_intersection->OffsetDistances;
 						// TODO: implement
 
 						// IfcPlacementRefDirection [OPTIONAL]
