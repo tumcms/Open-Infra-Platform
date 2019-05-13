@@ -15,26 +15,20 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-# Updated to 3.13 in revision 531
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0074 NEW)
-cmake_policy(SET CMP0071 OLD)
 project(OpenInfraPlatform)
 
 #-------------------------------------------------------------------------------------
-# CMake definitions and propertiess
+# CMake definitions and properties
 #-------------------------------------------------------------------------------------
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/)
 set(CMAKE_AUTOMOC ON)
-
-# Changed C++ standard to 14 in revision 534
-set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_DEBUG_POSTFIX "d")
 include(ProjectVersion)
-
 enable_testing()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -97,32 +91,16 @@ option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to find boost, Eigen and Qt
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
-	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
-		"C:\\thirdparty\\boost_1_65_1")
-	find_path(Boost_DIR NAMES boost/version.hpp HINTS
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
-		"C:\\thirdparty\\boost_1_65_1")
-	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4"
-		"C:\\thirdparty\\eigen")
+	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1")
+	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4")
 	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64")
-	find_path(GTEST_ROOT NAMES lib/cmake/GTest/GTestConfig.cmake HINTS
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest"
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-master")
-	if(NOT GTEST_ROOT)
-		find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS
-			"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
-			"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
-	endif()
+	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS 
+		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
+		      "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
 	find_path(ZLIB_ROOT NAMES zlib.h HINTS 
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
-	find_path(RAPTOR2_ROOT_DIR NAMES include/raptor2/raptor2.h HINTS 
-	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\raptor2"
-			  "C:\\thirdparty\\raptor2")
-	# Added to predefined path list in revision 533
-	find_path(FFTW3_DIR NAMES FFTW3Config.cmake HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\fftw-3.3.8\\lib\\cmake\\fftw3")
-	find_path(visit_struct_INCLUDE_DIR NAMES visit_struct/visit_struct.hpp HINTS "C:\\thirdparty\\visit_struct-master\\include")
+	find_path(RAPTOR2_ROOT_DIR include/raptor2/raptor2.h HINTS 
+	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\raptor2")		
 endif()
 
 #------------------------------------------------------------------------------
@@ -140,7 +118,7 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE       ${CMAKE_BINARY_DIR}/Release)
 
 add_definitions(-D_UNICODE 			# Unicode rules
 				#-DQT_NO_KEYWORDS 	# No qt keywords
-				#-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
+				-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
 ) # -DNOMINMAX does not work because GDI+ needs these macros
 
 if (WIN32)
@@ -152,27 +130,18 @@ endif (WIN32)
 # Find required thirdparty libraries.
 #------------------------------------------------------------------------------
 
-set(Boost_USE_STATIC_LIBS ON)
-
-# As of revision 530, boost 1.65.1 required.
-find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
-
-#if(MSVC_VERSION LESS 1910)
-#	add_compile_definitions(BOOST_VARIANT_DO_NOT_USE_VARIADIC_TEMPLATES)
-#endif()
-
-find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
-
-# Deprecated as of Revision 530
-#find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
+set(Boost_USE_STATIC_LIBS   ON)
+find_package(Boost 1.63.0 COMPONENTS signals system filesystem REQUIRED) # we suggest Boost 1.65.1
+find_package(BlueFramework COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
+find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
 find_package(Eigen3 3.3.2  REQUIRED)
 find_package(Oklabi REQUIRED)
-find_package(gtest 1.9.0 REQUIRED) 
+find_package(gtest REQUIRED) 
 find_package(ZLIB 1.2.10 REQUIRED)
-find_package(libLAS REQUIRED)
+# find_package(libLAS REQUIRED)	02.05.2019 moved to pcp module (coetzee)
 find_package(qhull REQUIRED)
 find_package(raptor2 REQUIRED)
-find_package(CloudCompare REQUIRED)
+# find_package(CC REQUIRED)	02.05.2019 moved to pcp module (coetzee)
 find_path(visit_struct_INCLUDE_DIR REQUIRED)
 
 # Added 12.09.2018: FFTW3
@@ -309,8 +278,8 @@ include_directories(
 	external/carve/common
 	ExpressBinding/src
 	Infrastructure/src
-	${CC_INCLUDE_DIRS}
-	external/qcustomplot
+	# ${CC_INCLUDE_DIRS}	02.05.2019 moved to pcp module (coetzee)
+	external/qcustomplot	
 	${FFTW3_INCLUDE_DIRS}
 )
 
@@ -324,7 +293,6 @@ link_directories(
 # Add subdirectories.
 #------------------------------------------------------------------------------
 
-
 add_subdirectory(external/QtXlsxWriter)
 add_subdirectory(external/QSimpleUpdater)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
@@ -334,24 +302,16 @@ add_subdirectory(oip)
 add_subdirectory(IfcBridgeGenerator)
 
 # ExpressGenerator rework revision 473.
-# Renamed to ExpressBindingGenerator in revision 537
-add_subdirectory(ExpressBindingGenerator)
+add_subdirectory(ExpressGenerator)
 
-# Core added in revision 483
-add_subdirectory(Core)
+if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding)
+	add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding)
+endif()
 
-# As of revision 531, replaces old OpenInfraPlatform_EarlyBinding_DIR
-add_subdirectory(${PROJECT_SOURCE_DIR}/EarlyBinding)
-
-foreach(format ${IFC_FORMATS})	
-	add_compile_definitions(OIP_MODULE_EARLYBINDING_${format})
-endforeach()
-
-# Do currently not work
+# Do currently not work.
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)
 #add_subdirectory(IfcTunnelGenerator)
-
 
 #------------------------------------------------------------------------------
 # Collect source files
@@ -361,9 +321,25 @@ endforeach()
 file(GLOB OpenInfraPlatform_Source									src/OpenInfraPlatform/*.*)
 file(GLOB OpenInfraPlatform_Core_Source 							src/OpenInfraPlatform/Core/*.*)
 file(GLOB OpenInfraPlatform_Data_Source 							src/OpenInfraPlatform/Data/*.*)
-#file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
+file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Source 					src/OpenInfraPlatform/DataManagement/*.*)
-file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)	
+file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)
+	#src/OpenInfraPlatform/IfcGeometryConverter/CarveHeaders.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc2x3EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc2x3EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4x1EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4x1EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfc4EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfc4EntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTBasicIfcBridgeEntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/EMTIfcBridgeEntityTypes.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/GeometryInputData.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/GeometrySettings.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/GeomUtils.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/IfcPeekStepReader.*
+	#src/OpenInfraPlatform/IfcGeometryConverter/RecursiveCallException.h
+	#src/OpenInfraPlatform/IfcGeometryConverter/UnhandledRepresentationException.h)
 
 # UnitTesting for images is currently not working but still in the code so files have to be collected
 file(GLOB OpenInfraPlatform_UnitTesting_Source						src/OpenInfraPlatform/UnitTesting/*.*)
@@ -431,7 +407,7 @@ source_group(OpenInfraPlatform										FILES ${OpenInfraPlatform_Source})
 source_group(OpenInfraPlatform\\Core								FILES ${OpenInfraPlatform_Core_Source})
 source_group(OpenInfraPlatform\\Data								FILES ${OpenInfraPlatform_Data_Source})
 source_group(OpenInfraPlatform\\DataManagement						FILES ${OpenInfraPlatform_DataManagement_Source})
-#source_group(OpenInfraPlatform\\DataManagement\\Command				FILES ${OpenInfraPlatform_DataManagement_Command_Source})
+source_group(OpenInfraPlatform\\DataManagement\\Command				FILES ${OpenInfraPlatform_DataManagement_Command_Source})
 source_group(OpenInfraPlatform\\IfcGeometryConverter				FILES ${OpenInfraPlatform_IfcGeometryConverter_Source})
 
 # Set Shader source groups
@@ -482,7 +458,7 @@ add_executable(OpenInfraPlatform.UI
 	${OpenInfraPlatform_Core_Source}
 	${OpenInfraPlatform_Data_Source}
 	${OpenInfraPlatform_DataManagement_Source}
-	#${OpenInfraPlatform_DataManagement_Command_Source}
+	${OpenInfraPlatform_DataManagement_Command_Source}
 	${OpenInfraPlatform_IfcGeometryConverter_Source}
 	${OpenInfraPlatform_UnitTesting_Source}
 	${OpenInfraPlatform_UserInterface_Source}
@@ -505,16 +481,17 @@ target_link_libraries(OpenInfraPlatform.UI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::
 
 target_link_libraries( OpenInfraPlatform.UI
 	OpenInfraPlatform.Infrastructure
+	OpenInfraPlatform.ExpressBinding	
 	${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 	Qt5::WinMain  # New target available via find_package ( Qt5Core )
 	${BLUEFRAMEWORK_LIBRARIES}
 	QtXlsxWriter
 	QSimpleUpdater
-	${LIBLAS_LIBRARIES}
+	# ${LIBLAS_LIBRARIES}	02.05.2019 moved to pcp module (coetzee)
 	carve
 	ZLIB::ZLIB
 	Rpcrt4.lib
-	${CC_LIBRARIES}
+	# ${CC_LIBRARIES}	02.05.2019 moved to pcp module (coetzee)
 	fftw3.lib
 )
 
@@ -528,7 +505,8 @@ target_link_libraries( OpenInfraPlatform.UI
 BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 # CloudCompare Copy Binaries
-CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
+# CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
+# 02.05.2019 move to pcp module (coetzee) 
 
 # Oklabi Copy Binaries
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
@@ -668,24 +646,28 @@ add_thirdparty(test_carve_polyhedrons_2	"carve")
 #-------------------------------------------------------------------------------------
 
 set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
-set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
+set_target_properties(CopyOpenInfraPlatformUIResources 					PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
-set_target_properties(CloudCompareCopyBinaries 				PROPERTIES FOLDER "Copy")
+set_target_properties(BlueFrameworkCopyBinaries 					PROPERTIES FOLDER "Copy")
+#set_target_properties(CloudCompareCopyBinaries 					PROPERTIES FOLDER "Copy")	02.05.2019 moved to pcp module (coetzee)
 set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
-set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
-# Switched to static gtest on 28.11.2018 / Revision 388+
-#set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
-set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(OpenInfraPlatform.ExpressBindingGenerator	 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
+set_target_properties(QSimpleUpdaterCopyBinaries					PROPERTIES FOLDER "Copy")
+#Switched to static gtest on 28.11.2018 / Revision 388+
+#set_target_properties(GTestCopyBinaries						PROPERTIES FOLDER "Copy")
+#set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")	02.05.2019 moved to pcp module (coetzee)
+set_target_properties(OpenInfraPlatform.ExpressGenerator	 			PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
+set_target_properties(GenerateEarlyBinding					 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
+set_target_properties(UpdateBoostMPL					 		PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
+#set_target_properties(OpenInfraPlatform.EXPRESS2Source		 			PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
-set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.CommandLineUtilities 	PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.IfcTunnelGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.Infrastructure		 PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.PointCloudProcessing	PROPERTIES FOLDER "OpenInfraPlatform")	# 02.05.2019 moved to pcp module (coetzee)
 #set_target_properties(OpenInfraPlatform.LandXMLViewer		 PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.RoadXMLViewer		 PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.UI					 PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.UI			PROPERTIES FOLDER "OpenInfraPlatform")
 
 #-------------------------------------------------------------------------------------
 # Deployment & Installation.
@@ -757,7 +739,9 @@ installData(${CMAKE_BINARY_DIR}/$<CONFIG>/res)
 installData(${CMAKE_BINARY_DIR}/$<CONFIG>/fbliste)
 installData(${CMAKE_BINARY_DIR}/Style)
 		
-install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll ${CMAKE_BINARY_DIR}/Release/tinyxml2.dll
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} #${LIBLAS_RELEASE_BINARIES} 02.05.2019 moved to pcp module (coetzee)
+${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} #${CC_RELEASE_BINARIES} 02.05.2019 moved to pcp module (coetzee)
+${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll ${CMAKE_BINARY_DIR}/Release/tinyxml2.dll
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 	
@@ -782,3 +766,4 @@ install(FILES ${Qt5_ICONENGINES_PLUGINS_DLLS}
 	COMPONENT oip_thirdparty)
 	
 include(CPack)
+
