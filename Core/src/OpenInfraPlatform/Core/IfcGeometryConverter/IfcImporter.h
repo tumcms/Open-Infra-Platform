@@ -67,8 +67,18 @@ namespace OpenInfraPlatform
 				// if yes, then apply the placement
 				if (product->ObjectPlacement)
 				{
+					// decltype(x) returns the compile time type of x.
+					//decltype(product->ObjectPlacement)::type &objectPlacement = product->ObjectPlacement;
+
+					OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement = product->ObjectPlacement;
+
+					//auto& optObjectPlacement = product->ObjectPlacement;	// store optional<weak_ptr> product->ObjectPlacement in optObjectPlacement.
+					//auto& objectPlacement = *optObjectPlacement;			// extract weak_ptr from optional<weak_ptr> optObjectPlacement.
+					auto& objectPlacement_ptr = objectPlacement.lock();		// get shared_ptr used to construct the weak_ptr.
+					// OR auto& objectPlacement = optObjectPlacement.get();
+
 					std::set<int> placementAlreadyApplied;
-					PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(product->ObjectPlacement,
+					PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(objectPlacement_ptr,
 						matProduct, lengthFactor,
 						placementAlreadyApplied);
 				}
@@ -77,15 +87,19 @@ namespace OpenInfraPlatform
 				std::stringstream strerr;
 
 				// go through all representations of the product
-				std::shared_ptr<typename IfcEntityTypesT::IfcProductRepresentation>& representation = product->Representation;
-				// so evaluate its geometry
-				for (auto& rep : representation->Representations)
-				{
-					// convert each shape of the represenation
-					repConverter->convertIfcRepresentation(rep, matProduct, productShape, strerr);
-				}
+				if (product->Representation) {
+					auto& representation = product->Representation;
+					// so evaluate its geometry
+					for (auto rep : representation->Representations)
+					{
+						// convert each shape of the represenation
+						repConverter->convertIfcRepresentation(rep.lock(), matProduct, productShape, strerr);
+					}
 
-				IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, strerr, repConverter);
+					IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, strerr, repConverter);
+				}
+				
+
 
 #ifdef _DEBUG
 				if (strerr.tellp() <= 0) return;

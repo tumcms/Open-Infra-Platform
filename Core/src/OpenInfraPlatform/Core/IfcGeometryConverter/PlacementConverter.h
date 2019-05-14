@@ -50,7 +50,7 @@ namespace OpenInfraPlatform
 				double length_factor)
 			{
 				// (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
-				if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis1Placement>(placement))
+				if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis1Placement>(placement))
 				{
 					std::stringstream ss;
 					#ifdef _DEBUG
@@ -60,17 +60,17 @@ namespace OpenInfraPlatform
 				}
 
 				// (2/3) IfcAxis2Placement2D SUBTYPE OF IfcPlacement 
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(placement))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(placement))
 				{
-					shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D> axis2placement2d = 
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(placement);
+					std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D> axis2placement2d = 
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(placement);
 					convertIfcAxis2Placement2D(axis2placement2d, matrix, length_factor);
 				}
 
 				// (3/3) IfcAxis2Placement3D SUBTYPE OF IfcPlacement
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(placement))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(placement))
 				{
-					shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d = dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(placement);
+					std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(placement);
 					convertIfcAxis2Placement3D(axis2placement3d, matrix, length_factor);
 				}
 				else
@@ -220,33 +220,39 @@ namespace OpenInfraPlatform
 				carve::math::Matrix object_placement_matrix(carve::math::Matrix::IDENT());
 
 				// (1/2) IfcLocalPLacement SUBTYPE OF IfcObjectPlacement
-				shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement = 
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcLocalPlacement>(object_placement);			
+				std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement = 
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLocalPlacement>(object_placement);			
 				if(local_placement)
 				{
 					// Relative Placement type IfcAxis2Placement [1:1]
 					if(local_placement->RelativePlacement)
 					{
-						shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement> axis2placement = local_placement->RelativePlacement;
-						
-						// IfcAxis2Placement = SELECT(IfcAxis2Placement2D,IfcAxis2Placement3D)
-						if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(axis2placement))
-						{
-							shared_ptr<typename IfcEntityTypesT::IfcPlacement> placement = 
-								dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(axis2placement);
-							carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
-							convertIfcPlacement(placement, relative_placement, length_factor);
-							object_placement_matrix = relative_placement;
+						decltype(local_placement->RelativePlacement)& axis2placement = local_placement->RelativePlacement;						
+						carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
+
+						switch (axis2placement.which()) {
+						case 0:
+							convertIfcAxis2Placement2D(axis2placement.get<0>().lock(), relative_placement, length_factor);
+							break;
+						case 1:
+							convertIfcAxis2Placement3D(axis2placement.get<1>().lock(), relative_placement, length_factor);
+							break;
+						default:
+							break;
 						}
+
+						//convertIfcPlacement(placement, relative_placement, length_factor);
+						object_placement_matrix = relative_placement;
+						
 					}
 
 					// PlacementRelTo type IfcObjectPlacement [0:1]
 					if (local_placement->PlacementRelTo)
 					{
 						// Reference to Object that provides the relative placement by its local coordinate system. 
-						shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement> local_object_placement = local_placement->PlacementRelTo;
+						decltype(local_placement->PlacementRelTo)::type& local_object_placement = local_placement->PlacementRelTo;
 						carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
-						convertIfcObjectPlacement(local_object_placement, relative_placement, length_factor, already_applied);
+						convertIfcObjectPlacement(local_object_placement.lock(), relative_placement, length_factor, already_applied);
 						object_placement_matrix = relative_placement*object_placement_matrix;
 					}
 					else
@@ -259,22 +265,22 @@ namespace OpenInfraPlatform
 				}
 
 				// (2/2) IfcGridPlacement SUBTYPE OF IfcObjectPlacement
-				else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcGridPlacement>(object_placement))
+				else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGridPlacement>(object_placement))
 				{
-					shared_ptr<typename IfcEntityTypesT::IfcGridPlacement> grid_placement = 
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcGridPlacement>(object_placement);
+					std::shared_ptr<typename IfcEntityTypesT::IfcGridPlacement> grid_placement = 
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGridPlacement>(object_placement);
 
 					// PlacementLocation type IfcVirtualGridIntersection
-					shared_ptr<typename IfcEntityTypesT::IfcVirtualGridIntersection> grid_intersection = 
-						grid_placement->PlacementLocation;
+					auto grid_intersection = grid_placement->PlacementLocation;
 
 					if (grid_intersection)
 					{
 						// IntersectingAxes type IfcGridAxis L[2:2]
-	/*Syntax?*/			std::vector<carve::geom::vector<2>>& vec_grid_axis = grid_intersection->IntersectingAxes;
+						/*Syntax?*/			
+						//std::vector<carve::geom::vector<2>>& vec_grid_axis = grid_intersection->IntersectingAxes;
 
 						// OffsetDistances type IfcLengthMeasure L[2:3]
-						std::vector<double>>& vec_offsets = grid_intersection->OffsetDistances;
+						//std::vector<double>& vec_offsets = grid_intersection->OffsetDistances;
 						// TODO: implement
 
 						// IfcPlacementRefDirection [OPTIONAL]
@@ -296,8 +302,8 @@ namespace OpenInfraPlatform
 					return;
 				}
 
-				shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationContext> geom_context = 
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationContext>(context);
+				std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationContext> geom_context = 
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationContext>(context);
 				if (!geom_context)
 				{
 					return;
@@ -318,13 +324,13 @@ namespace OpenInfraPlatform
 				// CoordinateSpaceDimension type IfcDimensionCount, Precision type IfcReal [OPTIONAL], World Coordinate System type IfcAxis2Placement, TrueNorth type IfcDirection [OPTIONAL].
 				int dim_count = geom_context->CoordinateSpaceDimension;
 				double	precision = geom_context->Precision;				
-				shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement>& world_coords = geom_context->WorldCoordinateSystem;
+				std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement>& world_coords = geom_context->WorldCoordinateSystem;
 				double true_north = geom_context->TrueNorth;	
 
 				// Inverse attributes: std::vector<weak_ptr<IfcGeometricRepresentationSubContext> >	HasSubContexts_inverse;
 
 				carve::math::Matrix world_coords_matrix(carve::math::Matrix::IDENT());
-				shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> world_coords_3d = dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(world_coords);
+				std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> world_coords_3d = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(world_coords);
 				if (world_coords_3d)
 				{
 					PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(world_coords_3d, world_coords_matrix, length_factor);
@@ -333,16 +339,16 @@ namespace OpenInfraPlatform
 				matrix = matrix*world_coords_matrix;
 
 				// Get inverse attribute.
-				shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext> geom_sub_context = 
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>(geom_context);
+				std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext> geom_sub_context = 
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>(geom_context);
 				if (geom_sub_context)
 				{
 					// Get attributes.
 					// ParentContext type IfcGeometricRepresentationContext, TargetScale type IfcPositiveRatioMeasure [OPTIONAL], TargetView type IfcGeometricProjectionEnum, UserDefinedTargetView type IfcLabel [OPTIONAL]
-					shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& parent_context = geom_sub_context->ParentContext;
+					std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& parent_context = geom_sub_context->ParentContext;
 					double target_scale = geom_sub_context->TargetScale;				
-					shared_ptr<typename IfcEntityTypesT::IfcGeometricProjectionEnum>& target_view = geom_sub_context->TargetView;
-					shared_ptr<typename IfcEntityTypesT::IfcLabel>& user_target_view = geom_sub_context->UserDefinedTargetView;	
+					std::shared_ptr<typename IfcEntityTypesT::IfcGeometricProjectionEnum>& target_view = geom_sub_context->TargetView;
+					std::shared_ptr<typename IfcEntityTypesT::IfcLabel>& user_target_view = geom_sub_context->UserDefinedTargetView;	
 					
 					if (parent_context)
 					{
@@ -368,10 +374,10 @@ namespace OpenInfraPlatform
 				double scale_z = 1.0;
 
 				// (1/2) IfcCartesianTransformationOperator2D SUBTYPE OF IfcCartesianTranformationOperator
-				if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D>(transform_operator))
+				if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D>(transform_operator))
 				{
-					shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D> trans_operator_2d = 
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D>(transform_operator);
+					std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D> trans_operator_2d = 
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D>(transform_operator);
 
 					if (!trans_operator_2d->LocalOrigin)
 					{
@@ -395,7 +401,7 @@ namespace OpenInfraPlatform
 						// transOperator2D->Scale is not NAN
 						// Magic: Markic & Hecht 19.06.18
 						if(std::is_same<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D, OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2D>::value)
-							scale = dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2D>(trans_operator_2d)->Scale;
+							scale = std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2D>(trans_operator_2d)->Scale;
 						else 
 							scale = *(double*)(&(trans_operator_2d->Scale));
 						// end magic
@@ -427,7 +433,7 @@ namespace OpenInfraPlatform
 					}
 
 					// IfcCartesianTransformationOperator2DnonUniform SUBTYPE OF IfcCartesianTransformationOperator2D
-					shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2DnonUniform> non_uniform = dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator2DnonUniform>(transform_operator);
+					std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2DnonUniform> non_uniform = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator2DnonUniform>(transform_operator);
 					if (non_uniform)
 					{
 						if (non_uniform->Scale2 == non_uniform->Scale2)
@@ -441,8 +447,8 @@ namespace OpenInfraPlatform
 				// (2/2) IfcCartesianTransformationOperator3D SUBTYPE OF IfcCartesianTranformationOperator
 				else
 				{
-					shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator3D> trans_operator_3d =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator3D>(transform_operator);
+					std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator3D> trans_operator_3d =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator3D>(transform_operator);
 					
 					if (!trans_operator_3d)
 					{
@@ -514,8 +520,8 @@ namespace OpenInfraPlatform
 					}
 
 					// IfcCartesianTransformationOperator3DnonUniform SUBTYPE OF IfcCartesianTransformationOperator3D
-					shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator3DnonUniform> non_uniform = 
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator3DnonUniform>(transform_operator);
+					std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator3DnonUniform> non_uniform = 
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianTransformationOperator3DnonUniform>(transform_operator);
 					
 					if (non_uniform)
 					{
@@ -589,16 +595,16 @@ namespace OpenInfraPlatform
 			}
 
 			//static void PlacementConverter::convertMatrix( const carve::math::Matrix& matrix, 
-			//									   shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d, 
+			//									   std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d, 
 			//									   double length_factor, int& entity_id, 
-			//										std::vector<shared_ptr<IfcEntityT> >& vec_entities )
+			//										std::vector<std::shared_ptr<IfcEntityT> >& vec_entities )
 			//{
 			//	throw std::exception();
 			//
 			//
 			//	if( !axis2placement3d )
 			//	{
-			//		axis2placement3d = shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>(new typename IfcEntityTypesT::IfcAxis2Placement3D(entity_id++));
+			//		axis2placement3d = std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>(new typename IfcEntityTypesT::IfcAxis2Placement3D(entity_id++));
 			//		vec_entities.push_back( axis2placement3d );
 			//	}
 			//
@@ -627,19 +633,19 @@ namespace OpenInfraPlatform
 			//	local_y.normalize();
 			//	local_z.normalize();
 			//
-			//	axis2placement3d->Location = shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>( new typename IfcEntityTypesT::IfcCartesianPoint( entity_id++ ) );
+			//	axis2placement3d->Location = std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>( new typename IfcEntityTypesT::IfcCartesianPoint( entity_id++ ) );
 			//	vec_entities.push_back( axis2placement3d->Location );
-			//	axis2placement3d->Location->Coordinates.push_back( shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>( new typename IfcEntityTypesT::IfcLengthMeasure( translate.x/length_factor ) ) );
-			//	axis2placement3d->Location->Coordinates.push_back( shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>( new typename IfcEntityTypesT::IfcLengthMeasure( translate.y/length_factor ) ) );
-			//	axis2placement3d->Location->Coordinates.push_back( shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>( new typename IfcEntityTypesT::IfcLengthMeasure( translate.z/length_factor ) ) );
+			//	axis2placement3d->Location->Coordinates.push_back( std::shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>( new typename IfcEntityTypesT::IfcLengthMeasure( translate.x/length_factor ) ) );
+			//	axis2placement3d->Location->Coordinates.push_back( std::shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>( new typename IfcEntityTypesT::IfcLengthMeasure( translate.y/length_factor ) ) );
+			//	axis2placement3d->Location->Coordinates.push_back( std::shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>( new typename IfcEntityTypesT::IfcLengthMeasure( translate.z/length_factor ) ) );
 			//
-			//	axis2placement3d->Axis = shared_ptr<typename IfcEntityTypesT::IfcDirection>( new typename IfcEntityTypesT::IfcDirection( entity_id++ ) );
+			//	axis2placement3d->Axis = std::shared_ptr<typename IfcEntityTypesT::IfcDirection>( new typename IfcEntityTypesT::IfcDirection( entity_id++ ) );
 			//	vec_entities.push_back( axis2placement3d->Axis );
 			//	axis2placement3d->Axis->DirectionRatios.push_back( local_z.x );
 			//	axis2placement3d->Axis->DirectionRatios.push_back( local_z.y );
 			//	axis2placement3d->Axis->DirectionRatios.push_back( local_z.z );
 			//
-			//	axis2placement3d->RefDirection = shared_ptr<typename IfcEntityTypesT::IfcDirection>( new typename IfcEntityTypesT::IfcDirection( entity_id++ ) );
+			//	axis2placement3d->RefDirection = std::shared_ptr<typename IfcEntityTypesT::IfcDirection>( new typename IfcEntityTypesT::IfcDirection( entity_id++ ) );
 			//	vec_entities.push_back( axis2placement3d->RefDirection );
 			//	axis2placement3d->RefDirection->DirectionRatios.push_back( local_x.x );
 			//	axis2placement3d->RefDirection->DirectionRatios.push_back( local_x.y );

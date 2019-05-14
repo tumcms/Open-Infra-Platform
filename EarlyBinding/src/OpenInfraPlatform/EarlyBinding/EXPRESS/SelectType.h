@@ -72,6 +72,8 @@ public:
 	using base::operator=;
 	using base::operator->;
 
+	const size_t which() const { return base::m_value.which(); }
+
 	template <class T> explicit operator T&() & {
 		static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
 		return std::ref(boost::get<T>(base::m_value));
@@ -79,6 +81,10 @@ public:
 	template <class T> explicit operator const T() const {
 		static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
 		return boost::get<T>(base::m_value);
+	}
+
+	template <size_t Index> auto get() -> std::tuple_element_t<Index, std::tuple<Args...>> {
+		return boost::get<std::tuple_element_t<Index, std::tuple<Args...>>>(base::m_value);
 	}
 
 	virtual const std::string getStepParameter() const {
