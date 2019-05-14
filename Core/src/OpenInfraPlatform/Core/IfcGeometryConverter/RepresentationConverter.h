@@ -125,10 +125,9 @@ namespace OpenInfraPlatform {
 
 							carve::math::Matrix map_matrix_target(carve::math::Matrix::IDENT());
 							if(mapped_item->MappingTarget) {
-								std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator> transform_operator =
-									mapped_item->MappingTarget;
+								auto& transform_operator = mapped_item->MappingTarget;
 
-								PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(transform_operator,
+								PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(transform_operator.lock(),
 									map_matrix_target,
 									length_factor);
 							}
@@ -192,11 +191,10 @@ namespace OpenInfraPlatform {
 
 								if(vertex_start_point) {
 									if(vertex_start_point->VertexGeometry) {
-										std::shared_ptr<typename IfcEntityTypesT::IfcPoint> edge_start_point_geometry =
-											vertex_start_point->VertexGeometry;
+										auto& edge_start_point_geometry = vertex_start_point->VertexGeometry;
 
 										std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_point =
-											std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(edge_start_point_geometry);
+											std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(edge_start_point_geometry.lock());
 										if(ifc_point) {
 											if(ifc_point->Coordinates.size() > 2) {
 												carve::geom::vector<3> point =

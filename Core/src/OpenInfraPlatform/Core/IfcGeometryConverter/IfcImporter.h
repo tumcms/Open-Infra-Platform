@@ -67,10 +67,18 @@ namespace OpenInfraPlatform
 				// if yes, then apply the placement
 				if (product->ObjectPlacement)
 				{
-					decltype(product->ObjectPlacement)::type &objectPlacement = product->ObjectPlacement;
-					
+					// decltype(x) returns the compile time type of x.
+					//decltype(product->ObjectPlacement)::type &objectPlacement = product->ObjectPlacement;
+
+					OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement = product->ObjectPlacement;
+
+					//auto& optObjectPlacement = product->ObjectPlacement;	// store optional<weak_ptr> product->ObjectPlacement in optObjectPlacement.
+					//auto& objectPlacement = *optObjectPlacement;			// extract weak_ptr from optional<weak_ptr> optObjectPlacement.
+					auto& objectPlacement_ptr = objectPlacement.lock();		// get shared_ptr used to construct the weak_ptr.
+					// OR auto& objectPlacement = optObjectPlacement.get();
+
 					std::set<int> placementAlreadyApplied;
-					PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(objectPlacement.lock(),
+					PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(objectPlacement_ptr,
 						matProduct, lengthFactor,
 						placementAlreadyApplied);
 				}
