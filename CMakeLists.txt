@@ -264,7 +264,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR} # Qt generated files will be located here
 	${Boost_INCLUDE_DIR}
 	${BLUEFRAMEWORK_INCLUDE_DIR}
-	${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR}
+	${EarlyBinding_INCLUDE_DIR} ######
 	${EIGEN3_INCLUDE_DIR}	
 	src
 	external/QtXlsxWriter/src/xlsx
@@ -276,8 +276,9 @@ include_directories(
 	external/carve/include
 	${CMAKE_BINARY_DIR}/external/carve/include
 	external/carve/common
-	ExpressBinding/src
+	ExpressBindingGenerator/src
 	Infrastructure/src
+	PointCloudProcessing	 # 14.05.2019 added for pcp module (coetzee)
 	# ${CC_INCLUDE_DIRS}	02.05.2019 moved to pcp module (coetzee)
 	external/qcustomplot	
 	${FFTW3_INCLUDE_DIRS}
@@ -297,16 +298,17 @@ add_subdirectory(external/QtXlsxWriter)
 add_subdirectory(external/QSimpleUpdater)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
 add_subdirectory(Infrastructure)
+add_subdirectory(PointCloudProcessing)		# 14.05.2019 added for pcp module (coetzee)
 add_subdirectory(UnitTests)
 add_subdirectory(oip)
 add_subdirectory(IfcBridgeGenerator)
 
 # ExpressGenerator rework revision 473.
-add_subdirectory(ExpressGenerator)
+add_subdirectory(ExpressBindingGenerator)
 
-if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding)
-	add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding)
-endif()
+#if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding)
+	#add_subdirectory(${CMAKE_BINARY_DIR}/EarlyBinding ${CMAKE_BINARY_DIR}/EarlyBinding) #######
+#endif()
 
 # Do currently not work.
 #add_subdirectory(RoadXMLViewer)
@@ -405,6 +407,7 @@ FILE(GLOB Translation_TS Data/translations/*.ts)
 
 source_group(OpenInfraPlatform										FILES ${OpenInfraPlatform_Source})
 source_group(OpenInfraPlatform\\Core								FILES ${OpenInfraPlatform_Core_Source})
+
 source_group(OpenInfraPlatform\\Data								FILES ${OpenInfraPlatform_Data_Source})
 source_group(OpenInfraPlatform\\DataManagement						FILES ${OpenInfraPlatform_DataManagement_Source})
 source_group(OpenInfraPlatform\\DataManagement\\Command				FILES ${OpenInfraPlatform_DataManagement_Command_Source})
@@ -481,8 +484,8 @@ target_link_libraries(OpenInfraPlatform.UI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::
 
 target_link_libraries( OpenInfraPlatform.UI
 	OpenInfraPlatform.Infrastructure
-	OpenInfraPlatform.ExpressBinding	
-	${OpenInfraPlatform.EarlyBinding_LIBRARIES}
+	#OpenInfraPlatform.ExpressBindingGenerator	
+	#${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 	Qt5::WinMain  # New target available via find_package ( Qt5Core )
 	${BLUEFRAMEWORK_LIBRARIES}
 	QtXlsxWriter
@@ -646,28 +649,115 @@ add_thirdparty(test_carve_polyhedrons_2	"carve")
 #-------------------------------------------------------------------------------------
 
 set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
-set_target_properties(CopyOpenInfraPlatformUIResources 					PROPERTIES FOLDER "Copy")
+set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(BlueFrameworkCopyBinaries 					PROPERTIES FOLDER "Copy")
-#set_target_properties(CloudCompareCopyBinaries 					PROPERTIES FOLDER "Copy")	02.05.2019 moved to pcp module (coetzee)
+set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
+# set_target_properties(CloudCompareCopyBinaries 				PROPERTIES FOLDER "Copy")	# 02.05.2019 moved to pcp module (coetzee)
 set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
-set_target_properties(QSimpleUpdaterCopyBinaries					PROPERTIES FOLDER "Copy")
+set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
 #Switched to static gtest on 28.11.2018 / Revision 388+
 #set_target_properties(GTestCopyBinaries						PROPERTIES FOLDER "Copy")
-#set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")	02.05.2019 moved to pcp module (coetzee)
-set_target_properties(OpenInfraPlatform.ExpressGenerator	 			PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
-set_target_properties(GenerateEarlyBinding					 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
-set_target_properties(UpdateBoostMPL					 		PROPERTIES FOLDER "OpenInfraPlatform/ExpressGenerator")
-#set_target_properties(OpenInfraPlatform.EXPRESS2Source		 			PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+# set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")	# 02.05.2019 moved to pcp module (coetzee)
+set_target_properties(OpenInfraPlatform.ExpressBindingGenerator	PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
+#set_target_properties(OpenInfraPlatform.EarlyBinding			PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator") ########
+#set_target_properties(UpdateBoostMPL					 		PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator") ########
+#set_target_properties(OpenInfraPlatform.EXPRESS2Source		 	PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
 
-set_target_properties(OpenInfraPlatform.CommandLineUtilities 	PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.IfcTunnelGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.Infrastructure		 PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.PointCloudProcessing	PROPERTIES FOLDER "OpenInfraPlatform")	# 02.05.2019 moved to pcp module (coetzee)
-#set_target_properties(OpenInfraPlatform.LandXMLViewer		 PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.RoadXMLViewer		 PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.UI			PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.CommandLineUtilities 		PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.IfcBridgeGenerator		PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.IfcTunnelGenerator		PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.Infrastructure			PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.LandXMLViewer			PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.RoadXMLViewer			PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.UI				PROPERTIES FOLDER "OpenInfraPlatform")
+
+#----------------------------------------------------------
+# MODULES
+#----------------------------------------------------------
+
+# Group of entries below. 
+# Select all modules with necessary thirdparty libraries to be built. 
+# Otherwise only core project is built.
+
+#----------------------------------------------------------
+# (1/7) Point Cloud Processing ("pcp module")
+#----------------------------------------------------------
+
+Option(MODULES_POINT_CLOUD_PROCESSING ON)
+
+if(MODULES_POINT_CLOUD_PROCESSING)
+
+#project(OpenInfraPlatform.PointCloudProcessing)	
+
+	find_package(CloudCompare REQUIRED)
+	find_package(libLAS REQUIRED)
+
+	# Add files.
+	file(GLOB OpenInfraPlatform_PointCloudProcessing_Source					src/*.*)	
+	source_group(OpenInfraPlatform\\PointCloudProcessing					FILES ${OpenInfraPlatform_PointCloudProcessing_Source}	
+	)	
+
+	# Copy thirdparty binaries.
+	CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})		
+
+	set_target_properties(CloudCompareCopyBinaries 						PROPERTIES FOLDER "Copy")
+	set_target_properties(libLASCopyBinaries							PROPERTIES FOLDER "Copy")	
+
+endif()
+
+#----------------------------------------------------------
+# (2/7) Digital Elevation Model 
+#----------------------------------------------------------
+Option(MODULES_DIGITAL_ELEVATION_MODEL ON)
+
+if(MODULES_DIGITAL_ELEVATION_MODEL)
+
+ENDIF()
+
+#----------------------------------------------------------
+# (3/7) Girder 
+#----------------------------------------------------------
+Option(MODULES_GIRDER ON)
+
+if(MODULES_GIRDER)
+
+ENDIF()
+
+#----------------------------------------------------------
+# (4/7) Proxy Model 
+#----------------------------------------------------------
+Option(MODULES_PROXY_MODEL ON)
+
+if(MODULES_PROXY_MODEL)
+
+ENDIF()
+
+#----------------------------------------------------------
+# (5/7) Railway 
+#----------------------------------------------------------
+Option(MODULES_RAILWAY ON)
+
+if(MODULES_RAILWAY)
+
+ENDIF()
+
+#----------------------------------------------------------
+# (6/7) Slabfield 
+#----------------------------------------------------------
+Option(MODULES_SLABFIELD ON)
+
+if(MODULES_SLABFIELD)
+
+ENDIF()
+
+#----------------------------------------------------------
+# (7/7) Tesselation 
+#----------------------------------------------------------
+Option(MODULES_TESSELATION ON)
+
+if(MODULES_TESSELATION)
+
+ENDIF()
 
 #-------------------------------------------------------------------------------------
 # Deployment & Installation.
