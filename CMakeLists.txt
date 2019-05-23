@@ -298,7 +298,6 @@ add_subdirectory(external/QtXlsxWriter)
 add_subdirectory(external/QSimpleUpdater)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
 add_subdirectory(Infrastructure)
-add_subdirectory(PointCloudProcessing)		# 14.05.2019 added for pcp module (coetzee)
 add_subdirectory(UnitTests)
 add_subdirectory(oip)
 add_subdirectory(IfcBridgeGenerator)
@@ -689,19 +688,7 @@ if(MODULES_POINT_CLOUD_PROCESSING)
 
 #project(OpenInfraPlatform.PointCloudProcessing)	
 
-	find_package(CloudCompare REQUIRED)
-	find_package(libLAS REQUIRED)
-
-	# Add files.
-	file(GLOB OpenInfraPlatform_PointCloudProcessing_Source					src/*.*)	
-	source_group(OpenInfraPlatform\\PointCloudProcessing					FILES ${OpenInfraPlatform_PointCloudProcessing_Source}	
-	)	
-
-	# Copy thirdparty binaries.
-	CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})		
-
-	set_target_properties(CloudCompareCopyBinaries 						PROPERTIES FOLDER "Copy")
-	set_target_properties(libLASCopyBinaries							PROPERTIES FOLDER "Copy")	
+add_subdirectory(PointCloudProcessing)
 
 endif()
 
