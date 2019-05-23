@@ -37,6 +37,21 @@ add_definitions(-DNOMINMAX)
 add_definitions(-D_UNICODE -DBOOST_PYTHON_STATIC_LIB)
 add_definitions(-DRAPTOR_STATIC)		
 
+# Find thirdparty libraries.
+find_package(CloudCompare REQUIRED)
+find_package(libLAS REQUIRED)
+
+# Add files.
+file(GLOB OpenInfraPlatform_PointCloudProcessing_Source					src/*.*)	
+source_group(OpenInfraPlatform\\PointCloudProcessing					FILES ${OpenInfraPlatform_PointCloudProcessing_Source}	
+)	
+
+# Copy thirdparty binaries.
+CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})		
+
+set_target_properties(CloudCompareCopyBinaries 						PROPERTIES FOLDER "Copy")
+set_target_properties(libLASCopyBinaries							PROPERTIES FOLDER "Copy")	
+
 # Create a target for the library
 add_library(OpenInfraPlatform.PointCloudProcessing MODULE	
 	${OpenInfraPlatform_PointCloudProcessing_Source}	
