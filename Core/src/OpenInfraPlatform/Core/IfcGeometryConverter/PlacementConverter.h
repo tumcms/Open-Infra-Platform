@@ -150,7 +150,8 @@ namespace OpenInfraPlatform
 				// Location type IfcCartesianPoint
 				if (axis2placement3d->Location)
 				{
-/*Syntax?*/			std::vector<carve::geom::vector<3>>& coords = axis2placement3d->Location->Coordinates;
+					//std::vector<carve::geom::vector<3>>
+/*Syntax?*/			auto& coords = axis2placement3d->Location->Coordinates; //Richtig
 
 					if (coords.size() > 2)
 					{
@@ -165,7 +166,9 @@ namespace OpenInfraPlatform
 				// Axis type IfcDirection [OPTIONAL]
 				if (axis2placement3d->Axis)
 				{
-					std::vector<double>& axis = axis2placement3d->Axis->DirectionRatios;
+					
+					auto& axis = axis2placement3d->Axis->DirectionRatios; //Richtig
+
 
 					if (axis.size() > 2)
 					{
@@ -400,8 +403,8 @@ namespace OpenInfraPlatform
 					{
 						// transOperator2D->Scale is not NAN
 						// Magic: Markic & Hecht 19.06.18
-						if(std::is_same<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D, OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2D>::value)
-							scale = std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcCartesianTransformationOperator2D>(trans_operator_2d)->Scale;
+						if(std::is_same<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D, OpenInfraPlatform::IFC4X1::IfcCartesianTransformationOperator2D>::value)
+							scale = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcCartesianTransformationOperator2D>(trans_operator_2d)->Scale;
 						else 
 							scale = *(double*)(&(trans_operator_2d->Scale));
 						// end magic
@@ -410,7 +413,7 @@ namespace OpenInfraPlatform
 					scale_y = scale;
 					scale_z = scale;
 
-					if (trans_operator_2d->Axis1 && trans_operator_2d-Axis2)
+					if (trans_operator_2d->Axis1 && trans_operator_2d->Axis2)
 					{
 						if (trans_operator_2d->Axis1->DirectionRatios.size() < 2)
 						{
@@ -483,9 +486,9 @@ namespace OpenInfraPlatform
 					if (trans_operator_3d->Axis1 && trans_operator_3d->Axis2 && trans_operator_3d->Axis3)
 					{
 						// Axis1, Axis2, Axis3 type IfcDirection
-						double axis1 = trans_operator_3d->Axis1;
-						double axis2 = trans_operator_3d->Axis2;
-						double axis3 = trans_operator_3d->Axis3;
+						auto axis1 = trans_operator_3d->Axis1;
+						auto axis2 = trans_operator_3d->Axis2;
+						auto axis3 = trans_operator_3d->Axis3;
 
 						if (axis1->DirectionRatios.size() < 2)
 						{

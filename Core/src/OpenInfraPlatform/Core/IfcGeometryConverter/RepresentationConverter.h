@@ -116,10 +116,9 @@ namespace OpenInfraPlatform {
 						carve::math::Matrix map_matrix_origin(carve::math::Matrix::IDENT());
 						if (map_source->MappingOrigin) {
 							typename IfcEntityTypesT::IfcAxis2Placement mapping_origin_select = map_source->MappingOrigin;
-							
+
 							std::shared_ptr<typename IfcEntityTypesT::IfcPlacement> mapping_origin_placement = nullptr;
 
-							 
 							switch (mapping_origin_select.which()) {
 							case 0: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<0>().lock()); break;
 							case 1: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<1>().lock()); break;
@@ -259,8 +258,15 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel> surface_model =
 				  std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>(geomItem);
 				if (surface_model) {
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet>>& vec_face_sets = surface_model->FbsmFaces;
-					typename std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet>>::iterator it_face_sets;
+					typename IfcEntityTypesT::IfcConnectedFaceSet vec_face_sets = surface_model->FbsmFaces;
+
+					std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet> it_face_sets = nullptr;
+
+					switch (vec_face_sets.which()) {
+					case 0: it_face_sets = std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet>(vec_face_sets.get<0>().lock()); break;
+					case 1: it_face_sets = std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet>(vec_face_sets.get<1>().lock()); break;
+					default: break;
+					}
 
 					for (it_face_sets = vec_face_sets.begin(); it_face_sets != vec_face_sets.end(); ++it_face_sets) {
 						std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet> face_set = (*it_face_sets);
@@ -342,13 +348,16 @@ namespace OpenInfraPlatform {
 							          std::back_inserter(itemData->closed_polyhedrons));
 						} else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOpenShell>(shell_select)) {
 							std::shared_ptr<typename IfcEntityTypesT::IfcOpenShell> open_shell = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOpenShell>(shell_select);
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>>& vec_ifc_faces = open_shell->CfsFaces;
+							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_ifc_faces = open_shell->CfsFaces;
 
 							std::shared_ptr<ItemData> input_data(new ItemData());
 
-							try {
+							try								
+							{
 								// faceConverter->convertIfcFaceList(vec_ifc_faces, pos, input_data, err);
-							} catch (...) {
+							}
+							catch (...)
+							{
 								std::cout << "TEST ERROR" << std::endl << std::flush;
 								// return;
 							}
