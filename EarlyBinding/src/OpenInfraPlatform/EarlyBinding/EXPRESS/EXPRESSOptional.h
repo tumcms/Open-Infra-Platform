@@ -58,8 +58,8 @@ public:
 	//EXPRESSOptional& operator=(const T& other) { boost::optional<T>::operator=(other); return *this; };
 
 	
-	//operator ForwardType &() { return (ForwardType&) this->base::get(); }
-	operator const ForwardType () const { return (const ForwardType) this->base::get(); }
+	operator ForwardType &() & { return (ForwardType&) this->base::get(); }
+	//operator const ForwardType () const { return (const ForwardType) this->base::get(); }
 	
 	operator T&() & { return this->get(); }
 	operator const T() const { return this->get(); }
