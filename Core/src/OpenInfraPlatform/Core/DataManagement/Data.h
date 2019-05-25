@@ -21,7 +21,6 @@
 
 #include "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSModel.h"
 
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
 #include "OpenInfraPlatform/Core/IfcGeometryConverter/ConverterBuw.h"
 
 
@@ -129,10 +128,7 @@ namespace OpenInfraPlatform
 			//---------------------------------------------------------------------------//
 			// Point Cloud
 			//---------------------------------------------------------------------------//
-			const int getPointCloudPointCount() const;
-
-			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> getPointCloud() const;
-
+			
 			//---------------------------------------------------------------------------//
 			// Preferences
 			//---------------------------------------------------------------------------//
@@ -198,14 +194,12 @@ namespace OpenInfraPlatform
 
 			/// Removed in Revision 483
 			buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel>	ifcGeometryModel_ = nullptr;
-			buw::ReferenceCounted<buw::PointCloud>							pointCloud_ = nullptr;
 			buw::ReferenceCounted<oip::EXPRESSModel>						expressModel_ = nullptr;
 
 			// temporary data for asynchronous operations
 			bool merge_;
 			buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel>	tempIfcGeometryModel_;
-			buw::ReferenceCounted<buw::PointCloud>							tempPointCloud_;
-
+			
 			int																currentJobID_;
 
 			// Add Georeference

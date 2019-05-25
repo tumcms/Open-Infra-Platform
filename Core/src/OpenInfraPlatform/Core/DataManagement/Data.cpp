@@ -57,9 +57,7 @@ bDrawSkybox_(false),
 bShowViewCube_(true),
 bShowReferenceCoordinateSystem(true),
 currentJobID_(-1),
-tempIfcGeometryModel_(nullptr),
-tempPointCloud_(nullptr),
-pointCloud_(nullptr)
+tempIfcGeometryModel_(nullptr)
 {
 	clear(false);
 
@@ -70,8 +68,6 @@ pointCloud_(nullptr)
 
 OpenInfraPlatform::DataManagement::Data::~Data()
 {
-	if (pointCloud_)
-		pointCloud_ = nullptr;
 }
 
 
@@ -88,8 +84,7 @@ void OpenInfraPlatform::DataManagement::Data::open( const std::string & filename
 void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) {   
 	ifcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
 
-	if (pointCloud_)
-		pointCloud_ = nullptr;
+	
 
 	//pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
 	
@@ -207,22 +202,7 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 
 		tempIfcGeometryModel_ = nullptr;
 	}
-	if (tempPointCloud_)
-	{
-		flag = flag | ChangeFlag::PointCloud;
-		if (pointCloud_)
-			pointCloud_ = nullptr;
-		
-		if (merge_)
-		{
-			
-		}
-		else
-		{
-			pointCloud_ = tempPointCloud_;
-		}
-		tempPointCloud_ = nullptr;
-	}
+	
 
 	pushChange(flag);
 }
@@ -343,13 +323,7 @@ buw::Vector3d OpenInfraPlatform::DataManagement::Data::getOffset() const
 	//	}
 	//}
 
-	if (pointCloud_->size() > 0)
-	{
-		CCVector3 min, max;
-		pointCloud_->getBoundingBox(min, max);
-		minPos = buw::Vector3d(min.x, min.y, min.z);
-		maxPos = buw::Vector3d(max.x, max.y, max.z);
-	}
+	
 
 	buw::Vector3d offsetViewArea = minPos + 0.5 * (maxPos - minPos);
 
@@ -415,25 +389,10 @@ bool OpenInfraPlatform::DataManagement::Data::isViewCubeEnabled()
 	return bShowViewCube_;
 }
 
-
 buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> OpenInfraPlatform::DataManagement::Data::getIfcGeometryModel() const
 { 
 	return ifcGeometryModel_;
 }
-
-buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::DataManagement::Data::getPointCloud() const
-{
-	return pointCloud_;
-}
-
-const int OpenInfraPlatform::DataManagement::Data::getPointCloudPointCount() const
-{
-	if(pointCloud_)
-		return pointCloud_->size();
-	else
-		return -1;
-}
-
 
 void OpenInfraPlatform::DataManagement::Data::setShowFrameTimes(const bool enable)
 {
