@@ -25,6 +25,7 @@
 #include <memory>
 #include <set>
 #include <sstream>
+#include <algorithm>
 
 #include "CarveHeaders.h"
 //#include "ReaderSettings.h"
@@ -258,19 +259,12 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel> surface_model =
 				  std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>(geomItem);
 				if (surface_model) {
-					typename IfcEntityTypesT::IfcConnectedFaceSet vec_face_sets = surface_model->FbsmFaces;
+					auto vec_face_sets = surface_model->FbsmFaces;
 
-					std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet> it_face_sets = nullptr;
-
-					switch (vec_face_sets.which()) {
-					case 0: it_face_sets = std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet>(vec_face_sets.get<0>().lock()); break;
-					case 1: it_face_sets = std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet>(vec_face_sets.get<1>().lock()); break;
-					default: break;
-					}
-
-					for (it_face_sets = vec_face_sets.begin(); it_face_sets != vec_face_sets.end(); ++it_face_sets) {
-						std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet> face_set = (*it_face_sets);
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>>& vec_ifc_faces = face_set->CfsFaces;
+					for (auto& it_face_sets : vec_face_sets) {
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_ifc_faces;
+						vec_ifc_faces.reserve(it_face_sets->CfsFaces.size());
+						std::transform(it_face_sets->CfsFaces.begin(), it_face_sets->CfsFaces.end(), vec_ifc_faces.begin(), [](auto& it) { return it.lock(); });
 
 						std::shared_ptr<ItemData> input_data_face_set(new ItemData);
 						try {
@@ -327,32 +321,23 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcShellBasedSurfaceModel> shell_based_surface_model =
 				  std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcShellBasedSurfaceModel>(geomItem);
 				if (shell_based_surface_model) {
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcShell>>& vec_shells = shell_based_surface_model->SbsmBoundary;
-					for (typename std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcShell>>::iterator it_shells = vec_shells.begin(); it_shells != vec_shells.end();
-					     ++it_shells) {
-						std::shared_ptr<typename IfcEntityTypesT::IfcShell> shell_select = (*it_shells);
-						if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcClosedShell>(shell_select)) {
-							std::shared_ptr<typename IfcEntityTypesT::IfcClosedShell> closed_shell =
-							  std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcClosedShell>(shell_select);
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>>& vec_ifc_faces = closed_shell->CfsFaces;
-
-							std::shared_ptr<ItemData> input_data(new ItemData());
-
+					std::shared_ptr<ItemData> input_data = std::make_shared<ItemData>();
+					for (auto& it_shells : shell_based_surface_model->SbsmBoundary) {
+						switch (it_shells.which()) {
+						case 0:						
 							try {
-								faceConverter->convertIfcFaceList(vec_ifc_faces, pos, input_data, err);
-							} catch (...) {
+								
+								faceConverter->convertIfcFaceList(it_shells.get<0>()->CfsFaces, pos, input_data, err);
+							}
+							catch (...) {
 								std::cout << "TEST ERROR" << std::endl << std::flush;
 								// return;
 							}
 							std::copy(input_data->open_or_closed_polyhedrons.begin(), input_data->open_or_closed_polyhedrons.end(),
-							          std::back_inserter(itemData->closed_polyhedrons));
-						} else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOpenShell>(shell_select)) {
-							std::shared_ptr<typename IfcEntityTypesT::IfcOpenShell> open_shell = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOpenShell>(shell_select);
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_ifc_faces = open_shell->CfsFaces;
-
-							std::shared_ptr<ItemData> input_data(new ItemData());
-
-							try								
+								std::back_inserter(itemData->closed_polyhedrons));
+							break;
+						case 1:
+							try
 							{
 								// faceConverter->convertIfcFaceList(vec_ifc_faces, pos, input_data, err);
 							}
@@ -362,6 +347,9 @@ namespace OpenInfraPlatform {
 								// return;
 							}
 							std::copy(input_data->open_or_closed_polyhedrons.begin(), input_data->open_or_closed_polyhedrons.end(), std::back_inserter(itemData->open_polyhedrons));
+							break;
+						default:
+							break;
 						}
 					}
 					return;
@@ -406,11 +394,26 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcGeometricSet> geometric_set = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricSet>(geomItem);
 				if (geometric_set) {
 					// ENTITY IfcGeometricSet SUPERTYPE OF(IfcGeometricCurveSet)
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcGeometricSetSelect>>& geom_set_elements = geometric_set->Elements;
-					typename std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcGeometricSetSelect>>::iterator it_set_elements;
-					for (it_set_elements = geom_set_elements.begin(); it_set_elements != geom_set_elements.end(); ++it_set_elements) {
+			
+					for (auto & it_set_elements: geometric_set->Elements) {
 						// TYPE IfcGeometricSetSelect = SELECT (IfcPoint, IfcCurve, IfcSurface);
-						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricSetSelect>& geom_select = (*it_set_elements);
+						std::shared_ptr<carve::input::PolylineSetData> polyline = nullptr;
+						switch (it_set_elements.which()) {
+						case 0:
+							std::cout << "Warning\t| IfcCurve not implemented" << std::endl;
+							break;
+						case 1:
+							std::cout << "Warning\t| IfcPoint not implemented" << std::endl;
+							break;
+						case 2:
+							polyline = std::make_shared<carve::input::PolylineSetData>();
+							faceConverter->convertIfcSurface(it_set_elements.get<2>().lock(), pos, polyline);
+							if (polyline->getVertexCount() > 1) {
+								itemData->polylines.push_back(polyline);
+							}
+							break;
+						default: break;
+						}
 
 						std::shared_ptr<typename IfcEntityTypesT::IfcPoint> select_point = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPoint>(geom_select);
 						if (select_point) {
