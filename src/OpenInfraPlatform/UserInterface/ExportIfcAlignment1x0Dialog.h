@@ -20,7 +20,7 @@
 #define OpenInfraPlatform_UserInterface_ExportP6AlginmentDialog_84f19553_085c_4888_88c3_3ffee5176b52_h
 
 #include "ui_ExportIfcAlignmentDialog.h"
-#include "OpenInfraPlatform/DataManagement/IfcZipper.h"
+#include "OpenInfraPlatform/Infrastructure/Core/IfcZipper.h"
 #include <QDialog>
 #include <iostream>
 

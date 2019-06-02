@@ -18,7 +18,7 @@
 #pragma once
 
 #include "ui_ExportIfc4x1Dialog.h"
-#include "OpenInfraPlatform/DataManagement/IfcZipper.h"
+#include "OpenInfraPlatform/Infrastructure/Core/IfcZipper.h"
 #include <QDialog>
 #include <iostream>
 

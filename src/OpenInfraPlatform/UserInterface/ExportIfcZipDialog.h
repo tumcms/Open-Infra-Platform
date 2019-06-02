@@ -21,7 +21,7 @@
 
 #include <ui_ExportIfczipDialog.h>
 #include <QDialog>
-#include "OpenInfraPlatform/DataManagement/IfcZipper.h"
+#include "OpenInfraPlatform/Infrastructure/Core/IfcZipper.h"
 #include <iostream>
 
 
