@@ -415,7 +415,7 @@ namespace OpenInfraPlatform {
 						default: break;
 						}
 
-						std::shared_ptr<typename IfcEntityTypesT::IfcPoint> select_point = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPoint>(geom_select);
+						std::shared_ptr<typename IfcEntityTypesT::IfcPoint> select_point = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPoint>(it_set_elements.get<1>().lock());
 						if (select_point) {
 #ifdef _DEBUG
 							std::cout << "Warning\t| IfcPoint not implemented" << std::endl;
@@ -423,7 +423,7 @@ namespace OpenInfraPlatform {
 							continue;
 						}
 
-						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> select_curve = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCurve>(geom_select);
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> select_curve = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCurve>(it_set_elements.get<0>().lock());
 						if (select_curve) {
 #ifdef _DEBUG
 							std::cout << "Warning\t| IfcCurve not implemented" << std::endl;
@@ -431,7 +431,7 @@ namespace OpenInfraPlatform {
 							continue;
 						}
 
-						std::shared_ptr<typename IfcEntityTypesT::IfcSurface> select_surface = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurface>(geom_select);
+						std::shared_ptr<typename IfcEntityTypesT::IfcSurface> select_surface = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurface>(it_set_elements.get<2>().lock());
 						if (select_surface) {
 							std::shared_ptr<carve::input::PolylineSetData> polyline(new carve::input::PolylineSetData());
 							faceConverter->convertIfcSurface(select_surface, pos, polyline);
