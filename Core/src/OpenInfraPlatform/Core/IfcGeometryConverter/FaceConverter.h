@@ -105,8 +105,8 @@ namespace OpenInfraPlatform
 					}
 
 					// (1/4) IfcBSplineSurface SUBTYPE of IfcBoundedSurface
-					std::shared_ptr<typename IfcEntityTypesT::IfcBSplineSurface> bspline_surface =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurface>(bounded_surface);
+					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBSplineSurface> bspline_surface =
+					  std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcBSplineSurface>(bounded_surface);
 
 					if (bspline_surface)
 					{
@@ -125,7 +125,7 @@ namespace OpenInfraPlatform
 							bspline_surface->ControlPointsList;
 						/*std::shared_ptr<typename IfcEntityTypesT::IfcBSplineSurfaceForm> surface_form =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurfaceForm>(bspline_surface);*/	// TO DO: next level (enum: PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED)
-						std::shared_ptr<typename IfcEntityTypesT::IfcBSplineSurfaceForm> surface_form =
+						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBSplineSurfaceForm> surface_form =
 							bspline_surface->SurfaceForm;
 
 
@@ -142,8 +142,8 @@ namespace OpenInfraPlatform
 						// TODO: implement		// Interpret values and calculate.
 
 												// IfcBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurface
-						std::shared_ptr<typename IfcEntityTypesT::IfcBSplineSurface> bspline_knots =							//bspline_surface zu bspline_knots
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurface>(bounded_surface);
+						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBSplineSurface> bspline_knots = // bspline_surface zu bspline_knots
+						  std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcBSplineSurface>(bounded_surface);
 
 						if (bspline_knots)
 						{
@@ -166,7 +166,7 @@ namespace OpenInfraPlatform
 								bspline_knots->VKnots;
 							/*std::shared_ptr<typename IfcEntityTypesT::IfcKnotType> knot_type =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcKnotType>(bspline_knots);*/	// TO DO: next level (enum: UNIFORM_KNOTS, QUASI_UNIFORM_KNOTS, PIECEWISE_BEZIER_KNOTS, UNSPECIFIED)
-							std::shared_ptr<typename IfcEntityTypesT::IfcKnotType> knot_type =
+							std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcKnotType> knot_type =
 								bspline_knots->KnotSpec;
 
 
@@ -189,7 +189,7 @@ namespace OpenInfraPlatform
 						if (basis_surface)
 						{
 							// Get basis surface position. 
-							std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& basis_surface_placement = basis_surface->Position;
+							std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& basis_surface_placement = basis_surface->Position.lock();
 
 							if (basis_surface_placement)
 							{
@@ -218,8 +218,8 @@ namespace OpenInfraPlatform
 					}
 
 					// (3/4) IfcCurveBoundedSurface SUBTYPE of IfcBoundedSurface.
-					std::shared_ptr<typename IfcEntityTypesT::IfcCurveBoundedSurface> curve_bounded_surface =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCurveBoundedSurface>(bounded_surface);
+					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCurveBoundedSurface> curve_bounded_surface =
+					  std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcCurveBoundedSurface>(bounded_surface);
 
 					if (curve_bounded_surface)
 					{
@@ -230,7 +230,7 @@ namespace OpenInfraPlatform
 							curve_bounded_surface->BasisSurface;
 						/*std::shared_ptr<typename IfcEntityTypesT::IfcBoundaryCurve> boundaries =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundaryCurve>(curve_bounded_surface);*/
-						std::shared_ptr<typename IfcEntityTypesT::IfcBoundaryCurve> boundaries =
+						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBoundaryCurve> boundaries =
 							curve_bounded_surface->Boundaries;
 						/*std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> implicit_outer =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoolean>(curve_bounded_surface);*/
@@ -298,8 +298,8 @@ namespace OpenInfraPlatform
 					}
 
 					// (1/4) IfcCylindricalSurface SUBTYPE of IfcElementarySurface
-					std::shared_ptr<typename IfcEntityTypesT::IfcCylindricalSurface> cylindrical_surface =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCylindricalSurface>(elementary_surface);
+					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCylindricalSurface> cylindrical_surface =
+					  std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcCylindricalSurface>(elementary_surface);
 
 					if (cylindrical_surface)
 					{
@@ -342,8 +342,8 @@ namespace OpenInfraPlatform
 					}
 
 					// (3/4) IfcSphericalPlane SUBTYPE of IfcElementarySurface
-					std::shared_ptr<typename IfcEntityTypesT::IfcSphericalSurface> spherical_surface =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSphericalSurface>(elementary_surface);
+					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcSphericalSurface> spherical_surface =
+					  std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcSphericalSurface>(elementary_surface);
 
 					if (spherical_surface)
 					{
@@ -359,8 +359,8 @@ namespace OpenInfraPlatform
 					}
 
 					// (4/4) IfcToroidalSurface SUBTYPE of IfcElementarySurface
-					std::shared_ptr<typename IfcEntityTypesT::IfcToroidalSurface> toroidal_surface =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcToroidalSurface>(elementary_surface);
+					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcToroidalSurface> toroidal_surface =
+					  std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcToroidalSurface>(elementary_surface);
 
 					if (toroidal_surface)
 					{
