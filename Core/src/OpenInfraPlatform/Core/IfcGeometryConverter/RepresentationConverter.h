@@ -325,10 +325,18 @@ namespace OpenInfraPlatform {
 					auto vec_shells = shell_based_surface_model->SbsmBoundary; 
 					for (auto& it_shells : vec_shells) {
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_shells;
-
-							vec_shells.reserve(it_shells.get<0>()->CfsFaces.size());
-							std::transform(it_shells.get<0>()->CfsFaces.begin(), it_shells.get<0>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock();});
 							std::shared_ptr<ItemData> input_data_shells_set(new ItemData);
+
+							switch (it_shells.which()) {
+							case 0:
+								vec_shells.reserve(it_shells.get<0>()->CfsFaces.size());
+								std::transform(it_shells.get<0>()->CfsFaces.begin(), it_shells.get<0>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock(); });
+								break;
+							case 1:
+								vec_shells.reserve(it_shells.get<1>()->CfsFaces.size());
+								std::transform(it_shells.get<1>()->CfsFaces.begin(), it_shells.get<1>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock(); });
+								break;
+							}
 
 							try {
 								faceConverter->convertIfcFaceList(vec_shells, pos, input_data_shells_set, err);
