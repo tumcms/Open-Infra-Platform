@@ -324,9 +324,10 @@ namespace OpenInfraPlatform {
 					
 					auto vec_shells = shell_based_surface_model->SbsmBoundary; 
 					for (auto& it_shells : vec_shells) {
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcShell>> vec_shells;
-							vec_shells.reserve(it_shells->CfsFaces.size());
-							std::transform(it_shells->CfsFaces.begin(), it_shells->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock();});
+							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_shells;
+
+							vec_shells.reserve(it_shells.get<0>()->CfsFaces.size());
+							std::transform(it_shells.get<0>()->CfsFaces.begin(), it_shells.get<0>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock();});
 							std::shared_ptr<ItemData> input_data_shells_set(new ItemData);
 
 							try {
@@ -336,8 +337,8 @@ namespace OpenInfraPlatform {
 								std::cout << "TEST ERROR" << std::endl << std::flush;
 								// return;
 							}
-							std::copy(input_data->open_or_closed_polyhedrons.begin(), 
-								Shellinput_data->open_or_closed_polyhedrons.end(),
+							std::copy(input_data_shells_set->open_or_closed_polyhedrons.begin(),
+								input_data_shells_set->open_or_closed_polyhedrons.end(),
 								std::back_inserter(itemData->closed_polyhedrons));
 							
 					}
