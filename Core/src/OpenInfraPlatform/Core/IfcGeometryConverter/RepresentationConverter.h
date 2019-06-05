@@ -22,10 +22,10 @@
 #ifndef REPRESENTATIONCONVERTER_H
 #define REPRESENTATIONCONVERTER_H
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <sstream>
-#include <algorithm>
 
 #include "CarveHeaders.h"
 //#include "ReaderSettings.h"
@@ -321,36 +321,25 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcShellBasedSurfaceModel> shell_based_surface_model =
 				  std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcShellBasedSurfaceModel>(geomItem);
 				if (shell_based_surface_model) {
-					std::shared_ptr<ItemData> input_data = std::make_shared<ItemData>();
-					for (auto& it_shells : shell_based_surface_model->SbsmBoundary) {
-						switch (it_shells.which()) {
-						case 0:						
+					
+					auto vec_shells = shell_based_surface_model->SbsmBoundary; 
+					for (auto& it_shells : vec_shells) {
+							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcShell>> vec_shells;
+							vec_shells.reserve(it_shells->CfsFaces.size());
+							std::transform(it_shells->CfsFaces.begin(), it_shells->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock();});
+							std::shared_ptr<ItemData> input_data_shells_set(new ItemData);
+
 							try {
-								
-								faceConverter->convertIfcFaceList(it_shells.get<0>()->CfsFaces, pos, input_data, err);
+								faceConverter->convertIfcFaceList(vec_shells, pos, input_data_shells_set, err);
 							}
 							catch (...) {
 								std::cout << "TEST ERROR" << std::endl << std::flush;
 								// return;
 							}
-							std::copy(input_data->open_or_closed_polyhedrons.begin(), input_data->open_or_closed_polyhedrons.end(),
+							std::copy(input_data->open_or_closed_polyhedrons.begin(), 
+								Shellinput_data->open_or_closed_polyhedrons.end(),
 								std::back_inserter(itemData->closed_polyhedrons));
-							break;
-						case 1:
-							try
-							{
-								// faceConverter->convertIfcFaceList(vec_ifc_faces, pos, input_data, err);
-							}
-							catch (...)
-							{
-								std::cout << "TEST ERROR" << std::endl << std::flush;
-								// return;
-							}
-							std::copy(input_data->open_or_closed_polyhedrons.begin(), input_data->open_or_closed_polyhedrons.end(), std::back_inserter(itemData->open_polyhedrons));
-							break;
-						default:
-							break;
-						}
+							
 					}
 					return;
 				}
@@ -394,17 +383,13 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcGeometricSet> geometric_set = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricSet>(geomItem);
 				if (geometric_set) {
 					// ENTITY IfcGeometricSet SUPERTYPE OF(IfcGeometricCurveSet)
-			
-					for (auto & it_set_elements: geometric_set->Elements) {
+
+					for (auto& it_set_elements : geometric_set->Elements) {
 						// TYPE IfcGeometricSetSelect = SELECT (IfcPoint, IfcCurve, IfcSurface);
 						std::shared_ptr<carve::input::PolylineSetData> polyline = nullptr;
 						switch (it_set_elements.which()) {
-						case 0:
-							std::cout << "Warning\t| IfcCurve not implemented" << std::endl;
-							break;
-						case 1:
-							std::cout << "Warning\t| IfcPoint not implemented" << std::endl;
-							break;
+						case 0: std::cout << "Warning\t| IfcCurve not implemented" << std::endl; break;
+						case 1: std::cout << "Warning\t| IfcPoint not implemented" << std::endl; break;
 						case 2:
 							polyline = std::make_shared<carve::input::PolylineSetData>();
 							faceConverter->convertIfcSurface(it_set_elements.get<2>().lock(), pos, polyline);
@@ -415,7 +400,8 @@ namespace OpenInfraPlatform {
 						default: break;
 						}
 
-						std::shared_ptr<typename IfcEntityTypesT::IfcPoint> select_point = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPoint>(it_set_elements.get<1>().lock());
+						std::shared_ptr<typename IfcEntityTypesT::IfcPoint> select_point =
+						  std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPoint>(it_set_elements.get<1>().lock());
 						if (select_point) {
 #ifdef _DEBUG
 							std::cout << "Warning\t| IfcPoint not implemented" << std::endl;
@@ -423,7 +409,8 @@ namespace OpenInfraPlatform {
 							continue;
 						}
 
-						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> select_curve = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCurve>(it_set_elements.get<0>().lock());
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> select_curve =
+						  std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCurve>(it_set_elements.get<0>().lock());
 						if (select_curve) {
 #ifdef _DEBUG
 							std::cout << "Warning\t| IfcCurve not implemented" << std::endl;
@@ -431,7 +418,8 @@ namespace OpenInfraPlatform {
 							continue;
 						}
 
-						std::shared_ptr<typename IfcEntityTypesT::IfcSurface> select_surface = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurface>(it_set_elements.get<2>().lock());
+						std::shared_ptr<typename IfcEntityTypesT::IfcSurface> select_surface =
+						  std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurface>(it_set_elements.get<2>().lock());
 						if (select_surface) {
 							std::shared_ptr<carve::input::PolylineSetData> polyline(new carve::input::PolylineSetData());
 							faceConverter->convertIfcSurface(select_surface, pos, polyline);
