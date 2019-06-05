@@ -15,7 +15,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "OpenInfraPlatform/DataManagement/IfcZipper.h"
+#include "OpenInfraPlatform/Infrastructure/Core/IfcZipper.h"
 #include <BlueFramework/Core/Diagnostics/log.h>
 #include <QThread>
 #include <QDate>
