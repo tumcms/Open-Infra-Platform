@@ -107,25 +107,26 @@ namespace OpenInfraPlatform {
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> vec_control_point_list;
 							std::shared_ptr<ItemData> input_data_cpl_set(new ItemData);
 							
-							vec_control_point_list.reserve(it_control_point_list()->ControlPointsList.size());
-							std::transform(it_control_point_list()->ControlPointsList.begin(),
-							               it_control_point_list()->ControlPointsList.end(),
+							vec_control_point_list.reserve(it_control_point_list.size());
+							std::transform(it_control_point_list.begin(),
+							               it_control_point_list.end(),
 							               vec_control_point_list.begin(),
 							               [](auto& it) { return it.lock(); });
 							   
 						}
 							/*std::shared_ptr<typename IfcEntityTypesT::IfcBSplineSurfaceForm> surface_form =
 							    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurfaceForm>(bspline_surface);*/	// TO DO: next level (enum: PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED)
-							std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBSplineSurfaceForm> surface_form = bspline_surface->SurfaceForm;
+							OpenInfraPlatform::IFC4X1::IfcBSplineSurfaceForm surface_form = bspline_surface->SurfaceForm;
 
 							// Get attributes 5-7. For information only.
 							/*std::shared_ptr<typename IfcEntityTypesT::IfcLogical> u_closed =
 							    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLogical>(bspline_surface);*/
-							std::shared_ptr<typename IfcEntityTypesT::IfcLogical> u_closed = bspline_surface->UClosed;
-							std::shared_ptr<typename IfcEntityTypesT::IfcLogical> v_closed = bspline_surface->VClosed;
-							std::shared_ptr<typename IfcEntityTypesT::IfcLogical> self_intersect = bspline_surface->SelfIntersect;
+							typename IfcEntityTypesT::IfcLogical u_closed = bspline_surface->UClosed;
+							typename IfcEntityTypesT::IfcLogical v_closed = bspline_surface->VClosed;
+							typename IfcEntityTypesT::IfcLogical self_intersect = bspline_surface->SelfIntersect;
 
 							// TODO: implement		// Interpret values and calculate.
+
 
 							// IfcBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurface
 							std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBSplineSurface> bspline_knots = // bspline_surface zu bspline_knots
@@ -133,22 +134,6 @@ namespace OpenInfraPlatform {
 
 							if (bspline_knots) {
 								// Get attributes 8-12.
-								/*std::shared_ptr<typename IfcEntityTypesT::IfcInteger> u_mult =
-								    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcInteger>(bspline_knots);*/	// TO DO: cardinality [2:]
-								int u_mult = bspline_knots->UMultiplicities;
-								/*std::shared_ptr<typename IfcEntityTypesT::IfcInteger> v_mult =
-								    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcInteger>(bspline_knots);*/	// TO DO: cardinality [2:]
-								int v_mult = bspline_knots->VMultiplicities;
-								/*std::shared_ptr<typename IfcEntityTypesT::IfcParameterValue> u_knots =
-								    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterValue>(bspline_knots);*/	// TO DO: cardinality [2:]
-								double u_knots = bspline_knots->UKnots;
-								/*std::shared_ptr<typename IfcEntityTypesT::IfcParameterValue> v_knots =
-								    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterValue>(bspline_knots);*/	// TO DO: cardinality [2:]
-								double v_knots = bspline_knots->VKnots;
-								/*std::shared_ptr<typename IfcEntityTypesT::IfcKnotType> knot_type =
-								    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcKnotType>(bspline_knots);*/	// TO DO: next level (enum: UNIFORM_KNOTS, QUASI_UNIFORM_KNOTS, PIECEWISE_BEZIER_KNOTS, UNSPECIFIED)
-								std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcKnotType> knot_type = bspline_knots->KnotSpec;
-
 								// TODO: implement		// Interpret values and calculate.
 							}
 						}
