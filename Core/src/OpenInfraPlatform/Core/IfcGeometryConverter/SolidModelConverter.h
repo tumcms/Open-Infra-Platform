@@ -228,7 +228,7 @@ namespace OpenInfraPlatform
 					if (sectioned_solid_horizontal)
 					{
 						// Get cross section positions and fixed axis vertical (attributes 3-4).
-						std::shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression> cross_section_positions =
+						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcDistanceExpression> cross_section_positions =
 							sectioned_solid_horizontal->CrossSectionPositions;
 						std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> fixed_axis_vertical =
 							sectioned_solid_horizontal->FixedAxisVertical;
@@ -278,16 +278,16 @@ namespace OpenInfraPlatform
 					}
 
 					// (2/4) IfcFixedReferenceSweptAreaSolid SUBTYPE of IfcSweptAreaSolid
-					std::shared_ptr<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixed_ref_swept_area_solid =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>(swept_area_solid);
+					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcFixedReferenceSweptAreaSolid> fixed_ref_swept_area_solid =
+						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcFixedReferenceSweptAreaSolid>(swept_area_solid);
 					if (fixed_ref_swept_area_solid) {
 						// Get directrix, start parameter, end parameter and fixed reference (attributes 3-6).
 						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
-							fixed_ref_swept_area_solid->Directrix;	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
+							fixed_ref_swept_area_solid->Directrix.lock();	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
 						double start_param = fixed_ref_swept_area_solid->StartParam;	// TO DO: optional
 						double end_param = fixed_ref_swept_area_solid->EndParam;		// TO DO: optional
 						std::shared_ptr<typename IfcEntityTypesT::IfcDirection> fixed_ref =
-							fixed_ref_swept_area_solid->FixedReference;
+							fixed_ref_swept_area_solid->FixedReference.lock();
 
 						// TO DO: implement//
 
@@ -387,8 +387,8 @@ namespace OpenInfraPlatform
 					// TODO: handle inner radius, start param, end param and check for formal propositions!
 
 					// (1/1) IfcSweptDiskSolidPolygonal SUBTYPE of IfcSweptDiskSolid
-					std::shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal> swept_disk_solid_polygonal =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>(swept_disk_solid);
+					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcSweptDiskSolidPolygonal> swept_disk_solid_polygonal =
+						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcSweptDiskSolidPolygonal>(swept_disk_solid);
 					if (swept_disk_solid_polygonal)
 					{
 						// Get fillet radius (attribute 6). 
