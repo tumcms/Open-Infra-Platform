@@ -163,7 +163,14 @@ namespace OpenInfraPlatform {
 							// TO DO: implement
 						}
 
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCurve>>& vec_inner_boundaries = curve_bounded_plane->InnerBoundaries;
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCurve>> vec_inner_boundaries;
+						vec_inner_boundaries.reserve(curve_bounded_plane->InnerBoundaries.size());
+						std::transform(
+							curve_bounded_plane->InnerBoundaries.begin(),
+							curve_bounded_plane->InnerBoundaries.end(),
+							vec_inner_boundaries.begin(),
+							[](auto& it) { return it.lock(); }
+						);
 						for (unsigned int i = 0; i < vec_inner_boundaries.size(); ++i) {
 							std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& inner_curve = vec_inner_boundaries[i];
 						}
@@ -180,7 +187,7 @@ namespace OpenInfraPlatform {
 						// Get basis surface, boundaries and implicit outer.
 						/*std::shared_ptr<typename IfcEntityTypesT::IfcSurface> basis_surface =
 						    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfacePlane>(curve_bounded_surface);*/
-						std::shared_ptr<typename IfcEntityTypesT::IfcSurface> basis_surface = curve_bounded_surface->BasisSurface.lock();
+						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcSurface> basis_surface = curve_bounded_surface->BasisSurface.lock();
 						/*std::shared_ptr<typename IfcEntityTypesT::IfcBoundaryCurve> boundaries =
 						    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundaryCurve>(curve_bounded_surface);*/
 						// std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBoundaryCurve> boundaries = curve_bounded_surface->Boundaries;

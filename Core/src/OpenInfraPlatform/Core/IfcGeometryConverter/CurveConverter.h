@@ -1388,7 +1388,15 @@ namespace OpenInfraPlatform {
 				void convertIfcPolyline(const std::shared_ptr<typename IfcEntityTypesT::IfcPolyline>& polyLine,
 					std::vector<carve::geom::vector<3>>& loop) const
 				{
-					convertIfcCartesianPointVector(polyLine->Points, loop);
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> points;
+					points.reserve(polyLine->Points.size());
+					std::transform(
+						polyLine->Points.begin(),
+						polyLine->Points.end(),
+						points.begin(),
+						[](auto& it) { return it.lock(); }
+					);
+					convertIfcCartesianPointVector(points, loop);
 				}
 
 				// Function 2b: Convert IfcLoop.
