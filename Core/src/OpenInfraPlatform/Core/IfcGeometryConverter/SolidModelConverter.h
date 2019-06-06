@@ -103,9 +103,22 @@ namespace OpenInfraPlatform
 				if (csg_solid)
 				{
 					// Get tree root expression (attribute 1). 
-					std::shared_ptr<typename IfcEntityTypesT::IfcCsgSelect> csg_select = csg_solid->TreeRootExpression; //noch richtigen Datentyp nachschauen
-
-					if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select))
+					IfcEntityTypesT::IfcCsgSelect csg_select = csg_solid->TreeRootExpression;
+					std::shared_ptr < IfcEntityTypesT::IfcBooleanResult> boolean_result = nullptr ; 
+					std::shared_ptr < IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D = nullptr;//noch richtigen Datentyp nachschauen
+					switch(csg_select.which()) {
+					case 0:
+						boolean_result = csg_select.get<0>().lock();
+						convertIfcBooleanResult(boolean_result, pos, itemData, err);
+						break;
+					case 1:
+						csg_primitive3D = csg_select.get<1>().lock();
+						convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData, err);
+						break;
+					default:
+						break;
+					}
+					/*if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select))
 					{
 						std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> csg_select_boolean_result =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select);
@@ -116,7 +129,7 @@ namespace OpenInfraPlatform
 						std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_select_primitive_3d =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(csg_select);
 						convertIfcCsgPrimitive3D(csg_select_primitive_3d, pos, itemData, err);
-					}
+					}*/
 					return;
 				} //endif csg_solid
 
@@ -136,15 +149,20 @@ namespace OpenInfraPlatform
 					}
 
 					// Get outer (attribute 1).
-					std::shared_ptr<typename IfcEntityTypesT::IfcClosedShell>& outerShell = manifoldSolidBrep->Outer;
+					std::shared_ptr<typename IfcEntityTypesT::IfcClosedShell>& outerShell = manifoldSolidBrep->Outer.lock();
 
 					if (outerShell) {
 						// first convert outer shell
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace> >& facesOuterShell = outerShell->CfsFaces;
+										
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_facesOuterShell;
 						std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
 
+						
+							vec_facesOuterShell.reserve(outerShell->CfsFaces.size());
+							std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.locj(); });
+													
 						try {
-							faceConverter->convertIfcFaceList(facesOuterShell, pos, inputDataOuterShell, err);
+							faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell, err);
 						}
 						catch (...) {
 							//return;
@@ -155,16 +173,16 @@ namespace OpenInfraPlatform
 					} //endif outer
 
 					  // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
-					std::shared_ptr<typename IfcEntityTypesT::IfcAdvancedBrep> advanced_brep =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAdvancedBrep>(manifoldSolidBrep);
+					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAdvancedBrep> advanced_brep =
+						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAdvancedBrep>(manifoldSolidBrep);
 					if (advanced_brep)
 					{
 						// TO DO: formal proposition: every face shall be of the type IfcAdvancedFace.
 						// TO DO: implement
 
 						// IfcAdvancedBrepWithVoids SUBTYPE of IfcAdvancedBrep
-						std::shared_ptr<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids> advanced_brep_with_voids =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids>(advanced_brep);
+						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAdvancedBrepWithVoids> advanced_brep_with_voids =
+							std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAdvancedBrepWithVoids>(advanced_brep);
 						if (advanced_brep_with_voids)
 						{
 							// Get voids (attribute 2). 
@@ -192,14 +210,14 @@ namespace OpenInfraPlatform
 				//	ABSTRACT SUPERTYPE of IfcSectionedSolidHorizontal																					  //
 				// *****************************************************************************************************************************************//
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSolid> sectioned_solid =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolid>(solidModel);
+				std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcSectionedSolid> sectioned_solid =
+					std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcSectionedSolid>(solidModel);
 
 				if (sectioned_solid)
 				{
 					//Get directrix and cross sections (attributes 1-2).
 					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
-						sectioned_solid->Directrix;	// TO DO: next level
+						sectioned_solid->Directrix.lock();	// TO DO: next level
 					std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> cross_sections =
 						sectioned_solid->CrossSections; // TO DO: next level
 
@@ -1128,16 +1146,42 @@ namespace OpenInfraPlatform
 							std::shared_ptr<carve::mesh::MeshSet<3> >& second_operand_meshset = (*it_second_operands);
 
 							int id1 = 0;
-							if (std::dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_first_operand))
-							{
-								id1 = std::dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_first_operand)->getId();
-							}
-							int id2 = 0;
-							if (std::dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_second_operand))
-							{
-								id2 = std::dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_second_operand)->getId();
+							switch(ifc_first_operand.which()) {
+							case 0:
+								id1 = ifc_first_operand.get<0>().lock()->getId();
+								break;
+							case 1:
+								id1 = ifc_first_operand.get<1>().lock()->getId();
+								break;
+							case 2:
+								id1 = ifc_first_operand.get<2>().lock()->getId();
+								break;
+							case 3:
+								id1 = ifc_first_operand.get<3>().lock()->getId();
+								break;
+							default:
+								break;
 							}
 
+							int id2 = 0;
+							switch(ifc_second_operand.which()) {
+							case 0:
+								id2 = ifc_second_operand.get<0>().lock()->getId();
+								break;
+							case 1:
+								id2 = ifc_second_operand.get<1>().lock()->getId();
+								break;
+							case 2:
+								id2 = ifc_second_operand.get<2>().lock()->getId();
+								break;
+							case 3:
+								id2 = ifc_second_operand.get<3>().lock()->getId();
+								break;
+							default:
+								break;
+							}
+							
+							
 							std::shared_ptr<carve::mesh::MeshSet<3> > result;
 							bool csg_op_ok = computeCSG(first_operand_meshset.get(),
 								second_operand_meshset.get(),
