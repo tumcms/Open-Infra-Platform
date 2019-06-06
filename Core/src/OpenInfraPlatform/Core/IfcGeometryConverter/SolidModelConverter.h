@@ -1076,26 +1076,27 @@ namespace OpenInfraPlatform
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(boolResult);
 				if (boolean_clipping_result)
 				{
-					bool ifc_boolean_operator = boolean_clipping_result->Operator;
-					bool ifc_first_operand = boolean_clipping_result->FirstOperand;
-					bool ifc_second_operand = boolean_clipping_result->SecondOperand;
+					typename IfcEntityTypesT::IfcBooleanOperator ifc_boolean_operator = boolean_clipping_result->Operator;
+					typename IfcEntityTypesT::IfcBooleanOperand ifc_first_operand = boolean_clipping_result->FirstOperand;
+					typename IfcEntityTypesT::IfcBooleanOperand ifc_second_operand = boolean_clipping_result->SecondOperand;
 
-					if (!ifc_boolean_operator || !ifc_first_operand || !ifc_second_operand)
-					{
-						std::cout << ": invalid IfcBooleanOperator or IfcBooleanOperand" << std::endl;
-						return;
-					}
+					/// Not needed since not optional nor pointers!
+					//if (!ifc_boolean_operator || !ifc_first_operand || !ifc_second_operand)
+					//{
+					//	std::cout << ": invalid IfcBooleanOperator or IfcBooleanOperand" << std::endl;
+					//	return;
+					//}
 
 					carve::csg::CSG::OP csg_operation = carve::csg::CSG::A_MINUS_B;
-					if (ifc_boolean_operator->enum == IfcEntityTypesT::IfcBooleanOperator::ENUM_UNION)
+					if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_UNION)
 					{
 						csg_operation = carve::csg::CSG::UNION;
 					}
-					else if (ifc_boolean_operator->enum == IfcEntityTypesT::IfcBooleanOperator::ENUM_INTERSECTION)
+					else if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_INTERSECTION)
 					{
 						csg_operation = carve::csg::CSG::INTERSECTION;
 					}
-					else if (ifc_boolean_operator->enum == IfcEntityTypesT::IfcBooleanOperator::ENUM_DIFFERENCE)
+					else if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_DIFFERENCE)
 					{
 						csg_operation = carve::csg::CSG::A_MINUS_B;
 					}
@@ -1430,23 +1431,49 @@ namespace OpenInfraPlatform
 				err << "Unhandled IFC Representation: #" << csgPrimitive->getId() << "=" << csgPrimitive->classname() << std::endl;
 			}
 
-			void convertIfcBooleanOperand(const std::shared_ptr<typename IfcEntityTypesT::IfcBooleanOperand>& operand,
+			void convertIfcBooleanOperand(typename IfcEntityTypesT::IfcBooleanOperand& operand,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
 				const std::shared_ptr<ItemData>& otherOperand,
 				std::stringstream& err)
 			{
-				std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel> solid_model =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSolidModel>(operand);
+				// OPERAND is SELECT of
+				/*
+				class IfcBooleanResult;
+				class IfcCsgPrimitive3D;
+				class IfcHalfSpaceSolid;
+				class IfcSolidModel;
+				class IfcTessellatedFaceSet;
+				*/
+				double length_factor = unitConverter->getLengthInMeterFactor();
+				std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel> solid_model = nullptr;
+				std::shared_ptr<typename IfcEntityTypesT::IfcHalfSpaceSolid> half_space_solid = nullptr;
+				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_result = nullptr;
+				std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D = nullptr;
+
+				switch (operand.which()) {
+				case 0:
+					boolean_result = operand.get<0>().lock();
+					break;
+				case 1:
+					csg_primitive3D = operand.get<1>().lock();
+					break;
+				case 2: 
+					half_space_solid = operand.get<2>().lock();
+					break;
+				case 3:
+					solid_model = operand.get<3>().lock();
+					break;
+				default:
+					break;
+				}
+
 				if (solid_model)
 				{
 					convertIfcSolidModel(solid_model, pos, itemData, err);
 					return;
 				}
-				double length_factor = unitConverter->getLengthInMeterFactor();
-
-				std::shared_ptr<typename IfcEntityTypesT::IfcHalfSpaceSolid> half_space_solid =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcHalfSpaceSolid>(operand);
+				
 				if (half_space_solid)
 				{
 					//ENTITY IfcHalfSpaceSolid SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
@@ -1744,17 +1771,13 @@ namespace OpenInfraPlatform
 					}
 					return;
 				}
-
-				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_result =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(operand);
+				
 				if (boolean_result)
 				{
 					convertIfcBooleanResult(boolean_result, pos, itemData, err);
 					return;
 				}
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(operand);
 				if (csg_primitive3D)
 				{
 					convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData, err);
