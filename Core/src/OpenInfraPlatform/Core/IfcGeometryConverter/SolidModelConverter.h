@@ -222,8 +222,8 @@ namespace OpenInfraPlatform
 					//TODO: implement, check for formal propositions. 
 
 					// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
-					std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSolidHorizontal> sectioned_solid_horizontal =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>(sectioned_solid);
+					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcSectionedSolidHorizontal> sectioned_solid_horizontal =
+						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcSectionedSolidHorizontal>(sectioned_solid);
 
 					if (sectioned_solid_horizontal)
 					{
