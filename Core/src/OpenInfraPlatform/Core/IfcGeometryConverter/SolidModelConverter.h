@@ -215,8 +215,8 @@ namespace OpenInfraPlatform
 				if (sectioned_solid)
 				{
 					//Get directrix and cross sections (attributes 1-2).
-					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
-						sectioned_solid->Directrix.lock();	// TO DO: next level
+					//std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
+					//	sectioned_solid->Directrix.lock();	// TO DO: next level
 					//TODO: Handle cross sections
 					//TODO: next level
 					//TODO: implement, check for formal propositions. 
@@ -228,8 +228,11 @@ namespace OpenInfraPlatform
 					if (sectioned_solid_horizontal)
 					{
 						// Get cross section positions and fixed axis vertical (attributes 3-4).
-						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcDistanceExpression> cross_section_positions =
-							sectioned_solid_horizontal->CrossSectionPositions;
+						std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcDistanceExpression>> vec_cross_section_positions;
+							vec_cross_section_positions.reserve(sectioned_solid_horizontal->CrossSectionPositions.size());
+						std::transform(sectioned_solid_horizontal->CrossSectionPositions.begin(),
+							sectioned_solid_horizontal->CrossSectionPositions.end(),
+							vec_cross_section_positions.begin(), [](auto& it) {return it.lock(); });
 						std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> fixed_axis_vertical =
 							sectioned_solid_horizontal->FixedAxisVertical;
 
@@ -282,12 +285,12 @@ namespace OpenInfraPlatform
 						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcFixedReferenceSweptAreaSolid>(swept_area_solid);
 					if (fixed_ref_swept_area_solid) {
 						// Get directrix, start parameter, end parameter and fixed reference (attributes 3-6).
-						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
-							fixed_ref_swept_area_solid->Directrix.lock();	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
+						//std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
+						//	fixed_ref_swept_area_solid->Directrix.lock();	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
 						double start_param = fixed_ref_swept_area_solid->StartParam;	// TO DO: optional
 						double end_param = fixed_ref_swept_area_solid->EndParam;		// TO DO: optional
-						std::shared_ptr<typename IfcEntityTypesT::IfcDirection> fixed_ref =
-							fixed_ref_swept_area_solid->FixedReference.lock();
+						//std::shared_ptr<typename IfcEntityTypesT::IfcDirection> fixed_ref =
+						//	fixed_ref_swept_area_solid->FixedReference.lock();
 
 						// TO DO: implement//
 
@@ -341,7 +344,7 @@ namespace OpenInfraPlatform
 						curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);
 
 						std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
-						faceConverter->convertIfcSurface(surface_curve_swept_area_solid->ReferenceSurface, swept_area_pos, polyline_data);
+						faceConverter->convertIfcSurface(surface_curve_swept_area_solid->ReferenceSurface.lock(), swept_area_pos, polyline_data);
 
 						return;
 					}
