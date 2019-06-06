@@ -251,13 +251,13 @@ namespace OpenInfraPlatform
 				if (swept_area_solid)
 				{
 					// Get swept area and position (attributes 1-2). 
-					std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& swept_area = swept_area_solid->SweptArea;
+					std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& swept_area = swept_area_solid->SweptArea.lock();
 
 					carve::math::Matrix swept_area_pos(pos);	// check if local coordinate system is specified for extrusion
 					if (swept_area_solid->Position)
 					{
 						double length_factor = unitConverter->getLengthInMeterFactor();
-						std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> swept_area_position = swept_area_solid->Position;
+						std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> swept_area_position = swept_area_solid->Position.lock();
 						PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(swept_area_position, swept_area_pos, length_factor);
 						swept_area_pos = pos * swept_area_pos;
 					}
@@ -303,7 +303,7 @@ namespace OpenInfraPlatform
 					{
 						// Get axis and angle (attributes 3-4). 
 						std::shared_ptr<typename IfcEntityTypesT::IfcAxis1Placement> axis =
-							revolved_area_solid->Axis;
+							revolved_area_solid->Axis.lock();
 						double angle = revolved_area_solid->Angle;
 
 						convertIfcRevolvedAreaSolid(revolved_area_solid, swept_area_pos, itemData, err);
@@ -319,11 +319,11 @@ namespace OpenInfraPlatform
 					{
 						// Get directrix, start parameter, end paramter and reference surface (attributes 3-6).
 						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
-							surface_curve_swept_area_solid->Directrix;	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
+							surface_curve_swept_area_solid->Directrix.lock();	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
 						double start_param = surface_curve_swept_area_solid->StartParam;	// TO DO: optional
 						double end_param = surface_curve_swept_area_solid->EndParam;		// TO DO: optional
 						std::shared_ptr<typename IfcEntityTypesT::IfcSurface> ref_surface =
-							surface_curve_swept_area_solid->ReferenceSurface;	// TO DO: next level
+							surface_curve_swept_area_solid->ReferenceSurface.lock();	// TO DO: next level
 
 // TO DO: implement / check current implementation //
 #ifdef _DEBUG
@@ -334,7 +334,7 @@ namespace OpenInfraPlatform
 						const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
 						std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
 
-						std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = surface_curve_swept_area_solid->Directrix;
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = surface_curve_swept_area_solid->Directrix.lock();
 						const int nvc = geomSettings->num_vertices_per_circle;
 						double length_in_meter = unitConverter->getLengthInMeterFactor();
 
