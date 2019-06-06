@@ -186,8 +186,7 @@ namespace OpenInfraPlatform
 						if (advanced_brep_with_voids)
 						{
 							// Get voids (attribute 2). 
-							std::shared_ptr<typename IfcEntityTypesT::IfcClosedShell> voids =
-								advanced_brep_with_voids->Voids;
+							//TODO
 
 						} //endif advanced_brep_with_voids
 					} // endif advanced_brep
@@ -218,10 +217,9 @@ namespace OpenInfraPlatform
 					//Get directrix and cross sections (attributes 1-2).
 					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
 						sectioned_solid->Directrix.lock();	// TO DO: next level
-					std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> cross_sections =
-						sectioned_solid->CrossSections; // TO DO: next level
-
-// TO DO: implement, check for formal propositions. 
+					//TODO: Handle cross sections
+					//TODO: next level
+					//TODO: implement, check for formal propositions. 
 
 					// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
 					std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSolidHorizontal> sectioned_solid_horizontal =
