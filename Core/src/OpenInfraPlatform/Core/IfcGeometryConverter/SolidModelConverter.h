@@ -98,23 +98,23 @@ namespace OpenInfraPlatform
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
 				// *****************************************************************************************************************************************//
 
-				shared_ptr<typename IfcEntityTypesT::IfcCsgSolid> csg_solid =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgSolid>(solidModel);
+				std::shared_ptr<typename IfcEntityTypesT::IfcCsgSolid> csg_solid =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgSolid>(solidModel);
 				if (csg_solid)
 				{
 					// Get tree root expression (attribute 1). 
-					shared_ptr<typename IfcEntityTypesT::IfcCsgSelect> csg_select = csg_solid->TreeRootExpression; //noch richtigen Datentyp nachschauen
+					std::shared_ptr<typename IfcEntityTypesT::IfcCsgSelect> csg_select = csg_solid->TreeRootExpression; //noch richtigen Datentyp nachschauen
 
-					if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select))
+					if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select))
 					{
-						shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> csg_select_boolean_result =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select);
+						std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> csg_select_boolean_result =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select);
 						convertIfcBooleanResult(csg_select_boolean_result, pos, itemData, err);
 					}
-					else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(csg_select))
+					else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(csg_select))
 					{
-						shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_select_primitive_3d =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(csg_select);
+						std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_select_primitive_3d =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(csg_select);
 						convertIfcCsgPrimitive3D(csg_select_primitive_3d, pos, itemData, err);
 					}
 					return;
@@ -125,8 +125,8 @@ namespace OpenInfraPlatform
 				//	ABSTRACT SUPERTYPE of IfcAdvancedBrep, IfcFacetedBrep																					//
 				// *****************************************************************************************************************************************//
 
-				shared_ptr<typename IfcEntityTypesT::IfcManifoldSolidBrep> manifoldSolidBrep =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcManifoldSolidBrep>(solidModel);
+				std::shared_ptr<typename IfcEntityTypesT::IfcManifoldSolidBrep> manifoldSolidBrep =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcManifoldSolidBrep>(solidModel);
 
 				if (manifoldSolidBrep) {
 
@@ -155,16 +155,16 @@ namespace OpenInfraPlatform
 					} //endif outer
 
 					  // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
-					shared_ptr<typename IfcEntityTypesT::IfcAdvancedBrep> advanced_brep =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcAdvancedBrep>(manifoldSolidBrep);
+					std::shared_ptr<typename IfcEntityTypesT::IfcAdvancedBrep> advanced_brep =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAdvancedBrep>(manifoldSolidBrep);
 					if (advanced_brep)
 					{
 						// TO DO: formal proposition: every face shall be of the type IfcAdvancedFace.
 						// TO DO: implement
 
 						// IfcAdvancedBrepWithVoids SUBTYPE of IfcAdvancedBrep
-						shared_ptr<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids> advanced_brep_with_voids =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids>(advanced_brep);
+						std::shared_ptr<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids> advanced_brep_with_voids =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids>(advanced_brep);
 						if (advanced_brep_with_voids)
 						{
 							// Get voids (attribute 2). 
@@ -175,8 +175,8 @@ namespace OpenInfraPlatform
 					} // endif advanced_brep
 
 					// (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
-					shared_ptr<typename IfcEntityTypesT::IfcFacetedBrep> faceted_brep =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcFacetedBrep>(manifoldSolidBrep);
+					std::shared_ptr<typename IfcEntityTypesT::IfcFacetedBrep> faceted_brep =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFacetedBrep>(manifoldSolidBrep);
 					if (faceted_brep) {
 						// No additional attributes
 						// TO DO: informal propositions: all bounding loops are IfcPolyLoop, all vertices shall be referenced by all polyloops, i.e. each cartesian point referenced by at least three polyloops. 
@@ -192,8 +192,8 @@ namespace OpenInfraPlatform
 				//	ABSTRACT SUPERTYPE of IfcSectionedSolidHorizontal																					  //
 				// *****************************************************************************************************************************************//
 
-				shared_ptr<typename IfcEntityTypesT::IfcSectionedSolid> sectioned_solid =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolid>(solidModel);
+				std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSolid> sectioned_solid =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolid>(solidModel);
 
 				if (sectioned_solid)
 				{
@@ -206,8 +206,8 @@ namespace OpenInfraPlatform
 // TO DO: implement, check for formal propositions. 
 
 					// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
-					shared_ptr<typename IfcEntityTypesT::IfcSectionedSolidHorizontal> sectioned_solid_horizontal =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>(sectioned_solid);
+					std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSolidHorizontal> sectioned_solid_horizontal =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>(sectioned_solid);
 
 					if (sectioned_solid_horizontal)
 					{
@@ -227,26 +227,26 @@ namespace OpenInfraPlatform
 				//	ABSTRACT SUPERTYPE of IfcExtrudedAreaSolid, IfcFixedReferenceSweptAreaSolid, IfcRevolvedAreaSolid, IfcSurfaceCurveSweptAreaSolid		//
 				// *****************************************************************************************************************************************//
 
-				shared_ptr<typename IfcEntityTypesT::IfcSweptAreaSolid> swept_area_solid =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptAreaSolid>(solidModel);
+				std::shared_ptr<typename IfcEntityTypesT::IfcSweptAreaSolid> swept_area_solid =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptAreaSolid>(solidModel);
 
 				if (swept_area_solid)
 				{
 					// Get swept area and position (attributes 1-2). 
-					shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& swept_area = swept_area_solid->SweptArea;
+					std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& swept_area = swept_area_solid->SweptArea;
 
 					carve::math::Matrix swept_area_pos(pos);	// check if local coordinate system is specified for extrusion
 					if (swept_area_solid->Position)
 					{
 						double length_factor = unitConverter->getLengthInMeterFactor();
-						shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> swept_area_position = swept_area_solid->Position;
+						std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> swept_area_position = swept_area_solid->Position;
 						PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(swept_area_position, swept_area_pos, length_factor);
 						swept_area_pos = pos * swept_area_pos;
 					}
 
 					// (1/4) IfcExtrudedAreaSolid SUBTYPE of IfcSweptAreaSolid
-					shared_ptr<typename IfcEntityTypesT::IfcExtrudedAreaSolid> extruded_area =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcExtrudedAreaSolid>(swept_area_solid);
+					std::shared_ptr<typename IfcEntityTypesT::IfcExtrudedAreaSolid> extruded_area =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcExtrudedAreaSolid>(swept_area_solid);
 					if (extruded_area)
 					{
 						// Get extruded direction and depth (attributes 3-4). 
@@ -262,8 +262,8 @@ namespace OpenInfraPlatform
 					}
 
 					// (2/4) IfcFixedReferenceSweptAreaSolid SUBTYPE of IfcSweptAreaSolid
-					shared_ptr<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixed_ref_swept_area_solid =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>(swept_area_solid);
+					std::shared_ptr<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixed_ref_swept_area_solid =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>(swept_area_solid);
 					if (fixed_ref_swept_area_solid) {
 						// Get directrix, start parameter, end parameter and fixed reference (attributes 3-6).
 						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
@@ -279,8 +279,8 @@ namespace OpenInfraPlatform
 					}
 
 					// (3/4) IfcRevolvedAreaSolid SUBTYPE of IfcSweptAreaSolid
-					shared_ptr<typename IfcEntityTypesT::IfcRevolvedAreaSolid> revolved_area_solid =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcRevolvedAreaSolid>(swept_area_solid);
+					std::shared_ptr<typename IfcEntityTypesT::IfcRevolvedAreaSolid> revolved_area_solid =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRevolvedAreaSolid>(swept_area_solid);
 					if (revolved_area_solid)
 					{
 						// Get axis and angle (attributes 3-4). 
@@ -295,8 +295,8 @@ namespace OpenInfraPlatform
 					}
 
 					// (4/4) IfcSurfaceCurveSweptAreaSolid SUBTYPE of IfcSweptAreaSolid
-					shared_ptr<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid> surface_curve_swept_area_solid =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid>(swept_area_solid);
+					std::shared_ptr<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid> surface_curve_swept_area_solid =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid>(swept_area_solid);
 					if (surface_curve_swept_area_solid)
 					{
 						// Get directrix, start parameter, end paramter and reference surface (attributes 3-6).
@@ -312,11 +312,11 @@ namespace OpenInfraPlatform
 						std::cout << "Warning\t| IfcSurfaceCurveSweptAreaSolid not implemented" << std::endl;
 #endif
 
-						shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter = profileCache->getProfileConverter(swept_area);
+						std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter = profileCache->getProfileConverter(swept_area);
 						const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
-						shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
+						std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
 
-						shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = surface_curve_swept_area_solid->Directrix;
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = surface_curve_swept_area_solid->Directrix;
 						const int nvc = geomSettings->num_vertices_per_circle;
 						double length_in_meter = unitConverter->getLengthInMeterFactor();
 
@@ -324,7 +324,7 @@ namespace OpenInfraPlatform
 						std::vector<carve::geom::vector<3> > basis_curve_points;
 						curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);
 
-						shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
+						std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
 						faceConverter->convertIfcSurface(surface_curve_swept_area_solid->ReferenceSurface, swept_area_pos, polyline_data);
 
 						return;
@@ -340,12 +340,12 @@ namespace OpenInfraPlatform
 				//	ABSTRACT SUPERTYPE of IfcSweptDiskSolidPolygonal																						//
 				// *****************************************************************************************************************************************//
 
-				shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolid> swept_disk_solid =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolid>(solidModel);
+				std::shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolid> swept_disk_solid =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolid>(solidModel);
 				if (swept_disk_solid)
 				{
 					// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
-					shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = swept_disp_solid->Directrix;
+					std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = swept_disp_solid->Directrix;
 					const int nvc = geomSettings->num_vertices_per_circle;
 					double length_in_meter = unitConverter->getLengthInMeterFactor();
 					double radius = 0.0;
@@ -371,8 +371,8 @@ namespace OpenInfraPlatform
 					// TODO: handle inner radius, start param, end param and check for formal propositions!
 
 					// (1/1) IfcSweptDiskSolidPolygonal SUBTYPE of IfcSweptDiskSolid
-					shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal> swept_disk_solid_polygonal =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>(swept_disk_solid);
+					std::shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal> swept_disk_solid_polygonal =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>(swept_disk_solid);
 					if (swept_disk_solid_polygonal)
 					{
 						// Get fillet radius (attribute 6). 
@@ -386,7 +386,7 @@ namespace OpenInfraPlatform
 					std::vector<carve::geom::vector<3> > basis_curve_points;
 					curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);
 
-					shared_ptr<carve::input::PolyhedronData> pipe_data(new carve::input::PolyhedronData());
+					std::shared_ptr<carve::input::PolyhedronData> pipe_data(new carve::input::PolyhedronData());
 					itemData->closed_polyhedrons.push_back(pipe_data);
 					std::vector<carve::geom::vector<3> > inner_shape_points;
 
@@ -612,8 +612,8 @@ namespace OpenInfraPlatform
 					return;
 				}// endif swept_disp_solid
 
-				//shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh =
-				//	dynamic_pointer_cast<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
+				//std::shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh =
+				//	std::dynamic_pointer_cast<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
 				//if (ssh)
 				//{
 				//
@@ -648,7 +648,7 @@ namespace OpenInfraPlatform
 			//end convertIfcSolidModel
 
 			//void convertIfcSectionedSolidHorizontal(
-			//	shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh,
+			//	std::shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh,
 			//	std::shared_ptr<ItemData> itemData,
 			//	std::stringstream& err)
 			//
@@ -681,10 +681,10 @@ namespace OpenInfraPlatform
 			//	}
 			//
 			//	// Retrieve data from IfcSectionedSolidHorizontal.
-			//	shared_ptr<emt::Ifc4x1EntityTypes::IfcCurve>& directrixCurve = ssh->Directrix;
-			//	std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcProfileDef>>& crossSections = ssh->CrossSections;
-			//	std::vector<shared_ptr<emt::Ifc4x1EntityTypes::IfcDistanceExpression>>& crossSectionPositions = ssh->CrossSectionPositions;
-			//	shared_ptr<emt::Ifc4x1EntityTypes::IfcBoolean>& fixedAxisVertical = ssh->FixedAxisVertical;
+			//	std::shared_ptr<emt::Ifc4x1EntityTypes::IfcCurve>& directrixCurve = ssh->Directrix;
+			//	std::vector<std::shared_ptr<emt::Ifc4x1EntityTypes::IfcProfileDef>>& crossSections = ssh->CrossSections;
+			//	std::vector<std::shared_ptr<emt::Ifc4x1EntityTypes::IfcDistanceExpression>>& crossSectionPositions = ssh->CrossSectionPositions;
+			//	std::shared_ptr<emt::Ifc4x1EntityTypes::IfcBoolean>& fixedAxisVertical = ssh->FixedAxisVertical;
 			//
 			//	// Check whether the same amount of crossSections and crossSectionPositions exist. CrossSections and CrossSectionPositions are lists L[2:?]
 			//	int crossSectionsSize = crossSections.size();
@@ -757,7 +757,7 @@ namespace OpenInfraPlatform
 			//	}
 			//
 			//	// Define a vector of pointers. Revolved and Extruded only use a single profile, so they do not need vectors.
-			//	std::vector< shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> > profile_converter;
+			//	std::vector< std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> > profile_converter;
 			//	
 			//	// Give crossSection information (profileDefs) to profileConverter (iterator: number of CrossSectionElements)
 			//	for (int element = 0; element <= crossSections.size(); ++element)
@@ -824,8 +824,8 @@ namespace OpenInfraPlatform
 				}
 
 				// swept area
-				shared_ptr<typename IfcEntityTypesT::IfcProfileDef> swept_area = extrudedArea->SweptArea;
-				shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
+				std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> swept_area = extrudedArea->SweptArea;
+				std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
 					profileCache->getProfileConverter(swept_area);
 				profile_converter->simplifyPaths();
 				const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
@@ -834,7 +834,7 @@ namespace OpenInfraPlatform
 				{
 					return;
 				}
-				shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
+				std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
 				GeomUtils::extrude(paths, extrusion_vector, poly_data, err);
 
 				// apply object coordinate system
@@ -862,24 +862,24 @@ namespace OpenInfraPlatform
 
 				// angle and axis
 				double angle_factor = unitConverter->getAngleInRadianFactor();
-				shared_ptr<typename IfcEntityTypesT::IfcProfileDef> swept_area_profile = revolvedArea->SweptArea;
+				std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> swept_area_profile = revolvedArea->SweptArea;
 				double revolution_angle = revolvedArea->Angle * angle_factor;
 
 				carve::geom::vector<3>  axis_location;
 				carve::geom::vector<3>  axis_direction;
 				if (revolvedArea->Axis)
 				{
-					shared_ptr<typename IfcEntityTypesT::IfcAxis1Placement> axis_placement = revolvedArea->Axis;
+					std::shared_ptr<typename IfcEntityTypesT::IfcAxis1Placement> axis_placement = revolvedArea->Axis;
 
 					if (axis_placement->Location)
 					{
-						shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> location_point = axis_placement->Location;
+						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> location_point = axis_placement->Location;
 						curveConverter->convertIfcCartesianPoint(location_point, axis_location);
 					}
 
 					if (axis_placement->Axis)
 					{
-						shared_ptr<typename IfcEntityTypesT::IfcDirection> axis = axis_placement->Axis;
+						std::shared_ptr<typename IfcEntityTypesT::IfcDirection> axis = axis_placement->Axis;
 						axis_direction = carve::geom::VECTOR(*(axis->DirectionRatios[0]),
 							*(axis->DirectionRatios[1]),
 							*(axis->DirectionRatios[2]));
@@ -893,7 +893,7 @@ namespace OpenInfraPlatform
 				base_point *= -1;
 
 				// swept area
-				shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter = profileCache->getProfileConverter(swept_area_profile);
+				std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter = profileCache->getProfileConverter(swept_area_profile);
 				const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profile_converter->getCoordinates();
 
 				// tesselate
@@ -1000,7 +1000,7 @@ namespace OpenInfraPlatform
 					d_angle = -d_angle;
 				}
 
-				shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
+				std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 				itemData->closed_polyhedrons.push_back(polyhedron_data);
 
 				// create vertices
@@ -1072,8 +1072,8 @@ namespace OpenInfraPlatform
 				std::stringstream& err)
 			{
 				const int boolean_result_id = boolResult->getId();
-				shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_clipping_result =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(boolResult);
+				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_clipping_result =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(boolResult);
 				if (boolean_clipping_result)
 				{
 					bool ifc_boolean_operator = boolean_clipping_result->Operator;
@@ -1105,39 +1105,39 @@ namespace OpenInfraPlatform
 					}
 
 					// convert the first operand
-					shared_ptr<ItemData> first_operand_data(new ItemData());
-					shared_ptr<ItemData> empty_operand;
+					std::shared_ptr<ItemData> first_operand_data(new ItemData());
+					std::shared_ptr<ItemData> empty_operand;
 					convertIfcBooleanOperand(ifc_first_operand, pos, first_operand_data, empty_operand, err);
 					first_operand_data->createMeshSetsFromClosedPolyhedrons();
 
 					// convert the second operand
-					shared_ptr<ItemData> second_operand_data(new ItemData());
+					std::shared_ptr<ItemData> second_operand_data(new ItemData());
 					convertIfcBooleanOperand(ifc_second_operand, pos, second_operand_data, first_operand_data, err);
 					second_operand_data->createMeshSetsFromClosedPolyhedrons();
 
 					// for every first operand polyhedrons, apply all second operand polyhedrons
-					std::vector<shared_ptr<carve::mesh::MeshSet<3> > >::iterator it_first_operands;
+					std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >::iterator it_first_operands;
 					for (it_first_operands = first_operand_data->meshsets.begin(); it_first_operands != first_operand_data->meshsets.end(); ++it_first_operands)
 					{
-						shared_ptr<carve::mesh::MeshSet<3> >& first_operand_meshset = (*it_first_operands);
+						std::shared_ptr<carve::mesh::MeshSet<3> >& first_operand_meshset = (*it_first_operands);
 
-						std::vector<shared_ptr<carve::mesh::MeshSet<3> > >::iterator it_second_operands;
+						std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >::iterator it_second_operands;
 						for (it_second_operands = second_operand_data->meshsets.begin(); it_second_operands != second_operand_data->meshsets.end(); ++it_second_operands)
 						{
-							shared_ptr<carve::mesh::MeshSet<3> >& second_operand_meshset = (*it_second_operands);
+							std::shared_ptr<carve::mesh::MeshSet<3> >& second_operand_meshset = (*it_second_operands);
 
 							int id1 = 0;
-							if (dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_first_operand))
+							if (std::dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_first_operand))
 							{
-								id1 = dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_first_operand)->getId();
+								id1 = std::dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_first_operand)->getId();
 							}
 							int id2 = 0;
-							if (dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_second_operand))
+							if (std::dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_second_operand))
 							{
-								id2 = dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_second_operand)->getId();
+								id2 = std::dynamic_pointer_cast<oip::EXPRESSEntity>(ifc_second_operand)->getId();
 							}
 
-							shared_ptr<carve::mesh::MeshSet<3> > result;
+							std::shared_ptr<carve::mesh::MeshSet<3> > result;
 							bool csg_op_ok = computeCSG(first_operand_meshset.get(),
 								second_operand_meshset.get(),
 								csg_operation, id1, id2, err, result);
@@ -1160,11 +1160,11 @@ namespace OpenInfraPlatform
 				std::shared_ptr<ItemData> itemData,
 				std::stringstream& err)
 			{
-				shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
+				std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 				double length_factor = unitConverter->getLengthInMeterFactor();
 
 				// ENTITY IfcCsgPrimitive3D  ABSTRACT SUPERTYPE OF(ONEOF(IfcBlock, IfcRectangularPyramid, IfcRightCircularCone, IfcRightCircularCylinder, IfcSphere)
-				shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& primitive_placement = csgPrimitive->Position;
+				std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& primitive_placement = csgPrimitive->Position;
 
 				carve::math::Matrix primitive_placement_matrix(pos);
 				if (primitive_placement)
@@ -1173,8 +1173,8 @@ namespace OpenInfraPlatform
 					primitive_placement_matrix = pos * primitive_placement_matrix;
 				}
 
-				shared_ptr<typename IfcEntityTypesT::IfcBlock> block =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcBlock>(csgPrimitive);
+				std::shared_ptr<typename IfcEntityTypesT::IfcBlock> block =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBlock>(csgPrimitive);
 				if (block)
 				{
 					double x_length = length_factor;
@@ -1225,8 +1225,8 @@ namespace OpenInfraPlatform
 					return;
 				}
 
-				shared_ptr<typename IfcEntityTypesT::IfcRectangularPyramid> rectangular_pyramid =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangularPyramid>(csgPrimitive);
+				std::shared_ptr<typename IfcEntityTypesT::IfcRectangularPyramid> rectangular_pyramid =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangularPyramid>(csgPrimitive);
 				if (rectangular_pyramid)
 				{
 					double x_length = length_factor;
@@ -1263,8 +1263,8 @@ namespace OpenInfraPlatform
 					return;
 				}
 
-				shared_ptr<typename IfcEntityTypesT::IfcRightCircularCone> right_circular_cone =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcRightCircularCone>(csgPrimitive);
+				std::shared_ptr<typename IfcEntityTypesT::IfcRightCircularCone> right_circular_cone =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRightCircularCone>(csgPrimitive);
 				if (right_circular_cone)
 				{
 					if (!right_circular_cone->Height)
@@ -1310,8 +1310,8 @@ namespace OpenInfraPlatform
 					return;
 				}
 
-				shared_ptr<typename IfcEntityTypesT::IfcRightCircularCylinder> right_circular_cylinder =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcRightCircularCylinder>(csgPrimitive);
+				std::shared_ptr<typename IfcEntityTypesT::IfcRightCircularCylinder> right_circular_cylinder =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRightCircularCylinder>(csgPrimitive);
 				if (right_circular_cylinder)
 				{
 					if (!right_circular_cylinder->Height)
@@ -1354,8 +1354,8 @@ namespace OpenInfraPlatform
 					return;
 				}
 
-				shared_ptr<typename IfcEntityTypesT::IfcSphere> sphere =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSphere>(csgPrimitive);
+				std::shared_ptr<typename IfcEntityTypesT::IfcSphere> sphere =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSphere>(csgPrimitive);
 				if (sphere)
 				{
 					if (!sphere->Radius)
@@ -1374,7 +1374,7 @@ namespace OpenInfraPlatform
 					//         4- 5 -6
 					//        /   |   \
 
-					shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
+					std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, radius)); // top
 
 					const int nvc = geomSettings->num_vertices_per_circle;
@@ -1436,8 +1436,8 @@ namespace OpenInfraPlatform
 				const std::shared_ptr<ItemData>& otherOperand,
 				std::stringstream& err)
 			{
-				shared_ptr<typename IfcEntityTypesT::IfcSolidModel> solid_model =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcSolidModel>(operand);
+				std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel> solid_model =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSolidModel>(operand);
 				if (solid_model)
 				{
 					convertIfcSolidModel(solid_model, pos, itemData, err);
@@ -1445,22 +1445,22 @@ namespace OpenInfraPlatform
 				}
 				double length_factor = unitConverter->getLengthInMeterFactor();
 
-				shared_ptr<typename IfcEntityTypesT::IfcHalfSpaceSolid> half_space_solid =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcHalfSpaceSolid>(operand);
+				std::shared_ptr<typename IfcEntityTypesT::IfcHalfSpaceSolid> half_space_solid =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcHalfSpaceSolid>(operand);
 				if (half_space_solid)
 				{
 					//ENTITY IfcHalfSpaceSolid SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
-					shared_ptr<typename IfcEntityTypesT::IfcSurface> base_surface = half_space_solid->BaseSurface;
+					std::shared_ptr<typename IfcEntityTypesT::IfcSurface> base_surface = half_space_solid->BaseSurface;
 
 					// base surface
-					shared_ptr<typename IfcEntityTypesT::IfcElementarySurface> elem_base_surface =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcElementarySurface>(base_surface);
+					std::shared_ptr<typename IfcEntityTypesT::IfcElementarySurface> elem_base_surface =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcElementarySurface>(base_surface);
 					if (!elem_base_surface)
 					{
 						std::cout << ": The base surface shall be an unbounded surface (subtype of IfcElementarySurface)" << std::endl;
 						return;
 					}
-					shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& base_surface_pos = elem_base_surface->Position;
+					std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& base_surface_pos = elem_base_surface->Position;
 					carve::geom::plane<3> base_surface_plane;
 					carve::geom::vector<3> base_surface_position;
 					carve::math::Matrix base_position_matrix(carve::math::Matrix::IDENT());
@@ -1477,11 +1477,11 @@ namespace OpenInfraPlatform
 						base_surface_plane.negate();
 					}
 
-					shared_ptr<typename IfcEntityTypesT::IfcBoxedHalfSpace> boxed_half_space =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoxedHalfSpace>(half_space_solid);
+					std::shared_ptr<typename IfcEntityTypesT::IfcBoxedHalfSpace> boxed_half_space =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoxedHalfSpace>(half_space_solid);
 					if (boxed_half_space)
 					{
-						shared_ptr<typename IfcEntityTypesT::IfcBoundingBox> bbox = boxed_half_space->Enclosure;
+						std::shared_ptr<typename IfcEntityTypesT::IfcBoundingBox> bbox = boxed_half_space->Enclosure;
 						if (!bbox)
 						{
 							err << ": IfcBoxedHalfSpace: Enclosure not given" << std::endl;
@@ -1493,7 +1493,7 @@ namespace OpenInfraPlatform
 							err << ": IfcBoxedHalfSpace: Enclosure not valid" << std::endl;
 							return;
 						}
-						shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>	bbox_corner = bbox->Corner;
+						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>	bbox_corner = bbox->Corner;
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_x_dim = bbox->XDim;
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_y_dim = bbox->YDim;
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_z_dim = bbox->ZDim;
@@ -1503,7 +1503,7 @@ namespace OpenInfraPlatform
 						carve::math::Matrix box_position_matrix = pos * base_position_matrix*carve::math::Matrix::TRANS(corner);
 
 						// else, its an unbounded half space solid, create simple box
-						shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
+						std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 						polyhedron_data->addVertex(carve::geom::VECTOR(bbox_x_dim, bbox_y_dim, bbox_z_dim));
 						polyhedron_data->addVertex(carve::geom::VECTOR(-bbox_x_dim, bbox_y_dim, bbox_z_dim));
 						polyhedron_data->addVertex(carve::geom::VECTOR(-bbox_x_dim, -bbox_y_dim, bbox_z_dim));
@@ -1547,7 +1547,7 @@ namespace OpenInfraPlatform
 						otherOperand->createMeshSetsFromClosedPolyhedrons();
 						for (int ii = 0; ii < otherOperand->meshsets.size(); ++ii)
 						{
-							shared_ptr<carve::mesh::MeshSet<3> >& meshset = otherOperand->meshsets[ii];
+							std::shared_ptr<carve::mesh::MeshSet<3> >& meshset = otherOperand->meshsets[ii];
 
 							if (!meshset)
 							{
@@ -1571,8 +1571,8 @@ namespace OpenInfraPlatform
 						other_operand_pos = aabb.pos;
 					}
 
-					shared_ptr<typename IfcEntityTypesT::IfcPolygonalBoundedHalfSpace> polygonal_half_space =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolygonalBoundedHalfSpace>(half_space_solid);
+					std::shared_ptr<typename IfcEntityTypesT::IfcPolygonalBoundedHalfSpace> polygonal_half_space =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolygonalBoundedHalfSpace>(half_space_solid);
 					if (polygonal_half_space)
 					{
 						// ENTITY IfcPolygonalBoundedHalfSpace 
@@ -1593,7 +1593,7 @@ namespace OpenInfraPlatform
 						// PolygonalBoundary is given in 2D
 						std::vector<carve::geom::vector<2> > polygonal_boundary;
 						std::vector<carve::geom::vector<2> > segment_start_points_2d;
-						shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve = polygonal_half_space->PolygonalBoundary;
+						std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve = polygonal_half_space->PolygonalBoundary;
 						curveConverter->convertIfcCurve2D(bounded_curve, polygonal_boundary, segment_start_points_2d);
 						ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>::deleteLastPointIfEqualToFirst(polygonal_boundary);
 						ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>::simplifyPath(polygonal_boundary);
@@ -1605,7 +1605,7 @@ namespace OpenInfraPlatform
 						//std::stringstream err;
 						std::vector<std::vector<carve::geom::vector<2> > > paths;
 						paths.push_back(polygonal_boundary);
-						shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
+						std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
 						GeomUtils::extrude(paths, carve::geom::vector<3>(carve::geom::VECTOR(0, 0, extrusion_depth)), poly_data, err);
 
 						const int num_poly_boundary_points = polygonal_boundary.size();
@@ -1660,12 +1660,12 @@ namespace OpenInfraPlatform
 						itemData->closed_polyhedrons.push_back(poly_data);
 
 
-						//shared_ptr<carve::mesh::MeshSet<3> > meshset( poly_data->createMesh(carve::input::opts()) );
+						//std::shared_ptr<carve::mesh::MeshSet<3> > meshset( poly_data->createMesh(carve::input::opts()) );
 						//	renderMeshsetInDebugViewer( meshset.get(), osg::Vec4(1.0f, 0.5f, 0.0f, 1.0f), true );
 
 						//	for( int ii=0; ii<otherOperand->meshsets.size(); ++ii )
 						//	{
-						//	shared_ptr<carve::mesh::MeshSet<3> >& meshset = otherOperand->meshsets[ii];
+						//	std::shared_ptr<carve::mesh::MeshSet<3> >& meshset = otherOperand->meshsets[ii];
 						//	renderMeshsetInDebugViewer( meshset.get(), osg::Vec4(0.8f, 0.0f, 1.0f, 1.0f), true );
 						//	}
 
@@ -1679,7 +1679,7 @@ namespace OpenInfraPlatform
 
 						if (var == 0)
 						{
-							shared_ptr<carve::input::PolylineSetData> surface_data(new carve::input::PolylineSetData());
+							std::shared_ptr<carve::input::PolylineSetData> surface_data(new carve::input::PolylineSetData());
 							faceConverter->convertIfcSurface(base_surface, carve::math::Matrix::IDENT(), surface_data);
 							std::vector<carve::geom::vector<3>> base_surface_points = surface_data->points;
 
@@ -1698,7 +1698,7 @@ namespace OpenInfraPlatform
 
 							carve::geom::vector<3>  half_space_extrusion_direction = -base_surface_normal;
 							carve::geom::vector<3>  half_space_extrusion_vector = half_space_extrusion_direction * HALF_SPACE_BOX_SIZE;
-							shared_ptr<carve::input::PolyhedronData> half_space_box_data(new carve::input::PolyhedronData());
+							std::shared_ptr<carve::input::PolyhedronData> half_space_box_data(new carve::input::PolyhedronData());
 							itemData->closed_polyhedrons.push_back(half_space_box_data);
 							extrudeBox(base_surface_points, half_space_extrusion_vector, half_space_box_data);
 
@@ -1728,7 +1728,7 @@ namespace OpenInfraPlatform
 								std::reverse(box_base_points.begin(), box_base_points.end());
 							}
 
-							shared_ptr<carve::input::PolyhedronData> half_space_box_data(new carve::input::PolyhedronData());
+							std::shared_ptr<carve::input::PolyhedronData> half_space_box_data(new carve::input::PolyhedronData());
 							itemData->closed_polyhedrons.push_back(half_space_box_data);
 							extrudeBox(box_base_points, half_space_extrusion_vector, half_space_box_data);
 
@@ -1745,16 +1745,16 @@ namespace OpenInfraPlatform
 					return;
 				}
 
-				shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_result =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(operand);
+				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_result =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(operand);
 				if (boolean_result)
 				{
 					convertIfcBooleanResult(boolean_result, pos, itemData, err);
 					return;
 				}
 
-				shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(operand);
+				std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(operand);
 				if (csg_primitive3D)
 				{
 					convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData, err);
@@ -1795,7 +1795,7 @@ namespace OpenInfraPlatform
 
 					try
 					{
-						result = shared_ptr<carve::mesh::MeshSet<3>>(csg.compute(op1, op2,
+						result = std::shared_ptr<carve::mesh::MeshSet<3>>(csg.compute(op1, op2,
 							operation, nullptr,
 							geomSettings->classify_type));
 
@@ -1879,7 +1879,7 @@ namespace OpenInfraPlatform
 				//carve::mesh::MeshSet<3>* meshset_new = carve::meshFromPolyhedron(poly, -1);
 
 				int num_vertices1 = meshset->vertex_storage.size();
-				shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData());
+				std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData());
 				std::map<double, std::map<double, std::map<double, int> > > existing_vertices_coords;
 				std::map<double, std::map<double, std::map<double, int> > >::iterator vert_it;
 				std::map<double, std::map<double, int> >::iterator it_find_y;
@@ -2006,7 +2006,7 @@ namespace OpenInfraPlatform
 					}
 				}
 
-				meshset = shared_ptr<carve::mesh::MeshSet<3> >(poly_data->createMesh(carve::input::opts()));
+				meshset = std::shared_ptr<carve::mesh::MeshSet<3> >(poly_data->createMesh(carve::input::opts()));
 
 				double volume_check2 = 0;
 				for (size_t i = 0; i < meshset->meshes.size(); ++i)
@@ -2108,24 +2108,24 @@ namespace OpenInfraPlatform
 		//	if (spine)
 		//	{
 		//
-		//		shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurve> spine_curve = spine->SpineCurve;
-		//		std::vector<shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> >& vec_cross_sections_unordered = spine->CrossSections;
-		//		std::vector<shared_ptr<emt::IfcBridgeEntityTypes::IfcReferencePlacement> >& vec_cross_section_positions_unordered = spine->CrossSectionPositions;
+		//		std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurve> spine_curve = spine->SpineCurve;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> >& vec_cross_sections_unordered = spine->CrossSections;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferencePlacement> >& vec_cross_section_positions_unordered = spine->CrossSectionPositions;
 		//
 		//		// copy cross sections
-		//		std::vector<shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef>>::iterator it_cross_sections;
-		//		std::vector<shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef>> vec_cross_sections = vec_cross_sections_unordered;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef>>::iterator it_cross_sections;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef>> vec_cross_sections = vec_cross_sections_unordered;
 		//
 		//		// copy placements
-		//		std::vector<shared_ptr<emt::IfcBridgeEntityTypes::IfcReferencePlacement>>::iterator it_placements;
-		//		std::vector<shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement>> vec_cross_section_positions;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferencePlacement>>::iterator it_placements;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement>> vec_cross_section_positions;
 		//		std::vector<carve::geom::vector<3>> vecCurveAbscissas;
 		//		for (it_placements = vec_cross_section_positions_unordered.begin(); it_placements != vec_cross_section_positions_unordered.end(); ++it_placements)
 		//		{
-		//			shared_ptr<emt::IfcBridgeEntityTypes::IfcReferencePlacement> reference_placement = (*it_placements);
+		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferencePlacement> reference_placement = (*it_placements);
 		//
-		//			shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> reference_curve_placement =
-		//				dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement>(reference_placement);
+		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> reference_curve_placement =
+		//				std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement>(reference_placement);
 		//
 		//			if (reference_curve_placement)
 		//			{
@@ -2139,30 +2139,30 @@ namespace OpenInfraPlatform
 		//			num_cross_sections = vec_cross_section_positions.size();
 		//		}
 		//
-		//		shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
+		//		std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 		//
 		//		// sort placements according to abscissa
-		//		std::vector<shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> >::iterator it_curve_placements;
-		//		std::vector<shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> >::iterator it_curve_placements_inner;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> >::iterator it_curve_placements;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> >::iterator it_curve_placements_inner;
 		//
 		//		for (unsigned int i = 0; i < num_cross_sections; ++i)
 		//		{
-		//			shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> reference_curve_placement = vec_cross_section_positions[i];
+		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> reference_curve_placement = vec_cross_section_positions[i];
 		//			double abscissa = reference_curve_placement->CurvilinearAbscissa;
 		//
 		//			for (unsigned int j = i + 1; j < num_cross_sections; ++j)
 		//			{
-		//				shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> other = vec_cross_section_positions[j];
+		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> other = vec_cross_section_positions[j];
 		//				double abscissa_other = other->CurvilinearAbscissa;
 		//
 		//				if (abscissa_other < abscissa)
 		//				{
 		//					// reordering necessary
-		//					shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> copy = vec_cross_section_positions[i];
+		//					std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> copy = vec_cross_section_positions[i];
 		//					vec_cross_section_positions[i] = vec_cross_section_positions[j];
 		//					vec_cross_section_positions[j] = copy;
 		//
-		//					shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> copy_profile = vec_cross_sections[i];
+		//					std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> copy_profile = vec_cross_sections[i];
 		//					vec_cross_sections[i] = vec_cross_sections[j];
 		//					vec_cross_sections[j] = copy_profile;
 		//					abscissa = abscissa_other;
@@ -2175,7 +2175,7 @@ namespace OpenInfraPlatform
 		//			for (unsigned int k = 0; k < num_cross_sections; ++k)
 		//			{
 		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef> profileDef
-		//					= dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef>(vec_cross_sections[k]);
+		//					= std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef>(vec_cross_sections[k]);
 		//
 		//				const double curveAbcissa = vec_cross_section_positions[k]->CurvilinearAbscissa;
 		//				const carve::geom::vector<3> refDirection =
@@ -2253,7 +2253,7 @@ namespace OpenInfraPlatform
 		//					polygonVertices2D.push_back(curveVertices2D);
 		//
 		//					std::shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids> profileDefWithVoids
-		//						= dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids>(profileDef);
+		//						= std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids>(profileDef);
 		//
 		//
 		//					// if profile defintion contains voids than subtract inner curves from outer curve
@@ -2381,37 +2381,37 @@ namespace OpenInfraPlatform
 		//		{
 		//			carve::geom::vector<3> abscissa3D = vecCurveAbscissas[i] * lengthFactor;
 		//
-		//			shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def = vec_cross_sections[i];
-		//			shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids> profile_with_voids
-		//				= dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids>(profile_def);
+		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def = vec_cross_sections[i];
+		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids> profile_with_voids
+		//				= std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids>(profile_def);
 		//
 		//			// if profile contains inner and outer curve profile definitions create corresponding cabs as well.
 		//			if (profile_with_voids)
 		//			{
-		//				shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids> next_profile_with_voids;
+		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids> next_profile_with_voids;
 		//
 		//				carve::geom::vector<3> abscissaNext3D = vecCurveAbscissas[i + 1] * lengthFactor;
 		//
-		//				shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def2 = vec_cross_sections[i + 1];
-		//				next_profile_with_voids = dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids>(profile_def2);
+		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def2 = vec_cross_sections[i + 1];
+		//				next_profile_with_voids = std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids>(profile_def2);
 		//
 		//				ProfileConverterT<emt::IfcBridgeEntityTypes, OpenInfraPlatform::IfcBridge::UnitConverter> profileConverter(geomSettings, unitConverter);
 		//				profileConverter.convertIfcArbitraryProfileWithVoids(profile_with_voids, next_profile_with_voids, placement, itemData, abscissa3D, abscissaNext3D);
 		//				continue;
 		//			}
 		//
-		//			shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef> profile
-		//				= dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef>(profile_def);
+		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef> profile
+		//				= std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef>(profile_def);
 		//
 		//			// if profile is simply closed (no voids inside) just convert geometry
 		//			if (profile)
 		//			{
-		//				shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef> next_profile;
+		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef> next_profile;
 		//
 		//				carve::geom::vector<3> abscissaNext3D = vecCurveAbscissas[i + 1] * lengthFactor;
 		//
-		//				shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def2 = vec_cross_sections[i + 1];
-		//				next_profile = dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef>(profile_def2);
+		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def2 = vec_cross_sections[i + 1];
+		//				next_profile = std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef>(profile_def2);
 		//
 		//				ProfileConverterT<emt::IfcBridgeEntityTypes, OpenInfraPlatform::IfcBridge::UnitConverter> profileConverter(geomSettings, unitConverter);
 		//
