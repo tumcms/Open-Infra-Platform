@@ -233,9 +233,9 @@ namespace OpenInfraPlatform
 						std::transform(sectioned_solid_horizontal->CrossSectionPositions.begin(),
 							sectioned_solid_horizontal->CrossSectionPositions.end(),
 							vec_cross_section_positions.begin(), [](auto& it) {return it.lock(); });
-						std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> fixed_axis_vertical =
-							sectioned_solid_horizontal->FixedAxisVertical;
+						bool fixed_axis_vertical = sectioned_solid_horizontal->FixedAxisVertical;
 
+						BLUE_LOG(warning) << "Geometry conversion for IfcSectionedSolidHorizontal not implemented.";
 						// TO DO: implement, check for formal propositions. 
 
 					} //endif sectioned_solid_horizontal
@@ -258,8 +258,8 @@ namespace OpenInfraPlatform
 					if (swept_area_solid->Position)
 					{
 						double length_factor = unitConverter->getLengthInMeterFactor();
-						std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> swept_area_position = swept_area_solid->Position.lock();
-						PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(swept_area_position, swept_area_pos, length_factor);
+						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> swept_area_position = swept_area_solid->Position;
+						PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(swept_area_position.lock(), swept_area_pos, length_factor);
 						swept_area_pos = pos * swept_area_pos;
 					}
 
@@ -270,7 +270,7 @@ namespace OpenInfraPlatform
 					{
 						// Get extruded direction and depth (attributes 3-4). 
 						std::shared_ptr<typename IfcEntityTypesT::IfcDirection> extrude_direction =
-							extruded_area->ExtrudeDirection;
+							extruded_area->ExtrudedDirection.lock();
 
 						double depth = extruded_area->Depth;
 
@@ -364,20 +364,15 @@ namespace OpenInfraPlatform
 				if (swept_disk_solid)
 				{
 					// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
-					std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = swept_disp_solid->Directrix;
+					std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = swept_disk_solid->Directrix.lock();
 					const int nvc = geomSettings->num_vertices_per_circle;
 					double length_in_meter = unitConverter->getLengthInMeterFactor();
-					double radius = 0.0;
-					typename IfcEntityTypesT::IfcLengthMeasure& sweptRadius = swept_disp_solid->Radius;
-					if (sweptRadius)
-					{
-						radius = sweptRadius * length_in_meter;
-						//radius = swept_disp_solid->Radius*length_in_meter;
-					}
+					double radius = swept_disk_solid->Radius * length_in_meter;
+					
 
 					double radius_inner = 0.0;
-					typename IfcEntityTypesT::IfcLengthMeasure& sweptInnerRadius = swept_disp_solid->InnerRadius;
-					if (swept_disp_solid->InnerRadius)
+					typename IfcEntityTypesT::IfcLengthMeasure& sweptInnerRadius = swept_disk_solid->InnerRadius;
+					if (swept_disk_solid->InnerRadius)
 					{
 						radius_inner = sweptInnerRadius * length_in_meter;
 						//radius_inner = swept_disp_solid->InnerRadius->length_in_meter;

@@ -484,13 +484,19 @@ namespace OpenInfraPlatform {
 			void convertIfcSectionedSpine(const std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSpine>& spine,
 			                              const carve::math::Matrix& pos,
 			                              std::shared_ptr<ItemData> itemData,
-			                              std::stringstream& err) {
-				const std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurve> spine_curve = spine->SpineCurve;
+			                              std::stringstream& err)
+			{
+				const std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurve> spine_curve = spine->SpineCurve.lock();
 				if (!spine_curve) {
 					return;
 				}
-				const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>>& vec_cross_sections = spine->CrossSections;
-				const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>>& vec_cross_section_positions = spine->CrossSectionPositions;
+				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
+				vec_cross_sections.reserve(spine->CrossSections.size());
+				std::transform(spine->CrossSections.begin(), spine->CrossSections.end(), vec_cross_sections.begin(), [](auto &it) { return it.lock(); });
+
+				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>> vec_cross_section_positions;
+				vec_cross_section_positions.reserve(spine->CrossSectionPositions.size());
+				std::transform(spine->CrossSectionPositions.begin(), spine->CrossSectionPositions.end(), vec_cross_section_positions.begin(), [](auto &it) { return it.lock(); });
 
 				typename std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>>::iterator it_cross_sections;
 
@@ -499,7 +505,9 @@ namespace OpenInfraPlatform {
 					num_cross_sections = vec_cross_section_positions.size();
 				}
 
-				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment>> segments = spine_curve->Segments;
+				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment>> segments;
+				segments.reserve(spine_curve->Segments.size());
+				std::transform(spine_curve->Segments.begin(), spine_curve->Segments.end(), segments.begin(), [](auto &it) { return it.lock(); });
 				int num_segments = segments.size();
 				if (vec_cross_section_positions.size() < num_segments + 1) {
 					num_segments = vec_cross_section_positions.size() - 1;

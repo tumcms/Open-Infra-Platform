@@ -113,12 +113,12 @@ namespace OpenInfraPlatform {
 					//	ABSTRACT SUPERTYPE of IfcAlignmentCurve, IfcBsplineCurve, IfcCompositeCurve, IfcIndexedPolycurve, IfcPolyline, IfcIfcTrimmedCurve	//
 					// ************************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(ifcCurve);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(ifcCurve);
 					if (bounded_curve)
 					{
 						// (1/6) IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
-						std::shared_ptr<typename IfcEntityTypesT::IfcAlignmentCurve> alignment_curve =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignmentCurve>(bounded_curve);
+						std::shared_ptr<IFC4X1::IfcAlignmentCurve> alignment_curve =
+							std::dynamic_pointer_cast<IFC4X1::IfcAlignmentCurve>(bounded_curve);
 						if (alignment_curve) {
 
 							//	********************************************************************************************
@@ -146,8 +146,8 @@ namespace OpenInfraPlatform {
 								int fragmentsCount_ = 0;														// number of fragments within segment. 
 								double fragmentsLength_;														// length of one fragment within segment.
 
-								Segment(std::vector<Station> segmentStations, segmentType segType, int fragmentsCount, double fragmentsLength
-									: segmentStations_(segmentStations), segType_(segType), fragmentsCount_(fragmentsCount), fragmentsLength_(fragmentsLength))
+								Segment(std::vector<Station> segmentStations, segmentType segType, int fragmentsCount, double fragmentsLength)
+									: segmentStations_(segmentStations), segType_(segType), fragmentsCount_(fragmentsCount), fragmentsLength_(fragmentsLength)
 								{
 								}
 								~Segment() {}
@@ -183,9 +183,9 @@ namespace OpenInfraPlatform {
 								double startY_;
 								double startDirection_;
 								double segmentLength_;
-								std::weak_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment> itHorizontal_;	// pointer to specific horizontal segment.
+								std::weak_ptr<IFC4X1::IfcAlignment2DHorizontalSegment> itHorizontal_;	// pointer to specific horizontal segment.
 
-								HorizontalSegment(double startX, double startY, double startDirection, double segmentLength, std::weak_ptr<typename IfcEntityTypesT::IfcAlignment2DSegment> > itHorizontal// members of HorizontalSegment
+								HorizontalSegment(double startX, double startY, double startDirection, double segmentLength, std::weak_ptr<IFC4X1::IfcAlignment2DHorizontalSegment> itHorizontal,// members of HorizontalSegment
 									std::vector<Station> segmentStations, segmentType segType, int fragmentsCount, double fragmentsLength) // members of Segment
 									: Segment(segmentStations, segType, fragmentsCount, fragmentsLength),
 									startX_(startX), startY_(startY), startDirection_(startDirection), segmentLength_(segmentLength), itHorizontal_(itHorizontal)
@@ -199,11 +199,11 @@ namespace OpenInfraPlatform {
 								double startDistAlong_;
 								double horizontalLength_;
 								double startGradient_;
-								std::weak_ptr<typename IfcEntityTypesT::IfcAlignment2DVerticalSegment> itVertical_;	// pointer to specific vertical segment.
+								std::weak_ptr<IFC4X1::IfcAlignment2DVerticalSegment> itVertical_;	// pointer to specific vertical segment.
 
-								VerticalSegment(double startZ, double startDistAlong, double horizontalLength, double startGradient, std::weak_ptr<typename IfcEntityTypesT::IfcAlignment2DSegment> > itVertical, // members of VerticalSegment
+								VerticalSegment(double startZ, double startDistAlong, double horizontalLength, double startGradient, std::weak_ptr<IFC4X1::IfcAlignment2DVerticalSegment> itVertical, // members of VerticalSegment
 									std::vector<Station> segmentStations, segmentType segType, int fragmentsCount, double fragmentsLength) // members of Segment
-									: Segment(segmentStations, segType, fragmentsCount, fragmentsLength, itPointer),
+									: Segment(segmentStations, segType, fragmentsCount, fragmentsLength),
 									startZ_(startZ), startDistAlong_(startDistAlong), horizontalLength_(horizontalLength), startGradient_(startGradient), itVertical_(itVertical)
 								{
 								}
@@ -223,7 +223,7 @@ namespace OpenInfraPlatform {
 							std::vector<HorizontalSegment> HorSegmentsVec;
 
 							// Get information from alignment.
-							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal> horizontal = alignment_curve->Alignment2DHorizontal;
+							std::shared_ptr<IFC4X1::IfcAlignment2DHorizontal> horizontal = alignment_curve->Alignment2DHorizontal;
 
 							if (!horizontal) {
 								BLUE_LOG(error) << "No IfcAlignment2DHorizontal in IfcAlignmentCurve."
@@ -244,7 +244,7 @@ namespace OpenInfraPlatform {
 								return;
 							}
 
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment> > horSegments =
+							std::vector<std::shared_ptr<IFC4X1::IfcAlignment2DHorizontalSegment> > horSegments =
 								horizontal->Segments;
 
 							if (horSegments.size() < 1) {
@@ -298,11 +298,11 @@ namespace OpenInfraPlatform {
 										// Segment types: IfcLineSegment2D, IfcCircularArcSegment2D and IfcTransitionCurveSegment2D
 										// http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifccurvesegment2d.htm
 								std::shared_ptr<typename IfcEntityTypesT::IfcLineSegment2D> line_segment_2D =
-									dynamic_pointer_cast<typename IfcEntityTypesT::IfcLineSegment2D>(horCurveGeometry);
+									std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLineSegment2D>(horCurveGeometry);
 								std::shared_ptr<typename IfcEntityTypesT::IfcCircularArcSegment2D> circular_arc_segment_2D =
-									dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircularArcSegment2D>(horCurveGeometry);
+									std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircularArcSegment2D>(horCurveGeometry);
 								std::shared_ptr<typename IfcEntityTypesT::IfcTransitionCurveSegment2D> trans_curve_segment_2D =
-									dynamic_pointer_cast<typename IfcEntityTypesT::IfcTransitionCurveSegment2D>(horCurveGeometry);
+									std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTransitionCurveSegment2D>(horCurveGeometry);
 
 								// Set number of fragments (number of points to be added between stations) according to segment type.
 								if (line_segment_2D) {
@@ -399,11 +399,11 @@ namespace OpenInfraPlatform {
 
 												// Segment types: IfcAlignment2DVerSegCircularArc, IfcAlignment2DVerSegLine, IfcAlignment2DVerSegParabolicArc.
 									std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc> v_seg_circ_arc_2D =
-										dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc>(it_segment);
+										std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc>(it_segment);
 									std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegLine> ver_seg_line_2D =
-										dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegLine>(it_segment);
+										std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegLine>(it_segment);
 									std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc> v_seg_par_arc_2D =
-										dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc>(it_segment);
+										std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc>(it_segment);
 
 									// Set number of fragments (number of stations to be added within segment) according to segment type.
 									if (v_seg_circ_arc_2D) {
@@ -550,7 +550,7 @@ namespace OpenInfraPlatform {
 
 											// (2) Get circular arc segment information.
 											std::shared_ptr<typename IfcEntityTypesT::IfcCircularArcSegment2D> circular_arc_segment_2D =
-												dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircularArcSegment2D>(horCurveGeometry);
+												std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircularArcSegment2D>(horCurveGeometry);
 
 											// Radius type IfcPositiveLengthMeasure [1:1]
 											if (!circular_arc_segment_2D->Radius) {
@@ -601,7 +601,7 @@ namespace OpenInfraPlatform {
 
 										// (2) Get transition curve segment information.
 											std::shared_ptr<typename IfcEntityTypesT::IfcTransitionCurveSegment2D> trans_curve_segment_2D =
-												dynamic_pointer_cast<typename IfcEntityTypesT::IfcTransitionCurveSegment2D>(horCurveGeometry);
+												std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTransitionCurveSegment2D>(horCurveGeometry);
 
 											// StartRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature) 
 											if (!trans_curve_segment_2D->StartRadius) {
@@ -777,7 +777,7 @@ namespace OpenInfraPlatform {
 
 											// (2) Get circular arc segment information.
 											std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc> v_seg_circ_arc_2D =
-												dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc>(horCurveGeometry);
+												std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc>(horCurveGeometry);
 
 											// Radius type IfcPositiveLengthMeasure [1:1] 
 											if (!v_seg_circ_arc_2D->Radius) {
@@ -822,7 +822,7 @@ namespace OpenInfraPlatform {
 
 											// (2) Get parabolic arc segment information.
 											std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc> v_seg_par_arc_2D =
-												dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc>(horCurveGeometry);
+												std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc>(horCurveGeometry);
 
 											// ParabolaConstant type IfcPositiveLengthMeasure [1:1]
 											if (!v_seg_par_arc_2D->ParabolaConstant) {
@@ -881,7 +881,7 @@ namespace OpenInfraPlatform {
 
 						// (2/6) IfcBSplineCurve SUBTYPE OF IfcBoundedCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcBSplineCurve> bspline_curve =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineCurve>(bounded_curve);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineCurve>(bounded_curve);
 						if (bspline_curve) {
 
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>>& points =
@@ -901,7 +901,7 @@ namespace OpenInfraPlatform {
 
 				// (3/6) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurve> composite_curve =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeCurve>(bounded_curve);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeCurve>(bounded_curve);
 						if (composite_curve) {
 
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> > segments =
@@ -925,7 +925,7 @@ namespace OpenInfraPlatform {
 
 				// (4/6) IfcIndexedPolyline SUBTYPE OF IfcBoundedCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcIndexedPolyline> index_poly_line =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcIndexedPolyline>(bounded_curve);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcIndexedPolyline>(bounded_curve);
 						if (index_poly_line)
 						{
 							// TO DO: implement
@@ -933,7 +933,7 @@ namespace OpenInfraPlatform {
 
 						// (5/6) IfcPolyline SUBTYPE OF IfcBoundedCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> poly_line =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(bounded_curve);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(bounded_curve);
 						if (poly_line) {
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> >& points = poly_line->Points;
 							if (points.size() > 0) {
@@ -948,7 +948,7 @@ namespace OpenInfraPlatform {
 
 				// (6/6) IfcTrimmedCurve SUBTYPE OF IfcBoundedCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcTrimmedCurve> trimmed_curve =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcTrimmedCurve>(bounded_curve);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTrimmedCurve>(bounded_curve);
 						if (trimmed_curve) {
 							std::shared_ptr<typename IfcEntityTypesT::IfcCurve> basis_curve = trimmed_curve->BasisCurve;
 							std::vector<carve::geom::vector<3> > basis_curve_points;
@@ -972,22 +972,22 @@ namespace OpenInfraPlatform {
 				//	ABSTRACT SUPERTYPE of IfcCircle, IfcEllipse																				//
 				// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcConic> conic =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcConic>(ifcCurve);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConic>(ifcCurve);
 					if (conic) {
 
 						std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement> conic_placement = conic->Position;
 						carve::math::Matrix conic_position_matrix(carve::math::Matrix::IDENT());
 
 						std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D> axis2placement2d =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(conic_placement);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(conic_placement);
 
 						if (axis2placement2d) {
 							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement2D(axis2placement2d,
 								conic_position_matrix, length_factor);
 						}
-						else if (dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(conic_placement)) {
+						else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(conic_placement)) {
 							std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d =
-								dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(conic_placement);
+								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(conic_placement);
 
 							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(axis2placement3d,
 								conic_position_matrix, length_factor);
@@ -995,7 +995,7 @@ namespace OpenInfraPlatform {
 
 						// (1/2) IfcCircle SUBTYPE OF IfcConic
 						std::shared_ptr<typename IfcEntityTypesT::IfcCircle> circle =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircle>(conic);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircle>(conic);
 						if (circle) {
 
 							// Get radius
@@ -1116,7 +1116,7 @@ namespace OpenInfraPlatform {
 						// (2/2) IfcEllipse SUBTYPE OF IfcConic
 
 						std::shared_ptr<typename IfcEntityTypesT::IfcEllipse> ellipse =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcEllipse>(conic);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEllipse>(conic);
 						if (ellipse) {
 							if (ellipse->SemiAxis1) {
 								if (ellipse->SemiAxis2) {
@@ -1163,7 +1163,7 @@ namespace OpenInfraPlatform {
 					//	IfcLine SUPTYPE of IfcCurve																								//
 					// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcLine> line =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcLine>(ifcCurve);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLine>(ifcCurve);
 					if (line) {
 
 						// Part 1: Get information from IfcLine. 
@@ -1274,12 +1274,12 @@ namespace OpenInfraPlatform {
 					//	ABSTRACT SUPERTYPE OF IfcOffsetCurve2D, IfcOffsetCurve3D, IfcOffsetCurveByDistances										//
 					// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve> offset_curve =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve>(ifcCurve);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve>(ifcCurve);
 					if (offset_curve) {
 
 						// (1/3) IfcOffsetCurve2D SUBTYPE OF IfcOffsetCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve2D> offset_curve_2d =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve2D>(offset_curve);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve2D>(offset_curve);
 						if (offset_curve_2d) {
 #ifdef _DEBUG
 							std::cout << "Warning\t| IfcOffsetCurve2D not implemented" << std::endl;
@@ -1289,7 +1289,7 @@ namespace OpenInfraPlatform {
 
 						// (2/3) IfcOffsetCurve3D SUBTYPE OF IfcOffsetCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve3D> offset_curve_3d =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve3D>(offset_curve);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve3D>(offset_curve);
 						if (offset_curve_3d) {
 #ifdef _DEBUG
 							std::cout << "Warning\t| IfcOffsetCurve3D not implemented" << std::endl;
@@ -1299,7 +1299,7 @@ namespace OpenInfraPlatform {
 
 						// (3/3) IfcOffsetCurveByDistances SUBTYPE OF IfcOffsetCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurveByDistances> offset_curve_dist =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurveByDistances>(offset_curve);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurveByDistances>(offset_curve);
 						if (offset_curve_dist) {
 #ifdef _DEBUG
 							std::cout << "Warning\t| IfcOffsetCurveByDistances not implemented" << std::endl;
@@ -1312,7 +1312,7 @@ namespace OpenInfraPlatform {
 					//	IfcPcurve SUPTYPE of IfcCurve																							//
 					// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcPcurve> p_curve =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcPcurve>(ifcCurve);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPcurve>(ifcCurve);
 					if (p_curve)
 					{
 						// TO DO: implement
@@ -1323,12 +1323,12 @@ namespace OpenInfraPlatform {
 					//	ABSTRACT SUPERTYPE OF IfcIntersectionCurve, IfcSeamCurve																//
 					// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcSurfaceCurve> surface_curve =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfaceCurve>(ifcCurve);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfaceCurve>(ifcCurve);
 					if (surface_curve)
 					{
 						// (1/2) IfcIntersectionCurve SUBTYPE OF IfcSurfaceCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcIntersectionCurve> intersection_curve =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcIntersectionCurve>(ifcCurve);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcIntersectionCurve>(ifcCurve);
 						if (intersection_curve)
 						{
 							// TO DO: implement
@@ -1336,7 +1336,7 @@ namespace OpenInfraPlatform {
 
 						// (2/2) IfcSeamCurve SUBTYPE OF IfcSurfaceCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcSeamCurve> seam_curve =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcSeamCurve>(ifcCurve);
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSeamCurve>(ifcCurve);
 						if (seam_curve)
 						{
 							// TO DO: implement
@@ -1404,7 +1404,7 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& loopPoints) const
 				{
 					const std::shared_ptr<typename IfcEntityTypesT::IfcPolyLoop> polyLoop =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyLoop>(loop);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyLoop>(loop);
 
 					if (polyLoop) {
 						const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>>& ifcPoints = polyLoop->Polygon;
@@ -1429,7 +1429,7 @@ namespace OpenInfraPlatform {
 					}
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcEdgeLoop> edgeLoop =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdgeLoop>(loop);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdgeLoop>(loop);
 
 					if (edgeLoop) {
 						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge>>& edgeList = edgeLoop->EdgeList;
@@ -1466,7 +1466,7 @@ namespace OpenInfraPlatform {
 							// every edge consists of one start and end vertex
 							std::shared_ptr<typename IfcEntityTypesT::IfcVertex>& edgeStartVertex = edgeElement->EdgeStart;
 							std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> edgeStartVertexPoint =
-								dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(edgeStartVertex);
+								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(edgeStartVertex);
 
 							if (edgeStartVertexPoint)
 							{
@@ -1475,7 +1475,7 @@ namespace OpenInfraPlatform {
 									std::shared_ptr<typename IfcEntityTypesT::IfcPoint>& startPoint =
 										edgeStartVertexPoint->VertexGeometry;
 									std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifcPoint =
-										dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(startPoint);
+										std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(startPoint);
 									if (!ifcPoint)
 									{
 										// TODO: could be also  IfcPointOnCurve, IfcPointOnSurface

@@ -335,7 +335,14 @@ namespace OpenInfraPlatform {
 				if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptSurface>(surface)) {
 					// Get swept curve and position.
 					std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& swept_surface_profile = swept_surface->SweptCurve.lock();
-					std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& swept_surface_placement = swept_surface->Position.lock();
+					std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> swept_surface_placement = nullptr;
+					if (swept_surface->Position) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> ref = swept_surface->Position;
+						swept_surface_placement = ref.lock();
+					}
+					else {
+						BLUE_LOG(warning) << "#" << swept_surface->getId() << " IfcSweptSurface without placement found.";
+					}
 
 					carve::math::Matrix swept_surface_matrix(pos);
 					if (swept_surface_placement) {
@@ -419,7 +426,9 @@ namespace OpenInfraPlatform {
 				const uint32_t faceID = face->getId();
 				// all bound definitions of the face (normal bound or outer bound)
 				/*std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFaceBound>>& bounds = face->m_Bounds;*/
-				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFaceBound>>& bounds = face->Bounds;
+				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFaceBound>> bounds;
+				bounds.reserve(face->Bounds.size());
+				std::transform(face->Bounds.begin(), face->Bounds.end(), bounds.begin(), [](auto& it) {return it.lock(); });
 				// to triangulate the mesh, carve needs 2D polygons
 				// we collect the data in 2D and 3D for every bound
 				std::vector<std::vector<carve::geom2d::P2>> faceVertices2D;
@@ -461,7 +470,7 @@ namespace OpenInfraPlatform {
 					//	IfcLoop <- IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
 					/*********************************************************************************/
 
-					std::shared_ptr<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
+					std::shared_ptr<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound.lock();
 					/*typename IfcEntityTypesT::IfcBoolean& polyOrientation = *(bound->m_Orientation);*/
 					bool polyOrientation = bound->Orientation;
 					if (!loop) {
