@@ -313,21 +313,21 @@ namespace OpenInfraPlatform {
 								// Set number of fragments (number of points to be added between stations) according to segment type.
 								if (line_segment_2D) {
 									int nHorFragments = 0;
-									HorizontalSegment horizontalSegment(xStart, yStart, dStartDirection, dSegLength, &it_segment, { horizontalStation }, isLine, nHorFragments, dSegLength); // Here dSegLength is equal to fragmentsLength because isLine is not fragmented
+									HorizontalSegment horizontalSegment(xStart, yStart, dStartDirection, dSegLength, it_segment, { horizontalStation }, isLine, nHorFragments, dSegLength); // Here dSegLength is equal to fragmentsLength because isLine is not fragmented
 									HorSegmentsVec.push_back(horizontalSegment);
 								}
 								if (circular_arc_segment_2D) {
 									int nHorFragments = geomSettings->min_num_vertices_per_arc;
 									double nHorFragmentsLength = dSegLength / nHorFragments;
 
-									HorizontalSegment horizontalSegment(xStart, yStart, dStartDirection, dSegLength, &it_segment, { horizontalStation }, isCircArc, nHorFragments, nHorFragmentsLength);
+									HorizontalSegment horizontalSegment(xStart, yStart, dStartDirection, dSegLength, it_segment, { horizontalStation }, isCircArc, nHorFragments, nHorFragmentsLength);
 									HorSegmentsVec.push_back(horizontalSegment);
 								}
 								if (trans_curve_segment_2D) {
 									int nHorFragments = geomSettings->min_num_vertices_per_arc;
 									double nHorFragmentsLength = dSegLength / nHorFragments;
 
-									HorizontalSegment horizontalSegment(xStart, yStart, dStartDirection, dSegLength, &it_segment, { horizontalStation }, isTrans, nHorFragments, nHorFragmentsLength);
+									HorizontalSegment horizontalSegment(xStart, yStart, dStartDirection, dSegLength, it_segment, { horizontalStation }, isTrans, nHorFragments, nHorFragmentsLength);
 									HorSegmentsVec.push_back(horizontalSegment);
 								}
 
@@ -411,20 +411,20 @@ namespace OpenInfraPlatform {
 									if (v_seg_circ_arc_2D) {
 										nVerFragments = geomSettings->min_num_vertices_per_arc;
 										double nVerFragmentsLength = dVerHorizontalLength / nVerFragments;
-										VerticalSegment verticalSegment(dVerStartHeight, dVerDistAlong, dVerHorizontalLength, dVerStartGradient, &it_segment,
+										VerticalSegment verticalSegment(dVerStartHeight, dVerDistAlong, dVerHorizontalLength, dVerStartGradient, it_segment,
 											{ verticalStation }, isCircArc, nVerFragments, nVerFragmentsLength);
 										VerSegmentsVec.push_back(verticalSegment);
 									}
 									if (ver_seg_line_2D) {
 										nVerFragments = 0;
-										VerticalSegment verticalSegment(dVerStartHeight, dVerDistAlong, dVerHorizontalLength, dVerStartGradient, &it_segment,
+										VerticalSegment verticalSegment(dVerStartHeight, dVerDistAlong, dVerHorizontalLength, dVerStartGradient, it_segment,
 											{ verticalStation }, isLine, nVerFragments, dVerHorizontalLength);
 										VerSegmentsVec.push_back(verticalSegment);
 									}
 									if (v_seg_par_arc_2D) {
 										nVerFragments = geomSettings->min_num_vertices_per_arc;
 										double nVerFragmentsLength = dVerHorizontalLength / nVerFragments;
-										VerticalSegment verticalSegment(dVerStartHeight, dVerDistAlong, dVerHorizontalLength, dVerStartGradient, &it_segment,
+										VerticalSegment verticalSegment(dVerStartHeight, dVerDistAlong, dVerHorizontalLength, dVerStartGradient, it_segment,
 											{ verticalStation }, isParArc, nVerFragments, nVerFragmentsLength);
 										VerSegmentsVec.push_back(verticalSegment);
 									}
@@ -598,21 +598,21 @@ namespace OpenInfraPlatform {
 										std::shared_ptr<IFC4X1::IfcTransitionCurveSegment2D> trans_curve_segment_2D =
 											std::dynamic_pointer_cast<IFC4X1::IfcTransitionCurveSegment2D>(horCurveGeometry);
 
-										// StartRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature) 
+										// StartRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
+										double startRadius = 0.0;
 										if (!trans_curve_segment_2D->StartRadius) {
 											BLUE_LOG(warning) << "IfcTransitionCurve: Start radius NIL, interpreted as infinite. (Segment ID: " << it_hor_segments.itHorizontal_->getId() << ").";
-											double startRadius = 0.0;
 										}
 										else {
-											double startRadius = trans_curve_segment_2D->StartRadius * length_factor;
+											startRadius = trans_curve_segment_2D->StartRadius * length_factor;
 										}
 										// EndRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
+										double endRadius = 0.0;
 										if (!trans_curve_segment_2D->EndRadius) {
 											BLUE_LOG(warning) << "IfcTransitionCurve: End radius NIL, interpreted as infinite. (Segment ID: " << it_hor_segments.itHorizontal_->getId() << ").";
-											double endRadius = 0.0;
 										}
 										else {
-											double endRadius = trans_curve_segment_2D->EndRadius * length_factor;
+											endRadius = trans_curve_segment_2D->EndRadius * length_factor;
 										}
 										// IsStartRadiusCCW type IfcBoolean
 										if (!trans_curve_segment_2D->IsStartRadiusCCW) {
@@ -627,14 +627,10 @@ namespace OpenInfraPlatform {
 										}
 										bool is_end_ccw = trans_curve_segment_2D->IsEndRadiusCCW;
 										// TransitionCurveType type IfcTransitionCurveType
-										if (!trans_curve_segment_2D->TransitionCurveType) {
-											BLUE_LOG(error) << "No curve type for IfcTransitionCurveSegment2D. (Segment ID: " << it_hor_segments.itHorizontal_->getId() << ").";
-											return;
-										}
+										using eTransitionCurveType = decltype(trans_curve_segment_2D->TransitionCurveType)::ENUM;
 										auto trans_type = trans_curve_segment_2D->TransitionCurveType;	//trans curve types: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm
 
 										// Calculate x and y coordinates for each horizontal station within transition curve segment.
-										using eTransitionCurveType = decltype(trans_type)::ENUM;
 										
 										switch (trans_type) {
 											
@@ -880,15 +876,19 @@ namespace OpenInfraPlatform {
 								std::vector<carve::geom::vector<3> > curve_points;
 
 								// Copy x,y,z information to curve_points vector by iterating over both lists of segments. 
-								for (auto it_hor_seg : horSegments) 
+								for (auto it_hor_seg : HorSegmentsVec) 
 								{
-									for (auto it_ver_seg : verSegments)
+									for (auto it_ver_seg : VerSegmentsVec)
 									{
 										for (auto it_hor_stations : it_hor_seg.segmentStations_) 
 										{
 											for (auto it_ver_stations : it_ver_seg.segmentStations_) 
 											{
-												curve_points.push_back({ it_hor_stations.x_, it_hor_stations.y_, it_ver_stations.z_ });
+												carve::mesh::Vertex<3>::vector_t point;
+												point.x = it_hor_stations.x_;
+												point.y = it_hor_stations.y_;
+												point.z = it_ver_stations.z_;
+												curve_points.push_back(point);
 											}
 										}
 									}
@@ -908,8 +908,14 @@ namespace OpenInfraPlatform {
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineCurve>(bounded_curve);
 						if (bspline_curve) {
 							
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>>& points =
-								bspline_curve->ControlPointsList;
+							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> points;
+							points.reserve(bspline_curve->ControlPointsList.size());
+
+							std::transform(
+								bspline_curve->ControlPointsList.begin(),
+								bspline_curve->ControlPointsList.end(),
+								points.begin(),
+								[](auto &it) {return it.lock(); });
 
 							std::vector<carve::geom::vector<3>> splinePoints;
 							splinePoints.reserve(points.size());
@@ -928,8 +934,14 @@ namespace OpenInfraPlatform {
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeCurve>(bounded_curve);
 						if (composite_curve) {
 
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> > segments =
-								composite_curve->Segments;
+							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> > segments;
+							segments.reserve(composite_curve->Segments.size());
+
+							std::transform(
+								composite_curve->Segments.begin(),
+								composite_curve->Segments.end(),
+								segments.begin(),
+								[](auto &it) { return it.lock(); });
 
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> >::iterator it_segments =
 								segments.begin();
@@ -960,7 +972,14 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> poly_line =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(bounded_curve);
 						if (poly_line) {
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> >& points = poly_line->Points;
+							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> > points;
+							points.reserve(poly_line->Points.size());
+							std::transform(
+								poly_line->Points.begin(),
+								poly_line->Points.end(),
+								points.begin(),
+								[](auto &it) {return it.lock(); });
+
 							if (points.size() > 0) {
 								convertIfcCartesianPointVector(points, targetVec);
 								segmentStartPoints.push_back(carve::geom::VECTOR(
@@ -1011,19 +1030,22 @@ namespace OpenInfraPlatform {
 						typename IfcEntityTypesT::IfcAxis2Placement conic_placement = conic->Position;
 						carve::math::Matrix conic_position_matrix(carve::math::Matrix::IDENT());
 
-						std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D> axis2placement2d =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(conic_placement);
-
-						if (axis2placement2d) {
-							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement2D(axis2placement2d,
-								conic_position_matrix, length_factor);
-						}
-						else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(conic_placement)) {
-							std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(conic_placement);
-
-							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(axis2placement3d,
-								conic_position_matrix, length_factor);
+						switch (conic_placement.which()) {
+						case 0: // class IfcAxis2Placement2D;
+							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement2D(
+								conic_placement.get<0>().lock(),
+								conic_position_matrix,
+								length_factor);
+							break;
+						case 1: // class IfcAxis2Placement3D;
+							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(
+								conic_placement.get<1>().lock(),
+								conic_position_matrix,
+								length_factor);
+							break;
+						default:
+							BLUE_LOG(warning) << "#" << conic->getId() << "=IfcConic no position found.";
+							break;
 						}
 
 						// (1/2) IfcCircle SUBTYPE OF IfcConic
@@ -1044,14 +1066,16 @@ namespace OpenInfraPlatform {
 							double trim_angle2 = M_PI * 2.0;
 
 							// Check for trimming begin
-							std::shared_ptr<typename IfcEntityTypesT::IfcParameterValue> trim_par1;
 							if (trim1Vec.size() > 0) {
-								if (OpenInfraPlatform::ExpressBinding::findFirstInVector<typename IfcEntityTypesT::IfcParameterValue, typename IfcEntityTypesT::IfcTrimmingSelect>(trim1Vec, trim_par1)) {
+								auto first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 1; });
+								if (first != trim1Vec.end()) {
+									typename IfcEntityTypesT::IfcParameterValue trim_par1 = (*first)->get<1>();
 									trim_angle1 = trim_par1 * plane_angle_factor;
 								}
 								else {
-									std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point1;
-									if (OpenInfraPlatform::ExpressBinding::findFirstInVector<typename IfcEntityTypesT::IfcCartesianPoint, typename IfcEntityTypesT::IfcTrimmingSelect>(trim1Vec, trim_point1)) {
+									first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 0; });
+									if (first != trim1Vec.end()) {
+										std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point1 = (*first)->get<0>().lock();
 										carve::geom::vector<3> trim_point;
 										convertIfcCartesianPoint(trim_point1, trim_point);
 
@@ -1064,15 +1088,18 @@ namespace OpenInfraPlatform {
 
 							if (trim2Vec.size() > 0) {
 								// check for trimming end
-								std::shared_ptr<typename IfcEntityTypesT::IfcParameterValue> trim_par2;
-								if (OpenInfraPlatform::ExpressBinding::findFirstInVector<typename IfcEntityTypesT::IfcParameterValue, typename IfcEntityTypesT::IfcTrimmingSelect>(trim2Vec, trim_par2)) {
-									trim_angle2 = trim_par2 * plane_angle_factor;
+								auto first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 1; });
+								if (first != trim2Vec.end()) {
+									typename IfcEntityTypesT::IfcParameterValue trim_par2 = (*first)->get<1>();
+									trim_angle1 = trim_par2 * plane_angle_factor;
 								}
 								else {
-									std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_trim_point;
-									if (OpenInfraPlatform::ExpressBinding::findFirstInVector<typename IfcEntityTypesT::IfcCartesianPoint, typename IfcEntityTypesT::IfcTrimmingSelect>(trim2Vec, ifc_trim_point)) {
+									first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 0; });
+									if (first != trim2Vec.end()) {
+										std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point2 = (*first)->get<0>().lock();
 										carve::geom::vector<3> trim_point;
-										convertIfcCartesianPoint(ifc_trim_point, trim_point);
+										convertIfcCartesianPoint(trim_point2, trim_point);
+
 										trim_angle2 = getAngleOnCircle(circle_center,
 											circle_radius,
 											trim_point);
@@ -1212,7 +1239,7 @@ namespace OpenInfraPlatform {
 						// Get IfcVector attributes: line orientation and magnitude. 
 
 						// Orientation type IfcDirection
-						double ifc_line_direction = line_vec->Orientation;
+						auto ifc_line_direction = line_vec->Orientation;
 
 						// Get IfcDirection attribute: direction ratios. 
 						std::vector<double> direction_ratios(ifc_line_direction->DirectionRatios.size());
@@ -1241,14 +1268,18 @@ namespace OpenInfraPlatform {
 
 						// Check for trimming at beginning of line
 						double start_parameter = 0.0;
-						std::shared_ptr<typename IfcEntityTypesT::IfcParameterValue> trim_par1;
-						if (OpenInfraPlatform::ExpressBinding::findFirstInVector<typename IfcEntityTypesT::IfcParameterValue, typename IfcEntityTypesT::IfcTrimmingSelect>(trim1Vec, trim_par1)) {
+						typename IfcEntityTypesT::IfcParameterValue trim_par1;
+						auto first_par_val = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select_ptr) { return select_ptr->which() == 1; });
+						if (first_par_val != trim1Vec.end()) {
+							trim_par1 = (*first_par_val)->get<1>();
 							start_parameter = trim_par1;
 							line_origin = line_origin + line_direction * start_parameter;
 						}
 						else {
 							std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_trim_point;
-							if (OpenInfraPlatform::ExpressBinding::findFirstInVector<typename IfcEntityTypesT::IfcCartesianPoint, typename IfcEntityTypesT::IfcTrimmingSelect>(trim1Vec, ifc_trim_point)) {
+							auto first_point = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select_ptr) { return select_ptr->which() == 0; });
+							if (first_point != trim1Vec.end() && *first_point) {
+								ifc_trim_point = (*first_point)->get<0>().lock();
 								carve::geom::vector<3> trim_point;
 								convertIfcCartesianPoint(ifc_trim_point, trim_point);
 
@@ -1265,14 +1296,20 @@ namespace OpenInfraPlatform {
 
 						// Check for trimming at end of line
 						carve::geom::vector<3> line_end;
-						std::shared_ptr<typename IfcEntityTypesT::IfcParameterValue> trim_par2;
-						if (OpenInfraPlatform::ExpressBinding::findFirstInVector<typename IfcEntityTypesT::IfcParameterValue, typename IfcEntityTypesT::IfcTrimmingSelect>(trim2Vec, trim_par2)) {
-							line_magnitude_value = trim_par2 * length_factor;
+						typename IfcEntityTypesT::IfcParameterValue trim_par2;
+						first_par_val = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select_ptr) { return select_ptr->which() == 1; });
+
+						if (first_par_val != trim2Vec.end()) {
+							trim_par2 = (*first_par_val)->get<1>();
+							line_magnitude = trim_par2 * length_factor;
 							line_end = line_origin + line_direction * line_magnitude;
 						}
 						else {
 							std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_trim_point;
-							if (OpenInfraPlatform::ExpressBinding::findFirstInVector<typename IfcEntityTypesT::IfcCartesianPoint, typename IfcEntityTypesT::IfcTrimmingSelect>(trim2Vec, ifc_trim_point)) {
+							auto first_point = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select_ptr) { return select_ptr->which() == 0; });
+
+							if (first_point != trim2Vec.end() && *first_point) {
+								ifc_trim_point = (*first_point)->get<0>().lock();
 								carve::geom::vector<3> trim_point;
 								convertIfcCartesianPoint(ifc_trim_point, trim_point);
 
