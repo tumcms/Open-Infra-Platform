@@ -54,8 +54,8 @@ namespace OpenInfraPlatform {
 			{
 				
 				// (1/5) IfcArbitraryClosedProfileDef SUBTYPE OF IfcProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
 				if(arbitrary_closed) {
 					convertIfcArbitraryClosedProfileDef(arbitrary_closed, paths);
 					removeDuplicates(paths);
@@ -63,8 +63,8 @@ namespace OpenInfraPlatform {
 				}
 
 				// (2/5) IfcArbitraryOpenProfileDef SUBTYPE OF IfcProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> arbitrary_open =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> arbitrary_open =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>(profileDef);
 				if(arbitrary_open) {
 					convertIfcArbitraryOpenProfileDef(arbitrary_open, paths);
 					removeDuplicates(paths);
@@ -72,7 +72,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (3/5) IfcCompositeProfileDef SUBTYPE OF IfcProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeProfileDef>(profileDef);
 				if(composite) {
 					convertIfcCompositeProfileDef(composite, paths);
 					removeDuplicates(paths);
@@ -80,7 +80,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (4/5) IfcDerivedProfileDef SUBTYPE OF IfcProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = dynamic_pointer_cast<typename IfcEntityTypesT::IfcDerivedProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDerivedProfileDef>(profileDef);
 				if(derived) {
 					convertIfcDerivedProfileDef(derived, paths);
 					removeDuplicates(paths);
@@ -88,16 +88,16 @@ namespace OpenInfraPlatform {
 				}
 
 				// (5/5) IfcParameterizedProfileDef SUBTYPE OF IfcProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
 				if(parameterized) {
 					convertIfcParameterizedProfileDefWithPosition(parameterized, paths);
 					removeDuplicates(paths);
 					return;
 				}
 
-				// shared_ptr<typename IfcEntityTypesT::IfcNurbsProfile> nurbs =
-				// dynamic_pointer_cast<typename IfcEntityTypesT::IfcNurbsProfile>(profileDef);
+				// std::shared_ptr<typename IfcEntityTypesT::IfcNurbsProfile> nurbs =
+				// std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcNurbsProfile>(profileDef);
 				// if( nurbs )
 				//{
 				//	convertIfcNurbsProfile( nurbs, paths );
@@ -119,7 +119,7 @@ namespace OpenInfraPlatform {
 			void convertIfcArbitraryClosedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
-				shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profileDef->OuterCurve;
+				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profileDef->OuterCurve;
 				std::vector<carve::geom::vector<2>> curve_polygon;
 				std::vector<carve::geom::vector<2>> segment_start_points;
 
@@ -130,12 +130,12 @@ namespace OpenInfraPlatform {
 				addAvoidingDuplicates(curve_polygon, paths);
 
 				// IfcArbitraryProfileDefWithVoids
-				shared_ptr<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids> profile_with_voids =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids> profile_with_voids =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids>(profileDef);
 				if(profile_with_voids) {
-					std::vector<shared_ptr<typename IfcEntityTypesT::IfcCurve>> inner_curves = profile_with_voids->InnerCurves;
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCurve>> inner_curves = profile_with_voids->InnerCurves;
 					for(int i = 0; i < inner_curves.size(); ++i) {
-						shared_ptr<typename IfcEntityTypesT::IfcCurve> inner_ifc_curve = inner_curves[i];
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> inner_ifc_curve = inner_curves[i];
 						std::vector<carve::geom::vector<2>> inner_curve_polygon;
 						std::vector<carve::geom::vector<2>> segment_start_points;
 
@@ -159,7 +159,7 @@ namespace OpenInfraPlatform {
 
 				if(polyline) {
 					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> next_outer_curve = next_profile->OuterCurve;
-					std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> next_polyline = dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(next_outer_curve);
+					std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> next_polyline = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(next_outer_curve);
 
 					// describe 2D-polyline geometry
 					std::shared_ptr<carve::input::PolylineSetData> polylineData(new carve::input::PolylineSetData());
@@ -271,11 +271,11 @@ namespace OpenInfraPlatform {
 				//	SUBTYPE OF IfcProfileDef;
 				//	Curve	 :	IfcBoundedCurve;
 
-				shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve;
+				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve;
 				CurveConverterT<IfcEntityTypesT, IfcUnitConverterT> c_converter(geomSettings, unitConverter);
 
-				shared_ptr<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcCenterLineProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCenterLineProfileDef>(profileDef);
 				if(center_line_profile_def) {
 					if(center_line_profile_def->Thickness) {
 						const double thickness = center_line_profile_def->Thickness * unitConverter->getLengthInMeterFactor();
@@ -362,39 +362,39 @@ namespace OpenInfraPlatform {
 				std::vector<int> temploop_counts;
 				std::vector<int> tempcontour_counts;
 
-				std::vector<shared_ptr<typename IfcEntityTypesT::IfcProfileDef>>& profiles = compositeProfileDef->Profiles;
-				std::vector<shared_ptr<typename IfcEntityTypesT::IfcProfileDef>>::iterator it;
+				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>>& profiles = compositeProfileDef->Profiles;
+				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>>::iterator it;
 
 				for(it = profiles.begin(); it != profiles.end(); ++it) {
-					shared_ptr<typename IfcEntityTypesT::IfcProfileDef> profileDef = (*it);
+					std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> profileDef = (*it);
 
-					shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
+					std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
 					if(parameterized) {
 						convertIfcParameterizedProfileDefWithPosition(parameterized, paths);
 						continue;
 					}
 
-					shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> open = dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>(profileDef);
+					std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> open = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>(profileDef);
 					if(open) {
 						convertIfcArbitraryOpenProfileDef(open, paths);
 						continue;
 					}
 
-					shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> closed =
-						dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
+					std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> closed =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
 					if(closed) {
 						convertIfcArbitraryClosedProfileDef(closed, paths);
 						continue;
 					}
 
-					shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeProfileDef>(profileDef);
+					std::shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeProfileDef>(profileDef);
 					if(composite) {
 						convertIfcCompositeProfileDef(composite, paths);
 						continue;
 					}
 
-					shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = dynamic_pointer_cast<typename IfcEntityTypesT::IfcDerivedProfileDef>(profileDef);
+					std::shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDerivedProfileDef>(profileDef);
 					if(derived) {
 						convertIfcDerivedProfileDef(derived, paths);
 						continue;
@@ -414,7 +414,7 @@ namespace OpenInfraPlatform {
 				temp_profiler.computeProfile(profileDef->ParentProfile);
 				const std::vector<std::vector<carve::geom::vector<2>>>& parent_paths = temp_profiler.getCoordinates();
 
-				shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D> transf_op_2D = profileDef->Operator;
+				std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D> transf_op_2D = profileDef->Operator;
 
 				double length_factor = unitConverter->getLengthInMeterFactor();
 				carve::math::Matrix transform(carve::math::Matrix::IDENT());
@@ -449,7 +449,7 @@ namespace OpenInfraPlatform {
 				std::vector<carve::geom::vector<2>> outer_loop;
 
 				// (1/10) IfcRectangleProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcRectangleProfileDef> rectangle_profile = dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleProfileDef>(profileDef);		
+				std::shared_ptr<typename IfcEntityTypesT::IfcRectangleProfileDef> rectangle_profile = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleProfileDef>(profileDef);		
 				if(rectangle_profile) {
 
 					if(rectangle_profile->XDim && rectangle_profile->YDim) {
@@ -457,8 +457,8 @@ namespace OpenInfraPlatform {
 						double y = rectangle_profile->YDim * length_factor;
 
 						// IfcRectangleHollowProfileDef SUBTYPE OF IfcRectangleProfile 
-						shared_ptr<typename IfcEntityTypesT::IfcRectangleHollowProfileDef> hollow =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>(rectangle_profile);
+						std::shared_ptr<typename IfcEntityTypesT::IfcRectangleHollowProfileDef> hollow =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>(rectangle_profile);
 						if(hollow) {
 							if(hollow->WallThickness) {
 								double t = hollow->WallThickness * length_factor;
@@ -509,8 +509,8 @@ namespace OpenInfraPlatform {
 						}
 
 						// IfcRoundedRectangleProfileDef SUBTYPE OF IfcRectangleProfile 
-						shared_ptr<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef> rounded_rectangle =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>(rectangle_profile);
+						std::shared_ptr<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef> rounded_rectangle =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>(rectangle_profile);
 						if(rounded_rectangle) {
 							if(rounded_rectangle->RoundingRadius) {
 								double rr = rounded_rectangle->RoundingRadius * length_factor;
@@ -534,7 +534,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (2/10) IfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcTrapeziumProfileDef> trapezium = dynamic_pointer_cast<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcTrapeziumProfileDef> trapezium = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(profileDef);
 				if(trapezium) {
 					if(trapezium->BottomXDim && trapezium->TopXDim && trapezium->TopXOffset && trapezium->YDim) {
 						double xBottom = trapezium->BottomXDim * length_factor;
@@ -551,7 +551,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (3/10) IfcCircleProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcCircleProfileDef> circle_profile_def = dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcCircleProfileDef> circle_profile_def = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleProfileDef>(profileDef);
 				if(circle_profile_def) {
 					double radius = circle_profile_def->Radius * length_factor;
 					if(radius < 0.000001) {
@@ -567,7 +567,7 @@ namespace OpenInfraPlatform {
 
 					// IfcCircleHollowProfileDef SUBTYPE OF IfcCircleProfileDef
 					std::vector<carve::geom::vector<2>> inner_loop;
-					shared_ptr<typename IfcEntityTypesT::IfcCircleHollowProfileDef> hollow = dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleHollowProfileDef>(profileDef);
+					std::shared_ptr<typename IfcEntityTypesT::IfcCircleHollowProfileDef> hollow = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleHollowProfileDef>(profileDef);
 					if(hollow) {
 						angle = 0;
 						radius -= hollow->WallThickness * length_factor;
@@ -583,7 +583,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (4/10) IfcEllipseProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcEllipseProfileDef> ellipse_profile_def = dynamic_pointer_cast<typename IfcEntityTypesT::IfcEllipseProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcEllipseProfileDef> ellipse_profile_def = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEllipseProfileDef>(profileDef);
 				if(ellipse_profile_def) {
 					if(ellipse_profile_def->SemiAxis1) {
 						if(ellipse_profile_def->SemiAxis2) {
@@ -603,7 +603,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (5/10) IfcIShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcIShapeProfileDef> i_shape = dynamic_pointer_cast<typename IfcEntityTypesT::IfcIShapeProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcIShapeProfileDef> i_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcIShapeProfileDef>(profileDef);
 				if(i_shape) {
 					if(i_shape->OverallDepth && i_shape->OverallWidth && i_shape->WebThickness && i_shape->FlangeThickness) {
 						double h = i_shape->OverallDepth * length_factor;
@@ -626,8 +626,8 @@ namespace OpenInfraPlatform {
 						}
 
 						// IfcAsymmetricIShapeProfileDef SUBTYPE OF IfcIShapeProfileDef
-						shared_ptr<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef> asym_I_profile =
-							dynamic_pointer_cast<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef>(i_shape);
+						std::shared_ptr<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef> asym_I_profile =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef>(i_shape);
 						if(asym_I_profile) {
 							if(asym_I_profile->TopFlangeWidth) {
 								double bTop = asym_I_profile->TopFlangeWidth * length_factor;
@@ -664,7 +664,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (6/10) IfcLShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcLShapeProfileDef> l_shape = dynamic_pointer_cast<typename IfcEntityTypesT::IfcLShapeProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcLShapeProfileDef> l_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLShapeProfileDef>(profileDef);
 				if(l_shape) {
 					if(l_shape->Depth && l_shape->Thickness) {
 						double h = l_shape->Depth * length_factor;
@@ -726,7 +726,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (7/10) IfcUShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcUShapeProfileDef> u_shape = dynamic_pointer_cast<typename IfcEntityTypesT::IfcUShapeProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcUShapeProfileDef> u_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcUShapeProfileDef>(profileDef);
 				if(u_shape) {
 					if(u_shape->Depth && u_shape->FlangeWidth && u_shape->WebThickness && u_shape->FlangeThickness) {
 						double h = u_shape->Depth * length_factor;
@@ -773,7 +773,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (8/10) IfcCShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcCShapeProfileDef> c_shape = dynamic_pointer_cast<typename IfcEntityTypesT::IfcCShapeProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcCShapeProfileDef> c_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCShapeProfileDef>(profileDef);
 				if(c_shape) {
 					if(c_shape->Depth && c_shape->Width && c_shape->Girth && c_shape->WallThickness) {
 						double h = c_shape->Depth * length_factor;
@@ -823,7 +823,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (9/10) IfcZShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcZShapeProfileDef> z_shape = dynamic_pointer_cast<typename IfcEntityTypesT::IfcZShapeProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcZShapeProfileDef> z_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcZShapeProfileDef>(profileDef);
 				if(z_shape) {
 					if(z_shape->Depth && z_shape->FlangeWidth && z_shape->WebThickness && z_shape->FlangeThickness) {
 						double h = z_shape->Depth * length_factor;
@@ -865,7 +865,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (10/10) IfcTShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				shared_ptr<typename IfcEntityTypesT::IfcTShapeProfileDef> t_shape = dynamic_pointer_cast<typename IfcEntityTypesT::IfcTShapeProfileDef>(profileDef);
+				std::shared_ptr<typename IfcEntityTypesT::IfcTShapeProfileDef> t_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTShapeProfileDef>(profileDef);
 				if(t_shape) {
 					const double h = t_shape->Depth * length_factor;
 					const double b = t_shape->FlangeWidth * length_factor;
@@ -941,18 +941,18 @@ namespace OpenInfraPlatform {
 			}
 
 			/*
-			void ProfileConverter::convertIfcNurbsProfile(const shared_ptr<IfcNurbsProfile>& nurbs_profile,
+			void ProfileConverter::convertIfcNurbsProfile(const std::shared_ptr<IfcNurbsProfile>& nurbs_profile,
 			std::vector<std::vector<carve::geom::vector<3>>>& paths )
 			{
 			std::stringstream err;
-			shared_ptr<IfcRationalBSplineSurfaceWithKnots> surface = dynamic_pointer_cast<IfcRationalBSplineSurfaceWithKnots>(nurbs_profile->Surface);
+			std::shared_ptr<IfcRationalBSplineSurfaceWithKnots> surface = std::dynamic_pointer_cast<IfcRationalBSplineSurfaceWithKnots>(nurbs_profile->Surface);
 			if( !surface )
 			{
 			return;
 			}
 			std::vector<carve::geom::vector<3> > loop;
 			double length_factor = polygon->getLengthInMeterFactor();
-			std::vector<std::vector<shared_ptr<IfcCartesianPoint> > >& vec_control_points = surface->ControlPointsList;
+			std::vector<std::vector<std::shared_ptr<IfcCartesianPoint> > >& vec_control_points = surface->ControlPointsList;
 			std::vector<std::vector<double> >& vec_weights = surface->WeightsData;
 
 			// o------------<------------o
@@ -967,50 +967,50 @@ namespace OpenInfraPlatform {
 			RepresentationConverter converter( polygon );
 
 			// xi = 0
-			std::vector<shared_ptr<IfcCartesianPoint> >& vec_control_points_eta0 = vec_control_points[0];
-			std::vector<shared_ptr<IfcCartesianPoint> >::iterator it_xi0 = vec_control_points_eta0.begin();
+			std::vector<std::shared_ptr<IfcCartesianPoint> >& vec_control_points_eta0 = vec_control_points[0];
+			std::vector<std::shared_ptr<IfcCartesianPoint> >::iterator it_xi0 = vec_control_points_eta0.begin();
 			for( ; it_xi0 != vec_control_points_eta0.end(); ++it_xi0 )
 			{
-			shared_ptr<IfcCartesianPoint>& ifc_point = (*it_xi0);
+			std::shared_ptr<IfcCartesianPoint>& ifc_point = (*it_xi0);
 			carve::geom::vector<3>  point;
 			converter.convertIfcCartesianPoint( ifc_point, point );
 			loop.push_back(point);
 			}
 
 			// eta = 1
-			std::vector<std::vector<shared_ptr<IfcCartesianPoint> > >::iterator it_eta1 = vec_control_points.begin();
-			std::vector<std::vector<shared_ptr<IfcCartesianPoint> > >::iterator it_eta1_last = vec_control_points.end();
+			std::vector<std::vector<std::shared_ptr<IfcCartesianPoint> > >::iterator it_eta1 = vec_control_points.begin();
+			std::vector<std::vector<std::shared_ptr<IfcCartesianPoint> > >::iterator it_eta1_last = vec_control_points.end();
 			++it_eta1;
 			--it_eta1_last;
 			for( ; it_eta1 != it_eta1_last; ++it_eta1 )
 			{
-			std::vector<shared_ptr<IfcCartesianPoint> >& vec_eta = *it_eta1;
-			shared_ptr<IfcCartesianPoint>& ifc_point = vec_eta.back();
+			std::vector<std::shared_ptr<IfcCartesianPoint> >& vec_eta = *it_eta1;
+			std::shared_ptr<IfcCartesianPoint>& ifc_point = vec_eta.back();
 			carve::geom::vector<3>  point;
 			converter.convertIfcCartesianPoint( ifc_point, point );
 			loop.push_back(point);
 			}
 
 			// xi = 1
-			std::vector<shared_ptr<IfcCartesianPoint> >& vec_control_points_eta1 = vec_control_points[vec_control_points.size()-1];
-			std::vector<shared_ptr<IfcCartesianPoint> >::reverse_iterator it_control_points_reverse = vec_control_points_eta1.rbegin();
+			std::vector<std::shared_ptr<IfcCartesianPoint> >& vec_control_points_eta1 = vec_control_points[vec_control_points.size()-1];
+			std::vector<std::shared_ptr<IfcCartesianPoint> >::reverse_iterator it_control_points_reverse = vec_control_points_eta1.rbegin();
 			for( ; it_control_points_reverse != vec_control_points_eta1.rend(); ++it_control_points_reverse )
 			{
-			shared_ptr<IfcCartesianPoint>& ifc_point = (*it_control_points_reverse);
+			std::shared_ptr<IfcCartesianPoint>& ifc_point = (*it_control_points_reverse);
 			carve::geom::vector<3>  point;
 			converter.convertIfcCartesianPoint( ifc_point, point );
 			loop.push_back(point);
 			}
 
 			// eta = 0
-			std::vector<std::vector<shared_ptr<IfcCartesianPoint> > >::reverse_iterator it_eta0 = vec_control_points.rbegin();
-			std::vector<std::vector<shared_ptr<IfcCartesianPoint> > >::reverse_iterator it_eta0_last = vec_control_points.rend();
+			std::vector<std::vector<std::shared_ptr<IfcCartesianPoint> > >::reverse_iterator it_eta0 = vec_control_points.rbegin();
+			std::vector<std::vector<std::shared_ptr<IfcCartesianPoint> > >::reverse_iterator it_eta0_last = vec_control_points.rend();
 			++it_eta0;
 			--it_eta0_last;
 			for( ; it_eta0 != it_eta0_last; ++it_eta0 )
 			{
-			std::vector<shared_ptr<IfcCartesianPoint> >& vec_eta = *it_eta1;
-			shared_ptr<IfcCartesianPoint>& ifc_point = vec_eta.back();
+			std::vector<std::shared_ptr<IfcCartesianPoint> >& vec_eta = *it_eta1;
+			std::shared_ptr<IfcCartesianPoint>& ifc_point = vec_eta.back();
 			carve::geom::vector<3>  point;
 			converter.convertIfcCartesianPoint( ifc_point, point );
 			loop.push_back(point);
@@ -1030,11 +1030,11 @@ namespace OpenInfraPlatform {
 				const double lengthFactor = unitConverter->getLengthInMeterFactor();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> outer_curve =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profile_with_voids);
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profile_with_voids);
 				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCurve>> inner_curves = profile_with_voids->InnerCurves;
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> next_outer_curve =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(next_profile_with_voids);
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(next_profile_with_voids);
 				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCurve>> next_inner_curves = next_profile_with_voids->InnerCurves;
 
 				// if there is any outer curve (as closed profile) convert it to geometry first
@@ -1056,7 +1056,7 @@ namespace OpenInfraPlatform {
 					}
 
 					if(polyline) {
-						std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve = dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(polyline);
+						std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(polyline);
 
 						// describe 2D-polyline geometry
 						std::shared_ptr<carve::input::PolylineSetData> polylineData(new carve::input::PolylineSetData());
@@ -1169,7 +1169,7 @@ namespace OpenInfraPlatform {
 
 				// local coordinate system
 				if(profileDef->Position) {
-					shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D> axis2Placement2D = profileDef->Position;
+					std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D> axis2Placement2D = profileDef->Position;
 					double length_factor = unitConverter->getLengthInMeterFactor();
 					carve::math::Matrix transform(carve::math::Matrix::IDENT());
 					PlacementConverterT<IfcEntityTypesT>::convertIfcPlacement(axis2Placement2D, transform, length_factor);

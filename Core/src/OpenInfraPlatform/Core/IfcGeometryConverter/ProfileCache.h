@@ -22,6 +22,7 @@
 #define PROFILECACHE_H
 
 #include <map>
+#include <memory>
 
 #include "CarveHeaders.h"
 
@@ -55,14 +56,14 @@ namespace OpenInfraPlatform
 			{
 				const int profile_id = ifcProfile->getId();
 
-				typename std::map<int, shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>>>::iterator 
+				typename std::map<int, std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>>>::iterator 
 					it_profile_cache = profileCache.find(profile_id);
 				if (it_profile_cache != profileCache.end())
 				{
 					return it_profile_cache->second;
 				}
 
-				shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
+				std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
 					std::make_shared<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>>(geomSettings, unitConverter);
 
 				profile_converter->computeProfile(ifcProfile);

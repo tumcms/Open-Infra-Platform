@@ -1477,7 +1477,15 @@ namespace OpenInfraPlatform {
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyLoop>(loop);
 
 					if (polyLoop) {
-						const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>>& ifcPoints = polyLoop->Polygon;
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> ifcPoints;
+						ifcPoints.reserve(polyLoop->Polygon.size());
+
+						std::transform(
+							polyLoop->Polygon.begin(),
+							polyLoop->Polygon.end(),
+							ifcPoints.begin(),
+							[](auto &it) { return it.lock(); });
+
 						convertIfcCartesianPointVectorSkipDuplicates(ifcPoints, loopPoints);
 
 						// If first and last point have same coordinates, remove last point
@@ -1502,20 +1510,27 @@ namespace OpenInfraPlatform {
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdgeLoop>(loop);
 
 					if (edgeLoop) {
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge>>& edgeList = edgeLoop->EdgeList;
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge>> edgeList;
+						edgeList.reserve(edgeLoop->EdgeList.size());
+
+						std::transform(
+							edgeLoop->EdgeList.begin(),
+							edgeLoop->EdgeList.end(),
+							edgeList.begin(),
+							[](auto &it) {return it.lock(); });
 
 						// go through every edge in the edge list
 						for (auto it_edge = edgeList.begin(); it_edge != edgeList.end(); ++it_edge) {
 							// edge loop consists of many oriented edges
 							std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge> orientedEdge = (*it_edge);
 							// which are described by the type of its edge element object
-							std::shared_ptr<typename IfcEntityTypesT::IfcEdge>& edgeElement = orientedEdge->EdgeElement;
+							std::shared_ptr<typename IfcEntityTypesT::IfcEdge>& edgeElement = orientedEdge->EdgeElement.lock();
 
 							std::shared_ptr<typename IfcEntityTypesT::IfcEdgeCurve> edgeCurve =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdgeCurve>(edgeElement);
 
 							if (edgeCurve) {
-								std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& curveGeom = edgeCurve->EdgeGeometry;
+								std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& curveGeom = edgeCurve->EdgeGeometry.lock();
 								std::vector<carve::geom::vector<3>> segmentStartPoints;
 
 								convertIfcCurve(curveGeom, loopPoints, segmentStartPoints);
@@ -1528,13 +1543,15 @@ namespace OpenInfraPlatform {
 
 							if (subEdge) {
 								std::cout << "ERROR\t| IfcSubedge not implemented" << std::endl;
+								BLUE_LOG(warning) << "Developer Warning: IfcSubedge not implemented.";
 								continue;
 							}
 
 							std::cout << "ERROR\t| Entity " << orientedEdge->classname() << " not handled" << std::endl;
+							BLUE_LOG(warning) << "Developer Warning: Entity " << orientedEdge->classname() << " not handled.";
 
 							// every edge consists of one start and end vertex
-							std::shared_ptr<typename IfcEntityTypesT::IfcVertex>& edgeStartVertex = edgeElement->EdgeStart;
+							std::shared_ptr<typename IfcEntityTypesT::IfcVertex>& edgeStartVertex = edgeElement->EdgeStart.lock();
 							std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> edgeStartVertexPoint =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(edgeStartVertex);
 
@@ -1543,13 +1560,14 @@ namespace OpenInfraPlatform {
 								if (edgeStartVertexPoint->VertexGeometry)
 								{
 									std::shared_ptr<typename IfcEntityTypesT::IfcPoint>& startPoint =
-										edgeStartVertexPoint->VertexGeometry;
+										edgeStartVertexPoint->VertexGeometry.lock();
 									std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifcPoint =
 										std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(startPoint);
 									if (!ifcPoint)
 									{
 										// TODO: could be also  IfcPointOnCurve, IfcPointOnSurface
-										/ continue;
+										BLUE_LOG(warning) << "Developer Warning: Not yet implemented!";
+										continue;
 									}
 									// TODO: implement
 								}
@@ -1572,7 +1590,7 @@ namespace OpenInfraPlatform {
 
 						point = carve::geom::VECTOR(x, y, z);
 					}
-					else if (ifcPoint->Coordinatese() > 1) {
+					else if (ifcPoint->Coordinates.size() > 1) {
 						double x = ifcPoint->Coordinates[0] * length_factor;
 						double y = ifcPoint->Coordinates[1] * length_factor;
 

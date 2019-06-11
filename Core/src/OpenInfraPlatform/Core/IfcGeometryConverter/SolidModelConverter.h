@@ -838,7 +838,7 @@ namespace OpenInfraPlatform
 				}
 
 				// swept area
-				std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> swept_area = extrudedArea->SweptArea;
+				std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> swept_area = extrudedArea->SweptArea.lock();
 				std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
 					profileCache->getProfileConverter(swept_area);
 				profile_converter->simplifyPaths();
@@ -876,27 +876,28 @@ namespace OpenInfraPlatform
 
 				// angle and axis
 				double angle_factor = unitConverter->getAngleInRadianFactor();
-				std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> swept_area_profile = revolvedArea->SweptArea;
+				std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> swept_area_profile = revolvedArea->SweptArea.lock();
 				double revolution_angle = revolvedArea->Angle * angle_factor;
 
 				carve::geom::vector<3>  axis_location;
 				carve::geom::vector<3>  axis_direction;
 				if (revolvedArea->Axis)
 				{
-					std::shared_ptr<typename IfcEntityTypesT::IfcAxis1Placement> axis_placement = revolvedArea->Axis;
+					std::shared_ptr<typename IfcEntityTypesT::IfcAxis1Placement> axis_placement = revolvedArea->Axis.lock();
 
 					if (axis_placement->Location)
 					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> location_point = axis_placement->Location;
+						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> location_point = axis_placement->Location.lock();
 						curveConverter->convertIfcCartesianPoint(location_point, axis_location);
 					}
 
 					if (axis_placement->Axis)
 					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcDirection> axis = axis_placement->Axis;
-						axis_direction = carve::geom::VECTOR(*(axis->DirectionRatios[0]),
-							*(axis->DirectionRatios[1]),
-							*(axis->DirectionRatios[2]));
+						decltype(axis_placement->Axis)::type axis = axis_placement->Axis;
+						axis_direction = carve::geom::VECTOR(
+							axis->DirectionRatios[0],
+							axis->DirectionRatios[1],
+							axis->DirectionRatios[2]);
 					}
 				}
 
@@ -1205,7 +1206,7 @@ namespace OpenInfraPlatform
 				double length_factor = unitConverter->getLengthInMeterFactor();
 
 				// ENTITY IfcCsgPrimitive3D  ABSTRACT SUPERTYPE OF(ONEOF(IfcBlock, IfcRectangularPyramid, IfcRightCircularCone, IfcRightCircularCylinder, IfcSphere)
-				std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& primitive_placement = csgPrimitive->Position;
+				std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> primitive_placement = csgPrimitive->Position.lock();
 
 				carve::math::Matrix primitive_placement_matrix(pos);
 				if (primitive_placement)
@@ -1517,7 +1518,7 @@ namespace OpenInfraPlatform
 				if (half_space_solid)
 				{
 					//ENTITY IfcHalfSpaceSolid SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
-					std::shared_ptr<typename IfcEntityTypesT::IfcSurface> base_surface = half_space_solid->BaseSurface;
+					std::shared_ptr<typename IfcEntityTypesT::IfcSurface> base_surface = half_space_solid->BaseSurface.lock();
 
 					// base surface
 					std::shared_ptr<typename IfcEntityTypesT::IfcElementarySurface> elem_base_surface =
@@ -1527,7 +1528,7 @@ namespace OpenInfraPlatform
 						std::cout << ": The base surface shall be an unbounded surface (subtype of IfcElementarySurface)" << std::endl;
 						return;
 					}
-					std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& base_surface_pos = elem_base_surface->Position;
+					std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& base_surface_pos = elem_base_surface->Position.lock();
 					carve::geom::plane<3> base_surface_plane;
 					carve::geom::vector<3> base_surface_position;
 					carve::math::Matrix base_position_matrix(carve::math::Matrix::IDENT());
@@ -1538,7 +1539,7 @@ namespace OpenInfraPlatform
 					}
 
 					// If the agreement flag is TRUE, then the subset is the one the normal points away from
-					bool agreement = *(half_space_solid->AgreementFlag);
+					bool agreement = half_space_solid->AgreementFlag;
 					if (!agreement)
 					{
 						base_surface_plane.negate();
@@ -1548,7 +1549,7 @@ namespace OpenInfraPlatform
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoxedHalfSpace>(half_space_solid);
 					if (boxed_half_space)
 					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcBoundingBox> bbox = boxed_half_space->Enclosure;
+						std::shared_ptr<typename IfcEntityTypesT::IfcBoundingBox> bbox = boxed_half_space->Enclosure.lock();
 						if (!bbox)
 						{
 							err << ": IfcBoxedHalfSpace: Enclosure not given" << std::endl;
@@ -1560,7 +1561,7 @@ namespace OpenInfraPlatform
 							err << ": IfcBoxedHalfSpace: Enclosure not valid" << std::endl;
 							return;
 						}
-						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>	bbox_corner = bbox->Corner;
+						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>	bbox_corner = bbox->Corner.lock();
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_x_dim = bbox->XDim;
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_y_dim = bbox->YDim;
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_z_dim = bbox->ZDim;
@@ -1652,7 +1653,7 @@ namespace OpenInfraPlatform
 						carve::geom::vector<3> boundary_position;
 						if (polygonal_half_space->Position)
 						{
-							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(polygonal_half_space->Position, boundary_position_matrix, length_factor);
+							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(polygonal_half_space->Position.lock(), boundary_position_matrix, length_factor);
 							boundary_plane_normal = carve::geom::VECTOR(boundary_position_matrix._31, boundary_position_matrix._32, boundary_position_matrix._33);
 							boundary_position = carve::geom::VECTOR(boundary_position_matrix._41, boundary_position_matrix._42, boundary_position_matrix._43);
 						}
@@ -1660,7 +1661,7 @@ namespace OpenInfraPlatform
 						// PolygonalBoundary is given in 2D
 						std::vector<carve::geom::vector<2> > polygonal_boundary;
 						std::vector<carve::geom::vector<2> > segment_start_points_2d;
-						std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve = polygonal_half_space->PolygonalBoundary;
+						std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve = polygonal_half_space->PolygonalBoundary.lock();
 						curveConverter->convertIfcCurve2D(bounded_curve, polygonal_boundary, segment_start_points_2d);
 						ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>::deleteLastPointIfEqualToFirst(polygonal_boundary);
 						ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>::simplifyPath(polygonal_boundary);
@@ -1756,7 +1757,7 @@ namespace OpenInfraPlatform
 								return;
 							}
 							// If the agreement flag is TRUE, then the subset is the one the normal points away from
-							bool agreement = *(half_space_solid->AgreementFlag);
+							bool agreement = half_space_solid->AgreementFlag;
 							if (!agreement)
 							{
 								std::reverse(base_surface_points.begin(), base_surface_points.end());
