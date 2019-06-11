@@ -1487,14 +1487,14 @@ namespace OpenInfraPlatform
 				class IfcTessellatedFaceSet;
 				*/
 				double length_factor = unitConverter->getLengthInMeterFactor();
-				std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel> solid_model = nullptr;
-				std::shared_ptr<typename IfcEntityTypesT::IfcHalfSpaceSolid> half_space_solid = nullptr;
-				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_result = nullptr;
-				std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D = nullptr;
+				std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel> solid_model;// = nullptr;
+				std::shared_ptr<typename IfcEntityTypesT::IfcHalfSpaceSolid> half_space_solid;// = nullptr;
+				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_result;// = nullptr;
+				std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D;// = nullptr;
 
 				switch (operand.which()) {
 				case 0:
-					boolean_result = operand.get<0>().lock();
+					boolean_result = operand.get<typename IfcEntityTypesT::IfcBooleanResult>().lock();
 					break;
 				case 1:
 					csg_primitive3D = operand.get<1>().lock();
