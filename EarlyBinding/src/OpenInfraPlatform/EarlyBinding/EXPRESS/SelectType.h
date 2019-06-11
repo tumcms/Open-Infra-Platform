@@ -87,6 +87,11 @@ public:
 		return boost::get<std::tuple_element_t<Index, std::tuple<Args...>>>(base::m_value);
 	}
 
+	template <class T> T get() {
+		static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
+		return boost::get<T>(base::m_value);
+	}
+
 	virtual const std::string getStepParameter() const {
 		return boost::apply_visitor(visitor_getStepParameter(), base::m_value);
 	}
