@@ -23,6 +23,7 @@
 #include <thread>
 #include <mutex>
 
+#include <memory>
 #include <algorithm>
 
 #include "CarveHeaders.h"
@@ -74,7 +75,7 @@ namespace OpenInfraPlatform
 
 					//auto& optObjectPlacement = product->ObjectPlacement;	// store optional<weak_ptr> product->ObjectPlacement in optObjectPlacement.
 					//auto& objectPlacement = *optObjectPlacement;			// extract weak_ptr from optional<weak_ptr> optObjectPlacement.
-					auto& objectPlacement_ptr = objectPlacement.lock();		// get shared_ptr used to construct the weak_ptr.
+					auto& objectPlacement_ptr = objectPlacement.lock();		// get std::shared_ptr used to construct the weak_ptr.
 					// OR auto& objectPlacement = optObjectPlacement.get();
 
 					std::set<int> placementAlreadyApplied;
@@ -127,11 +128,11 @@ namespace OpenInfraPlatform
 				const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT>> repConverter)
 			{
 				// now examine the opening data of the product representation
-				std::vector<shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> openingDatas;
+				std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> openingDatas;
 
 				// check if the product is an ifcElement, if so, it may contain opening data
-				shared_ptr<typename IfcEntityTypesT::IfcElement> element =
-					dynamic_pointer_cast<typename IfcEntityTypesT::IfcElement>(entity);
+				std::shared_ptr<typename IfcEntityTypesT::IfcElement> element =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcElement>(entity);
 
 				if (element)
 				{
@@ -157,7 +158,7 @@ namespace OpenInfraPlatform
 
 						if (openPoly->getVertexCount() < 3) { continue; }
 
-						shared_ptr<carve::mesh::MeshSet<3>> openMeshset(openPoly->createMesh(carve::input::opts()));
+						std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(openPoly->createMesh(carve::input::opts()));
 						itemData->meshsets.push_back(openMeshset);
 					}
 
@@ -167,7 +168,7 @@ namespace OpenInfraPlatform
 
 						if (openClosedPoly->getVertexCount() < 3) { continue; }
 
-						shared_ptr<carve::mesh::MeshSet<3>> openMeshset(
+						std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(
 							openClosedPoly->createMesh(carve::input::opts()));
 						itemData->meshsets.push_back(openMeshset);
 					}
@@ -214,7 +215,7 @@ namespace OpenInfraPlatform
 					//	std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
 					//	if (product) {
 					//		// create new shape input data for product
-					//		shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
+					//		std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
 					//		productShape->ifc_product = product;
 					//		IfcImporterUtil::convertIfcProduct<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, unitConverter, repConverter);
 					//		shapeInputData.insert(std::make_pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>(pair.first, productShape));

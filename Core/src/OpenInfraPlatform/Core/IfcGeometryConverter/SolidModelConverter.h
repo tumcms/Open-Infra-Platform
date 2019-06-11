@@ -159,7 +159,7 @@ namespace OpenInfraPlatform
 
 						
 							vec_facesOuterShell.reserve(outerShell->CfsFaces.size());
-							std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.locj(); });
+							std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
 													
 						try {
 							faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell, err);
@@ -822,11 +822,11 @@ namespace OpenInfraPlatform
 				//const double depth = extrudedArea->Depth->length_factor;
 				carve::geom::vector<3>  extrusion_vector;
 				std::vector<double>& vec_direction = std::vector<double>(extrudedArea->ExtrudedDirection->DirectionRatios.size());
-				std::transform(extrudedArea->ExtrudedDirection->DirectionRatios.begin(), extrudedArea->ExtrudedDirection->DirectionRatios.end(),
+				std::transform(
+					extrudedArea->ExtrudedDirection->DirectionRatios.begin(),
+					extrudedArea->ExtrudedDirection->DirectionRatios.end(),
 					vec_direction.begin(),
-					[](const std::shared_ptr<typename IfcEntityTypesT::IfcReal>& val) {
-					return val;
-				});
+					[](auto it)->double { return (double) it; });
 
 				if (vec_direction.size() > 2)
 				{

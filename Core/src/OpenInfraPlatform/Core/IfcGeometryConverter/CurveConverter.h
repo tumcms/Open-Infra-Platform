@@ -1001,13 +1001,13 @@ namespace OpenInfraPlatform {
 							curve_trim1_vec.reserve(trimmed_curve->Trim1.size());
 							std::transform(trimmed_curve->Trim1.begin(),
 								trimmed_curve->Trim1.end(),
-								curve_trim1_vec.begin(), [](auto& it) {return it.lock(); });
+								curve_trim1_vec.begin(), [](auto& it) { return std::make_shared<decltype(it)>(it); });
 							
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curve_trim2_vec;
 							curve_trim2_vec.reserve(trimmed_curve->Trim2.size());
 							std::transform(trimmed_curve->Trim2.begin(),
 								trimmed_curve->Trim2.end(),
-								curve_trim2_vec.begin(), [](auto& it) {return it.lock(); });
+								curve_trim2_vec.begin(), [](auto& it) { return std::make_shared<decltype(it)>(it); });
 							
 							bool trimmed_sense_agreement = trimmed_curve->SenseAgreement;
 

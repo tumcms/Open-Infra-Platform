@@ -196,7 +196,7 @@ namespace OpenInfraPlatform {
 
 						vec_boundaries.reserve(curve_bounded_surface->Boundaries.size());
 						std::transform(
-						  curve_bounded_surface->Boundaries.begin(), curve_bounded_surface->Boundaries.end(), vec_boundaries.begin(), [](auto& it) { retrun it.lock(); });
+						  curve_bounded_surface->Boundaries.begin(), curve_bounded_surface->Boundaries.end(), vec_boundaries.begin(), [](auto& it) { return it.lock(); });
 						// std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> control_point_list = -bspline_surface->ControlPointsList;
 						/*std::shared_ptr<typename IfcEntityTypesT::IfcBoolean> implicit_outer =
 						    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoolean>(curve_bounded_surface);*/

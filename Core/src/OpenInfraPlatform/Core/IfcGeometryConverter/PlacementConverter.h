@@ -566,20 +566,20 @@ namespace OpenInfraPlatform
 				// Location type IfcCartesianPoint 
 				if (axis2placement3d->Location)
 				{
-					std::vector<carve::geom::vector<3>> coords;
-					coords.reserve(axis2placement3d->Location->Coordinates.size());
-					std::transform(
-						axis2placement3d->Location->Coordinates.begin(),
-						axis2placement3d->Location->Coordinates.end(),
-						coords.begin(),
-						[](auto &point) {
-						carve::geom::vector<3> carve_point;
-						carve_point.x = point[0];
-						carve_point.y = point[1];
-						carve_point.z = point[2];
-						return carve_point;
-						}
-					);
+					auto coords = axis2placement3d->Location->Coordinates;
+					//coords.reserve(axis2placement3d->Location->Coordinates.size());
+					//std::transform(
+					//	axis2placement3d->Location->Coordinates.begin(),
+					//	axis2placement3d->Location->Coordinates.end(),
+					//	coords.begin(),
+					//	[](auto &point) {
+					//	carve::geom::vector<3> carve_point;
+					//	carve_point.x = point[0];
+					//	carve_point.y = point[1];
+					//	carve_point.z = point[2];
+					//	return carve_point;
+					//	}
+					//);
 
 					if (coords.size() > 2)
 					{
@@ -594,7 +594,7 @@ namespace OpenInfraPlatform
 				// Axis type IfcDirection
 				if (axis2placement3d->Axis)
 				{
-					std::vector<double>& axis = axis2placement3d->Axis->DirectionRatios;	// local z-axis
+					auto axis = axis2placement3d->Axis->DirectionRatios;	// local z-axis
 
 					if (axis.size() > 2)
 					{

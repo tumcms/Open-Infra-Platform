@@ -119,7 +119,7 @@ namespace OpenInfraPlatform {
 			void convertIfcArbitraryClosedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
-				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profileDef->OuterCurve;
+				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profileDef->OuterCurve.lock();
 				std::vector<carve::geom::vector<2>> curve_polygon;
 				std::vector<carve::geom::vector<2>> segment_start_points;
 
@@ -133,9 +133,8 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids> profile_with_voids =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids>(profileDef);
 				if(profile_with_voids) {
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCurve>> inner_curves = profile_with_voids->InnerCurves;
-					for(int i = 0; i < inner_curves.size(); ++i) {
-						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> inner_ifc_curve = inner_curves[i];
+					for(auto it : profile_with_voids->InnerCurves) {
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> inner_ifc_curve = it.lock();
 						std::vector<carve::geom::vector<2>> inner_curve_polygon;
 						std::vector<carve::geom::vector<2>> segment_start_points;
 
@@ -271,7 +270,7 @@ namespace OpenInfraPlatform {
 				//	SUBTYPE OF IfcProfileDef;
 				//	Curve	 :	IfcBoundedCurve;
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve;
+				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.lock();
 				CurveConverterT<IfcEntityTypesT, IfcUnitConverterT> c_converter(geomSettings, unitConverter);
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def =
@@ -362,11 +361,16 @@ namespace OpenInfraPlatform {
 				std::vector<int> temploop_counts;
 				std::vector<int> tempcontour_counts;
 
-				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>>& profiles = compositeProfileDef->Profiles;
-				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>>::iterator it;
+				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> profiles;
+				profiles.reserve(compositeProfileDef->Profiles.size());
+				std::transform(
+					compositeProfileDef->Profiles.begin(),
+					compositeProfileDef->Profiles.end(),
+					profiles.begin(),
+					[](auto& it) {return it.lock(); });
 
-				for(it = profiles.begin(); it != profiles.end(); ++it) {
-					std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> profileDef = (*it);
+				for(auto profileDef :profiles) {
+					//std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> profileDef = it;
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
@@ -411,10 +415,10 @@ namespace OpenInfraPlatform {
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
 				ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT> temp_profiler(geomSettings, unitConverter);
-				temp_profiler.computeProfile(profileDef->ParentProfile);
+				temp_profiler.computeProfile(profileDef->ParentProfile.lock());
 				const std::vector<std::vector<carve::geom::vector<2>>>& parent_paths = temp_profiler.getCoordinates();
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D> transf_op_2D = profileDef->Operator;
+				std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D> transf_op_2D = profileDef->Operator.lock();
 
 				double length_factor = unitConverter->getLengthInMeterFactor();
 				carve::math::Matrix transform(carve::math::Matrix::IDENT());
@@ -1169,10 +1173,10 @@ namespace OpenInfraPlatform {
 
 				// local coordinate system
 				if(profileDef->Position) {
-					std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D> axis2Placement2D = profileDef->Position;
+					EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2Placement2D = profileDef->Position;
 					double length_factor = unitConverter->getLengthInMeterFactor();
 					carve::math::Matrix transform(carve::math::Matrix::IDENT());
-					PlacementConverterT<IfcEntityTypesT>::convertIfcPlacement(axis2Placement2D, transform, length_factor);
+					PlacementConverterT<IfcEntityTypesT>::convertIfcPlacement(axis2Placement2D.lock(), transform, length_factor);
 
 					for(int i = 0; i < temp_paths.size(); ++i) {
 						std::vector<carve::geom::vector<2>>& path_loop = temp_paths[i];
