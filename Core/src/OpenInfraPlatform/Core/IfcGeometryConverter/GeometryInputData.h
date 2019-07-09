@@ -95,7 +95,7 @@ namespace OpenInfraPlatform
 							continue;
 						}
 
-						const carve::mesh::MeshSet<3>::aabb_t& aabb = meshset->getAABB();
+						carve::mesh::MeshSet<3>::aabb_t& aabb = meshset->getAABB();
 
 						if (firstIteration) {
 							aabb = aabb;

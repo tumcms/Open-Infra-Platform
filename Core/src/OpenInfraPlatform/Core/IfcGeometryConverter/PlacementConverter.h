@@ -227,27 +227,25 @@ namespace OpenInfraPlatform
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLocalPlacement>(object_placement);			
 				if(local_placement)
 				{
-					// Relative Placement type IfcAxis2Placement [1:1]
-					if(local_placement->RelativePlacement)
-					{
-						decltype(local_placement->RelativePlacement)& axis2placement = local_placement->RelativePlacement;						
-						carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
+					// Relative Placement type IfcAxis2Placement [1:1]					
+					decltype(local_placement->RelativePlacement)& axis2placement = local_placement->RelativePlacement;						
+					carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
 
-						switch (axis2placement.which()) {
-						case 0:
-							convertIfcAxis2Placement2D(axis2placement.get<0>().lock(), relative_placement, length_factor);
-							break;
-						case 1:
-							convertIfcAxis2Placement3D(axis2placement.get<1>().lock(), relative_placement, length_factor);
-							break;
-						default:
-							break;
-						}
-
-						//convertIfcPlacement(placement, relative_placement, length_factor);
-						object_placement_matrix = relative_placement;
-						
+					switch (axis2placement.which()) {
+					case 0:
+						convertIfcAxis2Placement2D(axis2placement.get<0>().lock(), relative_placement, length_factor);
+						break;
+					case 1:
+						convertIfcAxis2Placement3D(axis2placement.get<1>().lock(), relative_placement, length_factor);
+						break;
+					default:
+						break;
 					}
+
+					//convertIfcPlacement(placement, relative_placement, length_factor);
+					object_placement_matrix = relative_placement;
+						
+					
 
 					// PlacementRelTo type IfcObjectPlacement [0:1]
 					if (local_placement->PlacementRelTo)

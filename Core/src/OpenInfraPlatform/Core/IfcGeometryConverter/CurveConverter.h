@@ -52,7 +52,7 @@ namespace OpenInfraPlatform {
 
 				}
 
-				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
+				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve,
 					std::vector<carve::geom::vector<3>>& loops,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints) const
 				{
@@ -61,11 +61,11 @@ namespace OpenInfraPlatform {
 					convertIfcCurve(ifcCurve, loops, segmentStartPoints, trim1Vec, trim2Vec, true);
 				}
 
-				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
+				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> >& trim1Vec,
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> >& trim2Vec,
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> > trim1Vec,
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> > trim2Vec,
 					bool senseAgreement) const
 				{
 					double length_factor = unitConverter->getLengthInMeterFactor();
@@ -1001,13 +1001,13 @@ namespace OpenInfraPlatform {
 							curve_trim1_vec.reserve(trimmed_curve->Trim1.size());
 							std::transform(trimmed_curve->Trim1.begin(),
 								trimmed_curve->Trim1.end(),
-								curve_trim1_vec.begin(), [](auto& it) { return std::make_shared<decltype(it)>(it); });
+								curve_trim1_vec.begin(), [](auto it) { return std::make_shared<decltype(it)>(it); });
 							
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curve_trim2_vec;
 							curve_trim2_vec.reserve(trimmed_curve->Trim2.size());
 							std::transform(trimmed_curve->Trim2.begin(),
 								trimmed_curve->Trim2.end(),
-								curve_trim2_vec.begin(), [](auto& it) { return std::make_shared<decltype(it)>(it); });
+								curve_trim2_vec.begin(), [](auto it) { return std::make_shared<decltype(it)>(it); });
 							
 							bool trimmed_sense_agreement = trimmed_curve->SenseAgreement;
 

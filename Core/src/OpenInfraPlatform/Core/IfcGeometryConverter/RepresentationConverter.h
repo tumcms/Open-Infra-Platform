@@ -115,24 +115,23 @@ namespace OpenInfraPlatform {
 						}
 
 						carve::math::Matrix map_matrix_origin(carve::math::Matrix::IDENT());
-						if (map_source->MappingOrigin) {
-							typename IfcEntityTypesT::IfcAxis2Placement mapping_origin_select = map_source->MappingOrigin;
+						typename IfcEntityTypesT::IfcAxis2Placement mapping_origin_select = map_source->MappingOrigin;
 
-							std::shared_ptr<typename IfcEntityTypesT::IfcPlacement> mapping_origin_placement = nullptr;
+						std::shared_ptr<typename IfcEntityTypesT::IfcPlacement> mapping_origin_placement = nullptr;
 
-							switch (mapping_origin_select.which()) {
-							case 0: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<0>().lock()); break;
-							case 1: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<1>().lock()); break;
-							default: break;
-							}
-
-							if (mapping_origin_placement) {
-								PlacementConverterT<IfcEntityTypesT>::convertIfcPlacement(mapping_origin_placement, map_matrix_origin, length_factor);
-							} else {
-								err << "#" << mapping_origin_placement->getId() << " = IfcPlacement: !std::dynamic_pointer_cast<IfcPlacement>( mapping_origin ) )";
-								continue;
-							}
+						switch (mapping_origin_select.which()) {
+						case 0: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<0>().lock()); break;
+						case 1: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<1>().lock()); break;
+						default: break;
 						}
+
+						if (mapping_origin_placement) {
+							PlacementConverterT<IfcEntityTypesT>::convertIfcPlacement(mapping_origin_placement, map_matrix_origin, length_factor);
+						} else {
+							err << "#" << mapping_origin_placement->getId() << " = IfcPlacement: !std::dynamic_pointer_cast<IfcPlacement>( mapping_origin ) )";
+							continue;
+						}
+						
 
 						carve::math::Matrix mapped_pos((map_matrix_origin * objectPlacement) * map_matrix_target);
 
