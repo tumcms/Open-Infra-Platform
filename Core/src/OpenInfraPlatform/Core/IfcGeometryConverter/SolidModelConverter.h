@@ -1494,16 +1494,16 @@ namespace OpenInfraPlatform
 
 				switch (operand.which()) {
 				case 0:
-					boolean_result = operand.get<typename IfcEntityTypesT::IfcBooleanResult>().lock();
+					boolean_result = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>>().lock();
 					break;
 				case 1:
-					csg_primitive3D = operand.get<1>().lock();
+					csg_primitive3D = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcCsgPrimitive3D>>().lock();
 					break;
 				case 2: 
-					half_space_solid = operand.get<2>().lock();
+					half_space_solid = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcHalfSpaceSolid>>().lock();
 					break;
 				case 3:
-					solid_model = operand.get<3>().lock();
+					solid_model = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>>().lock();
 					break;
 				default:
 					break;
