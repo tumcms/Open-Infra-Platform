@@ -102,16 +102,16 @@ namespace OpenInfraPlatform {
 						int v_degree = bspline_surface->VDegree;
 						/*std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> control_point_list =
 						    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(bspline_surface);*/		// TO DO: next level (IfcCoordinates: IfcLengthMeasure)
-						auto vec_control_point_list = bspline_surface->ControlPointsList;
-						for (auto& it_control_point_list : vec_control_point_list) {
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> vec_control_point_list;
+						auto vec_control_point_list_list = bspline_surface->ControlPointsList;
+						for (auto& it_control_point_list : vec_control_point_list_list) {
+							std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCartesianPoint>> vec_control_point_list;
 							std::shared_ptr<ItemData> input_data_cpl_set(new ItemData);
 
 							vec_control_point_list.reserve(it_control_point_list.size());
 							std::transform(it_control_point_list.begin(),
 							               it_control_point_list.end(),
 							               vec_control_point_list.begin(),
-							               [](auto& it) { return it.lock(); });
+							               [](EXPRESSReference<OpenInfraPlatform::IFC4X1::IfcCartesianPoint> it) { return it.lock(); });
 							   
 						}
 						/*std::shared_ptr<typename IfcEntityTypesT::IfcBSplineSurfaceForm> surface_form =

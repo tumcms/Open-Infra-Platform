@@ -33,22 +33,22 @@ namespace OpenInfraPlatform {
 				m_length_unit_factor = 1.0;
 				m_plane_angle_factor = 1.0; // defaulting to radian
 
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_EXA] = 1E18;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PETA] = 1E15;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_TERA] = 1E12;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_GIGA] = 1E9;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MEGA] = 1E6;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_KILO] = 1E3;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_HECTO] = 1E2;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECA] = 1E1;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECI] = 1E-1;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_CENTI] = 1E-2;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MILLI] = 1E-3;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MICRO] = 1E-6;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_NANO] = 1E-9;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PICO] = 1E-12;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_FEMTO] = 1E-15;
-				m_prefix_map[IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_ATTO] = 1E-18;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_EXA] = 1E18;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PETA] = 1E15;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_TERA] = 1E12;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_GIGA] = 1E9;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MEGA] = 1E6;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_KILO] = 1E3;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_HECTO] = 1E2;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECA] = 1E1;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECI] = 1E-1;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_CENTI] = 1E-2;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MILLI] = 1E-3;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MICRO] = 1E-6;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_NANO] = 1E-9;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PICO] = 1E-12;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_FEMTO] = 1E-15;
+				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_ATTO] = 1E-18;
 			}
 
 			void setIfcProject(std::shared_ptr<typename IfcEntityTypesT::IfcProject> project) {
