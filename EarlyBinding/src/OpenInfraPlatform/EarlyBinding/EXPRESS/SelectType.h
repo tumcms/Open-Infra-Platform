@@ -88,7 +88,7 @@ public:
 	}
 
 	template <class T> T get() {
-		//static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
+		static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
 		return boost::get<T>(base::m_value);
 	}
 
