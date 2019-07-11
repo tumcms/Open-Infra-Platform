@@ -330,7 +330,7 @@ add_subdirectory(external/QtXlsxWriter)
 add_subdirectory(external/QSimpleUpdater)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
 #add_subdirectory(Infrastructure)	# deprecated
-add_subdirectory(UnitTests)
+#add_subdirectory(UnitTests)
 add_subdirectory(oip)
 #add_subdirectory(IfcBridgeGenerator)
 
@@ -353,18 +353,17 @@ endforeach()
 #add_subdirectory(LandXMLViewer)
 #add_subdirectory(IfcTunnelGenerator)
 
-
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Collect source files
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Collect general source files
 file(GLOB OpenInfraPlatform_Source									src/OpenInfraPlatform/*.*)
 file(GLOB OpenInfraPlatform_Core_Source 							src/OpenInfraPlatform/Core/*.*)
 file(GLOB OpenInfraPlatform_Data_Source 							src/OpenInfraPlatform/Data/*.*)
-#file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
 file(GLOB OpenInfraPlatform_DataManagement_Source 					src/OpenInfraPlatform/DataManagement/*.*)
 file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)	
+#file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
 
 # UnitTesting for images is currently not working but still in the code so files have to be collected
 file(GLOB OpenInfraPlatform_UnitTesting_Source						src/OpenInfraPlatform/UnitTesting/*.*)
@@ -372,19 +371,17 @@ file(GLOB OpenInfraPlatform_UnitTesting_Source						src/OpenInfraPlatform/UnitTe
 # Collect Shader files
 file(GLOB OpenInfraPlatform_Shader_Source 							src/OpenInfraPlatform/Shader/*.*)
 file(GLOB OpenInfraPlatform_Shader_D3D_Source 						src/OpenInfraPlatform/Shader/D3D/*.*)
-
 # Collect UserInterface files
 file(GLOB OpenInfraPlatform_UserInterface_ColorPicker_Source		src/OpenInfraPlatform/UserInterface/ColorPicker/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_Tools_Source				src/OpenInfraPlatform/UserInterface/Tools/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_Source 					src/OpenInfraPlatform/UserInterface/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_View2DWindow			 	src/OpenInfraPlatform/UserInterface/View2DWindow/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_SourceFiles_Source 		src/OpenInfraPlatform/UserInterface/SourceFiles/*.*)
+#file(GLOB OpenInfraPlatform_UserInterface_Tools_Source				src/OpenInfraPlatform/UserInterface/Tools/*.*)
+#file(GLOB OpenInfraPlatform_UserInterface_View2DWindow			 	src/OpenInfraPlatform/UserInterface/View2DWindow/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			src/OpenInfraPlatform/UserInterface/ViewPanel/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source 	src/OpenInfraPlatform/UserInterface/ViewPanel/Effects/*.*)
 
+# Collect Qt related stuff and UI files
 file(GLOB OpenInfraPlatform_QtPropertyBrowser_Source 				src/QtPropertyBrowser/*.*)
 file(GLOB OpenInfraPlatform_QCustomPlot_Source 						external/qcustomplot/*.*)
-
-# Collect Qt related stuff and UI files
 set(OpenInfraPlatform_UIS
 	external/QSimpleUpdater/src/dialogs/download_dialog.ui
 	src/OpenInfraPlatform/Forms/CodeEditorWindow.ui
@@ -432,7 +429,7 @@ source_group(OpenInfraPlatform										FILES ${OpenInfraPlatform_Source})
 source_group(OpenInfraPlatform\\Core								FILES ${OpenInfraPlatform_Core_Source})
 source_group(OpenInfraPlatform\\Data								FILES ${OpenInfraPlatform_Data_Source})
 source_group(OpenInfraPlatform\\DataManagement						FILES ${OpenInfraPlatform_DataManagement_Source})
-#source_group(OpenInfraPlatform\\DataManagement\\Command				FILES ${OpenInfraPlatform_DataManagement_Command_Source})
+#source_group(OpenInfraPlatform\\DataManagement\\Command			FILES ${OpenInfraPlatform_DataManagement_Command_Source})
 source_group(OpenInfraPlatform\\IfcGeometryConverter				FILES ${OpenInfraPlatform_IfcGeometryConverter_Source})
 
 # Set Shader source groups
@@ -445,8 +442,9 @@ source_group(OpenInfraPlatform\\UnitTesting  						FILES ${OpenInfraPlatform_Uni
 # Set UserInterface source groups
 source_group(OpenInfraPlatform\\UserInterface						FILES ${OpenInfraPlatform_UserInterface_Source})
 source_group(OpenInfraPlatform\\UserInterface\\ColorPicker			FILES ${OpenInfraPlatform_UserInterface_ColorPicker_Source})
-source_group(OpenInfraPlatform\\UserInterface\\Tools				FILES ${OpenInfraPlatform_UserInterface_Tools_Source})
-source_group(OpenInfraPlatform\\UserInterface\\View2DWindow			FILES ${OpenInfraPlatform_UserInterface_View2DWindow})
+#source_group(OpenInfraPlatform\\UserInterface\\Tools				FILES ${OpenInfraPlatform_UserInterface_Tools_Source})
+source_group(OpenInfraPlatform\\UserInterface\\SourceFiles			FILES ${OpenInfraPlatform_UserInterface_SourceFiles_Source})
+#source_group(OpenInfraPlatform\\UserInterface\\View2DWindow		FILES ${OpenInfraPlatform_UserInterface_View2DWindow})
 source_group(OpenInfraPlatform\\UserInterface\\ViewPanel			FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Source})
 source_group(OpenInfraPlatform\\UserInterface\\ViewPanel\\Effects	FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source})
 source_group(OpenInfraPlatform\\UserInterface\\Forms				FILES ${OpenInfraPlatform_UIS})
@@ -475,27 +473,29 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 # Add the actual executable.
 #------------------------------------------------------------------------------
 
-add_executable(OpenInfraPlatform.UI
-	${OpenInfraPlatform_QtPropertyBrowser_Source}
-	${OpenInfraPlatform_UIS_H}
-	${OpenInfraPlatform_RC_SRCS}
-	${OpenInfraPlatform_Source}
-	#${OpenInfraPlatform_Core_Source}
-	${OpenInfraPlatform_Data_Source}
-	${OpenInfraPlatform_DataManagement_Source}
-	#${OpenInfraPlatform_DataManagement_Command_Source}
-	#${OpenInfraPlatform_IfcGeometryConverter_Source}
-	${OpenInfraPlatform_UnitTesting_Source}
-	${OpenInfraPlatform_UserInterface_Source}
-	${OpenInfraPlatform_UserInterface_ColorPicker_Source}
-	${OpenInfraPlatform_UserInterface_Tools_Source}
-	${OpenInfraPlatform_UserInterface_ViewPanel_Source}
-	${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source}
-	${OpenInfraPlatform_UserInterface_View2DWindow}	
-	${OpenInfraPlatform_Shader_Source}
-	${OpenInfraPlatform_Shader_D3D_Source}
-	${OpenInfraPlatform_QCustomPlot_Source}
-)
+	add_executable(OpenInfraPlatform.UI
+		${OpenInfraPlatform_QtPropertyBrowser_Source}
+		${OpenInfraPlatform_UIS_H}
+		${OpenInfraPlatform_RC_SRCS}
+		${OpenInfraPlatform_Source}
+		#${OpenInfraPlatform_Core_Source}
+		${OpenInfraPlatform_Data_Source}
+		${OpenInfraPlatform_DataManagement_Source}
+		#${OpenInfraPlatform_DataManagement_Command_Source}
+		#${OpenInfraPlatform_IfcGeometryConverter_Source}
+		${OpenInfraPlatform_UnitTesting_Source}
+		${OpenInfraPlatform_UserInterface_Source}
+		${OpenInfraPlatform_UserInterface_ColorPicker_Source}
+		#${OpenInfraPlatform_UserInterface_Tools_Source}
+		${OpenInfraPlatform_UserInterface_SourceFiles_Source}
+		${OpenInfraPlatform_UserInterface_ViewPanel_Source}
+		${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source}
+		#${OpenInfraPlatform_UserInterface_View2DWindow}	
+		${OpenInfraPlatform_Shader_Source}
+		${OpenInfraPlatform_Shader_D3D_Source}
+		${OpenInfraPlatform_QCustomPlot_Source}
+		)
+
 
 #------------------------------------------------------------------------------
 # Link qt and other external libraries to our executable.
@@ -706,9 +706,8 @@ Option(MODULES_POINT_CLOUD_PROCESSING ON)
 
 if(MODULES_POINT_CLOUD_PROCESSING)
 
-#project(OpenInfraPlatform.PointCloudProcessing)	
-
 add_subdirectory(PointCloudProcessing)
+
 
 endif()
 

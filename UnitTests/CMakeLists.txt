@@ -22,13 +22,13 @@ include_directories(
 	${GTEST_INCLUDE_DIR}
 )
 
-file(GLOB OpenInfraPlatform_UnitTests_Source src/OpenInfraPlatform/UnitTests/*.cpp)
+#file(GLOB OpenInfraPlatform_UnitTests_Source src/OpenInfraPlatform/UnitTests/*.cpp)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/HorizontalAlignmentElement2DArbitraryCurve)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/HorizontalAlignmentElement2DArc)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/HorizontalAlignmentElement2DClothoid)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/HorizontalAlignmentElement2DLine)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/OkstraExportImport)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/LandInfraExportImport)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/IfcOWLExport)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/TrafficSign)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/HorizontalAlignmentElement2DArbitraryCurve)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/HorizontalAlignmentElement2DArc)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/HorizontalAlignmentElement2DClothoid)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/HorizontalAlignmentElement2DLine)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/OkstraExportImport)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/LandInfraExportImport)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/IfcOWLExport)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/UnitTests/Infrastructure/TrafficSign)
