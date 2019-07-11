@@ -33,8 +33,8 @@
 //#include "EMTIfc4EntityTypes.h"
 //#include "OpenInfraPlatform/Ifc4/model/Ifc4Model.h"
 
-#include "OpenInfraPlatform/IFC4X2_DRAFT_1/model/Model.h"
-#include "OpenInfraPlatform/IFC4X2_DRAFT_1/entity/IfcBoolean.h"
+/*#include "OpenInfraPlatform/IFC4X2_DRAFT_1/model/Model.h"
+#include "OpenInfraPlatform/IFC4X2_DRAFT_1/entity/IfcBoolean.h"*/
 
 namespace OpenInfraPlatform
 {

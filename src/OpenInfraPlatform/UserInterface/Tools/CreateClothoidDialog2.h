@@ -19,7 +19,7 @@
 #ifndef OpenInfraPlatform_UserInterface_CreateClothoidDialog2_a6a106b1_5ff0_4136_9549_b0f156cb9906_h
 #define OpenInfraPlatform_UserInterface_CreateClothoidDialog2_a6a106b1_5ff0_4136_9549_b0f156cb9906_h
 
-#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
 #include "ui_CreateClothoid2.h"
 #include <QDialog>
 

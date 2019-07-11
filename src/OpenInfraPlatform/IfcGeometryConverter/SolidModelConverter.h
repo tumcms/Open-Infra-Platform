@@ -30,7 +30,7 @@
 #include "PlacementConverter.h"
 #include "CurveConverter.h"
 
-#include "OpenInfraPlatform/ExpressBinding/EXPRESS/EXPRESSEntity.h"
+//#include "OpenInfraPlatform/ExpressBinding/EXPRESS/EXPRESSEntity.h"
 
 namespace OpenInfraPlatform
 {

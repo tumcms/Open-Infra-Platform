@@ -174,16 +174,16 @@ namespace OpenInfraPlatform
 			// Digital Elevation Model
 			//---------------------------------------------------------------------------//
 			
-			void addSurface(buw::ReferenceCounted<buw::Surface> surface);
-			void deleteSurface(buw::ReferenceCounted<buw::Surface> surface);
+		/*	void addSurface(buw::ReferenceCounted<buw::Surface> surface);
+			void deleteSurface(buw::ReferenceCounted<buw::Surface> surface);*/
 
-			buw::Vector3d getOffset() const;
+		//	buw::Vector3d getOffset() const;
 
 			/// Random Terrain Generation moved to infrastructure.
-
+/*
 			void createRandomTerrain(const buw::terrainDescription& td);
 			void createTerrainFromHeightMap(const std::string& filename);
-			void createTerrainFromMesh(const std::string& filename);
+			void createTerrainFromMesh(const std::string& filename);*/
 
 			//void importXYZ(const std::string& filename, const buw::Vector2d& start, const buw::Vector2d& end);
 
@@ -236,9 +236,12 @@ namespace OpenInfraPlatform
 			//---------------------------------------------------------------------------//
 			// Point Cloud
 			//---------------------------------------------------------------------------//
+			
+#ifdef pcp_module
 			const int getPointCloudPointCount() const;
 
-			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> getPointCloud() const;
+			buw::ReferenceCounted<OpenInfraPlatform::PointCloud> getPointCloud() const;
+#endif
 
 			//---------------------------------------------------------------------------//
 			// Preferences
@@ -352,14 +355,22 @@ namespace OpenInfraPlatform
 			//buw::ReferenceCounted<buw::ProxyModel>							proxyModel_;
 
 			buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel>	ifcGeometryModel_ = nullptr;
+
+#ifdef pcp_module
 			buw::ReferenceCounted<buw::PointCloud>							pointCloud_ = nullptr;
-			buw::ReferenceCounted<oip::EXPRESSModel>						expressModel_ = nullptr;
+#endif
+
+			//buw::ReferenceCounted<oip::EXPRESSModel>						expressModel_ = nullptr;
 
 			// temporary data for asynchronous operations
 			bool merge_;
-			buw::Import*													importer_;
+			//buw::Import*													importer_;
 			buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel>	tempIfcGeometryModel_;
+
+#ifdef pcp_module
 			buw::ReferenceCounted<buw::PointCloud>							tempPointCloud_;
+#endif
+
 
 			int																currentJobID_;
 
