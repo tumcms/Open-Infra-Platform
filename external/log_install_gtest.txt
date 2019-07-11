@@ -1,0 +1,855 @@
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>set dest=C:\thirdparty\vs2015\x64 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>set cmake_command=cmake 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>if NOT [C:/thirdparty/vs2015/x64] == [] set dest=C:/thirdparty/vs2015/x64 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>if NOT [C:/Users/ga83vin/Downloads/cmake-3.11.0-win64-x64/cmake-3.11.0-win64-x64/bin/cmake.exe] == [] set cmake_command="C:/Users/ga83vin/Downloads/cmake-3.11.0-win64-x64/cmake-3.11.0-win64-x64/bin/cmake.exe" 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>wget.exe --no-check-certificate https://github.com/google/googletest/archive/release-1.8.0.zip -OC:\Users\ga83vin\Documents\openinfraplatform_coetzee\external\release-1.8.0.zip 
+--2018-04-16 13:35:33--  https://github.com/google/googletest/archive/release-1.8.0.zip
+Resolving github.com (github.com)... 192.30.253.113, 192.30.253.112
+Connecting to github.com (github.com)|192.30.253.113|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://codeload.github.com/google/googletest/zip/release-1.8.0 [following]
+--2018-04-16 13:35:34--  https://codeload.github.com/google/googletest/zip/release-1.8.0
+Resolving codeload.github.com (codeload.github.com)... 192.30.253.120, 192.30.253.121
+Connecting to codeload.github.com (codeload.github.com)|192.30.253.120|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1586287 (1.5M) [application/zip]
+Saving to: 'C:/Users/ga83vin/Documents/openinfraplatform_coetzee/external/release-1.8.0.zip'
+
+     0K .......... .......... .......... .......... ..........  3%  223K 7s
+    50K .......... .......... .......... .......... ..........  6%  455K 5s
+   100K .......... .......... .......... .......... ..........  9%  449K 4s
+   150K .......... .......... .......... .......... .......... 12%  446K 4s
+   200K .......... .......... .......... .......... .......... 16% 9.61M 3s
+   250K .......... .......... .......... .......... .......... 19% 10.9M 2s
+   300K .......... .......... .......... .......... .......... 22%  477K 2s
+   350K .......... .......... .......... .......... .......... 25% 10.9M 2s
+   400K .......... .......... .......... .......... .......... 29% 10.4M 2s
+   450K .......... .......... .......... .......... .......... 32%  481K 2s
+   500K .......... .......... .......... .......... .......... 35% 11.0M 1s
+   550K .......... .......... .......... .......... .......... 38%  470K 1s
+   600K .......... .......... .......... .......... .......... 41% 11.2M 1s
+   650K .......... .......... .......... .......... .......... 45% 11.1M 1s
+   700K .......... .......... .......... .......... .......... 48%  486K 1s
+   750K .......... .......... .......... .......... .......... 51% 10.9M 1s
+   800K .......... .......... .......... .......... .......... 54% 11.1M 1s
+   850K .......... .......... .......... .......... .......... 58%  507K 1s
+   900K .......... .......... .......... .......... .......... 61% 7.35M 1s
+   950K .......... .......... .......... .......... .......... 64% 10.8M 1s
+  1000K .......... .......... .......... .......... .......... 67%  478K 1s
+  1050K .......... .......... .......... .......... .......... 71% 10.8M 1s
+  1100K .......... .......... .......... .......... .......... 74% 11.1M 0s
+  1150K .......... .......... .......... .......... .......... 77%  476K 0s
+  1200K .......... .......... .......... .......... .......... 80% 10.9M 0s
+  1250K .......... .......... .......... .......... .......... 83% 11.2M 0s
+  1300K .......... .......... .......... .......... .......... 87%  486K 0s
+  1350K .......... .......... .......... .......... .......... 90% 11.0M 0s
+  1400K .......... .......... .......... .......... .......... 93% 10.9M 0s
+  1450K .......... .......... .......... .......... .......... 96%  511K 0s
+  1500K .......... .......... .......... .......... ......... 100% 6.92M=1.6s
+
+2018-04-16 13:35:36 (987 KB/s) - 'C:/Users/ga83vin/Documents/openinfraplatform_coetzee/external/release-1.8.0.zip' saved [1586287/1586287]
+
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>7za.exe x  C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external\release-1.8.0.zip -oC:/thirdparty/vs2015/x64 
+
+7-Zip (A) 9.20  Copyright (c) 1999-2010 Igor Pavlov  2010-11-18
+
+Processing archive: C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external\release-1.8.0.zip
+
+Extracting  googletest-release-1.8.0
+Extracting  googletest-release-1.8.0\.gitignore
+Extracting  googletest-release-1.8.0\.travis.yml
+Extracting  googletest-release-1.8.0\CMakeLists.txt
+Extracting  googletest-release-1.8.0\README.md
+Extracting  googletest-release-1.8.0\appveyor.yml
+Extracting  googletest-release-1.8.0\googlemock
+Extracting  googletest-release-1.8.0\googlemock\CHANGES
+Extracting  googletest-release-1.8.0\googlemock\CMakeLists.txt
+Extracting  googletest-release-1.8.0\googlemock\CONTRIBUTORS
+Extracting  googletest-release-1.8.0\googlemock\LICENSE
+Extracting  googletest-release-1.8.0\googlemock\Makefile.am
+Extracting  googletest-release-1.8.0\googlemock\README.md
+Extracting  googletest-release-1.8.0\googlemock\build-aux
+Extracting  googletest-release-1.8.0\googlemock\build-aux\.keep
+Extracting  googletest-release-1.8.0\googlemock\configure.ac
+Extracting  googletest-release-1.8.0\googlemock\docs
+Extracting  googletest-release-1.8.0\googlemock\docs\CheatSheet.md
+Extracting  googletest-release-1.8.0\googlemock\docs\CookBook.md
+Extracting  googletest-release-1.8.0\googlemock\docs\DesignDoc.md
+Extracting  googletest-release-1.8.0\googlemock\docs\DevGuide.md
+Extracting  googletest-release-1.8.0\googlemock\docs\Documentation.md
+Extracting  googletest-release-1.8.0\googlemock\docs\ForDummies.md
+Extracting  googletest-release-1.8.0\googlemock\docs\FrequentlyAskedQuestions.md
+Extracting  googletest-release-1.8.0\googlemock\docs\KnownIssues.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_5
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_5\CheatSheet.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_5\CookBook.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_5\Documentation.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_5\ForDummies.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_5\FrequentlyAskedQuestions.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_6
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_6\CheatSheet.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_6\CookBook.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_6\Documentation.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_6\ForDummies.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_6\FrequentlyAskedQuestions.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_7
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_7\CheatSheet.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_7\CookBook.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_7\Documentation.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_7\ForDummies.md
+Extracting  googletest-release-1.8.0\googlemock\docs\v1_7\FrequentlyAskedQuestions.md
+Extracting  googletest-release-1.8.0\googlemock\include
+Extracting  googletest-release-1.8.0\googlemock\include\gmock
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-actions.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-cardinalities.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-generated-actions.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-generated-actions.h.pump
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-generated-function-mockers.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-generated-function-mockers.h.pump
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-generated-matchers.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-generated-matchers.h.pump
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-generated-nice-strict.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-generated-nice-strict.h.pump
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-matchers.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-more-actions.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-more-matchers.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock-spec-builders.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\gmock.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\internal
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\internal\custom
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\internal\custom\gmock-generated-actions.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\internal\custom\gmock-generated-actions.h.pump
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\internal\custom\gmock-matchers.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\internal\custom\gmock-port.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\internal\gmock-generated-internal-utils.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\internal\gmock-generated-internal-utils.h.pump
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\internal\gmock-internal-utils.h
+Extracting  googletest-release-1.8.0\googlemock\include\gmock\internal\gmock-port.h
+Extracting  googletest-release-1.8.0\googlemock\make
+Extracting  googletest-release-1.8.0\googlemock\make\Makefile
+Extracting  googletest-release-1.8.0\googlemock\msvc
+Extracting  googletest-release-1.8.0\googlemock\msvc\2005
+Extracting  googletest-release-1.8.0\googlemock\msvc\2005\gmock.sln
+Extracting  googletest-release-1.8.0\googlemock\msvc\2005\gmock.vcproj
+Extracting  googletest-release-1.8.0\googlemock\msvc\2005\gmock_config.vsprops
+Extracting  googletest-release-1.8.0\googlemock\msvc\2005\gmock_main.vcproj
+Extracting  googletest-release-1.8.0\googlemock\msvc\2005\gmock_test.vcproj
+Extracting  googletest-release-1.8.0\googlemock\msvc\2010
+Extracting  googletest-release-1.8.0\googlemock\msvc\2010\gmock.sln
+Extracting  googletest-release-1.8.0\googlemock\msvc\2010\gmock.vcxproj
+Extracting  googletest-release-1.8.0\googlemock\msvc\2010\gmock_config.props
+Extracting  googletest-release-1.8.0\googlemock\msvc\2010\gmock_main.vcxproj
+Extracting  googletest-release-1.8.0\googlemock\msvc\2010\gmock_test.vcxproj
+Extracting  googletest-release-1.8.0\googlemock\msvc\2015
+Extracting  googletest-release-1.8.0\googlemock\msvc\2015\gmock.sln
+Extracting  googletest-release-1.8.0\googlemock\msvc\2015\gmock.vcxproj
+Extracting  googletest-release-1.8.0\googlemock\msvc\2015\gmock_config.props
+Extracting  googletest-release-1.8.0\googlemock\msvc\2015\gmock_main.vcxproj
+Extracting  googletest-release-1.8.0\googlemock\msvc\2015\gmock_test.vcxproj
+Extracting  googletest-release-1.8.0\googlemock\scripts
+Extracting  googletest-release-1.8.0\googlemock\scripts\fuse_gmock_files.py
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\LICENSE
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\README
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\README.cppclean
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\cpp
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\cpp\__init__.py
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\cpp\ast.py
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\cpp\gmock_class.py
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\cpp\gmock_class_test.py
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\cpp\keywords.py
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\cpp\tokenize.py
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\cpp\utils.py
+Extracting  googletest-release-1.8.0\googlemock\scripts\generator\gmock_gen.py
+Extracting  googletest-release-1.8.0\googlemock\scripts\gmock-config.in
+Extracting  googletest-release-1.8.0\googlemock\scripts\gmock_doctor.py
+Extracting  googletest-release-1.8.0\googlemock\scripts\upload.py
+Extracting  googletest-release-1.8.0\googlemock\scripts\upload_gmock.py
+Extracting  googletest-release-1.8.0\googlemock\src
+Extracting  googletest-release-1.8.0\googlemock\src\gmock-all.cc
+Extracting  googletest-release-1.8.0\googlemock\src\gmock-cardinalities.cc
+Extracting  googletest-release-1.8.0\googlemock\src\gmock-internal-utils.cc
+Extracting  googletest-release-1.8.0\googlemock\src\gmock-matchers.cc
+Extracting  googletest-release-1.8.0\googlemock\src\gmock-spec-builders.cc
+Extracting  googletest-release-1.8.0\googlemock\src\gmock.cc
+Extracting  googletest-release-1.8.0\googlemock\src\gmock_main.cc
+Extracting  googletest-release-1.8.0\googlemock\test
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-actions_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-cardinalities_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-generated-actions_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-generated-function-mockers_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-generated-internal-utils_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-generated-matchers_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-internal-utils_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-matchers_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-more-actions_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-nice-strict_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-port_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock-spec-builders_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_all_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_ex_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_leak_test.py
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_leak_test_.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_link2_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_link_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_link_test.h
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_output_test.py
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_output_test_.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_output_test_golden.txt
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_stress_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_test.cc
+Extracting  googletest-release-1.8.0\googlemock\test\gmock_test_utils.py
+Extracting  googletest-release-1.8.0\googletest
+Extracting  googletest-release-1.8.0\googletest\.gitignore
+Extracting  googletest-release-1.8.0\googletest\CHANGES
+Extracting  googletest-release-1.8.0\googletest\CMakeLists.txt
+Extracting  googletest-release-1.8.0\googletest\CONTRIBUTORS
+Extracting  googletest-release-1.8.0\googletest\LICENSE
+Extracting  googletest-release-1.8.0\googletest\Makefile.am
+Extracting  googletest-release-1.8.0\googletest\README.md
+Extracting  googletest-release-1.8.0\googletest\build-aux
+Extracting  googletest-release-1.8.0\googletest\build-aux\.keep
+Extracting  googletest-release-1.8.0\googletest\cmake
+Extracting  googletest-release-1.8.0\googletest\cmake\internal_utils.cmake
+Extracting  googletest-release-1.8.0\googletest\codegear
+Extracting  googletest-release-1.8.0\googletest\codegear\gtest.cbproj
+Extracting  googletest-release-1.8.0\googletest\codegear\gtest.groupproj
+Extracting  googletest-release-1.8.0\googletest\codegear\gtest_all.cc
+Extracting  googletest-release-1.8.0\googletest\codegear\gtest_link.cc
+Extracting  googletest-release-1.8.0\googletest\codegear\gtest_main.cbproj
+Extracting  googletest-release-1.8.0\googletest\codegear\gtest_unittest.cbproj
+Extracting  googletest-release-1.8.0\googletest\configure.ac
+Extracting  googletest-release-1.8.0\googletest\docs
+Extracting  googletest-release-1.8.0\googletest\docs\AdvancedGuide.md
+Extracting  googletest-release-1.8.0\googletest\docs\DevGuide.md
+Extracting  googletest-release-1.8.0\googletest\docs\Documentation.md
+Extracting  googletest-release-1.8.0\googletest\docs\FAQ.md
+Extracting  googletest-release-1.8.0\googletest\docs\Primer.md
+Extracting  googletest-release-1.8.0\googletest\docs\PumpManual.md
+Extracting  googletest-release-1.8.0\googletest\docs\Samples.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_5_AdvancedGuide.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_5_Documentation.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_5_FAQ.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_5_Primer.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_5_PumpManual.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_5_XcodeGuide.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_6_AdvancedGuide.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_6_Documentation.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_6_FAQ.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_6_Primer.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_6_PumpManual.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_6_Samples.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_6_XcodeGuide.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_7_AdvancedGuide.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_7_Documentation.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_7_FAQ.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_7_Primer.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_7_PumpManual.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_7_Samples.md
+Extracting  googletest-release-1.8.0\googletest\docs\V1_7_XcodeGuide.md
+Extracting  googletest-release-1.8.0\googletest\docs\XcodeGuide.md
+Extracting  googletest-release-1.8.0\googletest\include
+Extracting  googletest-release-1.8.0\googletest\include\gtest
+Extracting  googletest-release-1.8.0\googletest\include\gtest\gtest-death-test.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\gtest-message.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\gtest-param-test.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\gtest-param-test.h.pump
+Extracting  googletest-release-1.8.0\googletest\include\gtest\gtest-printers.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\gtest-spi.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\gtest-test-part.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\gtest-typed-test.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\gtest.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\gtest_pred_impl.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\gtest_prod.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\custom
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\custom\gtest-port.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\custom\gtest-printers.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\custom\gtest.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-death-test-internal.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-filepath.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-internal.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-linked_ptr.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-param-util-generated.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-param-util-generated.h.pump
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-param-util.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-port-arch.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-port.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-string.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-tuple.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-tuple.h.pump
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-type-util.h
+Extracting  googletest-release-1.8.0\googletest\include\gtest\internal\gtest-type-util.h.pump
+Extracting  googletest-release-1.8.0\googletest\m4
+Extracting  googletest-release-1.8.0\googletest\m4\acx_pthread.m4
+Extracting  googletest-release-1.8.0\googletest\m4\gtest.m4
+Extracting  googletest-release-1.8.0\googletest\make
+Extracting  googletest-release-1.8.0\googletest\make\Makefile
+Extracting  googletest-release-1.8.0\googletest\msvc
+Extracting  googletest-release-1.8.0\googletest\msvc\gtest-md.sln
+Extracting  googletest-release-1.8.0\googletest\msvc\gtest-md.vcproj
+Extracting  googletest-release-1.8.0\googletest\msvc\gtest.sln
+Extracting  googletest-release-1.8.0\googletest\msvc\gtest.vcproj
+Extracting  googletest-release-1.8.0\googletest\msvc\gtest_main-md.vcproj
+Extracting  googletest-release-1.8.0\googletest\msvc\gtest_main.vcproj
+Extracting  googletest-release-1.8.0\googletest\msvc\gtest_prod_test-md.vcproj
+Extracting  googletest-release-1.8.0\googletest\msvc\gtest_prod_test.vcproj
+Extracting  googletest-release-1.8.0\googletest\msvc\gtest_unittest-md.vcproj
+Extracting  googletest-release-1.8.0\googletest\msvc\gtest_unittest.vcproj
+Extracting  googletest-release-1.8.0\googletest\samples
+Extracting  googletest-release-1.8.0\googletest\samples\prime_tables.h
+Extracting  googletest-release-1.8.0\googletest\samples\sample1.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample1.h
+Extracting  googletest-release-1.8.0\googletest\samples\sample10_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample1_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample2.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample2.h
+Extracting  googletest-release-1.8.0\googletest\samples\sample2_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample3-inl.h
+Extracting  googletest-release-1.8.0\googletest\samples\sample3_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample4.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample4.h
+Extracting  googletest-release-1.8.0\googletest\samples\sample4_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample5_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample6_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample7_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample8_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\samples\sample9_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\scripts
+Extracting  googletest-release-1.8.0\googletest\scripts\common.py
+Extracting  googletest-release-1.8.0\googletest\scripts\fuse_gtest_files.py
+Extracting  googletest-release-1.8.0\googletest\scripts\gen_gtest_pred_impl.py
+Extracting  googletest-release-1.8.0\googletest\scripts\gtest-config.in
+Extracting  googletest-release-1.8.0\googletest\scripts\pump.py
+Extracting  googletest-release-1.8.0\googletest\scripts\release_docs.py
+Extracting  googletest-release-1.8.0\googletest\scripts\test
+Extracting  googletest-release-1.8.0\googletest\scripts\test\Makefile
+Extracting  googletest-release-1.8.0\googletest\scripts\upload.py
+Extracting  googletest-release-1.8.0\googletest\scripts\upload_gtest.py
+Extracting  googletest-release-1.8.0\googletest\src
+Extracting  googletest-release-1.8.0\googletest\src\gtest-all.cc
+Extracting  googletest-release-1.8.0\googletest\src\gtest-death-test.cc
+Extracting  googletest-release-1.8.0\googletest\src\gtest-filepath.cc
+Extracting  googletest-release-1.8.0\googletest\src\gtest-internal-inl.h
+Extracting  googletest-release-1.8.0\googletest\src\gtest-port.cc
+Extracting  googletest-release-1.8.0\googletest\src\gtest-printers.cc
+Extracting  googletest-release-1.8.0\googletest\src\gtest-test-part.cc
+Extracting  googletest-release-1.8.0\googletest\src\gtest-typed-test.cc
+Extracting  googletest-release-1.8.0\googletest\src\gtest.cc
+Extracting  googletest-release-1.8.0\googletest\src\gtest_main.cc
+Extracting  googletest-release-1.8.0\googletest\test
+Extracting  googletest-release-1.8.0\googletest\test\gtest-death-test_ex_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-death-test_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-filepath_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-linked_ptr_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-listener_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-message_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-options_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-param-test2_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-param-test_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-param-test_test.h
+Extracting  googletest-release-1.8.0\googletest\test\gtest-port_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-printers_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-test-part_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-tuple_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-typed-test2_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-typed-test_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest-typed-test_test.h
+Extracting  googletest-release-1.8.0\googletest\test\gtest-unittest-api_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_all_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_break_on_failure_unittest.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_break_on_failure_unittest_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_catch_exceptions_test.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_catch_exceptions_test_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_color_test.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_color_test_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_env_var_test.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_env_var_test_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_environment_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_filter_unittest.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_filter_unittest_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_help_test.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_help_test_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_list_tests_unittest.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_list_tests_unittest_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_main_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_no_test_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_output_test.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_output_test_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_output_test_golden_lin.txt
+Extracting  googletest-release-1.8.0\googletest\test\gtest_pred_impl_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_premature_exit_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_prod_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_repeat_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_shuffle_test.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_shuffle_test_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_sole_header_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_stress_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_test_utils.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_throw_on_failure_ex_test.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_throw_on_failure_test.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_throw_on_failure_test_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_uninitialized_test.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_uninitialized_test_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_unittest.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_xml_outfile1_test_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_xml_outfile2_test_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_xml_outfiles_test.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_xml_output_unittest.py
+Extracting  googletest-release-1.8.0\googletest\test\gtest_xml_output_unittest_.cc
+Extracting  googletest-release-1.8.0\googletest\test\gtest_xml_test_utils.py
+Extracting  googletest-release-1.8.0\googletest\test\production.cc
+Extracting  googletest-release-1.8.0\googletest\test\production.h
+Extracting  googletest-release-1.8.0\googletest\xcode
+Extracting  googletest-release-1.8.0\googletest\xcode\Config
+Extracting  googletest-release-1.8.0\googletest\xcode\Config\DebugProject.xcconfig
+Extracting  googletest-release-1.8.0\googletest\xcode\Config\FrameworkTarget.xcconfig
+Extracting  googletest-release-1.8.0\googletest\xcode\Config\General.xcconfig
+Extracting  googletest-release-1.8.0\googletest\xcode\Config\ReleaseProject.xcconfig
+Extracting  googletest-release-1.8.0\googletest\xcode\Config\StaticLibraryTarget.xcconfig
+Extracting  googletest-release-1.8.0\googletest\xcode\Config\TestTarget.xcconfig
+Extracting  googletest-release-1.8.0\googletest\xcode\Resources
+Extracting  googletest-release-1.8.0\googletest\xcode\Resources\Info.plist
+Extracting  googletest-release-1.8.0\googletest\xcode\Samples
+Extracting  googletest-release-1.8.0\googletest\xcode\Samples\FrameworkSample
+Extracting  googletest-release-1.8.0\googletest\xcode\Samples\FrameworkSample\Info.plist
+Extracting  googletest-release-1.8.0\googletest\xcode\Samples\FrameworkSample\WidgetFramework.xcodeproj
+Extracting  googletest-release-1.8.0\googletest\xcode\Samples\FrameworkSample\WidgetFramework.xcodeproj\project.pbxproj
+Extracting  googletest-release-1.8.0\googletest\xcode\Samples\FrameworkSample\runtests.sh
+Extracting  googletest-release-1.8.0\googletest\xcode\Samples\FrameworkSample\widget.cc
+Extracting  googletest-release-1.8.0\googletest\xcode\Samples\FrameworkSample\widget.h
+Extracting  googletest-release-1.8.0\googletest\xcode\Samples\FrameworkSample\widget_test.cc
+Extracting  googletest-release-1.8.0\googletest\xcode\Scripts
+Extracting  googletest-release-1.8.0\googletest\xcode\Scripts\runtests.sh
+Extracting  googletest-release-1.8.0\googletest\xcode\Scripts\versiongenerate.py
+Extracting  googletest-release-1.8.0\googletest\xcode\gtest.xcodeproj
+Extracting  googletest-release-1.8.0\googletest\xcode\gtest.xcodeproj\project.pbxproj
+Extracting  googletest-release-1.8.0\travis.sh
+
+Everything is Ok
+
+Folders: 46
+Files: 324
+Size:       5763625
+Compressed: 1586287
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>del C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external\release-1.8.0.zip 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64 
+-- The C compiler identification is MSVC 19.0.24215.1
+-- The CXX compiler identification is MSVC 19.0.24215.1
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/x86_amd64/cl.exe
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/x86_amd64/cl.exe -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/x86_amd64/cl.exe
+-- Check for working CXX compiler: C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/x86_amd64/cl.exe -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found PythonInterp: C:/Program Files/Python36/python.exe (found version "3.6") 
+-- Looking for pthread.h
+-- Looking for pthread.h - not found
+-- Found Threads: TRUE  
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build
+Microsoft (R)-Buildmodul, Version 14.0.25420.1
+Copyright (C) Microsoft Corporation. Alle Rechte vorbehalten.
+
+Der Buildvorgang wurde am 16.04.2018 13:35:46 gestartet.
+Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" auf Knoten "1" (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ZERO_CHECK.vcxproj" (2) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "x64\Debug\ZERO_CHECK\" wird erstellt.
+  Das Verzeichnis "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Checking Build System
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/CMakeFiles/generate.stamp is up-to-date.
+FinalizeBuildStatus:
+  Die Datei "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ZERO_CHECK.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock.vcxproj" (3) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gmock.dir\Debug\" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\Debug\" wird erstellt.
+  Das Verzeichnis "gmock.dir\Debug\gmock.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gmock.dir\Debug\gmock.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googlemock/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /Od /Ob0 /D WIN32 /D _WINDOWS /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"Debug\"" /D gmock_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gmock.dir\Debug\\" /Fd"gmock.dir\Debug\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest-all.cc" "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\src\gmock-all.cc"
+  gtest-all.cc
+  gmock-all.cc
+  Code wird generiert...
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\Debug\gmock.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Debug/gmock.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Debug/gmock.lib" /MACHINE:X64  /machine:x64 /DLL "gmock.dir\Debug\gtest-all.obj"
+  "gmock.dir\Debug\gmock-all.obj"
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Debug/gmock.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Debug/gmock.exp" werden erstellt.
+  gmock.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\Debug\gmock.dll
+  gmock.vcxproj -> C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Debug/gmock.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "gmock.dir\Debug\gmock.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gmock.dir\Debug\gmock.tlog\gmock.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock_main.vcxproj" (4) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gmock_main.dir\Debug\" wird erstellt.
+  Das Verzeichnis "gmock_main.dir\Debug\gmock_main.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gmock_main.dir\Debug\gmock_main.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googlemock/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /Od /Ob0 /D WIN32 /D _WINDOWS /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"Debug\"" /D gmock_main_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gmock_main.dir\Debug\\" /Fd"gmock_main.dir\Debug\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest-all.cc" "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\src\gmock-all.cc" "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\src\gmock_main.cc"
+  gtest-all.cc
+  gmock-all.cc
+  gmock_main.cc
+  Code wird generiert...
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\Debug\gmock_main.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Debug/gmock_main.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Debug/gmock_main.lib" /MACHINE:X64  /machine:x64 /DLL "gmock_main.dir\Debug\gtest-all.obj"
+  "gmock_main.dir\Debug\gmock-all.obj"
+  gmock_main.dir\Debug\gmock_main.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Debug/gmock_main.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Debug/gmock_main.exp" werden erstellt.
+  gmock_main.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\Debug\gmock_main.dll
+  gmock_main.vcxproj -> C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Debug/gmock_main.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "gmock_main.dir\Debug\gmock_main.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gmock_main.dir\Debug\gmock_main.tlog\gmock_main.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock_main.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest.vcxproj" (5) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gtest.dir\Debug\" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\Debug\" wird erstellt.
+  Das Verzeichnis "gtest.dir\Debug\gtest.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gtest.dir\Debug\gtest.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googletest/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /Od /Ob0 /D WIN32 /D _WINDOWS /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"Debug\"" /D gtest_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gtest.dir\Debug\\" /Fd"gtest.dir\Debug\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest-all.cc"
+  gtest-all.cc
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\Debug\gtest.dll" /INCREMENTAL /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src" /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src/Debug" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Debug/gtest.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Debug/gtest.lib" /MACHINE:X64  /machine:x64 /DLL "gtest.dir\Debug\gtest-all.obj"
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Debug/gtest.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Debug/gtest.exp" werden erstellt.
+  gtest.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\Debug\gtest.dll
+  gtest.vcxproj -> C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Debug/gtest.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "gtest.dir\Debug\gtest.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gtest.dir\Debug\gtest.tlog\gtest.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest_main.vcxproj" (6) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gtest_main.dir\Debug\" wird erstellt.
+  Das Verzeichnis "gtest_main.dir\Debug\gtest_main.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gtest_main.dir\Debug\gtest_main.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googletest/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /Od /Ob0 /D WIN32 /D _WINDOWS /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"Debug\"" /D gtest_main_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gtest_main.dir\Debug\\" /Fd"gtest_main.dir\Debug\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest_main.cc"
+  gtest_main.cc
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\Debug\gtest_main.dll" /INCREMENTAL /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src" /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src/Debug" Debug\gtest.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Debug/gtest_main.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Debug/gtest_main.lib" /MACHINE:X64  /machine:x64 /DLL gtest_main.dir\Debug\gtest_main.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Debug/gtest_main.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Debug/gtest_main.exp" werden erstellt.
+  gtest_main.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\Debug\gtest_main.dll
+  gtest_main.vcxproj -> C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Debug/gtest_main.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "gtest_main.dir\Debug\gtest_main.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gtest_main.dir\Debug\gtest_main.tlog\gtest_main.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest_main.vcxproj" ist abgeschlossen (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "x64\Debug\ALL_BUILD\" wird erstellt.
+  Das Verzeichnis "x64\Debug\ALL_BUILD\ALL_BUILD.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "x64\Debug\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/CMakeFiles/generate.stamp is up-to-date.
+FinalizeBuildStatus:
+  Die Datei "x64\Debug\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "x64\Debug\ALL_BUILD\ALL_BUILD.tlog\ALL_BUILD.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" ist abgeschlossen (Standardziele).
+
+Der Buildvorgang wurde erfolgreich ausgefÅhrt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:10.31
+Microsoft (R)-Buildmodul, Version 14.0.25420.1
+Copyright (C) Microsoft Corporation. Alle Rechte vorbehalten.
+
+Der Buildvorgang wurde am 16.04.2018 13:35:56 gestartet.
+Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" auf Knoten "1" (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ZERO_CHECK.vcxproj" (2) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "x64\Release\ZERO_CHECK\" wird erstellt.
+  Das Verzeichnis "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Checking Build System
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/CMakeFiles/generate.stamp is up-to-date.
+FinalizeBuildStatus:
+  Die Datei "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ZERO_CHECK.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock.vcxproj" (3) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gmock.dir\Release\" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\Release\" wird erstellt.
+  Das Verzeichnis "gmock.dir\Release\gmock.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gmock.dir\Release\gmock.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googlemock/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"Release\"" /D gmock_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gmock.dir\Release\\" /Fd"gmock.dir\Release\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest-all.cc" "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\src\gmock-all.cc"
+  gtest-all.cc
+  gmock-all.cc
+  Code wird generiert...
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\Release\gmock.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Release/gmock.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Release/gmock.lib" /MACHINE:X64  /machine:x64 /DLL "gmock.dir\Release\gtest-all.obj"
+  "gmock.dir\Release\gmock-all.obj"
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Release/gmock.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Release/gmock.exp" werden erstellt.
+  gmock.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\Release\gmock.dll
+FinalizeBuildStatus:
+  Die Datei "gmock.dir\Release\gmock.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gmock.dir\Release\gmock.tlog\gmock.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock_main.vcxproj" (4) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gmock_main.dir\Release\" wird erstellt.
+  Das Verzeichnis "gmock_main.dir\Release\gmock_main.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gmock_main.dir\Release\gmock_main.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googlemock/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"Release\"" /D gmock_main_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gmock_main.dir\Release\\" /Fd"gmock_main.dir\Release\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest-all.cc" "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\src\gmock-all.cc" "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\src\gmock_main.cc"
+  gtest-all.cc
+  gmock-all.cc
+  gmock_main.cc
+  Code wird generiert...
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\Release\gmock_main.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Release/gmock_main.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Release/gmock_main.lib" /MACHINE:X64  /machine:x64 /DLL "gmock_main.dir\Release\gtest-all.obj"
+  "gmock_main.dir\Release\gmock-all.obj"
+  gmock_main.dir\Release\gmock_main.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Release/gmock_main.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/Release/gmock_main.exp" werden erstellt.
+  gmock_main.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\Release\gmock_main.dll
+FinalizeBuildStatus:
+  Die Datei "gmock_main.dir\Release\gmock_main.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gmock_main.dir\Release\gmock_main.tlog\gmock_main.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock_main.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest.vcxproj" (5) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gtest.dir\Release\" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\Release\" wird erstellt.
+  Das Verzeichnis "gtest.dir\Release\gtest.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gtest.dir\Release\gtest.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googletest/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"Release\"" /D gtest_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gtest.dir\Release\\" /Fd"gtest.dir\Release\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest-all.cc"
+  gtest-all.cc
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\Release\gtest.dll" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src" /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src/Release" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Release/gtest.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Release/gtest.lib" /MACHINE:X64  /machine:x64 /DLL "gtest.dir\Release\gtest-all.obj"
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Release/gtest.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Release/gtest.exp" werden erstellt.
+  gtest.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\Release\gtest.dll
+FinalizeBuildStatus:
+  Die Datei "gtest.dir\Release\gtest.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gtest.dir\Release\gtest.tlog\gtest.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest_main.vcxproj" (6) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gtest_main.dir\Release\" wird erstellt.
+  Das Verzeichnis "gtest_main.dir\Release\gtest_main.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gtest_main.dir\Release\gtest_main.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googletest/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"Release\"" /D gtest_main_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gtest_main.dir\Release\\" /Fd"gtest_main.dir\Release\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest_main.cc"
+  gtest_main.cc
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\Release\gtest_main.dll" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src" /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src/Release" Release\gtest.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Release/gtest_main.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Release/gtest_main.lib" /MACHINE:X64  /machine:x64 /DLL gtest_main.dir\Release\gtest_main.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Release/gtest_main.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/Release/gtest_main.exp" werden erstellt.
+  gtest_main.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\Release\gtest_main.dll
+FinalizeBuildStatus:
+  Die Datei "gtest_main.dir\Release\gtest_main.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gtest_main.dir\Release\gtest_main.tlog\gtest_main.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest_main.vcxproj" ist abgeschlossen (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "x64\Release\ALL_BUILD\" wird erstellt.
+  Das Verzeichnis "x64\Release\ALL_BUILD\ALL_BUILD.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "x64\Release\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/CMakeFiles/generate.stamp is up-to-date.
+FinalizeBuildStatus:
+  Die Datei "x64\Release\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "x64\Release\ALL_BUILD\ALL_BUILD.tlog\ALL_BUILD.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" ist abgeschlossen (Standardziele).
+
+Der Buildvorgang wurde erfolgreich ausgefÅhrt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:13.42
+Microsoft (R)-Buildmodul, Version 14.0.25420.1
+Copyright (C) Microsoft Corporation. Alle Rechte vorbehalten.
+
+Der Buildvorgang wurde am 16.04.2018 13:36:10 gestartet.
+Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" auf Knoten "1" (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ZERO_CHECK.vcxproj" (2) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "x64\RelWithDebInfo\ZERO_CHECK\" wird erstellt.
+  Das Verzeichnis "x64\RelWithDebInfo\ZERO_CHECK\ZERO_CHECK.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "x64\RelWithDebInfo\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Checking Build System
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/CMakeFiles/generate.stamp is up-to-date.
+FinalizeBuildStatus:
+  Die Datei "x64\RelWithDebInfo\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "x64\RelWithDebInfo\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ZERO_CHECK.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock.vcxproj" (3) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gmock.dir\RelWithDebInfo\" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\RelWithDebInfo\" wird erstellt.
+  Das Verzeichnis "gmock.dir\RelWithDebInfo\gmock.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gmock.dir\RelWithDebInfo\gmock.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googlemock/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D gmock_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gmock.dir\RelWithDebInfo\\" /Fd"gmock.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest-all.cc" "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\src\gmock-all.cc"
+  gtest-all.cc
+  gmock-all.cc
+  Code wird generiert...
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\RelWithDebInfo\gmock.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/RelWithDebInfo/gmock.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/RelWithDebInfo/gmock.lib" /MACHINE:X64  /machine:x64 /DLL "gmock.dir\RelWithDebInfo\gtest-all.obj"
+  "gmock.dir\RelWithDebInfo\gmock-all.obj"
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/RelWithDebInfo/gmock.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/RelWithDebInfo/gmock.exp" werden erstellt.
+  gmock.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\RelWithDebInfo\gmock.dll
+  gmock.vcxproj -> C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/RelWithDebInfo/gmock.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "gmock.dir\RelWithDebInfo\gmock.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gmock.dir\RelWithDebInfo\gmock.tlog\gmock.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock_main.vcxproj" (4) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gmock_main.dir\RelWithDebInfo\" wird erstellt.
+  Das Verzeichnis "gmock_main.dir\RelWithDebInfo\gmock_main.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gmock_main.dir\RelWithDebInfo\gmock_main.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googlemock/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D gmock_main_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gmock_main.dir\RelWithDebInfo\\" /Fd"gmock_main.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest-all.cc" "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\src\gmock-all.cc" "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googlemock\src\gmock_main.cc"
+  gtest-all.cc
+  gmock-all.cc
+  gmock_main.cc
+  Code wird generiert...
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\RelWithDebInfo\gmock_main.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/RelWithDebInfo/gmock_main.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/RelWithDebInfo/gmock_main.lib" /MACHINE:X64  /machine:x64 /DLL "gmock_main.dir\RelWithDebInfo\gtest-all.obj"
+  "gmock_main.dir\RelWithDebInfo\gmock-all.obj"
+  gmock_main.dir\RelWithDebInfo\gmock_main.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/RelWithDebInfo/gmock_main.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/RelWithDebInfo/gmock_main.exp" werden erstellt.
+  gmock_main.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\RelWithDebInfo\gmock_main.dll
+  gmock_main.vcxproj -> C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/RelWithDebInfo/gmock_main.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "gmock_main.dir\RelWithDebInfo\gmock_main.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gmock_main.dir\RelWithDebInfo\gmock_main.tlog\gmock_main.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gmock_main.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest.vcxproj" (5) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gtest.dir\RelWithDebInfo\" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\RelWithDebInfo\" wird erstellt.
+  Das Verzeichnis "gtest.dir\RelWithDebInfo\gtest.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gtest.dir\RelWithDebInfo\gtest.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googletest/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D gtest_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gtest.dir\RelWithDebInfo\\" /Fd"gtest.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest-all.cc"
+  gtest-all.cc
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\RelWithDebInfo\gtest.dll" /INCREMENTAL /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src" /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src/RelWithDebInfo" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/RelWithDebInfo/gtest.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/RelWithDebInfo/gtest.lib" /MACHINE:X64  /machine:x64 /DLL "gtest.dir\RelWithDebInfo\gtest-all.obj"
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/RelWithDebInfo/gtest.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/RelWithDebInfo/gtest.exp" werden erstellt.
+  gtest.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\RelWithDebInfo\gtest.dll
+  gtest.vcxproj -> C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/RelWithDebInfo/gtest.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "gtest.dir\RelWithDebInfo\gtest.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gtest.dir\RelWithDebInfo\gtest.tlog\gtest.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest_main.vcxproj" (6) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "gtest_main.dir\RelWithDebInfo\" wird erstellt.
+  Das Verzeichnis "gtest_main.dir\RelWithDebInfo\gtest_main.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "gtest_main.dir\RelWithDebInfo\gtest_main.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/googletest/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\include" /I"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest" /Zi /nologo /W4 /WX /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /D _WIN32 /D STRICT /D WIN32_LEAN_AND_MEAN /D GTEST_HAS_PTHREAD=0 /D _HAS_EXCEPTIONS=1 /D GTEST_CREATE_SHARED_LIBRARY=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D gtest_main_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"gtest_main.dir\RelWithDebInfo\\" /Fd"gtest_main.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /wd4251 /wd4275 /wd4702 /errorReport:queue  -J -bigobj "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\googletest\src\gtest_main.cc"
+  gtest_main.cc
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\RelWithDebInfo\gtest_main.dll" /INCREMENTAL /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src" /LIBPATH:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/src/RelWithDebInfo" RelWithDebInfo\gtest.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/RelWithDebInfo/gtest_main.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/RelWithDebInfo/gtest_main.lib" /MACHINE:X64  /machine:x64 /DLL gtest_main.dir\RelWithDebInfo\gtest_main.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/RelWithDebInfo/gtest_main.lib" und Objekt "C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/RelWithDebInfo/gtest_main.exp" werden erstellt.
+  gtest_main.vcxproj -> C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\RelWithDebInfo\gtest_main.dll
+  gtest_main.vcxproj -> C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/googlemock/gtest/RelWithDebInfo/gtest_main.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "gtest_main.dir\RelWithDebInfo\gtest_main.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "gtest_main.dir\RelWithDebInfo\gtest_main.tlog\gtest_main.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\googlemock\gtest\gtest_main.vcxproj" ist abgeschlossen (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "x64\RelWithDebInfo\ALL_BUILD\" wird erstellt.
+  Das Verzeichnis "x64\RelWithDebInfo\ALL_BUILD\ALL_BUILD.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "x64\RelWithDebInfo\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/googletest-release-1.8.0/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/googletest-release-1.8.0/build/CMakeFiles/generate.stamp is up-to-date.
+FinalizeBuildStatus:
+  Die Datei "x64\RelWithDebInfo\ALL_BUILD\ALL_BUILD.tlog\unsuccessfulbuild" wird gelîscht.
+  Aktualisieren des Timestamps von "x64\RelWithDebInfo\ALL_BUILD\ALL_BUILD.tlog\ALL_BUILD.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\googletest-release-1.8.0\build\ALL_BUILD.vcxproj" ist abgeschlossen (Standardziele).
+
+Der Buildvorgang wurde erfolgreich ausgefÅhrt.
+    0 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:13.82

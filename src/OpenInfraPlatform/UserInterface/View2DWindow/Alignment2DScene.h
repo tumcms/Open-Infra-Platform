@@ -48,7 +48,7 @@ namespace OpenInfraPlatform
 		public:
 			Alignment2DScene(QObject *parent = 0);
 			
-			//void setAlignment(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> alignment);
+			void setAlignment(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> alignment);
 
 			void setSelectedAlignment(int index);
 			int getSelectedAlignment();
@@ -75,11 +75,10 @@ namespace OpenInfraPlatform
 
 			virtual void v_configureColors(A2D_DrawState state){};
 
-			/*virtual void v_drawAlignment(buw::ReferenceCounted<buw::Alignment2DBased3D> a,
+			virtual void v_drawAlignment(buw::ReferenceCounted<buw::Alignment2DBased3D> a,
 				std::map<buw::eHorizontalAlignmentType, QPainterPath>& horizontalPainter,
 				std::map<buw::eVerticalAlignmentType, QPainterPath>& verticalPainter) 
-			{};*/
-
+			{};
 			virtual void v_drawDiagram(QPainterPath& diagPainter, QPainterPath& diagDashedPainter)
 			{};
 
@@ -93,19 +92,17 @@ namespace OpenInfraPlatform
 			void wheelEvent(QGraphicsSceneWheelEvent* mouseEvent);
 
 		protected:
+			buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> alignment_;
+			int					selectedAlignmentIndex_;
+			bool				differentColorsForHorizontalAlignmentElements_;
+			bool				differentColorsForVerticalAlignmentElements_;
 
-			// Old model.
-			//buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::AlignmentModel> alignment_;
-			//int					selectedAlignmentIndex_;
-			//bool				differentColorsForHorizontalAlignmentElements_;
-			//bool				differentColorsForVerticalAlignmentElements_;
+			buw::Vector4d		bounds;
 
-			//buw::Vector4d		bounds;
-
-			//std::map<buw::eHorizontalAlignmentType, QPen>			horizontalPens;
-			//std::map<buw::eVerticalAlignmentType, QPen>				verticalPens;
-			//std::map<buw::eHorizontalAlignmentType, QPainterPath>	horizontalPainter;
-			//std::map<buw::eVerticalAlignmentType, QPainterPath>		verticalPainter;
+			std::map<buw::eHorizontalAlignmentType, QPen>			horizontalPens;
+			std::map<buw::eVerticalAlignmentType, QPen>				verticalPens;
+			std::map<buw::eHorizontalAlignmentType, QPainterPath>	horizontalPainter;
+			std::map<buw::eVerticalAlignmentType, QPainterPath>		verticalPainter;
 
 			QPen			diagramPen, 
 							diagramDashedPen;
