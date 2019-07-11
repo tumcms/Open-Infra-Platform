@@ -22,6 +22,7 @@
 //#include "OpenInfraPlatform/Data/terrainDescription.h"
 //#include "OpenInfraPlatform/DataManagement/ViewCubeData.h"
 
+// Deactivated 11.07.2019 because of removal of OIP/Infrastructure
 //#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
 //#include "OpenInfraPlatform/Infrastructure/ProxyModel/ProxyModel.h"
 //#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
@@ -32,13 +33,18 @@
 
 //#include "OpenInfraPlatform/Infrastructure/Export/ExportIfcAlignment1x0.h"
 
+#ifdef pcp_module
 #include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
-#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/terrainDescription.h"
+#endif
+
+
 
 #include "OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.h"
 
-#include "OpenInfraPlatform/Infrastructure/Import/Import.h"
-#include "OpenInfraPlatform/Infrastructure/Export/Export.h"
+// Deactivated 11.07.2019 because of removal of OIP/Infrastructure
+//#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/terrainDescription.h"
+//#include "OpenInfraPlatform/Infrastructure/Import/Import.h"
+//#include "OpenInfraPlatform/Infrastructure/Export/Export.h"
 
 #include <BlueFramework/Application/DataManagement/DocumentManager.h>
 #include <BlueFramework/ImageProcessing/color.h>
@@ -159,8 +165,9 @@ namespace OpenInfraPlatform
 
 			/// Alignments disabled revision 483
 
-			void addAlignment(buw::ReferenceCounted<buw::IAlignment3D> alignment);
-			void deleteAlignment(buw::ReferenceCounted<buw::IAlignment3D> alignment);
+			// Deactivated 11.07.2019
+			//void addAlignment(buw::ReferenceCounted<buw::IAlignment3D> alignment);
+			//void deleteAlignment(buw::ReferenceCounted<buw::IAlignment3D> alignment);
 			//void computeSurfaceProfile();
 
 			//---------------------------------------------------------------------------//

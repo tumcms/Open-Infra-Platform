@@ -19,21 +19,21 @@
 
 
 #include <BlueFramework/Application/DataManagement/Notification/NotifiyAfterEachActionOnlyOnce.h>
-#include "buw.OIPInfrastructure.h"
+//#include "buw.OIPInfrastructure.h"
 
 
-#include "IFC2X3Reader.h"
-#include "IFC4Reader.h"
-#include "IFC4X1Reader.h"
-#include "IFC4X2_BIM4ROADReader.h"
-#include "IFC4X2_DRAFT_1Reader.h"
+//#include "IFC2X3Reader.h"
+//#include "IFC4Reader.h"
+//#include "IFC4X1Reader.h"
+//#include "IFC4X2_BIM4ROADReader.h"
+//#include "IFC4X2_DRAFT_1Reader.h"
 
 
-#include "EMTIFC2X3EntityTypes.h"
-#include "EMTIFC4EntityTypes.h"
-#include "EMTIFC4X1EntityTypes.h"
-#include "EMTIFC4X2_BIM4ROADEntityTypes.h"
-#include "EMTIFC4X2_DRAFT_1EntityTypes.h"
+//#include "EMTIFC2X3EntityTypes.h"
+//#include "EMTIFC4EntityTypes.h"
+//#include "EMTIFC4X1EntityTypes.h"
+//#include "EMTIFC4X2_BIM4ROADEntityTypes.h"
+//#include "EMTIFC4X2_DRAFT_1EntityTypes.h"
 
 
 #include "OpenInfraPlatform/IfcGeometryConverter/IfcImporter.h"
