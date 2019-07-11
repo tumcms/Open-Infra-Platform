@@ -1,0 +1,1839 @@
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>set dest=C:\thirdparty\vs2015\x64 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>set cmake_command=cmake 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>set boost_root=C:/thirdparty/vs2015/x64/boost_1_63_0 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>if NOT [C:/thirdparty/vs2015/x64] == [] set dest=C:/thirdparty/vs2015/x64 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>if NOT [C:/Users/ga83vin/Downloads/cmake-3.11.0-win64-x64/cmake-3.11.0-win64-x64/bin/cmake.exe] == [] set cmake_command="C:/Users/ga83vin/Downloads/cmake-3.11.0-win64-x64/cmake-3.11.0-win64-x64/bin/cmake.exe" 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>if NOT [C:/thirdparty/vs2015/x64/boost_1_67_0] == [] set boost_root=C:/thirdparty/vs2015/x64/boost_1_67_0 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>if [C:/thirdparty/vs2015/x64] == ["--boost-root"] set boost_root=C:/Users/ga83vin/Downloads/cmake-3.11.0-win64-x64/cmake-3.11.0-win64-x64/bin/cmake.exe 
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>wget.exe --no-check-certificate https://github.com/libLAS/libLAS-1.6/archive/master.zip -OC:\Users\ga83vin\Documents\openinfraplatform_coetzee\external\master.zip 
+--2018-04-16 13:45:06--  https://github.com/libLAS/libLAS-1.6/archive/master.zip
+Resolving github.com (github.com)... 192.30.253.113, 192.30.253.112
+Connecting to github.com (github.com)|192.30.253.113|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://codeload.github.com/libLAS/libLAS-1.6/zip/master [following]
+--2018-04-16 13:45:06--  https://codeload.github.com/libLAS/libLAS-1.6/zip/master
+Resolving codeload.github.com (codeload.github.com)... 192.30.253.121, 192.30.253.120
+Connecting to codeload.github.com (codeload.github.com)|192.30.253.121|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [application/zip]
+Saving to: 'C:/Users/ga83vin/Documents/openinfraplatform_coetzee/external/master.zip'
+
+     0K .......... .......... .......... .......... ..........  241K
+    50K .......... .......... .......... .......... ..........  492K
+   100K .......... .......... .......... .......... .......... 8.41M
+   150K .......... .......... .......... .......... ..........  490K
+   200K .......... .......... .......... .......... ..........  494K
+   250K .......... .......... .......... .......... .......... 11.6M
+   300K .......... .......... .......... .......... .......... 12.6M
+   350K .......... .......... .......... .......... ..........  523K
+   400K .......... .......... .......... .......... .......... 16.4M
+   450K .......... .......... .......... .......... .......... 78.3M
+   500K .......... .......... .......... .......... .......... 14.6M
+   550K .......... .......... .......... .......... .......... 11.9M
+   600K .......... .......... .......... .......... ..........  570K
+   650K .......... .......... .......... .......... .......... 8.09M
+   700K .......... .......... .......... .......... .......... 58.4M
+   750K .......... .......... .......... .......... .......... 24.6M
+   800K .......... .......... .......... .......... .......... 12.0M
+   850K .......... .......... .......... .......... .......... 12.0M
+   900K .......... .......... .......... .......... .......... 12.4M
+   950K .......... .......... .......... .......... .......... 12.3M
+  1000K .......... .......... .......... .......... .......... 11.7M
+  1050K .......... .......... .......... .......... .......... 12.0M
+  1100K .......... .......... .......... .......... .......... 12.6M
+  1150K .......... .......... .......... .......... .......... 2.29M
+  1200K .......... .......... .......... .......... .......... 1.04M
+  1250K .......... .......... .......... .......... .......... 10.2M
+  1300K .......... .......... .......... .......... .......... 11.9M
+  1350K .......... .......... .......... .......... .......... 12.3M
+  1400K .......... .......... .......... .......... .......... 12.5M
+  1450K .......... .......... .......... .......... .......... 11.9M
+  1500K .......... .......... .......... .......... .......... 11.8M
+  1550K .......... .......... .......... .......... .......... 16.5M
+  1600K .......... .......... .......... .......... .......... 64.5M
+  1650K .......... .......... .......... .......... .......... 16.1M
+  1700K .......... .......... .......... .......... .......... 11.9M
+  1750K .......... .......... .......... .......... ..........  756K
+  1800K .......... .......... .......... .......... .......... 8.82M
+  1850K .......... .......... .......... .......... .......... 39.6M
+  1900K .......... .......... .......... .......... .......... 31.0M
+  1950K .......... .......... .......... .......... .......... 12.3M
+  2000K .......... .......... .......... .......... .......... 11.4M
+  2050K .......... .......... .......... .......... .......... 12.5M
+  2100K .......... .......... .......... .......... .......... 17.3M
+  2150K .......... .......... .......... .......... .......... 73.7M
+  2200K .......... .......... .......... .......... .......... 14.5M
+  2250K .......... .......... .......... .......... .......... 12.4M
+  2300K .......... .......... .......... .......... .......... 12.2M
+  2350K .......... .......... .......... .......... ..........  689K
+  2400K .......... .......... .......... .......... .......... 11.7M
+  2450K .......... .......... .......... .......... .......... 12.4M
+  2500K .......... .......... .......... .......... .......... 11.5M
+  2550K .......... .......... .......... .......... .......... 75.1M
+  2600K .......... .......... .......... .......... .......... 24.0M
+  2650K .......... .......... .......... .......... .......... 12.6M
+  2700K .......... .......... .......... .......... .......... 12.2M
+  2750K .......... .......... .......... .......... .......... 12.4M
+  2800K .......... .......... .......... .......... .......... 11.4M
+  2850K .......... .......... .......... .......... .......... 12.3M
+  2900K .......... .......... .......... .......... .......... 12.2M
+  2950K .......... .......... .......... .......... .......... 59.6M
+  3000K .......... .......... .......... .......... .......... 26.7M
+  3050K .......... .......... .......... .......... ..........  852K
+  3100K .......... .......... .......... .......... .......... 8.24M
+  3150K .......... .......... .......... .......... .......... 12.4M
+  3200K .......... .......... .......... .......... .......... 11.4M
+  3250K .......... .......... .......... .......... .......... 16.3M
+  3300K .......... .......... .......... .......... .......... 63.1M
+  3350K .......... .......... .......... .......... .......... 16.2M
+  3400K .......... .......... .......... .......... .......... 12.2M
+  3450K .......... .......... .......... .......... .......... 12.6M
+  3500K .......... .......... .......... .......... .......... 11.9M
+  3550K .......... .......... .......... .......... .......... 12.5M
+  3600K .......... .......... .......... .......... .......... 12.3M
+  3650K .......... .......... .......... .......... .......... 23.5M
+  3700K .......... .......... .......... .......... .......... 76.7M
+  3750K .......... .......... .......... .......... .......... 12.4M
+  3800K .......... .......... .......... .......... ..........  831K
+  3850K .......... .......... .......... .......... .......... 10.1M
+  3900K .......... .......... .......... .......... .......... 12.0M
+  3950K .......... .......... .......... .......... .......... 12.4M
+  4000K .......... .......... .......... .......... .......... 25.7M
+  4050K .......... .......... .......... .......... .......... 47.0M
+  4100K .......... .......... .......... .......... .......... 12.3M
+  4150K .......... .......... .......... .......... .......... 12.2M
+  4200K .......... .......... .......... .......... .......... 12.2M
+  4250K .......... .......... .......... .......... .......... 12.5M
+  4300K .......... .......... .......... .......... .......... 12.3M
+  4350K .......... .......... .......... .......... .......... 15.9M
+  4400K .......... .......... .......... .......... .......... 63.6M
+  4450K .......... .......... .......... .......... ..........  822K
+  4500K .......... .......... .......... .......... .......... 7.04M
+  4550K .......... .......... .......... .......... .......... 11.4M
+  4600K .......... .......... .......... .......... .......... 10.9M
+  4650K .......... .......... .......... .......... .......... 13.5M
+  4700K .......... .......... .......... .......... .......... 79.3M
+  4750K .......... .......... .......... .......... .......... 17.9M
+  4800K .......... .......... .......... .......... .......... 12.4M
+  4850K .......... .......... .......... .......... .......... 12.4M
+  4900K .......... .......... .......... .......... .......... 12.4M
+  4950K .......... .......... .......... .......... .......... 33.2M
+  5000K .......... .......... .......... .......... .......... 39.8M
+  5050K .......... .......... .......... .......... .......... 12.3M
+  5100K .......... .......... .......... .......... .......... 12.0M
+  5150K .......... .......... .......... .......... .......... 12.5M
+  5200K .......... .......... .......... .......... .......... 16.6M
+  5250K .......... .......... .......... .......... .......... 76.8M
+  5300K .......... .......... .......... .......... .......... 14.4M
+  5350K .......... .......... .......... .......... .......... 12.6M
+  5400K .......... .......... .......... .......... .......... 11.9M
+  5450K .......... .......... .......... .......... .......... 12.6M
+  5500K .......... .......... .......... .......... .......... 46.6M
+  5550K .......... .......... .......... .......... .......... 30.7M
+  5600K .......... .......... .......... .......... .......... 12.0M
+  5650K .......... .......... .......... .......... .......... 12.6M
+  5700K .......... .......... .......... .......... .......... 12.3M
+  5750K .......... .......... .......... .......... .......... 20.2M
+  5800K .......... .......... .......... .......... .......... 67.1M
+  5850K .......... .......... .......... .......... .......... 14.1M
+  5900K .......... .......... .......... .......... .......... 12.3M
+  5950K .......... .......... .......... .......... .......... 12.5M
+  6000K .......... .......... .......... .......... .......... 12.3M
+  6050K .......... .......... .......... .......... .......... 75.0M
+  6100K .......... .......... .......... .......... .......... 20.0M
+  6150K .......... .......... .......... .......... .......... 11.3M
+  6200K .......... .......... .......... .......... .......... 11.2M
+  6250K .......... .......... .......... .......... .......... 11.0M
+  6300K .......... .......... .......... .......... .......... 20.6M
+  6350K .......... .......... .......... .......... .......... 67.2M
+  6400K .......... .......... .......... .......... .......... 11.1M
+  6450K .......... .......... .......... .......... .......... 11.2M
+  6500K .......... .......... .......... .......... .......... 12.1M
+  6550K .......... .......... .......... .......... .......... 14.1M
+  6600K .......... .......... .......... .......... .......... 43.2M
+  6650K .......... .......... .......... .......... .......... 20.1M
+  6700K .......... .......... .......... .......... .......... 12.0M
+  6750K .......... .......... .......... .......... .......... 12.6M
+  6800K .......... .......... .......... .......... .......... 12.3M
+  6850K .......... .......... .......... .......... .......... 29.4M
+  6900K .......... .......... .......... .......... .......... 51.4M
+  6950K .......... .......... .......... .......... .......... 12.2M
+  7000K .......... .......... .......... .......... .......... 12.2M
+  7050K .......... .......... .......... .......... .......... 12.6M
+  7100K .......... .......... .......... .......... .......... 15.5M
+  7150K .......... .......... .......... .......... .......... 69.0M
+  7200K .......... .......... .......... .......... .......... 16.4M
+  7250K .......... .......... .......... .......... .......... 12.5M
+  7300K .......... .......... .......... .......... .......... 12.4M
+  7350K .......... .......... .......... .......... .......... 12.5M
+  7400K .......... .......... .......... .......... .......... 35.0M
+  7450K .......... .......... .......... .......... .......... 36.6M
+  7500K .......... .......... .......... .......... .......... 12.1M
+  7550K .......... .......... .......... .......... .......... 12.5M
+  7600K .......... .......... .......... .......... .......... 12.2M
+  7650K .......... .......... .......... .......... .......... 17.3M
+  7700K .......... .......... .......... .......... .......... 66.9M
+  7750K .......... .......... .......... .......... .......... 15.4M
+  7800K .......... .......... .......... .......... .......... 12.3M
+  7850K .......... .......... .......... .......... .......... 12.6M
+  7900K .......... .......... .......... .......... .......... 12.3M
+  7950K .......... .......... .......... .......... .......... 52.3M
+  8000K .......... .......... .......... .......... .......... 27.0M
+  8050K .......... .......... .......... .......... .......... 12.3M
+  8100K .......... .......... .......... .......... .......... 12.3M
+  8150K .......... .......... .......... .......... .......... 11.7M
+  8200K .......... .......... .......... .......... .......... 20.1M
+  8250K .......... .......... .......... .......... .......... 74.8M
+  8300K .......... .......... .......... .......... .......... 13.4M
+  8350K .......... .......... .......... .......... .......... 12.6M
+  8400K .......... .......... .......... .......... .......... 12.2M
+  8450K .......... .......... .......... .......... .......... 12.5M
+  8500K .......... .......... .......... .......... .......... 75.5M
+  8550K .......... .......... .......... .......... .......... 20.7M
+  8600K .......... .......... .......... .......... .......... 12.1M
+  8650K .......... .......... .......... .......... .......... 12.5M
+  8700K .......... .......... .......... .......... .......... 11.4M
+  8750K .......... .......... .......... .......... .......... 25.3M
+  8800K .......... .......... .......... .......... .......... 65.9M
+  8850K .......... .......... .......... .......... .......... 12.4M
+  8900K .......... .......... .......... .......... .......... 12.2M
+  8950K .......... .......... .......... .......... .......... 12.4M
+  9000K .......... .......... .......... .......... .......... 14.1M
+  9050K .......... .......... .......... .......... .......... 75.0M
+  9100K .......... .......... .......... .......... .......... 18.8M
+  9150K .......... .......... .......... .......... .......... 12.4M
+  9200K .......... .......... .......... .......... .......... 12.0M
+  9250K .......... .......... .......... .......... .......... 12.5M
+  9300K .......... .......... .......... .......... .......... 30.6M
+  9350K .......... .......... .......... .......... .......... 48.0M
+  9400K .......... .......... .......... .......... .......... 12.0M
+  9450K .......... .......... .......... .......... .......... 12.5M
+  9500K .......... .......... .......... .......... .......... 12.0M
+  9550K .......... .......... .......... .......... .......... 16.6M
+  9600K .......... .......... .......... .......... .......... 26.8M
+  9650K .......... .......... .....                            11.9M=1.7s
+
+2018-04-16 13:45:09 (5.67 MB/s) - 'C:/Users/ga83vin/Documents/openinfraplatform_coetzee/external/master.zip' saved [9908180]
+
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>7za.exe x C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external\master.zip -oC:/thirdparty/vs2015/x64 
+
+7-Zip (A) 9.20  Copyright (c) 1999-2010 Igor Pavlov  2010-11-18
+
+Processing archive: C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external\master.zip
+
+Extracting  libLAS-1.6-master
+Extracting  libLAS-1.6-master\.hgignore
+Extracting  libLAS-1.6-master\.hgtags
+Extracting  libLAS-1.6-master\AUTHORS
+Extracting  libLAS-1.6-master\CMakeLists.txt
+Extracting  libLAS-1.6-master\COPYING
+Extracting  libLAS-1.6-master\CTestConfig.cmake
+Extracting  libLAS-1.6-master\HOWTORELEASE.txt
+Extracting  libLAS-1.6-master\INSTALL
+Extracting  libLAS-1.6-master\LICENSE.txt
+Extracting  libLAS-1.6-master\NEWS
+Extracting  libLAS-1.6-master\apps
+Extracting  libLAS-1.6-master\apps\CMakeLists.txt
+Extracting  libLAS-1.6-master\apps\bigfile_boost_iostreams_test.cpp
+Extracting  libLAS-1.6-master\apps\bigtest.c
+Extracting  libLAS-1.6-master\apps\kdx_util.cpp
+Extracting  libLAS-1.6-master\apps\kdx_util.hpp
+Extracting  libLAS-1.6-master\apps\las2las-old.c
+Extracting  libLAS-1.6-master\apps\las2las.cpp
+Extracting  libLAS-1.6-master\apps\las2oci.cpp
+Extracting  libLAS-1.6-master\apps\las2oci.hpp
+Extracting  libLAS-1.6-master\apps\las2ogr.cpp
+Extracting  libLAS-1.6-master\apps\las2txt.c
+Extracting  libLAS-1.6-master\apps\las2txt.cpp
+Extracting  libLAS-1.6-master\apps\lasblock.cpp
+Extracting  libLAS-1.6-master\apps\lascommon.c
+Extracting  libLAS-1.6-master\apps\lascommon.h
+Extracting  libLAS-1.6-master\apps\lasdiff.c
+Extracting  libLAS-1.6-master\apps\lasindex.cpp
+Extracting  libLAS-1.6-master\apps\lasindex_test.cpp
+Extracting  libLAS-1.6-master\apps\lasinfo-old.c
+Extracting  libLAS-1.6-master\apps\lasinfo.cpp
+Extracting  libLAS-1.6-master\apps\laskernel.cpp
+Extracting  libLAS-1.6-master\apps\laskernel.hpp
+Extracting  libLAS-1.6-master\apps\lasmerge.c
+Extracting  libLAS-1.6-master\apps\liblas-config.in
+Extracting  libLAS-1.6-master\apps\liblas.pc.in
+Extracting  libLAS-1.6-master\apps\makefile.vc
+Extracting  libLAS-1.6-master\apps\oci_util.cpp
+Extracting  libLAS-1.6-master\apps\oci_util.hpp
+Extracting  libLAS-1.6-master\apps\oci_wrapper.cpp
+Extracting  libLAS-1.6-master\apps\oci_wrapper.h
+Extracting  libLAS-1.6-master\apps\ts2las.cpp
+Extracting  libLAS-1.6-master\apps\ts2las.hpp
+Extracting  libLAS-1.6-master\apps\txt2las.c
+Extracting  libLAS-1.6-master\buildout
+Extracting  libLAS-1.6-master\buildout\README.txt
+Extracting  libLAS-1.6-master\buildout\bootstrap.py
+Extracting  libLAS-1.6-master\buildout\buildout.cfg
+Extracting  libLAS-1.6-master\buildout\setenv.in
+Extracting  libLAS-1.6-master\cmake
+Extracting  libLAS-1.6-master\cmake\libLAS.vcproj.user.template
+Extracting  libLAS-1.6-master\cmake\modules
+Extracting  libLAS-1.6-master\cmake\modules\BuildOSGeo4W.cmake
+Extracting  libLAS-1.6-master\cmake\modules\FindGDAL.cmake
+Extracting  libLAS-1.6-master\cmake\modules\FindGeoTIFF.cmake
+Extracting  libLAS-1.6-master\cmake\modules\FindLASzip.cmake
+Extracting  libLAS-1.6-master\cmake\modules\FindOracle.cmake
+Extracting  libLAS-1.6-master\cmake\modules\FindSpatialIndex.cmake
+Extracting  libLAS-1.6-master\csharp-new
+Extracting  libLAS-1.6-master\csharp-new\README.txt
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig.sln
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_cpp
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_cpp\liblas.i
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_cpp\liblas_swig_cpp.vcxproj
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_cpp\liblas_swig_cpp.vcxproj.filters
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_cpp\liblas_swig_cpp.vcxproj.user
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_cs
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_cs\Properties
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_cs\Properties\AssemblyInfo.cs
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_cs\liblas_swig_cs.csproj
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_test
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_test\Program.cs
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_test\Properties
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_test\Properties\AssemblyInfo.cs
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_test\TestGuid.cs
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_test\TestHeader.cs
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_test\TestPoint.cs
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_test\TestReader.cs
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_test\TestSpatialReference.cs
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_test\TestVariableRecord.cs
+Extracting  libLAS-1.6-master\csharp-new\liblas_swig_test\liblas_swig_test.csproj
+Extracting  libLAS-1.6-master\csharp
+Extracting  libLAS-1.6-master\csharp\HelloWorldLAS
+Extracting  libLAS-1.6-master\csharp\HelloWorldLAS\HelloWorldLAS.csproj
+Extracting  libLAS-1.6-master\csharp\HelloWorldLAS\HelloWorldLAS_Express.csproj
+Extracting  libLAS-1.6-master\csharp\HelloWorldLAS\Program.cs
+Extracting  libLAS-1.6-master\csharp\HelloWorldLAS\Properties
+Extracting  libLAS-1.6-master\csharp\HelloWorldLAS\Properties\AssemblyInfo.cs
+Extracting  libLAS-1.6-master\csharp\NUnitTest
+Extracting  libLAS-1.6-master\csharp\NUnitTest\LASFilesClass.cs
+Extracting  libLAS-1.6-master\csharp\NUnitTest\LASGuidTest.cs
+Extracting  libLAS-1.6-master\csharp\NUnitTest\LASHeaderTest.cs
+Extracting  libLAS-1.6-master\csharp\NUnitTest\LASPointTest.cs
+Extracting  libLAS-1.6-master\csharp\NUnitTest\LASReaderTest.cs
+Extracting  libLAS-1.6-master\csharp\NUnitTest\LASVariableLengthRecordTest.cs
+Extracting  libLAS-1.6-master\csharp\NUnitTest\LASWriterTest.cs
+Extracting  libLAS-1.6-master\csharp\NUnitTest\NUnitTest.csproj
+Extracting  libLAS-1.6-master\csharp\NUnitTest\NUnitTest_Express.csproj
+Extracting  libLAS-1.6-master\csharp\NUnitTest\Properties
+Extracting  libLAS-1.6-master\csharp\NUnitTest\Properties\AssemblyInfo.cs
+Extracting  libLAS-1.6-master\csharp\README
+Extracting  libLAS-1.6-master\csharp\Samples
+Extracting  libLAS-1.6-master\csharp\Samples\Read_Express
+Extracting  libLAS-1.6-master\csharp\Samples\Read_Express\ReadLAS.cs
+Extracting  libLAS-1.6-master\csharp\Samples\Read_Express\Read_Express.csproj
+Extracting  libLAS-1.6-master\csharp\Samples\WriteLAS
+Extracting  libLAS-1.6-master\csharp\Samples\WriteLAS\Properties
+Extracting  libLAS-1.6-master\csharp\Samples\WriteLAS\Properties\AssemblyInfo.cs
+Extracting  libLAS-1.6-master\csharp\Samples\WriteLAS\WriteLAS.cs
+Extracting  libLAS-1.6-master\csharp\Samples\WriteLAS\Write_Express.csproj
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS.sln
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\AssemblyInfo.cs
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\LASException.cs
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\LASGuid.cs
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\LASHeader.cs
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\LASPoint.cs
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\LASReader.cs
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\LASVariableLengthRecord.cs
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\LASWriter.cs
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\LibLASCAPI.cs
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\dotnetLibLAS.csproj
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\dotnetLibLAS.dll.config
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\dotnetLibLAS_Express.csproj
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\dotnetLibLas.xml
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS\liblas.snk
+Extracting  libLAS-1.6-master\csharp\dotnetLibLAS_xpress.sln
+Extracting  libLAS-1.6-master\csharp\makefile.vc
+Extracting  libLAS-1.6-master\doc
+Extracting  libLAS-1.6-master\doc\Makefile
+Extracting  libLAS-1.6-master\doc\_static
+Extracting  libLAS-1.6-master\doc\_static\files
+Extracting  libLAS-1.6-master\doc\_static\files\ASPRS-Workshop-NOAA-Demo.pdf
+Extracting  libLAS-1.6-master\doc\_static\files\LAS-1.0-1.3-feature-matrix.pdf
+Extracting  libLAS-1.6-master\doc\_static\files\liblas_foss4g_2008.pdf
+Extracting  libLAS-1.6-master\doc\_static\files\specifications
+Extracting  libLAS-1.6-master\doc\_static\files\specifications\asprs_las_format_v10.pdf
+Extracting  libLAS-1.6-master\doc\_static\files\specifications\asprs_las_format_v11.pdf
+Extracting  libLAS-1.6-master\doc\_static\files\specifications\asprs_las_format_v12.pdf
+Extracting  libLAS-1.6-master\doc\_static\files\specifications\asprs_las_format_v13.pdf
+Extracting  libLAS-1.6-master\doc\_static\liblas-color-pallette.css
+Extracting  libLAS-1.6-master\doc\_static\liblaslogo.png
+Extracting  libLAS-1.6-master\doc\_static\pdf.png
+Extracting  libLAS-1.6-master\doc\_static\sphinx.css
+Extracting  libLAS-1.6-master\doc\_templates
+Extracting  libLAS-1.6-master\doc\_templates\indexsidebar.html
+Extracting  libLAS-1.6-master\doc\_templates\layout.html
+Extracting  libLAS-1.6-master\doc\api
+Extracting  libLAS-1.6-master\doc\api\TracFooter.html
+Extracting  libLAS-1.6-master\doc\api\TracHeader.html
+Extracting  libLAS-1.6-master\doc\api\doxygen.conf
+Extracting  libLAS-1.6-master\doc\api\doxygen.css
+Extracting  libLAS-1.6-master\doc\api\doxygen_dev.conf
+Extracting  libLAS-1.6-master\doc\community.txt
+Extracting  libLAS-1.6-master\doc\compilation.txt
+Extracting  libLAS-1.6-master\doc\conf.py
+Extracting  libLAS-1.6-master\doc\copyright.txt
+Extracting  libLAS-1.6-master\doc\development
+Extracting  libLAS-1.6-master\doc\development\annual_report_2010.txt
+Extracting  libLAS-1.6-master\doc\development\buildbot.txt
+Extracting  libLAS-1.6-master\doc\development\format_elements.txt
+Extracting  libLAS-1.6-master\doc\development\index.txt
+Extracting  libLAS-1.6-master\doc\development\release_plan.txt
+Extracting  libLAS-1.6-master\doc\development\rfc
+Extracting  libLAS-1.6-master\doc\development\rfc\index.txt
+Extracting  libLAS-1.6-master\doc\development\rfc\rfc_1_verticalcs.txt
+Extracting  libLAS-1.6-master\doc\development\rfc\rfc_2_spatialreference.txt
+Extracting  libLAS-1.6-master\doc\development\source.txt
+Extracting  libLAS-1.6-master\doc\development\specifications.txt
+Extracting  libLAS-1.6-master\doc\docs.txt
+Extracting  libLAS-1.6-master\doc\download.txt
+Extracting  libLAS-1.6-master\doc\faq.txt
+Extracting  libLAS-1.6-master\doc\features.txt
+Extracting  libLAS-1.6-master\doc\images
+Extracting  libLAS-1.6-master\doc\images\boostpro-options.png
+Extracting  libLAS-1.6-master\doc\images\ccmake-osx-start.png
+Extracting  libLAS-1.6-master\doc\images\cmake-gui-osx-configured.png
+Extracting  libLAS-1.6-master\doc\images\cmake-gui-osx-start.png
+Extracting  libLAS-1.6-master\doc\images\lasblock_big.png
+Extracting  libLAS-1.6-master\doc\images\lasblock_small.png
+Extracting  libLAS-1.6-master\doc\images\liblas-logo.svg
+Extracting  libLAS-1.6-master\doc\images\liblas-twitter-logo.png
+Extracting  libLAS-1.6-master\doc\images\osgeo4w-advanced-install.png
+Extracting  libLAS-1.6-master\doc\images\osgeo4w-las2las-reproject.png
+Extracting  libLAS-1.6-master\doc\images\osgeo4w-lasinfo-output.png
+Extracting  libLAS-1.6-master\doc\images\osgeo4w-lasinfo-point.png
+Extracting  libLAS-1.6-master\doc\images\osgeo4w-run-liblas-shell.png
+Extracting  libLAS-1.6-master\doc\images\osgeo4w-select-liblas.png
+Extracting  libLAS-1.6-master\doc\images\windows-cmake-generator-makefiles.png
+Extracting  libLAS-1.6-master\doc\images\windows-cmake-generator-visual-studio-9.png
+Extracting  libLAS-1.6-master\doc\images\windows-cmake-start.png
+Extracting  libLAS-1.6-master\doc\images\windows-command-prompt.png
+Extracting  libLAS-1.6-master\doc\images\windows-msvc-build.png
+Extracting  libLAS-1.6-master\doc\images\windows-osgeo4w-advanced-install.png
+Extracting  libLAS-1.6-master\doc\images\windows-osgeo4w-choosing-packages.png
+Extracting  libLAS-1.6-master\doc\images\xcode-lasinfo-arguments.png
+Extracting  libLAS-1.6-master\doc\images\xcode-lasinfo-output.png
+Extracting  libLAS-1.6-master\doc\images\xcode-set-default-executable.png
+Extracting  libLAS-1.6-master\doc\images\xcode-start.png
+Extracting  libLAS-1.6-master\doc\index.txt
+Extracting  libLAS-1.6-master\doc\lastools.txt
+Extracting  libLAS-1.6-master\doc\liblas.json
+Extracting  libLAS-1.6-master\doc\make.bat
+Extracting  libLAS-1.6-master\doc\osgeo4w.txt
+Extracting  libLAS-1.6-master\doc\python.txt
+Extracting  libLAS-1.6-master\doc\start.txt
+Extracting  libLAS-1.6-master\doc\tutorial
+Extracting  libLAS-1.6-master\doc\tutorial\boo.txt
+Extracting  libLAS-1.6-master\doc\tutorial\cpp.txt
+Extracting  libLAS-1.6-master\doc\tutorial\csharp.txt
+Extracting  libLAS-1.6-master\doc\tutorial\index.txt
+Extracting  libLAS-1.6-master\doc\tutorial\ironpython.txt
+Extracting  libLAS-1.6-master\doc\tutorial\python.txt
+Extracting  libLAS-1.6-master\doc\tutorial\qhull.txt
+Extracting  libLAS-1.6-master\doc\tutorial\vbnet.txt
+Extracting  libLAS-1.6-master\doc\utilities
+Extracting  libLAS-1.6-master\doc\utilities\index.txt
+Extracting  libLAS-1.6-master\doc\utilities\las2las-old.txt
+Extracting  libLAS-1.6-master\doc\utilities\las2las.txt
+Extracting  libLAS-1.6-master\doc\utilities\las2oci.txt
+Extracting  libLAS-1.6-master\doc\utilities\las2ogr.txt
+Extracting  libLAS-1.6-master\doc\utilities\las2txt.txt
+Extracting  libLAS-1.6-master\doc\utilities\lasblock.txt
+Extracting  libLAS-1.6-master\doc\utilities\lasdiff.txt
+Extracting  libLAS-1.6-master\doc\utilities\lasinfo-old.txt
+Extracting  libLAS-1.6-master\doc\utilities\lasinfo.txt
+Extracting  libLAS-1.6-master\doc\utilities\lasmerge.txt
+Extracting  libLAS-1.6-master\doc\utilities\ts2las.txt
+Extracting  libLAS-1.6-master\doc\utilities\txt2las.txt
+Extracting  libLAS-1.6-master\hobu-config.bat
+Extracting  libLAS-1.6-master\include
+Extracting  libLAS-1.6-master\include\CMakeLists.txt
+Extracting  libLAS-1.6-master\include\liblas
+Extracting  libLAS-1.6-master\include\liblas\bounds.hpp
+Extracting  libLAS-1.6-master\include\liblas\capi
+Extracting  libLAS-1.6-master\include\liblas\capi\las_config.h
+Extracting  libLAS-1.6-master\include\liblas\capi\las_version.h
+Extracting  libLAS-1.6-master\include\liblas\capi\liblas.h
+Extracting  libLAS-1.6-master\include\liblas\chipper.hpp
+Extracting  libLAS-1.6-master\include\liblas\classification.hpp
+Extracting  libLAS-1.6-master\include\liblas\color.hpp
+Extracting  libLAS-1.6-master\include\liblas\compatibility.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail
+Extracting  libLAS-1.6-master\include\liblas\detail\binary.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\endian.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\file_ptr_stream.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\fwd.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\index
+Extracting  libLAS-1.6-master\include\liblas\detail\index\indexcell.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\index\indexoutput.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\pointrecord.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\private_utility.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\reader
+Extracting  libLAS-1.6-master\include\liblas\detail\reader\cachedreader.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\reader\header.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\reader\reader.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\reader\zipreader.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\sha1.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\singleton.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\timer.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\writer
+Extracting  libLAS-1.6-master\include\liblas\detail\writer\header.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\writer\point.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\writer\writer.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\writer\zipwriter.hpp
+Extracting  libLAS-1.6-master\include\liblas\detail\zippoint.hpp
+Extracting  libLAS-1.6-master\include\liblas\dimension.hpp
+Extracting  libLAS-1.6-master\include\liblas\error.hpp
+Extracting  libLAS-1.6-master\include\liblas\exception.hpp
+Extracting  libLAS-1.6-master\include\liblas\export.hpp
+Extracting  libLAS-1.6-master\include\liblas\external
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\exception_implementation.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\file_parser_error.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\info_parser_error.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\info_parser_read.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\info_parser_utils.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\info_parser_write.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\info_parser_writer_settings.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\json_parser_error.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\json_parser_read.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\json_parser_write.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\ptree_implementation.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\ptree_utils.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\rapidxml.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\xml_parser_error.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\xml_parser_flags.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\xml_parser_read_rapidxml.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\xml_parser_utils.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\xml_parser_write.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\detail\xml_parser_writer_settings.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\exceptions.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\id_translator.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\info_parser.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\ini_parser.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\json_parser.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\ptree.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\ptree_fwd.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\ptree_serialization.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\stream_translator.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\string_path.hpp
+Extracting  libLAS-1.6-master\include\liblas\external\property_tree\xml_parser.hpp
+Extracting  libLAS-1.6-master\include\liblas\factory.hpp
+Extracting  libLAS-1.6-master\include\liblas\filter.hpp
+Extracting  libLAS-1.6-master\include\liblas\guid.hpp
+Extracting  libLAS-1.6-master\include\liblas\header.hpp
+Extracting  libLAS-1.6-master\include\liblas\index.hpp
+Extracting  libLAS-1.6-master\include\liblas\iterator.hpp
+Extracting  libLAS-1.6-master\include\liblas\liblas.hpp
+Extracting  libLAS-1.6-master\include\liblas\point.hpp
+Extracting  libLAS-1.6-master\include\liblas\reader.hpp
+Extracting  libLAS-1.6-master\include\liblas\schema.hpp
+Extracting  libLAS-1.6-master\include\liblas\spatialreference.hpp
+Extracting  libLAS-1.6-master\include\liblas\transform.hpp
+Extracting  libLAS-1.6-master\include\liblas\utility.hpp
+Extracting  libLAS-1.6-master\include\liblas\variablerecord.hpp
+Extracting  libLAS-1.6-master\include\liblas\version.hpp
+Extracting  libLAS-1.6-master\include\liblas\writer.hpp
+Extracting  libLAS-1.6-master\liblas-osgeo4w-init.bat
+Extracting  libLAS-1.6-master\liblas-osgeo4w-postinstall.bat
+Extracting  libLAS-1.6-master\liblas-osgeo4w-start.bat.tmpl
+Extracting  libLAS-1.6-master\python
+Extracting  libLAS-1.6-master\python\examples
+Extracting  libLAS-1.6-master\python\examples\add_vlr.py
+Extracting  libLAS-1.6-master\python\examples\grab_classes.py
+Extracting  libLAS-1.6-master\python\examples\las_summary.py
+Extracting  libLAS-1.6-master\python\examples\oci_pc.py
+Extracting  libLAS-1.6-master\python\liblas
+Extracting  libLAS-1.6-master\python\liblas\__init__.py
+Extracting  libLAS-1.6-master\python\liblas\color.py
+Extracting  libLAS-1.6-master\python\liblas\core.py
+Extracting  libLAS-1.6-master\python\liblas\file.py
+Extracting  libLAS-1.6-master\python\liblas\guid.py
+Extracting  libLAS-1.6-master\python\liblas\header.py
+Extracting  libLAS-1.6-master\python\liblas\point.py
+Extracting  libLAS-1.6-master\python\liblas\schema.py
+Extracting  libLAS-1.6-master\python\liblas\srs.py
+Extracting  libLAS-1.6-master\python\liblas\vlr.py
+Extracting  libLAS-1.6-master\python\scripts
+Extracting  libLAS-1.6-master\python\scripts\oci2las.py
+Extracting  libLAS-1.6-master\python\setup.py
+Extracting  libLAS-1.6-master\python\tests
+Extracting  libLAS-1.6-master\python\tests\Color.txt
+Extracting  libLAS-1.6-master\python\tests\File.txt
+Extracting  libLAS-1.6-master\python\tests\GUID.txt
+Extracting  libLAS-1.6-master\python\tests\Header.txt
+Extracting  libLAS-1.6-master\python\tests\Point.txt
+Extracting  libLAS-1.6-master\python\tests\SRS-GDAL.txt
+Extracting  libLAS-1.6-master\python\tests\SRS-GeoTIFF.txt
+Extracting  libLAS-1.6-master\python\tests\SRS.txt
+Extracting  libLAS-1.6-master\python\tests\Schema.txt
+Extracting  libLAS-1.6-master\python\tests\VLR.txt
+Extracting  libLAS-1.6-master\python\tests\__init__.py
+Extracting  libLAS-1.6-master\python\tests\test_doctests.py
+Extracting  libLAS-1.6-master\rpm
+Extracting  libLAS-1.6-master\rpm\README.txt
+Extracting  libLAS-1.6-master\rpm\libLAS.spec
+Extracting  libLAS-1.6-master\schemas
+Extracting  libLAS-1.6-master\schemas\LAS-example.xsd
+Extracting  libLAS-1.6-master\schemas\LAS.xsd
+Extracting  libLAS-1.6-master\schemas\las.xml
+Extracting  libLAS-1.6-master\src
+Extracting  libLAS-1.6-master\src\CMakeLists.txt
+Extracting  libLAS-1.6-master\src\Version.rc
+Extracting  libLAS-1.6-master\src\c_api.cpp
+Extracting  libLAS-1.6-master\src\chipper.cpp
+Extracting  libLAS-1.6-master\src\classification.cpp
+Extracting  libLAS-1.6-master\src\color.cpp
+Extracting  libLAS-1.6-master\src\detail
+Extracting  libLAS-1.6-master\src\detail\index
+Extracting  libLAS-1.6-master\src\detail\index\indexcell.cpp
+Extracting  libLAS-1.6-master\src\detail\index\indexoutput.cpp
+Extracting  libLAS-1.6-master\src\detail\reader
+Extracting  libLAS-1.6-master\src\detail\reader\cachedreader.cpp
+Extracting  libLAS-1.6-master\src\detail\reader\header.cpp
+Extracting  libLAS-1.6-master\src\detail\reader\reader.cpp
+Extracting  libLAS-1.6-master\src\detail\reader\zipreader.cpp
+Extracting  libLAS-1.6-master\src\detail\utility.cpp
+Extracting  libLAS-1.6-master\src\detail\writer
+Extracting  libLAS-1.6-master\src\detail\writer\header.cpp
+Extracting  libLAS-1.6-master\src\detail\writer\point.cpp
+Extracting  libLAS-1.6-master\src\detail\writer\writer.cpp
+Extracting  libLAS-1.6-master\src\detail\writer\zipwriter.cpp
+Extracting  libLAS-1.6-master\src\detail\zippoint.cpp
+Extracting  libLAS-1.6-master\src\dimension.cpp
+Extracting  libLAS-1.6-master\src\error.cpp
+Extracting  libLAS-1.6-master\src\factory.cpp
+Extracting  libLAS-1.6-master\src\filter.cpp
+Extracting  libLAS-1.6-master\src\gt_citation.cpp
+Extracting  libLAS-1.6-master\src\gt_citation.h
+Extracting  libLAS-1.6-master\src\gt_wkt_srs.cpp
+Extracting  libLAS-1.6-master\src\gt_wkt_srs.h
+Extracting  libLAS-1.6-master\src\gt_wkt_srs_for_gdal.h
+Extracting  libLAS-1.6-master\src\header.cpp
+Extracting  libLAS-1.6-master\src\index.cpp
+Extracting  libLAS-1.6-master\src\point.cpp
+Extracting  libLAS-1.6-master\src\reader.cpp
+Extracting  libLAS-1.6-master\src\schema.cpp
+Extracting  libLAS-1.6-master\src\spatialreference.cpp
+Extracting  libLAS-1.6-master\src\tifvsi.cpp
+Extracting  libLAS-1.6-master\src\tifvsi.h
+Extracting  libLAS-1.6-master\src\transform.cpp
+Extracting  libLAS-1.6-master\src\utility.cpp
+Extracting  libLAS-1.6-master\src\variablerecord.cpp
+Extracting  libLAS-1.6-master\src\version.cpp
+Extracting  libLAS-1.6-master\src\writer.cpp
+Extracting  libLAS-1.6-master\test
+Extracting  libLAS-1.6-master\test\CMakeLists.txt
+Extracting  libLAS-1.6-master\test\data
+Extracting  libLAS-1.6-master\test\data\1.0_0.las
+Extracting  libLAS-1.6-master\test\data\1.0_1.las
+Extracting  libLAS-1.6-master\test\data\1.1_0.las
+Extracting  libLAS-1.6-master\test\data\1.1_1.las
+Extracting  libLAS-1.6-master\test\data\1.2-with-color.las
+Extracting  libLAS-1.6-master\test\data\1.2-with-color.laz
+Extracting  libLAS-1.6-master\test\data\1.2_0.las
+Extracting  libLAS-1.6-master\test\data\1.2_1.las
+Extracting  libLAS-1.6-master\test\data\1.2_2.las
+Extracting  libLAS-1.6-master\test\data\1.2_3.las
+Extracting  libLAS-1.6-master\test\data\TO_core_last_clip.las
+Extracting  libLAS-1.6-master\test\data\TO_core_last_zoom.las
+Extracting  libLAS-1.6-master\test\data\autzen.jpg
+Extracting  libLAS-1.6-master\test\data\autzen.jpg.aux.xml
+Extracting  libLAS-1.6-master\test\data\autzen.las
+Extracting  libLAS-1.6-master\test\data\autzen.wld
+Extracting  libLAS-1.6-master\test\data\bad_points_1.1.las
+Extracting  libLAS-1.6-master\test\data\certainty3d-color-utm-feet-navd88.las
+Extracting  libLAS-1.6-master\test\data\lots_of_vlr.las
+Extracting  libLAS-1.6-master\test\data\make_bad_points.py
+Extracting  libLAS-1.6-master\test\data\make_data.py
+Extracting  libLAS-1.6-master\test\data\srs.las
+Extracting  libLAS-1.6-master\test\data\srs_utm17.las
+Extracting  libLAS-1.6-master\test\data\srs_vertcs.las
+Extracting  libLAS-1.6-master\test\sample
+Extracting  libLAS-1.6-master\test\sample\CMakeLists.txt
+Extracting  libLAS-1.6-master\test\sample\files.cpp
+Extracting  libLAS-1.6-master\test\sample\files.vcproj
+Extracting  libLAS-1.6-master\test\sample\liblas.vsprops
+Extracting  libLAS-1.6-master\test\sample\liblas_sample.sln
+Extracting  libLAS-1.6-master\test\sample\read.cpp
+Extracting  libLAS-1.6-master\test\sample\read.vcproj
+Extracting  libLAS-1.6-master\test\sample\update.cpp
+Extracting  libLAS-1.6-master\test\sample\update.vcproj
+Extracting  libLAS-1.6-master\test\sample\utility.hpp
+Extracting  libLAS-1.6-master\test\sample\write.cpp
+Extracting  libLAS-1.6-master\test\sample\write.vcproj
+Extracting  libLAS-1.6-master\test\unit
+Extracting  libLAS-1.6-master\test\unit\CMakeLists.txt
+Extracting  libLAS-1.6-master\test\unit\bounds_test.cpp
+Extracting  libLAS-1.6-master\test\unit\classification_test.cpp
+Extracting  libLAS-1.6-master\test\unit\common.cpp
+Extracting  libLAS-1.6-master\test\unit\common.hpp
+Extracting  libLAS-1.6-master\test\unit\error_test.cpp
+Extracting  libLAS-1.6-master\test\unit\guid_test.cpp
+Extracting  libLAS-1.6-master\test\unit\header_test.cpp
+Extracting  libLAS-1.6-master\test\unit\liblas_test.hpp
+Extracting  libLAS-1.6-master\test\unit\liblas_test_suite.cpp
+Extracting  libLAS-1.6-master\test\unit\point_test.cpp
+Extracting  libLAS-1.6-master\test\unit\reader_iterator_test.cpp
+Extracting  libLAS-1.6-master\test\unit\reader_test.cpp
+Extracting  libLAS-1.6-master\test\unit\spatialreference_test.cpp
+Extracting  libLAS-1.6-master\test\unit\transform_test.cpp
+Extracting  libLAS-1.6-master\test\unit\tut
+Extracting  libLAS-1.6-master\test\unit\tut\README
+Extracting  libLAS-1.6-master\test\unit\tut\tut.hpp
+Extracting  libLAS-1.6-master\test\unit\tut\tut_assert.hpp
+Extracting  libLAS-1.6-master\test\unit\tut\tut_config.hpp
+Extracting  libLAS-1.6-master\test\unit\tut\tut_console_reporter.hpp
+Extracting  libLAS-1.6-master\test\unit\tut\tut_exception.hpp
+Extracting  libLAS-1.6-master\test\unit\tut\tut_posix.hpp
+Extracting  libLAS-1.6-master\test\unit\tut\tut_reporter.hpp
+Extracting  libLAS-1.6-master\test\unit\tut\tut_restartable.hpp
+Extracting  libLAS-1.6-master\test\unit\tut\tut_result.hpp
+Extracting  libLAS-1.6-master\test\unit\tut\tut_runner.hpp
+Extracting  libLAS-1.6-master\test\unit\variablerecord_test.cpp
+Extracting  libLAS-1.6-master\test\unit\writer_test.cpp
+Extracting  libLAS-1.6-master\test\unit\zipreader_test.cpp
+Extracting  libLAS-1.6-master\test\unit\zipwriter_test.cpp
+
+Everything is Ok
+
+Folders: 59
+Files: 421
+Size:       16621762
+Compressed: 9908180
+
+C:\Users\ga83vin\Documents\openinfraplatform_coetzee\external>call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64 
+-- The C compiler identification is MSVC 19.0.24215.1
+-- The CXX compiler identification is MSVC 19.0.24215.1
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/x86_amd64/cl.exe
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/x86_amd64/cl.exe -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/x86_amd64/cl.exe
+-- Check for working CXX compiler: C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/x86_amd64/cl.exe -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Searching for Boost 1.38+ - done
+-- Looking for pthread.h
+-- Looking for pthread.h - not found
+-- Found Threads: TRUE  
+-- Boost version: 1.67.0
+-- Found the following Boost libraries:
+--   program_options
+--   thread
+--   chrono
+--   system
+--   date_time
+--   atomic
+-- Enable libLAS utilities to build - done
+-- Generating Visual Studio 14 2015 Win64 user-specific settings in lasinfo-old.vcproj.ADS.ga83vin.user
+-- Generating Visual Studio 14 2015 Win64 user-specific settings in lasinfo.vcproj.ADS.ga83vin.user
+-- Generating Visual Studio 14 2015 Win64 user-specific settings in lasmerge.vcproj.ADS.ga83vin.user
+-- Generating Visual Studio 14 2015 Win64 user-specific settings in las2las.vcproj.ADS.ga83vin.user
+-- Generating Visual Studio 14 2015 Win64 user-specific settings in las2txt-old.vcproj.ADS.ga83vin.user
+-- Generating Visual Studio 14 2015 Win64 user-specific settings in txt2las.vcproj.ADS.ga83vin.user
+-- Generating Visual Studio 14 2015 Win64 user-specific settings in las2las.vcproj.ADS.ga83vin.user
+-- Generating Visual Studio 14 2015 Win64 user-specific settings in las2las-old.vcproj.ADS.ga83vin.user
+-- Generating Visual Studio 14 2015 Win64 user-specific settings in lasblock.vcproj.ADS.ga83vin.user
+-- Generating Visual Studio 14 2015 Win64 user-specific settings in ts2las.vcproj.ADS.ga83vin.user
+-- Generating Visual Studio 14 2015 Win64 user-specific settings in las2txt.vcproj.ADS.ga83vin.user
+-- Enable libLAS unit tests to build - done
+-- Configuring done
+CMake Warning (dev) at src/CMakeLists.txt:221 (add_library):
+  Policy CMP0038 is not set: Targets may not link directly to themselves.
+  Run "cmake --help-policy CMP0038" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+
+  Target "liblas" links to itself.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+CMake Warning (dev) at src/CMakeLists.txt:221 (add_library):
+  Policy CMP0038 is not set: Targets may not link directly to themselves.
+  Run "cmake --help-policy CMP0038" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+
+  Target "liblas" links to itself.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+CMake Warning (dev) at src/CMakeLists.txt:221 (add_library):
+  Policy CMP0038 is not set: Targets may not link directly to themselves.
+  Run "cmake --help-policy CMP0038" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+
+  Target "liblas" links to itself.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+CMake Warning (dev) at src/CMakeLists.txt:221 (add_library):
+  Policy CMP0038 is not set: Targets may not link directly to themselves.
+  Run "cmake --help-policy CMP0038" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+
+  Target "liblas" links to itself.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+CMake Warning (dev) at src/CMakeLists.txt:221 (add_library):
+  Policy CMP0038 is not set: Targets may not link directly to themselves.
+  Run "cmake --help-policy CMP0038" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+
+  Target "liblas" links to itself.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+CMake Warning (dev) at src/CMakeLists.txt:221 (add_library):
+  Policy CMP0038 is not set: Targets may not link directly to themselves.
+  Run "cmake --help-policy CMP0038" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+
+  Target "liblas" links to itself.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Generating done
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    BUILD_STATIC_LIBS
+
+
+-- Build files have been written to: C:/thirdparty/vs2015/x64/libLAS-1.6-master/build
+Microsoft (R)-Buildmodul, Version 14.0.25420.1
+Copyright (C) Microsoft Corporation. Alle Rechte vorbehalten.
+
+Der Buildvorgang wurde am 16.04.2018 13:45:19 gestartet.
+Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" auf Knoten "1" (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" (2) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "x64\Debug\ZERO_CHECK\" wird erstellt.
+  Das Verzeichnis "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Checking Build System
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/src/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/apps/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/test/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/test/unit/CMakeFiles/generate.stamp is up-to-date.
+FinalizeBuildStatus:
+  Die Datei "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" ist abgeschlossen (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "liblas.dir\Debug\" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Debug\" wird erstellt.
+  Das Verzeichnis "liblas.dir\Debug\liblas.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "liblas.dir\Debug\liblas.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/libLAS-1.6-master/src/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/src/CMakeFiles/generate.stamp is up-to-date.
+MakeDirsForCl:
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.dir\Debug\detail" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.dir\Debug\detail\reader" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.dir\Debug\detail\writer" wird erstellt.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\\" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\index\indexcell.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\index\indexoutput.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\factory.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\color.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\dimension.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\error.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\filter.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\index.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\spatialreference.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\transform.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\variablerecord.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\version.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\zippoint.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\zipreader.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\zipwriter.cpp"
+  indexcell.cpp
+  indexoutput.cpp
+  chipper.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(93): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(94): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): note: Siehe Deklaration von "std::equal::_Unchecked_iterators::_Deprecate"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(3008): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<_InIt1,_InIt2,std::equal_to<void>>(_InIt1,_InIt1,_InIt2,_Pr)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *,
+              _Pr=std::equal_to<void>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/array.hpp(325): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<const unsigned char*,const unsigned char*>(_InIt1,_InIt1,_InIt2)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *
+          ]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\include\liblas/guid.hpp(187): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool boost::operator ==<unsigned char,16>(const boost::array<unsigned char,16> &,const boost::array<unsigned char,16> &)".
+  factory.cpp
+  classification.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "const uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  color.cpp
+  dimension.cpp
+  error.cpp
+  filter.cpp
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): note: Siehe Deklaration von "std::equal::_Unchecked_iterators::_Deprecate"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(3008): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<_InIt1,_InIt2,std::equal_to<void>>(_InIt1,_InIt1,_InIt2,_Pr)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *,
+              _Pr=std::equal_to<void>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/array.hpp(325): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<const unsigned char*,const unsigned char*>(_InIt1,_InIt1,_InIt2)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *
+          ]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\include\liblas/guid.hpp(187): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool boost::operator ==<unsigned char,16>(const boost::array<unsigned char,16> &,const boost::array<unsigned char,16> &)".
+  index.cpp
+  spatialreference.cpp
+  schema.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp(772): warning C4456: Deklaration von "oss" blendet vorherige lokale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp(759): note: Siehe Deklaration von "oss"
+  transform.cpp
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): note: Siehe Deklaration von "std::equal::_Unchecked_iterators::_Deprecate"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(3008): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<_InIt1,_InIt2,std::equal_to<void>>(_InIt1,_InIt1,_InIt2,_Pr)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *,
+              _Pr=std::equal_to<void>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/array.hpp(325): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<const unsigned char*,const unsigned char*>(_InIt1,_InIt1,_InIt2)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *
+          ]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\include\liblas/guid.hpp(187): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool boost::operator ==<unsigned char,16>(const boost::array<unsigned char,16> &,const boost::array<unsigned char,16> &)".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(54): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<9>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(53): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<8>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(52): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<7>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(51): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<6>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(50): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<5>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(49): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<4>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(48): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<3>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(47): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<2>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(46): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<1>".
+  variablerecord.cpp
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2372): warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2372): note: Siehe Deklaration von "std::copy::_Unchecked_iterators::_Deprecate"
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\variablerecord.cpp(133): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "_OutIt *std::copy<std::_String_const_iterator<std::_String_val<std::_Simple_types<char>>>,char*>(_InIt,_InIt,_OutIt)".
+          with
+          [
+              _OutIt=char *,
+              _InIt=std::_String_const_iterator<std::_String_val<std::_Simple_types<char>>>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(54): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<9>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(53): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<8>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(52): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<7>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(51): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<6>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(50): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<5>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(49): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<4>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(48): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<3>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(47): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<2>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(46): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<1>".
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): note: Siehe Deklaration von "std::equal::_Unchecked_iterators::_Deprecate"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(3008): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<_InIt1,_InIt2,std::equal_to<void>>(_InIt1,_InIt1,_InIt2,_Pr)".
+          with
+          [
+              _InIt1=const char *,
+              _InIt2=const char *,
+              _Pr=std::equal_to<void>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/array.hpp(325): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<const char*,const char*>(_InIt1,_InIt1,_InIt2)".
+          with
+          [
+              _InIt1=const char *,
+              _InIt2=const char *
+          ]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\variablerecord.cpp(197): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool boost::operator ==<char,16>(const boost::array<char,16> &,const boost::array<char,16> &)".
+  version.cpp
+  zippoint.cpp
+  zipreader.cpp
+  cachedreader.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(158): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(192): warning C4267: "=": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(233): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(242): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(247): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(277): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): note: Siehe Deklaration von "std::equal::_Unchecked_iterators::_Deprecate"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(3008): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<_InIt1,_InIt2,std::equal_to<void>>(_InIt1,_InIt1,_InIt2,_Pr)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *,
+              _Pr=std::equal_to<void>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/array.hpp(325): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<const unsigned char*,const unsigned char*>(_InIt1,_InIt1,_InIt2)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *
+          ]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\include\liblas/guid.hpp(187): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool boost::operator ==<unsigned char,16>(const boost::array<unsigned char,16> &,const boost::array<unsigned char,16> &)".
+  zipwriter.cpp
+  Code wird generiert...
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\/header.cpp.obj" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\header.cpp"
+  header.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\/point.cpp.obj" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\point.cpp"
+  point.cpp
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): note: Siehe Deklaration von "std::equal::_Unchecked_iterators::_Deprecate"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(3008): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<_InIt1,_InIt2,std::equal_to<void>>(_InIt1,_InIt1,_InIt2,_Pr)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *,
+              _Pr=std::equal_to<void>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/array.hpp(325): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<const unsigned char*,const unsigned char*>(_InIt1,_InIt1,_InIt2)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *
+          ]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\include\liblas/guid.hpp(187): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool boost::operator ==<unsigned char,16>(const boost::array<unsigned char,16> &,const boost::array<unsigned char,16> &)".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(54): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<9>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(53): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<8>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(52): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<7>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(51): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<6>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(50): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<5>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(49): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<4>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(48): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<3>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(47): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<2>".
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/bind/placeholders.hpp(46): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Klassen-template "boost::arg<1>".
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\/reader.cpp.obj" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\reader.cpp"
+  reader.cpp
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): note: Siehe Deklaration von "std::equal::_Unchecked_iterators::_Deprecate"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(3008): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<_InIt1,_InIt2,std::equal_to<void>>(_InIt1,_InIt1,_InIt2,_Pr)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *,
+              _Pr=std::equal_to<void>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/array.hpp(325): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<const unsigned char*,const unsigned char*>(_InIt1,_InIt1,_InIt2)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *
+          ]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\include\liblas/guid.hpp(187): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool boost::operator ==<unsigned char,16>(const boost::array<unsigned char,16> &,const boost::array<unsigned char,16> &)".
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\/utility.cpp.obj" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\utility.cpp"
+  utility.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\utility.cpp(337): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\/writer.cpp.obj" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\writer.cpp"
+  writer.cpp
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): note: Siehe Deklaration von "std::equal::_Unchecked_iterators::_Deprecate"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(3008): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<_InIt1,_InIt2,std::equal_to<void>>(_InIt1,_InIt1,_InIt2,_Pr)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *,
+              _Pr=std::equal_to<void>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/array.hpp(325): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<const unsigned char*,const unsigned char*>(_InIt1,_InIt1,_InIt2)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *
+          ]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\include\liblas/guid.hpp(187): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool boost::operator ==<unsigned char,16>(const boost::array<unsigned char,16> &,const boost::array<unsigned char,16> &)".
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\/detail/utility.cpp.obj" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\utility.cpp"
+  utility.cpp
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\/detail/reader/header.cpp.obj" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\header.cpp"
+  header.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\/detail/reader/reader.cpp.obj" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\reader.cpp"
+  reader.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\reader.cpp(279): warning C4267: "=": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): note: Siehe Deklaration von "std::equal::_Unchecked_iterators::_Deprecate"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(3008): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<_InIt1,_InIt2,std::equal_to<void>>(_InIt1,_InIt1,_InIt2,_Pr)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *,
+              _Pr=std::equal_to<void>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/array.hpp(325): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<const unsigned char*,const unsigned char*>(_InIt1,_InIt1,_InIt2)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *
+          ]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\include\liblas/guid.hpp(187): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool boost::operator ==<unsigned char,16>(const boost::array<unsigned char,16> &,const boost::array<unsigned char,16> &)".
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\/detail/writer/header.cpp.obj" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\header.cpp"
+  header.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\header.cpp(379): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\/detail/writer/point.cpp.obj" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\point.cpp"
+  point.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Debug\/detail/writer/writer.cpp.obj" /Fd"liblas.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\writer.cpp"
+  writer.cpp
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): note: Siehe Deklaration von "std::equal::_Unchecked_iterators::_Deprecate"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(3008): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<_InIt1,_InIt2,std::equal_to<void>>(_InIt1,_InIt1,_InIt2,_Pr)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *,
+              _Pr=std::equal_to<void>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/array.hpp(325): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<const unsigned char*,const unsigned char*>(_InIt1,_InIt1,_InIt2)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *
+          ]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\include\liblas/guid.hpp(187): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool boost::operator ==<unsigned char,16>(const boost::array<unsigned char,16> &,const boost::array<unsigned char,16> &)".
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Debug\liblas.dll" /INCREMENTAL /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0" /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0/Debug" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_program_options-vc140-mt-gd-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_thread-vc140-mt-gd-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_chrono-vc140-mt-gd-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_system-vc140-mt-gd-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_date_time-vc140-mt-gd-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_atomic-vc140-mt-gd-x64-1_67.lib" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Debug/liblas.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Debug/liblas.lib" /MACHINE:X64  /machine:x64 /DLL liblas.dir\Debug\indexcell.obj
+  liblas.dir\Debug\indexoutput.obj
+  liblas.dir\Debug\chipper.obj
+  liblas.dir\Debug\factory.obj
+  liblas.dir\Debug\classification.obj
+  liblas.dir\Debug\color.obj
+  liblas.dir\Debug\dimension.obj
+  liblas.dir\Debug\error.obj
+  liblas.dir\Debug\filter.obj
+  liblas.dir\Debug\index.obj
+  liblas.dir\Debug\spatialreference.obj
+  liblas.dir\Debug\schema.obj
+  liblas.dir\Debug\transform.obj
+  liblas.dir\Debug\variablerecord.obj
+  liblas.dir\Debug\version.obj
+  liblas.dir\Debug\zippoint.obj
+  liblas.dir\Debug\zipreader.obj
+  liblas.dir\Debug\cachedreader.obj
+  liblas.dir\Debug\zipwriter.obj
+  liblas.dir\Debug\/header.cpp.obj
+  liblas.dir\Debug\/point.cpp.obj
+  liblas.dir\Debug\/reader.cpp.obj
+  liblas.dir\Debug\/utility.cpp.obj
+  liblas.dir\Debug\/writer.cpp.obj
+  liblas.dir\Debug\/detail/utility.cpp.obj
+  liblas.dir\Debug\/detail/reader/header.cpp.obj
+  liblas.dir\Debug\/detail/reader/reader.cpp.obj
+  liblas.dir\Debug\/detail/writer/header.cpp.obj
+  liblas.dir\Debug\/detail/writer/point.cpp.obj
+  liblas.dir\Debug\/detail/writer/writer.cpp.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Debug/liblas.lib" und Objekt "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Debug/liblas.exp" werden erstellt.
+  liblas.vcxproj -> C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Debug\liblas.dll
+  liblas.vcxproj -> C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Debug/liblas.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "liblas.dir\Debug\liblas.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "liblas.dir\Debug\liblas.tlog\liblas.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" ist abgeschlossen (Standardziele).
+
+Der Buildvorgang wurde erfolgreich ausgefhrt.
+
+"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" (Standardziel) (1) ->
+(ClCompile Ziel) -> 
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(93): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(94): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "const uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp(772): warning C4456: Deklaration von "oss" blendet vorherige lokale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2372): warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(158): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(192): warning C4267: "=": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(233): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(242): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(247): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(277): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\utility.cpp(337): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\reader.cpp(279): warning C4267: "=": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\header.cpp(379): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+
+    42 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:46.60
+Microsoft (R)-Buildmodul, Version 14.0.25420.1
+Copyright (C) Microsoft Corporation. Alle Rechte vorbehalten.
+
+Der Buildvorgang wurde am 16.04.2018 13:46:06 gestartet.
+Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" auf Knoten "1" (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" (2) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "x64\Release\ZERO_CHECK\" wird erstellt.
+  Das Verzeichnis "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Checking Build System
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/src/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/apps/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/test/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/test/unit/CMakeFiles/generate.stamp is up-to-date.
+FinalizeBuildStatus:
+  Die Datei "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" ist abgeschlossen (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "liblas.dir\Release\" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Release\" wird erstellt.
+  Das Verzeichnis "liblas.dir\Release\liblas.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "liblas.dir\Release\liblas.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/libLAS-1.6-master/src/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/src/CMakeFiles/generate.stamp is up-to-date.
+MakeDirsForCl:
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.dir\Release\detail" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.dir\Release\detail\reader" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.dir\Release\detail\writer" wird erstellt.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\\" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\index\indexcell.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\index\indexoutput.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\factory.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\color.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\dimension.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\error.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\filter.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\index.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\spatialreference.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\transform.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\variablerecord.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\version.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\zippoint.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\zipreader.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\zipwriter.cpp"
+  indexcell.cpp
+  indexoutput.cpp
+  chipper.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(93): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(94): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  factory.cpp
+  classification.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "const uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  color.cpp
+  dimension.cpp
+  error.cpp
+  filter.cpp
+  index.cpp
+  spatialreference.cpp
+  schema.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp(772): warning C4456: Deklaration von "oss" blendet vorherige lokale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp(759): note: Siehe Deklaration von "oss"
+  transform.cpp
+  variablerecord.cpp
+  version.cpp
+  zippoint.cpp
+  zipreader.cpp
+  cachedreader.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(158): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(192): warning C4267: "=": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(233): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(242): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(247): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(277): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  zipwriter.cpp
+  Code wird generiert...
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\/header.cpp.obj" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\header.cpp"
+  header.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\/point.cpp.obj" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\point.cpp"
+  point.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\/reader.cpp.obj" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\reader.cpp"
+  reader.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\/utility.cpp.obj" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\utility.cpp"
+  utility.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\utility.cpp(337): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\/writer.cpp.obj" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\writer.cpp"
+  writer.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\/detail/utility.cpp.obj" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\utility.cpp"
+  utility.cpp
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\/detail/reader/header.cpp.obj" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\header.cpp"
+  header.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\/detail/reader/reader.cpp.obj" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\reader.cpp"
+  reader.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\reader.cpp(279): warning C4267: "=": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\/detail/writer/header.cpp.obj" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\header.cpp"
+  header.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\header.cpp(379): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\/detail/writer/point.cpp.obj" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\point.cpp"
+  point.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\Release\/detail/writer/writer.cpp.obj" /Fd"liblas.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\writer.cpp"
+  writer.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Release\liblas.dll" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0" /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0/Release" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_program_options-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_thread-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_chrono-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_system-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_date_time-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_atomic-vc140-mt-x64-1_67.lib" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Release/liblas.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Release/liblas.lib" /MACHINE:X64  /machine:x64 /DLL liblas.dir\Release\indexcell.obj
+  liblas.dir\Release\indexoutput.obj
+  liblas.dir\Release\chipper.obj
+  liblas.dir\Release\factory.obj
+  liblas.dir\Release\classification.obj
+  liblas.dir\Release\color.obj
+  liblas.dir\Release\dimension.obj
+  liblas.dir\Release\error.obj
+  liblas.dir\Release\filter.obj
+  liblas.dir\Release\index.obj
+  liblas.dir\Release\spatialreference.obj
+  liblas.dir\Release\schema.obj
+  liblas.dir\Release\transform.obj
+  liblas.dir\Release\variablerecord.obj
+  liblas.dir\Release\version.obj
+  liblas.dir\Release\zippoint.obj
+  liblas.dir\Release\zipreader.obj
+  liblas.dir\Release\cachedreader.obj
+  liblas.dir\Release\zipwriter.obj
+  liblas.dir\Release\/header.cpp.obj
+  liblas.dir\Release\/point.cpp.obj
+  liblas.dir\Release\/reader.cpp.obj
+  liblas.dir\Release\/utility.cpp.obj
+  liblas.dir\Release\/writer.cpp.obj
+  liblas.dir\Release\/detail/utility.cpp.obj
+  liblas.dir\Release\/detail/reader/header.cpp.obj
+  liblas.dir\Release\/detail/reader/reader.cpp.obj
+  liblas.dir\Release\/detail/writer/header.cpp.obj
+  liblas.dir\Release\/detail/writer/point.cpp.obj
+  liblas.dir\Release\/detail/writer/writer.cpp.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Release/liblas.lib" und Objekt "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Release/liblas.exp" werden erstellt.
+  liblas.vcxproj -> C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Release\liblas.dll
+FinalizeBuildStatus:
+  Die Datei "liblas.dir\Release\liblas.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "liblas.dir\Release\liblas.tlog\liblas.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" ist abgeschlossen (Standardziele).
+
+Der Buildvorgang wurde erfolgreich ausgefhrt.
+
+"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" (Standardziel) (1) ->
+(ClCompile Ziel) -> 
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(93): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(94): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "const uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp(772): warning C4456: Deklaration von "oss" blendet vorherige lokale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(158): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(192): warning C4267: "=": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(233): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(242): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(247): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(277): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\utility.cpp(337): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\reader.cpp(279): warning C4267: "=": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\header.cpp(379): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+
+    31 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:51.04
+Microsoft (R)-Buildmodul, Version 14.0.25420.1
+Copyright (C) Microsoft Corporation. Alle Rechte vorbehalten.
+
+Der Buildvorgang wurde am 16.04.2018 13:46:57 gestartet.
+Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" auf Knoten "1" (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" (2) auf Knoten "1" (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "x64\RelWithDebInfo\ZERO_CHECK\" wird erstellt.
+  Das Verzeichnis "x64\RelWithDebInfo\ZERO_CHECK\ZERO_CHECK.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "x64\RelWithDebInfo\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Checking Build System
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/src/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/apps/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/test/CMakeFiles/generate.stamp is up-to-date.
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/test/unit/CMakeFiles/generate.stamp is up-to-date.
+FinalizeBuildStatus:
+  Die Datei "x64\RelWithDebInfo\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "x64\RelWithDebInfo\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" ist abgeschlossen (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "liblas.dir\RelWithDebInfo\" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\RelWithDebInfo\" wird erstellt.
+  Das Verzeichnis "liblas.dir\RelWithDebInfo\liblas.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "liblas.dir\RelWithDebInfo\liblas.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/libLAS-1.6-master/src/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/src/CMakeFiles/generate.stamp is up-to-date.
+MakeDirsForCl:
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.dir\RelWithDebInfo\detail" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.dir\RelWithDebInfo\detail\reader" wird erstellt.
+  Das Verzeichnis "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.dir\RelWithDebInfo\detail\writer" wird erstellt.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\\" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\index\indexcell.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\index\indexoutput.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\factory.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\color.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\dimension.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\error.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\filter.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\index.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\spatialreference.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\transform.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\variablerecord.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\version.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\zippoint.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\zipreader.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp" "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\zipwriter.cpp"
+  indexcell.cpp
+  indexoutput.cpp
+  chipper.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(93): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(94): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  factory.cpp
+  classification.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "const uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  color.cpp
+  dimension.cpp
+  error.cpp
+  filter.cpp
+  index.cpp
+  spatialreference.cpp
+  schema.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp(772): warning C4456: Deklaration von "oss" blendet vorherige lokale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp(759): note: Siehe Deklaration von "oss"
+  transform.cpp
+  variablerecord.cpp
+  version.cpp
+  zippoint.cpp
+  zipreader.cpp
+  cachedreader.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(158): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(192): warning C4267: "=": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(233): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(242): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(247): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(277): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  zipwriter.cpp
+  Code wird generiert...
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\/header.cpp.obj" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\header.cpp"
+  header.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\/point.cpp.obj" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\point.cpp"
+  point.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\/reader.cpp.obj" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\reader.cpp"
+  reader.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\/utility.cpp.obj" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\utility.cpp"
+  utility.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\utility.cpp(337): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\/writer.cpp.obj" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\writer.cpp"
+  writer.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\/detail/utility.cpp.obj" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\utility.cpp"
+  utility.cpp
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\/detail/reader/header.cpp.obj" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\header.cpp"
+  header.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\/detail/reader/reader.cpp.obj" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\reader.cpp"
+  reader.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\reader.cpp(279): warning C4267: "=": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\/detail/writer/header.cpp.obj" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\header.cpp"
+  header.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\header.cpp(379): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\/detail/writer/point.cpp.obj" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\point.cpp"
+  point.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas.dir\RelWithDebInfo\/detail/writer/writer.cpp.obj" /Fd"liblas.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\writer.cpp"
+  writer.cpp
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\RelWithDebInfo\liblas.dll" /INCREMENTAL /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0" /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0/RelWithDebInfo" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_program_options-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_thread-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_chrono-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_system-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_date_time-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_atomic-vc140-mt-x64-1_67.lib" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/RelWithDebInfo/liblas.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/RelWithDebInfo/liblas.lib" /MACHINE:X64  /machine:x64 /DLL liblas.dir\RelWithDebInfo\indexcell.obj
+  liblas.dir\RelWithDebInfo\indexoutput.obj
+  liblas.dir\RelWithDebInfo\chipper.obj
+  liblas.dir\RelWithDebInfo\factory.obj
+  liblas.dir\RelWithDebInfo\classification.obj
+  liblas.dir\RelWithDebInfo\color.obj
+  liblas.dir\RelWithDebInfo\dimension.obj
+  liblas.dir\RelWithDebInfo\error.obj
+  liblas.dir\RelWithDebInfo\filter.obj
+  liblas.dir\RelWithDebInfo\index.obj
+  liblas.dir\RelWithDebInfo\spatialreference.obj
+  liblas.dir\RelWithDebInfo\schema.obj
+  liblas.dir\RelWithDebInfo\transform.obj
+  liblas.dir\RelWithDebInfo\variablerecord.obj
+  liblas.dir\RelWithDebInfo\version.obj
+  liblas.dir\RelWithDebInfo\zippoint.obj
+  liblas.dir\RelWithDebInfo\zipreader.obj
+  liblas.dir\RelWithDebInfo\cachedreader.obj
+  liblas.dir\RelWithDebInfo\zipwriter.obj
+  liblas.dir\RelWithDebInfo\/header.cpp.obj
+  liblas.dir\RelWithDebInfo\/point.cpp.obj
+  liblas.dir\RelWithDebInfo\/reader.cpp.obj
+  liblas.dir\RelWithDebInfo\/utility.cpp.obj
+  liblas.dir\RelWithDebInfo\/writer.cpp.obj
+  liblas.dir\RelWithDebInfo\/detail/utility.cpp.obj
+  liblas.dir\RelWithDebInfo\/detail/reader/header.cpp.obj
+  liblas.dir\RelWithDebInfo\/detail/reader/reader.cpp.obj
+  liblas.dir\RelWithDebInfo\/detail/writer/header.cpp.obj
+  liblas.dir\RelWithDebInfo\/detail/writer/point.cpp.obj
+  liblas.dir\RelWithDebInfo\/detail/writer/writer.cpp.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/RelWithDebInfo/liblas.lib" und Objekt "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/RelWithDebInfo/liblas.exp" werden erstellt.
+  liblas.vcxproj -> C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\RelWithDebInfo\liblas.dll
+  liblas.vcxproj -> C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/RelWithDebInfo/liblas.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "liblas.dir\RelWithDebInfo\liblas.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "liblas.dir\RelWithDebInfo\liblas.tlog\liblas.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" ist abgeschlossen (Standardziele).
+
+Der Buildvorgang wurde erfolgreich ausgefhrt.
+
+"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" (Standardziel) (1) ->
+(ClCompile Ziel) -> 
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(93): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\chipper.cpp(94): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\classification.cpp(95): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "const uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\schema.cpp(772): warning C4456: Deklaration von "oss" blendet vorherige lokale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(158): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(192): warning C4267: "=": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(233): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(242): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(247): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\cachedreader.cpp(277): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\utility.cpp(337): warning C4267: "Argument": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\reader\reader.cpp(279): warning C4267: "=": Konvertierung von "size_t" nach "uint32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\detail\writer\header.cpp(379): warning C4267: "Initialisierung": Konvertierung von "size_t" nach "int32_t", Datenverlust m”glich [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj]
+
+    31 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:52.53
+Microsoft (R)-Buildmodul, Version 14.0.25420.1
+Copyright (C) Microsoft Corporation. Alle Rechte vorbehalten.
+
+Der Buildvorgang wurde am 16.04.2018 13:47:50 gestartet.
+Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" auf Knoten "1" (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" (2) auf Knoten "1" (Standardziele).
+InitializeBuildStatus:
+  "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Alle Ausgaben sind aktuell.
+FinalizeBuildStatus:
+  Die Datei "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "x64\Debug\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" (3) auf Knoten "1" (Standardziele).
+InitializeBuildStatus:
+  "liblas.dir\Debug\liblas.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Alle Ausgaben sind aktuell.
+ClCompile:
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+Link:
+  Alle Ausgaben sind aktuell.
+  liblas.vcxproj -> C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Debug\liblas.dll
+  liblas.vcxproj -> C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Debug/liblas.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "liblas.dir\Debug\liblas.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "liblas.dir\Debug\liblas.tlog\liblas.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" ist abgeschlossen (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "liblas_c.dir\Debug\" wird erstellt.
+  Das Verzeichnis "liblas_c.dir\Debug\liblas_c.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "liblas_c.dir\Debug\liblas_c.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/libLAS-1.6-master/src/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/src/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Debug\"" /D liblas_c_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas_c.dir\Debug\\" /Fd"liblas_c.dir\Debug\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp"
+  c_api.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(436): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(137): note: Siehe Deklaration von "transforms"
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(1728): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(137): note: Siehe Deklaration von "transforms"
+C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): note: Siehe Deklaration von "std::equal::_Unchecked_iterators::_Deprecate"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(3008): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<_InIt1,_InIt2,std::equal_to<void>>(_InIt1,_InIt1,_InIt2,_Pr)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *,
+              _Pr=std::equal_to<void>
+          ]
+  C:\thirdparty\vs2015\x64\boost_1_67_0\boost/array.hpp(325): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool std::equal<const unsigned char*,const unsigned char*>(_InIt1,_InIt1,_InIt2)".
+          with
+          [
+              _InIt1=const unsigned char *,
+              _InIt2=const unsigned char *
+          ]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\include\liblas/guid.hpp(187): note: Siehe Verweis auf die Instanziierung der gerade kompilierten Funktions-template "bool boost::operator ==<unsigned char,16>(const boost::array<unsigned char,16> &,const boost::array<unsigned char,16> &)".
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Debug\liblas_c.dll" /INCREMENTAL /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0" /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0/Debug" ..\bin\Debug\liblas.lib "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_program_options-vc140-mt-gd-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_thread-vc140-mt-gd-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_chrono-vc140-mt-gd-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_system-vc140-mt-gd-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_date_time-vc140-mt-gd-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_atomic-vc140-mt-gd-x64-1_67.lib" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Debug/liblas_c.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Debug/liblas_c.lib" /MACHINE:X64  /machine:x64 /DLL liblas_c.dir\Debug\c_api.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Debug/liblas_c.lib" und Objekt "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Debug/liblas_c.exp" werden erstellt.
+  liblas_c.vcxproj -> C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Debug\liblas_c.dll
+  liblas_c.vcxproj -> C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Debug/liblas_c.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "liblas_c.dir\Debug\liblas_c.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "liblas_c.dir\Debug\liblas_c.tlog\liblas_c.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" ist abgeschlossen (Standardziele).
+
+Der Buildvorgang wurde erfolgreich ausgefhrt.
+
+"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" (Standardziel) (1) ->
+(ClCompile Ziel) -> 
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(436): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(1728): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\xutility(2983): warning C4996: 'std::equal::_Unchecked_iterators::_Deprecate': Call to 'std::equal' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators' [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+
+    4 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:03.70
+Microsoft (R)-Buildmodul, Version 14.0.25420.1
+Copyright (C) Microsoft Corporation. Alle Rechte vorbehalten.
+
+Der Buildvorgang wurde am 16.04.2018 13:47:54 gestartet.
+Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" auf Knoten "1" (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" (2) auf Knoten "1" (Standardziele).
+InitializeBuildStatus:
+  "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Alle Ausgaben sind aktuell.
+FinalizeBuildStatus:
+  Die Datei "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" (3) auf Knoten "1" (Standardziele).
+InitializeBuildStatus:
+  "liblas.dir\Release\liblas.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Alle Ausgaben sind aktuell.
+ClCompile:
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+Link:
+  Alle Ausgaben sind aktuell.
+  liblas.vcxproj -> C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Release\liblas.dll
+FinalizeBuildStatus:
+  Die Datei "liblas.dir\Release\liblas.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "liblas.dir\Release\liblas.tlog\liblas.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" ist abgeschlossen (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "liblas_c.dir\Release\" wird erstellt.
+  Das Verzeichnis "liblas_c.dir\Release\liblas_c.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "liblas_c.dir\Release\liblas_c.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/libLAS-1.6-master/src/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/src/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /nologo /W4 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"Release\"" /D liblas_c_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas_c.dir\Release\\" /Fd"liblas_c.dir\Release\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp"
+  c_api.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(436): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(137): note: Siehe Deklaration von "transforms"
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(1728): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(137): note: Siehe Deklaration von "transforms"
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Release\liblas_c.dll" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0" /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0/Release" ..\bin\Release\liblas.lib "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_program_options-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_thread-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_chrono-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_system-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_date_time-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_atomic-vc140-mt-x64-1_67.lib" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Release/liblas_c.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Release/liblas_c.lib" /MACHINE:X64  /machine:x64 /DLL liblas_c.dir\Release\c_api.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Release/liblas_c.lib" und Objekt "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/Release/liblas_c.exp" werden erstellt.
+  liblas_c.vcxproj -> C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\Release\liblas_c.dll
+FinalizeBuildStatus:
+  Die Datei "liblas_c.dir\Release\liblas_c.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "liblas_c.dir\Release\liblas_c.tlog\liblas_c.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" ist abgeschlossen (Standardziele).
+
+Der Buildvorgang wurde erfolgreich ausgefhrt.
+
+"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" (Standardziel) (1) ->
+(ClCompile Ziel) -> 
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(436): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(1728): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+
+    3 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:03.93
+Microsoft (R)-Buildmodul, Version 14.0.25420.1
+Copyright (C) Microsoft Corporation. Alle Rechte vorbehalten.
+
+Der Buildvorgang wurde am 16.04.2018 13:47:58 gestartet.
+Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" auf Knoten "1" (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" (2) auf Knoten "1" (Standardziele).
+InitializeBuildStatus:
+  "x64\RelWithDebInfo\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Alle Ausgaben sind aktuell.
+FinalizeBuildStatus:
+  Die Datei "x64\RelWithDebInfo\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "x64\RelWithDebInfo\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\ZERO_CHECK.vcxproj" ist abgeschlossen (Standardziele).
+Das Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" (1) erstellt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" (3) auf Knoten "1" (Standardziele).
+InitializeBuildStatus:
+  "liblas.dir\RelWithDebInfo\liblas.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Alle Ausgaben sind aktuell.
+ClCompile:
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+  Alle Ausgaben sind aktuell.
+Link:
+  Alle Ausgaben sind aktuell.
+  liblas.vcxproj -> C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\RelWithDebInfo\liblas.dll
+  liblas.vcxproj -> C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/RelWithDebInfo/liblas.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "liblas.dir\RelWithDebInfo\liblas.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "liblas.dir\RelWithDebInfo\liblas.tlog\liblas.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas.vcxproj" ist abgeschlossen (Standardziele).
+PrepareForBuild:
+  Das Verzeichnis "liblas_c.dir\RelWithDebInfo\" wird erstellt.
+  Das Verzeichnis "liblas_c.dir\RelWithDebInfo\liblas_c.tlog\" wird erstellt.
+InitializeBuildStatus:
+  "liblas_c.dir\RelWithDebInfo\liblas_c.tlog\unsuccessfulbuild" wird erstellt, da "AlwaysCreate" angegeben wurde.
+CustomBuild:
+  Building Custom Rule C:/thirdparty/vs2015/x64/libLAS-1.6-master/src/CMakeLists.txt
+  CMake does not need to re-run because C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/src/CMakeFiles/generate.stamp is up-to-date.
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\CL.exe /c /I"C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\..\include" /IC:\thirdparty\vs2015\x64\boost_1_67_0 /Zi /nologo /W4 /WX- /O2 /Ob1 /D WIN32 /D _WINDOWS /D NDEBUG /D LAS_DLL_EXPORT=1 /D LASZIP_DLL_IMPORT=1 /D "CMAKE_INTDIR=\"RelWithDebInfo\"" /D liblas_c_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"liblas_c.dir\RelWithDebInfo\\" /Fd"liblas_c.dir\RelWithDebInfo\vc140.pdb" /Gd /TP /errorReport:queue "C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp"
+  c_api.cpp
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(436): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(137): note: Siehe Deklaration von "transforms"
+C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(1728): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(137): note: Siehe Deklaration von "transforms"
+c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\RelWithDebInfo\liblas_c.dll" /INCREMENTAL /NOLOGO /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0" /LIBPATH:"C:/thirdparty/vs2015/x64/boost_1_67_0/lib64-msvc-14.0/RelWithDebInfo" ..\bin\RelWithDebInfo\liblas.lib "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_program_options-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_thread-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_chrono-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_system-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_date_time-vc140-mt-x64-1_67.lib" "C:\thirdparty\vs2015\x64\boost_1_67_0\lib64-msvc-14.0\libboost_atomic-vc140-mt-x64-1_67.lib" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/RelWithDebInfo/liblas_c.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/RelWithDebInfo/liblas_c.lib" /MACHINE:X64  /machine:x64 /DLL liblas_c.dir\RelWithDebInfo\c_api.obj
+     Bibliothek "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/RelWithDebInfo/liblas_c.lib" und Objekt "C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/RelWithDebInfo/liblas_c.exp" werden erstellt.
+  liblas_c.vcxproj -> C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\bin\RelWithDebInfo\liblas_c.dll
+  liblas_c.vcxproj -> C:/thirdparty/vs2015/x64/libLAS-1.6-master/build/bin/RelWithDebInfo/liblas_c.pdb (Full PDB)
+FinalizeBuildStatus:
+  Die Datei "liblas_c.dir\RelWithDebInfo\liblas_c.tlog\unsuccessfulbuild" wird gel”scht.
+  Aktualisieren des Timestamps von "liblas_c.dir\RelWithDebInfo\liblas_c.tlog\liblas_c.lastbuildstate".
+Die Erstellung von Projekt "C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" ist abgeschlossen (Standardziele).
+
+Der Buildvorgang wurde erfolgreich ausgefhrt.
+
+"C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj" (Standardziel) (1) ->
+(ClCompile Ziel) -> 
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(436): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  C:\thirdparty\vs2015\x64\libLAS-1.6-master\src\c_api.cpp(1728): warning C4459: Deklaration von "transforms" blendet globale Deklaration aus [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+  c:\thirdparty\vs2015\x64\liblas-1.6-master\include\liblas\bounds.hpp(435): warning C4702: Unerreichbarer Code [C:\thirdparty\vs2015\x64\libLAS-1.6-master\build\src\liblas_c.vcxproj]
+
+    3 Warnung(en)
+    0 Fehler
+
+Verstrichene Zeit 00:00:04.18
