@@ -566,7 +566,7 @@ public:
 				&& part->m_entity_enum != IFCWALL)
 			{
 				//throw buw::NotImplementedYetException("Unimplemented part element type.");
-				BLUE_LOG(info, "muh");
+				//BLUE_LOG(info, "muh");
 			}
             auto const& ssh = createSectionedSolidHorizontals(std::static_pointer_cast<IfcElement>(part));
             results.insert(results.end(), ssh.begin(), ssh.end());

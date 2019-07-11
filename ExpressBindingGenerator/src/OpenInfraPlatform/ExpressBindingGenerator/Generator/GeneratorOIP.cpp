@@ -2225,9 +2225,7 @@ void OpenInfraPlatform::ExpressBindingGenerator::GeneratorOIP::generateTypeSourc
 		} else if (type.getType() == eType::Real) {
 			out << "\t\t\t"
 			    << "stream << m_value;" << std::endl;
-		} else {
-			std::cout << "muh" << std::endl;
-		}
+		} 
 	}
 
 	if (type.isArray()) {
