@@ -30,10 +30,10 @@ include_directories(
 )
 
 # Tell CMake to create the Qt5HelloWorld executable
-add_executable(OpenInfraPlatform.CommandLineUtilities main.cpp)
+#add_executable(OpenInfraPlatform.CommandLineUtilities main.cpp)
 
-target_link_libraries(OpenInfraPlatform.CommandLineUtilities
-	OpenInfraPlatform.Infrastructure
+#target_link_libraries(OpenInfraPlatform.CommandLineUtilities
+	#OpenInfraPlatform.Infrastructure
 	# BlueFramework
-	${BLUEFRAMEWORK_LIBRARIES}
-)
+	#${BLUEFRAMEWORK_LIBRARIES}
+#)

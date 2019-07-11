@@ -29,8 +29,8 @@ find_file(FLEX_EXECUTABLE win_flex.exe HINTS ${CMAKE_CURRENT_SOURCE_DIR}/Tools/w
 
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
-find_package(Python2 REQUIRED)
-
+#find_package(Python2 REQUIRED)
+set(Python2_EXECUTABLE "C:\\Users\\ga83vin\\AppData\\Local\\Continuum\\anaconda3\\envs\\Env-01\\python.exe")
 #if(Python_FOUND)
 #	message(STATUS "Found Python${Python_VERSION}.")
 #else()

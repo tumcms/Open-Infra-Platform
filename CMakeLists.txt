@@ -301,14 +301,14 @@ include_directories(
 	external/QtXlsxWriter/src/xlsx
 	external/QSimpleUpdater/src
 	external/QSimpleUpdater/dialogs
-	Infrastructure/canonicalHeaders
+	#Infrastructure/canonicalHeaders
 	${ZLIB_INCLUDE_DIRS}	
 	${visit_struct_INCLUDE_DIR}
 	external/carve/include
 	${CMAKE_BINARY_DIR}/external/carve/include
 	external/carve/common
 	ExpressBindingGenerator/src
-	Infrastructure/src
+	#Infrastructure/src	# deprecated
 	PointCloudProcessing	 # 14.05.2019 added for pcp module (coetzee)
 	# ${CC_INCLUDE_DIRS}	02.05.2019 moved to pcp module (coetzee)
 	external/qcustomplot
@@ -329,10 +329,10 @@ link_directories(
 add_subdirectory(external/QtXlsxWriter)
 add_subdirectory(external/QSimpleUpdater)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
-add_subdirectory(Infrastructure)
+#add_subdirectory(Infrastructure)	# deprecated
 add_subdirectory(UnitTests)
 add_subdirectory(oip)
-add_subdirectory(IfcBridgeGenerator)
+#add_subdirectory(IfcBridgeGenerator)
 
 # ExpressGenerator rework revision 473.
 # Renamed to ExpressBindingGenerator in revision 537
@@ -388,16 +388,16 @@ file(GLOB OpenInfraPlatform_QCustomPlot_Source 						external/qcustomplot/*.*)
 set(OpenInfraPlatform_UIS
 	external/QSimpleUpdater/src/dialogs/download_dialog.ui
 	src/OpenInfraPlatform/Forms/CodeEditorWindow.ui
-	src/OpenInfraPlatform/Forms/CreateArcClothoidArc.ui
-	src/OpenInfraPlatform/Forms/CreateArcClothoidArcMeth2.ui
-	src/OpenInfraPlatform/Forms/CreateArcClothoidClothoidArc.ui
-	src/OpenInfraPlatform/Forms/CreateArcClothoidClothoidArcMeth2.ui
-	src/OpenInfraPlatform/Forms/CreateClothoid.ui
-	src/OpenInfraPlatform/Forms/CreateClothoid2.ui
-	src/OpenInfraPlatform/Forms/CreateLineArcArcArcLine.ui
-	src/OpenInfraPlatform/Forms/CreateLineArcArcLine.ui
-	src/OpenInfraPlatform/Forms/CreateLineClothoidArcClothoidLine.ui
-	src/OpenInfraPlatform/Forms/CreateLineClothoidClothoidLine.ui
+	#src/OpenInfraPlatform/Forms/CreateArcClothoidArc.ui
+	#src/OpenInfraPlatform/Forms/CreateArcClothoidArcMeth2.ui
+	#src/OpenInfraPlatform/Forms/CreateArcClothoidClothoidArc.ui
+	#src/OpenInfraPlatform/Forms/CreateArcClothoidClothoidArcMeth2.ui
+	#src/OpenInfraPlatform/Forms/CreateClothoid.ui
+	#src/OpenInfraPlatform/Forms/CreateClothoid2.ui
+	#src/OpenInfraPlatform/Forms/CreateLineArcArcArcLine.ui
+	#src/OpenInfraPlatform/Forms/CreateLineArcArcLine.ui
+	#src/OpenInfraPlatform/Forms/CreateLineClothoidArcClothoidLine.ui
+	#src/OpenInfraPlatform/Forms/CreateLineClothoidClothoidLine.ui
 	src/OpenInfraPlatform/Forms/CurvatureWindow.ui
 	src/OpenInfraPlatform/Forms/ShowIFCtree.ui
 	src/OpenInfraPlatform/Forms/ExportExcel.ui
@@ -411,7 +411,7 @@ set(OpenInfraPlatform_UIS
 	src/OpenInfraPlatform/Forms/VerticalAlignmentWindow.ui
 	src/OpenInfraPlatform/Forms/XYZImportDialog.ui
 	src/OpenInfraPlatform/Forms/LicenseAndCopyrightInformation.ui
-	src/OpenInfraPlatform/Forms/CreateAccidentReport.ui
+	#src/OpenInfraPlatform/Forms/CreateAccidentReport.ui
 	src/OpenInfraPlatform/Forms/AddGeoreferenceDialog.ui
 )
 
@@ -480,11 +480,11 @@ add_executable(OpenInfraPlatform.UI
 	${OpenInfraPlatform_UIS_H}
 	${OpenInfraPlatform_RC_SRCS}
 	${OpenInfraPlatform_Source}
-	${OpenInfraPlatform_Core_Source}
+	#${OpenInfraPlatform_Core_Source}
 	${OpenInfraPlatform_Data_Source}
 	${OpenInfraPlatform_DataManagement_Source}
 	#${OpenInfraPlatform_DataManagement_Command_Source}
-	${OpenInfraPlatform_IfcGeometryConverter_Source}
+	#${OpenInfraPlatform_IfcGeometryConverter_Source}
 	${OpenInfraPlatform_UnitTesting_Source}
 	${OpenInfraPlatform_UserInterface_Source}
 	${OpenInfraPlatform_UserInterface_ColorPicker_Source}
@@ -505,7 +505,7 @@ add_executable(OpenInfraPlatform.UI
 target_link_libraries(OpenInfraPlatform.UI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::XmlPatterns Qt5::Svg Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Location Qt5::Positioning)
 
 target_link_libraries( OpenInfraPlatform.UI
-	OpenInfraPlatform.Infrastructure
+	# OpenInfraPlatform.Infrastructure
 	${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 	Qt5::WinMain  # New target available via find_package ( Qt5Core )
 	${BLUEFRAMEWORK_LIBRARIES}
@@ -681,13 +681,14 @@ set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
 # set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")	# 02.05.2019 moved to pcp module (coetzee)
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator	 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
-set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.IfcTunnelGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.Infrastructure		 PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.Infrastructure		 PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.LandXMLViewer		 PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.RoadXMLViewer		 PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.UI					 PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.UI			PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.Core			PROPERTIES FOLDER "OpenInfraPlatform")
 
 #----------------------------------------------------------
 # MODULES
