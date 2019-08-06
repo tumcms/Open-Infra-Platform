@@ -42,8 +42,8 @@ find_package(CloudCompare REQUIRED)
 find_package(libLAS REQUIRED)
 
 # Add files.
-file(GLOB OpenInfraPlatform_PointCloudProcessing_Source					src/*.*)	
-source_group(OpenInfraPlatform\\PointCloudProcessing					FILES ${OpenInfraPlatform_PointCloudProcessing_Source}	
+file(GLOB PointCloudProcessing_Source									src/*.*)	
+source_group(PointCloudProcessing										FILES ${PointCloudProcessing_Source}	
 )	
 
 # Copy thirdparty binaries.
@@ -54,7 +54,7 @@ set_target_properties(libLASCopyBinaries							PROPERTIES FOLDER "Copy")
 
 # Create a target for the library
 add_library(OpenInfraPlatform.PointCloudProcessing MODULE	
-	${OpenInfraPlatform_PointCloudProcessing_Source}	
+	${PointCloudProcessing_Source}	
 	)
 
 include_directories(
@@ -73,7 +73,7 @@ target_link_libraries(OpenInfraPlatform.PointCloudProcessing
 target_link_libraries(OpenInfraPlatform.PointCloudProcessing Qt5::Xml Qt5::XmlPatterns Qt5::Gui Qt5::OpenGL)	
 
 # Set the target properties.
-set_target_properties(OpenInfraPlatform.PointCloudProcessing						PROPERTIES FOLDER "OpenInfraPlatform")	
+set_target_properties(OpenInfraPlatform.PointCloudProcessing			PROPERTIES FOLDER "OpenInfraPlatform")	
 
 # Install files.
 install(FILES ${LIBLAS_RELEASE_BINARIES} ${CC_RELEASE_BINARIES}

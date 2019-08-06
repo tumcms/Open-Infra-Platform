@@ -108,7 +108,7 @@ add_subdirectory(examples)
 add_subdirectory(tests) 
 
 
-include(CTest)
+# include(CTest)
 
 if(BUILD_TESTING)
   ENABLE_TESTING()

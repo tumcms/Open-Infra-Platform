@@ -29,23 +29,12 @@ find_file(FLEX_EXECUTABLE win_flex.exe HINTS ${CMAKE_CURRENT_SOURCE_DIR}/Tools/w
 
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
-#find_package(Python2 REQUIRED)
-set(Python2_EXECUTABLE "C:\\Users\\ga83vin\\AppData\\Local\\Continuum\\anaconda3\\envs\\Env-01\\python.exe")
-#if(Python_FOUND)
-#	message(STATUS "Found Python${Python_VERSION}.")
-#else()
-#	message(STATUS "Python2 not found, looking for Python3.")
-#	find_package(Python REQUIRED)
-#	if(NOT Python_FOUND)
-#		message(ERROR "Python not found.")
-#	endif()
-#endif()
 
 get_filename_component(Python2_DIRECTORY ${Python2_EXECUTABLE} DIRECTORY)
 
 #find_file(Python_2to3_SCRIPT NAMES 2to3.py HINTS "${Python_DIRECTORY}\\Tools\\scripts" REQUIRED)
 
-# Get root directory of Qt intsallation
+# Get root directory of Qt installation
 string(FIND ${Qt5_DIR} "Qt" POS)
 string(SUBSTRING ${Qt5_DIR} 0 ${POS} Qt5_ROOT)
 string(SUBSTRING ${Qt5_DIR} ${POS} 2 Qt5_ROOT_SUFFIX)
@@ -59,29 +48,6 @@ set(MinGW_DIR ${Qt5_ROOT}/Tools/mingw730_64/bin)
 file(TO_NATIVE_PATH ${MinGW_DIR} MinGW_DIR)
 file(TO_NATIVE_PATH ${Python2_DIRECTORY} Python2_DIRECTORY)
 
-#if(${Python_VERSION_MAJOR} EQUAL 3)
-#	add_custom_target(Commands.UpdateBoostMPL
-#		COMMAND set PYTHON_PATH=${Python_DIRECTORY}
-#		COMMAND set GCC_PATH=${MinGW_DIR}
-#		COMMAND set PATH=%PATH%%PYTHON_PATH%
-#		COMMAND set PATH=%PATH%\;
-#		COMMAND set PATH=%PATH%%GCC_PATH%
-#		COMMAND echo %PATH%
-#		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w -f idioms -f buffer -f set_literal -f ws_comma "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\fix_boost_mpl_preprocess.py"
-#		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w -f idioms -f buffer -f set_literal -f ws_comma "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\boost_mpl_preprocess.py"
-#		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w -f idioms -f buffer -f set_literal -f ws_comma "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\preprocess.py"
-#		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w -f idioms -f buffer -f set_literal -f ws_comma "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\pp.py"
-#		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w -f idioms -f buffer -f set_literal -f ws_comma "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\preprocess_set.py"
-#		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w -f idioms -f buffer -f set_literal -f ws_comma "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\preprocess_map.py"
-#		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w -f idioms -f buffer -f set_literal -f ws_comma "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\preprocess_list.py"
-#		COMMAND ${Python_EXECUTABLE} ${Python_2to3_SCRIPT} -w -f idioms -f buffer -f set_literal -f ws_comma "${Boost_INCLUDE_DIR}\\libs\\mpl\\preprocessed\\preprocess_vector.py"
-#		COMMAND ${Python_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/fix_boost_mpl_preprocess.py ${Boost_INCLUDE_DIR}
-#		COMMAND ${Python_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/boost_mpl_preprocess.py --sequence-type=both --num-elements=100 ${Boost_INCLUDE_DIR}
-#	)
-#	
-#	set_target_properties(Commands.UpdateBoostMPL PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
-#endif()
-
 add_custom_target(Commands.UpdateBoostMPL
 	COMMAND set PYTHON_PATH=${Python2_DIRECTORY}
 	COMMAND set GCC_PATH=${MinGW_DIR}
@@ -92,7 +58,6 @@ add_custom_target(Commands.UpdateBoostMPL
 	COMMAND ${Python2_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/boost_mpl_preprocess.py --sequence-type=both --num-elements=100 ${Boost_INCLUDE_DIR}
 )
 set_target_properties(Commands.UpdateBoostMPL PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
-
 
 # Macro to add IFC formats and the respective schemas.
 macro(add_format format schema active)
@@ -113,17 +78,20 @@ add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)
 set(IFC_FORMATS ${IFC_FORMATS} PARENT_SCOPE)
 
 bison_target(Parser
-	${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/ExpressBindingGenerator/Parser/parser.y
+	#${CMAKE_CURRENT_SOURCE_DIR}/ExpressBindingGenerator/Parser/parser.y
+	${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/parser.y
 	${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
 	COMPILE_FLAGS "-Wother -Wconflicts-sr -Wconflicts-rr"
 	DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/parser.hpp
 	VERBOSE REPORT_FILE ${CMAKE_CURRENT_BINARY_DIR}/bison_log.txt
 )
 	
-flex_target(Scanner ${CMAKE_CURRENT_SOURCE_DIR}/src/OpenInfraPlatform/ExpressBindingGenerator/Parser/tokens.l  ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
+flex_target(Scanner ${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/tokens.l  ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
+#flex_target(Scanner ${CMAKE_CURRENT_SOURCE_DIR}/ExpressBindingGenerator/Parser/tokens.l  ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
 add_flex_bison_dependency(Scanner Parser)
 
 include_directories(
+	../ExpressBindingGenerator/src
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -131,26 +99,28 @@ include_directories(
 	${TCLAP_INCLUDE_DIR}
 )
 
-file(GLOB OpenInfraPlatform_ExpressBindingGenerator_Generator_Source	src/OpenInfraPlatform/ExpressBindingGenerator/Generator/*.*)	
-file(GLOB OpenInfraPlatform_ExpressBindingGenerator_Meta_Source			src/OpenInfraPlatform/ExpressBindingGenerator/Meta/*.*)	
-file(GLOB OpenInfraPlatform_ExpressBindingGenerator_Parser_Source		src/OpenInfraPlatform/ExpressBindingGenerator/Parser/*.*)	
-file(GLOB OpenInfraPlatform_ExpressBindingGenerator_Source	        	src/OpenInfraPlatform/ExpressBindingGenerator/*.*)	
+# Add files and set source groups.
+file(GLOB ExpressBindingGenerator_Source	        				src/*.*)	
+file(GLOB ExpressBindingGenerator_General_Source	        		src/General/*.*)		# necessary for finding correct namespace and main file.
+file(GLOB ExpressBindingGenerator_Generator_Source					src/Generator/*.*)	
+file(GLOB ExpressBindingGenerator_Meta_Source						src/Meta/*.*)	
+file(GLOB ExpressBindingGenerator_Parser_Source						src/Parser/*.*)	
 
-
-source_group(OpenInfraPlatform\\ExpressBindingGenerator\\Generator	FILES ${OpenInfraPlatform_ExpressBindingGenerator_Generator_Source})
-source_group(OpenInfraPlatform\\ExpressBindingGenerator\\Meta    	FILES ${OpenInfraPlatform_ExpressBindingGenerator_Meta_Source})	
-source_group(OpenInfraPlatform\\ExpressBindingGenerator\\Parser		FILES ${OpenInfraPlatform_ExpressBindingGenerator_Parser_Source})	
-source_group(OpenInfraPlatform\\ExpressBindingGenerator				FILES ${OpenInfraPlatform_ExpressBindingGenerator_Source})	
+source_group(ExpressBindingGenerator								FILES ${ExpressBindingGenerator_Source})	
+source_group(ExpressBindingGenerator\\General						FILES ${ExpressBindingGenerator_General_Source})
+source_group(ExpressBindingGenerator\\Generator						FILES ${ExpressBindingGenerator_Generator_Source})
+source_group(ExpressBindingGenerator\\Meta    						FILES ${ExpressBindingGenerator_Meta_Source})	
+source_group(ExpressBindingGenerator\\Parser						FILES ${ExpressBindingGenerator_Parser_Source})	
 
 add_executable(OpenInfraPlatform.ExpressBindingGenerator
-	${OpenInfraPlatform_ExpressBindingGenerator_Generator_Source}
-	${OpenInfraPlatform_ExpressBindingGenerator_Meta_Source}
-	${OpenInfraPlatform_ExpressBindingGenerator_Parser_Source}
-	${OpenInfraPlatform_ExpressBindingGenerator_Source}
+	${ExpressBindingGenerator_Source}
+	${ExpressBindingGenerator_General_Source}
+	${ExpressBindingGenerator_Generator_Source}
+	${ExpressBindingGenerator_Meta_Source}
+	${ExpressBindingGenerator_Parser_Source}
 	${FLEX_Scanner_OUTPUTS} 
 	${BISON_Parser_OUTPUTS}
 )
-
 
 # Custom target that generates the early binding library files.
 add_custom_target(Commands.GenerateEarlyBinding

@@ -21,13 +21,14 @@ cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0071 OLD)
+
 project(OpenInfraPlatform)
 
 #-------------------------------------------------------------------------------------
 # CMake definitions and propertiess
 #-------------------------------------------------------------------------------------
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/${CMAKE_MODULE_PATH})
 set(CMAKE_AUTOMOC ON)
 
 # Changed C++ standard to 14 in revision 534
@@ -169,11 +170,11 @@ find_package(Eigen3 3.3.2  REQUIRED)
 find_package(Oklabi REQUIRED)
 find_package(gtest 1.9.0 REQUIRED) 
 find_package(ZLIB 1.2.10 REQUIRED)
-# find_package(libLAS REQUIRED)	02.05.2019 moved to pcp module (coetzee)
 find_package(qhull REQUIRED)
 find_package(raptor2 REQUIRED)
-# find_package(CC REQUIRED)	02.05.2019 moved to pcp module (coetzee)
 find_path(visit_struct_INCLUDE_DIR REQUIRED)
+# find_package(CC REQUIRED)	02.05.2019 moved to pcp module (coetzee)
+# find_package(libLAS REQUIRED)	02.05.2019 moved to pcp module (coetzee)
 
 # Added 12.09.2018: FFTW3
 find_package(FFTW3 REQUIRED)
@@ -293,26 +294,26 @@ endforeach()
 
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR} # Qt generated files will be located here
+	# thirdpary libraries:
 	${Boost_INCLUDE_DIR}
 	${BLUEFRAMEWORK_INCLUDE_DIR}
 	${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR}
 	${EIGEN3_INCLUDE_DIR}	
-	src
-	external/QtXlsxWriter/src/xlsx
-	external/QSimpleUpdater/src
-	external/QSimpleUpdater/dialogs
-	#Infrastructure/canonicalHeaders
+	${FFTW3_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIRS}	
 	${visit_struct_INCLUDE_DIR}
+	# external:
+	external/QtXlsxWriter/src/xlsx
+	external/QSimpleUpdater/src
+	external/QSimpleUpdater/src/dialogs
 	external/carve/include
 	${CMAKE_BINARY_DIR}/external/carve/include
 	external/carve/common
-	ExpressBindingGenerator/src
-	#Infrastructure/src	# deprecated
-	PointCloudProcessing	 # 14.05.2019 added for pcp module (coetzee)
-	# ${CC_INCLUDE_DIRS}	02.05.2019 moved to pcp module (coetzee)
 	external/qcustomplot
-	${FFTW3_INCLUDE_DIRS}
+	# projects:
+	ExpressBindingGenerator
+	UserInterface
+	Core
 )
 
 link_directories(
@@ -325,20 +326,11 @@ link_directories(
 # Add subdirectories.
 #------------------------------------------------------------------------------
 
-
 add_subdirectory(external/QtXlsxWriter)
 add_subdirectory(external/QSimpleUpdater)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
-#add_subdirectory(Infrastructure)	# deprecated
-#add_subdirectory(UnitTests)
-add_subdirectory(oip)
-#add_subdirectory(IfcBridgeGenerator)
 
-# ExpressGenerator rework revision 473.
-# Renamed to ExpressBindingGenerator in revision 537
 add_subdirectory(ExpressBindingGenerator)
-
-# Core added in revision 483
 add_subdirectory(Core)
 
 # As of revision 531, replaces old OpenInfraPlatform_EarlyBinding_DIR
@@ -348,121 +340,108 @@ foreach(format ${IFC_FORMATS})
 	add_compile_definitions(OIP_MODULE_EARLYBINDING_${format})
 endforeach()
 
-# Do currently not work
+# Do currently not work. Located in Other. 
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)
 #add_subdirectory(IfcTunnelGenerator)
+#add_subdirectory(UnitTests)
+#add_subdirectory(oip)
+#add_subdirectory(IfcBridgeGenerator)
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Collect source files
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Collect general source files
-file(GLOB OpenInfraPlatform_Source									src/OpenInfraPlatform/*.*)
-file(GLOB OpenInfraPlatform_Core_Source 							src/OpenInfraPlatform/Core/*.*)
-file(GLOB OpenInfraPlatform_Data_Source 							src/OpenInfraPlatform/Data/*.*)
-file(GLOB OpenInfraPlatform_DataManagement_Source 					src/OpenInfraPlatform/DataManagement/*.*)
-file(GLOB OpenInfraPlatform_IfcGeometryConverter_Source  			src/OpenInfraPlatform/IfcGeometryConverter/*.*)	
-#file(GLOB OpenInfraPlatform_DataManagement_Command_Source 			src/OpenInfraPlatform/DataManagement/Command/*.*)
+# USER INTERFACE. 
+file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_Forms_Source 				UserInterface/Forms/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Resources/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_ColorPicker_Source		UserInterface/ColorPicker/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_Dialogues_Source 			UserInterface/Dialogues/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source 	UserInterfaces/QtPropertyBrowser/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_Shader_Source 			UserInterface/Shader/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_Shader_D3D_Source 		UserInterface/Shader/D3D/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			UserInterface/ViewPanel/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source 	UserInterface/ViewPanel/Effects/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_QCustomPlot_Source 		external/qcustomplot/*.*)
 
-# UnitTesting for images is currently not working but still in the code so files have to be collected
-file(GLOB OpenInfraPlatform_UnitTesting_Source						src/OpenInfraPlatform/UnitTesting/*.*)
+# Currently not included.
+#file(GLOB OpenInfraPlatform_UserInterface_Tools_Source				UserInterface/other/Tools/*.*)
+#file(GLOB OpenInfraPlatform_UserInterface_View2DWindow			 	UserInterface/other/View2DWindow/*.*)
 
-# Collect Shader files
-file(GLOB OpenInfraPlatform_Shader_Source 							src/OpenInfraPlatform/Shader/*.*)
-file(GLOB OpenInfraPlatform_Shader_D3D_Source 						src/OpenInfraPlatform/Shader/D3D/*.*)
-# Collect UserInterface files
-file(GLOB OpenInfraPlatform_UserInterface_ColorPicker_Source		src/OpenInfraPlatform/UserInterface/ColorPicker/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_SourceFiles_Source 		src/OpenInfraPlatform/UserInterface/SourceFiles/*.*)
-#file(GLOB OpenInfraPlatform_UserInterface_Tools_Source				src/OpenInfraPlatform/UserInterface/Tools/*.*)
-#file(GLOB OpenInfraPlatform_UserInterface_View2DWindow			 	src/OpenInfraPlatform/UserInterface/View2DWindow/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			src/OpenInfraPlatform/UserInterface/ViewPanel/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source 	src/OpenInfraPlatform/UserInterface/ViewPanel/Effects/*.*)
+# Does currently not work. 
+#file(GLOB OpenInfraPlatform_UnitTesting_Source					other/other_UI/UnitTesting/*.*)
 
-# Collect Qt related stuff and UI files
-file(GLOB OpenInfraPlatform_QtPropertyBrowser_Source 				src/QtPropertyBrowser/*.*)
-file(GLOB OpenInfraPlatform_QCustomPlot_Source 						external/qcustomplot/*.*)
-set(OpenInfraPlatform_UIS
+set(OpenInfraPlatform_UserInterface_Forms
 	external/QSimpleUpdater/src/dialogs/download_dialog.ui
-	src/OpenInfraPlatform/Forms/CodeEditorWindow.ui
-	#src/OpenInfraPlatform/Forms/CreateArcClothoidArc.ui
-	#src/OpenInfraPlatform/Forms/CreateArcClothoidArcMeth2.ui
-	#src/OpenInfraPlatform/Forms/CreateArcClothoidClothoidArc.ui
-	#src/OpenInfraPlatform/Forms/CreateArcClothoidClothoidArcMeth2.ui
-	#src/OpenInfraPlatform/Forms/CreateClothoid.ui
-	#src/OpenInfraPlatform/Forms/CreateClothoid2.ui
-	#src/OpenInfraPlatform/Forms/CreateLineArcArcArcLine.ui
-	#src/OpenInfraPlatform/Forms/CreateLineArcArcLine.ui
-	#src/OpenInfraPlatform/Forms/CreateLineClothoidArcClothoidLine.ui
-	#src/OpenInfraPlatform/Forms/CreateLineClothoidClothoidLine.ui
-	src/OpenInfraPlatform/Forms/CurvatureWindow.ui
-	src/OpenInfraPlatform/Forms/ShowIFCtree.ui
-	src/OpenInfraPlatform/Forms/ExportExcel.ui
-	src/OpenInfraPlatform/Forms/ExportIfc4x1Dialog.ui
-	src/OpenInfraPlatform/Forms/ExportIfcAlignmentDialog.ui
-	src/OpenInfraPlatform/Forms/ExportIfcZipDialog.ui
-	src/OpenInfraPlatform/Forms/GenerateTerrain.ui
-	src/OpenInfraPlatform/Forms/MainWindow.ui
-	src/OpenInfraPlatform/Forms/OSMImportDialog.ui
-	src/OpenInfraPlatform/Forms/PreferencesDialog.ui
-	src/OpenInfraPlatform/Forms/VerticalAlignmentWindow.ui
-	src/OpenInfraPlatform/Forms/XYZImportDialog.ui
-	src/OpenInfraPlatform/Forms/LicenseAndCopyrightInformation.ui
-	#src/OpenInfraPlatform/Forms/CreateAccidentReport.ui
-	src/OpenInfraPlatform/Forms/AddGeoreferenceDialog.ui
-)
-
-# Collect RC files
-set(OpenInfraPlatform_RC
-	src/OpenInfraPlatform/Resources/OpenInfraPlatform.qrc
-	src/QtPropertyBrowser/qtpropertybrowser.qrc
+	UserInterface/Forms/CodeEditorWindow.ui
+	UserInterface/Forms/CurvatureWindow.ui
+	UserInterface/Forms/ShowIFCtree.ui
+	UserInterface/Forms/ExportExcel.ui
+	UserInterface/Forms/ExportIfc4x1Dialog.ui
+	UserInterface/Forms/ExportIfcAlignmentDialog.ui
+	UserInterface/Forms/ExportIfcZipDialog.ui
+	UserInterface/Forms/GenerateTerrain.ui
+	UserInterface/Forms/MainWindow.ui
+	UserInterface/Forms/OSMImportDialog.ui
+	UserInterface/Forms/PreferencesDialog.ui
+	UserInterface/Forms/VerticalAlignmentWindow.ui
+	UserInterface/Forms/XYZImportDialog.ui
+	UserInterface/Forms/LicenseAndCopyrightInformation.ui
+	UserInterface/Forms/AddGeoreferenceDialog.ui
+	
+	# Currently not included.
+	#UserInterface/Forms/CreateAccidentReport.ui
+	#UserInterface/Forms/CreateArcClothoidArc.ui
+	#UserInterface/Forms/CreateArcClothoidArcMeth2.ui
+	#UserInterface/Forms/CreateArcClothoidClothoidArc.ui
+	#UserInterface/Forms/CreateArcClothoidClothoidArcMeth2.ui
+	#UserInterface/Forms/CreateClothoid.ui
+	#UserInterface/Forms/CreateClothoid2.ui
+	#UserInterface/Forms/CreateLineArcArcArcLine.ui
+	#UserInterface/Forms/CreateLineArcArcLine.ui
+	#UserInterface/Forms/CreateLineClothoidArcClothoidLine.ui
+	#UserInterface/Forms/CreateLineClothoidClothoidLine.ui
 )
 
 # Collect all translation files
-FILE(GLOB Translation_TS Data/translations/*.ts)
+FILE(GLOB Translation_TS UserInterface/Data/translations/*.ts)
 
 #------------------------------------------------------------------------------
 # Set source groups
 #------------------------------------------------------------------------------
 
-source_group(OpenInfraPlatform										FILES ${OpenInfraPlatform_Source})
-source_group(OpenInfraPlatform\\Core								FILES ${OpenInfraPlatform_Core_Source})
-source_group(OpenInfraPlatform\\Data								FILES ${OpenInfraPlatform_Data_Source})
-source_group(OpenInfraPlatform\\DataManagement						FILES ${OpenInfraPlatform_DataManagement_Source})
-#source_group(OpenInfraPlatform\\DataManagement\\Command			FILES ${OpenInfraPlatform_DataManagement_Command_Source})
-source_group(OpenInfraPlatform\\IfcGeometryConverter				FILES ${OpenInfraPlatform_IfcGeometryConverter_Source})
+# USER INTERFACE.
+source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
+source_group(UserInterface\\Forms				FILES ${OpenInfraPlatform_UserInterface_Forms_Source})
+source_group(UserInterface\\ColorPicker			FILES ${OpenInfraPlatform_UserInterface_ColorPicker_Source})
+source_group(UserInterface\\Resources			FILES ${OpenInfraPlatform_UserInterface_Resources_Source})
+source_group(UserInterface\\Dialogues			FILES ${OpenInfraPlatform_UserInterface_Dialogues_Source})
+source_group(UserInterface\\QtPropertyBrowser	FILES ${OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source})
+source_group(UserInterface\\Shader				FILES ${OpenInfraPlatform_UserInterface_Shader_Source})
+source_group(UserInterface\\Shader\\D3D			FILES ${OpenInfraPlatform_UserInterface_Shader_D3D_Source})
+source_group(UserInterface\\ViewPanel			FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Source})
+source_group(UserInterface\\ViewPanel\\Effects	FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source})
+source_group(UserInterface\\QCustomPlot			FILES ${OpenInfraPlatform_UserInterface_QCustomPlot_Source})
 
-# Set Shader source groups
-source_group(OpenInfraPlatform\\Shader								FILES ${OpenInfraPlatform_Shader_Source})
-source_group(OpenInfraPlatform\\Shader\\D3D							FILES ${OpenInfraPlatform_Shader_D3D_Source})
+# Does not currently work. 
+#source_group(UnitTesting  				FILES ${OpenInfraPlatform_UnitTesting_Source})
 
-# UnitTesting for images is currently not working but still in the code so it has to be linked
-source_group(OpenInfraPlatform\\UnitTesting  						FILES ${OpenInfraPlatform_UnitTesting_Source})
-
-# Set UserInterface source groups
-source_group(OpenInfraPlatform\\UserInterface						FILES ${OpenInfraPlatform_UserInterface_Source})
-source_group(OpenInfraPlatform\\UserInterface\\ColorPicker			FILES ${OpenInfraPlatform_UserInterface_ColorPicker_Source})
-#source_group(OpenInfraPlatform\\UserInterface\\Tools				FILES ${OpenInfraPlatform_UserInterface_Tools_Source})
-source_group(OpenInfraPlatform\\UserInterface\\SourceFiles			FILES ${OpenInfraPlatform_UserInterface_SourceFiles_Source})
-#source_group(OpenInfraPlatform\\UserInterface\\View2DWindow		FILES ${OpenInfraPlatform_UserInterface_View2DWindow})
-source_group(OpenInfraPlatform\\UserInterface\\ViewPanel			FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Source})
-source_group(OpenInfraPlatform\\UserInterface\\ViewPanel\\Effects	FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source})
-source_group(OpenInfraPlatform\\UserInterface\\Forms				FILES ${OpenInfraPlatform_UIS})
-
-source_group(QtPropertyBrowser										FILES ${OpenInfraPlatform_QtPropertyBrowser_Source})
-source_group(QCustomPlot											FILES ${OpenInfraPlatform_QCustomPlot_Source})
+# Currently not included.
+#source_group(UserInterface\\Tools			FILES ${OpenInfraPlatform_UserInterface_Tools_Source})
+#source_group(UserInterface\\View2DWindow		FILES ${OpenInfraPlatform_UserInterface_View2DWindow})
 
 #------------------------------------------------------------------------------
 # Set source group properties
 #------------------------------------------------------------------------------
 
 # Set HEADER_FILES_ONLY to true to make them show up in the IDE but be excluded from compiling
-set_source_files_properties(${OpenInfraPlatform_Shader_Source} 		PROPERTIES HEADER_FILE_ONLY TRUE)
-set_source_files_properties(${OpenInfraPlatform_Shader_D3D_Source} 	PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties(${OpenInfraPlatform_UserInterface_Shader_Source} 		PROPERTIES HEADER_FILE_ONLY TRUE)
+set_source_files_properties(${OpenInfraPlatform_UserInterfaces_Shader_D3D_Source} 	PROPERTIES HEADER_FILE_ONLY TRUE)
 
 # Qt related stuff
-QT5_ADD_RESOURCES(OpenInfraPlatform_RC_SRCS ${OpenInfraPlatform_RC})
-QT5_WRAP_UI(OpenInfraPlatform_UIS_H ${OpenInfraPlatform_UIS})
+QT5_ADD_RESOURCES(OpenInfraPlatform_UserInterface_Resources_Source_SRCS ${OpenInfraPlatform_UserInterface_Resources_Source})
+QT5_WRAP_UI(OpenInfraPlatform_UserInterface_Forms_H ${OpenInfraPlatform_UserInterface_Forms})
 QT5_ADD_TRANSLATION(OpenInfra_QMS ${Translation_TS})
 
 IF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
@@ -474,28 +453,23 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 #------------------------------------------------------------------------------
 
 	add_executable(OpenInfraPlatform.UI
-		${OpenInfraPlatform_QtPropertyBrowser_Source}
-		${OpenInfraPlatform_UIS_H}
-		${OpenInfraPlatform_RC_SRCS}
-		${OpenInfraPlatform_Source}
-		#${OpenInfraPlatform_Core_Source}
-		${OpenInfraPlatform_Data_Source}
-		${OpenInfraPlatform_DataManagement_Source}
-		#${OpenInfraPlatform_DataManagement_Command_Source}
-		#${OpenInfraPlatform_IfcGeometryConverter_Source}
-		${OpenInfraPlatform_UnitTesting_Source}
-		${OpenInfraPlatform_UserInterface_Source}
+		${OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source}
+		${OpenInfraPlatform_UserInterface_Data_Source}
+		${OpenInfraPlatform_UserInterface_Forms} 
+		${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}				
 		${OpenInfraPlatform_UserInterface_ColorPicker_Source}
-		#${OpenInfraPlatform_UserInterface_Tools_Source}
-		${OpenInfraPlatform_UserInterface_SourceFiles_Source}
+		${OpenInfraPlatform_UserInterface_Dialogues_Source}
 		${OpenInfraPlatform_UserInterface_ViewPanel_Source}
 		${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source}
-		#${OpenInfraPlatform_UserInterface_View2DWindow}	
-		${OpenInfraPlatform_Shader_Source}
-		${OpenInfraPlatform_Shader_D3D_Source}
-		${OpenInfraPlatform_QCustomPlot_Source}
+		${OpenInfraPlatform_UserInterface_Shader_Source}
+		${OpenInfraPlatform_UserInterface_Shader_D3D_Source}
+		${OpenInfraPlatform_UserInterface_QCustomPlot_Source}
+		
+		# Currently not included.
+		#${OpenInfraPlatform_UserInterface_View2DWindow}
+		#${OpenInfraPlatform_UserInterface_Tools_Source}
+		#${OpenInfraPlatform_UnitTesting_Source}		
 		)
-
 
 #------------------------------------------------------------------------------
 # Link qt and other external libraries to our executable.
@@ -505,20 +479,16 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 target_link_libraries(OpenInfraPlatform.UI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::XmlPatterns Qt5::Svg Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Location Qt5::Positioning)
 
 target_link_libraries( OpenInfraPlatform.UI
-	# OpenInfraPlatform.Infrastructure
 	${OpenInfraPlatform.EarlyBinding_LIBRARIES}
 	Qt5::WinMain  # New target available via find_package ( Qt5Core )
 	${BLUEFRAMEWORK_LIBRARIES}
 	QtXlsxWriter
 	QSimpleUpdater
-	# ${LIBLAS_LIBRARIES}	02.05.2019 moved to pcp module (coetzee)
 	carve
 	ZLIB::ZLIB
 	Rpcrt4.lib
-	# ${CC_LIBRARIES}	02.05.2019 moved to pcp module (coetzee)
 	fftw3.lib
 )
-
 
 #------------------------------------------------------------------------------
 # Calling copy functions to provide custom targets.
@@ -527,10 +497,6 @@ target_link_libraries( OpenInfraPlatform.UI
 
 # BlueFramework Copy Binaries
 BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
-
-# CloudCompare Copy Binaries
-# CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})
-# 02.05.2019 move to pcp module (coetzee) 
 
 # Oklabi Copy Binaries
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
@@ -556,20 +522,21 @@ add_custom_target(Qt5CopyBinaries
 add_custom_target(CopyOpenInfraPlatformUIResources
 	ALL DEPENDS ${OpenInfra_QMS}
 
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Shader		${CMAKE_BINARY_DIR}/Shader
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Shader		${CMAKE_BINARY_DIR}/RoadXMLViewer/Shader
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Shader		${CMAKE_BINARY_DIR}/LandXMLViewer/Shader
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/testdata							${CMAKE_BINARY_DIR}/LandXMLViewer/testdata
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Style		${CMAKE_BINARY_DIR}/Style
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Data								${CMAKE_BINARY_DIR}/Data
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/testdata							${CMAKE_BINARY_DIR}/testdata
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Data/DesignAutomation				${CMAKE_BINARY_DIR}/UnitTests/Data/DesignAutomation
+	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Shader					${CMAKE_BINARY_DIR}/Shader
+	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Shader					${CMAKE_BINARY_DIR}/RoadXMLViewer/Shader
+	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Shader					${CMAKE_BINARY_DIR}/LandXMLViewer/Shader
+	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Style					${CMAKE_BINARY_DIR}/UserInterface/Style
+	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Data					${CMAKE_BINARY_DIR}/UserInterface/Data
+	
+	#COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/other/testdata					${CMAKE_BINARY_DIR}/LandXMLViewer/testdata
+	#COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/other/testdata						${CMAKE_BINARY_DIR}/testdata
+	#COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Data/DesignAutomation				${CMAKE_BINARY_DIR}/UnitTests/Data/DesignAutomation
 
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Deutsch.qm								${CMAKE_BINARY_DIR}/Data/translations/Deutsch.qm
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/English.qm								${CMAKE_BINARY_DIR}/Data/translations/English.qm
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Espanol.qm								${CMAKE_BINARY_DIR}/Data/translations/Espanol.qm
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Deutsch.qm								${CMAKE_BINARY_DIR}/UserInterface/Data/translations/Deutsch.qm
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/English.qm								${CMAKE_BINARY_DIR}/UserInterface/Data/translations/English.qm
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Espanol.qm								${CMAKE_BINARY_DIR}/UserInterface/Data/translations/Espanol.qm
 
-	# QM files are generated in ${CMAKE_BINARY_DIR}, but we want to move them to /Data/translations
+	# QM files are generated in ${CMAKE_BINARY_DIR}, but we want to move them to UserInterface/Data/translations
 	# therefore we will delete them after they're copied
 	COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/Deutsch.qm ${CMAKE_BINARY_DIR}/English.qm ${CMAKE_BINARY_DIR}/Espanol.qm
 	
@@ -670,25 +637,24 @@ add_thirdparty(test_carve_polyhedrons_2	"carve")
 #-------------------------------------------------------------------------------------
 
 set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
-set_target_properties(CopyOpenInfraPlatformUIResources 			PROPERTIES FOLDER "Copy")
+set_target_properties(CopyOpenInfraPlatformUIResources 					PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(BlueFrameworkCopyBinaries 				PROPERTIES FOLDER "Copy")
-# set_target_properties(CloudCompareCopyBinaries 				PROPERTIES FOLDER "Copy")	# 02.05.2019 moved to pcp module (coetzee)
+set_target_properties(BlueFrameworkCopyBinaries 					PROPERTIES FOLDER "Copy")
 set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
-set_target_properties(QSimpleUpdaterCopyBinaries				PROPERTIES FOLDER "Copy")
+set_target_properties(QSimpleUpdaterCopyBinaries					PROPERTIES FOLDER "Copy")
+set_target_properties(OpenInfraPlatform.UI						PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.Core						PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.ExpressBindingGenerator				PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
+
+# Currently not included. 
+#set_target_properties(OpenInfraPlatform.CommandLineUtilities		PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.IfcBridgeGenerator			PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.IfcTunnelGenerator			PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.LandXMLViewer				PROPERTIES FOLDER "OpenInfraPlatform")
+#set_target_properties(OpenInfraPlatform.RoadXMLViewer				PROPERTIES FOLDER "OpenInfraPlatform")
+
 # Switched to static gtest on 28.11.2018 / Revision 388+
 #set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
-# set_target_properties(libLASCopyBinaries						PROPERTIES FOLDER "Copy")	# 02.05.2019 moved to pcp module (coetzee)
-set_target_properties(OpenInfraPlatform.ExpressBindingGenerator	 	PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
-
-#set_target_properties(OpenInfraPlatform.CommandLineUtilities PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.IfcBridgeGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.IfcTunnelGenerator	 PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.Infrastructure		 PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.LandXMLViewer		 PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.RoadXMLViewer		 PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.UI			PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.Core			PROPERTIES FOLDER "OpenInfraPlatform")
 
 #----------------------------------------------------------
 # MODULES
@@ -699,7 +665,7 @@ set_target_properties(OpenInfraPlatform.Core			PROPERTIES FOLDER "OpenInfraPlatf
 # Otherwise only core project is built.
 
 #----------------------------------------------------------
-# (1/7) Point Cloud Processing ("pcp module")
+# (1/7) Point Cloud Processing ("pcp_module")
 #----------------------------------------------------------
 
 Option(MODULES_POINT_CLOUD_PROCESSING ON)
@@ -707,7 +673,6 @@ Option(MODULES_POINT_CLOUD_PROCESSING ON)
 if(MODULES_POINT_CLOUD_PROCESSING)
 
 add_subdirectory(PointCloudProcessing)
-
 
 endif()
 
@@ -785,7 +750,7 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "OpenInfraPlatform")
 set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.txt")
 set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README.md")
 set(CPACK_WIX_UI_BANNER "${PROJECT_SOURCE_DIR}/Data/banner.bmp")
-set(CPACK_WIX_PRODUCT_ICON "${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Resources/icons/icon.ico")
+set(CPACK_WIX_PRODUCT_ICON "${PROJECT_SOURCE_DIR}/UserInterface/Resources/icons/icon.ico")
 set(CPACK_WIX_PROGRAM_MENU_FOLDER "TUM OpenInfraPlatform")
 set(CPACK_PACKAGE_EXECUTABLES OpenInfraPlatform.UI "TUM OpenInfraPlatform")
 set(CPACK_WIX_CULTURES "en-us")
@@ -827,13 +792,13 @@ macro(installData DATA)
     FILES_MATCHING PATTERN "*.*") 
 endmacro()
 
-installData(${PROJECT_SOURCE_DIR}/src/OpenInfraPlatform/Shader)
-installData(${PROJECT_SOURCE_DIR}/Data)
-installData(${PROJECT_SOURCE_DIR}/testdata)
+installData(${PROJECT_SOURCE_DIR}/UserInterface/Shader)
+installData(${PROJECT_SOURCE_DIR}/UserInterface/Data)
 installData(${CMAKE_BINARY_DIR}/$<CONFIG>/schema)
 installData(${CMAKE_BINARY_DIR}/$<CONFIG>/res)
 installData(${CMAKE_BINARY_DIR}/$<CONFIG>/fbliste)
-installData(${CMAKE_BINARY_DIR}/Style)
+installData(${CMAKE_BINARY_DIR}/UserInterface/Style)
+#installData(${PROJECT_SOURCE_DIR}/other/testdata)
 		
 install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll ${CMAKE_BINARY_DIR}/Release/tinyxml2.dll
 	DESTINATION bin

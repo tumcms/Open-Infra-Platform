@@ -17,8 +17,7 @@
 
 project(OpenInfraPlatform.EarlyBinding CXX)
 
-file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source		src/OpenInfraPlatform/EarlyBinding/EXPRESS/*.*)	
-
+file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source		EarlyBinding/src/EXPRESS/*.*)	
 
 foreach(format ${IFC_FORMATS})
 	message(STATUS "Format ${format} found.")

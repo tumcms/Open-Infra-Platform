@@ -22,29 +22,39 @@ project(OpenInfraPlatform.Core)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 14)
 
-file(GLOB DataManagement_Source 					src/OpenInfraPlatform/Core/DataManagement/*.*)
-file(GLOB IfcGeometryConverter_Source  			    src/OpenInfraPlatform/Core/IfcGeometryConverter/*.*)	
-file(GLOB Import_Source  			                src/OpenInfraPlatform/Core/Import/*.*)	
-file(GLOB Export_Source  			                src/OpenInfraPlatform/Core/Export/*.*)	
+file(GLOB Core_Source 								src/*.*)
+file(GLOB Core_DataManagement_Source 				src/DataManagement/*.*)
+file(GLOB Core_DataManagement_General_Source 		src/DataManagement/General/*.*)
+file(GLOB Core_DataManagement_Command_Source		src/DataManagement/Command/*.*)
+file(GLOB Core_DataManagement_Import_Source			src/DataManagement/Import/*.*)
+file(GLOB Core_DataManagement_Export_Source			src/DataManagement/Export/*.*)
+file(GLOB Core_IfcGeometryConverter_Source			src/IfcGeometryConverter/*.*)
 
-source_group(DataManagement						FILES ${DataManagement_Source})
-source_group(IfcGeometryConverter				FILES ${IfcGeometryConverter_Source})
-source_group(Import						        FILES ${Import_Source})
-source_group(Export						        FILES ${Export_Source})
+source_group(Core								FILES $Core_Source})
+source_group(Core\\DataManagement				FILES ${Core_DataManagement_Source})
+source_group(Core\\DataManagement\\General		FILES ${Core_DataManagement_General_Source})
+source_group(Core\\DataManagement\\Command		FILES ${Core_DataManagement_Command_Source})
+source_group(Core\\DataManagement\\Import		FILES ${Core_DataManagement_Import_Source})
+source_group(Core\\DataManagement\\Export		FILES ${Core_DataManagement_Export_Source})
+source_group(Core\\IfcGeometryConverter			FILES ${Core_IfcGeometryConverter_Source})
 
 include_directories(
-    ${BLUEFRAMEWORK_INCLUDE_DIR}
-    src
-	${CMAKE_SOURCE_DIR}/EarlyBinding/src
-)
+    	../Core/src
+		${BLUEFRAMEWORK_INCLUDE_DIR}
+		${CMAKE_SOURCE_DIR}/EarlyBinding/src
+)		
 
 add_library(OpenInfraPlatform.Core STATIC
-    ${DataManagement_Source}
-    ${IfcGeometryConverter_Source}
-    ${Import_Source}
-    ${Export_Source}
+	${Core_Source}
+	${Core_DataManagement_Source}
+	${Core_DataManagement_General_Source}
+	${Core_DataManagement_Command_Source}
+	${Core_DataManagement_Import_Source}
+	${Core_DataManagement_Export_Source}
+	${Core_IfcGeometryConverter_Source}
 )
 
+# Thirdparty libraries the project depends upon.
 target_link_libraries(OpenInfraPlatform.Core
     Qt5::Core
     Qt5::OpenGL
@@ -57,3 +67,5 @@ target_link_libraries(OpenInfraPlatform.Core
 foreach(format ${IFC_FORMATS})
 	target_link_libraries(OpenInfraPlatform.Core OpenInfraPlatform.${format})
 endforeach()
+
+set_target_properties(OpenInfraPlatform.Core 	PROPERTIES FOLDER "OpenInfraPlatform")
