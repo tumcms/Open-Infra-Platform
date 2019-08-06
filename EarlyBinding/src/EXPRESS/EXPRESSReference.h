@@ -21,7 +21,7 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSReference_c5a3045b_df30_4a77_aeea_3a16cde5c141_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSReference_c5a3045b_df30_4a77_aeea_3a16cde5c141_h
 
-#include "OpenInfraPlatform/EarlyBinding/namespace.h"
+#include "../EarlyBinding/src/namespace.h"
 
 #include "EXPRESSEntity.h"
 #include "EXPRESSModel.h"

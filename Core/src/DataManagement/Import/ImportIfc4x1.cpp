@@ -17,31 +17,31 @@
 
 #include "ImportIfc4x1.h"
 
-#include "OpenInfraPlatform/Infrastructure/Alignment/Alignment2DBased3D.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/Alignment3DBased3D.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DArc.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DLine.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DBlossCurve.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignmentElement2DLine.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignmentElement2DParabola.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignmentElement2DArc.h"
-#include "OpenInfraPlatform/Infrastructure/SlabField/SlabField.h"
-#include "OpenInfraPlatform/Infrastructure/SlabField/Railing.h"
-#include "OpenInfraPlatform/Infrastructure/Tessellation/Tessellation.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/Alignment2DBased3D.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/Alignment3DBased3D.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DArc.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DLine.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DBlossCurve.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignmentElement2DLine.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignmentElement2DParabola.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignmentElement2DArc.h"
+//#include "OpenInfraPlatform/Infrastructure/SlabField/SlabField.h"
+//#include "OpenInfraPlatform/Infrastructure/SlabField/Railing.h"
+//#include "OpenInfraPlatform/Infrastructure/Tessellation/Tessellation.h"
 
-#include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/model/Exception.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/writer/IfcStepWriter.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Entities.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Types.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/reader/Reader.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/model/UnitConverter.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/entity/IfcCartesianPoint.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntityEnums.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/model/Exception.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/writer/IfcStepWriter.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Entities.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Types.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/reader/Reader.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/model/UnitConverter.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/entity/IfcCartesianPoint.h"
+//#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntityEnums.h"
 
 #include <cmath>
 #include <fstream>
@@ -54,7 +54,7 @@
 
 using namespace OpenInfraPlatform::IfcAlignment1x1;
 
-class OpenInfraPlatform::Infrastructure::ImportIfc4x1::ImportIfc4x1Impl : public Import
+class OpenInfraPlatform::Core::ImportIfc4x1::ImportIfc4x1Impl : public Import
 {
 public:
     ImportIfc4x1Impl(const std::string& filename)

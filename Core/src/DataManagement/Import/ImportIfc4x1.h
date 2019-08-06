@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "OpenInfraPlatform/Infrastructure/Import/Import.h"
+#include "../Core/src/DataManagement/Import/Import.h"
 #include <boost/noncopyable.hpp>
 
 namespace OpenInfraPlatform {

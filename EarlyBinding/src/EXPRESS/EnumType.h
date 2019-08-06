@@ -21,7 +21,7 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EnumType_222b174c_10f8_447c_9363_6efd29177d6c_h
 #define OpenInfraPlatform_EarlyBinding_EnumType_222b174c_10f8_447c_9363_6efd29177d6c_h
 
-#include "OpenInfraPlatform/EarlyBinding/namespace.h"
+#include "../EarlyBinding/src/namespace.h"
 #include "ValueType.h"
 #include "EXPRESSModel.h"
 
