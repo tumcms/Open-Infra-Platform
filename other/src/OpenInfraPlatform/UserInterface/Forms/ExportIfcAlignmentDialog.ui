@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ExportP6AlignmentDialog</class>
+ <widget class="QDialog" name="ExportP6AlignmentDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>463</width>
+    <height>169</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>IFC Alignment 1x1 Export</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../Resources/OpenInfraPlatform.qrc">
+    <normaloff>:/icons/icon.ico</normaloff>:/icons/icon.ico</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="checkBoxExportDigitalElevationModel">
+     <property name="text">
+      <string>Export digital elevation model</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="2">
+    <widget class="QPushButton" name="pushButtonCancel">
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QCheckBox" name="checkBoxExportAlignment">
+     <property name="text">
+      <string>Export alignment</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QPushButton" name="pushButtonExport">
+     <property name="text">
+      <string>Export</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>IFC Version</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Angle measurement</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QComboBox" name="comboBoxAngleMeasurement">
+     <property name="currentText">
+      <string>Radiant</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>Radiant</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Degree</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="comboBoxIfcSchemaVersion">
+     <item>
+      <property name="text">
+       <string>IFC4x1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>IFC4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>IFC2x3</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="checkBoxUseFixedEntityIdForGeometry">
+     <property name="text">
+      <string>Use fixed entity ID for geometry</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Start ID</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QLineEdit" name="lineEditStartId">
+     <property name="text">
+      <string>4000</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../Resources/OpenInfraPlatform.qrc"/>
+ </resources>
+ <connections/>
+</ui>
