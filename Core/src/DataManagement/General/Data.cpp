@@ -34,9 +34,9 @@
 //#include "EMTIFC4X2_BIM4ROADEntityTypes.h"
 //#include "EMTIFC4X2_DRAFT_1EntityTypes.h"
 
-#include "OpenInfraPlatform/Core/IfcGeometryConverter/IfcImporter.h"
-#include "OpenInfraPlatform/Core/IfcGeometryConverter/GeometryInputData.h"
-#include "OpenInfraPlatform/Core/IfcGeometryConverter/IfcPeekStepReader.h"
+#include "../Core/src/IfcGeometryConverter/IfcImporter.h"
+#include "../Core/src/IfcGeometryConverter/GeometryInputData.h"
+#include "../Core/src/IfcGeometryConverter/IfcPeekStepReader.h"
 
 #include <QtXml>
 #include <QtXmlPatterns>

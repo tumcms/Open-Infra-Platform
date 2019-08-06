@@ -27,7 +27,7 @@
 namespace OpenInfraPlatform {
 	namespace Core {
 	//namespace Infrastructure {
-		class BLUEINFRASTRUCTURE_API Export : private boost::noncopyable {
+		class /*BLUEINFRASTRUCTURE_API*/ Export : private boost::noncopyable {
 		public:
 			Export(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, buw::ReferenceCounted<buw::ProxyModel> pm, const std::string& filename);
 

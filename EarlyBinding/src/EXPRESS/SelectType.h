@@ -21,7 +21,7 @@
 #ifndef OpenInfraPlatform_EarlyBinding_SelectType_10255db4_8b09_413b_9c43_ea39f1d63ced_h
 #define OpenInfraPlatform_EarlyBinding_SelectType_10255db4_8b09_413b_9c43_ea39f1d63ced_h
 
-#include "OpenInfraPlatform/EarlyBinding/namespace.h"
+#include "../EarlyBinding/src/namespace.h"
 
 #include "ValueType.h"
 #include "EXPRESSModel.h"
