@@ -374,21 +374,8 @@ file(GLOB OpenInfraPlatform_UserInterface_QCustomPlot_Source 		external/qcustomp
 
 set(OpenInfraPlatform_UserInterface_Forms
 	external/QSimpleUpdater/src/dialogs/download_dialog.ui
-	UserInterface/Forms/CodeEditorWindow.ui
-	UserInterface/Forms/CurvatureWindow.ui
-	UserInterface/Forms/ShowIFCtree.ui
-	UserInterface/Forms/ExportExcel.ui
-	UserInterface/Forms/ExportIfc4x1Dialog.ui
-	UserInterface/Forms/ExportIfcAlignmentDialog.ui
-	UserInterface/Forms/ExportIfcZipDialog.ui
-	UserInterface/Forms/GenerateTerrain.ui
 	UserInterface/Forms/MainWindow.ui
-	UserInterface/Forms/OSMImportDialog.ui
-	UserInterface/Forms/PreferencesDialog.ui
-	UserInterface/Forms/VerticalAlignmentWindow.ui
-	UserInterface/Forms/XYZImportDialog.ui
 	UserInterface/Forms/LicenseAndCopyrightInformation.ui
-	UserInterface/Forms/AddGeoreferenceDialog.ui
 	
 	# Currently not included.
 	#UserInterface/Forms/CreateAccidentReport.ui
@@ -402,6 +389,19 @@ set(OpenInfraPlatform_UserInterface_Forms
 	#UserInterface/Forms/CreateLineArcArcLine.ui
 	#UserInterface/Forms/CreateLineClothoidArcClothoidLine.ui
 	#UserInterface/Forms/CreateLineClothoidClothoidLine.ui
+	#UserInterface/Forms/CodeEditorWindow.ui
+	#UserInterface/Forms/CurvatureWindow.ui
+	#UserInterface/Forms/ShowIFCtree.ui
+	#UserInterface/Forms/ExportExcel.ui
+	#UserInterface/Forms/ExportIfc4x1Dialog.ui
+	#UserInterface/Forms/ExportIfcAlignmentDialog.ui
+	#UserInterface/Forms/ExportIfcZipDialog.ui
+	#UserInterface/Forms/GenerateTerrain.ui
+	#UserInterface/Forms/OSMImportDialog.ui
+	#UserInterface/Forms/PreferencesDialog.ui
+	#UserInterface/Forms/VerticalAlignmentWindow.ui
+	#UserInterface/Forms/XYZImportDialog.ui
+	#UserInterface/Forms/AddGeoreferenceDialog.ui
 )
 
 # Collect all translation files
