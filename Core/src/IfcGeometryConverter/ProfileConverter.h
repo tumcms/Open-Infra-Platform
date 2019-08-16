@@ -32,6 +32,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 /**********************************************************************************************/
 
 namespace OpenInfraPlatform {
+	namespace Core{
 	namespace IfcGeometryConverter {
 		template <class IfcEntityTypesT, class IfcUnitConverterT>
 		class ProfileConverterT {
@@ -1463,6 +1464,7 @@ namespace OpenInfraPlatform {
 			std::vector<std::vector<carve::geom::vector<2>>> paths;
 		};
 	} // namespace IfcGeometryConverter
+	} // namespace Core
 } // namespace OpenInfraPlatform
 
 #endif

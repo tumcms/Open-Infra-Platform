@@ -1525,17 +1525,17 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 
 	linebreak(out);
 
-	//writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESS.h");
+	//writeInclude(out, "OpenInfraPlatform/../EarlyBinding/src/EXPRESS/EXPRESS.h");
 
 	if (type.isSimpleType() || type.isDerivedType()) {
-		writeInclude(out, "EXPRESS/ValueType.h");
+		writeInclude(out, "../EarlyBinding/src/EXPRESS/ValueType.h");
 	}
 	else if (type.isEnumeration()) {
-		writeInclude(out, "EXPRESS/EnumType.h");
+		writeInclude(out, "../EarlyBinding/src/EXPRESS/EnumType.h");
 	}
 	else if (type.isContainerType()) {
-		writeInclude(out, "EXPRESS/EXPRESSContainer.h");
-		//writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSOptional.h");
+		writeInclude(out, "../EarlyBinding/src/EXPRESS/EXPRESSContainer.h");
+		//writeInclude(out, "../EarlyBinding/src/EXPRESS/EXPRESSOptional.h");
 
 		if (schema.hasType(type.getContainerType())) {
 			writeInclude(out, type.getContainerType() + ".h");
@@ -1546,8 +1546,8 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 
 	}
 	else if (type.isSelectType()) {
-		writeInclude(out, "EXPRESS/EXPRESSReference.h");
-		writeInclude(out, "EXPRESS/SelectType.h");
+		writeInclude(out, "../EarlyBinding/src/EXPRESS/EXPRESSReference.h");
+		writeInclude(out, "../EarlyBinding/src/EXPRESS/SelectType.h");
 	}
 
 	writeInclude(out, "../" + schema.getName() + "Namespace.h");
@@ -2007,7 +2007,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 	writeLicenseAndNotice(out);
 		
 	writeInclude(out, type.getName() + ".h");
-	writeInclude(out, "EXPRESS/EXPRESSOptional.h");
+	writeInclude(out, "../EarlyBinding/src/EXPRESS/EXPRESSOptional.h");
 	linebreak(out);
 
 	std::set<std::string> types, entities;
@@ -2030,7 +2030,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 		}
 
 		if (!entities.empty()) {
-			writeInclude(out, "EXPRESS/EXPRESSReference.h");
+			writeInclude(out, "../EarlyBinding/src/EXPRESS/EXPRESSReference.h");
 			for (auto entity : entities) {
 				writeInclude(out, "../entity/" + entity + ".h");
 			}
@@ -2259,7 +2259,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "#ifndef " + define);
 	writeLine(file, "#define " + define);
 
-	writeInclude(file, "EXPRESS/EXPRESS.h");
+	writeInclude(file, "../EarlyBinding/src/EXPRESS/EXPRESS.h");
 	writeInclude(file, "string", true);
 	linebreak(file);
 

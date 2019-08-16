@@ -44,99 +44,97 @@
 
 namespace OpenInfraPlatform
 {
-	namespace IfcGeometryConverter
-	{
-		class GeometrySettings;
+	namespace Core {
+		namespace IfcGeometryConverter {
+			class GeometrySettings;
 
-		enum ProjectionPlane
-		{
-			UNDEFINED,
-			XY_PLANE,
-			YZ_PLANE,
-			XZ_PLANE
-		};
+			enum ProjectionPlane {
+				UNDEFINED,
+				XY_PLANE,
+				YZ_PLANE,
+				XZ_PLANE
+			};
 
-		struct GeomException : public std::exception
-		{
-		   std::string s;
-		   GeomException(std::string ss) : s(ss) {}
-		   ~GeomException() throw () {} // Updated
-		   const char* what() const throw() { return s.c_str(); }
-		};
+			struct GeomException : public std::exception {
+				std::string s;
+				GeomException(std::string ss) : s(ss) {}
+				~GeomException() throw () {} // Updated
+				const char* what() const throw() { return s.c_str(); }
+			};
 
-		class GeomUtils
-		{
-		public:
+			class GeomUtils {
+			public:
 
-			static carve::geom::vector<3> computePolygonCentroid( 
-										const std::vector<carve::geom::vector<3> >& polygon );
-			static carve::geom::vector<3> computePolygonNormal( 
-										const std::vector<carve::geom::vector<3> >& polygon );
-			static carve::geom::vector<3> computePolygon2DNormal( 
-										const std::vector<carve::geom::vector<2> >& polygon );
+				static carve::geom::vector<3> computePolygonCentroid(
+					const std::vector<carve::geom::vector<3> >& polygon);
+				static carve::geom::vector<3> computePolygonNormal(
+					const std::vector<carve::geom::vector<3> >& polygon);
+				static carve::geom::vector<3> computePolygon2DNormal(
+					const std::vector<carve::geom::vector<2> >& polygon);
 
-			static bool LineSegmentToLineIntersection(carve::geom::vector<2>& v1, 
-														carve::geom::vector<2>& v2, 
-														carve::geom::vector<2>& v3, 
-														carve::geom::vector<2>& v4, 
-												std::vector<carve::geom::vector<2> >& result );
+				static bool LineSegmentToLineIntersection(carve::geom::vector<2>& v1,
+					carve::geom::vector<2>& v2,
+					carve::geom::vector<2>& v3,
+					carve::geom::vector<2>& v4,
+					std::vector<carve::geom::vector<2> >& result);
 
-			static bool LineSegmentToLineSegmentIntersection(carve::geom::vector<2>& v1, 
-															carve::geom::vector<2>& v2, 
-															carve::geom::vector<2>& v3, 
-															carve::geom::vector<2>& v4, 
-												std::vector<carve::geom::vector<2> >& result );
+				static bool LineSegmentToLineSegmentIntersection(carve::geom::vector<2>& v1,
+					carve::geom::vector<2>& v2,
+					carve::geom::vector<2>& v3,
+					carve::geom::vector<2>& v4,
+					std::vector<carve::geom::vector<2> >& result);
 
-			static void appendPointsToCurve(
-										const std::vector<carve::geom::vector<3> >& points_vec, 
-										std::vector<carve::geom::vector<3> >& target_vec );
-			static void appendPointsToCurve(
-										const std::vector<carve::geom::vector<2> >& points_vec, 
-											std::vector<carve::geom::vector<3> >& target_vec );
+				static void appendPointsToCurve(
+					const std::vector<carve::geom::vector<3> >& points_vec,
+					std::vector<carve::geom::vector<3> >& target_vec);
+				static void appendPointsToCurve(
+					const std::vector<carve::geom::vector<2> >& points_vec,
+					std::vector<carve::geom::vector<3> >& target_vec);
 
-			static void computeInverse(	const carve::math::Matrix& matrix_a, 
-										carve::math::Matrix& inv );
+				static void computeInverse(const carve::math::Matrix& matrix_a,
+					carve::math::Matrix& inv);
 
-			static void closestPointOnLine( const carve::geom::vector<3>& point, 
-											const carve::geom::vector<3>& line_origin, 
-											const carve::geom::vector<3>& line_direction, 
-											carve::geom::vector<3>& closest );
+				static void closestPointOnLine(const carve::geom::vector<3>& point,
+					const carve::geom::vector<3>& line_origin,
+					const carve::geom::vector<3>& line_direction,
+					carve::geom::vector<3>& closest);
 
 
-			static void closestPointOnLine( const buw::Vector3f& point, 
-											const buw::Vector3f& line_origin, 
-											const buw::Vector3f& line_direction, 
-											buw::Vector3f& closest );
+				static void closestPointOnLine(const buw::Vector3f& point,
+					const buw::Vector3f& line_origin,
+					const buw::Vector3f& line_direction,
+					buw::Vector3f& closest);
 
-			static bool isPointOnLineSegment( double& lambda, 
-											const buw::Vector3f& point, 
-											const buw::Vector3f& line_origin, 
-											const buw::Vector3f& line_direction );
-	
-			static void extrude(const std::vector<std::vector<carve::geom::vector<2> > >& paths, 
-								const carve::geom::vector<3> dir, 
-								std::shared_ptr<carve::input::PolyhedronData>& poly_data, 
-								std::stringstream& err );
+				static bool isPointOnLineSegment(double& lambda,
+					const buw::Vector3f& point,
+					const buw::Vector3f& line_origin,
+					const buw::Vector3f& line_direction);
 
-			static void makeLookAt(	const carve::geom::vector<3>& eye,
-									const carve::geom::vector<3>& center,
-									const carve::geom::vector<3>& up, 
-									carve::math::Matrix& m );
+				static void extrude(const std::vector<std::vector<carve::geom::vector<2> > >& paths,
+					const carve::geom::vector<3> dir,
+					std::shared_ptr<carve::input::PolyhedronData>& poly_data,
+					std::stringstream& err);
 
-			static bool bisectingPlane( const carve::geom::vector<3>& v1, 
-										const carve::geom::vector<3>& v2, 
-										const carve::geom::vector<3>& v3, 
-										carve::geom::vector<3>& normal );
+				static void makeLookAt(const carve::geom::vector<3>& eye,
+					const carve::geom::vector<3>& center,
+					const carve::geom::vector<3>& up,
+					carve::math::Matrix& m);
 
-			static void convertPlane2Matrix(	const carve::geom::vector<3>& plane_normal, 
-												const carve::geom::vector<3>& plane_position, 
-												const carve::geom::vector<3>& local_z, 
-												carve::math::Matrix& resulting_matrix );
+				static bool bisectingPlane(const carve::geom::vector<3>& v1,
+					const carve::geom::vector<3>& v2,
+					const carve::geom::vector<3>& v3,
+					carve::geom::vector<3>& normal);
 
-			static bool checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set, 
-										std::stringstream& err_poly, int entity_id );
-	
-		};
+				static void convertPlane2Matrix(const carve::geom::vector<3>& plane_normal,
+					const carve::geom::vector<3>& plane_position,
+					const carve::geom::vector<3>& local_z,
+					carve::math::Matrix& resulting_matrix);
+
+				static bool checkMeshSet(const carve::mesh::MeshSet<3>* mesh_set,
+					std::stringstream& err_poly, int entity_id);
+
+			};
+		}
 	}
 }
 

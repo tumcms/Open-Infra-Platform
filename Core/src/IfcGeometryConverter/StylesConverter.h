@@ -24,14 +24,14 @@
 
 namespace OpenInfraPlatform
 {
-	namespace IfcGeometryConverter
-	{
-		class StylesConverter
-		{
-		public:
-			StylesConverter();
-			~StylesConverter();
-		};
+	namespace Core {
+		namespace IfcGeometryConverter {
+			class StylesConverter {
+			public:
+				StylesConverter();
+				~StylesConverter();
+			};
+		}
 	}
 }
 

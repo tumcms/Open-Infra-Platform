@@ -353,9 +353,9 @@ endforeach()
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # USER INTERFACE. 
-file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
+# file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Forms_Source 				UserInterface/Forms/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Resources/*.*)
+# file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Resources/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_ColorPicker_Source		UserInterface/ColorPicker/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Dialogues_Source 			UserInterface/Dialogues/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source 	UserInterfaces/QtPropertyBrowser/*.*)
@@ -412,10 +412,10 @@ FILE(GLOB Translation_TS UserInterface/Data/translations/*.ts)
 #------------------------------------------------------------------------------
 
 # USER INTERFACE.
-source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
+# source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
 source_group(UserInterface\\Forms				FILES ${OpenInfraPlatform_UserInterface_Forms_Source})
 source_group(UserInterface\\ColorPicker			FILES ${OpenInfraPlatform_UserInterface_ColorPicker_Source})
-source_group(UserInterface\\Resources			FILES ${OpenInfraPlatform_UserInterface_Resources_Source})
+# source_group(UserInterface\\Resources			FILES ${OpenInfraPlatform_UserInterface_Resources_Source})
 source_group(UserInterface\\Dialogues			FILES ${OpenInfraPlatform_UserInterface_Dialogues_Source})
 source_group(UserInterface\\QtPropertyBrowser	FILES ${OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source})
 source_group(UserInterface\\Shader				FILES ${OpenInfraPlatform_UserInterface_Shader_Source})
@@ -454,9 +454,9 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 
 	add_executable(OpenInfraPlatform.UI
 		${OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source}
-		${OpenInfraPlatform_UserInterface_Data_Source}
+		#${OpenInfraPlatform_UserInterface_Data_Source}
 		${OpenInfraPlatform_UserInterface_Forms} 
-		${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}				
+		#${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}				
 		${OpenInfraPlatform_UserInterface_ColorPicker_Source}
 		${OpenInfraPlatform_UserInterface_Dialogues_Source}
 		${OpenInfraPlatform_UserInterface_ViewPanel_Source}
