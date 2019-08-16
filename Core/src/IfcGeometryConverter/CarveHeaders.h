@@ -26,11 +26,9 @@
 #include <carve/carve.hpp>
 #include <carve/matrix.hpp>
 #include <carve/geom3d.hpp>
-//#include <common/geometry.hpp> // not compilable
 #include <carve/poly.hpp>
 #include <carve/polyhedron_base.hpp>
 #include <carve/mesh.hpp>
-//#include <carve/mesh_simplify.hpp> // not compilable
 #include <carve/input.hpp>
 #include <carve/csg_triangulator.hpp>
 

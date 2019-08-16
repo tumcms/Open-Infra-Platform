@@ -26,12 +26,12 @@
 
 namespace OpenInfraPlatform {
 	namespace Core {
-		void BLUEINFRASTRUCTURE_API exportIfcAlignment1x1(
+		void /*BLUEINFRASTRUCTURE_API*/ exportIfcAlignment1x1(
 			buw::ReferenceCounted<buw::AlignmentModel> am,
 			buw::ReferenceCounted<buw::DigitalElevationModel> dem,
 			const std::string& filename);
 
-		class BLUEINFRASTRUCTURE_API ExportIfc4x1 : public Export {
+		class /*BLUEINFRASTRUCTURE_API*/ ExportIfc4x1 : public Export {
 		public:
 			ExportIfc4x1(const ifcAlignmentExportDescription& desc,
 				buw::ReferenceCounted<buw::AlignmentModel> am,

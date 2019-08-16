@@ -30,7 +30,7 @@
 #include "GeometrySettings.h"
 #include "SplineConverter.h"
 
-namespace OpenInfraPlatform {
+namespace Core {
 	namespace IfcGeometryConverter {
 		template <
 			class IfcEntityTypesT,

@@ -21,39 +21,26 @@
 #include "DataManagement/General/namespace.h"
 #include <boost/noncopyable.hpp>
 
-//#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
-//#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/DigitalElevationModel.h"
-//#include "OpenInfraPlatform/Infrastructure/ProxyModel/ProxyModel.h"
-//#include "OpenInfraPlatform/Infrastructure/DigitalElevationModel/TrafficSignModel.h"
-//#include "OpenInfraPlatform/Infrastructure/Girder/GirderModel.h"
-//#include "OpenInfraPlatform/Infrastructure/SlabField/SlabFieldModel.h"
-
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_BEGIN
-//OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
 
-class BLUEINFRASTRUCTURE_API Import : private boost::noncopyable {
-public:
-	Import(const std::string& filename);
+namespace DataManagement 
+{
+		class /*BLUEINFRASTRUCTURE_API*/ Import : private boost::noncopyable 
+		{
+		public:
+			Import(const std::string& filename);
+			buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> getIfcGeometryModel();
 
-	buw::ReferenceCounted<buw::AlignmentModel> getAlignmentModel();
-	buw::ReferenceCounted<buw::DigitalElevationModel> getDigitalElevationModel();
-	buw::ReferenceCounted<buw::TrafficSignModel> getTrafficSignModel();
-	buw::ReferenceCounted<buw::GirderModel> getGirderModel();
-	buw::ReferenceCounted<buw::SlabFieldModel> getSlabFieldModel();
-	buw::ReferenceCounted<buw::ProxyModel> getProxyModel();
+		protected:
+			std::string filename_;
+			buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel_;
+		};
 
-protected:
-	std::string filename_;
-	buw::ReferenceCounted<buw::AlignmentModel> alignmentModel_;
-	buw::ReferenceCounted<buw::DigitalElevationModel> digitalElevationModel_;
-	buw::ReferenceCounted<buw::TrafficSignModel> trafficSignModel_;
-	buw::ReferenceCounted<buw::GirderModel> girderModel_;
-	buw::ReferenceCounted<buw::SlabFieldModel> slabFieldModel_;
-	buw::ReferenceCounted<buw::ProxyModel> proxyModel_;
-};
+	void Import(const std::string & filename);
+}
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_END
 
 namespace buw {
-	using OpenInfraPlatform::Core::Import;
+	using OpenInfraPlatform::Core::DataManagement::Import;
 }
