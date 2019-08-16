@@ -34,6 +34,7 @@
 
 namespace OpenInfraPlatform
 {
+	namespace Core {
 	namespace IfcGeometryConverter
 	{
 		template <
@@ -2540,6 +2541,7 @@ namespace OpenInfraPlatform
 		//	return false;
 		//}
 
+	}
 	}
 }
 

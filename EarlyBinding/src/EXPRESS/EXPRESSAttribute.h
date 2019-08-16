@@ -23,8 +23,8 @@
 
 #include "../EarlyBinding/src/namespace.h"
 
-#include "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSOptional.h"
-#include "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSType.h"
+#include "../EarlyBinding/src/EXPRESS/EXPRESSOptional.h"
+#include "../EarlyBinding/src/EXPRESS/EXPRESSType.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 

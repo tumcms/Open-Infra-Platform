@@ -26,16 +26,16 @@ file(GLOB Core_Source 								src/*.*)
 file(GLOB Core_DataManagement_Source 				src/DataManagement/*.*)
 file(GLOB Core_DataManagement_General_Source 		src/DataManagement/General/*.*)
 file(GLOB Core_DataManagement_Command_Source		src/DataManagement/Command/*.*)
-file(GLOB Core_DataManagement_Import_Source			src/DataManagement/Import/*.*)
-file(GLOB Core_DataManagement_Export_Source			src/DataManagement/Export/*.*)
+#file(GLOB Core_DataManagement_Import_Source		src/DataManagement/Import/*.*)
+#file(GLOB Core_DataManagement_Export_Source		src/DataManagement/Export/*.*)
 file(GLOB Core_IfcGeometryConverter_Source			src/IfcGeometryConverter/*.*)
 
 source_group(Core								FILES $Core_Source})
 source_group(Core\\DataManagement				FILES ${Core_DataManagement_Source})
 source_group(Core\\DataManagement\\General		FILES ${Core_DataManagement_General_Source})
 source_group(Core\\DataManagement\\Command		FILES ${Core_DataManagement_Command_Source})
-source_group(Core\\DataManagement\\Import		FILES ${Core_DataManagement_Import_Source})
-source_group(Core\\DataManagement\\Export		FILES ${Core_DataManagement_Export_Source})
+#source_group(Core\\DataManagement\\Import		FILES ${Core_DataManagement_Import_Source})
+#source_group(Core\\DataManagement\\Export		FILES ${Core_DataManagement_Export_Source})
 source_group(Core\\IfcGeometryConverter			FILES ${Core_IfcGeometryConverter_Source})
 
 include_directories(
@@ -49,8 +49,8 @@ add_library(OpenInfraPlatform.Core STATIC
 	${Core_DataManagement_Source}
 	${Core_DataManagement_General_Source}
 	${Core_DataManagement_Command_Source}
-	${Core_DataManagement_Import_Source}
-	${Core_DataManagement_Export_Source}
+	#${Core_DataManagement_Import_Source}
+	#${Core_DataManagement_Export_Source}
 	${Core_IfcGeometryConverter_Source}
 )
 

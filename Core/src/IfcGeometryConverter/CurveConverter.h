@@ -30,6 +30,7 @@
 #include "GeometrySettings.h"
 #include "SplineConverter.h"
 
+namespace OpenInfraPlatform{
 namespace Core {
 	namespace IfcGeometryConverter {
 		template <
@@ -1730,6 +1731,7 @@ namespace Core {
 				std::shared_ptr<IfcUnitConverterT>	unitConverter;
 		}; // end class
 	}; // end namespace IfcGeometryConverter
+	}; // end namespace Core
 }; // end namespace OIP
 
 
