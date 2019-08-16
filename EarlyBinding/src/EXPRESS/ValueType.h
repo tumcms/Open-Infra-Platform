@@ -21,7 +21,7 @@
 #ifndef OpenInfraPlatform_EarlyBinding_ValueType_102447dd_302a_4c8f_bf0d_7515bbdcfc1c_h
 #define OpenInfraPlatform_EarlyBinding_ValueType_102447dd_302a_4c8f_bf0d_7515bbdcfc1c_h
 
-#include "OpenInfraPlatform/EarlyBinding/namespace.h"
+#include "../EarlyBinding/src/namespace.h"
 
 #include "EXPRESSOptional.h"
 #include "EXPRESSContainer.h"
