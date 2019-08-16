@@ -17,38 +17,17 @@
 
 #include "Import.h"
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_BEGIN
 
-Import::Import(const std::string& filename) : filename_(filename) {
-	alignmentModel_ = buw::makeReferenceCounted<buw::AlignmentModel>();
-	digitalElevationModel_ = buw::makeReferenceCounted<buw::DigitalElevationModel>();
-	trafficSignModel_ = buw::makeReferenceCounted<buw::TrafficSignModel>();
-	girderModel_ = buw::makeReferenceCounted<buw::GirderModel>();
-	slabFieldModel_ = buw::makeReferenceCounted<buw::SlabFieldModel>();
-	proxyModel_ = buw::makeReferenceCounted<buw::ProxyModel>();
-}
-buw::ReferenceCounted<buw::AlignmentModel> Import::getAlignmentModel() {
-	return alignmentModel_;
-}
-buw::ReferenceCounted<buw::DigitalElevationModel> Import::getDigitalElevationModel() {
-	return digitalElevationModel_;
-}
-
-buw::ReferenceCounted<buw::TrafficSignModel> Import::getTrafficSignModel() {
-	return trafficSignModel_;
-}
-
-buw::ReferenceCounted<buw::GirderModel> Import::getGirderModel() {
-	return girderModel_;
-}
-
-buw::ReferenceCounted<buw::SlabFieldModel> Import::getSlabFieldModel() {
-	return slabFieldModel_;
-}
-
-buw::ReferenceCounted<buw::ProxyModel> Import::getProxyModel()
+DataManagement::Import(const std::string& filename) : filename_(filename) 
 {
-	return proxyModel_;
+	ifcGeometryModel_ = buw::makeReferenceCounted::<buw::IfcGeometryModel>();
 }
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_INFRASTRUCTURE_END
+
+buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> OpenInfraPlatform::Core::DataManagement::Import::Import getIfcGeometryModel() 
+{
+	return ifcGeometryModel_;
+}
+
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_END

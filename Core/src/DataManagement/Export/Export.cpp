@@ -17,13 +17,11 @@
 
 #include "Export.h"
 
-OpenInfraPlatform::Infrastructure::Export::Export(buw::ReferenceCounted<buw::AlignmentModel> am,
-                                                  buw::ReferenceCounted<buw::DigitalElevationModel> dem,
-                                                  buw::ReferenceCounted<buw::ProxyModel> pm,
-                                                  const std::string& filename)
-    : alignmentModel_(am), digitalElevationModel_(dem), proxyModel_(pm), filename_(filename) {
+OpenInfraPlatform::Core::DataManagement::Export::Export(buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> igm,
+                                                 const std::string& filename)
+    : ifcGeometryModel_(igm), filename_(filename) 
+{
 }
 
-OpenInfraPlatform::Infrastructure::Export::Export(buw::ReferenceCounted<buw::AlignmentModel> am, buw::ReferenceCounted<buw::DigitalElevationModel> dem, const std::string& filename)
-    : alignmentModel_(am), digitalElevationModel_(dem), proxyModel_(nullptr), filename_(filename) {
-}
+
+

@@ -17,12 +17,12 @@
 
 #pragma once
 
-#include "OpenInfraPlatform/Infrastructure/Import/Import.h"
+#include "../Core/src/DataManagement/Import/Import.h"
 #include <boost/noncopyable.hpp>
 
 namespace OpenInfraPlatform {
-    namespace Infrastructure {
-        class BLUEINFRASTRUCTURE_API ImportIfc4x1 : public Import {
+    namespace Core {
+        class /*BLUEINFRASTRUCTURE_API*/ ImportIfc4x1 : public Import {
         public:
             ImportIfc4x1(const std::string& filename);
 
@@ -34,5 +34,5 @@ namespace OpenInfraPlatform {
 } // end namespace OpenInfraPlatform
 
 namespace buw {
-    using OpenInfraPlatform::Infrastructure::ImportIfc4x1;
+    using OpenInfraPlatform::Core::ImportIfc4x1;
 }

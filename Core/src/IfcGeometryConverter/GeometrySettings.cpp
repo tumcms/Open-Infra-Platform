@@ -32,7 +32,7 @@
 
 #include "GeometrySettings.h"
 
-using namespace OpenInfraPlatform::IfcGeometryConverter;
+using namespace OpenInfraPlatform::Core::IfcGeometryConverter;
 
 /**********************************************************************************************/
 

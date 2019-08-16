@@ -42,7 +42,7 @@
 
 /**********************************************************************************************/
 
-namespace OpenInfraPlatform
+namespace Core
 {
 	namespace IfcGeometryConverter
 	{

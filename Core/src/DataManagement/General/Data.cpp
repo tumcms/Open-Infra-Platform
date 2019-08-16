@@ -20,23 +20,17 @@
 #include <BlueFramework/Application/DataManagement/Notification/NotifiyAfterEachActionOnlyOnce.h>
 
 #include "reader/IFC2X3Reader.h"
-//#include "reader/IFC4Reader.h"
 #include "reader/IFC4X1Reader.h"
-//#include "reader/IFC4X2_BIM4ROADReader.h"
-//#include "reader/IFC4X2_DRAFT_1Reader.h"
 
 #include "EMTIFC2X3EntityTypes.h"
 #include "IFC2X3.h"
 
-//#include "EMTIFC4EntityTypes.h"
 #include "EMTIFC4X1EntityTypes.h"
 #include "IFC4X1.h"
-//#include "EMTIFC4X2_BIM4ROADEntityTypes.h"
-//#include "EMTIFC4X2_DRAFT_1EntityTypes.h"
 
-#include "OpenInfraPlatform/Core/IfcGeometryConverter/IfcImporter.h"
-#include "OpenInfraPlatform/Core/IfcGeometryConverter/GeometryInputData.h"
-#include "OpenInfraPlatform/Core/IfcGeometryConverter/IfcPeekStepReader.h"
+#include "IfcGeometryConverter\IfcImporter.h"
+#include "IfcGeometryConverter\GeometryInputData.h"
+#include "IfcGeometryConverter\IfcPeekStepReader.h"
 
 #include <QtXml>
 #include <QtXmlPatterns>
@@ -48,8 +42,8 @@
 #include "AsyncJob.h"
 
 
-OpenInfraPlatform::DataManagement::Data::Data() : 
-BlueFramework::Application::DataManagement::Data(new BlueFramework::Application::DataManagement::NotifiyAfterEachActionOnlyOnce<OpenInfraPlatform::DataManagement::Data>()),
+OpenInfraPlatform::Core::DataManagement::Data::Data() : 
+BlueFramework::Application::DataManagement::Data(new BlueFramework::Application::DataManagement::NotifiyAfterEachActionOnlyOnce<OpenInfraPlatform::Core::DataManagement::Data>()),
 clearColor_(0.3f, 0.5f, 0.9f),
 enableGradientClear_(true),
 bDrawGrid_(false),
@@ -61,17 +55,18 @@ tempIfcGeometryModel_(nullptr)
 {
 	clear(false);
 
-	latestChangeFlag_ = (ChangeFlag) (ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel);
+	latestChangeFlag_ = (ChangeFlag) (ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences);
+	/*latestChangeFlag_ = (ChangeFlag)(ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel)*/;
 
-	AsyncJob::getInstance().jobFinished.connect(boost::bind(&OpenInfraPlatform::DataManagement::Data::jobFinished, this, _1, _2));
+	AsyncJob::getInstance().jobFinished.connect(boost::bind(&OpenInfraPlatform::Core::DataManagement::Data::jobFinished, this, _1, _2));
 }
 
-OpenInfraPlatform::DataManagement::Data::~Data()
+OpenInfraPlatform::Core::DataManagement::Data::~Data()
 {
 }
 
 
-void OpenInfraPlatform::DataManagement::Data::open( const std::string & filename )
+void OpenInfraPlatform::Core::DataManagement::Data::open( const std::string & filename )
 {
 	if (boost::filesystem::exists(filename))
 	{
@@ -81,13 +76,11 @@ void OpenInfraPlatform::DataManagement::Data::open( const std::string & filename
 }
 
 
-void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) {   
+void OpenInfraPlatform::Core::DataManagement::Data::clear(const bool notifyObservers) {   
 	ifcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
 
-	
-
 	//pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
-	
+
 	if (notifyObservers) {
 		// The notification state is not used here, because a clear is not executed by an action.
 		//m_pNotifiactionState->Change();
@@ -98,24 +91,24 @@ void OpenInfraPlatform::DataManagement::Data::clear(const bool notifyObservers) 
 	}
 }
 
-void OpenInfraPlatform::DataManagement::Data::clear()
+void OpenInfraPlatform::Core::DataManagement::Data::clear()
 {
 	clear(true);
 }
 
-void OpenInfraPlatform::DataManagement::Data::pushChange(OpenInfraPlatform::DataManagement::ChangeFlag flag)
+void OpenInfraPlatform::Core::DataManagement::Data::pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag flag)
 {
 	latestChangeFlag_ = flag;
 	BlueFramework::Application::DataManagement::Data::Change();
 }
 
-OpenInfraPlatform::DataManagement::ChangeFlag OpenInfraPlatform::DataManagement::Data::getLatesChangeFlag()
+OpenInfraPlatform::Core::DataManagement::ChangeFlag OpenInfraPlatform::Core::DataManagement::Data::getLatesChangeFlag()
 {
 	return latestChangeFlag_;
 }
 
 
-void OpenInfraPlatform::DataManagement::Data::import(const std::string & filename)
+void OpenInfraPlatform::Core::DataManagement::Data::import(const std::string & filename)
 {
 	BLUE_ASSERT(boost::filesystem::exists(filename))("File does not exist");
 	if(boost::filesystem::exists(filename)) {
@@ -126,7 +119,7 @@ void OpenInfraPlatform::DataManagement::Data::import(const std::string & filenam
 	}
 }
 
-void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filename)
+void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing ").append(filename));
 
@@ -134,14 +127,14 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 	std::transform(filetype.begin(), filetype.end(), filetype.begin(), ::tolower);
 	if (filetype == ".ifc" || filetype == ".stp")
 	{
-		using OpenInfraPlatform::IfcGeometryConverter::IfcPeekStepReader;
+		using OpenInfraPlatform::Core::IfcGeometryConverter::IfcPeekStepReader;
 		IfcPeekStepReader::IfcSchema ifcSchema = IfcPeekStepReader::parseIfcHeader(filename);
-		tempIfcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
+		tempIfcGeometryModel_ = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
 
 
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC2X3) {
 			expressModel_ = OpenInfraPlatform::IFC2X3::IFC2X3Reader::FromFile(filename);
-			auto importer = OpenInfraPlatform::IfcGeometryConverter::IfcImporterT<emt::IFC2X3EntityTypes, OpenInfraPlatform::IfcGeometryConverter::UnitConverter< emt::IFC2X3EntityTypes>>();
+			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC2X3EntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC2X3EntityTypes>>();
 			if (importer.collectGeometryData(expressModel_)) {
 				auto converter = IfcGeometryConverter::ConverterBuwT< emt::IFC2X3EntityTypes>();
 				if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
@@ -153,7 +146,7 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 		}
 		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X1) {
 			expressModel_ = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename);
-			auto importer = OpenInfraPlatform::IfcGeometryConverter::IfcImporterT<emt::IFC4X1EntityTypes, OpenInfraPlatform::IfcGeometryConverter::UnitConverter< emt::IFC4X1EntityTypes>>();
+			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X1EntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC4X1EntityTypes>>();
 			if (importer.collectGeometryData(expressModel_)) {
 				auto converter = IfcGeometryConverter::ConverterBuwT<emt::IFC4X1EntityTypes>();
 				if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
@@ -167,7 +160,7 @@ void OpenInfraPlatform::DataManagement::Data::importJob(const std::string& filen
 }
 
 
-void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool completed)
+void OpenInfraPlatform::Core::DataManagement::Data::jobFinished(int jobID, bool completed)
 {
 	if(currentJobID_ != jobID) {
 		/*If jobID doesn't match, write errror to log file and display a dialog and return.*/
@@ -202,129 +195,107 @@ void OpenInfraPlatform::DataManagement::Data::jobFinished(int jobID, bool comple
 
 		tempIfcGeometryModel_ = nullptr;
 	}
-	
-
 	pushChange(flag);
 }
 
 
 
-void OpenInfraPlatform::DataManagement::Data::setClearColor( const buw::Color3f& color )
+void OpenInfraPlatform::Core::DataManagement::Data::setClearColor( const buw::Color3f& color )
 {
 	clearColor_ = color;
 
 	pushChange(ChangeFlag::Preferences);
 }
 
-buw::Color3f OpenInfraPlatform::DataManagement::Data::getClearColor()
+buw::Color3f OpenInfraPlatform::Core::DataManagement::Data::getClearColor()
 {
 	return clearColor_;
 }
 
-void OpenInfraPlatform::DataManagement::Data::enableGradientClear( const bool enable )
+void OpenInfraPlatform::Core::DataManagement::Data::enableGradientClear( const bool enable )
 {
 	enableGradientClear_ = enable;
 
 	pushChange(ChangeFlag::Preferences);
 }
 
-bool OpenInfraPlatform::DataManagement::Data::isGradientClearEnabled() const
+bool OpenInfraPlatform::Core::DataManagement::Data::isGradientClearEnabled() const
 {
 	return enableGradientClear_;
 }
 
-bool OpenInfraPlatform::DataManagement::Data::isDrawGridEnabled() const
+bool OpenInfraPlatform::Core::DataManagement::Data::isDrawGridEnabled() const
 {
 	return bDrawGrid_;
 }
 
-void OpenInfraPlatform::DataManagement::Data::enableDrawGrid( bool val )
+void OpenInfraPlatform::Core::DataManagement::Data::enableDrawGrid( bool val )
 {
 	bDrawGrid_ = val;
 
 	pushChange(ChangeFlag::Preferences);
 }
 
-const char* OpenInfraPlatform::DataManagement::Data::getApplicationName()
+const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationName()
 {
 	return "TUM Open Infra Platform";
 }
 
-const char* OpenInfraPlatform::DataManagement::Data::getApplicationVersionString()
+const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationVersionString()
 {
 	return "2018";
 }
 
-const char* OpenInfraPlatform::DataManagement::Data::getApplicationOpenFileFilter()
+const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationOpenFileFilter()
 {
 	return "All files (*.*);;LandXML (*.xml);;OKSTRA (*.xml; *.cte);;IfcAlignment BuildingSmart P6 Step File (*.ifc);;TUM Open Infra Platform File (*.bic);;IfcRoad (TUM Proposal) ICCBEI 2015 (*.ifc);;IfcBridge Step File (*.stp)";
 }
 
-const char* OpenInfraPlatform::DataManagement::Data::getApplicationSaveFileFilter()
+const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationSaveFileFilter()
 {
 	return "TUM Open Infra Platform File (*.bic);;All files (*.*)";
 }
 
-const char* OpenInfraPlatform::DataManagement::Data::getApplicationImportFileFilter()
+const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationImportFileFilter()
 {
 	return "LandXML (*.xml);;All files (*.*)";
 }
 
-const char* OpenInfraPlatform::DataManagement::Data::getApplicationNameXML()
+const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationNameXML()
 {
 	return "TUMOpenInfraPlatform";
 }
 
 
-void OpenInfraPlatform::DataManagement::Data::enableShowReferenceCoordinateSystem( bool enable )
+void OpenInfraPlatform::Core::DataManagement::Data::enableShowReferenceCoordinateSystem( bool enable )
 {
 	bShowReferenceCoordinateSystem = enable;
 
 	pushChange(ChangeFlag::Preferences);
 }
 
-bool OpenInfraPlatform::DataManagement::Data::isShowReferenceCoordinateSystemEnabled() const
+bool OpenInfraPlatform::Core::DataManagement::Data::isShowReferenceCoordinateSystemEnabled() const
 {
 	return bShowReferenceCoordinateSystem;
 }
 
-void OpenInfraPlatform::DataManagement::Data::enableSkybox( const bool enable )
+void OpenInfraPlatform::Core::DataManagement::Data::enableSkybox( const bool enable )
 {
 	bDrawSkybox_ = enable;
 
 	pushChange(ChangeFlag::Preferences);
 }
 
-bool OpenInfraPlatform::DataManagement::Data::isSkyboxEnabled() const
+bool OpenInfraPlatform::Core::DataManagement::Data::isSkyboxEnabled() const
 {
 	return bDrawSkybox_;
 }
 
 
-buw::Vector3d OpenInfraPlatform::DataManagement::Data::getOffset() const
+buw::Vector3d OpenInfraPlatform::Core::DataManagement::Data::getOffset() const
 {
 	buw::Vector3d minPos;
 	buw::Vector3d maxPos;
-	//if (digitalElevationModel_)
-	//	digitalElevationModel_->getSurfacesExtend(minPos, maxPos);
-	//
-	//if (alignmentModel_ && alignmentModel_->getAlignmentCount() > 0)
-	//{
-	//	auto aabb = alignmentModel_->getExtends();
-	//	if (digitalElevationModel_ && digitalElevationModel_->getSurfaceCount() > 0)
-	//	{
-	//		minPos = buw::minimizedVector(minPos, aabb.getMinimum());
-	//		maxPos = buw::maximizedVector(maxPos, aabb.getMaximum());
-	//	}
-	//	else
-	//	{
-	//		minPos = aabb.getMinimum();
-	//		maxPos = aabb.getMaximum();
-	//	}
-	//}
-
-	
-
 	buw::Vector3d offsetViewArea = minPos + 0.5 * (maxPos - minPos);
 
 	return offsetViewArea;
@@ -333,75 +304,75 @@ buw::Vector3d OpenInfraPlatform::DataManagement::Data::getOffset() const
 
 // Add Georeference
 
-double  OpenInfraPlatform::DataManagement::Data::getEastings() 
+double  OpenInfraPlatform::Core::DataManagement::Data::getEastings()
 {
 	return m_Eastings;
 }
 
-void  OpenInfraPlatform::DataManagement::Data::setEastings(double value)
+void  OpenInfraPlatform::Core::DataManagement::Data::setEastings(double value)
 {
 	m_Eastings = value;
 }
 
-double  OpenInfraPlatform::DataManagement::Data::getNorthings()
+double  OpenInfraPlatform::Core::DataManagement::Data::getNorthings()
 {
 	return m_Northings;
 }
 
-void  OpenInfraPlatform::DataManagement::Data::setNorthings(double value)
+void  OpenInfraPlatform::Core::DataManagement::Data::setNorthings(double value)
 {
 	m_Northings = value;
 }
 
 
-double  OpenInfraPlatform::DataManagement::Data::getOrthogonalHeight()
+double  OpenInfraPlatform::Core::DataManagement::Data::getOrthogonalHeight()
 {
 	return m_OrthogonalHeight;
 }
 
-void  OpenInfraPlatform::DataManagement::Data::setOrthogonalHeight(double value)
+void  OpenInfraPlatform::Core::DataManagement::Data::setOrthogonalHeight(double value)
 {
 	m_OrthogonalHeight = value;
 }
 
 
-QString  OpenInfraPlatform::DataManagement::Data::getEPSGcodeName()
+QString  OpenInfraPlatform::Core::DataManagement::Data::getEPSGcodeName()
 {
 	return m_Name;
 }
 
-void  OpenInfraPlatform::DataManagement::Data::setEPSGcodeName(QString value)
+void  OpenInfraPlatform::Core::DataManagement::Data::setEPSGcodeName(QString value)
 {
 	m_Name = value;
 }
 
 
 
-void OpenInfraPlatform::DataManagement::Data::showViewCube(const bool enable)
+void OpenInfraPlatform::Core::DataManagement::Data::showViewCube(const bool enable)
 {
 	bShowViewCube_ = enable;
 
 	pushChange(ChangeFlag::Preferences);
 }
 
-bool OpenInfraPlatform::DataManagement::Data::isViewCubeEnabled()
+bool OpenInfraPlatform::Core::DataManagement::Data::isViewCubeEnabled()
 {
 	return bShowViewCube_;
 }
 
-buw::ReferenceCounted<OpenInfraPlatform::IfcGeometryConverter::IfcGeometryModel> OpenInfraPlatform::DataManagement::Data::getIfcGeometryModel() const
+buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> OpenInfraPlatform::Core::DataManagement::Data::getIfcGeometryModel() const
 { 
 	return ifcGeometryModel_;
 }
 
-void OpenInfraPlatform::DataManagement::Data::setShowFrameTimes(const bool enable)
+void OpenInfraPlatform::Core::DataManagement::Data::setShowFrameTimes(const bool enable)
 {
 	bShowFrameTime_ = enable;
 
 	pushChange(ChangeFlag::Preferences);
 }
 
-bool OpenInfraPlatform::DataManagement::Data::showFrameTimes() const
+bool OpenInfraPlatform::Core::DataManagement::Data::showFrameTimes() const
 {
 	return bShowFrameTime_;
 }
