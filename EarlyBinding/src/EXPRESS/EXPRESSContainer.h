@@ -21,7 +21,7 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSContainer_b030829d_7f85_44aa_87a3_e2a92f69bcfe_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSContainer_b030829d_7f85_44aa_87a3_e2a92f69bcfe_h
 
-#include "OpenInfraPlatform/EarlyBinding/namespace.h"
+#include "../EarlyBinding/src/namespace.h"
 
 #include "EXPRESSType.h"
 #include "EXPRESSModel.h"

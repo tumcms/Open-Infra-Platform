@@ -1528,13 +1528,13 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 	//writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESS.h");
 
 	if (type.isSimpleType() || type.isDerivedType()) {
-		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/ValueType.h");
+		writeInclude(out, "EXPRESS/ValueType.h");
 	}
 	else if (type.isEnumeration()) {
-		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EnumType.h");
+		writeInclude(out, "EXPRESS/EnumType.h");
 	}
 	else if (type.isContainerType()) {
-		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSContainer.h");
+		writeInclude(out, "EXPRESS/EXPRESSContainer.h");
 		//writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSOptional.h");
 
 		if (schema.hasType(type.getContainerType())) {
@@ -1546,8 +1546,8 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 
 	}
 	else if (type.isSelectType()) {
-		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSReference.h");
-		writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/SelectType.h");
+		writeInclude(out, "EXPRESS/EXPRESSReference.h");
+		writeInclude(out, "EXPRESS/SelectType.h");
 	}
 
 	writeInclude(out, "../" + schema.getName() + "Namespace.h");
@@ -2007,7 +2007,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 	writeLicenseAndNotice(out);
 		
 	writeInclude(out, type.getName() + ".h");
-	writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSOptional.h");
+	writeInclude(out, "EXPRESS/EXPRESSOptional.h");
 	linebreak(out);
 
 	std::set<std::string> types, entities;
@@ -2682,7 +2682,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "" << std::endl;
 
-	file << "file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source ${CMAKE_SOURCE_DIR}/EarlyBinding/src/OpenInfraPlatform/EarlyBinding/EXPRESS/*.*)" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source ${CMAKE_SOURCE_DIR}/EarlyBinding/src/EXPRESS/*.*)" << std::endl;
 
 	file << "" << std::endl;
 
@@ -3138,7 +3138,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 	writeLine(out, "#ifndef " + define);
 	writeLine(out, "#define " + define);
 	linebreak(out);
-	writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESS.h");
+	writeInclude(out, "EXPRESS/EXPRESS.h");
 	linebreak(out);
 	writeInclude(out, "visit_struct/visit_struct.hpp", true);
 	linebreak(out);
@@ -3406,7 +3406,7 @@ void GeneratorOIP::generateNamespaceHeader(Schema & schema)
 	writeLine(file, "#ifndef " + define);
 	writeLine(file, "#define " + define);
 	linebreak(file);
-	writeInclude(file, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESS.h");
+	writeInclude(file, "EXPRESS/EXPRESS.h");
 	linebreak(file);
 
 	writeBeginNamespace(file, schema);
