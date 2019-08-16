@@ -2030,7 +2030,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 		}
 
 		if (!entities.empty()) {
-			writeInclude(out, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESSReference.h");
+			writeInclude(out, "EXPRESS/EXPRESSReference.h");
 			for (auto entity : entities) {
 				writeInclude(out, "../entity/" + entity + ".h");
 			}
@@ -2259,7 +2259,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "#ifndef " + define);
 	writeLine(file, "#define " + define);
 
-	writeInclude(file, "OpenInfraPlatform/EarlyBinding/EXPRESS/EXPRESS.h");
+	writeInclude(file, "EXPRESS/EXPRESS.h");
 	writeInclude(file, "string", true);
 	linebreak(file);
 
