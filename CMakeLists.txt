@@ -378,7 +378,8 @@ set(OpenInfraPlatform_UserInterface_Forms
 	external/QSimpleUpdater/src/dialogs/download_dialog.ui
 	UserInterface/Forms/MainWindow.ui
 	UserInterface/Forms/LicenseAndCopyrightInformation.ui
-	
+	UserInterface/Forms/PreferencesDialog.ui
+
 	# Currently not included.
 	#UserInterface/Forms/CreateAccidentReport.ui
 	#UserInterface/Forms/CreateArcClothoidArc.ui
@@ -400,7 +401,6 @@ set(OpenInfraPlatform_UserInterface_Forms
 	#UserInterface/Forms/ExportIfcZipDialog.ui
 	#UserInterface/Forms/GenerateTerrain.ui
 	#UserInterface/Forms/OSMImportDialog.ui
-	#UserInterface/Forms/PreferencesDialog.ui
 	#UserInterface/Forms/VerticalAlignmentWindow.ui
 	#UserInterface/Forms/XYZImportDialog.ui
 	#UserInterface/Forms/AddGeoreferenceDialog.ui
@@ -480,7 +480,7 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 #------------------------------------------------------------------------------
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(OpenInfraPlatform.UI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::XmlPatterns Qt5::Svg Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Location Qt5::Positioning)
+target_link_libraries(OpenInfraPlatform.UI OpenInfraPlatform.Core Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::XmlPatterns Qt5::Svg Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Location Qt5::Positioning)
 
 target_link_libraries( OpenInfraPlatform.UI
 	${OpenInfraPlatform.EarlyBinding_LIBRARIES}

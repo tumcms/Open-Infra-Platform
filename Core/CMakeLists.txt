@@ -38,13 +38,9 @@ source_group(Core\\DataManagement\\Command		FILES ${Core_DataManagement_Command_
 #source_group(Core\\DataManagement\\Export		FILES ${Core_DataManagement_Export_Source})
 source_group(Core\\IfcGeometryConverter			FILES ${Core_IfcGeometryConverter_Source})
 
+set(PROJECT_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src ${BLUEFRAMEWORK_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/EarlyBinding/src)
 
-
-include_directories(
-    	../Core/src
-		${BLUEFRAMEWORK_INCLUDE_DIR}
-		${CMAKE_SOURCE_DIR}/EarlyBinding/src
-)		
+include_directories(${PROJECT_INCLUDE_DIRS})		
 
 add_library(OpenInfraPlatform.Core STATIC
 	${Core_Source}
@@ -55,6 +51,8 @@ add_library(OpenInfraPlatform.Core STATIC
 	#${Core_DataManagement_Export_Source}
 	${Core_IfcGeometryConverter_Source}
 )
+
+target_include_directories(OpenInfraPlatform.Core INTERFACE ${PROJECT_INCLUDE_DIRS} )
 
 # Thirdparty libraries the project depends upon.
 target_link_libraries(OpenInfraPlatform.Core

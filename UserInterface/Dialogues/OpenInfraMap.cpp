@@ -5,7 +5,7 @@
  *	\endverbatim
  */
 
-#include "OpenInfraPlatform/UserInterface/OpenInfraMap.h"
+#include "../UserInterface/Dialogues/OpenInfraMap.h"
 #include <QVariant>
 #include <QQuickItem>
 #include "BlueFramework/Engine/ResourceManagment/download.h"
