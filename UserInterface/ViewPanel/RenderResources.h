@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "OpenInfraPlatform/UserInterface/OpenInfraMap.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/eView.h"
+#include "../UserInterface/OpenInfraMap.h"
+#include "../UserInterface/ViewPanel/eView.h"
 #include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 
  //#include <BlueFramework/Engine/ViewCube/ViewCube.h>
@@ -38,11 +38,11 @@
 //#include <BlueFramework/Engine/Camera/Camera.h>
 #include <BlueFramework/Engine/VertexCache/VertexCache.h>
 
-#include "OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.h"
+#include "../Core/src/IfcGeometryConverter/ConverterBuw.h"
 #include <QWidget>
 #include <QMouseEvent>
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Tool.h"
-#include "OpenInfraPlatform/DataManagement/Data.h"
+#include "../UserInterface/ViewPanel/Tool.h"
+#include "../Core/src/DataManagement/General/Data.h"
 
 #include <BlueFramework/ImageProcessing/Image.h>
 #include <BlueFramework/ImageProcessing/io.h>

@@ -17,8 +17,8 @@
 
 #include "CodeEditorWindow.h"
 
-#include "OpenInfraPlatform/Infrastructure/IfcPL/Parser.h"
-#include "OpenInfraPlatform/Infrastructure/IfcPL/Interpreter.h"
+(//#include "OpenInfraPlatform/Infrastructure/IfcPL/Parser.h"
+//#include "OpenInfraPlatform/Infrastructure/IfcPL/Interpreter.h"
 
 OpenInfraPlatform::UserInterface::CodeEditorWindow::CodeEditorWindow( QWidget *parent /*= nullptr*/ ) :
 	ui_(new Ui::CodeEditorWindow)
@@ -71,41 +71,41 @@ void OpenInfraPlatform::UserInterface::CodeEditorWindow::on_actionExample1_trigg
 	);
 }
 
-void OpenInfraPlatform::UserInterface::CodeEditorWindow::on_pushButtonExecute_clicked()
-{
-	system("cls");
-
-	using namespace OpenInfraPlatform::Infrastructure;
-
-	QFile file("code1.txt");
-	file.open(QIODevice::WriteOnly | QIODevice::Text);
-	QTextStream out(&file);
-	out << editor_->toPlainText().toStdString().c_str();
-	file.close(); 
-	
-	buw::ReferenceCounted<Lexer> lexer = std::make_shared<Lexer>("code1.txt");
-
-	std::cout << "##### Tokens: " << "#######################################" << std::endl;
-
-	for (int i = 0; i < lexer->getTokenCount(); i++)
-	{
-		std::cout << lexer->getTokens()[i] << std::endl;
-	}
-
-	auto tokens = lexer->getTokens();
-
-	buw::ReferenceCounted<Parser> parser = std::make_shared<Parser>(lexer);
-	auto ast = parser->parse();
-
-	std::cout << "##### Ast: " << "##########################################" << std::endl;
-
-	std::cout << ast << std::endl;
-
-	std::cout << "##### Program Output: " << "###############################" << std::endl;
-
-	buw::ReferenceCounted<Interpreter> interpreter = std::make_shared<Interpreter>();
-	interpreter->execute(ast);
-}
+//void OpenInfraPlatform::UserInterface::CodeEditorWindow::on_pushButtonExecute_clicked()
+//{
+//	system("cls");
+//
+//	using namespace OpenInfraPlatform::Core;
+//
+//	QFile file("code1.txt");
+//	file.open(QIODevice::WriteOnly | QIODevice::Text);
+//	QTextStream out(&file);
+//	out << editor_->toPlainText().toStdString().c_str();
+//	file.close(); 
+//	
+//	//buw::ReferenceCounted<Lexer> lexer = std::make_shared<Lexer>("code1.txt");
+//
+//	std::cout << "##### Tokens: " << "#######################################" << std::endl;
+//
+//	for (int i = 0; i < lexer->getTokenCount(); i++)
+//	{
+//		std::cout << lexer->getTokens()[i] << std::endl;
+//	}
+//
+//	auto tokens = lexer->getTokens();
+//
+//	//buw::ReferenceCounted<Parser> parser = std::make_shared<Parser>(lexer);
+//	auto ast = parser->parse();
+//
+//	std::cout << "##### Ast: " << "##########################################" << std::endl;
+//
+//	std::cout << ast << std::endl;
+//
+//	std::cout << "##### Program Output: " << "###############################" << std::endl;
+//
+//	buw::ReferenceCounted<Interpreter> interpreter = std::make_shared<Interpreter>();
+//	interpreter->execute(ast);
+//}
 
 void OpenInfraPlatform::UserInterface::CodeEditorWindow::on_actionHello_World_triggered()
 {
