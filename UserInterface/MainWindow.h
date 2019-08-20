@@ -22,7 +22,7 @@
 
 #include "../UserInterface/ViewPanel/View.h"
 #include "../UserInterface/Dialogues/LicenseAndCopyrightInformationDialog.h"
-#include "../Core/src/DataManagement/General/Data.h"
+#include "DataManagement/General/Data.h"
 #include "../UserInterface/Dialogues/PreferencesDialog.h"
 #include "../Core/src/DataManagement/General/ProgressCallback.h"
 
@@ -369,7 +369,6 @@ namespace OpenInfraPlatform
 			std::vector<QCustomPlot*>					plots_;
 			
 			int											inUnitTest_ = -1;
-			buw::ImageTester							tester_;
 
 			View*										view_;
 			Ui::MainWindow*  							ui_;
