@@ -19,8 +19,8 @@
 #ifndef OpenInfraPlatform_DataManagement_Data_3ff08224_6d48_4517_a691_b3ed20f3ca74_h
 #define OpenInfraPlatform_DataManagement_Data_3ff08224_6d48_4517_a691_b3ed20f3ca74_h
 
-#include "EXPRESS\EXPRESSModel.h"
-#include "IfcGeometryConverter\ConverterBuw.h"
+#include "..\EarlyBinding\src\EXPRESS\EXPRESSModel.h"
+#include "..\Core\src\IfcGeometryConverter\ConverterBuw.h"
 
 #include <BlueFramework/Application/DataManagement/DocumentManager.h>
 #include <BlueFramework/ImageProcessing/color.h>

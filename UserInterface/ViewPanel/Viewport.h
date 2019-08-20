@@ -19,11 +19,11 @@
 #ifndef OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
 #define OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
 
-#include "OpenInfraPlatform/DataManagement/Data.h"
-#include "OpenInfraPlatform/IfcGeometryConverter/ConverterBuw.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Tool.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/eView.h"
+#include "../Core/src/DataManagement/General/Data.h"
+#include "../Core/src/IfcGeometryConverter/ConverterBuw.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
+#include "../UserInterface/ViewPanel/Tool.h"
+#include "../UserInterface/ViewPanel/eView.h"
 
 //#include <BlueFramework/Engine/ViewCube/ViewCubeRefactored.h>
 //#include <BlueFramework/Engine/ViewCube/Compass.h>
@@ -55,7 +55,7 @@ namespace OpenInfraPlatform {
 
 		class Viewport : public QWidget {
 			Q_OBJECT;
-			typedef DataManagement::ChangeFlag ChangeFlag;
+			typedef OpenInfraPlatform::Core::DataManagement::ChangeFlag ChangeFlag;
 
 		public:
 			Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidget* parent = nullptr);
@@ -148,7 +148,7 @@ namespace OpenInfraPlatform {
 			void createDepthStencil();
 			void resizeDepthStencil();
 
-			void createIfcGeometry(buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel);
+			void createIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel);
 
 		private Q_SLOTS:
 			void tick();

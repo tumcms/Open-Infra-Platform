@@ -19,42 +19,44 @@
 #ifndef Blueform_UserInterface_MainWindow_aa3f98a6_ba15_4416_ae66_87ca891307d9_h
 #define Blueform_UserInterface_MainWindow_aa3f98a6_ba15_4416_ae66_87ca891307d9_h
 
-#include "OpenInfraPlatform/UserInterface/ViewPanel/View.h"
-#include "OpenInfraPlatform/UserInterface/XYZImportDialog.h"
-#include "OpenInfraPlatform/UserInterface/PreferencesDialog.h"
-#include "OpenInfraPlatform/UserInterface/ExportIfcAlignment1x0Dialog.h"
-#include "OpenInfraPlatform/UserInterface/ExportIfc4x1Dialog.h"
-#include "OpenInfraPlatform/UserInterface/LicenseAndCopyrightInformationDialog.h"
-#include "OpenInfraPlatform/UserInterface/ExportIfcZipDialog.h"
-#include "OpenInfraPlatform/UserInterface/ExportExcelDialog.h"
-#include "OpenInfraPlatform/UserInterface/GenerateTerrainDialog.h"
-#include "OpenInfraPlatform/UserInterface/AddGeoreferenceDialog.h"
-#include "OpenInfraPlatform/UserInterface/View2DWindow/VerticalAlignmentWindow.h"
-#include "OpenInfraPlatform/UserInterface/View2DWindow/CurvatureWindow.h"
-#include "OpenInfraPlatform/UserInterface/ShowIFCtree.h"
-#include "OpenInfraPlatform/DataManagement/Data.h"
-#include "OpenInfraPlatform/DataManagement/ProgressCallback.h"
-#include "OpenInfraPlatform/UnitTesting/ImageTester.h"
-#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidArcMeth2Dialog.h"
-#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcMeth2Dialog.h"
-#include "OpenInfraPlatform/UserInterface/Tools/CreateClothoidDialog.h"
-#include "OpenInfraPlatform/UserInterface/Tools/CreateClothoidDialog2.h"
-#include "OpenInfraPlatform/UserInterface/Tools/CreateLineArcArcLineDialog.h"
-#include "OpenInfraPlatform/UserInterface/Tools/CreateLineArcArcArcLineDialog.h"
-#include "OpenInfraPlatform/UserInterface/Tools/CreateLineClothoidArcClothoidLineDialog.h"
-#include "OpenInfraPlatform/UserInterface/Tools/CreateLineClothoidClothoidLineDialog.h"
-#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidArcDialog.h"
-#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcDialog.h"
-#include "OpenInfraPlatform/UserInterface/CreateAccidentReportDialog.h"
-#include "OpenInfraPlatform/UserInterface/OSMImportDialog.h"
+#include "../UserInterface/ViewPanel/View.h"
+#include "../Core/src/DataManagement/General/Data.h"
+#include "../Core/src/DataManagement/General/ProgressCallback.h"
+#include "../UserInterface/Dialogues/PreferencesDialog.h"
+
+//#include "OpenInfraPlatform/UserInterface/XYZImportDialog.h"
+//#include "OpenInfraPlatform/UserInterface/ExportIfcAlignment1x0Dialog.h"
+//#include "OpenInfraPlatform/UserInterface/ExportIfc4x1Dialog.h"
+//#include "OpenInfraPlatform/UserInterface/LicenseAndCopyrightInformationDialog.h"
+//#include "OpenInfraPlatform/UserInterface/ExportIfcZipDialog.h"
+//#include "OpenInfraPlatform/UserInterface/ExportExcelDialog.h"
+//#include "OpenInfraPlatform/UserInterface/GenerateTerrainDialog.h"
+//#include "OpenInfraPlatform/UserInterface/AddGeoreferenceDialog.h"
+//#include "OpenInfraPlatform/UserInterface/View2DWindow/VerticalAlignmentWindow.h"
+//#include "OpenInfraPlatform/UserInterface/View2DWindow/CurvatureWindow.h"
+//#include "OpenInfraPlatform/UserInterface/ShowIFCtree.h"
+//#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidArcMeth2Dialog.h"
+//#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcMeth2Dialog.h"
+//#include "OpenInfraPlatform/UserInterface/Tools/CreateClothoidDialog.h"
+//#include "OpenInfraPlatform/UserInterface/Tools/CreateClothoidDialog2.h"
+//#include "OpenInfraPlatform/UserInterface/Tools/CreateLineArcArcLineDialog.h"
+//#include "OpenInfraPlatform/UserInterface/Tools/CreateLineArcArcArcLineDialog.h"
+//#include "OpenInfraPlatform/UserInterface/Tools/CreateLineClothoidArcClothoidLineDialog.h"
+//#include "OpenInfraPlatform/UserInterface/Tools/CreateLineClothoidClothoidLineDialog.h"
+//#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidArcDialog.h"
+//#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcDialog.h"
+//#include "OpenInfraPlatform/UserInterface/CreateAccidentReportDialog.h"
+//#include "OpenInfraPlatform/UserInterface/OSMImportDialog.h"
+
+#include "../UserInterface/UnitTesting/ImageTester.h"
 
 #include "qsimpleupdater.h"
 
 #include <qcustomplot.h>
 
 #include <BlueFramework/Application/UserInterface/MainWindow.h>
-#include "../../QtPropertyBrowser/qttreepropertybrowser.h"
-#include "../../QtPropertyBrowser/qtvariantproperty.h"
+#include "../UserInterface/QtPropertyBrowser/qttreepropertybrowser.h"
+#include "../UserInterface/QtPropertyBrowser/qtvariantproperty.h"
 #include <QMenuBar>
 #include <QProgressBar>
 #include <QProgressDialog>
@@ -62,7 +64,7 @@
 #include <QColorDialog>
 #include <setjmp.h>
 
-#include "PrecisionTest.h"
+#include "../UserInterface/Dialogues/PrecisionTest.h"
 #include <QDropEvent>
 #include <qmimedata>
 
@@ -81,7 +83,7 @@ namespace OpenInfraPlatform
 		{
 			Q_OBJECT;
 
-			typedef DataManagement::ChangeFlag ChangeFlag;
+			typedef OpenInfraPlatform::Core::DataManagement::ChangeFlag ChangeFlag;
 
 		public:
 			//! Default constructor.
@@ -331,35 +333,37 @@ namespace OpenInfraPlatform
 
 			QColorDialog				pcdUniformColorDialog_, pcdFilteredPointsColorDialog_, pcdSegmentedPointsColorDialog_;
 			QButtonGroup				radioButtons2D3D_, radioButtonsOriginalFiltered_;
-			buw::ReferenceCounted<DataManagement::ProgressCallback> callback_ = nullptr;
+			buw::ReferenceCounted<OpenInfraPlatform::Core::DataManagement::ProgressCallback> callback_ = nullptr;
 
 			// Dialogs
-			CreateArcClothoidArcDialog*					ACA_ = nullptr;
-			CreateArcClothoidArcMeth2Dialog*			ACA2_ = nullptr;
-			CreateArcClothoidClothoidArcDialog*			ACCA_ = nullptr;
-			CreateArcClothoidClothoidArcMeth2Dialog*	ACCA2_ = nullptr;
-			CreateClothoidDialog*						LC_ = nullptr;
-			CreateClothoidDialog2*						createClothoidDialog2_ = nullptr;
-			CreateLineArcArcArcLineDialog*				LAAAL_ = nullptr;
-			CreateLineArcArcLineDialog*					LAAL_ = nullptr;
-			CreateLineClothoidArcClothoidLineDialog*	LCACL_ = nullptr;
-			CreateLineClothoidClothoidLineDialog*		LCCL_ = nullptr;
-			CurvatureWindow*							curvatureWindow_ = nullptr;
-			ShowIFCtree*								showIFCtree_ = nullptr;
-			ExportExcelDialog*							exportExcelDialog_ = nullptr;
-			ExportIfcAlignment1x0Dialog*				exportIfcAlignment1x0Dialog_ = nullptr;
-			ExportIfc4x1Dialog*				exportIfcAlignment1x1Dialog_ = nullptr;
-			ExportIfcZipDialog*							exportIfcZipDialog_ = nullptr;
-			GenerateTerrainDialog*						generateTerrainDialog_ = nullptr;
-			OSMImportDialog*							osmImportDialog_ = nullptr;
+			//CreateArcClothoidArcDialog*					ACA_ = nullptr;
+			//CreateArcClothoidArcMeth2Dialog*			ACA2_ = nullptr;
+			//CreateArcClothoidClothoidArcDialog*			ACCA_ = nullptr;
+			//CreateArcClothoidClothoidArcMeth2Dialog*	ACCA2_ = nullptr;
+			//CreateClothoidDialog*						LC_ = nullptr;
+			//CreateClothoidDialog2*						createClothoidDialog2_ = nullptr;
+			//CreateLineArcArcArcLineDialog*				LAAAL_ = nullptr;
+			//CreateLineArcArcLineDialog*					LAAL_ = nullptr;
+			//CreateLineClothoidArcClothoidLineDialog*	LCACL_ = nullptr;
+			//CreateLineClothoidClothoidLineDialog*		LCCL_ = nullptr;
+			//CurvatureWindow*							curvatureWindow_ = nullptr;
+			//ShowIFCtree*								showIFCtree_ = nullptr;
+			//ExportExcelDialog*							exportExcelDialog_ = nullptr;
+			//ExportIfcAlignment1x0Dialog*				exportIfcAlignment1x0Dialog_ = nullptr;
+			//ExportIfc4x1Dialog*				exportIfcAlignment1x1Dialog_ = nullptr;
+			//ExportIfcZipDialog*							exportIfcZipDialog_ = nullptr;
+			//GenerateTerrainDialog*						generateTerrainDialog_ = nullptr;
+			//OSMImportDialog*							osmImportDialog_ = nullptr;
+			
+			
+			//VerticalAlignmentWindow*					verticalAlignmentWindow_ = nullptr;
+			//XYZImportDialog*							XYZImportDialog_ = nullptr;
+			//LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
+			//CreateAccidentReportDialog*					createAccidentReportDialog_ = nullptr;
+			//AddGeoreferenceDialog*						addGeoreferenceDialog_ = nullptr;
+
 			PreferencesDialog*							preferencesDialog_ = nullptr;
 			QProgressDialog*							progressDialog_ = nullptr;
-			VerticalAlignmentWindow*					verticalAlignmentWindow_ = nullptr;
-			XYZImportDialog*							XYZImportDialog_ = nullptr;
-			LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
-			CreateAccidentReportDialog*					createAccidentReportDialog_ = nullptr;
-			AddGeoreferenceDialog*						addGeoreferenceDialog_ = nullptr;
-
 			QProgressBar*								progressBar_;
 
 			std::vector<QCustomPlot*>					plots_;

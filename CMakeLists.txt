@@ -353,12 +353,12 @@ endforeach()
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # USER INTERFACE. 
-# file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
+
+file(GLOB OpenInfraPlatform_UserInterface_Source 					UserInterface/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Forms_Source 				UserInterface/Forms/*.*)
-# file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Resources/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_ColorPicker_Source		UserInterface/ColorPicker/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Dialogues_Source 			UserInterface/Dialogues/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source 	UserInterfaces/QtPropertyBrowser/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source 	UserInterface/QtPropertyBrowser/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Shader_Source 			UserInterface/Shader/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Shader_D3D_Source 		UserInterface/Shader/D3D/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			UserInterface/ViewPanel/*.*)
@@ -368,9 +368,11 @@ file(GLOB OpenInfraPlatform_UserInterface_QCustomPlot_Source 		external/qcustomp
 # Currently not included.
 #file(GLOB OpenInfraPlatform_UserInterface_Tools_Source				UserInterface/other/Tools/*.*)
 #file(GLOB OpenInfraPlatform_UserInterface_View2DWindow			 	UserInterface/other/View2DWindow/*.*)
+# file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
+# file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Resources/*.*)
 
 # Does currently not work. 
-#file(GLOB OpenInfraPlatform_UnitTesting_Source					other/other_UI/UnitTesting/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_UnitTesting_Source					UserInterface/UnitTesting/*.*)
 
 set(OpenInfraPlatform_UserInterface_Forms
 	external/QSimpleUpdater/src/dialogs/download_dialog.ui
@@ -412,10 +414,9 @@ FILE(GLOB Translation_TS UserInterface/Data/translations/*.ts)
 #------------------------------------------------------------------------------
 
 # USER INTERFACE.
-# source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
+source_group(UserInterface						FILES ${OpenInfraPlatform_UserInterface_Source})
 source_group(UserInterface\\Forms				FILES ${OpenInfraPlatform_UserInterface_Forms_Source})
 source_group(UserInterface\\ColorPicker			FILES ${OpenInfraPlatform_UserInterface_ColorPicker_Source})
-# source_group(UserInterface\\Resources			FILES ${OpenInfraPlatform_UserInterface_Resources_Source})
 source_group(UserInterface\\Dialogues			FILES ${OpenInfraPlatform_UserInterface_Dialogues_Source})
 source_group(UserInterface\\QtPropertyBrowser	FILES ${OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source})
 source_group(UserInterface\\Shader				FILES ${OpenInfraPlatform_UserInterface_Shader_Source})
@@ -424,12 +425,14 @@ source_group(UserInterface\\ViewPanel			FILES ${OpenInfraPlatform_UserInterface_
 source_group(UserInterface\\ViewPanel\\Effects	FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source})
 source_group(UserInterface\\QCustomPlot			FILES ${OpenInfraPlatform_UserInterface_QCustomPlot_Source})
 
-# Does not currently work. 
-#source_group(UnitTesting  				FILES ${OpenInfraPlatform_UnitTesting_Source})
+# Does not currently work.
+source_group(UserInterface\\UnitTesting  		FILES ${OpenInfraPlatform_UserInterface_UnitTesting_Source})
 
 # Currently not included.
 #source_group(UserInterface\\Tools			FILES ${OpenInfraPlatform_UserInterface_Tools_Source})
 #source_group(UserInterface\\View2DWindow		FILES ${OpenInfraPlatform_UserInterface_View2DWindow})
+# source_group(UserInterface\\Resources			FILES ${OpenInfraPlatform_UserInterface_Resources_Source})
+# source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
 
 #------------------------------------------------------------------------------
 # Set source group properties
@@ -453,10 +456,9 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 #------------------------------------------------------------------------------
 
 	add_executable(OpenInfraPlatform.UI
+		${OpenInfraPlatform_UserInterface_Source}
 		${OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source}
-		#${OpenInfraPlatform_UserInterface_Data_Source}
-		${OpenInfraPlatform_UserInterface_Forms} 
-		#${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}				
+		${OpenInfraPlatform_UserInterface_Forms} 		
 		${OpenInfraPlatform_UserInterface_ColorPicker_Source}
 		${OpenInfraPlatform_UserInterface_Dialogues_Source}
 		${OpenInfraPlatform_UserInterface_ViewPanel_Source}
@@ -464,11 +466,13 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 		${OpenInfraPlatform_UserInterface_Shader_Source}
 		${OpenInfraPlatform_UserInterface_Shader_D3D_Source}
 		${OpenInfraPlatform_UserInterface_QCustomPlot_Source}
+		${OpenInfraPlatform_UserInterface_UnitTesting_Source}	
 		
 		# Currently not included.
 		#${OpenInfraPlatform_UserInterface_View2DWindow}
-		#${OpenInfraPlatform_UserInterface_Tools_Source}
-		#${OpenInfraPlatform_UnitTesting_Source}		
+		#${OpenInfraPlatform_UserInterface_Tools_Source}	
+		#${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}		
+		#${OpenInfraPlatform_UserInterface_Data_Source}
 		)
 
 #------------------------------------------------------------------------------
