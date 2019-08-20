@@ -20,9 +20,9 @@
 #define SPLASH_SCREEN
 #endif
 
-#include "OpenInfraPlatform/Benchmark.h"
-#include "OpenInfraPlatform/UserInterface/CodeEditorWindow.h"
-#include "OpenInfraPlatform/UserInterface/MainWindow.h"
+#include "../UserInterface/UnitTesting/Benchmark.h"
+#include "../UserInterface/ViewPanel/CodeEditorWindow.h"
+#include "../UserInterface/ViewPanel/MainWindow.h"
 #include <BlueFramework/Core/Diagnostics/log.h>
 #include <BlueFramework/Core/Version.h>
 #include <QApplication>
