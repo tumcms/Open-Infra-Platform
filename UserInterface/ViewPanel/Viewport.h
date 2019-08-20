@@ -21,9 +21,12 @@
 
 #include "../Core/src/DataManagement/General/Data.h"
 #include "../Core/src/IfcGeometryConverter/ConverterBuw.h"
-//#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 #include "../UserInterface/ViewPanel/Tool.h"
 #include "../UserInterface/ViewPanel/eView.h"
+
+#include "namespace.h"
+
+//#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 
 //#include <BlueFramework/Engine/ViewCube/ViewCubeRefactored.h>
 //#include <BlueFramework/Engine/ViewCube/Compass.h>

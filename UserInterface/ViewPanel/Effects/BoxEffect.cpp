@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "BoxEffect.h"
 
 
-#include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
+#include "../UserInterface/ViewPanel/RenderResources.h"
 #include <BlueFramework/Rasterizer/vertex.h>
 #include <BlueFramework/Engine/Mesh/geometryGeneration.h>
 

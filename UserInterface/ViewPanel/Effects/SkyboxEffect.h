@@ -20,7 +20,7 @@
 #ifndef OpenInfraPlatform_UserInterface_SkyboxEffect_34f22a43_6c1f_4b9f_99f5_ca188f4c0343_h
 #define OpenInfraPlatform_UserInterface_SkyboxEffect_34f22a43_6c1f_4b9f_99f5_ca188f4c0343_h
 
-#include "OpenInfraPlatform/namespace.h"
+#include "namespace.h"
 
 #include <buw.Engine.h>
 #include <buw.ImageProcessing.h>

@@ -17,9 +17,10 @@
 
 #pragma once
 
-#include "../UserInterface/OpenInfraMap.h"
+#include "../UserInterface/Dialogues/OpenInfraMap.h"
 #include "../UserInterface/ViewPanel/eView.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
+
+//#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 
  //#include <BlueFramework/Engine/ViewCube/ViewCube.h>
  //#include <BlueFramework/Engine/ViewCube/ViewCubeRefactored.h>
