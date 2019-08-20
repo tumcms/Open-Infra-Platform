@@ -21,7 +21,7 @@
 
 #include "ui_PreferencesDialog.h"
 #include "ColorPicker/colorpickerwidget.h"
-#include "../UserInterface/ViewPanel/View.h"
+#include "ViewPanel/View.h"
 //#include <BlueFramework/Engine/Camera/InfraCameraController.h>
 #include <QDialog>
 #include <QColorDialog>
@@ -54,8 +54,6 @@ namespace OpenInfraPlatform
 			void on_checkBoxShowReferenceCoordinateSystem_clicked(bool checked);
 			void on_checkBoxSkybox_clicked (bool checked);
 			
-			void on_doubleSpinBoxAlignmentLineWidth_valueChanged(double i);
-
 			void on_checkBoxShowFrameTimes_clicked(bool checked);
 
 			void on_doubleSpinBoxAnimationTime_valueChanged(double value);
@@ -104,7 +102,7 @@ namespace OpenInfraPlatform
             bool useTextured = false;
 			
 		private:
-			UserInterface::PreferencesDialog*	ui_;
+			Ui::PreferencesDialog*	ui_;
 			ColorPickerWidget*		colorPickerWidget_;
             QColorDialog            faceColorDialog_, borderColorDialog_, textColorDialog_, highlightColorDialog_;
 

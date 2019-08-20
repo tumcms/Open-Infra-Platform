@@ -386,10 +386,10 @@ buw::ReferenceCounted<buw::ViewCube> Viewport::getViewCube() {
     return viewCube_;
 }
 
-buw::ReferenceCounted<AlignmentEffect> OpenInfraPlatform::UserInterface::Viewport::getAlignmentEffect()
-{
-  /*  return alignmentEffect_;*/
-}
+//buw::ReferenceCounted<AlignmentEffect> OpenInfraPlatform::UserInterface::Viewport::getAlignmentEffect()
+//{
+//  /*  return alignmentEffect_;*/
+//}
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudUniformColor(const QColor & color)
 {

@@ -17,26 +17,26 @@
 
 #pragma once
 #ifndef Blueform_UserInterface_MainWindow_aa3f98a6_ba15_4416_ae66_87ca891307d9_h
+
 #define Blueform_UserInterface_MainWindow_aa3f98a6_ba15_4416_ae66_87ca891307d9_h
 
 #include "../UserInterface/ViewPanel/View.h"
-#include "../Core/src/DataManagement/General/Data.h"
-#include "../Core/src/DataManagement/General/ProgressCallback.h"
-#include "../UserInterface/Dialogues/PreferencesDialog.h"
 #include "../UserInterface/Dialogues/LicenseAndCopyrightInformationDialog.h"
+#include "../Core/src/DataManagement/General/Data.h"
+#include "../UserInterface/Dialogues/PreferencesDialog.h"
+#include "../Core/src/DataManagement/General/ProgressCallback.h"
 
-//#include "../UserInterface/View2DWindow/VerticalAlignmentWindow.h"
-//#include "../UserInterface/View2DWindow/CurvatureWindow.h"
-
-//#include "OpenInfraPlatform/UserInterface/XYZImportDialog.h"
+//#include "../UserInterface/XYZImportDialog.h"
 //#include "OpenInfraPlatform/UserInterface/ExportIfcAlignment1x0Dialog.h"
 //#include "OpenInfraPlatform/UserInterface/ExportIfc4x1Dialog.h"
 //#include "OpenInfraPlatform/UserInterface/ExportIfcZipDialog.h"
 //#include "OpenInfraPlatform/UserInterface/ExportExcelDialog.h"
 //#include "OpenInfraPlatform/UserInterface/GenerateTerrainDialog.h"
 //#include "OpenInfraPlatform/UserInterface/AddGeoreferenceDialog.h"
-
+//#include "OpenInfraPlatform/UserInterface/View2DWindow/VerticalAlignmentWindow.h"
+//#include "OpenInfraPlatform/UserInterface/View2DWindow/CurvatureWindow.h"
 //#include "OpenInfraPlatform/UserInterface/ShowIFCtree.h"
+//#include "OpenInfraPlatform/UnitTesting/ImageTester.h"
 //#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidArcMeth2Dialog.h"
 //#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcMeth2Dialog.h"
 //#include "OpenInfraPlatform/UserInterface/Tools/CreateClothoidDialog.h"
@@ -49,8 +49,6 @@
 //#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcDialog.h"
 //#include "OpenInfraPlatform/UserInterface/CreateAccidentReportDialog.h"
 //#include "OpenInfraPlatform/UserInterface/OSMImportDialog.h"
-
-#include "../UserInterface/UnitTesting/ImageTester.h"
 
 #include "qsimpleupdater.h"
 
@@ -356,16 +354,16 @@ namespace OpenInfraPlatform
 			//ExportIfcZipDialog*							exportIfcZipDialog_ = nullptr;
 			//GenerateTerrainDialog*						generateTerrainDialog_ = nullptr;
 			//OSMImportDialog*							osmImportDialog_ = nullptr;
-			
-			
+
 			//VerticalAlignmentWindow*					verticalAlignmentWindow_ = nullptr;
 			//XYZImportDialog*							XYZImportDialog_ = nullptr;
-			//LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
 			//CreateAccidentReportDialog*					createAccidentReportDialog_ = nullptr;
 			//AddGeoreferenceDialog*						addGeoreferenceDialog_ = nullptr;
 
 			PreferencesDialog*							preferencesDialog_ = nullptr;
 			QProgressDialog*							progressDialog_ = nullptr;
+			LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
+
 			QProgressBar*								progressBar_;
 
 			std::vector<QCustomPlot*>					plots_;

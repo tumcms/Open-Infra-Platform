@@ -21,8 +21,8 @@
 #endif
 
 #include "../UserInterface/UnitTesting/Benchmark.h"
-#include "../UserInterface/ViewPanel/CodeEditorWindow.h"
-#include "../UserInterface/ViewPanel/MainWindow.h"
+//#include "../UserInterface/ViewPanel/CodeEditorWindow.h"
+#include "MainWindow.h"
 #include <BlueFramework/Core/Diagnostics/log.h>
 #include <BlueFramework/Core/Version.h>
 #include <QApplication>

@@ -17,7 +17,7 @@
 
 #include "PreferencesDialog.h"
 
-#include "OpenInfraPlatform/DataManagement/Data.h"
+#include "DataManagement/General/Data.h"
 #include <BlueFramework/Engine/ViewCube/ViewCube.h>
 #include <QColorDialog>
 #include <QProgressDialog>
@@ -99,7 +99,7 @@ OpenInfraPlatform::UserInterface::PreferencesDialog::PreferencesDialog(OpenInfra
 
 void OpenInfraPlatform::UserInterface::PreferencesDialog::clearColorChanged( const QColor &col )
 {
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setClearColor(
+	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().setClearColor(
 		buw::Color3f(col.red() / 255.0f, col.green() / 255.0f, col.blue() / 255.0f)
 	);
 }
@@ -123,32 +123,28 @@ void OpenInfraPlatform::UserInterface::PreferencesDialog::changeEvent(QEvent* ev
 
 void OpenInfraPlatform::UserInterface::PreferencesDialog::on_checkBoxGradientClear_clicked( bool checked )
 {
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().enableGradientClear(checked);
+	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().enableGradientClear(checked);
 }
 
 void OpenInfraPlatform::UserInterface::PreferencesDialog::on_checkBoxShowGrid_clicked( bool checked )
 {
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().enableDrawGrid(checked);
+	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().enableDrawGrid(checked);
 }
 
 void OpenInfraPlatform::UserInterface::PreferencesDialog::on_checkBoxShowReferenceCoordinateSystem_clicked( bool checked )
 {
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().enableShowReferenceCoordinateSystem(checked);
+	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().enableShowReferenceCoordinateSystem(checked);
 }
 
 void OpenInfraPlatform::UserInterface::PreferencesDialog::on_checkBoxSkybox_clicked( bool checked )
 {
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().enableSkybox(checked);
+	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().enableSkybox(checked);
 }
 
-void OpenInfraPlatform::UserInterface::PreferencesDialog::on_doubleSpinBoxAlignmentLineWidth_valueChanged(double i)
-{
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setAlignmentLineWidth(i);
-}
 
 void OpenInfraPlatform::UserInterface::PreferencesDialog::on_checkBoxShowFrameTimes_clicked(bool checked)
 {
-	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().setShowFrameTimes(checked);
+	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().setShowFrameTimes(checked);
 }
 
 void OpenInfraPlatform::UserInterface::PreferencesDialog::on_doubleSpinBoxAnimationTime_valueChanged(double value)
@@ -300,7 +296,7 @@ void OpenInfraPlatform::UserInterface::PreferencesDialog::on_radioButtonLegacy_t
 void OpenInfraPlatform::UserInterface::PreferencesDialog::on_radioButtonTextured_toggled(bool value)
 {
    /* if (value) {
-        std::string path = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getViewCubeData().getTexturedViewCubeFilename();
+        std::string path = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getViewCubeData().getTexturedViewCubeFilename();
         if (path == "") {
             useTextured = true;
         }
@@ -316,8 +312,8 @@ void OpenInfraPlatform::UserInterface::PreferencesDialog::on_radioButtonTextured
 void OpenInfraPlatform::UserInterface::PreferencesDialog::on_radioButtonStandard_toggled(bool value)
 {
     /*if (value) {
-        if (OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getViewCubeData().getTexturedViewCubeFilename() != "" && useTextured) {
-            std::string path = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getViewCubeData().getViewCubeFilename();
+        if (OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getViewCubeData().getTexturedViewCubeFilename() != "" && useTextured) {
+            std::string path = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getViewCubeData().getViewCubeFilename();
             on_pushButton_Import_clicked(QString(path.data()));
         }
 
