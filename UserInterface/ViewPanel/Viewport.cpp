@@ -15,7 +15,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../UserInterface/ViewPanel/Viewport.h"
+#include "Viewport.h"
 #include "../UserInterface/UnitTesting/Benchmark.h"
 #include "../Core/src/DataManagement/General/Data.h"
 #include "../UserInterface/ViewPanel/RenderResources.h"
@@ -30,11 +30,12 @@
 //#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/TrafficSignEffect.h"
 //#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/GradientClearEffect.h"
 //#include "../UserInterface/ViewPanel/Effects/BillboardEffect.h"
+//#include "../UserInterface/ViewPanel/Effects/PointCloudEffect.h"
 
 #include "../UserInterface/ViewPanel/Effects/UIElementsEffect.h"
 #include "../UserInterface/ViewPanel/Effects/BoundingBoxEffect.h"
 #include "../UserInterface/ViewPanel/Effects/SkyboxEffect.h"
-#include "../UserInterface/ViewPanel/Effects/PointCloudEffect.h"
+
 #include "../UserInterface/ViewPanel/Effects/BoxEffect.h"
 #include "../UserInterface/ViewPanel/Effects/IfcGeometryEffect.h"
 
@@ -128,7 +129,7 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 
     viewCube_ = buw::makeReferenceCounted<buw::ViewCube>(renderSystem_, pickBuffer_, pickIdBuffer_, cameraController_);
 
-    BLUE_LOG(trace) << "Creating effects (1)";
+   /* BLUE_LOG(trace) << "Creating effects (1)";
     gradientClearEffect_ = buw::makeReferenceCounted<GradientClearEffect>(renderSystem_.get(), viewport_);
     BLUE_LOG(trace) << "Creating effects (1.1)";
     gradientClearEffect_->init();
@@ -151,7 +152,7 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 
     BLUE_LOG(trace) << "Creating effects (6)";
     slabFieldEffect_ = buw::makeReferenceCounted<SlabFieldEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
-    slabFieldEffect_->init();
+    slabFieldEffect_->init();*/
 
     BLUE_LOG(trace) << "Creating effects (7)";
     uiElements_ = buw::makeReferenceCounted<UIElements>(renderSystem_.get(), depthStencilMSAA_, worldBuffer_);
@@ -161,7 +162,7 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     boundingBoxEffect_ = buw::makeReferenceCounted<BoundingBoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
     boundingBoxEffect_->init();
 
-	BLUE_LOG(trace) << "Creating effects (9)";
+	/*BLUE_LOG(trace) << "Creating effects (9)";
 	pointCloudEffect_ = buw::makeReferenceCounted<PointCloudEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
 	pointCloudEffect_->init();
 
@@ -169,11 +170,11 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 	sectionsBoundingBoxEffect_ = buw::makeReferenceCounted<BoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
 	sectionsBoundingBoxEffect_->init();
 
-	pointCloudEffect_->sectionsBoundingBoxEffect_ = sectionsBoundingBoxEffect_;
+	pointCloudEffect_->sectionsBoundingBoxEffect_ = sectionsBoundingBoxEffect_;*/
 
-	BLUE_LOG(trace) << "Creating effects (11)";
+	/*BLUE_LOG(trace) << "Creating effects (11)";
 	billboardEffect_ = buw::makeReferenceCounted<BillboardEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
-	billboardEffect_->init();
+	billboardEffect_->init();*/
 
     BLUE_LOG(trace) << "Creating IfcGeometry effects";
     ifcGeometryEffect_ = buw::makeReferenceCounted<IfcGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
@@ -199,8 +200,8 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 Viewport::~Viewport() {
 
     disconnect(timer_, SIGNAL(timeout()), this, SLOT(tick()));
-    OpenInfraPlatform::Core::DataManagementDocumentManager::getInstance().getData().Change.disconnect(boost::bind(&Viewport::onChange, this));
-    OpenInfraPlatform::Core::DataManagementDocumentManager::getInstance().getData().Clear.disconnect(boost::bind(&Viewport::onClear, this));
+    OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Change.disconnect(boost::bind(&Viewport::onChange, this));
+    OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Clear.disconnect(boost::bind(&Viewport::onClear, this));
 
     buw::Singleton<RenderResources>::instance().release();
     activeEffects_.clear();
@@ -209,12 +210,12 @@ Viewport::~Viewport() {
     timer_ = nullptr;
 
     uiElements_ = nullptr;
-    slabFieldEffect_ = nullptr;
+    /*slabFieldEffect_ = nullptr;
     girderEffect_ = nullptr;
     alignmentEffect_ = nullptr;
     trafficSignEffect_ = nullptr;
     demEffect_ = nullptr;
-    gradientClearEffect_ = nullptr;
+    gradientClearEffect_ = nullptr;*/
     skyboxEffect_ = nullptr;
     ifcGeometryEffect_ = nullptr;
 
@@ -263,19 +264,19 @@ void Viewport::resizeDepthStencil() {
 }
 
 void Viewport::setDrawTerrainWireframe(const bool enable) {
-    demEffect_->setDrawTerrainWireframe(enable);
-    repaint();
+    /*demEffect_->setDrawTerrainWireframe(enable);
+    repaint();*/
 }
 
 void Viewport::setDifferentColorsForAlignmentElements(const bool checked) {
-    alignmentEffect_->enableAlignmentColor(checked);
-	repaint();
+   /* alignmentEffect_->enableAlignmentColor(checked);
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setHighlightSelectedAlignmentSegment(const bool checked)
 {
-    alignmentEffect_->enableHighlightSelected(checked);
-	repaint();
+ /*   alignmentEffect_->enableHighlightSelected(checked);
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::enableMap(const bool checked)
@@ -290,53 +291,53 @@ void Viewport::viewDirection(const buw::Vector3f& direction) {
 }
 
 void Viewport::setHideTerrain(const bool checked) {
-    demEffect_->hideTerrain(checked);
-    repaint();
+   /* demEffect_->hideTerrain(checked);
+    repaint();*/
 }
 
 void Viewport::enableTerrainTextured(const bool checked) {
-    demEffect_->enableTerrainTextured(checked);
-    repaint();
+ /*   demEffect_->enableTerrainTextured(checked);
+    repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::enableRoadBodyTextured(const bool checked)
 {
-    alignmentEffect_->drawRoadBodyTextured(checked);
-    repaint();
+  /*  alignmentEffect_->drawRoadBodyTextured(checked);
+    repaint();*/
 }
 
 void Viewport::enableIsoLines(const bool checked) {
-    demEffect_->enableIsoLines(checked);
-    repaint();
+    //demEffect_->enableIsoLines(checked);
+    //repaint();
 }
 
 void Viewport::enableTerrainGradientRamp(const bool checked) {
-    demEffect_->enableTerrainColorRamp(checked);
-    repaint();
+    /*demEffect_->enableTerrainColorRamp(checked);
+    repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setUseUniformPointColor(const bool useUniformColor)
 {
-	pointCloudEffect_->drawPointsWithUniformColor(useUniformColor);
-	repaint();
+	//pointCloudEffect_->drawPointsWithUniformColor(useUniformColor);
+	//repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setUseUniformPointSize(const bool useUniformSize)
 {
-	pointCloudEffect_->drawPointsWithUniformSize(useUniformSize);
-	repaint();
+	/*pointCloudEffect_->drawPointsWithUniformSize(useUniformSize);
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setPointSize(const float size)
 {
-	pointCloudEffect_->setPointSize(size);
-	repaint();
+	//pointCloudEffect_->setPointSize(size);
+	//repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setShowPointCloud(const bool checked)
 {
-	pointCloudEffect_->show(checked);
-	repaint();
+	/*pointCloudEffect_->show(checked);
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setShowSectionOOBB(const bool checked) {
@@ -346,38 +347,38 @@ void OpenInfraPlatform::UserInterface::Viewport::setShowSectionOOBB(const bool c
 
 void OpenInfraPlatform::UserInterface::Viewport::setShowOctree(const bool checked)
 {
-	pointCloudEffect_->showOctree(checked);
-	repaint();
+	/*pointCloudEffect_->showOctree(checked);
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setOctreeLevel(int value)
 {
-	pointCloudEffect_->setOctreeLevel(value);
-	repaint();
+	/*pointCloudEffect_->setOctreeLevel(value);
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setPointCloudIndices(std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> indices)
 {
-	pointCloudEffect_->updateIndexBuffers(indices);
-	repaint();
+	/*pointCloudEffect_->updateIndexBuffers(indices);
+	repaint();*/
 }
 
 void Viewport::showCrossSection(const bool showCrossSection) {
-    alignmentEffect_->showCrossSections(showCrossSection);
+   /* alignmentEffect_->showCrossSections(showCrossSection);*/
 }
 
 void Viewport::showDesignCrossSection(const bool showDesignCrossSections) {
-    alignmentEffect_->showDesignCrossSections(showDesignCrossSections);
+    /*alignmentEffect_->showDesignCrossSections(showDesignCrossSections);*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::showRoadBodyWireframe(const bool connectCrossSections)
 {
-    alignmentEffect_->showRoadBodyWireframe(connectCrossSections);
+    /*alignmentEffect_->showRoadBodyWireframe(connectCrossSections);*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::showRoadBodySolid(const bool checked)
 {
-    alignmentEffect_->showRoadBodySolid(checked);
+    /*alignmentEffect_->showRoadBodySolid(checked);*/
 }
 
 
@@ -387,65 +388,65 @@ buw::ReferenceCounted<buw::ViewCube> Viewport::getViewCube() {
 
 buw::ReferenceCounted<AlignmentEffect> OpenInfraPlatform::UserInterface::Viewport::getAlignmentEffect()
 {
-    return alignmentEffect_;
+  /*  return alignmentEffect_;*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudUniformColor(const QColor & color)
 {
-	pointCloudEffect_->setUniformColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
-	repaint();
+	/*pointCloudEffect_->setUniformColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudFilteredPointsColor(const QColor & color)
 {
-	pointCloudEffect_->setFilteredColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
-	repaint();
+	/*pointCloudEffect_->setFilteredColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudSegmentedPointsColor(const QColor & color)
 {
-	pointCloudEffect_->setSegmentedColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
-	repaint();
+	/*pointCloudEffect_->setSegmentedColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudSectionLength(const float length)
 {
-	pointCloudEffect_->setSectionLength(length);
-	repaint();
+	/*pointCloudEffect_->setSectionLength(length);
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudProjectPoints(const bool checked)
 {
-	pointCloudEffect_->setProjectPoints(checked);
-	repaint();
+	/*pointCloudEffect_->setProjectPoints(checked);
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudRenderOriginalCloud(const bool checked)
 {
-	pointCloudEffect_->showOriginalPointCloud(checked);
-	repaint();
+	//pointCloudEffect_->showOriginalPointCloud(checked);
+	//repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudShowSegmentedPoints(const bool checked)
 {
-	pointCloudEffect_->showSegmentedPoints(checked);
-	repaint();
+	/*pointCloudEffect_->showSegmentedPoints(checked);
+	repaint();*/
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudShowFilteredPoints(const bool checked)
 {
-	pointCloudEffect_->showFilteredPoints(checked);
-	repaint();
+	/*pointCloudEffect_->showFilteredPoints(checked);
+	repaint();*/
 }
 
 
 void Viewport::setView(eView type) {
-    switch (type) {
+    /*switch (type) {
     case eView::HorizontalAlignment: alignmentEffect_->drawFlattened(true); break;
     case eView::ThreeDimensional: alignmentEffect_->drawFlattened(false); break;
     default: alignmentEffect_->drawFlattened(false); break;
     }
-    repaint();
+    repaint();*/
 }
 
 void Viewport::saveAsScreenshot(const std::string& filename) {
@@ -515,9 +516,9 @@ void Viewport::goHome() {
 }
 
 void Viewport::toggleSnow() {
-    snow_ = !snow_;
+ /*   snow_ = !snow_;
     gradientClearEffect_->toggleSnow();
-    demEffect_->enableSnow(snow_);
+    demEffect_->enableSnow(snow_);*/
 }
 
 void Viewport::leaveEvent(QEvent* event) {
@@ -557,7 +558,7 @@ void Viewport::paintEvent(QPaintEvent* paintEvent) {
     updateWorldBuffer();
 
     if(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().isGradientClearEnabled())
-        gradientClearEffect_->render();
+        //gradientClearEffect_->render();
 
     if(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().isSkyboxEnabled())
         skyboxEffect_->render();
@@ -628,20 +629,20 @@ void Viewport::repositionCamera() {
 }
 
 void Viewport::mousePressEvent(QMouseEvent* event) {
-    if (event->buttons()) {
-        buw::Vector2f mouse(event->x(), event->y());
-        lastMousePos_ = mouse;
-        viewCube_->mousePress();
-        int alignmentId = alignmentEffect_->getAlignmentId(currentPickId_);
-        if(alignmentId != DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment() && alignmentId != -1) {
-            buw::ReferenceCounted<buw::SelectAlignment> actionSelectAlignment = std::make_shared<buw::SelectAlignment>(alignmentId);
-            OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().execute(actionSelectAlignment);
-        }
-        repositionCamera();
-    }
-
-	// To avoid continuous rendering.
-	repaint();
+//    if (event->buttons()) {
+//        buw::Vector2f mouse(event->x(), event->y());
+//        lastMousePos_ = mouse;
+//        viewCube_->mousePress();
+//        int alignmentId = alignmentEffect_->getAlignmentId(currentPickId_);
+//        if(alignmentId != Core::DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment() && alignmentId != -1) {
+//            buw::ReferenceCounted<buw::SelectAlignment> actionSelectAlignment = std::make_shared<buw::SelectAlignment>(alignmentId);
+//            OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().execute(actionSelectAlignment);
+//        }
+//        repositionCamera();
+//    }
+//
+//	// To avoid continuous rendering.
+//	repaint();
 }
 
 void Viewport::mouseMoveEvent(QMouseEvent* event) {
@@ -768,20 +769,20 @@ void Viewport::onChange() {
 
 void Viewport::onChange(ChangeFlag changeFlag) {
     auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
-    auto dem = data.getDigitalElevationModel();
-    auto alignment = data.getAlignmentModel();
-    auto trafficSignModel = data.getTrafficSignModel();
-    auto girderModel = data.getGirderModel();
-    auto slabFieldModel = data.getSlabFieldModel();
-    auto ifcGeometryModel = data.getIfcGeometryModel();
-	auto pointCloud = data.getPointCloud();
-	auto proxyModel = data.getProxyModel();
+ //   auto dem = data.getDigitalElevationModel();
+ //   auto alignment = data.getAlignmentModel();
+ //   auto trafficSignModel = data.getTrafficSignModel();
+ //   auto girderModel = data.getGirderModel();
+ //   auto slabFieldModel = data.getSlabFieldModel();
+ //   auto ifcGeometryModel = data.getIfcGeometryModel();
+	//auto pointCloud = data.getPointCloud();
+	//auto proxyModel = data.getProxyModel();
 
     buw::Vector3d min, max;
     min = buw::Vector3d(-1, -1, -1);
     max = buw::Vector3d(1, 1, 1);
 
-    if (dem && dem->getSurfaceCount() > 0)
+   /* if (dem && dem->getSurfaceCount() > 0)
         dem->getSurfacesExtend(min, max);
     else if (alignment && alignment->getAlignmentCount() > 0) {
         auto bb = alignment->getExtends();
@@ -795,7 +796,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
 
 		BLUE_LOG(trace) << "min:" << min;
 		BLUE_LOG(trace) << "max:" << max;
-	}
+	}*/
 	
 
     buw::Vector3d offset = (min + max) / -2.f;
@@ -806,54 +807,54 @@ void Viewport::onChange(ChangeFlag changeFlag) {
 
     boundingBoxEffect_->setBounds(min, max);
 
-    if(changeFlag & ChangeFlag::DigitalElevationModel && dem) {
-        demEffect_->setDEM(dem, offset);
-        activeEffects_.push_back(demEffect_);
-    }
+ //   if(changeFlag & ChangeFlag::DigitalElevationModel && dem) {
+ //       demEffect_->setDEM(dem, offset);
+ //       activeEffects_.push_back(demEffect_);
+ //   }
 
-    if(changeFlag & ChangeFlag::AlignmentModel && alignment) {
-        alignmentEffect_->setAlignment(alignment, offset);
-        activeEffects_.push_back(alignmentEffect_);
-    }
+ //   if(changeFlag & ChangeFlag::AlignmentModel && alignment) {
+ //       alignmentEffect_->setAlignment(alignment, offset);
+ //       activeEffects_.push_back(alignmentEffect_);
+ //   }
 
-    if(changeFlag & ChangeFlag::IfcGeometry && ifcGeometryModel) {
-        ifcGeometryEffect_->setIfcGeometryModel(ifcGeometryModel, offset);
-        activeEffects_.push_back(ifcGeometryEffect_);
-    }
+ //   if(changeFlag & ChangeFlag::IfcGeometry && ifcGeometryModel) {
+ //       ifcGeometryEffect_->setIfcGeometryModel(ifcGeometryModel, offset);
+ //       activeEffects_.push_back(ifcGeometryEffect_);
+ //   }
 
-    if(changeFlag & ChangeFlag::TrafficModel && trafficSignModel) {
-        trafficSignEffect_->setData(alignment, offset, trafficSignModel);
-        activeEffects_.push_back(trafficSignEffect_);
-    }
+ //   if(changeFlag & ChangeFlag::TrafficModel && trafficSignModel) {
+ //       trafficSignEffect_->setData(alignment, offset, trafficSignModel);
+ //       activeEffects_.push_back(trafficSignEffect_);
+ //   }
 
-    if(changeFlag & ChangeFlag::GirderModel && girderModel) {
-        girderEffect_->setData(girderModel, offset);
-        activeEffects_.push_back(girderEffect_);
-    }
+ //   if(changeFlag & ChangeFlag::GirderModel && girderModel) {
+ //       girderEffect_->setData(girderModel, offset);
+ //       activeEffects_.push_back(girderEffect_);
+ //   }
 
-    if(changeFlag & ChangeFlag::SlabFieldModel && slabFieldModel) {
-        slabFieldEffect_->setData(slabFieldModel, offset);
-        activeEffects_.push_back(slabFieldEffect_);
-    }
+ //   if(changeFlag & ChangeFlag::SlabFieldModel && slabFieldModel) {
+ //       slabFieldEffect_->setData(slabFieldModel, offset);
+ //       activeEffects_.push_back(slabFieldEffect_);
+ //   }
 
-    if(changeFlag & ChangeFlag::SelectedAlignmentIndex && alignment) {
-        selectedAlignmentIndex_ = data.getSelectedAlignment();
-        alignmentEffect_->setCurrentSelectedAlignment(selectedAlignmentIndex_);
-    }
+ //   if(changeFlag & ChangeFlag::SelectedAlignmentIndex && alignment) {
+ //       selectedAlignmentIndex_ = data.getSelectedAlignment();
+ //       alignmentEffect_->setCurrentSelectedAlignment(selectedAlignmentIndex_);
+ //   }
 
-	if(changeFlag & ChangeFlag::PointCloud && pointCloud && pointCloud->size() > 0) {
-		pointCloudEffect_->setPointCloud(pointCloud, offset);
-		activeEffects_.push_back(pointCloudEffect_);
-		activeEffects_.push_back(sectionsBoundingBoxEffect_);
-	}
+	//if(changeFlag & ChangeFlag::PointCloud && pointCloud && pointCloud->size() > 0) {
+	//	pointCloudEffect_->setPointCloud(pointCloud, offset);
+	//	activeEffects_.push_back(pointCloudEffect_);
+	//	activeEffects_.push_back(sectionsBoundingBoxEffect_);
+	//}
 
-	if (/*changeFlag & ChangeFlag::ProxyModel && */proxyModel && proxyModel->getAccidentReportCount()) {
-		billboardEffect_->setProxyModel(proxyModel, offset);
-		billboardEffect_->setPointSize(621.0f);
-		billboardEffect_->drawPointsWithUniformColor(false);
-		billboardEffect_->drawPointsWithUniformSize(true);
-		activeEffects_.push_back(billboardEffect_);
-	}
+	//if (/*changeFlag & ChangeFlag::ProxyModel && */proxyModel && proxyModel->getAccidentReportCount()) {
+	//	billboardEffect_->setProxyModel(proxyModel, offset);
+	//	billboardEffect_->setPointSize(621.0f);
+	//	billboardEffect_->drawPointsWithUniformColor(false);
+	//	billboardEffect_->drawPointsWithUniformSize(true);
+	//	activeEffects_.push_back(billboardEffect_);
+	//}
 
     if(changeFlag & ChangeFlag::Preferences) {
         //TODO
@@ -865,15 +866,15 @@ void Viewport::onClear() {
 }
 
 void Viewport::reloadShader() {
-    slabFieldEffect_->loadShader();
+    /*slabFieldEffect_->loadShader();
     girderEffect_->loadShader();
     alignmentEffect_->loadShader();
     demEffect_->loadShader();
-    gradientClearEffect_->loadShader();
+    gradientClearEffect_->loadShader();*/
     uiElements_->loadShader();
     boundingBoxEffect_->loadShader();
-	pointCloudEffect_->loadShader();
-	billboardEffect_->loadShader();
+	/*pointCloudEffect_->loadShader();
+	billboardEffect_->loadShader();*/
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END

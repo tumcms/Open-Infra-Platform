@@ -104,7 +104,7 @@ namespace OpenInfraPlatform
             bool useTextured = false;
 			
 		private:
-			Ui::PreferencesDialog*	ui_;
+			UserInterface::PreferencesDialog*	ui_;
 			ColorPickerWidget*		colorPickerWidget_;
             QColorDialog            faceColorDialog_, borderColorDialog_, textColorDialog_, highlightColorDialog_;
 

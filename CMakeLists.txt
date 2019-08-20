@@ -464,7 +464,7 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 		${OpenInfraPlatform_UserInterface_ViewPanel_Source}
 		${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source}
 		${OpenInfraPlatform_UserInterface_Shader_Source}
-		${OpenInfraPlatform_UserInterface_Shader_D3D_Source}
+		#${OpenInfraPlatform_UserInterface_Shader_D3D_Source}
 		${OpenInfraPlatform_UserInterface_QCustomPlot_Source}
 		${OpenInfraPlatform_UserInterface_UnitTesting_Source}	
 		
