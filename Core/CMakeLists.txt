@@ -55,7 +55,7 @@ add_library(OpenInfraPlatform.Core STATIC
 target_include_directories(OpenInfraPlatform.Core INTERFACE ${PROJECT_INCLUDE_DIRS} )
 
 # Thirdparty libraries the project depends upon.
-target_link_libraries(OpenInfraPlatform.Core
+target_link_libraries(OpenInfraPlatform.Core PRIVATE
     Qt5::Core
     Qt5::OpenGL
     Qt5::Xml
@@ -67,11 +67,11 @@ target_link_libraries(OpenInfraPlatform.Core
 if(MODULES_POINT_CLOUD_PROCESSING)
 	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
 	include_directories(${CC_INCLUDE_DIRS})
-	target_link_libraries(OpenInfraPlatform.Core ${CC_LIBRARIES})
+	target_link_libraries(OpenInfraPlatform.Core PUBLIC ${CC_LIBRARIES})
 endif()
 
 foreach(format ${IFC_FORMATS})
-	target_link_libraries(OpenInfraPlatform.Core OpenInfraPlatform.${format})
+	target_link_libraries(OpenInfraPlatform.Core PUBLIC OpenInfraPlatform.${format})
 endforeach()
 
 set_target_properties(OpenInfraPlatform.Core 	PROPERTIES FOLDER "OpenInfraPlatform")
