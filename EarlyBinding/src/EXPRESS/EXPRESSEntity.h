@@ -42,7 +42,7 @@ public:
 		m_id = id;
 	}
 
-	virtual const std::string getStepParameter() const override {
+	const std::string getStepParameter() const override {
 		return "#" + std::to_string(m_id);
 	}
 
