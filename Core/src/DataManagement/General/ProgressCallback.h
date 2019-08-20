@@ -19,19 +19,31 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef OpenInfraPlatform_DataManagement_ProgressCallback_D84F130D_FBD7_45E0_93AF_9CA3EC9CB915_h
 #define OpenInfraPlatform_DataManagement_ProgressCallback_D84F130D_FBD7_45E0_93AF_9CA3EC9CB915_h
 
-//#include <GenericProgressCallback.h>
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+	#include <GenericProgressCallback.h>
+#endif
+
 #include <QObject>
 
 namespace OpenInfraPlatform {
 namespace Core {
 	namespace DataManagement {
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 		class ProgressCallback : public QObject,  public CCLib::GenericProgressCallback
+#else
+		class ProgressCallback : public QObject
+#endif
 		{
 		Q_OBJECT;
 		public:
-			ProgressCallback(): CCLib::GenericProgressCallback(), QObject() {}
 
-		virtual void update(float percent) override
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+			ProgressCallback(): CCLib::GenericProgressCallback(), QObject() {}
+#else
+			ProgressCallback() : QObject() {}
+#endif
+
+		virtual void update(float percent)
 		{
 			Q_EMIT updateSignal(percent);
 		}

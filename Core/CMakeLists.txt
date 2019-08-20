@@ -38,6 +38,8 @@ source_group(Core\\DataManagement\\Command		FILES ${Core_DataManagement_Command_
 #source_group(Core\\DataManagement\\Export		FILES ${Core_DataManagement_Export_Source})
 source_group(Core\\IfcGeometryConverter			FILES ${Core_IfcGeometryConverter_Source})
 
+
+
 include_directories(
     	../Core/src
 		${BLUEFRAMEWORK_INCLUDE_DIR}
@@ -63,6 +65,12 @@ target_link_libraries(OpenInfraPlatform.Core
     ${BLUEFRAMEWORK_LIBRARIES}
     carve
 )
+
+if(MODULES_POINT_CLOUD_PROCESSING)
+	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
+	include_directories(${CC_INCLUDE_DIRS})
+	target_link_libraries(OpenInfraPlatform.Core ${CC_LIBRARIES})
+endif()
 
 foreach(format ${IFC_FORMATS})
 	target_link_libraries(OpenInfraPlatform.Core OpenInfraPlatform.${format})
