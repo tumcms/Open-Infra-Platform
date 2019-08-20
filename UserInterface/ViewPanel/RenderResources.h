@@ -39,11 +39,11 @@
 //#include <BlueFramework/Engine/Camera/Camera.h>
 #include <BlueFramework/Engine/VertexCache/VertexCache.h>
 
-#include "../Core/src/IfcGeometryConverter/ConverterBuw.h"
+#include "IfcGeometryConverter/ConverterBuw.h"
 #include <QWidget>
 #include <QMouseEvent>
 #include "../UserInterface/ViewPanel/Tool.h"
-#include "../Core/src/DataManagement/General/Data.h"
+#include "DataManagement/General/Data.h"
 
 #include <BlueFramework/ImageProcessing/Image.h>
 #include <BlueFramework/ImageProcessing/io.h>
