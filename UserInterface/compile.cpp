@@ -18,7 +18,7 @@
 #include "OpenInfraPlatform/Infrastructure/IfcPL/Parser.h"
 #include "OpenInfraPlatform/Infrastructure/IfcPL/Interpreter.h"
 
-using namespace OpenInfraPlatform::Infrastructure;
+using namespace OpenInfraPlatform::Core;
 
 void compile()
 {
