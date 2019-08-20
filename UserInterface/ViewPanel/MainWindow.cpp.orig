@@ -15,26 +15,24 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../UserInterface/Dialogues/MainWindow.h"
+#include "OpenInfraPlatform/UserInterface/MainWindow.h"
+
 #include "ColorPicker/colorpickerwidget.h"
-#include "../UserInterface/UnitTesting/Benchmark.h"
-#include "../Core/src/DataManagement/General/AsyncJob.h"
-#include "../UserInterface/Dialogues/HelpBrowser.h"
+#include "OpenInfraPlatform/Benchmark.h"
+#include "OpenInfraPlatform/DataManagement/AsyncJob.h"
+#include "OpenInfraPlatform/DataManagement/Command/CommandCreateClothoid.h"
+#include "OpenInfraPlatform/DataManagement/Command/DeleteAlignment.h"
+#include "OpenInfraPlatform/DataManagement/Command/DeleteSurface.h"
+#include "OpenInfraPlatform/DataManagement/Command/SelectAlignment.h"
 
-//#include "OpenInfraPlatform/UserInterface/Ifc4x1TreeModel.h"
-//#include "OpenInfraPlatform/DataManagement/Command/CommandCreateClothoid.h"
-//#include "OpenInfraPlatform/DataManagement/Command/DeleteAlignment.h"
-//#include "OpenInfraPlatform/DataManagement/Command/DeleteSurface.h"
-//#include "OpenInfraPlatform/DataManagement/Command/SelectAlignment.h"
-//#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DBlossCurve.h"
-//#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
+#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DBlossCurve.h"
+#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
+#include "OpenInfraPlatform/UserInterface/HelpBrowser.h"
+#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/AlignmentEffect.h"
+#include "OpenInfraPlatform/UserInterface/resource.h"
+#include "OpenInfraPlatform/UserInterface/VectorTableModel.h"
 
-//#include "../UserInterface/ViewPanel/Effects/AlignmentEffect.h"
-#include "../UserInterface/Dialogues/resource.h"
-#include "../UserInterface/Dialogues/VectorTableModel.h"
-
-//#include "buw.OIPInfrastructure.h"
-
+#include "buw.OIPInfrastructure.h"
 #include "ui_mainwindow.h"
 
 #include <BlueFramework/ImageProcessing/Image.h>
@@ -59,10 +57,10 @@
 using convert_type = std::codecvt_utf8<wchar_t>;
 
 OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nullptr*/)
-    : BlueFramework::Application::UserInterface::MainWindowBase(&OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance(), parent)
+    : BlueFramework::Application::UserInterface::MainWindowBase(&OpenInfraPlatform::DataManagement::DocumentManager::getInstance(), parent)
     , ui_(new Ui::MainWindow)
- /*   , verticalAlignmentWindow_(nullptr)
-    , curvatureWindow_(nullptr)*/
+    , verticalAlignmentWindow_(nullptr)
+    , curvatureWindow_(nullptr)
     , loaded_(false) {
 	ui_->setupUi(this);
 	variantEditor_ = new QtTreePropertyBrowser();
@@ -96,10 +94,10 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 
 	updateWindowTitle("Untitled");
 
-	//view_->getViewport()->getAlignmentEffect()->AlignmentSelectionChanged.connect(boost::bind(&MainWindow::on_comboBoxAlignment_currentIndexChanged, this, _1));
-	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Change.connect(boost::bind(&MainWindow::onChange, this));
-	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().RedoStackChanged.connect(boost::bind(&MainWindow::updateActionRedo, this, _1));
-	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().UndoStackChanged.connect(boost::bind(&MainWindow::updateActionUndo, this, _1));
+	view_->getViewport()->getAlignmentEffect()->AlignmentSelectionChanged.connect(boost::bind(&MainWindow::on_comboBoxAlignment_currentIndexChanged, this, _1));
+	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().Change.connect(boost::bind(&MainWindow::onChange, this));
+	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().RedoStackChanged.connect(boost::bind(&MainWindow::updateActionRedo, this, _1));
+	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().UndoStackChanged.connect(boost::bind(&MainWindow::updateActionUndo, this, _1));
 
 	OpenInfraPlatform::AsyncJob::getInstance().jobStarting.connect(boost::bind(&MainWindow::jobStarting, this));
 	OpenInfraPlatform::AsyncJob::getInstance().jobRunning.connect(boost::bind(&MainWindow::jobRunning, this, _1, _2, _3));
@@ -107,39 +105,39 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	OpenInfraPlatform::AsyncJob::getInstance().jobFinished.connect(boost::bind(&MainWindow::jobFinished, this, _1, _2));
 
 	// Initialize dialogs
-	//ACA_ = new CreateArcClothoidArcDialog(this);
-	//ACA2_ = new CreateArcClothoidArcMeth2Dialog(this);
-	//ACCA_ = new CreateArcClothoidClothoidArcDialog(this);
-	//ACCA2_ = new CreateArcClothoidClothoidArcMeth2Dialog(this);
-	//createClothoidDialog2_ = new CreateClothoidDialog2(this);
-	//curvatureWindow_ = new CurvatureWindow(ui_->actionCurvature);
-	//exportExcelDialog_ = new ExportExcelDialog(this);
-	//exportIfcZipDialog_ = new ExportIfcZipDialog(this);
-	//exportIfcAlignment1x0Dialog_ = new ExportIfcAlignment1x0Dialog(this);
-	//exportIfcAlignment1x1Dialog_ = new ExportIfc4x1Dialog(this);
-	//generateTerrainDialog_ = new GenerateTerrainDialog(this);
-	//LAAAL_ = new CreateLineArcArcArcLineDialog(this);
-	//LAAL_ = new CreateLineArcArcLineDialog(this);
-	//LC_ = new CreateClothoidDialog(this);
-	//LCACL_ = new CreateLineClothoidArcClothoidLineDialog(this);
-	//LCCL_ = new CreateLineClothoidClothoidLineDialog(this);
-	//osmImportDialog_ = new OSMImportDialog(this);
-	//preferencesDialog_ = new PreferencesDialog(view_, this);
-	//verticalAlignmentWindow_ = new VerticalAlignmentWindow(ui_->actionVertical_alignment);
-	//XYZImportDialog_ = new XYZImportDialog(this);
-	//addGeoreferenceDialog_ = new AddGeoreferenceDialog(view_, this);
-	//showIFCtree_ = new ShowIFCtree(view_, this);
+	ACA_ = new CreateArcClothoidArcDialog(this);
+	ACA2_ = new CreateArcClothoidArcMeth2Dialog(this);
+	ACCA_ = new CreateArcClothoidClothoidArcDialog(this);
+	ACCA2_ = new CreateArcClothoidClothoidArcMeth2Dialog(this);
+	createClothoidDialog2_ = new CreateClothoidDialog2(this);
+	curvatureWindow_ = new CurvatureWindow(ui_->actionCurvature);
+	exportExcelDialog_ = new ExportExcelDialog(this);
+	exportIfcZipDialog_ = new ExportIfcZipDialog(this);
+	exportIfcAlignment1x0Dialog_ = new ExportIfcAlignment1x0Dialog(this);
+	exportIfcAlignment1x1Dialog_ = new ExportIfc4x1Dialog(this);
+	generateTerrainDialog_ = new GenerateTerrainDialog(this);
+	LAAAL_ = new CreateLineArcArcArcLineDialog(this);
+	LAAL_ = new CreateLineArcArcLineDialog(this);
+	LC_ = new CreateClothoidDialog(this);
+	LCACL_ = new CreateLineClothoidArcClothoidLineDialog(this);
+	LCCL_ = new CreateLineClothoidClothoidLineDialog(this);
+	osmImportDialog_ = new OSMImportDialog(this);
+	preferencesDialog_ = new PreferencesDialog(view_, this);
+	verticalAlignmentWindow_ = new VerticalAlignmentWindow(ui_->actionVertical_alignment);
+	XYZImportDialog_ = new XYZImportDialog(this);
+	addGeoreferenceDialog_ = new AddGeoreferenceDialog(view_, this);
+	showIFCtree_ = new ShowIFCtree(view_, this);
 	updateRecentFileActions();
 
-	//connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), ACA_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
-	//connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), ACA2_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
-	//connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), ACCA_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
-	//connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), ACCA2_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
-	//connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LC_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
-	//connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LCACL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
-	//connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LCCL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
-	//connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LAAL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
-	//connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LAAAL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
+	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), ACA_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
+	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), ACA2_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
+	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), ACCA_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
+	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), ACCA2_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
+	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LC_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
+	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LCACL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
+	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LCCL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
+	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LAAL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
+	connect(this, SIGNAL(sendPoints(std::vector<buw::Vector3d>, buw::Vector2d)), LAAAL_, SLOT(takePoints(std::vector<buw::Vector3d>, buw::Vector2d)));
 
 	connect(&pcdUniformColorDialog_, &QColorDialog::currentColorChanged, view_->getViewport(), &Viewport::updatePointCloudUniformColor);
 	connect(&pcdUniformColorDialog_, &QColorDialog::colorSelected, view_->getViewport(), &Viewport::updatePointCloudUniformColor);
@@ -196,11 +194,9 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	ui_->radioButtonRender3D->setChecked(true);
 
 	// Create the callback for the progress bar and connect the signals.
-
-	callback_ = buw::makeReferenceCounted<OpenInfraPlatform::Core::DataManagement::ProgressCallback>();
-
-	//connect(callback_.get(), &OpenInfraPlatform::Core::DataManagement::ProgressCallback::activitySignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setVisible);
-	//connect(callback_.get(), &OpenInfraPlatform::Core::DataManagement::ProgressCallback::updateSignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setValue);
+	callback_ = buw::makeReferenceCounted<OpenInfraPlatform::DataManagement::ProgressCallback>();
+	//connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setVisible);
+	//connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::updateSignal, ui_->progressBarPointCloudProcessing, &QProgressBar::setValue);
 	
 	ui_->progressBarPointCloudProcessing->setVisible(false);
 
@@ -274,11 +270,11 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 
 
 	// Connect to the common progress dialog.
-	connect(callback_.get(), &OpenInfraPlatform::Core::DataManagement::ProgressCallback::activitySignal, progressDialog_, &QProgressDialog::setEnabled);
-	connect(callback_.get(), &OpenInfraPlatform::Core::DataManagement::ProgressCallback::activitySignal, progressDialog_, &QProgressDialog::setVisible);
-	connect(callback_.get(), &OpenInfraPlatform::Core::DataManagement::ProgressCallback::activitySignal, progressDialog_, [&](bool value) {value ? progressDialog_->setRange(0, 100) : progressDialog_->setRange(0, 0); });
-	connect(callback_.get(), &OpenInfraPlatform::Core::DataManagement::ProgressCallback::updateSignal, progressDialog_, &QProgressDialog::setValue);
-	connect(callback_.get(), &OpenInfraPlatform::Core::DataManagement::ProgressCallback::setMethodTitleSignal, progressDialog_, &QProgressDialog::setLabelText);
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, progressDialog_, &QProgressDialog::setEnabled);
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, progressDialog_, &QProgressDialog::setVisible);
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::activitySignal, progressDialog_, [&](bool value) {value ? progressDialog_->setRange(0, 100) : progressDialog_->setRange(0, 0); });
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::updateSignal, progressDialog_, &QProgressDialog::setValue);
+	connect(callback_.get(), &OpenInfraPlatform::DataManagement::ProgressCallback::setMethodTitleSignal, progressDialog_, &QProgressDialog::setLabelText);
 
 	ui_->doubleSpinBoxPointSize->setValue(3.0);
 	on_doubleSpinBoxPointSize_valueChanged(3.0);
@@ -335,13 +331,13 @@ void OpenInfraPlatform::UserInterface::MainWindow::showEvent(QShowEvent* event) 
 		// "testdata/Okstra/entwurf_s_achse-1_g_l_1014/Entwurf_S_Achse-1_G_L_1014.xml"
 		bool testBlossCurve = false;
 		if (!testBlossCurve) {
-			OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/Mainbruecke_Klingenberg.xml");
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/Mainbruecke_Klingenberg.xml");
 		} else {
 			double L = 20;
 			double R = 5;
 
 			{
-			/*	buw::ReferenceCounted<buw::Alignment2DBased3D> alignment = buw::makeReferenceCounted<buw::Alignment2DBased3D>();
+				buw::ReferenceCounted<buw::Alignment2DBased3D> alignment = buw::makeReferenceCounted<buw::Alignment2DBased3D>();
 				buw::ReferenceCounted<buw::HorizontalAlignment2D> halignment = buw::makeReferenceCounted<buw::HorizontalAlignment2D>();
 
 				buw::clothoidDescription cd;
@@ -358,7 +354,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::showEvent(QShowEvent* event) 
 
 				alignment->setHorizontalAlignment(halignment);
 
-				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().addAlignment(alignment);*/
+				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().addAlignment(alignment);
 			}
 			{
 				/*buw::ReferenceCounted<buw::Alignment2DBased3D> alignment = buw::makeReferenceCounted<buw::Alignment2DBased3D>();
@@ -370,7 +366,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::showEvent(QShowEvent* event) 
 				alignment->setHorizontalAlignment(halignment);
 
 
-				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().addAlignment(alignment);*/
+				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().addAlignment(alignment);*/
 			}
 		}
 	}
@@ -378,25 +374,25 @@ void OpenInfraPlatform::UserInterface::MainWindow::showEvent(QShowEvent* event) 
 
 OpenInfraPlatform::UserInterface::MainWindow::~MainWindow() {
 	// todo:L consider using smart pointers here
-	//buw::safeDelete(exportExcelDialog_);
-	//buw::safeDelete(createClothoidDialog2_);
-	//buw::safeDelete(exportIfcAlignment1x0Dialog_);
-	//buw::safeDelete(exportIfcAlignment1x1Dialog_);
-	//buw::safeDelete(XYZImportDialog_);
-	//buw::safeDelete(preferencesDialog_);
-	//buw::safeDelete(generateTerrainDialog_);
-	//buw::safeDelete(LAAL_);
-	//buw::safeDelete(LAAAL_);
-	//buw::safeDelete(ACA_);
-	//buw::safeDelete(ACCA_);
-	//buw::safeDelete(LCCL_);
-	//buw::safeDelete(LCACL_);
-	//buw::safeDelete(LC_);
-	//buw::safeDelete(ACA2_);
-	//buw::safeDelete(ACCA2_);
-	//buw::safeDelete(verticalAlignmentWindow_);
-	//buw::safeDelete(curvatureWindow_);
-	//buw::safeDelete(ui_);
+	buw::safeDelete(exportExcelDialog_);
+	buw::safeDelete(createClothoidDialog2_);
+	buw::safeDelete(exportIfcAlignment1x0Dialog_);
+	buw::safeDelete(exportIfcAlignment1x1Dialog_);
+	buw::safeDelete(XYZImportDialog_);
+	buw::safeDelete(preferencesDialog_);
+	buw::safeDelete(generateTerrainDialog_);
+	buw::safeDelete(LAAL_);
+	buw::safeDelete(LAAAL_);
+	buw::safeDelete(ACA_);
+	buw::safeDelete(ACCA_);
+	buw::safeDelete(LCCL_);
+	buw::safeDelete(LCACL_);
+	buw::safeDelete(LC_);
+	buw::safeDelete(ACA2_);
+	buw::safeDelete(ACCA2_);
+	buw::safeDelete(verticalAlignmentWindow_);
+	buw::safeDelete(curvatureWindow_);
+	buw::safeDelete(ui_);
 
 	plots_.clear();
 }
@@ -441,7 +437,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::retranslatePropertyBrowser() 
 	propertyHorizontalAlignment_->setPropertyName(tr("Horizontal Alignment"));
 	propertyVerticalAlignment_->setPropertyName(tr("Vertical Alignment"));
 	variantEditor_->translateHeader();
-	//on_comboBoxAlignment_currentIndexChanged(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment());
+	on_comboBoxAlignment_currentIndexChanged(DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment());
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::dropEvent(QDropEvent* ev) {
@@ -455,9 +451,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::dropEvent(QDropEvent* ev) {
 			std::string DropName = filePathList[0].toStdString();
 
 			if (boost::filesystem::exists(DropName)) {
-				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().clear();
-				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import(DropName);
-				addToRecentFilesList(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().recentFileName);
+				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().clear();
+				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import(DropName);
+				addToRecentFilesList(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().recentFileName);
 				updateRecentFileActions();
 
 				boost::filesystem::path p(DropName.c_str());
@@ -487,44 +483,44 @@ void OpenInfraPlatform::UserInterface::MainWindow::emitPoints(QDialog* toolDialo
 	buw::Vector2d viewOffset = view_->getOffset().block<2, 1>(0, 0);
 	Q_EMIT sendPoints(viewPoints, viewOffset);
 }
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Arc_Clothoid_Arc_triggered() {
-//	emitPoints(ACA_);
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Arc_Clothoid_Arc2_triggered() {
-//	emitPoints(ACA2_);
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Arc_Clothoid_Clothoid_Arc2_triggered() {
-//	emitPoints(ACCA2_);
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Arc_Clothoid_Clothoid_Arc_triggered() {
-//	emitPoints(ACCA_);
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Line_Clothoid_triggered() {
-//	emitPoints(LC_);
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Line_Clothoid_Arc_Clothoid_Line_triggered() {
-//	emitPoints(LCACL_);
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Line_Clothoid_Clothoid_Line_triggered() {
-//	emitPoints(LCCL_);
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Line_Arc_Arc_Line_triggered() {
-//	emitPoints(LAAL_);
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Line_Arc_Arc_Arc_Line_triggered() {
-//	emitPoints(LAAAL_);
-//}
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Arc_Clothoid_Arc_triggered() {
+	emitPoints(ACA_);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Arc_Clothoid_Arc2_triggered() {
+	emitPoints(ACA2_);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Arc_Clothoid_Clothoid_Arc2_triggered() {
+	emitPoints(ACCA2_);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Arc_Clothoid_Clothoid_Arc_triggered() {
+	emitPoints(ACCA_);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Line_Clothoid_triggered() {
+	emitPoints(LC_);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Line_Clothoid_Arc_Clothoid_Line_triggered() {
+	emitPoints(LCACL_);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Line_Clothoid_Clothoid_Line_triggered() {
+	emitPoints(LCCL_);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Line_Arc_Arc_Line_triggered() {
+	emitPoints(LAAL_);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Line_Arc_Arc_Arc_Line_triggered() {
+	emitPoints(LAAAL_);
+}
 
 void OpenInfraPlatform::UserInterface::MainWindow::createClothoid() {
-	/*buw::Vector2d startPoint(0.0, 0.0);
+	buw::Vector2d startPoint(0.0, 0.0);
 	double L = 100;
 	double A = 60;
 	double R = A * A / L;
@@ -546,7 +542,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::createClothoid() {
 	buw::ReferenceCounted<buw::HorizontalAlignment2D> horizontalAlignment = std::make_shared<buw::HorizontalAlignment2D>();
 	horizontalAlignment->addElement(c);
 	buw::ReferenceCounted<buw::Alignment2DBased3D> a = std::make_shared<buw::Alignment2DBased3D>(horizontalAlignment);
-	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().addAlignment(a);*/
+	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().addAlignment(a);
 }
 
 //---------------------------------------------------------------------------//
@@ -558,16 +554,16 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionExit_triggered() {
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionImport_OSM_File_triggered() {
-	//QString filename = QFileDialog::getOpenFileName(this, "Open Document", QDir::currentPath(), "OpenStreetMap (*.osm)");
+	QString filename = QFileDialog::getOpenFileName(this, "Open Document", QDir::currentPath(), "OpenStreetMap (*.osm)");
 
-	//if (!filename.isNull()) {
-	//	osmImportDialog_->setFilename(filename.toStdString());
-	//	int r = osmImportDialog_->exec();
+	if (!filename.isNull()) {
+		osmImportDialog_->setFilename(filename.toStdString());
+		int r = osmImportDialog_->exec();
 
-	//	if (r == QDialog::Accepted)
-	//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().importOSM(
-	//		  filename.toStdString(), osmImportDialog_->getFilterList(), osmImportDialog_->getMode());
-	//}
+		if (r == QDialog::Accepted)
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().importOSM(
+			  filename.toStdString(), osmImportDialog_->getFilterList(), osmImportDialog_->getMode());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionRecentFile1_triggered() {
@@ -650,34 +646,34 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionClearMenu_triggered(
 // Other
 //---------------------------------------------------------------------------//
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportIIfcRoad_triggered() {
-	//QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("IfcRoad Step File (*.ifc);;Zip compressed IfcRoad Step File (*.ifczip)"));
+	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("IfcRoad Step File (*.ifc);;Zip compressed IfcRoad Step File (*.ifczip)"));
 
-	//if (!filename.isNull()) {
-	//	if (filename.endsWith(".ifc")) {
-	//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportIfcRoadTUMProposal(filename.toStdString());
-	//	}
+	if (!filename.isNull()) {
+		if (filename.endsWith(".ifc")) {
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportIfcRoadTUMProposal(filename.toStdString());
+		}
 
-	//	else if (filename.endsWith("zip")) {
-	//		QUuid id = QUuid::createUuid();
-	//		QString tempFilename = QDir::currentPath().append(QString("/").append(id.toString().append(".ifc")));
+		else if (filename.endsWith("zip")) {
+			QUuid id = QUuid::createUuid();
+			QString tempFilename = QDir::currentPath().append(QString("/").append(id.toString().append(".ifc")));
 
-	//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportIfcRoadTUMProposal(tempFilename.toStdString());
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportIfcRoadTUMProposal(tempFilename.toStdString());
 
-	//		//OpenInfraPlatform::Core::DataManagement::IfcZipper* ExportZipper = new OpenInfraPlatform::Core::DataManagement::IfcZipper(nullptr, QString(filename.data()), tempFilename, DEFL);
+			OpenInfraPlatform::DataManagement::IfcZipper* ExportZipper = new OpenInfraPlatform::DataManagement::IfcZipper(nullptr, QString(filename.data()), tempFilename, DEFL);
 
-	//		QObject::connect(&OpenInfraPlatform::AsyncJob::getInstance(), SIGNAL(finished()), ExportZipper, SLOT(start()));
-	//		QObject::connect(ExportZipper, &OpenInfraPlatform::Core::DataManagement::IfcZipper::finished, ExportZipper, &QObject::deleteLater);
-	//	}
-	//}
+			QObject::connect(&OpenInfraPlatform::AsyncJob::getInstance(), SIGNAL(finished()), ExportZipper, SLOT(start()));
+			QObject::connect(ExportZipper, &OpenInfraPlatform::DataManagement::IfcZipper::finished, ExportZipper, &QObject::deleteLater);
+		}
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportIfcAlignment_triggered() {
-	//exportIfcAlignment1x0Dialog_->show();
+	exportIfcAlignment1x0Dialog_->show();
 }
 
 /*new*/
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportIfcZip_triggered() {
-	/*exportIfcZipDialog_->show();*/
+	exportIfcZipDialog_->show();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
@@ -725,22 +721,22 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_action3D_triggered() {
 	view_->setView(eView::ThreeDimensional);
 }
 
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionVertical_alignment_triggered() {
-//	ui_->actionVertical_alignment->setChecked(true);
-//	verticalAlignmentWindow_->show();
-//	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, verticalAlignmentWindow_);
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionCurvature_triggered() {
-//	ui_->actionCurvature->setChecked(true);
-//	curvatureWindow_->show();
-//	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, curvatureWindow_);
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_IFC_tree_triggered()
-//{
-//	showIFCtree_->show();
-//}
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionVertical_alignment_triggered() {
+	ui_->actionVertical_alignment->setChecked(true);
+	verticalAlignmentWindow_->show();
+	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, verticalAlignmentWindow_);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCurvature_triggered() {
+	ui_->actionCurvature->setChecked(true);
+	curvatureWindow_->show();
+	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, curvatureWindow_);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_IFC_tree_triggered()
+{
+	showIFCtree_->show();
+}
 
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionTerrain_Hide_triggered(bool checked) {
@@ -763,23 +759,23 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionTerrain_Iso_Lines_tr
 	view_->enableIsoLines(checked);
 }
 
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionMerge_XYZ_File_triggered() {
-//	XYZImportDialog_->show();
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionTerrain_Generate_Random_Terrain_triggered() {
-//	generateTerrainDialog_->show();
-//}
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionMerge_XYZ_File_triggered() {
+	XYZImportDialog_->show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionTerrain_Generate_Random_Terrain_triggered() {
+	generateTerrainDialog_->show();
+}
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionTerrain_Create_Terrain_from_Heightmap_triggered() {
-	/*QString openFile =
+	QString openFile =
 	  QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(), tr("Portable Network Graphics (*.png);;Bitmap (*.bmp);;JPEG (*.jpg);;TIFF (*.tif)"));
 
 	if (openFile.isNull() == false) {
 		std::string filename = openFile.toUtf8().constData();
 
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().createTerrainFromHeightMap(filename);
-	}*/
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().createTerrainFromHeightMap(filename);
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Cross_Section_triggered(bool checked) {
@@ -803,293 +799,293 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionDraw_Road_Texture_tr
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportVerticalAlignment_triggered() {
-	/*verticalAlignmentWindow_->exportToFile();*/
+	verticalAlignmentWindow_->exportToFile();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportLandInfra_triggered() {
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("LandInfra (*.xml)"));
 
-	//if (!filename.isNull()) {
-	//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportLandInfra(filename.toStdString());
-	//}
+	if (!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportLandInfra(filename.toStdString());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportPointCloud_triggered()
 {
-	//if(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud().get() != nullptr) {
-	//	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin;;*.las"));
-	//	if(!filename.isNull()) {
-	//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
-	//	}
-	//}
-	//else {
-	//	QMessageBox dialog;
-	//	dialog.setStandardButtons(QMessageBox::StandardButton::Ok);
-	//	dialog.setIcon(QMessageBox::Icon::Warning);
-	//	dialog.setText("No Point Cloud to export available.");
-	//	dialog.setWindowTitle(tr("Disclaimer"));
-	//	dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
-	//	dialog.exec();
-	//}
+	if(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud().get() != nullptr) {
+		QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin;;*.las"));
+		if(!filename.isNull()) {
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
+		}
+	}
+	else {
+		QMessageBox dialog;
+		dialog.setStandardButtons(QMessageBox::StandardButton::Ok);
+		dialog.setIcon(QMessageBox::Icon::Warning);
+		dialog.setText("No Point Cloud to export available.");
+		dialog.setWindowTitle(tr("Disclaimer"));
+		dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+		dialog.exec();
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportCurvature_triggered() {
-	/*curvatureWindow_->exportToFile();*/
+	curvatureWindow_->exportToFile();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::updateAlignmentUI() {
-	//buw::ReferenceCounted<buw::AlignmentModel> am = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getAlignmentModel();
+	buw::ReferenceCounted<buw::AlignmentModel> am = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getAlignmentModel();
 
-	//ui_->comboBoxAlignment->clear();
-	//for (int i = 0; i < am->getAlignmentCount(); i++) {
-	//	buw::ReferenceCounted<buw::IAlignment3D> alignment = am->getAlignment(i);
+	ui_->comboBoxAlignment->clear();
+	for (int i = 0; i < am->getAlignmentCount(); i++) {
+		buw::ReferenceCounted<buw::IAlignment3D> alignment = am->getAlignment(i);
 
-	//	ui_->comboBoxAlignment->addItem(alignment->getName().toCString());
-	//}
+		ui_->comboBoxAlignment->addItem(alignment->getName().toCString());
+	}
 
-	//if (am->getAlignmentCount() > 0) {
-	//	if (am->getAlignment(0)->getType() == buw::e3DAlignmentType::e2DBased) {
-	//		buw::ReferenceCounted<buw::Alignment2DBased3D> a = std::static_pointer_cast<buw::Alignment2DBased3D>(am->getAlignment(0));
+	if (am->getAlignmentCount() > 0) {
+		if (am->getAlignment(0)->getType() == buw::e3DAlignmentType::e2DBased) {
+			buw::ReferenceCounted<buw::Alignment2DBased3D> a = std::static_pointer_cast<buw::Alignment2DBased3D>(am->getAlignment(0));
 
-	//		buw::ReferenceCounted<buw::Alignment2DBased3D> currentAlignment = a;
+			buw::ReferenceCounted<buw::Alignment2DBased3D> currentAlignment = a;
 
-	//		itemStartStation_->setValue(currentAlignment->getStartStation());
-	//		itemEndStation_->setValue(currentAlignment->getEndStation());
-	//		itemLength_->setValue(currentAlignment->getLength());
-	//	}
-	//}
+			itemStartStation_->setValue(currentAlignment->getStartStation());
+			itemEndStation_->setValue(currentAlignment->getEndStation());
+			itemLength_->setValue(currentAlignment->getLength());
+		}
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::updateAlignmentElementsUI() {
-	//int index = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment();
+	int index = DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment();
 
-	//// clear horizontal alignment properties
-	//propertyHorizontalAlignment_->subProperties().clear();
+	// clear horizontal alignment properties
+	propertyHorizontalAlignment_->subProperties().clear();
 
-	//// clear vertical alignment properties
-	//propertyVerticalAlignment_->subProperties().clear();
+	// clear vertical alignment properties
+	propertyVerticalAlignment_->subProperties().clear();
 
-	//buw::ReferenceCounted<buw::AlignmentModel> am = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getAlignmentModel();
+	buw::ReferenceCounted<buw::AlignmentModel> am = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getAlignmentModel();
 
-	//if (am->getAlignmentCount() > index && index >= 0) {
-	//	if (am->getAlignment(index)->getType() != buw::e3DAlignmentType::e2DBased) {
-	//		buw::ReferenceCounted<buw::Alignment3DBased3D> currentAlignment = std::static_pointer_cast<buw::Alignment3DBased3D>(am->getAlignment(index));
+	if (am->getAlignmentCount() > index && index >= 0) {
+		if (am->getAlignment(index)->getType() != buw::e3DAlignmentType::e2DBased) {
+			buw::ReferenceCounted<buw::Alignment3DBased3D> currentAlignment = std::static_pointer_cast<buw::Alignment3DBased3D>(am->getAlignment(index));
 
-	//		itemStartStation_->setValue(currentAlignment->getStartStation());
-	//		itemEndStation_->setValue(currentAlignment->getEndStation());
-	//		itemLength_->setValue(currentAlignment->getLength());
-	//		ui_->comboBoxAlignment->setCurrentIndex(index);
+			itemStartStation_->setValue(currentAlignment->getStartStation());
+			itemEndStation_->setValue(currentAlignment->getEndStation());
+			itemLength_->setValue(currentAlignment->getLength());
+			ui_->comboBoxAlignment->setCurrentIndex(index);
 
-	//		return;
-	//	}
+			return;
+		}
 
-	//	buw::ReferenceCounted<buw::Alignment2DBased3D> currentAlignment = std::static_pointer_cast<buw::Alignment2DBased3D>(am->getAlignment(index));
+		buw::ReferenceCounted<buw::Alignment2DBased3D> currentAlignment = std::static_pointer_cast<buw::Alignment2DBased3D>(am->getAlignment(index));
 
-	//	itemStartStation_->setValue(currentAlignment->getStartStation());
-	//	itemEndStation_->setValue(currentAlignment->getEndStation());
-	//	itemLength_->setValue(currentAlignment->getLength());
-	//	ui_->comboBoxAlignment->setCurrentIndex(index);
+		itemStartStation_->setValue(currentAlignment->getStartStation());
+		itemEndStation_->setValue(currentAlignment->getEndStation());
+		itemLength_->setValue(currentAlignment->getLength());
+		ui_->comboBoxAlignment->setCurrentIndex(index);
 
-	//	if (currentAlignment->hasVerticalAlignment()) {
-	//		for (int k = 0; k < currentAlignment->getVerticalAlignment()->getAlignmentElementCount(); k++) {
-	//			auto va = currentAlignment->getVerticalAlignment()->getAlignmentElementByIndex(k);
-	//			std::string type = buw::verticalAlignmentTypeToString(va->getAlignmentType());
+		if (currentAlignment->hasVerticalAlignment()) {
+			for (int k = 0; k < currentAlignment->getVerticalAlignment()->getAlignmentElementCount(); k++) {
+				auto va = currentAlignment->getVerticalAlignment()->getAlignmentElementByIndex(k);
+				std::string type = buw::verticalAlignmentTypeToString(va->getAlignmentType());
 
-	//			auto itemVerticalAlignment = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), tr("Vertical Alignment (%1)").arg(type.c_str()));
+				auto itemVerticalAlignment = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), tr("Vertical Alignment (%1)").arg(type.c_str()));
 
-	//			propertyVerticalAlignment_->addSubProperty(itemVerticalAlignment);
+				propertyVerticalAlignment_->addSubProperty(itemVerticalAlignment);
 
-	//			auto start = va->getStartPosition();
-	//			auto end = va->getEndPosition();
+				auto start = va->getStartPosition();
+				auto end = va->getEndPosition();
 
-	//			double length = end.x() - start.x();
+				double length = end.x() - start.x();
 
-	//			// start position
-	//			auto itemStart = variantManager_->addProperty(QVariant::PointF, tr("Start"));
-	//			itemStart->setValue(QPointF(start.x(), start.y()));
-	//			itemStart->setAttribute(QLatin1String("decimals"), 4);
-	//			itemVerticalAlignment->addSubProperty(itemStart);
+				// start position
+				auto itemStart = variantManager_->addProperty(QVariant::PointF, tr("Start"));
+				itemStart->setValue(QPointF(start.x(), start.y()));
+				itemStart->setAttribute(QLatin1String("decimals"), 4);
+				itemVerticalAlignment->addSubProperty(itemStart);
 
-	//			// end position
-	//			auto itemEnd = variantManager_->addProperty(QVariant::PointF, tr("End"));
-	//			itemEnd->setValue(QPointF(end.x(), end.y()));
-	//			itemEnd->setAttribute(QLatin1String("decimals"), 4);
-	//			itemVerticalAlignment->addSubProperty(itemEnd);
+				// end position
+				auto itemEnd = variantManager_->addProperty(QVariant::PointF, tr("End"));
+				itemEnd->setValue(QPointF(end.x(), end.y()));
+				itemEnd->setAttribute(QLatin1String("decimals"), 4);
+				itemVerticalAlignment->addSubProperty(itemEnd);
 
-	//			// length
-	//			auto itemLength = variantManager_->addProperty(QVariant::Double, tr("Length [m]"));
-	//			itemLength->setValue(length);
-	//			itemVerticalAlignment->addSubProperty(itemLength);
+				// length
+				auto itemLength = variantManager_->addProperty(QVariant::Double, tr("Length [m]"));
+				itemLength->setValue(length);
+				itemVerticalAlignment->addSubProperty(itemLength);
 
-	//			// start gradient
-	//			double startGradient = 0;
-	//			va->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartGradient, &startGradient);
-	//			auto itemStartGradient = variantManager_->addProperty(QVariant::Double, tr("Start gradient"));
-	//			itemStartGradient->setValue(startGradient);
-	//			itemVerticalAlignment->addSubProperty(itemStartGradient);
-	//		}
-	//	}
+				// start gradient
+				double startGradient = 0;
+				va->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::StartGradient, &startGradient);
+				auto itemStartGradient = variantManager_->addProperty(QVariant::Double, tr("Start gradient"));
+				itemStartGradient->setValue(startGradient);
+				itemVerticalAlignment->addSubProperty(itemStartGradient);
+			}
+		}
 
-	//	for (int k = 0; k < currentAlignment->getHorizontalAlignment()->getAlignmentElementCount(); k++) {
-	//		// current alignment segment
-	//		auto ha = currentAlignment->getHorizontalAlignment()->getAlignmentElementByIndex(k);
-	//		std::string type = buw::horizontalAlignmentTypeToString(ha->getAlignmentType());
+		for (int k = 0; k < currentAlignment->getHorizontalAlignment()->getAlignmentElementCount(); k++) {
+			// current alignment segment
+			auto ha = currentAlignment->getHorizontalAlignment()->getAlignmentElementByIndex(k);
+			std::string type = buw::horizontalAlignmentTypeToString(ha->getAlignmentType());
 
-	//		auto itemHorizontalAlignment = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), tr("Horizontal Alignment (%1)").arg(tr(type.c_str())));
+			auto itemHorizontalAlignment = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), tr("Horizontal Alignment (%1)").arg(tr(type.c_str())));
 
-	//		propertyHorizontalAlignment_->addSubProperty(itemHorizontalAlignment);
+			propertyHorizontalAlignment_->addSubProperty(itemHorizontalAlignment);
 
-	//		auto horizontalElement = currentAlignment->getHorizontalAlignment()->getAlignmentElementByIndex(k);
-	//		auto start = horizontalElement->getStartPosition();
-	//		auto end = horizontalElement->getEndPosition();
+			auto horizontalElement = currentAlignment->getHorizontalAlignment()->getAlignmentElementByIndex(k);
+			auto start = horizontalElement->getStartPosition();
+			auto end = horizontalElement->getEndPosition();
 
-	//		// start position
-	//		auto itemStart = variantManager_->addProperty(QVariant::PointF, tr("Start"));
-	//		itemStart->setValue(QPointF(start.x(), start.y()));
-	//		itemStart->setAttribute(QLatin1String("decimals"), 4);
-	//		itemHorizontalAlignment->addSubProperty(itemStart);
+			// start position
+			auto itemStart = variantManager_->addProperty(QVariant::PointF, tr("Start"));
+			itemStart->setValue(QPointF(start.x(), start.y()));
+			itemStart->setAttribute(QLatin1String("decimals"), 4);
+			itemHorizontalAlignment->addSubProperty(itemStart);
 
-	//		// end position
-	//		auto itemEnd = variantManager_->addProperty(QVariant::PointF, tr("End"));
-	//		itemEnd->setValue(QPointF(end.x(), end.y()));
-	//		itemEnd->setAttribute(QLatin1String("decimals"), 4);
-	//		itemHorizontalAlignment->addSubProperty(itemEnd);
+			// end position
+			auto itemEnd = variantManager_->addProperty(QVariant::PointF, tr("End"));
+			itemEnd->setValue(QPointF(end.x(), end.y()));
+			itemEnd->setAttribute(QLatin1String("decimals"), 4);
+			itemHorizontalAlignment->addSubProperty(itemEnd);
 
-	//		// length
-	//		auto itemLength = variantManager_->addProperty(QVariant::Double, tr("Length [m]"));
-	//		itemLength->setValue(ha->getLength());
-	//		itemHorizontalAlignment->addSubProperty(itemLength);
+			// length
+			auto itemLength = variantManager_->addProperty(QVariant::Double, tr("Length [m]"));
+			itemLength->setValue(ha->getLength());
+			itemHorizontalAlignment->addSubProperty(itemLength);
 
-	//		switch (ha->getAlignmentType()) {
-	//		case buw::eHorizontalAlignmentType::Arc: {
-	//			double radius = 0;
-	//			ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Radius, &radius);
-	//			auto itemRadius = variantManager_->addProperty(QVariant::Double, tr("Radius [m]"));
-	//			itemRadius->setValue(radius);
-	//			itemHorizontalAlignment->addSubProperty(itemRadius);
+			switch (ha->getAlignmentType()) {
+			case buw::eHorizontalAlignmentType::Arc: {
+				double radius = 0;
+				ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Radius, &radius);
+				auto itemRadius = variantManager_->addProperty(QVariant::Double, tr("Radius [m]"));
+				itemRadius->setValue(radius);
+				itemHorizontalAlignment->addSubProperty(itemRadius);
 
-	//			bool ccw = true;
-	//			ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Counterclockwise, &ccw);
-	//			auto itemCCW = variantManager_->addProperty(QVariant::Bool, tr("Counterclockwise"));
-	//			itemCCW->setValue(ccw);
-	//			itemHorizontalAlignment->addSubProperty(itemCCW);
-	//		} break;
+				bool ccw = true;
+				ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Counterclockwise, &ccw);
+				auto itemCCW = variantManager_->addProperty(QVariant::Bool, tr("Counterclockwise"));
+				itemCCW->setValue(ccw);
+				itemHorizontalAlignment->addSubProperty(itemCCW);
+			} break;
 
-	//		case buw::eHorizontalAlignmentType::Clothoid: {
-	//			// ClothoidConstant
-	//			double clothoidConstant = 0;
-	//			ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::ClothoidConstant, &clothoidConstant);
-	//			auto itemClothoidConstant = variantManager_->addProperty(QVariant::Double, tr("Clothoid constant (A) [m�]"));
-	//			itemClothoidConstant->setValue(clothoidConstant);
-	//			itemHorizontalAlignment->addSubProperty(itemClothoidConstant);
+			case buw::eHorizontalAlignmentType::Clothoid: {
+				// ClothoidConstant
+				double clothoidConstant = 0;
+				ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::ClothoidConstant, &clothoidConstant);
+				auto itemClothoidConstant = variantManager_->addProperty(QVariant::Double, tr("Clothoid constant (A) [m�]"));
+				itemClothoidConstant->setValue(clothoidConstant);
+				itemHorizontalAlignment->addSubProperty(itemClothoidConstant);
 
-	//			// Radius Start
-	//			double RadiusStart = 0;
-	//			ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::RadiusStart, &RadiusStart);
+				// Radius Start
+				double RadiusStart = 0;
+				ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::RadiusStart, &RadiusStart);
 
-	//			if (buw::isInfinite(RadiusStart)) {
-	//				auto itemRadiusStart = variantManager_->addProperty(QVariant::String, tr("Radius Start [m]"));
-	//				itemRadiusStart->setValue(QVariant(tr("infinite")));
-	//				itemHorizontalAlignment->addSubProperty(itemRadiusStart);
-	//			} else {
-	//				auto itemRadiusStart = variantManager_->addProperty(QVariant::Double, tr("Radius Start [m]"));
-	//				itemRadiusStart->setValue(RadiusStart);
-	//				itemHorizontalAlignment->addSubProperty(itemRadiusStart);
-	//			}
+				if (buw::isInfinite(RadiusStart)) {
+					auto itemRadiusStart = variantManager_->addProperty(QVariant::String, tr("Radius Start [m]"));
+					itemRadiusStart->setValue(QVariant(tr("infinite")));
+					itemHorizontalAlignment->addSubProperty(itemRadiusStart);
+				} else {
+					auto itemRadiusStart = variantManager_->addProperty(QVariant::Double, tr("Radius Start [m]"));
+					itemRadiusStart->setValue(RadiusStart);
+					itemHorizontalAlignment->addSubProperty(itemRadiusStart);
+				}
 
-	//			// Radius End
-	//			double RadiusEnd = 0;
-	//			ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::RadiusEnd, &RadiusEnd);
+				// Radius End
+				double RadiusEnd = 0;
+				ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::RadiusEnd, &RadiusEnd);
 
-	//			if (buw::isInfinite(RadiusEnd)) {
-	//				auto itemRadiusEnd = variantManager_->addProperty(QVariant::String, tr("Radius End [m]"));
-	//				itemRadiusEnd->setValue(tr("infinite"));
-	//				itemHorizontalAlignment->addSubProperty(itemRadiusEnd);
-	//			} else {
-	//				auto itemRadiusEnd = variantManager_->addProperty(QVariant::Double, tr("Radius End [m]"));
-	//				itemRadiusEnd->setValue(RadiusEnd);
-	//				itemHorizontalAlignment->addSubProperty(itemRadiusEnd);
-	//			}
+				if (buw::isInfinite(RadiusEnd)) {
+					auto itemRadiusEnd = variantManager_->addProperty(QVariant::String, tr("Radius End [m]"));
+					itemRadiusEnd->setValue(tr("infinite"));
+					itemHorizontalAlignment->addSubProperty(itemRadiusEnd);
+				} else {
+					auto itemRadiusEnd = variantManager_->addProperty(QVariant::Double, tr("Radius End [m]"));
+					itemRadiusEnd->setValue(RadiusEnd);
+					itemHorizontalAlignment->addSubProperty(itemRadiusEnd);
+				}
 
-	//			bool ccw = true;
-	//			ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Counterclockwise, &ccw);
-	//			auto itemCCW = variantManager_->addProperty(QVariant::Bool, tr("Counterclockwise"));
-	//			itemCCW->setValue(ccw);
-	//			itemHorizontalAlignment->addSubProperty(itemCCW);
+				bool ccw = true;
+				ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Counterclockwise, &ccw);
+				auto itemCCW = variantManager_->addProperty(QVariant::Bool, tr("Counterclockwise"));
+				itemCCW->setValue(ccw);
+				itemHorizontalAlignment->addSubProperty(itemCCW);
 
-	//			// PI
-	//			buw::Vector2d pointOfIntersection;
-	//			bool hasPI = ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::PI, &pointOfIntersection);
-	//			auto itemPI = variantManager_->addProperty(QVariant::PointF, tr("Point of Intersection"));
-	//			itemPI->setValue(QPointF(pointOfIntersection.x(), pointOfIntersection.y()));
-	//			itemPI->setAttribute(QLatin1String("decimals"), 4);
-	//			itemHorizontalAlignment->addSubProperty(itemPI);
-	//		} break;
+				// PI
+				buw::Vector2d pointOfIntersection;
+				bool hasPI = ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::PI, &pointOfIntersection);
+				auto itemPI = variantManager_->addProperty(QVariant::PointF, tr("Point of Intersection"));
+				itemPI->setValue(QPointF(pointOfIntersection.x(), pointOfIntersection.y()));
+				itemPI->setAttribute(QLatin1String("decimals"), 4);
+				itemHorizontalAlignment->addSubProperty(itemPI);
+			} break;
 
-	//		case buw::eHorizontalAlignmentType::Bloss: {
-	//			// Radius Start
-	//			double RadiusStart = 0;
-	//			ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::RadiusStart, &RadiusStart);
+			case buw::eHorizontalAlignmentType::Bloss: {
+				// Radius Start
+				double RadiusStart = 0;
+				ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::RadiusStart, &RadiusStart);
 
-	//			if (buw::isInfinite(RadiusStart)) {
-	//				auto itemRadiusStart = variantManager_->addProperty(QVariant::String, tr("Radius Start [m]"));
-	//				itemRadiusStart->setValue(QVariant(tr("infinite")));
-	//				itemHorizontalAlignment->addSubProperty(itemRadiusStart);
-	//			} else {
-	//				auto itemRadiusStart = variantManager_->addProperty(QVariant::Double, tr("Radius Start [m]"));
-	//				itemRadiusStart->setValue(RadiusStart);
-	//				itemHorizontalAlignment->addSubProperty(itemRadiusStart);
-	//			}
+				if (buw::isInfinite(RadiusStart)) {
+					auto itemRadiusStart = variantManager_->addProperty(QVariant::String, tr("Radius Start [m]"));
+					itemRadiusStart->setValue(QVariant(tr("infinite")));
+					itemHorizontalAlignment->addSubProperty(itemRadiusStart);
+				} else {
+					auto itemRadiusStart = variantManager_->addProperty(QVariant::Double, tr("Radius Start [m]"));
+					itemRadiusStart->setValue(RadiusStart);
+					itemHorizontalAlignment->addSubProperty(itemRadiusStart);
+				}
 
-	//			// Radius End
-	//			double RadiusEnd = 0;
-	//			ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::RadiusEnd, &RadiusEnd);
+				// Radius End
+				double RadiusEnd = 0;
+				ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::RadiusEnd, &RadiusEnd);
 
-	//			if (buw::isInfinite(RadiusEnd)) {
-	//				auto itemRadiusEnd = variantManager_->addProperty(QVariant::String, tr("Radius End [m]"));
-	//				itemRadiusEnd->setValue(tr("infinite"));
-	//				itemHorizontalAlignment->addSubProperty(itemRadiusEnd);
-	//			} else {
-	//				auto itemRadiusEnd = variantManager_->addProperty(QVariant::Double, tr("Radius End [m]"));
-	//				itemRadiusEnd->setValue(RadiusEnd);
-	//				itemHorizontalAlignment->addSubProperty(itemRadiusEnd);
-	//			}
+				if (buw::isInfinite(RadiusEnd)) {
+					auto itemRadiusEnd = variantManager_->addProperty(QVariant::String, tr("Radius End [m]"));
+					itemRadiusEnd->setValue(tr("infinite"));
+					itemHorizontalAlignment->addSubProperty(itemRadiusEnd);
+				} else {
+					auto itemRadiusEnd = variantManager_->addProperty(QVariant::Double, tr("Radius End [m]"));
+					itemRadiusEnd->setValue(RadiusEnd);
+					itemHorizontalAlignment->addSubProperty(itemRadiusEnd);
+				}
 
-	//			bool ccw = true;
-	//			ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Counterclockwise, &ccw);
-	//			auto itemCCW = variantManager_->addProperty(QVariant::Bool, tr("Counterclockwise"));
-	//			itemCCW->setValue(ccw);
-	//			itemHorizontalAlignment->addSubProperty(itemCCW);
+				bool ccw = true;
+				ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::Counterclockwise, &ccw);
+				auto itemCCW = variantManager_->addProperty(QVariant::Bool, tr("Counterclockwise"));
+				itemCCW->setValue(ccw);
+				itemHorizontalAlignment->addSubProperty(itemCCW);
 
-	//			// PI
-	//			buw::Vector2d pointOfIntersection;
-	//			bool hasPI = ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::PI, &pointOfIntersection);
-	//			auto itemPI = variantManager_->addProperty(QVariant::PointF, tr("Point of Intersection"));
-	//			itemPI->setValue(QPointF(pointOfIntersection.x(), pointOfIntersection.y()));
-	//			itemPI->setAttribute(QLatin1String("decimals"), 4);
-	//			itemHorizontalAlignment->addSubProperty(itemPI);
-	//		} break;
+				// PI
+				buw::Vector2d pointOfIntersection;
+				bool hasPI = ha->genericQuery(OpenInfraPlatform::Infrastructure::eAlignmentElementQueryId::PI, &pointOfIntersection);
+				auto itemPI = variantManager_->addProperty(QVariant::PointF, tr("Point of Intersection"));
+				itemPI->setValue(QPointF(pointOfIntersection.x(), pointOfIntersection.y()));
+				itemPI->setAttribute(QLatin1String("decimals"), 4);
+				itemHorizontalAlignment->addSubProperty(itemPI);
+			} break;
 
-	//		default: break;
-	//		}
-	//	}
-	//} else {
-	//	itemStartStation_->setValue(0);
-	//	itemEndStation_->setValue(0);
-	//	itemLength_->setValue(0);
+			default: break;
+			}
+		}
+	} else {
+		itemStartStation_->setValue(0);
+		itemEndStation_->setValue(0);
+		itemLength_->setValue(0);
 
-	//	while (propertyHorizontalAlignment_->subProperties().size() > 0) {
-	//		propertyHorizontalAlignment_->removeSubProperty(propertyHorizontalAlignment_->subProperties()[0]);
-	//	}
+		while (propertyHorizontalAlignment_->subProperties().size() > 0) {
+			propertyHorizontalAlignment_->removeSubProperty(propertyHorizontalAlignment_->subProperties()[0]);
+		}
 
-	//	while (propertyVerticalAlignment_->subProperties().size() > 0) {
-	//		propertyVerticalAlignment_->removeSubProperty(propertyVerticalAlignment_->subProperties()[0]);
-	//	}
-	//}
+		while (propertyVerticalAlignment_->subProperties().size() > 0) {
+			propertyVerticalAlignment_->removeSubProperty(propertyVerticalAlignment_->subProperties()[0]);
+		}
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::onChange() {
-	onChange(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getLatesChangeFlag());
+	onChange(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getLatesChangeFlag());
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::onChange(ChangeFlag changeFlag) {
@@ -1098,8 +1094,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::onChange(ChangeFlag changeFla
 	if (changeFlag & ChangeFlag::AlignmentModel || changeFlag & ChangeFlag::Preferences || changeFlag & ChangeFlag::SelectedAlignmentIndex)
 		updateAlignmentElementsUI();
 
-	/*if (changeFlag & ChangeFlag::DigitalElevationModel) {
-		buw::ReferenceCounted<buw::DigitalElevationModel> dem = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getDigitalElevationModel();
+	if (changeFlag & ChangeFlag::DigitalElevationModel) {
+		buw::ReferenceCounted<buw::DigitalElevationModel> dem = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getDigitalElevationModel();
 
 		ui_->comboBoxSurfaces->clear();
 		for (int i = 0; i < dem->getSurfaceCount(); i++) {
@@ -1107,22 +1103,22 @@ void OpenInfraPlatform::UserInterface::MainWindow::onChange(ChangeFlag changeFla
 
 			ui_->comboBoxSurfaces->addItem(surface->getName());
 		}
-	}*/
+	}
 
-	//if (changeFlag & ChangeFlag::ProxyModel) {
-	//	buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::ProxyModel> pm = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
+	if (changeFlag & ChangeFlag::ProxyModel) {
+		buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::ProxyModel> pm = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getProxyModel();
 
-	//	if (pm->hasIfc4x1Data()) {
-	//		for (auto it = pm->getIfc4x1Data().begin(); it != pm->getIfc4x1Data().end(); ++it) {
-	//			ui_->listWidgetProxies->addItem(it->second->classname());
-	//		}
+		if (pm->hasIfc4x1Data()) {
+			for (auto it = pm->getIfc4x1Data().begin(); it != pm->getIfc4x1Data().end(); ++it) {
+				ui_->listWidgetProxies->addItem(it->second->classname());
+			}
 
-	//		ui_->listWidgetProxies->addItem("muh");
-	//	}
-	//}
+			ui_->listWidgetProxies->addItem("muh");
+		}
+	}
 
-	/*if(changeFlag & ChangeFlag::PointCloud) {
-		auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(changeFlag & ChangeFlag::PointCloud) {
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 		if(pointCloud) {
 			auto eigenvectorsView = new OpenInfraPlatform::UserInterface::VectorTableModel(pointCloud->getEigenvectors<3>());			
 			ui_->tableViewEigenmatrix->setModel(eigenvectorsView);
@@ -1142,27 +1138,27 @@ void OpenInfraPlatform::UserInterface::MainWindow::onChange(ChangeFlag changeFla
 			ui_->labelPointCloudSizeValue->setText(QString::number(pointCloud->size()));
 			ui_->labelPointCloudSectionsValue->setText(QString::number(pointCloud->getSections().size()));
 		}
-	}*/
+	}
 
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_comboBoxAlignment_currentIndexChanged(int index) {
-	/*if (index != OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment() && index != -1) {
+	if (index != DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment() && index != -1) {
 		buw::ReferenceCounted<buw::SelectAlignment> actionSelectAlignment = std::make_shared<buw::SelectAlignment>(index);
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().execute(actionSelectAlignment);
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().execute(actionSelectAlignment);
 	}
 	if (ui_->comboBoxAlignment->currentIndex() != index) {
 		ui_->comboBoxAlignment->setCurrentIndex(index);
 		ui_->comboBoxAlignment->update();
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionLandXML_triggered() {
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("LandXML (*.xml)"));
 
-	//if (!filename.isNull()) {
-	//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportLandXML(filename.toStdString());
-	//}
+	if (!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportLandXML(filename.toStdString());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxHighlightSelectedAlignmentSegment_clicked(bool checked) {
@@ -1172,17 +1168,17 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxHighlightSelectedA
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionAdvancedSVG_triggered() {
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("Scalable Vector Graphics (*.svg)"));
 
-	//if (!filename.isNull()) {
-	//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportSVGAdvanced(filename.toStdString());
-	//}
+	if (!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportSVGAdvanced(filename.toStdString());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionUsualSVG_triggered() {
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("Scalable Vector Graphics (*.svg)"));
 
-	/*if (!filename.isNull()) {
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportSVG(filename.toStdString());
-	}*/
+	if (!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportSVG(filename.toStdString());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionCheck_for_Updates_triggered() {
@@ -1193,13 +1189,13 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionCheck_for_Updates_tr
 	// FvUpdater::sharedUpdater()->CheckForUpdatesNotSilent();
 }
 
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionPreferences_triggered() {
-//	preferencesDialog_->show();
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionAdd_Georeference_triggered() {
-//	addGeoreferenceDialog_->show();
-//}
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionPreferences_triggered() {
+	preferencesDialog_->show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionAdd_Georeference_triggered() {
+	addGeoreferenceDialog_->show();
+}
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowMap_clicked(bool checked) {
 	view_->enableMap(checked);
@@ -1285,7 +1281,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::prepareTest(int i) {
 		// testdata/LandXML/Ji/B15n_Data/B15n.xml
 		// --------------------------------------------------------------------------
 
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/B15n_Data/B15n.xml");
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/B15n_Data/B15n.xml");
 		break;
 
 	case 1:
@@ -1293,7 +1289,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::prepareTest(int i) {
 		// testdata/LandXML/Mainbruecke_Klingenberg.xml
 		// --------------------------------------------------------------------------
 
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/Mainbruecke_Klingenberg.xml");
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/Mainbruecke_Klingenberg.xml");
 		break;
 
 	case 2:
@@ -1302,7 +1298,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::prepareTest(int i) {
 		// testdata/LandXML/LandXMLDemo.xml
 		// ###############################################################################################################################
 
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/AutoCAD Civil 3D/LandXMLDemo.xml");
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/AutoCAD Civil 3D/LandXMLDemo.xml");
 		break;
 
 	case 3:
@@ -1310,7 +1306,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::prepareTest(int i) {
 		// testdata/LandXML/ProVI/002LR.xml
 		// ###############################################################################################################################
 
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/ProVI/002LR.xml");
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/ProVI/002LR.xml");
 		break;
 
 	case 4:
@@ -1318,7 +1314,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::prepareTest(int i) {
 		// testdata/LandXML/AutoCAD Civil 3D/debug.xml
 		// ###############################################################################################################################
 
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/AutoCAD Civil 3D/debug.xml");
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/AutoCAD Civil 3D/debug.xml");
 		break;
 
 	case 5:
@@ -1326,7 +1322,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::prepareTest(int i) {
 		// testdata/LandXML/HbfMhfZweiteStammstrecke/HbfMhfZweiteStammstrecke.xml
 		// ###############################################################################################################################
 
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/HbfMhfZweiteStammstrecke/HbfMhfZweiteStammstrecke.xml");
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/HbfMhfZweiteStammstrecke/HbfMhfZweiteStammstrecke.xml");
 		break;
 
 	case 6:
@@ -1334,7 +1330,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::prepareTest(int i) {
 		// testdata/LandXML/HbfMhfZweiteStammstrecke/2teStammstreckeBeide.xml
 		// ###############################################################################################################################
 
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/HbfMhfZweiteStammstrecke/2teStammstreckeBeide.xml");
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/HbfMhfZweiteStammstrecke/2teStammstreckeBeide.xml");
 		break;
 
 	case 7:
@@ -1342,7 +1338,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::prepareTest(int i) {
 		// testdata/LandXML/CityCad/Sito_Tie.xml"
 		// ###############################################################################################################################
 
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/CityCad/Sito_Tie.xml");
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/CityCad/Sito_Tie.xml");
 		break;
 
 	case 8:
@@ -1350,7 +1346,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::prepareTest(int i) {
 		// testdata/LandXML/RIB STRATIS/BAB_A6.xml
 		// ###############################################################################################################################
 
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/RIB STRATIS/BAB_A6.xml");
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/RIB STRATIS/BAB_A6.xml");
 		break;
 
 	case 9:
@@ -1358,45 +1354,45 @@ void OpenInfraPlatform::UserInterface::MainWindow::prepareTest(int i) {
 		// testdata/LandXML/RIB STRATIS/St2237-Sulzkirchen.xml
 		// ###############################################################################################################################
 
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/RIB STRATIS/St2237-Sulzkirchen.xml");
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/RIB STRATIS/St2237-Sulzkirchen.xml");
 		break;
 
 	case 10:
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/Mainbruecke_Klingenberg.xml");
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("testdata/LandXML/Mainbruecke_Klingenberg.xml");
 		break;
 
 		//// export Oktra
 		// case 11:
-		//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportOkstra("Mainbruecke_Klingenberg_OKSTRA_export_1_13.xml", "1.013");
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportOkstra("Mainbruecke_Klingenberg_OKSTRA_export_1_13.xml", "1.013");
 		//	break;
 
 		// case 12:
-		//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportOkstra("Mainbruecke_Klingenberg_OKSTRA_export_1_14.xml", "1.014");
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportOkstra("Mainbruecke_Klingenberg_OKSTRA_export_1_14.xml", "1.014");
 		//	break;
 
 		// case 13:
-		//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportOkstra("Mainbruecke_Klingenberg_OKSTRA_export_1_13.cte", "1.013");
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportOkstra("Mainbruecke_Klingenberg_OKSTRA_export_1_13.cte", "1.013");
 		//	break;
 
 		// case 14:
-		//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportOkstra("Mainbruecke_Klingenberg_OKSTRA_export_1_14.cte", "1.014");
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportOkstra("Mainbruecke_Klingenberg_OKSTRA_export_1_14.cte", "1.014");
 		//	break;
 
 		//// import Okstra
 		// case 15:
-		//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("Mainbruecke_Klingenberg_OKSTRA_export_1_13.xml");
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("Mainbruecke_Klingenberg_OKSTRA_export_1_13.xml");
 		//	break;
 
 		// case 16:
-		//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("Mainbruecke_Klingenberg_OKSTRA_export_1_14.xml");
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("Mainbruecke_Klingenberg_OKSTRA_export_1_14.xml");
 		//	break;
 
 		// case 17:
-		//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("Mainbruecke_Klingenberg_OKSTRA_export_1_13.cte");
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("Mainbruecke_Klingenberg_OKSTRA_export_1_13.cte");
 		//	break;
 
 		// case 18:
-		//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("Mainbruecke_Klingenberg_OKSTRA_export_1_14.cte");
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("Mainbruecke_Klingenberg_OKSTRA_export_1_14.cte");
 		//	break;
 
 	case 11:
@@ -1965,7 +1961,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::performTest(int i) {
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionOpen_triggered() {
 	try {
 		handle_actionOpen_triggered();
-		addToRecentFilesList(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().recentFileName);
+		addToRecentFilesList(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().recentFileName);
 		updateRecentFileActions();
 	} catch (const buw::Exception& exception) {
 		QMessageBox::warning(this, QApplication::applicationName(), tr("Cannot open the selected file."));
@@ -2064,9 +2060,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionMerge_LAS_File_triggered() {
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("LAS cloud (*.las)"));
 
-//	if (!filename.isNull()) {
-//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().importLAS(filename.toStdString());
-//	}
+	if (!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().importLAS(filename.toStdString());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::openRecentFileViaAction(QAction* actionRecentFile) {
@@ -2074,7 +2070,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::openRecentFileViaAction(QActi
 	fileName = fileName.substr(4, fileName.length());
 
 	if (boost::filesystem::exists(fileName)) {
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import(fileName);
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import(fileName);
 		addToRecentFilesList(fileName.c_str());
 		updateRecentFileActions();
 		boost::filesystem::path p(fileName.c_str());
@@ -2111,117 +2107,117 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Alignment_Poi
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Alignment_triggered() {
-//	buw::Vector2d offset = view_->getOffset().block<2, 1>(0, 0);
-//
-//	auto points = view_->getAlignmentPoints();
-//
-//	if (points.size() <= 1) {
-//		return;
-//	}
-//
-//	if (points.size() == 2) {
-//		buw::Vector2d A = points[0].block<2, 1>(0, 0);
-//		buw::Vector2d B = points[1].block<2, 1>(0, 0);
-//
-//		// create horizontal alignment
-//		buw::Vector2d start = buw::Vector2d(points[0].x(), points[0].y()) + offset;
-//		buw::Vector2d end = buw::Vector2d(points[1].x(), points[1].y()) + offset;
-//		buw::ReferenceCounted<buw::HorizontalAlignmentElement2DLine> line = std::make_shared<buw::HorizontalAlignmentElement2DLine>(start, end);
-//		buw::ReferenceCounted<buw::HorizontalAlignment2D> ha = std::make_shared<buw::HorizontalAlignment2D>();
-//		ha->addElement(line);
-//		make3DLine(ha);
-//		return;
-//	}
-//
-//	buw::Vector2d A = points[0].block<2, 1>(0, 0);
-//	buw::Vector2d B = points[1].block<2, 1>(0, 0);
-//	buw::Vector2d C = points[2].block<2, 1>(0, 0);
-//
-//	buw::ReferenceCounted<buw::HorizontalAlignment2D> ha = std::make_shared<buw::HorizontalAlignment2D>();
-//
-//	// double angle = buw::calculateAngleBetweenVectors( A-B, C-B );
-//
-//	for (int i = 0; i < points.size() - 1; i++) {
-//		buw::Vector2d start = buw::Vector2d(points[i + 0].x(), points[i + 0].y()) + offset;
-//		buw::Vector2d end = buw::Vector2d(points[i + 1].x(), points[i + 1].y()) + offset;
-//
-//		buw::ReferenceCounted<buw::HorizontalAlignmentElement2DLine> line = std::make_shared<buw::HorizontalAlignmentElement2DLine>(start, end);
-//		ha->addElement(line);
-//	}
-//	make3DLine(ha);
-//}
-//void OpenInfraPlatform::UserInterface::MainWindow::aboutQt() {
-//	QMessageBox::aboutQt(this);
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Help_triggered() {
-//	HelpBrowser::showPage("index.html");
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_File_triggered() {
-//	wchar_t* localAppData = 0;
-//	SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
-//
-//	std::wstringstream ss;
-//	ss << localAppData << L"/OpenInfraPlatform/";
-//
-//	CoTaskMemFree(static_cast<void*>(localAppData));
-//	// setup converter
-//	std::wstring_convert<convert_type, wchar_t> converter;
-//
-//	// use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
-//	std::wstring filename = L"log.txt";
-//
-//#ifndef _DEBUG
-//	filename = ss.str().append(L"log.txt");
-//#endif
-//
-//	ShellExecute(0, 0, filename.c_str(), 0, 0, SW_SHOW);
+	buw::Vector2d offset = view_->getOffset().block<2, 1>(0, 0);
+
+	auto points = view_->getAlignmentPoints();
+
+	if (points.size() <= 1) {
+		return;
+	}
+
+	if (points.size() == 2) {
+		buw::Vector2d A = points[0].block<2, 1>(0, 0);
+		buw::Vector2d B = points[1].block<2, 1>(0, 0);
+
+		// create horizontal alignment
+		buw::Vector2d start = buw::Vector2d(points[0].x(), points[0].y()) + offset;
+		buw::Vector2d end = buw::Vector2d(points[1].x(), points[1].y()) + offset;
+		buw::ReferenceCounted<buw::HorizontalAlignmentElement2DLine> line = std::make_shared<buw::HorizontalAlignmentElement2DLine>(start, end);
+		buw::ReferenceCounted<buw::HorizontalAlignment2D> ha = std::make_shared<buw::HorizontalAlignment2D>();
+		ha->addElement(line);
+		make3DLine(ha);
+		return;
+	}
+
+	buw::Vector2d A = points[0].block<2, 1>(0, 0);
+	buw::Vector2d B = points[1].block<2, 1>(0, 0);
+	buw::Vector2d C = points[2].block<2, 1>(0, 0);
+
+	buw::ReferenceCounted<buw::HorizontalAlignment2D> ha = std::make_shared<buw::HorizontalAlignment2D>();
+
+	// double angle = buw::calculateAngleBetweenVectors( A-B, C-B );
+
+	for (int i = 0; i < points.size() - 1; i++) {
+		buw::Vector2d start = buw::Vector2d(points[i + 0].x(), points[i + 0].y()) + offset;
+		buw::Vector2d end = buw::Vector2d(points[i + 1].x(), points[i + 1].y()) + offset;
+
+		buw::ReferenceCounted<buw::HorizontalAlignmentElement2DLine> line = std::make_shared<buw::HorizontalAlignmentElement2DLine>(start, end);
+		ha->addElement(line);
+	}
+	make3DLine(ha);
+}
+void OpenInfraPlatform::UserInterface::MainWindow::aboutQt() {
+	QMessageBox::aboutQt(this);
 }
 
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstra_triggered() {
-//	QString version;
-//	QString filename = QFileDialog::getSaveFileName(
-//	  this,
-//	  tr("Save Document"),
-//	  QDir::currentPath(),
-//	  tr("OKSTRA 2.017 (*.xml);;OKSTRA 2.016 (*.xml);;OKSTRA 1.014 (*.xml);; OKSTRA 1.013 (*.xml);; OKSTRA 1.014 (*.cte);; OKSTRA 1.013 (*.cte);; "), // tr("OKSTRA 2.016 (*.xml);;
-//	                                                                                                                                                  // OKSTRA 1.014 (*.xml);;
-//	                                                                                                                                                  // OKSTRA 1.013 (*.xml);;
-//	                                                                                                                                                  // OKSTRA 2.016 (*.cte);;
-//	                                                                                                                                                  // OKSTRA 1.014 (*.cte);;
-//	                                                                                                                                                  // OKSTRA 1.013 (*.cte)"),
-//	  &version);
-//
-//	if (!filename.isNull()) {
-//		version = version.split(" ")[1];
-//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportOkstra(filename.toStdString(), version.toStdString());
-//	}
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstra_translated_triggered() {
-//	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("OKSTRA 2.017 (*.xml);;"));
-//
-//	if (!filename.isNull()) {
-//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportOkstraTranslated(filename.toStdString());
-//	}
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionifcOWL4x1Export_triggered() {
-//	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("Turtle (*.ttl);;RDF/XML-ABBREV (*.rdf);; All files (*.*)"));
-//
-//	if (!filename.isNull()) {
-//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportIfcOWL4x1(filename.toStdString());
-//	}
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstraOWL_triggered() {
-//	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("Turtle (*.ttl);;RDF/XML-ABBREV (*.rdf);; All files (*.*)"));
-//
-//	if (!filename.isNull()) {
-//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportOkstraOWL(filename.toStdString());
-//	}
-//}
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Help_triggered() {
+	HelpBrowser::showPage("index.html");
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_File_triggered() {
+	wchar_t* localAppData = 0;
+	SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
+
+	std::wstringstream ss;
+	ss << localAppData << L"/OpenInfraPlatform/";
+
+	CoTaskMemFree(static_cast<void*>(localAppData));
+	// setup converter
+	std::wstring_convert<convert_type, wchar_t> converter;
+
+	// use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
+	std::wstring filename = L"log.txt";
+
+#ifndef _DEBUG
+	filename = ss.str().append(L"log.txt");
+#endif
+
+	ShellExecute(0, 0, filename.c_str(), 0, 0, SW_SHOW);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstra_triggered() {
+	QString version;
+	QString filename = QFileDialog::getSaveFileName(
+	  this,
+	  tr("Save Document"),
+	  QDir::currentPath(),
+	  tr("OKSTRA 2.017 (*.xml);;OKSTRA 2.016 (*.xml);;OKSTRA 1.014 (*.xml);; OKSTRA 1.013 (*.xml);; OKSTRA 1.014 (*.cte);; OKSTRA 1.013 (*.cte);; "), // tr("OKSTRA 2.016 (*.xml);;
+	                                                                                                                                                  // OKSTRA 1.014 (*.xml);;
+	                                                                                                                                                  // OKSTRA 1.013 (*.xml);;
+	                                                                                                                                                  // OKSTRA 2.016 (*.cte);;
+	                                                                                                                                                  // OKSTRA 1.014 (*.cte);;
+	                                                                                                                                                  // OKSTRA 1.013 (*.cte)"),
+	  &version);
+
+	if (!filename.isNull()) {
+		version = version.split(" ")[1];
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportOkstra(filename.toStdString(), version.toStdString());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstra_translated_triggered() {
+	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("OKSTRA 2.017 (*.xml);;"));
+
+	if (!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportOkstraTranslated(filename.toStdString());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionifcOWL4x1Export_triggered() {
+	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("Turtle (*.ttl);;RDF/XML-ABBREV (*.rdf);; All files (*.*)"));
+
+	if (!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportIfcOWL4x1(filename.toStdString());
+	}
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionOkstraOWL_triggered() {
+	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("Turtle (*.ttl);;RDF/XML-ABBREV (*.rdf);; All files (*.*)"));
+
+	if (!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportOkstraOWL(filename.toStdString());
+	}
+}
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_spinBoxOctreeLevel_valueChanged(int value)
 {
@@ -2234,29 +2230,29 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowOctree_clicked
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonDeleteSelectedAlignment_clicked() {
-	/*int index = ui_->comboBoxAlignment->currentIndex();
+	int index = ui_->comboBoxAlignment->currentIndex();
 
-	buw::ReferenceCounted<buw::AlignmentModel> am = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getAlignmentModel();
+	buw::ReferenceCounted<buw::AlignmentModel> am = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getAlignmentModel();
 
 	if (am->getAlignmentCount() > index && index >= 0) {
 		buw::ReferenceCounted<buw::IAlignment3D> a = am->getAlignment(index);
 
 		buw::ReferenceCounted<buw::DeleteAlignment> actionDeleteAlignment = std::make_shared<buw::DeleteAlignment>(a);
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().execute(actionDeleteAlignment);
-	}*/
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().execute(actionDeleteAlignment);
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonDeleteSurface_clicked() {
-	//int index = ui_->comboBoxSurfaces->currentIndex();
+	int index = ui_->comboBoxSurfaces->currentIndex();
 
-	//buw::ReferenceCounted<buw::DigitalElevationModel> dem = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getDigitalElevationModel();
+	buw::ReferenceCounted<buw::DigitalElevationModel> dem = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getDigitalElevationModel();
 
-	//if (dem->getSurfaceCount() > index && index >= 0) {
-	//	buw::ReferenceCounted<buw::Surface> s = dem->getSurface(index);
+	if (dem->getSurfaceCount() > index && index >= 0) {
+		buw::ReferenceCounted<buw::Surface> s = dem->getSurface(index);
 
-	//	buw::ReferenceCounted<buw::DeleteSurface> actionDeleteSurface = std::make_shared<buw::DeleteSurface>(s);
-	//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().execute(actionDeleteSurface);
-	//}
+		buw::ReferenceCounted<buw::DeleteSurface> actionDeleteSurface = std::make_shared<buw::DeleteSurface>(s);
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().execute(actionDeleteSurface);
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::updateActionUndo(unsigned int numberOfUndoActions) {
@@ -2276,12 +2272,12 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateActionRedo(unsigned int
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExport_Terrain_As_Heightmap_triggered() {
-	/*QString openFile =
+	QString openFile =
 	  QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), tr("Portable Network Graphics (*.png);;Bitmap (*.bmp);;JPEG (*.jpg);;TIFF (*.tif)"));
 
 	if (openFile.isNull() == false) {
 		buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::DigitalElevationModel> dem =
-		  OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getDigitalElevationModel();
+		  OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getDigitalElevationModel();
 
 		buw::Vector3d tmin, tmax;
 		dem->getSurfacesExtend(tmin, tmax);
@@ -2320,19 +2316,19 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionExport_Terrain_As_He
 		std::cout << maxHeight << std::endl;
 
 		buw::storeImage(openFile.toStdString().c_str(), *img.get());
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionIfcAlignment_buildingSMART_P6_Excel_Comparison_triggered() {
-	/*exportExcelDialog_->show();*/
+	exportExcelDialog_->show();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_License_and_Copyright_Information_triggered() {
-	/*if (licenseAndCopyrightInformationDialog_ == nullptr) {
+	if (licenseAndCopyrightInformationDialog_ == nullptr) {
 		licenseAndCopyrightInformationDialog_ = new LicenseAndCopyrightInformationDialog(this);
 	}
 
-	licenseAndCopyrightInformationDialog_->show();*/
+	licenseAndCopyrightInformationDialog_->show();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_Folder_triggered() {
@@ -2348,28 +2344,28 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_Folder_trig
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionImport_IFC_Alignment_1_0_triggered() {
 	QString filename = QFileDialog::getOpenFileName(this, "Open Document", QDir::currentPath(), "IFC Alignment 1.0 (*.ifc)");
 
-	/*if (!filename.isNull()) {
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().importIfcAlignment1_0(filename.toStdString());
-	}*/
+	if (!filename.isNull()) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().importIfcAlignment1_0(filename.toStdString());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionAlignments_as_3D_Points_txt_triggered() {
 	QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), tr("Normal text file (*.txt)"));
 
-	/*if (filename.isNull() == false) {
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().export3DAlignmentAsTextfile(filename.toStdString());
-	}*/
+	if (filename.isNull() == false) {
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().export3DAlignmentAsTextfile(filename.toStdString());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowDifferentAlignmentElements_clicked(bool checked) {
-	/*view_->setDifferentColorsForAlignmentElements(checked);
+	view_->setDifferentColorsForAlignmentElements(checked);
 	verticalAlignmentWindow_->setDifferentColorsForHorizontalAlignmentElements(checked);
-	curvatureWindow_->setDifferentColorsForHorizontalAlignmentElements(checked);*/
+	curvatureWindow_->setDifferentColorsForHorizontalAlignmentElements(checked);
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxDifferentColorsForVerticalAlignmentElements_clicked(bool checked) {
-	/*verticalAlignmentWindow_->setDifferentColorsForVerticalAlignmentElements(checked);
-	curvatureWindow_->setDifferentColorsForVerticalAlignmentElements(checked);*/
+	verticalAlignmentWindow_->setDifferentColorsForVerticalAlignmentElements(checked);
+	curvatureWindow_->setDifferentColorsForVerticalAlignmentElements(checked);
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxUseUniformColor_clicked(bool checked) {
@@ -2398,88 +2394,88 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectFilteredPo
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDuplicateFilter_clicked()
 {
-	//auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//if(pointCloud) {
-	//	// Initialize the filter parameters.
-	//	buw::DuplicateFilterDescription desc;
-	//	desc.dim = ui_->radioButtonRender3D->isChecked() ? 
-	//		OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Volume3D :
-	//		OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Sections2D;
-	//	desc.minDistance = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		// Initialize the filter parameters.
+		buw::DuplicateFilterDescription desc;
+		desc.dim = ui_->radioButtonRender3D->isChecked() ? 
+			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Volume3D :
+			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Sections2D;
+		desc.minDistance = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
 
-	//	// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
-	//	pointCloud->applyDuplicateFilter(desc, callback_);
-	//	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
-	//}
+		// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
+		pointCloud->applyDuplicateFilter(desc, callback_);
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDuplicateFilter_clicked()
 {
-	//// Get the point cloud and reset the scalar field called "Duplicate" which holds the labeling for duplicates.
-	//auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//if(pointCloud) {
-	//	pointCloud->resetScalarField("Duplicate");
-	//	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
-	//}
+	// Get the point cloud and reset the scalar field called "Duplicate" which holds the labeling for duplicates.
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->resetScalarField("Duplicate");
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDensityFilter_clicked()
 {
-	//auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//if(pointCloud) {
-	//	// Initialize the filter parameters
-	//	buw::LocalDensityFilterDescription desc;
-	//	desc.dim = ui_->radioButtonRender3D->isChecked() ?
-	//		OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Volume3D :
-	//		OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Sections2D;
-	//	desc.kernelRadius = (float)(ui_->doubleSpinBoxFilterDensityKernelRadius->value()) / 100.0f;
-	//	desc.minThreshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
-	//	desc.density = CCLib::GeometricalAnalysisTools::Density(ui_->comboBoxFilterDensityMetric->currentData().toInt());
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		// Initialize the filter parameters
+		buw::LocalDensityFilterDescription desc;
+		desc.dim = ui_->radioButtonRender3D->isChecked() ?
+			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Volume3D :
+			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Sections2D;
+		desc.kernelRadius = (float)(ui_->doubleSpinBoxFilterDensityKernelRadius->value()) / 100.0f;
+		desc.minThreshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
+		desc.density = CCLib::GeometricalAnalysisTools::Density(ui_->comboBoxFilterDensityMetric->currentData().toInt());
 
-	//	// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
-	//	int err = pointCloud->applyLocalDensityFilter(desc, callback_);
-	//	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
-	//}
+		// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
+		int err = pointCloud->applyLocalDensityFilter(desc, callback_);
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetDensityFilter_clicked()
 {
 	// Get the point cloud and reset the scalar field called "Density" which holds the labeling for points which have a density below the minimum threshold.
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		pointCloud->resetScalarField("Density");
 		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyPositionFilter_clicked()
 {
-	//auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//if(pointCloud) {
-	//	buw::PositionFilterDescription desc;
-	//	desc.minValue = ui_->doubleSpinBoxFilterPositionMin->value();
-	//	desc.maxValue = ui_->doubleSpinBoxFilterPositionMax->value();
-	//	desc.dimension = ui_->comboBoxFilterPositionDimension->currentData().toInt();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::PositionFilterDescription desc;
+		desc.minValue = ui_->doubleSpinBoxFilterPositionMin->value();
+		desc.maxValue = ui_->doubleSpinBoxFilterPositionMax->value();
+		desc.dimension = ui_->comboBoxFilterPositionDimension->currentData().toInt();
 
-	//	if(pointCloud->applyPositionFilter(desc, callback_) == 0) {
-	//		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
-	//	} 
-	//}
+		if(pointCloud->applyPositionFilter(desc, callback_) == 0) {
+			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+		} 
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetPositionFilter_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		if(pointCloud->resetPositionFilter() == 0) {
 			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 		}
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRelativeHeightFilter_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		buw::RelativeHeightFilterDescription desc;
 		desc.lowerBound = ui_->doubleSpinBoxFilterHeightLowerBound->value();
@@ -2488,54 +2484,54 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRelativeHei
 		if(pointCloud->applyRelativeHeightWithGridFilter(desc, callback_) == 0) {
 			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 		}
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetRelativeHeightFilter_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		if(pointCloud->resetPositionFilter() == 0) {
 			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 		}
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonFilterOriginal_clicked()
 {
-	//QMessageBox dialog;	
-	//dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
-	//dialog.setIcon(QMessageBox::Icon::Question);
-	//dialog.setText("This will remove the filtered points from the cloud and can only be undone by reloading the original file.\nDo you want to continue?");
-	//dialog.setWindowTitle(tr("Disclaimer"));
-	//dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+	QMessageBox dialog;	
+	dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+	dialog.setIcon(QMessageBox::Icon::Question);
+	dialog.setText("This will remove the filtered points from the cloud and can only be undone by reloading the original file.\nDo you want to continue?");
+	dialog.setWindowTitle(tr("Disclaimer"));
+	dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
 
-	//if(dialog.exec() == QMessageBox::StandardButton::Yes) {
-	//	auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//	if(pointCloud) {
-	//		pointCloud->removeFilteredPoints(callback_);
-	//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
-	//	}
-	//}
+	if(dialog.exec() == QMessageBox::StandardButton::Yes) {
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+		if(pointCloud) {
+			pointCloud->removeFilteredPoints(callback_);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonRestoreOriginal_clicked()
 {
-	/*QMessageBox dialog;
+	QMessageBox dialog;
 	dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
 	dialog.setIcon(QMessageBox::Icon::Question);
 	dialog.setText("This will load the original file and discard all unsaved changes.\nDo you want to continue?");
 	dialog.setWindowTitle(tr("Disclaimer"));
 	dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
 	if(dialog.exec() == QMessageBox::StandardButton::Yes) {
-		auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import(pointCloud->getName().toStdString());
-	}*/
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import(pointCloud->getName().toStdString());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonExtractSegmentation_clicked()
 {
-	/*QMessageBox dialog;
+	QMessageBox dialog;
 	dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
 	dialog.setIcon(QMessageBox::Icon::Question);
 	dialog.setText("This will extract the segmented points from the cloud and can not be reversed.\nDo you want to continue?");
@@ -2543,12 +2539,12 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonExtractSegmentat
 	dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
 
 	if(dialog.exec() == QMessageBox::StandardButton::Yes) {
-		auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+		auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 		if(pointCloud) {
 			pointCloud->removeNotSegmentedPoints();
-			OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 		}
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonUndoSegmentation_clicked()
@@ -2558,7 +2554,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonUndoSegmentation
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyPercentileSegmentation_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		buw::PercentileSegmentationDescription desc;
 		desc.kernelRadius = ui_->doubleSpinBoxPercentileSegmentationKernelRadius->value() / 100.0f;
@@ -2569,16 +2565,16 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyPercentileS
 
 		pointCloud->applyPercentilesSegmentationHP(desc, callback_);
 		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetPercentileSegmentation_clicked()
 {
-	//auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//if(pointCloud) {
-	//	pointCloud->resetScalarField("SegmentedPercentile");
-	//	view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
-	//}
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		pointCloud->resetScalarField("SegmentedPercentile");
+		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxPercentileSegmentationKernelRadius_valueChanged(double value)
@@ -2590,16 +2586,16 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxPercentileSeg
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePercentilesOnGrid_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		pointCloud->applyPercentilesOnGridSegmentation(callback_);
 		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRateOfChangeSegmentation_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		buw::RateOfChangeSegmentationDescription desc;
 		desc.dim = ui_->comboBoxRateOfChangeDimension->currentData().toInt();
@@ -2612,40 +2608,40 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyRateOfChang
 		else {
 			view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
 		}
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetRateOfChangeSegmentation_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		pointCloud->resetScalarField("SegmentedRateOfChange");
 		view_->getViewport()->setPointCloudIndices(pointCloud->getIndices());
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeGrid_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		buw::GridComputationDescription desc;
 		desc.size = ui_->spinBoxGridSize->value();
 		desc.kernelRadius = ui_->doubleSpinBoxGridKernelRadius->value();
 		pointCloud->computeGrid(desc, callback_);
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetGrid_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		pointCloud->resetGrid();
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeChainage_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		buw::ChainageComputationDescription desc;
 		desc.base = (Infrastructure::Enums::eChainageComputationBase) ui_->comboBoxInterpolationBase->currentData().toInt();
@@ -2657,20 +2653,20 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeChainage_
 
 		pointCloud->computeChainage(desc, callback_);
 
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetChainage_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud)
-		pointCloud->resetScalarField("Chainage");*/
+		pointCloud->resetScalarField("Chainage");
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRailways_clicked()
 {
-	//auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//if(pointCloud) {
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
 		//buw::RailwaySegmentationDescription desc;
 		//desc.distanceForPCA = ui_->doubleSpinBoxDistanceForPCA->value();
 		//desc.numPointsForPCA = ui_->spinBoxNumPointsForPCA->value();
@@ -2688,113 +2684,113 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplySegmentRail
 		//	}
 		//	ui_->pushButtonComputeCurvature->setEnabled(true);
 		//	ui_->pushButtonPlotAlignment->setEnabled(true);
-		//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 		//}
 		//else if(numAlignments == 0) {
-		//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
+		//	OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 		//	BLUE_LOG(info) << "No railways detected.";
 		//}
 		//else {
 		//	BLUE_LOG(warning) << "Error in railway segmentation occurred. Code: " << numAlignments;
 		//	on_pushButtonResetSegmentRailways_clicked();
 		//}
-	//}
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetSegmentRailways_clicked()
 {
-	//auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//if(pointCloud) {
-	//	BLUE_LOG(info) << "Resetting railway segmentation.";
-	//	if(pointCloud->resetRailwaySegmentation() == 0) {
-	//		ui_->pushButtonComputeCurvature->setDisabled(true);
-	//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
-	//	}
-	//	else {
-	//		BLUE_LOG(warning) << "Resetting railway segmentation failed.";
-	//	}
-	//	// Clear our plotting combo box since we only want to plot the latest results.
-	//	ui_->comboBoxPlotSelectAlignment->clear();
-	//	ui_->pushButtonPlotAlignment->setDisabled(true);
-	//}
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		BLUE_LOG(info) << "Resetting railway segmentation.";
+		if(pointCloud->resetRailwaySegmentation() == 0) {
+			ui_->pushButtonComputeCurvature->setDisabled(true);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+		else {
+			BLUE_LOG(warning) << "Resetting railway segmentation failed.";
+		}
+		// Clear our plotting combo box since we only want to plot the latest results.
+		ui_->comboBoxPlotSelectAlignment->clear();
+		ui_->pushButtonPlotAlignment->setDisabled(true);
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCenterlines_clicked()
 {
-	//auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//
-	//if(pointCloud) {
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	
+	if(pointCloud) {
 
-	//	buw::CenterlineComputationDescription desc;		
-	//	desc.filterDuplicates = ui_->checkBoxCenterpointsApplyDuplicateFilter->isChecked();
-	//	desc.duplicateDistance = ui_->doubleSpinBoxCenterpointsDuplicateDistance->value();
+		buw::CenterlineComputationDescription desc;		
+		desc.filterDuplicates = ui_->checkBoxCenterpointsApplyDuplicateFilter->isChecked();
+		desc.duplicateDistance = ui_->doubleSpinBoxCenterpointsDuplicateDistance->value();
 
-	//	desc.filterDensity = ui_->checkBoxCenterpointsApplyDensityFilter->isChecked();
-	//	desc.densityKernelRadius = ui_->doubleSpinBoxCenterpointsDensityFilterKernelRadius->value();
-	//	desc.densityThreshold = ui_->spinBoxCenterpointsDensityThreshold->value();
+		desc.filterDensity = ui_->checkBoxCenterpointsApplyDensityFilter->isChecked();
+		desc.densityKernelRadius = ui_->doubleSpinBoxCenterpointsDensityFilterKernelRadius->value();
+		desc.densityThreshold = ui_->spinBoxCenterpointsDensityThreshold->value();
 
-	//	desc.sortingFarDistance = ui_->doubleSpinBoxSortingFarDistance->value();
-	//	desc.sortingCloseDistance = ui_->doubleSpinBoxCenterlineMaxDistance->value();
-	//	desc.sortingCloseRatio = ui_->doubleSpinBoxSortingNearRatio->value();
-	//	desc.sortingFarRatio = ui_->doubleSpinBoxSortingFarRatio->value();
+		desc.sortingFarDistance = ui_->doubleSpinBoxSortingFarDistance->value();
+		desc.sortingCloseDistance = ui_->doubleSpinBoxCenterlineMaxDistance->value();
+		desc.sortingCloseRatio = ui_->doubleSpinBoxSortingNearRatio->value();
+		desc.sortingFarRatio = ui_->doubleSpinBoxSortingFarRatio->value();
 
-	//	desc.fuseCenterlines = ui_->checkBoxFuseCenterlines->isChecked();
-	//	desc.fuseCenterlinesFarDistance = ui_->doubleSpinBoxFuseCenterlinesFarDistance->value();
-	//	desc.fuseCenterlinesFarRatio = ui_->doubleSpinBoxFuseCenterlinesFarRatio->value();
-	//	desc.fuseCenterlinesCloseDistance = ui_->doubleSpinBoxFuseCenterlinesNearDistance->value();
-	//	desc.fuseCenterlinesCloseRatio = ui_->doubleSpinBoxFuseCenterlinesNearRatio->value();
+		desc.fuseCenterlines = ui_->checkBoxFuseCenterlines->isChecked();
+		desc.fuseCenterlinesFarDistance = ui_->doubleSpinBoxFuseCenterlinesFarDistance->value();
+		desc.fuseCenterlinesFarRatio = ui_->doubleSpinBoxFuseCenterlinesFarRatio->value();
+		desc.fuseCenterlinesCloseDistance = ui_->doubleSpinBoxFuseCenterlinesNearDistance->value();
+		desc.fuseCenterlinesCloseRatio = ui_->doubleSpinBoxFuseCenterlinesNearRatio->value();
 
-	//	desc.fuseAlignments = ui_->checkBoxFuseAlignments->isChecked();
-	//	desc.fuseAlignmentsFarDistance = ui_->doubleSpinBoxFuseAlignmentsFarDistance->value();
-	//	desc.fuseAlignmentsFarRatio = ui_->doubleSpinBoxFuseAlignmentsFarRatio->value();
-	//	desc.fuseAlignmentsCloseDistance = ui_->doubleSpinBoxFuseAlignmentsNearDistance->value();
-	//	desc.fuseAlignmentsCloseRatio = ui_->doubleSpinBoxFuseAlignmentsNearRatio->value();
+		desc.fuseAlignments = ui_->checkBoxFuseAlignments->isChecked();
+		desc.fuseAlignmentsFarDistance = ui_->doubleSpinBoxFuseAlignmentsFarDistance->value();
+		desc.fuseAlignmentsFarRatio = ui_->doubleSpinBoxFuseAlignmentsFarRatio->value();
+		desc.fuseAlignmentsCloseDistance = ui_->doubleSpinBoxFuseAlignmentsNearDistance->value();
+		desc.fuseAlignmentsCloseRatio = ui_->doubleSpinBoxFuseAlignmentsNearRatio->value();
 
-	//	desc.centerlineSmoothing = ui_->checkBoxCenterlineSmoothing->isChecked();
-	//	desc.centerlineDensity = ui_->doubleSpinBoxCenterlineDensity->value() / 1000.0; // convert from millimeter to meter.
+		desc.centerlineSmoothing = ui_->checkBoxCenterlineSmoothing->isChecked();
+		desc.centerlineDensity = ui_->doubleSpinBoxCenterlineDensity->value() / 1000.0; // convert from millimeter to meter.
 
-	//	desc.centerlineSampling = ui_->checkBoxCenterlineSampling->isChecked();
-	//	desc.samplingLengthForPCA = ui_->doubleSpinBoxSamplingLengthForPCA->value();
-	//	desc.samplingStepSize = ui_->doubleSpinBoxSamplingStepSize->value() / 1000.0; // convert from millimeter to meter.
+		desc.centerlineSampling = ui_->checkBoxCenterlineSampling->isChecked();
+		desc.samplingLengthForPCA = ui_->doubleSpinBoxSamplingLengthForPCA->value();
+		desc.samplingStepSize = ui_->doubleSpinBoxSamplingStepSize->value() / 1000.0; // convert from millimeter to meter.
 
-	//	desc.minCenterlinePoints = ui_->spinBoxCenterlinesMinNumPoints->value();
-	//	desc.minCenterlineLength = ui_->doubleSpinBoxCenterlinesMinLength->value();
+		desc.minCenterlinePoints = ui_->spinBoxCenterlinesMinNumPoints->value();
+		desc.minCenterlineLength = ui_->doubleSpinBoxCenterlinesMinLength->value();
 
-	//	desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
-	//	desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
+		desc.minSegmentPoints = ui_->spinBoxMinSegmentPoints->value();
+		desc.minSegmentLength = ui_->doubleSpinBoxMinSegmentLength->value();
 
-	//	int numAlignments = pointCloud->computeCenterlines(desc, callback_);
-	//	if(numAlignments > 0) {
-	//
-	//		ui_->pushButtonComputeCurvature->setEnabled(true);
-	//
-	//		// Clear the combo boxes for plotting since we only want to plot the stuff from the latest computations.
-	//		ui_->comboBoxShowAlignment->clear();
-	//		ui_->comboBoxComputeCurvature->clear();
-	//		ui_->comboBoxPlotSelectAlignment->clear();
-	//
-	//		// Add the indices to the combo boxes.
-	//		for(int idx = 0; idx < numAlignments; idx++) {
-	//			ui_->comboBoxShowAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
-	//			ui_->comboBoxComputeCurvature->addItem(QString::number(idx), QVariant(QString::number(idx)));
-	//		}
-	//
-	//		ui_->comboBoxShowAlignment->addItem("All", QVariant(QString::number(-1)));
-	//		ui_->comboBoxComputeCurvature->addItem("All", QVariant(QString::number(-1)));
-	//
-	//		// Set the default index to 0.
-	//		ui_->comboBoxShowAlignment->setCurrentIndex(ui_->comboBoxShowAlignment->count() - 1);
-	//		ui_->comboBoxComputeCurvature->setCurrentIndex(ui_->comboBoxComputeCurvature->count() - 1);
-	//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
-	//	}
-	//	else
-	//		BLUE_LOG(warning) << "Computing centerlines failed.";		
-	//}
+		int numAlignments = pointCloud->computeCenterlines(desc, callback_);
+		if(numAlignments > 0) {
+	
+			ui_->pushButtonComputeCurvature->setEnabled(true);
+	
+			// Clear the combo boxes for plotting since we only want to plot the stuff from the latest computations.
+			ui_->comboBoxShowAlignment->clear();
+			ui_->comboBoxComputeCurvature->clear();
+			ui_->comboBoxPlotSelectAlignment->clear();
+	
+			// Add the indices to the combo boxes.
+			for(int idx = 0; idx < numAlignments; idx++) {
+				ui_->comboBoxShowAlignment->addItem(QString::number(idx), QVariant(QString::number(idx)));
+				ui_->comboBoxComputeCurvature->addItem(QString::number(idx), QVariant(QString::number(idx)));
+			}
+	
+			ui_->comboBoxShowAlignment->addItem("All", QVariant(QString::number(-1)));
+			ui_->comboBoxComputeCurvature->addItem("All", QVariant(QString::number(-1)));
+	
+			// Set the default index to 0.
+			ui_->comboBoxShowAlignment->setCurrentIndex(ui_->comboBoxShowAlignment->count() - 1);
+			ui_->comboBoxComputeCurvature->setCurrentIndex(ui_->comboBoxComputeCurvature->count() - 1);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+		}
+		else
+			BLUE_LOG(warning) << "Computing centerlines failed.";		
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetCenterlines_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		ui_->comboBoxShowAlignment->clear();
 		ui_->comboBoxComputeCurvature->clear();
@@ -2802,81 +2798,81 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetCenterlines
 
 		if(pointCloud->resetCenterlines() == 0) {
 			ui_->pushButtonComputeCurvature->setDisabled(true);
-			OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
+			OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 		}
 		else
 			BLUE_LOG(warning) << "Resetting centerlines failed.";
-	}*/
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePairs_clicked()
 {
-	//auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//if(pointCloud) {
-	//	buw::PairComputationDescription desc;
-	//	desc.maxError = ui_->doubleSpinBoxPairsMaxError->value();
-	//	desc.maxElevationChange = ui_->doubleSpinBoxPairsMaxElevationDiff->value();
-	//	desc.pointProximityDistance = ui_->doubleSpinBoxPairsPointProximity->value();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::PairComputationDescription desc;
+		desc.maxError = ui_->doubleSpinBoxPairsMaxError->value();
+		desc.maxElevationChange = ui_->doubleSpinBoxPairsMaxElevationDiff->value();
+		desc.pointProximityDistance = ui_->doubleSpinBoxPairsPointProximity->value();
 
-	//	desc.applyDensityFilter = ui_->checkBoxPairsApplyDensityFilter->isChecked();
-	//	desc.localDensityKernelRadius = ui_->doubleSpinBoxPairsDensityFilterKernelRadius->value();
-	//	desc.localDensityThreshold = ui_->spinBoxPairsDensityFilterThreshold->value();
+		desc.applyDensityFilter = ui_->checkBoxPairsApplyDensityFilter->isChecked();
+		desc.localDensityKernelRadius = ui_->doubleSpinBoxPairsDensityFilterKernelRadius->value();
+		desc.localDensityThreshold = ui_->spinBoxPairsDensityFilterThreshold->value();
 
-	//	desc.applyClusterFilter = ui_->checkBoxPairsApplyClusterFilter->isChecked();
-	//	desc.clusterDistance2D = ui_->doubleSpinBoxPairsClusterDistance->value() / 100.0; //Divide by 100 to scale to meters.
-	//	desc.clusterHeightRange = ui_->doubleSpinBoxClusterHeightRange->value();
-	//	desc.clusterHeightTreshold = ui_->doubleSpinBoxClusterHeightThreshold->value();
+		desc.applyClusterFilter = ui_->checkBoxPairsApplyClusterFilter->isChecked();
+		desc.clusterDistance2D = ui_->doubleSpinBoxPairsClusterDistance->value() / 100.0; //Divide by 100 to scale to meters.
+		desc.clusterHeightRange = ui_->doubleSpinBoxClusterHeightRange->value();
+		desc.clusterHeightTreshold = ui_->doubleSpinBoxClusterHeightThreshold->value();
 
-	//	pointCloud->computePairs(desc, std::vector<std::pair<size_t, size_t>>(), callback_);
-	//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
-	//}
-	//else {
-	//	BLUE_LOG(trace) << "No point cloud available.";
-	//}
+		pointCloud->computePairs(desc, std::vector<std::pair<size_t, size_t>>(), callback_);
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+	}
+	else {
+		BLUE_LOG(trace) << "No point cloud available.";
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonResetPairs_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		pointCloud->resetPairs();
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
 	}
 	else {
 		BLUE_LOG(trace) << "No point cloud available.";
-	}*/
+	}
 }
 
-//void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCurvature_clicked()
-//{
-	//auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//if(pointCloud) {
-	//	buw::CenterlineCurvatureComputationDescription desc;
-	//	desc.bearingComputationSegmentLength = ui_->doubleSpinBoxDistanceForPCA->value();
-	//	desc.curvatureStepSize = ui_->spinBoxCurvatureStepSize->value();
-	//	desc.numPointsForMeanCurvature = ui_->spinBoxNumPointsForMeanCurvature->value();
-	//	desc.numPointsForMedianCurvature = ui_->spinBoxNumPointsForMedianCurvature->value();
-	//	desc.numPointsForMeanBearing = ui_->spinBoxNumPointsForMeanBearing->value();
-	//	desc.numPointsForMedianBearing = ui_->spinBoxNumPointsForMedianBearing->value();
-	//	QString comboBoxComputeCurvatureData = ui_->comboBoxComputeCurvature->currentData().toString();
+void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeCurvature_clicked()
+{
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		buw::CenterlineCurvatureComputationDescription desc;
+		desc.bearingComputationSegmentLength = ui_->doubleSpinBoxDistanceForPCA->value();
+		desc.curvatureStepSize = ui_->spinBoxCurvatureStepSize->value();
+		desc.numPointsForMeanCurvature = ui_->spinBoxNumPointsForMeanCurvature->value();
+		desc.numPointsForMedianCurvature = ui_->spinBoxNumPointsForMedianCurvature->value();
+		desc.numPointsForMeanBearing = ui_->spinBoxNumPointsForMeanBearing->value();
+		desc.numPointsForMedianBearing = ui_->spinBoxNumPointsForMedianBearing->value();
+		QString comboBoxComputeCurvatureData = ui_->comboBoxComputeCurvature->currentData().toString();
 
-	//	if(comboBoxComputeCurvatureData == "All")
-	//		desc.centerlineIndex = -1;
-	//	else
-	//		desc.centerlineIndex = comboBoxComputeCurvatureData.toInt();
+		if(comboBoxComputeCurvatureData == "All")
+			desc.centerlineIndex = -1;
+		else
+			desc.centerlineIndex = comboBoxComputeCurvatureData.toInt();
 
-	//	//desc.centerlineIndex = ui_->comboBoxComputeCurvature->currentData().toString().toInt();
-	//	if(pointCloud->computeCenterlineCurvature(desc, callback_) == 0) {
-	//		if(desc.centerlineIndex != -1)
-	//			ui_->comboBoxPlotSelectAlignment->addItem(QString::number(desc.centerlineIndex), QVariant(QString::number(desc.centerlineIndex)));
-	//		else {
-	//			ui_->comboBoxPlotSelectAlignment->clear();
-	//			for(size_t i = 0; i < ui_->comboBoxComputeCurvature->count() - 1; i++)
-	//				ui_->comboBoxPlotSelectAlignment->addItem(QString::number(i), QVariant(QString::number(i)));
-	//		}
-	//	}
-	//}
-//}
+		//desc.centerlineIndex = ui_->comboBoxComputeCurvature->currentData().toString().toInt();
+		if(pointCloud->computeCenterlineCurvature(desc, callback_) == 0) {
+			if(desc.centerlineIndex != -1)
+				ui_->comboBoxPlotSelectAlignment->addItem(QString::number(desc.centerlineIndex), QVariant(QString::number(desc.centerlineIndex)));
+			else {
+				ui_->comboBoxPlotSelectAlignment->clear();
+				for(size_t i = 0; i < ui_->comboBoxComputeCurvature->count() - 1; i++)
+					ui_->comboBoxPlotSelectAlignment->addItem(QString::number(i), QVariant(QString::number(i)));
+			}
+		}
+	}
+}
 
 template <template<typename T> class Container, typename T> Container<T> linspace(const T& min, const T& max, const size_t& N)
 {
@@ -2890,9 +2886,9 @@ template <template<typename T> class Container, typename T> Container<T> linspac
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_clicked()
 {	
 	// Get the file to read.
-	//QString filename = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("*.txt"));
+	QString filename = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("*.txt"));
 
-	/*if(!filename.isEmpty()) {
+	if(!filename.isEmpty()) {
 		QVector<double> chainages, curvatures, bearings, deltaCurvatures;
 
 		QFile inputFile(filename);
@@ -2933,146 +2929,146 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 			fftw_destroy_plan(plan);
 
 			fftw_cleanup();
-*/
+
 
 			// Create plot for bearing.
-	/*		QCustomPlot* customPlotFFT = new QCustomPlot(nullptr);*/
+			QCustomPlot* customPlotFFT = new QCustomPlot(nullptr);
 
 			// TODO: Fix memory leak!
 			//connect(customPlotBearing, &QCustomPlot::close, customPlotBearing, &QObject::deleteLater);
 
-		//	customPlotFFT->resize(400, 400);
-		//	customPlotFFT->setInteraction(QCP::iRangeDrag, true);
+			customPlotFFT->resize(400, 400);
+			customPlotFFT->setInteraction(QCP::iRangeDrag, true);
 
-		//	// Set window title
-		//	customPlotFFT->setWindowTitle(filename);
+			// Set window title
+			customPlotFFT->setWindowTitle(filename);
 
-		//	// create graph and assign data to it:
-		//	customPlotFFT->addGraph(customPlotFFT->xAxis, customPlotFFT->yAxis);
-		//	customPlotFFT->setInteraction(QCP::iRangeZoom);
-		//	customPlotFFT->setInteraction(QCP::iRangeDrag);
-		//	QVector<double> freq;
+			// create graph and assign data to it:
+			customPlotFFT->addGraph(customPlotFFT->xAxis, customPlotFFT->yAxis);
+			customPlotFFT->setInteraction(QCP::iRangeZoom);
+			customPlotFFT->setInteraction(QCP::iRangeDrag);
+			QVector<double> freq;
 
-		//	for(size_t i = 0; i < numReal / 2 - 2; i++) {
-		//		freq.append((20.0 * i) / numReal);
-		//	}
+			for(size_t i = 0; i < numReal / 2 - 2; i++) {
+				freq.append((20.0 * i) / numReal);
+			}
 
-		//	customPlotFFT->graph(0)->setData(freq, fftReal);
-		//	customPlotFFT->graph(0)->setPen(QPen(Qt::green));
+			customPlotFFT->graph(0)->setData(freq, fftReal);
+			customPlotFFT->graph(0)->setPen(QPen(Qt::green));
 
-		//	// give the axes some labels:
-		//	customPlotFFT->xAxis->setLabel("Frequency");
-		//	customPlotFFT->yAxis->setLabel("Amplitude");
-
-
-		//	// set axes ranges, so we see all data:
-		//	customPlotFFT->xAxis->setRange(freq.first(), freq.last());
-		//	customPlotFFT->yAxis->rescale();
-
-		//	customPlotFFT->replot();
-		//	customPlotFFT->show();
-		//	plots_.push_back(customPlotFFT);
-		//}
-
-		//// Create plot for bearing.
-		//QCustomPlot* customPlotBearing = new QCustomPlot(nullptr);
-
-		//// TODO: Fix memory leak!
-		////connect(customPlotBearing, &QCustomPlot::close, customPlotBearing, &QObject::deleteLater);
-
-		//customPlotBearing->resize(400, 400);
-		//customPlotBearing->setInteraction(QCP::iRangeDrag, true);
-
-		//// Set window title
-		//customPlotBearing->setWindowTitle(filename);
-
-		//// create graph and assign data to it:
-		//customPlotBearing->addGraph(customPlotBearing->xAxis, customPlotBearing->yAxis);
-		//customPlotBearing->setInteraction(QCP::iRangeZoom);
-		//customPlotBearing->setInteraction(QCP::iRangeDrag);
-		//customPlotBearing->graph(0)->setData(chainages, bearings);
-		//customPlotBearing->graph(0)->setPen(QPen(Qt::blue));
-
-		//// give the axes some labels:
-		//customPlotBearing->xAxis->setLabel("Chainage");
-		//customPlotBearing->yAxis->setLabel("Bearing");
+			// give the axes some labels:
+			customPlotFFT->xAxis->setLabel("Frequency");
+			customPlotFFT->yAxis->setLabel("Amplitude");
 
 
-		//// set axes ranges, so we see all data:
-		//customPlotBearing->xAxis->setRange(chainages.first(), chainages.last());
-		//customPlotBearing->yAxis->rescale();
+			// set axes ranges, so we see all data:
+			customPlotFFT->xAxis->setRange(freq.first(), freq.last());
+			customPlotFFT->yAxis->rescale();
 
-		//customPlotBearing->replot();
-		//customPlotBearing->show();
-		//plots_.push_back(customPlotBearing);
+			customPlotFFT->replot();
+			customPlotFFT->show();
+			plots_.push_back(customPlotFFT);
+		}
 
-		//// Create plot for bearing.
-		//QCustomPlot* customPlotCurvature = new QCustomPlot(nullptr);
+		// Create plot for bearing.
+		QCustomPlot* customPlotBearing = new QCustomPlot(nullptr);
 
-		//// TODO: Fix memory leak!
-		////connect(customPlotCurvature, &QCustomPlot::close, customPlotCurvature, &QObject::deleteLater);
+		// TODO: Fix memory leak!
+		//connect(customPlotBearing, &QCustomPlot::close, customPlotBearing, &QObject::deleteLater);
 
-		//customPlotCurvature->resize(400, 400);
-		//customPlotCurvature->setInteraction(QCP::iRangeDrag, true);
+		customPlotBearing->resize(400, 400);
+		customPlotBearing->setInteraction(QCP::iRangeDrag, true);
 
-		//// Set window title
-		//customPlotCurvature->setWindowTitle(filename);
+		// Set window title
+		customPlotBearing->setWindowTitle(filename);
 
-		//// create graph and assign data to it:
-		//customPlotCurvature->addGraph(customPlotCurvature->xAxis, customPlotCurvature->yAxis);
-		//customPlotCurvature->setInteraction(QCP::iRangeZoom);
-		//customPlotCurvature->setInteraction(QCP::iRangeDrag);
-		//customPlotCurvature->graph(0)->setData(chainages, curvatures);
-		//customPlotCurvature->graph(0)->setPen(QPen(Qt::red));
+		// create graph and assign data to it:
+		customPlotBearing->addGraph(customPlotBearing->xAxis, customPlotBearing->yAxis);
+		customPlotBearing->setInteraction(QCP::iRangeZoom);
+		customPlotBearing->setInteraction(QCP::iRangeDrag);
+		customPlotBearing->graph(0)->setData(chainages, bearings);
+		customPlotBearing->graph(0)->setPen(QPen(Qt::blue));
 
-		//// give the axes some labels:
-		//customPlotCurvature->xAxis->setLabel("Chainage");
-		//customPlotCurvature->yAxis->setLabel("Curvature");
-
-
-		//// set axes ranges, so we see all data:
-		//customPlotCurvature->xAxis->setRange(chainages.first(), chainages.last());
-		//customPlotCurvature->yAxis->rescale();
-
-		//customPlotCurvature->replot();
-		//customPlotCurvature->show();
-		//plots_.push_back(customPlotCurvature);
-
-		//if(deltaCurvatures.size() > 0) {
-		//	// Create plot for delta curvature.
-		//	QCustomPlot* customPlotDeltaCurvature = new QCustomPlot(nullptr);
-
-		//	// TODO: Fix memory leak!
-		//	//connect(customPlotCurvature, &QCustomPlot::close, customPlotCurvature, &QObject::deleteLater);
-
-		//	customPlotDeltaCurvature->resize(400, 400);
-		//	customPlotDeltaCurvature->setInteraction(QCP::iRangeDrag, true);
-
-		//	// Set window title
-		//	customPlotDeltaCurvature->setWindowTitle(filename);
-
-		//	// create graph and assign data to it:
-		//	customPlotDeltaCurvature->addGraph(customPlotDeltaCurvature->xAxis, customPlotDeltaCurvature->yAxis);
-		//	customPlotDeltaCurvature->setInteraction(QCP::iRangeZoom);
-		//	customPlotDeltaCurvature->setInteraction(QCP::iRangeDrag);
-		//	customPlotDeltaCurvature->graph(0)->setData(chainages, deltaCurvatures);
-		//	customPlotDeltaCurvature->graph(0)->setPen(QPen(Qt::green));
-
-		//	// give the axes some labels:
-		//	customPlotDeltaCurvature->xAxis->setLabel("Chainage");
-		//	customPlotDeltaCurvature->yAxis->setLabel("dCurvature");
+		// give the axes some labels:
+		customPlotBearing->xAxis->setLabel("Chainage");
+		customPlotBearing->yAxis->setLabel("Bearing");
 
 
-		//	// set axes ranges, so we see all data:
-		//	customPlotDeltaCurvature->xAxis->setRange(chainages.first(), chainages.last());
-		//	customPlotDeltaCurvature->yAxis->rescale();
+		// set axes ranges, so we see all data:
+		customPlotBearing->xAxis->setRange(chainages.first(), chainages.last());
+		customPlotBearing->yAxis->rescale();
 
-		//	customPlotDeltaCurvature->replot();
-		//	customPlotDeltaCurvature->show();
-		//	plots_.push_back(customPlotDeltaCurvature);
+		customPlotBearing->replot();
+		customPlotBearing->show();
+		plots_.push_back(customPlotBearing);
 
-		//}
-	//}
+		// Create plot for bearing.
+		QCustomPlot* customPlotCurvature = new QCustomPlot(nullptr);
+
+		// TODO: Fix memory leak!
+		//connect(customPlotCurvature, &QCustomPlot::close, customPlotCurvature, &QObject::deleteLater);
+
+		customPlotCurvature->resize(400, 400);
+		customPlotCurvature->setInteraction(QCP::iRangeDrag, true);
+
+		// Set window title
+		customPlotCurvature->setWindowTitle(filename);
+
+		// create graph and assign data to it:
+		customPlotCurvature->addGraph(customPlotCurvature->xAxis, customPlotCurvature->yAxis);
+		customPlotCurvature->setInteraction(QCP::iRangeZoom);
+		customPlotCurvature->setInteraction(QCP::iRangeDrag);
+		customPlotCurvature->graph(0)->setData(chainages, curvatures);
+		customPlotCurvature->graph(0)->setPen(QPen(Qt::red));
+
+		// give the axes some labels:
+		customPlotCurvature->xAxis->setLabel("Chainage");
+		customPlotCurvature->yAxis->setLabel("Curvature");
+
+
+		// set axes ranges, so we see all data:
+		customPlotCurvature->xAxis->setRange(chainages.first(), chainages.last());
+		customPlotCurvature->yAxis->rescale();
+
+		customPlotCurvature->replot();
+		customPlotCurvature->show();
+		plots_.push_back(customPlotCurvature);
+
+		if(deltaCurvatures.size() > 0) {
+			// Create plot for delta curvature.
+			QCustomPlot* customPlotDeltaCurvature = new QCustomPlot(nullptr);
+
+			// TODO: Fix memory leak!
+			//connect(customPlotCurvature, &QCustomPlot::close, customPlotCurvature, &QObject::deleteLater);
+
+			customPlotDeltaCurvature->resize(400, 400);
+			customPlotDeltaCurvature->setInteraction(QCP::iRangeDrag, true);
+
+			// Set window title
+			customPlotDeltaCurvature->setWindowTitle(filename);
+
+			// create graph and assign data to it:
+			customPlotDeltaCurvature->addGraph(customPlotDeltaCurvature->xAxis, customPlotDeltaCurvature->yAxis);
+			customPlotDeltaCurvature->setInteraction(QCP::iRangeZoom);
+			customPlotDeltaCurvature->setInteraction(QCP::iRangeDrag);
+			customPlotDeltaCurvature->graph(0)->setData(chainages, deltaCurvatures);
+			customPlotDeltaCurvature->graph(0)->setPen(QPen(Qt::green));
+
+			// give the axes some labels:
+			customPlotDeltaCurvature->xAxis->setLabel("Chainage");
+			customPlotDeltaCurvature->yAxis->setLabel("dCurvature");
+
+
+			// set axes ranges, so we see all data:
+			customPlotDeltaCurvature->xAxis->setRange(chainages.first(), chainages.last());
+			customPlotDeltaCurvature->yAxis->rescale();
+
+			customPlotDeltaCurvature->replot();
+			customPlotDeltaCurvature->show();
+			plots_.push_back(customPlotDeltaCurvature);
+
+		}
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplicatesThreshold_valueChanged(double value)
@@ -3084,21 +3080,21 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxRemoveDuplica
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonCalculateSections_clicked()
 {
-	/*auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if(pointCloud) {
 		pointCloud->computeSections(100.0 / ui_->horizontalSliderSectionSize->value(), callback_);
 		view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->horizontalSliderSectionSize->value());
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
-	}*/
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::DataManagement::ChangeFlag::PointCloud);
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxSectionSize_valueChanged(double value)
 {
 
-	/*ui_->horizontalSliderSectionSize->blockSignals(true);
+	ui_->horizontalSliderSectionSize->blockSignals(true);
 	ui_->horizontalSliderSectionSize->setValue(value);
 	ui_->horizontalSliderSectionSize->blockSignals(false);
-*/
+
 	//if(ui_->checkBoxPreview->checkState() == Qt::CheckState::Checked)
 	//	view_->getViewport()->updatePointCloudSectionLength(100.0 / ui_->doubleSpinBoxSectionSize->value());
 
@@ -3144,31 +3140,31 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_horizontalSliderPointSize_
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_checkBoxShowSectionOOBB_clicked(bool checked) {
-	//auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
-	//if(pointCloud) {
-	//	auto sections = pointCloud->getSections();
-	//	if(!sections.empty()) {
-	//		view_->getViewport()->setShowSectionOOBB(checked);
-	//	}
-	//	else {
-	//		// Open dialog and ask if sections should be computed.
-	//		QMessageBox dialog;
-	//		dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
-	//		dialog.setIcon(QMessageBox::Icon::Question);
-	//		dialog.setText("No sections found. Do you want to compute sections now?");
-	//		dialog.setWindowTitle(tr("Disclaimer"));
-	//		dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
+	auto pointCloud = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+	if(pointCloud) {
+		auto sections = pointCloud->getSections();
+		if(!sections.empty()) {
+			view_->getViewport()->setShowSectionOOBB(checked);
+		}
+		else {
+			// Open dialog and ask if sections should be computed.
+			QMessageBox dialog;
+			dialog.setStandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+			dialog.setIcon(QMessageBox::Icon::Question);
+			dialog.setText("No sections found. Do you want to compute sections now?");
+			dialog.setWindowTitle(tr("Disclaimer"));
+			dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
 
-	//		if(dialog.exec() == QMessageBox::StandardButton::Yes) {
-	//			on_pushButtonCalculateSections_clicked();
-	//			
-	//			sections = pointCloud->getSections();
-	//			if(!sections.empty()) {
-	//				view_->getViewport()->setShowSectionOOBB(checked);
-	//			}
-	//		}
-	//	}
-	//}			
+			if(dialog.exec() == QMessageBox::StandardButton::Yes) {
+				on_pushButtonCalculateSections_clicked();
+				
+				sections = pointCloud->getSections();
+				if(!sections.empty()) {
+					view_->getViewport()->setShowSectionOOBB(checked);
+				}
+			}
+		}
+	}			
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionLoad_Bridge() {
@@ -3186,25 +3182,29 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionPrecisionTest() {
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionMerge_Mesh_triggered() {
 	QString openFile = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(), tr("OBJ (*.obj)"));
 
-	//if (openFile.isNull() == false) {
-	//	std::string filename = openFile.toUtf8().constData();
+	if (openFile.isNull() == false) {
+		std::string filename = openFile.toUtf8().constData();
 
-	//	OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().createTerrainFromMesh(filename);
-	//}
+		OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().createTerrainFromMesh(filename);
+	}
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreateClothoid_triggered() {
-//	createClothoidDialog2_->show();
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionIFC_Alignment_1_1_Export_triggered() {
-//	exportIfcAlignment1x1Dialog_->show();
-//}
-//
-//void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Accident_Report_triggered() {
-//	if (createAccidentReportDialog_ == nullptr) {
-//		createAccidentReportDialog_ = new CreateAccidentReportDialog(this);
-//	}
-//
-//	createAccidentReportDialog_->show();
+	createClothoidDialog2_->show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionIFC_Alignment_1_1_Export_triggered() {
+	exportIfcAlignment1x1Dialog_->show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionCreate_Accident_Report_triggered() {
+	if (createAccidentReportDialog_ == nullptr) {
+		createAccidentReportDialog_ = new CreateAccidentReportDialog(this);
+	}
+
+	createAccidentReportDialog_->show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionFilterIfcModel_triggered()
+{
 }

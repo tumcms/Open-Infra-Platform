@@ -15,27 +15,28 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Viewport.h"
+#include "../UserInterface/ViewPanel/Viewport.h"
+#include "../UserInterface/UnitTesting/Benchmark.h"
+#include "../Core/src/DataManagement/General/Data.h"
+#include "../UserInterface/ViewPanel/RenderResources.h"
 
-#include "OpenInfraPlatform/Benchmark.h"
-#include "OpenInfraPlatform/DataManagement/Command/SelectAlignment.h"
-#include "OpenInfraPlatform/DataManagement/Data.h"
-#include "OpenInfraPlatform/Infrastructure/Import/ImportLandXml.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/CoordinateSystem.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/AlignmentEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/GirderEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/SlabFieldEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/DEMEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/TrafficSignEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/GradientClearEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/UIElementsEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/BoundingBoxEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/IfcGeometryEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/SkyboxEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/PointCloudEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/BoxEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/BillboardEffect.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
+//#include "OpenInfraPlatform/DataManagement/Command/SelectAlignment.h"
+//#include "OpenInfraPlatform/Infrastructure/Import/ImportLandXml.h"
+//#include "OpenInfraPlatform/UserInterface/ViewPanel/CoordinateSystem.h"
+//#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/AlignmentEffect.h"
+//#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/GirderEffect.h"
+//#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/SlabFieldEffect.h"
+//#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/DEMEffect.h"
+//#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/TrafficSignEffect.h"
+//#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/GradientClearEffect.h"
+//#include "../UserInterface/ViewPanel/Effects/BillboardEffect.h"
+
+#include "../UserInterface/ViewPanel/Effects/UIElementsEffect.h"
+#include "../UserInterface/ViewPanel/Effects/BoundingBoxEffect.h"
+#include "../UserInterface/ViewPanel/Effects/SkyboxEffect.h"
+#include "../UserInterface/ViewPanel/Effects/PointCloudEffect.h"
+#include "../UserInterface/ViewPanel/Effects/BoxEffect.h"
+#include "../UserInterface/ViewPanel/Effects/IfcGeometryEffect.h"
 
 #include <buw.Engine.h>
 #include <buw.Rasterizer.h>
@@ -69,8 +70,8 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
 
-    OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().Change.connect(boost::bind(&Viewport::onChange, this));
-    OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().Clear.connect(boost::bind(&Viewport::onClear, this));
+    OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Change.connect(boost::bind(&Viewport::onChange, this));
+    OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Clear.connect(boost::bind(&Viewport::onClear, this));
 
     camera_ = buw::makeReferenceCounted<buw::Camera>();
     cameraController_ = buw::makeReferenceCounted<buw::CameraController>(camera_);
@@ -198,8 +199,8 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 Viewport::~Viewport() {
 
     disconnect(timer_, SIGNAL(timeout()), this, SLOT(tick()));
-    OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().Change.disconnect(boost::bind(&Viewport::onChange, this));
-    OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().Clear.disconnect(boost::bind(&Viewport::onClear, this));
+    OpenInfraPlatform::Core::DataManagementDocumentManager::getInstance().getData().Change.disconnect(boost::bind(&Viewport::onChange, this));
+    OpenInfraPlatform::Core::DataManagementDocumentManager::getInstance().getData().Clear.disconnect(boost::bind(&Viewport::onClear, this));
 
     buw::Singleton<RenderResources>::instance().release();
     activeEffects_.clear();
@@ -545,7 +546,7 @@ buw::CameraController::eState Viewport::getCameraMode() const {
 
 void Viewport::paintEvent(QPaintEvent* paintEvent) {
     // clear
-    clearColor_ = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getClearColor();
+    clearColor_ = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getClearColor();
 
     float color[] = {clearColor_.red(), clearColor_.green(), clearColor_.blue(), 0.0f};
 
@@ -555,13 +556,13 @@ void Viewport::paintEvent(QPaintEvent* paintEvent) {
 
     updateWorldBuffer();
 
-    if(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().isGradientClearEnabled())
+    if(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().isGradientClearEnabled())
         gradientClearEffect_->render();
 
-    if(OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().isSkyboxEnabled())
+    if(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().isSkyboxEnabled())
         skyboxEffect_->render();
 
-    if (OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().isShowReferenceCoordinateSystemEnabled())
+    if (OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().isShowReferenceCoordinateSystemEnabled())
         uiElements_->render();
 
     boundingBoxEffect_->render();
@@ -569,7 +570,7 @@ void Viewport::paintEvent(QPaintEvent* paintEvent) {
     for(auto effect : activeEffects_)
         effect->render();
 
-    if (OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().isViewCubeEnabled())
+    if (OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().isViewCubeEnabled())
         viewCube_->render();    
 
     renderSystem_->present();
@@ -634,7 +635,7 @@ void Viewport::mousePressEvent(QMouseEvent* event) {
         int alignmentId = alignmentEffect_->getAlignmentId(currentPickId_);
         if(alignmentId != DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment() && alignmentId != -1) {
             buw::ReferenceCounted<buw::SelectAlignment> actionSelectAlignment = std::make_shared<buw::SelectAlignment>(alignmentId);
-            OpenInfraPlatform::DataManagement::DocumentManager::getInstance().execute(actionSelectAlignment);
+            OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().execute(actionSelectAlignment);
         }
         repositionCamera();
     }
@@ -760,13 +761,13 @@ void Viewport::tick() {
 }
 
 void Viewport::onChange() {
-    auto& data = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData();
+    auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
 
     onChange(data.getLatesChangeFlag());
 }
 
 void Viewport::onChange(ChangeFlag changeFlag) {
-    auto& data = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData();
+    auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
     auto dem = data.getDigitalElevationModel();
     auto alignment = data.getAlignmentModel();
     auto trafficSignModel = data.getTrafficSignModel();

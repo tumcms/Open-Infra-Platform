@@ -16,10 +16,9 @@
 */
 
 #pragma once
-#ifndef OpenInfraPlatform_UserInterface_CodeEditorWindow_5f48a20a_6127_4e9c_b8b9_01b44ac3c30a_h
-#define OpenInfraPlatform_UserInterface_CodeEditorWindow_5f48a20a_6127_4e9c_b8b9_01b44ac3c30a_h
+#ifndef OpenInfraPlatform_UserInterface_CodeTextEdit_5a1d54d3_7a91_40dc_8452_7bc0041964da_h
+#define OpenInfraPlatform_UserInterface_CodeTextEdit_5a1d54d3_7a91_40dc_8452_7bc0041964da_h
 
-#include "ui_CodeEditorWindow.h"
 #include <boost/noncopyable.hpp>
 #include <QMainWindow>
 #include <QListWidgetItem>
@@ -28,48 +27,34 @@
 #include <QTextStream>
 #include <QDropEvent>
 #include <QMimeData>
-#include "highlighter.h"
-#include "OpenInfraPlatform/UserInterface/CodeTextEdit.h"
+#include "../UserInterface/Dialogues/highlighter.h"
 #include <iostream>
 
 namespace OpenInfraPlatform
 {
 	namespace UserInterface
 	{
-		class CodeEditorWindow : public QMainWindow
+		class CodeTextEdit : public QTextEdit
 		{
-			Q_OBJECT
+			Q_OBJECT;
 
 		public:
-			CodeEditorWindow(QWidget *parent = nullptr);
+			CodeTextEdit();
 
-			virtual ~CodeEditorWindow()	{}
+			void wheelEvent(QWheelEvent *e);
 
 		public Q_SLOTS:
-			void on_actionExit_triggered();
-			void on_actionExample1_triggered();
-			void on_pushButtonExecute_clicked();
-			void on_actionHello_World_triggered();
-			void on_actionEuclidean_triggered();
+			void makeDrag();
 
 		protected:
-			virtual void changeEvent(QEvent* evt) override;
-
-		private:
-			void setupEditor();
-
-		private:
-			Ui::CodeEditorWindow*	ui_;
-			CodeTextEdit*			editor_;
-			Highlighter*			highlighter_;
-		private:
-		}; // end class CodeEditorWindow
+			void dropEvent(QDropEvent *de);
+		};
 	} // end namespace UserInterface
 } // end namespace OpenInfraPlatform
 
 namespace buw
 {
-	using OpenInfraPlatform::UserInterface::CodeEditorWindow;
+	using OpenInfraPlatform::UserInterface::CodeTextEdit;
 }
 
-#endif // end define OpenInfraPlatform_UserInterface_CodeEditorWindow_5f48a20a_6127_4e9c_b8b9_01b44ac3c30a_h
+#endif // end define OpenInfraPlatform_UserInterface_CodeTextEdit_5a1d54d3_7a91_40dc_8452_7bc0041964da_h
