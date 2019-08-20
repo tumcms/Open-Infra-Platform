@@ -19,7 +19,7 @@
 #pragma once
 #ifndef OpenInfraPlatform_UserInterface_IfcGeometryEffect_d170662a_b003_4afa_a25b_a9d772f3013d_h
 #define OpenInfraPlatform_UserInterface_IfcGeometryEffect_d170662a_b003_4afa_a25b_a9d772f3013d_h
-#include "../Core/src/IfcGeometryConverter/ConverterBuw.h"
+#include "IfcGeometryConverter/ConverterBuw.h"
 #include "namespace.h"
 
 #include <buw.Rasterizer.h>

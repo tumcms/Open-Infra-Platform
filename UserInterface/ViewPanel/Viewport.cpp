@@ -16,9 +16,9 @@
 */
 
 #include "Viewport.h"
-#include "../UserInterface/UnitTesting/Benchmark.h"
-#include "../Core/src/DataManagement/General/Data.h"
-#include "../UserInterface/ViewPanel/RenderResources.h"
+#include "UnitTesting/Benchmark.h"
+#include "DataManagement/General/Data.h"
+#include "ViewPanel/RenderResources.h"
 
 //#include "OpenInfraPlatform/DataManagement/Command/SelectAlignment.h"
 //#include "OpenInfraPlatform/Infrastructure/Import/ImportLandXml.h"
@@ -32,12 +32,14 @@
 //#include "../UserInterface/ViewPanel/Effects/BillboardEffect.h"
 //#include "../UserInterface/ViewPanel/Effects/PointCloudEffect.h"
 
-#include "../UserInterface/ViewPanel/Effects/UIElementsEffect.h"
-#include "../UserInterface/ViewPanel/Effects/BoundingBoxEffect.h"
-#include "../UserInterface/ViewPanel/Effects/SkyboxEffect.h"
+//Effects
+#include "ViewPanel/Effects/UIElementsEffect.h"
+#include "ViewPanel/Effects/BoundingBoxEffect.h"
+#include "ViewPanel/Effects/SkyboxEffect.h"
+#include "ViewPanel/Effects/BoxEffect.h"
+#include "ViewPanel/Effects/IfcGeometryEffect.h"
+#include "ViewPanel/Effects/GradientClearEffect.h"
 
-#include "../UserInterface/ViewPanel/Effects/BoxEffect.h"
-#include "../UserInterface/ViewPanel/Effects/IfcGeometryEffect.h"
 
 #include <buw.Engine.h>
 #include <buw.Rasterizer.h>
@@ -129,11 +131,12 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 
     viewCube_ = buw::makeReferenceCounted<buw::ViewCube>(renderSystem_, pickBuffer_, pickIdBuffer_, cameraController_);
 
-   /* BLUE_LOG(trace) << "Creating effects (1)";
+    BLUE_LOG(trace) << "Creating effects (1)";
     gradientClearEffect_ = buw::makeReferenceCounted<GradientClearEffect>(renderSystem_.get(), viewport_);
     BLUE_LOG(trace) << "Creating effects (1.1)";
     gradientClearEffect_->init();
 
+	/*
     BLUE_LOG(trace) << "Creating effects (2)";
     demEffect_ = buw::makeReferenceCounted<DEMEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, pickBuffer_, depthStencil_, worldBuffer_);
     demEffect_->init();

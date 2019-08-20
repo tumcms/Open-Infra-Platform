@@ -19,10 +19,10 @@
 #ifndef OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
 #define OpenInfraPlatform_UserInterface_Viewport_fbfab9db_0e02_4e25_a393_88c65a2ab542_h
 
-#include "../Core/src/DataManagement/General/Data.h"
-#include "../Core/src/IfcGeometryConverter/ConverterBuw.h"
-#include "../UserInterface/ViewPanel/Tool.h"
-#include "../UserInterface/ViewPanel/eView.h"
+#include "DataManagement/General/Data.h"
+#include "IfcGeometryConverter/ConverterBuw.h"
+#include "ViewPanel/Tool.h"
+#include "ViewPanel/eView.h"
 
 #include "namespace.h"
 
