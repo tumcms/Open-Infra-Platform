@@ -17,7 +17,7 @@
 
 #include "SkyboxEffect.h"
 
-#include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
+#include "../UserInterface/ViewPanel/RenderResources.h"
 #include <boost/filesystem.hpp>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
