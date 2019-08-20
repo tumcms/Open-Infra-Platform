@@ -675,9 +675,8 @@ set_target_properties(OpenInfraPlatform.ExpressBindingGenerator				PROPERTIES FO
 Option(MODULES_POINT_CLOUD_PROCESSING ON)
 
 if(MODULES_POINT_CLOUD_PROCESSING)
-
+add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
 add_subdirectory(PointCloudProcessing)
-
 endif()
 
 #----------------------------------------------------------
