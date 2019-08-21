@@ -20,7 +20,11 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator= (const ForwardType& other) { this->base::emplace(other); return *this; }
+template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator= (const ForwardType& other) {
+	T obj;
+	obj = other;
+	boost::optional<T>::operator=(obj); /*this->base::emplace(other);*/ return *this;
+}
 
 template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator= (const EXPRESSOptional& other) { base::operator=(other.get_value_or(T())); return *this; };
 

@@ -21,11 +21,15 @@
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
 template <typename T> const std::string EXPRESSReference<T>::getStepParameter() const {
-	return this->base::lock()->getStepParameter();
+	const std::shared_ptr<T> ptr = this->base::lock();
+	return ptr.get()->getStepParameter();
+	//return this->base::lock().get()->getStepParameter();
 }
 
 template <typename T> const std::string EXPRESSReference<T>::classname() const {
-	return this->base::lock()->classname();
+	const std::shared_ptr<T> ptr = this->base::lock();
+	return ptr.get()->classname();
+	//return this->base::lock().get()->classname();
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
