@@ -113,18 +113,18 @@ const std::string ValueType<boost::logic::tribool>::getStepParameter() const {
 //};
 
 
-double ValueType<double>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model) { return(stod(value)); };
+double ValueType<double>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { return(stod(value)); };
 
-int ValueType<int>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model) { return (stoi(value)); };
+int ValueType<int>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { return (stoi(value)); };
 
-bool ValueType<bool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model) {
+bool ValueType<bool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {
 	std::string lower = boost::algorithm::to_lower_copy(value);
 	return (lower == "true");
 };
 
-std::string ValueType<std::string>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model) { return (value); };
+std::string ValueType<std::string>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { return (value); };
 
-boost::logic::tribool ValueType<boost::logic::tribool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model) {
+boost::logic::tribool ValueType<boost::logic::tribool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {
 	std::string lower = boost::algorithm::to_lower_copy(value);
 
 	if (lower == "true") {
