@@ -192,18 +192,18 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	QAction* actionLoadBridge = menuDebug->addAction(tr("Load Bridge"));
 	QAction* actionPrecisionTest = menuDebug->addAction(tr("Precision Test"));
 
-	QObject::connect(imageQualityBasedUnitTesting, &QAction::triggered, this, &MainWindow::ImageQualityBasedUnitTesting);
+	//QObject::connect(imageQualityBasedUnitTesting, &QAction::triggered, this, &MainWindow::ImageQualityBasedUnitTesting);
 	QObject::connect(actionGetCameraState, &QAction::triggered, this, &MainWindow::actionGetCameraState);
 	QObject::connect(actionShowMap, &QAction::triggered, this, &MainWindow::showMap);
 	QObject::connect(actionReloadShader, &QAction::triggered, this, &MainWindow::reloadShader);
 	QObject::connect(actionShowMap, &QAction::triggered, this, &MainWindow::showMap);
-	QObject::connect(variantEditor_, &QtTreePropertyBrowser::currentItemChanged, this, &MainWindow::on_variantEditor_currentItemChanged);
+	//QObject::connect(variantEditor_, &QtTreePropertyBrowser::currentItemChanged, this, &MainWindow::on_variantEditor_currentItemChanged);
 	QObject::connect(actionAboutQt, &QAction::triggered, this, &MainWindow::aboutQt);
 	QObject::connect(actionStoreGBuffer, &QAction::triggered, this, &MainWindow::storeGBuffer);
-	QObject::connect(actionCreateClothoid, &QAction::triggered, this, &MainWindow::createClothoid);
-	QObject::connect(actionShowVerticalAlignment3D, &QAction::triggered, this, &MainWindow::on_actionVertical_alignment_3D_triggered);
-	QObject::connect(actionLoadBridge, &QAction::triggered, this, &MainWindow::on_actionLoad_Bridge);
-	QObject::connect(actionPrecisionTest, &QAction::triggered, this, &MainWindow::on_actionPrecisionTest);
+	//QObject::connect(actionCreateClothoid, &QAction::triggered, this, &MainWindow::createClothoid);
+	//QObject::connect(actionShowVerticalAlignment3D, &QAction::triggered, this, &MainWindow::on_actionVertical_alignment_3D_triggered);
+	//QObject::connect(actionLoadBridge, &QAction::triggered, this, &MainWindow::on_actionLoad_Bridge);
+	//QObject::connect(actionPrecisionTest, &QAction::triggered, this, &MainWindow::on_actionPrecisionTest);
 
 #endif
 
@@ -236,10 +236,12 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	connect(callback_.get(), &OpenInfraPlatform::Core::DataManagement::ProgressCallback::updateSignal, progressDialog_, &QProgressDialog::setValue);
 	connect(callback_.get(), &OpenInfraPlatform::Core::DataManagement::ProgressCallback::setMethodTitleSignal, progressDialog_, &QProgressDialog::setLabelText);
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	ui_->doubleSpinBoxPointSize->setValue(3.0);
 	on_doubleSpinBoxPointSize_valueChanged(3.0);
+#endif
 
-	retranslatePropertyBrowser();
+	//retranslatePropertyBrowser();
 
 	// check for updates
 	updater = std::make_unique<QSimpleUpdater>(this);
@@ -319,7 +321,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::changeEvent(QEvent* evt) {
 			updateWindowTitle(newTitle);
 		}
 
-		retranslatePropertyBrowser();
+		//retranslatePropertyBrowser();
 	} else {
 		// remember to call base class implementation
 		QMainWindow::changeEvent(evt);
@@ -613,10 +615,6 @@ QString OpenInfraPlatform::UserInterface::MainWindow::strippedName(const QString
 	return QFileInfo(fullFileName).fileName();
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::ImageQualityBasedUnitTesting() {
-	prepareTest(0);
-}
-
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionOpen_triggered() {
 	try {
 		handle_actionOpen_triggered();
@@ -682,8 +680,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::jobFinished(int id, bool come
 	progressDialog_->hide();
 
 	if (inUnitTest_ >= 0) {
-		performTest(inUnitTest_);
-		prepareTest(inUnitTest_ + 1);
+		//performTest(inUnitTest_);
+		//prepareTest(inUnitTest_ + 1);
 	}
 }
 
@@ -1537,9 +1535,6 @@ void OpenInfraPlatform::UserInterface::MainWindow::showMap() {
 	view_->enableMap(checked);
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::on_variantEditor_currentItemChanged(QtBrowserItem* item) {
-	// std::cout << "Selected a Qt BrowserItem." << std::endl;
-}
 
 //---------------------------------------------------------------------------//
 // Debugging
@@ -1624,16 +1619,4 @@ template <template<typename T> class Container, typename T> Container<T> linspac
 	for(size_t i = 0; i < N; i++)
 		result.push_back(min + i * stepSize);
 	return result;
-}
-
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionLoad_Bridge() {
-	view_->LoadBridge();
-}
-
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionPrecisionTest() {
-	bool ok = false;
-	int iterations = QInputDialog::getInt(this, "Precision Test", "Number of Iterations", 5, 1, 100, 1, &ok);
-
-	if (ok)
-		precisionTest_.startTest(iterations);
 }

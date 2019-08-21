@@ -93,8 +93,8 @@ namespace OpenInfraPlatform
 			virtual ~MainWindow();
 
 			void showEvent(QShowEvent* event);
-			void updateAlignmentUI();
-			void updateAlignmentElementsUI();
+			//void updateAlignmentUI();
+			//void updateAlignmentElementsUI();
 			void emitPoints(QDialog*); // for the communication between menue/tools and MainWindow
 			void storeGBuffer();
 			virtual void changeEvent(QEvent* evt) override;
@@ -102,89 +102,98 @@ namespace OpenInfraPlatform
 			void checkForUpdates();
 
 		public Q_SLOTS:
-			void on_action3D_triggered();
+			//void on_action3D_triggered();
 			void on_actionAbout_triggered();
-			void on_actionAdvancedSVG_triggered();
-			void on_actionAlignments_as_3D_Points_txt_triggered();
+
+			//void on_actionAdvancedSVG_triggered();
+			//void on_actionUsualSVG_triggered();
+
+			//void on_actionAlignments_as_3D_Points_txt_triggered();
 			void on_actionCheck_for_Updates_triggered();
-			void on_actionCreate_Alignment_Points_triggered(bool checked);
-			void on_actionCreate_Alignment_triggered();
-			void on_actionCreate_Arc_Clothoid_Arc_triggered();
-			void on_actionCreate_Arc_Clothoid_Arc2_triggered();
-			void on_actionCreate_Arc_Clothoid_Clothoid_Arc_triggered();
-			void on_actionCreate_Arc_Clothoid_Clothoid_Arc2_triggered();
-			void on_actionCreate_Line_Arc_Arc_Arc_Line_triggered();
-			void on_actionCreate_Line_Arc_Arc_Line_triggered();
-			void on_actionCreate_Line_Clothoid_Arc_Clothoid_Line_triggered();
-			void on_actionCreate_Line_Clothoid_Clothoid_Line_triggered();
-			void on_actionCreate_Line_Clothoid_triggered();
-			void on_actionCreateClothoid_triggered();
-			void on_actionCurvature_triggered();
-			void on_actionShow_IFC_tree_triggered();
-			void on_actionDraw_Road_Texture_triggered(bool checked);
+			//void on_actionCreate_Alignment_Points_triggered(bool checked);
+			//void on_actionCreate_Alignment_triggered();
+			//void on_actionCreate_Arc_Clothoid_Arc_triggered();
+			//void on_actionCreate_Arc_Clothoid_Arc2_triggered();
+			//void on_actionCreate_Arc_Clothoid_Clothoid_Arc_triggered();
+			//void on_actionCreate_Arc_Clothoid_Clothoid_Arc2_triggered();
+			//void on_actionCreate_Line_Arc_Arc_Arc_Line_triggered();
+			//void on_actionCreate_Line_Arc_Arc_Line_triggered();
+			//void on_actionCreate_Line_Clothoid_Arc_Clothoid_Line_triggered();
+			//void on_actionCreate_Line_Clothoid_Clothoid_Line_triggered();
+			//void on_actionCreate_Line_Clothoid_triggered();
+			//void on_actionCreateClothoid_triggered();
+			//void on_actionCurvature_triggered();
+			//void on_actionShow_IFC_tree_triggered();
 			void on_actionExit_triggered();
-			void on_actionExport_Terrain_As_Heightmap_triggered();
-			void on_actionExportCurvature_triggered();
-			void on_actionExportIfcAlignment_triggered();
-			void on_actionExportIfcZip_triggered();
-			void on_actionExportIIfcRoad_triggered();
-			void on_actionExportVerticalAlignment_triggered();
-			void on_actionExportLandInfra_triggered();
-			void on_actionExportPointCloud_triggered();
-			void on_actionHorizontal_alignment_triggered();
-			void on_actionIfcAlignment_buildingSMART_P6_Excel_Comparison_triggered();
+			//void on_actionExport_Terrain_As_Heightmap_triggered();
+			//void on_actionExportCurvature_triggered();
+			//void on_actionExportIfcAlignment_triggered();
+			//void on_actionExportIfcZip_triggered();
+			//void on_actionExportIIfcRoad_triggered();
+			//void on_actionExportVerticalAlignment_triggered();
+			//void on_actionExportLandInfra_triggered();
+
+			//void on_actionHorizontal_alignment_triggered();
+			//void on_actionIfcAlignment_buildingSMART_P6_Excel_Comparison_triggered();
+			//void on_actionImport_IFC_Alignment_1_0_triggered();
+			//void on_actionIFC_Alignment_1_1_Export_triggered();
 
 			void on_actionShow_License_and_Copyright_Information_triggered();
-
 			void on_actionShow_Log_Folder_triggered();
 
-			void on_actionImport_IFC_Alignment_1_0_triggered();
 
-			void on_actionIFC_Alignment_1_1_Export_triggered();
-			void on_actionCreate_Accident_Report_triggered();
-			void on_actionImport_OSM_File_triggered();
-			void on_actionLandXML_triggered();
-			void on_actionLoad_Bridge();
-			void on_actionMerge_LAS_File_triggered();
-			void on_actionMerge_Mesh_triggered();
-			void on_actionMerge_XYZ_File_triggered();
+
+			//void on_actionCreate_Accident_Report_triggered();
+			//void on_actionImport_OSM_File_triggered();
+			//void on_actionLandXML_triggered();
+			//void on_actionLoad_Bridge();
+			
+			//void on_actionMerge_LAS_File_triggered();
+			//void on_actionMerge_Mesh_triggered();
+			//void on_actionMerge_XYZ_File_triggered();
+			
 			void on_actionNew_triggered();
-			void on_actionOkstra_triggered();
-			void on_actionOkstra_translated_triggered();
-			void on_actionOkstraOWL_triggered();
-			void on_actionifcOWL4x1Export_triggered();
+			//void on_actionOkstra_triggered();
+			//void on_actionOkstra_translated_triggered();
+			//void on_actionOkstraOWL_triggered();
+			//void on_actionifcOWL4x1Export_triggered();
 			void on_actionOpen_triggered();
-			void on_actionPrecisionTest();
+			//void on_actionPrecisionTest();
 			void on_actionPreferences_triggered();
 			void on_actionRedo_triggered();
-			void on_actionRoad_body_solid_triggered(bool checked);
-			void on_actionRoad_body_wireframe_triggered(bool checked);
+
+			//void on_actionRoad_body_solid_triggered(bool checked);
+			//void on_actionRoad_body_wireframe_triggered(bool checked);
+			//void on_actionDraw_Road_Texture_triggered(bool checked);
+
 			void on_actionSave_triggered();
 			void on_actionSaveAs_triggered();
-			void on_actionShow_Cross_Section_triggered(bool checked);
-			void on_actionShow_Design_Cross_Section_triggered(bool checked);
+			//void on_actionShow_Cross_Section_triggered(bool checked);
+			//void on_actionShow_Design_Cross_Section_triggered(bool checked);
 			void on_actionShow_Help_triggered();
 			void on_actionShow_Log_File_triggered();
-			void on_actionTerrain_Create_Terrain_from_Heightmap_triggered();
-			void on_actionTerrain_Generate_Random_Terrain_triggered();
-			void on_actionTerrain_Gradient_Ramp_triggered(bool checked);
-			void on_actionTerrain_Hide_triggered(bool checked);
-			void on_actionTerrain_Iso_Lines_triggered(bool checked);
-			void on_actionTerrain_Textured_triggered(bool checked);
-			void on_actionTerrain_Wireframe_triggered(bool checked);
+			//void on_actionTerrain_Create_Terrain_from_Heightmap_triggered();
+			//void on_actionTerrain_Generate_Random_Terrain_triggered();
+			//void on_actionTerrain_Gradient_Ramp_triggered(bool checked);
+			//void on_actionTerrain_Hide_triggered(bool checked);
+			//void on_actionTerrain_Iso_Lines_triggered(bool checked);
+			//void on_actionTerrain_Textured_triggered(bool checked);
+			//void on_actionTerrain_Wireframe_triggered(bool checked);
 			void on_actionUndo_triggered();
-			void on_actionUsualSVG_triggered();
-			void on_actionVertical_alignment_3D_triggered();
-			void on_actionVertical_alignment_triggered();
+			//void on_actionVertical_alignment_3D_triggered();
+			//void on_actionVertical_alignment_triggered();
 			void on_actionViewport_as_screenshot_triggered();
-			void on_actionAdd_Georeference_triggered();
+			//void on_actionAdd_Georeference_triggered();
 
-			void on_checkBoxDifferentColorsForVerticalAlignmentElements_clicked(bool checked);
-			void on_checkBoxHighlightSelectedAlignmentSegment_clicked(bool checked);
-			void on_checkBoxShowDifferentAlignmentElements_clicked(bool checked);
+			//void on_checkBoxDifferentColorsForVerticalAlignmentElements_clicked(bool checked);
+			//void on_checkBoxHighlightSelectedAlignmentSegment_clicked(bool checked);
+			//void on_checkBoxShowDifferentAlignmentElements_clicked(bool checked);
 			void on_checkBoxShowMap_clicked (bool checked);
 
 			// Point Cloud
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+
+			void on_actionExportPointCloud_triggered();
 			void on_checkBoxUseUniformColor_clicked(bool checked);
 			void on_checkBoxUseUniformSize_clicked(bool checked);
 
@@ -254,10 +263,11 @@ namespace OpenInfraPlatform
 
 			void on_spinBoxOctreeLevel_valueChanged(int value);
 			void on_checkBoxShowOctree_clicked(bool checked);
+#endif
 
-			void on_pushButtonDeleteSelectedAlignment_clicked();
-			void on_pushButtonDeleteSurface_clicked();
-			void on_variantEditor_currentItemChanged(QtBrowserItem * item);
+			//void on_pushButtonDeleteSelectedAlignment_clicked();
+			//void on_pushButtonDeleteSurface_clicked();
+			//void on_variantEditor_currentItemChanged(QtBrowserItem * item);
 
 
 			// Recent files
@@ -277,7 +287,7 @@ namespace OpenInfraPlatform
 			void onCheckingFinished();
 
 		private:
-			void createClothoid();
+			//void createClothoid();
 
 			// Todo move recent files functionality to MainWindowBase
 			void addToRecentFilesList(const QString &fileName);
@@ -285,7 +295,6 @@ namespace OpenInfraPlatform
 			QString strippedName(const QString &fullFileName);
 
 		private Q_SLOTS:
-			void ImageQualityBasedUnitTesting();
 			void actionGetCameraState();
 			void showMap();
 			void reloadShader();
@@ -298,8 +307,8 @@ namespace OpenInfraPlatform
 			void jobFinishing(int id, bool completed);
 			void jobFinished(int id, bool completed);
 
-			void prepareTest(int i);
-			void performTest(int i);
+			//void prepareTest(int i);
+			//void performTest(int i);
 
 			void openRecentFileViaAction( QAction *actionRecentFile );
 
@@ -307,10 +316,9 @@ namespace OpenInfraPlatform
 			void onChange(ChangeFlag changeFlag);
 
 			void updateActionUndo( unsigned int numberOfUndoActions );
-
 			void updateActionRedo(unsigned int numberOfRedoActions);
 
-			void retranslatePropertyBrowser();
+			//void retranslatePropertyBrowser();
 		private:
 			// RegEx to parse the window title and capture the document state
 			// RegEx matches "TUM Open Infra Platform YYYY - [Filename]", and captures "Filename"
