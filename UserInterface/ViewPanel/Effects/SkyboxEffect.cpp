@@ -41,6 +41,7 @@ SkyboxEffect::~SkyboxEffect() {
 void SkyboxEffect::v_init() {
     std::vector<buw::VertexPosition3Normal3Texture2> vertices;
     std::vector<unsigned int> indices;
+	auto resourceRootDir = buw::Singleton<RenderResources>::instance().getResourceRootDir();
 
     buw::createIndexedSphere(1, 180, 45, vertices, indices);
     buw::VertexLayout vertexLayout = buw::VertexPosition3Normal3Texture2::getVertexLayout();
@@ -58,7 +59,7 @@ void SkyboxEffect::v_init() {
 
     indexBuffer_ = renderSystem()->createIndexBuffer(ibd);
     buw::pipelineStateDescription psd;
-	psd.effectFilename = buw::Singleton<RenderResources>::instance().getResourceRootDir() + "/Shader/SkyboxEffect.be";
+	psd.effectFilename = resourceRootDir + "/Shader/SkyboxEffect.be";
 	psd.pipelineStateName = "";
     psd.primitiveTopology = buw::ePrimitiveTopology::TriangleList;
     psd.vertexLayout = vertexLayout;
@@ -71,12 +72,12 @@ void SkyboxEffect::v_init() {
     sampler_ = renderSystem()->createSampler(ssd);
 
     // load texture
-    auto img0 = buw::loadImage4b("Data/sky/right.png");
-    auto img1 = buw::loadImage4b("Data/sky/left.png");
-    auto img2 = buw::loadImage4b("Data/sky/top.png");
-    auto img3 = buw::loadImage4b("Data/sky/bottom.png");
-    auto img4 = buw::loadImage4b("Data/sky/front.png");
-    auto img5 = buw::loadImage4b("Data/sky/back.png");
+    auto img0 = buw::loadImage4b(resourceRootDir + "/Data/sky/right.png");
+    auto img1 = buw::loadImage4b(resourceRootDir + "/Data/sky/left.png");
+    auto img2 = buw::loadImage4b(resourceRootDir + "/Data/sky/top.png");
+    auto img3 = buw::loadImage4b(resourceRootDir + "/Data/sky/bottom.png");
+    auto img4 = buw::loadImage4b(resourceRootDir + "/Data/sky/front.png");
+    auto img5 = buw::loadImage4b(resourceRootDir + "/Data/sky/back.png");
 
     buw::textureCubeDescription td1;
     td1.width = img1.getWidth();
