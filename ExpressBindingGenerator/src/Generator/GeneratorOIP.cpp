@@ -2373,6 +2373,9 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeInclude(file, "exception", true);
 	linebreak(file);
 
+	writeBeginNamespace(file, schema);
+	linebreak(file);
+
 	writeLine(file, "std::vector<std::string> parseArgs(const std::string &line) {");
 	writeLine(file, "std::vector<std::string> args;");
 	writeLine(file, "auto paramvalue = line.substr(line.find_first_of('('), line.find_last_of(')') - 1);");
@@ -2399,7 +2402,6 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "};"); // end function parseArgs
 	linebreak(file);
 
-	writeBeginNamespace(file, schema);
 
 	writeLine(file, "std::shared_ptr<EarlyBinding::EXPRESSModel> " + schema.getName().append("Reader") + "::FromFile(const std::string &filename) {"); // begin function FromFile
 
