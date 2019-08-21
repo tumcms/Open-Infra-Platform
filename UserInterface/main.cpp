@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
         // 			return 0;
         // 		}
 
-        OpenInfraPlatform::Benchmark::getInstance().beginStartup();
+        //OpenInfraPlatform::Benchmark::getInstance().beginStartup();
 
         // check if we have an appropriate BlueFramework
         int patchNumber = 559;
@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
 
         // OpenInfraPlatform::UserInterface::CodeEditorWindow CodeEditor;
         // CodeEditor.show();
-        // return application.exec();
+        //return application.exec();
 
         if (g_splash) {
             g_splash->hide();

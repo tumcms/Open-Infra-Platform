@@ -519,9 +519,9 @@ void Viewport::goHome() {
 }
 
 void Viewport::toggleSnow() {
- /*   snow_ = !snow_;
+    snow_ = !snow_;
     gradientClearEffect_->toggleSnow();
-    demEffect_->enableSnow(snow_);*/
+    //demEffect_->enableSnow(snow_);
 }
 
 void Viewport::leaveEvent(QEvent* event) {
@@ -561,7 +561,7 @@ void Viewport::paintEvent(QPaintEvent* paintEvent) {
     updateWorldBuffer();
 
     if(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().isGradientClearEnabled())
-        //gradientClearEffect_->render();
+        gradientClearEffect_->render();
 
     if(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().isSkyboxEnabled())
         skyboxEffect_->render();
@@ -632,20 +632,20 @@ void Viewport::repositionCamera() {
 }
 
 void Viewport::mousePressEvent(QMouseEvent* event) {
-//    if (event->buttons()) {
-//        buw::Vector2f mouse(event->x(), event->y());
-//        lastMousePos_ = mouse;
-//        viewCube_->mousePress();
-//        int alignmentId = alignmentEffect_->getAlignmentId(currentPickId_);
-//        if(alignmentId != Core::DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment() && alignmentId != -1) {
-//            buw::ReferenceCounted<buw::SelectAlignment> actionSelectAlignment = std::make_shared<buw::SelectAlignment>(alignmentId);
-//            OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().execute(actionSelectAlignment);
-//        }
-//        repositionCamera();
-//    }
-//
-//	// To avoid continuous rendering.
-//	repaint();
+    if (event->buttons()) {
+        buw::Vector2f mouse(event->x(), event->y());
+        lastMousePos_ = mouse;
+        viewCube_->mousePress();
+        //int alignmentId = alignmentEffect_->getAlignmentId(currentPickId_);
+        //if(alignmentId != Core::DataManagement::DocumentManager::getInstance().getData().getSelectedAlignment() && alignmentId != -1) {
+        //    buw::ReferenceCounted<buw::SelectAlignment> actionSelectAlignment = std::make_shared<buw::SelectAlignment>(alignmentId);
+        //    OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().execute(actionSelectAlignment);
+        //}
+        repositionCamera();
+    }
+
+	// To avoid continuous rendering.
+	repaint();
 }
 
 void Viewport::mouseMoveEvent(QMouseEvent* event) {
@@ -777,7 +777,7 @@ void Viewport::onChange(ChangeFlag changeFlag) {
  //   auto trafficSignModel = data.getTrafficSignModel();
  //   auto girderModel = data.getGirderModel();
  //   auto slabFieldModel = data.getSlabFieldModel();
- //   auto ifcGeometryModel = data.getIfcGeometryModel();
+    auto ifcGeometryModel = data.getIfcGeometryModel();
 	//auto pointCloud = data.getPointCloud();
 	//auto proxyModel = data.getProxyModel();
 
@@ -820,10 +820,10 @@ void Viewport::onChange(ChangeFlag changeFlag) {
  //       activeEffects_.push_back(alignmentEffect_);
  //   }
 
- //   if(changeFlag & ChangeFlag::IfcGeometry && ifcGeometryModel) {
- //       ifcGeometryEffect_->setIfcGeometryModel(ifcGeometryModel, offset);
- //       activeEffects_.push_back(ifcGeometryEffect_);
- //   }
+    if(changeFlag & ChangeFlag::IfcGeometry && ifcGeometryModel) {
+        ifcGeometryEffect_->setIfcGeometryModel(ifcGeometryModel, offset);
+        activeEffects_.push_back(ifcGeometryEffect_);
+    }
 
  //   if(changeFlag & ChangeFlag::TrafficModel && trafficSignModel) {
  //       trafficSignEffect_->setData(alignment, offset, trafficSignModel);
@@ -872,8 +872,8 @@ void Viewport::reloadShader() {
     /*slabFieldEffect_->loadShader();
     girderEffect_->loadShader();
     alignmentEffect_->loadShader();
-    demEffect_->loadShader();
-    gradientClearEffect_->loadShader();*/
+    demEffect_->loadShader();*/
+    gradientClearEffect_->loadShader();
     uiElements_->loadShader();
     boundingBoxEffect_->loadShader();
 	/*pointCloudEffect_->loadShader();
