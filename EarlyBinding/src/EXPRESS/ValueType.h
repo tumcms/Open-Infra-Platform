@@ -54,7 +54,15 @@ public:
 
 	virtual const std::string getStepParameter() const override { return "unknown"; };
 
-	static T readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model = nullptr) { return T::readStepData(value, model); };
+	static T readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model = nullptr) {
+		if (value == "*") {
+			//TODO : Implement behaviour
+			return T();
+		}
+		else {
+			return T::readStepData(value, model);
+		}
+	};
 
 	virtual const std::string classname() const override { return typeid(T).name(); };
 
@@ -104,35 +112,54 @@ const std::string ValueType<boost::logic::tribool>::getStepParameter() const {
 	return "ERROR";
 }
 
-//template <typename ContainerType, typename ValueType, int MinCardinality, int MaxCardinality> std::string to_string(const EXPRESSContainer<ContainerType, ValueType, MinCardinality, MaxCardinality>& val) {
-//	return val.getStepParameter();
-//};
 
-//template <typename ValueType, int MinCardinality, int MaxCardinality> std::string to_string(const EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>& val) {
-//	return val.getStepParameter();
-//};
+double ValueType<double>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {
+	if (value == "*") {
+		//TODO : Implement behaviour
+		return 0.0;
+	}
+	else {
+		return (stod(value));
+	}
+};
 
-
-double ValueType<double>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { return(stod(value)); };
-
-int ValueType<int>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { return (stoi(value)); };
+int ValueType<int>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { 
+	if (value == "*") {
+		//TODO : Implement behaviour
+		return 0;
+	}
+	else {
+		return (stoi(value));
+	}
+};
 
 bool ValueType<bool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {
-	std::string lower = boost::algorithm::to_lower_copy(value);
-	return (lower == "true");
+	if (value == "*") {
+		//TODO : Implement behaviour
+		return false;
+	}
+	else {
+		std::string lower = boost::algorithm::to_lower_copy(value);
+		return (lower == "true");
+	}
 };
 
 std::string ValueType<std::string>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { return (value); };
 
 boost::logic::tribool ValueType<boost::logic::tribool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {
 	std::string lower = boost::algorithm::to_lower_copy(value);
-
-	if (lower == "true") {
-		return boost::logic::tribool::true_value;
-	}
-	else if (lower == "false") {
-		return boost::logic::tribool::false_value;
-	}
+	if (value == "*") {
+		//TODO : Implement behaviour
+		if (lower == "true") {
+			return boost::logic::tribool::true_value;
+		}
+		else if (lower == "false") {
+			return boost::logic::tribool::false_value;
+		}
+		else {
+			return boost::logic::tribool(boost::logic::indeterminate);
+		}
+	}	
 	else {
 		return boost::logic::tribool(boost::logic::indeterminate);
 	}
