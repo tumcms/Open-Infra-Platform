@@ -63,7 +63,7 @@ public:
 		}
 		else {
 			size_t refId = std::stoull(arg.substr(1, arg.size() - 1));
-			if (model->entities.cound(refId) > 0) {
+			if (model->entities.count(refId) > 0) {
 				EXPRESSReference<T> reference = std::dynamic_pointer_cast<T>(model->entities[refId]);
 				reference.refId = refId;
 				reference.model = model;
