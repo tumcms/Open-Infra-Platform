@@ -2452,7 +2452,9 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "std::ifstream file(filename, std::ifstream::in);");
 	writeLine(file, "if(file.is_open()) {"); // begin if(file.is_open())
 	writeLine(file, "std::shared_ptr<EarlyBinding::EXPRESSModel> model = std::make_shared<EarlyBinding::EXPRESSModel>(\"" + schema.getName() + "\");");
-	writeLine(file, "for(std::string line = \"\"; std::getline(file,line);) {"); // begin for read file
+	writeLine(file, "std::string line = \"\";");
+	writeLine(file, "try {");
+	writeLine(file, "for(line = \"\"; std::getline(file,line);) {"); // begin for read file
 	writeLine(file, "if(line == \"\") continue;");
 	writeLine(file, "line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());");
 	writeLine(file, "if(line[0] == '#') {");
@@ -2472,6 +2474,10 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "}"); //end if line[0] == '#'
 	writeLine(file, "}"); //end for read file
 	writeLine(file, "return model;");
+	writeLine(file, "}"); //end try 
+	writeLine(file, "catch(std::exception e) {"); // begin catch
+	writeLine(file, "std::cout << e.what() << std::endl;");
+	writeLine(file, "}"); //end catch 
 	writeLine(file, "}");
 	writeLine(file, "else {");
 	writeLine(file, "throw std::exception(\"Could not open file.\");");
