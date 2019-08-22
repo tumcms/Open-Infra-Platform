@@ -1,19 +1,19 @@
 /*
-    This file is part of Expresso, a simple early binding generator for EXPRESS.
+	This file is part of Expresso, a simple early binding generator for EXPRESS.
 	Copyright (c) 2016 Technical University of Munich
 	Chair of Computational Modeling and Simulation.
 
-    BlueFramework is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License Version 3
-    as published by the Free Software Foundation.
+	BlueFramework is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License Version 3
+	as published by the Free Software Foundation.
 
-    BlueFramework is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+	BlueFramework is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -56,9 +56,9 @@ template <typename ...Args> class SelectType : public ValueType<boost::variant<A
 	static inline typename std::enable_if<I == sizeof...(Args), void>::type
 		for_each(std::tuple<Args...>, Function) // Unused arguments are given no names.
 	{ };
-	
+
 	template<std::size_t I = 0, typename Function>
-	static inline typename std::enable_if<I < sizeof...(Args), void>::type
+	static inline typename std::enable_if < I < sizeof...(Args), void>::type
 		for_each(std::tuple<Args...> t, Function f)
 	{
 		f(std::get<I>(t));
@@ -98,30 +98,34 @@ public:
 
 	static Select readStepData(const std::string value, const std::shared_ptr<EXPRESSModel>& model) {
 		Select select;
-		if (value[0] == '#') {
-			size_t refId = std::stoull(value.substr(1, value.size() - 1));
-			if (model->entities.count(refId) > 0) {
-				auto refEntity = model->entities[refId];
-				//TODO
+		if (value == "*") {
+			//TODO
+		} else {
+			if (value[0] == '#') {
+				size_t refId = std::stoull(value.substr(1, value.size() - 1));
+				if (model->entities.count(refId) > 0) {
+					auto refEntity = model->entities[refId];
+					//TODO
+				}
+				else {
+					//TODO:: error
+					throw std::exception("Entity not contained in model.");
+				}
 			}
 			else {
-				//TODO:: error
-				throw std::exception("Entity not contained in model.");
+				auto name = value.substr(0, value.find_first_of('('));
+				auto startpos = value.find_first_of('(') + 1;
+				auto arg = value.substr(startpos, value.find_last_of(')') - startpos);
+
+				std::tuple<Args...> variadicArgs = std::tuple<Args...>();
+
+				SelectType::for_each(variadicArgs, [&select, &name, &arg, &model](auto type) {
+					if (name == type.classname()) {
+						type = decltype(type)::readStepData(arg, model);
+						select = type;
+					}
+				});
 			}
-		}
-		else {
-			auto name = value.substr(0, value.find_first_of('('));
-			auto startpos = value.find_first_of('(') + 1;
-			auto arg = value.substr(startpos, value.find_last_of(')') - startpos);
-
-			std::tuple<Args...> variadicArgs = std::tuple<Args...>();
-
-			SelectType::for_each(variadicArgs, [&select, &name, &arg, &model](auto type) {
-				if (name == type.classname()) {
-					type = decltype(type)::readStepData(arg, model);
-					select = type;
-				}
-			});
 		}
 		return select;
 	}

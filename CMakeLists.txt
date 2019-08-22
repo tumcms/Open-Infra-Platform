@@ -179,6 +179,10 @@ find_path(visit_struct_INCLUDE_DIR REQUIRED)
 # Added 12.09.2018: FFTW3
 find_package(FFTW3 REQUIRED)
 
+include(GTestCopyBinaries)
+GTEST_COPY_BINARIES(${CMAKE_BINARY_DIR})
+set_target_properties(GTestCopyBinaries	PROPERTIES FOLDER "Copy")
+
 # Find the Qt components
 set(QT5_COMPONENTS
 	Core
@@ -340,11 +344,12 @@ foreach(format ${IFC_FORMATS})
 	add_compile_definitions(OIP_MODULE_EARLYBINDING_${format})
 endforeach()
 
+add_subdirectory(UnitTests)
+
 # Do currently not work. Located in Other. 
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)
 #add_subdirectory(IfcTunnelGenerator)
-#add_subdirectory(UnitTests)
 #add_subdirectory(oip)
 #add_subdirectory(IfcBridgeGenerator)
 
