@@ -2421,7 +2421,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "}"); // end if
 	writeLine(file, "else {"); // begin else
 	writeLine(file, "args.push_back(paramvalue.substr(0, pos));");
-	writeLine(file, "paramvalue.erase(0, pos + 1;");
+	writeLine(file, "paramvalue.erase(0, pos + 1);");
 	writeLine(file, "}"); // end else
 	writeLine(file, "}"); // end if
 	writeLine(file, "else {"); // begin else
