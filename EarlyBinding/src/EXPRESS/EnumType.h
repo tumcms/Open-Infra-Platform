@@ -46,7 +46,7 @@ public:
 	static Enum readStepData(const std::string &arg, const std::shared_ptr<EXPRESSModel>&) {
 		for (int i = 0; i < Count; i++) {
 			Enum value = static_cast<Enum>(i);
-			if (("." + arg + ".") == to_string(value)) {
+			if (arg == to_string(value)) {
 				return value;
 			}
 		}
