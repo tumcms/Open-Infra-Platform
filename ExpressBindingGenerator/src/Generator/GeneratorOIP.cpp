@@ -2375,22 +2375,53 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 
 	writeBeginNamespace(file, schema);
 	linebreak(file);
+	/*
+	std::vector<std::string> parseArgs(const std::string &line) {
+	std::vector<std::string> args;
+	auto paramvalue = line.substr(line.find_first_of('(') + 1, line.find_last_of(')') - line.find_first_of('(') - 1);
+	std::cout << paramvalue << std::endl;
+	while (!paramvalue.empty()) {
+	auto end = paramvalue.size() - 1;
+	auto pos = paramvalue.find_first_of(',');
+	if (pos < end) {
+	if (paramvalue.find_first_of('(') < pos) {
+	auto isOpenBrace = [](char c) -> bool {return c == '('; };
+
+	while (std::count(paramvalue.begin(), paramvalue.begin() + pos, '(') != std::count(paramvalue.begin(), paramvalue.begin() + pos, ')'))
+	pos++;
+
+	args.push_back(paramvalue.substr(0, pos));
+	paramvalue.erase(0, pos + 1);
+	}
+	else {
+	args.push_back(paramvalue.substr(0, pos));
+	paramvalue.erase(0, pos + 1);
+	}
+	}
+	else {
+	args.push_back(paramvalue.substr(0, pos));
+	paramvalue.clear();
+	}
+	}
+	return args;
+	};
+	*/
 
 	writeLine(file, "std::vector<std::string> parseArgs(const std::string &line) {");
 	writeLine(file, "std::vector<std::string> args;");
-	writeLine(file, "auto paramvalue = line.substr(line.find_first_of('(') + 1, line.find_last_of(')') - (line.find_first_of('(') + 1);");
+	writeLine(file, "auto paramvalue = line.substr(line.find_first_of('(') + 1, line.find_last_of(')') - line.find_first_of('(') - 1);");
 	writeLine(file, "while(!paramvalue.empty()) {");
 	writeLine(file, "auto end = paramvalue.size() - 1;");
 	writeLine(file, "auto pos = paramvalue.find_first_of(',');");
 	writeLine(file, "if (pos < end) {"); // begin if
 	writeLine(file, "if(paramvalue.find_first_of('(') < pos) {"); // begin if
+	writeLine(file, "while (std::count(paramvalue.begin(), paramvalue.begin() + pos, '(') != std::count(paramvalue.begin(), paramvalue.begin() + pos, ')')) pos++;");
 	writeLine(file, "args.push_back(paramvalue.substr(0, pos));");
 	writeLine(file, "paramvalue.erase(0, pos + 1);");
 	writeLine(file, "}"); // end if
 	writeLine(file, "else {"); // begin else
-	writeLine(file, "pos = paramvalue.find_first_of(\"),\");");
 	writeLine(file, "args.push_back(paramvalue.substr(0, pos));");
-	writeLine(file, "paramvalue.erase(0, pos + 2);");
+	writeLine(file, "paramvalue.erase(0, pos + 1;");
 	writeLine(file, "}"); // end else
 	writeLine(file, "}"); // end if
 	writeLine(file, "else {"); // begin else
