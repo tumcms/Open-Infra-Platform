@@ -97,19 +97,32 @@ public:
 	}
 
 	static Select readStepData(const std::string value, const std::shared_ptr<EXPRESSModel>& model) {
-		auto name = value.substr(0, value.find_first_of('('));
-		auto startpos = value.find_first_of('(') + 1;
-		auto arg = value.substr(startpos, value.find_first_of(')') - startpos);
-
-		std::tuple<Args...> variadicArgs = std::tuple<Args...>();
-		
 		Select select;
-		SelectType::for_each(variadicArgs, [&select, &name, &arg, &model](auto type) {
-			if (name == type.classname()) {
-				type = decltype(type)::readStepData(arg, model);
-				select = type;
+		if (value[0] == '#') {
+			size_t refId = std::stoull(value.substr(1, value.size() - 1));
+			if (model->entities.count(refId) > 0) {
+				auto refEntity = model->entities[refId];
+				//TODO
 			}
-		});
+			else {
+				//TODO:: error
+				throw std::exception("Entity not contained in model.");
+			}
+		}
+		else {
+			auto name = value.substr(0, value.find_first_of('('));
+			auto startpos = value.find_first_of('(') + 1;
+			auto arg = value.substr(startpos, value.find_last_of(')') - startpos);
+
+			std::tuple<Args...> variadicArgs = std::tuple<Args...>();
+
+			SelectType::for_each(variadicArgs, [&select, &name, &arg, &model](auto type) {
+				if (name == type.classname()) {
+					type = decltype(type)::readStepData(arg, model);
+					select = type;
+				}
+			});
+		}
 		return select;
 	}
 };
