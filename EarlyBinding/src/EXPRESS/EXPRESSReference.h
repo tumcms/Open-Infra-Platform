@@ -57,7 +57,7 @@ public:
 	operator bool() const { return this->base::lock().operator bool(); }
 
 	static EXPRESSReference<T> readStepData(const std::string arg, const std::shared_ptr<EXPRESSModel>& model) {
-		size_t refId = std::stoull(arg);
+		size_t refId = std::stoull(arg.substr(1, arg.size() - 1));
 		EXPRESSReference<T> reference = std::dynamic_pointer_cast<T>(model->entities[refId]);
 		reference.refId = refId;
 		reference.model = model;
