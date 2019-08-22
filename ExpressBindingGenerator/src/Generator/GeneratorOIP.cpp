@@ -596,15 +596,18 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 	}
 	writeLine(out, "};");
 	linebreak(out);
-	writeLine(out, "inline const std::string to_string(const " + enumName + "& v) {");
-	writeLine(out, "switch(v) {");
-	for (auto elem : seq) {
-		writeLine(out, "case " + enumName + "::" + elem + ": return \"." + elem + ".\";");
-	}
-	writeLine(out, "default: return \"unknown\";");
-	writeLine(out, "}");
-	writeLine(out, "};");
+	writeLine(out, "const std::string to_string(const " + enumName + "& v);");
 	linebreak(out);
+
+	//writeLine(out, "inline const std::string to_string(const " + enumName + "& v) {");
+	//writeLine(out, "switch(v) {");
+	//for (auto elem : seq) {
+	//	writeLine(out, "case " + enumName + "::" + elem + ": return \"." + elem + ".\";");
+	//}
+	//writeLine(out, "default: return \"unknown\";");
+	//writeLine(out, "}");
+	//writeLine(out, "};");
+	//linebreak(out);
 
 	const std::string basetype = "EarlyBinding::EnumType<" + enumName + "," + std::to_string(seq.size()) + ">";
 	writeLine(out, "class " + name + " : public " + basetype + " {");
@@ -2139,6 +2142,15 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 	}
 	else if (type.isEnumeration()) {
 		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; };");
+		linebreak(out);
+		writeLine(out, "const std::string to_string(const e" + type.getName() + "& v) {");
+		writeLine(out, "switch(v) {");
+		for (auto elem : type.getTypes()) {
+			writeLine(out, "case e" + type.getName() + "::ENUM_" + elem + ": return \"." + elem + ".\";");
+		}
+		writeLine(out, "default: return \"unknown\";");
+		writeLine(out, "}");
+		writeLine(out, "};");
 	}
 	else if (type.isContainerType()) {
 		writeLine(out, name + "* " + name + "::operator->() { return this; };");
