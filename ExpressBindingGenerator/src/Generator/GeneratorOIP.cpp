@@ -2421,6 +2421,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 
 	writeLine(file, "std::vector<std::string> parseArgs(const std::string &line) {");
 	writeLine(file, "std::vector<std::string> args;");
+	writeLine(file, "args.push_back(line.substr(1, line.find_first_of('=') - 1));");
 	writeLine(file, "auto paramvalue = line.substr(line.find_first_of('(') + 1, line.find_last_of(')') - line.find_first_of('(') - 1);");
 	writeLine(file, "while(!paramvalue.empty()) {");
 	writeLine(file, "auto end = paramvalue.size() - 1;");
@@ -2455,7 +2456,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "if(line == \"\") continue;");
 	writeLine(file, "line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());");
 	writeLine(file, "if(line[0] == '#') {");
-	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=')));");
+	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=') - 1));");
 	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
 	writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
