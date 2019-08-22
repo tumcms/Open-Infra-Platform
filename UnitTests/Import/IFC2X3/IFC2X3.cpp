@@ -24,7 +24,7 @@ namespace {
 		buw::loadWebResources("Data/resources.xml");
 
 		auto filename = "Data/20190228201620_Svaleveien_8_Hus_A.ifc";
-		auto expressModel = OpenInfraPlatform::IFC2X3::IFC2X3Reader::FromFile(filename);
+		auto expressModel = OpenInfraPlatform::IFC2X3::IFC2X3Reader::FromFile(filename);		
 	}
 }
 	
