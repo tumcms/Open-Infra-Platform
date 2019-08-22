@@ -364,12 +364,13 @@ file(GLOB OpenInfraPlatform_UserInterface_Shader_D3D_Source 		UserInterface/Shad
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			UserInterface/ViewPanel/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source 	UserInterface/ViewPanel/Effects/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_QCustomPlot_Source 		external/qcustomplot/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Resources/*.*)
 
 # Currently not included.
 #file(GLOB OpenInfraPlatform_UserInterface_Tools_Source				UserInterface/other/Tools/*.*)
 #file(GLOB OpenInfraPlatform_UserInterface_View2DWindow			 	UserInterface/other/View2DWindow/*.*)
 # file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
-# file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Resources/*.*)
+
 
 # Does currently not work. 
 file(GLOB OpenInfraPlatform_UserInterface_UnitTesting_Source					UserInterface/UnitTesting/*.*)
@@ -409,6 +410,11 @@ set(OpenInfraPlatform_UserInterface_Forms
 # Collect all translation files
 FILE(GLOB Translation_TS UserInterface/Data/translations/*.ts)
 
+set(OpenInfraPlatform_RC
+	UserInterface/Resources/OpenInfraPlatform.qrc
+	UserInterface/QtPropertyBrowser/qtpropertybrowser.qrc
+)
+
 #------------------------------------------------------------------------------
 # Set source groups
 #------------------------------------------------------------------------------
@@ -424,6 +430,7 @@ source_group(UserInterface\\Shader\\D3D			FILES ${OpenInfraPlatform_UserInterfac
 source_group(UserInterface\\ViewPanel			FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Source})
 source_group(UserInterface\\ViewPanel\\Effects	FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source})
 source_group(UserInterface\\QCustomPlot			FILES ${OpenInfraPlatform_UserInterface_QCustomPlot_Source})
+source_group(UserInterface\\Resources			FILES ${OpenInfraPlatform_UserInterface_Resources_Source})
 
 # Does not currently work.
 source_group(UserInterface\\UnitTesting  		FILES ${OpenInfraPlatform_UserInterface_UnitTesting_Source})
@@ -431,7 +438,6 @@ source_group(UserInterface\\UnitTesting  		FILES ${OpenInfraPlatform_UserInterfa
 # Currently not included.
 #source_group(UserInterface\\Tools			FILES ${OpenInfraPlatform_UserInterface_Tools_Source})
 #source_group(UserInterface\\View2DWindow		FILES ${OpenInfraPlatform_UserInterface_View2DWindow})
-# source_group(UserInterface\\Resources			FILES ${OpenInfraPlatform_UserInterface_Resources_Source})
 # source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
 
 #------------------------------------------------------------------------------
@@ -443,7 +449,8 @@ set_source_files_properties(${OpenInfraPlatform_UserInterface_Shader_Source} 		P
 set_source_files_properties(${OpenInfraPlatform_UserInterfaces_Shader_D3D_Source} 	PROPERTIES HEADER_FILE_ONLY TRUE)
 
 # Qt related stuff
-QT5_ADD_RESOURCES(OpenInfraPlatform_UserInterface_Resources_Source_SRCS ${OpenInfraPlatform_UserInterface_Resources_Source})
+#QT5_ADD_RESOURCES(OpenInfraPlatform_UserInterface_Resources_Source_SRCS ${OpenInfraPlatform_UserInterface_Resources_Source})
+QT5_ADD_RESOURCES(OpenInfraPlatform_UserInterface_Resources_Source_SRCS ${OpenInfraPlatform_RC})
 QT5_WRAP_UI(OpenInfraPlatform_UserInterface_Forms_H ${OpenInfraPlatform_UserInterface_Forms})
 QT5_ADD_TRANSLATION(OpenInfra_QMS ${Translation_TS})
 
@@ -471,7 +478,7 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 		# Currently not included.
 		#${OpenInfraPlatform_UserInterface_View2DWindow}
 		#${OpenInfraPlatform_UserInterface_Tools_Source}	
-		#${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}		
+		${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}		
 		#${OpenInfraPlatform_UserInterface_Data_Source}
 		)
 
@@ -530,9 +537,9 @@ add_custom_target(CopyOpenInfraPlatformUIResources
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Shader					${CMAKE_BINARY_DIR}/RoadXMLViewer/Shader
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Shader					${CMAKE_BINARY_DIR}/LandXMLViewer/Shader
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Style					${CMAKE_BINARY_DIR}/UserInterface/Style
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Data					${CMAKE_BINARY_DIR}/UserInterface/Data
+	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Data						${CMAKE_BINARY_DIR}/UserInterface/Data
 	
-	#COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/other/testdata					${CMAKE_BINARY_DIR}/LandXMLViewer/testdata
+	#COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/other/testdata						${CMAKE_BINARY_DIR}/LandXMLViewer/testdata
 	#COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/other/testdata						${CMAKE_BINARY_DIR}/testdata
 	#COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Data/DesignAutomation				${CMAKE_BINARY_DIR}/UnitTests/Data/DesignAutomation
 
