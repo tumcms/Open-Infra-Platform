@@ -162,8 +162,8 @@
 						|- (X)OpenInfraMap.*
 						|- (X)OSMImportDialog.*
 						|- (X)PrecisionTest.h
-						|- (X)PreferencesDialog.*
-						|- (X)resource.h
+						|- PreferencesDialog.*
+						|- resource.h
 						|- (X)ShowIFCtree.*
 						|- (X)SimpleTreeItem.*
 						|- (X)SimpleTreeModel.*
@@ -172,6 +172,7 @@
 [					|- Forms
 						|- LicenseAndCopyrightInformation.ui
 						|- MainWindow.ui
+						|- PreferencesDialog.ui
 						|- (X)AddGeoreferenceDialog.ui
 						|- (X)addgeoreferencingdialogue.ui
 						|- (X)CodeEditorWindow.ui
@@ -195,7 +196,6 @@
 						|- (X)georeferencingdialog.ui
 						|- (X)importifczipdialog.ui
 						|- (X)OSMImportDialog.ui
-						|- (X)PreferencesDialog.ui
 						|- (X)showifctree.ui
 						|- (X)VerticalAlignentWindow.ui
 ]						|- (X)XYZImportDialog.ui
@@ -276,7 +276,8 @@
 						|- Tool.*
 						|- View.*
 						|- Viewport.*
-]]]					|- Viewport_CrossSection.cpp										
+]]]						|- Viewport_CrossSection.cpp	
+							
 [//			|- (X)OpenInfraPlatform.PointCloudProcessing (MODULE)
 				|- PointCloudProcessing
 					|- Octree.*
