@@ -111,7 +111,7 @@ namespace OpenInfraPlatform {
 								std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCartesianPoint>> vec_control_point_list;
 								std::shared_ptr<ItemData> input_data_cpl_set(new ItemData);
 
-								vec_control_point_list.reserve(it_control_point_list.size());
+								vec_control_point_list.resize(it_control_point_list.size());
 								std::transform(it_control_point_list.begin(),
 									it_control_point_list.end(),
 									vec_control_point_list.begin(),
@@ -168,7 +168,7 @@ namespace OpenInfraPlatform {
 							}
 
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCurve>> vec_inner_boundaries;
-							vec_inner_boundaries.reserve(curve_bounded_plane->InnerBoundaries.size());
+							vec_inner_boundaries.resize(curve_bounded_plane->InnerBoundaries.size());
 							std::transform(
 								curve_bounded_plane->InnerBoundaries.begin(),
 								curve_bounded_plane->InnerBoundaries.end(),
@@ -198,7 +198,7 @@ namespace OpenInfraPlatform {
 
 							std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBoundaryCurve>> vec_boundaries;
 
-							vec_boundaries.reserve(curve_bounded_surface->Boundaries.size());
+							vec_boundaries.resize(curve_bounded_surface->Boundaries.size());
 							std::transform(
 								curve_bounded_surface->Boundaries.begin(), curve_bounded_surface->Boundaries.end(), vec_boundaries.begin(), [](auto& it) { return it.lock(); });
 							// std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> control_point_list = -bspline_surface->ControlPointsList;
@@ -433,7 +433,7 @@ namespace OpenInfraPlatform {
 					// all bound definitions of the face (normal bound or outer bound)
 					/*std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFaceBound>>& bounds = face->m_Bounds;*/
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFaceBound>> bounds;
-					bounds.reserve(face->Bounds.size());
+					bounds.resize(face->Bounds.size());
 					std::transform(face->Bounds.begin(), face->Bounds.end(), bounds.begin(), [](auto& it) {return it.lock(); });
 					// to triangulate the mesh, carve needs 2D polygons
 					// we collect the data in 2D and 3D for every bound
@@ -469,6 +469,7 @@ namespace OpenInfraPlatform {
 							modBounds.push_back(bound);
 						}
 					}
+					modBounds.shrink_to_fit();
 
 					for(const auto& bound : modBounds) {
 						boundID++;
@@ -520,7 +521,7 @@ namespace OpenInfraPlatform {
 						/*********************************************************************************/
 						if(loopVertices3D.size() == 3) {
 							std::vector<uint32_t> triangleIndices;
-							triangleIndices.reserve(3);
+							triangleIndices.resize(3);
 
 							int pointID = -1;
 							for(const auto& vertex3D : loopVertices3D) {
@@ -590,8 +591,8 @@ namespace OpenInfraPlatform {
 					try {
 						incorporatedIndices = carve::triangulate::incorporateHolesIntoPolygon(faceVertices2D);
 
-						mergedVertices2D.reserve(incorporatedIndices.size());
-						mergedVertices3D.reserve(incorporatedIndices.size());
+						mergedVertices2D.resize(incorporatedIndices.size());
+						mergedVertices3D.resize(incorporatedIndices.size());
 
 						for(const auto& incorpIndex : incorporatedIndices) {
 							size_t loopIndex = incorpIndex.first;
@@ -652,7 +653,7 @@ namespace OpenInfraPlatform {
 					}
 
 					// now collect all vertices in 2D
-					loopVertices2D.reserve(loopVertices3D.size());
+					loopVertices2D.resize(loopVertices3D.size());
 
 					for(const auto& vertex : loopVertices3D) {
 						if(plane == ProjectionPlane::YZ_PLANE) {
@@ -822,7 +823,7 @@ namespace OpenInfraPlatform {
 			//			bsplineSurface->m_ControlPointsList;
 			//
 			//		std::vector<std::vector<carve::geom::vector<3>>> splinePoints2D;
-			//		splinePoints2D.reserve(points2D.size());
+			//		splinePoints2D.resize(points2D.size());
 			//		convertIfcCartesianPoint2DVector(points2D, splinePoints2D);
 			//
 			//		SplineConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::convertIfcBSplineSurface(bsplineSurface, splinePoints2D, polylineData);
