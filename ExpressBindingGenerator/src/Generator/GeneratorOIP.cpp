@@ -2427,15 +2427,15 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "auto end = paramvalue.size() - 1;");
 	writeLine(file, "auto pos = paramvalue.find_first_of(',');");
 	writeLine(file, "if (pos < end) {"); // begin if
-	writeLine(file, "if(paramvalue.find_first_of('(') < pos) {"); // begin if
+	writeLine(file, "auto textStart = paramvalue.find_first_of('\\\'');");
+	writeLine(file, "if (textStart < pos) {"); // begin if
+	writeLine(file, "auto textEnd = paramvalue.substr(textStart + 1, paramvalue.size() - textStart - 1).find_first_of('\\\'') + textStart + 1;");
+	writeLine(file, "pos = paramvalue.substr(textEnd, paramvalue.size() - textEnd).find_first_of(',') + textEnd;");
+	writeLine(file, "} else if(paramvalue.find_first_of('(') < pos) {"); //end if begin else if
 	writeLine(file, "while (std::count(paramvalue.begin(), paramvalue.begin() + pos, '(') != std::count(paramvalue.begin(), paramvalue.begin() + pos, ')')) pos++;");
+	writeLine(file, "}"); // end else if
 	writeLine(file, "args.push_back(paramvalue.substr(0, pos));");
 	writeLine(file, "paramvalue.erase(0, pos + 1);");
-	writeLine(file, "}"); // end if
-	writeLine(file, "else {"); // begin else
-	writeLine(file, "args.push_back(paramvalue.substr(0, pos));");
-	writeLine(file, "paramvalue.erase(0, pos + 1);");
-	writeLine(file, "}"); // end else
 	writeLine(file, "}"); // end if
 	writeLine(file, "else {"); // begin else
 	writeLine(file, "args.push_back(paramvalue.substr(0, pos));");

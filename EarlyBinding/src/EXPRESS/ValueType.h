@@ -45,6 +45,7 @@ template <typename T> class ValueType : public EXPRESSType {
 
 public:
 	typedef T UnderlyingType;
+	typedef T element_type;
 
 	ValueType() = default;
 	ValueType(const ValueType& other) : m_value(other.m_value) {};

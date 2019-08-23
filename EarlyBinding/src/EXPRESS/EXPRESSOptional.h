@@ -38,12 +38,21 @@ template <typename T> class EXPRESSOptional : public boost::optional<T> {
 	using base = boost::optional<T>;
 	typedef typename T::UnderlyingType ForwardType;
 public:
+	typedef T UnderlyingType;
+
+	friend void swap(EXPRESSOptional& first, EXPRESSOptional& second)
+	{
+		using boost::swap;
+		first.base::swap(second);
+	}
+
 	// Constructors
 
 	EXPRESSOptional() = default;
 	EXPRESSOptional(const EXPRESSOptional &other) = default;
+	EXPRESSOptional(EXPRESSOptional && other) { this->base::swap(other); };
 	using base::base;
-		
+	
 
 	// Assignment Operators
 
@@ -51,7 +60,7 @@ public:
 	EXPRESSOptional& operator= (const ForwardType& other);
 	//EXPRESSOptional& operator= (const ForwardType& other) { this->base::emplace(other); return *this; }
 
-	EXPRESSOptional& operator= (const EXPRESSOptional& other);
+	EXPRESSOptional& operator= (const EXPRESSOptional& other) = default;
 	//EXPRESSOptional& operator= (const EXPRESSOptional& other) { base::operator=(other.get_value_or(T())); return *this; };
 
 	EXPRESSOptional& operator=(const T& other);
@@ -92,11 +101,7 @@ public:
 	//	return opt;
 	//}
 
-	friend void swap(EXPRESSOptional& first, EXPRESSOptional& second)
-	{
-		using boost::swap;
-		first.base::swap(second);
-	}
+
 
 	typedef T type;
 };
