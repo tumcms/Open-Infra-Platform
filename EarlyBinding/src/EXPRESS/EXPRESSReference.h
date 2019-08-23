@@ -48,13 +48,29 @@ public:
 	using base::base;
 	using base::operator=;
 
+	auto lock() -> decltype(this->base::lock()) {
+		if (!this->expired() && refId != 0) {
+			return this->base::lock();
+		}
+		else if (this->base::expired() && !model.expired() && refId != 0 && model.lock()->entities.count(refId) > 0) {
+			this->base::operator=(std::dynamic_pointer_cast<T>(model.lock()->entities[refId]));
+			return this->base::lock();
+		}
+		else {
+			return this->base::lock();
+		}
+	}
+
+
 	const std::string getStepParameter() const;
 	
 
-	T* operator->() { return this->base::lock().operator->(); }
+	T* operator->() { return this->lock().operator->(); }
 	const T* const operator->() const { return this->base::lock().operator->(); }
 
-	operator bool() const { return this->base::lock().operator bool(); }
+	operator bool() const { 
+		return this->base::lock().operator bool();
+	}
 
 	static EXPRESSReference<T> readStepData(const std::string arg, const std::shared_ptr<EXPRESSModel>& model) {
 		if (arg == "*") {
@@ -63,16 +79,13 @@ public:
 		}
 		else {
 			size_t refId = std::stoull(arg.substr(1, arg.size() - 1));
+			EXPRESSReference<T> reference;
 			if (model->entities.count(refId) > 0) {
-				EXPRESSReference<T> reference = std::dynamic_pointer_cast<T>(model->entities[refId]);
-				reference.refId = refId;
-				reference.model = model;
-				return reference;
+				reference.base::operator=(std::dynamic_pointer_cast<T>(model->entities[refId]));
 			}
-			else {
-				//TODO
-				return EXPRESSReference<T>();
-			}
+			reference.refId = refId;
+			reference.model = model;
+			return reference;
 		}
 	}
 
@@ -87,7 +100,7 @@ public:
 	}
 
 private:
-	size_t refId;
+	size_t refId = 0;
 	std::weak_ptr<EXPRESSModel> model;
 };
 
