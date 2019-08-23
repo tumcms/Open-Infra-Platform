@@ -268,7 +268,7 @@ namespace OpenInfraPlatform {
 
 						for(auto& it_face_sets : vec_face_sets) {
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_ifc_faces;
-							vec_ifc_faces.reserve(it_face_sets->CfsFaces.size());
+							vec_ifc_faces.resize(it_face_sets->CfsFaces.size());
 							std::transform(it_face_sets->CfsFaces.begin(), it_face_sets->CfsFaces.end(), vec_ifc_faces.begin(), [](auto& it) { return it.lock(); });
 
 							std::shared_ptr<ItemData> input_data_face_set(new ItemData);
@@ -336,11 +336,11 @@ namespace OpenInfraPlatform {
 
 							switch(it_shells.which()) {
 							case 0:
-								vec_shells.reserve(it_shells.get<0>()->CfsFaces.size());
+								vec_shells.resize(it_shells.get<0>()->CfsFaces.size());
 								std::transform(it_shells.get<0>()->CfsFaces.begin(), it_shells.get<0>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock(); });
 								break;
 							case 1:
-								vec_shells.reserve(it_shells.get<1>()->CfsFaces.size());
+								vec_shells.resize(it_shells.get<1>()->CfsFaces.size());
 								std::transform(it_shells.get<1>()->CfsFaces.begin(), it_shells.get<1>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock(); });
 								break;
 							}
@@ -499,11 +499,11 @@ namespace OpenInfraPlatform {
 						return;
 					}
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
-					vec_cross_sections.reserve(spine->CrossSections.size());
+					vec_cross_sections.resize(spine->CrossSections.size());
 					std::transform(spine->CrossSections.begin(), spine->CrossSections.end(), vec_cross_sections.begin(), [](auto &it) { return it.lock(); });
 
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>> vec_cross_section_positions;
-					vec_cross_section_positions.reserve(spine->CrossSectionPositions.size());
+					vec_cross_section_positions.resize(spine->CrossSectionPositions.size());
 					std::transform(spine->CrossSectionPositions.begin(), spine->CrossSectionPositions.end(), vec_cross_section_positions.begin(), [](auto &it) { return it.lock(); });
 
 					typename std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>>::iterator it_cross_sections;
@@ -514,7 +514,7 @@ namespace OpenInfraPlatform {
 					}
 
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment>> segments;
-					segments.reserve(spine_curve->Segments.size());
+					segments.resize(spine_curve->Segments.size());
 					std::transform(spine_curve->Segments.begin(), spine_curve->Segments.end(), segments.begin(), [](auto &it) { return it.lock(); });
 					int num_segments = segments.size();
 					if(vec_cross_section_positions.size() < num_segments + 1) {
