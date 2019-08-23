@@ -26,8 +26,6 @@ template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator= (const F
 	boost::optional<T>::operator=(obj); /*this->base::emplace(other);*/ return *this;
 }
 
-template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator= (const EXPRESSOptional& other) { base::operator=(other.get_value_or(T())); return *this; };
-
 template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator=(const T& other) { boost::optional<T>::operator=(other); return *this; };
 
 template <typename T> const std::string EXPRESSOptional<T>::classname() const {

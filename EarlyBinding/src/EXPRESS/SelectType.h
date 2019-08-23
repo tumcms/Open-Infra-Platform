@@ -98,6 +98,7 @@ public:
 
 	static Select readStepData(const std::string value, const std::shared_ptr<EXPRESSModel>& model) {
 		Select select;
+		std::tuple<Args...> variadicArgs = std::tuple<Args...>();
 		if (value == "*") {
 			//TODO
 		} else {
@@ -106,6 +107,13 @@ public:
 				if (model->entities.count(refId) > 0) {
 					auto refEntity = model->entities[refId];
 					//TODO
+					SelectType::for_each(variadicArgs, [&select, &refEntity, &value, &model](auto type) {
+						typedef typename std::conditional<std::is_base_of<EXPRESSType, decltype(type)>::value, EXPRESSEntity, typename decltype(type)::element_type>::type CastType;
+						if (!std::is_base_of<EXPRESSType, decltype(type)>::value && std::dynamic_pointer_cast<CastType>(refEntity)) {
+							type = decltype(type)::readStepData(value, model);
+							select = type;
+						}
+					});
 				}
 				else {
 					//TODO:: error
@@ -116,8 +124,6 @@ public:
 				auto name = value.substr(0, value.find_first_of('('));
 				auto startpos = value.find_first_of('(') + 1;
 				auto arg = value.substr(startpos, value.find_last_of(')') - startpos);
-
-				std::tuple<Args...> variadicArgs = std::tuple<Args...>();
 
 				SelectType::for_each(variadicArgs, [&select, &name, &arg, &model](auto type) {
 					if (name == type.classname()) {

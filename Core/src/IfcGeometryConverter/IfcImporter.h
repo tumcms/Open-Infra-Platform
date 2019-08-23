@@ -31,6 +31,8 @@
 
 #include "UnitConverter.h"
 
+#include <boost/algorithm/string.hpp>    
+
 
 namespace OpenInfraPlatform 
 {
@@ -200,7 +202,7 @@ namespace OpenInfraPlatform
 
 					bool collectGeometryData(std::shared_ptr<oip::EXPRESSModel> model)
 					{
-						auto project = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair) { return pair.second->classname() == "IFCPROJECT"; });
+						auto project = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair) { return boost::algorithm::to_upper_copy(pair.second->classname())  == "IFCPROJECT"; });
 
 						if(project != model->entities.end()) {
 							//std::for_each(model->entities.begin(), model->entities.end(), [this, &model](std::pair<size_t, std::shared_ptr<oip::EXPRESSEntity>> &pair) {
