@@ -256,7 +256,7 @@ namespace Core {
 							}
 
 							std::vector<std::shared_ptr<IFC4X1::IfcAlignment2DHorizontalSegment> > horSegments;
-							horSegments.reserve(horizontal->Segments.size());
+							horSegments.resize(horizontal->Segments.size());
 							std::transform(horizontal->Segments.begin(), horizontal->Segments.end(), horSegments.begin(), [](auto &it) {return it.lock(); });
 
 
@@ -358,7 +358,7 @@ namespace Core {
 									BLUE_LOG(error) << "No segments in IfcAlignment2DVertical. (Segment ID: " << vertical->getId() << ").";
 								}
 								std::vector<std::shared_ptr<IFC4X1::IfcAlignment2DVerticalSegment> > verSegments;
-								verSegments.reserve(vertical->Segments.size());
+								verSegments.resize(vertical->Segments.size());
 
 								std::transform(vertical->Segments.begin(), vertical->Segments.end(), verSegments.begin(), [](auto &it) {return it.lock(); });
 
@@ -910,7 +910,7 @@ namespace Core {
 						if (bspline_curve) {
 							
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> points;
-							points.reserve(bspline_curve->ControlPointsList.size());
+							points.resize(bspline_curve->ControlPointsList.size());
 
 							std::transform(
 								bspline_curve->ControlPointsList.begin(),
@@ -919,7 +919,7 @@ namespace Core {
 								[](auto &it) {return it.lock(); });
 
 							std::vector<carve::geom::vector<3>> splinePoints;
-							splinePoints.reserve(points.size());
+							splinePoints.resize(points.size());
 							convertIfcCartesianPointVector(points, splinePoints);
 
 							SplineConverterT<typename IfcEntityTypesT, IfcUnitConverterT>::convertIfcBSplineCurve(bspline_curve, splinePoints, targetVec);
@@ -936,7 +936,7 @@ namespace Core {
 						if (composite_curve) {
 
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> > segments;
-							segments.reserve(composite_curve->Segments.size());
+							segments.resize(composite_curve->Segments.size());
 
 							std::transform(
 								composite_curve->Segments.begin(),
@@ -974,7 +974,7 @@ namespace Core {
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(bounded_curve);
 						if (poly_line) {
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> > points;
-							points.reserve(poly_line->Points.size());
+							points.resize(poly_line->Points.size());
 							std::transform(
 								poly_line->Points.begin(),
 								poly_line->Points.end(),
@@ -999,13 +999,13 @@ namespace Core {
 							std::vector<carve::geom::vector<3> > basis_curve_points;
 
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curve_trim1_vec;
-							curve_trim1_vec.reserve(trimmed_curve->Trim1.size());
+							curve_trim1_vec.resize(trimmed_curve->Trim1.size());
 							std::transform(trimmed_curve->Trim1.begin(),
 								trimmed_curve->Trim1.end(),
 								curve_trim1_vec.begin(), [](auto it) { return std::make_shared<decltype(it)>(it); });
 							
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curve_trim2_vec;
-							curve_trim2_vec.reserve(trimmed_curve->Trim2.size());
+							curve_trim2_vec.resize(trimmed_curve->Trim2.size());
 							std::transform(trimmed_curve->Trim2.begin(),
 								trimmed_curve->Trim2.end(),
 								curve_trim2_vec.begin(), [](auto it) { return std::make_shared<decltype(it)>(it); });
@@ -1460,7 +1460,7 @@ namespace Core {
 					std::vector<carve::geom::vector<3>>& loop) const
 				{
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> points;
-					points.reserve(polyLine->Points.size());
+					points.resize(polyLine->Points.size());
 					std::transform(
 						polyLine->Points.begin(),
 						polyLine->Points.end(),
@@ -1479,7 +1479,7 @@ namespace Core {
 
 					if (polyLoop) {
 						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> ifcPoints;
-						ifcPoints.reserve(polyLoop->Polygon.size());
+						ifcPoints.resize(polyLoop->Polygon.size());
 
 						std::transform(
 							polyLoop->Polygon.begin(),
@@ -1512,7 +1512,7 @@ namespace Core {
 
 					if (edgeLoop) {
 						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge>> edgeList;
-						edgeList.reserve(edgeLoop->EdgeList.size());
+						edgeList.resize(edgeLoop->EdgeList.size());
 
 						std::transform(
 							edgeLoop->EdgeList.begin(),
