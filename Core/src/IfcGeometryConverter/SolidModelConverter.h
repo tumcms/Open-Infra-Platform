@@ -159,7 +159,7 @@ namespace OpenInfraPlatform
 						std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
 
 						
-							vec_facesOuterShell.reserve(outerShell->CfsFaces.size());
+							vec_facesOuterShell.resize(outerShell->CfsFaces.size());
 							std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
 													
 						try {
@@ -230,7 +230,7 @@ namespace OpenInfraPlatform
 					{
 						// Get cross section positions and fixed axis vertical (attributes 3-4).
 						std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcDistanceExpression>> vec_cross_section_positions;
-							vec_cross_section_positions.reserve(sectioned_solid_horizontal->CrossSectionPositions.size());
+							vec_cross_section_positions.resize(sectioned_solid_horizontal->CrossSectionPositions.size());
 						std::transform(sectioned_solid_horizontal->CrossSectionPositions.begin(),
 							sectioned_solid_horizontal->CrossSectionPositions.end(),
 							vec_cross_section_positions.begin(), [](auto& it) {return it.lock(); });
@@ -930,7 +930,7 @@ namespace OpenInfraPlatform
 				try
 				{
 					std::vector<std::pair<size_t, size_t> > result = carve::triangulate::incorporateHolesIntoPolygon(profile_coords_2d);	// first is loop index, second is vertex index in loop
-					merged.reserve(result.size());
+					merged.resize(result.size());
 					for (size_t i = 0; i < result.size(); ++i)
 					{
 						int loop_number = result[i].first;
@@ -2402,7 +2402,7 @@ namespace OpenInfraPlatform
 		//					// contains index in polyhedron data for each merged vertex
 		//					std::map<std::string, uint32_t> mergedVertexIndices;
 		//					std::vector<uint32_t> vertexIndices;
-		//					vertexIndices.reserve(mergedVertices3D.size());
+		//					vertexIndices.resize(mergedVertices3D.size());
 		//
 		//					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 		//

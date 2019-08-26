@@ -591,9 +591,6 @@ namespace OpenInfraPlatform {
 					try {
 						incorporatedIndices = carve::triangulate::incorporateHolesIntoPolygon(faceVertices2D);
 
-						mergedVertices2D.resize(incorporatedIndices.size());
-						mergedVertices3D.resize(incorporatedIndices.size());
-
 						for(const auto& incorpIndex : incorporatedIndices) {
 							size_t loopIndex = incorpIndex.first;
 							size_t vertexIndex = incorpIndex.second;
@@ -653,7 +650,7 @@ namespace OpenInfraPlatform {
 					}
 
 					// now collect all vertices in 2D
-					loopVertices2D.resize(loopVertices3D.size());
+					//loopVertices2D.resize(loopVertices3D.size());
 
 					for(const auto& vertex : loopVertices3D) {
 						if(plane == ProjectionPlane::YZ_PLANE) {

@@ -2452,9 +2452,12 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "std::ifstream file(filename, std::ifstream::in);");
 	writeLine(file, "if(file.is_open()) {"); // begin if(file.is_open())
 	writeLine(file, "std::shared_ptr<EarlyBinding::EXPRESSModel> model = std::make_shared<EarlyBinding::EXPRESSModel>(\"" + schema.getName() + "\");");
-	writeLine(file, "std::string line = \"\";");
+	writeLine(file, "std::string lineInFile = \"\";");
+	writeLine(file, "std::vector<std::string> lines;");
 	writeLine(file, "try {");
-	writeLine(file, "for(line = \"\"; std::getline(file,line);) {"); // begin for read file
+	writeLine(file, "while (!std::getline(file, lineInFile).eof()) lines.push_back(lineInFile);");
+	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
+	writeLine(file, "auto line = lines[i];");
 	writeLine(file, "if(line == \"\") continue;");
 	writeLine(file, "line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());");
 	writeLine(file, "if(line[0] == '#') {");
@@ -2465,14 +2468,37 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
 			writeLine(file, "if(entityType == \"" + toUpper(entity.getName()) + "\") {");
-			writeLine(file, "std::shared_ptr<" + entity.getName() + "> entity = std::make_shared<" + entity.getName() + ">(" + entity.getName() + "::readStepData(parseArgs(line), model));"); //TODO
-			writeLine(file, "model->entities.insert({id, entity});");
+			//writeLine(file, "std::shared_ptr<" + entity.getName() + "> entity = std::make_shared<" + entity.getName() + ">(" + entity.getName() + "::readStepData(parseArgs(line), model));"); //TODO
+			writeLine(file, "model->entities.insert({id, std::make_shared<" + entity.getName() + ">()});");
 			writeLine(file, "continue;");
 			writeLine(file, "}");
 		}
 	}
 	writeLine(file, "}"); //end if line[0] == '#'
 	writeLine(file, "}"); //end for read file
+
+	linebreak(file);
+	writeLine(file, "#pragma omp parallel for");
+	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
+	writeLine(file, "auto line = lines[i];");
+	writeLine(file, "if(line == \"\") continue;");
+	writeLine(file, "line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());");
+	writeLine(file, "if(line[0] == '#') {");
+	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=') - 1));");
+	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
+	writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
+	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
+		auto entity = schema.getEntityByIndex(idx);
+		if (!schema.isAbstract(entity)) {
+			writeLine(file, "if(entityType == \"" + toUpper(entity.getName()) + "\") {");
+			writeLine(file, "model->entities.find(id)->second = std::make_shared<" + entity.getName() + ">(" + entity.getName() + "::readStepData(parseArgs(line), model));");
+			writeLine(file, "continue;");
+			writeLine(file, "}");
+		}
+	}
+	writeLine(file, "}"); //end if line[0] == '#'
+	writeLine(file, "}"); //end for read file
+	linebreak(file);
 	writeLine(file, "return model;");
 	writeLine(file, "}"); //end try 
 	writeLine(file, "catch(std::exception e) {"); // begin catch
@@ -3440,39 +3466,32 @@ void GeneratorOIP::generateEntityEnumsHeaderFile(Schema &schema) {
 	std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssHeaderFilename.str());
 
-	out << license << std::endl;
-	out << std::endl;
-	out << notice << std::endl;
-	out << std::endl;
+	writeLicenseAndNotice(out);
 
-	out << "#pragma once" << std::endl;
-	out << std::endl;
+	boost::mt19937 ran;
+	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	ran.seed(time(&now)); // one should likely seed in a better way
+	boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
+	auto guid = boost::uuids::to_string(gen());
+	std::replace(guid.begin(), guid.end(), '-', '_');
+	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), "Enums", guid, "h" }, '_');
 
-	writeBeginNamespace(out, schema);	
+	writeLine(out, "#pragma once");
+	writeLine(out, "#ifndef " + define);
+	writeLine(out, "#define " + define);
+	linebreak(out);
 
-	out << "\t"
-	    << "\t"
-	    << "enum " << schema.getName() << "EntityEnum" << std::endl;
-	out << "\t"
-	    << "\t"
-	    << "{" << std::endl;
+	writeBeginNamespace(out, schema);
 
-	for (int i = 0; i < schema.getEntityCount(); i++) {
-		out << "\t"
-		    << "\t"
-		    << "\t" << toUpper(schema.getEntityByIndex(i).getName());
-		if (i < schema.getEntityCount() - 1) {
-			out << ",";
-		}
-
-		out << std::endl;
+	writeLine(out, "enum Enums : size_t {");
+	for (size_t i = 0; i < schema.getEntityCount(); i++) {
+		//TODO
 	}
 
-	out << "\t"
-	    << "\t"
-	    << "};" << std::endl;
 
+	
 	writeEndNamespace(out, schema);
+	writeLine(out, "#endif");
 }
 
 void GeneratorOIP::generateSchemaHeader(Schema & schema)
