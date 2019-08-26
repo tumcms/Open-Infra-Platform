@@ -28,7 +28,13 @@ template <typename T> const std::string EXPRESSReference<T>::getStepParameter() 
 
 template <typename T> const std::string EXPRESSReference<T>::classname() const {
 	const std::shared_ptr<T> ptr = this->base::lock();
-	return ptr.get()->classname();
+	// Lock on this and return runtime classname or if empty construct T and return T.classname()
+	if (ptr) {
+		return ptr.get()->classname();
+	}
+	else {
+		return "unknown";
+	}
 	//return this->base::lock().get()->classname();
 }
 

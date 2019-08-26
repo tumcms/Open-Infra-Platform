@@ -126,7 +126,7 @@ public:
 				auto arg = value.substr(startpos, value.find_last_of(')') - startpos);
 
 				SelectType::for_each(variadicArgs, [&select, &name, &arg, &model](auto type) {
-					if (name == type.classname()) {
+					if (std::is_base_of<EXPRESSType, decltype(type)>::value && name == type.classname()) {
 						type = decltype(type)::readStepData(arg, model);
 						select = type;
 					}
