@@ -228,7 +228,7 @@ namespace OpenInfraPlatform
 								}
 							}
 							catch (std::exception e) {
-								BLUE_LOG(warning) << "Failed collecting geometry data. Abort." << e.what();
+								BLUE_LOG(warning) << "Failed collecting geometry data. Abort. " << e.what();
 								return false;
 							}
 						}

@@ -68,8 +68,12 @@ public:
 	T* operator->() { return this->lock().operator->(); }
 	const T* const operator->() const { return this->base::lock().operator->(); }
 
-	operator bool() const { 
+	operator const bool() const { 
 		return this->base::lock().operator bool();
+	}
+
+	operator const bool() {
+		return this->lock().operator bool();
 	}
 
 	static EXPRESSReference<T> readStepData(const std::string arg, const std::shared_ptr<EXPRESSModel>& model) {
