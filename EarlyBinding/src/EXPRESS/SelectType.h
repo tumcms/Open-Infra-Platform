@@ -72,7 +72,7 @@ public:
 	using base::operator=;
 	using base::operator->;
 
-	const size_t which() const { return base::m_value.which(); }
+	const size_t which() const { return base::m_value.which(); };
 
 	template <class T> explicit operator T&() & {
 		static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
