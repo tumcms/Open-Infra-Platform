@@ -329,8 +329,8 @@ namespace OpenInfraPlatform {
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcShellBasedSurfaceModel>(geomItem);
 					if(shell_based_surface_model) {
 
-						auto vec_shells = shell_based_surface_model->SbsmBoundary;
-						for(auto& it_shells : vec_shells) {
+						//auto vec_shells = shell_based_surface_model->SbsmBoundary;
+						for(auto& it_shells : shell_based_surface_model->SbsmBoundary) {
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_shells;
 							std::shared_ptr<ItemData> input_data_shells_set(new ItemData);
 
@@ -348,9 +348,8 @@ namespace OpenInfraPlatform {
 							try {
 								faceConverter->convertIfcFaceList(vec_shells, pos, input_data_shells_set, err);
 							}
-							catch(...) {
-								std::cout << "TEST ERROR" << std::endl << std::flush;
-								// return;
+							catch(std::exception e) {
+								BLUE_LOG(error) << e.what();
 							}
 							std::copy(input_data_shells_set->open_or_closed_polyhedrons.begin(),
 								input_data_shells_set->open_or_closed_polyhedrons.end(),

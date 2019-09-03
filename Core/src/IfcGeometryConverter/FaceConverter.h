@@ -397,6 +397,9 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<ItemData> item_data,
 					std::stringstream& strs_err)
 				{
+#ifdef _DEBUG
+					BLUE_LOG(trace) << "Converting IfcFaceList. Size:" << faces.size();
+#endif
 					// carve polygon of the converted face list
 					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 					// contains polygon indices of vertices (x,y,z converted to string)
@@ -430,6 +433,10 @@ namespace OpenInfraPlatform {
 
 					// id of face in step file
 					const uint32_t faceID = face->getId();
+#ifdef _DEBUG
+					BLUE_LOG(trace) << "Converting IfcFace #" << faceID;
+#endif
+
 					// all bound definitions of the face (normal bound or outer bound)
 					/*std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFaceBound>>& bounds = face->m_Bounds;*/
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFaceBound>> bounds;
@@ -482,7 +489,7 @@ namespace OpenInfraPlatform {
 						/*typename IfcEntityTypesT::IfcBoolean& polyOrientation = *(bound->m_Orientation);*/
 						bool polyOrientation = bound->Orientation;
 						if(!loop) {
-							strs_err << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " no valid loop." << std::endl;
+							BLUE_LOG(warning) << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " no valid loop.";
 
 							if(boundID == 0) {
 								break;
@@ -501,7 +508,7 @@ namespace OpenInfraPlatform {
 						}
 
 						if(loopVertices3D.size() < 3) {
-							strs_err << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " Number of vertices < 2." << std::endl;
+							BLUE_LOG(warning) << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " Number of vertices < 2.";
 
 							if(boundID == 0) {
 								break;
@@ -562,13 +569,13 @@ namespace OpenInfraPlatform {
 
 						if(!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed)) {
 							convertionFailed = true;
-							strs_err << "FaceConverter::convertIfcFaceList: #" << faceID << "= IfcFace: loop could not be projected" << std::endl;
+							BLUE_LOG(warning) << "#" << faceID << "= IfcFace: loop could not be projected";
 							continue;
 						}
 
 						if(loopVertices2D.size() < 3) {
 							convertionFailed = true;
-							strs_err << "FaceConverter::convertIfcFaceList: #" << faceID << "= IfcFace: path_loop.size() < 3" << std::endl;
+							BLUE_LOG(warning) << "#" << faceID << "= IfcFace: path_loop.size() < 3";
 							continue;
 						}
 
@@ -604,10 +611,11 @@ namespace OpenInfraPlatform {
 						}
 
 					}
-					catch(...) // catch carve error if holes cannot be incorporated
+					catch(std::exception e) // catch carve error if holes cannot be incorporated
 					{
 						convertionFailed = true;
-						strs_err << "convertIfcFaceList: #" << faceID << " = IfcFace: carve::triangulate::incorporateHolesIntoPolygon failed " << std::endl;
+						BLUE_LOG(error) << "convertIfcFaceList: #" << faceID << " = IfcFace: carve::triangulate::incorporateHolesIntoPolygon failed ";
+						BLUE_LOG(error) << e.what();
 						// continue;
 
 						mergedVertices2D = faceVertices2D.at(0);

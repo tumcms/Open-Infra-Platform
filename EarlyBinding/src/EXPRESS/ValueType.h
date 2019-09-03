@@ -141,7 +141,7 @@ bool ValueType<bool>::readStepData(const std::string &value, const std::shared_p
 	}
 	else {
 		std::string lower = boost::algorithm::to_lower_copy(value);
-		return (lower == "true");
+		return (lower == "true" || lower == ".t.");
 	}
 };
 
@@ -151,18 +151,18 @@ boost::logic::tribool ValueType<boost::logic::tribool>::readStepData(const std::
 	std::string lower = boost::algorithm::to_lower_copy(value);
 	if (value == "*") {
 		//TODO : Implement behaviour
-		if (lower == "true") {
+		return boost::logic::tribool(boost::logic::indeterminate);
+	}
+	else {
+		if (lower == "true" || lower == ".t.") {
 			return boost::logic::tribool::true_value;
 		}
-		else if (lower == "false") {
+		else if (lower == "false" || lower == ".f.") {
 			return boost::logic::tribool::false_value;
 		}
 		else {
 			return boost::logic::tribool(boost::logic::indeterminate);
 		}
-	}	
-	else {
-		return boost::logic::tribool(boost::logic::indeterminate);
 	}
 };
 

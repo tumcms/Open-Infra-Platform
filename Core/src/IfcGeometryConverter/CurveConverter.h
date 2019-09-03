@@ -1459,6 +1459,9 @@ namespace Core {
 				void convertIfcPolyline(const std::shared_ptr<typename IfcEntityTypesT::IfcPolyline>& polyLine,
 					std::vector<carve::geom::vector<3>>& loop) const
 				{
+#ifdef _DEBUG
+					BLUE_LOG(trace) << "Converting IfcPolyline #" << polyLine->getId();
+#endif
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> points;
 					points.resize(polyLine->Points.size());
 					std::transform(
@@ -1474,6 +1477,9 @@ namespace Core {
 				void convertIfcLoop(const std::shared_ptr<typename IfcEntityTypesT::IfcLoop>& loop,
 					std::vector<carve::geom::vector<3>>& loopPoints) const
 				{
+#ifdef _DEBUG
+					BLUE_LOG(trace) << "Converting IfcLoop #" << loop->getId();
+#endif
 					const std::shared_ptr<typename IfcEntityTypesT::IfcPolyLoop> polyLoop =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyLoop>(loop);
 
@@ -1684,7 +1690,8 @@ namespace Core {
 								if (abs(vertex.y - vertex_previous.y) < 0.00000001) {
 									if (abs(vertex.z - vertex_previous.z) < 0.00000001) {
 										// TODO: is it better to report degenerated loops, or to just omit them?
-										continue;
+										BLUE_LOG(warning) << "Duplicate point in polyloop. IfcPoint #" << it_cp->get()->getId();
+										//continue;
 									}
 								}
 							}

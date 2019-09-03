@@ -833,6 +833,7 @@ void writeSelectTypeFileREFACTORED(Schema& schema, Type& selectType, std::ostrea
 	std::transform(seq.begin(), seq.end(), seq.begin(), [&schema](std::string elem)->std::string {return schema.hasEntity(elem) ? "EXPRESSReference<" + elem + ">" : elem; });
 
 	const std::string basetype = "EarlyBinding::SelectType<" + join(seq, ',') + ">";
+
 	//writeLine(out, "class " + select + " : public " + basetype +", public ExpressBindingGenerator::EXPRESSType {");
 	writeLine(out, "class " + select + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");

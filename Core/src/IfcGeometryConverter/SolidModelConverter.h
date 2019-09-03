@@ -98,15 +98,17 @@ namespace OpenInfraPlatform
 				// *****************************************************************************************************************************************//
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
 				// *****************************************************************************************************************************************//
-
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Converting IfcSolidModel #" << solidModel->getId();
+#endif
 				std::shared_ptr<typename IfcEntityTypesT::IfcCsgSolid> csg_solid =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgSolid>(solidModel);
 				if (csg_solid)
 				{
 					// Get tree root expression (attribute 1). 
-					IfcEntityTypesT::IfcCsgSelect csg_select = csg_solid->TreeRootExpression;
-					std::shared_ptr < IfcEntityTypesT::IfcBooleanResult> boolean_result = nullptr ; 
-					std::shared_ptr < IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D = nullptr;//noch richtigen Datentyp nachschauen
+					typename IfcEntityTypesT::IfcCsgSelect csg_select = csg_solid->TreeRootExpression;
+					std::shared_ptr < typename IfcEntityTypesT::IfcBooleanResult> boolean_result = nullptr ; 
+					std::shared_ptr < typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D = nullptr;//noch richtigen Datentyp nachschauen
 					switch(csg_select.which()) {
 					case 0:
 						boolean_result = csg_select.get<0>().lock();
@@ -1088,6 +1090,10 @@ namespace OpenInfraPlatform
 				std::stringstream& err)
 			{
 				const int boolean_result_id = boolResult->getId();
+
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Converting IfcBooleanResult #" << boolean_result_id;
+#endif
 				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_clipping_result =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(boolResult);
 				if (boolean_clipping_result)
@@ -1487,6 +1493,10 @@ namespace OpenInfraPlatform
 				class IfcSolidModel;
 				class IfcTessellatedFaceSet;
 				*/
+
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Converting IfcBooleanOperand. Which: " << operand.which();
+#endif
 				double length_factor = unitConverter->getLengthInMeterFactor();
 				std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel> solid_model;// = nullptr;
 				std::shared_ptr<typename IfcEntityTypesT::IfcHalfSpaceSolid> half_space_solid;// = nullptr;
