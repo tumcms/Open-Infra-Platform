@@ -222,12 +222,13 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	progressDialog_->setWindowTitle(tr("Please wait"));
 	progressDialog_->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
 	progressDialog_->setMinimumWidth(500);
-	progressDialog_->setAutoClose(false);
-	progressDialog_->setAutoReset(false);
-	progressDialog_->hide();
+	//progressDialog_->setAutoClose(false);
+	//progressDialog_->setAutoReset(false);
+	//progressDialog_->hide();
+	progressDialog_->setValue(progressDialog_->maximum());
+
 	QObject::connect(progressDialog_, SIGNAL(canceled()), this, SLOT(cancelJob()));
 	QObject::disconnect(progressDialog_, SIGNAL(canceled()), progressDialog_, SLOT(cancel()));
-
 
 	// Connect to the common progress dialog.
 	connect(callback_.get(), &OpenInfraPlatform::Core::DataManagement::ProgressCallback::activitySignal, progressDialog_, &QProgressDialog::setEnabled);
@@ -285,7 +286,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::onCheckingFinished() {
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::showEvent(QShowEvent* event) {
-	QWidget::showEvent(event);	
+	QWidget::showEvent(event);
 }
 
 OpenInfraPlatform::UserInterface::MainWindow::~MainWindow() {
