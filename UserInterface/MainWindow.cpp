@@ -265,7 +265,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::checkForUpdates() {
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::onCheckingFinished() {
-	/*
+	
 	if (updater->newerVersionAvailable())
 	{
 	    auto updateText = tr("There is a newer version (%1) available. Do you want to download?").arg(updater->latestVersion());
@@ -281,7 +281,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::onCheckingFinished() {
 	        updater->downloadLatestVersion();
 	    }
 	}
-	*/
+	
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::showEvent(QShowEvent* event) {
@@ -676,7 +676,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::jobFinishing(int id, bool com
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::jobFinished(int id, bool comepleted) {
-	// progressBar_->hide();
+	progressBar_->hide();
 	progressDialog_->hide();
 
 	if (inUnitTest_ >= 0) {
@@ -692,7 +692,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::cancelJob() {
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
-	/*auto cameraController = view_->getInfraCameraController();
+	/*
+	auto cameraController = view_->getInfraCameraController();
 	auto camera = cameraController->getCamera();
 
 	std::ostream& out = std::cout;
@@ -700,7 +701,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 	auto pos = camera->getPosition(buw::InfraCamera::CAMERA);
 	auto rot = camera->getRotation();
 	out << "camera->setPosition(" << pos.x() << ", " << pos.y() << ", " << pos.z() << ", buw::InfraCamera::CAMERA);" << std::endl;
-	out << "camera->setRotation(" << rot.x() << ", " << rot.y() << ");" << std::endl;*/
+	out << "camera->setRotation(" << rot.x() << ", " << rot.y() << ");" << std::endl;
+	*/
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
