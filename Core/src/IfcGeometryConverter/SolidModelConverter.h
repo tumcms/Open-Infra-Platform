@@ -1094,10 +1094,11 @@ namespace OpenInfraPlatform
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Converting IfcBooleanResult #" << boolean_result_id;
 #endif
-				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_clipping_result =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(boolResult);
+				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanClippingResult> boolean_clipping_result =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanClippingResult>(boolResult);
 				if (boolean_clipping_result)
 				{
+					BLUE_LOG(trace) << "Processing IfcBooleanClippingResult #" << boolean_clipping_result->getId();
 					typename IfcEntityTypesT::IfcBooleanOperator ifc_boolean_operator = boolean_clipping_result->Operator;
 					typename IfcEntityTypesT::IfcBooleanOperand ifc_first_operand = boolean_clipping_result->FirstOperand;
 					typename IfcEntityTypesT::IfcBooleanOperand ifc_second_operand = boolean_clipping_result->SecondOperand;
@@ -1124,7 +1125,7 @@ namespace OpenInfraPlatform
 					}
 					else
 					{
-						err << ": invalid IfcBooleanOperator" << std::endl;
+						BLUE_LOG(error) << " invalid IfcBooleanOperator in IfcBooleanResult #" << boolResult->getId();
 					}
 
 					// convert the first operand
