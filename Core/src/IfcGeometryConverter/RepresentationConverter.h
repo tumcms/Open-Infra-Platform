@@ -89,7 +89,9 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> geom_item =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(representation_item);
 						if(geom_item) {
+							BLUE_LOG(trace) << "Processing IfcGeometricRepresentationItem #" << geom_item->getId();
 							convertIfcGeometricRepresentationItem(geom_item, objectPlacement, itemData, err);
+							BLUE_LOG(trace) << "Processed IfcGeometricRepresentationItem #" << geom_item->getId();
 							continue;
 						}
 
@@ -100,14 +102,14 @@ namespace OpenInfraPlatform {
 							auto& map_source = mapped_item->MappingSource;
 
 							if(!map_source.lock()) {
-								err << "unhandled representation: #" << representation_item->getId() << " = " << representation_item->classname() << std::endl;
+								BLUE_LOG(warning) << "unhandled representation: #" << representation_item->getId() << " = " << representation_item->classname();
 								continue;
 							}
 
 							// decltype(map_source->Mapped_Representation)::type &mapped_representation = map_source->MappedRepresentation;
 							auto& mapped_representation = map_source->MappedRepresentation;
 							if(!mapped_representation.lock()) {
-								err << "unhandled representation: #" << representation_item->getId() << " = " << representation_item->classname() << std::endl;
+								BLUE_LOG(warning) << "unhandled representation: #" << representation_item->getId() << " = " << representation_item->classname();
 								continue;
 							}
 
@@ -133,7 +135,7 @@ namespace OpenInfraPlatform {
 								PlacementConverterT<IfcEntityTypesT>::convertIfcPlacement(mapping_origin_placement, map_matrix_origin, length_factor);
 							}
 							else {
-								err << "#" << mapping_origin_placement->getId() << " = IfcPlacement: !std::dynamic_pointer_cast<IfcPlacement>( mapping_origin ) )";
+								BLUE_LOG(warning) << "#" << mapping_origin_placement->getId() << " = IfcPlacement: !std::dynamic_pointer_cast<IfcPlacement>( mapping_origin ) )";
 								continue;
 							}
 
@@ -141,12 +143,14 @@ namespace OpenInfraPlatform {
 							carve::math::Matrix mapped_pos((map_matrix_origin * objectPlacement) * map_matrix_target);
 
 							convertIfcRepresentation(mapped_representation.lock(), mapped_pos, inputData, err);
+							BLUE_LOG(trace) << "Processed IfcMappedItem #" << mapped_representation.lock()->getId();
 							continue;
 						}
 
 						// (3/4) IfcStyledItem SUBTYPE OF IfcRepresentationItem
 						std::shared_ptr<typename IfcEntityTypesT::IfcStyledItem> styled_item = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcStyledItem>(representation_item);
 						if(styled_item) {
+							BLUE_LOG(warning) << "#" << styled_item->getId() << " = IfcStyledItem: Not implemented yet!";
 							continue;
 						}
 
@@ -160,6 +164,7 @@ namespace OpenInfraPlatform {
 							std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet> topo_connected_face_set =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConnectedFaceSet>(topo_item);
 							if(topo_connected_face_set) {
+								BLUE_LOG(warning) << "#" << topo_item->getId() << " = IfcTopologicalRepresentationItem: #" << topo_connected_face_set ->getId() << " = IfcConnectedFaceSet not implemented yet";
 								continue;
 							}
 
@@ -290,10 +295,12 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_result = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(geomItem);
 					if(boolean_result) {
 						try {
+							BLUE_LOG(trace) << "Processing IfcBooleanResult #" << boolean_result->getId();
 							solidConverter->convertIfcBooleanResult(boolean_result, pos, itemData, err);
+							BLUE_LOG(trace) << "Processed IfcBooleanResult #" << boolean_result->getId();
 						}
 						catch(...) {
-							std::cout << "Warning:\t| Boolean operand could not be used correctly!\n";
+							BLUE_LOG(warning) <<  "IfcBooleanResult #"<< boolean_result->getId() << " could not be used correctly!";
 						}
 						return;
 					}

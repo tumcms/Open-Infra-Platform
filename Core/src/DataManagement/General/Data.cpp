@@ -135,6 +135,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC2X3) {
 			expressModel_ = OpenInfraPlatform::IFC2X3::IFC2X3Reader::FromFile(filename);
+			BLUE_LOG(info) << "Imported entities from " << filename << " into express model.";
 			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC2X3EntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC2X3EntityTypes>>();
 			if (importer.collectGeometryData(expressModel_)) {
 				auto converter = IfcGeometryConverter::ConverterBuwT< emt::IFC2X3EntityTypes>();
