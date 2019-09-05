@@ -260,7 +260,7 @@ namespace OpenInfraPlatform {
 				//	IfcShellBasedSurfaceModel, IfcSolidModel, IfcSurface, IfcTextLiteral, IfcTextureCoordinate, IfcTextureVertex, IfcVector. //
 				// *********************************************************************************************************************************************************************//
 
-				void convertIfcGeometricRepresentationItem(const std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem>& geomItem,
+				void convertIfcGeometricRepresentationItem(std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem>& geomItem,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData> itemData,
 					std::stringstream& err)
@@ -269,7 +269,8 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel> surface_model =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>(geomItem);
 					if(surface_model) {
-						auto vec_face_sets = surface_model->FbsmFaces;
+						BLUE_LOG(trace) << "Processing IfcFaceBasedSurfaceModel #" << surface_model->getId();
+						auto& vec_face_sets = surface_model->FbsmFaces;
 
 						for(auto& it_face_sets : vec_face_sets) {
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_ifc_faces;
@@ -280,14 +281,15 @@ namespace OpenInfraPlatform {
 							try {
 								faceConverter->convertIfcFaceList(vec_ifc_faces, pos, input_data_face_set, err);
 							}
-							catch(...) {
+							catch(std::exception e) {
+								BLUE_LOG(error) << e.what();
 								// return;
 							}
 							std::copy(input_data_face_set->open_or_closed_polyhedrons.begin(),
 								input_data_face_set->open_or_closed_polyhedrons.end(),
 								std::back_inserter(itemData->open_polyhedrons));
 						}
-
+						BLUE_LOG(trace) << "Processed IfcFaceBasedSurfaceModel #" << surface_model->getId();
 						return;
 					}
 
@@ -335,6 +337,7 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<typename IfcEntityTypesT::IfcShellBasedSurfaceModel> shell_based_surface_model =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcShellBasedSurfaceModel>(geomItem);
 					if(shell_based_surface_model) {
+						BLUE_LOG(trace) << "Processing IfcShellBasedSurfaceModel #" << shell_based_surface_model->getId();
 
 						//auto vec_shells = shell_based_surface_model->SbsmBoundary;
 						for(auto& it_shells : shell_based_surface_model->SbsmBoundary) {
@@ -363,6 +366,7 @@ namespace OpenInfraPlatform {
 								std::back_inserter(itemData->closed_polyhedrons));
 
 						}
+						BLUE_LOG(trace) << "Processed IfcShellBasedSurfaceModel #" << shell_based_surface_model->getId();
 						return;
 					}
 
@@ -420,37 +424,7 @@ namespace OpenInfraPlatform {
 								}
 								break;
 							default: break;
-							}
-
-							std::shared_ptr<typename IfcEntityTypesT::IfcPoint> select_point =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPoint>(it_set_elements.get<1>().lock());
-							if(select_point) {
-#ifdef _DEBUG
-								std::cout << "Warning\t| IfcPoint not implemented" << std::endl;
-#endif
-								continue;
-							}
-
-							std::shared_ptr<typename IfcEntityTypesT::IfcCurve> select_curve =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCurve>(it_set_elements.get<0>().lock());
-							if(select_curve) {
-#ifdef _DEBUG
-								std::cout << "Warning\t| IfcCurve not implemented" << std::endl;
-#endif
-								continue;
-							}
-
-							std::shared_ptr<typename IfcEntityTypesT::IfcSurface> select_surface =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurface>(it_set_elements.get<2>().lock());
-							if(select_surface) {
-								std::shared_ptr<carve::input::PolylineSetData> polyline(new carve::input::PolylineSetData());
-								faceConverter->convertIfcSurface(select_surface, pos, polyline);
-								if(polyline->getVertexCount() > 1) {
-									itemData->polylines.push_back(polyline);
-								}
-
-								continue;
-							}
+							}							
 						}
 
 						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricCurveSet> geometric_curve_set =
