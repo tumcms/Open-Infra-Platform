@@ -1083,9 +1083,12 @@ namespace Core {
 								}
 								else {
 									first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 0; });
-									if (first != trim1Vec.end() && *first) {
+									if (first != trim1Vec.end() && (*first) != nullptr) {
+										BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Found trimming begin.";
+										BLUE_LOG(trace) <<" IfcTrimmingSelect:" << (*first)->which();
+
 										std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point1 = (*first)->get<0>().lock();
-										BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Found trimming begin as IfcCartesianPoint #" << trim_point1->getId();
+										BLUE_LOG(trace) << "IfcCartesianPoint #" << trim_point1->getId();
 										carve::geom::vector<3> trim_point;
 										convertIfcCartesianPoint(trim_point1, trim_point);
 
