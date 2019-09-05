@@ -53,22 +53,26 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& ifcProfile)
 					{
 						const int profile_id = ifcProfile->getId();
+						BLUE_LOG(trace) << "Getting ProfileConverterT for IfcProfileDef #" << profile_id;
 
 						typename std::map<int, std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>>>::iterator
 							it_profile_cache = profileCache.find(profile_id);
 						if(it_profile_cache != profileCache.end()) {
+							BLUE_LOG(trace) << "Found ProfileConverterT for IfcProfileDef #" << profile_id;
 							return it_profile_cache->second;
 						}
+						else {
+							BLUE_LOG(trace) << "Creating ProfileConverterT for IfcProfile #" << profile_id;
+							std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
+								std::make_shared<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>>(geomSettings, unitConverter);
 
-						std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
-							std::make_shared<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>>(geomSettings, unitConverter);
+							profile_converter->computeProfile(ifcProfile);
 
-						profile_converter->computeProfile(ifcProfile);
+							profileCache[profile_id] = profile_converter;
 
-						profileCache[profile_id] = profile_converter;
-
-
-						return profile_converter;
+							BLUE_LOG(trace) << "Created ProfileConverterT for IfcProfile #" << profile_id;
+							return profile_converter;
+						}
 					}
 
 					void clearProfileCache()
