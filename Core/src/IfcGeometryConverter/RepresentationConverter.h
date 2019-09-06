@@ -89,9 +89,13 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> geom_item =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(representation_item);
 						if(geom_item) {
+#ifdef _DEBUG
 							BLUE_LOG(trace) << "Processing IfcGeometricRepresentationItem #" << geom_item->getId();
+#endif
 							convertIfcGeometricRepresentationItem(geom_item, objectPlacement, itemData, err);
+#ifdef _DEBUG
 							BLUE_LOG(trace) << "Processed IfcGeometricRepresentationItem #" << geom_item->getId();
+#endif
 							continue;
 						}
 
@@ -143,7 +147,9 @@ namespace OpenInfraPlatform {
 							carve::math::Matrix mapped_pos((map_matrix_origin * objectPlacement) * map_matrix_target);
 
 							convertIfcRepresentation(mapped_representation.lock(), mapped_pos, inputData, err);
+#ifdef _DEBUG
 							BLUE_LOG(trace) << "Processed IfcMappedItem #" << mapped_representation.lock()->getId();
+#endif
 							continue;
 						}
 
@@ -269,7 +275,9 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel> surface_model =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>(geomItem);
 					if(surface_model) {
+#ifdef _DEBUG
 						BLUE_LOG(trace) << "Processing IfcFaceBasedSurfaceModel #" << surface_model->getId();
+#endif
 						auto& vec_face_sets = surface_model->FbsmFaces;
 
 						for(auto& it_face_sets : vec_face_sets) {
@@ -289,7 +297,9 @@ namespace OpenInfraPlatform {
 								input_data_face_set->open_or_closed_polyhedrons.end(),
 								std::back_inserter(itemData->open_polyhedrons));
 						}
+#ifdef _DEBUG
 						BLUE_LOG(trace) << "Processed IfcFaceBasedSurfaceModel #" << surface_model->getId();
+#endif
 						return;
 					}
 
@@ -297,9 +307,13 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_result = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(geomItem);
 					if(boolean_result) {
 						try {
+#ifdef _DEBUG
 							BLUE_LOG(trace) << "Processing IfcBooleanResult #" << boolean_result->getId();
+#endif
 							solidConverter->convertIfcBooleanResult(boolean_result, pos, itemData, err);
+#ifdef _DEBUG
 							BLUE_LOG(trace) << "Processed IfcBooleanResult #" << boolean_result->getId();
+#endif
 						}
 						catch(...) {
 							BLUE_LOG(warning) <<  "IfcBooleanResult #"<< boolean_result->getId() << " could not be used correctly!";
@@ -337,8 +351,9 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<typename IfcEntityTypesT::IfcShellBasedSurfaceModel> shell_based_surface_model =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcShellBasedSurfaceModel>(geomItem);
 					if(shell_based_surface_model) {
+#ifdef _DEBUG
 						BLUE_LOG(trace) << "Processing IfcShellBasedSurfaceModel #" << shell_based_surface_model->getId();
-
+#endif
 						//auto vec_shells = shell_based_surface_model->SbsmBoundary;
 						for(auto& it_shells : shell_based_surface_model->SbsmBoundary) {
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_shells;
@@ -366,7 +381,9 @@ namespace OpenInfraPlatform {
 								std::back_inserter(itemData->closed_polyhedrons));
 
 						}
+#ifdef _DEBUG
 						BLUE_LOG(trace) << "Processed IfcShellBasedSurfaceModel #" << shell_based_surface_model->getId();
+#endif
 						return;
 					}
 
