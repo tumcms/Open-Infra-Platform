@@ -757,7 +757,7 @@ void Viewport::tick() {
     cameraController_->tick(delta);
     camera_->tick(delta);
 
-	if(cameraController_->isCameraMoving()) {
+	if(cameraController_->isCameraMoving() || snow_) {
 		repaint();
 	}
 

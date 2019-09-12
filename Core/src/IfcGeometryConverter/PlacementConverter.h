@@ -366,8 +366,8 @@ namespace OpenInfraPlatform {
 							if(trans_operator_2d->Scale == trans_operator_2d->Scale) {
 								// transOperator2D->Scale is not NAN
 								// Magic: Markic & Hecht 19.06.18
-								if(std::is_same<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D, OpenInfraPlatform::IFC4X1::IfcCartesianTransformationOperator2D>::value)
-									scale = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcCartesianTransformationOperator2D>(trans_operator_2d)->Scale;
+								if(std::is_same<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D, OpenInfraPlatform::IFC4X3::IfcCartesianTransformationOperator2D>::value)
+									scale = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X3::IfcCartesianTransformationOperator2D>(trans_operator_2d)->Scale;
 								else
 									scale = *(double*)(&(trans_operator_2d->Scale));
 								// end magic

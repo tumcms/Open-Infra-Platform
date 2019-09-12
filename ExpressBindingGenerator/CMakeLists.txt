@@ -71,10 +71,11 @@ macro(add_format format schema active)
 	set(${format}_SCHEMA ${schema}.exp)
 endmacro()
 
-add_format(IFC2X3 			IFC2X3_TC1 		ON)
-add_format(IFC4 			IFC4_ADD1 		ON)
+add_format(IFC2X3 			IFC2X3_TC1 		OFF)
+add_format(IFC4 			IFC4_ADD1 		OFF)
 add_format(IFC4X2_BIM4ROAD 	IFC4x2_BIM4ROAD	OFF)
-add_format(IFC4X1		 	IFC4x1_RC3		ON)
+add_format(IFC4X1		 	IFC4x1_RC3		OFF)
+add_format(IFC4X3 			IFC4x3			ON)
 add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)
 
 # Push to parent scope to be able to determine which folders to add in the higher level CMakeLists.txt
@@ -128,9 +129,10 @@ add_executable(OpenInfraPlatform.ExpressBindingGenerator
 # Custom target that generates the early binding library files.
 add_custom_target(Commands.GenerateEarlyBinding
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding	
-	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC2X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
+	#COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC2X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
+	#COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
+	#COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
+	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
 )
 
 add_dependencies(Commands.GenerateEarlyBinding OpenInfraPlatform.ExpressBindingGenerator)
