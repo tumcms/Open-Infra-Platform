@@ -637,13 +637,12 @@ namespace Core {
 											
 											case(eTransitionCurveType::ENUM_BIQUADRATICPARABOLA):
 											{
-											
 												// Iterate over stations in transition curve segment.
 												for (auto it_hor_stations : it_hor_segments.segmentStations_)
 												{
-													double distAlong = it_hor_stations.distAlong_; // Distance along of station.
 													if (it_hor_stations.x_ == 0) // Skip calculation if x,y coordinate is already there.
 													{
+														double distAlong = it_hor_stations.distAlong_; // Distance along of station.
 														double x = distAlong;		// x coordinate
 														double y = 0.0;
 														if (x <= segmentLength / 2) // y coordinate
@@ -671,9 +670,9 @@ namespace Core {
 												// Iterate over stations in transition curve segment.
 												for (auto it_hor_stations : it_hor_segments.segmentStations_)
 												{
-													double distAlong = it_hor_stations.distAlong_;
 													// Skip calculation if x,y coordinate is already there.
 													if (it_hor_stations.x_ == 0) {
+														double distAlong = it_hor_stations.distAlong_;
 														// Integration durch Substitution(s.Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
 														double teta_up = pow(distAlong + segmentLength, 3) / (endRadius * pow(segmentLength, 2)) - pow(distAlong + segmentLength, 4) / (2 * endRadius * pow(segmentLength, 3)); //values for upper boundary of integral
 														double teta_low = pow(distAlong, 3) / (endRadius * pow(segmentLength, 2)) - pow(distAlong, 4) / (2 * endRadius * pow(segmentLength, 3)); //values for lower boundary of integral
@@ -791,8 +790,8 @@ namespace Core {
 											// Calculate x and y coordinates for each vertical station within line segment. 
 											if (it_ver_stations.z_ == 0) // Skip calculation if z coordinate is already there.
 											{
-												double distanceToStartStation = horizontalLength - startDistAlong;
-												it_ver_stations.z_ = startGradient * distanceToStartStation;
+												double distanceToStartStation = it_ver_stations.distAlong_ - startDistAlong;
+												it_ver_stations.z_ = startHeight + startGradient * distanceToStartStation;
 											}
 										} // end station iteration
 									} // endif isLine
@@ -820,7 +819,7 @@ namespace Core {
 											bool is_convex = v_seg_circ_arc_2D->IsConvex;
 
 											// Calculate x and y coordinates for each vertical station within circular arc segment. 
-
+											//TODO check calculation
 											// Calculate circle centre.
 											double distAlongCentre = startDistAlong - radius * startDistAlong / sqrt(1 + pow(startGradient, 2));
 											double centreZ = startHeight + radius * startDistAlong / sqrt(1 + pow(startGradient, 2));
@@ -862,9 +861,9 @@ namespace Core {
 											bool is_convex = v_seg_par_arc_2D->IsConvex;
 
 											if (it_ver_stations.z_ == 0) { // Skip calculation if z coordinate is already there.
-												double parabol_radius = is_convex == true ? arc_const : -arc_const;
-												double parabol_grad = (horizontalLength - startDistAlong) / (parabol_radius + startGradient);
-												it_ver_stations.z_ = (horizontalLength - startDistAlong) * (parabol_grad + startGradient) / 2 + startHeight;
+												double parabol_radius = is_convex == true ? -arc_const : arc_const;
+												double parabol_grad = (it_ver_stations.distAlong_ - startDistAlong) / (parabol_radius + startGradient);
+												it_ver_stations.z_ = (it_ver_stations.distAlong_ - startDistAlong) * (parabol_grad + startGradient) / 2 + startHeight;
 											} // endif
 										} // end vertical stations iteration
 									} // end isParArc
