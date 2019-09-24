@@ -76,7 +76,7 @@ namespace Core {
 
 					IfcCurve
 
-					IfcBoundedCurve				http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcboundedcurve.htm
+					IfcBoundedCurve				https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcboundedcurve.htm
 						IfcAlignmentCurve
 						IfcBsplineCurve
 							IfcBsplineCurveWithKnots*
@@ -87,20 +87,20 @@ namespace Core {
 						IfcPolyline
 						IfcTrimmedCurve
 
-					IfcConic					http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcconic.htm
+					IfcConic					https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcconic.htm
 						IfcCircle
 						IfcEllipse
 
-					IfcLine						http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcline.htm
+					IfcLine						https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcline.htm
 
-					IfcOffsetCurve				http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcoffsetcurve.htm
+					IfcOffsetCurve				https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcoffsetcurve.htm
 						IfcOffsetCurve2D*
 						IfcOffsetCurve3D*
 						IfcOffsetCurveByDistances*
 
-					IfcPcurve*					http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcpcurve.htm
+					IfcPcurve*					https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpcurve.htm
 
-					IfcSurfaceCurve				http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcsurfacecurve.htm
+					IfcSurfaceCurve				https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcsurfacecurve.htm
 						IfcIntersectionCurve*
 						IfcSeamCurve*
 
@@ -303,7 +303,7 @@ namespace Core {
 							// Step 2: Get segment type information and additional members and store in horizontal segments vector.
 
 							// Segment types: IfcLineSegment2D, IfcCircularArcSegment2D and IfcTransitionCurveSegment2D
-							// http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifccurvesegment2d.htm
+							// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifccurvesegment2d.htm
 								std::shared_ptr<IFC4X1::IfcLineSegment2D> line_segment_2D =
 									std::dynamic_pointer_cast<IFC4X1::IfcLineSegment2D>(horCurveGeometry);
 								std::shared_ptr<IFC4X1::IfcCircularArcSegment2D> circular_arc_segment_2D =
@@ -629,7 +629,7 @@ namespace Core {
 										bool is_end_ccw = trans_curve_segment_2D->IsEndRadiusCCW;
 										// TransitionCurveType type IfcTransitionCurveType
 										using eTransitionCurveType = decltype(trans_curve_segment_2D->TransitionCurveType)::ENUM;
-										auto trans_type = trans_curve_segment_2D->TransitionCurveType;	//trans curve types: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm
+										auto trans_type = trans_curve_segment_2D->TransitionCurveType;	//trans curve types: https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm
 
 										// Calculate x and y coordinates for each horizontal station within transition curve segment.
 										
@@ -673,7 +673,7 @@ namespace Core {
 													// Skip calculation if x,y coordinate is already there.
 													if (it_hor_stations.x_ == 0) {
 														double distAlong = it_hor_stations.distAlong_;
-														// Integration durch Substitution(s.Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
+														// Integration durch Substitution(s.Formel: https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
 														double teta_up = pow(distAlong + segmentLength, 3) / (endRadius * pow(segmentLength, 2)) - pow(distAlong + segmentLength, 4) / (2 * endRadius * pow(segmentLength, 3)); //values for upper boundary of integral
 														double teta_low = pow(distAlong, 3) / (endRadius * pow(segmentLength, 2)) - pow(distAlong, 4) / (2 * endRadius * pow(segmentLength, 3)); //values for lower boundary of integral
 														double teta_deriv_up = 2 * pow(distAlong + segmentLength, 2) / endRadius * pow(segmentLength, 2) - 4 * pow(distAlong + segmentLength, 3) / 2 * endRadius*pow(segmentLength, 3);
@@ -753,7 +753,7 @@ namespace Core {
 														double psi = (2 * M_PI * distAlong) / segmentLength;
 														double x = distAlong * (1 - pow(segmentLength, 2) / (32 * pow(M_PI, 4)*pow(endRadius, 2) - (pow(segmentLength, 3) / 3840 * pow(M_PI, 5)*pow(endRadius, 2)))
 															* (3 * pow(psi, 5) - 20 * pow(psi, 3) + 30 * psi - (240 - 60 * pow(psi, 2)*sin(psi) + 30 * cos(psi)*sin(psi) + 120 * psi*cos(psi))));
-														// Integration durch Substitution (s. Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
+														// Integration durch Substitution (s. Formel: https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
 														double teta_up = pow((distAlong + segmentLength), 2) / (2 * endRadius*segmentLength) + (segmentLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(distAlong + segmentLength) / segmentLength) - 1);
 														double teta_low = pow((distAlong + segmentLength), 2) / (2 * endRadius*segmentLength) + (segmentLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(distAlong) / segmentLength) - 1);
 														double teta_deriv_up = 2 * (distAlong + segmentLength) / 2 * endRadius*segmentLength;
