@@ -30,9 +30,9 @@
 %}
 
 %{
-#include "src/OpenInfraPlatform/ExpressBindingGenerator/Meta/eExpressTokenType.h"
+#include "src/Meta/eExpressTokenType.h"
 //#include <iostream>
-#include "src/OpenInfraPlatform/ExpressBindingGenerator/Parser/node.h"
+#include "src/Parser/node.h"
 #include "parser.hpp"
 int line_num = 1;
 %}

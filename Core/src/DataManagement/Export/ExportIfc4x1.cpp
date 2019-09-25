@@ -24,34 +24,19 @@
 #include "EXPRESS\EXPRESSEntity.h"
 #include "EXPRESS\EXPRESSType.h"
 
-//#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Entities.h"
-//#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1EntityEnums.h"
-//#include "OpenInfraPlatform/IfcAlignment1x1/IfcAlignment1x1Types.h"
-
 #include "IfcGeometryConverter/UnhandledRepresentationException.h"
 #include "IfcGeometryConverter/CurveConverter.h"
 #include "IfcGeometryConverter/UnitConverter.h"
 #include "IfcGeometryConverter/IfcPeekStepReader.h"
 
-//#include "OpenInfraPlatform/IfcAlignment1x1/guid/CreateGuid_64.h"
-//#include "OpenInfraPlatform/IfcAlignment1x1/model/Model.h"
-
 #include "EarlyBinding\IFC4X1\src\reader\IFC4X1Reader.h"
-
-//#include "OpenInfraPlatform/IfcAlignment1x1/reader/IfcStepReader.h"
-//#include "OpenInfraPlatform/IfcAlignment1x1/reader/Reader.h"
-
-//#include "OpenInfraPlatform/IfcAlignment1x1/writer/IfcStepWriter.h"
-//#include "OpenInfraPlatform/Infrastructure/Alignment/Alignment3DBased3D.h"
-//#include "OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignmentElement2DLine.h"
-//#include "OpenInfraPlatform/Infrastructure/Alignment/VerticalAlignment/VerticalAlignmentElement2DParabola.h"
 
 #include <fstream>
 #include <memory>
 
 using namespace OpenInfraPlatform::IfcAlignment1x1;
 
-class OpenInfraPlatform::Infrastructure::ExportIfc4x1::IfcAlignment1x1ExportImpl : public Export {
+class OpenInfraPlatform::Core::ExportIfc4x1::IfcAlignment1x1ExportImpl : public Export {
 public:
     IfcAlignment1x1ExportImpl(const ifcAlignmentExportDescription& desc,
                               buw::ReferenceCounted<buw::AlignmentModel> am,

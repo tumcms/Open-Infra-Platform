@@ -50,6 +50,7 @@ template <typename ValueType, size_t MinCardinality, size_t MaxCardinality> clas
 	using base = std::vector<ValueType>;
 public:
 	typedef base UnderlyingType;
+	typedef ValueType element_type;
 
 	using base::base;
 	using base::operator=;

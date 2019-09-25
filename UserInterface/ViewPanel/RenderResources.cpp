@@ -74,7 +74,8 @@ std::string OpenInfraPlatform::UserInterface::RenderResources::getResourceRootDi
 				}
 			}
 
-			resourceRootDir_ += "/src/OpenInfraPlatform";
+			//resourceRootDir_ += "/src/OpenInfraPlatform";
+			resourceRootDir_ += "/UserInterface";
 		}
 	}
 

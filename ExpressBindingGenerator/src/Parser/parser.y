@@ -1,13 +1,13 @@
 %error-verbose
 
 %{
-	#include "OpenInfraPlatform/ExpressBindingGenerator/Parser/node.h"
-	#include "OpenInfraPlatform/ExpressBindingGenerator/Meta/Entity.h"
-	#include "OpenInfraPlatform/ExpressBindingGenerator/Meta/Type.h"
-	#include "OpenInfraPlatform/ExpressBindingGenerator/Meta/EntityAttribute.h"
-	#include "OpenInfraPlatform/ExpressBindingGenerator/Meta/Schema.h"
-	#include "OpenInfraPlatform/ExpressBindingGenerator/memory.h"
-	#include "OpenInfraPlatform/ExpressBindingGenerator/stack.h"
+	#include "Parser/node.h"
+	#include "Meta/Entity.h"
+	#include "Meta/Type.h"
+	#include "Meta/EntityAttribute.h"
+	#include "Meta/Schema.h"
+	#include "General/memory.h"
+	#include "General/stack.h"
 
 	#include <cstdio>
 	#include <iostream>

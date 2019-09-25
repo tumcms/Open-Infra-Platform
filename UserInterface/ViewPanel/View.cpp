@@ -153,7 +153,7 @@ void OpenInfraPlatform::UserInterface::View::createViewport(const buw::eRenderAP
 	setWidget(viewport_);
 
 	viewport_->resize(width(), height());
-	viewport_->onChange((DataManagement::ChangeFlag)~0);
+	viewport_->onChange((Core::DataManagement::ChangeFlag)~0);
 }
 
 

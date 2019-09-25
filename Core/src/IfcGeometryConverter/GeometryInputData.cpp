@@ -19,7 +19,7 @@
 
 #include <limits>
 
-using namespace OpenInfraPlatform::IfcGeometryConverter;
+using namespace OpenInfraPlatform::Core::IfcGeometryConverter;
 
 /**********************************************************************************************/
 

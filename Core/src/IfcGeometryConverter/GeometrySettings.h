@@ -47,23 +47,24 @@
 
 namespace OpenInfraPlatform
 {
-	namespace IfcGeometryConverter
+	namespace Core 
 	{
+		namespace IfcGeometryConverter {
 
-		class GeometrySettings
-		{
-		public:
-			GeometrySettings();
-			~GeometrySettings();
-			int	num_vertices_per_circle;
-			int min_num_vertices_per_arc;
+			class GeometrySettings {
+			public:
+				GeometrySettings();
+				~GeometrySettings();
+				int	num_vertices_per_circle;
+				int min_num_vertices_per_arc;
 
-			double min_colinearity;
-			double min_delta_v;
-			double min_normal_angle;
-			double min_length;
-			carve::csg::CSG::CLASSIFY_TYPE classify_type;
-		};
+				double min_colinearity;
+				double min_delta_v;
+				double min_normal_angle;
+				double min_length;
+				carve::csg::CSG::CLASSIFY_TYPE classify_type;
+			};
+		}
 	}
 }
 

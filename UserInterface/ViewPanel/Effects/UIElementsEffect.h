@@ -19,8 +19,8 @@
 #ifndef BlueFramework_UserInterface_UIElementsEffect_ce3ae2a7_9ba0_4302_9860_f5d26081abd7_h
 #define BlueFramework_UserInterface_UIElementsEffect_ce3ae2a7_9ba0_4302_9860_f5d26081abd7_h
 
-#include "OpenInfraPlatform/namespace.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
+#include "namespace.h"
+#include "../UserInterface/ViewPanel/RenderResources.h"
 #include <buw.Engine.h>
 #include <buw.Rasterizer.h>
 

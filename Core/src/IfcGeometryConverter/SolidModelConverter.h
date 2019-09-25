@@ -34,6 +34,7 @@
 
 namespace OpenInfraPlatform
 {
+	namespace Core {
 	namespace IfcGeometryConverter
 	{
 		template <
@@ -97,15 +98,17 @@ namespace OpenInfraPlatform
 				// *****************************************************************************************************************************************//
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
 				// *****************************************************************************************************************************************//
-
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Converting IfcSolidModel #" << solidModel->getId();
+#endif
 				std::shared_ptr<typename IfcEntityTypesT::IfcCsgSolid> csg_solid =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgSolid>(solidModel);
 				if (csg_solid)
 				{
 					// Get tree root expression (attribute 1). 
-					IfcEntityTypesT::IfcCsgSelect csg_select = csg_solid->TreeRootExpression;
-					std::shared_ptr < IfcEntityTypesT::IfcBooleanResult> boolean_result = nullptr ; 
-					std::shared_ptr < IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D = nullptr;//noch richtigen Datentyp nachschauen
+					typename IfcEntityTypesT::IfcCsgSelect csg_select = csg_solid->TreeRootExpression;
+					std::shared_ptr < typename IfcEntityTypesT::IfcBooleanResult> boolean_result = nullptr ; 
+					std::shared_ptr < typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D = nullptr;//noch richtigen Datentyp nachschauen
 					switch(csg_select.which()) {
 					case 0:
 						boolean_result = csg_select.get<0>().lock();
@@ -158,7 +161,7 @@ namespace OpenInfraPlatform
 						std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
 
 						
-							vec_facesOuterShell.reserve(outerShell->CfsFaces.size());
+							vec_facesOuterShell.resize(outerShell->CfsFaces.size());
 							std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
 													
 						try {
@@ -229,7 +232,7 @@ namespace OpenInfraPlatform
 					{
 						// Get cross section positions and fixed axis vertical (attributes 3-4).
 						std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcDistanceExpression>> vec_cross_section_positions;
-							vec_cross_section_positions.reserve(sectioned_solid_horizontal->CrossSectionPositions.size());
+							vec_cross_section_positions.resize(sectioned_solid_horizontal->CrossSectionPositions.size());
 						std::transform(sectioned_solid_horizontal->CrossSectionPositions.begin(),
 							sectioned_solid_horizontal->CrossSectionPositions.end(),
 							vec_cross_section_positions.begin(), [](auto& it) {return it.lock(); });
@@ -929,7 +932,7 @@ namespace OpenInfraPlatform
 				try
 				{
 					std::vector<std::pair<size_t, size_t> > result = carve::triangulate::incorporateHolesIntoPolygon(profile_coords_2d);	// first is loop index, second is vertex index in loop
-					merged.reserve(result.size());
+					merged.resize(result.size());
 					for (size_t i = 0; i < result.size(); ++i)
 					{
 						int loop_number = result[i].first;
@@ -1087,6 +1090,10 @@ namespace OpenInfraPlatform
 				std::stringstream& err)
 			{
 				const int boolean_result_id = boolResult->getId();
+
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Converting IfcBooleanResult #" << boolean_result_id;
+#endif
 				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_clipping_result =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(boolResult);
 				if (boolean_clipping_result)
@@ -1486,6 +1493,10 @@ namespace OpenInfraPlatform
 				class IfcSolidModel;
 				class IfcTessellatedFaceSet;
 				*/
+
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Converting IfcBooleanOperand. Which: " << operand.which();
+#endif
 				double length_factor = unitConverter->getLengthInMeterFactor();
 				std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel> solid_model;// = nullptr;
 				std::shared_ptr<typename IfcEntityTypesT::IfcHalfSpaceSolid> half_space_solid;// = nullptr;
@@ -1494,16 +1505,16 @@ namespace OpenInfraPlatform
 
 				switch (operand.which()) {
 				case 0:
-					boolean_result = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>>().lock();
+					solid_model = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>>().lock();
 					break;
 				case 1:
-					csg_primitive3D = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcCsgPrimitive3D>>().lock();
-					break;
-				case 2: 
 					half_space_solid = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcHalfSpaceSolid>>().lock();
 					break;
+				case 2: 
+					boolean_result = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>>().lock();
+					break;
 				case 3:
-					solid_model = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>>().lock();
+					csg_primitive3D = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcCsgPrimitive3D>>().lock();
 					break;
 				default:
 					break;
@@ -2401,7 +2412,7 @@ namespace OpenInfraPlatform
 		//					// contains index in polyhedron data for each merged vertex
 		//					std::map<std::string, uint32_t> mergedVertexIndices;
 		//					std::vector<uint32_t> vertexIndices;
-		//					vertexIndices.reserve(mergedVertices3D.size());
+		//					vertexIndices.resize(mergedVertices3D.size());
 		//
 		//					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 		//
@@ -2540,6 +2551,7 @@ namespace OpenInfraPlatform
 		//	return false;
 		//}
 
+	}
 	}
 }
 

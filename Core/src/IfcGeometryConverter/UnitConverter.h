@@ -23,143 +23,147 @@
 #include <memory>
 #include <vector>
 
-namespace OpenInfraPlatform {
-	namespace IfcGeometryConverter {
+namespace OpenInfraPlatform 
+{
+	namespace Core 
+	{
+		namespace IfcGeometryConverter {
 
-		template < class IfcEntityTypesT> class UnitConverter
-		{
-		public:
-			UnitConverter() {
-				m_length_unit_factor = 1.0;
-				m_plane_angle_factor = 1.0; // defaulting to radian
-
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_EXA] = 1E18;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PETA] = 1E15;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_TERA] = 1E12;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_GIGA] = 1E9;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MEGA] = 1E6;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_KILO] = 1E3;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_HECTO] = 1E2;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECA] = 1E1;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECI] = 1E-1;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_CENTI] = 1E-2;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MILLI] = 1E-3;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MICRO] = 1E-6;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_NANO] = 1E-9;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PICO] = 1E-12;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_FEMTO] = 1E-15;
-				m_prefix_map[(int) IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_ATTO] = 1E-18;
-			}
-
-			void setIfcProject(std::shared_ptr<typename IfcEntityTypesT::IfcProject> project) {
-				m_length_unit_factor = 1.0;
-				m_plane_angle_factor = 1.0; // defaulting to radian
-
-				if (!project->UnitsInContext)
+			template < class IfcEntityTypesT> class UnitConverter {
+			public:
+				UnitConverter()
 				{
-					return;
+					m_length_unit_factor = 1.0;
+					m_plane_angle_factor = 1.0; // defaulting to radian
+
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_EXA] = 1E18;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PETA] = 1E15;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_TERA] = 1E12;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_GIGA] = 1E9;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MEGA] = 1E6;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_KILO] = 1E3;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_HECTO] = 1E2;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECA] = 1E1;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECI] = 1E-1;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_CENTI] = 1E-2;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MILLI] = 1E-3;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MICRO] = 1E-6;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_NANO] = 1E-9;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PICO] = 1E-12;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_FEMTO] = 1E-15;
+					m_prefix_map[(int)IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_ATTO] = 1E-18;
 				}
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcUnitAssignment> unit_assignment = project->UnitsInContext;
-				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcUnit> >& units = unit_assignment->Units;
-				//std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcUnit> >::iterator it;
+				void setIfcProject(std::shared_ptr<typename IfcEntityTypesT::IfcProject> project)
+				{
+					m_length_unit_factor = 1.0;
+					m_plane_angle_factor = 1.0; // defaulting to radian
 
-				//for (it = units.begin(); it != units.end(); ++it)
-				/*
-				for(auto unit : project->UnitsInContext->Units) {			
+					if(!project->UnitsInContext) {
+						return;
+					}
+
+					std::shared_ptr<typename IfcEntityTypesT::IfcUnitAssignment> unit_assignment = project->UnitsInContext;
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcUnit> >& units = unit_assignment->Units;
+					//std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcUnit> >::iterator it;
+
+					//for (it = units.begin(); it != units.end(); ++it)
+					/*
+					for(auto unit : project->UnitsInContext->Units) {
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcSIUnit> si_unit = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSIUnit>(&unit);
 					if (si_unit)
 					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcUnitEnum> unit_type = si_unit->UnitType;
-						std::shared_ptr<typename IfcEntityTypesT::IfcSIUnitName> unit_name = si_unit->Name;
+					std::shared_ptr<typename IfcEntityTypesT::IfcUnitEnum> unit_type = si_unit->UnitType;
+					std::shared_ptr<typename IfcEntityTypesT::IfcSIUnitName> unit_name = si_unit->Name;
 
-						if (unit_type)
-						{
-							if (*unit_type == eIfcUnitEnum::ENUM_LENGTHUNIT)
-							{
-								if (si_unit->Prefix)
-								{
-									if (m_prefix_map.find(si_unit->Prefix) != m_prefix_map.end())
-									{
-										m_length_unit_factor = m_prefix_map[si_unit->Prefix];
-									}
-								}
-							}
-							else if (unit_type->m_enum == IfcUnitEnum::ENUM_PLANEANGLEUNIT)
-							{
-								if (unit_name->m_enum == IfcSIUnitName::ENUM_RADIAN)
-								{
-									m_plane_angle_factor = 1.0;
-								}
-							}
-						}
-						continue;
+					if (unit_type)
+					{
+					if (*unit_type == eIfcUnitEnum::ENUM_LENGTHUNIT)
+					{
+					if (si_unit->Prefix)
+					{
+					if (m_prefix_map.find(si_unit->Prefix) != m_prefix_map.end())
+					{
+					m_length_unit_factor = m_prefix_map[si_unit->Prefix];
+					}
+					}
+					}
+					else if (unit_type->m_enum == IfcUnitEnum::ENUM_PLANEANGLEUNIT)
+					{
+					if (unit_name->m_enum == IfcSIUnitName::ENUM_RADIAN)
+					{
+					m_plane_angle_factor = 1.0;
+					}
+					}
+					}
+					continue;
 					}
 
 					shared_ptr<IfcConversionBasedUnit> conversion_based_unit = dynamic_pointer_cast<IfcConversionBasedUnit>(unit);
 					if (conversion_based_unit)
 					{
-						if (conversion_based_unit->m_ConversionFactor)
-						{
-							shared_ptr<IfcMeasureWithUnit> conversion_factor = conversion_based_unit->m_ConversionFactor;
-							if (conversion_factor->m_UnitComponent)
-							{
-								shared_ptr<IfcUnit> unit_component = conversion_factor->m_UnitComponent;
-								shared_ptr<IfcSIUnit> unit_component_si = dynamic_pointer_cast<IfcSIUnit>(unit_component);
-								if (unit_component_si)
-								{
-									shared_ptr<IfcUnitEnum> type = unit_component_si->m_UnitType;
-									if (type)
-									{
-										if (type->m_enum == IfcUnitEnum::ENUM_PLANEANGLEUNIT)
-										{
-											if (conversion_factor->m_ValueComponent)
-											{
-												shared_ptr<IfcValue> plane_angle_value = conversion_factor->m_ValueComponent;
-												if (dynamic_pointer_cast<IfcPlaneAngleMeasure>(plane_angle_value))
-												{
-													shared_ptr<IfcPlaneAngleMeasure> plane_angle_measure = dynamic_pointer_cast<IfcPlaneAngleMeasure>(plane_angle_value);
-													m_plane_angle_factor = plane_angle_measure->m_value;
-												}
-												else if (dynamic_pointer_cast<IfcRatioMeasure>(plane_angle_value))
-												{
-													shared_ptr<IfcRatioMeasure> plane_angle_measure = dynamic_pointer_cast<IfcRatioMeasure>(plane_angle_value);
-													m_plane_angle_factor = plane_angle_measure->m_value;
-												}
-												else if (conversion_based_unit->m_Name)
-												{
-													if (_stricmp(conversion_based_unit->m_Name->m_value.c_str(), "DEGREE") == 0)
-													{
-														m_plane_angle_factor = M_PI / 180.0;
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
+					if (conversion_based_unit->m_ConversionFactor)
+					{
+					shared_ptr<IfcMeasureWithUnit> conversion_factor = conversion_based_unit->m_ConversionFactor;
+					if (conversion_factor->m_UnitComponent)
+					{
+					shared_ptr<IfcUnit> unit_component = conversion_factor->m_UnitComponent;
+					shared_ptr<IfcSIUnit> unit_component_si = dynamic_pointer_cast<IfcSIUnit>(unit_component);
+					if (unit_component_si)
+					{
+					shared_ptr<IfcUnitEnum> type = unit_component_si->m_UnitType;
+					if (type)
+					{
+					if (type->m_enum == IfcUnitEnum::ENUM_PLANEANGLEUNIT)
+					{
+					if (conversion_factor->m_ValueComponent)
+					{
+					shared_ptr<IfcValue> plane_angle_value = conversion_factor->m_ValueComponent;
+					if (dynamic_pointer_cast<IfcPlaneAngleMeasure>(plane_angle_value))
+					{
+					shared_ptr<IfcPlaneAngleMeasure> plane_angle_measure = dynamic_pointer_cast<IfcPlaneAngleMeasure>(plane_angle_value);
+					m_plane_angle_factor = plane_angle_measure->m_value;
 					}
+					else if (dynamic_pointer_cast<IfcRatioMeasure>(plane_angle_value))
+					{
+					shared_ptr<IfcRatioMeasure> plane_angle_measure = dynamic_pointer_cast<IfcRatioMeasure>(plane_angle_value);
+					m_plane_angle_factor = plane_angle_measure->m_value;
+					}
+					else if (conversion_based_unit->m_Name)
+					{
+					if (_stricmp(conversion_based_unit->m_Name->m_value.c_str(), "DEGREE") == 0)
+					{
+					m_plane_angle_factor = M_PI / 180.0;
+					}
+					}
+					}
+					}
+					}
+					}
+					}
+					}
+					}
+					}
+					*/
 				}
-				*/
-			}
 
-			double getLengthInMeterFactor()
-			{
-				return m_length_unit_factor;
-			}
+				double getLengthInMeterFactor()
+				{
+					return m_length_unit_factor;
+				}
 
-			double getAngleInRadianFactor()
-			{
-				return m_plane_angle_factor;
-			}
+				double getAngleInRadianFactor()
+				{
+					return m_plane_angle_factor;
+				}
 
-		private:
-			std::map<int, double> m_prefix_map;
-			double m_length_unit_factor;
-			double m_plane_angle_factor;
-		};
+			private:
+				std::map<int, double> m_prefix_map;
+				double m_length_unit_factor;
+				double m_plane_angle_factor;
+			};
+		}
 	}
 }
 

@@ -1,19 +1,19 @@
 /*
-    This file is part of Expresso, a simple early binding generator for EXPRESS.
+	This file is part of Expresso, a simple early binding generator for EXPRESS.
 	Copyright (c) 2016 Technical University of Munich
 	Chair of Computational Modeling and Simulation.
 
-    BlueFramework is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License Version 3
-    as published by the Free Software Foundation.
+	BlueFramework is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License Version 3
+	as published by the Free Software Foundation.
 
-    BlueFramework is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+	BlueFramework is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -56,9 +56,9 @@ template <typename ...Args> class SelectType : public ValueType<boost::variant<A
 	static inline typename std::enable_if<I == sizeof...(Args), void>::type
 		for_each(std::tuple<Args...>, Function) // Unused arguments are given no names.
 	{ };
-	
+
 	template<std::size_t I = 0, typename Function>
-	static inline typename std::enable_if<I < sizeof...(Args), void>::type
+	static inline typename std::enable_if < I < sizeof...(Args), void>::type
 		for_each(std::tuple<Args...> t, Function f)
 	{
 		f(std::get<I>(t));
@@ -72,7 +72,7 @@ public:
 	using base::operator=;
 	using base::operator->;
 
-	const size_t which() const { return base::m_value.which(); }
+	const size_t which() const { return base::m_value.which(); };
 
 	template <class T> explicit operator T&() & {
 		static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
@@ -97,19 +97,42 @@ public:
 	}
 
 	static Select readStepData(const std::string value, const std::shared_ptr<EXPRESSModel>& model) {
-		auto name = value.substr(0, value.find_first_of('('));
-		auto startpos = value.find_first_of('(') + 1;
-		auto arg = value.substr(startpos, value.find_first_of(')') - startpos);
-
-		std::tuple<Args...> variadicArgs = std::tuple<Args...>();
-		
 		Select select;
-		SelectType::for_each(variadicArgs, [&select, &name, &arg, &model](auto type) {
-			if (name == type.classname()) {
-				type = decltype(type)::readStepData(arg, model);
-				select = type;
+		std::tuple<Args...> variadicArgs = std::tuple<Args...>();
+		if (value == "*") {
+			//TODO
+		} else {
+			if (value[0] == '#') {
+				size_t refId = std::stoull(value.substr(1, value.size() - 1));
+				if (model->entities.count(refId) > 0) {
+					auto refEntity = model->entities[refId];
+					//TODO
+					SelectType::for_each(variadicArgs, [&select, &refEntity, &value, &model](auto type) {
+						typedef typename std::conditional<std::is_base_of<EXPRESSType, decltype(type)>::value, EXPRESSEntity, typename decltype(type)::element_type>::type CastType;
+						if (!std::is_base_of<EXPRESSType, decltype(type)>::value && std::dynamic_pointer_cast<CastType>(refEntity)) {
+							type = decltype(type)::readStepData(value, model);
+							select = type;
+						}
+					});
+				}
+				else {
+					//TODO:: error
+					throw std::exception("Entity not contained in model.");
+				}
 			}
-		});
+			else {
+				auto name = value.substr(0, value.find_first_of('('));
+				auto startpos = value.find_first_of('(') + 1;
+				auto arg = value.substr(startpos, value.find_last_of(')') - startpos);
+
+				SelectType::for_each(variadicArgs, [&select, &name, &arg, &model](auto type) {
+					if (std::is_base_of<EXPRESSType, decltype(type)>::value && name == type.classname()) {
+						type = decltype(type)::readStepData(arg, model);
+						select = type;
+					}
+				});
+			}
+		}
 		return select;
 	}
 };

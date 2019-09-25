@@ -24,7 +24,7 @@
 #include <algorithm>
 #include <cctype>
 
-using OpenInfraPlatform::IfcGeometryConverter::IfcPeekStepReader;
+using OpenInfraPlatform::Core::IfcGeometryConverter::IfcPeekStepReader;
 
 using MapType = std::pair< std::string, IfcPeekStepReader::IfcSchema>;
 

@@ -179,6 +179,10 @@ find_path(visit_struct_INCLUDE_DIR REQUIRED)
 # Added 12.09.2018: FFTW3
 find_package(FFTW3 REQUIRED)
 
+include(GTestCopyBinaries)
+GTEST_COPY_BINARIES(${CMAKE_BINARY_DIR})
+set_target_properties(GTestCopyBinaries	PROPERTIES FOLDER "Copy")
+
 # Find the Qt components
 set(QT5_COMPONENTS
 	Core
@@ -340,11 +344,12 @@ foreach(format ${IFC_FORMATS})
 	add_compile_definitions(OIP_MODULE_EARLYBINDING_${format})
 endforeach()
 
+add_subdirectory(UnitTests)
+
 # Do currently not work. Located in Other. 
 #add_subdirectory(RoadXMLViewer)
 #add_subdirectory(LandXMLViewer)
 #add_subdirectory(IfcTunnelGenerator)
-#add_subdirectory(UnitTests)
 #add_subdirectory(oip)
 #add_subdirectory(IfcBridgeGenerator)
 
@@ -353,30 +358,34 @@ endforeach()
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # USER INTERFACE. 
-file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
+
+file(GLOB OpenInfraPlatform_UserInterface_Source 					UserInterface/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Forms_Source 				UserInterface/Forms/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Resources/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_ColorPicker_Source		UserInterface/ColorPicker/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Dialogues_Source 			UserInterface/Dialogues/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source 	UserInterfaces/QtPropertyBrowser/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source 	UserInterface/QtPropertyBrowser/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Shader_Source 			UserInterface/Shader/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Shader_D3D_Source 		UserInterface/Shader/D3D/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			UserInterface/ViewPanel/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source 	UserInterface/ViewPanel/Effects/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_QCustomPlot_Source 		external/qcustomplot/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Resources/*.*)
 
 # Currently not included.
 #file(GLOB OpenInfraPlatform_UserInterface_Tools_Source				UserInterface/other/Tools/*.*)
 #file(GLOB OpenInfraPlatform_UserInterface_View2DWindow			 	UserInterface/other/View2DWindow/*.*)
+# file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
+
 
 # Does currently not work. 
-#file(GLOB OpenInfraPlatform_UnitTesting_Source					other/other_UI/UnitTesting/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_UnitTesting_Source					UserInterface/UnitTesting/*.*)
 
 set(OpenInfraPlatform_UserInterface_Forms
 	external/QSimpleUpdater/src/dialogs/download_dialog.ui
 	UserInterface/Forms/MainWindow.ui
 	UserInterface/Forms/LicenseAndCopyrightInformation.ui
-	
+	UserInterface/Forms/PreferencesDialog.ui
+
 	# Currently not included.
 	#UserInterface/Forms/CreateAccidentReport.ui
 	#UserInterface/Forms/CreateArcClothoidArc.ui
@@ -398,7 +407,6 @@ set(OpenInfraPlatform_UserInterface_Forms
 	#UserInterface/Forms/ExportIfcZipDialog.ui
 	#UserInterface/Forms/GenerateTerrain.ui
 	#UserInterface/Forms/OSMImportDialog.ui
-	#UserInterface/Forms/PreferencesDialog.ui
 	#UserInterface/Forms/VerticalAlignmentWindow.ui
 	#UserInterface/Forms/XYZImportDialog.ui
 	#UserInterface/Forms/AddGeoreferenceDialog.ui
@@ -407,15 +415,19 @@ set(OpenInfraPlatform_UserInterface_Forms
 # Collect all translation files
 FILE(GLOB Translation_TS UserInterface/Data/translations/*.ts)
 
+set(OpenInfraPlatform_RC
+	UserInterface/Resources/OpenInfraPlatform.qrc
+	UserInterface/QtPropertyBrowser/qtpropertybrowser.qrc
+)
+
 #------------------------------------------------------------------------------
 # Set source groups
 #------------------------------------------------------------------------------
 
 # USER INTERFACE.
-source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
+source_group(UserInterface						FILES ${OpenInfraPlatform_UserInterface_Source})
 source_group(UserInterface\\Forms				FILES ${OpenInfraPlatform_UserInterface_Forms_Source})
 source_group(UserInterface\\ColorPicker			FILES ${OpenInfraPlatform_UserInterface_ColorPicker_Source})
-source_group(UserInterface\\Resources			FILES ${OpenInfraPlatform_UserInterface_Resources_Source})
 source_group(UserInterface\\Dialogues			FILES ${OpenInfraPlatform_UserInterface_Dialogues_Source})
 source_group(UserInterface\\QtPropertyBrowser	FILES ${OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source})
 source_group(UserInterface\\Shader				FILES ${OpenInfraPlatform_UserInterface_Shader_Source})
@@ -423,13 +435,15 @@ source_group(UserInterface\\Shader\\D3D			FILES ${OpenInfraPlatform_UserInterfac
 source_group(UserInterface\\ViewPanel			FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Source})
 source_group(UserInterface\\ViewPanel\\Effects	FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source})
 source_group(UserInterface\\QCustomPlot			FILES ${OpenInfraPlatform_UserInterface_QCustomPlot_Source})
+source_group(UserInterface\\Resources			FILES ${OpenInfraPlatform_UserInterface_Resources_Source})
 
-# Does not currently work. 
-#source_group(UnitTesting  				FILES ${OpenInfraPlatform_UnitTesting_Source})
+# Does not currently work.
+source_group(UserInterface\\UnitTesting  		FILES ${OpenInfraPlatform_UserInterface_UnitTesting_Source})
 
 # Currently not included.
 #source_group(UserInterface\\Tools			FILES ${OpenInfraPlatform_UserInterface_Tools_Source})
 #source_group(UserInterface\\View2DWindow		FILES ${OpenInfraPlatform_UserInterface_View2DWindow})
+# source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
 
 #------------------------------------------------------------------------------
 # Set source group properties
@@ -440,7 +454,8 @@ set_source_files_properties(${OpenInfraPlatform_UserInterface_Shader_Source} 		P
 set_source_files_properties(${OpenInfraPlatform_UserInterfaces_Shader_D3D_Source} 	PROPERTIES HEADER_FILE_ONLY TRUE)
 
 # Qt related stuff
-QT5_ADD_RESOURCES(OpenInfraPlatform_UserInterface_Resources_Source_SRCS ${OpenInfraPlatform_UserInterface_Resources_Source})
+#QT5_ADD_RESOURCES(OpenInfraPlatform_UserInterface_Resources_Source_SRCS ${OpenInfraPlatform_UserInterface_Resources_Source})
+QT5_ADD_RESOURCES(OpenInfraPlatform_UserInterface_Resources_Source_SRCS ${OpenInfraPlatform_RC})
 QT5_WRAP_UI(OpenInfraPlatform_UserInterface_Forms_H ${OpenInfraPlatform_UserInterface_Forms})
 QT5_ADD_TRANSLATION(OpenInfra_QMS ${Translation_TS})
 
@@ -453,22 +468,23 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 #------------------------------------------------------------------------------
 
 	add_executable(OpenInfraPlatform.UI
+		${OpenInfraPlatform_UserInterface_Source}
 		${OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source}
-		${OpenInfraPlatform_UserInterface_Data_Source}
-		${OpenInfraPlatform_UserInterface_Forms} 
-		${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}				
+		${OpenInfraPlatform_UserInterface_Forms} 		
 		${OpenInfraPlatform_UserInterface_ColorPicker_Source}
 		${OpenInfraPlatform_UserInterface_Dialogues_Source}
 		${OpenInfraPlatform_UserInterface_ViewPanel_Source}
 		${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source}
 		${OpenInfraPlatform_UserInterface_Shader_Source}
-		${OpenInfraPlatform_UserInterface_Shader_D3D_Source}
+		#${OpenInfraPlatform_UserInterface_Shader_D3D_Source}
 		${OpenInfraPlatform_UserInterface_QCustomPlot_Source}
+		${OpenInfraPlatform_UserInterface_UnitTesting_Source}	
 		
 		# Currently not included.
 		#${OpenInfraPlatform_UserInterface_View2DWindow}
-		#${OpenInfraPlatform_UserInterface_Tools_Source}
-		#${OpenInfraPlatform_UnitTesting_Source}		
+		#${OpenInfraPlatform_UserInterface_Tools_Source}	
+		${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}		
+		#${OpenInfraPlatform_UserInterface_Data_Source}
 		)
 
 #------------------------------------------------------------------------------
@@ -476,7 +492,7 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 #------------------------------------------------------------------------------
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(OpenInfraPlatform.UI Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::XmlPatterns Qt5::Svg Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Location Qt5::Positioning)
+target_link_libraries(OpenInfraPlatform.UI OpenInfraPlatform.Core Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::XmlPatterns Qt5::Svg Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Location Qt5::Positioning)
 
 target_link_libraries( OpenInfraPlatform.UI
 	${OpenInfraPlatform.EarlyBinding_LIBRARIES}
@@ -526,9 +542,9 @@ add_custom_target(CopyOpenInfraPlatformUIResources
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Shader					${CMAKE_BINARY_DIR}/RoadXMLViewer/Shader
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Shader					${CMAKE_BINARY_DIR}/LandXMLViewer/Shader
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Style					${CMAKE_BINARY_DIR}/UserInterface/Style
-	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Data					${CMAKE_BINARY_DIR}/UserInterface/Data
+	COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/UserInterface/Data						${CMAKE_BINARY_DIR}/UserInterface/Data
 	
-	#COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/other/testdata					${CMAKE_BINARY_DIR}/LandXMLViewer/testdata
+	#COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/other/testdata						${CMAKE_BINARY_DIR}/LandXMLViewer/testdata
 	#COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/other/testdata						${CMAKE_BINARY_DIR}/testdata
 	#COMMAND	${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/Data/DesignAutomation				${CMAKE_BINARY_DIR}/UnitTests/Data/DesignAutomation
 
@@ -671,9 +687,8 @@ set_target_properties(OpenInfraPlatform.ExpressBindingGenerator				PROPERTIES FO
 Option(MODULES_POINT_CLOUD_PROCESSING ON)
 
 if(MODULES_POINT_CLOUD_PROCESSING)
-
+add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
 add_subdirectory(PointCloudProcessing)
-
 endif()
 
 #----------------------------------------------------------

@@ -21,7 +21,7 @@
 
 #include "Viewport.h"
 //#include "buw.BlueApplication.h"
-#include "../../DataManagement/Data.h"
+#include "DataManagement/General/Data.h"
 
 #include <QMenuBar>
 #include <QDockWidget>

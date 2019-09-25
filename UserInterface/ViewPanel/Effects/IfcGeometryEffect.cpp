@@ -17,7 +17,7 @@
 
 #include "IfcGeometryEffect.h"
 
-#include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
+#include "../UserInterface/ViewPanel/RenderResources.h"
 #include <BlueFramework/Rasterizer/vertex.h>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
@@ -47,7 +47,7 @@ IfcGeometryEffect::~IfcGeometryEffect() {
     depthStencilMSAA_ = nullptr;
 }
 
-void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, buw::Vector3d & offset)
+void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, buw::Vector3d & offset)
 {
     if(!ifcGeometryModel->isEmpty()) {
         buw::vertexBufferDescription vbd;
