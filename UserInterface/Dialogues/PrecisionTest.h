@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "OpenInfraPlatform/DataManagement/AsyncJob.h"
-#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
+#include "../Core/src/DataManagement/General/AsyncJob.h"
+//#include "OpenInfraPlatform/Infrastructure/Alignment/HorizontalAlignment/HorizontalAlignmentElement2DClothoid.h"
 
 namespace OpenInfraPlatform
 {
@@ -38,8 +38,8 @@ namespace OpenInfraPlatform
 		public:
 			PrecisionTest()
 			{
-				state = DoNothing;
-				OpenInfraPlatform::AsyncJob::getInstance().jobFinished.connect(boost::bind(&PrecisionTest::jobFinished, this, _1, _2));
+				/*state = DoNothing;
+				OpenInfraPlatform::Core::DataManagement::AsyncJob::getInstance().jobFinished.connect(boost::bind(&PrecisionTest::jobFinished, this, _1, _2));*/
 			}
 
 			void startTest(int iterations)
@@ -53,7 +53,7 @@ namespace OpenInfraPlatform
 				</Spiral>
 				*/
 
-				buw::Vector2d startPosition(4007.416452674545, 7812.092296369315);
+				/*buw::Vector2d startPosition(4007.416452674545, 7812.092296369315);
 				double startDirection = buw::HorizontalAlignmentElement2DClothoid::computeStartDirection(startPosition, buw::Vector2d(3973.275113622304, 7821.715472328171));
 				double startCurvature = 1.0/63.0;
 				bool counterClockwise = false;
@@ -76,7 +76,7 @@ namespace OpenInfraPlatform
 				totalIterations = iterations;
 				iteration = 0;
 
-				exportIfc();
+				exportIfc();*/
 			}
 		private:
 
@@ -120,7 +120,7 @@ namespace OpenInfraPlatform
 
 			void exportIfc()
 			{
-				std::cout << "export ifc" << std::endl;
+		/*		std::cout << "export ifc" << std::endl;
 
 				state = ExportingIfc;
 
@@ -136,12 +136,12 @@ namespace OpenInfraPlatform
 				desc.exportTerrain = false;
 				desc.useRadiansInsteadOfDegrees = true;
 
-				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportIfcAlignment1x0(desc, "ifcPrecisionTest.ifc");
+				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportIfcAlignment1x0(desc, "ifcPrecisionTest.ifc");*/
 			}
 
 			void exportOkstra()
 			{
-				std::cout << "export okstra" << std::endl;
+			/*	std::cout << "export okstra" << std::endl;
 				state = ExportingOkstra;
 
 				buw::ReferenceCounted<buw::HorizontalAlignment2D> horizontalAlignment = std::make_shared<buw::HorizontalAlignment2D>();
@@ -151,7 +151,7 @@ namespace OpenInfraPlatform
 				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().clear();
 				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().addAlignment(alignment);
 
-				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportOkstra("okstraPrecisionTest.xml", "2.016");
+				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().exportOkstra("okstraPrecisionTest.xml", "2.016");*/
 			}
 
 			void importIfc()
@@ -159,8 +159,8 @@ namespace OpenInfraPlatform
 				std::cout << "import ifc" << std::endl;
 				state = ImportingIfc;
 
-				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().clear();
-				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("ifcPrecisionTest.ifc");
+				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().clear();
+				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("ifcPrecisionTest.ifc");
 			}
 
 			void importOkstra()
@@ -168,19 +168,19 @@ namespace OpenInfraPlatform
 				std::cout << "import okstra" << std::endl;
 				state = ImportingOkstra;
 
-				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().clear();
-				OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().import("okstraPrecisionTest.xml");
+				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().clear();
+				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import("okstraPrecisionTest.xml");
 			}
 
 			void importFinished()
 			{
-				buw::ReferenceCounted<buw::IAlignment3D> a = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getAlignmentModel()->getAlignment(0);
+				//buw::ReferenceCounted<buw::IAlignment3D> a = OpenInfraPlatform::DataManagement::DocumentManager::getInstance().getData().getAlignmentModel()->getAlignment(0);
 
-				buw::ReferenceCounted<buw::Alignment2DBased3D> alignment2D = std::static_pointer_cast<buw::Alignment2DBased3D>(a);
-				buw::ReferenceCounted<buw::HorizontalAlignment2D> horizontalAlignment = alignment2D->getHorizontalAlignment();
+				//buw::ReferenceCounted<buw::Alignment2DBased3D> alignment2D = std::static_pointer_cast<buw::Alignment2DBased3D>(a);
+				//buw::ReferenceCounted<buw::HorizontalAlignment2D> horizontalAlignment = alignment2D->getHorizontalAlignment();
 
-				buw::ReferenceCounted<buw::HorizontalAlignmentElement2D> element = horizontalAlignment->getAlignmentElementByIndex(0);
-				tempClothoid = std::static_pointer_cast<buw::HorizontalAlignmentElement2DClothoid>(element);
+				//buw::ReferenceCounted<buw::HorizontalAlignmentElement2D> element = horizontalAlignment->getAlignmentElementByIndex(0);
+				//tempClothoid = std::static_pointer_cast<buw::HorizontalAlignmentElement2DClothoid>(element);
 			}
 
 			template<typename T>
@@ -212,64 +212,64 @@ namespace OpenInfraPlatform
 			{
 				state = DoNothing;
 
-				Diff<buw::Vector2d> start;
-				start.target = clothoid->getStartPosition();
-				start.actual = tempClothoid->getStartPosition();
+				//Diff<buw::Vector2d> start;
+				////start.target = clothoid->getStartPosition();
+				////start.actual = tempClothoid->getStartPosition();
 
-				Diff<buw::Vector2d> end;
-				end.target = clothoid->getEndPosition();
-				end.actual = tempClothoid->getEndPosition();
+				//Diff<buw::Vector2d> end;
+				//end.target = clothoid->getEndPosition();
+				//end.actual = tempClothoid->getEndPosition();
 
-				Diff<buw::Vector2d> pi;
-				pi.target = clothoid->getPiPosition();
-				pi.actual = tempClothoid->getPiPosition();
+				//Diff<buw::Vector2d> pi;
+				//pi.target = clothoid->getPiPosition();
+				//pi.actual = tempClothoid->getPiPosition();
 
-				Diff<double> startDirection;
-				startDirection.target = clothoid->getStartDirection();
-				startDirection.actual = tempClothoid->getStartDirection();
+				//Diff<double> startDirection;
+				//startDirection.target = clothoid->getStartDirection();
+				//startDirection.actual = tempClothoid->getStartDirection();
 
-				Diff<double> endDirection;
-				endDirection.target = clothoid->getEndDirection();
-				endDirection.actual = tempClothoid->getEndDirection();
+				//Diff<double> endDirection;
+				//endDirection.target = clothoid->getEndDirection();
+				//endDirection.actual = tempClothoid->getEndDirection();
 
 
-				Diff<double> startCurvature;
-				startCurvature.target = clothoid->getStartCurvature();
-				startCurvature.actual = tempClothoid->getStartCurvature();
+				//Diff<double> startCurvature;
+				//startCurvature.target = clothoid->getStartCurvature();
+				//startCurvature.actual = tempClothoid->getStartCurvature();
 
-				Diff<double> endCurvature;
-				endCurvature.target = clothoid->getEndCurvature();
-				endCurvature.actual = tempClothoid->getEndCurvature();
+				//Diff<double> endCurvature;
+				//endCurvature.target = clothoid->getEndCurvature();
+				//endCurvature.actual = tempClothoid->getEndCurvature();
 
-				Diff<double> clothoidConstant;
-				clothoidConstant.target = clothoid->getClothoidConstant();
-				clothoidConstant.actual = tempClothoid->getClothoidConstant();
+				//Diff<double> clothoidConstant;
+				//clothoidConstant.target = clothoid->getClothoidConstant();
+				//clothoidConstant.actual = tempClothoid->getClothoidConstant();
 
-				Diff<double> length;
-				length.target = clothoid->getLength();
-				length.actual = tempClothoid->getLength();
+				//Diff<double> length;
+				//length.target = clothoid->getLength();
+				//length.actual = tempClothoid->getLength();
 
-				Diff<bool> isEntry;
-				isEntry.target = clothoid->isEntry();
-				isEntry.actual = tempClothoid->isEntry();
+				//Diff<bool> isEntry;
+				//isEntry.target = clothoid->isEntry();
+				//isEntry.actual = tempClothoid->isEntry();
 
-				Diff<bool> ccw;
-				ccw.target = clothoid->isCounterClockwise();
-				ccw.actual = tempClothoid->isCounterClockwise();
+				//Diff<bool> ccw;
+				//ccw.target = clothoid->isCounterClockwise();
+				//ccw.actual = tempClothoid->isCounterClockwise();
 
-				std::cout << "Results:" << std::endl;
-				std::cout << "StartPosition:\t" << start.diff() << std::endl;
-				std::cout << "EndPosition:\t\t" << end.diff() << std::endl;
-				std::cout << "PiPosition:\t\t" << pi.diff() << std::endl;
-				std::cout << "StartDirection:\t" << startDirection.diff() << std::endl;
-				std::cout << "EndDirection:\t\t" << endDirection.diff() << std::endl;
-				std::cout << "StartCurvature:\t\t" << startCurvature.diff() << std::endl;
-				std::cout << "EndCurvature:\t\t" << endCurvature.diff() << std::endl;
-				std::cout << "ClothoidConstant:\t" << clothoidConstant.diff() << std::endl;
-				std::cout << "Length:\t\t\t" << length.diff() << std::endl;
-				std::cout << "IsEntry:\t\t\t" << isEntry.diff() << std::endl;
-				std::cout << "IsCCW:\t\t\t" << ccw.diff() << std::endl;
-				std::cout << std::endl;
+				//std::cout << "Results:" << std::endl;
+				//std::cout << "StartPosition:\t" << start.diff() << std::endl;
+				//std::cout << "EndPosition:\t\t" << end.diff() << std::endl;
+				//std::cout << "PiPosition:\t\t" << pi.diff() << std::endl;
+				//std::cout << "StartDirection:\t" << startDirection.diff() << std::endl;
+				//std::cout << "EndDirection:\t\t" << endDirection.diff() << std::endl;
+				//std::cout << "StartCurvature:\t\t" << startCurvature.diff() << std::endl;
+				//std::cout << "EndCurvature:\t\t" << endCurvature.diff() << std::endl;
+				//std::cout << "ClothoidConstant:\t" << clothoidConstant.diff() << std::endl;
+				//std::cout << "Length:\t\t\t" << length.diff() << std::endl;
+				//std::cout << "IsEntry:\t\t\t" << isEntry.diff() << std::endl;
+				//std::cout << "IsCCW:\t\t\t" << ccw.diff() << std::endl;
+				//std::cout << std::endl;
 
 				/*buw::Vector2d start, startIfc, startOkstra;
 				buw::Vector2d end, endIfc, endOkstra;
@@ -334,7 +334,7 @@ namespace OpenInfraPlatform
 
 
 		private:
-			buw::ReferenceCounted<buw::HorizontalAlignmentElement2DClothoid> clothoid, tempClothoid;
+			/*buw::ReferenceCounted<buw::HorizontalAlignmentElement2DClothoid> clothoid, tempClothoid;*/
 			State state;
 
 			int iteration, totalIterations;

@@ -19,8 +19,8 @@
 #ifndef BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h
 #define BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h
 
-#include "OpenInfraPlatform/namespace.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
+#include "namespace.h"
+#include "../UserInterface/ViewPanel/RenderResources.h"
 #include <buw.Engine.h>
 #include <buw.Rasterizer.h>
 

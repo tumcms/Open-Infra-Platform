@@ -21,7 +21,7 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSType_13ae9fe1_2b22_4812_b3bc_747f6d941fab_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSType_13ae9fe1_2b22_4812_b3bc_747f6d941fab_h
 
-#include "../EarlyBinding/src/namespace.h"
+//#include "../EarlyBinding/src/namespace.h"
 
 #include "EXPRESSObject.h"
 

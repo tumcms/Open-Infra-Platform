@@ -25,49 +25,47 @@
 
 #include "CarveHeaders.h"
 
-namespace OpenInfraPlatform
-{
-	namespace IfcGeometryConverter
-	{
-		template <
-			class IfcEntityTypesT
-		>
-		class UnhandledRepresentationException : public std::exception
-		{
-		public:
-			UnhandledRepresentationException()
-			{
-			}
-			UnhandledRepresentationException(std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem> item)
-			{
-				item = item;
-			}
+namespace OpenInfraPlatform {
+	namespace Core {
+		namespace IfcGeometryConverter {
+			template <
+				class IfcEntityTypesT
+			>
+				class UnhandledRepresentationException : public std::exception {
+				public:
+					UnhandledRepresentationException()
+					{
+					}
+					UnhandledRepresentationException(std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem> item)
+					{
+						item = item;
+					}
 
-			~UnhandledRepresentationException() throw()
-			{
-			}
+					~UnhandledRepresentationException() throw()
+					{
+					}
 
-			const char* what() const throw()
-			{
-				return "Unhandled IFC Representation";
-			}
+					const char* what() const throw()
+					{
+						return "Unhandled IFC Representation";
+					}
 
-			std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem> item;
-			//std::shared_ptr<typename IfcEntityTypesT::IfcAbstractSelect> select;
-		};
+					std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem> item;
+					//std::shared_ptr<typename IfcEntityTypesT::IfcAbstractSelect> select;
+			};
 
-		#ifdef _DEBUG
+#ifdef _DEBUG
 
-		class DebugBreakException : public std::exception
-		{
-		public:
-			DebugBreakException( std::string reason ) { reason = reason; }
-			~DebugBreakException() throw() {}
-			virtual const char* what() const throw() { return reason.c_str(); }
-			std::string reason;
-		};
+			class DebugBreakException : public std::exception {
+			public:
+				DebugBreakException(std::string reason) { reason = reason; }
+				~DebugBreakException() throw() {}
+				virtual const char* what() const throw() { return reason.c_str(); }
+				std::string reason;
+			};
 
-		#endif
+#endif
+		}
 	}
 }
 

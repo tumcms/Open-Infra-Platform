@@ -19,11 +19,11 @@
 #ifndef OpenInfraPlatform_UserInterface_GradientClearEffect_afbb68df_d61c_4c33_97ea_562ed68cda3c_h
 #define OpenInfraPlatform_UserInterface_GradientClearEffect_afbb68df_d61c_4c33_97ea_562ed68cda3c_h
 
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Viewport.h"
+#include "ViewPanel/Viewport.h"
 
-#include "OpenInfraPlatform/Benchmark.h"
-#include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
-#include "OpenInfraPlatform/namespace.h"
+#include "UnitTesting/Benchmark.h"
+#include "ViewPanel/RenderResources.h"
+#include "namespace.h"
 
 #include <buw.Engine.h>
 #include <buw.Rasterizer.h>

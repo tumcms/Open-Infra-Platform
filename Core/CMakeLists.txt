@@ -26,36 +26,36 @@ file(GLOB Core_Source 								src/*.*)
 file(GLOB Core_DataManagement_Source 				src/DataManagement/*.*)
 file(GLOB Core_DataManagement_General_Source 		src/DataManagement/General/*.*)
 file(GLOB Core_DataManagement_Command_Source		src/DataManagement/Command/*.*)
-file(GLOB Core_DataManagement_Import_Source			src/DataManagement/Import/*.*)
-file(GLOB Core_DataManagement_Export_Source			src/DataManagement/Export/*.*)
+#file(GLOB Core_DataManagement_Import_Source		src/DataManagement/Import/*.*)
+#file(GLOB Core_DataManagement_Export_Source		src/DataManagement/Export/*.*)
 file(GLOB Core_IfcGeometryConverter_Source			src/IfcGeometryConverter/*.*)
 
 source_group(Core								FILES $Core_Source})
 source_group(Core\\DataManagement				FILES ${Core_DataManagement_Source})
 source_group(Core\\DataManagement\\General		FILES ${Core_DataManagement_General_Source})
 source_group(Core\\DataManagement\\Command		FILES ${Core_DataManagement_Command_Source})
-source_group(Core\\DataManagement\\Import		FILES ${Core_DataManagement_Import_Source})
-source_group(Core\\DataManagement\\Export		FILES ${Core_DataManagement_Export_Source})
+#source_group(Core\\DataManagement\\Import		FILES ${Core_DataManagement_Import_Source})
+#source_group(Core\\DataManagement\\Export		FILES ${Core_DataManagement_Export_Source})
 source_group(Core\\IfcGeometryConverter			FILES ${Core_IfcGeometryConverter_Source})
 
-include_directories(
-    	../Core/src
-		${BLUEFRAMEWORK_INCLUDE_DIR}
-		${CMAKE_SOURCE_DIR}/EarlyBinding/src
-)		
+set(PROJECT_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src ${BLUEFRAMEWORK_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/EarlyBinding/src)
+
+include_directories(${PROJECT_INCLUDE_DIRS})		
 
 add_library(OpenInfraPlatform.Core STATIC
 	${Core_Source}
 	${Core_DataManagement_Source}
 	${Core_DataManagement_General_Source}
 	${Core_DataManagement_Command_Source}
-	${Core_DataManagement_Import_Source}
-	${Core_DataManagement_Export_Source}
+	#${Core_DataManagement_Import_Source}
+	#${Core_DataManagement_Export_Source}
 	${Core_IfcGeometryConverter_Source}
 )
 
+target_include_directories(OpenInfraPlatform.Core INTERFACE ${PROJECT_INCLUDE_DIRS} )
+
 # Thirdparty libraries the project depends upon.
-target_link_libraries(OpenInfraPlatform.Core
+target_link_libraries(OpenInfraPlatform.Core PRIVATE
     Qt5::Core
     Qt5::OpenGL
     Qt5::Xml
@@ -64,8 +64,14 @@ target_link_libraries(OpenInfraPlatform.Core
     carve
 )
 
+if(MODULES_POINT_CLOUD_PROCESSING)
+	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
+	include_directories(${CC_INCLUDE_DIRS})
+	target_link_libraries(OpenInfraPlatform.Core PUBLIC ${CC_LIBRARIES})
+endif()
+
 foreach(format ${IFC_FORMATS})
-	target_link_libraries(OpenInfraPlatform.Core OpenInfraPlatform.${format})
+	target_link_libraries(OpenInfraPlatform.Core PUBLIC OpenInfraPlatform.${format})
 endforeach()
 
 set_target_properties(OpenInfraPlatform.Core 	PROPERTIES FOLDER "OpenInfraPlatform")

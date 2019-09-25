@@ -15,7 +15,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/BoundingBoxEffect.h"
+#include "BoundingBoxEffect.h"
 
 #include <QPainter>
 

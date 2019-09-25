@@ -15,7 +15,7 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/GradientClearEffect.h"
+#include "GradientClearEffect.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
 

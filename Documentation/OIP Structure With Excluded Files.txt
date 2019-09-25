@@ -69,9 +69,9 @@
 							|- (X)DeleteSurface.*
 							|- (X)ImportXYZ.*
 ]							|- (X)SelectAlignment.*
-[						|- Export
-							|- Export.*
-							|- ExportIfc4x1.*
+[						|- (X)Export
+							|- (X)Export.*
+							|- (X)ExportIfc4x1.*
 							|- (X)ExportIfc4x1ExcelReport.*
 							|- (X)ExportIfcAlignment1x0.*
 							|- (X)ExportIfcOWL4x1.*
@@ -88,9 +88,9 @@
 							|- Data.*
 							|- namespace.h
 ]							|- PickIdGenerator.*
-[						|- Import
-							|- Import.*
-							|- ImportIfc4x1.*
+[						|- (X)Import
+							|- (X)Import.*
+							|- (X)ImportIfc4x1.*
 							|- (X)HeightmapImport.*
 							|- (X)ImportD40.*
 							|- (X)ImportIfcAlignment1x0.*
@@ -141,8 +141,8 @@
 [				|- UserInterface
 [					|- ColorPicker
 ]						|- (...)
-[					|- Data
-]						|- (...)
+[					|- (X)Data
+]						|- (X)(...)
 [					|- Dialogues
 						|- LicenseAndCopyrightInformation.*
 						|- MainWindow.*
@@ -162,8 +162,8 @@
 						|- (X)OpenInfraMap.*
 						|- (X)OSMImportDialog.*
 						|- (X)PrecisionTest.h
-						|- (X)PreferencesDialog.*
-						|- (X)resource.h
+						|- PreferencesDialog.*
+						|- resource.h
 						|- (X)ShowIFCtree.*
 						|- (X)SimpleTreeItem.*
 						|- (X)SimpleTreeModel.*
@@ -172,6 +172,7 @@
 [					|- Forms
 						|- LicenseAndCopyrightInformation.ui
 						|- MainWindow.ui
+						|- PreferencesDialog.ui
 						|- (X)AddGeoreferenceDialog.ui
 						|- (X)addgeoreferencingdialogue.ui
 						|- (X)CodeEditorWindow.ui
@@ -195,14 +196,13 @@
 						|- (X)georeferencingdialog.ui
 						|- (X)importifczipdialog.ui
 						|- (X)OSMImportDialog.ui
-						|- (X)PreferencesDialog.ui
 						|- (X)showifctree.ui
 						|- (X)VerticalAlignentWindow.ui
 ]						|- (X)XYZImportDialog.ui
 [					|- QCustomPlot
 ]						|- (...)
-[					|- Resources
-]						|- (...)
+[					|- (X)Resources
+]						|- (X)(...)
 [					|- Shader
 [						|- D3D
 							|- AlignmentShader.hlsl
@@ -276,7 +276,8 @@
 						|- Tool.*
 						|- View.*
 						|- Viewport.*
-]]]					|- Viewport_CrossSection.cpp										
+]]]						|- Viewport_CrossSection.cpp	
+							
 [//			|- (X)OpenInfraPlatform.PointCloudProcessing (MODULE)
 				|- PointCloudProcessing
 					|- Octree.*

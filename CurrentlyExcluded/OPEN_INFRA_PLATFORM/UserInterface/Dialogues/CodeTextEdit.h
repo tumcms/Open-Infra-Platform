@@ -27,7 +27,7 @@
 #include <QTextStream>
 #include <QDropEvent>
 #include <QMimeData>
-#include "highlighter.h"
+#include "../UserInterface/Dialogues/highlighter.h"
 #include <iostream>
 
 namespace OpenInfraPlatform

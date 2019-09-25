@@ -41,83 +41,79 @@
 #include "CarveHeaders.h"
 
 /**********************************************************************************************/
+namespace OpenInfraPlatform {
+	namespace Core {
+		namespace IfcGeometryConverter {
 
-namespace OpenInfraPlatform
-{
-	namespace IfcGeometryConverter
-	{
+			//\brief Class to hold input data of one IFC geometric representation item.
+			class ItemData {
+			public:
+				std::vector<std::shared_ptr<carve::input::PolyhedronData>>	closed_polyhedrons;
+				std::vector<std::shared_ptr<carve::input::PolyhedronData>>	open_polyhedrons;
+				std::vector<std::shared_ptr<carve::input::PolyhedronData>>	open_or_closed_polyhedrons;
+				std::vector<std::shared_ptr<carve::input::PolylineSetData>> polylines;
+				std::vector<std::shared_ptr<carve::mesh::MeshSet<3>>>		meshsets;
+				void createMeshSetsFromClosedPolyhedrons();
+			};
 
-		//\brief Class to hold input data of one IFC geometric representation item.
-		class ItemData
-		{
-		public:
-			std::vector<std::shared_ptr<carve::input::PolyhedronData>>	closed_polyhedrons;
-			std::vector<std::shared_ptr<carve::input::PolyhedronData>>	open_polyhedrons;
-			std::vector<std::shared_ptr<carve::input::PolyhedronData>>	open_or_closed_polyhedrons;
-			std::vector<std::shared_ptr<carve::input::PolylineSetData>> polylines;
-			std::vector<std::shared_ptr<carve::mesh::MeshSet<3>>>		meshsets;
-			void createMeshSetsFromClosedPolyhedrons();
-		};
+			/**************************************************************************************/
 
-		/**************************************************************************************/
+			struct PlacementData {
+				std::set<int> placement_already_applied;
+				carve::math::Matrix pos;
+			};
 
-		struct PlacementData
-		{
-			std::set<int> placement_already_applied;
-			carve::math::Matrix pos;
-		};
+			/**************************************************************************************/
 
-		/**************************************************************************************/
-
-		template<
-			class IfcEntityTypesT
-		>
-		class ShapeInputDataT
-		{
-		public:
-			ShapeInputDataT()
-				: added_to_storey(false)
-			{ }
-
-			~ShapeInputDataT()
-			{ }
-
-			// compute AABB from meshsets
-			void computeAABB()
-			{
-				bool firstIteration = true;
-
-				for (const auto& itemData : vec_item_data)
-				{
-					for (const auto& meshset : itemData->meshsets)
+			template<
+				class IfcEntityTypesT
+			>
+				class ShapeInputDataT {
+				public:
+					ShapeInputDataT()
+						: added_to_storey(false)
 					{
-						if (meshset->meshes.empty()) {
-							continue;
-						}
+					}
 
-						carve::mesh::MeshSet<3>::aabb_t& aabb = meshset->getAABB();
+					~ShapeInputDataT()
+					{
+					}
 
-						if (firstIteration) {
-							aabb = aabb;
-							firstIteration = false;
-						}
-						else {
-							aabb.unionAABB(aabb);
+					// compute AABB from meshsets
+					void computeAABB()
+					{
+						bool firstIteration = true;
+
+						for(const auto& itemData : vec_item_data) {
+							for(const auto& meshset : itemData->meshsets) {
+								if(meshset->meshes.empty()) {
+									continue;
+								}
+
+								carve::mesh::MeshSet<3>::aabb_t& aabb = meshset->getAABB();
+
+								if(firstIteration) {
+									aabb = aabb;
+									firstIteration = false;
+								}
+								else {
+									aabb.unionAABB(aabb);
+								}
+							}
 						}
 					}
-				}
-			}
 
-			std::shared_ptr<typename IfcEntityTypesT::IfcProduct>				ifc_product;
-			std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>		representation;
-			std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>		object_placement;
-			std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProduct>>	vec_openings;
+					std::shared_ptr<typename IfcEntityTypesT::IfcProduct>				ifc_product;
+					std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>		representation;
+					std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>		object_placement;
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProduct>>	vec_openings;
 
-			std::vector<std::shared_ptr<ItemData>>	vec_item_data;
-			bool									added_to_storey;
+					std::vector<std::shared_ptr<ItemData>>	vec_item_data;
+					bool									added_to_storey;
 
-			carve::mesh::MeshSet<3>::aabb_t			aabb;
-		};
+					carve::mesh::MeshSet<3>::aabb_t			aabb;
+			};
+		}
 	}
 }
 
