@@ -537,8 +537,9 @@ namespace Core {
 											// Calculate x and y coordinates for each horizontal station within line segment. 
 											if (it_hor_stations.x_ == 0) // Skips calculation if x,y coordinate is already there.
 											{
-												it_hor_stations.x_ = startStationX + segmentLength * cos(startDirection);
-												it_hor_stations.y_ = startStationY + segmentLength * sin(startDirection);
+												double distanceToStart = it_hor_stations.distAlong_ - startStationDistAlong;
+												it_hor_stations.x_ = startStationX + distanceToStart * cos(startDirection);
+												it_hor_stations.y_ = startStationY + distanceToStart * sin(startDirection);
 											} // end if
 										} // end stations iteration
 									} // end if isLine
@@ -568,7 +569,7 @@ namespace Core {
 
 										// Calculate circle center, given start point and direction (angle between tangent and x-axis).
 										double radiusDirection = 0.;
-										is_CCW ? radiusDirection = startDirection + M_PI / 2 : radiusDirection = startDirection - M_PI / 2;
+										is_CCW ? radiusDirection = startDirection + 3 * M_PI / 2 : radiusDirection = startDirection + M_PI / 2;
 										double centerX = startStationX + cos(radiusDirection) * radius;
 										double centerY = startStationY + sin(radiusDirection) * radius;
 										double angleAlpha = atan2(startStationY - centerY, startStationX - centerX); // Angle between x-axis and vector(start, center).
@@ -819,20 +820,22 @@ namespace Core {
 											bool is_convex = v_seg_circ_arc_2D->IsConvex;
 
 											// Calculate x and y coordinates for each vertical station within circular arc segment. 
-											//TODO check calculation
-											// Calculate circle centre.
-											double distAlongCentre = startDistAlong - radius * startDistAlong / sqrt(1 + pow(startGradient, 2));
-											double centreZ = startHeight + radius * startDistAlong / sqrt(1 + pow(startGradient, 2));
 
-											// Calculate z coordinate according to isConvex
-											if (it_ver_stations.z_ == 0) // Skip calculation if z coordinate is already there.
-											{
-												if (is_convex == true) {
-													it_ver_stations.z_ = startDistAlong + sqrt(pow(radius, 2) - pow(horizontalLength - distAlongCentre, 2)); // Crest (decreasing gradiant)
-												}
-												else {
-													it_ver_stations.z_ = startDistAlong - sqrt(pow(radius, 2) - pow(horizontalLength - distAlongCentre, 2)); // Sag (increasing gradiant)
-												}
+											// pointDistAlong and verSegDistAlong are along horizontal alignment, which corresponds to the horizontal axis in the vertical alignment
+											double distanceToStart = it_ver_stations.distAlong_ - startDistAlong;
+											double z = 0.;
+
+											if (is_convex == true) {
+												z = -sqrt(pow(radius, 2) - pow(distanceToStart + (startGradient * radius) / sqrt(1 + pow(startGradient, 2)), 2))
+													+ radius / sqrt(1 + pow(startGradient, 2)); // Crest (decreasing gradient)
+											}
+											else {
+												z = sqrt(pow(radius, 2) - pow(distanceToStart - (startGradient * radius) / sqrt(1 + pow(startGradient, 2)), 2))
+													- radius / sqrt(1 + pow(startGradient, 2)); // Sag (increasing gradient)
+											}
+
+											it_ver_stations.z_ = z + startHeight;
+
 											} // end isConvex
 										} // end if
 									} // end isCircArc
