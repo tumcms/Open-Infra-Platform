@@ -681,7 +681,6 @@ namespace OpenInfraPlatform {
 							// Iterate over horizontal segments
 							for (auto it_segment : verSegments) {
 
-								// todo: correspondence of StartDistAlong in Horizontal and in Vertical
 								// StartDistAlong type IfcLengthMeasure [1:1]
 								if (!it_segment->StartDistAlong) {
 									BLUE_LOG(error) << "No start distance along in IfcAlignment2DVerticalSegment (Segment ID: " << it_segment->getId() << ").";
@@ -739,10 +738,6 @@ namespace OpenInfraPlatform {
 								}
 							}// end vertical stations iteration
 
-							// TODO:  coordinate calculation according to segTypes
-							// have: verticalSegmentRelevanttoPoint with verSegStartHeight, verSegStartGradient, verSegDistAlong, VerSegLength,
-							// dHorizontalSegmentRelevantToPoint, horizSegStartPointX, horizSegStartPointY, horizSegStartDirection, horizSegLength, horizSegStartDistAlong
-
 							// Calculate x and y coordinates from horizontal curve, if not already there.
 							if (!targetPoint3D->Coordinates[0])
 							{
@@ -754,8 +749,9 @@ namespace OpenInfraPlatform {
 									std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTransitionCurveSegment2D>(horCurveGeometry);
 
 								if (line_segment_2D) {
-									targetPoint3D->Coordinates[0] = horizSegStartPointX + horizSegLength * cos(horizSegStartDirection);
-									targetPoint3D->Coordinates[1] = horizSegStartPointY + horizSegLength * sin(horizSegStartDirection);
+									double distanceToStart = pointDistAlong - horizSegStartDistAlong;
+									targetPoint3D->Coordinates[0] = horizSegStartPointX + distanceToStart * cos(horizSegStartDirection);
+									targetPoint3D->Coordinates[1] = horizSegStartPointY + distanceToStart * sin(horizSegStartDirection);
 								}
 								if (circular_arc_segment_2D) {
 									// Radius type IfcPositiveLengthMeasure [1:1]
@@ -774,10 +770,10 @@ namespace OpenInfraPlatform {
 
 									// Calculate circle center, given start point and direction (angle between tangent and x-axis).
 									double radiusDirection = 0.;
-									is_CCW ? radiusDirection = horizSegStartDirection + M_PI / 2 : radiusDirection = horizSegStartDirection - M_PI / 2;
+									is_CCW ? radiusDirection = horizSegStartDirection + 3 * M_PI / 2 : radiusDirection = horizSegStartDirection + M_PI / 2;
 									double centerX = horizSegStartPointX + cos(radiusDirection) * radius;
 									double centerY = horizSegStartPointY + sin(radiusDirection) * radius;
-									double angleAlpha = atan2(startStationY - centerY, horizSegStartPointX - centerX); // Angle between x-axis and vector(start, center).
+									double angleAlpha = atan2(horizSegStartPointY - centerY, horizSegStartPointX - centerX); // Angle between x-axis and vector(start, center).
 
 									// Calculate x and y
 									double distanceStartToStation = pointDistAlong - horizSegStartDistAlong; // Distance from start of segment to point along alignment.
@@ -832,7 +828,7 @@ namespace OpenInfraPlatform {
 									{
 										double x = pointDistAlong;		// x coordinate
 										double y = 0.0;
-										if (x <= horizSegLength / 2)		// y coordinate
+										if (x <= horizSegLength / 2)	// y coordinate
 										{
 											y = pow(x, 4) / (6 * endRadius * horizSegLength * horizSegLength);
 										}
@@ -844,7 +840,7 @@ namespace OpenInfraPlatform {
 										else
 										{
 											BLUE_LOG(error) << "Y coordinate not defined for biquadratic parabola (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
-											break; // y not defined. TODO: handle, error message
+											break;
 										}
 										targetPoint3D->Coordinates[0] = x;
 										targetPoint3D->Coordinates[1] = y;
@@ -952,14 +948,20 @@ namespace OpenInfraPlatform {
 									}
 									bool is_convex = v_seg_circ_arc_2D->IsConvex;
 
+									// pointDistAlong and verSegDistAlong are along horizontal alignment, which corresponds to the horizontal axis in the vertical alignment
 									double distanceToStart = pointDistAlong - verSegDistAlong;
+									double z = 0.;
 
 									if (is_convex == true) {
-										targetPoint3D->Coordinates[2] = -sqrt(pow(radius, 2) - pow(distanceToStart + (verSegStartGradient * radius) / sqrt(1 + pow(verSegStartGradient, 2), 2) + radius / sqrt(1 + pow(verSegStartGradient, 2); // Crest (decreasing gradient)
+										z = -sqrt(pow(radius, 2) - pow(distanceToStart + (verSegStartGradient * radius) / sqrt(1 + pow(verSegStartGradient, 2)),2))
+											+ radius / sqrt(1 + pow(verSegStartGradient, 2)); // Crest (decreasing gradient)
 									}
 									else {
-										targetPoint3D->Coordinates[2] = sqrt(pow(radius, 2) - pow(distanceToStart - (verSegStartGradient * radius) / sqrt(1 + pow(verSegStartGradient, 2), 2) - radius / sqrt(1 + pow(verSegStartGradient, 2); // Sag (increasing gradient)
+										z = sqrt(pow(radius, 2) - pow(distanceToStart - (verSegStartGradient * radius) / sqrt(1 + pow(verSegStartGradient, 2)), 2)) 
+											- radius / sqrt(1 + pow(verSegStartGradient, 2)); // Sag (increasing gradient)
 									}
+
+									targetPoint3D->Coordinates[2] = z + verSegStartHeight;
 								}
 								if (v_seg_par_arc_2D)
 								{
@@ -977,8 +979,8 @@ namespace OpenInfraPlatform {
 									}
 									bool is_convex = v_seg_par_arc_2D->IsConvex;
 
-									double parabola_radius = is_convex ? -arc_const : arc_const
-										double parabola_gradient = (pointDistAlong - startDistAlong) / (parabola_radius + startGradient);
+									double parabola_radius = is_convex ? -arc_const : arc_const;
+									double parabola_gradient = (pointDistAlong - startDistAlong) / parabola_radius + startGradient;
 									targetPoint3D->Coordinates[2] = (pointDistAlong - startDistAlong) * (parabola_gradient + startGradient) / 2 + startHeight;
 								}
 							}// end z coordinate calculation
