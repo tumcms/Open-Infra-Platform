@@ -89,11 +89,6 @@ public:
 			auto end = paramvalue.size() - 1;
 			auto pos = paramvalue.find_first_of(',');
 			if (pos < end) {
-				if (paramvalue.find_first_of('(') < pos) {
-					while (std::count(paramvalue.begin(), paramvalue.begin() + pos, '(') != std::count(paramvalue.begin(), paramvalue.begin() + pos, ')'))
-						pos++;
-				}
-
 				ValueType type;
 				type = ValueType::readStepData(paramvalue.substr(0, pos), model);
 				result.push_back(type);
