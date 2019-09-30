@@ -14,9 +14,9 @@
  * OpenSceneGraph Public License for more details.
  */
 
- // More details can be found in README.md file in the root directory.
+// More details can be found in README.md file in the root directory.
 
- // visual studio
+// visual studio
 #pragma once
 // unix
 #ifndef REPRESENTATIONCONVERTER_H
@@ -80,7 +80,7 @@ namespace OpenInfraPlatform {
 				{
 					double length_factor = unitConverter->getLengthInMeterFactor();
 
-					for (auto it_representation_items : representation->Items) {
+					for(auto it_representation_items : representation->Items) {
 						std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem>& representation_item = it_representation_items.lock();
 						std::shared_ptr<ItemData> itemData(new ItemData());
 						inputData->vec_item_data.push_back(itemData);
@@ -88,7 +88,7 @@ namespace OpenInfraPlatform {
 						// (1/4) IfcGeometricRepresenationItem SUBTYPE OF IfcRepresentationItem
 						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> geom_item =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(representation_item);
-						if (geom_item) {
+						if(geom_item) {
 #ifdef _DEBUG
 							BLUE_LOG(trace) << "Processing IfcGeometricRepresentationItem #" << geom_item->getId();
 #endif
@@ -101,24 +101,24 @@ namespace OpenInfraPlatform {
 
 						// (2/4) IfcMappedItem SUBTYPE OF IfcRepresentationItem
 						std::shared_ptr<typename IfcEntityTypesT::IfcMappedItem> mapped_item = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcMappedItem>(representation_item);
-						if (mapped_item) {
+						if(mapped_item) {
 							// decltype(mapped_item->MappingSource)::type &map_source = mapped_item->MappingSource;
 							auto& map_source = mapped_item->MappingSource;
 
-							if (!map_source.lock()) {
+							if(!map_source.lock()) {
 								BLUE_LOG(warning) << "unhandled representation: #" << representation_item->getId() << " = " << representation_item->classname();
 								continue;
 							}
 
 							// decltype(map_source->Mapped_Representation)::type &mapped_representation = map_source->MappedRepresentation;
 							auto& mapped_representation = map_source->MappedRepresentation;
-							if (!mapped_representation.lock()) {
+							if(!mapped_representation.lock()) {
 								BLUE_LOG(warning) << "unhandled representation: #" << representation_item->getId() << " = " << representation_item->classname();
 								continue;
 							}
 
 							carve::math::Matrix map_matrix_target(carve::math::Matrix::IDENT());
-							if (mapped_item->MappingTarget) {
+							if(mapped_item->MappingTarget) {
 								auto& transform_operator = mapped_item->MappingTarget;
 
 								PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(transform_operator.lock(), map_matrix_target, length_factor);
@@ -129,13 +129,13 @@ namespace OpenInfraPlatform {
 
 							std::shared_ptr<typename IfcEntityTypesT::IfcPlacement> mapping_origin_placement = nullptr;
 
-							switch (mapping_origin_select.which()) {
+							switch(mapping_origin_select.which()) {
 							case 0: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<0>().lock()); break;
 							case 1: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<1>().lock()); break;
 							default: break;
 							}
 
-							if (mapping_origin_placement) {
+							if(mapping_origin_placement) {
 								PlacementConverterT<IfcEntityTypesT>::convertIfcPlacement(mapping_origin_placement, map_matrix_origin, length_factor);
 							}
 							else {
@@ -155,7 +155,7 @@ namespace OpenInfraPlatform {
 
 						// (3/4) IfcStyledItem SUBTYPE OF IfcRepresentationItem
 						std::shared_ptr<typename IfcEntityTypesT::IfcStyledItem> styled_item = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcStyledItem>(representation_item);
-						if (styled_item) {
+						if(styled_item) {
 							BLUE_LOG(warning) << "#" << styled_item->getId() << " = IfcStyledItem: Not implemented yet!";
 							continue;
 						}
@@ -163,20 +163,20 @@ namespace OpenInfraPlatform {
 						// (4/4) IfcTopologicalRepresentationItem SUBTYPE OF IfcRepresentationItem
 						std::shared_ptr<typename IfcEntityTypesT::IfcTopologicalRepresentationItem> topo_item =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>(representation_item);
-						if (topo_item) {
+						if(topo_item) {
 							// IfcTopologicalRepresentationItem ABSTRACT SUPERTYPE OF IfcConnectedFaceSet, IfcEdge, IfcFace*, IfcFaceBound*, IfcLoop*, IfcPath*, IfcVertex*.
 
 							// IfcConnectedFaceSet SUBTYPE OF IfcTopologicalRepresentationItem
 							std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet> topo_connected_face_set =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConnectedFaceSet>(topo_item);
-							if (topo_connected_face_set) {
-								BLUE_LOG(warning) << "#" << topo_item->getId() << " = IfcTopologicalRepresentationItem: #" << topo_connected_face_set->getId() << " = IfcConnectedFaceSet not implemented yet";
+							if(topo_connected_face_set) {
+								BLUE_LOG(warning) << "#" << topo_item->getId() << " = IfcTopologicalRepresentationItem: #" << topo_connected_face_set ->getId() << " = IfcConnectedFaceSet not implemented yet";
 								continue;
 							}
 
 							// IfcEdge SUBTYPE OF IfcTopologicalRepresentationItem
 							std::shared_ptr<typename IfcEntityTypesT::IfcEdge> topo_edge = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdge>(topo_item);
-							if (topo_edge) {
+							if(topo_edge) {
 								std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
 								polyline_data->beginPolyline();
 
@@ -186,14 +186,14 @@ namespace OpenInfraPlatform {
 								std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_start_point =
 									std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_start.lock());
 
-								if (vertex_start_point) {
-									if (vertex_start_point->VertexGeometry) {
+								if(vertex_start_point) {
+									if(vertex_start_point->VertexGeometry) {
 										auto& edge_start_point_geometry = vertex_start_point->VertexGeometry;
 
 										std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_point =
 											std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(edge_start_point_geometry.lock());
-										if (ifc_point) {
-											if (ifc_point->Coordinates.size() > 2) {
+										if(ifc_point) {
+											if(ifc_point->Coordinates.size() > 2) {
 												carve::geom::vector<3> point = carve::geom::VECTOR(ifc_point->Coordinates[0] * length_factor, ifc_point->Coordinates[1] * length_factor,
 													ifc_point->Coordinates[2] * length_factor);
 
@@ -208,14 +208,14 @@ namespace OpenInfraPlatform {
 								auto& vertex_end = topo_edge->EdgeEnd;
 								std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_end_point =
 									std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_end.lock());
-								if (vertex_end_point) {
-									if (vertex_end_point->VertexGeometry) {
+								if(vertex_end_point) {
+									if(vertex_end_point->VertexGeometry) {
 										auto& edge_point_geometry = vertex_end_point->VertexGeometry;
 
 										std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_point =
 											std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(edge_point_geometry.lock());
-										if (ifc_point) {
-											if (ifc_point->Coordinates.size() > 2) {
+										if(ifc_point) {
+											if(ifc_point->Coordinates.size() > 2) {
 												carve::geom::vector<3> point = carve::geom::VECTOR(ifc_point->Coordinates[0] * length_factor, ifc_point->Coordinates[1] * length_factor,
 													ifc_point->Coordinates[2] * length_factor);
 
@@ -232,7 +232,7 @@ namespace OpenInfraPlatform {
 						err << "unhandled representation: #" << representation_item->getId() << " = " << representation_item->classname() << std::endl;
 					}
 
-					if (handle_layer_assignments) {
+					if(handle_layer_assignments) {
 						// std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcPresentationLayerAssignment>>& LayerAssignments_inverse =
 						//	representation->LayerAssignments_inverse;
 						//
@@ -274,13 +274,13 @@ namespace OpenInfraPlatform {
 					// (1/9) IfcFaceBasedSurfaceModel SUBTYPE OF IfcGeometricRepresentationItem
 					std::shared_ptr<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel> surface_model =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>(geomItem);
-					if (surface_model) {
+					if(surface_model) {
 #ifdef _DEBUG
 						BLUE_LOG(trace) << "Processing IfcFaceBasedSurfaceModel #" << surface_model->getId();
 #endif
 						auto& vec_face_sets = surface_model->FbsmFaces;
 
-						for (auto& it_face_sets : vec_face_sets) {
+						for(auto& it_face_sets : vec_face_sets) {
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_ifc_faces;
 							vec_ifc_faces.resize(it_face_sets->CfsFaces.size());
 							std::transform(it_face_sets->CfsFaces.begin(), it_face_sets->CfsFaces.end(), vec_ifc_faces.begin(), [](auto& it) { return it.lock(); });
@@ -289,7 +289,7 @@ namespace OpenInfraPlatform {
 							try {
 								faceConverter->convertIfcFaceList(vec_ifc_faces, pos, input_data_face_set, err);
 							}
-							catch (std::exception e) {
+							catch(std::exception e) {
 								BLUE_LOG(error) << e.what();
 								// return;
 							}
@@ -305,7 +305,7 @@ namespace OpenInfraPlatform {
 
 					// (2/9) IfcBooleanResult SUBTYPE OF IfcGeometricRepresentationItem
 					std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_result = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(geomItem);
-					if (boolean_result) {
+					if(boolean_result) {
 						try {
 #ifdef _DEBUG
 							BLUE_LOG(trace) << "Processing IfcBooleanResult #" << boolean_result->getId();
@@ -315,29 +315,29 @@ namespace OpenInfraPlatform {
 							BLUE_LOG(trace) << "Processed IfcBooleanResult #" << boolean_result->getId();
 #endif
 						}
-						catch (...) {
-							BLUE_LOG(warning) << "IfcBooleanResult #" << boolean_result->getId() << " could not be used correctly!";
+						catch(...) {
+							BLUE_LOG(warning) <<  "IfcBooleanResult #"<< boolean_result->getId() << " could not be used correctly!";
 						}
 						return;
 					}
 
 					// (3/9) IfcSolidModel SUBTYPE OF IfcGeometricRepresentationItem
 					std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel> solid_model = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSolidModel>(geomItem);
-					if (solid_model) {
+					if(solid_model) {
 						solidConverter->convertIfcSolidModel(solid_model, pos, itemData, err);
 						return;
 					}
 
 					// (4/9) IfcCurve SUBTYPE OF IfcGeometricRepresentationItem
 					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> curve = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCurve>(geomItem);
-					if (curve) {
+					if(curve) {
 						std::vector<carve::geom::vector<3>> loops;
 						std::vector<carve::geom::vector<3>> segment_start_points;
 						curveConverter->convertIfcCurve(curve, loops, segment_start_points);
 
 						std::shared_ptr<carve::input::PolylineSetData> polylineData(new carve::input::PolylineSetData());
 						polylineData->beginPolyline();
-						for (int i = 0; i < loops.size(); ++i) {
+						for(int i = 0; i < loops.size(); ++i) {
 							carve::geom::vector<3> point = loops.at(i);
 							polylineData->addVertex(pos * point);
 							polylineData->addPolylineIndex(i);
@@ -350,16 +350,16 @@ namespace OpenInfraPlatform {
 					// (5/9) IfcShellBasedSurfaceModel SUBTYPE OF IfcGeometricRepresentationItem
 					std::shared_ptr<typename IfcEntityTypesT::IfcShellBasedSurfaceModel> shell_based_surface_model =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcShellBasedSurfaceModel>(geomItem);
-					if (shell_based_surface_model) {
+					if(shell_based_surface_model) {
 #ifdef _DEBUG
 						BLUE_LOG(trace) << "Processing IfcShellBasedSurfaceModel #" << shell_based_surface_model->getId();
 #endif
 						//auto vec_shells = shell_based_surface_model->SbsmBoundary;
-						for (auto& it_shells : shell_based_surface_model->SbsmBoundary) {
+						for(auto& it_shells : shell_based_surface_model->SbsmBoundary) {
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_shells;
 							std::shared_ptr<ItemData> input_data_shells_set(new ItemData);
 
-							switch (it_shells.which()) {
+							switch(it_shells.which()) {
 							case 0:
 								vec_shells.resize(it_shells.get<0>()->CfsFaces.size());
 								std::transform(it_shells.get<0>()->CfsFaces.begin(), it_shells.get<0>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock(); });
@@ -373,7 +373,7 @@ namespace OpenInfraPlatform {
 							try {
 								faceConverter->convertIfcFaceList(vec_shells, pos, input_data_shells_set, err);
 							}
-							catch (std::exception e) {
+							catch(std::exception e) {
 								BLUE_LOG(error) << e.what();
 							}
 							std::copy(input_data_shells_set->open_or_closed_polyhedrons.begin(),
@@ -389,10 +389,10 @@ namespace OpenInfraPlatform {
 
 					// (6/9) IfcSurface SUBTYPE OF IfcGeometricRepresentationItem
 					std::shared_ptr<typename IfcEntityTypesT::IfcSurface> surface = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurface>(geomItem);
-					if (surface) {
+					if(surface) {
 						std::shared_ptr<carve::input::PolylineSetData> polyline(new carve::input::PolylineSetData());
 						faceConverter->convertIfcSurface(surface, pos, polyline);
-						if (polyline->getVertexCount() > 1) {
+						if(polyline->getVertexCount() > 1) {
 							itemData->polylines.push_back(polyline);
 						}
 						return;
@@ -400,7 +400,7 @@ namespace OpenInfraPlatform {
 
 					// (7/9) IfcPolyline SUBTYPE OF IfcGeometricRepresentationItem
 					std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> poly_line = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(geomItem);
-					if (poly_line) {
+					if(poly_line) {
 						std::vector<carve::geom::vector<3>> poly_vertices;
 						curveConverter->convertIfcPolyline(poly_line, poly_vertices);
 
@@ -410,7 +410,7 @@ namespace OpenInfraPlatform {
 						polyline_data->beginPolyline();
 
 						// apply position
-						for (unsigned int i = 0; i < num_points; ++i) {
+						for(unsigned int i = 0; i < num_points; ++i) {
 							carve::geom::vector<3>& vertex = poly_vertices.at(i);
 							vertex = pos * vertex;
 
@@ -424,29 +424,29 @@ namespace OpenInfraPlatform {
 
 					// (8/9) IfcGeometricSet SUBTYPE OF IfcGeometricRepresentationItem
 					std::shared_ptr<typename IfcEntityTypesT::IfcGeometricSet> geometric_set = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricSet>(geomItem);
-					if (geometric_set) {
+					if(geometric_set) {
 						// ENTITY IfcGeometricSet SUPERTYPE OF(IfcGeometricCurveSet)
 
-						for (auto& it_set_elements : geometric_set->Elements) {
+						for(auto& it_set_elements : geometric_set->Elements) {
 							// TYPE IfcGeometricSetSelect = SELECT (IfcPoint, IfcCurve, IfcSurface);
 							std::shared_ptr<carve::input::PolylineSetData> polyline = nullptr;
-							switch (it_set_elements.which()) {
+							switch(it_set_elements.which()) {
 							case 0: std::cout << "Warning\t| IfcCurve not implemented" << std::endl; break;
 							case 1: std::cout << "Warning\t| IfcPoint not implemented" << std::endl; break;
 							case 2:
 								polyline = std::make_shared<carve::input::PolylineSetData>();
 								faceConverter->convertIfcSurface(it_set_elements.get<2>().lock(), pos, polyline);
-								if (polyline->getVertexCount() > 1) {
+								if(polyline->getVertexCount() > 1) {
 									itemData->polylines.push_back(polyline);
 								}
 								break;
 							default: break;
-							}
+							}							
 						}
 
 						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricCurveSet> geometric_curve_set =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricCurveSet>(geometric_set);
-						if (geometric_curve_set) {
+						if(geometric_curve_set) {
 #ifdef _DEBUG
 							std::cout << "Warning\t| IfcGeometricCurveSet not implemented" << std::endl;
 #endif
@@ -457,12 +457,12 @@ namespace OpenInfraPlatform {
 
 					// (9/9) IfcSectionedSpine SUBTYPE OF IfcGeometricRepresentationItem
 					std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSpine> sectioned_spine = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSpine>(geomItem);
-					if (sectioned_spine) {
+					if(sectioned_spine) {
 						convertIfcSectionedSpine(sectioned_spine, pos, itemData, err);
 						return;
 					}
 
-					if (convertVersionSpecificIfcGeometricRepresentationItem(geomItem, pos, itemData, err)) {
+					if(convertVersionSpecificIfcGeometricRepresentationItem(geomItem, pos, itemData, err)) {
 						return;
 					}
 					err << "Unhandled IFC Representation: #" << geomItem->getId() << "=" << geomItem->classname() << std::endl;
@@ -479,57 +479,10 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<ItemData> itemData,
 					std::stringstream& err)
 				{
-					const double lengthFactor = unitConverter->getLengthInMeterFactor();
-
-					std::shared_ptr<typename IfcEntityTypesT::IfcTessellatedItem>  tessellatedItem =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTessellatedItem>(geomItem);
-
-					if (tessellatedItem)
-					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcTriangulatedFaceSet> faceSet =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTriangulatedFaceSet>(tessellatedItem);
-
-						if (faceSet)
-						{
-							std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
-
-							auto& coordinatesIndices = faceSet->CoordIndex;
-							auto& pointList = faceSet->Coordinates->CoordList;
-
-							// obtain vertices from coordination list and add them to the new polygon
-							for (const auto& point : pointList)
-							{
-								carve::geom::vector<3> vertex =
-									carve::geom::VECTOR(point[0] * lengthFactor,
-										point[1] * lengthFactor,
-										point[2] * lengthFactor);
-
-								// apply transformation
-								vertex = pos * vertex;
-
-								polygon->addVertex(vertex);
-							}
-
-							// read coordinates index list and create faces
-							for (const auto& indices : coordinatesIndices)
-							{
-								if (indices.size() < 3)
-								{
-									throw std::exception("invalid size of coordIndex of tessellated item.");
-								}
-
-								polygon->addFace(indices[0] - 1, indices[1] - 1, indices[2] - 1);
-							}
-
-							itemData->open_or_closed_polyhedrons.push_back(polygon);
-
-							return true;
-						}
 #ifdef _DEBUG
-						std::cout << "Warning\t| Could not find other version specific geometric representations" << std::endl;
+					std::cout << "Warning\t| Could not find other version specific geometric representations" << std::endl;
 #endif
-						return false;
-					}
+					return false;
 				}
 
 				// Function 2:  Convert IfcSectionedSpine,
@@ -539,7 +492,7 @@ namespace OpenInfraPlatform {
 					std::stringstream& err)
 				{
 					const std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurve> spine_curve = spine->SpineCurve.lock();
-					if (!spine_curve) {
+					if(!spine_curve) {
 						return;
 					}
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
@@ -553,7 +506,7 @@ namespace OpenInfraPlatform {
 					typename std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>>::iterator it_cross_sections;
 
 					unsigned int num_cross_sections = vec_cross_sections.size();
-					if (vec_cross_section_positions.size() < num_cross_sections) {
+					if(vec_cross_section_positions.size() < num_cross_sections) {
 						num_cross_sections = vec_cross_section_positions.size();
 					}
 
@@ -561,7 +514,7 @@ namespace OpenInfraPlatform {
 					segments.resize(spine_curve->Segments.size());
 					std::transform(spine_curve->Segments.begin(), spine_curve->Segments.end(), segments.begin(), [](auto &it) { return it.lock(); });
 					int num_segments = segments.size();
-					if (vec_cross_section_positions.size() < num_segments + 1) {
+					if(vec_cross_section_positions.size() < num_segments + 1) {
 						num_segments = vec_cross_section_positions.size() - 1;
 					}
 
@@ -578,7 +531,7 @@ namespace OpenInfraPlatform {
 				void convertStyledItem(const std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem>& representation_item, std::shared_ptr<ItemData>& itemData)
 				{
 					std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcStyledItem>>& StyledByItem_inverse_vec = representation_item->StyledByItem_inverse;
-					for (unsigned int i = 0; i < StyledByItem_inverse_vec.size(); ++i) {
+					for(unsigned int i = 0; i < StyledByItem_inverse_vec.size(); ++i) {
 						std::weak_ptr<typename IfcEntityTypesT::IfcStyledItem> styled_item_weak = StyledByItem_inverse_vec[i];
 						std::shared_ptr<typename IfcEntityTypesT::IfcStyledItem> styled_item = std::shared_ptr<typename IfcEntityTypesT::IfcStyledItem>(styled_item_weak);
 					}
@@ -660,31 +613,31 @@ namespace OpenInfraPlatform {
 					const int product_id = ifcElement->getId();
 
 					// now go through all meshsets of the item
-					for (int i_product_meshset = 0; i_product_meshset < itemData->meshsets.size(); ++i_product_meshset) {
+					for(int i_product_meshset = 0; i_product_meshset < itemData->meshsets.size(); ++i_product_meshset) {
 						std::shared_ptr<carve::mesh::MeshSet<3>>& product_meshset = itemData->meshsets[i_product_meshset];
 						std::stringstream strs_meshset_err;
 
 						bool product_meshset_valid_for_csg = GeomUtils::checkMeshSet(product_meshset.get(), strs_meshset_err, product_id);
-						if (!product_meshset_valid_for_csg) {
+						if(!product_meshset_valid_for_csg) {
 							continue;
 						}
 
-						for (int i_opening = 0; i_opening < vecOpeningData.size(); ++i_opening) {
+						for(int i_opening = 0; i_opening < vecOpeningData.size(); ++i_opening) {
 							std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& opening_representation_data = vecOpeningData[i_opening];
 							int representation_id = -1;
-							if (opening_representation_data->representation) {
+							if(opening_representation_data->representation) {
 								representation_id = opening_representation_data->representation->getId();
 							}
 
 							std::vector<std::shared_ptr<ItemData>>& vec_opening_items = opening_representation_data->vec_item_data;
 
-							for (int i_item = 0; i_item < vec_opening_items.size(); ++i_item) {
+							for(int i_item = 0; i_item < vec_opening_items.size(); ++i_item) {
 								std::shared_ptr<ItemData>& opening_item_data = vec_opening_items[i_item];
 								opening_item_data->createMeshSetsFromClosedPolyhedrons();
 
 								std::vector<std::shared_ptr<carve::mesh::MeshSet<3>>>::iterator it_opening_meshsets = opening_item_data->meshsets.begin();
 
-								for (; it_opening_meshsets != opening_item_data->meshsets.end(); ++it_opening_meshsets) {
+								for(; it_opening_meshsets != opening_item_data->meshsets.end(); ++it_opening_meshsets) {
 									std::shared_ptr<carve::mesh::MeshSet<3>> opening_meshset = (*it_opening_meshsets);
 
 									// try to cut out the opening elements
@@ -698,7 +651,7 @@ namespace OpenInfraPlatform {
 
 									const uint16_t numVertices = opening_meshset->vertex_storage.size();
 
-									for (size_t i = 0; i < numVertices; ++i) {
+									for(size_t i = 0; i < numVertices; ++i) {
 										center += opening_meshset->vertex_storage[i].v;
 									}
 
@@ -706,7 +659,7 @@ namespace OpenInfraPlatform {
 
 									double volume = 0.0;
 
-									for (const auto& mesh : opening_meshset->meshes) {
+									for(const auto& mesh : opening_meshset->meshes) {
 										volume += mesh->volume();
 									}
 
@@ -714,7 +667,7 @@ namespace OpenInfraPlatform {
 
 									const double enlargeFactor = volume / 3000.0f;
 
-									for (size_t i = 0; i < numVertices; ++i) {
+									for(size_t i = 0; i < numVertices; ++i) {
 										carve::geom::vector<3>& v = opening_meshset->vertex_storage[i].v;
 
 										carve::geom::vector<3> dir = v - center;
@@ -722,7 +675,7 @@ namespace OpenInfraPlatform {
 										v += enlargeFactor * dir;
 									}
 
-									for (size_t i = 0; i < opening_meshset->meshes.size(); ++i) {
+									for(size_t i = 0; i < opening_meshset->meshes.size(); ++i) {
 										opening_meshset->meshes[i]->recalc();
 									}
 
@@ -731,12 +684,12 @@ namespace OpenInfraPlatform {
 									bool csg_op_ok =
 										solidConverter->computeCSG(product_meshset.get(), opening_meshset.get(), carve::csg::CSG::A_MINUS_B, product_id, representation_id, err, result);
 
-									if (!result || !csg_op_ok) {
+									if(!result || !csg_op_ok) {
 										err << "Error: Subtraction of opening elements #" << ifcElement->getId() << " failed" << std::endl;
 										continue;
 									}
 
-									if (csg_op_ok) {
+									if(csg_op_ok) {
 										product_meshset = result;
 									}
 								}
@@ -782,10 +735,8 @@ namespace OpenInfraPlatform {
 				bool handle_styled_items;
 				bool handle_layer_assignments;
 
-			};
-
-			// namespace IfcGeometryConverter
-			// template <>
+			}; // namespace IfcGeometryConverter
+			   // template <>
 			// inline bool RepresentationConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter,
 			// OpenInfraPlatform::Ifc4::Ifc4Entity>::convertVersionSpecificIfcGeometricRepresentationItem(
 			//	const std::shared_ptr<emt::Ifc4EntityTypes::IfcGeometricRepresentationItem>& geomItem,
