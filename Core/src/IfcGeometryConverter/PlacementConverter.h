@@ -606,7 +606,7 @@ namespace OpenInfraPlatform {
 								}
 
 								// SegmentLength type IfcPositiveLengthMeasure [1:1]
-								if (!horCurveGeometry->SegmentLength) {
+								if (horCurveGeometry->SegmentLength < 0) {
 									BLUE_LOG(error) << "No curve segment length in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
 									return;
 								}
@@ -620,7 +620,7 @@ namespace OpenInfraPlatform {
 
 									// StartPoint type IfcCartesianPoint [1:1]
 									auto curveSegStartPoint = horCurveGeometry->StartPoint.lock();
-									if (!curveSegStartPoint) {
+									if (curveSegStartPoint.empty()) {
 										BLUE_LOG(error) << "No curve segment start point in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
 										return;
 									}
@@ -629,10 +629,11 @@ namespace OpenInfraPlatform {
 									horizSegStartPointY = curveSegStartPoint->Coordinates[1] * length_factor;
 
 									// StartDirection type IfcPlaneAngleMeasure [1:1]
-									if (!horCurveGeometry->StartDirection) {
+									// cannot check because StartDirection is IfcPlaneAngleMeasure
+									/*if (!horCurveGeometry->StartDirection) {
 										BLUE_LOG(error) << "No curve segment start direction in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
 										return;
-									}
+									}*/
 									horizSegStartDirection = horCurveGeometry->StartDirection * plane_angle_factor;
 
 									break;
@@ -645,7 +646,7 @@ namespace OpenInfraPlatform {
 								{
 									// StartPoint type IfcCartesianPoint [1:1]
 									auto curveSegStartPoint = horCurveGeometry->StartPoint.lock();
-									if (!curveSegStartPoint) {
+									if (curveSegStartPoint.empty()) {
 										BLUE_LOG(error) << "No curve segment start point in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
 										return;
 									}
@@ -687,14 +688,14 @@ namespace OpenInfraPlatform {
 								for (auto it_segment : verSegments) {
 
 									// StartDistAlong type IfcLengthMeasure [1:1]
-									if (!it_segment->StartDistAlong) {
+									if (it_segment->StartDistAlong < 0) {
 										BLUE_LOG(error) << "No start distance along in IfcAlignment2DVerticalSegment (Segment ID: " << it_segment->getId() << ").";
 										return;
 									}
 									verSegDistAlong = it_segment->StartDistAlong * length_factor;
 
 									// HorizontalLength type IfcPositiveLengthMeasure [1:1]
-									if (!it_segment->HorizontalLength) {
+									if (it_segment->HorizontalLength <= 0) {
 										BLUE_LOG(error) << "No horizontal length in IfcAlignment2DVerticalSegment (Segment ID: " << it_segment->getId() << ").";
 										return;
 									}
@@ -706,45 +707,28 @@ namespace OpenInfraPlatform {
 										verticalSegmentRelevantToPoint = it_segment;
 
 										// StartHeight type IfcLengthMeasure [1:1]
-										if (!it_segment->StartHeight) {
+										// cannot check since StartHeight is IfcLengthMeasure, not IfcPositiveLengthMeasure
+										/*if (!it_segment->StartHeight) {
 											BLUE_LOG(error) << "No start height in IfcAlignment2DVerticalSegment (Segment ID: " << it_segment->getId() << ").";
 											return;
-										}
+										}*/
 										double verSegStartHeight = it_segment->StartHeight * length_factor;
 
 										// StartGradient type IfcRatioMeasure [1:1]
-										if (!it_segment->StartGradient) {
+										// cannot check since StartGradient is IfcRatioMeasure
+										/*if (!it_segment->StartGradient) {
 											BLUE_LOG(error) << "No start gradient in IfcAlignment2DVerticalSegment (Segment ID: " << it_segment->getId() << ").";
 											return;
-										}
+										}*/
 										double verSegStartGradient = it_segment->StartGradient;
 
 										break;
 									} // end if
 
-									else if (verSegDistAlong == pointDistAlong)
-									{
-										// StartHeight type IfcLengthMeasure [1:1]
-										if (!it_segment->StartHeight) {
-											BLUE_LOG(error) << "No start height in IfcAlignment2DVerticalSegment (Segment ID: " << it_segment->getId() << ").";
-											return;
-										}
-										double verSegStartHeight = it_segment->StartHeight * length_factor;
-
-										// If the segment starts exactly at the point's distance along the alignment, save the start height as z.
-										targetPoint3D->Coordinates[2] = verSegStartHeight;
-
-										// StartGradient type IfcRatioMeasure [1:1]
-										if (!it_segment->StartGradient) {
-											BLUE_LOG(error) << "No start gradient in IfcAlignment2DVerticalSegment (Segment ID: " << it_segment->getId() << ").";
-											return;
-										}
-										double verSegStartGradient = it_segment->StartGradient;
-									}
 								}// end vertical stations iteration
 
 								// Calculate x and y coordinates from horizontal curve, if not already there.
-								if (!targetPoint3D->Coordinates[0])
+								if (targetPoint3D->Coordinates.empty())
 								{
 									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcLineSegment2D> line_segment_2D =
 										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcLineSegment2D>(horCurveGeometry);
@@ -760,17 +744,18 @@ namespace OpenInfraPlatform {
 									}
 									if (circular_arc_segment_2D) {
 										// Radius type IfcPositiveLengthMeasure [1:1]
-										if (!circular_arc_segment_2D->Radius) {
+										if (circular_arc_segment_2D->Radius <= 0) {
 											BLUE_LOG(error) << "No radius in IfcCircularArcSegment2D (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
 											return;
 										}
 										double radius = circular_arc_segment_2D->Radius * length_factor;
 
 										// IsCCW type IfcBoolean [1:1]
-										if (!circular_arc_segment_2D->IsCCW) {
+										// TODO: can check boolean this way?
+										/*if (!circular_arc_segment_2D->IsCCW) {
 											BLUE_LOG(error) << "No direction information for IfcCircularArcSegment2D (counterclockwise/clockwise) (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
 											return;
-										}
+										}*/
 										bool is_CCW = circular_arc_segment_2D->IsCCW;
 
 										// Calculate circle center, given start point and direction (angle between tangent and x-axis).
@@ -798,7 +783,7 @@ namespace OpenInfraPlatform {
 									if (trans_curve_segment_2D) {
 										// StartRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
 										double startRadius = 0.0;
-										if (!trans_curve_segment_2D->StartRadius) {
+										if (trans_curve_segment_2D->StartRadius <= 0) {
 											BLUE_LOG(warning) << "IfcTransitionCurve: Start radius NIL, interpreted as infinite. (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
 										}
 										else {
@@ -806,23 +791,25 @@ namespace OpenInfraPlatform {
 										}
 										// EndRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
 										double endRadius = 0.0;
-										if (!trans_curve_segment_2D->EndRadius) {
+										if (trans_curve_segment_2D->EndRadius <= 0) {
 											BLUE_LOG(warning) << "IfcTransitionCurve: End radius NIL, interpreted as infinite. (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
 										}
 										else {
 											endRadius = trans_curve_segment_2D->EndRadius * length_factor;
 										}
 										// IsStartRadiusCCW type IfcBoolean
-										if (!trans_curve_segment_2D->IsStartRadiusCCW) {
+										// TODO: can check boolean this way?
+										/*if (!trans_curve_segment_2D->IsStartRadiusCCW) {
 											BLUE_LOG(error) << "No direction information for start of IfcTransitionCurveSegment2D (counterclockwise/clockwise). (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
 											return;
-										}
+										}*/
 										bool is_start_ccw = trans_curve_segment_2D->IsStartRadiusCCW;
 										// IsEndRadiusCCW type IfcBoolean
-										if (!trans_curve_segment_2D->IsEndRadiusCCW) {
+										// TODO: can check boolean this way?
+										/*if (!trans_curve_segment_2D->IsEndRadiusCCW) {
 											BLUE_LOG(error) << "No direction information for end of IfcTransitionCurveSegment2D (counterclockwise/clockwise). (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
 											return;
-										}
+										}*/
 										bool is_end_ccw = trans_curve_segment_2D->IsEndRadiusCCW;
 
 										auto trans_type = trans_curve_segment_2D->TransitionCurveType;
@@ -923,7 +910,7 @@ namespace OpenInfraPlatform {
 
 
 								// Calculate z coordinate from vertical alignment, if not already there.
-								if (!targetPoint3D->Coordinates[2])
+								if (targetPoint3D->Coordinates.empty())
 								{
 									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegLine> v_seg_line_2D =
 										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcLineSegment2D>(verticalSegmentRelevantToPoint);
@@ -940,17 +927,18 @@ namespace OpenInfraPlatform {
 									if (v_seg_circ_arc_2D)
 									{
 										// Radius type IfcPositiveLengthMeasure [1:1] 
-										if (!v_seg_circ_arc_2D->Radius) {
+										if (v_seg_circ_arc_2D->Radius <= 0) {
 											BLUE_LOG(error) << "No radius in IfcAlignment2DVerSegCircularArc\" (Segment ID : " << verticalSegmentRelevantToPoint->getId() << ").";
 											return;
 										}
 										double radius = v_seg_circ_arc_2D->Radius * length_factor;
 
 										// IsConvex type IfcBoolean [1:1]
-										if (!v_seg_circ_arc_2D->IsConvex) {
+										// TODO: can check boolean this way?
+										/*if (!v_seg_circ_arc_2D->IsConvex) {
 											BLUE_LOG(error) << "No curvature information in IfcAlignment2DVerSegCircularArc (convex/concave)\" (Segment ID : " << verticalSegmentRelevantToPoint->getId() << ").";
 											return;
-										}
+										}*/
 										bool is_convex = v_seg_circ_arc_2D->IsConvex;
 
 										// pointDistAlong and verSegDistAlong are along horizontal alignment, which corresponds to the horizontal axis in the vertical alignment
@@ -971,17 +959,18 @@ namespace OpenInfraPlatform {
 									if (v_seg_par_arc_2D)
 									{
 										// ParabolaConstant type IfcPositiveLengthMeasure [1:1]
-										if (!v_seg_par_arc_2D->ParabolaConstant) {
+										if (v_seg_par_arc_2D->ParabolaConstant <= 0) {
 											BLUE_LOG(error) << "No parabola constant in IfcAlignment2DVerSegParabolicArc (Segment ID : " << verticalSegmentRelevantToPoint->getId() << ").";
 											return;
 										}
 										double arc_const = v_seg_par_arc_2D->ParabolaConstant * length_factor;
 
 										// IsConvex type IfcBoolean [1:1]
-										if (!v_seg_par_arc_2D->IsConvex) {
+										// TODO: can check boolean this way?
+										/*if (!v_seg_par_arc_2D->IsConvex) {
 											BLUE_LOG(error) << "No curvature information in IfcAlignment2DVerSegParabolicArc (convex/concave) (Segment ID : " << verticalSegmentRelevantToPoint->getId() << ").";
 											return;
-										}
+										}*/
 										bool is_convex = v_seg_par_arc_2D->IsConvex;
 
 										double parabola_radius = is_convex ? -arc_const : arc_const;
