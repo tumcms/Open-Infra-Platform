@@ -53,7 +53,9 @@ namespace OpenInfraPlatform {
 			// *************************************************************************************************************************************************************//
 			void computeProfile(std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> profileDef)
 			{
-				
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcProfileDef #" << profileDef->getId();
+#endif
 				// (1/5) IfcArbitraryClosedProfileDef SUBTYPE OF IfcProfileDef
 				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
@@ -104,7 +106,7 @@ namespace OpenInfraPlatform {
 				//	convertIfcNurbsProfile( nurbs, paths );
 				//	return;
 				//}
-
+				BLUE_LOG(error) << "IfcProfileDef #" << profileDef->getId() << " not supported: " << profileDef->classname();
 				std::stringstream sstr;
 				sstr << "ProfileDef not supported: " << profileDef->classname() << " ";
 				throw std::runtime_error(sstr.str().c_str());
@@ -120,13 +122,21 @@ namespace OpenInfraPlatform {
 			void convertIfcArbitraryClosedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcArbitraryClosedProfileDef #" << profileDef->getId();
+#endif
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profileDef->OuterCurve.lock();
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcArbitraryClosedProfileDef.OuterCurve IfcCurve #" << outer_curve->getId();
+#endif
 				std::vector<carve::geom::vector<2>> curve_polygon;
 				std::vector<carve::geom::vector<2>> segment_start_points;
 
 				CurveConverterT<IfcEntityTypesT, IfcUnitConverterT> c_conv(geomSettings, unitConverter);
 				c_conv.convertIfcCurve2D(outer_curve, curve_polygon, segment_start_points);
-
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processed IfcArbitraryClosedProfileDef.OuterCurve IfcCurve #" << outer_curve->getId();
+#endif
 				deleteLastPointIfEqualToFirst(curve_polygon);
 				addAvoidingDuplicates(curve_polygon, paths);
 
@@ -134,6 +144,10 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids> profile_with_voids =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids>(profileDef);
 				if(profile_with_voids) {
+#ifdef _DEBUG
+					BLUE_LOG(trace) << "Processing IfcArbitraryProfileDefWithVoids #" << profile_with_voids->getId();
+#endif
+
 					for(auto it : profile_with_voids->InnerCurves) {
 						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> inner_ifc_curve = it.lock();
 						std::vector<carve::geom::vector<2>> inner_curve_polygon;
@@ -143,8 +157,15 @@ namespace OpenInfraPlatform {
 						deleteLastPointIfEqualToFirst(inner_curve_polygon);
 						addAvoidingDuplicates(inner_curve_polygon, paths);
 					}
+#ifdef _DEBUG
+					BLUE_LOG(trace) << "Processed IfcArbitraryProfileDefWithVoids #" << profile_with_voids->getId();
+#endif
 				}
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processed IfcArbitraryClosedProfileDef #" << profileDef->getId();
+#endif
 			}
+
 			void convertIfcArbitraryClosedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& profile,
 				const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& next_profile,
 				const carve::math::Matrix& placement,
@@ -152,6 +173,9 @@ namespace OpenInfraPlatform {
 				const carve::geom::vector<3>& abscissa,
 				const carve::geom::vector<3>& next_abscissa) const
 			{
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcArbitraryClosedProfileDef #" << profile->getId();
+#endif
 				const double lengthFactor = unitConverter->getLengthInMeterFactor();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profile->OuterCurve;
@@ -260,6 +284,13 @@ namespace OpenInfraPlatform {
 					itemData->polylines.push_back(polylineData);
 					itemData->open_or_closed_polyhedrons.push_back(polygon);
 				}
+				else {
+					BLUE_LOG(warning) << "No polyline found in IfcArbitraryClosedProfileDef #" << profile->getId();
+				}
+
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processed IfcArbitraryClosedProfileDef #" << profile->getId();
+#endif
 			}
 
 			// Function 2: Convert IfcArbitraryOpenProfileDef
@@ -270,7 +301,9 @@ namespace OpenInfraPlatform {
 				//	SUPERTYPE OF(IfcCenterLineProfileDef)
 				//	SUBTYPE OF IfcProfileDef;
 				//	Curve	 :	IfcBoundedCurve;
-
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcArbitraryOpenProfileDef #" << profileDef->getId();
+#endif
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.lock();
 				CurveConverterT<IfcEntityTypesT, IfcUnitConverterT> c_converter(geomSettings, unitConverter);
 
@@ -353,12 +386,18 @@ namespace OpenInfraPlatform {
 					c_converter.convertIfcCurve2D(ifc_curve, polygon, segment_start_points);
 					addAvoidingDuplicates(polygon, paths);
 				}
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processed IfcArbitraryOpenProfileDef #" << profileDef->getId();
+#endif
 			}
 
 			// Function 3: Convert IfcCompositeProfileDef
 			void convertIfcCompositeProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef>& compositeProfileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcCompositeProfileDef #" << compositeProfileDef->getId();
+#endif
 				std::vector<int> temploop_counts;
 				std::vector<int> tempcontour_counts;
 
@@ -409,12 +448,18 @@ namespace OpenInfraPlatform {
 					sstr << "ProfileDef not supported: " << compositeProfileDef->classname() << " "; //<< __func__;
 					throw std::runtime_error(sstr.str().c_str());
 				}
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processed IfcCompositeProfileDef #" << compositeProfileDef->getId();
+#endif
 			}
 
 			// Function 4: Convert IfcDerivedProfileDef
 			void convertIfcDerivedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcDerivedProfileDef #" << profileDef->getId();
+#endif
 				ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT> temp_profiler(geomSettings, unitConverter);
 				temp_profiler.computeProfile(profileDef->ParentProfile.lock());
 				const std::vector<std::vector<carve::geom::vector<2>>>& parent_paths = temp_profiler.getCoordinates();
@@ -436,6 +481,10 @@ namespace OpenInfraPlatform {
 					}
 					paths.push_back(loop);
 				}
+
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processed IfcDerivedProfileDef #" << profileDef->getId();
+#endif
 			}
 
 			// Function 5: Convert IfcParametrizedProfileDef
@@ -448,7 +497,9 @@ namespace OpenInfraPlatform {
 				// ABSTRACT SUPERTYPE OF IfcCShapeProfileDef, IfcCircleProfileDef, IfcEllipseProfileDef, IfcIShapeProfileDef, IfcLShapeProfileDef,								//
 				// IfcRectangleProfileDef, IfcTShapeProfileDef, IfcTrapeziumProfileDef, IfcUShapeProfileDef, IfcZShapeProfileDef												//
 				// *************************************************************************************************************************************************************//
-				
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcParameterizedProfileDef #" << profileDef->getId();
+#endif
 				double length_factor = unitConverter->getLengthInMeterFactor();
 				double angle_factor = unitConverter->getAngleInRadianFactor();
 				std::vector<carve::geom::vector<2>> outer_loop;
@@ -940,6 +991,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// Not supported ProfileDef
+				BLUE_LOG(error) << "IfcProfileDef #" << profileDef->getId() << " not supported: " << profileDef->classname();
 				std::stringstream sstr;
 				sstr << "IfcProfileDef not supported: " << profileDef->classname() << " #" << profileDef->getId(); // << __func__;
 				throw std::runtime_error(sstr.str().c_str());
@@ -1032,6 +1084,9 @@ namespace OpenInfraPlatform {
 				const carve::geom::vector<3>& abscissa,
 				const carve::geom::vector<3>& next_abscissa)
 			{
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcArbitraryProfileDefWithVoids #" << profile_with_voids->getId();
+#endif
 				const double lengthFactor = unitConverter->getLengthInMeterFactor();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> outer_curve =
@@ -1163,6 +1218,9 @@ namespace OpenInfraPlatform {
 						itemData->open_or_closed_polyhedrons.push_back(polygon);
 					}
 				}
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processed IfcArbitraryProfileDefWithVoids #" << profile_with_voids->getId();
+#endif
 			}
 
 			// Function 7: Convert IfcParametrizedProfileDefWithPosition

@@ -71,7 +71,9 @@ namespace Core {
 				{
 					double length_factor = unitConverter->getLengthInMeterFactor();
 					double plane_angle_factor = unitConverter->getAngleInRadianFactor();
-
+#ifdef _DEBUG
+					BLUE_LOG(trace) << "Processing IfcCurve #" << ifcCurve->getId();
+#endif
 					/*	CurveConverter.h (IFC 4x1)
 
 					IfcCurve
@@ -1029,7 +1031,9 @@ namespace Core {
 					std::shared_ptr<typename IfcEntityTypesT::IfcConic> conic =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConic>(ifcCurve);
 					if (conic) {
-
+#ifdef _DEBUG
+						BLUE_LOG(trace) << "Processing IfcConic #" << conic->getId();
+#endif
 						typename IfcEntityTypesT::IfcAxis2Placement conic_placement = conic->Position;
 						carve::math::Matrix conic_position_matrix(carve::math::Matrix::IDENT());
 
@@ -1055,11 +1059,16 @@ namespace Core {
 						std::shared_ptr<typename IfcEntityTypesT::IfcCircle> circle =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircle>(conic);
 						if (circle) {
-
+#ifdef _DEBUG
+							BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId();
+#endif
 							// Get radius
 							double circle_radius = 0.0;
 							if (circle->Radius) {
 								circle_radius = circle->Radius * length_factor;
+							}
+							else {
+								BLUE_LOG(warning) << "IfcCircle #" << circle->getId() << ": No radius!";
 							}
 
 							carve::geom::vector<3> circle_center =
@@ -1070,35 +1079,57 @@ namespace Core {
 
 							// Check for trimming begin
 							if (trim1Vec.size() > 0) {
+								BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Check for trimming begin.";
 								auto first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 1; });
-								if (first != trim1Vec.end()) {
+								if (first != trim1Vec.end() && *first) {
+									BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Found trimming begin as IfcParameterValue.";
 									typename IfcEntityTypesT::IfcParameterValue trim_par1 = (*first)->get<1>();
 									trim_angle1 = trim_par1 * plane_angle_factor;
 								}
 								else {
 									first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 0; });
-									if (first != trim1Vec.end()) {
-										std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point1 = (*first)->get<0>().lock();
-										carve::geom::vector<3> trim_point;
-										convertIfcCartesianPoint(trim_point1, trim_point);
+									if (first != trim1Vec.end() && (*first) != nullptr) {
+										BLUE_LOG(trace) << "blub" << circle->getId();
+										BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Found trimming begin.";
+										try {
+											EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> trim_point1_ref = (*first)->get<0>();
+											std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point1 = trim_point1_ref.lock();
 
-										trim_angle1 = getAngleOnCircle(circle_center,
-											circle_radius,
-											trim_point);
+											BLUE_LOG(trace) << "IfcCartesianPoint #" << trim_point1->getId();
+											carve::geom::vector<3> trim_point;
+											convertIfcCartesianPoint(trim_point1, trim_point);
+
+											trim_angle1 = getAngleOnCircle(circle_center,
+												circle_radius,
+												trim_point);
+										}
+										catch (...) {
+											BLUE_LOG(error) << "Exception occured!";
+											return;
+										}
+									}
+									else {
+										BLUE_LOG(warning) << "Processing IfcCircle #" << circle->getId() << ": No trimming begin.";
 									}
 								}
+							}
+							else {
+								BLUE_LOG(warning) << "Processing IfcCircle #" << circle->getId() << ": trim1vec is empty!";
 							}
 
 							if (trim2Vec.size() > 0) {
 								// check for trimming end
+								BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Check for trimming end.";
 								auto first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 1; });
 								if (first != trim2Vec.end()) {
+									BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Found trimming end as IfcParameterValue.";
 									typename IfcEntityTypesT::IfcParameterValue trim_par2 = (*first)->get<1>();
 									trim_angle1 = trim_par2 * plane_angle_factor;
 								}
 								else {
 									first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 0; });
 									if (first != trim2Vec.end()) {
+										BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Found trimming end as IfcCartesianPoint.";
 										std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point2 = (*first)->get<0>().lock();
 										carve::geom::vector<3> trim_point;
 										convertIfcCartesianPoint(trim_point2, trim_point);
@@ -1107,7 +1138,13 @@ namespace Core {
 											circle_radius,
 											trim_point);
 									}
+									else {
+										BLUE_LOG(warning) << "Processing IfcCircle #" << circle->getId() << ": No trimming end.";
+									}
 								}
+							}
+							else {
+								BLUE_LOG(warning) << "Processing IfcCircle #" << circle->getId() << ": trim2vec is empty!";
 							}
 
 							double start_angle = trim_angle1;
@@ -1417,7 +1454,10 @@ namespace Core {
 						}
 
 					} // endif surface curve */
-				} // end convertIfcCurve
+#ifdef _DEBUG
+					BLUE_LOG(trace) << "Processed IfcCurve #" << ifcCurve->getId();
+#endif
+				}
 				
 				// ************************************************************************************************************************	//
 				//	Functions			
@@ -1463,7 +1503,7 @@ namespace Core {
 					std::vector<carve::geom::vector<3>>& loop) const
 				{
 #ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcPolyline #" << polyLine->getId();
+					BLUE_LOG(trace) << "Processing IfcPolyline #" << polyLine->getId();
 #endif
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> points;
 					points.resize(polyLine->Points.size());
@@ -1481,7 +1521,7 @@ namespace Core {
 					std::vector<carve::geom::vector<3>>& loopPoints) const
 				{
 #ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcLoop #" << loop->getId();
+					BLUE_LOG(trace) << "Processing IfcLoop #" << loop->getId();
 #endif
 					const std::shared_ptr<typename IfcEntityTypesT::IfcPolyLoop> polyLoop =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyLoop>(loop);
