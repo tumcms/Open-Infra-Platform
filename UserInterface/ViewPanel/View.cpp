@@ -32,7 +32,7 @@ OpenInfraPlatform::UserInterface::View::View() : QDockWidget(), // no parent
 	//buw::renderWindowsDescription rwd =  buw::loadRenderWindowsSettings("Data/settings.xml");
 	buw::eRenderAPI renderAPI;
 	bool warp, msaa;
-	if(buw::loadRenderSystemSettings("Data/settings.xml", renderAPI, warp, msaa))	
+	if(buw::loadRenderSystemSettings("UserInterface/Data/settings.xml", renderAPI, warp, msaa))	
 		createViewport(renderAPI, warp, msaa);
 	else
 		createViewport(buw::eRenderAPI::Direct3D11, false, true);
@@ -69,12 +69,12 @@ OpenInfraPlatform::UserInterface::View::View() : QDockWidget(), // no parent
 	homeAction_ = new QAction("", nullptr);
 	homeAction_->setShortcut(QKeySequence(Qt::Key_H));
 
-	homeIcon = QIcon("Data/home.ico");
-	ghostSelectedIcon = QIcon("Data/ghost_selected.ico");
-	ghostUnselectedIcon = QIcon("Data/ghost_unselected.ico");
+	homeIcon = QIcon("UserInterface/Data/home.ico");
+	ghostSelectedIcon = QIcon("UserInterface/Data/ghost_selected.ico");
+	ghostUnselectedIcon = QIcon("UserInterface/Data/ghost_unselected.ico");
 
-    snowSelectedIcon = QIcon("Data/snow_selected.ico");
-    snowUnselectedIcon = QIcon("Data/snow_unselected.ico");
+    snowSelectedIcon = QIcon("UserInterface/Data/snow_selected.ico");
+    snowUnselectedIcon = QIcon("UserInterface/Data/snow_unselected.ico");
 
 	if (homeIcon.isNull() || ghostSelectedIcon.isNull() || ghostUnselectedIcon.isNull())
 	{
