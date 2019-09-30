@@ -19,14 +19,23 @@
 
 #include <BlueFramework/Application/DataManagement/Notification/NotifiyAfterEachActionOnlyOnce.h>
 
-#include "reader/IFC2X3Reader.h"
-#include "reader/IFC4X1Reader.h"
+//#ifdef OIP_MODULE_EARLYBINDING_IFC2X3
+	#include "reader/IFC2X3Reader.h"
+	#include "EMTIFC2X3EntityTypes.h"
+	#include "IFC2X3.h"
+//#endif
 
-#include "EMTIFC2X3EntityTypes.h"
-#include "IFC2X3.h"
+//#ifdef OIP_MODULE_EARLYBINDING_IFC4
+	#include "reader/IFC4Reader.h"
+	#include "EMTIFC4EntityTypes.h"
+	#include "IFC4.h"
+//#endif
 
-#include "EMTIFC4X1EntityTypes.h"
-#include "IFC4X1.h"
+//#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+	#include "reader/IFC4X1Reader.h"
+	#include "EMTIFC4X1EntityTypes.h"
+	#include "IFC4X1.h"
+//#endif
 
 #include "IfcGeometryConverter\IfcImporter.h"
 #include "IfcGeometryConverter\GeometryInputData.h"
@@ -135,9 +144,22 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC2X3) {
 			expressModel_ = OpenInfraPlatform::IFC2X3::IFC2X3Reader::FromFile(filename);
+			BLUE_LOG(info) << "Imported entities from " << filename << " into express model.";
 			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC2X3EntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC2X3EntityTypes>>();
 			if (importer.collectGeometryData(expressModel_)) {
 				auto converter = IfcGeometryConverter::ConverterBuwT< emt::IFC2X3EntityTypes>();
+				if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
+					if (!tempIfcGeometryModel_->isEmpty()) {
+						ifcGeometryModel_ = tempIfcGeometryModel_;
+					}
+				}
+			}
+		}
+		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4) {
+			expressModel_ = OpenInfraPlatform::IFC4::IFC4Reader::FromFile(filename);
+			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4EntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC4EntityTypes>>();
+			if (importer.collectGeometryData(expressModel_)) {
+				auto converter = IfcGeometryConverter::ConverterBuwT<emt::IFC4EntityTypes>();
 				if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
 					if (!tempIfcGeometryModel_->isEmpty()) {
 						ifcGeometryModel_ = tempIfcGeometryModel_;
