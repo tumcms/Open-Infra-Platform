@@ -118,6 +118,14 @@ namespace OpenInfraPlatform
 #endif
 					}
 
+					if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product)) {
+						auto alignment = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product);
+						std::shared_ptr<ItemData> itemData(new ItemData());
+						productShape->vec_item_data.push_back(itemData);
+						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> axis = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(alignment->Axis.lock());
+						repConverter->convertIfcGeometricRepresentationItem(axis, matProduct, itemData, strerr);
+					}
+
 #ifdef _DEBUG
 					if(strerr.tellp() <= 0) return;
 
