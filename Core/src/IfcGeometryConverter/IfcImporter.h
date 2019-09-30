@@ -86,9 +86,7 @@ namespace OpenInfraPlatform
 							matProduct, lengthFactor,
 							placementAlreadyApplied);
 
-#ifdef _DEBUG
 						BLUE_LOG(trace) << "Processed IfcObjectPlacement #" << objectPlacement->getId();
-#endif
 					}
 
 					// error string
@@ -96,26 +94,18 @@ namespace OpenInfraPlatform
 
 					// go through all representations of the product
 					if(product->Representation) {
-#ifdef _DEBUG
 						BLUE_LOG(trace) << "Processing IfcProductRepresentation #" << product->Representation->getId();
-#endif
 						OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcProductRepresentation>& representation = product->Representation;
 						// so evaluate its geometry
 						for(EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& rep : representation->Representations) {
 							// convert each shape of the represenation
-#ifdef _DEBUG
 							BLUE_LOG(trace) << "Processing IfcRepresentation #" << rep->getId();
-#endif
 							repConverter->convertIfcRepresentation(rep.lock(), matProduct, productShape, strerr);
-#ifdef _DEBUG
 							BLUE_LOG(trace) << "Processed IfcRepresentation #" << rep->getId();
-#endif
 						}
 
 						IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, strerr, repConverter);
-#ifdef _DEBUG
 						BLUE_LOG(trace) << "Processed IfcProductRepresentation #" << representation->getId();
-#endif
 					}
 
 #ifdef _DEBUG
@@ -237,9 +227,7 @@ namespace OpenInfraPlatform
 								for (auto pair : model->entities) {
 									std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
 									if (product) {
-#ifdef _DEBUG
 										BLUE_LOG(trace) << "Converting IfcProduct #" << product->getId();
-#endif
 										// create new shape input data for product
 										std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
 										productShape->ifc_product = product;
