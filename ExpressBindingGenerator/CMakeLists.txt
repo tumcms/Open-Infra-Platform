@@ -64,11 +64,20 @@ set_target_properties(Commands.UpdateBoostMPL PROPERTIES FOLDER "OpenInfraPlatfo
 
 # Macro to add IFC formats and the respective schemas.
 macro(add_format format schema active)
+	set(${format}_SCHEMA ${schema}.exp)
 	if(${active})
 		set(IFC_FORMATS ${IFC_FORMATS} ${format})
 		set(IFC_SCHEMAS ${IFC_SCHEMAS} ${schema})
+		
+		# Custom target that generates the early binding library files.
+		add_custom_target(Commands.GenerateEarlyBinding.${format}
+			COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding	
+			COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${schema}.exp -o ${CMAKE_BINARY_DIR}/EarlyBinding
+		)
+
+		add_dependencies(Commands.GenerateEarlyBinding.${format} OpenInfraPlatform.ExpressBindingGenerator)
+		set_target_properties(Commands.GenerateEarlyBinding.${format} PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
 	endif()
-	set(${format}_SCHEMA ${schema}.exp)
 endmacro()
 
 add_format(IFC2X3 			IFC2X3_TC1 		OFF)
@@ -124,18 +133,6 @@ add_executable(OpenInfraPlatform.ExpressBindingGenerator
 	${FLEX_Scanner_OUTPUTS} 
 	${BISON_Parser_OUTPUTS}
 )
-
-# Custom target that generates the early binding library files.
-add_custom_target(Commands.GenerateEarlyBinding
-	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding	
-	#COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC2X3_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4X1_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	#COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${IFC4_SCHEMA} -o ${CMAKE_BINARY_DIR}/EarlyBinding
-)
-
-add_dependencies(Commands.GenerateEarlyBinding OpenInfraPlatform.ExpressBindingGenerator)
-
-set_target_properties(Commands.GenerateEarlyBinding PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
 
 
 #-------------------------------------------------------------------------------------
