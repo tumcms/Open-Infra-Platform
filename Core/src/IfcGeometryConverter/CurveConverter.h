@@ -30,15 +30,15 @@
 #include "GeometrySettings.h"
 #include "SplineConverter.h"
 
-namespace OpenInfraPlatform{
-namespace Core {
-	namespace IfcGeometryConverter {
-		template <
-			class IfcEntityTypesT,
-			class IfcUnitConverterT
-		>
-			class CurveConverterT 
-		{
+namespace OpenInfraPlatform {
+	namespace Core {
+		namespace IfcGeometryConverter {
+			template <
+				class IfcEntityTypesT,
+				class IfcUnitConverterT
+			>
+				class CurveConverterT
+			{
 			public:
 				CurveConverterT(std::shared_ptr<GeometrySettings> geomSettings,
 					std::shared_ptr<IfcUnitConverterT> unitConverter)
@@ -129,12 +129,12 @@ namespace Core {
 
 							std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DHorizontal> horizontal = alignment_curve->Horizontal.lock();
 
-							if (!horizontal) 
+							if (!horizontal)
 							{
 								BLUE_LOG(error) << "No IfcAlignment2DHorizontal in IfcAlignmentCurve.";
 								return;
 							}
-							
+
 							// StartDistAlong type IfcLengthMeasure [0:1]
 							double horStartDistAlong = 0.0;
 							double hStartDistAlong = horizontal->StartDistAlong;
@@ -166,166 +166,164 @@ namespace Core {
 							auto it_horizontal_segment = horizontal->Segments.begin();
 							auto it_vertical_segment = vertical->Segments.begin();
 
+							auto ver_end_it = vertical->Segments.end();
+
 							// Iterate over horizontal and vertical segments
-							while (it_horizontal_segment != horizontal->Segments.end())
+							while (it_horizontal_segment != horizontal->Segments.end() && it_vertical_segment != vertical->Segments.end())
 							{
-								while (it_vertical_segment != vertical->Segments.end()) 
+								//IfcAlignment2DHorizontalSegment (TangentialContinuity type IfcBoolean [0:1], StartTag type IfcLabel [0:1], EndTag type IfcLabel [0:1], CurveGeometry type IfcCurveSegment2D [1:1])
+								std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCurveSegment2D> horCurveGeometry =
+									(*it_horizontal_segment)->CurveGeometry.lock();
+
+								// Get and interpret information from IfcCurveSegment2D.
+								if (!horCurveGeometry) {
+									BLUE_LOG(error) << "No curve geometry in IfcAlignment2DHorizontalSegment (Segment ID: " << (*it_horizontal_segment)->getId() << ").";
+									return;
+								}
+
+								// SegmentLength type IfcPositiveLengthMeasure [1:1]
+								if (horCurveGeometry->SegmentLength <= 0) {
+									BLUE_LOG(error) << "No curve segment length in IfcCurveSegment2D (Segment ID: " << (*it_horizontal_segment)->getId() << ").";
+									return;
+								}
+								double dHorizontalSegLength = horCurveGeometry->SegmentLength * length_factor;
+
+								// Step 2: Get horizontal segment type and store number and length of fragments.
+
+								// Segment types: IfcLineSegment2D, IfcCircularArcSegment2D and IfcTransitionCurveSegment2D
+								// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifccurvesegment2d.htm
+								std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcLineSegment2D> line_segment_2D =
+									std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcLineSegment2D>(horCurveGeometry);
+								std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCircularArcSegment2D> circular_arc_segment_2D =
+									std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcCircularArcSegment2D>(horCurveGeometry);
+								std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcTransitionCurveSegment2D> trans_curve_segment_2D =
+									std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcTransitionCurveSegment2D>(horCurveGeometry);
+
+								double nHorFragmentsLength = 0.;
+								int nHorFragments = 0;
+
+								// Set number of fragments (number of points to be added between stations) according to segment type.
+								if (line_segment_2D) {
+									nHorFragments = 0;
+									nHorFragmentsLength = dHorizontalSegLength;
+								}
+								if (circular_arc_segment_2D) {
+									nHorFragments = geomSettings->min_num_vertices_per_arc;
+									nHorFragmentsLength = dHorizontalSegLength / nHorFragments;
+								}
+								if (trans_curve_segment_2D) {
+									nHorFragments = geomSettings->min_num_vertices_per_arc;
+									nHorFragmentsLength = dHorizontalSegLength / nHorFragments;
+								}
+
+								// Step 3: Get vertical segment type and store number and length of fragments.
+
+								int nVerFragments = 0;
+								double nVerFragmentsLength = 0.;
+
+								// StartDistAlong type IfcLengthMeasure [1:1]
+								// cannot be checked this way because it is an IfcLengthMeasure, not IfcPositiveLengthMeasure
+								if ((*it_vertical_segment)->StartDistAlong < 0.0) {
+									BLUE_LOG(error) << "No start distance along in IfcAlignment2DVerticalSegment (Segment ID: " << (*it_vertical_segment)->getId() << ").";
+									return;
+								}
+								double dVerDistAlong = (*it_vertical_segment)->StartDistAlong * length_factor;
+
+								// HorizontalLength type IfcPositiveLengthMeasure [1:1]
+								if ((*it_vertical_segment)->HorizontalLength < 0.0) {
+									BLUE_LOG(error) << "No horizontal length in IfcAlignment2DVerticalSegment (Segment ID: " << (*it_vertical_segment)->getId() << ").";
+									return;
+								}
+								double dVerticalSegmentLength = (*it_vertical_segment)->HorizontalLength * length_factor;
+
+								// Segment types: IfcAlignment2DVerSegCircularArc, IfcAlignment2DVerSegLine, IfcAlignment2DVerSegParabolicArc.
+								std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegCircularArc> v_seg_circ_arc_2D =
+									std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegCircularArc>(it_vertical_segment->lock());
+								std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegLine> ver_seg_line_2D =
+									std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegLine>(it_vertical_segment->lock());
+								std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegParabolicArc> v_seg_par_arc_2D =
+									std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegParabolicArc>(it_vertical_segment->lock());
+
+								// Set number of fragments (number of stations to be added within segment) according to segment type.
+								if (v_seg_circ_arc_2D) {
+									nVerFragments = geomSettings->min_num_vertices_per_arc;
+									nVerFragmentsLength = dVerticalSegmentLength / nVerFragments;
+								}
+								if (ver_seg_line_2D) {
+									nVerFragments = 0;
+									nVerFragmentsLength = dVerticalSegmentLength;
+								}
+								if (v_seg_par_arc_2D) {
+									nVerFragments = geomSettings->min_num_vertices_per_arc;
+									nVerFragmentsLength = dVerticalSegmentLength / nVerFragments;
+								}
+
+								// Select greater accuracy/smaller fragments.
+								if (nVerFragmentsLength < nHorFragmentsLength)
 								{
-									//IfcAlignment2DHorizontalSegment (TangentialContinuity type IfcBoolean [0:1], StartTag type IfcLabel [0:1], EndTag type IfcLabel [0:1], CurveGeometry type IfcCurveSegment2D [1:1])
-									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCurveSegment2D> horCurveGeometry =
-										it_segment->CurveGeometry.lock();
+									fragmentsLength = nVerFragmentsLength;
+								}
+								else
+								{
+									fragmentsLength = nHorFragmentsLength;
+								}
 
-									// Get and interpret information from IfcCurveSegment2D.
-									if (!horCurveGeometry) {
-										BLUE_LOG(error) << "No curve geometry in IfcAlignment2DHorizontalSegment (Segment ID: " << it_segment->getId() << ").";
-										return;
-									}
-
-									// SegmentLength type IfcPositiveLengthMeasure [1:1]
-									if (horCurveGeometry->SegmentLength <= 0) {
-										BLUE_LOG(error) << "No curve segment length in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
-										return;
-									}
-									double dHorizontalSegLength = horCurveGeometry->SegmentLength * length_factor;
-
-									// Step 2: Get horizontal segment type and store number and length of fragments.
-
-									// Segment types: IfcLineSegment2D, IfcCircularArcSegment2D and IfcTransitionCurveSegment2D
-									// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifccurvesegment2d.htm
-									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcLineSegment2D> line_segment_2D =
-										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcLineSegment2D>(horCurveGeometry);
-									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCircularArcSegment2D> circular_arc_segment_2D =
-										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcCircularArcSegment2D>(horCurveGeometry);
-									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcTransitionCurveSegment2D> trans_curve_segment_2D =
-										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcTransitionCurveSegment2D>(horCurveGeometry);
-									
-									double nHorFragmentsLength = 0.;
-									int nHorFragments = 0;
-
-									// Set number of fragments (number of points to be added between stations) according to segment type.
-									if (line_segment_2D) {
-										nHorFragments = 0;
-										nHorFragmentsLength = dHorizontalSegLength;
-									}
-									if (circular_arc_segment_2D) {
-										nHorFragments = geomSettings->min_num_vertices_per_arc;
-										nHorFragmentsLength = dHorizontalSegLength / nHorFragments;
-									}
-									if (trans_curve_segment_2D) {
-										nHorFragments = geomSettings->min_num_vertices_per_arc;
-										nHorFragmentsLength = dHorizontalSegLength / nHorFragments;
-									}
-
-									// Step 3: Get vertical segment type and store number and length of fragments.
-									
-									int nVerFragments = 0;
-									double nVerFragmentsLength = 0.;
-
-									// StartDistAlong type IfcLengthMeasure [1:1]
-									// cannot be checked this way because it is an IfcLengthMeasure, not IfcPositiveLengthMeasure
-									/*if (!it_segment->StartDistAlong) {
-										BLUE_LOG(error) << "No start distance along in IfcAlignment2DVerticalSegment (Segment ID: " << it_segment->getId() << ").";
-										return;
-									}*/
-									double dVerDistAlong = it_segment->StartDistAlong * length_factor;
-
-									// HorizontalLength type IfcPositiveLengthMeasure [1:1]
-									if (it_segment->HorizontalLength <= 0) {
-										BLUE_LOG(error) << "No horizontal length in IfcAlignment2DVerticalSegment (Segment ID: " << it_segment->getId() << ").";
-										return;
-									}
-									double dVerticalSegmentLength = it_segment->HorizontalLength * length_factor;
-								
-									// Segment types: IfcAlignment2DVerSegCircularArc, IfcAlignment2DVerSegLine, IfcAlignment2DVerSegParabolicArc.
-									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegCircularArc> v_seg_circ_arc_2D =
-										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegCircularArc>(it_vertical_segment);
-									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegLine> ver_seg_line_2D =
-										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegLine>(it_vertical_segment);
-									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegParabolicArc> v_seg_par_arc_2D =
-										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegParabolicArc>(it_vertical_segment);
-
-									// Set number of fragments (number of stations to be added within segment) according to segment type.
-									if (v_seg_circ_arc_2D) {
-										nVerFragments = geomSettings->min_num_vertices_per_arc;
-										nVerFragmentsLength = dVerticalSegmentLength / nVerFragments;
-									}
-									if (ver_seg_line_2D) {
-										nVerFragments = 0;
-										nVerFragmentsLength = dVerticalSegmentLength;
-									}
-									if (v_seg_par_arc_2D) {
-										nVerFragments = geomSettings->min_num_vertices_per_arc;
-										nVerFragmentsLength = dVerticalSegmentLength / nVerFragments;
-									}
-
-									// Select greater accuracy/smaller fragments.
-									if (nVerFragmentsLength < nHorFragmentsLength)
-									{
-										fragmentsLength = nVerFragmentsLength;
-										
-									}
-									else
-									{
-										fragmentsLength = nHorFragmentsLength;
-									}
-
-									// Select smaller segment length.
-									if (dVerticalSegmentLength < dHorizontalSegLength)
-									{
-										overlappingLengthOfSegments = dVerticalSegmentLength;
-										isShorterSegmentHorizontal = false;
-									}
-									else
-									{
-										overlappingLengthOfSegments = dHorizontalSegLength;
-										isShorterSegmentHorizontal = true;
-									}
+								// Select smaller segment length.
+								if (dVerticalSegmentLength < dHorizontalSegLength)
+								{
+									overlappingLengthOfSegments = dVerticalSegmentLength;
+									isShorterSegmentHorizontal = false;
+								}
+								else
+								{
+									overlappingLengthOfSegments = dHorizontalSegLength;
+									isShorterSegmentHorizontal = true;
+								}
 
 
-									double newStationDistAlong = startDistAlong;
+								double newStationDistAlong = startDistAlong;
 
-									// Add stations according to length of fragments until the end of the shorter segment.
-									while (newStationDistAlong <= overlappingLengthOfSegments + startDistAlong)
-									{
-										newStationDistAlong += fragmentsLength;
-										stations.push_back(newStationDistAlong);
-									}
+								// Add stations according to length of fragments until the end of the shorter segment.
+								while (newStationDistAlong <= overlappingLengthOfSegments + startDistAlong)
+								{
+									newStationDistAlong += fragmentsLength;
+									stations.push_back(newStationDistAlong);
+								}
 
-									// Length along alignment that has been covered.
-									startDistAlong += overlappingLengthOfSegments;
+								// Length along alignment that has been covered.
+								startDistAlong += overlappingLengthOfSegments;
 
-									// If shorter segment is horizontal, take next horizontal segment but keep current vertical segment.
-									if (isShorterSegmentHorizontal)
-									{
-										it_horizontal_segment++;
-									}
-									// vice versa
-									else
-									{
-										it_vertical_segment++;
-									}
+								// If shorter segment is horizontal, take next horizontal segment but keep current vertical segment.
+								if (isShorterSegmentHorizontal)
+								{
+									it_horizontal_segment++;
+								}
+								// vice versa
+								else
+								{
+									it_vertical_segment++;
+								}
 
-								} // end of vertical segments iteration
-							} // end of horizontal segments iteration
+							} // end of vertical segments iteration
 
-							carve::geom::vector<3>& targetPoint3D;
-							carve::geom::vector<3>& targetDirection3D;
-							carve::geom::vector<vector<3>> curve_points;
+							carve::geom::vector<3> targetPoint3D;
+							carve::geom::vector<3> targetDirection3D;
+							std::vector<carve::geom::vector<3>> curve_points;
 
 							for (auto it_station : stations)
 							{
-								convertAlignmentCurveDistAlongToPoint3D(alignment_curve, it_station, targetPoint3D, targetDirection3D);
+								PlacementConverterT<IfcEntityTypesT>::convertAlignmentCurveDistAlongToPoint3D(alignment_curve, it_station, targetPoint3D, targetDirection3D);
 								curve_points.push_back(targetPoint3D);
 							}
 							GeomUtils::appendPointsToCurve(curve_points, targetVec);
 						} // end if IfcAlignmentCurve
-					
-						
+
+
 						// (2/6) IfcBSplineCurve SUBTYPE OF IfcBoundedCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcBSplineCurve> bspline_curve =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineCurve>(bounded_curve);
 						if (bspline_curve) {
-							
+
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> points;
 							points.resize(bspline_curve->ControlPointsList.size());
 
@@ -420,13 +418,13 @@ namespace Core {
 							std::transform(trimmed_curve->Trim1.begin(),
 								trimmed_curve->Trim1.end(),
 								curve_trim1_vec.begin(), [](auto it) { return std::make_shared<decltype(it)>(it); });
-							
+
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curve_trim2_vec;
 							curve_trim2_vec.resize(trimmed_curve->Trim2.size());
 							std::transform(trimmed_curve->Trim2.begin(),
 								trimmed_curve->Trim2.end(),
 								curve_trim2_vec.begin(), [](auto it) { return std::make_shared<decltype(it)>(it); });
-							
+
 							bool trimmed_sense_agreement = trimmed_curve->SenseAgreement;
 
 							convertIfcCurve(basis_curve, basis_curve_points, segmentStartPoints,
@@ -442,7 +440,7 @@ namespace Core {
 					//	ABSTRACT SUPERTYPE of IfcCircle, IfcEllipse																				//
 					// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcConic> conic =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConic>(ifcCurve);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConic>(ifcCurve);
 					if (conic) {
 #ifdef _DEBUG
 						BLUE_LOG(trace) << "Processing IfcConic #" << conic->getId();
@@ -676,7 +674,7 @@ namespace Core {
 					// ************************************************************************************************************************	//
 					std::shared_ptr<typename IfcEntityTypesT::IfcLine> line =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLine>(ifcCurve);
-					if (line) 
+					if (line)
 					{
 
 						// Part 1: Get information from IfcLine. 
@@ -831,7 +829,7 @@ namespace Core {
 							return;
 						}
 					}
-					
+
 					// ************************************************************************************************************************	//
 					//	IfcPcurve SUPTYPE of IfcCurve																							//
 					// ************************************************************************************************************************	//
@@ -871,7 +869,7 @@ namespace Core {
 					BLUE_LOG(trace) << "Processed IfcCurve #" << ifcCurve->getId();
 #endif
 				}
-				
+
 				// ************************************************************************************************************************	//
 				//	Functions			
 				//	convertIfcCurve2D, convertIfcCartesianPoint (+ related functions), getAngleOnCircle
@@ -1192,9 +1190,9 @@ namespace Core {
 			protected:
 				std::shared_ptr<GeometrySettings>	geomSettings;
 				std::shared_ptr<IfcUnitConverterT>	unitConverter;
-		}; // end class
-	}; // end namespace IfcGeometryConverter
-}; // end namespace Core
+			}; // end class
+		}; // end namespace IfcGeometryConverter
+	}; // end namespace Core
 }; // end namespace OIP
 
 
