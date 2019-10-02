@@ -554,7 +554,7 @@ namespace OpenInfraPlatform {
 
 					// Function 7: Convert distance along an alignment curve to 3D coordinates.
 					static void convertAlignmentCurveDistAlongToPoint3D(std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> ifcAlignmentCurve,
-						std::shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure> pointDistAlong,
+						typename IfcEntityTypesT::IfcLengthMeasure pointDistAlong,
 						carve::geom::vector<3>& targetPoint3D,
 						carve::geom::vector<3>& targetDirection3D)
 					
@@ -564,6 +564,7 @@ namespace OpenInfraPlatform {
 							std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignmentCurve>(ifcAlignmentCurve);
 						if (alignment_curve)
 						{
+							auto unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
 							double length_factor = unitConverter->getLengthInMeterFactor();
 							double plane_angle_factor = unitConverter->getAngleInRadianFactor();
 
@@ -620,7 +621,7 @@ namespace OpenInfraPlatform {
 
 									// StartPoint type IfcCartesianPoint [1:1]
 									auto curveSegStartPoint = horCurveGeometry->StartPoint.lock();
-									if (curveSegStartPoint.empty()) {
+									if (!curveSegStartPoint) {
 										BLUE_LOG(error) << "No curve segment start point in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
 										return;
 									}
@@ -646,13 +647,13 @@ namespace OpenInfraPlatform {
 								{
 									// StartPoint type IfcCartesianPoint [1:1]
 									auto curveSegStartPoint = horCurveGeometry->StartPoint.lock();
-									if (curveSegStartPoint.empty()) {
+									if (!curveSegStartPoint) {
 										BLUE_LOG(error) << "No curve segment start point in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
 										return;
 									}
 
-									targetPoint3D->Coordinates[0] = curveSegStartPoint->Coordinates[0] * length_factor;
-									targetPoint3D->Coordinates[1] = curveSegStartPoint->Coordinates[1] * length_factor;
+									targetPoint3D.x = curveSegStartPoint->Coordinates[0] * length_factor;
+									targetPoint3D.y = curveSegStartPoint->Coordinates[1] * length_factor;
 
 									break;
 								} // end if
@@ -678,7 +679,7 @@ namespace OpenInfraPlatform {
 								std::transform(vertical->Segments.begin(), vertical->Segments.end(), verSegments.begin(), [](auto &it) {return it.lock(); });
 
 
-								std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerticalSegment >> verticalSegmentRelevantToPoint;
+								std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerticalSegment > verticalSegmentRelevantToPoint;
 								double verSegStartHeight = 0.;
 								double verSegStartGradient = 0.;
 								double verSegLength = 0.;
@@ -728,7 +729,7 @@ namespace OpenInfraPlatform {
 								}// end vertical stations iteration
 
 								// Calculate x and y coordinates from horizontal curve, if not already there.
-								if (targetPoint3D->Coordinates.empty())
+								if (true)
 								{
 									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcLineSegment2D> line_segment_2D =
 										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcLineSegment2D>(horCurveGeometry);
@@ -739,13 +740,13 @@ namespace OpenInfraPlatform {
 
 									if (line_segment_2D) {
 										double distanceToStart = pointDistAlong - horizSegStartDistAlong;
-										targetPoint3D->Coordinates[0] = horizSegStartPointX + distanceToStart * cos(horizSegStartDirection);
-										targetPoint3D->Coordinates[1] = horizSegStartPointY + distanceToStart * sin(horizSegStartDirection);
+										targetPoint3D.x = horizSegStartPointX + distanceToStart * cos(horizSegStartDirection);
+										targetPoint3D.y = horizSegStartPointY + distanceToStart * sin(horizSegStartDirection);
 									}
 									if (circular_arc_segment_2D) {
 										// Radius type IfcPositiveLengthMeasure [1:1]
 										if (circular_arc_segment_2D->Radius <= 0) {
-											BLUE_LOG(error) << "No radius in IfcCircularArcSegment2D (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
+											BLUE_LOG(error) << "No radius in IfcCircularArcSegment2D (Segment ID: " << horCurveGeometry->getId() << ").";
 											return;
 										}
 										double radius = circular_arc_segment_2D->Radius * length_factor;
@@ -777,14 +778,14 @@ namespace OpenInfraPlatform {
 											angleBeta = angleAlpha + distanceStartToStation / radius; // Angle between x-axis and point according to circle direction.
 										}
 
-										targetPoint3D->Coordinates[0] = centerX + radius * cos(angleBeta);
-										targetPoint3D->Coordinates[1] = centerY + radius * sin(angleBeta);
+										targetPoint3D.x = centerX + radius * cos(angleBeta);
+										targetPoint3D.y = centerY + radius * sin(angleBeta);
 									}
 									if (trans_curve_segment_2D) {
 										// StartRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
 										double startRadius = 0.0;
 										if (trans_curve_segment_2D->StartRadius <= 0) {
-											BLUE_LOG(warning) << "IfcTransitionCurve: Start radius NIL, interpreted as infinite. (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
+											BLUE_LOG(warning) << "IfcTransitionCurve: Start radius NIL, interpreted as infinite. (Segment ID: " << horCurveGeometry->getId() << ").";
 										}
 										else {
 											startRadius = trans_curve_segment_2D->StartRadius * length_factor;
@@ -792,7 +793,7 @@ namespace OpenInfraPlatform {
 										// EndRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
 										double endRadius = 0.0;
 										if (trans_curve_segment_2D->EndRadius <= 0) {
-											BLUE_LOG(warning) << "IfcTransitionCurve: End radius NIL, interpreted as infinite. (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
+											BLUE_LOG(warning) << "IfcTransitionCurve: End radius NIL, interpreted as infinite. (Segment ID: " << horCurveGeometry->getId() << ").";
 										}
 										else {
 											endRadius = trans_curve_segment_2D->EndRadius * length_factor;
@@ -816,7 +817,7 @@ namespace OpenInfraPlatform {
 
 										switch (trans_type) {
 
-										case(eTransitionCurveType::ENUM_BIQUADRATICPARABOLA):
+										case(decltype(trans_type)::ENUM::ENUM_BIQUADRATICPARABOLA):
 										{
 											double x = pointDistAlong;		// x coordinate
 											double y = 0.0;
@@ -831,15 +832,15 @@ namespace OpenInfraPlatform {
 											} // end elseif
 											else
 											{
-												BLUE_LOG(error) << "Y coordinate not defined for biquadratic parabola (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
+												BLUE_LOG(error) << "Y coordinate not defined for biquadratic parabola (Segment ID: " << horCurveGeometry->getId() << ").";
 												break;
 											}
-											targetPoint3D->Coordinates[0] = x;
-											targetPoint3D->Coordinates[1] = y;
+											targetPoint3D.x = x;
+											targetPoint3D.y = y;
 										} // end case BIQUADRATICPARABOLA
 										break;
 
-										case(eTransitionCurveType::ENUM_BLOSSCURVE):
+										case(decltype(trans_type)::ENUM::ENUM_BLOSSCURVE):
 										{
 											// Integration durch Substitution(s.Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
 											double teta_up = pow(pointDistAlong + horizSegLength, 3) / (endRadius * pow(horizSegLength, 2))
@@ -853,20 +854,20 @@ namespace OpenInfraPlatform {
 											double x = sin(teta_up) / teta_deriv_up - sin(teta_low) / teta_deriv_low;
 											double y = -cos(teta_up) / teta_deriv_up + cos(teta_low) / teta_deriv_low;
 
-											targetPoint3D->Coordinates[0] = x;
-											targetPoint3D->Coordinates[1] = y;
+											targetPoint3D.x = x;
+											targetPoint3D.y = y;
 
 										} // end case BLOSSCURVE
 										break;
 
-										case(eTransitionCurveType::ENUM_CLOTHOIDCURVE):
+										case(decltype(trans_type)::ENUM::ENUM_CLOTHOIDCURVE):
 										{
-											targetPoint3D->Coordinates[0] = pointDistAlong * (1 - pow(pointDistAlong, 4) / 40 * pow(endRadius, 2) * pow(horizSegLength, 2) + pow(pointDistAlong, 8) / 3456 * pow(endRadius, 4) * pow(horizSegLength, 4));
-											targetPoint3D->Coordinates[1] = (pow(pointDistAlong, 3) / 6 * endRadius*horizSegLength) * (1 - pow(pointDistAlong, 4) / 56 * pow(endRadius, 2) * pow(horizSegLength, 2) + pow(pointDistAlong, 8) / 7040 * pow(endRadius, 4) * pow(horizSegLength, 4));
+											targetPoint3D.x = pointDistAlong * (1 - pow(pointDistAlong, 4) / 40 * pow(endRadius, 2) * pow(horizSegLength, 2) + pow(pointDistAlong, 8) / 3456 * pow(endRadius, 4) * pow(horizSegLength, 4));
+											targetPoint3D.y = (pow(pointDistAlong, 3) / 6 * endRadius*horizSegLength) * (1 - pow(pointDistAlong, 4) / 56 * pow(endRadius, 2) * pow(horizSegLength, 2) + pow(pointDistAlong, 8) / 7040 * pow(endRadius, 4) * pow(horizSegLength, 4));
 										} // end case CLOTHOIDCURVE
 										break;
 
-										case(eTransitionCurveType::ENUM_COSINECURVE):
+										case(decltype(trans_type)::ENUM::ENUM_COSINECURVE):
 										{
 											double psi = M_PI * pointDistAlong / horizSegLength;
 											double x = pointDistAlong - (pow(horizSegLength, 2) / (8 * pow(M_PI, 2) * pow(endRadius, 2))) * horizSegLength / M_PI
@@ -875,21 +876,21 @@ namespace OpenInfraPlatform {
 												- (pow(horizSegLength, 3) / (48 * pow(M_PI, 4) * pow(endRadius, 3)))
 												* (pow(psi, 4) / 4 + pow(sin(psi), 2) * cos(psi) / 3 - 16 * cos(psi) / 3 + 3 * pow(psi, 2) * cos(psi)
 													- 6 * psi * sin(psi) + 3 * pow(psi, 2) / 4 - 3 * psi * sin(2 * psi) / 4 - 3 * cos(2 * psi) / 8 + 137 / 24));
-											targetPoint3D->Coordinates[0] = x;
-											targetPoint3D->Coordinates[1] = y;
+											targetPoint3D.x = x;
+											targetPoint3D.y = y;
 										} // end case COSINECURVE
 										break;
 
-										case (eTransitionCurveType::ENUM_CUBICPARABOLA):
+										case (decltype(trans_type)::ENUM::ENUM_CUBICPARABOLA):
 										{
 											double x = pointDistAlong;
 											double y = pow(x, 3) / (6 * endRadius * horizSegLength);
-											targetPoint3D->Coordinates[0] = x;
-											targetPoint3D->Coordinates[1] = y;
+											targetPoint3D.x = x;
+											targetPoint3D.y = y;
 										} // end case CUBICPARABOLA
 										break;
 
-										case (eTransitionCurveType::ENUM_SINECURVE):
+										case (decltype(trans_type)::ENUM::ENUM_SINECURVE):
 										{
 											double psi = (2 * M_PI * pointDistAlong) / horizSegLength;
 											double x = pointDistAlong * (1 - pow(horizSegLength, 2) / (32 * pow(M_PI, 4)*pow(endRadius, 2) - (pow(horizSegLength, 3) / 3840 * pow(M_PI, 5)*pow(endRadius, 2)))
@@ -900,8 +901,8 @@ namespace OpenInfraPlatform {
 											double teta_deriv_up = 2 * (pointDistAlong + horizSegLength) / 2 * endRadius*horizSegLength;
 											double teta_deriv_low = 2 * pointDistAlong / 2 * endRadius*horizSegLength;
 											double y = sin(teta_up) / teta_deriv_up - sin(teta_low) / teta_deriv_low;
-											targetPoint3D->Coordinates[0] = x;
-											targetPoint3D->Coordinates[1] = y;
+											targetPoint3D.x = x;
+											targetPoint3D.y = y;
 										} // end case SINECURVE
 										break;
 										} // end switch (trans_type)
@@ -910,10 +911,10 @@ namespace OpenInfraPlatform {
 
 
 								// Calculate z coordinate from vertical alignment, if not already there.
-								if (targetPoint3D->Coordinates.empty())
+								if (!std::isnan(targetPoint3D.z))
 								{
 									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegLine> v_seg_line_2D =
-										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcLineSegment2D>(verticalSegmentRelevantToPoint);
+										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegLine>(verticalSegmentRelevantToPoint);
 									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegCircularArc> v_seg_circ_arc_2D =
 										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegCircularArc>(verticalSegmentRelevantToPoint);
 									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegParabolicArc> v_seg_par_arc_2D =
@@ -922,7 +923,7 @@ namespace OpenInfraPlatform {
 									if (v_seg_line_2D)
 									{
 										double distanceToStart = pointDistAlong - verSegDistAlong;
-										targetPoint3D->Coordinates[2] = verSegStartHeight + verSegStartGradient * distanceToStart;
+										targetPoint3D.z = verSegStartHeight + verSegStartGradient * distanceToStart;
 									}
 									if (v_seg_circ_arc_2D)
 									{
@@ -954,7 +955,7 @@ namespace OpenInfraPlatform {
 												- radius / sqrt(1 + pow(verSegStartGradient, 2)); // Sag (increasing gradient)
 										}
 
-										targetPoint3D->Coordinates[2] = z + verSegStartHeight;
+										targetPoint3D.z = z + verSegStartHeight;
 									}
 									if (v_seg_par_arc_2D)
 									{
@@ -974,8 +975,8 @@ namespace OpenInfraPlatform {
 										bool is_convex = v_seg_par_arc_2D->IsConvex;
 
 										double parabola_radius = is_convex ? -arc_const : arc_const;
-										double parabola_gradient = (pointDistAlong - startDistAlong) / parabola_radius + startGradient;
-										targetPoint3D->Coordinates[2] = (pointDistAlong - startDistAlong) * (parabola_gradient + startGradient) / 2 + startHeight;
+										double parabola_gradient = (pointDistAlong - verSegDistAlong) / parabola_radius + verSegStartGradient;
+										targetPoint3D.z = (pointDistAlong - verSegDistAlong) * (parabola_gradient + verSegStartGradient) / 2 + verSegStartHeight;
 									}
 								}// end z coordinate calculation
 
