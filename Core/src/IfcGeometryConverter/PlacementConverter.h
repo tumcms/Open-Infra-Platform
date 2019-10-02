@@ -911,7 +911,7 @@ namespace OpenInfraPlatform {
 
 
 								// Calculate z coordinate from vertical alignment, if not already there.
-								if (!std::isnan(targetPoint3D.z))
+								if (true)
 								{
 									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegLine> v_seg_line_2D =
 										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegLine>(verticalSegmentRelevantToPoint);
