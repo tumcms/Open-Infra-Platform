@@ -87,6 +87,7 @@ void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeome
 
             ibd.data = &ifcGeometryModel->polylineDescription_.indices[0];
             ibd.indexCount = ifcGeometryModel->polylineDescription_.indices.size();
+			ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
 
             if(polylineIndexBuffer_)
                 polylineIndexBuffer_ = nullptr;
@@ -134,11 +135,11 @@ void IfcGeometryEffect::v_init()
 
 void IfcGeometryEffect::v_render()
 {
-    if(meshPipelineState_ && meshVertexBuffer_ && meshIndexBuffer_ && valid_) {
-        buw::ReferenceCounted<buw::ITexture2D> renderTarget = renderSystem()->getBackBufferTarget();
-        setRenderTarget(renderTarget, depthStencilMSAA_);
-        setViewport(viewport_);
+	buw::ReferenceCounted<buw::ITexture2D> renderTarget = renderSystem()->getBackBufferTarget();
+	setRenderTarget(renderTarget, depthStencilMSAA_);
+	setViewport(viewport_);
 
+    if(meshPipelineState_ && meshVertexBuffer_ && meshIndexBuffer_ && valid_) {
         setPipelineState(meshPipelineState_);
         setConstantBuffer(worldBuffer_, "WorldBuffer");
         setVertexBuffer(meshVertexBuffer_);
