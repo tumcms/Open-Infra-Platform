@@ -12,6 +12,8 @@
 
 [Building](docs/markdown/Building.md)
 
+[Developer Documentation](docs/markdown/DeveloperDocumentation.md)
+
 ## License
 
 Copyright (c) 2018 Technical University of Munich
