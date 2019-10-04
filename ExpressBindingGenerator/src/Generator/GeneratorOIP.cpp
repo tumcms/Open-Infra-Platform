@@ -2873,7 +2873,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	
 	file << "" << std::endl;
 
-	file << "add_library(OpenInfraPlatform." << schema.getName() << " SHARED" << std::endl;
+	file << "add_library(OpenInfraPlatform." << schema.getName() << " STATIC" << std::endl;
 	file << "\t"
 		<< "${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}" << std::endl;
 	file << "\t"
