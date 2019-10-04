@@ -349,7 +349,6 @@ include_directories(
 	${Boost_INCLUDE_DIR}
 	${BLUEFRAMEWORK_INCLUDE_DIR}
 	${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR}
-	${EIGEN3_INCLUDE_DIR}	
 	${FFTW3_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIRS}	
 	${visit_struct_INCLUDE_DIR}
@@ -548,9 +547,11 @@ target_link_libraries( OpenInfraPlatform.UI
 	QtXlsxWriter
 	QSimpleUpdater
 	carve
-	ZLIB::ZLIB
+	#ZLIB::ZLIB
+	zlib
 	Rpcrt4.lib
 	fftw3.lib
+	eigen
 )
 
 #------------------------------------------------------------------------------
@@ -565,7 +566,7 @@ BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 # zlic Copy Binaries
-ZLIB_COPY_BINARIES(${CMAKE_BINARY_DIR})
+#ZLIB_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 # QtCopyBinaries
 add_custom_target(Qt5CopyBinaries
@@ -698,7 +699,7 @@ add_thirdparty(test_carve_polyhedrons_2	"carve")
 # Set the target properties.
 #-------------------------------------------------------------------------------------
 
-set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
+#set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(CopyOpenInfraPlatformUIResources 					PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
 set_target_properties(BlueFrameworkCopyBinaries 					PROPERTIES FOLDER "Copy")

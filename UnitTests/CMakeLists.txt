@@ -15,7 +15,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-find_package(GTest REQUIRED)
+#find_package(GTest REQUIRED)
 
 file(GLOB OpenInfraPlatform_UnitTests_Source *.cpp)
 

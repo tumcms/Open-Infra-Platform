@@ -29,8 +29,10 @@ include_directories(${BLUEFRAMEWORK_INCLUDE_DIR})
 target_link_libraries(IFC2X3
 	OpenInfraPlatform.IFC2X3
 	${BLUEFRAMEWORK_LIBRARIES}
-	GTest::GTest
-	GTest::Main
+	#GTest::GTest
+	#GTest::Main
+	gtest	
+	gtest_main
 )
 
 add_test(
