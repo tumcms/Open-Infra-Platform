@@ -35,6 +35,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_DEBUG_POSTFIX "d")
 include(ProjectVersion)
+find_package(Git REQUIRED)
+
+include(FetchContent)
 
 enable_testing()
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -111,13 +114,13 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	find_path(GTEST_ROOT NAMES lib/cmake/GTest/GTestConfig.cmake HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest"
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-master")
-	if(NOT GTEST_ROOT)
-		find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS
-			"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
-			"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
-	endif()
-	find_path(ZLIB_ROOT NAMES zlib.h HINTS 
-	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
+	#if(NOT GTEST_ROOT)
+	#	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS
+	#		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
+	#		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
+	#endif()
+	#find_path(ZLIB_ROOT NAMES zlib.h HINTS 
+	#          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
 	find_path(RAPTOR2_ROOT_DIR NAMES include/raptor2/raptor2.h HINTS 
 	          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\raptor2"
 			  "C:\\thirdparty\\raptor2")
@@ -166,10 +169,23 @@ find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProc
 
 # Deprecated as of Revision 530
 #find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
-find_package(Eigen3 3.3.2  REQUIRED)
+#find_package(Eigen3 3.3.2  REQUIRED)
+#find_path(eigen_DIR)
+if(NOT eigen_DIR)
+	FetchContent_Declare(
+		eigen
+		GIT_REPOSITORY https://github.com/eigenteam/eigen-git-mirror.git
+  	)
+  
+ 	FetchContent_GetProperties(eigen)
+  	if(NOT eigen_POPULATED)
+		FetchContent_Populate(eigen)
+		add_subdirectory(${eigen_SOURCE_DIR} ${eigen_BINARY_DIR})
+  	endif()
+endif()
+
+
 find_package(Oklabi REQUIRED)
-find_package(gtest 1.9.0 REQUIRED) 
-find_package(ZLIB 1.2.10 REQUIRED)
 find_package(qhull REQUIRED)
 find_package(raptor2 REQUIRED)
 find_path(visit_struct_INCLUDE_DIR REQUIRED)
@@ -179,9 +195,40 @@ find_path(visit_struct_INCLUDE_DIR REQUIRED)
 # Added 12.09.2018: FFTW3
 find_package(FFTW3 REQUIRED)
 
-include(GTestCopyBinaries)
-GTEST_COPY_BINARIES(${CMAKE_BINARY_DIR})
-set_target_properties(GTestCopyBinaries	PROPERTIES FOLDER "Copy")
+find_package(gtest 1.9.0)
+if(NOT gtest-FOUND)
+	FetchContent_Declare(
+		gtest
+		GIT_REPOSITORY https://github.com/google/googletest.git
+  	)
+  
+ 	FetchContent_GetProperties(gtest)
+  	if(NOT gtest_POPULATED)
+		FetchContent_Populate(gtest)
+		add_subdirectory(${gtest_SOURCE_DIR} ${gtest_BINARY_DIR})
+  	endif()
+endif()
+
+#include(GTestCopyBinaries)
+#GTEST_COPY_BINARIES(${CMAKE_BINARY_DIR})
+#set_target_properties(GTestCopyBinaries	PROPERTIES FOLDER "Copy")
+
+find_package(ZLIB)
+
+if(NOT zlib-FOUND)
+	FetchContent_Declare(
+		zlib
+		GIT_REPOSITORY https://github.com/madler/zlib.git
+  	)
+  
+ 	FetchContent_GetProperties(zlib)
+  	if(NOT zlib_POPULATED)
+		FetchContent_Populate(zlib)
+		add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
+  	endif()
+endif()
+
+
 
 # Find the Qt components
 set(QT5_COMPONENTS
