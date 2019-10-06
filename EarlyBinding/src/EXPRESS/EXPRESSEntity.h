@@ -46,6 +46,10 @@ public:
 		return "#" + std::to_string(m_id);
 	}
 
+	const std::string getErrorLog() const {
+		return classname() + ": (" + getStepParameter() + ")";
+	}
+
 	virtual const std::string classname() const = 0;
 
 	virtual const std::string getStepLine() const = 0;
