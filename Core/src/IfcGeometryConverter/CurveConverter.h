@@ -155,7 +155,7 @@ namespace OpenInfraPlatform {
 
 							// is it going to be only a horizontal alignment?
 							bool bOnlyHorizontal = false;
-							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVertical> vertical = alignment_curve->Vertical.lock();
+							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVertical> vertical = alignment_curve->Vertical.get();
 							if (!vertical) {
 								BLUE_LOG(trace) << "No IfcAlignment2DVertical in " << alignment_curve->getErrorLog();
 								bOnlyHorizontal = true;
@@ -165,7 +165,7 @@ namespace OpenInfraPlatform {
 							std::vector<double> stations;  // the stations at which a point of the tesselation has to be calcuated
 
 							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment>>::iterator itHorizontalSegment = horizontal->Segments.begin();
-							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcAlignment2DVerticalSegment>>::iterator itVerticalSegment   = bOnlyHorizontal ? nullptr : vertical->Segments.begin();
+							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcAlignment2DVerticalSegment>>::iterator   itVerticalSegment   = vertical->Segments.begin();
 
 							double dHorizontalSegStart = 0.; // the end station of the last element in the horizontal ( i.e. the start station of current itHorizotnalSegment )
 							double dVerticalSegStart = 0.; // similar
@@ -196,7 +196,7 @@ namespace OpenInfraPlatform {
 
 								// Step 2: Get horizontal segment type and store the number and length of fragments.
 								// the values needed for calculation of points
-								double dFragmentsLength = 0.;
+								double dFragmentLength = 0.;
 								int    nFragments = 0;
 
 								// Segment types: IfcLineSegment2D, IfcCircularArcSegment2D and IfcTransitionCurveSegment2D
@@ -211,15 +211,15 @@ namespace OpenInfraPlatform {
 								// Set number of fragments (number of points to be added between start & end) according to segment type.
 								if (line_segment_2D) {
 									nFragments = 0;
-									dFragmentsLength = dHorizontalSegLength;
+									dFragmentLength = dHorizontalSegLength;
 								}
 								else if (circular_arc_segment_2D) {
 									nFragments = geomSettings->min_num_vertices_per_arc;
-									dFragmentsLength = dHorizontalSegLength / nFragments;
+									dFragmentLength = dHorizontalSegLength / nFragments;
 								}
 								else if (trans_curve_segment_2D) {
 									nFragments = geomSettings->min_num_vertices_per_arc;
-									dFragmentsLength = dHorizontalSegLength / nFragments;
+									dFragmentLength = dHorizontalSegLength / nFragments;
 								}
 								else
 								{
@@ -234,6 +234,8 @@ namespace OpenInfraPlatform {
 								{
 									// check, if the current vertical segment overlaps the horizontal
 									bool bLoop = true;
+									double dVerticalSegLength = 0.;
+									double dVerticalSegEnd = 0.;
 
 									while (bLoop)
 									{
@@ -246,12 +248,12 @@ namespace OpenInfraPlatform {
 										dVerticalSegStart = (*itVerticalSegment)->StartDistAlong * length_factor;
 
 										// HorizontalLength type IfcPositiveLengthMeasure [1:1]
-										if ((*it_vertical_segment)->HorizontalLength <= 0.0) {
+										if ((*itVerticalSegment)->HorizontalLength <= 0.0) {
 											BLUE_LOG(error) << (*itVerticalSegment)->getErrorLog() << ": Invalid horizontal length.";
 											return;
 										}
-										double dVerticalSegLength = (*itVerticalSegment)->HorizontalLength * length_factor;
-										double dVerticalSegEnd = dVerticalSegStart + dVerticalSegLength;
+										dVerticalSegLength = (*itVerticalSegment)->HorizontalLength * length_factor;
+										dVerticalSegEnd = dVerticalSegStart + dVerticalSegLength;
 
 										// check the plausibility
 										//  itVerticalSeg:          +-------+  itHorizontalSeg
@@ -301,12 +303,12 @@ namespace OpenInfraPlatform {
 									}
 									else
 									{
-										BLUE_LOG(error) << (*it_vertical_segment)->getErrorLog() << ": Could not determine tesselation values.";
+										BLUE_LOG(error) << (*itVerticalSegment)->getErrorLog() << ": Could not determine tesselation values.";
 										return;
 									}
 
 									// Select greater accuracy/smaller fragments.
-									dFragmentsLength = std::min(dFragmentsLength, dVerFragmentsLength);
+									dFragmentLength = std::min(dFragmentLength, dVerFragmentsLength);
 
 									// determine the overlap area
 									dOverlapStart = std::max(dHorizontalSegStart, dVerticalSegStart);
@@ -316,7 +318,7 @@ namespace OpenInfraPlatform {
 								double newStationDistAlong = dOverlapStart;
 
 								// Add stations according to length of fragments until the end of the overlapping area.
-								while (newStationDistAlong <= dOverLapEnd)
+								while (newStationDistAlong <= dOverlapEnd)
 								{
 									stations.push_back(newStationDistAlong);
 									newStationDistAlong += dFragmentLength;
