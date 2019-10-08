@@ -31,7 +31,7 @@ find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 find_package(Python2 REQUIRED)
 
-find_path(TCLAP_INCLUDE_DIR REQUIRED)
+find_path(TCLAP_INCLUDE_DIR NAMES tclap HINTS "C:\\thirdparty\\tclap-1.2.2\\include" REQUIRED)
 
 get_filename_component(Python2_DIRECTORY ${Python2_EXECUTABLE} DIRECTORY)
 
