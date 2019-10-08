@@ -123,7 +123,7 @@ namespace OpenInfraPlatform
 						std::shared_ptr<ItemData> itemData(new ItemData());
 						productShape->vec_item_data.push_back(itemData);
 						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> axis = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(alignment->Axis.lock());
-						repConverter->convertIfcGeometricRepresentationItem(axis, matProduct, itemData, strerr);
+						repConverter->convertIfcGeometricRepresentationItem(axis, carve::math::Matrix::IDENT(), itemData, strerr);
 					}
 
 #ifdef _DEBUG
