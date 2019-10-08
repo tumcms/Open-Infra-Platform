@@ -31,7 +31,17 @@ find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 find_package(Python2 REQUIRED)
 
-find_path(TCLAP_INCLUDE_DIR REQUIRED)
+#find_path(TCLAP_INCLUDE_DIR REQUIRED)
+FetchContent_Declare(
+	tclap
+	GIT_REPOSITORY https://github.com/eile/tclap.git
+)
+  
+FetchContent_GetProperties(tclap)
+if(NOT tclap_POPULATED)
+	FetchContent_Populate(tclap)
+endif()
+set(TCLAP_INCLUDE_DIR ${tclap_SOURCE_DIR}/include)
 
 get_filename_component(Python2_DIRECTORY ${Python2_EXECUTABLE} DIRECTORY)
 
