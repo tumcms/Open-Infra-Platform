@@ -744,6 +744,12 @@ if(MODULES_TESSELATION)
 
 ENDIF()
 
+option(MODULES_TREEVIEW ON)
+
+if(MODULES_TREEVIEW)
+	add_subdirectory(TreeView)
+endif()
+
 #-------------------------------------------------------------------------------------
 # Deployment & Installation.
 #-------------------------------------------------------------------------------------

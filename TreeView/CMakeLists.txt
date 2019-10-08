@@ -1,0 +1,31 @@
+#
+#    Copyright (c) 2018 Technical University of Munich
+#    Chair of Computational Modeling and Simulation.
+#
+#    TUM Open Infra Platform is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License Version 3
+#    as published by the Free Software Foundation.
+#
+#    TUM Open Infra Platform is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+project(OpenInfraPlatform.TreeView)
+find_package(Qt5 5.10.0 COMPONENTS Core Widgets)
+
+file(GLOB OpenInfraPlatform_TreeView_Forms    Forms/*.ui)
+file(GLOB OpenInfraPlatform_TreeView_Source					src/*.*)
+
+source_group(TreeView						FILES ${OpenInfraPlatform_TreeView_Source})
+source_group(TreeView\\Forms				FILES ${OpenInfraPlatform_TreeView_Forms})
+
+add_executable(OpenInfraPlatform.TreeView ${OpenInfraPlatform_TreeView_Source})
+
+target_link_libraries(OpenInfraPlatform.TreeView Qt5::Core)
+
+set_target_properties(OpenInfraPlatform.TreeView						PROPERTIES FOLDER "OpenInfraPlatform")
