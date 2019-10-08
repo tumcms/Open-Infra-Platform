@@ -305,6 +305,8 @@ set(Qt5_ICONENGINES_PLUGINS
 	QSvgIconPlugin
 )
 
+set(Qt5_PLUGINS ${Qt5_IMAGEFORMATS_PLUGINS} ${Qt5_GEOSERVICES_PLUGINS} ${Qt5_PLATFORMS_PLUGINS} ${Qt5_NETWORK_PLUGINS} ${Qt5_ICONENGINES_PLUGINS})
+
 foreach(plugin ${Qt5_GEOSERVICES_PLUGINS})
 	include(${Qt5Location_DIR}/Qt5Location_${plugin}.cmake)
 endforeach()
