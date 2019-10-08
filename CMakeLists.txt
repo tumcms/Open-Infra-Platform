@@ -576,8 +576,6 @@ target_link_libraries( OpenInfraPlatform.UI
 	Qt5::Core
 	Qt5::Gui
 	Qt5::Widgets
-	Qt5::Xml
-	Qt5::XmlPatterns
 	Qt5::Svg
 	Qt5::PrintSupport
 	Qt5::Quick
