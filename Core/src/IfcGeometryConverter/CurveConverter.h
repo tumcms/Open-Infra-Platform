@@ -155,7 +155,8 @@ namespace OpenInfraPlatform {
 
 							// is it going to be only a horizontal alignment?
 							bool bOnlyHorizontal = false;
-							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVertical> vertical = alignment_curve->Vertical.get();
+							//std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVertical>
+							auto vertical = alignment_curve->Vertical;
 							if (!vertical) {
 								BLUE_LOG(trace) << "No IfcAlignment2DVertical in " << alignment_curve->getErrorLog();
 								bOnlyHorizontal = true;
@@ -165,7 +166,9 @@ namespace OpenInfraPlatform {
 							std::vector<double> stations;  // the stations at which a point of the tesselation has to be calcuated
 
 							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment>>::iterator itHorizontalSegment = horizontal->Segments.begin();
-							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcAlignment2DVerticalSegment>>::iterator   itVerticalSegment   = vertical->Segments.begin();
+							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcAlignment2DVerticalSegment>>::iterator   itVerticalSegment;
+							if(!bOnlyHorizontal)
+								itVerticalSegment = vertical->Segments.begin();
 
 							double dHorizontalSegStart = 0.; // the end station of the last element in the horizontal ( i.e. the start station of current itHorizotnalSegment )
 							double dVerticalSegStart = 0.; // similar
@@ -274,7 +277,7 @@ namespace OpenInfraPlatform {
 											return;
 										}
 
-										if (bLoop)
+										if ( bLoop && !bOnlyHorizontal )
 											itVerticalSegment++; // take the next element
 									}
 
