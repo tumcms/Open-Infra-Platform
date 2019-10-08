@@ -608,7 +608,7 @@ namespace OpenInfraPlatform {
 
 								// SegmentLength type IfcPositiveLengthMeasure [1:1]
 								if (horCurveGeometry->SegmentLength < 0) {
-									BLUE_LOG(error) << "No curve segment length in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
+									BLUE_LOG(error) << "No curve segment length in IfcCurveSegment2D (Segment ID: " << horCurveGeometry->getId() << ").";
 									return;
 								}
 								horizSegLength = horCurveGeometry->SegmentLength * length_factor;
@@ -665,7 +665,7 @@ namespace OpenInfraPlatform {
 							// Get information on vertical alignment.
 							auto vertical = alignment_curve->Vertical;
 							if (!vertical) {
-								BLUE_LOG(warning) << "No IfcAlignment2DVertical in IfcAlignmentCurve (Segment ID: " << vertical->getId() << ").";
+								BLUE_LOG(warning) << "No IfcAlignment2DVertical in IfcAlignmentCurve (Segment ID: " << alignment_curve->getId() << ").";
 								// TO DO: Handle as horizontal alignment only.
 							}
 							else
@@ -911,7 +911,7 @@ namespace OpenInfraPlatform {
 
 
 								// Calculate z coordinate from vertical alignment, if not already there.
-								if (!std::isnan(targetPoint3D.z))
+								if (true)
 								{
 									std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegLine> v_seg_line_2D =
 										std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerSegLine>(verticalSegmentRelevantToPoint);

@@ -151,7 +151,8 @@ namespace OpenInfraPlatform {
 
 							auto vertical = alignment_curve->Vertical;
 							if (!vertical) {
-								BLUE_LOG(warning) << "No IfcAlignment2DVertical in IfcAlignmentCurve (Segment ID: " << vertical->getId() << ").";
+								BLUE_LOG(error) << "No IfcAlignment2DVertical in IfcAlignmentCurve (Segment ID: " << alignment_curve->getId() << ").";
+								return;
 								// TO DO: Handle as horizontal alignment only.
 							}
 
@@ -166,7 +167,6 @@ namespace OpenInfraPlatform {
 							auto it_horizontal_segment = horizontal->Segments.begin();
 							auto it_vertical_segment = vertical->Segments.begin();
 
-							auto ver_end_it = vertical->Segments.end();
 
 							// Iterate over horizontal and vertical segments
 							while (it_horizontal_segment != horizontal->Segments.end() && it_vertical_segment != vertical->Segments.end())
@@ -183,7 +183,7 @@ namespace OpenInfraPlatform {
 
 								// SegmentLength type IfcPositiveLengthMeasure [1:1]
 								if (horCurveGeometry->SegmentLength <= 0) {
-									BLUE_LOG(error) << "No curve segment length in IfcCurveSegment2D (Segment ID: " << (*it_horizontal_segment)->getId() << ").";
+									BLUE_LOG(error) << "No curve segment length in IfcCurveSegment2D (Segment ID: " << horCurveGeometry->getId() << ").";
 									return;
 								}
 								double dHorizontalSegLength = horCurveGeometry->SegmentLength * length_factor;
