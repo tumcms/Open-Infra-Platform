@@ -107,9 +107,9 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	find_path(Boost_DIR NAMES boost/version.hpp HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
 		"C:\\thirdparty\\boost_1_65_1")
-	find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4"
-		"C:\\thirdparty\\eigen")
+	#find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS
+	#	"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4"
+	#	"C:\\thirdparty\\eigen")
 	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64")
 	find_path(GTEST_ROOT NAMES lib/cmake/GTest/GTestConfig.cmake HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest"
@@ -126,7 +126,7 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 			  "C:\\thirdparty\\raptor2")
 	# Added to predefined path list in revision 533
 	find_path(FFTW3_DIR NAMES FFTW3Config.cmake HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\fftw-3.3.8\\lib\\cmake\\fftw3")
-	find_path(visit_struct_INCLUDE_DIR NAMES visit_struct/visit_struct.hpp HINTS "C:\\thirdparty\\visit_struct-master\\include")
+	#find_path(visit_struct_INCLUDE_DIR NAMES visit_struct/visit_struct.hpp HINTS "C:\\thirdparty\\visit_struct-master\\include")
 endif()
 
 #------------------------------------------------------------------------------
@@ -167,65 +167,72 @@ find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
 
 find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
 
+
 # Deprecated as of Revision 530
 #find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
 #find_package(Eigen3 3.3.2  REQUIRED)
 #find_path(eigen_DIR)
-if(NOT eigen_DIR)
-	FetchContent_Declare(
-		eigen
-		GIT_REPOSITORY https://github.com/eigenteam/eigen-git-mirror.git
-  	)
+FetchContent_Declare(
+	eigen
+	GIT_REPOSITORY https://github.com/eigenteam/eigen-git-mirror.git
+	GIT_TAG 3.3.7
+)
   
- 	FetchContent_GetProperties(eigen)
-  	if(NOT eigen_POPULATED)
-		FetchContent_Populate(eigen)
-		add_subdirectory(${eigen_SOURCE_DIR} ${eigen_BINARY_DIR})
-  	endif()
+FetchContent_GetProperties(eigen)
+if(NOT eigen_POPULATED)
+	FetchContent_Populate(eigen)
+	add_subdirectory(${eigen_SOURCE_DIR} ${eigen_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
 
 find_package(Oklabi REQUIRED)
 find_package(qhull REQUIRED)
 find_package(raptor2 REQUIRED)
-find_path(visit_struct_INCLUDE_DIR REQUIRED)
+
+FetchContent_Declare(
+	visit_struct
+	GIT_REPOSITORY https://github.com/cbeck88/visit_struct.git
+	GIT_TAG v1.0
+)
+  
+FetchContent_GetProperties(visit_struct)
+if(NOT visit_struct_POPULATED)
+	FetchContent_Populate(visit_struct)
+endif()
+set(visit_struct_INCLUDE_DIR ${visit_struct_SOURCE_DIR}/include)
+
 # find_package(CC REQUIRED)	02.05.2019 moved to pcp module (coetzee)
 # find_package(libLAS REQUIRED)	02.05.2019 moved to pcp module (coetzee)
 
 # Added 12.09.2018: FFTW3
 find_package(FFTW3 REQUIRED)
 
-find_package(gtest 1.9.0)
-if(NOT gtest-FOUND)
-	FetchContent_Declare(
-		gtest
-		GIT_REPOSITORY https://github.com/google/googletest.git
-  	)
-  
- 	FetchContent_GetProperties(gtest)
-  	if(NOT gtest_POPULATED)
-		FetchContent_Populate(gtest)
-		add_subdirectory(${gtest_SOURCE_DIR} ${gtest_BINARY_DIR})
-  	endif()
+FetchContent_Declare(
+	gtest
+	GIT_REPOSITORY https://github.com/google/googletest.git
+	GIT_TAG release-1.10.0
+)
+ 
+FetchContent_GetProperties(gtest)
+if(NOT gtest_POPULATED)
+	FetchContent_Populate(gtest)
+	add_subdirectory(${gtest_SOURCE_DIR} ${gtest_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
 #include(GTestCopyBinaries)
 #GTEST_COPY_BINARIES(${CMAKE_BINARY_DIR})
 #set_target_properties(GTestCopyBinaries	PROPERTIES FOLDER "Copy")
 
-find_package(ZLIB)
 
-if(NOT zlib-FOUND)
-	FetchContent_Declare(
-		zlib
-		GIT_REPOSITORY https://github.com/madler/zlib.git
-  	)
-  
- 	FetchContent_GetProperties(zlib)
-  	if(NOT zlib_POPULATED)
-		FetchContent_Populate(zlib)
-		add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
-  	endif()
+FetchContent_Declare(
+	zlib
+	GIT_REPOSITORY https://github.com/madler/zlib.git
+)
+ 
+FetchContent_GetProperties(zlib)
+if(NOT zlib_POPULATED)
+	FetchContent_Populate(zlib)
+	add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
 
