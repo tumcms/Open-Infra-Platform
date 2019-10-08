@@ -554,14 +554,14 @@ namespace OpenInfraPlatform {
 
 					// Function 7: Convert distance along an alignment curve to 3D coordinates.
 					static void convertAlignmentCurveDistAlongToPoint3D(std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> ifcAlignmentCurve,
-						typename IfcEntityTypesT::IfcLengthMeasure pointDistAlong,
+						double pointDistAlong,
 						carve::geom::vector<3>& targetPoint3D,
 						carve::geom::vector<3>& targetDirection3D)
 					
 					{	
 						// Function allows IfcBoundedCurve as input because of template issues. TODO: change to IfcAlignmentCurve
-						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignmentCurve> alignment_curve =
-							std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAlignmentCurve>(ifcAlignmentCurve);
+						std::shared_ptr<typename IfcEntityTypesT::IfcAlignmentCurve> alignment_curve =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignmentCurve>(ifcAlignmentCurve);
 						if (alignment_curve)
 						{
 							auto unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
@@ -569,7 +569,7 @@ namespace OpenInfraPlatform {
 							double plane_angle_factor = unitConverter->getAngleInRadianFactor();
 
 							// Get information from horizontal alignment.
-							std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DHorizontal> horizontal = alignment_curve->Horizontal.lock();
+							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal> horizontal = alignment_curve->Horizontal.lock();
 
 							if (!horizontal)
 							{
@@ -583,12 +583,12 @@ namespace OpenInfraPlatform {
 								return;
 							}
 
-							std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DHorizontalSegment> > horSegments;
+							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment> > horSegments;
 							horSegments.resize(horizontal->Segments.size());
 							std::transform(horizontal->Segments.begin(), horizontal->Segments.end(), horSegments.begin(), [](auto &it) {return it.lock(); });
 
-							std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DHorizontalSegment> horizontalSegmentRelevantToPoint;
-							std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCurveSegment2D> horCurveGeometry;
+							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment> horizontalSegmentRelevantToPoint;
+							std::shared_ptr<typename IfcEntityTypesT::IfcCurveSegment2D> horCurveGeometry;
 							double horizSegStartDistAlong = 0.;
 							double horizSegStartPointX = 0.;
 							double horizSegStartPointY = 0.;
@@ -672,6 +672,7 @@ namespace OpenInfraPlatform {
 							{
 								if (vertical->Segments.empty()) {
 									BLUE_LOG(error) << "No segments in IfcAlignment2DVertical. (Segment ID: " << vertical->getId() << ").";
+									return;
 								}
 								std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAlignment2DVerticalSegment> > verSegments;
 								verSegments.resize(vertical->Segments.size());

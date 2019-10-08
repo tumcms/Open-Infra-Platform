@@ -277,9 +277,9 @@ namespace OpenInfraPlatform {
 											return;
 										}
 
-										if ( bLoop && !bOnlyHorizontal )
+										if ( bLoop )
 											itVerticalSegment++; // take the next element
-									}
+									} // while( bLoop )
 
 									// Segment types: IfcAlignment2DVerSegCircularArc, IfcAlignment2DVerSegLine, IfcAlignment2DVerSegParabolicArc.
 									std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc> v_seg_circ_arc_2D =
@@ -315,13 +315,13 @@ namespace OpenInfraPlatform {
 
 									// determine the overlap area
 									dOverlapStart = std::max(dHorizontalSegStart, dVerticalSegStart);
-									dOverlapEnd   = std::max(dHorizontalSegEnd  , dVerticalSegEnd);
+									dOverlapEnd   = std::min(dHorizontalSegEnd  , dVerticalSegEnd);
 								}
 
 								double newStationDistAlong = dOverlapStart;
 
 								// Add stations according to length of fragments until the end of the overlapping area.
-								while (newStationDistAlong <= dOverlapEnd)
+								while (newStationDistAlong < dOverlapEnd)
 								{
 									stations.push_back(newStationDistAlong);
 									newStationDistAlong += dFragmentLength;
