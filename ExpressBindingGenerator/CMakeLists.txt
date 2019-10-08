@@ -20,15 +20,26 @@ project(OpenInfraPlatform.ExpressBindingGenerator)
 if(NOT Boost_FOUND)
 	find_package(Boost 1.65.1 REQUIRED)
 endif()
-if(NOT gtest_FOUND)
-	find_package(gtest REQUIRED)
-endif()
+
 
 find_file(BISON_EXECUTABLE win_bison.exe HINTS ${CMAKE_CURRENT_SOURCE_DIR}/Tools/win_flex_bison-2.5.5)
 find_file(FLEX_EXECUTABLE win_flex.exe HINTS ${CMAKE_CURRENT_SOURCE_DIR}/Tools/win_flex_bison-2.5.5)
 
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
+
+# FetchContent_Declare(
+# 	winflexbison
+# 	GIT_REPOSITORY https://github.com/lexxmark/winflexbison.git
+# 	GIT_TAG v2.5.20
+# )
+ 
+# FetchContent_GetProperties(winflexbison)
+# if(NOT winflexbison_POPULATED)
+# 	FetchContent_Populate(winflexbison)
+# 	add_subdirectory(${winflexbison_SOURCE_DIR} ${winflexbison_BINARY_DIR})
+# endif()
+
 find_package(Python2 REQUIRED)
 
 #find_path(TCLAP_INCLUDE_DIR REQUIRED)
@@ -41,7 +52,6 @@ FetchContent_GetProperties(tclap)
 if(NOT tclap_POPULATED)
 	FetchContent_Populate(tclap)
 endif()
-set(TCLAP_INCLUDE_DIR ${tclap_SOURCE_DIR}/include)
 
 get_filename_component(Python2_DIRECTORY ${Python2_EXECUTABLE} DIRECTORY)
 
@@ -81,7 +91,9 @@ macro(add_format format schema active)
 		
 		# Custom target that generates the early binding library files.
 		add_custom_target(Commands.GenerateEarlyBinding.${format}
-			COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding	
+			COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding
+			COMMAND ${CMAKE_COMMAND} -E remove_directory  ${CMAKE_BINARY_DIR}/EarlyBinding/${format}
+
 			COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${schema}.exp -o ${CMAKE_BINARY_DIR}/EarlyBinding
 		)
 
@@ -118,7 +130,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/src
 	${Boost_INCLUDE_DIR}
-	${TCLAP_INCLUDE_DIR}
+	${tclap_SOURCE_DIR}/include
 )
 
 # Add files and set source groups.
