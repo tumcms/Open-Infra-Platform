@@ -345,6 +345,8 @@ namespace OpenInfraPlatform {
 								}
 
 							} // end of horizontal / vertical segments while iteration
+							// add the last station
+							stations.push_back(dHorizontalSegStart);
 
 							carve::geom::vector<3> targetPoint3D;
 							carve::geom::vector<3> targetDirection3D;
