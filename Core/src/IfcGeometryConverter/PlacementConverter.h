@@ -599,7 +599,7 @@ namespace OpenInfraPlatform {
 
 							// Get information from vertical alignment.
 							bool bOnlyHorizontal = false;
-							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVertical> vertical = alignment_curve->Vertical->get(); // .lock();
+							auto vertical = alignment_curve->Vertical; // .lock();
 
 							if (!vertical)
 							{
@@ -811,8 +811,8 @@ namespace OpenInfraPlatform {
 								x = horizSegStartPointX + distanceToStart * cos(horizSegStartDirection);
 								y = horizSegStartPointY + distanceToStart * sin(horizSegStartDirection);
 
-								//TODO calculate direction
-								//dir = ?
+								// calculate direction
+								dir = horizSegStartDirection;
 
 							} // if (line_segment_2D) 
 							else if (circular_arc_segment_2D) 
