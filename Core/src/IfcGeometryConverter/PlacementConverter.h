@@ -786,6 +786,11 @@ namespace OpenInfraPlatform {
 							double horizSegStartPointY = curveSegStartPoint->Coordinates[1] * length_factor;
 							// length
 							double horizSegLength = horCurveGeometryRelevantToPoint->SegmentLength * length_factor;
+							if( horizSegLength < 0. ) {
+								BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog()
+									<< ": No curve segment length specified.";
+								return;
+							}
 
 							// direction
 							// StartDirection type IfcPlaneAngleMeasure [1:1]
@@ -864,7 +869,7 @@ namespace OpenInfraPlatform {
 								// EndRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
 								double endRadius = 0.0;
 								if (trans_curve_segment_2D->EndRadius <= 0.) {
-									BLUE_LOG(warning) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Start radius NIL, interpreted as infinite.";
+									BLUE_LOG(warning) << horCurveGeometryRelevantToPoint->getErrorLog() << ": End radius NIL, interpreted as infinite.";
 								}
 								else {
 									endRadius = trans_curve_segment_2D->EndRadius * length_factor;
@@ -896,12 +901,12 @@ namespace OpenInfraPlatform {
 									y = 0.0;
 									if (x <= horizSegLength / 2)	// y coordinate
 									{
-										y = pow(x, 4) / (6 * endRadius * horizSegLength * horizSegLength);
+										y = pow(x, 4) / (6. * endRadius * horizSegLength * horizSegLength);
 									}
 									else if (horizSegLength / 2 < x && x <= horizSegLength)
 									{
-										y = -(pow(x, 4) / (6 * endRadius * pow(horizSegLength, 2)) + (2 * pow(x, 3)) / (3 * endRadius * horizSegLength)
-											- pow(x, 2) / (2 * endRadius) + (horizSegLength * x) / (6 * endRadius) - pow(horizSegLength, 2) / (48 * endRadius));
+										y = -(pow(x, 4) / (6. * endRadius * pow(horizSegLength, 2)) + (2. * pow(x, 3)) / (3. * endRadius * horizSegLength)
+											- pow(x, 2) / (2. * endRadius) + (horizSegLength * x) / (6. * endRadius) - pow(horizSegLength, 2) / (48. * endRadius));
 									} // end elseif
 									else
 									{
