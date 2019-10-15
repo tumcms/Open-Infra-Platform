@@ -49,8 +49,8 @@ void GeneratorEcho::generateEntities(Schema& schema, std::ostream& out) {
 			out << " SUBTYPE OF(" << entity.getSupertype() << ");" << std::endl;
 		}
 
-		for (int i = 0; i < entity.getAttributeCount(); i++) {
-			const EntityAttribute& att = entity.getAttribute(i);
+		for (int j = 0; j < entity.getAttributeCount(); j++) {
+			const EntityAttribute& att = entity.getAttribute(j);
 
 			out << "\t" << att.getName() << " : ";
 
@@ -111,10 +111,10 @@ void GeneratorEcho::generateTypes(Schema& schema, std::ostream& out) {
 		} else if (type.getType() == eType::Enumeration) {
 			out << "ENUMERATION OF " << std::endl << "\t(";
 
-			for (int i = 0; i < type.getTypes().size(); i++) {
-				out << type.getTypes()[i];
+			for (int j = 0; j < type.getTypes().size(); j++) {
+				out << type.getTypes()[j];
 
-				if (i + 1 < type.getTypes().size())
+				if (j + 1 < type.getTypes().size())
 					out << std::endl << "\t,";
 			}
 
@@ -122,10 +122,10 @@ void GeneratorEcho::generateTypes(Schema& schema, std::ostream& out) {
 		} else if (type.getType() == eType::Select) {
 			out << "SELECT " << std::endl << "\t(";
 
-			for (int i = 0; i < type.getTypes().size(); i++) {
-				out << type.getTypes()[i];
+			for (int j = 0; j < type.getTypes().size(); j++) {
+				out << type.getTypes()[j];
 
-				if (i + 1 < type.getTypes().size())
+				if (j + 1 < type.getTypes().size())
 					out << std::endl << "\t,";
 			}
 
