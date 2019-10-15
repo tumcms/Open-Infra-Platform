@@ -62,6 +62,7 @@ target_link_libraries(OpenInfraPlatform.Core PRIVATE
     Qt5::XmlPatterns
     ${BLUEFRAMEWORK_LIBRARIES}
     carve
+    eigen
 )
 
 if(MODULES_POINT_CLOUD_PROCESSING)
