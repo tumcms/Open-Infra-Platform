@@ -63,3 +63,9 @@ install(TARGETS QtXlsxWriter
 
 # Use the Widgets module from Qt 5.
 target_link_libraries(QtXlsxWriter Qt5::Core Qt5::Gui Qt5::Xml Qt5::XmlPatterns Qt5::Widgets)
+
+# add_custom_command(TARGET QtXlsxWriter
+#     POST_BUILD
+#     COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
+#     COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:QtXlsxWriter>/$<TARGET_FILE_NAME:QtXlsxWriter>"
+# )
