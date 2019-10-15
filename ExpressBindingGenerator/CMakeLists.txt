@@ -107,7 +107,7 @@ add_format(IFC4 			IFC4_ADD1 		OFF)
 add_format(IFC4X2_BIM4ROAD 	IFC4x2_BIM4ROAD	OFF)
 add_format(IFC4X1		 	IFC4x1_RC3		ON)
 add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)
-add_format(IFC4X2			IFC4x2			OFF)
+add_format(IFC4X2			IFC4x2			ON)
 
 # Push to parent scope to be able to determine which folders to add in the higher level CMakeLists.txt
 set(IFC_FORMATS ${IFC_FORMATS} PARENT_SCOPE)
