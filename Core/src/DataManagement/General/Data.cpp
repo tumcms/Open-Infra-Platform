@@ -31,11 +31,15 @@
 //	#include "IFC4.h"
 //#endif
 
-//#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-	#include "reader/IFC4X1Reader.h"
-	#include "EMTIFC4X1EntityTypes.h"
-	#include "IFC4X1.h"
+//#ifdef OIP_MODULE_EARLYBINDING_IFC4X2
+	//#include "reader/IFC4X2Reader.h"
+	//#include "EMTIFC4X2EntityTypes.h"
+	//#include "IFC4X2.h"
 //#endif
+
+#include "reader/IFC4X2Reader.h"
+#include "EMTIFC4X2EntityTypes.h"
+#include "IFC4X2.h"
 
 #include "IfcGeometryConverter\IfcImporter.h"
 #include "IfcGeometryConverter\GeometryInputData.h"
@@ -167,18 +171,30 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 		//		}
 		//	}
 		//}
-		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X1) {
-			expressModel_ = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename);
-			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X1EntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC4X1EntityTypes>>();
+		//if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X2) {
+		//	expressModel_ = OpenInfraPlatform::IFC4X2::IFC4X2Reader::FromFile(filename);
+		//	auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X2EntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC4X2EntityTypes>>();
+		//	if (importer.collectGeometryData(expressModel_)) {
+		//		auto converter = IfcGeometryConverter::ConverterBuwT<emt::IFC4X2EntityTypes>();
+		//		if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
+		//			if (!tempIfcGeometryModel_->isEmpty()) {
+		//				ifcGeometryModel_ = tempIfcGeometryModel_;
+		//			}
+		//		}
+		//	}
+		//}
+		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X2) {
+			expressModel_ = OpenInfraPlatform::IFC4X2::IFC4X2Reader::FromFile(filename);
+			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X2EntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC4X2EntityTypes>>();
 			if (importer.collectGeometryData(expressModel_)) {
-				auto converter = IfcGeometryConverter::ConverterBuwT<emt::IFC4X1EntityTypes>();
+				auto converter = IfcGeometryConverter::ConverterBuwT<emt::IFC4X2EntityTypes>();
 				if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
 					if (!tempIfcGeometryModel_->isEmpty()) {
 						ifcGeometryModel_ = tempIfcGeometryModel_;
 					}
 				}
 			}
-		}		
+		}
 	}	
 }
 

@@ -48,7 +48,7 @@ namespace OpenInfraPlatform {
 			}
 
 			// *************************************************************************************************************************************************************//
-			//	IfcProfileDef		(http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcprofileresource/lexical/ifcprofiledef.htm)							//
+			//	IfcProfileDef		(http://www.buildingsmart-tech.org/ifc/IFC4X2/final/html/schema/ifcprofileresource/lexical/ifcprofiledef.htm)							//
 			//	ABSTRACT SUPERTYPE OF IfcArbitraryClosedProfileDef, IfcArbitraryOpenProfileDef, IfcCompositeProfileDef, IfcDerivedProfileDef, IfcParameterizedProfileDef	//
 			// *************************************************************************************************************************************************************//
 			void computeProfile(std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> profileDef)
@@ -493,7 +493,7 @@ namespace OpenInfraPlatform {
 			{
 				
 				// *************************************************************************************************************************************************************//
-				// IfcParameterizedProfileDef	(http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcprofileresource/lexical/ifcparameterizedprofiledef.htm)		//
+				// IfcParameterizedProfileDef	(http://www.buildingsmart-tech.org/ifc/IFC4X2/final/html/schema/ifcprofileresource/lexical/ifcparameterizedprofiledef.htm)		//
 				// ABSTRACT SUPERTYPE OF IfcCShapeProfileDef, IfcCircleProfileDef, IfcEllipseProfileDef, IfcIShapeProfileDef, IfcLShapeProfileDef,								//
 				// IfcRectangleProfileDef, IfcTShapeProfileDef, IfcTrapeziumProfileDef, IfcUShapeProfileDef, IfcZShapeProfileDef												//
 				// *************************************************************************************************************************************************************//

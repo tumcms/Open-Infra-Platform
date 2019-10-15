@@ -39,7 +39,7 @@ namespace OpenInfraPlatform {
 				public:
 
 					// **************************************************************************************************************************//
-					//	IfcPlacement (http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcplacement.htm) //
+					//	IfcPlacement (http://www.buildingsmart-tech.org/ifc/IFC4X2/RC3/html/schema/ifcgeometryresource/lexical/ifcplacement.htm) //
 					//	ABSTRACT SUPERTYPE OF IfcAxis1Placement, IfcAxis2Placement2D, IfcAxis2Placement3D										 //
 					// **************************************************************************************************************************//
 
@@ -367,8 +367,8 @@ namespace OpenInfraPlatform {
 							if(trans_operator_2d->Scale == trans_operator_2d->Scale) {
 								// transOperator2D->Scale is not NAN
 								// Magic: Markic & Hecht 19.06.18
-								if(std::is_same<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D, OpenInfraPlatform::IFC4X1::IfcCartesianTransformationOperator2D>::value)
-									scale = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcCartesianTransformationOperator2D>(trans_operator_2d)->Scale;
+								if(std::is_same<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D, OpenInfraPlatform::IFC4X2::IfcCartesianTransformationOperator2D>::value)
+									scale = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2::IfcCartesianTransformationOperator2D>(trans_operator_2d)->Scale;
 								else
 									scale = *(double*)(&(trans_operator_2d->Scale));
 								// end magic
@@ -918,7 +918,7 @@ namespace OpenInfraPlatform {
 
 								case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BLOSSCURVE):
 								{
-									// Integration durch Substitution(s.Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
+									// Integration durch Substitution(s.Formel: http://www.buildingsmart-tech.org/ifc/IFC4X2/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
 									double teta_up = pow(dPointDistAlong + horizSegLength, 3) / (endRadius * pow(horizSegLength, 2))
 										- pow(dPointDistAlong + horizSegLength, 4) / (2 * endRadius * pow(horizSegLength, 3)); //values for upper boundary of integral
 									double teta_low = pow(dPointDistAlong, 3) / (endRadius * pow(horizSegLength, 2))
@@ -964,7 +964,7 @@ namespace OpenInfraPlatform {
 									double psi = (2 * M_PI * dPointDistAlong) / horizSegLength;
 									x = dPointDistAlong * (1 - pow(horizSegLength, 2) / (32 * pow(M_PI, 4)*pow(endRadius, 2) - (pow(horizSegLength, 3) / 3840 * pow(M_PI, 5)*pow(endRadius, 2)))
 										* (3 * pow(psi, 5) - 20 * pow(psi, 3) + 30 * psi - (240 - 60 * pow(psi, 2)*sin(psi) + 30 * cos(psi)*sin(psi) + 120 * psi*cos(psi))));
-									// Integration durch Substitution (s. Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
+									// Integration durch Substitution (s. Formel: http://www.buildingsmart-tech.org/ifc/IFC4X2/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
 									double teta_up = pow((dPointDistAlong + horizSegLength), 2) / (2 * endRadius*horizSegLength) + (horizSegLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(dPointDistAlong + horizSegLength) / horizSegLength) - 1);
 									double teta_low = pow((dPointDistAlong + horizSegLength), 2) / (2 * endRadius*horizSegLength) + (horizSegLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(dPointDistAlong) / horizSegLength) - 1);
 									double teta_deriv_up = 2 * (dPointDistAlong + horizSegLength) / 2 * endRadius*horizSegLength;

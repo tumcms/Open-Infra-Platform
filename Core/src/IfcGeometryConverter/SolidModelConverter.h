@@ -66,24 +66,24 @@ namespace OpenInfraPlatform
 
 
 			/*	SolidModelConverter.h
-			For IFC4x1:
+			For IFC4X2:
 
-			IfcCsgSolid						http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometricmodelresource/lexical/ifccsgsolid.htm
+			IfcCsgSolid						http://www.buildingsmart-tech.org/ifc/IFC4X2/final/html/schema/ifcgeometricmodelresource/lexical/ifccsgsolid.htm
 
-			IfcManifoldSolidBrep			http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometricmodelresource/lexical/ifcmanifoldsolidbrep.htm
+			IfcManifoldSolidBrep			http://www.buildingsmart-tech.org/ifc/IFC4X2/final/html/schema/ifcgeometricmodelresource/lexical/ifcmanifoldsolidbrep.htm
 				IfcAdvancedBrep*
 				IfcFacetedBrep
 
-			IfcSectionedSolid				http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometricmodelresource/lexical/ifcsectionedsolid.htm
+			IfcSectionedSolid				http://www.buildingsmart-tech.org/ifc/IFC4X2/final/html/schema/ifcgeometricmodelresource/lexical/ifcsectionedsolid.htm
 				IfcSectionedSolidHorizontal*
 
-			IfcSweptAreaSolid				http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometricmodelresource/lexical/ifcsweptareasolid.htm
+			IfcSweptAreaSolid				http://www.buildingsmart-tech.org/ifc/IFC4X2/final/html/schema/ifcgeometricmodelresource/lexical/ifcsweptareasolid.htm
 				IfcExtrudedAreaSolid*
 				IfcFixedReferenceSweptAreaSolid*
 				IfcRevolvedAreaSolid*
 				IfcSurfaceCurveSweptAreaSolid
 
-			IfcSweptDiskSolid				http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometricmodelresource/lexical/ifcsweptdisksolid.htm
+			IfcSweptDiskSolid				http://www.buildingsmart-tech.org/ifc/IFC4X2/final/html/schema/ifcgeometricmodelresource/lexical/ifcsweptdisksolid.htm
 				IfcSweptDiskSolidPolygonal*
 
 			*: not implemented in SolidModelConverter.h
@@ -190,16 +190,16 @@ namespace OpenInfraPlatform
 					}
 
 					  // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
-					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAdvancedBrep> advanced_brep =
-						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAdvancedBrep>(manifoldSolidBrep);
+					std::shared_ptr<OpenInfraPlatform::IFC4X2::IfcAdvancedBrep> advanced_brep =
+						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2::IfcAdvancedBrep>(manifoldSolidBrep);
 					if (advanced_brep)
 					{
 						// TO DO: formal proposition: every face shall be of the type IfcAdvancedFace.
 						// TO DO: implement
 
 						// IfcAdvancedBrepWithVoids SUBTYPE of IfcAdvancedBrep
-						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcAdvancedBrepWithVoids> advanced_brep_with_voids =
-							std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcAdvancedBrepWithVoids>(advanced_brep);
+						std::shared_ptr<OpenInfraPlatform::IFC4X2::IfcAdvancedBrepWithVoids> advanced_brep_with_voids =
+							std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2::IfcAdvancedBrepWithVoids>(advanced_brep);
 						if (advanced_brep_with_voids)
 						{
 							// Get voids (attribute 2). 
@@ -226,8 +226,8 @@ namespace OpenInfraPlatform
 				//	ABSTRACT SUPERTYPE of IfcSectionedSolidHorizontal																					  //
 				// *****************************************************************************************************************************************//
 
-				std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcSectionedSolid> sectioned_solid =
-					std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcSectionedSolid>(solidModel);
+				std::shared_ptr<OpenInfraPlatform::IFC4X2::IfcSectionedSolid> sectioned_solid =
+					std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2::IfcSectionedSolid>(solidModel);
 
 				if (sectioned_solid)
 				{
@@ -242,13 +242,13 @@ namespace OpenInfraPlatform
 					BLUE_LOG(trace) << "Processing IfcSectionedSolid #" << sectioned_solid->getId();
 #endif
 					// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
-					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcSectionedSolidHorizontal> sectioned_solid_horizontal =
-						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcSectionedSolidHorizontal>(sectioned_solid);
+					std::shared_ptr<OpenInfraPlatform::IFC4X2::IfcSectionedSolidHorizontal> sectioned_solid_horizontal =
+						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2::IfcSectionedSolidHorizontal>(sectioned_solid);
 
 					if (sectioned_solid_horizontal)
 					{
 						// Get cross section positions and fixed axis vertical (attributes 3-4).
-						std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcDistanceExpression>> vec_cross_section_positions;
+						std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X2::IfcDistanceExpression>> vec_cross_section_positions;
 							vec_cross_section_positions.resize(sectioned_solid_horizontal->CrossSectionPositions.size());
 						std::transform(sectioned_solid_horizontal->CrossSectionPositions.begin(),
 							sectioned_solid_horizontal->CrossSectionPositions.end(),
@@ -304,8 +304,8 @@ namespace OpenInfraPlatform
 					}
 
 					// (2/4) IfcFixedReferenceSweptAreaSolid SUBTYPE of IfcSweptAreaSolid
-					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcFixedReferenceSweptAreaSolid> fixed_ref_swept_area_solid =
-						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcFixedReferenceSweptAreaSolid>(swept_area_solid);
+					std::shared_ptr<OpenInfraPlatform::IFC4X2::IfcFixedReferenceSweptAreaSolid> fixed_ref_swept_area_solid =
+						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2::IfcFixedReferenceSweptAreaSolid>(swept_area_solid);
 					if (fixed_ref_swept_area_solid) {
 						// Get directrix, start parameter, end parameter and fixed reference (attributes 3-6).
 						//std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
@@ -414,8 +414,8 @@ namespace OpenInfraPlatform
 					// TODO: handle inner radius, start param, end param and check for formal propositions!
 
 					// (1/1) IfcSweptDiskSolidPolygonal SUBTYPE of IfcSweptDiskSolid
-					std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcSweptDiskSolidPolygonal> swept_disk_solid_polygonal =
-						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcSweptDiskSolidPolygonal>(swept_disk_solid);
+					std::shared_ptr<OpenInfraPlatform::IFC4X2::IfcSweptDiskSolidPolygonal> swept_disk_solid_polygonal =
+						std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X2::IfcSweptDiskSolidPolygonal>(swept_disk_solid);
 					if (swept_disk_solid_polygonal)
 					{
 						// Get fillet radius (attribute 6). 
@@ -655,8 +655,8 @@ namespace OpenInfraPlatform
 					return;
 				}// endif swept_disp_solid
 
-				//std::shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh =
-				//	std::dynamic_pointer_cast<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
+				//std::shared_ptr<emt::IFC4X2EntityTypes::IfcSectionedSolidHorizontal> ssh =
+				//	std::dynamic_pointer_cast<emt::IFC4X2EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
 				//if (ssh)
 				//{
 				//
@@ -691,7 +691,7 @@ namespace OpenInfraPlatform
 			//end convertIfcSolidModel
 
 			//void convertIfcSectionedSolidHorizontal(
-			//	std::shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh,
+			//	std::shared_ptr<emt::IFC4X2EntityTypes::IfcSectionedSolidHorizontal> ssh,
 			//	std::shared_ptr<ItemData> itemData,
 			//	std::stringstream& err)
 			//
@@ -724,10 +724,10 @@ namespace OpenInfraPlatform
 			//	}
 			//
 			//	// Retrieve data from IfcSectionedSolidHorizontal.
-			//	std::shared_ptr<emt::Ifc4x1EntityTypes::IfcCurve>& directrixCurve = ssh->Directrix;
-			//	std::vector<std::shared_ptr<emt::Ifc4x1EntityTypes::IfcProfileDef>>& crossSections = ssh->CrossSections;
-			//	std::vector<std::shared_ptr<emt::Ifc4x1EntityTypes::IfcDistanceExpression>>& crossSectionPositions = ssh->CrossSectionPositions;
-			//	std::shared_ptr<emt::Ifc4x1EntityTypes::IfcBoolean>& fixedAxisVertical = ssh->FixedAxisVertical;
+			//	std::shared_ptr<emt::IFC4X2EntityTypes::IfcCurve>& directrixCurve = ssh->Directrix;
+			//	std::vector<std::shared_ptr<emt::IFC4X2EntityTypes::IfcProfileDef>>& crossSections = ssh->CrossSections;
+			//	std::vector<std::shared_ptr<emt::IFC4X2EntityTypes::IfcDistanceExpression>>& crossSectionPositions = ssh->CrossSectionPositions;
+			//	std::shared_ptr<emt::IFC4X2EntityTypes::IfcBoolean>& fixedAxisVertical = ssh->FixedAxisVertical;
 			//
 			//	// Check whether the same amount of crossSections and crossSectionPositions exist. CrossSections and CrossSectionPositions are lists L[2:?]
 			//	int crossSectionsSize = crossSections.size();

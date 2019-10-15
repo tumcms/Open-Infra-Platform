@@ -69,7 +69,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// *************************************************************************************************************************************************************//
-				//	IfcRepresentationItem	(http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifcgeometricrepresentationitem.htm)		//
+				//	IfcRepresentationItem	(http://www.buildingsmart-tech.org/ifc/IFC4X2/final/html/schema/ifcgeometryresource/lexical/ifcgeometricrepresentationitem.htm)		//
 				//	ABSTRACT SUPERTYPE OF IfcGeometricRepresentationItem, IfcMappedItem, IfcStyledItem, IfcTopologicalRepresentationItem										//
 				// *************************************************************************************************************************************************************//
 
@@ -259,7 +259,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// *********************************************************************************************************************************************************************//
-				//	IfcGeometricRepresentationItem	 (http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifcgeometricrepresentationitem.htm)
+				//	IfcGeometricRepresentationItem	 (http://www.buildingsmart-tech.org/ifc/IFC4X2/final/html/schema/ifcgeometryresource/lexical/ifcgeometricrepresentationitem.htm)
 				//// 	ABSTRACT SUPERTYPE OF IfcAnnotationFillArea, IfcBooleanResult, IfcBoundingBox, IfcCartesianTransformationOperator, IfcCompositeCurveSegment, IfcCsgPrimitive3D,
 				//// 	IfcCurve, IfcDefinedSymbol, IfcDirection, IfcFaceBasedSurfaceModel, IfcFillAreaStyleHatching, IfcFillAreaStyleTiles, IfcFillAreaStyleTileSymbolWithStyle, //
 				//	IfcGeometricSet, IfcHalfSpaceSolid, IfcLightSource, IfcOneDirectionRepeatFactor, IfcPlacement, IfcPlanarExtent, IfcPoint, IfcSectionedSpine, //
