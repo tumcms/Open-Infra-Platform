@@ -560,7 +560,7 @@ namespace OpenInfraPlatform {
 						carve::geom::vector<3>& vkt3DtargetDirection)
 					
 					{	
-						//TODO scale dPointDistAlog accordingly to unit_converter?
+						// *DONE* scale dPointDistAlong according to unit_converter? Not necessary, because already applied in curve converter before function call (?, cc). 
 
 						// preset the return values
 						vkt3DtargetPoint	 = carve::geom::VECTOR(0., 0., 0.);
@@ -883,7 +883,7 @@ namespace OpenInfraPlatform {
 								}*/
 								bool is_start_ccw = trans_curve_segment_2D->IsStartRadiusCCW;
 								// IsEndRadiusCCW type IfcBoolean
-								// TODO: can check boolean this way?
+								// *DONE*: can check boolean this way? cppreference about "!": It has only one operand, to its right, and inverts it, producing false if its operand is true, and true if its operand is false. Basically, it returns the opposite Boolean value of evaluating its operand. 
 								/*if (!trans_curve_segment_2D->IsEndRadiusCCW) {
 									BLUE_LOG(error) << "No direction information for end of IfcTransitionCurveSegment2D (counterclockwise/clockwise). (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
 									return;
@@ -982,6 +982,7 @@ namespace OpenInfraPlatform {
 							vkt3DtargetPoint.y = y;
 
 							// set the direction
+							dir = dir * 180 / M_PI_2; // convert "dir" from deg to rad (for use of sin and cos). TODO: if used more than once, write function.
 							vkt3DtargetDirection.x = cos(dir);
 							vkt3DtargetDirection.y = sin(dir);
 								
@@ -1084,15 +1085,12 @@ namespace OpenInfraPlatform {
 							}// end if ( verticalSegmentRelevantToPoint ) --> z coordinate calculation
 							//********************************************************************
 
-
 						}//end if alignment curve
 						else 
 						{
 							BLUE_LOG(error) << "Function convertAlignmentCurveDistAlongToPoint3D exclusively handles alignment curves.";
 						}
 					}//end convertAlignmentCurveDistAlongToPoint3D
-
-
 
 					//static void PlacementConverter::convertMatrix( const carve::math::Matrix& matrix, 
 					//									   std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d, 
