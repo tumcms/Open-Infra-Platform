@@ -231,6 +231,9 @@ namespace OpenInfraPlatform {
 								}
 								// Step 2 finished: We have the necessary information from the horizontal element
 
+								if(!bOnlyHorizontal)
+									itVerticalSegment = vertical->Segments.begin();
+
 								// Step 3: Get vertical segment type and store number and length of fragments.
 								double dOverlapStart = dHorizontalSegStart, dOverlapEnd = dHorizontalSegEnd; //where does the overlap happen?
 								if (!bOnlyHorizontal && itVerticalSegment != vertical->Segments.end()) // the vertical alignment may be shorter than horizontal
