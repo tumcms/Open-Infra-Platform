@@ -62,11 +62,14 @@ include_directories(
 	${LIBLAS_INCLUDE_DIRS}	
 	${CC_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR} 	
+	${BLUEFRAMEWORK_INCLUDE_DIR}
 )
 
 target_link_libraries(OpenInfraPlatform.PointCloudProcessing 	
 		${LIBLAS_LIBRARIES}	
-		${CC_LIBRARIES}	
+		${CC_LIBRARIES}
+		${BLUEFRAMEWORK_LIBRARIES}
+
 )
 
 # Use the Widgets module from Qt 5.
