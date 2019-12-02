@@ -45,7 +45,8 @@ find_package(Python2 REQUIRED)
 #find_path(TCLAP_INCLUDE_DIR REQUIRED)
 FetchContent_Declare(
 	tclap
-	GIT_REPOSITORY https://github.com/eile/tclap.git
+	GIT_REPOSITORY https://github.com/mirror/tclap.git
+	GIT_TAG v1.2.2
 )
   
 FetchContent_GetProperties(tclap)
