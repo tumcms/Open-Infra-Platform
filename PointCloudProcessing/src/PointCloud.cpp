@@ -1019,7 +1019,7 @@ int OpenInfraPlatform::PointCloudProcessing::PointCloud::flagDuplicatePoints(con
 	setCurrentInScalarField(idx);
 	setCurrentOutScalarField(idx);
 
-	return CCLib::GeometricalAnalysisTools::flagDuplicatePoints(this, minDistance, callback.get(), octree_.get());
+	return CCLib::GeometricalAnalysisTools::FlagDuplicatePoints(this, minDistance, callback.get(), octree_.get());
 }
 
 int OpenInfraPlatform::PointCloudProcessing::PointCloud::applyLocalDensityFilter(LocalDensityFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {

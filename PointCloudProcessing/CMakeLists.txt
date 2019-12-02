@@ -22,70 +22,79 @@
 if(MODULES_POINT_CLOUD_PROCESSING)
 
 project(OpenInfraPlatform.PointCloudProcessing)
+#include(FetchContent)
 
 add_definitions(-DBLUEINFRASTRUCTURE_EXPORT)
-set(CMAKE_DEBUG_POSTFIX "d")
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG 	../Debug)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE 	../Release)
-set(CMAKE_PDB_OUTPUT_DIRECTORY_DEBUG 	    ../Debug)
-set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE 	    ../Release)
-
-# Unicode rules!
-add_definitions(-D_UNICODE)
-add_definitions(-DNOMINMAX)
-add_definitions(-D_UNICODE -DBOOST_PYTHON_STATIC_LIB)
-add_definitions(-DRAPTOR_STATIC)		
 
 # Find thirdparty libraries.
-find_package(CloudCompare REQUIRED)
+FetchContent_Declare(
+	cc
+	GIT_REPOSITORY https://github.com/CloudCompare/CloudCompare.git
+	GIT_TAG v2.10.3
+)
+	
+FetchContent_GetProperties(cc)
+if(NOT cc_POPULATED)
+	FetchContent_Populate(cc) 
+	add_subdirectory(${cc_SOURCE_DIR} ${cc_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
 find_package(libLAS REQUIRED)
+
+#FetchContent_Declare(
+#	libgeo
+#	GIT_REPOSITORY https://github.com/OSGeo/libgeotiff.git
+#	GIT_TAG 1.5.1
+#)
+  
+#FetchContent_GetProperties(libgeo)
+#if(NOT libgeo_POPULATED)
+#	FetchContent_Populate(libgeo)
+#	add_subdirectory(${libgeo_SOURCE_DIR}/libgeotiff ${libgeo_BINARY_DIR} EXCLUDE_FROM_ALL)
+#endif()
+
+# Find thirdparty libraries.
+#FetchContent_Declare(
+#	liblas
+#	GIT_REPOSITORY https://github.com/libLAS/libLAS.git
+#	GIT_TAG 1.8.1
+#)
+  
+#FetchContent_GetProperties(liblas)
+#if(NOT liblas_POPULATED)
+#	FetchContent_Populate(liblas)
+#	add_subdirectory(${liblas_SOURCE_DIR} ${liblas_BINARY_DIR} EXCLUDE_FROM_ALL)
+#endif()
 
 # Add files.
 file(GLOB PointCloudProcessing_Source									src/*.*)	
-source_group(PointCloudProcessing										FILES ${PointCloudProcessing_Source}	
-)	
+source_group(PointCloudProcessing										FILES ${PointCloudProcessing_Source})	
 
-# Copy thirdparty binaries.
-CLOUDCOMPARE_COPY_BINARIES(${CMAKE_BINARY_DIR})		
-
-set_target_properties(CloudCompareCopyBinaries 						PROPERTIES FOLDER "Copy")
-set_target_properties(libLASCopyBinaries							PROPERTIES FOLDER "Copy")	
 
 # Create a target for the library
-add_library(OpenInfraPlatform.PointCloudProcessing MODULE	
-	${PointCloudProcessing_Source}	
-	)
+add_library(OpenInfraPlatform.PointCloudProcessing SHARED ${PointCloudProcessing_Source})
 
 include_directories(
-	../PointCloudProcessing/src
+	src
 	${LIBLAS_INCLUDE_DIRS}	
-	${CC_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR} 	
 	${BLUEFRAMEWORK_INCLUDE_DIR}
+	${cc_SOURCE_DIR}/CC/include
+	${cc_SOURCE_DIR}/qCC
+	${cc_SOURCE_DIR}/libs/qCC_db
+	${cc_SOURCE_DIR}/libs/qCC_io
 )
 
 target_link_libraries(OpenInfraPlatform.PointCloudProcessing 	
 		${LIBLAS_LIBRARIES}	
-		${CC_LIBRARIES}
 		${BLUEFRAMEWORK_LIBRARIES}
-
 )
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(OpenInfraPlatform.PointCloudProcessing Qt5::Xml Qt5::XmlPatterns Qt5::Gui Qt5::OpenGL eigen)	
+target_link_libraries(OpenInfraPlatform.PointCloudProcessing Qt5::Xml Qt5::XmlPatterns Qt5::Gui Qt5::OpenGL eigen CC_CORE_LIB QCC_DB_LIB QCC_IO_LIB)	
 
 # Set the target properties.
 set_target_properties(OpenInfraPlatform.PointCloudProcessing			PROPERTIES FOLDER "OpenInfraPlatform")	
-
-# Install files.
-install(FILES ${LIBLAS_RELEASE_BINARIES} ${CC_RELEASE_BINARIES}
-	LIBRARY DESTINATION lib
-	COMPONENT oip_thirdparty)
-
-install(TARGETS OpenInfraPlatform.PointCloudProcessing 	
-       	RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-     	ARCHIVE DESTINATION lib/static)
 
 endif()
