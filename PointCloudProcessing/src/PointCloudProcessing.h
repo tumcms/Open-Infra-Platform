@@ -16,11 +16,10 @@
 */
 
 #pragma once
-#ifndef OpenInfraPlatform_Infrastructure_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h
-#define OpenInfraPlatform_Infrastructure_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h
+#ifndef OpenInfraPlatform_PointCloudProcessing_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h
+#define OpenInfraPlatform_PointCloudProcessing_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h
 
-#include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
-#include "OpenInfraPlatform/Infrastructure/namespace.h"
+#include "namespace.h"
 
 #include <BlueFramework/ImageProcessing/color.h>
 #include <BlueFramework/Core/Math/vector.h>
@@ -36,7 +35,7 @@
 
 namespace OpenInfraPlatform
 {
-	namespace Infrastructure
+	namespace PointCloudProcessing
 	{
 		namespace Enums {
 			enum ePointCloudFilterDimension {
@@ -190,26 +189,26 @@ namespace OpenInfraPlatform
 
 		//BLUEINFRASTRUCTURE_API void importLASPointCloud(const char* filename, PointCloud& pointCloud);
 		//BLUEINFRASTRUCTURE_API void importBINPointCloud(const char* filename, PointCloud& pointCloud);
-	} // end namespace Infrastructure
+	} // end namespace PointCloudProcessing
 } // end namespace BlueFramework
 
 namespace buw
 {
-	//using OpenInfraPlatform::Infrastructure::importLASPointCloud;
-	//using OpenInfraPlatform::Infrastructure::importBINPointCloud;
-	using OpenInfraPlatform::Infrastructure::LaserPoint;
-	using OpenInfraPlatform::Infrastructure::DuplicateFilterDescription;
-	using OpenInfraPlatform::Infrastructure::LocalDensityFilterDescription;
-	using OpenInfraPlatform::Infrastructure::PositionFilterDescription;
-	using OpenInfraPlatform::Infrastructure::RelativeHeightFilterDescription;
-	using OpenInfraPlatform::Infrastructure::RateOfChangeSegmentationDescription;
-	using OpenInfraPlatform::Infrastructure::PercentileSegmentationDescription;
-	using OpenInfraPlatform::Infrastructure::RailwaySegmentationDescription;
-	using OpenInfraPlatform::Infrastructure::CenterlineComputationDescription;
-	using OpenInfraPlatform::Infrastructure::CenterlineCurvatureComputationDescription;
-	using OpenInfraPlatform::Infrastructure::GridComputationDescription;
-	using OpenInfraPlatform::Infrastructure::ChainageComputationDescription;
-	using OpenInfraPlatform::Infrastructure::PairComputationDescription;
+	//using OpenInfraPlatform::PointCloudProcessing::importLASPointCloud;
+	//using OpenInfraPlatform::PointCloudProcessing::importBINPointCloud;
+	using OpenInfraPlatform::PointCloudProcessing::LaserPoint;
+	using OpenInfraPlatform::PointCloudProcessing::DuplicateFilterDescription;
+	using OpenInfraPlatform::PointCloudProcessing::LocalDensityFilterDescription;
+	using OpenInfraPlatform::PointCloudProcessing::PositionFilterDescription;
+	using OpenInfraPlatform::PointCloudProcessing::RelativeHeightFilterDescription;
+	using OpenInfraPlatform::PointCloudProcessing::RateOfChangeSegmentationDescription;
+	using OpenInfraPlatform::PointCloudProcessing::PercentileSegmentationDescription;
+	using OpenInfraPlatform::PointCloudProcessing::RailwaySegmentationDescription;
+	using OpenInfraPlatform::PointCloudProcessing::CenterlineComputationDescription;
+	using OpenInfraPlatform::PointCloudProcessing::CenterlineCurvatureComputationDescription;
+	using OpenInfraPlatform::PointCloudProcessing::GridComputationDescription;
+	using OpenInfraPlatform::PointCloudProcessing::ChainageComputationDescription;
+	using OpenInfraPlatform::PointCloudProcessing::PairComputationDescription;
 }
 
-#endif // end define OpenInfraPlatform_Infrastructure_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h
+#endif // end define OpenInfraPlatform_PointCloudProcessing_PointCloudProcessing_8b77c948_e060_457a_a3ef_7a546fad37c3_h

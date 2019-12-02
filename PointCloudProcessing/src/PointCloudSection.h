@@ -16,13 +16,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#ifndef OpenInfraPlatform_Infrastructure_PointCloudProcessing_PointCloudSection_87B20647_825A_4D6A_AA34_62736D1B2174_h
-#define OpenInfraPlatform_Infrastructure_PointCloudProcessing_PointCloudSection_87B20647_825A_4D6A_AA34_62736D1B2174_h
+#ifndef OpenInfraPlatform_PointCloudProcessing_PointCloudProcessing_PointCloudSection_87B20647_825A_4D6A_AA34_62736D1B2174_h
+#define OpenInfraPlatform_PointCloudProcessing_PointCloudProcessing_PointCloudSection_87B20647_825A_4D6A_AA34_62736D1B2174_h
 
-#include "OpenInfraPlatform/Infrastructure/namespace.h"
-#include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
-
+#include "namespace.h"
+#include "PointCloudProcessing.h"
 
 #include <BlueFramework/Core/Math/vector.h>
 #include <BlueFramework/Core/memory.h>
@@ -33,7 +31,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <tuple>
 
 namespace OpenInfraPlatform {
-	namespace Infrastructure {
+	namespace PointCloudProcessing {
 
 		// Forward declarations
 		class PointCloud;
@@ -101,6 +99,6 @@ namespace OpenInfraPlatform {
 }
 
 namespace buw {	
-	using OpenInfraPlatform::Infrastructure::PointCloudSection;
+	using OpenInfraPlatform::PointCloudProcessing::PointCloudSection;
 }
 #endif

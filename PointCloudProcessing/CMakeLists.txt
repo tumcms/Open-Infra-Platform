@@ -21,7 +21,7 @@
 
 if(MODULES_POINT_CLOUD_PROCESSING)
 
-#project(OpenInfraPlatform_PointCloudProcessing)
+project(OpenInfraPlatform.PointCloudProcessing)
 
 add_definitions(-DBLUEINFRASTRUCTURE_EXPORT)
 set(CMAKE_DEBUG_POSTFIX "d")
@@ -60,17 +60,17 @@ add_library(OpenInfraPlatform.PointCloudProcessing MODULE
 include_directories(
 	../PointCloudProcessing/src
 	${LIBLAS_INCLUDE_DIRS}	
-	${CloudCompare_INCLUDE_DIRS}
+	${CC_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR} 	
 )
 
 target_link_libraries(OpenInfraPlatform.PointCloudProcessing 	
 		${LIBLAS_LIBRARIES}	
-		${CloudCompare_LIBRARIES}	
+		${CC_LIBRARIES}	
 )
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(OpenInfraPlatform.PointCloudProcessing Qt5::Xml Qt5::XmlPatterns Qt5::Gui Qt5::OpenGL)	
+target_link_libraries(OpenInfraPlatform.PointCloudProcessing Qt5::Xml Qt5::XmlPatterns Qt5::Gui Qt5::OpenGL eigen)	
 
 # Set the target properties.
 set_target_properties(OpenInfraPlatform.PointCloudProcessing			PROPERTIES FOLDER "OpenInfraPlatform")	

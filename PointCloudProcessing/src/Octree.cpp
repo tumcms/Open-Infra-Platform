@@ -18,16 +18,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "Octree.h"
 #include <ccPointCloud.h>
 
-OpenInfraPlatform::Infrastructure::Octree::Octree(CCLib::GenericIndexedCloudPersist * cloud) : CCLib::DgmOctree(cloud)
+OpenInfraPlatform::PointCloudProcessing::Octree::Octree(CCLib::GenericIndexedCloudPersist * cloud) : CCLib::DgmOctree(cloud)
 {
 }
 
-CCLib::DgmOctree::CellCode OpenInfraPlatform::Infrastructure::Octree::getTruncatedCellCode(const Tuple3i & cellPos, const unsigned char level)
+CCLib::DgmOctree::CellCode OpenInfraPlatform::PointCloudProcessing::Octree::getTruncatedCellCode(const Tuple3i & cellPos, const unsigned char level)
 {	
 	return GenerateTruncatedCellCode(cellPos, level);
 }
 
-std::vector<Tuple3i> OpenInfraPlatform::Infrastructure::Octree::getNeighborCellPositionsAround(const Tuple3i & cellPos, int neighbourhoodLength, unsigned char level) const
+std::vector<Tuple3i> OpenInfraPlatform::PointCloudProcessing::Octree::getNeighborCellPositionsAround(const Tuple3i & cellPos, int neighbourhoodLength, unsigned char level) const
 {
 	auto positions = std::vector<Tuple3i>();
 	CCLib::DgmOctree::cellIndexesContainer indices = CCLib::DgmOctree::cellIndexesContainer();

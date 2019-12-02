@@ -16,16 +16,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "PointCloudSection.h"
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
+#include "PointCloud.h"
 
 #include <ccScalarField.h>
 
-OpenInfraPlatform::Infrastructure::PointCloudSection::~PointCloudSection()
+OpenInfraPlatform::PointCloudProcessing::PointCloudSection::~PointCloudSection()
 {
 	pairs_.clear();
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloudSection::flagDuplicatePoints(const double minDistance)
+int OpenInfraPlatform::PointCloudProcessing::PointCloudSection::flagDuplicatePoints(const double minDistance)
 {
 	buw::ReferenceCounted<buw::PointCloud> cloud2D = createPointCloud2D();
 	buw::PointCloud* associatedCloud = dynamic_cast<buw::PointCloud*>(getAssociatedCloud());
@@ -44,7 +44,7 @@ int OpenInfraPlatform::Infrastructure::PointCloudSection::flagDuplicatePoints(co
 	return 0;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloudSection::computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::PointCloudProcessing::PointCloudSection::computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric, ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	buw::ReferenceCounted<buw::PointCloud> cloud2D = createPointCloud2D();
 	buw::PointCloud* associatedCloud = dynamic_cast<buw::PointCloud*>(getAssociatedCloud());
@@ -64,13 +64,13 @@ int OpenInfraPlatform::Infrastructure::PointCloudSection::computeLocalDensity(CC
 	return err;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloudSection::computePercentiles(float kernelRadius)
+int OpenInfraPlatform::PointCloudProcessing::PointCloudSection::computePercentiles(float kernelRadius)
 {
 	//TODO
 	return 0;
 }
 
-CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeCenterOfMass()
+CCVector3 OpenInfraPlatform::PointCloudProcessing::PointCloudSection::computeCenterOfMass()
 {
 	if(this->size() > 0) {
 		CCVector3 center = CCVector3(0, 0, 0);
@@ -84,14 +84,14 @@ CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeCenterOfM
 	}
 }
 
-CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeCenter()
+CCVector3 OpenInfraPlatform::PointCloudProcessing::PointCloudSection::computeCenter()
 {
 	CCVector3 min, max;
 	getBoundingBox(min, max);
 	return min + ((max-min)/2.0f);
 }
 
-CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeMedianCenter()
+CCVector3 OpenInfraPlatform::PointCloudProcessing::PointCloudSection::computeMedianCenter()
 {
 	std::vector<float> x,y,z;
 
@@ -109,7 +109,7 @@ CCVector3 OpenInfraPlatform::Infrastructure::PointCloudSection::computeMedianCen
 	return CCVector3(x[std::floor(x.size() / 2.0)], y[std::floor(y.size() / 2.0)], z[std::floor(z.size() / 2.0)]);
 }
 
-Eigen::Matrix3d OpenInfraPlatform::Infrastructure::PointCloudSection::getOrientation()
+Eigen::Matrix3d OpenInfraPlatform::PointCloudProcessing::PointCloudSection::getOrientation()
 {
 	Eigen::Matrix3d eigenvectors = createPointCloud3D()->getEigenvectors<3>();
 	Eigen::Matrix3d orientation;
@@ -119,7 +119,7 @@ Eigen::Matrix3d OpenInfraPlatform::Infrastructure::PointCloudSection::getOrienta
 	return orientation;
 }
 
-std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointCloudSection::computePairs(buw::PairComputationDescription desc, buw::ReferenceCounted<PointCloudSection> nextSection)
+std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::PointCloudProcessing::PointCloudSection::computePairs(buw::PairComputationDescription desc, buw::ReferenceCounted<PointCloudSection> nextSection)
 {
 	if(this->size() > 0) {
 		// Project all points in this section onto the LS plane to get 2D coordinates.
@@ -363,17 +363,17 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointC
 	return getPairs();
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloudSection::resetPairs()
+void OpenInfraPlatform::PointCloudProcessing::PointCloudSection::resetPairs()
 {
 	pairs_.clear();
 }
 
-std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::Infrastructure::PointCloudSection::getPairs()
+std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::PointCloudProcessing::PointCloudSection::getPairs()
 {
 	return pairs_;
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloudSection::getAxisAlignedBoundingBox(CCVector3 & min, CCVector3 & max)
+void OpenInfraPlatform::PointCloudProcessing::PointCloudSection::getAxisAlignedBoundingBox(CCVector3 & min, CCVector3 & max)
 {
 	// Initialize min to maximal possible value and max to minimal possible value.
 	min = CCVector3(LONG_MAX, LONG_MAX, LONG_MAX);
@@ -391,7 +391,7 @@ void OpenInfraPlatform::Infrastructure::PointCloudSection::getAxisAlignedBoundin
 	});
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloudSection::getObjectOrientedBoundingBox(CCVector3 & min, CCVector3 & max)
+void OpenInfraPlatform::PointCloudProcessing::PointCloudSection::getObjectOrientedBoundingBox(CCVector3 & min, CCVector3 & max)
 {
 	// Initialize min to maximal possible value and max to minimal possible value.
 	min = CCVector3(LONG_MAX, LONG_MAX, LONG_MAX);
@@ -423,21 +423,21 @@ void OpenInfraPlatform::Infrastructure::PointCloudSection::getObjectOrientedBoun
 }
 
 
-void OpenInfraPlatform::Infrastructure::PointCloudSection::setLength(double length)
+void OpenInfraPlatform::PointCloudProcessing::PointCloudSection::setLength(double length)
 {
 	length_ = length;
 }
 
-const double OpenInfraPlatform::Infrastructure::PointCloudSection::getLength() const
+const double OpenInfraPlatform::PointCloudProcessing::PointCloudSection::getLength() const
 {
 	return length_;
 }
 
-OpenInfraPlatform::Infrastructure::PointCloudSection::PointCloudSection(GenericIndexedCloudPersist * associatedCloud) : ReferenceCloud(associatedCloud) {
+OpenInfraPlatform::PointCloudProcessing::PointCloudSection::PointCloudSection(GenericIndexedCloudPersist * associatedCloud) : ReferenceCloud(associatedCloud) {
 	pairs_ = std::vector<std::pair<size_t, size_t>>();
 }
 
-OpenInfraPlatform::Infrastructure::PointCloudSection::PointCloudSection(PointCloudSection & other) : ReferenceCloud(other) {
+OpenInfraPlatform::PointCloudProcessing::PointCloudSection::PointCloudSection(PointCloudSection & other) : ReferenceCloud(other) {
 	pairs_ = other.pairs_;
 	length_ = other.length_;
 	mainAxis_ = other.mainAxis_;
@@ -445,7 +445,7 @@ OpenInfraPlatform::Infrastructure::PointCloudSection::PointCloudSection(PointClo
 }
 
 
-buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointCloudSection::createPointCloud2D()
+buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::PointCloudSection::createPointCloud2D()
 {
 	// Create an empty cloud which we return when finished and reserve as much space as we have indices.
 	buw::ReferenceCounted<buw::PointCloud> cloud2D = buw::makeReferenceCounted<buw::PointCloud>();
@@ -466,7 +466,7 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 	return cloud2D;
 }
 
-buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointCloudSection::createPointCloud3D()
+buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::PointCloudSection::createPointCloud3D()
 {
 	// Create an empty cloud which we return when finished and reserve as much space as we have indices.
 	buw::ReferenceCounted<buw::PointCloud> cloud3D = buw::makeReferenceCounted<buw::PointCloud>();

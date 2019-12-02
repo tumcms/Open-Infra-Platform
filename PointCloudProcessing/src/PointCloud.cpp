@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "PointCloud.h"
 
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudSection.h"
+#include "PointCloudSection.h"
 
 #include <BlueFramework/Core/Diagnostics/log.h>
 
@@ -35,7 +35,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <QDateTime>
 #include <QDir>
 
-buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointCloud::FromFile(const char *filename) {
+buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::PointCloud::FromFile(const char *filename) {
 	buw::ReferenceCounted<buw::PointCloud> pointCloud = buw::makeReferenceCounted<buw::PointCloud>(QString(filename));
 
 	// Initialize the filters for file IO.
@@ -138,7 +138,7 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::Infrastructure::PointC
 	return pointCloud;
 }
 
-OpenInfraPlatform::Infrastructure::PointCloud::PointCloud(PointCloud & other)
+OpenInfraPlatform::PointCloudProcessing::PointCloud::PointCloud(PointCloud & other)
 {
 	// Copy base class attributes.
 	other.cloneThis(this, false);
@@ -164,7 +164,7 @@ OpenInfraPlatform::Infrastructure::PointCloud::PointCloud(PointCloud & other)
 	octree_ = buw::makeReferenceCounted<Octree>(this);
 }
 
-OpenInfraPlatform::Infrastructure::PointCloud::~PointCloud() {
+OpenInfraPlatform::PointCloudProcessing::PointCloud::~PointCloud() {
 
 	this->deleteAllScalarFields();
 
@@ -185,7 +185,7 @@ OpenInfraPlatform::Infrastructure::PointCloud::~PointCloud() {
 		octree_ = nullptr;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::add(const buw::ReferenceCounted<ccPointCloud>& other, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback, ColorCompType* color)
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::add(const buw::ReferenceCounted<ccPointCloud>& other, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback, ColorCompType* color)
 {
 	if(callback)
 		callback->start();
@@ -254,7 +254,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::add(const buw::ReferenceCount
 	return 0;
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeSections(const float length, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 
 	if(callback)
 		callback->start();
@@ -330,13 +330,13 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeSections(const float 
 		callback->stop();
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(ChainageComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeChainage(ChainageComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	switch(desc.base) {
-	case OpenInfraPlatform::Infrastructure::Enums::eChainageComputationBase::Octree:
+	case OpenInfraPlatform::PointCloudProcessing::Enums::eChainageComputationBase::Octree:
 		this->computeChainageOctreeBased(callback);
 		break;
-	case OpenInfraPlatform::Infrastructure::Enums::eChainageComputationBase::Grid:
+	case OpenInfraPlatform::PointCloudProcessing::Enums::eChainageComputationBase::Grid:
 		this->computeChainageGridBased(desc.interpolation, callback);
 		break;
 	default:
@@ -350,7 +350,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainage(ChainageComp
 	}
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeChainageOctreeBased(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeChainageOctreeBased(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	if (callback)
 		callback->start();
 
@@ -537,7 +537,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainageOctreeBased(b
 }
 
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeChainageGridBased(OpenInfraPlatform::Infrastructure::Enums::eChainageComputationInterpolationMethod method, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeChainageGridBased(OpenInfraPlatform::PointCloudProcessing::Enums::eChainageComputationInterpolationMethod method, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	//TODO: Use different and implement different interpolation methods.
 	if(callback)
@@ -853,7 +853,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeChainageGridBased(Ope
 		callback->stop();
 }
 
-std::vector<std::pair<CCVector3, ScalarType>> OpenInfraPlatform::Infrastructure::PointCloud::getAllPointsAndScalarFieldValue(int index)
+std::vector<std::pair<CCVector3, ScalarType>> OpenInfraPlatform::PointCloudProcessing::PointCloud::getAllPointsAndScalarFieldValue(int index)
 {
 	setCurrentOutScalarField(index);
 	std::vector<std::pair<CCVector3, ScalarType>> pointsAndScalarValues;
@@ -864,7 +864,7 @@ std::vector<std::pair<CCVector3, ScalarType>> OpenInfraPlatform::Infrastructure:
 	return pointsAndScalarValues;
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid(buw::GridComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeGrid(buw::GridComputationDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	grid_.clear();
 	grid_ = std::map<std::pair<int, int>, std::tuple<std::vector<uint32_t>,CCVector3, CCVector2>>();
 
@@ -967,13 +967,13 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeGrid(buw::GridComputa
 		callback->stop();
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::resetGrid()
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::resetGrid()
 {
 	if(!grid_.empty())
 		grid_.clear();
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::alignOnMainAxis() {
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::alignOnMainAxis() {
 	auto orientation = getEigenvectors<3>();
 	bool isOrthgonal = true;
 	for (int i = 0; i < 2; i++) {
@@ -1002,7 +1002,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::alignOnMainAxis() {
 	applyRigidTransformation(ccGLMatrix::FromQuaternion((std::vector<double>({q.x(), q.y(), q.z(), q.w()})).data()));
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::flagDuplicatePoints(const double minDistance, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::flagDuplicatePoints(const double minDistance, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	// Get octree or build it if not yet built.
 	if (!octree_) {
 		octree_ = buw::makeReferenceCounted<buw::Octree> (this);
@@ -1022,7 +1022,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::flagDuplicatePoints(const dou
 	return CCLib::GeometricalAnalysisTools::flagDuplicatePoints(this, minDistance, callback.get(), octree_.get());
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::applyLocalDensityFilter(LocalDensityFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::applyLocalDensityFilter(LocalDensityFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	int err = 0;
 
 	// Compute the density, either for the volume or the sections.
@@ -1063,7 +1063,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyLocalDensityFilter(Local
 	return err;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::applyDuplicateFilter(DuplicateFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::applyDuplicateFilter(DuplicateFilterDescription desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	int err = 0;
 
 	// Call flagDuplicatePoints on this or on all sections.
@@ -1089,7 +1089,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyDuplicateFilter(Duplicat
 	return err;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::applyPositionFilter(const buw::PositionFilterDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::applyPositionFilter(const buw::PositionFilterDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	int err = 0;
 
 	if (callback)
@@ -1133,7 +1133,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPositionFilter(const buw
 	return err;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::applyRelativeHeightWithGridFilter(const buw::RelativeHeightFilterDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::applyRelativeHeightWithGridFilter(const buw::RelativeHeightFilterDescription &desc, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 
 	const double lowerBound = desc.lowerBound;
@@ -1188,7 +1188,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRelativeHeightWithGridFi
 	return 0;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::resetPositionFilter() {
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::resetPositionFilter() {
 	deleteScalarField(getScalarFieldIndexByName("Coord. X"));
 	deleteScalarField(getScalarFieldIndexByName("Coord. Y"));
 	deleteScalarField(getScalarFieldIndexByName("Coord. Z"));
@@ -1197,7 +1197,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::resetPositionFilter() {
 	return 0;
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::resetScalarField(const char *name) {
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::resetScalarField(const char *name) {
 	// Get the specified scalar field.
 	int idx = getScalarFieldIndexByName(name);
 	if (idx == -1)
@@ -1214,7 +1214,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::resetScalarField(const char 
 	computeIndices();
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric,
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::computeLocalDensity(CCLib::GeometricalAnalysisTools::Density metric,
                                                                        ScalarType kernelRadius,
                                                                        buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	if (!isScalarFieldEnabled())
@@ -1235,7 +1235,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeLocalDensity(CCLib::Ge
 	return CCLib::GeometricalAnalysisTools::computeLocalDensity(this, metric, kernelRadius, callback ? callback.get() : nullptr, octree_ ? octree_.get() : nullptr);
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::init() {
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::init() {
 	BLUE_LOG(trace) << "Start initializing point cloud.";
 
 	// If we have no colors, we add white as color to all points.
@@ -1272,17 +1272,17 @@ void OpenInfraPlatform::Infrastructure::PointCloud::init() {
 	//computeIndices();
 }
 
-std::vector<buw::ReferenceCounted<buw::PointCloudSection>> OpenInfraPlatform::Infrastructure::PointCloud::getSections() {
+std::vector<buw::ReferenceCounted<buw::PointCloudSection>> OpenInfraPlatform::PointCloudProcessing::PointCloud::getSections() {
 	return sections_;
 }
 
-buw::ReferenceCounted<CCLib::ReferenceCloud> OpenInfraPlatform::Infrastructure::PointCloud::subsample(size_t size) {
+buw::ReferenceCounted<CCLib::ReferenceCloud> OpenInfraPlatform::PointCloudProcessing::PointCloud::subsample(size_t size) {
 	BLUE_LOG(fatal) << "This function should never be called right now.";
 	return buw::ReferenceCounted<CCLib::ReferenceCloud>(
 	  CCLib::CloudSamplingTools::subsampleCloudWithOctree(this, size, CCLib::CloudSamplingTools::SUBSAMPLING_CELL_METHOD::NEAREST_POINT_TO_CELL_CENTER, nullptr, octree_.get()));
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices() {
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeIndices() {
 	// Clear the index buffers.
 	if(!remainingIndices_.empty())
 		remainingIndices_.clear();
@@ -1436,7 +1436,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computeIndices() {
 
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(const buw::PairComputationDescription &desc, std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::computePairs(const buw::PairComputationDescription &desc, std::vector<std::pair<size_t, size_t>> &o_pairs, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	if(bHasPairs_) {
 		resetPairs();
@@ -1519,7 +1519,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::computePairs(const buw::Pair
 	}
 }
 
-std::vector<buw::ReferenceCounted<CCLib::ReferenceCloud>> OpenInfraPlatform::Infrastructure::PointCloud::extractConnectedComponents(ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
+std::vector<buw::ReferenceCounted<CCLib::ReferenceCloud>> OpenInfraPlatform::PointCloudProcessing::PointCloud::extractConnectedComponents(ScalarType kernelRadius, buw::ReferenceCounted<CCLib::GenericProgressCallback> callback)
 {
 	// Vector that holds the individual components.
 	std::vector<buw::ReferenceCounted<CCLib::ReferenceCloud>> components;
@@ -1528,14 +1528,14 @@ std::vector<buw::ReferenceCounted<CCLib::ReferenceCloud>> OpenInfraPlatform::Inf
 	return components;
 }
 
-const std::tuple<ScalarType, ScalarType> OpenInfraPlatform::Infrastructure::PointCloud::getScalarFieldMinAndMax(int idx) const {
+const std::tuple<ScalarType, ScalarType> OpenInfraPlatform::PointCloudProcessing::PointCloud::getScalarFieldMinAndMax(int idx) const {
 	// Get the min and max for the scalar field and store it in the returned tuple.
 	CCLib::ScalarField *field = getScalarField(idx);
 	field->computeMinAndMax();
 	return std::tuple<ScalarType, ScalarType>(field->getMin(), field->getMax());
 }
 
-const std::tuple<size_t, size_t> OpenInfraPlatform::Infrastructure::PointCloud::getScalarFieldMinAndMaxIndex(int idx)
+const std::tuple<size_t, size_t> OpenInfraPlatform::PointCloudProcessing::PointCloud::getScalarFieldMinAndMaxIndex(int idx)
 {
 	// Get the min and max for the scalar field and store it in the returned tuple.
 	auto temp = getCurrentOutScalarFieldIndex();
@@ -1557,7 +1557,7 @@ const std::tuple<size_t, size_t> OpenInfraPlatform::Infrastructure::PointCloud::
 	return idxMinMax;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentation(buw::PercentileSegmentationDescription desc,
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::applyPercentilesSegmentation(buw::PercentileSegmentationDescription desc,
                                                                                 buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	// If we have a callback, call start to init the GUI.
 	if (callback)
@@ -1645,7 +1645,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentation(
 	return 0;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentationHP(const buw::PercentileSegmentationDescription &desc,
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::applyPercentilesSegmentationHP(const buw::PercentileSegmentationDescription &desc,
                                                                                   buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	// If we have a callback, call start to init the GUI.
 	if (callback)
@@ -1758,7 +1758,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesSegmentationH
 	return err;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesOnGridSegmentation(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::applyPercentilesOnGridSegmentation(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	// If we have a callback, call start to init the GUI.
 	if (callback)
 		callback->start();
@@ -1829,7 +1829,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyPercentilesOnGridSegment
 	return 0;
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation(RateOfChangeSegmentationDescription desc,
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::applyRateOfChangeSegmentation(RateOfChangeSegmentationDescription desc,
                                                                                  buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	// If we have a callback, call start to init the GUI.
 	if (callback)
@@ -1941,7 +1941,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::applyRateOfChangeSegmentation
 }
 
 
-int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw::CenterlineComputationDescription &desc,
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::computeCenterlines(const buw::CenterlineComputationDescription &desc,
                                                                       buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {	
 
 	// Vector holding the rail point pairs (left and right track).
@@ -2679,12 +2679,12 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlines(const buw:
 }
 
 
-int OpenInfraPlatform::Infrastructure::PointCloud::resetCenterlines() {
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::resetCenterlines() {
 	centerlineDescription_ = buw::CenterlineComputationDescription();
 	return resetRailwaySegmentation();
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::resetPairs() {
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::resetPairs() {
 	// If there are pairs, reset them. Otherwise return -2 and print trace to log.
 	if(bHasPairs_) {
 		// Get the railway scalar field and set it to read from. If not existing, abort and return -1.
@@ -2720,7 +2720,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::resetPairs() {
 	}
 }
 
-int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(const buw::CenterlineCurvatureComputationDescription &desc,
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::computeCenterlineCurvature(const buw::CenterlineCurvatureComputationDescription &desc,
                                                                               buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	// Tell the callback that we're done.
 	if (callback)
@@ -3158,7 +3158,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::computeCenterlineCurvature(co
 }
 
 
-int OpenInfraPlatform::Infrastructure::PointCloud::resetRailwaySegmentation() {
+int OpenInfraPlatform::PointCloudProcessing::PointCloud::resetRailwaySegmentation() {
 	// Reset the railway points color to white.
 	int idx_railway = getScalarFieldIndexByName("Railway");
 	if (idx_railway == -1)
@@ -3206,7 +3206,7 @@ int OpenInfraPlatform::Infrastructure::PointCloud::resetRailwaySegmentation() {
 	return 0;
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::removeNotSegmentedPoints() {
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::removeNotSegmentedPoints() {
 	int idx_segmented = getScalarFieldIndexByName("Segmented");
 
 	// Abort if we have no filtered points.
@@ -3238,7 +3238,7 @@ void OpenInfraPlatform::Infrastructure::PointCloud::removeNotSegmentedPoints() {
 	init();
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::removeFilteredPoints(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::removeFilteredPoints(buw::ReferenceCounted<CCLib::GenericProgressCallback> callback) {
 	if (callback)
 		callback->start();
 
@@ -3276,11 +3276,11 @@ void OpenInfraPlatform::Infrastructure::PointCloud::removeFilteredPoints(buw::Re
 		callback->stop();
 }
 
-const CCVector3 OpenInfraPlatform::Infrastructure::PointCloud::getMainAxis() const {
+const CCVector3 OpenInfraPlatform::PointCloudProcessing::PointCloud::getMainAxis() const {
 	return mainAxis_;
 }
 
-const double OpenInfraPlatform::Infrastructure::PointCloud::getSectionLength() const {
+const double OpenInfraPlatform::PointCloudProcessing::PointCloud::getSectionLength() const {
 	// If sections are initialized, return the length of the first section since all are equally long.
 	if (sections_.size() > 0 && sections_[0]) {
 		return sections_[0]->getLength();
@@ -3290,17 +3290,17 @@ const double OpenInfraPlatform::Infrastructure::PointCloud::getSectionLength() c
 	}
 }
 
-const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> OpenInfraPlatform::Infrastructure::PointCloud::getIndices() const {
+const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> OpenInfraPlatform::PointCloudProcessing::PointCloud::getIndices() const {
 	return std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>>(remainingIndices_, filteredIndices_, segmentedIndices_);
 }
 
-buw::ReferenceCounted<buw::Octree> OpenInfraPlatform::Infrastructure::PointCloud::getDGMOctree() {
+buw::ReferenceCounted<buw::Octree> OpenInfraPlatform::PointCloudProcessing::PointCloud::getDGMOctree() {
 	if (!octree_)
 		octree_ = std::make_shared<buw::Octree>(this);
 	return octree_;
 }
 
-void OpenInfraPlatform::Infrastructure::PointCloud::computeMainAxis() {
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeMainAxis() {
 	BLUE_LOG(trace) << "Start computing main axis.";
 	// Set the main axis as the eigenvector with the largest eigenvalue.
 	mainAxis_ = CCVector3(getEigenvectors<1>().cast<float>().normalized().data());

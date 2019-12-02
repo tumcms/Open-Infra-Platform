@@ -16,14 +16,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#ifndef OpenInfraPlatform_Infrastructure_PointCloudProcessing_PointCloud_C6DADDAE_D1A5_4A99_A95F_2DD5667ED977_h
-#define OpenInfraPlatform_Infrastructure_PointCloudProcessing_PointCloud_C6DADDAE_D1A5_4A99_A95F_2DD5667ED977_h
+#ifndef OpenInfraPlatform_PointCloudProcessing_PointCloudProcessing_PointCloud_C6DADDAE_D1A5_4A99_A95F_2DD5667ED977_h
+#define OpenInfraPlatform_PointCloudProcessing_PointCloudProcessing_PointCloud_C6DADDAE_D1A5_4A99_A95F_2DD5667ED977_h
 
-#include "OpenInfraPlatform/Infrastructure/namespace.h"
-#include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
+#include "namespace.h"
 
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/Octree.h"
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudProcessing.h"
+#include "Octree.h"
+#include "PointCloudProcessing.h"
 
 #include <BlueFramework/Core/Math/vector.h>
 #include <BlueFramework/Core/memory.h>
@@ -35,7 +34,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 class CCLib::GenericProgressCallback;
 
 namespace OpenInfraPlatform {
-	namespace Infrastructure {
+	namespace PointCloudProcessing {
 
 		class PointCloudSection;
 
@@ -198,7 +197,7 @@ namespace OpenInfraPlatform {
 }
 
 namespace buw {
-	using OpenInfraPlatform::Infrastructure::PointCloud;
+	using OpenInfraPlatform::PointCloudProcessing::PointCloud;
 }
 
 #endif

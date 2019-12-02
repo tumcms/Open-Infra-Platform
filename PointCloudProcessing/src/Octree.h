@@ -16,16 +16,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#ifndef OpenInfraPlatform_Infrastructure_PointCloudProcessing_Octree_A4497380_8447_40E1_9366_D2DDE1F2D7FE_h
-#define OpenInfraPlatform_Infrastructure_PointCloudProcessing_Octree_A4497380_8447_40E1_9366_D2DDE1F2D7FE_h
+#ifndef OpenInfraPlatform_PointCloudProcessing_PointCloudProcessing_Octree_A4497380_8447_40E1_9366_D2DDE1F2D7FE_h
+#define OpenInfraPlatform_PointCloudProcessing_PointCloudProcessing_Octree_A4497380_8447_40E1_9366_D2DDE1F2D7FE_h
 
-#include "OpenInfraPlatform/Infrastructure/namespace.h"
-#include "OpenInfraPlatform/Infrastructure/OIPInfrastructure.h"
-
+#include "namespace.h"
 #include <DgmOctree.h>
 
 namespace OpenInfraPlatform {
-	namespace Infrastructure {
+	namespace PointCloudProcessing {
 		class BLUEINFRASTRUCTURE_API Octree : public CCLib::DgmOctree {
 		public:
 			Octree() = default;
@@ -42,7 +40,7 @@ namespace OpenInfraPlatform {
 }
 
 namespace buw {
-	using OpenInfraPlatform::Infrastructure::Octree;
+	using OpenInfraPlatform::PointCloudProcessing::Octree;
 }
 
 #endif
