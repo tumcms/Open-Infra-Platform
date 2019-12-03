@@ -1232,7 +1232,9 @@ int OpenInfraPlatform::PointCloudProcessing::PointCloud::computeLocalDensity(CCL
 	// setCurrentOutScalarField(idx);
 
 	// Compute the local density and retirn the error code.
-	return CCLib::GeometricalAnalysisTools::computeLocalDensity(this, metric, kernelRadius, callback ? callback.get() : nullptr, octree_ ? octree_.get() : nullptr);
+	//return CCLib::GeometricalAnalysisTools::computeLocalDensity(this, metric, kernelRadius, callback ? callback.get() : nullptr, octree_ ? octree_.get() : nullptr);
+	return CCLib::GeometricalAnalysisTools::ComputeCharactersitic(CCLib::GeometricalAnalysisTools::GeomCharacteristic::LocalDensity, metric, this, kernelRadius, callback ? callback.get() : nullptr, octree_ ? octree_.get() : nullptr);
+
 }
 
 void OpenInfraPlatform::PointCloudProcessing::PointCloud::init() {
