@@ -107,6 +107,7 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	find_path(Boost_DIR NAMES boost/version.hpp HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
 		"C:\\thirdparty\\boost_1_65_1")
+
 	#find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS
 	#	"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4"
 	#	"C:\\thirdparty\\eigen")
@@ -289,6 +290,39 @@ if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
 endif()
 
 #------------------------------------------------------------------------------
+# DOXYGEN stuff. 
+#------------------------------------------------------------------------------
+find_path(Doxygen HINTS
+".../Tools/doxygen-master"
+)
+
+find_package(Doxygen)
+
+if(DOXYGEN_FOUND)
+message("Doxygen found.")
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+add_custom_target(doc ALL
+${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+COMMENT "Generating API documentation with Doxygen" VERBATIM
+)
+else()
+message("Doxygen not found. Please install doxygen to be able to generate documentation for the project.")
+endif(DOXYGEN_FOUND)
+
+#doxygen_add_docs(oipDoc
+#${PROJECT_SOURCE_DIR}
+#COMMENT "Generate Open Infra Platform doxygen documentation."
+#)
+
+# Later:
+# doxygen_add_docs(coreDoc
+# ...)
+
+#set(DOXYGEN_GENERATE_HTML YES)
+
+
+#------------------------------------------------------------------------------
 # Set required Qt plugins variables and find and add the corresponding dlls for deployment and copying.
 #------------------------------------------------------------------------------
 
@@ -383,6 +417,7 @@ include_directories(
 	${FFTW3_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIRS}	
 	${visit_struct_INCLUDE_DIR}
+	$(Doxygen_INCLUDE_DIR)
 	# external:
 	external/QtXlsxWriter/src/xlsx
 	external/QSimpleUpdater/src
