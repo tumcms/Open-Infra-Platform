@@ -75,15 +75,16 @@ source_group(PointCloudProcessing										FILES ${PointCloudProcessing_Source})
 # Create a target for the library
 add_library(OpenInfraPlatform.PointCloudProcessing SHARED ${PointCloudProcessing_Source})
 
-include_directories(
+
+target_include_directories(OpenInfraPlatform.PointCloudProcessing INTERFACE
 	src
 	${LIBLAS_INCLUDE_DIRS}	
 	${CMAKE_CURRENT_BINARY_DIR} 	
 	${BLUEFRAMEWORK_INCLUDE_DIR}
 	${cc_SOURCE_DIR}/CC/include
-	${cc_SOURCE_DIR}/qCC
-	${cc_SOURCE_DIR}/libs/qCC_db
 	${cc_SOURCE_DIR}/libs/qCC_io
+	${cc_SOURCE_DIR}/libs/qCC_db
+	${cc_SOURCE_DIR}/qCC
 )
 
 target_link_libraries(OpenInfraPlatform.PointCloudProcessing 	

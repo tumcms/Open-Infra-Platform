@@ -412,14 +412,28 @@ add_subdirectory(external/QSimpleUpdater)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
 
 add_subdirectory(ExpressBindingGenerator)
-add_subdirectory(Core)
-
 # As of revision 531, replaces old OpenInfraPlatform_EarlyBinding_DIR
 add_subdirectory(${PROJECT_SOURCE_DIR}/EarlyBinding)
 
 foreach(format ${IFC_FORMATS})	
 	add_compile_definitions(OIP_MODULE_EARLYBINDING_${format})
 endforeach()
+
+#----------------------------------------------------------
+# (1/7) Point Cloud Processing ("pcp_module")
+#----------------------------------------------------------
+
+Option(MODULES_POINT_CLOUD_PROCESSING OFF)
+
+if(MODULES_POINT_CLOUD_PROCESSING)
+	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
+	add_subdirectory(PointCloudProcessing)
+endif()
+
+
+add_subdirectory(Core)
+
+
 
 add_subdirectory(UnitTests)
 
@@ -544,25 +558,25 @@ ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 # Add the actual executable.
 #------------------------------------------------------------------------------
 
-	add_executable(OpenInfraPlatform.UI
-		${OpenInfraPlatform_UserInterface_Source}
-		${OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source}
-		${OpenInfraPlatform_UserInterface_Forms} 		
-		${OpenInfraPlatform_UserInterface_ColorPicker_Source}
-		${OpenInfraPlatform_UserInterface_Dialogues_Source}
-		${OpenInfraPlatform_UserInterface_ViewPanel_Source}
-		${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source}
-		${OpenInfraPlatform_UserInterface_Shader_Source}
-		#${OpenInfraPlatform_UserInterface_Shader_D3D_Source}
-		${OpenInfraPlatform_UserInterface_QCustomPlot_Source}
-		${OpenInfraPlatform_UserInterface_UnitTesting_Source}	
-		
-		# Currently not included.
-		#${OpenInfraPlatform_UserInterface_View2DWindow}
-		#${OpenInfraPlatform_UserInterface_Tools_Source}	
-		${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}		
-		#${OpenInfraPlatform_UserInterface_Data_Source}
-		)
+add_executable(OpenInfraPlatform.UI
+	${OpenInfraPlatform_UserInterface_Source}
+	${OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source}
+	${OpenInfraPlatform_UserInterface_Forms} 		
+	${OpenInfraPlatform_UserInterface_ColorPicker_Source}
+	${OpenInfraPlatform_UserInterface_Dialogues_Source}
+	${OpenInfraPlatform_UserInterface_ViewPanel_Source}
+	${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source}
+	${OpenInfraPlatform_UserInterface_Shader_Source}
+	#${OpenInfraPlatform_UserInterface_Shader_D3D_Source}
+	${OpenInfraPlatform_UserInterface_QCustomPlot_Source}
+	${OpenInfraPlatform_UserInterface_UnitTesting_Source}	
+	
+	# Currently not included.
+	#${OpenInfraPlatform_UserInterface_View2DWindow}
+	#${OpenInfraPlatform_UserInterface_Tools_Source}	
+	${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}		
+	#${OpenInfraPlatform_UserInterface_Data_Source}
+)
 
 #------------------------------------------------------------------------------
 # Link qt and other external libraries to our executable.
@@ -781,16 +795,7 @@ set_target_properties(OpenInfraPlatform.ExpressBindingGenerator				PROPERTIES FO
 # Select all modules with necessary thirdparty libraries to be built. 
 # Otherwise only core project is built.
 
-#----------------------------------------------------------
-# (1/7) Point Cloud Processing ("pcp_module")
-#----------------------------------------------------------
 
-Option(MODULES_POINT_CLOUD_PROCESSING ON)
-
-if(MODULES_POINT_CLOUD_PROCESSING)
-add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
-add_subdirectory(PointCloudProcessing)
-endif()
 
 #----------------------------------------------------------
 # (2/7) Digital Elevation Model 
