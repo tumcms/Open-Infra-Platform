@@ -194,6 +194,7 @@ namespace OpenInfraPlatform
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 
 			void on_actionExportPointCloud_triggered();
+			void on_actionMerge_LAS_File_triggered();
 			void on_checkBoxUseUniformColor_clicked(bool checked);
 			void on_checkBoxUseUniformSize_clicked(bool checked);
 

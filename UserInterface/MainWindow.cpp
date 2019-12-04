@@ -47,6 +47,10 @@
 #include <shlobj.h>
 #include <stdlib.h>
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+#include <PointCloudProcessing.h>
+#include <PointCloud.h>
+#endif
 using convert_type = std::codecvt_utf8<wchar_t>;
 
 OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nullptr*/)
@@ -756,8 +760,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDuplicateFi
 		// Initialize the filter parameters.
 		buw::DuplicateFilterDescription desc;
 		desc.dim = ui_->radioButtonRender3D->isChecked() ?
-			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Volume3D :
-			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Sections2D;
+			OpenInfraPlatform::PointCloudProcessing::Enums::ePointCloudFilterDimension::Volume3D :
+			OpenInfraPlatform::PointCloudProcessing::Enums::ePointCloudFilterDimension::Sections2D;
 		desc.minDistance = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
 
 		// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
@@ -783,8 +787,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDensityFilt
 		// Initialize the filter parameters
 		buw::LocalDensityFilterDescription desc;
 		desc.dim = ui_->radioButtonRender3D->isChecked() ?
-			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Volume3D :
-			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Sections2D;
+			OpenInfraPlatform::PointCloudProcessing::Enums::ePointCloudFilterDimension::Volume3D :
+			OpenInfraPlatform::PointCloudProcessing::Enums::ePointCloudFilterDimension::Sections2D;
 		desc.kernelRadius = (float)(ui_->doubleSpinBoxFilterDensityKernelRadius->value()) / 100.0f;
 		desc.minThreshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
 		desc.density = CCLib::GeometricalAnalysisTools::Density(ui_->comboBoxFilterDensityMetric->currentData().toInt());
@@ -1001,9 +1005,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeChainage_
 	auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if (pointCloud) {
 		buw::ChainageComputationDescription desc;
-		desc.base = (Infrastructure::Enums::eChainageComputationBase) ui_->comboBoxInterpolationBase->currentData().toInt();
+		desc.base = (PointCloudProcessing::Enums::eChainageComputationBase) ui_->comboBoxInterpolationBase->currentData().toInt();
 		desc.bUseInterpolation = ui_->checkBoxInterpolation->isChecked();
-		desc.interpolation = (Infrastructure::Enums::eChainageComputationInterpolationMethod) ui_->comboBoxInterpolationMethod->currentData().toInt();
+		desc.interpolation = (PointCloudProcessing::Enums::eChainageComputationInterpolationMethod) ui_->comboBoxInterpolationMethod->currentData().toInt();
 		desc.bUseSmoothing = ui_->checkBoxSmoothing->isChecked();
 		desc.sigma = ui_->doubleSpinBoxSmoothingSigma->value();
 		desc.sigmaSF = ui_->doubleSpinBoxSmoothingSigmaSF->value();

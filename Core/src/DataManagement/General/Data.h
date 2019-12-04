@@ -28,6 +28,11 @@
 #include <boost/signals2.hpp>
 #include <map>
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+#include <PointCloudProcessing.h>
+#include <PointCloud.h>
+#endif
+
 namespace OpenInfraPlatform
 {
 	namespace Core 
@@ -127,6 +132,10 @@ namespace OpenInfraPlatform
 				//---------------------------------------------------------------------------//
 				// Point Cloud
 				//---------------------------------------------------------------------------//
+
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+				std::shared_ptr<buw::PointCloud> getPointCloud();
+#endif
 
 				//---------------------------------------------------------------------------//
 				// Preferences

@@ -399,3 +399,12 @@ bool OpenInfraPlatform::Core::DataManagement::Data::showFrameTimes() const
 {
 	return bShowFrameTime_;
 }
+
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+
+std::shared_ptr<buw::PointCloud> OpenInfraPlatform::Core::DataManagement::Data::getPointCloud() {
+	//TODO
+	return std::shared_ptr<buw::PointCloud>();
+}
+
+#endif
