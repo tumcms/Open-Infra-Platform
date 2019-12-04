@@ -73,10 +73,8 @@ source_group(PointCloudProcessing										FILES ${PointCloudProcessing_Source})
 
 
 # Create a target for the library
-add_library(OpenInfraPlatform.PointCloudProcessing SHARED ${PointCloudProcessing_Source})
 
-
-target_include_directories(OpenInfraPlatform.PointCloudProcessing INTERFACE
+set(DEPENDENT_INCLUDE_DIRS
 	src
 	${LIBLAS_INCLUDE_DIRS}	
 	${CMAKE_CURRENT_BINARY_DIR} 	
@@ -87,13 +85,19 @@ target_include_directories(OpenInfraPlatform.PointCloudProcessing INTERFACE
 	${cc_SOURCE_DIR}/qCC
 )
 
-target_link_libraries(OpenInfraPlatform.PointCloudProcessing 	
+include_directories(${DEPENDENT_INCLUDE_DIRS})
+
+add_library(OpenInfraPlatform.PointCloudProcessing SHARED ${PointCloudProcessing_Source})
+
+target_include_directories(OpenInfraPlatform.PointCloudProcessing PUBLIC ${DEPENDENT_INCLUDE_DIRS})
+
+target_link_libraries(OpenInfraPlatform.PointCloudProcessing PUBLIC
 		${LIBLAS_LIBRARIES}	
 		${BLUEFRAMEWORK_LIBRARIES}
 )
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(OpenInfraPlatform.PointCloudProcessing Qt5::Xml Qt5::XmlPatterns Qt5::Gui Qt5::OpenGL eigen CC_CORE_LIB QCC_DB_LIB QCC_IO_LIB)	
+target_link_libraries(OpenInfraPlatform.PointCloudProcessing PUBLIC Qt5::Xml Qt5::XmlPatterns Qt5::Gui Qt5::OpenGL eigen CC_CORE_LIB QCC_DB_LIB QCC_IO_LIB)	
 
 # Set the target properties.
 set_target_properties(OpenInfraPlatform.PointCloudProcessing			PROPERTIES FOLDER "OpenInfraPlatform")	
