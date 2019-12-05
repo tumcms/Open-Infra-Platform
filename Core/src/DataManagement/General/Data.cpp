@@ -407,4 +407,8 @@ std::shared_ptr<buw::PointCloud> OpenInfraPlatform::Core::DataManagement::Data::
 	return std::shared_ptr<buw::PointCloud>();
 }
 
+void OpenInfraPlatform::Core::DataManagement::Data::exportPointCloud(const std::string& filename) const {
+	//TODO
+}
+
 #endif

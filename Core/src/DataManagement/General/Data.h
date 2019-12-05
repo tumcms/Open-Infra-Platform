@@ -135,6 +135,8 @@ namespace OpenInfraPlatform
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 				std::shared_ptr<buw::PointCloud> getPointCloud();
+
+				void exportPointCloud(const std::string& filename) const;
 #endif
 
 				//---------------------------------------------------------------------------//

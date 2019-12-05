@@ -716,7 +716,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionMerge_LAS_File_trigg
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("LAS cloud (*.las)"));
 
 	if (!filename.isNull()) {
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().importLAS(filename.toStdString());
+		//TODO
+		//OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().importLAS(filename.toStdString());
 	}
 }
 
@@ -1259,7 +1260,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 		}
 
 		bool plotFourierTransform = false;
-
+#ifdef OIP_WITH_FFTW
 		if (plotFourierTransform) {
 			int numReal = bearings.size();
 			int numComplex = (std::floor((numReal / 2)) + 1);
@@ -1321,6 +1322,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 			customPlotFFT->show();
 			plots_.push_back(customPlotFFT);
 		}
+#endif
 
 		// Create plot for bearing.
 		QCustomPlot* customPlotBearing = new QCustomPlot(nullptr);
@@ -1465,6 +1467,11 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_horizontalSliderSectionSiz
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectSegmentedPointsColor_clicked()
 {
 	pcdSegmentedPointsColorDialog_.show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_comboBoxAlignment_currentIndexChanged(int index)
+{
+	//TODO
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxPointSize_valueChanged(double value) {
