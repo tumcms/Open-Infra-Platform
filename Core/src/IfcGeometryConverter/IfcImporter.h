@@ -31,8 +31,9 @@
 
 #include "UnitConverter.h"
 
-#include <boost/algorithm/string.hpp>    
+#include <boost/algorithm/string.hpp>
 
+#include "EXPRESS/EXPRESS.h"
 
 namespace OpenInfraPlatform 
 {
@@ -49,95 +50,93 @@ namespace OpenInfraPlatform
 				~IfcImporterUtil() {}
 
 				template <
-					class IfcEntityTypesT,
-					class IfcUnitConverterT
+					class IfcEntityTypesT
 				>
-
 					static void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
-						const std::shared_ptr<IfcUnitConverterT> unitConverter,
-						const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT>> repConverter)
-				{
-					//#ifdef _DEBUG
-					//				std::cout << "Info\t| IfcGeometryConverter.Importer.RepConverter: Converting IFC product " << product->classname() << " #" << product->getId() << std::endl;
-					//#endif
-
-					// get id of product
-					const uint32_t productId = product->getId();
-
-					double lengthFactor = unitConverter->getLengthInMeterFactor();
-					carve::math::Matrix matProduct(carve::math::Matrix::IDENT());
-
-					// check if there's any global object placement for this product
-					// if yes, then apply the placement
-					if(product->ObjectPlacement) {
-						// decltype(x) returns the compile time type of x.
-						//decltype(product->ObjectPlacement)::type &objectPlacement = product->ObjectPlacement;
-
-						OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement = product->ObjectPlacement;
-
-						//auto& optObjectPlacement = product->ObjectPlacement;	// store optional<weak_ptr> product->ObjectPlacement in optObjectPlacement.
-						//auto& objectPlacement = *optObjectPlacement;			// extract weak_ptr from optional<weak_ptr> optObjectPlacement.
-						auto& objectPlacement_ptr = objectPlacement.lock();		// get std::shared_ptr used to construct the weak_ptr.
-																				// OR auto& objectPlacement = optObjectPlacement.get();
-
-						std::set<int> placementAlreadyApplied;
-						PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(objectPlacement_ptr,
-							matProduct, lengthFactor,
-							placementAlreadyApplied);
-
-#ifdef _DEBUG
-						BLUE_LOG(trace) << "Processed IfcObjectPlacement #" << objectPlacement->getId();
-#endif
-					}
-
-					// error string
-					std::stringstream strerr;
-
-					// go through all representations of the product
-					if(product->Representation) {
-#ifdef _DEBUG
-						BLUE_LOG(trace) << "Processing IfcProductRepresentation #" << product->Representation->getId();
-#endif
-						OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcProductRepresentation>& representation = product->Representation;
-						// so evaluate its geometry
-						for(EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& rep : representation->Representations) {
-							// convert each shape of the represenation
-#ifdef _DEBUG
-							BLUE_LOG(trace) << "Processing IfcRepresentation #" << rep->getId();
-#endif
-							repConverter->convertIfcRepresentation(rep.lock(), matProduct, productShape, strerr);
-#ifdef _DEBUG
-							BLUE_LOG(trace) << "Processed IfcRepresentation #" << rep->getId();
-#endif
-						}
-
-						IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, strerr, repConverter);
-#ifdef _DEBUG
-						BLUE_LOG(trace) << "Processed IfcProductRepresentation #" << representation->getId();
-#endif
-					}
-
-					if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product)) {
-						auto alignment = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product);
-						std::shared_ptr<ItemData> itemData(new ItemData());
-						productShape->vec_item_data.push_back(itemData);
-						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> axis = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(alignment->Axis.lock());
-						repConverter->convertIfcGeometricRepresentationItem(axis, carve::math::Matrix::IDENT(), itemData, strerr);
-					}
-
-#ifdef _DEBUG
-					if(strerr.tellp() <= 0) return;
-
-					std::stringstream ss;
-					ss << "log/" << "-" << product->classname()
-						<< "#" << product->getId() << ".txt";
-
-					std::ofstream debugLog(ss.str());
-					debugLog << strerr.str();
-					debugLog.close();
-#endif
-				}
+						const std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
+						const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT, UnitConverter<IfcEntityTypesT>>> repConverter);
+//				{
+//					//#ifdef _DEBUG
+//					//				std::cout << "Info\t| IfcGeometryConverter.Importer.RepConverter: Converting IFC product " << product->classname() << " #" << product->getId() << std::endl;
+//					//#endif
+//
+//					// get id of product
+//					const uint32_t productId = product->getId();
+//
+//					double lengthFactor = unitConverter->getLengthInMeterFactor();
+//					carve::math::Matrix matProduct(carve::math::Matrix::IDENT());
+//
+//					// check if there's any global object placement for this product
+//					// if yes, then apply the placement
+//					if(product->ObjectPlacement) {
+//						// decltype(x) returns the compile time type of x.
+//						//decltype(product->ObjectPlacement)::type &objectPlacement = product->ObjectPlacement;
+//
+//						OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement = product->ObjectPlacement;
+//
+//						//auto& optObjectPlacement = product->ObjectPlacement;	// store optional<weak_ptr> product->ObjectPlacement in optObjectPlacement.
+//						//auto& objectPlacement = *optObjectPlacement;			// extract weak_ptr from optional<weak_ptr> optObjectPlacement.
+//						auto& objectPlacement_ptr = objectPlacement.lock();		// get std::shared_ptr used to construct the weak_ptr.
+//																				// OR auto& objectPlacement = optObjectPlacement.get();
+//
+//						std::set<int> placementAlreadyApplied;
+//						PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(objectPlacement_ptr,
+//							matProduct, lengthFactor,
+//							placementAlreadyApplied);
+//
+//#ifdef _DEBUG
+//						BLUE_LOG(trace) << "Processed IfcObjectPlacement #" << objectPlacement->getId();
+//#endif
+//					}
+//
+//					// error string
+//					std::stringstream strerr;
+//
+//					// go through all representations of the product
+//					if(product->Representation) {
+//#ifdef _DEBUG
+//						BLUE_LOG(trace) << "Processing IfcProductRepresentation #" << product->Representation->getId();
+//#endif
+//						OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcProductRepresentation>& representation = product->Representation;
+//						// so evaluate its geometry
+//						for(EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& rep : representation->Representations) {
+//							// convert each shape of the represenation
+//#ifdef _DEBUG
+//							BLUE_LOG(trace) << "Processing IfcRepresentation #" << rep->getId();
+//#endif
+//							repConverter->convertIfcRepresentation(rep.lock(), matProduct, productShape, strerr);
+//#ifdef _DEBUG
+//							BLUE_LOG(trace) << "Processed IfcRepresentation #" << rep->getId();
+//#endif
+//						}
+//
+//						IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, strerr, repConverter);
+//#ifdef _DEBUG
+//						BLUE_LOG(trace) << "Processed IfcProductRepresentation #" << representation->getId();
+//#endif
+//					}
+//
+//					if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product)) {
+//						auto alignment = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product);
+//						std::shared_ptr<ItemData> itemData(new ItemData());
+//						productShape->vec_item_data.push_back(itemData);
+//						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> axis = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(alignment->Axis.lock());
+//						repConverter->convertIfcGeometricRepresentationItem(axis, carve::math::Matrix::IDENT(), itemData, strerr);
+//					}
+//
+//#ifdef _DEBUG
+//					if(strerr.tellp() <= 0) return;
+//
+//					std::stringstream ss;
+//					ss << "log/" << "-" << product->classname()
+//						<< "#" << product->getId() << ".txt";
+//
+//					std::ofstream debugLog(ss.str());
+//					debugLog << strerr.str();
+//					debugLog.close();
+//#endif
+//				}
 
 				// ***************************************
 				// 3: Compute Meshsets from Polyhedrons
@@ -207,7 +206,6 @@ namespace OpenInfraPlatform
 				class IfcEntityTypesT,
 				class IfcUnitConverterT
 			>
-
 				// IfcImporterT class with readStepFile, collectGeometryData, getter and setter. 
 				class IfcImporterT {
 				public:

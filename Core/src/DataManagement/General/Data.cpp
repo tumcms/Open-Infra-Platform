@@ -19,23 +19,23 @@
 
 #include <BlueFramework/Application/DataManagement/Notification/NotifiyAfterEachActionOnlyOnce.h>
 
-//#ifdef OIP_MODULE_EARLYBINDING_IFC2X3
-//	#include "reader/IFC2X3Reader.h"
-//	#include "EMTIFC2X3EntityTypes.h"
-//	#include "IFC2X3.h"
-//#endif
+#ifdef OIP_MODULE_EARLYBINDING_IFC2X3
+	#include "reader/IFC2X3Reader.h"
+	#include "EMTIFC2X3EntityTypes.h"
+	//#include "IFC2X3.h"
+#endif
 
-//#ifdef OIP_MODULE_EARLYBINDING_IFC4
-//	#include "reader/IFC4Reader.h"
-//	#include "EMTIFC4EntityTypes.h"
-//	#include "IFC4.h"
-//#endif
+#ifdef OIP_MODULE_EARLYBINDING_IFC4
+	#include "reader/IFC4Reader.h"
+	#include "EMTIFC4EntityTypes.h"
+	//#include "IFC4.h"
+#endif
 
-//#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
 	#include "reader/IFC4X1Reader.h"
 	#include "EMTIFC4X1EntityTypes.h"
-	#include "IFC4X1.h"
-//#endif
+	//#include "IFC4X1.h"
+#endif
 
 #include "IfcGeometryConverter\IfcImporter.h"
 #include "IfcGeometryConverter\GeometryInputData.h"

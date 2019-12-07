@@ -30,6 +30,9 @@
 #include "PlacementConverter.h"
 #include "UnhandledRepresentationException.h"
 
+#include "BlueFramework/Core/Diagnostics/log.h"
+
+
 namespace OpenInfraPlatform {
 	namespace Core {
 		namespace IfcGeometryConverter {
