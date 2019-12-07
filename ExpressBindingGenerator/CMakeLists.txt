@@ -83,32 +83,62 @@ add_custom_target(Commands.UpdateBoostMPL
 )
 set_target_properties(Commands.UpdateBoostMPL PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
 
+# Create list of possible IFC formats
+#set(SUPPORTED_IFC_FORMATS IFC2X3 IFC4 IFC4X2_BIM4ROAD IFC4X1 IFC4X2_DRAFT_1 IFC4X2)
+
+
+
 # Macro to add IFC formats and the respective schemas.
 macro(add_format format schema active)
 	set(${format}_SCHEMA ${schema}.exp)
-	if(${active})
+	set(EARLYBINDING_${format} ${format} ${schema})
+	set(SUPPORTED_IFC_FORMATS ${SUPPORTED_IFC_FORMATS} EARLYBINDING_${format})
+	option(EARLYBINDING_WITH_${format} "Build with support for ${format} and generate all required files.")
+	
+	#if(${active})
+	#	set(IFC_FORMATS ${IFC_FORMATS} ${format})
+	#	set(IFC_SCHEMAS ${IFC_SCHEMAS} ${schema})
+	#	
+	#	# Custom target that generates the early binding library files.
+	#	add_custom_target(Commands.GenerateEarlyBinding.${format}
+	#		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding
+	#		COMMAND ${CMAKE_COMMAND} -E remove_directory  ${CMAKE_BINARY_DIR}/EarlyBinding/${format}
+	#
+	#		COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${schema}.exp -o ${CMAKE_BINARY_DIR}/EarlyBinding
+	#	)
+	#
+	#	add_dependencies(Commands.GenerateEarlyBinding.${format} OpenInfraPlatform.ExpressBindingGenerator)
+	#	set_target_properties(Commands.GenerateEarlyBinding.${format} PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
+	#endif()
+endmacro()
+
+add_format(IFC2X3 			IFC2X3_TC1 		ON)
+add_format(IFC4 			IFC4_ADD1 		ON)
+add_format(IFC4X2_BIM4ROAD 	IFC4x2_BIM4ROAD	OFF)
+add_format(IFC4X1		 	IFC4x1_RC3		ON)
+add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)
+add_format(IFC4X2			IFC4x2			OFF)
+
+# Add options to create early bindings for formats
+foreach(standard IN LISTS SUPPORTED_IFC_FORMATS)
+	list(GET ${standard} 0 format)
+	list(GET ${standard} 1 schema)
+	if(EARLYBINDING_WITH_${format})
+		message(STATUS "Building with ${format}.")
 		set(IFC_FORMATS ${IFC_FORMATS} ${format})
 		set(IFC_SCHEMAS ${IFC_SCHEMAS} ${schema})
 		
 		# Custom target that generates the early binding library files.
 		add_custom_target(Commands.GenerateEarlyBinding.${format}
 			COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding
-			COMMAND ${CMAKE_COMMAND} -E remove_directory  ${CMAKE_BINARY_DIR}/EarlyBinding/${format}
-
+			COMMAND ${CMAKE_COMMAND} -E remove_directory  ${CMAKE_BINARY_DIR}/EarlyBinding/${format}	
 			COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${schema}.exp -o ${CMAKE_BINARY_DIR}/EarlyBinding
 		)
-
+	
 		add_dependencies(Commands.GenerateEarlyBinding.${format} OpenInfraPlatform.ExpressBindingGenerator)
 		set_target_properties(Commands.GenerateEarlyBinding.${format} PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
 	endif()
-endmacro()
-
-add_format(IFC2X3 			IFC2X3_TC1 		OFF)
-add_format(IFC4 			IFC4_ADD1 		OFF)
-add_format(IFC4X2_BIM4ROAD 	IFC4x2_BIM4ROAD	OFF)
-add_format(IFC4X1		 	IFC4x1_RC3		ON)
-add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)
-add_format(IFC4X2			IFC4x2			OFF)
+endforeach()
 
 # Push to parent scope to be able to determine which folders to add in the higher level CMakeLists.txt
 set(IFC_FORMATS ${IFC_FORMATS} PARENT_SCOPE)
