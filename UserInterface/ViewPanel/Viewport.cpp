@@ -30,7 +30,10 @@
 //#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/TrafficSignEffect.h"
 //#include "OpenInfraPlatform/UserInterface/ViewPanel/Effects/GradientClearEffect.h"
 //#include "../UserInterface/ViewPanel/Effects/BillboardEffect.h"
-//#include "../UserInterface/ViewPanel/Effects/PointCloudEffect.h"
+
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+#include "ViewPanel/Effects/PointCloudEffect.h"
+#endif
 
 //Effects
 #include "ViewPanel/Effects/UIElementsEffect.h"
@@ -165,7 +168,8 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     boundingBoxEffect_ = buw::makeReferenceCounted<BoundingBoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
     boundingBoxEffect_->init();
 
-	/*BLUE_LOG(trace) << "Creating effects (9)";
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+	BLUE_LOG(trace) << "Creating effects (9)";
 	pointCloudEffect_ = buw::makeReferenceCounted<PointCloudEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
 	pointCloudEffect_->init();
 
@@ -173,7 +177,8 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 	sectionsBoundingBoxEffect_ = buw::makeReferenceCounted<BoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
 	sectionsBoundingBoxEffect_->init();
 
-	pointCloudEffect_->sectionsBoundingBoxEffect_ = sectionsBoundingBoxEffect_;*/
+	pointCloudEffect_->sectionsBoundingBoxEffect_ = sectionsBoundingBoxEffect_;
+#endif
 
 	/*BLUE_LOG(trace) << "Creating effects (11)";
 	billboardEffect_ = buw::makeReferenceCounted<BillboardEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
@@ -219,6 +224,11 @@ Viewport::~Viewport() {
     trafficSignEffect_ = nullptr;
     demEffect_ = nullptr;
     gradientClearEffect_ = nullptr;*/
+
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+	pointCloudEffect_ = nullptr;
+#endif
+
     skyboxEffect_ = nullptr;
     ifcGeometryEffect_ = nullptr;
 
@@ -319,28 +329,29 @@ void Viewport::enableTerrainGradientRamp(const bool checked) {
     repaint();*/
 }
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 void OpenInfraPlatform::UserInterface::Viewport::setUseUniformPointColor(const bool useUniformColor)
 {
-	//pointCloudEffect_->drawPointsWithUniformColor(useUniformColor);
-	//repaint();
+	pointCloudEffect_->drawPointsWithUniformColor(useUniformColor);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setUseUniformPointSize(const bool useUniformSize)
 {
-	/*pointCloudEffect_->drawPointsWithUniformSize(useUniformSize);
-	repaint();*/
+	pointCloudEffect_->drawPointsWithUniformSize(useUniformSize);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setPointSize(const float size)
 {
-	//pointCloudEffect_->setPointSize(size);
-	//repaint();
+	pointCloudEffect_->setPointSize(size);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setShowPointCloud(const bool checked)
 {
-	/*pointCloudEffect_->show(checked);
-	repaint();*/
+	pointCloudEffect_->show(checked);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setShowSectionOOBB(const bool checked) {
@@ -350,21 +361,22 @@ void OpenInfraPlatform::UserInterface::Viewport::setShowSectionOOBB(const bool c
 
 void OpenInfraPlatform::UserInterface::Viewport::setShowOctree(const bool checked)
 {
-	/*pointCloudEffect_->showOctree(checked);
-	repaint();*/
+	pointCloudEffect_->showOctree(checked);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setOctreeLevel(int value)
 {
-	/*pointCloudEffect_->setOctreeLevel(value);
-	repaint();*/
+	pointCloudEffect_->setOctreeLevel(value);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::setPointCloudIndices(std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> indices)
 {
-	/*pointCloudEffect_->updateIndexBuffers(indices);
-	repaint();*/
+	pointCloudEffect_->updateIndexBuffers(indices);
+	repaint();
 }
+#endif
 
 void Viewport::showCrossSection(const bool showCrossSection) {
    /* alignmentEffect_->showCrossSections(showCrossSection);*/
@@ -394,53 +406,55 @@ buw::ReferenceCounted<buw::ViewCube> Viewport::getViewCube() {
 //  /*  return alignmentEffect_;*/
 //}
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudUniformColor(const QColor & color)
 {
-	/*pointCloudEffect_->setUniformColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
-	repaint();*/
+	pointCloudEffect_->setUniformColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudFilteredPointsColor(const QColor & color)
 {
-	/*pointCloudEffect_->setFilteredColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
-	repaint();*/
+	pointCloudEffect_->setFilteredColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudSegmentedPointsColor(const QColor & color)
 {
-	/*pointCloudEffect_->setSegmentedColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
-	repaint();*/
+	pointCloudEffect_->setSegmentedColor(buw::Vector4f(color.redF(), color.greenF(), color.blueF(), color.alphaF()));
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudSectionLength(const float length)
 {
-	/*pointCloudEffect_->setSectionLength(length);
-	repaint();*/
+	pointCloudEffect_->setSectionLength(length);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudProjectPoints(const bool checked)
 {
-	/*pointCloudEffect_->setProjectPoints(checked);
-	repaint();*/
+	pointCloudEffect_->setProjectPoints(checked);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudRenderOriginalCloud(const bool checked)
 {
-	//pointCloudEffect_->showOriginalPointCloud(checked);
-	//repaint();
+	pointCloudEffect_->showOriginalPointCloud(checked);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudShowSegmentedPoints(const bool checked)
 {
-	/*pointCloudEffect_->showSegmentedPoints(checked);
-	repaint();*/
+	pointCloudEffect_->showSegmentedPoints(checked);
+	repaint();
 }
 
 void OpenInfraPlatform::UserInterface::Viewport::updatePointCloudShowFilteredPoints(const bool checked)
 {
-	/*pointCloudEffect_->showFilteredPoints(checked);
-	repaint();*/
+	pointCloudEffect_->showFilteredPoints(checked);
+	repaint();
 }
+#endif
 
 
 void Viewport::setView(eView type) {
@@ -778,7 +792,10 @@ void Viewport::onChange(ChangeFlag changeFlag) {
  //   auto girderModel = data.getGirderModel();
  //   auto slabFieldModel = data.getSlabFieldModel();
     auto ifcGeometryModel = data.getIfcGeometryModel();
-	//auto pointCloud = data.getPointCloud();
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+	auto pointCloud = data.getPointCloud();
+#endif
+
 	//auto proxyModel = data.getProxyModel();
 
     buw::Vector3d min, max;
@@ -791,7 +808,9 @@ void Viewport::onChange(ChangeFlag changeFlag) {
         auto bb = alignment->getExtends();
         min = bb.getMinimum();
         max = bb.getMaximum();
-	} else if(pointCloud && data.getPointCloudPointCount() > 0) {
+	}*/
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+	if(pointCloud && pointCloud->size() > 0) {
 		CCVector3 minPos, maxPos;
 		pointCloud->getBoundingBox(minPos, maxPos);
 		min = buw::Vector3d(minPos.x, minPos.y, minPos.z);
@@ -799,7 +818,8 @@ void Viewport::onChange(ChangeFlag changeFlag) {
 
 		BLUE_LOG(trace) << "min:" << min;
 		BLUE_LOG(trace) << "max:" << max;
-	}*/
+	}
+#endif
 	
 
     buw::Vector3d offset = (min + max) / -2.f;
@@ -845,11 +865,13 @@ void Viewport::onChange(ChangeFlag changeFlag) {
  //       alignmentEffect_->setCurrentSelectedAlignment(selectedAlignmentIndex_);
  //   }
 
-	//if(changeFlag & ChangeFlag::PointCloud && pointCloud && pointCloud->size() > 0) {
-	//	pointCloudEffect_->setPointCloud(pointCloud, offset);
-	//	activeEffects_.push_back(pointCloudEffect_);
-	//	activeEffects_.push_back(sectionsBoundingBoxEffect_);
-	//}
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+	if(changeFlag & ChangeFlag::PointCloud && pointCloud && pointCloud->size() > 0) {
+		pointCloudEffect_->setPointCloud(pointCloud, offset);
+		activeEffects_.push_back(pointCloudEffect_);
+		activeEffects_.push_back(sectionsBoundingBoxEffect_);
+	}
+#endif
 
 	//if (/*changeFlag & ChangeFlag::ProxyModel && */proxyModel && proxyModel->getAccidentReportCount()) {
 	//	billboardEffect_->setProxyModel(proxyModel, offset);
@@ -876,8 +898,12 @@ void Viewport::reloadShader() {
     gradientClearEffect_->loadShader();
     uiElements_->loadShader();
     boundingBoxEffect_->loadShader();
-	/*pointCloudEffect_->loadShader();
-	billboardEffect_->loadShader();*/
+	
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+	pointCloudEffect_->loadShader();
+#endif
+
+	/*billboardEffect_->loadShader();*/
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END

@@ -249,7 +249,7 @@ namespace OpenInfraPlatform
 										// create new shape input data for product
 										std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
 										productShape->ifc_product = product;
-										IfcImporterUtil::convertIfcProduct<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, unitConverter, repConverter);
+										IfcImporterUtil::convertIfcProduct<IfcEntityTypesT>(product, productShape, unitConverter, repConverter);
 										shapeInputData.insert(std::pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>(pair.first, productShape));
 									}
 								}

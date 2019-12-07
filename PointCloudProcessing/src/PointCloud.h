@@ -40,9 +40,10 @@ namespace OpenInfraPlatform {
 
 		class BLUEINFRASTRUCTURE_API PointCloud : public ccPointCloud {
 		public:
+			static const QStringList GetSupportedExtensions();
 
 			// Dont use, prototype implementation.
-			static buw::ReferenceCounted<PointCloud> FromFile(const char* filename);
+			static buw::ReferenceCounted<PointCloud> FromFile(const char* filename, bool init = false);
 
 			PointCloud() : ccPointCloud(), octree_(std::make_shared<Octree>(this)) { }
 
@@ -179,8 +180,6 @@ namespace OpenInfraPlatform {
 			const std::tuple<ScalarType, ScalarType> getScalarFieldMinAndMax(int idx) const;
 
 			const std::tuple<size_t, size_t> getScalarFieldMinAndMaxIndex(int idx);
-
-
 		public:
 
 		private:
@@ -192,6 +191,7 @@ namespace OpenInfraPlatform {
 			bool bHasPairs_ = false, bHasCenterline_ = false;
 
 			buw::CenterlineComputationDescription centerlineDescription_;
+			static bool areFiltersInitialized_;
 		};
 	}
 }

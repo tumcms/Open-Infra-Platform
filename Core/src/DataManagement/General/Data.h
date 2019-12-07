@@ -218,6 +218,12 @@ namespace OpenInfraPlatform
 				double m_OrthogonalHeight = 0.0;
 				QString m_Name = "EPSG:31467";
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+
+				buw::ReferenceCounted<buw::PointCloud> pointCloud_ = nullptr;
+
+#endif
+
 			}; // end class Data
 		} // end namespace DataManagement
 	} // end namespace Core

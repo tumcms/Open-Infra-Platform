@@ -103,6 +103,8 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	
 	updateRecentFileActions();
 	
+
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	connect(&pcdUniformColorDialog_, &QColorDialog::currentColorChanged, view_->getViewport(), &Viewport::updatePointCloudUniformColor);
 	connect(&pcdUniformColorDialog_, &QColorDialog::colorSelected, view_->getViewport(), &Viewport::updatePointCloudUniformColor);
 
@@ -156,6 +158,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	// Restore original situation.
 	ui_->radioButtonOriginal->setChecked(true);
 	ui_->radioButtonRender3D->setChecked(true);
+#endif
 
 	// Create the callback for the progress bar and connect the signals.
 	callback_ = buw::makeReferenceCounted<OpenInfraPlatform::Core::DataManagement::ProgressCallback>();
@@ -164,7 +167,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	
 	ui_->progressBarPointCloudProcessing->setVisible(false);
 
-
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	// Make railways tab scrollable
 	QScrollArea* scrollArea = new QScrollArea(this);
 	QWidget* page = new QWidget(this);
@@ -178,6 +181,10 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	ui_->tabPointCloudProcessing->addTab(scrollArea, tr("Railways"));
 
 	//ui_->tabWidgetView->tabBar()->setContentsMargins(QMargins(0, 0, 100, 0));
+
+	ui_->tabPointCloudProcessing->hide();
+#else
+#endif
 
 #ifdef _DEBUG
 	// Show debug menu only in debug mode

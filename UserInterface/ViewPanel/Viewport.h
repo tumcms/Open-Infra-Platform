@@ -108,6 +108,7 @@ namespace OpenInfraPlatform {
 			void enableIsoLines(const bool checked);
 			void enableTerrainGradientRamp(const bool checked);
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 			/*Settings for rendering point clouds*/
 			void setUseUniformPointColor(const bool useUniformColor);
 			void setUseUniformPointSize(const bool useUniformSize);
@@ -119,6 +120,7 @@ namespace OpenInfraPlatform {
 			void setOctreeLevel(int value);
 
 			void setPointCloudIndices(std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint32_t>> indices);
+#endif
 
 			void saveAsScreenshot(const std::string& filename);
 			void storeGBuffer();
@@ -134,6 +136,7 @@ namespace OpenInfraPlatform {
 			buw::ReferenceCounted<buw::ViewCube> getViewCube();
 			buw::ReferenceCounted<AlignmentEffect> getAlignmentEffect();
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 		public Q_SLOTS:
 			void updatePointCloudUniformColor(const QColor& color);
 			void updatePointCloudFilteredPointsColor(const QColor& color);
@@ -143,6 +146,7 @@ namespace OpenInfraPlatform {
 			void updatePointCloudRenderOriginalCloud(const bool checked);
 			void updatePointCloudShowSegmentedPoints(const bool checked);
 			void updatePointCloudShowFilteredPoints(const bool checked);
+#endif
 
 		private:
 			void updateWorldBuffer();
@@ -193,8 +197,12 @@ namespace OpenInfraPlatform {
 			buw::ReferenceCounted<UIElements> uiElements_;
 			buw::ReferenceCounted<BoundingBoxEffect> boundingBoxEffect_;
 			buw::ReferenceCounted<SkyboxEffect> skyboxEffect_;
-			buw::ReferenceCounted<PointCloudEffect> pointCloudEffect_;
+
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+			buw::ReferenceCounted<PointCloudEffect> pointCloudEffect_ = nullptr;
 			buw::ReferenceCounted<BoxEffect> sectionsBoundingBoxEffect_ = nullptr;
+#endif
+
 			buw::ReferenceCounted<BillboardEffect> billboardEffect_;
 			std::vector<buw::ReferenceCounted<buw::Effect>> activeEffects_;
 

@@ -19,22 +19,22 @@
 
 #include <BlueFramework/Application/DataManagement/Notification/NotifiyAfterEachActionOnlyOnce.h>
 
-#ifdef OIP_MODULE_EARLYBINDING_IFC2X3
-	#include "reader/IFC2X3Reader.h"
-	#include "EMTIFC2X3EntityTypes.h"
-	//#include "IFC2X3.h"
-#endif
+//#ifdef OIP_MODULE_EARLYBINDING_IFC2X3
+//	#include "reader/IFC2X3Reader.h"
+//	#include "EMTIFC2X3EntityTypes.h"
+//	//#include "IFC2X3.h"
+//#endif
 
-#ifdef OIP_MODULE_EARLYBINDING_IFC4
-	#include "reader/IFC4Reader.h"
-	#include "EMTIFC4EntityTypes.h"
-	//#include "IFC4.h"
-#endif
+//#ifdef OIP_MODULE_EARLYBINDING_IFC4
+//	#include "reader/IFC4Reader.h"
+//	#include "EMTIFC4EntityTypes.h"
+//	//#include "IFC4.h"
+//#endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
 	#include "reader/IFC4X1Reader.h"
 	#include "EMTIFC4X1EntityTypes.h"
-	//#include "IFC4X1.h"
+	#include "IFC4X1.h"
 #endif
 
 #include "IfcGeometryConverter\IfcImporter.h"
@@ -180,6 +180,18 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 			}
 		}		
 	}	
+
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
+	if (buw::PointCloud::GetSupportedExtensions().contains(extension)) {
+		pointCloud_ = buw::PointCloud::FromFile(filename.data(), true);
+		return;
+	}
+	else {
+		BLUE_LOG(info) << "Supported PCD extensions: " << buw::PointCloud::GetSupportedExtensions().join(", ").toStdString() << ".";
+	}
+#endif
+
 }
 
 
@@ -218,6 +230,12 @@ void OpenInfraPlatform::Core::DataManagement::Data::jobFinished(int jobID, bool 
 
 		tempIfcGeometryModel_ = nullptr;
 	}
+
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+	if (pointCloud_) {
+		flag = flag | ChangeFlag::PointCloud;
+	}
+#endif
 	pushChange(flag);
 }
 
@@ -403,8 +421,7 @@ bool OpenInfraPlatform::Core::DataManagement::Data::showFrameTimes() const
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 
 std::shared_ptr<buw::PointCloud> OpenInfraPlatform::Core::DataManagement::Data::getPointCloud() {
-	//TODO
-	return std::shared_ptr<buw::PointCloud>();
+	return pointCloud_;
 }
 
 void OpenInfraPlatform::Core::DataManagement::Data::exportPointCloud(const std::string& filename) const {
