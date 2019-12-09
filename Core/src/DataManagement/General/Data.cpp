@@ -50,6 +50,15 @@
 
 #include "AsyncJob.h"
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+#ifdef _DEBUG
+	#define OIP_PCD_LIB "OpenInfraPlatform.PointCloudProcessingd.lib"
+#else
+	#define OIP_PCD_LIB "OpenInfraPlatform.PointCloudProcessing.lib"
+#endif
+	#pragma comment( lib, OIP_PCD_LIB)
+#endif
+
 std::mutex OpenInfraPlatform::Core::IfcGeometryConverter::ConverterBuwUtil::s_geometryMutex;
 
 OpenInfraPlatform::Core::DataManagement::Data::Data() : 

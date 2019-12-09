@@ -227,7 +227,7 @@ Viewport::~Viewport() {
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	pointCloudEffect_ = nullptr;
-	sectionsBoundingBoxEffect_ = nullptr
+	sectionsBoundingBoxEffect_ = nullptr;
 #endif
 
     skyboxEffect_ = nullptr;

@@ -401,6 +401,7 @@ link_directories(
 	${Boost_LIBRARY_DIRS}
 	${OKLABI_ROOT_DIR}
 	${FFTW3_LIBRARY_DIRS}
+	${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
 )
 
 #------------------------------------------------------------------------------

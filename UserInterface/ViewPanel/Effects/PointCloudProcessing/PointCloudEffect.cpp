@@ -16,7 +16,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "PointCloudEffect.h"
-#include "BoxEffect.h"
 
 #include "PointCloud.h"
 #include "PointCloudSection.h"
