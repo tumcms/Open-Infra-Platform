@@ -181,9 +181,10 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	ui_->tabPointCloudProcessing->addTab(scrollArea, tr("Railways"));
 
 	//ui_->tabWidgetView->tabBar()->setContentsMargins(QMargins(0, 0, 100, 0));
-
-	ui_->tabPointCloudProcessing->hide();
 #else
+	ui_->tabLaserScan->hide();
+	int idx_pcd = ui_->tabWidgetView->indexOf(ui_->tabLaserScan);
+	ui_->tabWidgetView->removeTab(idx_pcd);
 #endif
 
 #ifdef _DEBUG

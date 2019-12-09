@@ -458,7 +458,15 @@ file(GLOB OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source 	UserInterfac
 file(GLOB OpenInfraPlatform_UserInterface_Shader_Source 			UserInterface/Shader/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Shader_D3D_Source 		UserInterface/Shader/D3D/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			UserInterface/ViewPanel/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source 	UserInterface/ViewPanel/Effects/*.*)
+file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source 	UserInterface/ViewPanel/Effects/*.h UserInterface/ViewPanel/Effects/*.cpp)
+
+if(MODULES_POINT_CLOUD_PROCESSING)
+	file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_PointCloudProcessing_Source 	UserInterface/ViewPanel/Effects/PointCloudProcessing/*.*)
+	source_group(UserInterface\\ViewPanel\\Effects\\PointCloudProcessing	FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_PointCloudProcessing_Source})
+	list(APPEND OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_PointCloudProcessing_Source})
+endif()
+
+
 file(GLOB OpenInfraPlatform_UserInterface_QCustomPlot_Source 		external/qcustomplot/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Resources/*.*)
 
