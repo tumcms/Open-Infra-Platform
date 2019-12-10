@@ -300,27 +300,17 @@ find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
 message("Doxygen found.")
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-add_custom_target(doc ALL
-${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-COMMENT "Generating API documentation with Doxygen" VERBATIM
+set(DOXYGEN_GENERATE_HTML YES)
+set(DOXYGEN_GENERATE_LATEX NO)
+set(DOXYGEN_PROJECT_NAME PROJECT_NAME)
+doxygen_add_docs(Doxymentation
+${CMAKE_CURRENT_SOURCE_DIR}	# Source files that are used as input to generate the documentation OR PROJECT_SOURCE_DIR?
+[ALL]
+COMMENT "Generate doxymentation for TUM Open Infra Platform."
 )
 else()
 message("Doxygen not found. Please install doxygen to be able to generate documentation for the project.")
 endif(DOXYGEN_FOUND)
-
-#doxygen_add_docs(oipDoc
-#${PROJECT_SOURCE_DIR}
-#COMMENT "Generate Open Infra Platform doxygen documentation."
-#)
-
-# Later:
-# doxygen_add_docs(coreDoc
-# ...)
-
-#set(DOXYGEN_GENERATE_HTML YES)
-
 
 #------------------------------------------------------------------------------
 # Set required Qt plugins variables and find and add the corresponding dlls for deployment and copying.
