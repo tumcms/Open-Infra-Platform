@@ -20,8 +20,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef OpenInfraPlatform_UserInterface_PointCloudEffect_C9932E98_6B4E_4E36_8B8D_5AA32D41AC0F_h
 #define OpenInfraPlatform_UserInterface_PointCloudEffect_C9932E98_6B4E_4E36_8B8D_5AA32D41AC0F_h
 
-#include "OpenInfraPlatform/namespace.h"
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
+#include "namespace.h"
+#include "PointCloud.h"
 
 #include "BoxEffect.h"
 
@@ -91,11 +91,11 @@ public:
 
 
 	/*Set the point cloud to be rendered*/
-	void setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset);
+	void setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::PointCloudProcessing::PointCloud> pointCloud, buw::Vector3d offset);
 	
-	void setOctree(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::Octree> octree, buw::Vector3d offset);
+	void setOctree(buw::ReferenceCounted<OpenInfraPlatform::PointCloudProcessing::Octree> octree, buw::Vector3d offset);
 
-	void setSections(std::vector<buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloudSection>> sections, buw::Vector3d offset);
+	void setSections(std::vector<buw::ReferenceCounted<OpenInfraPlatform::PointCloudProcessing::PointCloudSection>> sections, buw::Vector3d offset);
 
 	buw::ReferenceCounted<BoxEffect> sectionsBoundingBoxEffect_ = nullptr;
 

@@ -29,6 +29,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "GeometrySettings.h"
 #include "PlacementConverter.h"
 
+#include "BlueFramework/Core/Diagnostics/log.h"
+
+
 /**********************************************************************************************/
 
 namespace OpenInfraPlatform {

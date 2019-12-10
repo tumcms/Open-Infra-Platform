@@ -30,6 +30,9 @@
 #include "GeometrySettings.h"
 #include "SplineConverter.h"
 
+#include "BlueFramework/Core/Diagnostics/log.h"
+
+
 namespace OpenInfraPlatform {
 	namespace Core {
 		namespace IfcGeometryConverter {

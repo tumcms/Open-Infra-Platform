@@ -234,7 +234,9 @@ std::vector<std::pair<size_t, size_t>> OpenInfraPlatform::PointCloudProcessing::
 					cloud3D->addPoint(*(associatedCloud->getPoint(pair.second)));
 				}
 
-				int error = CCLib::GeometricalAnalysisTools::computeLocalDensity(cloud3D.get(), CCLib::GeometricalAnalysisTools::Density::DENSITY_KNN, desc.localDensityKernelRadius, nullptr, nullptr);
+				// Method to compute local density changed some time in CloudCompare.
+				//int error = CCLib::GeometricalAnalysisTools::computeLocalDensity(cloud3D.get(), CCLib::GeometricalAnalysisTools::Density::DENSITY_KNN, desc.localDensityKernelRadius, nullptr, nullptr);
+				int error = CCLib::GeometricalAnalysisTools::ComputeCharactersitic(CCLib::GeometricalAnalysisTools::GeomCharacteristic::LocalDensity, CCLib::GeometricalAnalysisTools::Density::DENSITY_KNN, cloud3D.get(), desc.localDensityKernelRadius);
 
 				if(error == 0) {
 					ScalarType mean;

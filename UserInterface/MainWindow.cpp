@@ -47,6 +47,10 @@
 #include <shlobj.h>
 #include <stdlib.h>
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+#include <PointCloudProcessing.h>
+#include <PointCloud.h>
+#endif
 using convert_type = std::codecvt_utf8<wchar_t>;
 
 OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nullptr*/)
@@ -99,6 +103,8 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	
 	updateRecentFileActions();
 	
+
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	connect(&pcdUniformColorDialog_, &QColorDialog::currentColorChanged, view_->getViewport(), &Viewport::updatePointCloudUniformColor);
 	connect(&pcdUniformColorDialog_, &QColorDialog::colorSelected, view_->getViewport(), &Viewport::updatePointCloudUniformColor);
 
@@ -152,6 +158,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	// Restore original situation.
 	ui_->radioButtonOriginal->setChecked(true);
 	ui_->radioButtonRender3D->setChecked(true);
+#endif
 
 	// Create the callback for the progress bar and connect the signals.
 	callback_ = buw::makeReferenceCounted<OpenInfraPlatform::Core::DataManagement::ProgressCallback>();
@@ -160,7 +167,7 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	
 	ui_->progressBarPointCloudProcessing->setVisible(false);
 
-
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	// Make railways tab scrollable
 	QScrollArea* scrollArea = new QScrollArea(this);
 	QWidget* page = new QWidget(this);
@@ -174,6 +181,10 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	ui_->tabPointCloudProcessing->addTab(scrollArea, tr("Railways"));
 
 	//ui_->tabWidgetView->tabBar()->setContentsMargins(QMargins(0, 0, 100, 0));
+
+	ui_->tabPointCloudProcessing->hide();
+#else
+#endif
 
 #ifdef _DEBUG
 	// Show debug menu only in debug mode
@@ -712,7 +723,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionMerge_LAS_File_trigg
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open Document"), QDir::currentPath(), tr("LAS cloud (*.las)"));
 
 	if (!filename.isNull()) {
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().importLAS(filename.toStdString());
+		//TODO
+		//OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().importLAS(filename.toStdString());
 	}
 }
 
@@ -756,8 +768,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDuplicateFi
 		// Initialize the filter parameters.
 		buw::DuplicateFilterDescription desc;
 		desc.dim = ui_->radioButtonRender3D->isChecked() ?
-			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Volume3D :
-			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Sections2D;
+			OpenInfraPlatform::PointCloudProcessing::Enums::ePointCloudFilterDimension::Volume3D :
+			OpenInfraPlatform::PointCloudProcessing::Enums::ePointCloudFilterDimension::Sections2D;
 		desc.minDistance = ui_->doubleSpinBoxRemoveDuplicatesThreshold->value() / 1000.0;
 
 		// Apply the filter and pass the callback for updating the UI, then update the indices for rendering.
@@ -783,8 +795,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonApplyDensityFilt
 		// Initialize the filter parameters
 		buw::LocalDensityFilterDescription desc;
 		desc.dim = ui_->radioButtonRender3D->isChecked() ?
-			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Volume3D :
-			OpenInfraPlatform::Infrastructure::Enums::ePointCloudFilterDimension::Sections2D;
+			OpenInfraPlatform::PointCloudProcessing::Enums::ePointCloudFilterDimension::Volume3D :
+			OpenInfraPlatform::PointCloudProcessing::Enums::ePointCloudFilterDimension::Sections2D;
 		desc.kernelRadius = (float)(ui_->doubleSpinBoxFilterDensityKernelRadius->value()) / 100.0f;
 		desc.minThreshold = ui_->doubleSpinBoxFilterDensityThreshold->value();
 		desc.density = CCLib::GeometricalAnalysisTools::Density(ui_->comboBoxFilterDensityMetric->currentData().toInt());
@@ -1001,9 +1013,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputeChainage_
 	auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
 	if (pointCloud) {
 		buw::ChainageComputationDescription desc;
-		desc.base = (Infrastructure::Enums::eChainageComputationBase) ui_->comboBoxInterpolationBase->currentData().toInt();
+		desc.base = (PointCloudProcessing::Enums::eChainageComputationBase) ui_->comboBoxInterpolationBase->currentData().toInt();
 		desc.bUseInterpolation = ui_->checkBoxInterpolation->isChecked();
-		desc.interpolation = (Infrastructure::Enums::eChainageComputationInterpolationMethod) ui_->comboBoxInterpolationMethod->currentData().toInt();
+		desc.interpolation = (PointCloudProcessing::Enums::eChainageComputationInterpolationMethod) ui_->comboBoxInterpolationMethod->currentData().toInt();
 		desc.bUseSmoothing = ui_->checkBoxSmoothing->isChecked();
 		desc.sigma = ui_->doubleSpinBoxSmoothingSigma->value();
 		desc.sigmaSF = ui_->doubleSpinBoxSmoothingSigmaSF->value();
@@ -1255,7 +1267,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 		}
 
 		bool plotFourierTransform = false;
-
+#ifdef OIP_WITH_FFTW
 		if (plotFourierTransform) {
 			int numReal = bearings.size();
 			int numComplex = (std::floor((numReal / 2)) + 1);
@@ -1317,6 +1329,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonPlotAlignment_cl
 			customPlotFFT->show();
 			plots_.push_back(customPlotFFT);
 		}
+#endif
 
 		// Create plot for bearing.
 		QCustomPlot* customPlotBearing = new QCustomPlot(nullptr);
@@ -1461,6 +1474,11 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_horizontalSliderSectionSiz
 void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonSelectSegmentedPointsColor_clicked()
 {
 	pcdSegmentedPointsColorDialog_.show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_comboBoxAlignment_currentIndexChanged(int index)
+{
+	//TODO
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_doubleSpinBoxPointSize_valueChanged(double value) {

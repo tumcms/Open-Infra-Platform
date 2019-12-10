@@ -39,6 +39,9 @@
 #include "ProfileConverter.h"
 #include "SolidModelConverter.h"
 
+#include "BlueFramework/Core/Diagnostics/log.h"
+
+
 /**********************************************************************************************/
 
 namespace OpenInfraPlatform {

@@ -26,6 +26,9 @@
 #include <memory>
 #include "CarveHeaders.h"
 
+#include "BlueFramework/Core/Diagnostics/log.h"
+
+
 
 /**********************************************************************************************/
 

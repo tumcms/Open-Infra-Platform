@@ -28,6 +28,11 @@
 #include <boost/signals2.hpp>
 #include <map>
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+#include <PointCloudProcessing.h>
+#include <PointCloud.h>
+#endif
+
 namespace OpenInfraPlatform
 {
 	namespace Core 
@@ -128,6 +133,12 @@ namespace OpenInfraPlatform
 				// Point Cloud
 				//---------------------------------------------------------------------------//
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+				std::shared_ptr<buw::PointCloud> getPointCloud();
+
+				void exportPointCloud(const std::string& filename) const;
+#endif
+
 				//---------------------------------------------------------------------------//
 				// Preferences
 				//---------------------------------------------------------------------------//
@@ -206,6 +217,12 @@ namespace OpenInfraPlatform
 				double m_Northings = 0.0;
 				double m_OrthogonalHeight = 0.0;
 				QString m_Name = "EPSG:31467";
+
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+
+				buw::ReferenceCounted<buw::PointCloud> pointCloud_ = nullptr;
+
+#endif
 
 			}; // end class Data
 		} // end namespace DataManagement

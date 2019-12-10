@@ -67,8 +67,8 @@ target_link_libraries(OpenInfraPlatform.Core PRIVATE
 
 if(MODULES_POINT_CLOUD_PROCESSING)
 	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
-	include_directories(${CC_INCLUDE_DIRS})
-	target_link_libraries(OpenInfraPlatform.Core PUBLIC ${CC_LIBRARIES})
+	target_link_libraries(OpenInfraPlatform.Core PUBLIC OpenInfraPlatform.PointCloudProcessing)
+	message(STATUS "Linking OpenInfraPlatform.Core against OpenInfraPlatform.PointCloudProcessing")
 endif()
 
 foreach(format ${IFC_FORMATS})

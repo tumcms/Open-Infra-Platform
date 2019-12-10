@@ -35,7 +35,23 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <QDateTime>
 #include <QDir>
 
-buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::PointCloud::FromFile(const char *filename) {
+bool OpenInfraPlatform::PointCloudProcessing::PointCloud::areFiltersInitialized_ = false;
+
+const QStringList OpenInfraPlatform::PointCloudProcessing::PointCloud::GetSupportedExtensions()
+{
+	QStringList supported_extensions;
+	if (!areFiltersInitialized_) {
+		FileIOFilter::InitInternalFilters();
+	}
+
+	for (auto filter : FileIOFilter::GetFilters()) {
+		supported_extensions.push_back(filter->getDefaultExtension());
+	}
+
+	return supported_extensions;
+}
+
+buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::PointCloud::FromFile(const char *filename, bool init) {
 	buw::ReferenceCounted<buw::PointCloud> pointCloud = buw::makeReferenceCounted<buw::PointCloud>(QString(filename));
 
 	// Initialize the filters for file IO.
@@ -126,14 +142,20 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::
 				}
 			}
 		} else {
-			// TODO
+			BLUE_LOG(warning) << "PCD format \"." << extension.toStdString() << "\" not supported.";
+			
+			BLUE_LOG(info) << "Supported extensions: " << GetSupportedExtensions().join(", ").toStdString() << ".";
+			return pointCloud;
 		}
 	}
 
 	BLUE_LOG(trace) << "Finished importing " << filename << ".";
 
 	pointCloud->setName(filename);
-	pointCloud->init();
+
+	if (init) {
+		pointCloud->init();
+	}
 
 	return pointCloud;
 }
@@ -1232,7 +1254,9 @@ int OpenInfraPlatform::PointCloudProcessing::PointCloud::computeLocalDensity(CCL
 	// setCurrentOutScalarField(idx);
 
 	// Compute the local density and retirn the error code.
-	return CCLib::GeometricalAnalysisTools::computeLocalDensity(this, metric, kernelRadius, callback ? callback.get() : nullptr, octree_ ? octree_.get() : nullptr);
+	//return CCLib::GeometricalAnalysisTools::computeLocalDensity(this, metric, kernelRadius, callback ? callback.get() : nullptr, octree_ ? octree_.get() : nullptr);
+	return CCLib::GeometricalAnalysisTools::ComputeCharactersitic(CCLib::GeometricalAnalysisTools::GeomCharacteristic::LocalDensity, metric, this, kernelRadius, callback ? callback.get() : nullptr, octree_ ? octree_.get() : nullptr);
+
 }
 
 void OpenInfraPlatform::PointCloudProcessing::PointCloud::init() {
@@ -3295,8 +3319,10 @@ const std::tuple<std::vector<uint32_t>, std::vector<uint32_t>, std::vector<uint3
 }
 
 buw::ReferenceCounted<buw::Octree> OpenInfraPlatform::PointCloudProcessing::PointCloud::getDGMOctree() {
-	if (!octree_)
-		octree_ = std::make_shared<buw::Octree>(this);
+	if (!octree_) {
+		BLUE_LOG(warning) << "Octree not built yet. Returning nullptr.";
+		return nullptr;
+	}
 	return octree_;
 }
 

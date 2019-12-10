@@ -18,10 +18,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "PointCloudEffect.h"
 #include "BoxEffect.h"
 
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloud.h"
-#include "OpenInfraPlatform/Infrastructure/PointCloudProcessing/PointCloudSection.h"
+#include "PointCloud.h"
+#include "PointCloudSection.h"
 
-#include "OpenInfraPlatform/UserInterface/ViewPanel/RenderResources.h"
+#include "ViewPanel/RenderResources.h"
 #include <BlueFramework/Rasterizer/vertex.h>
 #include <BlueFramework/Engine/Mesh/geometryGeneration.h>
 #include <ccColorTypes.h>
@@ -223,7 +223,7 @@ void PointCloudEffect::updateIndexBuffers(const std::tuple<std::vector<uint32_t>
 		indexBufferSegmented_ = nullptr;
 }
 
-void PointCloudEffect::setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::Infrastructure::PointCloud> pointCloud, buw::Vector3d offset)
+void PointCloudEffect::setPointCloud(buw::ReferenceCounted<buw::PointCloud> pointCloud, buw::Vector3d offset)
 {
 	pointCloud_ = pointCloud;
 	offset_ = offset;
