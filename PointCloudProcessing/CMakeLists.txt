@@ -64,8 +64,9 @@ if(OPTION_USE_LIBE57FORMAT)
 		execute_process(COMMAND ${CMAKE_SOURCE_DIR}/external/7za.exe x ${CMAKE_CURRENT_BINARY_DIR}/libe57.zip -o${CMAKE_CURRENT_BINARY_DIR})
 	endif()
 
+	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_BINARY_DIR}/E57RefImpl_src-1.1.312/cmake ${CMAKE_CURRENT_BINARY_DIR}/E57RefImpl_src-1.1.312/cmake/Modules)
 	add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/E57RefImpl_src-1.1.312 ${CMAKE_CURRENT_BINARY_DIR}/E57RefImpl_src-1.1.312 EXCLUDE_FROM_ALL)
-	execute_process(COMMAND cmake --build ${CMAKE_CURRENT_BINARY_DIR}/E57RefImpl_src-1.1.312 --target E57RefImpl --config $<CONFIG>)
+	
 	set(LIBE57FORMAT_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/E57RefImpl_src-1.1.312)
 endif()
 
