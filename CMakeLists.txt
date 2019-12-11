@@ -300,12 +300,14 @@ find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
 message("Doxygen found.")
+
 set(DOXYGEN_GENERATE_HTML YES)
 set(DOXYGEN_GENERATE_LATEX NO)
 set(DOXYGEN_PROJECT_NAME PROJECT_NAME)
+
 doxygen_add_docs(Doxymentation
 ${CMAKE_CURRENT_SOURCE_DIR}	# Source files that are used as input to generate the documentation OR PROJECT_SOURCE_DIR?
-[ALL]
+$(CMAKE_CURRENT_BINARY_DIR) # Folder in build directory with html build. 
 COMMENT "Generate doxymentation for TUM Open Infra Platform."
 )
 else()
