@@ -109,6 +109,10 @@ namespace OpenInfraPlatform {
 			void enableTerrainGradientRamp(const bool checked);
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+			//---------------------------------------------------------------------------//
+			// Point Cloud
+			//---------------------------------------------------------------------------//
+
 			/*Settings for rendering point clouds*/
 			void setUseUniformPointColor(const bool useUniformColor);
 			void setUseUniformPointSize(const bool useUniformSize);

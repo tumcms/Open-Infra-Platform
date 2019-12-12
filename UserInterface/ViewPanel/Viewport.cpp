@@ -32,7 +32,7 @@
 //#include "../UserInterface/ViewPanel/Effects/BillboardEffect.h"
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-#include "ViewPanel/Effects/PointCloudEffect.h"
+#include "ViewPanel/Effects/PointCloudProcessing/PointCloudEffect.h"
 #endif
 
 //Effects
@@ -227,6 +227,7 @@ Viewport::~Viewport() {
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	pointCloudEffect_ = nullptr;
+	sectionsBoundingBoxEffect_ = nullptr;
 #endif
 
     skyboxEffect_ = nullptr;

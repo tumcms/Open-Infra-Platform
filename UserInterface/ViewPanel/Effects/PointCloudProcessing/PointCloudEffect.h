@@ -23,7 +23,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "namespace.h"
 #include "PointCloud.h"
 
-#include "BoxEffect.h"
+#include "ViewPanel/Effects/BoxEffect.h"
 
 #include <buw.Rasterizer.h>
 #include <buw.Engine.h>

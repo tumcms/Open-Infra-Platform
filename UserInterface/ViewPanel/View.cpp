@@ -291,6 +291,8 @@ void OpenInfraPlatform::UserInterface::View::setHighlightSelectedAlignmentSegmen
 	viewport_->setHighlightSelectedAlignmentSegment(enable);
 }
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+
 void OpenInfraPlatform::UserInterface::View::setUseUniformPointColor(const bool useUniformColor)
 {
 	viewport_->setUseUniformPointColor(useUniformColor);
@@ -310,7 +312,7 @@ void OpenInfraPlatform::UserInterface::View::setShowPointCloud(const bool checke
 {
 	viewport_->setShowPointCloud(checked);
 }
-
+#endif
 
 std::vector<buw::Vector3d> OpenInfraPlatform::UserInterface::View::getAlignmentPoints()
 {

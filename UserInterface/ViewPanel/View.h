@@ -70,10 +70,17 @@ namespace OpenInfraPlatform
 			void setDifferentColorsForAlignmentElements( const bool checked );
 			void setHighlightSelectedAlignmentSegment( const bool enable );
 
+			
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+			//---------------------------------------------------------------------------//
+			// Point Cloud
+			//---------------------------------------------------------------------------//
+
 			void setUseUniformPointColor(const bool useUniformColor);
 			void setUseUniformPointSize(const bool useUniformSize);
 			void setPointSize(const float size);
 			void setShowPointCloud(const bool checked);
+#endif
 
 			buw::Vector3d getOffset() const;
 
