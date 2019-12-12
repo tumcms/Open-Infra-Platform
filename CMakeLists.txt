@@ -301,15 +301,29 @@ find_package(Doxygen)
 if(DOXYGEN_FOUND)
 message("Doxygen found.")
 
+set(html_loc ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html)
 set(DOXYGEN_GENERATE_HTML YES)
-set(DOXYGEN_GENERATE_LATEX NO)
+set(HTML_OUTPUT html_loc)
+set(DOXYGEN_GENERATE_LATEX YES)
 set(DOXYGEN_PROJECT_NAME PROJECT_NAME)
+set(EXTRACT_ALL YES) # Set to yes if you want to extract all existing documentation  from project. 
+set(INTERNAL_DOCS NO) # Comments intended for developers and not for users (*! \internal *)
+set(doxyfile_input ${CMAKE_CURRENT_BINARY_DIR}/CmakeDoxyfile.in)
+set(doxyfile_output ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
-doxygen_add_docs(Doxymentation
-${CMAKE_CURRENT_SOURCE_DIR}	# Source files that are used as input to generate the documentation OR PROJECT_SOURCE_DIR?
-$(CMAKE_CURRENT_BINARY_DIR) # Folder in build directory with html build. 
-COMMENT "Generate doxymentation for TUM Open Infra Platform."
+configure_file(${doxyfile_input} ${doxyfile_output} @ONLY)
+
+message("Doxygen build started.")
+
+add_custom_target(doxxy ALL
+COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile_input}
+WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+COMMENT "Generating API documentation with Doxygen" VERBATIM
 )
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html)
+message("Doxygen files installed.")
+
 else()
 message("Doxygen not found. Please install doxygen to be able to generate documentation for the project.")
 endif(DOXYGEN_FOUND)
