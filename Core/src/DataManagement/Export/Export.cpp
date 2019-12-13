@@ -15,6 +15,9 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*! Detailed doxygen description.
+*/
+
 #include "Export.h"
 
 OpenInfraPlatform::Core::DataManagement::Export::Export(buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> igm,

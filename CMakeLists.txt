@@ -299,30 +299,38 @@ find_path(Doxygen HINTS
 find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
-message("Doxygen found.")
+message("Doxygen found. For developers: Please use this project's doxygen documentation style specified in ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/OIPdoxystyle.")
 
-set(html_loc ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html)
+# CONFIGURATION. Check http://www.doxygen.nl/manual/config.html for all available options and their default values. 
+
+# Build related configuration options. 
+set(DOXYGEN_PROJECT_NAME OpenInfraPlatform)
+#set(logo 
+#set(DOXYGEN_PROJECT_LOGO 
+#set(PROJECT_BRIEF Copyright (c) 2018 Technical University of Munich, Chair of Computational Modeling and Simulation.)
+set(DOXYGEN_EXTRACT_ALL YES) # Set to yes if you want to extract all existing documentation  from project. 
+set(DOXYGEN_INTERNAL_DOCS NO) # Comments intended for developers and not for users (*! \internal *)
+set(DOXYFILE_CMAKE ${CMAKE_CURRENT_BINARY_DIR}/CMakeDoxyfile.in)
+set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+set(DOXYGEN_CPP_CLI_SUPPORT YES)
+
+# Input. Specify because complicated project and otherwise unübersichtlich. Try with core now, add other directories once documented etc. 
+set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Output (HTML/Latex/...) configuration options.
 set(DOXYGEN_GENERATE_HTML YES)
-set(HTML_OUTPUT html_loc)
-set(DOXYGEN_GENERATE_LATEX YES)
-set(DOXYGEN_PROJECT_NAME PROJECT_NAME)
-set(EXTRACT_ALL YES) # Set to yes if you want to extract all existing documentation  from project. 
-set(INTERNAL_DOCS NO) # Comments intended for developers and not for users (*! \internal *)
-set(doxyfile_input ${CMAKE_CURRENT_BINARY_DIR}/CmakeDoxyfile.in)
-set(doxyfile_output ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+set(DOXYGEN_GENERATE_LATEX NO)
+set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation)
+set(DOXYGEN_SEARCHENGINE YES)
+set(DOXYGEN_SOURCE_BROWSER NO)
 
-configure_file(${doxyfile_input} ${doxyfile_output} @ONLY)
+configure_file(${DOXYFILE_CMAKE} ${DOXYFILE} @ONLY)
 
-message("Doxygen build started.")
-
-add_custom_target(doxxy ALL
-COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile_input}
-WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-COMMENT "Generating API documentation with Doxygen" VERBATIM
+add_custom_target(GenerateDocumentation ALL
+COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE}
+WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+COMMENT "Generating doxygemation for TUM Open Infra Platform project." VERBATIM
 )
-
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html)
-message("Doxygen files installed.")
 
 else()
 message("Doxygen not found. Please install doxygen to be able to generate documentation for the project.")
