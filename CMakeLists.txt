@@ -308,10 +308,10 @@ message("Doxygen found. For developers: Please use this project's doxygen docume
 
 # Build related configuration options. 
 set(DOXYGEN_PROJECT_NAME OpenInfraPlatform)
-set(DOXYGEN_PROJECT_BRIEF "Open / source / software / for / viewing / and / converting / alignment / data.")
+set(DOXYGEN_PROJECT_BRIEF "Open source software for viewing and converting alignment data.")
 set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/interface.png)
-set(DOXYGEN_INTERNAL_DOCS NO) # Comments intended for developers and not for users (*! \internal *)
-set(DOXYGEN_CLASS_DIAGRAMS YES)
+#set(DOXYGEN_INTERNAL_DOCS NO) # Comments intended for developers and not for users (*! \internal *)
+#set(DOXYGEN_CLASS_DIAGRAMS YES)
 
 # Configuration file generation using CMake. 
 set(DOXYFILE_CMAKE ${CMAKE_CURRENT_BINARY_DIR}/CMakeDoxyfile.in)
@@ -321,7 +321,9 @@ set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 # Specify input. Specify because complicated project and otherwise unübersichtlich. If not specified, current directory is searched. 
 # Try with core now, add other directories once documented etc. Multiple entries possible (use FILE_PATTERNS and EXCLUDE for this later).
 set(DOXYGEN_EXTRACT_ALL YES) # Set to yes if you want to extract all existing documentation  from project. Do this for now, once starting proper documentation change to NO. 
-set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/IfcGeometryConverter/IfcImporter.cpp) 
+#set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/IfcGeometryConverter/IfcImporter.cpp) 
+set(DOXYGEN_RECURSIVE YES) #Search subdirectories for input files as well.
+set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR}/EarlyBinding/src/EXPRESS ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/IfcGeometryConverter) 
 
 # Output (HTML/Latex/...) configuration options.
 set(DOXYGEN_GENERATE_HTML YES)
@@ -340,7 +342,7 @@ COMMENT "Generating doxymentation for TUM Open Infra Platform project." VERBATIM
 )
 
 else()
-message("Doxygen not found. Please install doxygen to be able to generate documentation for the project.")
+message("Doxygen not found. Please install doxygen using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Doxygen.cmd to be able to generate documentation for the project.")
 endif(DOXYGEN_FOUND)
 
 #------------------------------------------------------------------------------
