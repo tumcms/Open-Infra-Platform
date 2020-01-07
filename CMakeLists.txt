@@ -290,8 +290,11 @@ if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
 endif()
 
 #------------------------------------------------------------------------------
-# DOXYGEN stuff. 
+# DOXYGEN. 
 #------------------------------------------------------------------------------
+
+#CONFIGURE_DOXYGEN_OIP()
+
 find_path(Doxygen HINTS
 ".../Tools/doxygen-master"
 )
@@ -305,31 +308,35 @@ message("Doxygen found. For developers: Please use this project's doxygen docume
 
 # Build related configuration options. 
 set(DOXYGEN_PROJECT_NAME OpenInfraPlatform)
-#set(logo 
-#set(DOXYGEN_PROJECT_LOGO 
-#set(PROJECT_BRIEF Copyright (c) 2018 Technical University of Munich, Chair of Computational Modeling and Simulation.)
-set(DOXYGEN_EXTRACT_ALL YES) # Set to yes if you want to extract all existing documentation  from project. 
+set(DOXYGEN_PROJECT_BRIEF "Open / source / software / for / viewing / and / converting / alignment / data.")
+set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/interface.png)
 set(DOXYGEN_INTERNAL_DOCS NO) # Comments intended for developers and not for users (*! \internal *)
+set(DOXYGEN_CLASS_DIAGRAMS YES)
+
+# Configuration file generation using CMake. 
 set(DOXYFILE_CMAKE ${CMAKE_CURRENT_BINARY_DIR}/CMakeDoxyfile.in)
 set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-set(DOXYGEN_CPP_CLI_SUPPORT YES)
+#set(DOXYGEN_CPP_CLI_SUPPORT YES)
 
-# Input. Specify because complicated project and otherwise unübersichtlich. Try with core now, add other directories once documented etc. 
-set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR})
+# Specify input. Specify because complicated project and otherwise unübersichtlich. If not specified, current directory is searched. 
+# Try with core now, add other directories once documented etc. Multiple entries possible (use FILE_PATTERNS and EXCLUDE for this later).
+set(DOXYGEN_EXTRACT_ALL YES) # Set to yes if you want to extract all existing documentation  from project. Do this for now, once starting proper documentation change to NO. 
+set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/IfcGeometryConverter/IfcImporter.cpp) 
 
 # Output (HTML/Latex/...) configuration options.
 set(DOXYGEN_GENERATE_HTML YES)
 set(DOXYGEN_GENERATE_LATEX NO)
 set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation)
 set(DOXYGEN_SEARCHENGINE YES)
-set(DOXYGEN_SOURCE_BROWSER NO)
+set(DOXYGEN_SOURCE_BROWSER YES)
+set(DOXYGEN_SUBGROUPING YES)
 
 configure_file(${DOXYFILE_CMAKE} ${DOXYFILE} @ONLY)
 
 add_custom_target(GenerateDocumentation ALL
 COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE}
-WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-COMMENT "Generating doxygemation for TUM Open Infra Platform project." VERBATIM
+WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} 
+COMMENT "Generating doxymentation for TUM Open Infra Platform project." VERBATIM
 )
 
 else()
