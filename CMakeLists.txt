@@ -310,6 +310,8 @@ message("Doxygen found. For developers: Please use this project's doxygen docume
 set(DOXYGEN_PROJECT_NAME OpenInfraPlatform)
 set(DOXYGEN_PROJECT_BRIEF "Open source software for viewing and converting alignment data.")
 set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/interface.png)
+set(DOXYGEN_CREATE_SUBDIRS YES)
+set(DOXYGEN_HAVE_DOT YES) # GraphViz Package for diagrams
 #set(DOXYGEN_INTERNAL_DOCS NO) # Comments intended for developers and not for users (*! \internal *)
 #set(DOXYGEN_CLASS_DIAGRAMS YES)
 
@@ -321,13 +323,11 @@ set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 # Specify input. Specify because complicated project and otherwise unübersichtlich. If not specified, current directory is searched. 
 # Try with core now, add other directories once documented etc. Multiple entries possible (use FILE_PATTERNS and EXCLUDE for this later).
 set(DOXYGEN_EXTRACT_ALL YES) # Set to yes if you want to extract all existing documentation  from project. Do this for now, once starting proper documentation change to NO. 
-#set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/IfcGeometryConverter/IfcImporter.cpp) 
 set(DOXYGEN_RECURSIVE YES) #Search subdirectories for input files as well.
-set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR}/EarlyBinding/src/EXPRESS ${CMAKE_CURRENT_SOURCE_DIR}/Core/src/IfcGeometryConverter) 
 
 # Output (HTML/Latex/...) configuration options.
 set(DOXYGEN_GENERATE_HTML YES)
-set(DOXYGEN_GENERATE_LATEX NO)
+set(DOXYGEN_GENERATE_LATEX YES)
 set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation)
 set(DOXYGEN_SEARCHENGINE YES)
 set(DOXYGEN_SOURCE_BROWSER YES)
@@ -335,14 +335,20 @@ set(DOXYGEN_SUBGROUPING YES)
 
 configure_file(${DOXYFILE_CMAKE} ${DOXYFILE} @ONLY)
 
-add_custom_target(GenerateDocumentation ALL
-COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE}
-WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} 
-COMMENT "Generating doxymentation for TUM Open Infra Platform project." VERBATIM
-)
+# Documentation for CORE only.
+doxygen_add_docs(GenerateDocumentation ALL
+${CMAKE_CURRENT_SOURCE_DIR}/Core/src/EXPRESS
+WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
+
+#add_custom_target(GenerateDocumentation ALL
+#COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE}
+#WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} 
+#COMMENT "Generating doxymentation for TUM Open Infra Platform project." VERBATIM
+#)
 
 else()
-message("Doxygen not found. Please install doxygen using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Doxygen.cmd to be able to generate documentation for the project.")
+message("Doxygen not found. Please install doxygen using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Doxygen.cmd to be able to generate documentation for the project. Please also install the GraphViz DOT package using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Dot.cmd for rendering diagrams.")
 endif(DOXYGEN_FOUND)
 
 #------------------------------------------------------------------------------
