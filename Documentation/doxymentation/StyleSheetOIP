@@ -1,0 +1,27 @@
+TUM OPEN INFRA PLATFORM Doxygen Style Sheet. 
+Refer to ConfigureDoxygen.cmake for configuration settings.
+
+
+### Comment blocks: ###
+
+- Detailed description:
+
+/*!
+* ... text
+*/
+
+- Brief description: 
+
+/*! \brief description as long as paragraph
+*
+* After skipping a line, detailed description starts.
+*/
+
+- In Body descriptions:
+
+int var /*< for detailed descriptions after member, only for members and parameters. Avoid structural comments, as they lead to duplication of information.*/
+
+- Internal comments:
+
+/*! \internal These comments can be included and excluded separately. Handy for developer-only comments.
+*/
