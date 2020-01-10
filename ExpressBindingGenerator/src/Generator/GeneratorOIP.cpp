@@ -314,8 +314,41 @@ void writeInclude(std::ostream &out, std::string filename, bool useAngleBrackets
 
 
 
+// Doxygen helper functions
+void writeDoxyCommentStart(std::ostream &out)
+{
+	out << "/*!" << std::endl;
+}
+void writeDoxyCommentEnd(std::ostream &out)
+{
+	out << "*/" << std::endl;
+}
+
+/*!
+* \brief Writes a line of comment.
+*
+* The function prepends str with " * " and outputs it to the out stream.
+* 
+* \note The function adds a new line at the end!
+*
+* \param out Output stream for the text.
+* \param str The string to be output.
+*/
+void writeDoxyLine(std::ostream &out, std::string &str)
+{
+	writeLine(out, std::string(" * ") + str);
+}
+
+
+
+
 void writeEntityDestructor(std::ostream &out, const OpenInfraPlatform::ExpressBindingGenerator::Entity &entity, std::string parameters = "", std::string implementation = "")
 {
+	writeDoxyCommentStart(out);
+	std::string comment = "Destructor for " + entity.getName();
+	writeDoxyLine(out, comment);
+	writeDoxyCommentEnd(out);
+
 	std::string signature = entity.getName() + "::~" + entity.getName() + "(" + parameters + ") {" + implementation + "}";
 	writeLine(out, signature);
 }

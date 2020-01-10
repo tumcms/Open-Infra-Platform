@@ -5,8 +5,6 @@
 #  	Changes to documentation settings should be made here. 
 #  
 
-#if(DOXYGEN_GENERATE_DOCUMENTATION)
-
 find_path(Doxygen HINTS
 ".../thirdparty/doxygen-master"
 )
@@ -53,12 +51,15 @@ ${CMAKE_CURRENT_SOURCE_DIR} 	# Actual documented code here
 WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root
 COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
 
-# Add index.html to GenerateDocumentation Visual Studio project to facilitate access.
-# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html/index.html) TODO
+# Add important links to GenerateDocumentation Visual Studio project to facilitate access.
+#set(OpenInfraPlatform_Documentation_ImportantLinks
+#${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html/index.html
+#${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html/classes.html
+#${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html/namespaces.html
+#)
 
 else()
 message("Doxygen not found. Please install doxygen using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Doxygen.cmd to be able to generate documentation for the project. Please also install the GraphViz DOT package using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Dot.cmd for rendering diagrams.")
 endif(DOXYGEN_FOUND)
 
-#endif(DOXYGEN_GENERATE_DOCUMENTATION)
 
