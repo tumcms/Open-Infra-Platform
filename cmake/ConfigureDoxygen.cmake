@@ -6,13 +6,13 @@
 #  
 
 find_path(Doxygen HINTS
-".../Tools/doxygen-master"
+".../thirdparty/doxygen-master"
 )
 
 find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
-message("Doxygen found. For developers: Please use this project's doxygen documentation style specified in ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/OIPdoxystyle.")
+message("Doxygen found. For developers: Please use this project's doxygen documentation style specified in ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/StyleSheetOIP.")
 
 # CONFIGURATION. Check http://www.doxygen.nl/manual/config.html for all available options and their default values. 
 
@@ -50,6 +50,11 @@ ${CMAKE_CURRENT_SOURCE_DIR} 	# Actual documented code here
 WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root
 COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
 
+# Add index.html to GenerateDocumentation Visual Studio project to facilitate access.
+# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html/index.html) TODO
+
 else()
 message("Doxygen not found. Please install doxygen using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Doxygen.cmd to be able to generate documentation for the project. Please also install the GraphViz DOT package using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Dot.cmd for rendering diagrams.")
 endif(DOXYGEN_FOUND)
+
+
