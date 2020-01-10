@@ -5,6 +5,8 @@
 #  	Changes to documentation settings should be made here. 
 #  
 
+#if(DOXYGEN_GENERATE_DOCUMENTATION)
+
 find_path(Doxygen HINTS
 ".../thirdparty/doxygen-master"
 )
@@ -13,6 +15,7 @@ find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
 message("Doxygen found. For developers: Please use this project's doxygen documentation style specified in ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/StyleSheetOIP.")
+
 
 # CONFIGURATION. Check http://www.doxygen.nl/manual/config.html for all available options and their default values. 
 
@@ -57,4 +60,5 @@ else()
 message("Doxygen not found. Please install doxygen using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Doxygen.cmd to be able to generate documentation for the project. Please also install the GraphViz DOT package using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Dot.cmd for rendering diagrams.")
 endif(DOXYGEN_FOUND)
 
+#endif(DOXYGEN_GENERATE_DOCUMENTATION)
 

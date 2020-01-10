@@ -292,8 +292,13 @@ endif()
 #------------------------------------------------------------------------------
 # DOXYGEN. 
 #------------------------------------------------------------------------------
+Option(DOXYGEN_GENERATE_DOCUMENTATION ON)
 
-include(ConfigureDoxygen)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
+if(DOXYGEN_GENERATE_DOCUMENTATION)
+include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
+else()
+message("DOXYGEN_GENERATE_DOCUMENTATION box not checked. Thus not generating doxygen documentation for TUM Open Infra Platform project. To generate doxygen documentation, check the box next to DOXYGEN_GENERATE_DOCUMENTATION.")
+endif(DOXYGEN_GENERATE_DOCUMENTATION)
 
 #------------------------------------------------------------------------------
 # Set required Qt plugins variables and find and add the corresponding dlls for deployment and copying.
