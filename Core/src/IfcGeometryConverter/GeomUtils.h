@@ -40,7 +40,7 @@
 #include "CarveHeaders.h"
 
 //#include <buw.BlueEngine.h>
-#include <BlueFramework/Core/Math/vector.h>
+#include <BlueFramework/Core/Math/Vector.h>
 
 namespace OpenInfraPlatform
 {
