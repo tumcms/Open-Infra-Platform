@@ -265,7 +265,7 @@ set(QT5_COMPONENTS
 # 		set(QT5_DLLS_DEBUG ${QT5_DLLS_DEBUG} ${Qt5${Component}_location})
 # 	endif()
 # endforeach()
-find_package( Qt5 5.10.0 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
+find_package( Qt5 5.12.1 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
 
 
 if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
