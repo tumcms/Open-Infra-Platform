@@ -84,7 +84,7 @@ add_custom_target(Commands.UpdateBoostMPL
 set_target_properties(Commands.UpdateBoostMPL PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
 
 # Create list of possible IFC formats
-#set(SUPPORTED_IFC_FORMATS IFC2X3 IFC4 IFC4X2_BIM4ROAD IFC4X1 IFC4X2_DRAFT_1 IFC4X2)
+#set(SUPPORTED_IFC_FORMATS IFC2X3 IFC4 IFC4X2_BIM4ROAD IFC4X1 IFC4X2_DRAFT_1 IFC4X2 IFC4X3_ALPHA)
 
 
 
@@ -118,6 +118,7 @@ add_format(IFC4X2_BIM4ROAD 	IFC4x2_BIM4ROAD	OFF)
 add_format(IFC4X1		 	IFC4x1_RC3		ON)
 add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)
 add_format(IFC4X2			IFC4x2			OFF)
+add_format(IFC4X3_ALPHA	 	IFC4X3_ALPHA	ON)
 
 # Add options to create early bindings for formats
 foreach(standard IN LISTS SUPPORTED_IFC_FORMATS)

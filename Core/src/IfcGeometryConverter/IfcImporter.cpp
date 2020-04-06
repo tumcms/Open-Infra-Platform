@@ -33,6 +33,11 @@
 #include "IFC4X1Entities.h"
 #endif
 
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_ALPHA
+#include "EMTIFC4X3_ALPHAEntityTypes.h"
+#include "IFC4X3_ALPHAEntities.h"
+#endif
+
 template <
 	class IfcEntityTypesT
 >
@@ -142,3 +147,10 @@ template void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::co
 //	const std::shared_ptr<UnitConverter<emt::IFC2X3EntityTypes>> unitConverter,
 //	const std::shared_ptr<RepresentationConverterT<emt::IFC2X3EntityTypes, UnitConverter<emt::IFC2X3EntityTypes>>> repConverter);
 //#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_ALPHA
+template void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct<emt::IFC4X3_ALPHAEntityTypes>(const std::shared_ptr<typename emt::IFC4X3_ALPHAEntityTypes::IfcProduct>& product,
+	std::shared_ptr<ShapeInputDataT<emt::IFC4X3_ALPHAEntityTypes>> productShape,
+	const std::shared_ptr<UnitConverter<emt::IFC4X3_ALPHAEntityTypes>> unitConverter,
+	const std::shared_ptr<RepresentationConverterT<emt::IFC4X3_ALPHAEntityTypes, UnitConverter<emt::IFC4X3_ALPHAEntityTypes>>> repConverter);
+#endif
