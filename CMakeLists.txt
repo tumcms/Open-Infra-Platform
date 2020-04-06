@@ -800,7 +800,7 @@ set_target_properties(BlueFrameworkCopyBinaries 					PROPERTIES FOLDER "Copy")
 #set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries					PROPERTIES FOLDER "Copy")
 set_target_properties(OpenInfraPlatform.UI						PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.Core						PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.Core						PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator				PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
 # Currently not included. 
