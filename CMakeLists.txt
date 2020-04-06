@@ -268,26 +268,26 @@ set(QT5_COMPONENTS
 find_package( Qt5 5.12.1 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
 
 
-if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
-    get_target_property(_qt5_qmake_location Qt5::qmake IMPORTED_LOCATION)
-
-    execute_process(
-        COMMAND "${_qt5_qmake_location}" -query QT_INSTALL_PREFIX
-        RESULT_VARIABLE return_code
-        OUTPUT_VARIABLE qt5_install_prefix
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-
-    set(imported_location "${qt5_install_prefix}/bin/windeployqt.exe")
-
-    if(EXISTS ${imported_location})
-        add_executable(Qt5::windeployqt IMPORTED)
-
-        set_target_properties(Qt5::windeployqt PROPERTIES
-            IMPORTED_LOCATION ${imported_location}
-        )
-    endif()
-endif()
+# if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
+#     get_target_property(_qt5_qmake_location Qt5::qmake IMPORTED_LOCATION)
+# 
+#     execute_process(
+#         COMMAND "${_qt5_qmake_location}" -query QT_INSTALL_PREFIX
+#         RESULT_VARIABLE return_code
+#         OUTPUT_VARIABLE qt5_install_prefix
+#         OUTPUT_STRIP_TRAILING_WHITESPACE
+#     )
+# 
+#     set(imported_location "${qt5_install_prefix}/bin/windeployqt.exe")
+# 
+#     if(EXISTS ${imported_location})
+#         add_executable(Qt5::windeployqt IMPORTED)
+# 
+#         set_target_properties(Qt5::windeployqt PROPERTIES
+#             IMPORTED_LOCATION ${imported_location}
+#         )
+#     endif()
+# endif()
 
 #------------------------------------------------------------------------------
 # DOXYGEN. 
@@ -576,6 +576,10 @@ IF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 	MESSAGE(WARNING "Could not find lrelease. Your build won't contain translations.")
 ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 
+# include the QtDeployTool
+include(ExecuteQtDeployTool)
+set_target_properties(ExecuteQtDeployTool                 	 PROPERTIES FOLDER "Copy")
+
 #------------------------------------------------------------------------------
 # Add the actual executable.
 #------------------------------------------------------------------------------
@@ -632,13 +636,13 @@ target_link_libraries( OpenInfraPlatform.UI
 	eigen
 )
 
-if(TARGET Qt5::windeployqt)
-    # execute windeployqt in a tmp directory after build
-    add_custom_command(TARGET OpenInfraPlatform.UI
-        POST_BUILD
-        COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
-        COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
-    )
+# if(TARGET Qt5::windeployqt)
+#    # execute windeployqt in a tmp directory after build
+#    add_custom_command(TARGET OpenInfraPlatform.UI
+#        POST_BUILD
+#        COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
+#        COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
+#    )
 
     # # copy deployment directory during installation
     # install(
@@ -646,7 +650,7 @@ if(TARGET Qt5::windeployqt)
     #     "${CMAKE_CURRENT_BINARY_DIR}/windeployqt/"
     #     DESTINATION ${FOO_INSTALL_RUNTIME_DESTINATION}
     # )
-endif()
+#endif()
 
 #------------------------------------------------------------------------------
 # Calling copy functions to provide custom targets.
@@ -719,6 +723,10 @@ add_custom_target(QSimpleUpdaterCopyBinaries
 	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll	${CMAKE_BINARY_DIR}/RelWithDebInfo
 )
 
+# Qt Deploy Tool
+add_custom_target(QtDeployTool
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ExecuteQtDeployTool
+)
 
 #add_custom_target(ZLIBCopyBinaries
 #  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Debug/zlibd.dll           ${CMAKE_BINARY_DIR}/Debug
