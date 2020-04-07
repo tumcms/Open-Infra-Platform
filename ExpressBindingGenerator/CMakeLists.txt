@@ -40,7 +40,6 @@ find_package(BISON REQUIRED)
 # 	add_subdirectory(${winflexbison_SOURCE_DIR} ${winflexbison_BINARY_DIR})
 # endif()
 
-find_package(Python2 REQUIRED)
 
 #find_path(TCLAP_INCLUDE_DIR REQUIRED)
 FetchContent_Declare(
@@ -54,6 +53,7 @@ if(NOT tclap_POPULATED)
 	FetchContent_Populate(tclap)
 endif()
 
+find_package(Python2 REQUIRED)
 get_filename_component(Python2_DIRECTORY ${Python2_EXECUTABLE} DIRECTORY)
 
 #find_file(Python_2to3_SCRIPT NAMES 2to3.py HINTS "${Python_DIRECTORY}\\Tools\\scripts" REQUIRED)
@@ -75,8 +75,7 @@ file(TO_NATIVE_PATH ${Python2_DIRECTORY} Python2_DIRECTORY)
 add_custom_target(Commands.UpdateBoostMPL
 	COMMAND set PYTHON_PATH=${Python2_DIRECTORY}
 	COMMAND set GCC_PATH=${MinGW_DIR}
-	COMMAND set PATH=%PYTHON_PATH%\;%PATH%
-	COMMAND set PATH=%GCC_PATH%\;%PATH%
+	COMMAND set PATH=%GCC_PATH%\;%PYTHON_PATH%\;%PATH%;
 	COMMAND echo %PATH%
 	COMMAND ${Python2_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/fix_boost_mpl_preprocess.py ${Boost_INCLUDE_DIR}
 	COMMAND ${Python2_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/boost_mpl_preprocess.py --sequence-type=both --num-elements=100 ${Boost_INCLUDE_DIR}

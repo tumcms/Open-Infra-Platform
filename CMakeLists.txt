@@ -111,7 +111,7 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	#find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS
 	#	"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4"
 	#	"C:\\thirdparty\\eigen")
-	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64")
+	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64")
 	#find_path(GTEST_ROOT NAMES lib/cmake/GTest/GTestConfig.cmake HINTS
 	#	"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest"
 	#	"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-master")
@@ -166,7 +166,7 @@ find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
 #	add_compile_definitions(BOOST_VARIANT_DO_NOT_USE_VARIADIC_TEMPLATES)
 #endif()
 
-find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
+#find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
 
 # Deprecated as of Revision 530
 #find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
@@ -265,7 +265,8 @@ set(QT5_COMPONENTS
 # 		set(QT5_DLLS_DEBUG ${QT5_DLLS_DEBUG} ${Qt5${Component}_location})
 # 	endif()
 # endforeach()
-find_package( Qt5 5.10.0 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
+find_package( Qt5 5.12.1 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
+
 
 
 if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
@@ -299,6 +300,19 @@ include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/
 else()
 message("DOXYGEN_GENERATE_DOCUMENTATION box not checked. Thus not generating doxygen documentation for TUM Open Infra Platform project. To generate doxygen documentation, check the box next to DOXYGEN_GENERATE_DOCUMENTATION.")
 endif(DOXYGEN_GENERATE_DOCUMENTATION)
+
+
+FetchContent_Declare(
+	blue_framework
+	GIT_REPOSITORY https://github.com/hechth/Blue-Framework.git
+	GIT_TAG alpha
+)
+  
+FetchContent_GetProperties(blue_framework)
+if(NOT blue_framework_POPULATED)
+	FetchContent_Populate(blue_framework)
+	add_subdirectory(${blue_framework_SOURCE_DIR} ${blue_framework_BINARY_DIR})
+endif()
 
 #------------------------------------------------------------------------------
 # Set required Qt plugins variables and find and add the corresponding dlls for deployment and copying.
@@ -390,7 +404,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR} # Qt generated files will be located here
 	# thirdpary libraries:
 	${Boost_INCLUDE_DIR}
-	${BLUEFRAMEWORK_INCLUDE_DIR}
+	${blue_framework_SOURCE_DIR}/include
 	${OpenInfraPlatform.EarlyBinding_INCLUDE_DIR}
 	${FFTW3_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIRS}	
@@ -576,6 +590,10 @@ IF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 	MESSAGE(WARNING "Could not find lrelease. Your build won't contain translations.")
 ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 
+# include the QtDeployTool
+include(ExecuteQtDeployTool)
+set_target_properties(ExecuteQtDeployTool                 	 PROPERTIES FOLDER "Copy")
+
 #------------------------------------------------------------------------------
 # Add the actual executable.
 #------------------------------------------------------------------------------
@@ -600,11 +618,16 @@ add_executable(OpenInfraPlatform.UI
 	#${OpenInfraPlatform_UserInterface_Data_Source}
 )
 
+# set up start-up project
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT OpenInfraPlatform.UI)
+
+
 #------------------------------------------------------------------------------
 # Link qt and other external libraries to our executable.
 #------------------------------------------------------------------------------
 
 # Use the Widgets module from Qt 5.
+#find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
 
 target_link_libraries( OpenInfraPlatform.UI
 	OpenInfraPlatform.Core
@@ -618,7 +641,13 @@ target_link_libraries( OpenInfraPlatform.UI
 	Qt5::Qml
 	Qt5::Location
 	Qt5::Positioning
-	${BLUEFRAMEWORK_LIBRARIES}
+	BlueFramework.Core
+	BlueFramework.Engine
+	BlueFramework.Application
+	BlueFramework.ImageProcessing
+	BlueFramework.Rasterizer
+	BlueFramework.D3D11RenderSystem
+	BlueFramework.D3D12RenderSystem
 	QtXlsxWriter
 	QSimpleUpdater
 	carve
@@ -628,13 +657,13 @@ target_link_libraries( OpenInfraPlatform.UI
 	eigen
 )
 
-if(TARGET Qt5::windeployqt)
-    # execute windeployqt in a tmp directory after build
-    add_custom_command(TARGET OpenInfraPlatform.UI
-        POST_BUILD
-        COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
-        COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
-    )
+# if(TARGET Qt5::windeployqt)
+#    # execute windeployqt in a tmp directory after build
+#    add_custom_command(TARGET OpenInfraPlatform.UI
+#        POST_BUILD
+#        COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
+#        COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
+#    )
 
     # # copy deployment directory during installation
     # install(
@@ -642,7 +671,7 @@ if(TARGET Qt5::windeployqt)
     #     "${CMAKE_CURRENT_BINARY_DIR}/windeployqt/"
     #     DESTINATION ${FOO_INSTALL_RUNTIME_DESTINATION}
     # )
-endif()
+#endif()
 
 #------------------------------------------------------------------------------
 # Calling copy functions to provide custom targets.
@@ -650,7 +679,7 @@ endif()
 #------------------------------------------------------------------------------
 
 # BlueFramework Copy Binaries
-BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
+#BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
 # Oklabi Copy Binaries
 OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
@@ -715,6 +744,10 @@ add_custom_target(QSimpleUpdaterCopyBinaries
 	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll	${CMAKE_BINARY_DIR}/RelWithDebInfo
 )
 
+# Qt Deploy Tool
+add_custom_target(QtDeployTool
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ExecuteQtDeployTool
+)
 
 #add_custom_target(ZLIBCopyBinaries
 #  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Debug/zlibd.dll           ${CMAKE_BINARY_DIR}/Debug
@@ -792,11 +825,11 @@ add_thirdparty(test_carve_polyhedrons_2	"carve")
 #set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
 set_target_properties(CopyOpenInfraPlatformUIResources 					PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
-set_target_properties(BlueFrameworkCopyBinaries 					PROPERTIES FOLDER "Copy")
+#set_target_properties(BlueFrameworkCopyBinaries 					PROPERTIES FOLDER "Copy")
 #set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries					PROPERTIES FOLDER "Copy")
 set_target_properties(OpenInfraPlatform.UI						PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.Core						PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.Core						PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator				PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
 # Currently not included. 
