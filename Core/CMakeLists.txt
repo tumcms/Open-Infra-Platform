@@ -60,7 +60,9 @@ target_link_libraries(OpenInfraPlatform.Core PRIVATE
     Qt5::OpenGL
     Qt5::Xml
     Qt5::XmlPatterns
-    ${BLUEFRAMEWORK_LIBRARIES}
+    BlueFramework.Core
+	BlueFramework.Rasterizer
+	BlueFramework.Application
     carve
     eigen
 )
