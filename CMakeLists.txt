@@ -591,8 +591,8 @@ IF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 
 # include the QtDeployTool
-include(ExecuteQtDeployTool)
-set_target_properties(ExecuteQtDeployTool                 	 PROPERTIES FOLDER "Copy")
+include(RunQtDeployTool)
+set_target_properties(RunQtDeployTool                 	 PROPERTIES FOLDER "Copy")
 
 #------------------------------------------------------------------------------
 # Add the actual executable.
