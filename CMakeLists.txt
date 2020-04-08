@@ -657,18 +657,18 @@ target_link_libraries( OpenInfraPlatform.UI
 )
 
 if(TARGET Qt5::windeployqt)
-   # execute windeployqt in a tmp directory after build
-   add_custom_command(TARGET OpenInfraPlatform.UI
-       POST_BUILD
-       COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
-       COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
+    # execute windeployqt in a tmp directory after build
+    add_custom_command(TARGET OpenInfraPlatform.UI
+        POST_BUILD
+        COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
+        COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
 
-       # hack pjanck 2020.08.04.
-       # these are known issues in BlueFramework
-       COMMAND ${CMAKE_COMMAND} -E copy ${Qt5_BIN_DIR}/Qt5Xmld.dll "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>"
-       COMMAND ${CMAKE_COMMAND} -E copy ${blue_framework_BINARY_DIR}/$<CONFIG>/BlueFramework.Applicationd.dll "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>"
-       # end hack
-   )
+        # hack pjanck 2020.08.04.
+        # these are known issues in BlueFramework
+        COMMAND ${CMAKE_COMMAND} -E copy ${Qt5_BIN_DIR}/Qt5Xmld.dll "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>"
+        COMMAND ${CMAKE_COMMAND} -E copy ${blue_framework_BINARY_DIR}/$<CONFIG>/BlueFramework.Applicationd.dll "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>"
+        # end hack
+    )
 
     # # copy deployment directory during installation
     # install(
