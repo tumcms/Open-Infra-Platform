@@ -25,6 +25,7 @@
 #include "MainWindow.h"
 #include <BlueFramework/Core/Diagnostics/log.h>
 #include <BlueFramework/Core/Version.h>
+#include "ViewPanel/RenderResources.h"
 #include <QApplication>
 #include <QDockWidget>
 #include <QMainWindow>
