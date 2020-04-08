@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
         //*(int *)0 = 0;// Baaaaaaad thing that should never happen
         // throw std::runtime_error("muh");
 
-        std::string basePath = "Style/blueform.qss";
+        std::string basePath = buw::Singleton<OpenInfraPlatform::UserInterface::RenderResources>::instance().getResourceRootDir() + "/Style/blueform.qss";
 
         QFile styleSheet(basePath.c_str());
 
