@@ -5822,7 +5822,7 @@ ENTITY IfcDirectrixCurveSweptAreaSolid
 	EndParam : OPTIONAL IfcParameterValue;
  WHERE
 	DirectrixBounded : (EXISTS(StartParam) AND EXISTS(EndParam)) OR 
-(SIZEOF(['IFC4X3.IFCCONIC', 'IFC4X3.IFCBOUNDEDCURVE'] * TYPEOF(Directrix)) = 1);
+(SIZEOF(['IFC4X3_ALPHA.IFCCONIC', 'IFC4X3_ALPHA.IFCBOUNDEDCURVE'] * TYPEOF(Directrix)) = 1);
 END_ENTITY;
 
 ENTITY IfcDirectrixDistanceSweptAreaSolid
