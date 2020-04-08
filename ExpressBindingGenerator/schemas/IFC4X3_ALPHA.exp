@@ -19,7 +19,7 @@ for incidental consequential damages in connection with the furnishing, performa
 of the material. The information contained in this document is subject to change without notice.
 
 Issue date:
-06 April 2020
+08 April 2020
 
 *)
 
@@ -3971,7 +3971,7 @@ ENTITY IfcAlignment
 END_ENTITY;
 
 ENTITY IfcAlignment2DCant
- SUBTYPE OF (IfcAxisLateralInclination);
+ SUBTYPE OF (IfcGeometricRepresentationItem);
 	RailHeadDistance : IfcPositiveLengthMeasure;
 	Segments : LIST [1:?] OF IfcAlignment2DCantSegment;
 END_ENTITY;
@@ -4271,7 +4271,7 @@ ENTITY IfcAxis2Placement3D
 END_ENTITY;
 
 ENTITY IfcAxisLateralInclination
- ABSTRACT SUPERTYPE OF(ONEOF (IfcAlignment2DCant))
+ ABSTRACT
  SUBTYPE OF (IfcGeometricRepresentationItem);
  INVERSE
 	ToLinearAxis : SET [1:1] OF IfcLinearAxisWithInclination FOR Inclinating;
@@ -5820,6 +5820,9 @@ ENTITY IfcDirectrixCurveSweptAreaSolid
 	Directrix : IfcCurve;
 	StartParam : OPTIONAL IfcParameterValue;
 	EndParam : OPTIONAL IfcParameterValue;
+ WHERE
+	DirectrixBounded : (EXISTS(StartParam) AND EXISTS(EndParam)) OR 
+(SIZEOF(['IFC4X3.IFCCONIC', 'IFC4X3.IFCBOUNDEDCURVE'] * TYPEOF(Directrix)) = 1);
 END_ENTITY;
 
 ENTITY IfcDirectrixDistanceSweptAreaSolid
@@ -6933,9 +6936,6 @@ END_ENTITY;
 ENTITY IfcFixedReferenceSweptAreaSolid
  SUBTYPE OF (IfcDirectrixCurveSweptAreaSolid);
 	FixedReference : IfcDirection;
- WHERE
-	DirectrixBounded : (EXISTS(StartParam) AND EXISTS(EndParam)) OR 
-(SIZEOF(['IFC4X3_ALPHA.IFCCONIC', 'IFC4X3_ALPHA.IFCBOUNDEDCURVE'] * TYPEOF(Directrix)) = 1);
 END_ENTITY;
 
 ENTITY IfcFlowController
@@ -8319,7 +8319,7 @@ ENTITY IfcOpenCrossProfileDef
 	HorizontalWidths : IfcBoolean;
 	Widths : LIST [1:?] OF IfcNonNegativeLengthMeasure;
 	Slopes : LIST [1:?] OF IfcPlaneAngleMeasure;
-	Tags : OPTIONAL SET [2:?] OF IfcLabel;
+	Tags : OPTIONAL LIST [2:?] OF IfcLabel;
  WHERE
 	CorrectProfileType : SELF\IfcProfileDef.ProfileType = IfcProfileTypeEnum.CURVE;
 	CorrespondingSlopeWidths : SIZEOF(Slopes) = SIZEOF(Widths);
@@ -11133,9 +11133,6 @@ END_ENTITY;
 ENTITY IfcSurfaceCurveSweptAreaSolid
  SUBTYPE OF (IfcDirectrixCurveSweptAreaSolid);
 	ReferenceSurface : IfcSurface;
- WHERE
-	DirectrixBounded : (EXISTS(StartParam) AND EXISTS(EndParam)) OR 
-(SIZEOF(['IFC4X3_ALPHA.IFCCONIC', 'IFC4X3_ALPHA.IFCBOUNDEDCURVE'] * TYPEOF(Directrix)) = 1);
 END_ENTITY;
 
 ENTITY IfcSurfaceFeature
