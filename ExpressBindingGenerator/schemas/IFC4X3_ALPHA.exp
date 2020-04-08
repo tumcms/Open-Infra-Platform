@@ -4271,7 +4271,7 @@ ENTITY IfcAxis2Placement3D
 END_ENTITY;
 
 ENTITY IfcAxisLateralInclination
- ABSTRACT
+ ABSTRACT SUPERTYPE OF(ONEOF (IfcAlignment2DCant))
  SUBTYPE OF (IfcGeometricRepresentationItem);
  INVERSE
 	ToLinearAxis : SET [1:1] OF IfcLinearAxisWithInclination FOR Inclinating;
