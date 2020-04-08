@@ -268,7 +268,7 @@ set(QT5_COMPONENTS
 find_package( Qt5 5.12.1 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
 
 
-
+# https://stackoverflow.com/questions/41912734/deploy-icu-libraries-when-linking-a-cmake-project-with-qt5
 if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
     get_target_property(_qt5_qmake_location Qt5::qmake IMPORTED_LOCATION)
 
@@ -359,7 +359,7 @@ endif()
 # 	include(${Qt5Location_DIR}/Qt5Location_${plugin}.cmake)
 # endforeach()
 
-# string(REPLACE "lib/cmake/Qt5" "bin" Qt5_BIN_DIR "${Qt5_DIR}")
+string(REPLACE "lib/cmake/Qt5" "bin" Qt5_BIN_DIR "${Qt5_DIR}")
 
 # macro(addQt5Dll lib)
 # 	set(QT5_DLLS_RELEASE ${QT5_DLLS_RELEASE} ${Qt5_BIN_DIR}/Qt5${lib}.dll)
@@ -625,6 +625,7 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT O
 # Use the Widgets module from Qt 5.
 #find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
 
+#https://cmake.org/cmake/help/latest/command/target_link_libraries.html
 target_link_libraries( OpenInfraPlatform.UI
 	OpenInfraPlatform.Core
 	Qt5::WinMain  # New target available via find_package ( Qt5Core )
@@ -637,6 +638,8 @@ target_link_libraries( OpenInfraPlatform.UI
 	Qt5::Qml
 	Qt5::Location
 	Qt5::Positioning
+	Qt5::Xml
+	Qt5::XmlPatterns
 	BlueFramework.Core
 	BlueFramework.Engine
 	BlueFramework.Application
@@ -660,6 +663,11 @@ if(TARGET Qt5::windeployqt)
        COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
        COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
 
+       # hack pjanck 2020.08.04.
+       # these are known issues in BlueFramework
+       COMMAND ${CMAKE_COMMAND} -E copy ${Qt5_BIN_DIR}/Qt5Xmld.dll "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>"
+       COMMAND ${CMAKE_COMMAND} -E copy ${blue_framework_BINARY_DIR}/$<CONFIG>/BlueFramework.Applicationd.dll "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>"
+       # end hack
    )
 
     # # copy deployment directory during installation
@@ -684,20 +692,6 @@ OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
 # zlic Copy Binaries
 #ZLIB_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
-# # QtCopyBinaries
-# add_custom_target(Qt5CopyBinaries
-# 	COMMAND ${CMAKE_COMMAND} -E copy ${QT5_DLLS_RELEASE} ${CMAKE_BINARY_DIR}/Release
-# 	COMMAND ${CMAKE_COMMAND} -E copy ${QT5_DLLS_RELEASE} ${CMAKE_BINARY_DIR}/RelWithDebInfo
-# 	COMMAND ${CMAKE_COMMAND} -E copy ${QT5_DLLS_DEBUG} ${CMAKE_BINARY_DIR}/Debug	
-
-# 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${Qt5Core_DIR}/../../../qml						${CMAKE_BINARY_DIR}/Release/qml
-# 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${Qt5Core_DIR}/../../../plugins/geoservices		${CMAKE_BINARY_DIR}/Release/plugins/geoservices
-# 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${Qt5Core_DIR}/../../../plugins/imageformats		${CMAKE_BINARY_DIR}/Release/plugins/imageformats
-# 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${Qt5Core_DIR}/../../../plugins/platforms		${CMAKE_BINARY_DIR}/Release/platforms
-
-# 	# Output Message
-# 	COMMENT "Copying Ot binaries from '${Qt5Core_DIR}/../../bin/' to '${CMAKE_BINARY_DIR}'" VERBATIM
-# )
 
 add_custom_target(CopyOpenInfraPlatformUIResources
 	ALL DEPENDS ${OpenInfra_QMS}
@@ -818,7 +812,6 @@ add_thirdparty(test_carve_polyhedrons_2	"carve")
 set_target_properties(CopyOpenInfraPlatformUIResources 					PROPERTIES FOLDER "Copy")
 set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
 #set_target_properties(BlueFrameworkCopyBinaries 					PROPERTIES FOLDER "Copy")
-#set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries					PROPERTIES FOLDER "Copy")
 set_target_properties(OpenInfraPlatform.UI						PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.Core						PROPERTIES FOLDER "OpenInfraPlatform")
