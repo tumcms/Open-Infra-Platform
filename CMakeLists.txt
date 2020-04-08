@@ -590,10 +590,6 @@ IF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 	MESSAGE(WARNING "Could not find lrelease. Your build won't contain translations.")
 ENDIF(NOT QT_LRELEASE_EXECUTABLE AND NOT Qt5_LRELEASE_EXECUTABLE)
 
-# include the QtDeployTool
-include(RunQtDeployTool)
-set_target_properties(RunQtDeployTool                 	 PROPERTIES FOLDER "Copy")
-
 #------------------------------------------------------------------------------
 # Add the actual executable.
 #------------------------------------------------------------------------------
@@ -657,13 +653,14 @@ target_link_libraries( OpenInfraPlatform.UI
 	eigen
 )
 
-# if(TARGET Qt5::windeployqt)
-#    # execute windeployqt in a tmp directory after build
-#    add_custom_command(TARGET OpenInfraPlatform.UI
-#        POST_BUILD
-#        COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
-#        COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
-#    )
+if(TARGET Qt5::windeployqt)
+   # execute windeployqt in a tmp directory after build
+   add_custom_command(TARGET OpenInfraPlatform.UI
+       POST_BUILD
+       COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
+       COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
+
+   )
 
     # # copy deployment directory during installation
     # install(
@@ -671,7 +668,7 @@ target_link_libraries( OpenInfraPlatform.UI
     #     "${CMAKE_CURRENT_BINARY_DIR}/windeployqt/"
     #     DESTINATION ${FOO_INSTALL_RUNTIME_DESTINATION}
     # )
-#endif()
+endif()
 
 #------------------------------------------------------------------------------
 # Calling copy functions to provide custom targets.
@@ -742,11 +739,6 @@ add_custom_target(QSimpleUpdaterCopyBinaries
 	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll	${CMAKE_BINARY_DIR}/Debug
 	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll	${CMAKE_BINARY_DIR}/Release
 	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll	${CMAKE_BINARY_DIR}/RelWithDebInfo
-)
-
-# Qt Deploy Tool
-add_custom_target(QtDeployTool
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ExecuteQtDeployTool
 )
 
 #add_custom_target(ZLIBCopyBinaries
