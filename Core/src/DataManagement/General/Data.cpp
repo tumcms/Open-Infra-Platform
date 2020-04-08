@@ -182,18 +182,21 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 		//		}
 		//	}
 		//}
-		//if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X1) {
-		//	expressModel_ = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename);
-		//	auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X1EntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC4X1EntityTypes>>();
-		//	if (importer.collectGeometryData(expressModel_)) {
-		//		auto converter = IfcGeometryConverter::ConverterBuwT<emt::IFC4X1EntityTypes>();
-		//		if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
-		//			if (!tempIfcGeometryModel_->isEmpty()) {
-		//				ifcGeometryModel_ = tempIfcGeometryModel_;
-		//			}
-		//		}
-		//	}
-		//}
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X1) {
+			expressModel_ = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename);
+			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X1EntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC4X1EntityTypes>>();
+			if (importer.collectGeometryData(expressModel_)) {
+				auto converter = IfcGeometryConverter::ConverterBuwT<emt::IFC4X1EntityTypes>();
+				if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
+					if (!tempIfcGeometryModel_->isEmpty()) {
+						ifcGeometryModel_ = tempIfcGeometryModel_;
+					}
+				}
+			}
+		}
+#endif //OIP_MODULE_EARLYBINDING_IFC4X1
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_ALPHA
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_ALPHA) {
 			expressModel_ = OpenInfraPlatform::IFC4X3_ALPHA::IFC4X3_ALPHAReader::FromFile(filename);
 			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X3_ALPHAEntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC4X3_ALPHAEntityTypes>>();
@@ -207,6 +210,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 			}
 		}
 	}
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_ALPHA
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
