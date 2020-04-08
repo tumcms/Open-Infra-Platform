@@ -654,13 +654,13 @@ target_link_libraries( OpenInfraPlatform.UI
 )
 
 if(TARGET Qt5::windeployqt)
-   # execute windeployqt in a tmp directory after build
-   add_custom_command(TARGET OpenInfraPlatform.UI
-       POST_BUILD
-       COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
-       COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
+    # execute windeployqt in a tmp directory after build
+    add_custom_command(TARGET OpenInfraPlatform.UI
+        POST_BUILD
+        COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
+        COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
 
-   )
+    )
 
     # # copy deployment directory during installation
     # install(
