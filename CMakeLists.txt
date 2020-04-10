@@ -304,8 +304,8 @@ endif(DOXYGEN_GENERATE_DOCUMENTATION)
 
 FetchContent_Declare(
 	blue_framework
-	GIT_REPOSITORY https://github.com/hechth/Blue-Framework.git
-	GIT_TAG alpha
+	GIT_REPOSITORY https://github.com/tumcms/Blue-Framework.git
+	#GIT_TAG alpha
 )
   
 FetchContent_GetProperties(blue_framework)
