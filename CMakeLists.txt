@@ -659,7 +659,7 @@ if(TARGET Qt5::windeployqt)
     add_custom_command(TARGET OpenInfraPlatform.UI
         POST_BUILD
         COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
-
+        COMMAND Qt5::windeployqt -xml $<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>
     )
 
     # # copy deployment directory during installation
