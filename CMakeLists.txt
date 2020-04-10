@@ -305,7 +305,7 @@ endif(DOXYGEN_GENERATE_DOCUMENTATION)
 FetchContent_Declare(
 	blue_framework
 	GIT_REPOSITORY https://github.com/tumcms/Blue-Framework.git
-	#GIT_TAG alpha
+	GIT_TAG a0.0.2
 )
   
 FetchContent_GetProperties(blue_framework)
@@ -626,31 +626,32 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT O
 #find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
 
 target_link_libraries( OpenInfraPlatform.UI
-	OpenInfraPlatform.Core
-	Qt5::WinMain  # New target available via find_package ( Qt5Core )
-	Qt5::Core
-	Qt5::Gui
-	Qt5::Widgets
-	Qt5::Svg
-	Qt5::PrintSupport
-	Qt5::Quick
-	Qt5::Qml
-	Qt5::Location
-	Qt5::Positioning
-	BlueFramework.Core
-	BlueFramework.Engine
-	BlueFramework.Application
-	BlueFramework.ImageProcessing
-	BlueFramework.Rasterizer
-	BlueFramework.D3D11RenderSystem
-	BlueFramework.D3D12RenderSystem
-	QtXlsxWriter
-	QSimpleUpdater
-	carve
-	#ZLIB::ZLIB
-	zlib
-	Rpcrt4.lib
-	eigen
+	PUBLIC
+		OpenInfraPlatform.Core
+		Qt5::WinMain  # New target available via find_package ( Qt5Core )
+		Qt5::Core
+		Qt5::Gui
+		Qt5::Widgets
+		Qt5::Svg
+		Qt5::PrintSupport
+		Qt5::Quick
+		Qt5::Qml
+		Qt5::Location
+		Qt5::Positioning
+		BlueFramework.Core
+		BlueFramework.Engine
+		BlueFramework.Application
+		BlueFramework.ImageProcessing
+		BlueFramework.Rasterizer
+		BlueFramework.D3D11RenderSystem
+		BlueFramework.D3D12RenderSystem
+		QtXlsxWriter
+		QSimpleUpdater
+		carve
+		#ZLIB::ZLIB
+		zlib
+		Rpcrt4.lib
+		eigen
 )
 
 if(TARGET Qt5::windeployqt)
@@ -658,7 +659,6 @@ if(TARGET Qt5::windeployqt)
     add_custom_command(TARGET OpenInfraPlatform.UI
         POST_BUILD
         COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
-        COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
 
     )
 
