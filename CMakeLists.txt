@@ -111,7 +111,7 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	#find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS
 	#	"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4"
 	#	"C:\\thirdparty\\eigen")
-	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.10.0\\msvc${MSVC_VERSION_YEAR}_64")
+	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64")
 	#find_path(GTEST_ROOT NAMES lib/cmake/GTest/GTestConfig.cmake HINTS
 	#	"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest"
 	#	"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-master")
@@ -266,6 +266,7 @@ set(QT5_COMPONENTS
 # 	endif()
 # endforeach()
 find_package( Qt5 5.12.1 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
+
 
 
 if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
@@ -613,6 +614,10 @@ add_executable(OpenInfraPlatform.UI
 	#${OpenInfraPlatform_UserInterface_Data_Source}
 )
 
+# set up start-up project
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT OpenInfraPlatform.UI)
+
+
 #------------------------------------------------------------------------------
 # Link qt and other external libraries to our executable.
 #------------------------------------------------------------------------------
@@ -736,7 +741,6 @@ add_custom_target(QSimpleUpdaterCopyBinaries
 	COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll	${CMAKE_BINARY_DIR}/RelWithDebInfo
 )
 
-
 #add_custom_target(ZLIBCopyBinaries
 #  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Debug/zlibd.dll           ${CMAKE_BINARY_DIR}/Debug
 #  COMMAND	${CMAKE_COMMAND} -E copy ${ZLIB_ROOT}/build/Release/zlib.dll          ${CMAKE_BINARY_DIR}/Release
@@ -817,7 +821,7 @@ set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
 #set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries					PROPERTIES FOLDER "Copy")
 set_target_properties(OpenInfraPlatform.UI						PROPERTIES FOLDER "OpenInfraPlatform")
-#set_target_properties(OpenInfraPlatform.Core						PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.Core						PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator				PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
 # Currently not included. 
