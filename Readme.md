@@ -39,7 +39,7 @@ TUM Open Infra Platform uses several software libraries. The corresponding licen
 * Google Test 1.8.0 (https://github.com/google/googletest) (*BSD 3-Clause License*) ({root_dir}/Licenses/GoogleTest.LICENSE)
 * Qt 5.12.1 (https://download.qt.io/archive/qt/) (LGPL version 3) ({root_dir}/Licenses/Qt.LICENSE)
 * BlueFramwork a0.0.2 (https://github.com/tumcms/Blue-Framework) (GPL v3 License) ({root_dir}/Licenses/BlueFramwork.LICENSE.txt)
-* CloudCompare (http://www.danielgm.net/cc/) (GPL v2 License) on development branch IDP for PCD processing. ({root_dir}/Licenses/cloudcompare.license.txt)
+* CloudCompare v2.10.3 (http://www.danielgm.net/cc/) (GPL v2 License) on development branch IDP for PCD processing. ({root_dir}/Licenses/cloudcompare.license.txt)
 * zlib 1.2.11 (https://zlib.net/) (Zlib license) ({root_dir}/Licenses/zlib.license.txt)
 * TCLAP (http://tclap.sourceforge.net/) (MIT License) ({root_dir}/Licenses/TCLAP.COPYING)
 * qhull (http://www.qhull.org/) without modification. ({root_dir}/Licenses/qhull.COPYING.txt)
