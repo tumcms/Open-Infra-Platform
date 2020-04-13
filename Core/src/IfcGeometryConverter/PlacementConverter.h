@@ -289,7 +289,85 @@ namespace OpenInfraPlatform {
 								//IfcGridPlacementDirectionSelect* ref_direction = grid_placement->PlacementRefDirection.get()
 							}
 
+						} // end if IfcGridPlacement
+
+						// (3/3) IfcLinearPlacement SUBTYPE OF IfcObjectPlacement
+						std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement > linear_placement =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLinearPlacement>(object_placement);
+						if (linear_placement) {
+							// TODO implement
+
+							// ENTITY IfcLinearPlacement
+							//  SUBTYPE OF(IfcObjectPlacement);
+							//   PlacementRelTo : IfcCurve;			// IFC4x1
+							//   PlacementMeasuredAlong: IfcCurve;  // from IFC4x2+
+							//   Distance: IfcDistanceExpression;
+							//   Orientation: OPTIONAL IfcOrientationExpression;
+							//   CartesianPosition: OPTIONAL IfcAxis2Placement3D;
+							// END_ENTITY;
+
+							// IFC4x1
+							std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve = linear_placement->PlacementRelTo.lock();
+							std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> ifcBoundedCurve =
+								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(ifcCurve);
+							if (!ifcBoundedCurve)
+							{
+								BLUE_LOG(error) << linear_placement->getErrorLog() << ": Placement along a " << ifcCurve->classname() << " is not supported!";
+								return;
+							}
+							// IFC4x2+
+							//std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve = linear_placement->PlacementMeasuredAlong.lock();
+
+							auto& distExpr = linear_placement->Distance;
+
+							auto& orientExpr = linear_placement->Orientation;
+
+							carve::math::Matrix absolute_placement(carve::math::Matrix::IDENT());
+							if (linear_placement->CartesianPosition)
+								convertIfcAxis2Placement3D(linear_placement->CartesianPosition.get().lock(), absolute_placement);
+
+							double length_factor = UnitConvert()->getLengthInMeterFactor();
+
+							// evaluate distance expression
+							// ENTITY IfcDistanceExpression
+							//  SUBTYPE OF (IfcGeometricRepresentationItem);
+							//   DistanceAlong : IfcLengthMeasure;
+							//   OffsetLateral : OPTIONAL IfcLengthMeasure;
+							//   OffsetVertical : OPTIONAL IfcLengthMeasure;
+							//   OffsetLongitudinal : OPTIONAL IfcLengthMeasure;
+							//   AlongHorizontal : OPTIONAL IfcBoolean;
+							// END_ENTITY;
+							double distAlong = distExpr->DistanceAlong * length_factor;
+							carve::geom::vector<3> offsetFromCurve(carve::geom::VECTOR(0.0, 0.0, 0.0));
+							bool alongHorizontal = true;
+							if (distExpr->OffsetLongitudinal)
+								offsetFromCurve.x = distExpr->OffsetLongitudinal.get() * length_factor;
+							if (distExpr->OffsetLateral)
+								offsetFromCurve.y = distExpr->OffsetLateral.get() * length_factor;
+							if (distExpr->OffsetVertical)
+								offsetFromCurve.z = distExpr->OffsetVertical.get() * length_factor;
+							alongHorizontal = distExpr->AlongHorizontal;
+
+							// calculate the position on and the direction of the base curve
+							carve::geom::vector<3>  pointOnCurve	 ( carve::geom::VECTOR(0.0, 0.0, 0.0) ),
+													directionOfCurve ( carve::geom::VECTOR(1.0, 0.0, 0.0) );
+							convertAlignmentCurveDistAlongToPoint3D( 
+								ifcBoundedCurve, distAlong, alongHorizontal, 
+								pointOnCurve, directionOfCurve);
+
+							// calculate the position
+							object_placement_matrix = absolute_placement; //TODO wrong
+
+							// PlacementRelTo type IfcObjectPlacement [0:1] (introduced in IFC4x2)
+							if (linear_placement->PlacementRelTo) {
+								// Reference to Object that provides the relative placement by its local coordinate system. 
+								decltype(local_placement->PlacementRelTo)::type& local_object_placement = local_placement->PlacementRelTo;
+								carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
+								convertIfcObjectPlacement(local_object_placement.lock(), relative_placement, already_applied);
+								object_placement_matrix = relative_placement * object_placement_matrix;
+							}
 						}
+
 						matrix = object_placement_matrix;
 					}
 
