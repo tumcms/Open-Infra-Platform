@@ -476,6 +476,53 @@ namespace OpenInfraPlatform {
 						return;
 					}
 
+					std::shared_ptr<typename IfcEntityTypesT::IfcTriangulatedFaceSet> faceSet = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTriangulatedFaceSet>(geomItem);
+					if (faceSet) {
+						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+												
+						double length_factor = UnitConvert()->getLengthInMeterFactor();
+
+						// obtain vertices from coordinates list and add them to the new polygon
+						for (const auto& point : faceSet->Coordinates->CoordList)
+						{
+							carve::geom::vector<3> vertex =
+								carve::geom::VECTOR(point[0] * length_factor,
+													point[1] * length_factor,
+													point[2] * length_factor);
+						
+							// apply transformation
+							vertex = pos * vertex;
+						
+							polygon->addVertex(vertex);
+						}
+
+						auto& coordinatesIndices = faceSet->CoordIndex; 
+						auto& pnIndices = faceSet->PnIndex; // optional
+						auto& normals = faceSet->Normals; // TODO implement normals
+						
+						// read coordinates index list and create faces
+						for ( auto& indices : coordinatesIndices)
+						{
+							if (indices.size() < 3)
+							{
+								throw std::exception("invalid size of coordIndex of tessellated item.");
+							}
+						
+							if( pnIndices )
+								polygon->addFace(pnIndices.get()[indices[0] - 1] - 1, 
+												 pnIndices.get()[indices[1] - 1] - 1,
+												 pnIndices.get()[indices[2] - 1] - 1);
+							else
+								polygon->addFace(indices[0] - 1, 
+												 indices[1] - 1, 
+												 indices[2] - 1);
+						}
+						
+						itemData->open_or_closed_polyhedrons.push_back(polygon);
+						
+						return;
+					}
+
 					if(convertVersionSpecificIfcGeometricRepresentationItem(geomItem, pos, itemData, err)) {
 						return;
 					}
