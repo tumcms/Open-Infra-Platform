@@ -86,7 +86,7 @@ namespace OpenInfraPlatform
 				int getNumberOfVerticesForTesselation(const double dRadius, const double dArcExtent = 2. * M_PI)
 				{
 					// if radius is smaller then the precision of the model, it is a straight (curvature -> infinity)
-					if (dRadius < getPrecission())
+					if (dRadius < getPrecision())
 						return 2;
 
 					// what's the biggest angle so that the precision still holds
