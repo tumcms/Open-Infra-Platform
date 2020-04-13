@@ -322,20 +322,17 @@ namespace OpenInfraPlatform {
 									std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc> v_seg_par_arc_2D =
 										std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc>(itVerticalSegment->lock());
 
-									int nVerFragments = 0;
-									double dVerFragmentsLength = 0.;
 									// Set number of fragments (number of stations to be added within segment) according to segment type.
-									if (v_seg_circ_arc_2D) {
-										nVerFragments = geomSettings->min_num_vertices_per_arc;
-										dVerFragmentsLength = dVerticalSegLength / nVerFragments;
+									// depending on the segment radius.
+									double dVerticalRadius = 0.;
+									if (v_seg_line_2D) {
+										dVerticalRadius = 0.;
 									}
-									else if (v_seg_line_2D) {
-										nVerFragments = 0;
-										dVerFragmentsLength = dVerticalSegLength;
+									else if (v_seg_circ_arc_2D) {
+										dVerticalRadius = v_seg_circ_arc_2D->Radius;
 									}
 									else if (v_seg_par_arc_2D) {
-										nVerFragments = geomSettings->min_num_vertices_per_arc;
-										dVerFragmentsLength = dVerticalSegLength / nVerFragments;
+										dVerticalRadius = v_seg_par_arc_2D->ParabolaConstant;
 									}
 									else
 									{
@@ -343,12 +340,19 @@ namespace OpenInfraPlatform {
 										return;
 									}
 
-									// Select greater accuracy/smaller fragments.
+									dVerticalRadius *= length_factor;
+
+									// determine tesselation density
+									int nVerFragments = GeomSettings()->getNumberOfSegmentsForTesselation(dVerticalRadius);
+									double dVerFragmentsLength = dVerticalSegLength / (double)(nVerFragments);
+
+									// Select greater accuracy / more fragments / smaller fragments.
+									nFragments = std::max(nFragments, nVerFragments);
 									dFragmentLength = std::min(dFragmentLength, dVerFragmentsLength);
 
 									// determine the overlap area
-									dOverlapStart = std::max(dHorizontalSegStart, dVerticalSegStart);
-									dOverlapEnd   = std::min(dHorizontalSegEnd  , dVerticalSegEnd);
+									dOverlapStart = std::max(dOverlapStart, dVerticalSegStart);
+									dOverlapEnd   = std::min(dOverlapEnd  , dVerticalSegEnd);
 								}
 
 								double newStationDistAlong = dOverlapStart;
