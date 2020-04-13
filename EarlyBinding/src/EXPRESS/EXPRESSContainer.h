@@ -82,27 +82,95 @@ public:
 	static std::vector<ValueType> readStepData(const std::string& value, const std::shared_ptr<EXPRESSModel>& model) {
 		// Remove the parentheses
 		auto paramvalue = value.substr(1, value.size() - 2);
-	
+		// Loop over the rest
+		std::string::iterator it = paramvalue.begin();
+		size_t start = 0;
+		// The result
 		std::vector<ValueType> result;
-	
-		while (!paramvalue.empty()) {
-			auto end = paramvalue.size() - 1;
-			auto pos = paramvalue.find_first_of(',');
-			if (pos < end) {
-				ValueType type;
-				type = ValueType::readStepData(paramvalue.substr(0, pos), model);
-				result.push_back(type);
-				paramvalue.erase(0, pos + 1);
+
+		// Amount of open parenthesis
+		size_t nOpenedParenthesis = 0;
+
+		// Loop until the end
+		while (it != paramvalue.end()) {
+
+			// The current position of the iterator
+			auto currentpos = std::distance(paramvalue.begin(), it);
+
+			// Skip the content of string literal, if some parenthesis were open already
+			// The content of the literal will get managed later in the recursion
+			if (*it == '\''
+				&& nOpenedParenthesis > 0)
+			{
+				auto pos = paramvalue.find_first_of('\'', currentpos + 1);
+				it += pos - currentpos;
+				continue;
 			}
-			else {
-				ValueType type;
-				type = ValueType::readStepData(paramvalue.substr(0, pos), model);
-				result.push_back(type);
-				paramvalue.clear();
-				break;
+
+			// React according to the character in question
+			switch (*it)
+			{
+			case ' ':
+			{
+				// ignore outside a string literal
+				it++;
+				continue;
 			}
+			case '(':
+			{
+				// count up
+				nOpenedParenthesis++;
+				// Remeber position, if first
+				if (nOpenedParenthesis == 1)
+					start = currentpos;
+				it++;
+				continue;
+			}
+			case ')':
+			{
+				// count down
+				nOpenedParenthesis--;
+			}
+			} // end switch (*it)
+
+			// Two cases:
+			//  -> if it is just a simple container
+			//       i.e. (aa,bb,cc) - the out-most parenthesis were already removed, so we are dealing with aa,bb,cc
+			//       <start - our position>                                                                  x          (start = our position)
+			//       or                                                                                         x
+			//  -> or we have finished with one element within the container
+			//       i.e. ((a,b),(c,d)) - again, the out-most parenthesis were removed already -> (a,b),(c,d)
+			//       <start - our position>                                                       <   >
+			//       or																					<   >
+			if (nOpenedParenthesis == 0)
+			{
+				// find the first comma that follows
+				auto pos = paramvalue.find_first_of(',', currentpos + 1);
+				// if none found -> take the end
+				if (pos == std::string::npos)
+					pos = paramvalue.size();
+
+				// Interpret the value
+				ValueType type;
+				std::string sub = paramvalue.substr(start, pos-start);
+				type = ValueType::readStepData(sub, model);
+				result.push_back(type);
+
+				// Continue along the string, skip the sub
+				auto len = pos - currentpos;
+				// if we are in the middle of a list, count 1 more to skip the comma
+				if ( it + len != paramvalue.end() )
+					len += 1;
+				// count up
+				it += len;
+				start += len;
+				continue;
+			}
+
+			// go to next char
+			it++;
 		}
-	
+
 		return result;
 	}
 
