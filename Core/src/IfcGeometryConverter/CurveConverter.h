@@ -23,11 +23,12 @@
 
 #include "CarveHeaders.h"
 
+#include "ConverterBase.h"
+
 #include "GeomUtils.h"
 #include "UnhandledRepresentationException.h"
 #include "PlacementConverter.h"
 #include "ProfileConverter.h"
-#include "GeometrySettings.h"
 #include "SplineConverter.h"
 
 #include "BlueFramework/Core/Diagnostics/log.h"
@@ -36,26 +37,44 @@
 namespace OpenInfraPlatform {
 	namespace Core {
 		namespace IfcGeometryConverter {
+
+			/*! \class CurveConverterT
+			*
+			* \brief Curve converter functionality
+			*
+			* \param IfcEntityTypesT The IFC version templates
+			*/
 			template <
-				class IfcEntityTypesT,
-				class IfcUnitConverterT
+				class IfcEntityTypesT
 			>
-				class CurveConverterT
+			class CurveConverterT : public ConverterBaseT<IfcEntityTypesT>
 			{
 			public:
-				CurveConverterT(std::shared_ptr<GeometrySettings> geomSettings,
-					std::shared_ptr<IfcUnitConverterT> unitConverter)
+				//! Constructor
+				CurveConverterT(
+					std::shared_ptr<GeometrySettings> geomSettings,
+					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc)
 					:
-					geomSettings(geomSettings),
-					unitConverter(unitConverter)
+					ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
+					placementConverter(pc)
 				{
 				}
 
+				//! Virtual destructor
 				virtual ~CurveConverterT()
 				{
 
 				}
 
+				/*! \brief Converts the curve to an array of segments to be rendered on screen
+				*
+				* \param[in] ifcCurve The curve to be converted
+				* \param[out] loops The loops (?)
+				* \param[out] segmentStartPoints (?)
+				*
+				* \note Calls the other overload convertIfcCurve with empty IfcTrimmingSelect-s
+				*/
 				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve,
 					std::vector<carve::geom::vector<3>>& loops,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints) const
@@ -65,6 +84,17 @@ namespace OpenInfraPlatform {
 					convertIfcCurve(ifcCurve, loops, segmentStartPoints, trim1Vec, trim2Vec, true);
 				}
 
+				/*! \brief Converts the curve to an array of segments to be rendered on screen
+				*
+				* \param[in] ifcCurve				The curve to be converted
+				* \param[out] targetVec				The loops (?)
+				* \param[out] segmentStartPoints	(?)
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the ifcCurve
+				*
+				* \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometryresource/lexical/ifccurve.htm
+				*/
 				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
@@ -72,11 +102,15 @@ namespace OpenInfraPlatform {
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> > trim2Vec,
 					bool senseAgreement) const
 				{
-					double length_factor = unitConverter->getLengthInMeterFactor();
-					double plane_angle_factor = unitConverter->getAngleInRadianFactor();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing IfcCurve #" << ifcCurve->getId();
-#endif
+					// get the scaling factors from unit converter
+					double length_factor = UnitConvert()->getLengthInMeterFactor();
+					double plane_angle_factor = UnitConvert()->getAngleInRadianFactor();
+
+					// log to the console
+					#ifdef _DEBUG
+					BLUE_LOG(trace) << "Processing " << ifcCurve->getErrorLog();
+					#endif
+
 					/*	CurveConverter.h (IFC 4x1)
 
 					IfcCurve
@@ -128,12 +162,8 @@ namespace OpenInfraPlatform {
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignmentCurve>(bounded_curve);
 						if (alignment_curve) 
 						{
-#ifdef _DEBUG
-							BLUE_LOG(trace) << "Processing " << alignment_curve->getErrorLog();
-#endif
-
+							// **************************************************************************************************************************** //
 							// Step 1: Get segment information from horizontal and vertical alignments.
-
 							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal> horizontal = alignment_curve->Horizontal.lock();
 
 							if (!horizontal)
@@ -354,13 +384,22 @@ namespace OpenInfraPlatform {
 							carve::geom::vector<3> targetPoint3D;
 							carve::geom::vector<3> targetDirection3D;
 							std::vector<carve::geom::vector<3>> curve_points;
-
+							
+							// attach the curve points
 							for (auto it_station : stations)
 							{
-								PlacementConverterT<IfcEntityTypesT>::convertAlignmentCurveDistAlongToPoint3D(alignment_curve, it_station, targetPoint3D, targetDirection3D);
+								// call the placement converter that handles the geometry and calculates the 3D point along a curve
+								placementConverter->convertAlignmentCurveDistAlongToPoint3D(alignment_curve, it_station, true, targetPoint3D, targetDirection3D);
 								curve_points.push_back(targetPoint3D);
 							}
 							GeomUtils::appendPointsToCurve(curve_points, targetVec);
+
+							// add the first point to segments
+							placementConverter->convertAlignmentCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
+							segmentStartPoints.push_back(targetPoint3D);
+
+							// end
+							return;
 						} // end if IfcAlignmentCurve
 
 
@@ -382,13 +421,13 @@ namespace OpenInfraPlatform {
 							splinePoints.resize(points.size());
 							convertIfcCartesianPointVector(points, splinePoints);
 
-							SplineConverterT<typename IfcEntityTypesT, IfcUnitConverterT>::convertIfcBSplineCurve(bspline_curve, splinePoints, targetVec);
+							SplineConverterT<typename IfcEntityTypesT>::convertIfcBSplineCurve(bspline_curve, splinePoints, targetVec);
 							return;
 
 							// TO DO: Implement IfcBSplineCurveWithKnots
 							// TO DO: IfcRationalBSplineCurveWithKnots
 
-						} // endif bsplinecurve
+						} // end if IfcBSplineCurve
 
 						// (3/6) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurve> composite_curve =
@@ -413,12 +452,12 @@ namespace OpenInfraPlatform {
 
 								std::vector<carve::geom::vector<3>> segment_vec;
 								convertIfcCurve(segment_curve, segment_vec, segmentStartPoints);
-								if (segment_vec.size() > 0) {
+								if ( !segment_vec.empty() ) {
 									GeomUtils::appendPointsToCurve(segment_vec, targetVec);
 								}
 							}
 							return;
-						} // endif composite curve
+						} // end if IfcCompositeCurve
 
 						/* TO DO: IMPLEMENT
 						// (4/6) IfcIndexedPolyline SUBTYPE OF IfcBoundedCurve
@@ -441,7 +480,7 @@ namespace OpenInfraPlatform {
 								points.begin(),
 								[](auto &it) {return it.lock(); });
 
-							if (points.size() > 0) {
+							if ( !points.empty() ) {
 								convertIfcCartesianPointVector(points, targetVec);
 								segmentStartPoints.push_back(carve::geom::VECTOR(
 									points[0]->Coordinates[0] * length_factor,
@@ -449,7 +488,7 @@ namespace OpenInfraPlatform {
 									0));
 							}
 							return;
-						} // endif points
+						} // end if IfcPolyline
 
 						// (6/6) IfcTrimmedCurve SUBTYPE OF IfcBoundedCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcTrimmedCurve> trimmed_curve =
@@ -472,12 +511,15 @@ namespace OpenInfraPlatform {
 
 							bool trimmed_sense_agreement = trimmed_curve->SenseAgreement;
 
+							// call recursively with trimmings
 							convertIfcCurve(basis_curve, basis_curve_points, segmentStartPoints,
 								curve_trim1_vec, curve_trim2_vec, trimmed_sense_agreement);
 							GeomUtils::appendPointsToCurve(basis_curve_points, targetVec);
 							return;
 						}
 
+						// the rest makes a return
+						BLUE_LOG(warning) << bounded_curve->getErrorLog() << ": Not supported";
 					} // end IfcBoundedCurve
 
 					// ************************************************************************************************************************	//
@@ -487,37 +529,30 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<typename IfcEntityTypesT::IfcConic> conic =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConic>(ifcCurve);
 					if (conic) {
-#ifdef _DEBUG
-						BLUE_LOG(trace) << "Processing IfcConic #" << conic->getId();
-#endif
+						// determine position
 						typename IfcEntityTypesT::IfcAxis2Placement conic_placement = conic->Position;
 						carve::math::Matrix conic_position_matrix(carve::math::Matrix::IDENT());
 
 						switch (conic_placement.which()) {
 						case 0: // class IfcAxis2Placement2D;
-							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement2D(
+							placementConverter->convertIfcAxis2Placement2D(
 								conic_placement.get<0>().lock(),
-								conic_position_matrix,
-								length_factor);
+								conic_position_matrix);
 							break;
 						case 1: // class IfcAxis2Placement3D;
-							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(
+							placementConverter->convertIfcAxis2Placement3D(
 								conic_placement.get<1>().lock(),
-								conic_position_matrix,
-								length_factor);
+								conic_position_matrix);
 							break;
 						default:
-							BLUE_LOG(warning) << "#" << conic->getId() << "=IfcConic no position found.";
+							BLUE_LOG(error) << conic->getErrorLog() << ": no position found.";
 							break;
-						}
+						} //end switch (conic_placement.which())
 
 						// (1/2) IfcCircle SUBTYPE OF IfcConic
 						std::shared_ptr<typename IfcEntityTypesT::IfcCircle> circle =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircle>(conic);
 						if (circle) {
-#ifdef _DEBUG
-							BLUE_LOG(trace) << "Processing " << circle->getErrorLog();
-#endif
 							// Get radius
 							double circle_radius = 0.0;
 							if (circle->Radius) {
@@ -536,23 +571,21 @@ namespace OpenInfraPlatform {
 
 							// Check for trimming begin
 							if (trim1Vec.size() > 0) {
-								BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Check for trimming begin.";
+								BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming begin.";
 								auto first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 1; });
 								if (first != trim1Vec.end() && *first) {
-									BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Found trimming begin as IfcParameterValue.";
+									BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming begin as IfcParameterValue.";
 									typename IfcEntityTypesT::IfcParameterValue trim_par1 = (*first)->get<1>();
 									trim_angle1 = trim_par1 * plane_angle_factor;
 								}
 								else {
 									first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 0; });
 									if (first != trim1Vec.end() && (*first) != nullptr) {
-										BLUE_LOG(trace) << "blub" << circle->getId();
-										BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Found trimming begin.";
+										BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming begin as IfcCartesianPoint.";
 										try {
-											EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> trim_point1_ref = (*first)->get<0>();
-											std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point1 = trim_point1_ref.lock();
+											std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point1 = (*first)->get<0>().lock();
 
-											BLUE_LOG(trace) << "IfcCartesianPoint #" << trim_point1->getId();
+											BLUE_LOG(trace) << trim_point1->getErrorLog();
 											carve::geom::vector<3> trim_point;
 											convertIfcCartesianPoint(trim_point1, trim_point);
 
@@ -561,47 +594,56 @@ namespace OpenInfraPlatform {
 												trim_point);
 										}
 										catch (...) {
-											BLUE_LOG(error) << "Exception occured!";
+											BLUE_LOG(error) << "Processing " << circle->getErrorLog() << ": Exception occured!";
 											return;
 										}
 									}
 									else {
-										BLUE_LOG(warning) << "Processing IfcCircle #" << circle->getId() << ": No trimming begin.";
+										BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": No trimming begin.";
 									}
 								}
 							}
 							else {
-								BLUE_LOG(warning) << "Processing IfcCircle #" << circle->getId() << ": trim1vec is empty!";
+								BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": trim1vec is empty!";
 							}
 
 							if (trim2Vec.size() > 0) {
 								// check for trimming end
-								BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Check for trimming end.";
+								BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming end.";
 								auto first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 1; });
 								if (first != trim2Vec.end()) {
-									BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Found trimming end as IfcParameterValue.";
+									BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming end as IfcParameterValue.";
 									typename IfcEntityTypesT::IfcParameterValue trim_par2 = (*first)->get<1>();
 									trim_angle1 = trim_par2 * plane_angle_factor;
 								}
 								else {
 									first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 0; });
 									if (first != trim2Vec.end()) {
-										BLUE_LOG(trace) << "Processing IfcCircle #" << circle->getId() << ": Found trimming end as IfcCartesianPoint.";
-										std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point2 = (*first)->get<0>().lock();
-										carve::geom::vector<3> trim_point;
-										convertIfcCartesianPoint(trim_point2, trim_point);
+										BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming end as IfcCartesianPoint.";
 
-										trim_angle2 = getAngleOnCircle(circle_center,
-											circle_radius,
-											trim_point);
+										try {
+											std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point2 = (*first)->get<0>().lock();
+
+											BLUE_LOG(trace) << trim_point2->getErrorLog();
+											carve::geom::vector<3> trim_point;
+											convertIfcCartesianPoint(trim_point2, trim_point);
+
+											trim_angle2 = getAngleOnCircle(circle_center,
+												circle_radius,
+												trim_point);
+										}
+										catch (...) {
+											BLUE_LOG(error) << "Processing " << circle->getErrorLog() << ": Exception occured!";
+											return;
+										}
 									}
 									else {
-										BLUE_LOG(warning) << "Processing IfcCircle #" << circle->getId() << ": No trimming end.";
+										BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": No trimming end.";
 									}
 								}
 							}
 							else {
-								BLUE_LOG(warning) << "Processing IfcCircle #" << circle->getId() << ": trim2vec is empty!";
+								BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": trim2vec is empty!";
 							}
 
 							double start_angle = trim_angle1;
@@ -637,19 +679,16 @@ namespace OpenInfraPlatform {
 								}
 							}
 
-							int num_segments = geomSettings->num_vertices_per_circle
-								* (abs(opening_angle) / (2.0*M_PI));
-
-							if (num_segments < geomSettings->min_num_vertices_per_arc) {
-								num_segments = geomSettings->min_num_vertices_per_arc;
-							}
+							int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation( circle_radius, abs(opening_angle) );
 
 							const double circle_center_x = 0.0;
 							const double circle_center_y = 0.0;
 							std::vector<carve::geom::vector<2> > circle_points;
-							ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>::addArcWithEndPoint(circle_points, circle_radius, start_angle,
-								opening_angle, circle_center_x,
-								circle_center_y, num_segments);
+							ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
+								circle_points, circle_radius, 
+								start_angle, opening_angle, 
+								circle_center_x, circle_center_y, 
+								num_segments);
 
 							if (circle_points.size() > 0) {
 								// apply position
@@ -662,13 +701,14 @@ namespace OpenInfraPlatform {
 								}
 
 								GeomUtils::appendPointsToCurve(circle_points, targetVec);
-								segmentStartPoints.push_back(carve::geom::VECTOR(circle_points.at(0).x,
+								segmentStartPoints.push_back(carve::geom::VECTOR(
+									circle_points.at(0).x,
 									circle_points.at(0).y,
 									0));
 							}
 
 							return;
-						} // end if circle
+						} // end if IfcCircle
 
 						// (2/2) IfcEllipse SUBTYPE OF IfcConic
 						std::shared_ptr<typename IfcEntityTypesT::IfcEllipse> ellipse =
@@ -681,38 +721,39 @@ namespace OpenInfraPlatform {
 									double yRadius = ellipse->SemiAxis2 * length_factor;
 
 									double radiusMax = std::max(xRadius, yRadius);
-									int num_segments = geomSettings->num_vertices_per_circle;
-									// TODO: adapt to model size and complexity
+									double radiusMin = std::min(xRadius, yRadius);
+									int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation(radiusMin);
+									double deltaAngle = GeomSettings()->getAngleLength(radiusMin);
 
 									// todo: implement clipping
+									if( !trim1Vec.empty() || !trim2Vec.empty() )
+										BLUE_LOG(warning) << ellipse->getErrorLog() << ": Trimming not supported";
 
-									std::vector<carve::geom::vector<3> > circle_points;
+									std::vector<carve::geom::vector<3> > ellipse_points;
 									double angle = 0.0;
 									for (int i = 0; i < num_segments; ++i) {
-										circle_points.push_back(carve::geom::vector<3>(
-											carve::geom::VECTOR(xRadius * cos(angle),
+										ellipse_points.push_back(carve::geom::vector<3>(
+											carve::geom::VECTOR(
+												xRadius * cos(angle),
 												yRadius * sin(angle),
 												0)));
-										angle += 2.0*M_PI / double(num_segments);
+										angle += deltaAngle;
 									}
 
 									// apply position
-									for (unsigned int i = 0; i < circle_points.size(); ++i) {
-										carve::geom::vector<3>& point = circle_points.at(i);
+									for (unsigned int i = 0; i < ellipse_points.size(); ++i) {
+										carve::geom::vector<3>& point = ellipse_points.at(i);
 										point = conic_position_matrix * point;
 									}
-									GeomUtils::appendPointsToCurve(circle_points, targetVec);
-
-									//if( segmentStartPoints != NULL )
-									{
-										carve::geom::vector<3> pt0 = circle_points.at(0);
-										segmentStartPoints.push_back(pt0);
-									}
+									GeomUtils::appendPointsToCurve(ellipse_points, targetVec);
+									segmentStartPoints.push_back(ellipse_points.at(0));
 								}
 							}
 							return;
 						} // end if ellipse
 
+						// the rest makes a return
+						BLUE_LOG(warning) << conic->getErrorLog() << ": Not supported";
 					} // end if conic
 
 					// ************************************************************************************************************************	//
@@ -722,7 +763,6 @@ namespace OpenInfraPlatform {
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLine>(ifcCurve);
 					if (line)
 					{
-
 						// Part 1: Get information from IfcLine. 
 
 						// Get IfcLine attributes: line point and line direction. 
@@ -732,6 +772,7 @@ namespace OpenInfraPlatform {
 
 						std::shared_ptr<typename IfcEntityTypesT::IfcVector> line_vec = line->Dir.lock();
 						if (!line_vec) {
+							BLUE_LOG(error) << line->getErrorLog() << ": No direction specified";
 							return;
 						}
 						// Get IfcVector attributes: line orientation and magnitude. 
@@ -828,23 +869,21 @@ namespace OpenInfraPlatform {
 						points_vec.push_back(line_end);
 
 						GeomUtils::appendPointsToCurve(points_vec, targetVec);
-
-						// if( segment_start_points != NULL )
-						{
-							segmentStartPoints.push_back(line_origin);
-						}
+						segmentStartPoints.push_back(line_origin);
 						return;
-					} // end if line
+					} // end if IfcLine
 
 					// ************************************************************************************************************************	//
 					//	IfcOffsetCurve SUPTYPE of IfcCurve																						//
 					//	ABSTRACT SUPERTYPE OF IfcOffsetCurve2D, IfcOffsetCurve3D, IfcOffsetCurveByDistances										//
 					// ************************************************************************************************************************	//
-					/* TODO: IMPLEMENT OFFSETCURVE, PCURVE, SURFACECURVE
+					// TODO: IMPLEMENT OFFSETCURVE, PCURVE, SURFACECURVE
 					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve> offset_curve =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve>(ifcCurve);
 					if (offset_curve) {
-
+						BLUE_LOG(warning) << offset_curve->getErrorLog() << ": Not supported";
+						return;
+						/*
 						// (1/3) IfcOffsetCurve2D SUBTYPE OF IfcOffsetCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve2D> offset_curve_2d =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve2D>(offset_curve);
@@ -874,7 +913,8 @@ namespace OpenInfraPlatform {
 #endif
 							return;
 						}
-					}
+						*/
+					} // end if IfcOffsetCurve
 
 					// ************************************************************************************************************************	//
 					//	IfcPcurve SUPTYPE of IfcCurve																							//
@@ -883,8 +923,10 @@ namespace OpenInfraPlatform {
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPcurve>(ifcCurve);
 					if (p_curve)
 					{
+						BLUE_LOG(warning) << p_curve->getErrorLog() << ": Not supported";
+						return;
 						// TO DO: implement
-					}
+					} // end if IfcPcurve
 
 					// ************************************************************************************************************************	//
 					//	IfcSurfaceCurve SUPTYPE of IfcCurve																						//
@@ -894,6 +936,9 @@ namespace OpenInfraPlatform {
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfaceCurve>(ifcCurve);
 					if (surface_curve)
 					{
+						BLUE_LOG(warning) << surface_curve->getErrorLog() << ": Not supported";
+						return;
+						/*
 						// (1/2) IfcIntersectionCurve SUBTYPE OF IfcSurfaceCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcIntersectionCurve> intersection_curve =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcIntersectionCurve>(ifcCurve);
@@ -909,12 +954,12 @@ namespace OpenInfraPlatform {
 						{
 							// TO DO: implement
 						}
+						*/
+					} // end if IfcSurfaceCurve
 
-					} // endif surface curve */
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processed IfcCurve #" << ifcCurve->getId();
-#endif
-				}
+					BLUE_LOG(warning) << ifcCurve->getErrorLog() << ": Not supported";
+					return;
+				} // end convertIfcCurve (function)
 
 				// ************************************************************************************************************************	//
 				//	Functions			
@@ -1088,7 +1133,7 @@ namespace OpenInfraPlatform {
 				void convertIfcCartesianPoint(const std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>& ifcPoint,
 					carve::geom::vector<3> & point) const
 				{
-					double length_factor = unitConverter->getLengthInMeterFactor();
+					double length_factor = UnitConvert()->getLengthInMeterFactor();
 
 					if (ifcPoint->Coordinates.size() > 2) {
 						double x = ifcPoint->Coordinates[0] * length_factor;
@@ -1129,7 +1174,7 @@ namespace OpenInfraPlatform {
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>>& points,
 					std::vector<carve::geom::vector<3>>& loop) const
 				{
-					const double length_factor = unitConverter->getLengthInMeterFactor();
+					const double length_factor = UnitConvert()->getLengthInMeterFactor();
 					const unsigned int num_points = points.size();
 
 					for (unsigned int i_point = 0; i_point < num_points; ++i_point)
@@ -1160,7 +1205,7 @@ namespace OpenInfraPlatform {
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> >& ifcPoints,
 					std::vector<carve::geom::vector<3> >& loop) const
 				{
-					const double length_factor = unitConverter->getLengthInMeterFactor();
+					const double length_factor = UnitConvert()->getLengthInMeterFactor();
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> >::const_iterator it_cp; // iterates over points
 					int i = 0;
 					carve::geom::vector<3>  vertex_previous;
@@ -1234,8 +1279,9 @@ namespace OpenInfraPlatform {
 				}
 
 			protected:
-				std::shared_ptr<GeometrySettings>	geomSettings;
-				std::shared_ptr<IfcUnitConverterT>	unitConverter;
+
+				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
+
 			}; // end class
 		}; // end namespace IfcGeometryConverter
 	}; // end namespace Core

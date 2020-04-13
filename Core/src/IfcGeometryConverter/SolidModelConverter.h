@@ -23,10 +23,11 @@
 
 #include "CarveHeaders.h"
 
+#include "ConverterBase.h"
+
 #include "ProfileCache.h"
 #include "ProfileConverter.h"
 #include "FaceConverter.h"
-#include "GeometrySettings.h"
 #include "PlacementConverter.h"
 #include "CurveConverter.h"
 
@@ -38,23 +39,24 @@ namespace OpenInfraPlatform
 	namespace IfcGeometryConverter
 	{
 		template <
-			class IfcEntityTypesT,
-			class IfcUnitConverterT
+			class IfcEntityTypesT
 		>
-			class SolidModelConverterT
+		class SolidModelConverterT : public ConverterBaseT<IfcEntityTypesT>
 		{
 		public:
-			SolidModelConverterT(std::shared_ptr<GeometrySettings> geomSettings,
-				std::shared_ptr<IfcUnitConverterT> uc,
-				std::shared_ptr<CurveConverterT<IfcEntityTypesT, IfcUnitConverterT>> cc,
-				std::shared_ptr<FaceConverterT<IfcEntityTypesT, IfcUnitConverterT>> fc,
-				std::shared_ptr<ProfileCacheT<IfcEntityTypesT, IfcUnitConverterT>> pc)
+			SolidModelConverterT(
+				std::shared_ptr<GeometrySettings> geomSettings,
+				std::shared_ptr<UnitConverter<IfcEntityTypesT>> uc,
+				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc,
+				std::shared_ptr<CurveConverterT<IfcEntityTypesT>> cc,
+				std::shared_ptr<FaceConverterT<IfcEntityTypesT>> fc,
+				std::shared_ptr<ProfileCacheT<IfcEntityTypesT>> profc)
 				:
-				geomSettings(geomSettings),
-				unitConverter(uc),
+				ConverterBaseT<IfcEntityTypesT>(geomSettings, uc),
+				placementConverter(pc),
 				curveConverter(cc),
 				faceConverter(fc),
-				profileCache(pc)
+				profileCache(profc)
 			{
 
 			}
@@ -280,9 +282,8 @@ namespace OpenInfraPlatform
 					carve::math::Matrix swept_area_pos(pos);	// check if local coordinate system is specified for extrusion
 					if (swept_area_solid->Position)
 					{
-						double length_factor = unitConverter->getLengthInMeterFactor();
 						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> swept_area_position = swept_area_solid->Position;
-						PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(swept_area_position.lock(), swept_area_pos, length_factor);
+						placementConverter->convertIfcAxis2Placement3D(swept_area_position.lock(), swept_area_pos);
 						swept_area_pos = pos * swept_area_pos;
 					}
 
@@ -357,13 +358,13 @@ namespace OpenInfraPlatform
 						std::cout << "Warning\t| IfcSurfaceCurveSweptAreaSolid not implemented" << std::endl;
 #endif
 
-						std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter = profileCache->getProfileConverter(swept_area);
+						std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(swept_area);
 						const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
 						std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
 
 						std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = surface_curve_swept_area_solid->Directrix.lock();
-						const int nvc = geomSettings->num_vertices_per_circle;
-						double length_in_meter = unitConverter->getLengthInMeterFactor();
+						//const int nvc = geomSettings->num_vertices_per_circle;
+						double length_in_meter = UnitConvert()->getLengthInMeterFactor();
 
 						std::vector<carve::geom::vector<3> > segment_start_points;
 						std::vector<carve::geom::vector<3> > basis_curve_points;
@@ -394,8 +395,8 @@ namespace OpenInfraPlatform
 				{
 					// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
 					std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& directrix_curve = swept_disk_solid->Directrix.lock();
-					const int nvc = geomSettings->num_vertices_per_circle;
-					double length_in_meter = unitConverter->getLengthInMeterFactor();
+					
+					double length_in_meter = UnitConvert()->getLengthInMeterFactor();
 					double radius = swept_disk_solid->Radius * length_in_meter;
 					
 
@@ -433,18 +434,21 @@ namespace OpenInfraPlatform
 					itemData->closed_polyhedrons.push_back(pipe_data);
 					std::vector<carve::geom::vector<3> > inner_shape_points;
 
-					double angle = 0;
-					double delta_angle = 2.0*M_PI / double(nvc);	// TODO: adapt to model size and complexity
+					const int nvc = GeomSettings()->getNumberOfVerticesForTesselation(radius);
+					double delta_angle = GeomSettings()->getAngleLength(radius);
+
 					std::vector<carve::geom::vector<3> > circle_points;
 					std::vector<carve::geom::vector<3> > circle_points_inner;
-					for (int i = 0; i < nvc; ++i)
+					int i; double angle;
+					for ( i = 0, angle = 0.; 
+						  i < nvc; 
+						  ++i,	 angle += delta_angle)
 					{
 						// cross section (circle) is defined in YZ plane
 						double x = sin(angle);
 						double y = cos(angle);
 						circle_points.push_back(carve::geom::VECTOR(0.0, x*radius, y*radius));
 						circle_points_inner.push_back(carve::geom::VECTOR(0.0, x*radius_inner, y*radius_inner));
-						angle += delta_angle;
 					}
 
 					int num_base_points = basis_curve_points.size();
@@ -847,7 +851,7 @@ namespace OpenInfraPlatform
 					BLUE_LOG(error) << "Invalid Depth ";
 					return;
 				}
-				double length_factor = unitConverter->getLengthInMeterFactor();
+				double length_factor = UnitConvert()->getLengthInMeterFactor();
 
 				// direction and length of extrusion
 				const double depth = (typename IfcEntityTypesT::IfcLengthMeasure)(extrudedArea->Depth) * length_factor;
@@ -870,7 +874,7 @@ namespace OpenInfraPlatform
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcExtrudedAreaSolid.SweptArea IfcProfileDef #" << swept_area->getId();
 #endif
-				std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
+				std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter =
 					profileCache->getProfileConverter(swept_area);
 				profile_converter->simplifyPaths();
 				const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
@@ -911,10 +915,10 @@ namespace OpenInfraPlatform
 				{
 					return;
 				}
-				double length_factor = unitConverter->getLengthInMeterFactor();
+				double length_factor = UnitConvert()->getLengthInMeterFactor();
 
 				// angle and axis
-				double angle_factor = unitConverter->getAngleInRadianFactor();
+				double angle_factor = UnitConvert()->getAngleInRadianFactor();
 				std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> swept_area_profile = revolvedArea->SweptArea.lock();
 				double revolution_angle = revolvedArea->Angle * angle_factor;
 
@@ -947,7 +951,7 @@ namespace OpenInfraPlatform
 				base_point *= -1;
 
 				// swept area
-				std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter = profileCache->getProfileConverter(swept_area_profile);
+				std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(swept_area_profile);
 				const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profile_converter->getCoordinates();
 
 				// tesselate
@@ -1031,17 +1035,31 @@ namespace OpenInfraPlatform
 					return;
 				}
 
+				// determine the biggest distance to rotational axis -> biggest radius that needs to be tesselated
+				double biggestRadius = 0.;
+				for (int i = 0; i < profile_coords.size(); ++i)
+				{
+					const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[i];
+					for( int j=0; j < profile_loop.size(); ++j)
+					{
+						const carve::geom::vector<2>& pt_2d = profile_loop.at(j);
+						carve::geom::vector<3>  point(carve::geom::VECTOR(pt_2d.x, pt_2d.y, 0.));
+						carve::geom::vector<3>  pointOnLine;
+						GeomUtils::closestPointOnLine(point, axis_location, axis_direction, pointOnLine);
+						biggestRadius = std::max(biggestRadius, (pointOnLine - point).length());
+					}
+				}
+
 				if (revolution_angle > M_PI * 2) revolution_angle = M_PI * 2;
 				if (revolution_angle < -M_PI * 2) revolution_angle = M_PI * 2;
 
-				// TODO: calculate num segments according to length/width/height ratio and overall size of the object
-				int num_segments = geomSettings->num_vertices_per_circle*(abs(revolution_angle) / (2.0*M_PI));
+				int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation(biggestRadius, abs(revolution_angle));
 				if (num_segments < 6)
 				{
 					num_segments = 6;
 				}
 				double angle = 0.0;
-				double d_angle = revolution_angle / num_segments;
+				double d_angle = revolution_angle / (double)num_segments;
 
 				// check if we have to change the direction
 				carve::geom::vector<3>  polygon_normal = GeomUtils::computePolygon2DNormal(profile_coords[0]);
@@ -1249,7 +1267,7 @@ namespace OpenInfraPlatform
 				std::stringstream& err)
 			{
 				std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
-				double length_factor = unitConverter->getLengthInMeterFactor();
+				double length_factor = UnitConvert()->getLengthInMeterFactor();
 
 				// ENTITY IfcCsgPrimitive3D  ABSTRACT SUPERTYPE OF(ONEOF(IfcBlock, IfcRectangularPyramid, IfcRightCircularCone, IfcRightCircularCylinder, IfcSphere)
 				std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> primitive_placement = csgPrimitive->Position.lock();
@@ -1257,7 +1275,7 @@ namespace OpenInfraPlatform
 				carve::math::Matrix primitive_placement_matrix(pos);
 				if (primitive_placement)
 				{
-					PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(primitive_placement, primitive_placement_matrix, length_factor);
+					placementConverter->convertIfcAxis2Placement3D(primitive_placement, primitive_placement_matrix);
 					primitive_placement_matrix = pos * primitive_placement_matrix;
 				}
 
@@ -1372,27 +1390,26 @@ namespace OpenInfraPlatform
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
 
-					double angle = 0;
-					double d_angle = 2.0*M_PI / double(geomSettings->num_vertices_per_circle);	// TODO: adapt to model size and complexity
-					for (int i = 0; i < geomSettings->num_vertices_per_circle; ++i)
+					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTesselation(radius);
+					double d_angle = GeomSettings()->getAngleLength(radius);
+					for (double angle = 0.; angle < 2*M_PI; angle += d_angle)
 					{
 						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
-						angle += d_angle;
 					}
 
 					// outer shape
-					for (int i = 0; i < geomSettings->num_vertices_per_circle - 1; ++i)
+					for (int i = 0; i < numVerticesInCircle - 1; ++i)
 					{
 						polyhedron_data->addFace(0, i + 3, i + 2);
 					}
-					polyhedron_data->addFace(0, 2, geomSettings->num_vertices_per_circle + 1);
+					polyhedron_data->addFace(0, 2, numVerticesInCircle + 1);
 
 					// bottom circle
-					for (int i = 0; i < geomSettings->num_vertices_per_circle - 1; ++i)
+					for (int i = 0; i < numVerticesInCircle - 1; ++i)
 					{
 						polyhedron_data->addFace(1, i + 2, i + 3);
 					}
-					polyhedron_data->addFace(1, geomSettings->num_vertices_per_circle + 1, 2);
+					polyhedron_data->addFace(1, numVerticesInCircle + 1, 2);
 
 					itemData->closed_polyhedrons.push_back(polyhedron_data);
 					return;
@@ -1414,29 +1431,27 @@ namespace OpenInfraPlatform
 						return;
 					}
 
-					int slices = geomSettings->num_vertices_per_circle;
-					double rad = 0;
-
 					//carve::mesh::MeshSet<3> * cylinder_mesh = makeCylinder( slices, rad, height, primitive_placement_matrix);
 					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Height)*length_factor;
 					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Radius)*length_factor;
 
-					double angle = 0;
-					double d_angle = 2.0*M_PI / double(geomSettings->num_vertices_per_circle);	// TODO: adapt to model size and complexity
-					for (int i = 0; i < geomSettings->num_vertices_per_circle; ++i)
+					int slices = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
+					double rad = 0;
+
+					double d_angle = GeomSettings()->getAngleLength(radius);
+					for (double angle = 0.; angle < 2 * M_PI; angle += d_angle)
 					{
 						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, height));
 						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
-						angle += d_angle;
 					}
 
-					for (int i = 0; i < geomSettings->num_vertices_per_circle - 1; ++i)
+					for (int i = 0; i < slices - 1; ++i)
 					{
 						polyhedron_data->addFace(0, i * 2 + 2, i * 2 + 4);		// top cap:		0-2-4	0-4-6		0-6-8
 						polyhedron_data->addFace(1, i * 2 + 3, i * 2 + 5);		// bottom cap:	1-3-5	1-5-7		1-7-9
 						polyhedron_data->addFace(i, i + 1, i + 3, i + 2);		// side
 					}
-					polyhedron_data->addFace(2 * geomSettings->num_vertices_per_circle - 2, 2 * geomSettings->num_vertices_per_circle - 1, 1, 0);		// side
+					polyhedron_data->addFace(2 * slices - 2, 2 * slices - 1, 1, 0);		// side
 
 					itemData->closed_polyhedrons.push_back(polyhedron_data);
 					return;
@@ -1454,6 +1469,7 @@ namespace OpenInfraPlatform
 
 					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(sphere->Radius);
 
+					// seen from the top, each ring is:
 					//        \   |   /
 					//         2- 1 -nvc
 					//        / \ | / \
@@ -1465,8 +1481,9 @@ namespace OpenInfraPlatform
 					std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, radius)); // top
 
-					const int nvc = geomSettings->num_vertices_per_circle;
-					const int num_vertical_edges = nvc * 0.5;
+					const int nvc = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
+					const double d_horizontal_angle = GeomSettings()->getAngleLength(radius);
+					const int num_vertical_edges = ceil(0.5 * nvc);
 					double d_vertical_angle = M_PI / double(num_vertical_edges - 1);	// TODO: adapt to model size and complexity
 					double vertical_angle = d_vertical_angle;
 
@@ -1476,7 +1493,6 @@ namespace OpenInfraPlatform
 						double vertical_level = cos(vertical_angle)*radius;
 						double radius_at_level = sin(vertical_angle)*radius;
 						double horizontal_angle = 0;
-						double d_horizontal_angle = 2.0*M_PI / double(nvc);
 						for (int i = 0; i < nvc; ++i)
 						{
 							polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(horizontal_angle)*radius_at_level, cos(horizontal_angle)*radius_at_level, vertical_level));
@@ -1535,7 +1551,7 @@ namespace OpenInfraPlatform
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Converting IfcBooleanOperand. Which: " << operand.which();
 #endif
-				double length_factor = unitConverter->getLengthInMeterFactor();
+				double length_factor = UnitConvert()->getLengthInMeterFactor();
 				std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel> solid_model;// = nullptr;
 				std::shared_ptr<typename IfcEntityTypesT::IfcHalfSpaceSolid> half_space_solid;// = nullptr;
 				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_result;// = nullptr;
@@ -1598,8 +1614,8 @@ namespace OpenInfraPlatform
 					carve::math::Matrix base_position_matrix(carve::math::Matrix::IDENT());
 					if (base_surface_pos)
 					{
-						PlacementConverterT<IfcEntityTypesT>::getPlane(base_surface_pos, base_surface_plane, base_surface_position, length_factor);
-						PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(base_surface_pos, base_position_matrix, length_factor);
+						placementConverter->getPlane(base_surface_pos, base_surface_plane, base_surface_position, length_factor);
+						placementConverter->convertIfcAxis2Placement3D(base_surface_pos, base_position_matrix);
 					}
 
 					// If the agreement flag is TRUE, then the subset is the one the normal points away from
@@ -1725,7 +1741,7 @@ namespace OpenInfraPlatform
 #ifdef _DEBUG
 							BLUE_LOG(trace) << "Processing IfcPolygonalBoundedHalfSpace.Position: IfcAxis2Placement3D  #" << polygonal_half_space->Position.lock()->getId();
 #endif
-							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(polygonal_half_space->Position.lock(), boundary_position_matrix, length_factor);
+							placementConverter->convertIfcAxis2Placement3D(polygonal_half_space->Position.lock(), boundary_position_matrix);
 							boundary_plane_normal = carve::geom::VECTOR(boundary_position_matrix._31, boundary_position_matrix._32, boundary_position_matrix._33);
 							boundary_position = carve::geom::VECTOR(boundary_position_matrix._41, boundary_position_matrix._42, boundary_position_matrix._43);
 #ifdef _DEBUG
@@ -1738,8 +1754,8 @@ namespace OpenInfraPlatform
 						std::vector<carve::geom::vector<2> > segment_start_points_2d;
 						std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve = polygonal_half_space->PolygonalBoundary.lock();
 						curveConverter->convertIfcCurve2D(bounded_curve, polygonal_boundary, segment_start_points_2d);
-						ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>::deleteLastPointIfEqualToFirst(polygonal_boundary);
-						ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>::simplifyPath(polygonal_boundary);
+						ProfileConverterT<IfcEntityTypesT>::deleteLastPointIfEqualToFirst(polygonal_boundary);
+						ProfileConverterT<IfcEntityTypesT>::simplifyPath(polygonal_boundary);
 
 						if (otherOperand)
 						{
@@ -1943,7 +1959,7 @@ namespace OpenInfraPlatform
 					{
 						result = std::shared_ptr<carve::mesh::MeshSet<3>>(csg.compute(op1, op2,
 							operation, nullptr,
-							geomSettings->classify_type));
+							GeomSettings()->getCSGtype()));
 
 						isCSGComputationOk = GeomUtils::checkMeshSet(result.get(), err, -1);
 
@@ -2229,11 +2245,11 @@ namespace OpenInfraPlatform
 			}
 
 		protected:
-			std::shared_ptr<GeometrySettings>	geomSettings;
-			std::shared_ptr<IfcUnitConverterT>		unitConverter;
-			std::shared_ptr<CurveConverterT<IfcEntityTypesT, IfcUnitConverterT>> curveConverter;
-			std::shared_ptr<FaceConverterT<IfcEntityTypesT, IfcUnitConverterT>>  faceConverter;
-			std::shared_ptr<ProfileCacheT<IfcEntityTypesT, IfcUnitConverterT>>   profileCache;
+
+			std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
+			std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter;
+			std::shared_ptr<FaceConverterT<IfcEntityTypesT>>  faceConverter;
+			std::shared_ptr<ProfileCacheT<IfcEntityTypesT>>   profileCache;
 		};
 
 		//template<>

@@ -30,10 +30,12 @@
 #include "CarveHeaders.h"
 //#include "ReaderSettings.h"
 
+#include "ConverterBase.h"
+
+#include "PlacementConverter.h"
 #include "CurveConverter.h"
 #include "FaceConverter.h"
 #include "GeomUtils.h"
-#include "GeometrySettings.h"
 #include "PlacementConverter.h"
 #include "ProfileCache.h"
 #include "ProfileConverter.h"
@@ -47,24 +49,33 @@
 namespace OpenInfraPlatform {
 	namespace Core {
 		namespace IfcGeometryConverter {
-			template <class IfcEntityTypesT, class IfcUnitConverterT>
-			class RepresentationConverterT {
+			template <
+				class IfcEntityTypesT
+			>
+			class RepresentationConverterT : public ConverterBaseT<IfcEntityTypesT>
+			{
 			public:
-				RepresentationConverterT(std::shared_ptr<GeometrySettings> geomSettings, std::shared_ptr<IfcUnitConverterT> unitConverter)
-					: geomSettings(geomSettings), unitConverter(unitConverter)
+				RepresentationConverterT(
+					std::shared_ptr<GeometrySettings> geomSettings, 
+					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter
+				)
+					: 
+					ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter)
 				{
 					handle_styled_items = true;
 					handle_layer_assignments = true;
 
+					placementConverter = std::make_shared<PlacementConverterT<IfcEntityTypesT>>(geomSettings, unitConverter);
+
 					// styles_converter = shared_ptr<StylesConverter>( new StylesConverter() );
-					profileCache = std::make_shared<ProfileCacheT<IfcEntityTypesT, IfcUnitConverterT>>(geomSettings, unitConverter);
 
-					curveConverter = std::make_shared<CurveConverterT<IfcEntityTypesT, IfcUnitConverterT>>(geomSettings, unitConverter);
+					curveConverter = std::make_shared<CurveConverterT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter);
 
-					faceConverter = std::make_shared<FaceConverterT<IfcEntityTypesT, IfcUnitConverterT>>(geomSettings, unitConverter, curveConverter);
+					faceConverter = std::make_shared<FaceConverterT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter, curveConverter);
 
+					profileCache = std::make_shared<ProfileCacheT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter);
 					solidConverter =
-						std::make_shared<SolidModelConverterT<IfcEntityTypesT, IfcUnitConverterT>>(geomSettings, unitConverter, curveConverter, faceConverter, profileCache);
+						std::make_shared<SolidModelConverterT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter, curveConverter, faceConverter, profileCache);
 				}
 
 				~RepresentationConverterT()
@@ -81,7 +92,7 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData,
 					std::stringstream& err)
 				{
-					double length_factor = unitConverter->getLengthInMeterFactor();
+					double length_factor = UnitConvert()->getLengthInMeterFactor();
 
 					for(auto it_representation_items : representation->Items) {
 						std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem>& representation_item = it_representation_items.lock();
@@ -124,7 +135,7 @@ namespace OpenInfraPlatform {
 							if(mapped_item->MappingTarget) {
 								auto& transform_operator = mapped_item->MappingTarget;
 
-								PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(transform_operator.lock(), map_matrix_target, length_factor);
+								PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(transform_operator.lock(), map_matrix_target, UnitConvert()->getLengthInMeterFactor());
 							}
 
 							carve::math::Matrix map_matrix_origin(carve::math::Matrix::IDENT());
@@ -139,7 +150,7 @@ namespace OpenInfraPlatform {
 							}
 
 							if(mapping_origin_placement) {
-								PlacementConverterT<IfcEntityTypesT>::convertIfcPlacement(mapping_origin_placement, map_matrix_origin, length_factor);
+								placementConverter->convertIfcPlacement(mapping_origin_placement, map_matrix_origin);
 							}
 							else {
 								BLUE_LOG(warning) << "#" << mapping_origin_placement->getId() << " = IfcPlacement: !std::dynamic_pointer_cast<IfcPlacement>( mapping_origin ) )";
@@ -552,7 +563,7 @@ namespace OpenInfraPlatform {
 					//		return;
 					//	}
 					//	const int product_id = ifcElement->getId();
-					//	const double length_factor = unitConverter->getLengthInMeterFactor();
+					//	const double length_factor = UnitConvert()->getLengthInMeterFactor();
 					//
 					//	// convert opening representation
 					//	for (int i_void = 0; i_void<vec_rel_voids.size(); ++i_void)
@@ -701,11 +712,15 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-				std::shared_ptr<SolidModelConverterT<IfcEntityTypesT, IfcUnitConverterT>>& getSolidConverter()
+				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>>& getPlacementConverter()
+				{
+					return placementConverter;
+				}
+				std::shared_ptr<SolidModelConverterT<IfcEntityTypesT>>& getSolidConverter()
 				{
 					return solidConverter;
 				}
-				std::shared_ptr<ProfileCacheT<IfcEntityTypesT, IfcUnitConverterT>>& getProfileCache()
+				std::shared_ptr<ProfileCacheT<IfcEntityTypesT>>& getProfileCache()
 				{
 					return profileCache;
 				}
@@ -727,13 +742,13 @@ namespace OpenInfraPlatform {
 				}
 
 			protected:
-				std::shared_ptr<GeometrySettings> geomSettings;
-				std::shared_ptr<IfcUnitConverterT> unitConverter;
+
 				// std::shared_ptr<StylesConverter>	stylesConverter;
-				std::shared_ptr<CurveConverterT<IfcEntityTypesT, IfcUnitConverterT>> curveConverter;
-				std::shared_ptr<SolidModelConverterT<IfcEntityTypesT, IfcUnitConverterT>> solidConverter;
-				std::shared_ptr<FaceConverterT<IfcEntityTypesT, IfcUnitConverterT>> faceConverter;
-				std::shared_ptr<ProfileCacheT<IfcEntityTypesT, IfcUnitConverterT>> profileCache;
+				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
+				std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter;
+				std::shared_ptr<SolidModelConverterT<IfcEntityTypesT>> solidConverter;
+				std::shared_ptr<FaceConverterT<IfcEntityTypesT>> faceConverter;
+				std::shared_ptr<ProfileCacheT<IfcEntityTypesT>> profileCache;
 
 				bool handle_styled_items;
 				bool handle_layer_assignments;

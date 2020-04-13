@@ -32,14 +32,19 @@ namespace OpenInfraPlatform {
 	namespace Core {
 		namespace IfcGeometryConverter {
 			template<
-				class IfcEntityTypesT,
-				class IfcUnitConverterT
+				class IfcEntityTypesT
 			>
-				class ProfileCacheT {
+			class ProfileCacheT : public ConverterBaseT<IfcEntityTypesT>
+			{
 				public:
-					ProfileCacheT(std::shared_ptr<GeometrySettings> geomSettings,
-						std::shared_ptr<IfcUnitConverterT> unitConverter)
-						: geomSettings(geomSettings), unitConverter(unitConverter)
+					ProfileCacheT(
+						std::shared_ptr<GeometrySettings> geomSettings,
+						std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
+						std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc
+					)
+						: 
+						ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
+						placementConverter(pc)
 					{
 
 					}
@@ -49,14 +54,14 @@ namespace OpenInfraPlatform {
 
 					}
 
-					std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> getProfileConverter(
+					std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> getProfileConverter(
 						std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& ifcProfile)
 					{
 						const int profile_id = ifcProfile->getId();
 #ifdef _DEBUG
 						BLUE_LOG(trace) << "Getting ProfileConverterT for IfcProfileDef #" << profile_id;
 #endif
-						typename std::map<int, std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>>>::iterator
+						typename std::map<int, std::shared_ptr<ProfileConverterT<IfcEntityTypesT>>>::iterator
 							it_profile_cache = profileCache.find(profile_id);
 						if(it_profile_cache != profileCache.end()) {
 #ifdef _DEBUG
@@ -68,8 +73,8 @@ namespace OpenInfraPlatform {
 #ifdef _DEBUG
 							BLUE_LOG(trace) << "Creating ProfileConverterT for IfcProfile #" << profile_id;
 #endif
-							std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> profile_converter =
-								std::make_shared<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>>(geomSettings, unitConverter);
+							std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter =
+								std::make_shared<ProfileConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert(), placementConverter);
 
 							profile_converter->computeProfile(ifcProfile);
 
@@ -88,9 +93,9 @@ namespace OpenInfraPlatform {
 					}
 
 				protected:
-					std::shared_ptr<GeometrySettings>	geomSettings;
-					std::shared_ptr<IfcUnitConverterT>	unitConverter;
-					std::map<int, std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>>> profileCache;
+
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
+					std::map<int, std::shared_ptr<ProfileConverterT<IfcEntityTypesT>>> profileCache;
 			};
 		}
 	}

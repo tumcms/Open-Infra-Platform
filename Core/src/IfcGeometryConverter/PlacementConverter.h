@@ -26,6 +26,8 @@
 #include <memory>
 #include "CarveHeaders.h"
 
+#include "ConverterBase.h"
+
 #include "BlueFramework/Core/Diagnostics/log.h"
 
 
@@ -38,18 +40,32 @@ namespace OpenInfraPlatform {
 			template <
 				class IfcEntityTypesT
 			>
-				class PlacementConverterT {
-				public:
+			class PlacementConverterT : public ConverterBaseT<IfcEntityTypesT>
+			{
+			public:
+				//! Constructor
+				PlacementConverterT(
+					std::shared_ptr<GeometrySettings> geomSettings,
+					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter)
+					:
+					ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter)
+				{
+				}
+
+				//! Virtual destructor
+				virtual ~PlacementConverterT()
+				{
+
+				}
 
 					// **************************************************************************************************************************//
 					//	IfcPlacement (http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcplacement.htm) //
 					//	ABSTRACT SUPERTYPE OF IfcAxis1Placement, IfcAxis2Placement2D, IfcAxis2Placement3D										 //
 					// **************************************************************************************************************************//
 
-					static void convertIfcPlacement(
+					void convertIfcPlacement(
 						const std::shared_ptr<typename IfcEntityTypesT::IfcPlacement> placement,
-						carve::math::Matrix& matrix,
-						double length_factor)
+						carve::math::Matrix& matrix)
 					{
 						// (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
 						if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis1Placement>(placement)) {
@@ -64,13 +80,13 @@ namespace OpenInfraPlatform {
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(placement)) {
 							std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D> axis2placement2d =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(placement);
-							convertIfcAxis2Placement2D(axis2placement2d, matrix, length_factor);
+							convertIfcAxis2Placement2D(axis2placement2d, matrix);
 						}
 
 						// (3/3) IfcAxis2Placement3D SUBTYPE OF IfcPlacement
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(placement)) {
 							std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(placement);
-							convertIfcAxis2Placement3D(axis2placement3d, matrix, length_factor);
+							convertIfcAxis2Placement3D(axis2placement3d, matrix);
 						}
 						else {
 							std::stringstream ss;
@@ -85,10 +101,9 @@ namespace OpenInfraPlatform {
 					// ********************************************************************************************************************************************************	//
 
 					// Function 1: Convert IfcAxis2Placement2D.
-					static void convertIfcAxis2Placement2D(
+					void convertIfcAxis2Placement2D(
 						const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D> axis2placement2d,
-						carve::math::Matrix& matrix,
-						double length_factor)
+						carve::math::Matrix& matrix)
 					{
 
 						carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
@@ -96,6 +111,8 @@ namespace OpenInfraPlatform {
 						carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
 						carve::geom::vector<3>  local_z(carve::geom::VECTOR(0.0, 0.0, 1.0));
 						carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
+
+						double length_factor = UnitConvert()->getLengthInMeterFactor();
 
 						// Location type IfcCartesianPoint 
 						if(axis2placement2d->Location) {
@@ -122,6 +139,7 @@ namespace OpenInfraPlatform {
 						local_y.normalize();
 						local_z.normalize();
 
+						// produce a quaternion
 						matrix = carve::math::Matrix(
 							local_x.x, local_y.x, local_z.x, translate.x,
 							local_x.y, local_y.y, local_z.y, translate.y,
@@ -130,10 +148,9 @@ namespace OpenInfraPlatform {
 					}
 
 					// Function 2: Convert IfcAxis2Placement3D.
-					static void convertIfcAxis2Placement3D(
+					void convertIfcAxis2Placement3D(
 						const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d,
-						carve::math::Matrix& matrix,
-						double length_factor)
+						carve::math::Matrix& matrix)
 					{
 						carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
 						carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
@@ -141,10 +158,12 @@ namespace OpenInfraPlatform {
 						carve::geom::vector<3>  local_z(carve::geom::VECTOR(0.0, 0.0, 1.0));
 						carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
 
+						double length_factor = UnitConvert()->getLengthInMeterFactor();
+
 						// Location type IfcCartesianPoint
 						if(axis2placement3d->Location) {
-							//std::vector<carve::geom::vector<3>>
-							/*Syntax?*/			auto& coords = axis2placement3d->Location->Coordinates; //Richtig
+
+							auto& coords = axis2placement3d->Location->Coordinates;
 
 							if(coords.size() > 2) {
 								translate = carve::geom::VECTOR(coords[0] * length_factor, coords[1] * length_factor, coords[2] * length_factor);
@@ -182,6 +201,7 @@ namespace OpenInfraPlatform {
 						local_y.normalize();
 						local_z.normalize();
 
+						// produce a quaternion
 						matrix = carve::math::Matrix(
 							local_x.x, local_y.x, local_z.x, translate.x,
 							local_x.y, local_y.y, local_z.y, translate.y,
@@ -189,11 +209,10 @@ namespace OpenInfraPlatform {
 							0, 0, 0, 1);
 					}
 
-					// Function 3: Convert IfcObjectPlacement. 
-					static void convertIfcObjectPlacement(
+					// Function 3: Convert IfcObjectPlacement
+					void convertIfcObjectPlacement(
 						const std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement> object_placement,
 						carve::math::Matrix& matrix,
-						double length_factor,
 						std::set<int>& already_applied)
 					{
 						// Prevent cyclic relative placement
@@ -207,7 +226,7 @@ namespace OpenInfraPlatform {
 						}
 						carve::math::Matrix object_placement_matrix(carve::math::Matrix::IDENT());
 
-						// (1/2) IfcLocalPLacement SUBTYPE OF IfcObjectPlacement
+						// (1/3) IfcLocalPLacement SUBTYPE OF IfcObjectPlacement
 						std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLocalPlacement>(object_placement);
 						if(local_placement) {
@@ -217,10 +236,10 @@ namespace OpenInfraPlatform {
 
 							switch(axis2placement.which()) {
 							case 0:
-								convertIfcAxis2Placement2D(axis2placement.get<0>().lock(), relative_placement, length_factor);
+								convertIfcAxis2Placement2D(axis2placement.get<0>().lock(), relative_placement);
 								break;
 							case 1:
-								convertIfcAxis2Placement3D(axis2placement.get<1>().lock(), relative_placement, length_factor);
+								convertIfcAxis2Placement3D(axis2placement.get<1>().lock(), relative_placement);
 								break;
 							default:
 								break;
@@ -236,7 +255,7 @@ namespace OpenInfraPlatform {
 								// Reference to Object that provides the relative placement by its local coordinate system. 
 								decltype(local_placement->PlacementRelTo)::type& local_object_placement = local_placement->PlacementRelTo;
 								carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
-								convertIfcObjectPlacement(local_object_placement.lock(), relative_placement, length_factor, already_applied);
+								convertIfcObjectPlacement(local_object_placement.lock(), relative_placement, already_applied);
 								object_placement_matrix = relative_placement*object_placement_matrix;
 							}
 							else {
@@ -245,12 +264,14 @@ namespace OpenInfraPlatform {
 									//applyContext( context, context_matrix, length_factor, placement_already_applied );
 									//object_placement_matrix = context_matrix*object_placement_matrix;
 							}
-						}
+						} // end if IfcLocalPlacement
 
-						// (2/2) IfcGridPlacement SUBTYPE OF IfcObjectPlacement
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGridPlacement>(object_placement)) {
-							std::shared_ptr<typename IfcEntityTypesT::IfcGridPlacement> grid_placement =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGridPlacement>(object_placement);
+						// (2/3) IfcGridPlacement SUBTYPE OF IfcObjectPlacement
+						std::shared_ptr<typename IfcEntityTypesT::IfcGridPlacement> grid_placement =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGridPlacement>(object_placement);
+						if( grid_placement ) {
+
+							BLUE_LOG(warning) << grid_placement->getErrorLog() << ": Not implemented";
 
 							// PlacementLocation type IfcVirtualGridIntersection
 							auto grid_intersection = grid_placement->PlacementLocation;
@@ -556,29 +577,26 @@ namespace OpenInfraPlatform {
 					}
 
 					// Function 7: Convert distance along an alignment curve to 3D coordinates.
-					static void convertAlignmentCurveDistAlongToPoint3D(
+					// Function allows IfcBoundedCurve as input because of template issues. TODO: change to IfcAlignmentCurve
+					void convertAlignmentCurveDistAlongToPoint3D(
 						std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> ifcAlignmentCurve,
-						double dPointDistAlong,
+						double dDistAlongOfPoint,
+						bool bDistMeasuredAlongHorizontal,
 						carve::geom::vector<3>& vkt3DtargetPoint,
-						carve::geom::vector<3>& vkt3DtargetDirection)
-					
+						carve::geom::vector<3>& vkt3DtargetDirection) 					
 					{	
-						// *DONE* scale dPointDistAlong according to unit_converter? Not necessary, because already applied in curve converter before function call (?, cc). 
-
 						// preset the return values
 						vkt3DtargetPoint	 = carve::geom::VECTOR(0., 0., 0.);
 						vkt3DtargetDirection = carve::geom::VECTOR(1., 0., 0.);
 
-						// Function allows IfcBoundedCurve as input because of template issues. TODO: change to IfcAlignmentCurve
+						// get the length & angle factors
+						double length_factor = UnitConvert()->getLengthInMeterFactor();
+						double plane_angle_factor = UnitConvert()->getAngleInRadianFactor();
+
 						std::shared_ptr<typename IfcEntityTypesT::IfcAlignmentCurve> alignment_curve =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignmentCurve>(ifcAlignmentCurve);
 						if (alignment_curve)
 						{
-							//TODO get the unit conversion that is globally set in the IFC file
-							auto unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
-							double length_factor = unitConverter->getLengthInMeterFactor();
-							double plane_angle_factor = unitConverter->getAngleInRadianFactor();
-
 							// the vectors of horizontal and vertical segments - used in analysis
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment> > horSegments;
 							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerticalSegment> > verSegments;
@@ -655,7 +673,7 @@ namespace OpenInfraPlatform {
 								//*********************************************************************
 
 								// if begin of this segment is after the station -> sth went wrong
-								if (horizSegStartDistAlong > dPointDistAlong)
+								if (horizSegStartDistAlong > dDistAlongOfPoint)
 								{
 									BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Inconsistency! Segment begins after the station.";
 									return;
@@ -664,7 +682,7 @@ namespace OpenInfraPlatform {
 								//*********************************************************************
 								// If the end of this segment is further along than the point searched for, 
 								//    the point is within this segment -> remember that!
-								if (horizSegStartDistAlong + horizSegLength > dPointDistAlong)
+								if (horizSegStartDistAlong + horizSegLength > dDistAlongOfPoint)
 								{
 									horizontalSegmentRelevantToPoint = it_segment;
 
@@ -689,7 +707,7 @@ namespace OpenInfraPlatform {
 
 									// break the for loop, since we have found the element!
 									break;
-								} // end if (horizSegStartDistAlong + horizSegLength > dPointDistAlong)
+								} // end if (horizSegStartDistAlong + horizSegLength > dDistAlongOfPoint)
 								//********************************************************************
 
 								// If the start of the segment along the alignment equals the point's distance along the alignment, save the segment start point coordinates.
@@ -742,7 +760,7 @@ namespace OpenInfraPlatform {
 									verSegLength = it_segment->HorizontalLength * length_factor;
 
 									// If the end of this segment is further along than the point, the point is within this segment.
-									if (verSegDistAlong + verSegLength > dPointDistAlong)
+									if (verSegDistAlong + verSegLength > dDistAlongOfPoint)
 									{
 										verticalSegmentRelevantToPoint = it_segment;
 
@@ -763,7 +781,7 @@ namespace OpenInfraPlatform {
 										//verSegStartGradient = it_segment->StartGradient;
 
 										break;
-									} // end if (verSegDistAlong + verSegLength > dPointDistAlong)
+									} // end if (verSegDistAlong + verSegLength > dDistAlongOfPoint)
 
 								}// end vertical stations iteration
 							} // end if (!verSegments.empty())
@@ -806,7 +824,7 @@ namespace OpenInfraPlatform {
 
 							// types have additional data
 							//   -> calculate the exact position within the x,y
-							double distanceToStart = dPointDistAlong - horizSegStartDistAlong; // Distance from start of segment to point along alignment.
+							double distanceToStart = dDistAlongOfPoint - horizSegStartDistAlong; // Distance from start of segment to point along alignment.
 
 							// these values should be set after the following if - else if - ...
 							double x, y; // the resulting point coordinate
@@ -900,7 +918,7 @@ namespace OpenInfraPlatform {
 								{
 								case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BIQUADRATICPARABOLA):
 								{
-									x = dPointDistAlong;		// x coordinate
+									x = dDistAlongOfPoint;		// x coordinate
 									y = 0.0;
 									if (x <= horizSegLength / 2)	// y coordinate
 									{
@@ -922,14 +940,14 @@ namespace OpenInfraPlatform {
 								case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BLOSSCURVE):
 								{
 									// Integration durch Substitution(s.Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
-									double teta_up = pow(dPointDistAlong + horizSegLength, 3) / (endRadius * pow(horizSegLength, 2))
-										- pow(dPointDistAlong + horizSegLength, 4) / (2 * endRadius * pow(horizSegLength, 3)); //values for upper boundary of integral
-									double teta_low = pow(dPointDistAlong, 3) / (endRadius * pow(horizSegLength, 2))
-										- pow(dPointDistAlong, 4) / (2 * endRadius * pow(horizSegLength, 3)); //values for lower boundary of integral
-									double teta_deriv_up = 2 * pow(dPointDistAlong + horizSegLength, 2) / endRadius * pow(horizSegLength, 2)
-										- 4 * pow(dPointDistAlong + horizSegLength, 3) / 2 * endRadius*pow(horizSegLength, 3);
-									double teta_deriv_low = 2 * pow(dPointDistAlong, 2) / endRadius * pow(horizSegLength, 2)
-										- 4 * pow(dPointDistAlong, 3) / 2 * endRadius*pow(horizSegLength, 3);
+									double teta_up = pow(dDistAlongOfPoint + horizSegLength, 3) / (endRadius * pow(horizSegLength, 2))
+										- pow(dDistAlongOfPoint + horizSegLength, 4) / (2 * endRadius * pow(horizSegLength, 3)); //values for upper boundary of integral
+									double teta_low = pow(dDistAlongOfPoint, 3) / (endRadius * pow(horizSegLength, 2))
+										- pow(dDistAlongOfPoint, 4) / (2 * endRadius * pow(horizSegLength, 3)); //values for lower boundary of integral
+									double teta_deriv_up = 2 * pow(dDistAlongOfPoint + horizSegLength, 2) / endRadius * pow(horizSegLength, 2)
+										- 4 * pow(dDistAlongOfPoint + horizSegLength, 3) / 2 * endRadius*pow(horizSegLength, 3);
+									double teta_deriv_low = 2 * pow(dDistAlongOfPoint, 2) / endRadius * pow(horizSegLength, 2)
+										- 4 * pow(dDistAlongOfPoint, 3) / 2 * endRadius*pow(horizSegLength, 3);
 									x = sin(teta_up) / teta_deriv_up - sin(teta_low) / teta_deriv_low;
 									y = -cos(teta_up) / teta_deriv_up + cos(teta_low) / teta_deriv_low;
 									
@@ -938,15 +956,15 @@ namespace OpenInfraPlatform {
 
 								case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_CLOTHOIDCURVE):
 								{
-									x = dPointDistAlong * (1 - pow(dPointDistAlong, 4) / 40 * pow(endRadius, 2) * pow(horizSegLength, 2) + pow(dPointDistAlong, 8) / 3456 * pow(endRadius, 4) * pow(horizSegLength, 4));
-									y = (pow(dPointDistAlong, 3) / 6 * endRadius*horizSegLength) * (1 - pow(dPointDistAlong, 4) / 56 * pow(endRadius, 2) * pow(horizSegLength, 2) + pow(dPointDistAlong, 8) / 7040 * pow(endRadius, 4) * pow(horizSegLength, 4));
+									x = dDistAlongOfPoint * (1 - pow(dDistAlongOfPoint, 4) / 40 * pow(endRadius, 2) * pow(horizSegLength, 2) + pow(dDistAlongOfPoint, 8) / 3456 * pow(endRadius, 4) * pow(horizSegLength, 4));
+									y = (pow(dDistAlongOfPoint, 3) / 6 * endRadius*horizSegLength) * (1 - pow(dDistAlongOfPoint, 4) / 56 * pow(endRadius, 2) * pow(horizSegLength, 2) + pow(dDistAlongOfPoint, 8) / 7040 * pow(endRadius, 4) * pow(horizSegLength, 4));
 								} // end case CLOTHOIDCURVE
 								break;
 
 								case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_COSINECURVE):
 								{
-									double psi = M_PI * dPointDistAlong / horizSegLength;
-									x = dPointDistAlong - (pow(horizSegLength, 2) / (8 * pow(M_PI, 2) * pow(endRadius, 2))) * horizSegLength / M_PI
+									double psi = M_PI * dDistAlongOfPoint / horizSegLength;
+									x = dDistAlongOfPoint - (pow(horizSegLength, 2) / (8 * pow(M_PI, 2) * pow(endRadius, 2))) * horizSegLength / M_PI
 										* ((pow(psi, 3) / 3) + (psi / 2 - sin(psi) * cos(psi) / 2) - 2 * (sin(psi) - psi * cos(psi)));
 									y = horizSegLength * (horizSegLength / (2 * pow(M_PI, 2) * endRadius) * (pow(psi, 2) / 2 + cos(psi) - 1)
 										- (pow(horizSegLength, 3) / (48 * pow(M_PI, 4) * pow(endRadius, 3)))
@@ -957,21 +975,21 @@ namespace OpenInfraPlatform {
 
 								case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_CUBICPARABOLA):
 								{
-									x = dPointDistAlong;
+									x = dDistAlongOfPoint;
 									y = pow(x, 3) / (6 * endRadius * horizSegLength);
 								} // end case CUBICPARABOLA
 								break;
 
 								case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_SINECURVE):
 								{
-									double psi = (2 * M_PI * dPointDistAlong) / horizSegLength;
-									x = dPointDistAlong * (1 - pow(horizSegLength, 2) / (32 * pow(M_PI, 4)*pow(endRadius, 2) - (pow(horizSegLength, 3) / 3840 * pow(M_PI, 5)*pow(endRadius, 2)))
+									double psi = (2 * M_PI * dDistAlongOfPoint) / horizSegLength;
+									x = dDistAlongOfPoint * (1 - pow(horizSegLength, 2) / (32 * pow(M_PI, 4)*pow(endRadius, 2) - (pow(horizSegLength, 3) / 3840 * pow(M_PI, 5)*pow(endRadius, 2)))
 										* (3 * pow(psi, 5) - 20 * pow(psi, 3) + 30 * psi - (240 - 60 * pow(psi, 2)*sin(psi) + 30 * cos(psi)*sin(psi) + 120 * psi*cos(psi))));
 									// Integration durch Substitution (s. Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
-									double teta_up = pow((dPointDistAlong + horizSegLength), 2) / (2 * endRadius*horizSegLength) + (horizSegLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(dPointDistAlong + horizSegLength) / horizSegLength) - 1);
-									double teta_low = pow((dPointDistAlong + horizSegLength), 2) / (2 * endRadius*horizSegLength) + (horizSegLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(dPointDistAlong) / horizSegLength) - 1);
-									double teta_deriv_up = 2 * (dPointDistAlong + horizSegLength) / 2 * endRadius*horizSegLength;
-									double teta_deriv_low = 2 * dPointDistAlong / 2 * endRadius*horizSegLength;
+									double teta_up = pow((dDistAlongOfPoint + horizSegLength), 2) / (2 * endRadius*horizSegLength) + (horizSegLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(dDistAlongOfPoint + horizSegLength) / horizSegLength) - 1);
+									double teta_low = pow((dDistAlongOfPoint + horizSegLength), 2) / (2 * endRadius*horizSegLength) + (horizSegLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(dDistAlongOfPoint) / horizSegLength) - 1);
+									double teta_deriv_up = 2 * (dDistAlongOfPoint + horizSegLength) / 2 * endRadius*horizSegLength;
+									double teta_deriv_low = 2 * dDistAlongOfPoint / 2 * endRadius*horizSegLength;
 									y = sin(teta_up) / teta_deriv_up - sin(teta_low) / teta_deriv_low;
 
 								} // end case SINECURVE
@@ -985,7 +1003,7 @@ namespace OpenInfraPlatform {
 							vkt3DtargetPoint.y = y;
 
 							// set the direction
-							dir = dir * 180 / M_PI_2; // convert "dir" from deg to rad (for use of sin and cos). TODO: if used more than once, write function.
+							dir = dir * 180 / M_PI; // convert "dir" from deg to rad (for use of sin and cos). TODO: if used more than once, write function.
 							vkt3DtargetDirection.x = cos(dir);
 							vkt3DtargetDirection.y = sin(dir);
 								
@@ -1009,7 +1027,7 @@ namespace OpenInfraPlatform {
 								// common parameters
 								// StartDistAlong type IfcLengthMeasure [1:1]
 								double verSegDistAlong = verticalSegmentRelevantToPoint->StartDistAlong * length_factor;
-								double distVerToStart = dPointDistAlong - verSegDistAlong;
+								double distVerToStart = dDistAlongOfPoint - verSegDistAlong;
 
 								// HorizontalLength type IfcPositiveLengthMeasure [1:1]
 								double verSegLength = verticalSegmentRelevantToPoint->HorizontalLength * length_factor;

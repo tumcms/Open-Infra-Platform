@@ -36,10 +36,10 @@
 template <
 	class IfcEntityTypesT
 >
-static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct(
+	const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
-	const std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
-	const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT, UnitConverter<IfcEntityTypesT>>> repConverter)
+	const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter)
 {
 	//#ifdef _DEBUG
 	//				std::cout << "Info\t| IfcGeometryConverter.Importer.RepConverter: Converting IFC product " << product->classname() << " #" << product->getId() << std::endl;
@@ -48,7 +48,6 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 	// get id of product
 	const uint32_t productId = product->getId();
 
-	double lengthFactor = unitConverter->getLengthInMeterFactor();
 	carve::math::Matrix matProduct(carve::math::Matrix::IDENT());
 
 	// check if there's any global object placement for this product
@@ -65,8 +64,9 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 																// OR auto& objectPlacement = optObjectPlacement.get();
 
 		std::set<int> placementAlreadyApplied;
-		PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(objectPlacement_ptr,
-			matProduct, lengthFactor,
+		repConverter->getPlacementConverter()->convertIfcObjectPlacement(
+			objectPlacement_ptr,
+			matProduct,
 			placementAlreadyApplied);
 
 #ifdef _DEBUG
@@ -95,7 +95,7 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 #endif
 		}
 
-		IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT, UnitConverter<IfcEntityTypesT>>(product, productShape, strerr, repConverter);
+		IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT>(product, productShape, strerr, repConverter);
 #ifdef _DEBUG
 		BLUE_LOG(trace) << "Processed IfcProductRepresentation #" << representation->getId();
 #endif
@@ -123,22 +123,20 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 }
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-template void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct<emt::IFC4X1EntityTypes>(const std::shared_ptr<typename emt::IFC4X1EntityTypes::IfcProduct>& product,
+template void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct<emt::IFC4X1EntityTypes>(
+	const std::shared_ptr<typename emt::IFC4X1EntityTypes::IfcProduct>& product,
 	std::shared_ptr<ShapeInputDataT<emt::IFC4X1EntityTypes>> productShape,
-	const std::shared_ptr<UnitConverter<emt::IFC4X1EntityTypes>> unitConverter,
-	const std::shared_ptr<RepresentationConverterT<emt::IFC4X1EntityTypes, UnitConverter<emt::IFC4X1EntityTypes>>> repConverter);
+	const std::shared_ptr<RepresentationConverterT<emt::IFC4X1EntityTypes>> repConverter);
 #endif
 
 //#ifdef OIP_MODULE_EARLYBINDING_IFC4
 //template void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct<emt::IFC4EntityTypes>(const std::shared_ptr<typename emt::IFC4EntityTypes::IfcProduct>& product,
 //	std::shared_ptr<ShapeInputDataT<emt::IFC4EntityTypes>> productShape,
-//	const std::shared_ptr<UnitConverter<emt::IFC4EntityTypes>> unitConverter,
-//	const std::shared_ptr<RepresentationConverterT<emt::IFC4EntityTypes, UnitConverter<emt::IFC4EntityTypes>>> repConverter);
+//	const std::shared_ptr<RepresentationConverterT<emt::IFC4EntityTypes>> repConverter);
 //#endif
 
 //#ifdef OIP_MODULE_EARLYBINDING_IFC2X3
 //template void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct<emt::IFC2X3EntityTypes>(const std::shared_ptr<typename emt::IFC2X3EntityTypes::IfcProduct>& product,
 //	std::shared_ptr<ShapeInputDataT<emt::IFC2X3EntityTypes>> productShape,
-//	const std::shared_ptr<UnitConverter<emt::IFC2X3EntityTypes>> unitConverter,
-//	const std::shared_ptr<RepresentationConverterT<emt::IFC2X3EntityTypes, UnitConverter<emt::IFC2X3EntityTypes>>> repConverter);
+//	const std::shared_ptr<RepresentationConverterT<emt::IFC2X3EntityTypes>> repConverter);
 //#endif
