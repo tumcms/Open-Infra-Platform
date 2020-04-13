@@ -191,12 +191,23 @@ namespace OpenInfraPlatform {
 							//std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVertical>
 							auto vertical = alignment_curve->Vertical;
 							if (!vertical) {
+								// there is no vertical alignment
 								BLUE_LOG(trace) << "No IfcAlignment2DVertical in " << alignment_curve->getErrorLog();
 								bOnlyHorizontal = true;
 							}
+							else
+							{
+								// vertical alignment is there
+								if (vertical->Segments.empty()) {
+									BLUE_LOG(error) << "No segments in " << vertical->getErrorLog();
+									return;
+								}
+							}
 
-							double dCurrentDistAlong = 0.; // start at the beginning
-							std::vector<double> stations;  // the stations at which a point of the tesselation has to be calcuated
+							// start at the beginning of the alignment
+							double dCurrentDistAlong = 0.; 
+							// the stations at which a point of the tesselation has to be calcuated - to be converted and fill the targetVec
+							std::vector<double> stations;  
 
 							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment>>::iterator itHorizontalSegment = horizontal->Segments.begin();
 							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcAlignment2DVerticalSegment>>::iterator   itVerticalSegment;
@@ -204,15 +215,15 @@ namespace OpenInfraPlatform {
 								itVerticalSegment = vertical->Segments.begin();
 
 							double dHorizontalSegStart = 0.; // the end station of the last element in the horizontal ( i.e. the start station of current itHorizotnalSegment )
-							double dVerticalSegStart = 0.; // similar
+							double dVerticalSegStart = 0.; // similar for vertical
 
 							// Iterate over horizontal segments
 							while (itHorizontalSegment != horizontal->Segments.end())
 							{
 								// IfcAlignment2DHorizontalSegment
-								//   TangentialContinuity type IfcBoolean [0:1], 
-								//   StartTag type IfcLabel [0:1], 
-								//   EndTag type IfcLabel [0:1], 
+								//   TangentialContinuity type IfcBoolean [0:1], // ignored
+								//   StartTag type IfcLabel [0:1],				 // ignored
+								//   EndTag type IfcLabel [0:1],				 // ignored
 								//   CurveGeometry type IfcCurveSegment2D [1:1]
 								std::shared_ptr<typename IfcEntityTypesT::IfcCurveSegment2D> horCurveGeometry = (*itHorizontalSegment)->CurveGeometry.lock();
 
@@ -224,14 +235,14 @@ namespace OpenInfraPlatform {
 
 								// SegmentLength type IfcPositiveLengthMeasure [1:1]
 								if (horCurveGeometry->SegmentLength <= 0) {
-									BLUE_LOG(error) << "No curve segment length in " << horCurveGeometry->getErrorLog();
+									BLUE_LOG(error) << "Curve segment length is " << std::to_string(horCurveGeometry->SegmentLength) << " in " << horCurveGeometry->getErrorLog();
 									return;
 								}
 								double dHorizontalSegLength = horCurveGeometry->SegmentLength * length_factor;
 								double dHorizontalSegEnd = dHorizontalSegStart + dHorizontalSegLength;
 
 								// Step 2: Get horizontal segment type and store the number and length of fragments.
-								// the values needed for calculation of points
+								// the values are needed for calculation of points
 								double dFragmentLength = 0.;
 								int    nFragments = 0;
 
@@ -244,29 +255,43 @@ namespace OpenInfraPlatform {
 								std::shared_ptr<typename IfcEntityTypesT::IfcTransitionCurveSegment2D> trans_curve_segment_2D =
 									std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTransitionCurveSegment2D>(horCurveGeometry);
 								
-								// Set number of fragments (number of points to be added between start & end) according to segment type.
+								// Set number of fragments (number of stations to be added within segment) according to segment type.
+								// depending on the (smallest) segment radius.
+								double dHorizontalRadius = 0.;
 								if (line_segment_2D) {
-									nFragments = 0;
-									dFragmentLength = dHorizontalSegLength;
+									dHorizontalRadius = 0.;
 								}
 								else if (circular_arc_segment_2D) {
-									nFragments = geomSettings->min_num_vertices_per_arc;
-									dFragmentLength = dHorizontalSegLength / nFragments;
+									dHorizontalRadius = circular_arc_segment_2D->Radius;
 								}
 								else if (trans_curve_segment_2D) {
-									nFragments = geomSettings->min_num_vertices_per_arc;
-									dFragmentLength = dHorizontalSegLength / nFragments;
+									double dStartRadius = INFINITY, dEndRadius = INFINITY;
+									if (trans_curve_segment_2D->StartRadius)
+										dStartRadius = trans_curve_segment_2D->StartRadius;
+									if (trans_curve_segment_2D->EndRadius)
+										dEndRadius = trans_curve_segment_2D->EndRadius;
+									dHorizontalRadius = std::min(dStartRadius, dEndRadius);
+									if (dHorizontalRadius == INFINITY)
+									{
+										BLUE_LOG(warning) << trans_curve_segment_2D->getErrorLog() << ": A straight disgusised as a transition curve.";
+										dHorizontalRadius = 0.;
+									}
 								}
 								else
 								{
 									BLUE_LOG(error) << (*itHorizontalSegment)->getErrorLog() << ": Could not determine tesselation values.";
 									return;
 								}
+
+								dHorizontalRadius *= length_factor;
+								nFragments = GeomSettings()->getNumberOfSegmentsForTesselation(dHorizontalRadius);
+								dFragmentLength = dHorizontalSegLength / (double)(nFragments);
 								// Step 2 finished: We have the necessary information from the horizontal element
 
 								// Step 3: Get vertical segment type and store number and length of fragments.
-								double dOverlapStart = dHorizontalSegStart, dOverlapEnd = dHorizontalSegEnd; //where does the overlap happen?
-								if (!bOnlyHorizontal && itVerticalSegment != vertical->Segments.end()) // the vertical alignment may be shorter than horizontal
+								double dOverlapStart = dHorizontalSegStart, dOverlapEnd = dHorizontalSegEnd; // where does the overlap happen?
+								if (  !bOnlyHorizontal // if there is a vertical alignment
+									&& itVerticalSegment != vertical->Segments.end()) // the vertical alignment may be shorter than horizontal
 								{
 									// check, if the current vertical segment overlaps the horizontal
 									bool bLoop = true;
@@ -276,11 +301,6 @@ namespace OpenInfraPlatform {
 									while (bLoop)
 									{
 										// StartDistAlong type IfcLengthMeasure [1:1]
-										// cannot be checked this way because it is an IfcLengthMeasure, not IfcPositiveLengthMeasure
-										//if ((*it_vertical_segment)->StartDistAlong < 0.0) {
-										//	BLUE_LOG(error) << (*it_vertical_segment)->getErrorLog() << ": Unknown StartDistAlong.";
-										//	return;
-										//}
 										dVerticalSegStart = (*itVerticalSegment)->StartDistAlong * length_factor;
 
 										// HorizontalLength type IfcPositiveLengthMeasure [1:1]
@@ -292,26 +312,36 @@ namespace OpenInfraPlatform {
 										dVerticalSegEnd = dVerticalSegStart + dVerticalSegLength;
 
 										// check the plausibility
-										//  itVerticalSeg:          +-------+  itHorizontalSeg
+										//  itHorizontalSeg: dHorizontalSegStart +---+ dHorizontalSegEnd
+										//  itVerticalSeg:   dVerticalSegStart   +---+ dVerticalSegEnd
+										//                          +-------+  itHorizontalSeg    
+										//  itVerticalSeg:  
 										//      1:        +------+								<------- the only case, where we need to count up the iterator of vertical segments
-										//      2:              +-------+
-										//      3:             +------------------+
-										//      4:                  +-------+
-										//      5:                       +-+
-										//      6:                        +-------+
-										//      7:                               +---------+    <------- should never ever happen
+										//      2:            +-----+
+										//      3:              +-------+
+										//      4:             +------------------+
+										//      5:                  +-------+
+										//      6:                       +-+
+										//      7:                        +-------+
+										//      8:                               +---------+    <------- should never ever happen
 
+										// option 1 & 2 - bLoop stays on true
+										// - these elements should have been considered with previous horizontal element
+
+										// options 3 through 7
 										if (dVerticalSegEnd > dHorizontalSegStart)
 											bLoop = false;
 
+										// option 8
 										if (dVerticalSegStart > dHorizontalSegEnd)
 										{
 											BLUE_LOG(error) << (*itVerticalSegment)->getErrorLog() << ": Invalid sequence of vertical elements.";
 											return;
 										}
 
+										// take the next element
 										if ( bLoop )
-											itVerticalSegment++; // take the next element
+											itVerticalSegment++;
 									} // while( bLoop )
 
 									// Segment types: IfcAlignment2DVerSegCircularArc, IfcAlignment2DVerSegLine, IfcAlignment2DVerSegParabolicArc.
@@ -672,6 +702,7 @@ namespace OpenInfraPlatform {
 								}
 							}
 
+							// correct for -2*PI <= angle <= 2*PI
 							if (opening_angle > 0) {
 								while (opening_angle > 2.0*M_PI) {
 									opening_angle -= 2.0*M_PI;
