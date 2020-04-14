@@ -1,0 +1,241 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION((''),'2;1');
+FILE_NAME('','2019-03-20T15:56:47',(''),(''),'BuildingSmart IfcKit by Constructivity','IfcDoc 12.0.0.0','');
+FILE_SCHEMA(('IFC4x1'));
+ENDSEC;
+
+DATA;
+
+#1= IFCPROJECT('3EasFN11P0zQRYKyp7G85J',#2,'HVAC Product Type Library Example','Demonstrates an air terminal type, which may be instantiated in buildings within referencing files.','ProductLibrary',$,$,(#3),#4);
+#2= IFCOWNERHISTORY(#6,#7,.READWRITE.,.NOTDEFINED.,$,$,$,1321047295);
+#3= IFCGEOMETRICREPRESENTATIONCONTEXT('3D','Model',3,1.0E-05,#8,$);
+#4= IFCUNITASSIGNMENT((#10));
+#6= IFCPERSONANDORGANIZATION(#11,#12,$);
+#7= IFCAPPLICATION(#13,'0.9.1','Constructivity','CONSTRUCTIVITY');
+#8= IFCAXIS2PLACEMENT3D(#14,$,$);
+#9= IFCSHAPEREPRESENTATION(#3,'Body','AdvancedSweptSolid',(#15));
+#10= IFCCONVERSIONBASEDUNIT(#17,.LENGTHUNIT.,'inch',#18);
+#11= IFCPERSON('Tim',$,$,$,$,$,$,$);
+#12= IFCORGANIZATION($,'Tim-PC',$,$,$);
+#13= IFCORGANIZATION($,'Constructivity.com LLC',$,$,$);
+#14= IFCCARTESIANPOINT((0.,0.,0.));
+#15= IFCEXTRUDEDAREASOLIDTAPERED(#19,#20,#21,4.,#22);
+#16= IFCREPRESENTATIONMAP(#23,#9);
+#17= IFCDIMENSIONALEXPONENTS(1,0,0,0,0,0,0);
+#18= IFCMEASUREWITHUNIT(IFCLENGTHMEASURE(0.0254),#24);
+#19= IFCRECTANGLEHOLLOWPROFILEDEF(.AREA.,$,$,24.,24.,2.,10.,0.);
+#20= IFCAXIS2PLACEMENT3D(#25,$,$);
+#21= IFCDIRECTION((0.,0.,1.));
+#22= IFCDERIVEDPROFILEDEF(.AREA.,$,#19,#26,$);
+#23= IFCAXIS2PLACEMENT3D(#27,$,$);
+#24= IFCSIUNIT($,.LENGTHUNIT.,$,.METRE.);
+#25= IFCCARTESIANPOINT((12.,12.,0.));
+#26= IFCCARTESIANTRANSFORMATIONOPERATOR2D($,$,#28,0.5);
+#27= IFCCARTESIANPOINT((0.,0.,0.));
+#28= IFCCARTESIANPOINT((0.,0.));
+
+#5= IFCRELDECLARES('0$b_yyn8PEbAVbeTOu2ljb',#2,$,$,#1,(#29,#30));
+
+#29= IFCAIRTERMINALTYPE('1FESQ2M9vC7xYWZpI_LlCh',#2,'Acme Diffuser 1234','Ceiling diffuser',$,(#31,#32),(#16),$,$,.DIFFUSER.);
+
+#30= IFCPROJECTLIBRARY('1rfo$z7PbCaeLf5SOGGJV5',#2,'IFC4',$,$,$,$,$,$);
+
+#31= IFCPROPERTYSET('34RBPXI3v1B9OyUNo6YREP',#2,'Pset_AirTerminalTypeCommon',$,(#36,#37,#38,#39,#40,#41,#42,#43,#44,#45,#46,#47,#48,#49,#50,#51,#52,#53,#54,#55,#56,#57,#58,#59,#60,#61));
+#36= IFCPROPERTYSINGLEVALUE('Reference',$,$,$);
+#37= IFCPROPERTYENUMERATEDVALUE('Status',$,$,#63);
+#38= IFCPROPERTYENUMERATEDVALUE('Shape',$,(IFCLABEL('SQUARE')),#64);
+#39= IFCPROPERTYENUMERATEDVALUE('FaceType',$,$,#65);
+#40= IFCPROPERTYSINGLEVALUE('SlotWidth',$,$,$);
+#41= IFCPROPERTYSINGLEVALUE('SlotLength',$,$,$);
+#42= IFCPROPERTYSINGLEVALUE('NumberOfSlots',$,$,$);
+#43= IFCPROPERTYENUMERATEDVALUE('FlowPattern',$,$,#66);
+#44= IFCPROPERTYBOUNDEDVALUE('AirFlowrateRange',$,$,$,$,$);
+#45= IFCPROPERTYBOUNDEDVALUE('TemperatureRange',$,$,$,$,$);
+#46= IFCPROPERTYENUMERATEDVALUE('DischargeDirection',$,$,#67);
+#47= IFCPROPERTYSINGLEVALUE('ThrowLength',$,$,$);
+#48= IFCPROPERTYSINGLEVALUE('AirDiffusionPerformanceIndex',$,$,$);
+#49= IFCPROPERTYENUMERATEDVALUE('FinishType',$,$,#68);
+#50= IFCPROPERTYSINGLEVALUE('FinishColor',$,$,$);
+#51= IFCPROPERTYENUMERATEDVALUE('MountingType',$,$,#69);
+#52= IFCPROPERTYENUMERATEDVALUE('CoreType',$,$,#70);
+#53= IFCPROPERTYSINGLEVALUE('CoreSetHorizontal',$,$,$);
+#54= IFCPROPERTYSINGLEVALUE('CoreSetVertical',$,$,$);
+#55= IFCPROPERTYSINGLEVALUE('HasIntegralControl',$,$,$);
+#56= IFCPROPERTYENUMERATEDVALUE('FlowControlType',$,$,#71);
+#57= IFCPROPERTYSINGLEVALUE('HasSoundAttenuator',$,$,$);
+#58= IFCPROPERTYSINGLEVALUE('HasThermalInsulation',$,$,$);
+#59= IFCPROPERTYSINGLEVALUE('NeckArea',$,$,$);
+#60= IFCPROPERTYSINGLEVALUE('EffectiveArea',$,$,$);
+#61= IFCPROPERTYTABLEVALUE('AirFlowrateVersusFlowControlElement',$,$,$,$,$,$,$);
+#63= IFCPROPERTYENUMERATION('PEnum_Status',(IFCLABEL('NEW'),IFCLABEL('EXISTING'),IFCLABEL('DEMOLISH'),IFCLABEL('TEMPORARY'),IFCLABEL('OTHER'),IFCLABEL('NOTKNOWN'),IFCLABEL('UNSET')),$);
+#64= IFCPROPERTYENUMERATION('PEnum_AirTerminalShape',(IFCLABEL('ROUND'),IFCLABEL('RECTANGULAR'),IFCLABEL('SQUARE'),IFCLABEL('SLOT'),IFCLABEL('OTHER'),IFCLABEL('NOTKNOWN'),IFCLABEL('UNSET')),$);
+#65= IFCPROPERTYENUMERATION('PEnum_AirTerminalFaceType',(IFCLABEL('FOURWAYPATTERN'),IFCLABEL('SINGLEDEFLECTION'),IFCLABEL('DOUBLEDEFLECTION'),IFCLABEL('SIGHTPROOF'),IFCLABEL('EGGCRATE'),IFCLABEL('PERFORATED'),IFCLABEL('LOUVERED'),IFCLABEL('OTHER'),IFCLABEL('NOTKNOWN'),IFCLABEL('UNSET')),$);
+#66= IFCPROPERTYENUMERATION('PEnum_AirTerminalFlowPattern',(IFCLABEL('LINEARSINGLE'),IFCLABEL('LINEARDOUBLE'),IFCLABEL('LINEARFOURWAY'),IFCLABEL('RADIAL'),IFCLABEL('SWIRL'),IFCLABEL('DISPLACMENT'),IFCLABEL('COMPACTJET'),IFCLABEL('OTHER'),IFCLABEL('NOTKNOWN'),IFCLABEL('UNSET')),$);
+#67= IFCPROPERTYENUMERATION('PEnum_AirTerminalDischargeDirection',(IFCLABEL('PARALLEL'),IFCLABEL('PERPENDICULAR'),IFCLABEL('ADJUSTABLE'),IFCLABEL('OTHER'),IFCLABEL('NOTKNOWN'),IFCLABEL('UNSET')),$);
+#68= IFCPROPERTYENUMERATION('PEnum_AirTerminalFinishType',(IFCLABEL('ANNODIZED'),IFCLABEL('PAINTED'),IFCLABEL('NONE'),IFCLABEL('OTHER'),IFCLABEL('NOTKNOWN'),IFCLABEL('UNSET')),$);
+#69= IFCPROPERTYENUMERATION('PEnum_AirTerminalMountingType',(IFCLABEL('SURFACE'),IFCLABEL('FLATFLUSH'),IFCLABEL('LAYIN'),IFCLABEL('OTHER'),IFCLABEL('NOTKNOWN'),IFCLABEL('UNSET')),$);
+#70= IFCPROPERTYENUMERATION('PEnum_AirTerminalCoreType',(IFCLABEL('SHUTTERBLADE'),IFCLABEL('CURVEDBLADE'),IFCLABEL('REMOVABLE'),IFCLABEL('REVERSIBLE'),IFCLABEL('NONE'),IFCLABEL('OTHER'),IFCLABEL('NOTKNOWN'),IFCLABEL('UNSET')),$);
+#71= IFCPROPERTYENUMERATION('PEnum_AirTerminalFlowControlType',(IFCLABEL('DAMPER'),IFCLABEL('BELLOWS'),IFCLABEL('NONE'),IFCLABEL('OTHER'),IFCLABEL('NOTKNOWN'),IFCLABEL('UNSET')),$);
+
+#32= IFCPROPERTYSET('2LM02K5dbFiBVTpfUgOnl4',#2,'Pset_ManufacturerTypeInformation',$,(#72,#73,#74,#75,#76,#77,#78));
+#72= IFCPROPERTYSINGLEVALUE('GlobalTradeItemNumber',$,$,$);
+#73= IFCPROPERTYSINGLEVALUE('ArticleNumber',$,$,$);
+#74= IFCPROPERTYSINGLEVALUE('ModelReference',$,IFCLABEL('1234'),$);
+#75= IFCPROPERTYSINGLEVALUE('ModelLabel',$,IFCLABEL('Ceiling Diffuser'),$);
+#76= IFCPROPERTYSINGLEVALUE('Manufacturer',$,IFCLABEL('Acme'),$);
+#77= IFCPROPERTYSINGLEVALUE('ProductionYear',$,IFCLABEL('2011'),$);
+#78= IFCPROPERTYENUMERATEDVALUE('AssemblyPlace',$,(IFCLABEL('FACTORY')),#80);
+#80= IFCPROPERTYENUMERATION('PEnum_AssemblyPlace',(IFCLABEL('FACTORY'),IFCLABEL('OFFSITE'),IFCLABEL('SITE'),IFCLABEL('OTHER'),IFCLABEL('NOTKNOWN'),IFCLABEL('UNSET')),$);
+
+#33= IFCRELNESTS('1yPSy1NEzAsQ3rkI$pYuin',#2,$,$,#29,(#81));
+
+#34= IFCRELASSOCIATESLIBRARY('2AvhQDLy558AFVeANPXoWB',#2,$,$,(#30),#82);
+#82= IFCLIBRARYINFORMATION('IFC4',$,#83,'2011-09-26T20:52:24','http://buildingsmart-tech.org/ifc/IFC2x4/rc3/html/annex/annex-a/ifc2x4_rc3-templates.ifc',$);
+#83= IFCORGANIZATION($,'Tim-PC',$,$,$);
+#84= IFCLIBRARYREFERENCE($,'Pset_DistributionPortCommon','Pset_DistributionPortCommon',$,$,#82);
+#85= IFCLIBRARYREFERENCE($,'Pset_DistributionPortTypeAirConditioning','Pset_DistributionPortTypeAirConditioning',$,$,#82);
+#86= IFCLIBRARYREFERENCE($,'Pset_AirTerminalTypeCommon','Pset_AirTerminalTypeCommon',$,$,#82);
+#87= IFCLIBRARYREFERENCE($,'Pset_ManufacturerTypeInformation','Pset_ManufacturerTypeInformation',$,$,#82);
+
+#35= IFCRELDECLARES('0Xl$PCnZPB2BUMJcj$F_RN',#2,'PROJECT',$,#30,(#92,#93,#94,#95));
+
+#62= IFCRELDEFINESBYTEMPLATE('2MnMFQk5T8PfDt4jNfTD0y',#2,$,$,(#31),#94);
+
+#79= IFCRELDEFINESBYTEMPLATE('1gZFqTeWDCiPFdVEDktMyc',#2,$,$,(#32),#95);
+
+#81= IFCDISTRIBUTIONPORT('0lCGSOGtb4mu56WSeYuzNg',#2,'Inlet',$,$,#96,$,.SINK.,.DUCT.,.AIRCONDITIONING.);
+#96= IFCLOCALPLACEMENT($,#99);
+#99= IFCAXIS2PLACEMENT3D(#100,$,$);
+#100= IFCCARTESIANPOINT((12.,12.,4.));
+
+#88= IFCRELASSOCIATESLIBRARY('24PRN3YsXAVP3fEgb4zpZM',#2,$,$,(#92),#84);
+
+#89= IFCRELASSOCIATESLIBRARY('2DqAITf693l8NzYzj5r79c',#2,$,$,(#93),#85);
+
+#90= IFCRELASSOCIATESLIBRARY('259LjdEyzC5gc5NKIzDXj4',#2,$,$,(#94),#86);
+
+#91= IFCRELASSOCIATESLIBRARY('39XKqfEPrEmwCmJTAn1TLk',#2,$,$,(#95),#87);
+
+#92= IFCPROPERTYSETTEMPLATE('29WBDBI9L3tgEAg5Ay2Kax',#2,'Pset_DistributionPortCommon','Common attributes attached to an instance of IfcDistributionPort.',.PSET_OCCURRENCEDRIVEN.,'IfcDistributionPort',(#101,#102));
+
+#93= IFCPROPERTYSETTEMPLATE('1A6ROK3ijAv94HqL2QeE5V',#2,'Pset_DistributionPortTypeAirConditioning','Duct port occurrence attributes attached to an instance of IfcDistributionPort.',.PSET_OCCURRENCEDRIVEN.,'IfcDistributionPort/AIRCONDITIONING',(#104,#105,#106,#107,#108,#109,#110,#111,#112));
+
+#94= IFCPROPERTYSETTEMPLATE('2jTsg4Mlz1weXQWo2pv0Qb',#2,'Pset_AirTerminalTypeCommon','Air terminal type common attributes.\X\0ASoundLevel attribute deleted in IFC2x2 Pset Addendum: Use IfcSoundProperties instead.',.PSET_TYPEDRIVENOVERRIDE.,'IfcAirTerminal',(#114,#115,#116,#117,#118,#119,#120,#121,#122,#123,#124,#125,#126,#127,#128,#129,#130,#131,#132,#133,#134,#135,#136,#137,#138,#139));
+
+#95= IFCPROPERTYSETTEMPLATE('0wwkiIwGz0lf2YIWw4Kdjj',#2,'Pset_ManufacturerTypeInformation','Defines characteristics of types (ranges) of manufactured products that may be given by the manufacturer. Note that the term ''manufactured'' may also be used to refer to products that are supplied and identified by the supplier or that are assembled off site by a third party provider. \X\0AHISTORY: This property set replaces the entity IfcManufacturerInformation from previous IFC releases. IFC 2x4: AssemblyPlace property added.',.PSET_TYPEDRIVENOVERRIDE.,'IfcElement',(#140,#141,#142,#143,#144,#145,#146));
+
+#97= IFCRELDEFINESBYPROPERTIES('0eTnqsHaH63xaP$yFWdQxt',#2,'Pset_DistributionPortCommon',$,(#81),#147);
+
+#98= IFCRELDEFINESBYPROPERTIES('2Phx4Cdqz3XRbcSidvQspJ',#2,'Pset_DistributionPortTypeAirConditioning',$,(#81),#148);
+
+#101= IFCSIMPLEPROPERTYTEMPLATE('3_bLjRfq13tPEPPfI$6pRX',#2,'PortNumber','The port index for logically ordering the port within the containing element or element type.',.P_SINGLEVALUE.,'IfcInteger','',$,$,$,$,.READWRITE.);
+
+#102= IFCSIMPLEPROPERTYTEMPLATE('2VDgHzk35At81oM56a3xnn',#2,'ColorCode','Name of a color for identifying the connector, if applicable.',.P_SINGLEVALUE.,'IfcLabel','',$,$,$,$,.READWRITE.);
+
+#103= IFCRELDEFINESBYTEMPLATE('2DA69vfj12BPHrvbOJli4C',#2,$,$,(#147),#92);
+
+#104= IFCSIMPLEPROPERTYTEMPLATE('3$fSJrLkP9WesgtUW7tvY9',#2,'ConnectionType','The end-style treatment of the duct port:\X\0A\X\0ABEADEDSLEEVE: Beaded Sleeve. \X\0ACOMPRESSION: Compression. \X\0ACRIMP: Crimp. \X\0ADRAWBAND: Drawband. \X\0ADRIVESLIP: Drive slip. \X\0AFLANGED: Flanged. \X\0AOUTSIDESLEEVE: Outside Sleeve. \X\0ASLIPON: Slipon. \X\0ASOLDERED: Soldered. \X\0ASSLIP: S-Slip. \X\0ASTANDINGSEAM: Standing seam. \X\0ASWEDGE: Swedge. \X\0AWELDED: Welded. \X\0AOTHER: Another type of end-style has been applied.\X\0ANONE: No end-style has been applied.',.P_ENUMERATEDVALUE.,'IfcLabel',$,#149,$,$,$,.READWRITE.);
+#149= IFCPROPERTYENUMERATION('PEnum_DuctConnectionType',(IFCLABEL('BEADEDSLEEVE'),IFCLABEL('COMPRESSION'),IFCLABEL('CRIMP'),IFCLABEL('DRAWBAND'),IFCLABEL('DRIVESLIP'),IFCLABEL('FLANGED'),IFCLABEL('OUTSIDESLEEVE'),IFCLABEL('SLIPON'),IFCLABEL('SOLDERED'),IFCLABEL('SSLIP'),IFCLABEL('STANDINGSEAM'),IFCLABEL('SWEDGE'),IFCLABEL('WELDED'),IFCLABEL('OTHER'),IFCLABEL('NONE'),IFCLABEL('USERDEFINED'),IFCLABEL('NOTDEFINED')),$);
+
+#105= IFCSIMPLEPROPERTYTEMPLATE('3eYrOWOML0MAWniKzD$bg8',#2,'ConnectionSubType','The physical port connection subtype that further qualifies the ConnectionType.',.P_SINGLEVALUE.,'IfcLabel','',$,$,$,$,.READWRITE.);
+
+#106= IFCSIMPLEPROPERTYTEMPLATE('3U0yI_myr9Tuk86rnglnUq',#2,'NominalWidth','The nominal width or diameter of the duct connection.',.P_SINGLEVALUE.,'IfcPositiveLengthMeasure','',$,$,$,$,.READWRITE.);
+
+#107= IFCSIMPLEPROPERTYTEMPLATE('1T7T2i39H9OfTY1TIerMbJ',#2,'NominalHeight','The nominal height of the duct connection.',.P_SINGLEVALUE.,'IfcPositiveLengthMeasure','',$,$,$,$,.READWRITE.);
+
+#108= IFCSIMPLEPROPERTYTEMPLATE('3ASt$O5yD8NeM$q_lQyHWd',#2,'DryBulbTemperature','Dry bulb temperature of the air.',.P_BOUNDEDVALUE.,'IfcThermodynamicTemperatureMeasure','',$,$,$,$,.READWRITE.);
+
+#109= IFCSIMPLEPROPERTYTEMPLATE('1tms9JUcX85eqcKjr4hn0X',#2,'WetBulbTemperature','Wet bulb temperature of the air.',.P_BOUNDEDVALUE.,'IfcThermodynamicTemperatureMeasure','',$,$,$,$,.READWRITE.);
+
+#110= IFCSIMPLEPROPERTYTEMPLATE('0oDnPia3b949zQ9IOqQ3WD',#2,'VolumetricFlowRate','The volumetric flow rate of the fluid.',.P_BOUNDEDVALUE.,'IfcVolumetricFlowRateMeasure','',$,$,$,$,.READWRITE.);
+
+#111= IFCSIMPLEPROPERTYTEMPLATE('0Y$o5$IVnCBBYMkfqCX9u2',#2,'Velocity','The velocity of the fluid.',.P_BOUNDEDVALUE.,'IfcLinearVelocityMeasure','',$,$,$,$,.READWRITE.);
+
+#112= IFCSIMPLEPROPERTYTEMPLATE('0r4zhLdSb4$QDqtTZAlksU',#2,'Pressure','The pressure of the fluid.',.P_BOUNDEDVALUE.,'IfcPressureMeasure','',$,$,$,$,.READWRITE.);
+
+#113= IFCRELDEFINESBYTEMPLATE('2rvy24e5L04OIpKBIyaF5s',#2,$,$,(#148),#93);
+
+#114= IFCSIMPLEPROPERTYTEMPLATE('3fpWm82nz9hQ6TKg7VFU19',#2,'Reference','Reference ID for this specified type in this project (e.g. type ''A-1''), provided, if there is no classification reference to a recognized classification system used.',.P_SINGLEVALUE.,'IfcIdentifier','',$,$,$,$,.READWRITE.);
+
+#115= IFCSIMPLEPROPERTYTEMPLATE('0Yj8hLD1HER8_kCs5XavrF',#2,'Status','Status of the element, predominately used in renovation or retrofitting projects. The status can be assigned to as "New" - element designed as new addition, "Existing" - element exists and remains, "Demolish" - element existed but is to be demolished,  "Temporary" - element will exists only temporary (like a temporary support structure).',.P_ENUMERATEDVALUE.,'IfcLabel',$,#63,$,$,$,.READWRITE.);
+
+#116= IFCSIMPLEPROPERTYTEMPLATE('0s3HOiBZz5HuKtBnUthHVn',#2,'Shape','Shape of the air terminal. Slot is typically a long narrow supply device with an aspect ratio generally greater than 10 to 1.',.P_ENUMERATEDVALUE.,'IfcLabel',$,#64,$,$,$,.READWRITE.);
+
+#117= IFCSIMPLEPROPERTYTEMPLATE('3ccEnz8CbDehYY5UfGjNhk',#2,'FaceType','Identifies how the terminal face of an AirTerminal is constructed.',.P_ENUMERATEDVALUE.,'IfcLabel',$,#65,$,$,$,.READWRITE.);
+
+#118= IFCSIMPLEPROPERTYTEMPLATE('3s2OInnMzFHQs$K3elh_3h',#2,'SlotWidth','Slot width.',.P_SINGLEVALUE.,'IfcPositiveLengthMeasure','',$,$,$,$,.READWRITE.);
+
+#119= IFCSIMPLEPROPERTYTEMPLATE('1y1kHB7PrChPwTgQ$ECHb$',#2,'SlotLength','Slot length.',.P_SINGLEVALUE.,'IfcPositiveLengthMeasure','',$,$,$,$,.READWRITE.);
+
+#120= IFCSIMPLEPROPERTYTEMPLATE('1U0eyN6b902eI0MbwdUd8M',#2,'NumberOfSlots','Number of slots.',.P_SINGLEVALUE.,'IfcInteger','',$,$,$,$,.READWRITE.);
+
+#121= IFCSIMPLEPROPERTYTEMPLATE('0y7Fb2v4H9ehCvfO24PHM1',#2,'FlowPattern','Flow pattern.',.P_ENUMERATEDVALUE.,'IfcLabel',$,#66,$,$,$,.READWRITE.);
+
+#122= IFCSIMPLEPROPERTYTEMPLATE('0rg225Jsz7aPmR4rqHJHRR',#2,'AirFlowrateRange','Air flowrate range within which the air terminal is designed to operate.',.P_BOUNDEDVALUE.,'IfcVolumetricFlowRateMeasure','',$,$,$,$,.READWRITE.);
+
+#123= IFCSIMPLEPROPERTYTEMPLATE('1IJN6qN3j68w9NjQIASYJF',#2,'TemperatureRange','Temperature range within which the air terminal is designed to operate.',.P_BOUNDEDVALUE.,'IfcThermodynamicTemperatureMeasure','',$,$,$,$,.READWRITE.);
+
+#124= IFCSIMPLEPROPERTYTEMPLATE('3YNHGt1l51jg4X9QGpz17j',#2,'DischargeDirection','Discharge direction of the air terminal.\X\0A\X\0AParallel: discharges parallel to mounting surface designed so that flow attaches to the surface.\X\0APerpendicular:  discharges away from mounting surface.\X\0AAdjustable: both parallel and perpendicular discharge.',.P_ENUMERATEDVALUE.,'IfcLabel',$,#67,$,$,$,.READWRITE.);
+
+#125= IFCSIMPLEPROPERTYTEMPLATE('15AjYKuPv9lQ9iggUpGAaF',#2,'ThrowLength','The horizontal or vertical axial distance an airstream travels after leaving an AirTerminal before the maximum stream velocity is reduced to a specified terminal velocity under isothermal conditions at the upper value of the AirFlowrateRange.',.P_SINGLEVALUE.,'IfcLengthMeasure','',$,$,$,$,.READWRITE.);
+
+#126= IFCSIMPLEPROPERTYTEMPLATE('0JBeud9tT5RgwbQACxzdZH',#2,'AirDiffusionPerformanceIndex','The Air Diffusion Performance Index (ADPI) is used for cooling mode conditions. If several measurements of air velocity and air temperature are made throughout the occupied zone of a space, the ADPI is the percentage of locations where measurements were taken that meet the specifications for effective draft temperature and air velocity.',.P_SINGLEVALUE.,'IfcReal','',$,$,$,$,.READWRITE.);
+
+#127= IFCSIMPLEPROPERTYTEMPLATE('1rGAtIuLj049KjoAX5lv0j',#2,'FinishType','The type of finish for the air terminal.',.P_ENUMERATEDVALUE.,'IfcLabel',$,#68,$,$,$,.READWRITE.);
+
+#128= IFCSIMPLEPROPERTYTEMPLATE('0Lx74WLuDAJBe29ZAokn7n',#2,'FinishColor','The finish color for the air terminal.',.P_SINGLEVALUE.,'IfcLabel','',$,$,$,$,.READWRITE.);
+
+#129= IFCSIMPLEPROPERTYTEMPLATE('28DA3rBGD45wIHAjVhRVfn',#2,'MountingType','The way the air terminal is mounted to the ceiling, wall, etc.\X\0A\X\0ASurface: mounted to the surface of something (e.g., wall, duct, etc.).\X\0AFlat flush: mounted flat and flush with a surface.\X\0ALay-in: mounted in a lay-in type ceiling (e.g., a dropped ceiling grid).',.P_ENUMERATEDVALUE.,'IfcLabel',$,#69,$,$,$,.READWRITE.);
+
+#130= IFCSIMPLEPROPERTYTEMPLATE('2BHDN$CwT3oPiLEOzMDEo6',#2,'CoreType','Identifies the way the core of the AirTerminal is constructed.',.P_ENUMERATEDVALUE.,'IfcLabel',$,#70,$,$,$,.READWRITE.);
+
+#131= IFCSIMPLEPROPERTYTEMPLATE('3ivegLDDDF4Bj8eqOSTpHI',#2,'CoreSetHorizontal','Degree of horizontal (in the X-axis of the LocalPlacement) blade set from the centerline.',.P_SINGLEVALUE.,'IfcPlaneAngleMeasure','',$,$,$,$,.READWRITE.);
+
+#132= IFCSIMPLEPROPERTYTEMPLATE('0lGnkfyAL1Yw4lbl7z2VvE',#2,'CoreSetVertical','Degree of vertical (in the Y-axis of the LocalPlacement) blade set from the centerline.',.P_SINGLEVALUE.,'IfcPlaneAngleMeasure','',$,$,$,$,.READWRITE.);
+
+#133= IFCSIMPLEPROPERTYTEMPLATE('2z_gncAVT79OxwFBa0hkvU',#2,'HasIntegralControl','If TRUE, a self powered temperature control is included in the AirTerminal.',.P_SINGLEVALUE.,'IfcBoolean','',$,$,$,$,.READWRITE.);
+
+#134= IFCSIMPLEPROPERTYTEMPLATE('3M$NkRjRbFrvWwcY1izFe4',#2,'FlowControlType','Type of flow control element that may be included as a part of the construction of the air terminal.',.P_ENUMERATEDVALUE.,'IfcLabel',$,#71,$,$,$,.READWRITE.);
+
+#135= IFCSIMPLEPROPERTYTEMPLATE('1hMma$QwL4QOtgcEGSVoYE',#2,'HasSoundAttenuator','If TRUE, the air terminal has sound attenuation.',.P_SINGLEVALUE.,'IfcBoolean','',$,$,$,$,.READWRITE.);
+
+#136= IFCSIMPLEPROPERTYTEMPLATE('1KWi8MdX54FxZUOwumhTef',#2,'HasThermalInsulation','If TRUE, the air terminal has thermal insulation.',.P_SINGLEVALUE.,'IfcBoolean','',$,$,$,$,.READWRITE.);
+
+#137= IFCSIMPLEPROPERTYTEMPLATE('2dgLXZEs900vztGBIr8_ao',#2,'NeckArea','Neck area of the air terminal.',.P_SINGLEVALUE.,'IfcAreaMeasure','',$,$,$,$,.READWRITE.);
+
+#138= IFCSIMPLEPROPERTYTEMPLATE('309SGtOAPE9929AbT6FTuV',#2,'EffectiveArea','Effective discharge area of the air terminal.',.P_SINGLEVALUE.,'IfcAreaMeasure','',$,$,$,$,.READWRITE.);
+
+#139= IFCSIMPLEPROPERTYTEMPLATE('2aOlIhtEn1yBBCqpuP6ygt',#2,'AirFlowrateVersusFlowControlElement','Air flowrate versus flow control element position at nominal pressure drop.',.P_TABLEVALUE.,'IfcVolumetricFlowRateMeasure','IfcPositiveRatioMeasure',$,$,$,$,.READWRITE.);
+
+#140= IFCSIMPLEPROPERTYTEMPLATE('3eHmy4aE566RLnsXQnc182',#2,'GlobalTradeItemNumber','The Global Trade Item Number (GTIN) is an identifier for trade items developed by GS1 (www.gs1.org).',.P_SINGLEVALUE.,'IfcIdentifier','',$,$,$,$,.READWRITE.);
+
+#141= IFCSIMPLEPROPERTYTEMPLATE('1sgvdetjb1JxEqbzkc2sqC',#2,'ArticleNumber','Article number or reference that is be applied to a configured product according to a standard scheme for article number definition as defined by the manufacturer. It is often used as the purchasing number.',.P_SINGLEVALUE.,'IfcIdentifier','',$,$,$,$,.READWRITE.);
+
+#142= IFCSIMPLEPROPERTYTEMPLATE('3wqp__MIv1H9F7bsX0g1Pv',#2,'ModelReference','The model number or designator of the product model (or product line) as assigned by the manufacturer of the manufactured item.',.P_SINGLEVALUE.,'IfcLabel','',$,$,$,$,.READWRITE.);
+
+#143= IFCSIMPLEPROPERTYTEMPLATE('0ZGAMw3wDEvQK1eN0ABad0',#2,'ModelLabel','The descriptive model name of the product model (or product line) as assigned by the manufacturer of the manufactured item.',.P_SINGLEVALUE.,'IfcLabel','',$,$,$,$,.READWRITE.);
+
+#144= IFCSIMPLEPROPERTYTEMPLATE('0SjOR_Aiz1F9zib80mPIr0',#2,'Manufacturer','The organization that manufactured and/or assembled the item.',.P_SINGLEVALUE.,'IfcLabel','',$,$,$,$,.READWRITE.);
+
+#145= IFCSIMPLEPROPERTYTEMPLATE('2zE_DR$F52WAh8dBauU7vt',#2,'ProductionYear','The year of production of the manufactured item.',.P_SINGLEVALUE.,'IfcLabel','',$,$,$,$,.READWRITE.);
+
+#146= IFCSIMPLEPROPERTYTEMPLATE('0T7c_L8b9E$9V2KslgB9xe',#2,'AssemblyPlace','Enumeration defining where the assembly is intended to take place, either in a factory or on the building site.',.P_ENUMERATEDVALUE.,'IfcLabel',$,#80,$,$,$,.READWRITE.);
+
+#147= IFCPROPERTYSET('3MdHsbDH1BrQYI$kjaLN5a',#2,'Pset_DistributionPortCommon','Common attributes attached to an instance of IfcDistributionPort.',(#150,#151));
+#150= IFCPROPERTYSINGLEVALUE('PortNumber','The port index for logically ordering the port within the containing element or element type.',$,$);
+#151= IFCPROPERTYSINGLEVALUE('ColorCode','Name of a color for identifying the connector, if applicable.',$,$);
+
+#148= IFCPROPERTYSET('142LVYnPP62figC7tUlZnT',#2,'Pset_DistributionPortTypeAirConditioning',$,(#152,#153,#154,#155,#156,#157,#158,#159,#160));
+#152= IFCPROPERTYENUMERATEDVALUE('ConnectionType',$,(IFCLABEL('OUTSIDESLEEVE')),#149);
+#153= IFCPROPERTYSINGLEVALUE('ConnectionSubType',$,$,$);
+#154= IFCPROPERTYSINGLEVALUE('NominalWidth',$,IFCPOSITIVELENGTHMEASURE(12.),$);
+#155= IFCPROPERTYSINGLEVALUE('NominalHeight',$,IFCPOSITIVELENGTHMEASURE(12.),$);
+#156= IFCPROPERTYBOUNDEDVALUE('DryBulbTemperature',$,$,$,$,$);
+#157= IFCPROPERTYBOUNDEDVALUE('WetBulbTemperature',$,$,$,$,$);
+#158= IFCPROPERTYBOUNDEDVALUE('VolumetricFlowRate',$,$,$,$,$);
+#159= IFCPROPERTYBOUNDEDVALUE('Velocity',$,$,$,$,$);
+#160= IFCPROPERTYBOUNDEDVALUE('Pressure',$,$,$,$,$);
+ENDSEC;
+
+END-ISO-10303-21;
