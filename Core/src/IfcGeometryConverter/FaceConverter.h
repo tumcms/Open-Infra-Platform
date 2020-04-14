@@ -26,10 +26,12 @@
 
 #include <memory>
 
+#include "ConverterBase.h"
+
 #include "CurveConverter.h"
+#include "PlacementConverter.h"
 #include "GeomUtils.h"
 #include "GeometryInputData.h"
-#include "GeometrySettings.h"
 #include "PlacementConverter.h"
 #include "UnhandledRepresentationException.h"
 
@@ -41,13 +43,20 @@ namespace OpenInfraPlatform {
 		namespace IfcGeometryConverter {
 			class ItemData;
 
-			template <class IfcEntityTypesT, class IfcUnitConverterT>
-			class FaceConverterT {
+			template <
+				class IfcEntityTypesT
+			>
+			class FaceConverterT : public ConverterBaseT<IfcEntityTypesT>
+			{
 			public:
 				FaceConverterT(std::shared_ptr<GeometrySettings> geomSettings,
-					std::shared_ptr<IfcUnitConverterT> unitConverter,
-					std::shared_ptr<CurveConverterT<IfcEntityTypesT, IfcUnitConverterT>> cc)
-					: geomSettings(geomSettings), unitConverter(unitConverter), curveConverter(cc)
+					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc,
+					std::shared_ptr<CurveConverterT<IfcEntityTypesT>> cc)
+					: 
+					ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
+					placementConverter(pc),
+					curveConverter(cc)
 				{
 				}
 
@@ -59,7 +68,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polyline_data)
 				{
-					double length_factor = unitConverter->getLengthInMeterFactor();
+					double length_factor = UnitConvert()->getLengthInMeterFactor();
 
 					/*	Faceconverter.h
 						For IFC4x1:
@@ -163,7 +172,7 @@ namespace OpenInfraPlatform {
 								std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& basis_surface_placement = basis_surface->Position.lock();
 
 								if(basis_surface_placement) {
-									PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(basis_surface_placement, curve_bounded_plane_matrix, length_factor);
+									placementConverter->convertIfcAxis2Placement3D(basis_surface_placement, curve_bounded_plane_matrix);
 									curve_bounded_plane_matrix = pos * curve_bounded_plane_matrix;
 								}
 							}
@@ -261,7 +270,7 @@ namespace OpenInfraPlatform {
 
 						carve::math::Matrix elementary_surface_matrix(pos);
 						if(elementary_surface_placement) {
-							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(elementary_surface_placement, elementary_surface_matrix, length_factor);
+							placementConverter->convertIfcAxis2Placement3D(elementary_surface_placement, elementary_surface_matrix);
 							elementary_surface_matrix = pos * elementary_surface_matrix;
 						}
 
@@ -356,7 +365,7 @@ namespace OpenInfraPlatform {
 
 						carve::math::Matrix swept_surface_matrix(pos);
 						if(swept_surface_placement) {
-							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(swept_surface_placement, swept_surface_matrix, length_factor);
+							placementConverter->convertIfcAxis2Placement3D(swept_surface_placement, swept_surface_matrix);
 							swept_surface_matrix = pos * swept_surface_matrix;
 						}
 
@@ -778,7 +787,7 @@ namespace OpenInfraPlatform {
 				void convertIfcCartesianPoint2DVector(const std::vector<std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>>>& points2D,
 					std::vector<std::vector<carve::geom::vector<3>>>& loop2D) const
 				{
-					const double lengthFactor = unitConverter->getLengthInMeterFactor();
+					const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
 					const uint32_t numPointsY = points2D.size();
 					loop2D.resize(numPointsY);
 
@@ -813,9 +822,9 @@ namespace OpenInfraPlatform {
 				}
 
 			protected:
-				std::shared_ptr<GeometrySettings> geomSettings;
-				std::shared_ptr<IfcUnitConverterT> unitConverter;
-				std::shared_ptr<CurveConverterT<IfcEntityTypesT, IfcUnitConverterT>> curveConverter;
+
+				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
+				std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter;
 			};
 
 			// template<>

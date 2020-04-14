@@ -29,7 +29,7 @@ namespace OpenInfraPlatform
 	{
 		namespace IfcGeometryConverter {
 
-			template < class IfcEntityTypesT> class UnitConverter {
+			template <class IfcEntityTypesT> class UnitConverter {
 			public:
 				UnitConverter()
 				{

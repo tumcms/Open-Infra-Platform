@@ -51,10 +51,92 @@ namespace OpenInfraPlatform
 	{
 		namespace IfcGeometryConverter {
 
+			/*!	\brief Settings regarding tessellation and precision of geometries
+
+			*/
 			class GeometrySettings {
 			public:
+				//! Default constructor
 				GeometrySettings();
+				//! Default destructor
 				~GeometrySettings();
+				
+				/*! Calculates the number of vertices needed for tessellation of an arc
+				
+				\param[in] dRadius		The radius of the arc
+				\param[in] dArcStart	The angle where the arc begins [in radians]
+				\param[in] dArcEnd		The angle where the arc stops [in radians]
+
+				\sa getNumberOfVertices
+
+				\return The number of vertices
+				*/
+				int getNumberOfVerticesForTesselation(const double dRadius, const double dArcStart, const double dArcEnd)
+				{
+					return getNumberOfVerticesForTesselation(dRadius, abs(dArcStart - dArcEnd));
+				}
+				
+				/*! Calculates the number of vertices needed for tessellation of an arc
+
+				\param[in] dRadius		The radius of the arc
+				\param[in] dArcExtent	The angular extent of the arc [in radians] (default = full circle)
+
+				\return The number of vertices
+				*/
+				int getNumberOfVerticesForTesselation(const double dRadius, const double dArcExtent = 2. * M_PI)
+				{
+					// if radius is smaller then the precision of the model, it is a straight (curvature -> infinity)
+					if (dRadius < getPrecision())
+						return 2;
+
+					// what's the biggest angle so that the precision still holds
+					// that is, the maximum distance between the arc and the line between two points on the arc < precision
+					double alpha = acos((dRadius - getPrecision()) / dRadius);
+
+					// we need at least this many segments along the arc
+					int numOfVertices = (int) ceil(dArcExtent / alpha);
+
+					// return at least 2 (start & end)
+					return carve::util::max_functor()(numOfVertices , 2);
+				}
+
+				/*! Calculates the arc segment length when tessellating an arc
+
+				\param[in] dRadius		The radius of the arc
+				\param[in] dArcExtent	The angular extent of the arc [in radians] (default = full circle)
+
+				\return The angular length of the segment [in radians]
+				*/
+				double getAngleLength(const double dRadius, const double dArcExtent = 2.0 * M_PI)
+				{
+					return dArcExtent / (double)(getNumberOfSegmentsForTesselation(dRadius, dArcExtent));
+				}
+
+				/*! Calculates the number of segments when tessellating an arc
+
+				\param[in] dRadius		The radius of the arc
+				\param[in] dArcExtent	The angular extent of the arc [in radians] (default = full circle)
+
+				\return The number of segments [in radians]
+				*/
+				int getNumberOfSegmentsForTesselation(const double dRadius, const double dArcExtent = 2.0 * M_PI)
+				{
+					return getNumberOfVerticesForTesselation(dRadius, dArcExtent) - 1;
+				}
+
+				/*! returns the precision of the model
+				
+				*/
+				double getPrecision()
+				{
+					return 0.01; //TODO remove constant and replace with content from IFC (i.e. introduce member, getter / setter)
+				}
+
+				carve::csg::CSG::CLASSIFY_TYPE getCSGtype() {
+					return classify_type;
+				}
+
+			private:
 				int	num_vertices_per_circle;
 				int min_num_vertices_per_arc;
 
