@@ -316,27 +316,26 @@ namespace OpenInfraPlatform
 					//	IfcMonetaryUnit);
 					// END_TYPE;
 
-					auto &unitBase = conversionBasedUnit->ConversionFactor->UnitComponent;
-					switch (unitBase.which())
+					switch (unit.which())
 					{
 					case 0:
 					{
 						// IfcDerivedUnit
-						auto& derivedUnit = unitBase.get<EXPRESSReference<typename IfcEntityTypesT::IfcDerivedUnit>>().lock();
+						auto& derivedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcDerivedUnit>>().lock();
 
 						return convertUnit(derivedUnit); // call recursively the other overload
 					}
 					case 1:
 					{
 						// IfcMonetaryUnit
-						auto& monetaryUnit = unitBase.get<EXPRESSReference<typename IfcEntityTypesT::IfcMonetaryUnit>>().lock();
+						auto& monetaryUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcMonetaryUnit>>().lock();
 						BLUE_LOG(warning) << monetaryUnit->getErrorLog() << ": Not supported.";
 						break;
 					}
 					case 2:
 					{
 						// IfcNamedUnit
-						auto& namedUnit = unitBase.get<EXPRESSReference<typename IfcEntityTypesT::IfcNamedUnit>>().lock();
+						auto& namedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcNamedUnit>>().lock();
 
 						return convertUnit(namedUnit); // call recursively the other overload
 					}
