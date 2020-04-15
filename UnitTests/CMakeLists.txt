@@ -18,16 +18,17 @@
 #find_package(GTest REQUIRED)
 
 FetchContent_Declare(
-	gtest
+	dep_gtest
 	GIT_REPOSITORY https://github.com/google/googletest.git
 	GIT_TAG release-1.10.0
 )
  
-FetchContent_GetProperties(gtest)
-if(NOT gtest_POPULATED)
-	FetchContent_Populate(gtest)
-	add_subdirectory(${gtest_SOURCE_DIR} ${gtest_BINARY_DIR} EXCLUDE_FROM_ALL)
+FetchContent_GetProperties(dep_gtest)
+if(NOT dep_gtest_POPULATED)
+	FetchContent_Populate(dep_gtest)
+	add_subdirectory(${dep_gtest_SOURCE_DIR} ${dep_gtest_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
+
 
 file(GLOB OpenInfraPlatform_UnitTests_Source *.cpp)
 
