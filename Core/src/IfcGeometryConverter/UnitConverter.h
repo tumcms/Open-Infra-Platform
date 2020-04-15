@@ -31,16 +31,28 @@ namespace OpenInfraPlatform
 	{
 		namespace IfcGeometryConverter {
 
+			/*! \brief Unit conversion functionality
+			
+			\param IfcEntityTypesT The IFC version specification.
+
+			*/
 			template <class IfcEntityTypesT> 
 			class UnitConverter 
 			{
 			public:
+				//! Constructor
 				UnitConverter()
 				{
 					m_length_unit_factor = -1.0; // is set in the first call to the getter
 					m_plane_angle_factor = -1.0; // is set in the first call to the getter
 				}
 
+				/*! \brief Gets the default units from the IfcProject.
+				
+				Sets all member variables.
+
+				\param[in] project A pointer to the IfcProject entity within the model.
+				*/
 				void setIfcProject(std::shared_ptr<typename IfcEntityTypesT::IfcProject> project)
 				{
 					if(!project->UnitsInContext) {
@@ -54,6 +66,10 @@ namespace OpenInfraPlatform
 					m_plane_angle_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_PLANEANGLEUNIT ); 
 				}
 
+				/*! \brief Gets the factor for specified unit type.
+				
+				\param[in] unit_type The type of unit specified by the enumeration value of IfcUnitEnum.
+				*/
 				double getFactorFor(const typename IfcEntityTypesT::IfcUnitEnum& unit_type) const
 				{
 					if (!m_unit_assignment)
@@ -99,6 +115,10 @@ namespace OpenInfraPlatform
 					return 1.;
 				}
 
+				/*! \brief Gets the factor for specified unit type.
+
+				\param[in] unit_type The type of unit specified by the enumeration value of IfcDerivedUnitEnum.
+				*/
 				double getFactorFor(const typename IfcEntityTypesT::IfcDerivedUnitEnum& unit_type) const
 				{
 					if (!m_unit_assignment)
@@ -144,6 +164,12 @@ namespace OpenInfraPlatform
 					return 1.;
 				}
 
+				/*! \brief Converts the unit to a factor to obtain SI unit.
+				
+				\param[in] unit The unit in question of type *IfcNamedUnit*.
+
+				\return The factor to obtain the SI equivalent unit.
+				*/
 				double convertUnit(const std::shared_ptr<typename IfcEntityTypesT::IfcNamedUnit>& unit) const
 				{
 					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcmeasureresource/lexical/ifcnamedunit.htm
@@ -281,6 +307,12 @@ namespace OpenInfraPlatform
 					return 1.;
 				}
 
+				/*! \brief Converts the unit to a factor to obtain SI unit.
+
+				\param[in] unit The unit in question of type -IfcDerivedUnit-.
+
+				\return The factor to obtain the SI equivalent unit.
+				*/
 				double convertUnit(const std::shared_ptr<typename IfcEntityTypesT::IfcDerivedUnit>& unit) const
 				{
 					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcmeasureresource/lexical/ifcderivedunit.htm
@@ -314,6 +346,12 @@ namespace OpenInfraPlatform
 					return factor;
 				}
 
+				/*! \brief Converts the unit to a factor to obtain SI unit.
+
+				\param[in] unit The unit in question of type _IfcUnit_.
+
+				\return The factor to obtain the SI equivalent unit.
+				*/
 				double convertUnit(typename IfcEntityTypesT::IfcUnit& unit) const
 				{
 					// TYPE IfcUnit = SELECT(
@@ -350,11 +388,24 @@ namespace OpenInfraPlatform
 					return 1.;
 				}
 
+				/*! \brief Converts the value to a floating point (if applicable).
+
+				\param[in] value The value in question of type IfcValue.
+
+				\return The value saved or 1. (if not a real number).
+				*/
 				double convertValue(const typename IfcEntityTypesT::IfcValue& value) const
 				{
 					return 1.;
 				}
 
+				/*! \brief Gets the factor for length.
+
+				This factor is accessed very often and is therefore cached.
+				It gets set in UnitConverter<T>::setIfcProject function.
+
+				\return The factor to obtain meters of length.
+				*/
 				double getLengthInMeterFactor()
 				{
 					if (m_length_unit_factor < 0.0) // means, it is unset
@@ -362,6 +413,13 @@ namespace OpenInfraPlatform
 					return m_length_unit_factor;
 				}
 
+				/*! \brief Gets the factor for angles.
+
+				This factor is accessed very often and is therefore cached.
+				It gets set in UnitConverter<T>::setIfcProject function.
+
+				\return The factor to obtain radians of angle.
+				*/
 				double getAngleInRadianFactor()
 				{
 					if (m_plane_angle_factor < 0.0) // means, it is unset
@@ -371,7 +429,7 @@ namespace OpenInfraPlatform
 
 			private:
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcUnitAssignment> m_unit_assignment; //< the unit assignment in the IFC file
+				std::shared_ptr<typename IfcEntityTypesT::IfcUnitAssignment> m_unit_assignment; //< the unit assignment present in the IFC file
 
 				double m_length_unit_factor; //< cached value for the factor of distance [to meters]
 				double m_plane_angle_factor; //< cached value for the factor of angle [to radians]
