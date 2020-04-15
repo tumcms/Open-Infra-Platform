@@ -308,7 +308,7 @@ namespace OpenInfraPlatform
 					return factor;
 				}
 
-				double convertUnit(const typename IfcEntityTypesT::IfcUnit& unit) const
+				double convertUnit(typename IfcEntityTypesT::IfcUnit& unit) const
 				{
 					// TYPE IfcUnit = SELECT(
 					//	IfcDerivedUnit,
