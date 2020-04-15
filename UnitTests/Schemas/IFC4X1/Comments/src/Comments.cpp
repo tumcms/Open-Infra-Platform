@@ -34,7 +34,7 @@ protected:
     }
 
 
-    const std::string filename = "Data/csg-primitive-commented.ifc";
+    const std::string filename = "UnitTests/Schemas/IFC4X1/Comments/Data/csg-primitive-commented.ifc";
     std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 
 };

@@ -52,13 +52,13 @@ function(CreateIfcFileUnitTestForSchema test_name schema)
 
     gtest_discover_tests(${UnitTest_Executable_Name})
 
-    set_target_properties(${UnitTest_Executable_Name} PROPERTIES FOLDER "UnitTests/Schema/${schema}")
-    set(OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}_Data_Path ${CMAKE_SOURCE_DIR}/UnitTests/Schema/${schema}/${test_name}/Data)
+    set_target_properties(${UnitTest_Executable_Name} PROPERTIES FOLDER "UnitTests/Schemas/${schema}")
+    set(UnitTest_Data_Rel_Path UnitTests/Schemas/${schema}/${test_name}/Data)
 
     add_custom_command(TARGET ${UnitTest_Executable_Name} POST_BUILD
-        COMMENT "Copying resources from '${CMAKE_SOURCE_DIR}/UnitTests/Schema/${schema}/${test_name}/Data' to '${CMAKE_BINARY_DIR}/UnitTests/Schema/${schema}/'" VERBATIM
-        COMMAND	${CMAKE_COMMAND} -E make_directory OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}_Data_Path
-        COMMAND	${CMAKE_COMMAND} -E copy_directory OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}_Data_Path ${CMAKE_BINARY_DIR}/UnitTests/Schema/${schema}/${test_name}/Data
+        COMMENT "Copying resources from '${CMAKE_SOURCE_DIR}/${UnitTest_Data_Rel_Path}' to '${CMAKE_BINARY_DIR}/$<CONFIG>/${UnitTest_Data_Rel_Path}'" VERBATIM
+        COMMAND	${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/${UnitTest_Data_Rel_Path}
+        COMMAND	${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${UnitTest_Data_Rel_Path} ${CMAKE_BINARY_DIR}/$<CONFIG>/${UnitTest_Data_Rel_Path}
     )
 
 endfunction()
