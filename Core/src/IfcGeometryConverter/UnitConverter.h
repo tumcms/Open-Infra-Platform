@@ -56,6 +56,9 @@ namespace OpenInfraPlatform
 
 				double getFactorFor(const typename IfcEntityTypesT::IfcUnitEnum& unit_type) const
 				{
+					if (!m_unit_assignment)
+						return 1.;
+
 					for (auto& unit : m_unit_assignment->Units)
 					{
 						// TYPE IfcUnit = SELECT(
@@ -98,6 +101,9 @@ namespace OpenInfraPlatform
 
 				double getFactorFor(const typename IfcEntityTypesT::IfcDerivedUnitEnum& unit_type) const
 				{
+					if (!m_unit_assignment)
+						return 1.;
+
 					for (auto& unit : m_unit_assignment->Units)
 					{
 						// TYPE IfcUnit = SELECT(
