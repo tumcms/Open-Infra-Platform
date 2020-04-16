@@ -20,7 +20,7 @@ message("Doxygen found. For developers: Please use this project's doxygen docume
 # Build related configuration options. 
 set(DOXYGEN_PROJECT_NAME OpenInfraPlatform)
 set(DOXYGEN_PROJECT_BRIEF "Open source software for viewing and converting alignment data.")
-set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/interface.png)
+#set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/interface.png)
 set(DOXYGEN_CREATE_SUBDIRS YES)
 set(DOXYGEN_HAVE_DOT YES) # GraphViz Package for diagrams
 
@@ -41,7 +41,7 @@ set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymenta
 set(DOXYGEN_SEARCHENGINE YES)
 set(DOXYGEN_SOURCE_BROWSER YES)
 set(DOXYGEN_SUBGROUPING YES)
-set(DOXYGEN_EXCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/CurrentlyExcluded ${CMAKE_CURRENT_SOURCE_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/deploy ${CMAKE_CURRENT_SOURCE_DIR}/Documentation ${CMAKE_CURRENT_SOURCE_DIR}/external ${CMAKE_CURRENT_SOURCE_DIR}/testdata ${CMAKE_CURRENT_SOURCE_DIR}/Tools ${CMAKE_CURRENT_SOURCE_DIR}/UnitTests)
+set(DOXYGEN_EXCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/CurrentlyExcluded ${CMAKE_CURRENT_SOURCE_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/deploy ${CMAKE_CURRENT_SOURCE_DIR}/Documentation ${CMAKE_CURRENT_SOURCE_DIR}/external ${CMAKE_CURRENT_SOURCE_DIR}/testdata ${CMAKE_CURRENT_SOURCE_DIR}/Tools ${CMAKE_CURRENT_SOURCE_DIR}/UnitTests ${CMAKE_CURRENT_SOURCE_DIR}/UserInterface/QtPropertyBrowser)
 
 configure_file(${DOXYFILE_CMAKE} ${DOXYFILE} @ONLY)
 
