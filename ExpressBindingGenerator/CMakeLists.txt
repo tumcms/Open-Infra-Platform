@@ -28,18 +28,6 @@ find_file(FLEX_EXECUTABLE win_flex.exe HINTS ${CMAKE_CURRENT_SOURCE_DIR}/Tools/w
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
-# FetchContent_Declare(
-# 	winflexbison
-# 	GIT_REPOSITORY https://github.com/lexxmark/winflexbison.git
-# 	GIT_TAG v2.5.20
-# )
- 
-# FetchContent_GetProperties(winflexbison)
-# if(NOT winflexbison_POPULATED)
-# 	FetchContent_Populate(winflexbison)
-# 	add_subdirectory(${winflexbison_SOURCE_DIR} ${winflexbison_BINARY_DIR})
-# endif()
-
 
 #find_path(TCLAP_INCLUDE_DIR REQUIRED)
 FetchContent_Declare(
@@ -92,7 +80,7 @@ macro(add_format format schema active)
 	set(${format}_SCHEMA ${schema}.exp)
 	set(EARLYBINDING_${format} ${format} ${schema})
 	set(SUPPORTED_IFC_FORMATS ${SUPPORTED_IFC_FORMATS} EARLYBINDING_${format})
-	option(EARLYBINDING_WITH_${format} "Build with support for ${format} and generate all required files.")
+	option(EARLYBINDING_WITH_${format} "Build with support for ${format} and generate all required files." ${active})
 	
 	#if(${active})
 	#	set(IFC_FORMATS ${IFC_FORMATS} ${format})
@@ -111,8 +99,8 @@ macro(add_format format schema active)
 	#endif()
 endmacro()
 
-add_format(IFC2X3 			IFC2X3_TC1 		ON)
-add_format(IFC4 			IFC4_ADD1 		ON)
+add_format(IFC2X3 			IFC2X3_TC1 		OFF)
+add_format(IFC4 			IFC4_ADD1 		OFF)
 add_format(IFC4X2_BIM4ROAD 	IFC4x2_BIM4ROAD	OFF)
 add_format(IFC4X1		 	IFC4x1_RC3		ON)
 add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)

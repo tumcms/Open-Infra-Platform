@@ -27,8 +27,6 @@ include(ExternalData)
 add_definitions(-DBLUEINFRASTRUCTURE_EXPORT)
 
 
-
-
 if(OPTION_USE_LIBE57FORMAT)
 	message(STATUS "Building with libe57 support.")
 		# Find thirdparty libraries.
@@ -71,7 +69,6 @@ if(OPTION_USE_LIBE57FORMAT)
 endif()
 
 
-
 # Find thirdparty libraries.
 FetchContent_Declare(
 	cc
@@ -85,42 +82,13 @@ if(NOT cc_POPULATED)
 	add_subdirectory(${cc_SOURCE_DIR} ${cc_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
-
-
 find_package(libLAS REQUIRED)
-
-#FetchContent_Declare(
-#	libgeo
-#	GIT_REPOSITORY https://github.com/OSGeo/libgeotiff.git
-#	GIT_TAG 1.5.1
-#)
-  
-#FetchContent_GetProperties(libgeo)
-#if(NOT libgeo_POPULATED)
-#	FetchContent_Populate(libgeo)
-#	add_subdirectory(${libgeo_SOURCE_DIR}/libgeotiff ${libgeo_BINARY_DIR} EXCLUDE_FROM_ALL)
-#endif()
-
-# Find thirdparty libraries.
-#FetchContent_Declare(
-#	liblas
-#	GIT_REPOSITORY https://github.com/libLAS/libLAS.git
-#	GIT_TAG 1.8.1
-#)
-  
-#FetchContent_GetProperties(liblas)
-#if(NOT liblas_POPULATED)
-#	FetchContent_Populate(liblas)
-#	add_subdirectory(${liblas_SOURCE_DIR} ${liblas_BINARY_DIR} EXCLUDE_FROM_ALL)
-#endif()
 
 # Add files.
 file(GLOB PointCloudProcessing_Source									src/*.*)	
 source_group(PointCloudProcessing										FILES ${PointCloudProcessing_Source})	
 
-
 # Create a target for the library
-
 set(DEPENDENT_INCLUDE_DIRS
 	src
 	${LIBLAS_INCLUDE_DIRS}	
