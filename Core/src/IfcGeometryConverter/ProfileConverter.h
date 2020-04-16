@@ -23,10 +23,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "CarveHeaders.h"
 
+#include "ConverterBase.h"
+
 #include "CurveConverter.h"
 #include "GeomUtils.h"
 #include "GeometryInputData.h"
-#include "GeometrySettings.h"
 #include "PlacementConverter.h"
 
 #include "BlueFramework/Core/Diagnostics/log.h"
@@ -37,11 +38,20 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 namespace OpenInfraPlatform {
 	namespace Core{
 	namespace IfcGeometryConverter {
-		template <class IfcEntityTypesT, class IfcUnitConverterT>
-		class ProfileConverterT {
+		template <
+			class IfcEntityTypesT
+		>
+		class ProfileConverterT : public ConverterBaseT<IfcEntityTypesT>
+		{
 		public:
-			ProfileConverterT(std::shared_ptr<GeometrySettings> geomSettings, std::shared_ptr<IfcUnitConverterT> unitConverter)
-				: geomSettings(geomSettings), unitConverter(unitConverter)
+			ProfileConverterT(
+				std::shared_ptr<GeometrySettings> geomSettings, 
+				std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
+				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc
+			)
+				:
+				ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
+				placementConverter(pc)
 			{
 				// std::cout << "Usage of ProfileConverterT" << std::endl;
 			}
@@ -135,7 +145,7 @@ namespace OpenInfraPlatform {
 				std::vector<carve::geom::vector<2>> curve_polygon;
 				std::vector<carve::geom::vector<2>> segment_start_points;
 
-				CurveConverterT<IfcEntityTypesT, IfcUnitConverterT> c_conv(geomSettings, unitConverter);
+				CurveConverterT<IfcEntityTypesT> c_conv(GeomSettings(), UnitConvert(), placementConverter);
 				c_conv.convertIfcCurve2D(outer_curve, curve_polygon, segment_start_points);
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processed IfcArbitraryClosedProfileDef.OuterCurve IfcCurve #" << outer_curve->getId();
@@ -179,7 +189,7 @@ namespace OpenInfraPlatform {
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcArbitraryClosedProfileDef #" << profile->getId();
 #endif
-				const double lengthFactor = unitConverter->getLengthInMeterFactor();
+				const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profile->OuterCurve;
 				std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> polyline = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(outer_curve);
@@ -308,13 +318,13 @@ namespace OpenInfraPlatform {
 				BLUE_LOG(trace) << "Processing IfcArbitraryOpenProfileDef #" << profileDef->getId();
 #endif
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.lock();
-				CurveConverterT<IfcEntityTypesT, IfcUnitConverterT> c_converter(geomSettings, unitConverter);
+				CurveConverterT<IfcEntityTypesT> c_converter(GeomSettings(), UnitConvert(), placementConverter);
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCenterLineProfileDef>(profileDef);
 				if(center_line_profile_def) {
 					if(center_line_profile_def->Thickness) {
-						const double thickness = center_line_profile_def->Thickness * unitConverter->getLengthInMeterFactor();
+						const double thickness = center_line_profile_def->Thickness * UnitConvert()->getLengthInMeterFactor();
 						std::vector<carve::geom::vector<3>> segment_start_points;
 						std::vector<carve::geom::vector<3>> basis_curve_points;
 						c_converter.convertIfcCurve(ifc_curve, basis_curve_points, segment_start_points);
@@ -463,15 +473,14 @@ namespace OpenInfraPlatform {
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcDerivedProfileDef #" << profileDef->getId();
 #endif
-				ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT> temp_profiler(geomSettings, unitConverter);
+				ProfileConverterT<IfcEntityTypesT> temp_profiler(GeomSettings(), UnitConvert(), placementConverter);
 				temp_profiler.computeProfile(profileDef->ParentProfile.lock());
 				const std::vector<std::vector<carve::geom::vector<2>>>& parent_paths = temp_profiler.getCoordinates();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D> transf_op_2D = profileDef->Operator.lock();
 
-				double length_factor = unitConverter->getLengthInMeterFactor();
 				carve::math::Matrix transform(carve::math::Matrix::IDENT());
-				PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(transf_op_2D, transform, length_factor);
+				placementConverter->convertTransformationOperator(transf_op_2D, transform, UnitConvert()->getLengthInMeterFactor());
 				for(int i = 0; i < parent_paths.size(); ++i) {
 					const std::vector<carve::geom::vector<2>>& loop_parent = parent_paths[i];
 					std::vector<carve::geom::vector<2>> loop;
@@ -503,8 +512,8 @@ namespace OpenInfraPlatform {
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcParameterizedProfileDef #" << profileDef->getId();
 #endif
-				double length_factor = unitConverter->getLengthInMeterFactor();
-				double angle_factor = unitConverter->getAngleInRadianFactor();
+				double length_factor = UnitConvert()->getLengthInMeterFactor();
+				double angle_factor = UnitConvert()->getAngleInRadianFactor();
 				std::vector<carve::geom::vector<2>> outer_loop;
 
 				// (1/10) IfcRectangleProfileDef SUBTYPE OF IfcParametrizedProfileDef
@@ -616,11 +625,12 @@ namespace OpenInfraPlatform {
 					if(radius < 0.000001) {
 						return;
 					}
-					int num_segments = geomSettings->num_vertices_per_circle; // TODO: adapt to model size and complexity
+					int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
+					double d_angle = GeomSettings()->getAngleLength(radius);
 					double angle = 0;
 					for(int i = 0; i < num_segments; ++i) {
 						outer_loop.push_back(carve::geom::VECTOR((radius * cos(angle)), (radius * sin(angle))));
-						angle += 2.0 * M_PI / double(num_segments);
+						angle += d_angle;
 					}
 					paths.push_back(outer_loop);
 
@@ -629,12 +639,13 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<typename IfcEntityTypesT::IfcCircleHollowProfileDef> hollow = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleHollowProfileDef>(profileDef);
 					if(hollow) {
 						angle = 0;
-						radius -= hollow->WallThickness * length_factor;
+						double radius2 = radius - hollow->WallThickness * length_factor;
 
-						int num_segments2 = geomSettings->num_vertices_per_circle; // TODO: adapt to model size and complexity
+						int num_segments2 = GeomSettings()->getNumberOfSegmentsForTesselation(radius2);
+						double d_angle2 = GeomSettings()->getAngleLength(radius2);
 						for(int i = 0; i < num_segments2; ++i) {
-							inner_loop.push_back(carve::geom::VECTOR((radius * cos(angle)), (radius * sin(angle))));
-							angle += 2.0 * M_PI / double(num_segments2);
+							inner_loop.push_back(carve::geom::VECTOR((radius2 * cos(angle)), (radius2 * sin(angle))));
+							angle += d_angle2;
 						}
 						paths.push_back(inner_loop);
 					}
@@ -649,11 +660,12 @@ namespace OpenInfraPlatform {
 							double xRadius = ellipse_profile_def->SemiAxis1 * length_factor;
 							double yRadius = ellipse_profile_def->SemiAxis2 * length_factor;
 							double radiusMax = std::max(xRadius, yRadius);
-							int num_segments = geomSettings->num_vertices_per_circle; // TODO: adapt to model size and complexity
+							int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation(radiusMax);
+							double d_angle = GeomSettings()->getAngleLength(radiusMax);
 							double angle = 0;
 							for(int i = 0; i < num_segments; ++i) {
 								outer_loop.push_back(carve::geom::VECTOR((xRadius * cos(angle)), (yRadius * sin(angle))));
-								angle += 2.0 * M_PI / double(num_segments);
+								angle += d_angle;
 							}
 							paths.push_back(outer_loop);
 						}
@@ -1090,7 +1102,7 @@ namespace OpenInfraPlatform {
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcArbitraryProfileDefWithVoids #" << profile_with_voids->getId();
 #endif
-				const double lengthFactor = unitConverter->getLengthInMeterFactor();
+				const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> outer_curve =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profile_with_voids);
@@ -1236,9 +1248,8 @@ namespace OpenInfraPlatform {
 				// local coordinate system
 				if(profileDef->Position) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2Placement2D = profileDef->Position;
-					double length_factor = unitConverter->getLengthInMeterFactor();
 					carve::math::Matrix transform(carve::math::Matrix::IDENT());
-					PlacementConverterT<IfcEntityTypesT>::convertIfcPlacement(axis2Placement2D.lock(), transform, length_factor);
+					placementConverter->convertIfcPlacement(axis2Placement2D.lock(), transform);
 
 					for(int i = 0; i < temp_paths.size(); ++i) {
 						std::vector<carve::geom::vector<2>>& path_loop = temp_paths[i];
@@ -1270,11 +1281,7 @@ namespace OpenInfraPlatform {
 			void addArc(std::vector<carve::geom::vector<2>>& coords, double radius, double startAngle, double openingAngle, double xM, double yM, int numSegments = -1) const
 			{
 				if(numSegments < 0) {
-					numSegments = (int)(abs(openingAngle) / (2.0 * M_PI) * geomSettings->num_vertices_per_circle); // TODO: adapt to model size and complexity
-				}
-
-				if(numSegments < geomSettings->min_num_vertices_per_arc) {
-					numSegments = geomSettings->min_num_vertices_per_arc;
+					numSegments = GeomSettings()->getNumberOfSegmentsForTesselation(radius, abs(openingAngle));
 				}
 
 				if(numSegments > 100) {
@@ -1292,11 +1299,7 @@ namespace OpenInfraPlatform {
 			// Function 2: Add arc with end point 
 			void addArcWithEndPoint(std::vector<carve::geom::vector<2>>& coords, double radius, double startAngle, double openingAngle, double xM, double yM) const
 			{
-				int numSegments = (int)(abs(openingAngle) / (2.0 * M_PI) * geomSettings->num_vertices_per_circle); // TODO: adapt to model size and complexity
-
-				if(numSegments < geomSettings->min_num_vertices_per_arc) {
-					numSegments = geomSettings->min_num_vertices_per_arc;
-				}
+				int numSegments = GeomSettings()->getNumberOfSegmentsForTesselation(radius, abs(openingAngle));
 
 				if(numSegments > 100) {
 					numSegments = 100;
@@ -1520,8 +1523,9 @@ namespace OpenInfraPlatform {
 			}
 
 		protected:
-			std::shared_ptr<GeometrySettings> geomSettings;
-			std::shared_ptr<IfcUnitConverterT> unitConverter;
+
+			std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
+
 			std::vector<std::vector<carve::geom::vector<2>>> paths;
 		};
 	} // namespace IfcGeometryConverter

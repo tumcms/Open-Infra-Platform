@@ -107,27 +107,7 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	find_path(Boost_DIR NAMES boost/version.hpp HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
 		"C:\\thirdparty\\boost_1_65_1")
-
-	#find_path(EIGEN3_INCLUDE_DIR NAMES Eigen/Core HINTS
-	#	"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\Eigen_3.3.4"
-	#	"C:\\thirdparty\\eigen")
 	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64")
-	#find_path(GTEST_ROOT NAMES lib/cmake/GTest/GTestConfig.cmake HINTS
-	#	"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest"
-	#	"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-master")
-	#if(NOT GTEST_ROOT)
-	#	find_path(GTEST_ROOT NAMES googletest/include/gtest/gtest.h HINTS
-	#		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-release-1.8.0" 
-	#		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\googletest-1.8.0")
-	#endif()
-	#find_path(ZLIB_ROOT NAMES zlib.h HINTS 
-	#          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\zlib-1.2.11")
-	#find_path(RAPTOR2_ROOT_DIR NAMES include/raptor2/raptor2.h HINTS 
-	#          "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\raptor2"
-	#		  "C:\\thirdparty\\raptor2")
-	# Added to predefined path list in revision 533
-	#find_path(FFTW3_DIR NAMES FFTW3Config.cmake HINTS "C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\fftw-3.3.8\\lib\\cmake\\fftw3")
-	#find_path(visit_struct_INCLUDE_DIR NAMES visit_struct/visit_struct.hpp HINTS "C:\\thirdparty\\visit_struct-master\\include")
 endif()
 
 #------------------------------------------------------------------------------
@@ -162,16 +142,6 @@ set(Boost_USE_STATIC_LIBS ON)
 # As of revision 530, boost 1.65.1 required.
 find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
 
-#if(MSVC_VERSION LESS 1910)
-#	add_compile_definitions(BOOST_VARIANT_DO_NOT_USE_VARIADIC_TEMPLATES)
-#endif()
-
-#find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
-
-# Deprecated as of Revision 530
-#find_package(OpenInfraPlatform.EarlyBinding REQUIRED)
-#find_package(Eigen3 3.3.2  REQUIRED)
-#find_path(eigen_DIR)
 FetchContent_Declare(
 	eigen
 	GIT_REPOSITORY https://github.com/eigenteam/eigen-git-mirror.git
@@ -187,20 +157,6 @@ endif()
 
 find_package(Oklabi REQUIRED)
 
-# FetchContent_Declare(
-# 	qhull
-# 	GIT_REPOSITORY https://github.com/qhull/qhull.git
-# 	GIT_TAG v7.3.2
-# )
- 
-# FetchContent_GetProperties(qhull)
-# if(NOT qhull_POPULATED)
-# 	FetchContent_Populate(qhull)
-# 	add_subdirectory(${qhull_SOURCE_DIR} ${qhull_BINARY_DIR} EXCLUDE_FROM_ALL)
-# endif()
-
-#find_package(raptor2 REQUIRED)
-
 FetchContent_Declare(
 	visit_struct
 	GIT_REPOSITORY https://github.com/cbeck88/visit_struct.git
@@ -213,20 +169,11 @@ if(NOT visit_struct_POPULATED)
 endif()
 set(visit_struct_INCLUDE_DIR ${visit_struct_SOURCE_DIR}/include)
 
-# find_package(CC REQUIRED)	02.05.2019 moved to pcp module (coetzee)
-# find_package(libLAS REQUIRED)	02.05.2019 moved to pcp module (coetzee)
-
-# Added 12.09.2018: FFTW3
-#find_package(FFTW3 REQUIRED)
-
-#include(GTestCopyBinaries)
-#GTEST_COPY_BINARIES(${CMAKE_BINARY_DIR})
-#set_target_properties(GTestCopyBinaries	PROPERTIES FOLDER "Copy")
-
 
 FetchContent_Declare(
 	zlib
 	GIT_REPOSITORY https://github.com/madler/zlib.git
+	GIT_TAG v1.2.11
 )
 
 FetchContent_GetProperties(zlib)
@@ -234,8 +181,6 @@ if(NOT zlib_POPULATED)
 	FetchContent_Populate(zlib)
 	add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
-
-
 
 # Find the Qt components
 set(QT5_COMPONENTS
@@ -255,20 +200,9 @@ set(QT5_COMPONENTS
 	Location
 )
 
-# Loop over all components, find them and initialize the corresponding variables
-# foreach(Component ${QT5_COMPONENTS})
-# 	find_package( Qt5 5.10.0 COMPONENTS ${Component}	REQUIRED)
-# 	if(TARGET ${Qt5${Component}_LIBRARIES})
-# 		get_target_property(Qt5${Component}_location ${Qt5${Component}_LIBRARIES} LOCATION_Release)
-# 		set(QT5_DLLS_RELEASE ${QT5_DLLS_RELEASE} ${Qt5${Component}_location})
-# 		get_target_property(Qt5${Component}_location ${Qt5${Component}_LIBRARIES} LOCATION_Debug)
-# 		set(QT5_DLLS_DEBUG ${QT5_DLLS_DEBUG} ${Qt5${Component}_location})
-# 	endif()
-# endforeach()
 find_package( Qt5 5.12.1 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
 
-
-# https://stackoverflow.com/questions/41912734/deploy-icu-libraries-when-linking-a-cmake-project-with-qt5
+# Get deploy target to automatically deploy Qt5 dlls in the binary directory
 if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
     get_target_property(_qt5_qmake_location Qt5::qmake IMPORTED_LOCATION)
 
@@ -304,8 +238,8 @@ endif(DOXYGEN_GENERATE_DOCUMENTATION)
 
 FetchContent_Declare(
 	blue_framework
-	GIT_REPOSITORY https://github.com/hechth/Blue-Framework.git
-	GIT_TAG alpha
+	GIT_REPOSITORY https://github.com/tumcms/Blue-Framework.git
+	GIT_TAG a0.0.3
 )
   
 FetchContent_GetProperties(blue_framework)
@@ -313,88 +247,6 @@ if(NOT blue_framework_POPULATED)
 	FetchContent_Populate(blue_framework)
 	add_subdirectory(${blue_framework_SOURCE_DIR} ${blue_framework_BINARY_DIR})
 endif()
-
-#------------------------------------------------------------------------------
-# Set required Qt plugins variables and find and add the corresponding dlls for deployment and copying.
-#------------------------------------------------------------------------------
-
-# set(Qt5_IMAGEFORMATS_PLUGINS
-# 	QGifPlugin
-# 	QICNSPlugin
-# 	QICOPlugin
-# 	QJpegPlugin
-# 	QTgaPlugin
-# 	QTiffPlugin
-# 	QWbmpPlugin
-# 	QWebpPlugin
-# 	QSvgPlugin
-# )
-
-# set(Qt5_GEOSERVICES_PLUGINS
-# 	QGeoServiceProviderFactoryOsm
-# 	QGeoServiceProviderFactoryNokia
-# 	QGeoServiceProviderFactoryMapbox
-# 	QGeoServiceProviderFactoryItemsOverlay
-# 	GeoServiceProviderFactoryEsri
-# )
-
-# set(Qt5_PLATFORMS_PLUGINS
-# 	QWindowsIntegrationPlugin
-# 	QWindowsDirect2DIntegrationPlugin
-# 	QMinimalIntegrationPlugin
-# 	QOffscreenIntegrationPlugin
-# )
-
-# set(Qt5_NETWORK_PLUGINS
-# 	QGenericEnginePlugin
-# )
-
-# set(Qt5_ICONENGINES_PLUGINS
-# 	QSvgIconPlugin
-# )
-
-# set(Qt5_PLUGINS ${Qt5_IMAGEFORMATS_PLUGINS} ${Qt5_GEOSERVICES_PLUGINS} ${Qt5_PLATFORMS_PLUGINS} ${Qt5_NETWORK_PLUGINS} ${Qt5_ICONENGINES_PLUGINS})
-
-# foreach(plugin ${Qt5_GEOSERVICES_PLUGINS})
-# 	include(${Qt5Location_DIR}/Qt5Location_${plugin}.cmake)
-# endforeach()
-
-string(REPLACE "lib/cmake/Qt5" "bin" Qt5_BIN_DIR "${Qt5_DIR}")
-
-# macro(addQt5Dll lib)
-# 	set(QT5_DLLS_RELEASE ${QT5_DLLS_RELEASE} ${Qt5_BIN_DIR}/Qt5${lib}.dll)
-# 	set(QT5_DLLS_DEBUG ${QT5_DLLS_DEBUG} ${Qt5_BIN_DIR}/Qt5${lib}d.dll)
-# endmacro()
-
-# macro(addQt5PluginDll plugin output)
-# 	get_target_property(_loc Qt5::${plugin} LOCATION)
-# 	list(APPEND ${output} ${_loc})
-# endmacro()
-
-# addQt5Dll(Gui)
-# addQt5Dll(Multimedia)
-# addQt5Dll(MultimediaWidgets)
-# addQt5Dll(OpenGL)
-# addQt5Dll(Sensors)
-# addQt5Dll(Sql)
-# addQt5Dll(WebChannel)
-# addQt5Dll(Concurrent)
-
-# foreach(plugin ${Qt5_PLATFORMS_PLUGINS})
-# 	addQt5PluginDll(${plugin} Qt5_PLATFORMS_PLUGINS_DLLS)
-# endforeach()
-# foreach(plugin ${Qt5_IMAGEFORMATS_PLUGINS})
-# 	addQt5PluginDll(${plugin} Qt5_IMAGEFORMATS_PLUGINS_DLLS)
-# endforeach()
-# foreach(plugin ${Qt5_GEOSERVICES_PLUGINS})
-# 	addQt5PluginDll(${plugin} Qt5_GEOSERVICES_PLUGINS_DLLS)
-# endforeach()
-# foreach(plugin ${Qt5_NETWORK_PLUGINS})
-# 	addQt5PluginDll(${plugin} Qt5_NETWORK_PLUGINS_DLLS)
-# endforeach()
-# foreach(plugin ${Qt5_ICONENGINES_PLUGINS})
-# 	addQt5PluginDll(${plugin} Qt5_ICONENGINES_PLUGINS_DLLS)
-# endforeach()
 
 #------------------------------------------------------------------------------
 # Set include directories and link directories.
@@ -627,33 +479,32 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT O
 
 #https://cmake.org/cmake/help/latest/command/target_link_libraries.html
 target_link_libraries( OpenInfraPlatform.UI
-	OpenInfraPlatform.Core
-	Qt5::WinMain  # New target available via find_package ( Qt5Core )
-	Qt5::Core
-	Qt5::Gui
-	Qt5::Widgets
-	Qt5::Svg
-	Qt5::PrintSupport
-	Qt5::Quick
-	Qt5::Qml
-	Qt5::Location
-	Qt5::Positioning
-	Qt5::Xml
-	Qt5::XmlPatterns
-	BlueFramework.Core
-	BlueFramework.Engine
-	BlueFramework.Application
-	BlueFramework.ImageProcessing
-	BlueFramework.Rasterizer
-	BlueFramework.D3D11RenderSystem
-	BlueFramework.D3D12RenderSystem
-	QtXlsxWriter
-	QSimpleUpdater
-	carve
-	#ZLIB::ZLIB
-	zlib
-	Rpcrt4.lib
-	eigen
+	PUBLIC
+		OpenInfraPlatform.Core
+		Qt5::WinMain  # New target available via find_package ( Qt5Core )
+		Qt5::Core
+		Qt5::Gui
+		Qt5::Widgets
+		Qt5::Svg
+		Qt5::PrintSupport
+		Qt5::Quick
+		Qt5::Qml
+		Qt5::Location
+		Qt5::Positioning
+		BlueFramework.Core
+		BlueFramework.Engine
+		BlueFramework.Application
+		BlueFramework.ImageProcessing
+		BlueFramework.Rasterizer
+		BlueFramework.D3D11RenderSystem
+		BlueFramework.D3D12RenderSystem
+		QtXlsxWriter
+		QSimpleUpdater
+		carve
+		#ZLIB::ZLIB
+		zlib
+		Rpcrt4.lib
+		eigen
 )
 
 if(TARGET Qt5::windeployqt)
@@ -661,13 +512,7 @@ if(TARGET Qt5::windeployqt)
     add_custom_command(TARGET OpenInfraPlatform.UI
         POST_BUILD
         COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
-        COMMAND Qt5::windeployqt --dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>" "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>"
-
-        # hack pjanck 2020.08.04.
-        # these are known issues in BlueFramework
-        COMMAND ${CMAKE_COMMAND} -E copy ${Qt5_BIN_DIR}/Qt5Xmld.dll "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>"
-        COMMAND ${CMAKE_COMMAND} -E copy ${blue_framework_BINARY_DIR}/$<CONFIG>/BlueFramework.Applicationd.dll "$<TARGET_FILE_DIR:OpenInfraPlatform.UI>"
-        # end hack
+        COMMAND Qt5::windeployqt -xml $<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>
     )
 
     # # copy deployment directory during installation

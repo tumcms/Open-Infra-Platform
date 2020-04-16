@@ -54,8 +54,7 @@ namespace OpenInfraPlatform
 				>
 					static void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
-						const std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
-						const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT, UnitConverter<IfcEntityTypesT>>> repConverter);
+						const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter);
 //				{
 //					//#ifdef _DEBUG
 //					//				std::cout << "Info\t| IfcGeometryConverter.Importer.RepConverter: Converting IFC product " << product->classname() << " #" << product->getId() << std::endl;
@@ -142,13 +141,12 @@ namespace OpenInfraPlatform
 				// 3: Compute Meshsets from Polyhedrons
 				// ***************************************
 				template <
-					class IfcEntityTypesT,
-					class IfcUnitConverterT
+					class IfcEntityTypesT
 				>
 					static void computeMeshsetsFromPolyhedrons(const std::shared_ptr<oip::EXPRESSEntity>& entity,
 						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
 						std::stringstream& strerr,
-						const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT>> repConverter)
+						const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter)
 				{
 					// now examine the opening data of the product representation
 					std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> openingDatas;
@@ -203,17 +201,17 @@ namespace OpenInfraPlatform
 			};
 
 			template <
-				class IfcEntityTypesT,
-				class IfcUnitConverterT
+				class IfcEntityTypesT
 			>
 				// IfcImporterT class with readStepFile, collectGeometryData, getter and setter. 
-				class IfcImporterT {
+			class IfcImporterT 
+			{
 				public:
 					IfcImporterT()
 					{
 						geomSettings = std::make_shared<GeometrySettings>();
-						unitConverter = std::make_shared<IfcUnitConverterT>();
-						repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT>>(geomSettings, unitConverter);
+						unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
+						repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT>>(geomSettings, unitConverter);
 					}
 
 					virtual ~IfcImporterT()
@@ -249,7 +247,7 @@ namespace OpenInfraPlatform
 										// create new shape input data for product
 										std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
 										productShape->ifc_product = product;
-										IfcImporterUtil::convertIfcProduct<IfcEntityTypesT>(product, productShape, unitConverter, repConverter);
+										IfcImporterUtil::convertIfcProduct<IfcEntityTypesT>(product, productShape, repConverter);
 										shapeInputData.insert(std::pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>(pair.first, productShape));
 									}
 								}
@@ -273,14 +271,14 @@ namespace OpenInfraPlatform
 
 
 					std::shared_ptr<GeometrySettings>& getGeomSettings() { return geomSettings; }
-					std::shared_ptr<IfcUnitConverterT>& getUnitConverter() { return unitConverter; }
+					std::shared_ptr<UnitConverter<IfcEntityTypesT>>& getUnitConverter() { return unitConverter; }
 					std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& getShapeDatas() { return shapeInputData; }
 
 				protected:
 
-					std::shared_ptr<GeometrySettings>		geomSettings;
-					std::shared_ptr<RepresentationConverterT<IfcEntityTypesT, IfcUnitConverterT>> repConverter;
-					std::shared_ptr<IfcUnitConverterT>		unitConverter;
+					std::shared_ptr<GeometrySettings>							geomSettings;
+					std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
+					std::shared_ptr<UnitConverter<IfcEntityTypesT>>				unitConverter;
 
 
 					// shape input data of all products

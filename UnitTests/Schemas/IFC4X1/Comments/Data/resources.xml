@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Resources -->
+<resources>
+  <resource>
+    <uri>https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/annex/annex-e/csg-primitive.ifc</uri>
+    <localPath>Data/csg-primitive.ifc</localPath>
+  </resource>
+</resources>
