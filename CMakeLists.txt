@@ -239,7 +239,7 @@ endif(DOXYGEN_GENERATE_DOCUMENTATION)
 FetchContent_Declare(
 	blue_framework
 	GIT_REPOSITORY https://github.com/tumcms/Blue-Framework.git
-	GIT_TAG a0.0.2
+	GIT_TAG a0.0.3
 )
   
 FetchContent_GetProperties(blue_framework)
