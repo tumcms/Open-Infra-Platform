@@ -26,10 +26,12 @@
 
 #include <memory>
 
+#include "ConverterBase.h"
+
 #include "CurveConverter.h"
+#include "PlacementConverter.h"
 #include "GeomUtils.h"
 #include "GeometryInputData.h"
-#include "GeometrySettings.h"
 #include "PlacementConverter.h"
 #include "UnhandledRepresentationException.h"
 
@@ -41,13 +43,20 @@ namespace OpenInfraPlatform {
 		namespace IfcGeometryConverter {
 			class ItemData;
 
-			template <class IfcEntityTypesT, class IfcUnitConverterT>
-			class FaceConverterT {
+			template <
+				class IfcEntityTypesT
+			>
+			class FaceConverterT : public ConverterBaseT<IfcEntityTypesT>
+			{
 			public:
 				FaceConverterT(std::shared_ptr<GeometrySettings> geomSettings,
-					std::shared_ptr<IfcUnitConverterT> unitConverter,
-					std::shared_ptr<CurveConverterT<IfcEntityTypesT, IfcUnitConverterT>> cc)
-					: geomSettings(geomSettings), unitConverter(unitConverter), curveConverter(cc)
+					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc,
+					std::shared_ptr<CurveConverterT<IfcEntityTypesT>> cc)
+					: 
+					ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
+					placementConverter(pc),
+					curveConverter(cc)
 				{
 				}
 
@@ -59,7 +68,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polyline_data)
 				{
-					double length_factor = unitConverter->getLengthInMeterFactor();
+					double length_factor = UnitConvert()->getLengthInMeterFactor();
 
 					/*	Faceconverter.h
 						For IFC4x1:
@@ -99,8 +108,8 @@ namespace OpenInfraPlatform {
 						}
 
 						// (1/4) IfcBSplineSurface SUBTYPE of IfcBoundedSurface
-						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBSplineSurface> bspline_surface =
-							std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcBSplineSurface>(bounded_surface);
+						std::shared_ptr<typename IfcEntityTypesT::IfcBSplineSurface> bspline_surface =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurface>(bounded_surface);
 
 						if(bspline_surface) {
 							// Get attributes 1-4.
@@ -114,19 +123,19 @@ namespace OpenInfraPlatform {
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(bspline_surface);*/		// TO DO: next level (IfcCoordinates: IfcLengthMeasure)
 							auto vec_control_point_list_list = bspline_surface->ControlPointsList;
 							for(auto& it_control_point_list : vec_control_point_list_list) {
-								std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCartesianPoint>> vec_control_point_list;
+								std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> vec_control_point_list;
 								std::shared_ptr<ItemData> input_data_cpl_set(new ItemData);
 
 								vec_control_point_list.resize(it_control_point_list.size());
 								std::transform(it_control_point_list.begin(),
 									it_control_point_list.end(),
 									vec_control_point_list.begin(),
-									[](EXPRESSReference<OpenInfraPlatform::IFC4X1::IfcCartesianPoint> it) { return it.lock(); });
+									[](EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> it) { return it.lock(); });
 
 							}
 							/*std::shared_ptr<typename IfcEntityTypesT::IfcBSplineSurfaceForm> surface_form =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurfaceForm>(bspline_surface);*/	// TO DO: next level (enum: PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED)
-							OpenInfraPlatform::IFC4X1::IfcBSplineSurfaceForm surface_form = bspline_surface->SurfaceForm;
+							typename IfcEntityTypesT::IfcBSplineSurfaceForm surface_form = bspline_surface->SurfaceForm;
 
 							// Get attributes 5-7. For information only.
 							/*std::shared_ptr<typename IfcEntityTypesT::IfcLogical> u_closed =
@@ -139,8 +148,8 @@ namespace OpenInfraPlatform {
 
 
 							// IfcBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurface
-							std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBSplineSurface> bspline_knots = // bspline_surface zu bspline_knots
-								std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcBSplineSurface>(bounded_surface);
+							std::shared_ptr<typename IfcEntityTypesT::IfcBSplineSurface> bspline_knots = // bspline_surface zu bspline_knots
+								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurface>(bounded_surface);
 
 							if(bspline_knots) {
 								// Get attributes 8-12.
@@ -163,7 +172,7 @@ namespace OpenInfraPlatform {
 								std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& basis_surface_placement = basis_surface->Position.lock();
 
 								if(basis_surface_placement) {
-									PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(basis_surface_placement, curve_bounded_plane_matrix, length_factor);
+									placementConverter->convertIfcAxis2Placement3D(basis_surface_placement, curve_bounded_plane_matrix);
 									curve_bounded_plane_matrix = pos * curve_bounded_plane_matrix;
 								}
 							}
@@ -190,19 +199,19 @@ namespace OpenInfraPlatform {
 						}
 
 						// (3/4) IfcCurveBoundedSurface SUBTYPE of IfcBoundedSurface.
-						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCurveBoundedSurface> curve_bounded_surface =
-							std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcCurveBoundedSurface>(bounded_surface);
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurveBoundedSurface> curve_bounded_surface =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCurveBoundedSurface>(bounded_surface);
 
 						if(curve_bounded_surface) {
 							// Get basis surface, boundaries and implicit outer.
 							/*std::shared_ptr<typename IfcEntityTypesT::IfcSurface> basis_surface =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfacePlane>(curve_bounded_surface);*/
-							std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcSurface> basis_surface = curve_bounded_surface->BasisSurface.lock();
+							std::shared_ptr<typename IfcEntityTypesT::IfcSurface> basis_surface = curve_bounded_surface->BasisSurface.lock();
 							/*std::shared_ptr<typename IfcEntityTypesT::IfcBoundaryCurve> boundaries =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundaryCurve>(curve_bounded_surface);*/
-								// std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBoundaryCurve> boundaries = curve_bounded_surface->Boundaries;
+								// std::shared_ptr<typename IfcEntityTypesT::IfcBoundaryCurve> boundaries = curve_bounded_surface->Boundaries;
 
-							std::vector<std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcBoundaryCurve>> vec_boundaries;
+							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcBoundaryCurve>> vec_boundaries;
 
 							vec_boundaries.resize(curve_bounded_surface->Boundaries.size());
 							std::transform(
@@ -261,13 +270,13 @@ namespace OpenInfraPlatform {
 
 						carve::math::Matrix elementary_surface_matrix(pos);
 						if(elementary_surface_placement) {
-							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(elementary_surface_placement, elementary_surface_matrix, length_factor);
+							placementConverter->convertIfcAxis2Placement3D(elementary_surface_placement, elementary_surface_matrix);
 							elementary_surface_matrix = pos * elementary_surface_matrix;
 						}
 
 						// (1/4) IfcCylindricalSurface SUBTYPE of IfcElementarySurface
-						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcCylindricalSurface> cylindrical_surface =
-							std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcCylindricalSurface>(elementary_surface);
+						std::shared_ptr<typename IfcEntityTypesT::IfcCylindricalSurface> cylindrical_surface =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCylindricalSurface>(elementary_surface);
 
 						if(cylindrical_surface) {
 							// Get radius.
@@ -303,8 +312,8 @@ namespace OpenInfraPlatform {
 						}
 
 						// (3/4) IfcSphericalPlane SUBTYPE of IfcElementarySurface
-						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcSphericalSurface> spherical_surface =
-							std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcSphericalSurface>(elementary_surface);
+						std::shared_ptr<typename IfcEntityTypesT::IfcSphericalSurface> spherical_surface =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSphericalSurface>(elementary_surface);
 
 						if(spherical_surface) {
 							// Get radius.
@@ -317,8 +326,8 @@ namespace OpenInfraPlatform {
 						}
 
 						// (4/4) IfcToroidalSurface SUBTYPE of IfcElementarySurface
-						std::shared_ptr<OpenInfraPlatform::IFC4X1::IfcToroidalSurface> toroidal_surface =
-							std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcToroidalSurface>(elementary_surface);
+						std::shared_ptr<typename IfcEntityTypesT::IfcToroidalSurface> toroidal_surface =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcToroidalSurface>(elementary_surface);
 
 						if(toroidal_surface) {
 							// Get major and minor radius.
@@ -356,7 +365,7 @@ namespace OpenInfraPlatform {
 
 						carve::math::Matrix swept_surface_matrix(pos);
 						if(swept_surface_placement) {
-							PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(swept_surface_placement, swept_surface_matrix, length_factor);
+							placementConverter->convertIfcAxis2Placement3D(swept_surface_placement, swept_surface_matrix);
 							swept_surface_matrix = pos * swept_surface_matrix;
 						}
 
@@ -778,7 +787,7 @@ namespace OpenInfraPlatform {
 				void convertIfcCartesianPoint2DVector(const std::vector<std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>>>& points2D,
 					std::vector<std::vector<carve::geom::vector<3>>>& loop2D) const
 				{
-					const double lengthFactor = unitConverter->getLengthInMeterFactor();
+					const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
 					const uint32_t numPointsY = points2D.size();
 					loop2D.resize(numPointsY);
 
@@ -813,9 +822,9 @@ namespace OpenInfraPlatform {
 				}
 
 			protected:
-				std::shared_ptr<GeometrySettings> geomSettings;
-				std::shared_ptr<IfcUnitConverterT> unitConverter;
-				std::shared_ptr<CurveConverterT<IfcEntityTypesT, IfcUnitConverterT>> curveConverter;
+
+				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
+				std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter;
 			};
 
 			// template<>

@@ -132,7 +132,7 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     cbd2.data = nullptr;
     pickIdBuffer_ = renderSystem_->createConstantBuffer(cbd2);
 
-    viewCube_ = buw::makeReferenceCounted<buw::ViewCube>(renderSystem_, pickBuffer_, pickIdBuffer_, cameraController_);
+    viewCube_ = buw::makeReferenceCounted<buw::ViewCube>(renderSystem_, pickBuffer_, pickIdBuffer_, cameraController_, buw::Singleton<RenderResources>::instance().getResourceRootDir());
 
     BLUE_LOG(trace) << "Creating effects (1)";
     gradientClearEffect_ = buw::makeReferenceCounted<GradientClearEffect>(renderSystem_.get(), viewport_);

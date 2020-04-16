@@ -34,10 +34,10 @@ namespace OpenInfraPlatform
 	namespace Core {
 		namespace IfcGeometryConverter {
 			template <
-				class IfcEntityTypesT,
-				class IfcUnitConverterT
+				class IfcEntityTypesT
 			>
-				class SplineConverterT {
+			class SplineConverterT : public ConverterBaseT<IfcEntityTypesT> // TODO 2020.04.08.: spline converter does not apply length corrections
+			{
 				public:
 					SplineConverterT() {}
 					virtual ~SplineConverterT() {}

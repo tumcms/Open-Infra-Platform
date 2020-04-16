@@ -4,7 +4,7 @@
 
 `TUM Open Infra Platform`is a software for viewing and converting alignment data. Currently it offers partial support for LandXML, our IFC based Alignment proposal, IFC Alignment 1.0, IFC Alignment 1.1 (work in progress) and OKSTRA.
 
-![Beta1_5_Windows8_1.png](screenshots/Beta1_5_Windows8_1.png)
+![Beta1_5_Windows8_1.png](Documentation/Beta1_5_Windows8_1.png)
 
 ## Documentation
 
@@ -34,12 +34,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 ## Copyright notes
 TUM Open Infra Platform uses several software libraries. The corresponding licenses can be found in the Licenses folder distributed with this source code:
 
-* boost 1.69.0 (http://www.boost.org/) (*Boost Software License*) ({root_dir}/Licenses/boost.LICENSE_1_0.txt)
+* boost 1.65.1 (http://www.boost.org/) (*Boost Software License*) ({root_dir}/Licenses/boost.LICENSE_1_0.txt)
 * Eigen 3.3.7 (http://eigen.tuxfamily.org/) (*MPL2*) ({root_dir}/Licenses/Eigen.COPYING.MPL2)
 * Google Test 1.8.0 (https://github.com/google/googletest) (*BSD 3-Clause License*) ({root_dir}/Licenses/GoogleTest.LICENSE)
-* Qt 5.12 (https://download.qt.io/archive/qt/) (LGPL version 3) ({root_dir}/Licenses/Qt.LICENSE)
-* BlueFramwork (https://bitbucket.org/tumcms/blueframework/downloads/) (GPL v3 License) ({root_dir}/Licenses/BlueFramwork.LICENSE.txt)
-* CloudCompare (http://www.danielgm.net/cc/) (GPL v2 License) on development branch IDP for PCD processing. ({root_dir}/Licenses/cloudcompare.license.txt)
+* Qt 5.12.1 (https://download.qt.io/archive/qt/) (LGPL version 3) ({root_dir}/Licenses/Qt.LICENSE)
+* BlueFramwork a0.0.2 (https://github.com/tumcms/Blue-Framework) (GPL v3 License) ({root_dir}/Licenses/BlueFramwork.LICENSE.txt)
+* CloudCompare v2.10.3 (http://www.danielgm.net/cc/) (GPL v2 License) on development branch IDP for PCD processing. ({root_dir}/Licenses/cloudcompare.license.txt)
 * zlib 1.2.11 (https://zlib.net/) (Zlib license) ({root_dir}/Licenses/zlib.license.txt)
 * TCLAP (http://tclap.sourceforge.net/) (MIT License) ({root_dir}/Licenses/TCLAP.COPYING)
 * qhull (http://www.qhull.org/) without modification. ({root_dir}/Licenses/qhull.COPYING.txt)
