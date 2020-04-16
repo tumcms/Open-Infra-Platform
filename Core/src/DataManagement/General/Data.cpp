@@ -211,6 +211,8 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 		}
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 
+	}
+
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
 	if (buw::PointCloud::GetSupportedExtensions().contains(extension)) {
