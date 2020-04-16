@@ -328,7 +328,9 @@ namespace OpenInfraPlatform {
 
 							double length_factor = UnitConvert()->getLengthInMeterFactor();
 
-							// evaluate distance expression
+							// ***********************************************************
+							// calculate the position of the point on the curve + offsets
+							// 1. evaluate distance expression
 							// ENTITY IfcDistanceExpression
 							//  SUBTYPE OF (IfcGeometricRepresentationItem);
 							//   DistanceAlong : IfcLengthMeasure;
@@ -348,14 +350,17 @@ namespace OpenInfraPlatform {
 								offsetFromCurve.z = distExpr->OffsetVertical.get() * length_factor;
 							alongHorizontal = distExpr->AlongHorizontal;
 
-							// calculate the position on and the direction of the base curve
+							// 2. calculate the position on and the direction of the base curve
 							carve::geom::vector<3>  pointOnCurve	 ( carve::geom::VECTOR(0.0, 0.0, 0.0) ),
 													directionOfCurve ( carve::geom::VECTOR(1.0, 0.0, 0.0) );
 							convertAlignmentCurveDistAlongToPoint3D( 
 								ifcBoundedCurve, distAlong, alongHorizontal, 
 								pointOnCurve, directionOfCurve);
 
-							// calculate the position
+							// 3. calculate the position
+							// the position on the curve = pointOnCurve
+							// the direction of the curve's tangent = directionOfCurve
+							// the offsets = offsetFromCurve
 							object_placement_matrix = absolute_placement; //TODO wrong
 
 							// PlacementRelTo type IfcObjectPlacement [0:1] (introduced in IFC4x2)

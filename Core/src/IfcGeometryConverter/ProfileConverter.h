@@ -639,13 +639,13 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<typename IfcEntityTypesT::IfcCircleHollowProfileDef> hollow = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleHollowProfileDef>(profileDef);
 					if(hollow) {
 						angle = 0;
-						radius -= hollow->WallThickness * length_factor;
+						double radius2 = radius - hollow->WallThickness * length_factor;
 
-						int num_segments2 = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
-						double d_angle = GeomSettings()->getAngleLength(radius);
+						int num_segments2 = GeomSettings()->getNumberOfSegmentsForTesselation(radius2);
+						double d_angle2 = GeomSettings()->getAngleLength(radius2);
 						for(int i = 0; i < num_segments2; ++i) {
-							inner_loop.push_back(carve::geom::VECTOR((radius * cos(angle)), (radius * sin(angle))));
-							angle += d_angle;
+							inner_loop.push_back(carve::geom::VECTOR((radius2 * cos(angle)), (radius2 * sin(angle))));
+							angle += d_angle2;
 						}
 						paths.push_back(inner_loop);
 					}
