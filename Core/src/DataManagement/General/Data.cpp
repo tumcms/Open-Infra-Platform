@@ -37,10 +37,10 @@
 	#include "IFC4X1.h"
 #endif
 
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_ALPHA
-	#include "reader/IFC4X3_ALPHAReader.h"
-	#include "EMTIFC4X3_ALPHAEntityTypes.h"
-	#include "IFC4X3_ALPHA.h"
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+	#include "reader/IFC4X3_RC1Reader.h"
+	#include "EMTIFC4X3_RC1EntityTypes.h"
+	#include "IFC4X3_RC1.h"
 #endif
 
 #include "IfcGeometryConverter\IfcImporter.h"
@@ -196,12 +196,12 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 			}
 		}
 #endif //OIP_MODULE_EARLYBINDING_IFC4X1
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_ALPHA
-		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_ALPHA) {
-			expressModel_ = OpenInfraPlatform::IFC4X3_ALPHA::IFC4X3_ALPHAReader::FromFile(filename);
-			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X3_ALPHAEntityTypes, OpenInfraPlatform::Core::IfcGeometryConverter::UnitConverter< emt::IFC4X3_ALPHAEntityTypes>>();
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC1) {
+			expressModel_ = OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader::FromFile(filename);
+			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X3_RC1EntityTypes>();
 			if (importer.collectGeometryData(expressModel_)) {
-				auto converter = IfcGeometryConverter::ConverterBuwT<emt::IFC4X3_ALPHAEntityTypes>();
+				auto converter = IfcGeometryConverter::ConverterBuwT<emt::IFC4X3_RC1EntityTypes>();
 				if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
 					if (!tempIfcGeometryModel_->isEmpty()) {
 						ifcGeometryModel_ = tempIfcGeometryModel_;
@@ -209,8 +209,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 				}
 			}
 		}
-	}
-#endif //OIP_MODULE_EARLYBINDING_IFC4X3_ALPHA
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
