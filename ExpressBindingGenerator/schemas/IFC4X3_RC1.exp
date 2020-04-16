@@ -11762,7 +11762,7 @@ ENTITY IfcTransportElement
  WHERE
 	CorrectPredefinedType : NOT(EXISTS(PredefinedType)) OR
 ((PredefinedType <> IfcTransportElementFixedTypeEnum.USERDEFINED) AND (PredefinedType <> IfcTransportElementNonFixedTypeEnum.USERDEFINED)) OR
- ((PredefinedType = IfcTransportElementFixedTypeEnum.USERDEFINED OR IfcTransportElementNonFixedTypeEnum.USERDEFINED)) AND EXISTS(SELF\IfcObject.ObjectType));
+ ((PredefinedType = IfcTransportElementFixedTypeEnum.USERDEFINED OR IfcTransportElementNonFixedTypeEnum.USERDEFINED) AND EXISTS(SELF\IfcObject.ObjectType));
 	CorrectTypeAssigned : (SIZEOF(IsTypedBy) = 0) OR
   ('IFC4X3_RC1.IFCTRANSPORTELEMENTTYPE' IN TYPEOF(SELF\IfcObject.IsTypedBy[1].RelatingType));
 END_ENTITY;
@@ -11772,7 +11772,7 @@ ENTITY IfcTransportElementType
 	PredefinedType : IfcTransportElementTypeSelect;
  WHERE
 	CorrectPredefinedType : ((PredefinedType <> IfcTransportElementFixedTypeEnum.USERDEFINED) AND (PredefinedType <> IfcTransportElementNonFixedTypeEnum.USERDEFINED) OR
-((PredefinedType = IfcTransportElementFixedTypeEnum.USERDEFINED OR PredefinedType = IfcTransportElementNonFixedTypeEnum.USERDEFINED)) AND EXISTS(SELF\IfcElementType.ElementType));
+((PredefinedType = IfcTransportElementFixedTypeEnum.USERDEFINED OR IfcTransportElementNonFixedTypeEnum.USERDEFINED) AND EXISTS(SELF\IfcElementType.ElementType)));
 END_ENTITY;
 
 ENTITY IfcTrapeziumProfileDef
