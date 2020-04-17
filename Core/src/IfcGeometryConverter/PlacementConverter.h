@@ -306,8 +306,13 @@ namespace OpenInfraPlatform {
 							//   CartesianPosition: OPTIONAL IfcAxis2Placement3D;
 							// END_ENTITY;
 
-							// IFC4x1
-							std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve = linear_placement->PlacementRelTo.lock();
+							std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve = nullptr;
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+								ifcCurve = linear_placement->PlacementRelTo.lock();
+#endif //OIP_MODULE_EARLYBINDING_IFC4X1
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+								ifcCurve = linear_placement->PlacementMeasuredAlong.lock();
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 							std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> ifcBoundedCurve =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(ifcCurve);
 							if (!ifcBoundedCurve)
@@ -315,8 +320,6 @@ namespace OpenInfraPlatform {
 								BLUE_LOG(error) << linear_placement->getErrorLog() << ": Placement along a " << ifcCurve->classname() << " is not supported!";
 								return;
 							}
-							// IFC4x2+
-							//std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve = linear_placement->PlacementMeasuredAlong.lock();
 
 							auto& distExpr = linear_placement->Distance;
 
@@ -363,7 +366,16 @@ namespace OpenInfraPlatform {
 							// the offsets = offsetFromCurve
 							object_placement_matrix = absolute_placement; //TODO wrong
 
+							// 4. calculate the rotations
+							// ENTITY IfcOrientationExpression
+							//	SUBTYPE OF(IfcGeometricRepresentationItem);
+							//	LateralAxisDirection: IfcDirection;
+							//	VerticalAxisDirection: IfcDirection;
+							// END_ENTITY;
+
+
 							// PlacementRelTo type IfcObjectPlacement [0:1] (introduced in IFC4x2)
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 							if (linear_placement->PlacementRelTo) {
 								// Reference to Object that provides the relative placement by its local coordinate system. 
 								decltype(local_placement->PlacementRelTo)::type& local_object_placement = local_placement->PlacementRelTo;
@@ -371,6 +383,7 @@ namespace OpenInfraPlatform {
 								convertIfcObjectPlacement(local_object_placement.lock(), relative_placement, already_applied);
 								object_placement_matrix = relative_placement * object_placement_matrix;
 							}
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 						}
 
 						matrix = object_placement_matrix;
