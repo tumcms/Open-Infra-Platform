@@ -29,17 +29,17 @@ find_path(LIBLAS_ROOT NAMES liblas-osgeo4w-init.bat include/liblas/liblas.hpp HI
 if(NOT LIBLAS_ROOT)
 	set(LIBLAS_INSTALL_DIR "C:/thirdparty/${MSVC_VERSION_STRING}/x64" CACHE FILEPATH "Please specify an installation directory.")
 	option(LIBLAS_AUTOMATIC_INSTALL OFF)
-	if(NOT BOOST_ROOT)
-		find_path(BOOST_ROOT REQUIRED)
+	if(NOT Boost_DIR)
+		find_path(Boost_DIR REQUIRED)
 		message(FATAL_ERROR"Boost required!")
 	endif()
-	if(LIBLAS_AUTOMATIC_INSTALL AND LIBLAS_INSTALL_DIR AND BOOST_ROOT)
+	if(LIBLAS_AUTOMATIC_INSTALL AND LIBLAS_INSTALL_DIR AND Boost_DIR)
 		message(STATUS "Installing libLAS...")
 		if(${MSVC_VERSION_STRING} STREQUAL "vs2015")
 			execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_libLAS-1.6_Visual Studio 14 2015 Win64.cmd"
 				${LIBLAS_INSTALL_DIR}
 				"${CMAKE_COMMAND}"
-				"${BOOST_ROOT}"
+				"${Boost_DIR}"
 				WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
 				RESULT_VARIABLE RESULT
 				ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_liblas.txt"
@@ -48,7 +48,7 @@ if(NOT LIBLAS_ROOT)
 			execute_process(COMMAND "${PROJECT_SOURCE_DIR}/external/Build_libLAS-1.6_Visual Studio 15 2017 Win64.cmd"
 				${LIBLAS_INSTALL_DIR}
 				"${CMAKE_COMMAND}"
-				"${BOOST_ROOT}"
+				"${Boost_DIR}"
 				WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/external
 				RESULT_VARIABLE RESULT
 				ERROR_FILE "${PROJECT_SOURCE_DIR}/external/log_install_liblas.txt"
