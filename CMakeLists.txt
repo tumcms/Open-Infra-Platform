@@ -291,6 +291,8 @@ add_subdirectory(external/QtXlsxWriter)
 add_subdirectory(external/QSimpleUpdater)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/carve)
 
+include(UpdateBoostMPL)
+
 add_subdirectory(ExpressBindingGenerator)
 # As of revision 531, replaces old OpenInfraPlatform_EarlyBinding_DIR
 add_subdirectory(${PROJECT_SOURCE_DIR}/EarlyBinding)

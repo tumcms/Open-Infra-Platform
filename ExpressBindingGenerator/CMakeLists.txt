@@ -41,35 +41,6 @@ if(NOT tclap_POPULATED)
 	FetchContent_Populate(tclap)
 endif()
 
-find_package(Python2 REQUIRED)
-get_filename_component(Python2_DIRECTORY ${Python2_EXECUTABLE} DIRECTORY)
-
-#find_file(Python_2to3_SCRIPT NAMES 2to3.py HINTS "${Python_DIRECTORY}\\Tools\\scripts" REQUIRED)
-
-# Get root directory of Qt installation
-string(FIND ${Qt5_DIR} "Qt" POS)
-string(SUBSTRING ${Qt5_DIR} 0 ${POS} Qt5_ROOT)
-string(SUBSTRING ${Qt5_DIR} ${POS} 2 Qt5_ROOT_SUFFIX)
-string(APPEND Qt5_ROOT ${Qt5_ROOT_SUFFIX})
-message(STATUS ${Qt5_ROOT})
-
-# Set path to MinGW bin folder containing gcc executable
-set(MinGW_DIR ${Qt5_ROOT}/Tools/mingw730_64/bin)
-
-# Get Python and MinGW directories in native path format to add them to %PATH% variable
-file(TO_NATIVE_PATH ${MinGW_DIR} MinGW_DIR)
-file(TO_NATIVE_PATH ${Python2_DIRECTORY} Python2_DIRECTORY)
-
-add_custom_target(Commands.UpdateBoostMPL
-	COMMAND set PYTHON_PATH=${Python2_DIRECTORY}
-	COMMAND set GCC_PATH=${MinGW_DIR}
-	COMMAND set PATH=%GCC_PATH%\;%PYTHON_PATH%\;%PATH%;
-	COMMAND echo %PATH%
-	COMMAND ${Python2_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/fix_boost_mpl_preprocess.py ${Boost_INCLUDE_DIR}
-	COMMAND ${Python2_EXECUTABLE} ${Boost_INCLUDE_DIR}/libs/mpl/preprocessed/boost_mpl_preprocess.py --sequence-type=both --num-elements=100 ${Boost_INCLUDE_DIR}
-)
-set_target_properties(Commands.UpdateBoostMPL PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
-
 # Create list of possible IFC formats
 #set(SUPPORTED_IFC_FORMATS IFC2X3 IFC4 IFC4X2_BIM4ROAD IFC4X1 IFC4X2_DRAFT_1 IFC4X2 IFC4X3_ALPHA)
 
