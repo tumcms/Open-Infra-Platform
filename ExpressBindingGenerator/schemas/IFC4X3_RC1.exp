@@ -19,7 +19,7 @@ for incidental consequential damages in connection with the furnishing, performa
 of the material. The information contained in this document is subject to change without notice.
 
 Issue date:
-16 April 2020
+17 April 2020
 
 *)
 
@@ -3977,7 +3977,6 @@ ENTITY IfcAlignment2DCantSegTransition
 	IsStartRadiusCCW : IfcBoolean;
 	IsEndRadiusCCW : IfcBoolean;
 	TransitionCurveType : IfcTransitionCurveType;
-	TransitionCurve : IfcTransitionCurveSegment2D;
 END_ENTITY;
 
 ENTITY IfcAlignment2DCantSegment
@@ -4044,7 +4043,6 @@ ENTITY IfcAlignment2DVerSegTransition
 	IsStartRadiusCCW : IfcBoolean;
 	IsEndRadiusCCW : IfcBoolean;
 	TransitionCurveType : IfcTransitionCurveType;
-	TransitionCurve : IfcTransitionCurveSegment2D;
 END_ENTITY;
 
 ENTITY IfcAlignment2DVertical
@@ -11762,7 +11760,7 @@ ENTITY IfcTransportElement
  WHERE
 	CorrectPredefinedType : NOT(EXISTS(PredefinedType)) OR
 ((PredefinedType <> IfcTransportElementFixedTypeEnum.USERDEFINED) AND (PredefinedType <> IfcTransportElementNonFixedTypeEnum.USERDEFINED)) OR
- ((PredefinedType = IfcTransportElementFixedTypeEnum.USERDEFINED OR IfcTransportElementNonFixedTypeEnum.USERDEFINED) AND EXISTS(SELF\IfcObject.ObjectType));
+(((PredefinedType = IfcTransportElementFixedTypeEnum.USERDEFINED) OR (PredefinedType = IfcTransportElementNonFixedTypeEnum.USERDEFINED)) AND EXISTS(SELF\IfcObject.ObjectType));
 	CorrectTypeAssigned : (SIZEOF(IsTypedBy) = 0) OR
   ('IFC4X3_RC1.IFCTRANSPORTELEMENTTYPE' IN TYPEOF(SELF\IfcObject.IsTypedBy[1].RelatingType));
 END_ENTITY;
@@ -11771,8 +11769,8 @@ ENTITY IfcTransportElementType
  SUBTYPE OF (IfcElementType);
 	PredefinedType : IfcTransportElementTypeSelect;
  WHERE
-	CorrectPredefinedType : ((PredefinedType <> IfcTransportElementFixedTypeEnum.USERDEFINED) AND (PredefinedType <> IfcTransportElementNonFixedTypeEnum.USERDEFINED) OR
-((PredefinedType = IfcTransportElementFixedTypeEnum.USERDEFINED OR IfcTransportElementNonFixedTypeEnum.USERDEFINED) AND EXISTS(SELF\IfcElementType.ElementType)));
+	CorrectPredefinedType : ((PredefinedType <> IfcTransportElementFixedTypeEnum.USERDEFINED) AND (PredefinedType <> IfcTransportElementNonFixedTypeEnum.USERDEFINED)) OR
+(((PredefinedType = IfcTransportElementFixedTypeEnum.USERDEFINED) OR (PredefinedType = IfcTransportElementNonFixedTypeEnum.USERDEFINED)) AND EXISTS(SELF\IfcElementType.ElementType));
 END_ENTITY;
 
 ENTITY IfcTrapeziumProfileDef
