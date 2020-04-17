@@ -307,7 +307,14 @@ namespace OpenInfraPlatform {
 							// END_ENTITY;
 
 							// IFC4x1
-							std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve = linear_placement->PlacementRelTo.lock();
+							std::string linearPlacementTypeName =typeid(typename IfcEntityTypesT::IfcCurve).name();
+							std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve = nullptr;
+
+							if(linearPlacementTypeName.find("IFC4X1") != std::string::npos)
+								ifcCurve = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcLinearPlacement>(linear_placement)->PlacementRelTo.lock();
+							else
+								ifcCurve = linear_placement->PlacementMeasuredAlong.lock();
+
 							std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> ifcBoundedCurve =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(ifcCurve);
 							if (!ifcBoundedCurve)
@@ -315,8 +322,6 @@ namespace OpenInfraPlatform {
 								BLUE_LOG(error) << linear_placement->getErrorLog() << ": Placement along a " << ifcCurve->classname() << " is not supported!";
 								return;
 							}
-							// IFC4x2+
-							//std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve = linear_placement->PlacementMeasuredAlong.lock();
 
 							auto& distExpr = linear_placement->Distance;
 
