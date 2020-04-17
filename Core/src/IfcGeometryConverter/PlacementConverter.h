@@ -103,7 +103,7 @@ namespace OpenInfraPlatform {
 
 					}
 					// scale the lengths according to the unit conversion
-					point *= UnitConvert()->getLengthInMetersFactor();
+					point *= UnitConvert()->getLengthInMeterFactor();
 				}
 
 				/*! Converts IfcDirection to a vector3D.
