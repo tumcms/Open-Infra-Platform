@@ -87,15 +87,15 @@ namespace OpenInfraPlatform {
 					point = carve::geom::VECTOR(0.0, 0.0, 0.0);
 					// read the coordinates
 					auto& coords = cartesianPoint->Coordinates;
-					if (coord.size() > 0)
+					if (coords.size() > 0)
 					{
-						point.x = coord[0];
+						point.x = coords[0];
 
-						if (coord.size() > 1) 
+						if (coords.size() > 1) 
 						{
 							point.y = coords[1];
 
-							if (coord.size() > 2) 
+							if (coords.size() > 2) 
 							{
 								point.z = coords[2];
 							}
