@@ -28,50 +28,24 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
 include(ExternalData)
 add_definitions(-DBLUEINFRASTRUCTURE_EXPORT)
 
+# Find thirdparty libraries.
+FetchContent_Declare(
+	dep_liblas
+	GIT_REPOSITORY https://github.com/libLAS/libLAS.git
+	GIT_TAG 1.6.0
+)
 
-if(OPTION_USE_LIBE57FORMAT)
-	message(STATUS "Building with libe57 support.")
-		# Find thirdparty libraries.
-	FetchContent_Declare(
-		xerces_cpp
-		GIT_REPOSITORY https://github.com/apache/xerces-c.git
-		GIT_TAG 3.2.2
-	)
+FetchContent_GetProperties(dep_liblas)
+if(NOT dep_liblas_POPULATED)
+	FetchContent_Populate(dep_liblas)
 
-	FetchContent_GetProperties(xerces_cpp)
-	if(NOT xerces_cpp)
-		FetchContent_Populate(xerces_cpp) 
-		add_subdirectory(${xerces_cpp_SOURCE_DIR} ${xerces_cpp_BINARY_DIR} EXCLUDE_FROM_ALL)
-	endif()
+	set(WITH_UTILITIES FALSE)
+	set(WITH_TESTS FALSE)
+	mark_as_advanced(FORCE WITH_UTILITIES WITH_TESTS)
 
-	get_target_property(xerces_BINARY_DIRECTORY xerces-c BINARY_DIR)
-	get_target_property(xerces_OUTPUT_NAME xerces-c OUTPUT_NAME)
-	get_target_property(Xerces_INCLUDE_DIR xerces-c INCLUDE_DIRECTORIES)
-	
-	set(Xerces_LIBRARY_DEBUG ${xerces_BINARY_DIRECTORY}/Debug/${xerces_OUTPUT_NAME}D.lib)
-	set(Xerces_LIBRARY_RELEASE ${xerces_BINARY_DIRECTORY}/Release/${xerces_OUTPUT_NAME}.lib)
-
-	set(Xerces_LIBRARY ${Xerces_LIBRARY_DEBUG} ${Xerces_LIBRARY_RELEASE})
-	set(XERCES_ROOT ${xerces_cpp_SOURCE_DIR})
-	message(STATUS "${Xerces_LIBRARY_DEBUG}, ${Xerces_LIBRARY_RELEASE} and ${Xerces_INCLUDE_DIR} found.")
-
-	if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/libe57.zip")
-		file(DOWNLOAD
-			"http://sourceforge.net/projects/e57-3d-imgfmt/files/E57Refimpl-src/E57RefImpl_src-1.1.312.zip"
-			${CMAKE_CURRENT_BINARY_DIR}/libe57.zip
-			SHOW_PROGRESS
-		)
-		execute_process(COMMAND ${CMAKE_SOURCE_DIR}/external/7za.exe x ${CMAKE_CURRENT_BINARY_DIR}/libe57.zip -o${CMAKE_CURRENT_BINARY_DIR})
-	endif()
-
-	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_BINARY_DIR}/E57RefImpl_src-1.1.312/cmake ${CMAKE_CURRENT_BINARY_DIR}/E57RefImpl_src-1.1.312/cmake/Modules)
-	add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/E57RefImpl_src-1.1.312 ${CMAKE_CURRENT_BINARY_DIR}/E57RefImpl_src-1.1.312 EXCLUDE_FROM_ALL)
-	
-	set(LIBE57FORMAT_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/E57RefImpl_src-1.1.312)
+	add_subdirectory(${dep_liblas_SOURCE_DIR} ${dep_liblas_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
-
-# Find thirdparty libraries.
 FetchContent_Declare(
 	cc
 	GIT_REPOSITORY https://github.com/CloudCompare/CloudCompare.git
@@ -84,7 +58,7 @@ if(NOT cc_POPULATED)
 	add_subdirectory(${cc_SOURCE_DIR} ${cc_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
-find_package(libLAS REQUIRED)
+
 
 # Add files.
 file(GLOB PointCloudProcessing_Source									src/*.*)	
@@ -93,7 +67,7 @@ source_group(PointCloudProcessing										FILES ${PointCloudProcessing_Source})
 # Create a target for the library
 set(DEPENDENT_INCLUDE_DIRS
 	src
-	${LIBLAS_INCLUDE_DIRS}	
+	${dep_liblas_SOURCE_DIR}/include
 	${CMAKE_CURRENT_BINARY_DIR} 	
 	${blue_framework_SOURCE_DIR}/include
 	${cc_SOURCE_DIR}/CC/include
@@ -109,7 +83,8 @@ add_library(OpenInfraPlatform.PointCloudProcessing SHARED ${PointCloudProcessing
 target_include_directories(OpenInfraPlatform.PointCloudProcessing PUBLIC ${DEPENDENT_INCLUDE_DIRS})
 
 target_link_libraries(OpenInfraPlatform.PointCloudProcessing PUBLIC
-		${LIBLAS_LIBRARIES}
+		liblas
+		liblas_c
 		BlueFramework.ImageProcessing
 		BlueFramework.Rasterizer
 )
