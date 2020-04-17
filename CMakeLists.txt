@@ -142,6 +142,10 @@ set(Boost_USE_STATIC_LIBS ON)
 # As of revision 530, boost 1.65.1 required.
 find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
 
+if(Boost_FOUND)
+	set(Boost_DIR ${Boost_INCLUDE_DIR})
+endif()
+
 FetchContent_Declare(
 	eigen
 	GIT_REPOSITORY https://github.com/eigenteam/eigen-git-mirror.git
@@ -508,20 +512,19 @@ target_link_libraries( OpenInfraPlatform.UI
 		eigen
 )
 
+set(QT_WINDEPLOY_FLAGS -xml)
+
+if(MODULES_POINT_CLOUD_PROCESSING)
+	list(APPEND QT_WINDEPLOY_FLAGS -opengl)
+endif()
+
 if(TARGET Qt5::windeployqt)
     # execute windeployqt in a tmp directory after build
     add_custom_command(TARGET OpenInfraPlatform.UI
         POST_BUILD
         COMMAND set PATH=%PATH%$<SEMICOLON>${qt5_install_prefix}/bin
-        COMMAND Qt5::windeployqt -xml $<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>
-    )
-
-    # # copy deployment directory during installation
-    # install(
-    #     DIRECTORY
-    #     "${CMAKE_CURRENT_BINARY_DIR}/windeployqt/"
-    #     DESTINATION ${FOO_INSTALL_RUNTIME_DESTINATION}
-    # )
+        COMMAND Qt5::windeployqt ${QT_WINDEPLOY_FLAGS} $<TARGET_FILE_DIR:OpenInfraPlatform.UI>/$<TARGET_FILE_NAME:OpenInfraPlatform.UI>
+	)
 endif()
 
 #------------------------------------------------------------------------------
