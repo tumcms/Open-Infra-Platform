@@ -58,83 +58,191 @@ namespace OpenInfraPlatform {
 
 				}
 
-				// **************************************************************************************************************************//
-				//	IfcPlacement (http://www.buildingsmart-tech.org/ifc/IFC4x1/RC3/html/schema/ifcgeometryresource/lexical/ifcplacement.htm) //
-				//	ABSTRACT SUPERTYPE OF IfcAxis1Placement, IfcAxis2Placement2D, IfcAxis2Placement3D										 //
-				// **************************************************************************************************************************//
+				/*! Converts IfcCartesianPoint to a vector3D.
+				
+				\param[in]	cartesianPoint	IfcCartesianPoint entity to be interpreted.
+				\param[out] point			Calculated 2D or 3D vector.
 
+				\note The point's coordinates are scaled according to the unit conversion factor.
+				\note The point's coordinates are reset to (0,0,0).
+				*/
+				void convertIfcCartesianPoint(
+					const std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint,
+					carve::geom::vector<3>& point)
+				{
+					// **************************************************************************************************************************
+					// IfcCartesianPoint
+					//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifccartesianpoint.htm
+					// ENTITY IfcCartesianPoint
+					//	SUBTYPE OF(IfcPoint);
+					//		Coordinates: LIST[1:3] OF IfcLengthMeasure;
+					//	DERIVE
+					//		Dim : IfcDimensionCount: = HIINDEX(Coordinates);
+					//	WHERE
+					//		CP2Dor3D : HIINDEX(Coordinates) >= 2;
+					// END_ENTITY;
+					// **************************************************************************************************************************
+
+					// set to default
+					point = carve::geom::VECTOR(0.0, 0.0, 0.0);
+					// read the coordinates
+					auto& coords = cartesianPoint->Coordinates;
+					if (coord.size() > 0)
+					{
+						point.x = coord[0];
+
+						if (coord.size() > 1) 
+						{
+							point.y = coords[1];
+
+							if (coord.size() > 2) 
+							{
+								point.z = coords[2];
+							}
+						}
+
+					}
+					// scale the lengths according to the unit conversion
+					point *= UnitConvert()->getLengthInMetersFactor();
+				}
+
+				/*! Converts IfcDirection to a vector3D.
+
+				\param[in]	ifcDirection	IfcDirection entity to be interpreted.
+				\param[out] direction		Calculated 2D or 3D vector.
+
+				\note The direction is normalized.
+				\note The default value for the direction needs to be set outside the function.
+				*/
+				void convertIfcDirection(
+					const std::shared_ptr<typename IfcEntityTypesT::IfcDirection>& ifcDirection,
+					carve::geom::vector<3>& direction)
+				{
+					// **************************************************************************************************************************
+					// IfcDirection
+					//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcdirection.htm
+					// ENTITY IfcDirection
+					//	SUBTYPE OF(IfcGeometricRepresentationItem);
+					//		DirectionRatios: LIST[2:3] OF IfcReal;
+					//	DERIVE
+					//		Dim : IfcDimensionCount: = HIINDEX(DirectionRatios);
+					//	WHERE
+					//		MagnitudeGreaterZero : SIZEOF(QUERY(Tmp < *DirectionRatios | Tmp <> 0.0)) > 0;
+					// END_ENTITY;
+					// read the coordinates
+					// **************************************************************************************************************************
+					
+					auto& ratios = ifcDirection->DirectionRatios;
+					if (ratios.size() > 0)
+					{
+						direction.x = ratios[0];
+
+						if (ratios.size() > 1)
+						{
+							direction.y = ratios[1];
+
+							if (ratios.size() > 2)
+							{
+								direction.z = ratios[2];
+							}
+						}
+
+					}
+					// normalize the direction
+					direction.normalize();
+				}
+
+				/*! Converts IfcPlacement to a transformation matrix
+
+				\param[in]	IfcPlacement	IfcPlacement entity to be interpreted
+				\param[out] matrix			Calculated transformation matrix				
+				*/
 				void convertIfcPlacement(
-					const std::shared_ptr<typename IfcEntityTypesT::IfcPlacement> placement,
+					const std::shared_ptr<typename IfcEntityTypesT::IfcPlacement>& placement,
 					carve::math::Matrix& matrix)
 				{
+					// **************************************************************************************************************************
+					// IfcPlacement 
+					//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcplacement.htm
+					// ENTITY IfcPlacement
+					//	ABSTRACT SUPERTYPE OF(ONEOF(IfcAxis1Placement, IfcAxis2Placement2D, IfcAxis2Placement3D))
+					//	SUBTYPE OF(IfcGeometricRepresentationItem);
+					//		Location: IfcCartesianPoint;
+					//	DERIVE
+					//		Dim : IfcDimensionCount: = Location.Dim;
+					// END_ENTITY;									 
+					// **************************************************************************************************************************
+
 					// (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
 					if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis1Placement>(placement)) {
-						std::stringstream ss;
-#ifdef _DEBUG
-						ss << "Warning\t| IfcAxis1Placement not implemented ";
-#endif
-						throw std::runtime_error(ss.str().c_str());
+						BLUE_LOG(error) << placement->getErrorLog() << ": Not implemented.";
+						return;
 					}
 
 					// (2/3) IfcAxis2Placement2D SUBTYPE OF IfcPlacement 
-					else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(placement)) {
-						std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D> axis2placement2d =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(placement);
+					std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(placement);
+					if( axis2placement2d ) {
 						convertIfcAxis2Placement2D(axis2placement2d, matrix);
+						return;
 					}
 
 					// (3/3) IfcAxis2Placement3D SUBTYPE OF IfcPlacement
-					else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(placement)) {
-						std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(placement);
+					std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d = 
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(placement);
+					if( axis2placement3d ) {
 						convertIfcAxis2Placement3D(axis2placement3d, matrix);
+						return; 
 					}
-					else {
-						std::stringstream ss;
-						ss << "Error\t| IfcPlacement is not IfcAxis2Placement2D or IfcAxis2Placement3D ";
-						throw std::runtime_error(ss.str().c_str());
-					}
-				};
 
-				// ********************************************************************************************************************************************************	//
-				//	Functions																																				//
-				//	convertIfcAxis2Placement2D, convertIfcAxis2Placement3D, convertIfcObjectPlacement, getWorldCoordinateSystem, convertTransformationOperator, getPlane.	//
-				// ********************************************************************************************************************************************************	//
+					BLUE_LOG(error) << placement->getErrorLog() << ": Not supported.";
+				}
 
-				// Function 1: Convert IfcAxis2Placement2D.
+				/*! Converts IfcAxis2Placement2D to a transformation matrix.
+
+				\param[in]	axis2placement2d	IfcAxis2Placement2D entity to be interpreted.
+				\param[out] matrix				Calculated transformation matrix.
+				*/
 				void convertIfcAxis2Placement2D(
-					const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D> axis2placement2d,
+					const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d,
 					carve::math::Matrix& matrix)
 				{
+					// **************************************************************************************************************************
+					// IfcAxis2Placement2D 
+					//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcaxis2placement2d.htm
+					// ENTITY IfcAxis2Placement2D
+					//	SUBTYPE OF(IfcPlacement);
+					//		RefDirection: OPTIONAL IfcDirection;
+					//	DERIVE
+					//		P : LIST[2:2] OF IfcDirection : = IfcBuild2Axes(RefDirection);
+					//	WHERE
+					//		RefDirIs2D : (NOT(EXISTS(RefDirection))) OR(RefDirection.Dim = 2);
+					//		LocationIs2D: SELF\IfcPlacement.Location.Dim = 2;
+					// END_ENTITY;
+					// **************************************************************************************************************************
 
 					carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
 					carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
 					carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
 					carve::geom::vector<3>  local_z(carve::geom::VECTOR(0.0, 0.0, 1.0));
-					carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
+					carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0)); // defaults to (1.0,0.0) according to the specification
+					
+					// interpret Location 
+					convertIfcCartesianPoint(axis2placement2d->Location.lock(), translate);
 
-					double length_factor = UnitConvert()->getLengthInMeterFactor();
-
-					// Location type IfcCartesianPoint 
-					if(axis2placement2d->Location) {
-						if(axis2placement2d->Location->Coordinates.size() > 1) {
-							translate = carve::geom::VECTOR(axis2placement2d->Location->Coordinates[0] * length_factor, axis2placement2d->Location->Coordinates[1] * length_factor, 0.0);
-						}
-					}
-
-					// Reference Direction type IfcDirection [OPTIONAL]
+					// interpret RefDirection [OPTIONAL]
 					if(axis2placement2d->RefDirection) {
-						if(axis2placement2d->RefDirection->DirectionRatios.size() > 1) {
-							ref_direction.x = axis2placement2d->RefDirection->DirectionRatios[0];
-							ref_direction.y = axis2placement2d->RefDirection->DirectionRatios[1];
-							ref_direction.z = 0;
-
-							local_x = ref_direction;	//carve::geom::VECTOR(direction_ratios[0], direction_ratios[1], 0 );
-							carve::geom::vector<3>  z_axis(carve::geom::VECTOR(0.0, 0.0, 1.0));
-							local_y = carve::geom::cross(z_axis, local_x);	// ref_direction can be just in the x-z-plane, not perpendicular to y and z. so re-compute local x					
-							local_x = carve::geom::cross(local_y, local_z);
-						}
+						convertIfcDirection(axis2placement2d->RefDirection.get().lock(), ref_direction);
 					}
 
+					// calculate
+					local_x = ref_direction;
+					// ref_direction can be just in the x-z-plane, not perpendicular to y and z.
+					//  --> so re-compute local x					
+					local_y = carve::geom::cross(local_z, local_x);	
+					local_x = carve::geom::cross(local_y, local_z);
+
+					// normalize the direction vectors
 					local_x.normalize();
 					local_y.normalize();
 					local_z.normalize();
@@ -147,56 +255,60 @@ namespace OpenInfraPlatform {
 						0, 0, 0, 1);
 				}
 
-				// Function 2: Convert IfcAxis2Placement3D.
+				/*! Converts IfcAxis2Placement3D to a transformation matrix.
+
+				\param[in]	axis2placement3d	IfcAxis2Placement3D entity to be interpreted.
+				\param[out] matrix				Calculated transformation matrix.
+				*/
 				void convertIfcAxis2Placement3D(
-					const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d,
+					const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d,
 					carve::math::Matrix& matrix)
 				{
+					// **************************************************************************************************************************
+					// IfcAxis2Placement2D 
+					//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcaxis2placement3d.htm
+					// ENTITY IfcAxis2Placement3D
+					//	SUBTYPE OF(IfcPlacement);
+					//		Axis: OPTIONAL IfcDirection;
+					//		RefDirection: OPTIONAL IfcDirection;
+					//	DERIVE
+					//		P : LIST[3:3] OF IfcDirection : = IfcBuildAxes(Axis, RefDirection);
+					//	WHERE
+					//		LocationIs3D : SELF\IfcPlacement.Location.Dim = 3;
+					//		AxisIs3D: (NOT(EXISTS(Axis))) OR(Axis.Dim = 3);
+					//		RefDirIs3D: (NOT(EXISTS(RefDirection))) OR(RefDirection.Dim = 3);
+					//		AxisToRefDirPosition: (NOT(EXISTS(Axis))) OR(NOT(EXISTS(RefDirection))) OR(IfcCrossProduct(Axis, RefDirection).Magnitude > 0.0);
+					//		AxisAndRefDirProvision: NOT((EXISTS(Axis)) XOR(EXISTS(RefDirection)));
+					// END_ENTITY;
+					// **************************************************************************************************************************
+
 					carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
 					carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
 					carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
 					carve::geom::vector<3>  local_z(carve::geom::VECTOR(0.0, 0.0, 1.0));
 					carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
 
-					double length_factor = UnitConvert()->getLengthInMeterFactor();
+					// interpret Location
+					convertIfcCartesianPoint(axis2placement3d->Location.lock(), translate);
 
-					// Location type IfcCartesianPoint
-					if(axis2placement3d->Location) {
-
-						auto& coords = axis2placement3d->Location->Coordinates;
-
-						if(coords.size() > 2) {
-							translate = carve::geom::VECTOR(coords[0] * length_factor, coords[1] * length_factor, coords[2] * length_factor);
-						}
-						else if(coords.size() > 1) {
-							translate = carve::geom::VECTOR(coords[0] * length_factor, coords[1] * length_factor, 0.0);
-						}
+					// interpret RefDirection [OPTIONAL]
+					if (axis2placement3d->RefDirection) {
+						convertIfcDirection(axis2placement3d->RefDirection.get().lock(), ref_direction);
 					}
 
-					// Axis type IfcDirection [OPTIONAL]
+					// interpret Axis [OPTIONAL]
 					if(axis2placement3d->Axis) {
-
-						auto& axis = axis2placement3d->Axis->DirectionRatios; //Richtig
-
-
-						if(axis.size() > 2) {
-							local_z = carve::geom::VECTOR(axis[0], axis[1], axis[2]);
-						}
+						convertIfcDirection(axis2placement3d->Axis.get().lock(), local_z);
 					}
 
-					// Reference Direction type IfcDirection [OPTIONAL]
-					if(axis2placement3d->RefDirection) {
-						if(axis2placement3d->RefDirection->DirectionRatios.size() > 2) {
-							ref_direction.x = axis2placement3d->RefDirection->DirectionRatios[0];
-							ref_direction.y = axis2placement3d->RefDirection->DirectionRatios[1];
-							ref_direction.z = axis2placement3d->RefDirection->DirectionRatios[2];
-						}
-					}
-
+					// calculate
 					local_x = ref_direction;
-					local_y = carve::geom::cross(local_z, local_x);	// ref_direction can be just in the x-z-plane, not perpendicular to y and z. so re-compute local x
+					// ref_direction can be just in the x-z-plane, not perpendicular to y and z.
+					//  --> so re-compute local x					
+					local_y = carve::geom::cross(local_z, local_x);
 					local_x = carve::geom::cross(local_y, local_z);
 
+					// normalize the direction vectors
 					local_x.normalize();
 					local_y.normalize();
 					local_z.normalize();
