@@ -22,7 +22,9 @@
 if(MODULES_POINT_CLOUD_PROCESSING)
 
 project(OpenInfraPlatform.PointCloudProcessing)
-#include(FetchContent)
+
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
+
 include(ExternalData)
 add_definitions(-DBLUEINFRASTRUCTURE_EXPORT)
 
@@ -93,7 +95,7 @@ set(DEPENDENT_INCLUDE_DIRS
 	src
 	${LIBLAS_INCLUDE_DIRS}	
 	${CMAKE_CURRENT_BINARY_DIR} 	
-	${BLUEFRAMEWORK_INCLUDE_DIR}
+	${blue_framework_SOURCE_DIR}/include
 	${cc_SOURCE_DIR}/CC/include
 	${cc_SOURCE_DIR}/libs/qCC_io
 	${cc_SOURCE_DIR}/libs/qCC_db
@@ -107,8 +109,9 @@ add_library(OpenInfraPlatform.PointCloudProcessing SHARED ${PointCloudProcessing
 target_include_directories(OpenInfraPlatform.PointCloudProcessing PUBLIC ${DEPENDENT_INCLUDE_DIRS})
 
 target_link_libraries(OpenInfraPlatform.PointCloudProcessing PUBLIC
-		${LIBLAS_LIBRARIES}	
-		${BLUEFRAMEWORK_LIBRARIES}
+		${LIBLAS_LIBRARIES}
+		BlueFramework.ImageProcessing
+		BlueFramework.Rasterizer
 )
 
 # Use the Widgets module from Qt 5.
