@@ -53,16 +53,16 @@ namespace OpenInfraPlatform
 
 				\param[in] project A pointer to the IfcProject entity within the model.
 				*/
-				void setIfcProject(std::shared_ptr<typename IfcEntityTypesT::IfcProject> project)
+				void setIfcProject(const std::shared_ptr<typename IfcEntityTypesT::IfcProject>& project)
 				{
 					if(!project->UnitsInContext) {
 						return;
 					}
 
 					// remember units in context
-					m_unit_assignment = project->UnitsInContext;
+					m_unit_assignment = project->UnitsInContext.get().lock();
 
-					m_length_unit_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_LENGTH ); 
+					m_length_unit_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_LENGTHUNIT ); 
 					m_plane_angle_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_PLANEANGLEUNIT ); 
 				}
 
