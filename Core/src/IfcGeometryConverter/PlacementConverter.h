@@ -58,9 +58,9 @@ namespace OpenInfraPlatform {
 
 				}
 
-				/*! Converts IfcCartesianPoint to a vector3D.
+				/*! \brief Converts \c IfcCartesianPoint to a vector.
 				
-				\param[in]	cartesianPoint	IfcCartesianPoint entity to be interpreted.
+				\param[in]	cartesianPoint	\c IfcCartesianPoint entity to be interpreted.
 				\param[out] point			Calculated 2D or 3D vector.
 
 				\note The point's coordinates are scaled according to the unit conversion factor.
@@ -106,7 +106,7 @@ namespace OpenInfraPlatform {
 					point *= UnitConvert()->getLengthInMeterFactor();
 				}
 
-				/*! Converts IfcDirection to a vector3D.
+				/*! \brief Converts \c IfcDirection to a vector.
 
 				\param[in]	ifcDirection	IfcDirection entity to be interpreted.
 				\param[out] direction		Calculated 2D or 3D vector.
@@ -152,10 +152,10 @@ namespace OpenInfraPlatform {
 					direction.normalize();
 				}
 
-				/*! Converts IfcPlacement to a transformation matrix
+				/*! \brief Converts \c IfcPlacement to a transformation matrix.
 
-				\param[in]	IfcPlacement	IfcPlacement entity to be interpreted
-				\param[out] matrix			Calculated transformation matrix				
+				\param[in]	placement	\c IfcPlacement entity to be interpreted.
+				\param[out] matrix		Calculated transformation matrix.		
 				*/
 				void convertIfcPlacement(
 					const std::shared_ptr<typename IfcEntityTypesT::IfcPlacement>& placement,
@@ -198,9 +198,9 @@ namespace OpenInfraPlatform {
 					BLUE_LOG(error) << placement->getErrorLog() << ": Not supported.";
 				}
 
-				/*! Converts IfcAxis2Placement2D to a transformation matrix.
+				/*! \brief Converts \c IfcAxis2Placement2D to a transformation matrix.
 
-				\param[in]	axis2placement2d	IfcAxis2Placement2D entity to be interpreted.
+				\param[in]	axis2placement2d	\c IfcAxis2Placement2D entity to be interpreted.
 				\param[out] matrix				Calculated transformation matrix.
 				*/
 				void convertIfcAxis2Placement2D(
@@ -255,9 +255,9 @@ namespace OpenInfraPlatform {
 						0, 0, 0, 1);
 				}
 
-				/*! Converts IfcAxis2Placement3D to a transformation matrix.
+				/*! \brief Converts \c IfcAxis2Placement3D to a transformation matrix.
 
-				\param[in]	axis2placement3d	IfcAxis2Placement3D entity to be interpreted.
+				\param[in]	axis2placement3d	\c IfcAxis2Placement3D entity to be interpreted.
 				\param[out] matrix				Calculated transformation matrix.
 				*/
 				void convertIfcAxis2Placement3D(
@@ -321,13 +321,16 @@ namespace OpenInfraPlatform {
 						0, 0, 0, 1);
 				}
 
-				/*! Converts IfcObjectPlacement to a transformation matrix.
+				/*! \brief Converts \c IfcObjectPlacement to a transformation matrix.
 
-				\param[in]	objectPlacement		IfcObjectPlacement entity to be interpreted.
+				\param[in]	objectPlacement		\c IfcObjectPlacement entity to be interpreted.
 				\param[out] matrix				Calculated transformation matrix.
-				\param		alreadyApplied		An array of references to already applied \c IfcObjectPlacement-s
+				\param		alreadyApplied		An array of references to already applied \c IfcObjectPlacement-s.
 
-				\note Function checks, if \c objectPlacement is contained within \c alreadyApplied. Returns, if contained. Otherwise, transforms the \c objectPlacement with recursive calls to self. It adds the \c objectPlacement to \c alreadyApplied. This prevents cyclic \c IfcObjectPlacements.
+				\note Function checks, if \c objectPlacement is contained within \c alreadyApplied. 
+				Returns, if contained. Otherwise, transforms the \c objectPlacement with recursive calls to self. 
+				It adds the \c objectPlacement to \c alreadyApplied. 
+				This prevents cyclic \c IfcObjectPlacement-s.
 				*/
 				void convertIfcObjectPlacement(
 					const std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement,
