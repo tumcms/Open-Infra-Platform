@@ -227,6 +227,12 @@ namespace OpenInfraPlatform
 						auto project = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair) { return boost::algorithm::to_upper_copy(pair.second->classname())  == "IFCPROJECT"; });
 
 						if(project != model->entities.end()) {
+
+							// Set the unit conversion factors
+							std::shared_ptr<typename IfcEntityTypesT::IfcProject> ifcproject =
+								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProject>(project->second);
+							unitConverter->setIfcProject(ifcproject);
+
 							//std::for_each(model->entities.begin(), model->entities.end(), [this, &model](std::pair<size_t, std::shared_ptr<oip::EXPRESSEntity>> &pair) {
 							//	std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
 							//	if (product) {
@@ -238,7 +244,7 @@ namespace OpenInfraPlatform
 							//	}
 							//});
 							try {
-								for (auto pair : model->entities) {
+								for (auto& pair : model->entities) {
 									std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
 									if (product) {
 #ifdef _DEBUG
