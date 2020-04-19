@@ -53,22 +53,22 @@ namespace OpenInfraPlatform
 
 				\param[in] project A pointer to the IfcProject entity within the model.
 				*/
-				void setIfcProject(std::shared_ptr<typename IfcEntityTypesT::IfcProject> project)
+				void setIfcProject(const std::shared_ptr<typename IfcEntityTypesT::IfcProject>& project)
 				{
 					if(!project->UnitsInContext) {
 						return;
 					}
 
 					// remember units in context
-					m_unit_assignment = project->UnitsInContext;
+					m_unit_assignment = project->UnitsInContext.get().lock();
 
-					m_length_unit_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_LENGTH ); 
+					m_length_unit_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_LENGTHUNIT ); 
 					m_plane_angle_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_PLANEANGLEUNIT ); 
 				}
 
 				/*! \brief Gets the factor for specified unit type.
 				
-				\param[in] unit_type The type of unit specified by the enumeration value of IfcUnitEnum.
+				\param[in] unit_type The type of unit specified by the enumeration value of \c IfcUnitEnum.
 				*/
 				double getFactorFor(const typename IfcEntityTypesT::IfcUnitEnum& unit_type) const
 				{
@@ -117,7 +117,7 @@ namespace OpenInfraPlatform
 
 				/*! \brief Gets the factor for specified unit type.
 
-				\param[in] unit_type The type of unit specified by the enumeration value of IfcDerivedUnitEnum.
+				\param[in] unit_type The type of unit specified by the enumeration value of \c IfcDerivedUnitEnum.
 				*/
 				double getFactorFor(const typename IfcEntityTypesT::IfcDerivedUnitEnum& unit_type) const
 				{
@@ -166,7 +166,7 @@ namespace OpenInfraPlatform
 
 				/*! \brief Converts the unit to a factor to obtain SI unit.
 				
-				\param[in] unit The unit in question of type *IfcNamedUnit*.
+				\param[in] unit The unit in question of type \c IfcNamedUnit.
 
 				\return The factor to obtain the SI equivalent unit.
 				*/
@@ -309,7 +309,7 @@ namespace OpenInfraPlatform
 
 				/*! \brief Converts the unit to a factor to obtain SI unit.
 
-				\param[in] unit The unit in question of type -IfcDerivedUnit-.
+				\param[in] unit The unit in question of type \c IfcDerivedUnit.
 
 				\return The factor to obtain the SI equivalent unit.
 				*/
@@ -348,7 +348,7 @@ namespace OpenInfraPlatform
 
 				/*! \brief Converts the unit to a factor to obtain SI unit.
 
-				\param[in] unit The unit in question of type _IfcUnit_.
+				\param[in] unit The unit in question of type \c IfcUnit.
 
 				\return The factor to obtain the SI equivalent unit.
 				*/
@@ -390,7 +390,7 @@ namespace OpenInfraPlatform
 
 				/*! \brief Converts the value to a floating point (if applicable).
 
-				\param[in] value The value in question of type IfcValue.
+				\param[in] value The value in question of type \c IfcValue.
 
 				\return The value saved or 1. (if not a real number).
 				*/

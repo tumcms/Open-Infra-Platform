@@ -93,13 +93,17 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 							
 							std::transform(schema.begin(), schema.end(), schema.begin(), ::tolower);
 							
-							if(schemata.count(schema) > 0) {
-								return schemata[schema];
+							try
+							{
+								if(schemata.count(schema) > 0) {
+									return schemata[schema];
+								}						
 							}
-							else {
+							catch(...)
+							{
 								throw std::exception("IFC schema is not specified or could not be determined.");
 								return IfcSchema::UNKNOWN;
-							}							
+							}	
 						}
 					}
 				}
