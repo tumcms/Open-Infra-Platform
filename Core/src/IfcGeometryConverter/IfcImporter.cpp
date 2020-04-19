@@ -68,7 +68,7 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 		auto& objectPlacement_ptr = objectPlacement.lock();		// get std::shared_ptr used to construct the weak_ptr.
 																// OR auto& objectPlacement = optObjectPlacement.get();
 
-		std::set<int> placementAlreadyApplied;
+		std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>> placementAlreadyApplied;
 		repConverter->getPlacementConverter()->convertIfcObjectPlacement(
 			objectPlacement_ptr,
 			matProduct,
