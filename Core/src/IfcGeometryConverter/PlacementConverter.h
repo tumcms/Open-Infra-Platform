@@ -321,56 +321,88 @@ namespace OpenInfraPlatform {
 						0, 0, 0, 1);
 				}
 
-				// Function 3: Convert IfcObjectPlacement
+				/*! Converts IfcObjectPlacement to a transformation matrix.
+
+				\param[in]	objectPlacement		IfcObjectPlacement entity to be interpreted.
+				\param[out] matrix				Calculated transformation matrix.
+				\param		alreadyApplied		An array of references to already applied \c IfcObjectPlacement-s
+
+				\note Function checks, if \c objectPlacement is contained within \c alreadyApplied. Returns, if contained. Otherwise, transforms the \c objectPlacement with recursive calls to self. It adds the \c objectPlacement to \c alreadyApplied. This prevents cyclic \c IfcObjectPlacements.
+				*/
 				void convertIfcObjectPlacement(
-					const std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement> object_placement,
+					const std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement,
 					carve::math::Matrix& matrix,
-					std::set<int>& already_applied)
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied)
 				{
+					// **************************************************************************************************************************
+					// IfcObjectPlacement
+					//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifcobjectplacement.htm
+					// ENTITY IfcObjectPlacement
+					//	ABSTRACT SUPERTYPE OF(ONEOF(IfcGridPlacement, IfcLinearPlacement, IfcLocalPlacement));
+					//   PlacementRelTo : IfcObjectPlacement;			// from IFC4x2+
+					//       ( PlacementRelTo is handled by each subtype individually )
+					//	INVERSE
+					//		PlacesObject : SET[0:?] OF IfcProduct FOR ObjectPlacement;
+					//		ReferencedByPlacements: SET[0:?] OF IfcLocalPlacement FOR PlacementRelTo;
+					// END_ENTITY;
+					// **************************************************************************************************************************
+					
 					// Prevent cyclic relative placement
-					const int placement_id = object_placement->getId();
-					if(placement_id > 0) {
-						if(already_applied.find(placement_id) != already_applied.end()) {
+					for ( auto& el : alreadyApplied) 
+						if( el == objectPlacement )
 							return;
-							//throw IfcPPException( "PlacementConverter::convertIfcObjectPlacement: detected placement cycle", __func__ );
-						}
-						already_applied.insert(placement_id);
-					}
+
+					// Add self to apllied
+					alreadyApplied.push_back(objectPlacement);
+					
+					// The placement matrix - local variable that will get assigned at the end
 					carve::math::Matrix object_placement_matrix(carve::math::Matrix::IDENT());
 
 					// (1/3) IfcLocalPLacement SUBTYPE OF IfcObjectPlacement
 					std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLocalPlacement>(object_placement);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLocalPlacement>(objectPlacement);
 					if(local_placement) {
-						// Relative Placement type IfcAxis2Placement [1:1]					
+						// **************************************************************************************************************************
+						//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifclocalplacement.htm
+						// ENTITY IfcLocalPlacement
+						//	SUBTYPE OF(IfcObjectPlacement);
+						//		PlacementRelTo: OPTIONAL IfcObjectPlacement; // was promoted to ObjectPlacement from IFC4x2+
+						//		RelativePlacement: IfcAxis2Placement;
+						//	WHERE
+						//		WR21 : IfcCorrectLocalPlacement(RelativePlacement, PlacementRelTo);
+						// END_ENTITY;
+						// **************************************************************************************************************************
+						
+						// RelativePlacement				
+						// TYPE IfcAxis2Placement = SELECT (
+						//	IfcAxis2Placement2D,
+						//	IfcAxis2Placement3D);
+						// END_TYPE;
 						decltype(local_placement->RelativePlacement)& axis2placement = local_placement->RelativePlacement;
-						carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
-
 						switch(axis2placement.which()) {
 						case 0:
-							convertIfcAxis2Placement2D(axis2placement.get<0>().lock(), relative_placement);
+							convertIfcAxis2Placement2D(axis2placement.get<0>().lock(), object_placement_matrix);
 							break;
 						case 1:
-							convertIfcAxis2Placement3D(axis2placement.get<1>().lock(), relative_placement);
+							convertIfcAxis2Placement3D(axis2placement.get<1>().lock(), object_placement_matrix);
 							break;
 						default:
+							BLUE_LOG(fatal) << local_placement->getErrorLog() << "RelativePlacement conversion issues.";
 							break;
 						}
-
-						//convertIfcPlacement(placement, relative_placement, length_factor);
-						object_placement_matrix = relative_placement;
-
-
-
-						// PlacementRelTo type IfcObjectPlacement [0:1]
+						
+						// PlacementRelTo
 						if(local_placement->PlacementRelTo) {
-							// Reference to Object that provides the relative placement by its local coordinate system. 
+							// Reference to ObjectPlacement that provides the relative placement by its local coordinate system. 
 							decltype(local_placement->PlacementRelTo)::type& local_object_placement = local_placement->PlacementRelTo;
 							carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
-							convertIfcObjectPlacement(local_object_placement.lock(), relative_placement, already_applied);
-							object_placement_matrix = relative_placement*object_placement_matrix;
+							// recursive call
+							convertIfcObjectPlacement(local_object_placement.lock(), relative_placement, alreadyApplied);
+							// correct self's placement
+							object_placement_matrix = relative_placement * object_placement_matrix;
 						}
 						else {
+							//TODO Georeferencing
 							// If reference to Object is omitted, then the local placement is given to the WCS, established by the geometric representation context.
 								//carve::math::Matrix context_matrix( carve::math::Matrix::IDENT() );
 								//applyContext( context, context_matrix, length_factor, placement_already_applied );
@@ -380,35 +412,18 @@ namespace OpenInfraPlatform {
 
 					// (2/3) IfcGridPlacement SUBTYPE OF IfcObjectPlacement
 					std::shared_ptr<typename IfcEntityTypesT::IfcGridPlacement> grid_placement =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGridPlacement>(object_placement);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGridPlacement>(objectPlacement);
 					if( grid_placement ) {
-
+						//TODO Not implemented
 						BLUE_LOG(warning) << grid_placement->getErrorLog() << ": Not implemented";
-
-						// PlacementLocation type IfcVirtualGridIntersection
-						auto grid_intersection = grid_placement->PlacementLocation;
-
-						if(grid_intersection) {
-							// IntersectingAxes type IfcGridAxis L[2:2]
-							/*Syntax?*/
-							//std::vector<carve::geom::vector<2>>& vec_grid_axis = grid_intersection->IntersectingAxes;
-
-							// OffsetDistances type IfcLengthMeasure L[2:3]
-							//std::vector<double>& vec_offsets = grid_intersection->OffsetDistances;
-							// TODO: implement
-
-							// IfcPlacementRefDirection [OPTIONAL]
-							//IfcGridPlacementDirectionSelect* ref_direction = grid_placement->PlacementRefDirection.get()
-						}
-
 					} // end if IfcGridPlacement
 
 					// (3/3) IfcLinearPlacement SUBTYPE OF IfcObjectPlacement
 					std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement > linear_placement =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLinearPlacement>(object_placement);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLinearPlacement>(objectPlacement);
 					if (linear_placement) {
-						// TODO implement
-
+						// **************************************************************************************************************************
+						//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifclinearplacement.htm
 						// ENTITY IfcLinearPlacement
 						//  SUBTYPE OF(IfcObjectPlacement);
 						//   PlacementRelTo : IfcCurve;			// IFC4x1
@@ -417,35 +432,40 @@ namespace OpenInfraPlatform {
 						//   Orientation: OPTIONAL IfcOrientationExpression;
 						//   CartesianPosition: OPTIONAL IfcAxis2Placement3D;
 						// END_ENTITY;
+						// **************************************************************************************************************************
 
+						// PlacementRelTo / PlacementMeasuredAlong
+						std::string linearPlacementTypeName = typeid(typename IfcEntityTypesT::IfcCurve).name();
 						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve = nullptr;
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-							ifcCurve = linear_placement->PlacementRelTo.lock();
-#endif //OIP_MODULE_EARLYBINDING_IFC4X1
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+
+						#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+						if (linearPlacementTypeName.find("IFC4X1") != std::string::npos)
+							ifcCurve = std::dynamic_pointer_cast<OpenInfraPlatform::IFC4X1::IfcLinearPlacement>(linear_placement)->PlacementRelTo.lock();
+						#else
 							ifcCurve = linear_placement->PlacementMeasuredAlong.lock();
-#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+						#endif //OIP_MODULE_EARLYBINDING_IFC4X1
+
 						std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> ifcBoundedCurve =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(ifcCurve);
 						if (!ifcBoundedCurve)
 						{
-							BLUE_LOG(error) << linear_placement->getErrorLog() << ": Placement along a " << ifcCurve->classname() << " is not supported!";
+							BLUE_LOG(error) << linear_placement->getErrorLog() << ": Linear placement along a " << ifcCurve->classname() << " is not supported!";
 							return;
 						}
 
-						auto& distExpr = linear_placement->Distance;
-
-						auto& orientExpr = linear_placement->Orientation;
-
-						carve::math::Matrix absolute_placement(carve::math::Matrix::IDENT());
-						if (linear_placement->CartesianPosition)
-							convertIfcAxis2Placement3D(linear_placement->CartesianPosition.get().lock(), absolute_placement);
-
+						// Conversion factor for length
 						double length_factor = UnitConvert()->getLengthInMeterFactor();
+
+						// Initialize intermediate variables
+						carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
+						carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
+						carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
+						carve::geom::vector<3>  local_z(carve::geom::VECTOR(0.0, 0.0, 1.0));
 
 						// ***********************************************************
 						// calculate the position of the point on the curve + offsets
 						// 1. evaluate distance expression
+						// Distance
 						// ENTITY IfcDistanceExpression
 						//  SUBTYPE OF (IfcGeometricRepresentationItem);
 						//   DistanceAlong : IfcLengthMeasure;
@@ -454,16 +474,16 @@ namespace OpenInfraPlatform {
 						//   OffsetLongitudinal : OPTIONAL IfcLengthMeasure;
 						//   AlongHorizontal : OPTIONAL IfcBoolean;
 						// END_ENTITY;
+						auto& distExpr = linear_placement->Distance;
 						double distAlong = distExpr->DistanceAlong * length_factor;
+						bool alongHorizontal = distExpr->AlongHorizontal;
 						carve::geom::vector<3> offsetFromCurve(carve::geom::VECTOR(0.0, 0.0, 0.0));
-						bool alongHorizontal = true;
 						if (distExpr->OffsetLongitudinal)
 							offsetFromCurve.x = distExpr->OffsetLongitudinal.get() * length_factor;
 						if (distExpr->OffsetLateral)
 							offsetFromCurve.y = distExpr->OffsetLateral.get() * length_factor;
 						if (distExpr->OffsetVertical)
 							offsetFromCurve.z = distExpr->OffsetVertical.get() * length_factor;
-						alongHorizontal = distExpr->AlongHorizontal;
 
 						// 2. calculate the position on and the direction of the base curve
 						carve::geom::vector<3>  pointOnCurve	 ( carve::geom::VECTOR(0.0, 0.0, 0.0) ),
@@ -476,29 +496,81 @@ namespace OpenInfraPlatform {
 						// the position on the curve = pointOnCurve
 						// the direction of the curve's tangent = directionOfCurve
 						// the offsets = offsetFromCurve
-						object_placement_matrix = absolute_placement; //TODO wrong
+						// 3.a apply the alongHorizontal bool
+						carve::geom::vector<3> curve_x(carve::geom::VECTOR( directionOfCurve.x, directionOfCurve.y, alongHorizontal ? 0.0 : directionOfCurve.z));
+						// 3.b get the perpendicular to the left of the curve in the x-y plane (curve's coordinate system)
+						carve::geom::vector<3> curve_y(carve::geom::VECTOR( -curve_x.y, curve_x.x, 0.0)); // always lies in the x-y plane
+						// 3.c get the vertical as cross product
+						carve::geom::vector<3> curve_z = carve::geom::cross(curve_x, curve_y);
+						// normalize the direction vectors
+						curve_x.normalize();
+						curve_y.normalize();
+						curve_z.normalize();
+
+						// produce the location
+						auto localPlacementMatrix = carve::math::Matrix(
+							curve_x.x, curve_y.x, curve_z.x, 0.0,
+							curve_x.y, curve_y.y, curve_z.y, 0.0,
+							curve_x.z, curve_y.z, curve_z.z, 0.0,
+							0.0, 0.0, 0.0, 1.0);
+						translate = pointOnCurve + localPlacementMatrix * offsetFromCurve;
 
 						// 4. calculate the rotations
+						// Orientation OPTIONAL
 						// ENTITY IfcOrientationExpression
 						//	SUBTYPE OF(IfcGeometricRepresentationItem);
 						//	LateralAxisDirection: IfcDirection;
 						//	VerticalAxisDirection: IfcDirection;
 						// END_ENTITY;
+						auto& orientExpr = linear_placement->Orientation;
+						if (orientExpr)
+						{
+							// convert the attributes
+							convertIfcDirection(orientExpr->LateralAxisDirection.lock(), local_y);
+							convertIfcDirection(orientExpr->VerticalAxisDirection.lock(), local_z);
 
+							local_x = carve::geom::cross(local_y, local_z);
+						}
+
+						// 5. produce a quaternion
+						object_placement_matrix = carve::math::Matrix(
+							local_x.x, local_y.x, local_z.x, translate.x,
+							local_x.y, local_y.y, local_z.y, translate.y,
+							local_x.z, local_y.z, local_z.z, translate.z,
+							0, 0, 0, 1);
+
+						// ***********************************************************
+						// check with the provided CartesianPosition
+						// CartesianPosition OPTIONAL
+						carve::math::Matrix absolute_placement(carve::math::Matrix::IDENT());
+						if (linear_placement->CartesianPosition)
+						{
+							convertIfcAxis2Placement3D(linear_placement->CartesianPosition.get().lock(), absolute_placement);
+							if (absolute_placement != matrix)
+							{
+								BLUE_LOG(trace) << linear_placement->getErrorLog() << "Absolute placemet and the calculated linear placement do not agree";
+							}
+						}
 
 						// PlacementRelTo type IfcObjectPlacement [0:1] (introduced in IFC4x2)
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-						if (linear_placement->PlacementRelTo) {
+						if (   linear_placement->PlacementRelTo
+							&& linearPlacementTypeName.find("IFC4X1") == std::string::npos) // and it's NOT IFC4x1
+						{
 							// Reference to Object that provides the relative placement by its local coordinate system. 
 							decltype(local_placement->PlacementRelTo)::type& local_object_placement = local_placement->PlacementRelTo;
 							carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
-							convertIfcObjectPlacement(local_object_placement.lock(), relative_placement, already_applied);
+							// recursive call
+							convertIfcObjectPlacement(local_object_placement.lock(), relative_placement, alreadyApplied);
+							// correct self's placement
 							object_placement_matrix = relative_placement * object_placement_matrix;
 						}
-#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 					}
 
+					// Set the return value
 					matrix = object_placement_matrix;
+
+					// Remove self from applied
+					alreadyApplied.pop_back();
 				}
 
 				// Function 4: Get World Coordinate System. 
