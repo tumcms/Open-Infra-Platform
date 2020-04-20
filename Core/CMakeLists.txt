@@ -52,7 +52,7 @@ add_library(OpenInfraPlatform.Core STATIC
 	${Core_IfcGeometryConverter_Source}
 )
 
-target_include_directories(OpenInfraPlatform.Core INTERFACE ${PROJECT_INCLUDE_DIRS} )
+target_include_directories(OpenInfraPlatform.Core PUBLIC ${PROJECT_INCLUDE_DIRS} )
 
 # Thirdparty libraries the project depends upon.
 target_link_libraries(OpenInfraPlatform.Core PRIVATE

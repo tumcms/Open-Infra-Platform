@@ -30,6 +30,8 @@
 #include "CarveHeaders.h"
 #include "GeometryInputData.h"
 
+#include "namespace.h"
+
 /***********************************************************************************************/
 
 typedef buw::VertexPosition3Color3Normal3 VertexLayout;
@@ -559,5 +561,7 @@ namespace OpenInfraPlatform
 		}
 	}
 }
+
+EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(IfcGeometryModel)
 
 #endif
