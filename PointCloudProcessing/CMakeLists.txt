@@ -36,13 +36,13 @@ FetchContent_Declare(
 )
 
 FetchContent_GetProperties(dep_liblas)
+
+set(WITH_UTILITIES FALSE CACHE INTERNAL "Build libLAS with utilities" FORCE)
+set(WITH_TESTS FALSE CACHE INTERNAL "Build libLAS with tests" FORCE)
+mark_as_advanced(FORCE WITH_UTILITIES WITH_TESTS)
+
 if(NOT dep_liblas_POPULATED)
 	FetchContent_Populate(dep_liblas)
-
-	set(WITH_UTILITIES FALSE)
-	set(WITH_TESTS FALSE)
-	mark_as_advanced(FORCE WITH_UTILITIES WITH_TESTS)
-
 	add_subdirectory(${dep_liblas_SOURCE_DIR} ${dep_liblas_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
