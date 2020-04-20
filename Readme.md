@@ -37,6 +37,7 @@ TUM Open Infra Platform uses several software libraries. The corresponding licen
 * boost 1.65.1 (http://www.boost.org/) (*Boost Software License*) ({root_dir}/Licenses/boost.LICENSE_1_0.txt)
 * Eigen 3.3.7 (http://eigen.tuxfamily.org/) (*MPL2*) ({root_dir}/Licenses/Eigen.COPYING.MPL2)
 * Google Test 1.8.0 (https://github.com/google/googletest) (*BSD 3-Clause License*) ({root_dir}/Licenses/GoogleTest.LICENSE)
+* IfcPlusPlus (https://github.com/ifcquery/ifcplusplus) (MIT License) (https://github.com/ifcquery/ifcplusplus/blob/master/LICENSE.txt)
 * Qt 5.12.1 (https://download.qt.io/archive/qt/) (LGPL version 3) ({root_dir}/Licenses/Qt.LICENSE)
 * BlueFramwork a0.0.2 (https://github.com/tumcms/Blue-Framework) (GPL v3 License) ({root_dir}/Licenses/BlueFramwork.LICENSE.txt)
 * CloudCompare v2.10.3 (http://www.danielgm.net/cc/) (GPL v2 License) on development branch IDP for PCD processing. ({root_dir}/Licenses/cloudcompare.license.txt)
