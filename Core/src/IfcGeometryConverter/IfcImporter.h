@@ -22,16 +22,13 @@
 
 #include <thread>
 #include <mutex>
-
 #include <memory>
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
 
 #include "CarveHeaders.h"
 #include "RepresentationConverter.h"
-
 #include "UnitConverter.h"
-
-#include <boost/algorithm/string.hpp>
 
 #include "EXPRESS/EXPRESS.h"
 

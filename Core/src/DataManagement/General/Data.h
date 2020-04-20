@@ -187,7 +187,7 @@ namespace OpenInfraPlatform
 				void jobFinished(int jobID, bool completed);
 				void importJob(const std::string& filename);
 
-
+				void ParseExpressAndGeometryModel(const std::string &filename);
 
 			private:
 				ChangeFlag		latestChangeFlag_;
