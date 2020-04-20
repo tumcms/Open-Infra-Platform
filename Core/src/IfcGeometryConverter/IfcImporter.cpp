@@ -33,6 +33,8 @@
 #include "IFC4X1Entities.h"
 #endif
 
+#include "PlacementConverterImpl.h"
+
 template <
 	class IfcEntityTypesT
 >

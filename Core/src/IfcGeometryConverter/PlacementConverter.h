@@ -28,7 +28,7 @@
 
 #include "ConverterBase.h"
 
-#include "BlueFramework/Core/Diagnostics/log.h"
+#include <BlueFramework/Core/Diagnostics/log.h>
 
 
 
@@ -70,9 +70,7 @@ namespace OpenInfraPlatform {
 						// (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
 						if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis1Placement>(placement)) {
 							std::stringstream ss;
-#ifdef _DEBUG
 							ss << "Warning\t| IfcAxis1Placement not implemented ";
-#endif
 							throw std::runtime_error(ss.str().c_str());
 						}
 
@@ -209,6 +207,8 @@ namespace OpenInfraPlatform {
 							0, 0, 0, 1);
 					}
 
+					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> GetRelativePlacement(const std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement);
+
 					// Function 3: Convert IfcObjectPlacement
 					void convertIfcObjectPlacement(
 						const std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement> object_placement,
@@ -307,7 +307,9 @@ namespace OpenInfraPlatform {
 							// END_ENTITY;
 
 							// IFC4x1
-							std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve = linear_placement->PlacementRelTo.lock();
+							std::string linearPlacementTypeName =typeid(typename IfcEntityTypesT::IfcCurve).name();
+							std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve = GetRelativePlacement(linear_placement);
+
 							std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> ifcBoundedCurve =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(ifcCurve);
 							if (!ifcBoundedCurve)
@@ -315,8 +317,6 @@ namespace OpenInfraPlatform {
 								BLUE_LOG(error) << linear_placement->getErrorLog() << ": Placement along a " << ifcCurve->classname() << " is not supported!";
 								return;
 							}
-							// IFC4x2+
-							//std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve = linear_placement->PlacementMeasuredAlong.lock();
 
 							auto& distExpr = linear_placement->Distance;
 
