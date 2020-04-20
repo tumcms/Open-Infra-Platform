@@ -190,7 +190,6 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X1) {
 			ParseExpressAndGeometryModel(filename);
 		}		
-		
 #endif //OIP_MODULE_EARLYBINDING_IFC4X1
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC1) {
@@ -222,6 +221,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 }
 
 void OpenInfraPlatform::Core::DataManagement::Data::ParseExpressAndGeometryModel(const std::string &filename) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
 	expressModel_ = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename);
 	auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X1EntityTypes>();
 	if (importer.collectGeometryData(expressModel_)) {
@@ -232,6 +232,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::ParseExpressAndGeometryModel
 			}
 		}
 	}
+#endif //OIP_MODULE_EARLYBINDING_IFC4X1
 }
 
 
