@@ -177,16 +177,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 		//	}
 		//}
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X1) {
-			expressModel_ = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename);
-			auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X1EntityTypes>();
-			if (importer.collectGeometryData(expressModel_)) {
-				auto converter = IfcGeometryConverter::ConverterBuwT<emt::IFC4X1EntityTypes>();
-				if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
-					if (!tempIfcGeometryModel_->isEmpty()) {
-						ifcGeometryModel_ = tempIfcGeometryModel_;
-					}
-				}
-			}
+			ParseExpressAndGeometryModel(filename);
 		}		
 	}	
 
@@ -201,6 +192,19 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 	}
 #endif
 
+}
+
+void OpenInfraPlatform::Core::DataManagement::Data::ParseExpressAndGeometryModel(const std::string &filename) {
+	expressModel_ = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename);
+	auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<emt::IFC4X1EntityTypes>();
+	if (importer.collectGeometryData(expressModel_)) {
+		auto converter = IfcGeometryConverter::ConverterBuwT<emt::IFC4X1EntityTypes>();
+		if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
+			if (!tempIfcGeometryModel_->isEmpty()) {
+				ifcGeometryModel_ = tempIfcGeometryModel_;
+			}
+		}
+	}
 }
 
 
@@ -436,5 +440,6 @@ std::shared_ptr<buw::PointCloud> OpenInfraPlatform::Core::DataManagement::Data::
 void OpenInfraPlatform::Core::DataManagement::Data::exportPointCloud(const std::string& filename) const {
 	//TODO
 }
+
 
 #endif
