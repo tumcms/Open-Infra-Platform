@@ -885,6 +885,9 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<3>& vkt3DtargetPoint,
 					carve::geom::vector<3>& vkt3DtargetDirection) 					
 				{	
+					if (!bDistMeasuredAlongHorizontal)
+						BLUE_LOG(info) << __func__ << ": Distance along a 3D curve not supported. Interpretation is along the horizontal distance.";
+
 					// preset the return values
 					vkt3DtargetPoint	 = carve::geom::VECTOR(0., 0., 0.);
 					vkt3DtargetDirection = carve::geom::VECTOR(1., 0., 0.);
@@ -897,12 +900,10 @@ namespace OpenInfraPlatform {
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignmentCurve>(ifcCurve);
 					if (alignment_curve)
 					{
-						// the vectors of horizontal and vertical segments - used in analysis
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment> > horSegments;
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerticalSegment> > verSegments;
-
-						// Get information from horizontal alignment.
-						std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal> horizontal = alignment_curve->Horizontal.lock();
+						// **************************************************************************************************************************
+						// 1. Get information.
+						// Info about the horizontal alignment.
+						std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal>& horizontal = alignment_curve->Horizontal.lock();
 
 						if (!horizontal)
 						{
@@ -915,17 +916,23 @@ namespace OpenInfraPlatform {
 							BLUE_LOG(error) << horizontal->getErrorLog() << ": Segments are emtpy!";
 							return;
 						}
+						// the vector of horizontal segments - used in analysis
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment>> horSegments;
 						horSegments.resize(horizontal->Segments.size());
 						std::transform(horizontal->Segments.begin(), horizontal->Segments.end(), horSegments.begin(), [](auto &it) {return it.lock(); });
 
 						// Get information from vertical alignment.
 						bool bOnlyHorizontal = false;
-						auto vertical = alignment_curve->Vertical; // .lock();
-
+						auto vertical = alignment_curve->Vertical;
+						// the vector of vertical segments - used in analysis
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerticalSegment>> verSegments;
+						
 						if (!vertical)
 						{
-							BLUE_LOG(trace) << alignment_curve->getErrorLog() << ": No IfcAlignment2DVertical! Interpreting as 2D alignment curve.";
 							bOnlyHorizontal = true;
+							BLUE_LOG(info) << alignment_curve->getErrorLog() << ": No IfcAlignment2DVertical.";
+							if(bDistMeasuredAlongHorizontal)
+								BLUE_LOG(warning) << alignment_curve->getErrorLog() << ": Although 3D distance along is wanted, we can only deliver along a 2D alignment curve.";
 						}
 						else
 						{
@@ -938,7 +945,9 @@ namespace OpenInfraPlatform {
 							std::transform(vertical->Segments.begin(), vertical->Segments.end(), verSegments.begin(), [](auto &it) {return it.lock(); });
 						}
 							
-						// the entities relevant to the point trying to be calculated
+						// **************************************************************************************************************************
+						// 2. Find the corresponding segment in horizontal alignment.
+						// The entities relevant to the point trying to be calculated
 						std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment> horizontalSegmentRelevantToPoint;
 						std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerticalSegment> verticalSegmentRelevantToPoint;
 						std::shared_ptr<typename IfcEntityTypesT::IfcCurveSegment2D> horCurveGeometryRelevantToPoint;
@@ -946,382 +955,553 @@ namespace OpenInfraPlatform {
 						double horizSegStartDistAlong = 0.;
 
 						// Iterate over horizontal segments -> find the necessary element
-						for (auto it_segment : horSegments) 
+						for (auto& it_segment : horSegments) 
 						{
-							//IfcAlignment2DHorizontalSegment (TangentialContinuity type IfcBoolean [0:1], StartTag type IfcLabel [0:1], EndTag type IfcLabel [0:1], CurveGeometry type IfcCurveSegment2D [1:1])
+							// IfcAlignment2DHorizontalSegment (TangentialContinuity type IfcBoolean [0:1], StartTag type IfcLabel [0:1], EndTag type IfcLabel [0:1], CurveGeometry type IfcCurveSegment2D [1:1])
+							// ENTITY IfcAlignment2DHorizontalSegment
+							//	SUBTYPE OF(IfcAlignment2DSegment);
+							//		CurveGeometry: IfcCurveSegment2D;
+							//	INVERSE
+							//		ToHorizontal : SET[1:1] OF IfcAlignment2DHorizontal FOR Segments;
+							// END_ENTITY;
 							horCurveGeometryRelevantToPoint = it_segment->CurveGeometry.lock();
 
-							//********************************************************************
-							// some checks
+							//*********************************************************************
+							// 2.a some checks
 							// Get and interpret information from IfcCurveSegment2D.
 							if (!horCurveGeometryRelevantToPoint) {
 								BLUE_LOG(error) << it_segment->getErrorLog() << ": No curve geometry.";
 								continue;
 							}
 
-							// SegmentLength type IfcPositiveLengthMeasure [1:1]
-							if (horCurveGeometryRelevantToPoint->SegmentLength < 0) {
-								BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": No curve segment length.";
-								continue;
+							// IfcCurveSegment2D -> SegmentLength type IfcPositiveLengthMeasure [1:1]
+							// ENTITY IfcCurveSegment2D
+							//	ABSTRACT SUPERTYPE OF(ONEOF(IfcCircularArcSegment2D, IfcLineSegment2D, IfcTransitionCurveSegment2D))
+							//	SUBTYPE OF(IfcBoundedCurve);
+							//		StartPoint: IfcCartesianPoint;
+							//		StartDirection: IfcPlaneAngleMeasure;
+							//		SegmentLength: IfcPositiveLengthMeasure;
+							// END_ENTITY;
+							if (horCurveGeometryRelevantToPoint->SegmentLength < 0. ) {
+								BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Curve segment length is false.";
+								return;
 							}
+
+							// Get the segment's length
 							double horizSegLength = horCurveGeometryRelevantToPoint->SegmentLength * length_factor;
-							if (horizSegLength == 0.)
+							if (horizSegLength <= 0.)
 							{
-								BLUE_LOG(trace) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Segment length is ZERO?!";
+								BLUE_LOG(trace) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Segment length is negative/ZERO?!";
 								continue;
 							}
-							//*********************************************************************
 
 							// if begin of this segment is after the station -> sth went wrong
 							if (horizSegStartDistAlong > dDistAlongOfPoint)
 							{
-								BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Inconsistency! Segment begins after the station.";
+								BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Inconsistency! Segment begins after the specified station.";
 								return;
 							}
 
 							//*********************************************************************
-							// If the end of this segment is further along than the point searched for, 
-							//    the point is within this segment -> remember that!
-							if (horizSegStartDistAlong + horizSegLength > dDistAlongOfPoint)
+							// 2.b If the end of this segment is further along than the point searched for, 
+							//      the point is within this segment -> remember that!
+							if (horizSegStartDistAlong + horizSegLength >= dDistAlongOfPoint)
 							{
+								// Remember the element for later
 								horizontalSegmentRelevantToPoint = it_segment;
-
-								// StartPoint type IfcCartesianPoint [1:1]
-								//auto curveSegStartPoint = horizontalSegmentRelevantToPoint->StartPoint.lock();
-								//if (!curveSegStartPoint) {
-								//	BLUE_LOG(error) << horizontalSegmentRelevantToPoint->getErrorLog() 
-								//					<< ": No curve segment start point.";
-								//	return;
-								//}
-
-								//horizSegStartPointX = curveSegStartPoint->Coordinates[0] * length_factor;
-								//horizSegStartPointY = curveSegStartPoint->Coordinates[1] * length_factor;
-
-								//// StartDirection type IfcPlaneAngleMeasure [1:1]
-								//// cannot check because StartDirection is IfcPlaneAngleMeasure
-								///*if (!horCurveGeometry->StartDirection) {
-								//	BLUE_LOG(error) << "No curve segment start direction in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
-								//	return;
-								//}*/
-								//horizSegStartDirection = horCurveGeometry->StartDirection * plane_angle_factor;
 
 								// break the for loop, since we have found the element!
 								break;
 							} // end if (horizSegStartDistAlong + horizSegLength > dDistAlongOfPoint)
-							//********************************************************************
 
-							// If the start of the segment along the alignment equals the point's distance along the alignment, save the segment start point coordinates.
-							// horizSegStartDistAlong is the sum of the previous segments (starting with 0 at first segment)
-
-							//else if (horizSegStartDistAlong == pointDistAlong)
-							//{
-							//	// StartPoint type IfcCartesianPoint [1:1]
-							//	auto curveSegStartPoint = horCurveGeometry->StartPoint.lock();
-							//	if (!curveSegStartPoint) {
-							//		BLUE_LOG(error) << "No curve segment start point in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
-							//		return;
-							//	}
-
-							//	targetPoint3D.x = curveSegStartPoint->Coordinates[0] * length_factor;
-							//	targetPoint3D.y = curveSegStartPoint->Coordinates[1] * length_factor;
-
-							//	break; // todo: Return?
-							//} // end if
-
+							// Add the length to the distance along
+							//TODO Correct for 3D length
 							horizSegStartDistAlong += horizSegLength;
 						} // end horizontal segments iteration
 							
 						//********************************************************************
-						// now check the vertical alignment
+						// 3. Find the corresponding segment in vertical alignment.
 						if (!verSegments.empty())
 						{
+							// some temporary variables
 							double verSegStartHeight = 0.;
 							double verSegStartGradient = 0.;
 
 							double verSegLength = 0.;
 							double verSegDistAlong = 0.;
 
-							//********************************************************************
 							// Iterate over vertical segments
-							for (auto it_segment : verSegments) {
+							for (auto& it_segment : verSegments) {
 
-								// StartDistAlong type IfcLengthMeasure [1:1]
-								if (it_segment->StartDistAlong < 0) {
-									BLUE_LOG(error) << it_segment->getErrorLog() << ": No start distance along.";
+								// ENTITY IfcAlignment2DVerticalSegment
+								//	ABSTRACT SUPERTYPE OF(ONEOF(IfcAlignment2DVerSegCircularArc, IfcAlignment2DVerSegLine, IfcAlignment2DVerSegParabolicArc))
+								//	SUBTYPE OF(IfcAlignment2DSegment);
+								//		StartDistAlong: IfcLengthMeasure;
+								//		HorizontalLength: IfcPositiveLengthMeasure;
+								//		StartHeight: IfcLengthMeasure;
+								//		StartGradient: IfcRatioMeasure;
+								//	INVERSE
+								//		ToVertical : SET[1:1] OF IfcAlignment2DVertical FOR Segments;
+								// END_ENTITY;
+
+								//*********************************************************************
+								// 3.a some checks
+								// Get the start distance along: StartDistAlong
+								verSegDistAlong = it_segment->StartDistAlong * length_factor;
+								if (verSegDistAlong < 0.) {
+									BLUE_LOG(error) << it_segment->getErrorLog() << ": Start distance along is inconsistent.";
 									return;
 								}
-								verSegDistAlong = it_segment->StartDistAlong * length_factor;
 
-								// HorizontalLength type IfcPositiveLengthMeasure [1:1]
-								if (it_segment->HorizontalLength <= 0) {
-									BLUE_LOG(error) << it_segment->getErrorLog() << ": No horizontal length.";
+								// Get the segment's length
+								verSegLength = it_segment->HorizontalLength * length_factor;
+								if (verSegLength <= 0.) {
+									BLUE_LOG(error) << it_segment->getErrorLog() << ": Segment length is negative/ZERO?!";
 									continue;
 								}
-								verSegLength = it_segment->HorizontalLength * length_factor;
 
-								// If the end of this segment is further along than the point, the point is within this segment.
+								// if begin of this segment is after the station -> sth went wrong
+								if (verSegDistAlong > dDistAlongOfPoint)
+								{
+									BLUE_LOG(error) << it_segment->getErrorLog() << ": Inconsistency! Segment begins after the specified station.";
+									return;
+								}
+
+								//*********************************************************************
+								// 3.b If the end of this segment is further along than the point searched for, 
+								//      the point is within this segment -> remember that!
 								if (verSegDistAlong + verSegLength > dDistAlongOfPoint)
 								{
+									// Remember the element for later
 									verticalSegmentRelevantToPoint = it_segment;
 
-									// StartHeight type IfcLengthMeasure [1:1]
-									// cannot check since StartHeight is IfcLengthMeasure, not IfcPositiveLengthMeasure
-									/*if (!it_segment->StartHeight) {
-										BLUE_LOG(error) << "No start height in IfcAlignment2DVerticalSegment (Segment ID: " << it_segment->getId() << ").";
-										return;
-									}*/
-									//verSegStartHeight = it_segment->StartHeight * length_factor;
-
-									// StartGradient type IfcRatioMeasure [1:1]
-									// cannot check since StartGradient is IfcRatioMeasure
-									/*if (!it_segment->StartGradient) {
-										BLUE_LOG(error) << "No start gradient in IfcAlignment2DVerticalSegment (Segment ID: " << it_segment->getId() << ").";
-										return;
-									}*/
-									//verSegStartGradient = it_segment->StartGradient;
-
+									// break the for loop, since we have found the element!
 									break;
 								} // end if (verSegDistAlong + verSegLength > dDistAlongOfPoint)
-
 							}// end vertical stations iteration
 						} // end if (!verSegments.empty())
 
 						//********************************************************************
-						// Calculate x and y coordinates from horizontal segment
+						// 4. Calculate x and y coordinates of point
+						//     as well as the horizontal direction from horizontal segment
+
+						// get the starting point of segment
+						const auto& curveSegStartPoint = horCurveGeometryRelevantToPoint->StartPoint.lock();
+						if (!curveSegStartPoint) {
+							BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog()
+								<< ": No curve segment start point.";
+							return;
+						}
+						
+						// get the length of the segment
+						double horizSegLength = horCurveGeometryRelevantToPoint->SegmentLength * length_factor;
+						if( horizSegLength <= 0. ) {
+							BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog()
+								<< ": Curve segment length inconsistent.";
+							return;
+						}
+						// Distance from start of segment to point along alignment.
+						double distanceToStart = dDistAlongOfPoint - horizSegStartDistAlong;
+
+						// types have additional data -> calculate the exact position within the segment
 						std::shared_ptr<typename IfcEntityTypesT::IfcLineSegment2D> line_segment_2D =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLineSegment2D>(horCurveGeometryRelevantToPoint);
 						std::shared_ptr<typename IfcEntityTypesT::IfcCircularArcSegment2D> circular_arc_segment_2D =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircularArcSegment2D>(horCurveGeometryRelevantToPoint);
 						std::shared_ptr<typename IfcEntityTypesT::IfcTransitionCurveSegment2D> trans_curve_segment_2D =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTransitionCurveSegment2D>(horCurveGeometryRelevantToPoint);
-							
-						// some temporary variables
-						auto curveSegStartPoint = horCurveGeometryRelevantToPoint->StartPoint.lock();
-						if (!curveSegStartPoint) {
-							BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog()
-								<< ": No curve segment start point.";
-							return;
-						}
-						// x, y
-						double horizSegStartPointX = curveSegStartPoint->Coordinates[0] * length_factor;
-						double horizSegStartPointY = curveSegStartPoint->Coordinates[1] * length_factor;
-						// length
-						double horizSegLength = horCurveGeometryRelevantToPoint->SegmentLength * length_factor;
-						if( horizSegLength < 0. ) {
-							BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog()
-								<< ": No curve segment length specified.";
-							return;
-						}
-
-						// direction
-						// StartDirection type IfcPlaneAngleMeasure [1:1]
-						// cannot check because StartDirection is IfcPlaneAngleMeasure
-						/*if (!horCurveGeometry->StartDirection) {
-							BLUE_LOG(error) << "No curve segment start direction in IfcCurveSegment2D (Segment ID: " << it_segment->getId() << ").";
-							return;
-						}*/
-						double horizSegStartDirection = horCurveGeometryRelevantToPoint->StartDirection * plane_angle_factor; // get it in RADIAN
-
-						// types have additional data
-						//   -> calculate the exact position within the x,y
-						double distanceToStart = dDistAlongOfPoint - horizSegStartDistAlong; // Distance from start of segment to point along alignment.
-
-						// these values should be set after the following if - else if - ...
-						double x, y; // the resulting point coordinate
-						double dir; //TODO the resulting direction (in radian)
+						
+						//********************************************************************
+						// 4.a determine the functions
+						// initialize the function that calculates x,y coordinate
+						// that is, the deviation of y from x-axis along the curve
+						// (segment's true starting point is included later)
+						std::function<void(const double, const double, const double, double&, double&)> fctPosition =
+							[](const double distAlong, const double horizSegLength, const double radius,
+								double &x, double &y) -> void { x = y = 1.; };
+						// initialize the function that calculates horizontal direction
+						// that is, the deviation from the x-axis 
+						// (segment's true direction is included later)
+						std::function<void(const double, const double, const double, double&)> fctDirection =
+							[](const double distAlong, const double horizSegLength, const double radius,
+								double &dir) -> void { dir = 1.; };
+						// initialize the function that provides radius attribute for start and end
+						std::function<void(double&, double&)> fctRadii =
+							[](double& bStartRadius, double& bEndRadius) -> void { bStartRadius = bEndRadius = 0.; };
+						// initialize the function that provides CCW attribute for start and end
+						std::function<void(bool&, bool&)> fctCCW =
+							[](bool& bStartCCW, bool& bEndCCW) -> void { bStartCCW = bEndCCW = true; };
 
 						if (line_segment_2D) 
 						{
 							// straight line
-							// Calculate x and y
-							x = horizSegStartPointX + distanceToStart * cos(horizSegStartDirection);
-							y = horizSegStartPointY + distanceToStart * sin(horizSegStartDirection);
+							fctPosition = 
+								[](const double distAlong, const double horizSegLength, const double radius,
+									double &x, double &y) -> void
+							{
+								// x-coordinate
+								x = distAlong;
 
-							// calculate direction
-							dir = horizSegStartDirection;
+								// y-coordinate
+								y = 0.;
+							};
+
+							// the direction is the same for the whole line
+							fctDirection =
+								[](const double distAlong, const double horizSegLength, const double radius,
+									double &dir) -> void
+							{
+								dir = 0.;
+							};
+
+							// CCW attributes - it doesn't matter, but still
+							fctCCW = [](bool& bStartCCW, bool& bEndCCW) -> void
+							{
+								bStartCCW = bEndCCW = true;
+							};
 
 						} // if (line_segment_2D) 
 						else if (circular_arc_segment_2D) 
 						{
 							// Radius type IfcPositiveLengthMeasure [1:1]
-							if (circular_arc_segment_2D->Radius <= 0) {
-								BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": No radius.";
+							if (circular_arc_segment_2D->Radius <= 0.) {
+								BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Radius inconsistent.";
 								return;
 							}
-							double radius = circular_arc_segment_2D->Radius * length_factor;
+							//double radius = circular_arc_segment_2D->Radius * length_factor;
+							fctRadii = [&](double& bStartRadius, double& bEndRadius) -> void
+							{ 
+								bStartRadius = bEndRadius = circular_arc_segment_2D->Radius * length_factor;
+							};
 
 							// IsCCW type IfcBoolean [1:1]
-							// TODO: can check boolean this way?
-							/*if (!circular_arc_segment_2D->IsCCW) {
-								BLUE_LOG(error) << "No direction information for IfcCircularArcSegment2D (counterclockwise/clockwise) (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
-								return;
-							}*/
-							bool is_CCW = circular_arc_segment_2D->IsCCW;
+							//bool is_CCW = circular_arc_segment_2D->IsCCW;
+							// CCW attributes
+							fctCCW = [&](bool& bStartCCW, bool& bEndCCW) -> void
+							{
+								bStartCCW = bEndCCW = circular_arc_segment_2D->IsCCW;
+							};
 
-							// Calculate circle center, given start point and direction (angle between tangent and x-axis).
-							double radiusDirection = horizSegStartDirection + M_PI / 2 * (is_CCW ? 3 : 1);
-							double centerX = horizSegStartPointX + cos(radiusDirection) * radius;
-							double centerY = horizSegStartPointY + sin(radiusDirection) * radius;
+							// Calculate circle's center, given start point and direction (angle between tangent and x-axis).
+							//double radiusDirection = horizSegStartDirection + 0.5 * M_PI * (is_CCW ? -1 : 1);
+							//double centerX = startPoint.x + cos(radiusDirection) * radius;
+							//double centerY = startPoint.y + sin(radiusDirection) * radius;
 
 							// Angle between x-axis and vector(start, center).
-							double angleAlpha = atan2(horizSegStartPointY - centerY, horizSegStartPointX - centerX); 
+							//double angleAlpha = atan2(startPoint.y - centerY, startPoint.x - centerX);
 
 							// Angle between x-axis and point according to circle direction.
-							double angleBeta = angleAlpha + distanceToStart / radius * ( is_CCW ? -1 : 1); 
+							//double angleBeta = angleAlpha + distanceToStart / radius * ( is_CCW ? -1 : 1); 
+							//x = centerX + radius * cos(angleBeta);
+							//y = centerY + radius * sin(angleBeta);
 
-							// Calculate x and y
-							x = centerX + radius * cos(angleBeta);
-							y = centerY + radius * sin(angleBeta);
+							fctPosition =
+								[](const double distAlong, const double horizSegLength, const double radius,
+									double &x, double &y) -> void
+							{
+								double opening_angle = distAlong / radius;
 
-							//TODO calculate direction
-							//dir = ?
+								// x-coordinate
+								x = radius * sin(opening_angle);
+
+								// y-coordinate
+								y = radius * (1. - cos(opening_angle));
+							};
+
+							// Calculate direction
+							//dir = angleBeta + (is_CCW ? -1 : 1) * 0.5 * M_PI;
+							fctDirection =
+								[](const double distAlong, const double horizSegLength, const double radius,
+									double &dir) -> void
+							{
+								//double opening_angle = distAlong / radius;
+								dir = distAlong / radius;
+							};
 
 						} // if (circular_arc_segment_2D) 
 						else if (trans_curve_segment_2D) 
 						{
 							// StartRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
-							double startRadius = 0.0;
+							//double startRadius = 0.0;
 							if (trans_curve_segment_2D->StartRadius <= 0.) {
-								BLUE_LOG(warning) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Start radius NIL, interpreted as infinite.";
+								BLUE_LOG(info) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Start radius NIL, interpreted as infinite.";
 							}
-							else {
-								startRadius = trans_curve_segment_2D->StartRadius * length_factor;
-							}
+							//else {
+							//	startRadius = trans_curve_segment_2D->StartRadius * length_factor;
+							//}
 							// EndRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
-							double endRadius = 0.0;
+							//double endRadius = 0.0;
 							if (trans_curve_segment_2D->EndRadius <= 0.) {
-								BLUE_LOG(warning) << horCurveGeometryRelevantToPoint->getErrorLog() << ": End radius NIL, interpreted as infinite.";
+								BLUE_LOG(info) << horCurveGeometryRelevantToPoint->getErrorLog() << ": End radius NIL, interpreted as infinite.";
 							}
-							else {
-								endRadius = trans_curve_segment_2D->EndRadius * length_factor;
-							}
+							//else {
+							//	endRadius = trans_curve_segment_2D->EndRadius * length_factor;
+							//}
+							fctRadii = [&](double& bStartRadius, double& bEndRadius) -> void
+							{
+								bStartRadius = std::max( trans_curve_segment_2D->StartRadius * length_factor, 0. );
+								bEndRadius = std::max( trans_curve_segment_2D->EndRadius * length_factor, 0. );
+							};
 
 							// IsStartRadiusCCW type IfcBoolean
-							// TODO: can check boolean this way?
-							/*if (!trans_curve_segment_2D->IsStartRadiusCCW) {
-								BLUE_LOG(error) << "No direction information for start of IfcTransitionCurveSegment2D (counterclockwise/clockwise). (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
-								return;
-							}*/
-							bool is_start_ccw = trans_curve_segment_2D->IsStartRadiusCCW;
+							//bool is_start_ccw = trans_curve_segment_2D->IsStartRadiusCCW;
 							// IsEndRadiusCCW type IfcBoolean
-							// *DONE*: can check boolean this way? cppreference about "!": It has only one operand, to its right, and inverts it, producing false if its operand is true, and true if its operand is false. Basically, it returns the opposite Boolean value of evaluating its operand. 
-							/*if (!trans_curve_segment_2D->IsEndRadiusCCW) {
-								BLUE_LOG(error) << "No direction information for end of IfcTransitionCurveSegment2D (counterclockwise/clockwise). (Segment ID: " << dHorizontalSegmentRelevantToPoint->getId() << ").";
-								return;
-							}*/
-							bool is_end_ccw = trans_curve_segment_2D->IsEndRadiusCCW;
+							//bool is_end_ccw = trans_curve_segment_2D->IsEndRadiusCCW;
+							// CCW attributes
+							fctCCW = [&](bool& bStartCCW, bool& bEndCCW) -> void
+							{
+								bStartCCW = trans_curve_segment_2D->IsStartRadiusCCW;
+								bEndCCW = trans_curve_segment_2D->IsEndRadiusCCW;
+							};
 
-							auto trans_type = trans_curve_segment_2D->TransitionCurveType;
-
-							//TODO account for the start direction (horizSegStartDirection) -> put it in -dir-
+							// get the type of transition
+							const auto& trans_type = trans_curve_segment_2D->TransitionCurveType;
+							// https://www.researchgate.net/publication/273829731_Investigation_of_a_New_Transition_Curve/link/5a6a60ce458515b2d0532a79/download
 							switch (trans_type) 
 							{
 							case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BIQUADRATICPARABOLA):
 							{
-								x = dDistAlongOfPoint;		// x coordinate
-								y = 0.0;
-								if (x <= horizSegLength / 2)	// y coordinate
+								fctPosition =
+									[](const double distAlong, const double horizSegLength, const double radius,
+										double &x, double &y) -> void 
 								{
-									y = pow(x, 4) / (6. * endRadius * horizSegLength * horizSegLength);
-								}
-								else if (horizSegLength / 2 < x && x <= horizSegLength)
-								{
-									y = -(pow(x, 4) / (6. * endRadius * pow(horizSegLength, 2)) + (2. * pow(x, 3)) / (3. * endRadius * horizSegLength)
-										- pow(x, 2) / (2. * endRadius) + (horizSegLength * x) / (6. * endRadius) - pow(horizSegLength, 2) / (48. * endRadius));
-								} // end elseif
-								else
-								{
-									BLUE_LOG(error) << "Y coordinate not defined for biquadratic parabola (Segment ID: " << trans_curve_segment_2D->getErrorLog() << ").";
-									break;
-								}
+									// x-coordinate
+									x = distAlong;
+									
+									// y-coordinate
+									y = 0.;
+									if (x <= horizSegLength * 0.5)
+									{
+										y = pow(x, 4) / (6. * radius * horizSegLength * horizSegLength);
+									}
+									else if (horizSegLength * 0.5 < x && x <= horizSegLength)
+									{
+										y = -(pow(x, 4) / (6. * radius * pow(horizSegLength, 2)) + (2. * pow(x, 3)) / (3. * radius * horizSegLength)
+											- pow(x, 2) / (2. * radius) + (horizSegLength * x) / (6. * radius) - pow(horizSegLength, 2) / (48. * radius));
+									} // end elseif
+									else
+									{
+										y = INFINITY;
+									}
+								};
 							} // end case BIQUADRATICPARABOLA
 							break;
 
 							case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BLOSSCURVE):
 							{
-								// Integration durch Substitution(s.Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
-								double teta_up = pow(dDistAlongOfPoint + horizSegLength, 3) / (endRadius * pow(horizSegLength, 2))
-									- pow(dDistAlongOfPoint + horizSegLength, 4) / (2 * endRadius * pow(horizSegLength, 3)); //values for upper boundary of integral
-								double teta_low = pow(dDistAlongOfPoint, 3) / (endRadius * pow(horizSegLength, 2))
-									- pow(dDistAlongOfPoint, 4) / (2 * endRadius * pow(horizSegLength, 3)); //values for lower boundary of integral
-								double teta_deriv_up = 2 * pow(dDistAlongOfPoint + horizSegLength, 2) / endRadius * pow(horizSegLength, 2)
-									- 4 * pow(dDistAlongOfPoint + horizSegLength, 3) / 2 * endRadius*pow(horizSegLength, 3);
-								double teta_deriv_low = 2 * pow(dDistAlongOfPoint, 2) / endRadius * pow(horizSegLength, 2)
-									- 4 * pow(dDistAlongOfPoint, 3) / 2 * endRadius*pow(horizSegLength, 3);
-								x = sin(teta_up) / teta_deriv_up - sin(teta_low) / teta_deriv_low;
-								y = -cos(teta_up) / teta_deriv_up + cos(teta_low) / teta_deriv_low;
+								fctPosition =
+									[](const double distAlong, const double horizSegLength, const double radius,
+										double &x, double &y) -> void
+								{
+									// Integration with Substitution
+									double teta_up = pow(distAlong + horizSegLength, 3) / (radius * pow(horizSegLength, 2))
+										- pow(distAlong + horizSegLength, 4) / (2. * radius * pow(horizSegLength, 3)); //values for upper boundary of integral
+									double teta_low = pow(distAlong, 3) / (radius * pow(horizSegLength, 2))
+										- pow(distAlong, 4) / (2. * radius * pow(horizSegLength, 3)); //values for lower boundary of integral
+									double teta_deriv_up = 2. * pow(distAlong + horizSegLength, 2) / (radius * pow(horizSegLength, 2))
+										- 4. * pow(distAlong + horizSegLength, 3) / (2. * radius * pow(horizSegLength, 3));
+									double teta_deriv_low = 2. * pow(distAlong, 2) / (radius * pow(horizSegLength, 2))
+										- 4. * pow(distAlong, 3) / (2. * radius * pow(horizSegLength, 3));
 									
+									// x-coordinate
+									x = sin(teta_up) / teta_deriv_up - sin(teta_low) / teta_deriv_low;
+									// y-coordinate
+									y = -cos(teta_up) / teta_deriv_up + cos(teta_low) / teta_deriv_low;
+								};
 							} // end case BLOSSCURVE
 							break;
 
 							case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_CLOTHOIDCURVE):
 							{
-								x = dDistAlongOfPoint * (1 - pow(dDistAlongOfPoint, 4) / 40 * pow(endRadius, 2) * pow(horizSegLength, 2) + pow(dDistAlongOfPoint, 8) / 3456 * pow(endRadius, 4) * pow(horizSegLength, 4));
-								y = (pow(dDistAlongOfPoint, 3) / 6 * endRadius*horizSegLength) * (1 - pow(dDistAlongOfPoint, 4) / 56 * pow(endRadius, 2) * pow(horizSegLength, 2) + pow(dDistAlongOfPoint, 8) / 7040 * pow(endRadius, 4) * pow(horizSegLength, 4));
+								// https://www.springerprofessional.de/transition-curves-for-highway-geometric-design/12088070
+								// page 26, Eqs. (4.3) and (4.4)
+								fctPosition =
+									[](const double distAlong, const double horizSegLength, const double radius,
+										double &x, double &y) -> void
+								{
+									double a2 = radius * horizSegLength;
+									// x-coordinate
+									x = distAlong
+										- pow(distAlong, 5) / (40. * pow(a2, 2))
+										+ pow(distAlong, 9) / (3456. * pow(a2, 4));
+									// y-coordinate
+									y = pow(distAlong, 3) / (6. * a2)
+										- pow(distAlong, 7) / (336. * pow(a2, 3))
+										+ pow(distAlong, 11) / (42240. * pow(a2, 5));
+								};
 							} // end case CLOTHOIDCURVE
 							break;
 
 							case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_COSINECURVE):
 							{
-								double psi = M_PI * dDistAlongOfPoint / horizSegLength;
-								x = dDistAlongOfPoint - (pow(horizSegLength, 2) / (8 * pow(M_PI, 2) * pow(endRadius, 2))) * horizSegLength / M_PI
-									* ((pow(psi, 3) / 3) + (psi / 2 - sin(psi) * cos(psi) / 2) - 2 * (sin(psi) - psi * cos(psi)));
-								y = horizSegLength * (horizSegLength / (2 * pow(M_PI, 2) * endRadius) * (pow(psi, 2) / 2 + cos(psi) - 1)
-									- (pow(horizSegLength, 3) / (48 * pow(M_PI, 4) * pow(endRadius, 3)))
-									* (pow(psi, 4) / 4 + pow(sin(psi), 2) * cos(psi) / 3 - 16 * cos(psi) / 3 + 3 * pow(psi, 2) * cos(psi)
-										- 6 * psi * sin(psi) + 3 * pow(psi, 2) / 4 - 3 * psi * sin(2 * psi) / 4 - 3 * cos(2 * psi) / 8 + 137 / 24));
+								fctPosition =
+									[](const double distAlong, const double horizSegLength, const double radius,
+										double &x, double &y) -> void
+								{
+									double psi = M_PI * distAlong / horizSegLength;
+
+									// x-coordinate
+									x = distAlong - (pow(horizSegLength, 2) / (8. * pow(M_PI, 2) * pow(radius, 2))) * horizSegLength / M_PI
+										* ((pow(psi, 3) / 3.) + (psi / 2. - sin(psi) * cos(psi) / 2.) - 2. * (sin(psi) - psi * cos(psi)));
+									// y-coordinate
+									y = horizSegLength * (horizSegLength / (2. * pow(M_PI, 2) * radius) * (pow(psi, 2) / 2. + cos(psi) - 1.)
+										- (pow(horizSegLength, 3) / (48. * pow(M_PI, 4) * pow(radius, 3))) 
+											* (pow(psi, 4) / 4. + pow(sin(psi), 2) * cos(psi) / 3. - 16. * cos(psi) / 3.
+											+ 3. * pow(psi, 2) * cos(psi)
+											- 6. * psi * sin(psi) + 3. * pow(psi, 2) / 4. - 3. * psi * sin(2. * psi) / 4. - 3. * cos(2. * psi) / 8. + 137. / 24.));
+								};
 							} // end case COSINECURVE
 							break;
 
 							case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_CUBICPARABOLA):
 							{
-								x = dDistAlongOfPoint;
-								y = pow(x, 3) / (6 * endRadius * horizSegLength);
+								fctPosition =
+									[](const double distAlong, const double horizSegLength, const double radius,
+									double &x, double &y) -> void
+								{
+									// x-coordinate
+									x = distAlong;
+									// y-coordinate
+									y = pow(x, 3) / (6. * radius * horizSegLength);
+								};
 							} // end case CUBICPARABOLA
 							break;
 
 							case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_SINECURVE):
 							{
-								double psi = (2 * M_PI * dDistAlongOfPoint) / horizSegLength;
-								x = dDistAlongOfPoint * (1 - pow(horizSegLength, 2) / (32 * pow(M_PI, 4)*pow(endRadius, 2) - (pow(horizSegLength, 3) / 3840 * pow(M_PI, 5)*pow(endRadius, 2)))
-									* (3 * pow(psi, 5) - 20 * pow(psi, 3) + 30 * psi - (240 - 60 * pow(psi, 2)*sin(psi) + 30 * cos(psi)*sin(psi) + 120 * psi*cos(psi))));
-								// Integration durch Substitution (s. Formel: http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcgeometryresource/lexical/ifctransitioncurvetype.htm).
-								double teta_up = pow((dDistAlongOfPoint + horizSegLength), 2) / (2 * endRadius*horizSegLength) + (horizSegLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(dDistAlongOfPoint + horizSegLength) / horizSegLength) - 1);
-								double teta_low = pow((dDistAlongOfPoint + horizSegLength), 2) / (2 * endRadius*horizSegLength) + (horizSegLength / (4 * pow(M_PI, 2)*endRadius)) * (cos(2 * M_PI*(dDistAlongOfPoint) / horizSegLength) - 1);
-								double teta_deriv_up = 2 * (dDistAlongOfPoint + horizSegLength) / 2 * endRadius*horizSegLength;
-								double teta_deriv_low = 2 * dDistAlongOfPoint / 2 * endRadius*horizSegLength;
-								y = sin(teta_up) / teta_deriv_up - sin(teta_low) / teta_deriv_low;
+								fctPosition =
+									[](const double distAlong, const double horizSegLength, const double radius,
+									double &x, double &y) -> void
+								{
+									double psi = (2. * M_PI * distAlong) / horizSegLength;
+									// x-coordinate
+									x = distAlong * (1. - pow(horizSegLength, 2) / (32. * pow(M_PI, 4)*pow(radius, 2)
+														- (pow(horizSegLength, 3) / (3840. * pow(M_PI, 5)*pow(radius, 2))))
+										* (3. * pow(psi, 5) - 20. * pow(psi, 3) + 30. * psi - (240. - 60. * pow(psi, 2)*sin(psi) 
+											+ 30. * cos(psi)*sin(psi) + 120. * psi*cos(psi))));
+									
+									// Integration with Substitution
+									double teta_up = pow((distAlong + horizSegLength), 2) / (2. * radius * horizSegLength) + (horizSegLength / (4. * pow(M_PI, 2)*radius)) * (cos(2. * M_PI*(distAlong + horizSegLength) / horizSegLength) - 1.);
+									double teta_low = pow((distAlong + horizSegLength), 2) / (2. * radius * horizSegLength) + (horizSegLength / (4. * pow(M_PI, 2)*radius)) * (cos(2. * M_PI*(distAlong) / horizSegLength) - 1.);
+									double teta_deriv_up = 2. * (distAlong + horizSegLength) / (2. * radius * horizSegLength);
+									double teta_deriv_low = 2. * distAlong / (2. * radius * horizSegLength);
+									// y-coordinate
+									y = sin(teta_up) / teta_deriv_up - sin(teta_low) / teta_deriv_low;
+								};
 
 							} // end case SINECURVE
 							break;
 							} // end switch (trans_type)
 
+
+							// Calculate direction
+							fctDirection =
+								[this, &fctPosition](const double distAlong, const double horizSegLength, const double radius,
+									double &dir) -> void
+							{
+								// for direction
+								// - step a bit backwards & forwards
+								// - calculate the coordinates
+								// - get the tangent from these points
+								double delta = GeomSettings()->getPrecision();
+								double xMinus, xPlus, yMinus, yPlus;
+
+								fctPosition(distAlong - delta, horizSegLength, radius, xMinus, yMinus);
+								fctPosition(distAlong + delta, horizSegLength, radius, xPlus, yPlus);
+
+								dir = atan2(yPlus - yMinus, xPlus - xMinus);
+							};
+
 						} // end if (trans_curve_segment_2D) 
 
-						// set the x,y
-						vkt3DtargetPoint.x = x;
-						vkt3DtargetPoint.y = y;
+						//********************************************************************
+						// 4.b Determine the point
+						//  Amount of distance within the segment
+						double dDist = dDistAlongOfPoint - horizSegStartDistAlong;
+						//  The radii
+						double dRadStart, dRadEnd;
+						fctRadii(dRadStart, dRadEnd);
+						if ( dRadStart != 0. && dRadEnd != 0. && dRadStart != dRadEnd )
+						{
+							BLUE_LOG(warning) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Different radii with != 0. not supported.";
+							return;
+						}
+						// is it a curve with decreasing curvature? (doesn't matter with straights and circular arcs)
+						double curveOut = dRadStart != 0.;
+						double radius = (curveOut ? dRadStart : dRadEnd);
+						//  Starting point of the segment
+						carve::geom::vector<3> startPoint;
+						convertIfcCartesianPoint(curveSegStartPoint, startPoint);
+						//  Calculate the deltas for coordinates in the local system of the segment
+						carve::geom::vector<3> vctLocal = carve::geom::VECTOR(0.0, 0.0, 0.0);
+						fctPosition(dDist, horizSegLength, radius, vctLocal.x, vctLocal.y);
+
+						//  Starting direction of the segment
+						double horizSegStartDirection = horCurveGeometryRelevantToPoint->StartDirection * plane_angle_factor; // get it in RADIAN
+						GeomSettings()->normalizeAngle(horizSegStartDirection, 0., M_TWOPI);
+
+						// produce a quaternion
+						carve::math::Matrix matrix = carve::math::Matrix(
+							cos(horizSegStartDirection), -sin(horizSegStartDirection), 0., startPoint.x,
+							sin(horizSegStartDirection), cos(horizSegStartDirection), 0., startPoint.y,
+							0., 0., 1., 0.,
+							0., 0., 0., 1.);
+
+						// (counter-)clock-wise?
+						bool bCCWStart, bCCWEnd;
+						fctCCW(bCCWStart, bCCWEnd);
+						bool bCCW = (curveOut ? bCCWStart : bCCWEnd);
+
+						// account for start/end
+						if (curveOut)
+						{
+							// calculate the end point
+							carve::geom::vector<3> vctEnd = carve::geom::VECTOR(0.0, 0.0, 0.0);
+							fctPosition(horizSegLength, horizSegLength, radius, vctEnd.x, vctEnd.y);
+							//  Ending direction of the segment
+							double horizSegEndDirection;
+							fctDirection(horizSegLength, horizSegLength, radius, horizSegEndDirection);
+							// mirror the curve
+							horizSegEndDirection -= M_PI;
+							GeomSettings()->normalizeAngle(horizSegEndDirection, 0., 2. * M_PI);
+							bCCW = !bCCW;
+							// add an additional step in transformation (go from the end)
+							matrix = carve::math::Matrix(
+								cos(horizSegEndDirection), -sin(horizSegEndDirection), 0., vctEnd.x,
+								sin(horizSegEndDirection),  cos(horizSegEndDirection), 0., vctEnd.y,
+								0., 0., 1., 0.,
+								0., 0., 0., 1.) * matrix;
+						}
+
+						// account for CCW
+						if (!bCCW)
+							vctLocal.y *= -1.;
+						
+						// calculate the global x,y
+						vkt3DtargetPoint = matrix * vctLocal;
+						// end x, y coordinate calculation
+
+						//********************************************************************
+						// 4.c Determine the direction of the segment at point
+						double dir;
+						fctDirection(dDist, horizSegLength, radius, dir);
+						// add the segment's direction
+						dir += horizSegStartDirection;
 
 						// set the direction
-						dir = dir * 180 / M_PI; // convert "dir" from deg to rad (for use of sin and cos). TODO: if used more than once, write function.
 						vkt3DtargetDirection.x = cos(dir);
 						vkt3DtargetDirection.y = sin(dir);
-								
-						// normalize the direction
-						vkt3DtargetDirection /= vkt3DtargetDirection.length();
-						// end x, y coordinate calculation
 						// end x, y direction  calculation
-						//********************************************************************
 
 						//********************************************************************
-						// Calculate z coordinate from vertical alignment, if there.
+						// 5. Calculate z coordinate from vertical alignment, if there.
 						if ( verticalSegmentRelevantToPoint )
 						{
-							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegLine> v_seg_line_2D =
+							const std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegLine>& v_seg_line_2D =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegLine>(verticalSegmentRelevantToPoint);
-							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc> v_seg_circ_arc_2D =
+							const std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc>& v_seg_circ_arc_2D =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc>(verticalSegmentRelevantToPoint);
-							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc> v_seg_par_arc_2D =
+							const std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc>& v_seg_par_arc_2D =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc>(verticalSegmentRelevantToPoint);
 
 							// common parameters
@@ -1340,7 +1520,7 @@ namespace OpenInfraPlatform {
 
 							// the results
 							double dz = 0.0; // the height above verSegStartHeight
-							double gradient = 0.0; //TODO set the correct value for the gradient
+							double gradient = 0.0; // the value for the gradient
 							if (v_seg_line_2D)
 							{
 								dz = verSegStartGradient * distVerToStart;
@@ -1356,22 +1536,17 @@ namespace OpenInfraPlatform {
 								double radius = v_seg_circ_arc_2D->Radius * length_factor;
 
 								// IsConvex type IfcBoolean [1:1]
-								// TODO: can check boolean this way?
-								/*if (!v_seg_circ_arc_2D->IsConvex) {
-									BLUE_LOG(error) << "No curvature information in IfcAlignment2DVerSegCircularArc (convex/concave)\" (Segment ID : " << verticalSegmentRelevantToPoint->getId() << ").";
-									return;
-								}*/
 								bool is_convex = v_seg_circ_arc_2D->IsConvex;
 
 								// pointDistAlong and verSegDistAlong are along horizontal alignment, which corresponds to the horizontal axis in the vertical alignment
 
 								if (is_convex == true) {
-									dz = -sqrt(pow(radius, 2) - pow(distVerToStart + (verSegStartGradient * radius) / sqrt(1 + pow(verSegStartGradient, 2)), 2))
-										+ radius / sqrt(1 + pow(verSegStartGradient, 2)); // Crest (decreasing gradient)
+									dz = -sqrt(pow(radius, 2) - pow(distVerToStart + (verSegStartGradient * radius) / sqrt(1. + pow(verSegStartGradient, 2)), 2))
+										+ radius / sqrt(1. + pow(verSegStartGradient, 2)); // Crest (decreasing gradient)
 								}
 								else {
-									dz = sqrt(pow(radius, 2) - pow(distVerToStart - (verSegStartGradient * radius) / sqrt(1 + pow(verSegStartGradient, 2)), 2))
-										- radius / sqrt(1 + pow(verSegStartGradient, 2)); // Sag (increasing gradient)
+									dz = sqrt(pow(radius, 2) - pow(distVerToStart - (verSegStartGradient * radius) / sqrt(1. + pow(verSegStartGradient, 2)), 2))
+										- radius / sqrt(1. + pow(verSegStartGradient, 2)); // Sag (increasing gradient)
 								}
 							}
 							else if (v_seg_par_arc_2D)
@@ -1381,35 +1556,33 @@ namespace OpenInfraPlatform {
 									BLUE_LOG(error) << verticalSegmentRelevantToPoint->getErrorLog() << ": No parabola constant.";
 									return;
 								}
-								double arc_const = v_seg_par_arc_2D->ParabolaConstant * length_factor; //TODO really needed?
+								double arc_const = v_seg_par_arc_2D->ParabolaConstant * length_factor;
 
 								// IsConvex type IfcBoolean [1:1]
-								// TODO: can check boolean this way?
-								/*if (!v_seg_par_arc_2D->IsConvex) {
-									BLUE_LOG(error) << "No curvature information in IfcAlignment2DVerSegParabolicArc (convex/concave) (Segment ID : " << verticalSegmentRelevantToPoint->getId() << ").";
-									return;
-								}*/
 								bool is_convex = v_seg_par_arc_2D->IsConvex;
 
 								double parabola_radius = is_convex ? -arc_const : arc_const;
 								double parabola_gradient = distVerToStart / parabola_radius + verSegStartGradient;
-								dz = distVerToStart * (parabola_gradient + verSegStartGradient) * 0.5; //TODO why + verSegStartGradient (see above line)
+								dz = distVerToStart * parabola_gradient * 0.5; //TODO why + verSegStartGradient (see above line)
 							}
 
 							// set the coordinate
 							vkt3DtargetPoint.z = verSegStartHeight + dz;
 
+							// normalize the direction
+							vkt3DtargetDirection.normalize();
 							// set the vertical direction
 							vkt3DtargetDirection.z = gradient;
-							// normalize the direction again
-							vkt3DtargetDirection /= vkt3DtargetDirection.length();
 						}// end if ( verticalSegmentRelevantToPoint ) --> z coordinate calculation
 						//********************************************************************
+
+						// normalize the direction
+						vkt3DtargetDirection.normalize();
 
 					}//end if alignment curve
 					else 
 					{
-						BLUE_LOG(error) << "Function convertAlignmentCurveDistAlongToPoint3D exclusively handles alignment curves.";
+						BLUE_LOG(error) << ifcCurve->getErrorLog() << ": Function convertAlignmentCurveDistAlongToPoint3D exclusively handles alignment curves.";
 					}
 				}//end convertAlignmentCurveDistAlongToPoint3D
 
