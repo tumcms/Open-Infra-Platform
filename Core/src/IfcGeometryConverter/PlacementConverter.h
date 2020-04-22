@@ -1198,10 +1198,10 @@ namespace OpenInfraPlatform {
 								double opening_angle = distAlong / radius;
 
 								// x-coordinate
-								x = radius * sin(opening_angle);
+								x = radius * cos(opening_angle);
 
 								// y-coordinate
-								y = radius * (1. - cos(opening_angle));
+								y = radius * (1. - sin(opening_angle));
 							};
 
 							// Calculate direction
@@ -1218,25 +1218,27 @@ namespace OpenInfraPlatform {
 						else if (trans_curve_segment_2D) 
 						{
 							// StartRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
-							//double startRadius = 0.0;
-							if (trans_curve_segment_2D->StartRadius <= 0.) {
-								BLUE_LOG(info) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Start radius NIL, interpreted as infinite.";
+							double startRadius = 0.0;
+							if (  !trans_curve_segment_2D->StartRadius
+								|| trans_curve_segment_2D->StartRadius <= 0.) {
+								//BLUE_LOG(info) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Start radius NIL, interpreted as infinite.";
 							}
-							//else {
-							//	startRadius = trans_curve_segment_2D->StartRadius * length_factor;
-							//}
+							else {
+								startRadius = trans_curve_segment_2D->StartRadius * length_factor;
+							}
 							// EndRadius type IfcLengthMeasure: if NIL, interpret as infinite (= no curvature)
-							//double endRadius = 0.0;
-							if (trans_curve_segment_2D->EndRadius <= 0.) {
-								BLUE_LOG(info) << horCurveGeometryRelevantToPoint->getErrorLog() << ": End radius NIL, interpreted as infinite.";
+							double endRadius = 0.0;
+							if (  !trans_curve_segment_2D->EndRadius
+								|| trans_curve_segment_2D->EndRadius <= 0.) {
+								//BLUE_LOG(info) << horCurveGeometryRelevantToPoint->getErrorLog() << ": End radius NIL, interpreted as infinite.";
 							}
-							//else {
-							//	endRadius = trans_curve_segment_2D->EndRadius * length_factor;
-							//}
+							else {
+								endRadius = trans_curve_segment_2D->EndRadius * length_factor;
+							}
 							fctRadii = [&](double& bStartRadius, double& bEndRadius) -> void
 							{
-								bStartRadius = std::max( trans_curve_segment_2D->StartRadius * length_factor, 0. );
-								bEndRadius = std::max( trans_curve_segment_2D->EndRadius * length_factor, 0. );
+								bStartRadius = std::max( startRadius, 0. );
+								bEndRadius = std::max( endRadius, 0. );
 							};
 
 							// IsStartRadiusCCW type IfcBoolean
@@ -1412,8 +1414,6 @@ namespace OpenInfraPlatform {
 
 						//********************************************************************
 						// 4.b Determine the point
-						//  Amount of distance within the segment
-						double dDist = dDistAlongOfPoint - horizSegStartDistAlong;
 						//  The radii
 						double dRadStart, dRadEnd;
 						fctRadii(dRadStart, dRadEnd);
@@ -1423,55 +1423,64 @@ namespace OpenInfraPlatform {
 							return;
 						}
 						// is it a curve with decreasing curvature? (doesn't matter with straights and circular arcs)
-						double curveOut = dRadStart != 0.;
+						bool curveOut = dRadStart != 0.;
 						double radius = (curveOut ? dRadStart : dRadEnd);
-						//  Starting point of the segment
-						carve::geom::vector<3> startPoint;
-						convertIfcCartesianPoint(curveSegStartPoint, startPoint);
-						//  Calculate the deltas for coordinates in the local system of the segment
-						carve::geom::vector<3> vctLocal = carve::geom::VECTOR(0.0, 0.0, 0.0);
-						fctPosition(dDist, horizSegLength, radius, vctLocal.x, vctLocal.y);
-
-						//  Starting direction of the segment
-						double horizSegStartDirection = horCurveGeometryRelevantToPoint->StartDirection * plane_angle_factor; // get it in RADIAN
-						GeomSettings()->normalizeAngle(horizSegStartDirection, 0., M_TWOPI);
-
-						// produce a quaternion
-						carve::math::Matrix matrix = carve::math::Matrix(
-							cos(horizSegStartDirection), -sin(horizSegStartDirection), 0., startPoint.x,
-							sin(horizSegStartDirection), cos(horizSegStartDirection), 0., startPoint.y,
-							0., 0., 1., 0.,
-							0., 0., 0., 1.);
 
 						// (counter-)clock-wise?
 						bool bCCWStart, bCCWEnd;
 						fctCCW(bCCWStart, bCCWEnd);
 						bool bCCW = (curveOut ? bCCWStart : bCCWEnd);
 
-						// account for start/end
+						//  Starting point of the segment
+						carve::geom::vector<3> startPoint;
+						convertIfcCartesianPoint(curveSegStartPoint, startPoint);
+
+						// the transformation matrix
+						carve::math::Matrix matrix(carve::math::Matrix::IDENT());
+
+						// if curveOut -> handle the curve mirrored
 						if (curveOut)
 						{
+							// mirror the CCW 
+							bCCW = !bCCW;
+
 							// calculate the end point
 							carve::geom::vector<3> vctEnd = carve::geom::VECTOR(0.0, 0.0, 0.0);
 							fctPosition(horizSegLength, horizSegLength, radius, vctEnd.x, vctEnd.y);
 							//  Ending direction of the segment
 							double horizSegEndDirection;
 							fctDirection(horizSegLength, horizSegLength, radius, horizSegEndDirection);
-							// mirror the curve
-							horizSegEndDirection -= M_PI;
-							GeomSettings()->normalizeAngle(horizSegEndDirection, 0., 2. * M_PI);
-							bCCW = !bCCW;
+							// move to the end and draw from back
+							horizSegEndDirection = M_PI - horizSegEndDirection;
+							GeomSettings()->normalizeAngle(horizSegEndDirection, 0., M_TWOPI);
 							// add an additional step in transformation (go from the end)
-							matrix = carve::math::Matrix(
+							matrix = matrix * carve::math::Matrix(
 								cos(horizSegEndDirection), -sin(horizSegEndDirection), 0., vctEnd.x,
 								sin(horizSegEndDirection),  cos(horizSegEndDirection), 0., vctEnd.y,
 								0., 0., 1., 0.,
-								0., 0., 0., 1.) * matrix;
+								0., 0., 0., 1.);
 						}
+
+						//  Calculate the deltas for coordinates in the local system of the segment
+						carve::geom::vector<3> vctLocal = carve::geom::VECTOR(0.0, 0.0, 0.0);
+						fctPosition(distanceToStart, horizSegLength, radius, vctLocal.x, vctLocal.y);
 
 						// account for CCW
 						if (!bCCW)
+						{
 							vctLocal.y *= -1.;
+						}
+
+						//  Starting direction of the segment
+						double horizSegStartDirection = horCurveGeometryRelevantToPoint->StartDirection * plane_angle_factor; // get it in RADIAN
+						GeomSettings()->normalizeAngle(horizSegStartDirection, 0., M_TWOPI);
+
+						// multiply
+						matrix = carve::math::Matrix(
+							cos(horizSegStartDirection), -sin(horizSegStartDirection), 0., startPoint.x,
+							sin(horizSegStartDirection), cos(horizSegStartDirection), 0., startPoint.y,
+							0., 0., 1., 0.,
+							0., 0., 0., 1.) * matrix;
 						
 						// calculate the global x,y
 						vkt3DtargetPoint = matrix * vctLocal;
@@ -1480,7 +1489,7 @@ namespace OpenInfraPlatform {
 						//********************************************************************
 						// 4.c Determine the direction of the segment at point
 						double dir;
-						fctDirection(dDist, horizSegLength, radius, dir);
+						fctDirection(distanceToStart, horizSegLength, radius, dir);
 						// add the segment's direction
 						dir += horizSegStartDirection;
 
