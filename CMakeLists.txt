@@ -184,6 +184,7 @@ FetchContent_GetProperties(zlib)
 if(NOT zlib_POPULATED)
 	FetchContent_Populate(zlib)
 	add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR} EXCLUDE_FROM_ALL)
+	set_target_properties(zlib PROPERTIES FOLDER "ThirdParty")
 endif()
 
 # Find the Qt components
@@ -507,6 +508,7 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT O
 # Use the Widgets module from Qt 5.
 #find_package(BlueFramework 3.1.1.94 COMPONENTS Core Engine Application ImageProcessing Rasterizer D3D11RenderSystem D3D12RenderSystem REQUIRED)
 
+#https://cmake.org/cmake/help/latest/command/target_link_libraries.html
 target_link_libraries( OpenInfraPlatform.UI
 	PUBLIC
 		OpenInfraPlatform.Core
@@ -565,20 +567,6 @@ OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
 # zlic Copy Binaries
 #ZLIB_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
-# # QtCopyBinaries
-# add_custom_target(Qt5CopyBinaries
-# 	COMMAND ${CMAKE_COMMAND} -E copy ${QT5_DLLS_RELEASE} ${CMAKE_BINARY_DIR}/Release
-# 	COMMAND ${CMAKE_COMMAND} -E copy ${QT5_DLLS_RELEASE} ${CMAKE_BINARY_DIR}/RelWithDebInfo
-# 	COMMAND ${CMAKE_COMMAND} -E copy ${QT5_DLLS_DEBUG} ${CMAKE_BINARY_DIR}/Debug	
-
-# 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${Qt5Core_DIR}/../../../qml						${CMAKE_BINARY_DIR}/Release/qml
-# 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${Qt5Core_DIR}/../../../plugins/geoservices		${CMAKE_BINARY_DIR}/Release/plugins/geoservices
-# 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${Qt5Core_DIR}/../../../plugins/imageformats		${CMAKE_BINARY_DIR}/Release/plugins/imageformats
-# 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${Qt5Core_DIR}/../../../plugins/platforms		${CMAKE_BINARY_DIR}/Release/platforms
-
-# 	# Output Message
-# 	COMMENT "Copying Ot binaries from '${Qt5Core_DIR}/../../bin/' to '${CMAKE_BINARY_DIR}'" VERBATIM
-# )
 
 add_custom_target(CopyOpenInfraPlatformUIResources
 	ALL DEPENDS ${OpenInfra_QMS}
@@ -665,8 +653,8 @@ macro(add_thirdparty TGT)
 endmacro()
 
 # Thirdparty
-	add_thirdparty(QtXlsxWriter 	"REQUIRED")
-	add_thirdparty(QSimpleUpdater 	"REQUIRED")
+add_thirdparty(QtXlsxWriter 	"REQUIRED")
+add_thirdparty(QSimpleUpdater 	"REQUIRED")
 		
 # carve
 add_thirdparty(carve					"carve")
@@ -695,15 +683,14 @@ add_thirdparty(test_carve_polyhedrons_2	"carve")
 # Set the target properties.
 #-------------------------------------------------------------------------------------
 
-#set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
-set_target_properties(CopyOpenInfraPlatformUIResources 					PROPERTIES FOLDER "Copy")
-set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
-#set_target_properties(BlueFrameworkCopyBinaries 					PROPERTIES FOLDER "Copy")
-#set_target_properties(Qt5CopyBinaries			 				PROPERTIES FOLDER "Copy")
-set_target_properties(QSimpleUpdaterCopyBinaries					PROPERTIES FOLDER "Copy")
-set_target_properties(OpenInfraPlatform.UI						PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.Core						PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.ExpressBindingGenerator				PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
+set_target_properties(CopyOpenInfraPlatformUIResources 					PROPERTIES FOLDER "OpenInfraPlatform/Copy")
+set_target_properties(OklabiCopyBinaries								PROPERTIES FOLDER "OpenInfraPlatform/Copy")
+set_target_properties(QSimpleUpdaterCopyBinaries						PROPERTIES FOLDER "OpenInfraPlatform/Copy")
+
+set_target_properties(OpenInfraPlatform.UI								PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.Core							PROPERTIES FOLDER "OpenInfraPlatform")
+
+set_target_properties(OpenInfraPlatform.ExpressBindingGenerator			PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
 # Currently not included. 
 #set_target_properties(OpenInfraPlatform.CommandLineUtilities		PROPERTIES FOLDER "OpenInfraPlatform")
