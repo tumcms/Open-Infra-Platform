@@ -229,6 +229,24 @@ void OpenInfraPlatform::Core::DataManagement::Data::ParseExpressAndGeometryModel
 		if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
 			if (!tempIfcGeometryModel_->isEmpty()) {
 				ifcGeometryModel_ = tempIfcGeometryModel_;
+
+				//Current version of code position the IFC model origin in the centroid of the previously loaded point cloud. Here, IFC vertices are translated using the centBB variable calculated after loading the point cloud (if any)
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+
+				auto pointCloud = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud();
+				if (pointCloud) {
+					//// Calculating centroid of point cloud's bounding box to correct ifc placement. kyq 
+					CCVector3 bbMin, bbMax;
+					pointCloud->getBoundingBox(bbMin, bbMax);//min, max
+					CCVector3 centBB = { (bbMax[0] + bbMin[0]) / 2, (bbMax[1] + bbMin[1]) / 2, (bbMax[2] + bbMin[2]) / 2 };
+
+					for (int ii = 0; ii < ifcGeometryModel_->meshDescription_.vertices.size(); ii++) {
+						for (int j = 0; j < 3; j++)
+							ifcGeometryModel_->meshDescription_.vertices.at(ii).position[j] -= centBB[j];
+					}
+
+				}
+#endif	
 			}
 		}
 	}
