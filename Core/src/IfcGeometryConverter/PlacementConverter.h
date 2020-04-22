@@ -363,6 +363,14 @@ namespace OpenInfraPlatform {
 							// the offsets = offsetFromCurve
 							object_placement_matrix = absolute_placement; //TODO wrong
 
+							// 4. calculate the rotations
+							// ENTITY IfcOrientationExpression
+							//	SUBTYPE OF(IfcGeometricRepresentationItem);
+							//	LateralAxisDirection: IfcDirection;
+							//	VerticalAxisDirection: IfcDirection;
+							// END_ENTITY;
+
+
 							// PlacementRelTo type IfcObjectPlacement [0:1] (introduced in IFC4x2)
 							if (linear_placement->PlacementRelTo) {
 								// Reference to Object that provides the relative placement by its local coordinate system. 
