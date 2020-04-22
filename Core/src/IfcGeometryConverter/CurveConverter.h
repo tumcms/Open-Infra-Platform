@@ -192,7 +192,7 @@ namespace OpenInfraPlatform {
 							auto vertical = alignment_curve->Vertical;
 							if (!vertical) {
 								// there is no vertical alignment
-								BLUE_LOG(trace) << "No IfcAlignment2DVertical in " << alignment_curve->getErrorLog();
+								BLUE_LOG(info) << "No IfcAlignment2DVertical in " << alignment_curve->getErrorLog();
 								bOnlyHorizontal = true;
 							}
 							else

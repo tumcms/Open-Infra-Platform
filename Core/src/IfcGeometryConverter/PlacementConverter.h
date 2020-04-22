@@ -930,8 +930,8 @@ namespace OpenInfraPlatform {
 						if (!vertical)
 						{
 							bOnlyHorizontal = true;
-							BLUE_LOG(info) << alignment_curve->getErrorLog() << ": No IfcAlignment2DVertical.";
-							if(bDistMeasuredAlongHorizontal)
+							//BLUE_LOG(info) << alignment_curve->getErrorLog() << ": No IfcAlignment2DVertical.";
+							if( !bDistMeasuredAlongHorizontal)
 								BLUE_LOG(warning) << alignment_curve->getErrorLog() << ": Although 3D distance along is wanted, we can only deliver along a 2D alignment curve.";
 						}
 						else
@@ -982,17 +982,13 @@ namespace OpenInfraPlatform {
 							//		StartDirection: IfcPlaneAngleMeasure;
 							//		SegmentLength: IfcPositiveLengthMeasure;
 							// END_ENTITY;
-							if (horCurveGeometryRelevantToPoint->SegmentLength < 0. ) {
-								BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Curve segment length is false.";
-								return;
-							}
 
 							// Get the segment's length
 							double horizSegLength = horCurveGeometryRelevantToPoint->SegmentLength * length_factor;
 							if (horizSegLength <= 0.)
 							{
 								BLUE_LOG(trace) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Segment length is negative/ZERO?!";
-								continue;
+								return;
 							}
 
 							// if begin of this segment is after the station -> sth went wrong
@@ -1070,7 +1066,7 @@ namespace OpenInfraPlatform {
 								//*********************************************************************
 								// 3.b If the end of this segment is further along than the point searched for, 
 								//      the point is within this segment -> remember that!
-								if (verSegDistAlong + verSegLength > dDistAlongOfPoint)
+								if (verSegDistAlong + verSegLength >= dDistAlongOfPoint)
 								{
 									// Remember the element for later
 									verticalSegmentRelevantToPoint = it_segment;
@@ -1528,6 +1524,7 @@ namespace OpenInfraPlatform {
 							}
 							else if (v_seg_circ_arc_2D)
 							{
+								// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifcalignment2dversegcirculararc.htm
 								// Radius type IfcPositiveLengthMeasure [1:1] 
 								if (v_seg_circ_arc_2D->Radius <= 0.) {
 									BLUE_LOG(error) << verticalSegmentRelevantToPoint->getErrorLog() << ": No radius.";
@@ -1540,13 +1537,14 @@ namespace OpenInfraPlatform {
 
 								// pointDistAlong and verSegDistAlong are along horizontal alignment, which corresponds to the horizontal axis in the vertical alignment
 
-								if (is_convex == true) {
-									dz = -sqrt(pow(radius, 2) - pow(distVerToStart + (verSegStartGradient * radius) / sqrt(1. + pow(verSegStartGradient, 2)), 2))
-										+ radius / sqrt(1. + pow(verSegStartGradient, 2)); // Crest (decreasing gradient)
+								double tmp = radius / sqrt(1. + pow(verSegStartGradient, 2));
+								if ( is_convex ) {
+									// Crest (decreasing gradient)
+									dz = -sqrt(pow(radius, 2) - pow(distVerToStart + verSegStartGradient * tmp, 2))	+ tmp; 
 								}
 								else {
-									dz = sqrt(pow(radius, 2) - pow(distVerToStart - (verSegStartGradient * radius) / sqrt(1. + pow(verSegStartGradient, 2)), 2))
-										- radius / sqrt(1. + pow(verSegStartGradient, 2)); // Sag (increasing gradient)
+									// Sag (increasing gradient)
+									dz =  sqrt(pow(radius, 2) - pow(distVerToStart - verSegStartGradient * tmp, 2)) - tmp; 
 								}
 							}
 							else if (v_seg_par_arc_2D)
