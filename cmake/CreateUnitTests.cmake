@@ -52,7 +52,7 @@ function(CreateIfcFileUnitTestForSchema test_name schema)
 
     gtest_discover_tests(${UnitTest_Executable_Name})
 
-    set_target_properties(${UnitTest_Executable_Name} PROPERTIES FOLDER "UnitTests/Schemas/${schema}")
+    set_target_properties(${UnitTest_Executable_Name} PROPERTIES FOLDER "OpenInfraPlatform/UnitTests/Schemas/${schema}")
     set(UnitTest_Data_Rel_Path UnitTests/Schemas/${schema}/${test_name}/Data)
 
     add_custom_command(TARGET ${UnitTest_Executable_Name} POST_BUILD
