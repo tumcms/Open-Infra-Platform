@@ -1,6 +1,6 @@
 # TUM Open Infra Platform
 
-## Info
+## Info  
 
 `TUM Open Infra Platform`is a software for viewing and converting alignment data. Currently it offers partial support for LandXML, our IFC based Alignment proposal, IFC Alignment 1.0, IFC Alignment 1.1 (work in progress) and OKSTRA.
 
