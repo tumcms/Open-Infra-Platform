@@ -321,7 +321,19 @@ namespace OpenInfraPlatform {
 						0, 0, 0, 1);
 				}
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> GetRelativePlacement(const std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement);
+				/*! \brief Gets the \c IfcCurve attribute from \c IfcLinearPlacement.
+
+				There was a change moving from IFC4x1 to IFC4x2 in the naming of the attribute to \c IfcCurve.
+				In IFC4x1, the attribute was named \c PlacementRelTo, starting in IFC4x2 it is named \c PlacementMeasuredAlong.
+
+				\param[in]	linearPlacement		\c IfcLinearPlacement entity to interpret.
+
+				\return		\c std::shared_ptr to \c IfcCurve that \c IfcLinearPlacement references.
+
+				\note The implementation is in \file PlacementConverterImpl.h.
+				*/
+				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> GetCurveOfPlacement(
+					const std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement);
 
 				/*! \brief Converts \c IfcObjectPlacement to a transformation matrix.
 
@@ -440,8 +452,7 @@ namespace OpenInfraPlatform {
 						// **************************************************************************************************************************
 
 						// PlacementRelTo / PlacementMeasuredAlong
-						std::string linearPlacementTypeName = typeid(typename IfcEntityTypesT::IfcCurve).name();
-						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve = GetRelativePlacement(linear_placement);
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve = GetCurveOfPlacement(linear_placement);
 
 						std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> ifcBoundedCurve =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(ifcCurve);

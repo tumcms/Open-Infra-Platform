@@ -25,12 +25,17 @@ namespace OpenInfraPlatform {
 		namespace IfcGeometryConverter {
 
             #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-            std::shared_ptr<emt::IFC4X1EntityTypes::IfcCurve> PlacementConverterT<emt::IFC4X1EntityTypes>::GetRelativePlacement(const std::shared_ptr<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linearPlacement) {
+            std::shared_ptr<emt::IFC4X1EntityTypes::IfcCurve> PlacementConverterT<emt::IFC4X1EntityTypes>::GetCurveOfPlacement(
+				const std::shared_ptr<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linearPlacement) 
+			{
             	return linearPlacement->PlacementRelTo.lock();
             };
             #endif
 
-			template<typename IfcEntityTypesT> std::shared_ptr<typename IfcEntityTypesT::IfcCurve> PlacementConverterT<IfcEntityTypesT>::GetRelativePlacement(const std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement) {
+			template<typename IfcEntityTypesT> 
+			std::shared_ptr<typename IfcEntityTypesT::IfcCurve> PlacementConverterT<IfcEntityTypesT>::GetCurveOfPlacement(
+				const std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement) 
+			{
 				return linearPlacement->PlacementMeasuredAlong.lock();
 			};
         }
