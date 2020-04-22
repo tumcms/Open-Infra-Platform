@@ -184,6 +184,7 @@ FetchContent_GetProperties(zlib)
 if(NOT zlib_POPULATED)
 	FetchContent_Populate(zlib)
 	add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR} EXCLUDE_FROM_ALL)
+	set_target_properties(zlib PROPERTIES FOLDER "ThirdParty")
 endif()
 
 # Find the Qt components
@@ -628,8 +629,8 @@ macro(add_thirdparty TGT)
 endmacro()
 
 # Thirdparty
-	add_thirdparty(QtXlsxWriter 	"REQUIRED")
-	add_thirdparty(QSimpleUpdater 	"REQUIRED")
+add_thirdparty(QtXlsxWriter 	"REQUIRED")
+add_thirdparty(QSimpleUpdater 	"REQUIRED")
 		
 # carve
 add_thirdparty(carve					"carve")
@@ -658,14 +659,14 @@ add_thirdparty(test_carve_polyhedrons_2	"carve")
 # Set the target properties.
 #-------------------------------------------------------------------------------------
 
-#set_target_properties(ZLIBCopyBinaries							PROPERTIES FOLDER "Copy")
-set_target_properties(CopyOpenInfraPlatformUIResources 					PROPERTIES FOLDER "Copy")
-set_target_properties(OklabiCopyBinaries						PROPERTIES FOLDER "Copy")
-#set_target_properties(BlueFrameworkCopyBinaries 					PROPERTIES FOLDER "Copy")
-set_target_properties(QSimpleUpdaterCopyBinaries					PROPERTIES FOLDER "Copy")
-set_target_properties(OpenInfraPlatform.UI						PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.Core						PROPERTIES FOLDER "OpenInfraPlatform")
-set_target_properties(OpenInfraPlatform.ExpressBindingGenerator				PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
+set_target_properties(CopyOpenInfraPlatformUIResources 					PROPERTIES FOLDER "OpenInfraPlatform/Copy")
+set_target_properties(OklabiCopyBinaries								PROPERTIES FOLDER "OpenInfraPlatform/Copy")
+set_target_properties(QSimpleUpdaterCopyBinaries						PROPERTIES FOLDER "OpenInfraPlatform/Copy")
+
+set_target_properties(OpenInfraPlatform.UI								PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.Core							PROPERTIES FOLDER "OpenInfraPlatform")
+
+set_target_properties(OpenInfraPlatform.ExpressBindingGenerator			PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
 # Currently not included. 
 #set_target_properties(OpenInfraPlatform.CommandLineUtilities		PROPERTIES FOLDER "OpenInfraPlatform")
