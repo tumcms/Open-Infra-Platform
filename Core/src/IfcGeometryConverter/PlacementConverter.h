@@ -562,6 +562,7 @@ namespace OpenInfraPlatform {
 						}
 
 						// PlacementRelTo type IfcObjectPlacement [0:1] (introduced in IFC4x2)
+						std::string linearPlacementTypeName = typeid(typename IfcEntityTypesT::IfcCurve).name();
 						if (   linear_placement->PlacementRelTo
 							&& linearPlacementTypeName.find("IFC4X1") == std::string::npos) // and it's NOT IFC4x1
 						{
