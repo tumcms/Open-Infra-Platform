@@ -497,7 +497,7 @@ namespace OpenInfraPlatform {
 						// 2. calculate the position on and the direction of the base curve
 						carve::geom::vector<3>  pointOnCurve	 ( carve::geom::VECTOR(0.0, 0.0, 0.0) ),
 												directionOfCurve ( carve::geom::VECTOR(1.0, 0.0, 0.0) );
-						convertAlignmentCurveDistAlongToPoint3D( 
+						convertBoundedCurveDistAlongToPoint3D( 
 							ifcBoundedCurve, distAlong, alongHorizontal, 
 							pointOnCurve, directionOfCurve);
 
@@ -865,12 +865,22 @@ namespace OpenInfraPlatform {
 					translate = location;
 				}
 
-				// Function 7: Convert distance along an alignment curve to 3D coordinates.
-				// Function allows IfcBoundedCurve as input because of template issues. TODO: change to IfcAlignmentCurve
-				void convertAlignmentCurveDistAlongToPoint3D(
-					std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> ifcAlignmentCurve,
-					double dDistAlongOfPoint,
-					bool bDistMeasuredAlongHorizontal,
+				/*! \brief Calculates a point and the tangent at the point along a \c IfcCurve.
+
+				\param[in]	ifcCurve						\c IfcBoundedCurve entity representing the directrix.
+				\param[in]	dDistAlongOfPoint				The distance along the curve at which the point and tangent should be calculated.
+				\param[in]	bDistMeasuredAlongHorizontal	Is the distance measured only along the x-y projection of the curve?
+				\param[out]	vkt3DtargetPoint				The calculated 3D point.
+				\param[out]	vkt3DtargetDirection			The calculated 3D direction vector of the tangent to the curve at that point.
+
+				\note \c dDistAlongOfPoint need to account for unit conversion outside of function.
+				\note Function currently only supports \c IfcAlignmentCurve.
+				\note Function presets the returns to (0.,0.,0.) and (1.,0.,0.).
+				*/
+				void convertBoundedCurveDistAlongToPoint3D(
+					const std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve>& ifcCurve,
+					const double dDistAlongOfPoint,
+					const bool bDistMeasuredAlongHorizontal,
 					carve::geom::vector<3>& vkt3DtargetPoint,
 					carve::geom::vector<3>& vkt3DtargetDirection) 					
 				{	
@@ -883,7 +893,7 @@ namespace OpenInfraPlatform {
 					double plane_angle_factor = UnitConvert()->getAngleInRadianFactor();
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcAlignmentCurve> alignment_curve =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignmentCurve>(ifcAlignmentCurve);
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignmentCurve>(ifcCurve);
 					if (alignment_curve)
 					{
 						// the vectors of horizontal and vertical segments - used in analysis

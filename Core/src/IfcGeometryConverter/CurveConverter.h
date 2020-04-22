@@ -420,16 +420,16 @@ namespace OpenInfraPlatform {
 							std::vector<carve::geom::vector<3>> curve_points;
 							
 							// attach the curve points
-							for (auto it_station : stations)
+							for (auto& it_station : stations)
 							{
 								// call the placement converter that handles the geometry and calculates the 3D point along a curve
-								placementConverter->convertAlignmentCurveDistAlongToPoint3D(alignment_curve, it_station, true, targetPoint3D, targetDirection3D);
+								placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, it_station, true, targetPoint3D, targetDirection3D);
 								curve_points.push_back(targetPoint3D);
 							}
 							GeomUtils::appendPointsToCurve(curve_points, targetVec);
 
 							// add the first point to segments
-							placementConverter->convertAlignmentCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
+							placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
 							segmentStartPoints.push_back(targetPoint3D);
 
 							// end
