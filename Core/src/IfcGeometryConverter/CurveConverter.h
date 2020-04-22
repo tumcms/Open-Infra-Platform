@@ -704,14 +704,10 @@ namespace OpenInfraPlatform {
 
 							// correct for -2*PI <= angle <= 2*PI
 							if (opening_angle > 0) {
-								while (opening_angle > 2.0*M_PI) {
-									opening_angle -= 2.0*M_PI;
-								}
+								GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
 							}
 							else {
-								while (opening_angle < -2.0*M_PI) {
-									opening_angle += 2.0*M_PI;
-								}
+								GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
 							}
 
 							int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation( circle_radius, abs(opening_angle) );
