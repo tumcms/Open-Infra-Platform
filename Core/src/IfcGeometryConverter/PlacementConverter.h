@@ -1551,6 +1551,7 @@ namespace OpenInfraPlatform {
 							}
 							else if (v_seg_par_arc_2D)
 							{
+								// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifcalignment2dversegparabolicarc.htm
 								// ParabolaConstant type IfcPositiveLengthMeasure [1:1]
 								if (v_seg_par_arc_2D->ParabolaConstant <= 0.) {
 									BLUE_LOG(error) << verticalSegmentRelevantToPoint->getErrorLog() << ": No parabola constant.";
@@ -1563,7 +1564,7 @@ namespace OpenInfraPlatform {
 
 								double parabola_radius = is_convex ? -arc_const : arc_const;
 								double parabola_gradient = distVerToStart / parabola_radius + verSegStartGradient;
-								dz = distVerToStart * parabola_gradient * 0.5; //TODO why + verSegStartGradient (see above line)
+								dz = distVerToStart * (parabola_gradient + verSegStartGradient) * 0.5;
 							}
 
 							// set the coordinate
