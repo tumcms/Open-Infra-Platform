@@ -266,7 +266,8 @@ include_directories(
 	${FFTW3_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIRS}	
 	${visit_struct_INCLUDE_DIR}
-	$(Doxygen_INCLUDE_DIR)
+	thirdparty/doxygen
+	thirdparty/graphviz_dot
 	# external:
 	external/QtXlsxWriter/src/xlsx
 	external/QSimpleUpdater/src
