@@ -1198,10 +1198,10 @@ namespace OpenInfraPlatform {
 								double opening_angle = distAlong / radius;
 
 								// x-coordinate
-								x = radius * cos(opening_angle);
+								x = radius * sin(opening_angle);
 
 								// y-coordinate
-								y = radius * (1. - sin(opening_angle));
+								y = radius * (1. - cos(opening_angle));
 							};
 
 							// Calculate direction
