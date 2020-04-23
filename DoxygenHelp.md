@@ -38,16 +38,16 @@ Important: when adding settingsthem in CMake, always use DOXYGEN_ before the sta
 In Visual studio, build "GenerateDocumentation".
 In your build directory under Doxymentation/html you will then find something called “index.html”. This is a link to the index page of the HTML documentation browser. 
 
-## Style sheet 
-When using doxygen within the Open Infra Platform, please use this style, start a comment block with /*!, start every line with * and end it with */.
+## Style 
+When using doxygen within the Open Infra Platform, please use this style: start a comment block with /*!, start every line with * and end it with */.
 
-Brief description: introduced by \brief 
-Internal comments: introduced by \internal
-Parameters: introduced by \param
+- Brief description: introduced by \brief 
+- Internal comments: introduced by \internal
+- Parameters: introduced by \param
 
 Refer to the doxygen manual (http://www.doxygen.nl/manual) for everything else.
 
-Useful links:
+## Useful links
 
 - Code blocks:
 Entire source code file: http://www.doxygen.nl/manual/commands.html#cmdinclude 
