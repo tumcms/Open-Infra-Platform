@@ -45,25 +45,25 @@ When using doxygen within the Open Infra Platform, please use this style:
 
 - Detailed description:
 
-/*!
-* ... text
-*/
+"/*!"
+"* ... text"
+"*/"
 
 - Brief description: 
 
-/*! \brief description as long as paragraph
-*
-* After skipping a line, detailed description starts.
-*/
+"/*! \brief description as long as paragraph"
+"*"
+"* After skipping a line, detailed description starts."
+"*/"
 
 - In Body descriptions:
 
-int var /*< for detailed descriptions after member, only for members and parameters. Avoid structural comments, as they lead to duplication of information.*/
+"int var /*< for detailed descriptions after member, only for members and parameters. Avoid structural comments, as they lead to duplication of information.*/"
 
 - Internal comments:
 
-/*! \internal These comments can be included and excluded separately. Handy for developer-only comments.
-*/
+"/*! \internal These comments can be included and excluded separately. Handy for developer-only comments."
+"*/"
 
 Refer to the doxygen manual (http://www.doxygen.nl/manual) for everything else.
 
