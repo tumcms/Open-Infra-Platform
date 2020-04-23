@@ -496,17 +496,17 @@ namespace OpenInfraPlatform
 							return buw::Vector3f(0.6f, 0.6f, 0.4f);//, 1.0f);
 						}
 
-						// Gelï¿½nder
+						// Geländer
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRailing>(product)) {
 							return buw::Vector3f(0.7f, 0.7f, 0.2f);//, 1.0f);
 						}
 
-						// Gelï¿½nder
+						// Geländer
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPile>(product)) {
 							return buw::Vector3f(0.15f, 0.7f, 0.0f);//, 1.0f);
 						}
 
-						// Mï¿½bel
+						// Möbel
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFurnishingElement>(product)) {
 							return buw::Vector3f(0.8f, 0.6f, 0.2f);//, 1.0f);
 						}
@@ -519,7 +519,7 @@ namespace OpenInfraPlatform
 							|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDistributionFlowElement>(product)) {
 							return buw::Vector3f(0.4f, 0.4f, 0.6f);//, 1.0f);
 						}
-						// Platte als Dach oder Gelï¿½nder?
+						// Platte als Dach oder Geländer?
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSlab>(product)) {
 							const std::shared_ptr<typename IfcEntityTypesT::IfcSlab>& slab =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSlab>(product);

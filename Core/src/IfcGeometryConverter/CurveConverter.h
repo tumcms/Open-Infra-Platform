@@ -192,7 +192,7 @@ namespace OpenInfraPlatform {
 							auto vertical = alignment_curve->Vertical;
 							if (!vertical) {
 								// there is no vertical alignment
-								BLUE_LOG(trace) << "No IfcAlignment2DVertical in " << alignment_curve->getErrorLog();
+								BLUE_LOG(info) << "No IfcAlignment2DVertical in " << alignment_curve->getErrorLog();
 								bOnlyHorizontal = true;
 							}
 							else
@@ -420,16 +420,16 @@ namespace OpenInfraPlatform {
 							std::vector<carve::geom::vector<3>> curve_points;
 							
 							// attach the curve points
-							for (auto it_station : stations)
+							for (auto& it_station : stations)
 							{
 								// call the placement converter that handles the geometry and calculates the 3D point along a curve
-								placementConverter->convertAlignmentCurveDistAlongToPoint3D(alignment_curve, it_station, true, targetPoint3D, targetDirection3D);
+								placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, it_station, true, targetPoint3D, targetDirection3D);
 								curve_points.push_back(targetPoint3D);
 							}
 							GeomUtils::appendPointsToCurve(curve_points, targetVec);
 
 							// add the first point to segments
-							placementConverter->convertAlignmentCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
+							placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
 							segmentStartPoints.push_back(targetPoint3D);
 
 							// end
@@ -704,14 +704,10 @@ namespace OpenInfraPlatform {
 
 							// correct for -2*PI <= angle <= 2*PI
 							if (opening_angle > 0) {
-								while (opening_angle > 2.0*M_PI) {
-									opening_angle -= 2.0*M_PI;
-								}
+								GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
 							}
 							else {
-								while (opening_angle < -2.0*M_PI) {
-									opening_angle += 2.0*M_PI;
-								}
+								GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
 							}
 
 							int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation( circle_radius, abs(opening_angle) );

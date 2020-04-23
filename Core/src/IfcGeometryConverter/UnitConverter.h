@@ -396,6 +396,7 @@ namespace OpenInfraPlatform
 				*/
 				double convertValue(const typename IfcEntityTypesT::IfcValue& value) const
 				{
+					//TODO IfcValue conversion
 					return 1.;
 				}
 
