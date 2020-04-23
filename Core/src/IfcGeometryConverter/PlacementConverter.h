@@ -1441,24 +1441,49 @@ namespace OpenInfraPlatform {
 						// if curveOut -> handle the curve mirrored
 						if (curveOut)
 						{
-							// mirror the CCW 
-							bCCW = !bCCW;
+							// mirror the distance to start of element
+							distanceToStart = horizSegLength - distanceToStart;
 
 							// calculate the end point
 							carve::geom::vector<3> vctEnd = carve::geom::VECTOR(0.0, 0.0, 0.0);
 							fctPosition(horizSegLength, horizSegLength, radius, vctEnd.x, vctEnd.y);
+							// account for CCW
+							//if (!bCCW)
+							//	vctEnd.y *= -1.;
 							//  Ending direction of the segment
 							double horizSegEndDirection;
 							fctDirection(horizSegLength, horizSegLength, radius, horizSegEndDirection);
 							// move to the end and draw from back
-							horizSegEndDirection = M_PI - horizSegEndDirection;
-							GeomSettings()->normalizeAngle(horizSegEndDirection, 0., M_TWOPI);
+							// account for CCW
+							if (!bCCW)
+								horizSegEndDirection = M_PI - horizSegEndDirection;
+							else
+								horizSegEndDirection = M_PI + horizSegEndDirection;
+
+							//GeomSettings()->normalizeAngle(horizSegEndDirection, 0., M_TWOPI);
 							// add an additional step in transformation (go from the end)
-							matrix = matrix * carve::math::Matrix(
-								cos(horizSegEndDirection), -sin(horizSegEndDirection), 0., vctEnd.x,
-								sin(horizSegEndDirection),  cos(horizSegEndDirection), 0., vctEnd.y,
-								0., 0., 1., 0.,
-								0., 0., 0., 1.);
+							// see https://www.lantmateriet.se/contentassets/4a728c7e9f0145569edd5eb81fececa7/rapport_reit_eng.pdf
+							//  section 6.2
+							matrix = 
+								//carve::math::Matrix(
+								//0., -1., 0., 0.,
+								//1., 0., 0., 0.,
+								//0., 0., 1., 0.,
+								//0., 0., 0., 1.) *
+								carve::math::Matrix(
+									cos(horizSegEndDirection), -sin(horizSegEndDirection), 0., 0.,
+									sin(horizSegEndDirection),  cos(horizSegEndDirection), 0., 0.,
+									0., 0., 1., 0.,
+									0., 0., 0., 1.) *
+								carve::math::Matrix(
+									1., 0., 0., -vctEnd.x,
+									0., 1., 0., -vctEnd.y,
+									0., 0., 1., 0.,
+									0., 0., 0., 1.) * 
+								matrix;
+
+							// mirror the CCW 
+							bCCW = !bCCW;
 						}
 
 						//  Calculate the deltas for coordinates in the local system of the segment
@@ -1467,18 +1492,16 @@ namespace OpenInfraPlatform {
 
 						// account for CCW
 						if (!bCCW)
-						{
 							vctLocal.y *= -1.;
-						}
 
 						//  Starting direction of the segment
 						double horizSegStartDirection = horCurveGeometryRelevantToPoint->StartDirection * plane_angle_factor; // get it in RADIAN
-						GeomSettings()->normalizeAngle(horizSegStartDirection, 0., M_TWOPI);
+						//GeomSettings()->normalizeAngle(horizSegStartDirection, 0., M_TWOPI);
 
 						// multiply
 						matrix = carve::math::Matrix(
 							cos(horizSegStartDirection), -sin(horizSegStartDirection), 0., startPoint.x,
-							sin(horizSegStartDirection), cos(horizSegStartDirection), 0., startPoint.y,
+							sin(horizSegStartDirection),  cos(horizSegStartDirection), 0., startPoint.y,
 							0., 0., 1., 0.,
 							0., 0., 0., 1.) * matrix;
 						
@@ -1492,6 +1515,16 @@ namespace OpenInfraPlatform {
 						fctDirection(distanceToStart, horizSegLength, radius, dir);
 						// add the segment's direction
 						dir += horizSegStartDirection;
+						// mirror if needed
+						if (curveOut)
+						{
+							//  Ending direction of the segment
+							double horizSegEndDirection;
+							fctDirection(horizSegLength, horizSegLength, radius, horizSegEndDirection);
+							dir += horizSegEndDirection + M_PI;
+							if (!bCCW)
+								dir = M_TWOPI - dir;
+						}
 
 						// set the direction
 						vkt3DtargetDirection.x = cos(dir);
