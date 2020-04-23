@@ -48,12 +48,12 @@ set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Doxymentation)
 set(DOXYGEN_SEARCHENGINE YES)
 set(DOXYGEN_SOURCE_BROWSER YES)
 set(DOXYGEN_SUBGROUPING YES)
-set(DOXYGEN_EXCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/CurrentlyExcluded ${CMAKE_CURRENT_SOURCE_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/deploy ${CMAKE_CURRENT_SOURCE_DIR}/Documentation ${CMAKE_CURRENT_SOURCE_DIR}/external ${CMAKE_CURRENT_SOURCE_DIR}/testdata ${CMAKE_CURRENT_SOURCE_DIR}/Tools ${CMAKE_CURRENT_SOURCE_DIR}/UnitTests ${CMAKE_CURRENT_SOURCE_DIR}/UserInterface/QtPropertyBrowser)
+set(DOXYGEN_EXCLUDE_PATTERNS */CurrentlyExcluded/* */cmake/* */deploy/* */Documentation/* */external/* */testdata/* */Tools/* */UserInterface/QtPropertyBrowser/*)
 
 configure_file(${DOXYFILE_CMAKE} ${DOXYFILE} @ONLY) 
 
 # Documentation for entire OPEN INFRA PLATFORM project.
-doxygen_add_docs(GenerateDocumentation ALL
+doxygen_add_docs(OpenInfraPlatform.GenerateDocumentation ALL
 ${CMAKE_CURRENT_SOURCE_DIR} 	# Source code that is (to be) documented located here
 WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root. Change if relative base point should be different.
 COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
