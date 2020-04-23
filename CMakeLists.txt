@@ -235,6 +235,29 @@ endif()
 Option(DOXYGEN_GENERATE_DOCUMENTATION ON)
 
 if(DOXYGEN_GENERATE_DOCUMENTATION)
+
+find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
+"C:/thirdparty/doxygen"
+)
+
+find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
+"C:/thirdparty/graphviz_dot/release/bin"
+)
+
+find_package(Doxygen
+	REQUIRED dot
+)
+
+#set(ENV{DOXYGEN_EXECUTABLE} []}
+#set(IMPORTED_LOCATION C:/thirdparty/doxygen/doxygen.exe)
+#message("Imported location doxygen set.")
+#add_executable(Doxygen::doxygen IMPORTED)
+
+#set(IMPORTED_LOCATION C:/thirdparty/graphviz_dot/release/bin/dot.exe)
+#message("Imported location dot set.")
+#add_executable(Doxygen::dot IMPORTED)
+
+
 include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
 else()
 message("DOXYGEN_GENERATE_DOCUMENTATION box not checked. Thus not generating doxygen documentation for TUM Open Infra Platform project. To generate doxygen documentation, check the box next to DOXYGEN_GENERATE_DOCUMENTATION.")

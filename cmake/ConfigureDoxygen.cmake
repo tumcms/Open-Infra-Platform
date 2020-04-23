@@ -7,18 +7,20 @@
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Doxymentation)
 
+find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
+"C:/thirdparty/doxygen"
+)
+
+find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
+"C:/thirdparty/graphviz_dot/release/bin"
+)
+
 find_package(Doxygen
 	REQUIRED dot
 )
-find_path(DOXYGEN_EXECUTABLE HINTS
-"C:/thirdparty/doxygen/doxygen.exe"
-)
-find_path(DOXYGEN_DOT_EXECUTABLE HINTS
-"C:/thirdparty/graphviz_dot/release/bin/dot.exe"
-)
 
 if(DOXYGEN_FOUND)
-message("For developers: Please use this project's doxygen documentation style specified in ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/StyleSheetOIP.")
+message("Use of DOXYGEN for developers: Please use this project's doxygen documentation style specified in ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/StyleSheetOIP.")
 
 # CONFIGURATION. Check http://www.doxygen.nl/manual/config.html for all available options and their default values. 
 
