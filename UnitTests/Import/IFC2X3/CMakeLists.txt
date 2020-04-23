@@ -40,7 +40,7 @@ add_test(
     COMMAND IFC2X3
 )
 
-set_target_properties(IFC2X3 PROPERTIES FOLDER "UnitTests/Import")
+set_target_properties(IFC2X3 PROPERTIES FOLDER "OpenInfraPlatform/UnitTests/Import")
 
 add_custom_target(CopyIFC2X3UnitTestResources
 	COMMENT "Copying resources from '${CMAKE_SOURCE_DIR}/UnitTests/Import/IFC2X3/Data' to '${CMAKE_BINARY_DIR}/UnitTests/Import/IFC2X3'" VERBATIM
@@ -48,4 +48,4 @@ add_custom_target(CopyIFC2X3UnitTestResources
 	COMMAND	${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/UnitTests/Import/IFC2X3/Data   ${CMAKE_BINARY_DIR}/UnitTests/Import/IFC2X3/Data
 )
 	
-set_target_properties(CopyIFC2X3UnitTestResources PROPERTIES FOLDER "UnitTests/Import/Copy")
+set_target_properties(CopyIFC2X3UnitTestResources PROPERTIES FOLDER "OpenInfraPlatform/UnitTests/Import/Copy")

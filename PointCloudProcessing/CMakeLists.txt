@@ -44,6 +44,9 @@ mark_as_advanced(FORCE WITH_UTILITIES WITH_TESTS)
 if(NOT dep_liblas_POPULATED)
 	FetchContent_Populate(dep_liblas)
 	add_subdirectory(${dep_liblas_SOURCE_DIR} ${dep_liblas_BINARY_DIR} EXCLUDE_FROM_ALL)
+
+	set_target_properties(liblas PROPERTIES FOLDER "ThirdParty/libLAS")
+	set_target_properties(liblas_c PROPERTIES FOLDER "ThirdParty/libLAS")
 endif()
 
 FetchContent_Declare(
@@ -56,6 +59,11 @@ FetchContent_GetProperties(cc)
 if(NOT cc_POPULATED)
 	FetchContent_Populate(cc) 
 	add_subdirectory(${cc_SOURCE_DIR} ${cc_BINARY_DIR} EXCLUDE_FROM_ALL)
+
+	set_target_properties(CC_FBO_LIB PROPERTIES FOLDER "ThirdParty/CloudCompare")
+	set_target_properties(CC_CORE_LIB PROPERTIES FOLDER "ThirdParty/CloudCompare")
+	set_target_properties(QCC_DB_LIB PROPERTIES FOLDER "ThirdParty/CloudCompare")
+	set_target_properties(QCC_IO_LIB PROPERTIES FOLDER "ThirdParty/CloudCompare")
 endif()
 
 

@@ -128,29 +128,3 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 	debugLog.close();
 #endif
 }
-
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-template void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct<emt::IFC4X3_RC1EntityTypes>(
-	const std::shared_ptr<typename emt::IFC4X3_RC1EntityTypes::IfcProduct>& product,
-	std::shared_ptr<ShapeInputDataT<emt::IFC4X3_RC1EntityTypes>> productShape,
-	const std::shared_ptr<RepresentationConverterT<emt::IFC4X3_RC1EntityTypes>> repConverter);
-#endif
-
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-template void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct<emt::IFC4X1EntityTypes>(
-	const std::shared_ptr<typename emt::IFC4X1EntityTypes::IfcProduct>& product,
-	std::shared_ptr<ShapeInputDataT<emt::IFC4X1EntityTypes>> productShape,
-	const std::shared_ptr<RepresentationConverterT<emt::IFC4X1EntityTypes>> repConverter);
-#endif
-
-#ifdef OIP_MODULE_EARLYBINDING_IFC4
-template void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct<emt::IFC4EntityTypes>(const std::shared_ptr<typename emt::IFC4EntityTypes::IfcProduct>& product,
-	std::shared_ptr<ShapeInputDataT<emt::IFC4EntityTypes>> productShape,
-	const std::shared_ptr<RepresentationConverterT<emt::IFC4EntityTypes>> repConverter);
-#endif
-
-#ifdef OIP_MODULE_EARLYBINDING_IFC2X3
-template void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct<emt::IFC2X3EntityTypes>(const std::shared_ptr<typename emt::IFC2X3EntityTypes::IfcProduct>& product,
-	std::shared_ptr<ShapeInputDataT<emt::IFC2X3EntityTypes>> productShape,
-	const std::shared_ptr<RepresentationConverterT<emt::IFC2X3EntityTypes>> repConverter);
-#endif

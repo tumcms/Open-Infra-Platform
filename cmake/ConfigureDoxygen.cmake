@@ -5,17 +5,28 @@
 #  	Changes to documentation settings should be made here. 
 #  
 
-find_path(Doxygen HINTS
-".../thirdparty/doxygen-master"
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Doxymentation)
+
+find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
+"C:/thirdparty/doxygen"
 )
 
-find_package(Doxygen)
+find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
+"C:/thirdparty/graphviz_dot/release/bin"
+)
+
+find_package(Doxygen
+	REQUIRED dot
+)
 
 if(DOXYGEN_FOUND)
-message("Doxygen found. For developers: Please use this project's doxygen documentation style specified in ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/StyleSheetOIP.")
-
+message("Use of DOXYGEN for developers: Please use this project's doxygen documentation style specified in ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/StyleSheetOIP.")
 
 # CONFIGURATION. Check http://www.doxygen.nl/manual/config.html for all available options and their default values. 
+
+# Configuration file generation using CMake. 
+set(DOXYFILE_CMAKE ${CMAKE_CURRENT_BINARY_DIR}/CMakeDoxyfile.in)
+set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
 # Build related configuration options. 
 set(DOXYGEN_PROJECT_NAME OpenInfraPlatform)
@@ -23,10 +34,6 @@ set(DOXYGEN_PROJECT_BRIEF "Open source software for viewing and converting align
 #set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/interface.png)
 set(DOXYGEN_CREATE_SUBDIRS YES)
 set(DOXYGEN_HAVE_DOT YES) # GraphViz Package for diagrams
-
-# Configuration file generation using CMake. 
-set(DOXYFILE_CMAKE ${CMAKE_CURRENT_BINARY_DIR}/CMakeDoxyfile.in)
-set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
 # Documentation settings.
 set(DOXYGEN_EXTRACT_ALL YES) # Set to yes if you want to extract all existing documentation  from project. Do this for now, once starting proper documentation change to NO. 
@@ -37,18 +44,18 @@ set(DOXYGEN_CLASS_DIAGRAMS YES)
 # Output (HTML/Latex/...) configuration options.
 set(DOXYGEN_GENERATE_HTML YES)
 set(DOXYGEN_GENERATE_LATEX NO)
-set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation)
+set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Doxymentation)
 set(DOXYGEN_SEARCHENGINE YES)
 set(DOXYGEN_SOURCE_BROWSER YES)
 set(DOXYGEN_SUBGROUPING YES)
 set(DOXYGEN_EXCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/CurrentlyExcluded ${CMAKE_CURRENT_SOURCE_DIR}/build ${CMAKE_CURRENT_SOURCE_DIR}/deploy ${CMAKE_CURRENT_SOURCE_DIR}/Documentation ${CMAKE_CURRENT_SOURCE_DIR}/external ${CMAKE_CURRENT_SOURCE_DIR}/testdata ${CMAKE_CURRENT_SOURCE_DIR}/Tools ${CMAKE_CURRENT_SOURCE_DIR}/UnitTests ${CMAKE_CURRENT_SOURCE_DIR}/UserInterface/QtPropertyBrowser)
 
-configure_file(${DOXYFILE_CMAKE} ${DOXYFILE} @ONLY)
+configure_file(${DOXYFILE_CMAKE} ${DOXYFILE} @ONLY) 
 
 # Documentation for entire OPEN INFRA PLATFORM project.
 doxygen_add_docs(GenerateDocumentation ALL
-${CMAKE_CURRENT_SOURCE_DIR} 	# Actual documented code here
-WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root
+${CMAKE_CURRENT_SOURCE_DIR} 	# Source code that is (to be) documented located here
+WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root. Change if relative base point should be different.
 COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
 
 # Add important links to GenerateDocumentation Visual Studio project to facilitate access.

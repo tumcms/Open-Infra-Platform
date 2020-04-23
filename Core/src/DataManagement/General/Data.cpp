@@ -43,9 +43,9 @@
 	#include "IFC4X3_RC1.h"
 #endif
 
-#include "IfcGeometryConverter\IfcImporter.h"
 #include "IfcGeometryConverter\GeometryInputData.h"
 #include "IfcGeometryConverter\IfcPeekStepReader.h"
+#include "IfcGeometryConverter\IfcImporterImpl.h"
 
 #include <QtXml>
 #include <QtXmlPatterns>
