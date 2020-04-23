@@ -58,13 +58,6 @@ ${CMAKE_CURRENT_SOURCE_DIR} 	# Source code that is (to be) documented located he
 WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root. Change if relative base point should be different.
 COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
 
-# Add important links to GenerateDocumentation Visual Studio project to facilitate access.
-#set(OpenInfraPlatform_Documentation_ImportantLinks
-#${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html/index.html
-#${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html/classes.html
-#${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/html/namespaces.html
-#)
-
 else()
 message("Doxygen not found. Please install doxygen using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Doxygen.cmd to be able to generate documentation for the project. Please also install the GraphViz DOT package using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Dot.cmd for rendering diagrams.")
 endif(DOXYGEN_FOUND)
