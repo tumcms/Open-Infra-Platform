@@ -96,6 +96,9 @@ foreach(standard IN LISTS SUPPORTED_IFC_FORMATS)
 	
 		add_dependencies(Commands.GenerateEarlyBinding.${format} OpenInfraPlatform.ExpressBindingGenerator)
 		set_target_properties(Commands.GenerateEarlyBinding.${format} PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
+		add_custom_command(TARGET Commands.GenerateEarlyBinding.${format} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E echo "!!! Generate the solution anew (in CMake) to include the generated project 'OpenInfraPlatform.${format}' !!!." VERBATIM
+		)
 	endif()
 endforeach()
 
