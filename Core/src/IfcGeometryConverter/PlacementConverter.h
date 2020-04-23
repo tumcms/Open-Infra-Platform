@@ -1423,7 +1423,7 @@ namespace OpenInfraPlatform {
 							return;
 						}
 						// is it a curve with decreasing curvature? (doesn't matter with straights and circular arcs)
-						bool curveOut = dRadStart != 0.;
+						bool curveOut = (dRadStart != 0. && dRadStart != dRadEnd);
 						double radius = (curveOut ? dRadStart : dRadEnd);
 
 						// (counter-)clock-wise?
@@ -1447,10 +1447,8 @@ namespace OpenInfraPlatform {
 							// calculate the end point
 							carve::geom::vector<3> vctEnd = carve::geom::VECTOR(0.0, 0.0, 0.0);
 							fctPosition(horizSegLength, horizSegLength, radius, vctEnd.x, vctEnd.y);
-							// account for CCW
-							//if (!bCCW)
-							//	vctEnd.y *= -1.;
-							//  Ending direction of the segment
+
+							// Ending direction of the segment
 							double horizSegEndDirection;
 							fctDirection(horizSegLength, horizSegLength, radius, horizSegEndDirection);
 							// move to the end and draw from back
@@ -1465,11 +1463,6 @@ namespace OpenInfraPlatform {
 							// see https://www.lantmateriet.se/contentassets/4a728c7e9f0145569edd5eb81fececa7/rapport_reit_eng.pdf
 							//  section 6.2
 							matrix = 
-								//carve::math::Matrix(
-								//0., -1., 0., 0.,
-								//1., 0., 0., 0.,
-								//0., 0., 1., 0.,
-								//0., 0., 0., 1.) *
 								carve::math::Matrix(
 									cos(horizSegEndDirection), -sin(horizSegEndDirection), 0., 0.,
 									sin(horizSegEndDirection),  cos(horizSegEndDirection), 0., 0.,
@@ -1481,19 +1474,24 @@ namespace OpenInfraPlatform {
 									0., 0., 1., 0.,
 									0., 0., 0., 1.) * 
 								matrix;
-
-							// mirror the CCW 
-							bCCW = !bCCW;
+						}
+						else // not curveOut
+						{
+							// account for CCW
+							if (!bCCW)
+								matrix =
+								carve::math::Matrix(
+									1.,  0., 0., 0.,
+									0., -1., 0., 0.,
+									0.,  0., 1., 0.,
+									0.,  0., 0., 1.) *
+								matrix;
 						}
 
 						//  Calculate the deltas for coordinates in the local system of the segment
 						carve::geom::vector<3> vctLocal = carve::geom::VECTOR(0.0, 0.0, 0.0);
 						fctPosition(distanceToStart, horizSegLength, radius, vctLocal.x, vctLocal.y);
-
-						// account for CCW
-						if (!bCCW)
-							vctLocal.y *= -1.;
-
+						
 						//  Starting direction of the segment
 						double horizSegStartDirection = horCurveGeometryRelevantToPoint->StartDirection * plane_angle_factor; // get it in RADIAN
 						//GeomSettings()->normalizeAngle(horizSegStartDirection, 0., M_TWOPI);
