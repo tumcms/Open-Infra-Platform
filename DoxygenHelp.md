@@ -5,7 +5,7 @@ The TUM Open Infra Platform uses doxygen to document its code.
 Doxygen (http://www.doxygen.nl/download.html). For windows, there is:
 A self-installing archive (doxygen-1.8.17-setup.exe) with the GUI frontend and HTML versions of manual and a doxygen binary download in zip (32 or 64-bit version).
 
-- Run “Get_Doxygen.cmd” and “Get_Dot.cmd” under “.../Open-Infra-Platform/external”. This should be suggested to you when configuring CMake if they are missing anyway (... if you have selected DOXYGEN_GENERATE_DOCUMENTATION) 
+- Run “Get_Doxygen.cmd” and “Get_Dot.cmd” under “.../Open-Infra-Platform/external”. This should be suggested to you when configuring CMake if they are missing anyway (... if you have selected DOXYGEN_GENERATE_DOCUMENTATION in the CMake GUI) 
 
 Alternatively install doxygen and dot yourself:
 - Download the 64-bit version of the doxygen binary in zip. We don’t need the GUI front end, because we are setting everything within CMake. 
@@ -25,14 +25,14 @@ If DOXYGEN_GENERATE_DOCUMENTATION is selected in CMake, CMake will include Confi
 
 https://github.com/tumcms/Open-Infra-Platform/blob/development/cmake/ConfigureDoxygen.cmake
 
-Tags that will are more likely to be required to change:
+Tags that are more likely to be required to change:
 - DOXYGEN_EXCLUDE: if you want to exclude certain source code directories or files from the documentation, you should add them here.
 - DOXYGEN_INTERNAL_DOCS: set to yes if you want to include comments included for developers in the documentation. 
 
 More settings to be added can be found here:
 http://www.doxygen.nl/manual/index.html
 
-Important, when adding settingsthem in CMake, always use DOXYGEN_ before the standard doxygen tag, e.g. the doxygen tag "PROJECT_BRIEF" has to be "DOXYGEN_PROJECT_BRIEF" in the ConfigureDoxygen.cmake file.
+Important: when adding settingsthem in CMake, always use DOXYGEN_ before the standard doxygen tag, e.g. the doxygen tag "PROJECT_BRIEF" has to be "DOXYGEN_PROJECT_BRIEF" in the ConfigureDoxygen.cmake file.
 
 ## Building the documentation
 In Visual studio, build "GenerateDocumentation".
