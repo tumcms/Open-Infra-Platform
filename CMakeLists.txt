@@ -683,6 +683,8 @@ set_target_properties(OpenInfraPlatform.Core							PROPERTIES FOLDER "OpenInfraP
 
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator			PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
+set_target_properties(OpenInfraPlatform.GenerateDocumentation 			PROPERTIES FOLDER "OpenInfraPlatform/Commands")
+
 # Currently not included. 
 #set_target_properties(OpenInfraPlatform.CommandLineUtilities		PROPERTIES FOLDER "OpenInfraPlatform")
 #set_target_properties(OpenInfraPlatform.IfcBridgeGenerator			PROPERTIES FOLDER "OpenInfraPlatform")
