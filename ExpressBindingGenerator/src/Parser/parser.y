@@ -642,7 +642,7 @@ domain_rule:
 
 expression:
 	simple_expression expression1 {
-		std::cout << "muh" << std::endl;
+		//std::cout << "muh" << std::endl;
 	}
 ;
 	
@@ -652,14 +652,14 @@ expression1:
  
 simple_expression:
 	term simple_expression1 {
-		std::cout << "mm" << std::endl;
+		//std::cout << "mm" << std::endl;
 	}
 ;
 	
 simple_expression1: 
 	%empty
   | add_like_op term simple_expression1 {
-		std::cout << "muh";
+		//std::cout << "muh";
 	}; 
  
 add_like_op:
@@ -812,7 +812,7 @@ string_literal:
 
 simple_string_literal:
 	TOKEN_SIMPLE_STRING_LITERAL {
-		std::cout << $1 << std::endl;
+		//std::cout << $1 << std::endl;
 	}
 ;
  	
@@ -1130,7 +1130,7 @@ upper_bound:
 
 aggregate_initializer:
 	TOKEN_SQUARE_BRACKET_OPEN aggregate_initializer1 TOKEN_SQUARE_BRACKET_CLOSE {
-		std::cout << "aggregate_initializer" << std::endl;
+		//std::cout << "aggregate_initializer" << std::endl;
 	}
 ;
 
@@ -1516,7 +1516,7 @@ redeclared_attribute:
 qualified_attribute:
 	TOKEN_SELF group_qualifier attribute_qualifier
 	{
-		std::cout << "qualified_attribute: " << ids.top() << "." << attribute_ids.top() << std::endl;
+		//std::cout << "qualified_attribute: " << ids.top() << "." << attribute_ids.top() << std::endl;
 
 		currentEntity.addQualifiedAttribute(ids.top(), attribute_ids.top());
 		//currentEntity.addSelfDerivedAttribute(ids.top(), attribute_ids.top());
