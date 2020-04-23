@@ -39,8 +39,31 @@ In Visual studio, build "GenerateDocumentation".
 In your build directory under Doxymentation/html you will then find something called “index.html”. This is a link to the index page of the HTML documentation browser. 
 
 ## Style sheet 
-When using doxygen within the Open Infra Platform, please use the style specified here:
-https://github.com/tumcms/Open-Infra-Platform/blob/development/Documentation/doxymentation/StyleSheetOIP
+When using doxygen within the Open Infra Platform, please use this style:
+
+### Comment blocks: ###
+
+- Detailed description:
+
+/*!
+* ... text
+*/
+
+- Brief description: 
+
+/*! \brief description as long as paragraph
+*
+* After skipping a line, detailed description starts.
+*/
+
+- In Body descriptions:
+
+int var /*< for detailed descriptions after member, only for members and parameters. Avoid structural comments, as they lead to duplication of information.*/
+
+- Internal comments:
+
+/*! \internal These comments can be included and excluded separately. Handy for developer-only comments.
+*/
 
 Refer to the doxygen manual (http://www.doxygen.nl/manual) for everything else.
 
