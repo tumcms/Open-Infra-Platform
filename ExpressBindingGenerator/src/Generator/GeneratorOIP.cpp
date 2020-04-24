@@ -314,29 +314,118 @@ void writeInclude(std::ostream &out, std::string filename, bool useAngleBrackets
 
 
 
-// Doxygen helper functions
+/*!
+* \brief Starts a doxygen comment.
+* \note The function adds a new line at the end.
+* \param out Output stream for the text.
+*/
 void writeDoxyCommentStart(std::ostream &out)
 {
-	out << "/*!" << std::endl;
+	writeLine(out, "/*!");
 }
+/*!
+* \brief Ends a doxygen comment.
+* \note The function adds a new line at the end.
+* \param out Output stream for the text.
+*/
 void writeDoxyCommentEnd(std::ostream &out)
 {
-	out << "*/" << std::endl;
+	writeLine(out, "*/");
 }
-
 /*!
 * \brief Writes a line of comment.
 *
-* The function prepends str with " * " and outputs it to the out stream.
+* The function prepends \c str with \code " * " \endcode and outputs it to the stream \c out.
 * 
-* \note The function adds a new line at the end!
+* \note The function adds a new line at the end.
 *
 * \param out Output stream for the text.
 * \param str The string to be output.
 */
-void writeDoxyLine(std::ostream &out, std::string &str)
+void writeDoxyLine(std::ostream &out, const std::string &str)
 {
 	writeLine(out, std::string(" * ") + str);
+}
+
+/*!
+* \brief Writes a doxy-comment (\c brief).
+*
+* The function outputs the content of the doxy-comment to the stream \c out (\c desc).
+*
+* \param out		Output stream for the text (\c params).
+* \param brief		The content of \c brief field.
+* \param desc		The content of \c description field.
+* \param params		The content(s) of \c params field. This field is a map of tuples, for details see \c notes.
+* \param notes		The content(s) of \c note field. Each element is a separate note.
+* \param returns	The content of \return field.
+*
+* \note Each field of this doxycomment has a note in "()" denoting what each input parameter fills (notes).
+* \note \c params is a vector of tuples. The first field fills the optional parameters to \c param (empty / in / out / in,out). 
+	The second parameter is the param's name.
+	The third parameter is the param's description.
+* \note At least \c brief or \c desc needs to be filled in.
+*
+* \return Nothing (\c returns).
+*/
+void WriteDoxyComment(std::ostream &out,
+	const std::string& brief = "",
+	const std::string& desc = "",
+	const std::vector<std::tuple<std::string, std::string, std::string>>* params = nullptr,
+	const std::vector<std::string>* notes = nullptr,
+	const std::string& returns = ""
+)
+{
+	if (brief.empty() && desc.empty())
+	{
+		std::cerr << "At least brief or desc needs to be filled in!" << std::endl;
+		return;
+	}
+
+	// start comment
+	writeDoxyCommentStart(out);
+	// brief
+	if( !brief.empty() )
+	{
+		writeDoxyLine(out, "\\brief " + brief);
+		writeDoxyLine(out, "");
+	}
+	// description
+	if (!desc.empty())
+	{
+		writeDoxyLine(out, desc);
+		writeDoxyLine(out, "");
+	}
+	// parameters
+	if( params )
+	{
+		for (auto& it : *params)
+		{
+			if( !std::get<1>(it).empty() )
+				writeDoxyLine(out, "\\param"
+					+ (std::get<0>(it).empty() ? "" : "[" + std::get<0>(it) + "] ")
+					+ std::get<1>(it) + " "
+					+ std::get<2>(it));
+		}
+		writeDoxyLine(out, "");
+	}
+	// notes
+	if( notes )
+	{
+		for (auto& it : *notes)
+		{
+			writeDoxyLine(out, "\\note " + it);
+		}
+		writeDoxyLine(out, "");
+	}
+	// returns
+	if (!returns.empty())
+	{
+		writeDoxyLine(out, "\\return " + returns);
+		writeDoxyLine(out, "");
+	}
+
+	// end comment
+	writeDoxyCommentEnd(out);
 }
 
 
@@ -344,10 +433,7 @@ void writeDoxyLine(std::ostream &out, std::string &str)
 
 void writeEntityDestructor(std::ostream &out, const OpenInfraPlatform::ExpressBindingGenerator::Entity &entity, std::string parameters = "", std::string implementation = "")
 {
-	writeDoxyCommentStart(out);
-	std::string comment = "Destructor for " + entity.getName();
-	writeDoxyLine(out, comment);
-	writeDoxyCommentEnd(out);
+	WriteDoxyComment(out, "Destructor for " + entity.getName());
 
 	std::string signature = entity.getName() + "::~" + entity.getName() + "(" + parameters + ") {" + implementation + "}";
 	writeLine(out, signature);
@@ -3409,6 +3495,8 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		linebreak(out);
 	}
 
+	WriteDoxyComment(out, "\class " + entity.getName());
+
 	writeLine(out, "class " + entity.getName() + " : public " + supertype + " {");
 	writeLine(out, "private:");
 	writeLine(out, "using base = " + supertype + ";");
@@ -3428,9 +3516,11 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		linebreak(out);
 
 		// Destructor.
+		WriteDoxyComment(out, "Destructor.");
 		writeLine(out, "virtual ~" + entity.getName() + "() {};");
 		linebreak(out);
 
+		// Swap function.
 		writeLine(out, "friend void swap(" + entity.getName() + "& first, " + entity.getName() + "& second);");
 		linebreak(out);
 
@@ -3438,15 +3528,15 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		writeLine(out, "virtual " + entity.getName() + "& operator=(" + entity.getName() + " other);");
 		linebreak(out);
 
-		//Classname function
+		// Classname function.
 		writeLine(out, "virtual const std::string classname() const override;");
 		linebreak(out); 
 
-		auto attributes = schema.getAllEntityAttributes(entity);
-
-		writeLine(out, "static " + entity.getName() + " readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");		
+		//Interpret STEP data
+		writeLine(out, "static " + entity.getName() + " readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
 		linebreak(out);
 
+		//Get STEP data
 		writeLine(out, "virtual const std::string getStepLine() const override;");
 		linebreak(out);
 
@@ -3462,12 +3552,9 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		writeLine(out, "virtual const std::string getStepLine() const = 0;");
 	}
 
+	//GetAttributes
 	if (!attributes.empty()) {
 		linebreak(out);
-	}
-
-	//GetAttributes	
-	if (!attributes.empty()) {
 		for (auto attr : attributes) {
 			writeLine(out, attr.toString(schema) + " " + attr.getName() + ";");
 		}
@@ -3963,43 +4050,44 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 	auto initClassAsDefault = [&out, &entity, &schema]() {
 
 		// Default constructor
+		WriteDoxyComment(out, "Default constructor");
 		writeLine(out, entity.getName() + "::" + entity.getName() + "() { }");
 		linebreak(out);
 
 		// Copy constructor
+		WriteDoxyComment(out, "Copy constructor");
 		writeLine(out, entity.getName() + "::" + entity.getName() + "(const " + entity.getName() + "& other) {");
-		writeLine(out, "this->m_id = other.m_id;");
-		for (auto attr : schema.getAllEntityAttributes(entity)) {
-			writeLine(out, "this->" + attr.getName() + " = other." + attr.getName() + ";");
-		}
+		writeLine(out, "this->operator=(other);");
 		writeLine(out, "}");
 		linebreak(out);
 
-		// Move constructor
-		//dumb_array(dumb_array&& other)
-		//	: dumb_array() // initialize via default constructor, C++11 only
-		//{
-		//	swap(*this, other);
-		//}
+		// Move constructor.
+		WriteDoxyComment(out, "Move constructor");
 		writeLine(out, entity.getName() + "::" + entity.getName() + "(" + entity.getName() + "&& other) : " + entity.getName() + "() {");
 		writeLine(out, "swap(*this, other);");
 		writeLine(out, "}");
 		linebreak(out);
-		
+
+		auto attributes = schema.getAllEntityAttributes(entity);
+
 		// Copy Assignment Operator
+		WriteDoxyComment(out, "Assigns the content of \c other to \c this.");
 		writeLine(out, entity.getName() + "& " + entity.getName() + "::operator=(" + entity.getName() + " other) {");
-		writeLine(out, "swap(*this, other);");
+		writeLine(out, "this->m_id = other.m_id;");
+		for (auto attr : attributes) {
+			writeLine(out, "this->" + attr.getName() + " = other." + attr.getName() + ";");
+		}
 		writeLine(out, "return *this;");
 		writeLine(out, "}");
 		linebreak(out);
 
-
-		//Classname function
+		// Classname function
+		WriteDoxyComment(out, "Returns the class name.", "", nullptr, nullptr, "\"" + entity.getName() + "\"");
 		writeLine(out, "const std::string " + entity.getName() + "::classname() const { return \"" + entity.getName() + "\";} ");
 		linebreak(out);
 
-		auto attributes = schema.getAllEntityAttributes(entity);
-
+		// Interpret STEP data
+		WriteDoxyComment(out, "Interprets the STEP seralization.", "", nullptr, nullptr, "An instance of " + entity.getName());
 		writeLine(out, entity.getName() + " " + entity.getName() +"::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
 		writeLine(out, entity.getName() + " entity;");
 		writeLine(out, "entity.setId(stoull(args[0]));");
@@ -4011,6 +4099,8 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		writeLine(out, "}");
 		linebreak(out);
 
+		// Get STEP data
+		WriteDoxyComment(out, "Returns the STEP serialization.", "", nullptr, nullptr, "#ID=" + entity.getName() + "(<attributes>);");
 		writeLine(out, "const std::string " + entity.getName() + "::getStepLine() const {");
 		writeLine(out, "std::string stepLine = this->getStepParameter() + \"=\" + this->classname() + \"(\";");
 		for (int i = 0; i < attributes.size() - 1; i++) {
@@ -4023,6 +4113,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 
 	if (!schema.isAbstract(entity)) {
 		// Write swap function implementation
+		WriteDoxyComment(out, "Swaps the content between the two entities.");
 		writeLine(out, "void swap(" + entity.getName() + "& first, " + entity.getName() + "& second) {");
 		writeLine(out, "using std::swap;");
 		writeLine(out, "swap(first.m_id, second.m_id);");
