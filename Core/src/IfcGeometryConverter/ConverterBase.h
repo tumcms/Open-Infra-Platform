@@ -52,7 +52,7 @@ namespace OpenInfraPlatform
 			It includes the geometry settings and the unit conversion factors.
 
 			\sa GeometrySettings
-			\sa UnitConverterT
+			\sa UnitConverter
 			*/
 			template <
 				class IfcEntityTypesT
@@ -72,9 +72,11 @@ namespace OpenInfraPlatform
 
 				//! Getter for geometry settings
 				std::shared_ptr<GeometrySettings>&				 GeomSettings()		  { return geomSettings_; }
+				//! const-getter for geometry settings
 				std::shared_ptr<GeometrySettings> 				 GeomSettings() const { return geomSettings_; }
 				//! Getter for unit conversion
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>>& UnitConvert()		  { return unitConverter_; }
+				//! const-getter for unit conversion
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>>  UnitConvert()	const { return unitConverter_; }
 
 			private:
