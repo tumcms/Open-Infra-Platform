@@ -58,10 +58,10 @@ namespace OpenInfraPlatform {
 
 			/**************************************************************************************/
 
-			struct PlacementData {
-				std::set<int> placement_already_applied;
-				carve::math::Matrix pos;
-			};
+			//struct PlacementData {
+			//	std::set<int> placement_already_applied;
+			//	carve::math::Matrix pos;
+			//};
 
 			/**************************************************************************************/
 
