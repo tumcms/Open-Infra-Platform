@@ -32,6 +32,15 @@ namespace OpenInfraPlatform {
             };
             #endif
 
+			/*! \brief Gets the \c IfcCurve attribute from \c IfcLinearPlacement.
+
+			There was a change moving from IFC4x1 to IFC4x2 in the naming of the attribute to \c IfcCurve.
+			In IFC4x1, the attribute was named \c PlacementRelTo, starting in IFC4x2 it is named \c PlacementMeasuredAlong.
+
+			\param[in]	linearPlacement		\c IfcLinearPlacement entity to interpret.
+
+			\return		\c std::shared_ptr to \c IfcCurve that \c IfcLinearPlacement references.
+			*/
 			template<typename IfcEntityTypesT> 
 			std::shared_ptr<typename IfcEntityTypesT::IfcCurve> PlacementConverterT<IfcEntityTypesT>::GetCurveOfPlacement(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement) 
