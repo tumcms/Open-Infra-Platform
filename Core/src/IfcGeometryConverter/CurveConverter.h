@@ -506,9 +506,9 @@ namespace OpenInfraPlatform {
 						if (poly_line) {
 							if ( !poly_line->Points.empty() ) {
 								std::vector<carve::geom::vector<3>> loop;
-								convertIfcPolyline(poly_line->Points, loop);
+								convertIfcPolyline(poly_line, loop);
 
-								segmentStartPoints.push_back(carve::geom::VECTOR(loop.at(0)));
+								segmentStartPoints.push_back(loop.at(0));
 								targetVec.insert(targetVec.end(), loop.begin(), loop.end());
 							}
 							return;
