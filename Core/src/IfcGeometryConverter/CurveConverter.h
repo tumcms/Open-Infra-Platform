@@ -504,20 +504,12 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> poly_line =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(bounded_curve);
 						if (poly_line) {
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> > points;
-							points.resize(poly_line->Points.size());
-							std::transform(
-								poly_line->Points.begin(),
-								poly_line->Points.end(),
-								points.begin(),
-								[](auto &it) {return it.lock(); });
+							if ( !poly_line->Points.empty() ) {
+								std::vector<carve::geom::vector<3>> loop;
+								convertIfcPolyline(poly_line->Points, loop);
 
-							if ( !points.empty() ) {
-								convertIfcCartesianPointVector(points, targetVec);
-								segmentStartPoints.push_back(carve::geom::VECTOR(
-									points[0]->Coordinates[0] * length_factor,
-									points[0]->Coordinates[1] * length_factor,
-									0));
+								segmentStartPoints.push_back(carve::geom::VECTOR(loop.at(0)));
+								targetVec.insert(targetVec.end(), loop.begin(), loop.end());
 							}
 							return;
 						} // end if IfcPolyline
@@ -1187,7 +1179,7 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& loop) const
 				{
 					carve::geom::vector<3> point = carve::geom::VECTOR(0., 0., 0.);
-					loop.resize(points->size());
+					loop.resize(points.size());
 					for ( auto& it = points.begin(); it != points.end(); ++it )
 					{
 						placementConverter->convertIfcCartesianPoint(*it, point);
