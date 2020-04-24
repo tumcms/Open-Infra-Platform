@@ -249,6 +249,7 @@ find_package(Doxygen
 )
 
 include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
+set_target_properties(OpenInfraPlatform.GenerateDocumentation 			PROPERTIES FOLDER "OpenInfraPlatform/Commands")
 else()
 message("DOXYGEN_GENERATE_DOCUMENTATION box not checked. Thus not generating doxygen documentation for TUM Open Infra Platform project. To generate doxygen documentation, check the box next to DOXYGEN_GENERATE_DOCUMENTATION.")
 endif(DOXYGEN_GENERATE_DOCUMENTATION)
@@ -683,7 +684,6 @@ set_target_properties(OpenInfraPlatform.Core							PROPERTIES FOLDER "OpenInfraP
 
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator			PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
-set_target_properties(OpenInfraPlatform.GenerateDocumentation 			PROPERTIES FOLDER "OpenInfraPlatform/Commands")
 
 # Currently not included. 
 #set_target_properties(OpenInfraPlatform.CommandLineUtilities		PROPERTIES FOLDER "OpenInfraPlatform")
