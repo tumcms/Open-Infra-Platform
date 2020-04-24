@@ -530,7 +530,7 @@ target_link_libraries( OpenInfraPlatform.UI
 		eigen
 )
 
-set(QT_WINDEPLOY_FLAGS -xml)
+set(QT_WINDEPLOY_FLAGS -xml -concurrent)
 
 if(MODULES_POINT_CLOUD_PROCESSING)
 	list(APPEND QT_WINDEPLOY_FLAGS -opengl)
