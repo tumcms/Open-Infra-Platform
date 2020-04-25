@@ -330,7 +330,7 @@ void writeDoxyCommentStart(std::ostream &out)
 */
 void writeDoxyCommentEnd(std::ostream &out)
 {
-	writeLine(out, "*/");
+	writeLine(out, " */");
 }
 /*!
 * \brief Writes a line of comment.
@@ -381,23 +381,36 @@ void WriteDoxyComment(std::ostream &out,
 		return;
 	}
 
+	// If this is the first field, not need for a new empty line before.
+	bool isFirst = true;
+
 	// start comment
 	writeDoxyCommentStart(out);
 	// brief
 	if( !brief.empty() )
 	{
+		if (!isFirst)
+			writeDoxyLine(out, "");
+		else
+			isFirst = false;
 		writeDoxyLine(out, "\\brief " + brief);
-		writeDoxyLine(out, "");
 	}
 	// description
 	if (!desc.empty())
 	{
+		if (!isFirst)
+			writeDoxyLine(out, "");
+		else
+			isFirst = false;
 		writeDoxyLine(out, desc);
-		writeDoxyLine(out, "");
 	}
 	// parameters
 	if( params )
 	{
+		if (!isFirst)
+			writeDoxyLine(out, "");
+		else
+			isFirst = false;
 		for (auto& it : *params)
 		{
 			if( !std::get<1>(it).empty() )
@@ -406,22 +419,28 @@ void WriteDoxyComment(std::ostream &out,
 					+ std::get<1>(it) + " "
 					+ std::get<2>(it));
 		}
-		writeDoxyLine(out, "");
 	}
 	// notes
 	if( notes )
 	{
+		if (!isFirst)
+			writeDoxyLine(out, "");
+		else
+			isFirst = false;
+
 		for (auto& it : *notes)
 		{
 			writeDoxyLine(out, "\\note " + it);
 		}
-		writeDoxyLine(out, "");
 	}
 	// returns
 	if (!returns.empty())
 	{
+		if (!isFirst)
+			writeDoxyLine(out, "");
+		else
+			isFirst = false;
 		writeDoxyLine(out, "\\return " + returns);
-		writeDoxyLine(out, "");
 	}
 
 	// end comment
@@ -3525,7 +3544,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		linebreak(out);
 
 		// Assignment operator.
-		writeLine(out, "virtual " + entity.getName() + "& operator=(" + entity.getName() + " other);");
+		writeLine(out, "virtual " + entity.getName() + "& operator=(const " + entity.getName() + "& other);");
 		linebreak(out);
 
 		// Classname function.
@@ -4057,7 +4076,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		// Copy constructor
 		WriteDoxyComment(out, "Copy constructor");
 		writeLine(out, entity.getName() + "::" + entity.getName() + "(const " + entity.getName() + "& other) {");
-		writeLine(out, "this->operator=(other);");
+		writeLine(out, "operator=(other);");
 		writeLine(out, "}");
 		linebreak(out);
 
@@ -4071,10 +4090,10 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		auto attributes = schema.getAllEntityAttributes(entity);
 
 		// Copy Assignment Operator
-		WriteDoxyComment(out, "Assigns the content of \c other to \c this.");
-		writeLine(out, entity.getName() + "& " + entity.getName() + "::operator=(" + entity.getName() + " other) {");
+		WriteDoxyComment(out, "Assigns the content of \\c other to \\c this.");
+		writeLine(out, entity.getName() + "& " + entity.getName() + "::operator=(const " + entity.getName() + "& other) {");
 		writeLine(out, "this->m_id = other.m_id;");
-		for (auto attr : attributes) {
+		for (auto& attr : attributes) {
 			writeLine(out, "this->" + attr.getName() + " = other." + attr.getName() + ";");
 		}
 		writeLine(out, "return *this;");
@@ -4102,11 +4121,13 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		// Get STEP data
 		WriteDoxyComment(out, "Returns the STEP serialization.", "", nullptr, nullptr, "#ID=" + entity.getName() + "(<attributes>);");
 		writeLine(out, "const std::string " + entity.getName() + "::getStepLine() const {");
-		writeLine(out, "std::string stepLine = this->getStepParameter() + \"=\" + this->classname() + \"(\";");
+		writeLine(out, "std::string classname = this->classname();");
+		writeLine(out, "boost::to_upper(classname);");
+		writeLine(out, "std::string stepLine = this->getStepParameter() + \"=\" + classname + \"(\";");
 		for (int i = 0; i < attributes.size() - 1; i++) {
 			writeLine(out, "stepLine += " + attributes[i].getName() + ".getStepParameter() + \",\";");
 		}
-		writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \")\";");
+		writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \");\";");
 		writeLine(out, "return stepLine;");
 		writeLine(out, "}");
 	};
