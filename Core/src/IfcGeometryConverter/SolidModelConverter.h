@@ -931,7 +931,7 @@ namespace OpenInfraPlatform
 					if (axis_placement->Location)
 					{
 						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> location_point = axis_placement->Location.lock();
-						curveConverter->convertIfcCartesianPoint(location_point, axis_location);
+						placementConverter->convertIfcCartesianPoint(location_point, axis_location);
 					}
 
 					if (axis_placement->Axis)
@@ -1650,7 +1650,7 @@ namespace OpenInfraPlatform
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_z_dim = bbox->ZDim;
 
 						carve::geom::vector<3> corner;
-						curveConverter->convertIfcCartesianPoint(bbox_corner, corner);
+						placementConverter->convertIfcCartesianPoint(bbox_corner, corner);
 						carve::math::Matrix box_position_matrix = pos * base_position_matrix*carve::math::Matrix::TRANS(corner);
 
 						// else, its an unbounded half space solid, create simple box

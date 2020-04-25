@@ -132,6 +132,31 @@ namespace OpenInfraPlatform
 					return 0.01; //TODO remove constant and replace with content from IFC (i.e. introduce member, getter / setter)
 				}
 
+				/*! \brief Normalizes given angle to lie within the specified interval.
+
+				\param[in,out]	dAngle	The angle to be normalized.
+				\param[in]		dMin	The lower edge of the interval (default = 0).
+				\param[in]		dMax	The upper edge of the interval (default = 2*PI).
+
+				\note The interval is increased to a minimum of \c dMin \c + \c 2*PI if needed.
+				\note The borders are swaped to fulfil \c dMin \c < \c dMax.
+				*/
+				void normalizeAngle(double& dAngle, double dMin = 0., double dMax = M_TWOPI)
+				{
+					if (dMax < dMin)
+						std::swap(dMin, dMax);
+					if (dMax - dMin < M_TWOPI)
+						dMax = dMin + M_TWOPI;
+
+					while (dAngle > dMax) {
+						dAngle -= M_TWOPI;
+					}
+					while (dAngle < dMin) {
+						dAngle += M_TWOPI;
+					}
+				}
+
+
 				carve::csg::CSG::CLASSIFY_TYPE getCSGtype() {
 					return classify_type;
 				}

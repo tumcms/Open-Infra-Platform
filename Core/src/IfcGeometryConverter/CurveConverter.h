@@ -38,9 +38,7 @@ namespace OpenInfraPlatform {
 	namespace Core {
 		namespace IfcGeometryConverter {
 
-			/*! \class CurveConverterT
-			*
-			* \brief Curve converter functionality
+			/*! \brief Converter functionality for \c IfcCurve's subtypes
 			*
 			* \param IfcEntityTypesT The IFC version templates
 			*/
@@ -67,13 +65,13 @@ namespace OpenInfraPlatform {
 
 				}
 
-				/*! \brief Converts the curve to an array of segments to be rendered on screen
+				/*! \brief Converts an \c IfcCurve to an array of segments to be rendered on screen.
 				*
-				* \param[in] ifcCurve The curve to be converted
-				* \param[out] loops The loops (?)
-				* \param[out] segmentStartPoints (?)
+				* \param[in] ifcCurve				The \c IfcCurve to be converted.
+				* \param[out] loops					The loops (?)
+				* \param[out] segmentStartPoints	The starting points of separate segments (?)
 				*
-				* \note Calls the other overload convertIfcCurve with empty IfcTrimmingSelect-s
+				* \note Calls the other overload CurveConverterT::convertIfcCurve with empty \c IfcTrimmingSelect-s.
 				*/
 				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve,
 					std::vector<carve::geom::vector<3>>& loops,
@@ -84,14 +82,14 @@ namespace OpenInfraPlatform {
 					convertIfcCurve(ifcCurve, loops, segmentStartPoints, trim1Vec, trim2Vec, true);
 				}
 
-				/*! \brief Converts the curve to an array of segments to be rendered on screen
+				/*! \brief Converts an \c IfcCurve to an array of segments to be rendered on screen.
 				*
-				* \param[in] ifcCurve				The curve to be converted
+				* \param[in] ifcCurve				The \c IfcCurve to be converted.
 				* \param[out] targetVec				The loops (?)
-				* \param[out] segmentStartPoints	(?)
+				* \param[out] segmentStartPoints	The starting points of separate segments (?)
 				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the ifcCurve
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
 				*
 				* \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometryresource/lexical/ifccurve.htm
 				*/
@@ -192,7 +190,7 @@ namespace OpenInfraPlatform {
 							auto vertical = alignment_curve->Vertical;
 							if (!vertical) {
 								// there is no vertical alignment
-								BLUE_LOG(trace) << "No IfcAlignment2DVertical in " << alignment_curve->getErrorLog();
+								BLUE_LOG(info) << "No IfcAlignment2DVertical in " << alignment_curve->getErrorLog();
 								bOnlyHorizontal = true;
 							}
 							else
@@ -420,16 +418,16 @@ namespace OpenInfraPlatform {
 							std::vector<carve::geom::vector<3>> curve_points;
 							
 							// attach the curve points
-							for (auto it_station : stations)
+							for (auto& it_station : stations)
 							{
 								// call the placement converter that handles the geometry and calculates the 3D point along a curve
-								placementConverter->convertAlignmentCurveDistAlongToPoint3D(alignment_curve, it_station, true, targetPoint3D, targetDirection3D);
+								placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, it_station, true, targetPoint3D, targetDirection3D);
 								curve_points.push_back(targetPoint3D);
 							}
 							GeomUtils::appendPointsToCurve(curve_points, targetVec);
 
 							// add the first point to segments
-							placementConverter->convertAlignmentCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
+							placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
 							segmentStartPoints.push_back(targetPoint3D);
 
 							// end
@@ -506,20 +504,12 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> poly_line =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(bounded_curve);
 						if (poly_line) {
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> > points;
-							points.resize(poly_line->Points.size());
-							std::transform(
-								poly_line->Points.begin(),
-								poly_line->Points.end(),
-								points.begin(),
-								[](auto &it) {return it.lock(); });
+							if ( !poly_line->Points.empty() ) {
+								std::vector<carve::geom::vector<3>> loop;
+								convertIfcPolyline(poly_line, loop);
 
-							if ( !points.empty() ) {
-								convertIfcCartesianPointVector(points, targetVec);
-								segmentStartPoints.push_back(carve::geom::VECTOR(
-									points[0]->Coordinates[0] * length_factor,
-									points[0]->Coordinates[1] * length_factor,
-									0));
+								segmentStartPoints.push_back(loop.at(0));
+								targetVec.insert(targetVec.end(), loop.begin(), loop.end());
 							}
 							return;
 						} // end if IfcPolyline
@@ -621,7 +611,7 @@ namespace OpenInfraPlatform {
 
 											BLUE_LOG(trace) << trim_point1->getErrorLog();
 											carve::geom::vector<3> trim_point;
-											convertIfcCartesianPoint(trim_point1, trim_point);
+											placementConverter->convertIfcCartesianPoint(trim_point1, trim_point);
 
 											trim_angle1 = getAngleOnCircle(circle_center,
 												circle_radius,
@@ -660,7 +650,7 @@ namespace OpenInfraPlatform {
 
 											BLUE_LOG(trace) << trim_point2->getErrorLog();
 											carve::geom::vector<3> trim_point;
-											convertIfcCartesianPoint(trim_point2, trim_point);
+											placementConverter->convertIfcCartesianPoint(trim_point2, trim_point);
 
 											trim_angle2 = getAngleOnCircle(circle_center,
 												circle_radius,
@@ -704,14 +694,10 @@ namespace OpenInfraPlatform {
 
 							// correct for -2*PI <= angle <= 2*PI
 							if (opening_angle > 0) {
-								while (opening_angle > 2.0*M_PI) {
-									opening_angle -= 2.0*M_PI;
-								}
+								GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
 							}
 							else {
-								while (opening_angle < -2.0*M_PI) {
-									opening_angle += 2.0*M_PI;
-								}
+								GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
 							}
 
 							int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation( circle_radius, abs(opening_angle) );
@@ -803,7 +789,7 @@ namespace OpenInfraPlatform {
 						// Get IfcLine attributes: line point and line direction. 
 						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_line_point = line->Pnt.lock();
 						carve::geom::vector<3> line_origin;
-						convertIfcCartesianPoint(ifc_line_point, line_origin);
+						placementConverter->convertIfcCartesianPoint(ifc_line_point, line_origin);
 
 						std::shared_ptr<typename IfcEntityTypesT::IfcVector> line_vec = line->Dir.lock();
 						if (!line_vec) {
@@ -855,7 +841,7 @@ namespace OpenInfraPlatform {
 							if (first_point != trim1Vec.end() && *first_point) {
 								ifc_trim_point = (*first_point)->get<0>().lock();
 								carve::geom::vector<3> trim_point;
-								convertIfcCartesianPoint(ifc_trim_point, trim_point);
+								placementConverter->convertIfcCartesianPoint(ifc_trim_point, trim_point);
 
 								carve::geom::vector<3> closest_point_on_line;
 								GeomUtils::closestPointOnLine(trim_point, line_origin,
@@ -885,7 +871,7 @@ namespace OpenInfraPlatform {
 							if (first_point != trim2Vec.end() && *first_point) {
 								ifc_trim_point = (*first_point)->get<0>().lock();
 								carve::geom::vector<3> trim_point;
-								convertIfcCartesianPoint(ifc_trim_point, trim_point);
+								placementConverter->convertIfcCartesianPoint(ifc_trim_point, trim_point);
 
 								carve::geom::vector<3> closest_point_on_line;
 								GeomUtils::closestPointOnLine(trim_point, line_origin,
@@ -996,13 +982,14 @@ namespace OpenInfraPlatform {
 					return;
 				} // end convertIfcCurve (function)
 
-				// ************************************************************************************************************************	//
-				//	Functions			
-				//	convertIfcCurve2D, convertIfcCartesianPoint (+ related functions), getAngleOnCircle
-				// ************************************************************************************************************************	//
-
-				// Function 1: Convert 2D IfcCurve (overloaded). 
-
+				/*! \brief Calls CurveConverterT::convertIfcCurve and converts the results to 2D.
+				*
+				* \param[in] ifcCurve				The \c IfcCurve to be converted.
+				* \param[out] loops					The loops (?)
+				* \param[out] segmentStartPoints	The starting points of separate segments (?)
+				*
+				* \note Calls the other overload CurveConverterT::convertIfcCurve2D with empty \c IfcTrimmingSelect-s.
+				*/
 				void convertIfcCurve2D(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<2>>& loops,
 					std::vector<carve::geom::vector<2>>& segmentStartPoints) const
@@ -1012,12 +999,23 @@ namespace OpenInfraPlatform {
 					convertIfcCurve2D(ifcCurve, loops, segmentStartPoints, trim1Vec, trim2Vec, true);
 				}
 
+				/*! \brief Calls CurveConverterT::convertIfcCurve and converts the results to 2D.
+				*
+				* \param[in] ifcCurve				The \c IfcCurve to be converted.
+				* \param[out] targetVec				The loops (?)
+				* \param[out] segmentStartPoints	The starting points of separate segments (?)
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				*
+				* \note Calls the CurveConverterT::convertIfcCurve and converts the results to 2D.
+				*/
 				void convertIfcCurve2D(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<2>>& targetVec,
 					std::vector<carve::geom::vector<2>>& segmentStartPoints,
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					bool senseAgreement) const
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement) const
 				{
 					std::vector<carve::geom::vector<3>> target_vec_3d;
 					std::vector<carve::geom::vector<3>> segment_start_points_3d;
@@ -1035,55 +1033,63 @@ namespace OpenInfraPlatform {
 					}
 				} //end convertIfcCurve2D
 
-				// Function 2a: Convert IfcPolyline.
-				void convertIfcPolyline(const std::shared_ptr<typename IfcEntityTypesT::IfcPolyline>& polyLine,
+				/*! \brief Converts \c IfcPolyline to a series of points.
+				*
+				* This function is called from CurveConverterT::convertIfcCurve but is provided for simplicity reasons.
+				*
+				* \param[in] ifcpolyline			The \c IfcPolyline to be converted.
+				* \param[out] loop					The series of points.
+				*/
+				void convertIfcPolyline(const std::shared_ptr<typename IfcEntityTypesT::IfcPolyline>& ifcpolyline,
 					std::vector<carve::geom::vector<3>>& loop) const
 				{
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing IfcPolyline #" << polyLine->getId();
-#endif
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> points;
-					points.resize(polyLine->Points.size());
+					points.resize(ifcpolyline->Points.size());
 					std::transform(
-						polyLine->Points.begin(),
-						polyLine->Points.end(),
+						ifcpolyline->Points.begin(),
+						ifcpolyline->Points.end(),
 						points.begin(),
 						[](auto& it) { return it.lock(); }
 					);
 					convertIfcCartesianPointVector(points, loop);
 				}
 
-				// Function 2b: Convert IfcLoop.
-				void convertIfcLoop(const std::shared_ptr<typename IfcEntityTypesT::IfcLoop>& loop,
-					std::vector<carve::geom::vector<3>>& loopPoints) const
+				/*! \brief Converts \c IfcLoop and its subtypes to a series of points.
+				*
+				* \param[in] ifcloop				The \c IfcLoop to be converted.
+				* \param[out] loop					The series of points.
+				*
+				* \note The function disregards topological relationships.
+				* \note The function is not fully implemented.
+				*
+				* \internal TODO.
+				*/
+				void convertIfcLoop(const std::shared_ptr<typename IfcEntityTypesT::IfcLoop>& ifcloop,
+					std::vector<carve::geom::vector<3>>& loop) const
 				{
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing IfcLoop #" << loop->getId();
-#endif
 					const std::shared_ptr<typename IfcEntityTypesT::IfcPolyLoop> polyLoop =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyLoop>(loop);
-
-					if (polyLoop) {
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyLoop>(ifcloop);
+					if (polyLoop) 
+					{
 						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> ifcPoints;
 						ifcPoints.resize(polyLoop->Polygon.size());
-
 						std::transform(
 							polyLoop->Polygon.begin(),
 							polyLoop->Polygon.end(),
 							ifcPoints.begin(),
 							[](auto &it) { return it.lock(); });
 
-						convertIfcCartesianPointVectorSkipDuplicates(ifcPoints, loopPoints);
+						convertIfcCartesianPointVectorSkipDuplicates(ifcPoints, loop);
 
 						// If first and last point have same coordinates, remove last point
-						while (loopPoints.size() > 2) {
-							carve::geom3d::Vector& first = loopPoints.front();
-							carve::geom3d::Vector& last = loopPoints.back();
+						while (loop.size() > 2) {
+							carve::geom3d::Vector& first = loop.front();
+							carve::geom3d::Vector& last = loop.back();
 
 							if (abs(first.x - last.x) < 0.00000001) {
 								if (abs(first.y - last.y) < 0.00000001) {
 									if (abs(first.z - last.z) < 0.00000001) {
-										loopPoints.pop_back();
+										loop.pop_back();
 										continue;
 									}
 								}
@@ -1094,12 +1100,11 @@ namespace OpenInfraPlatform {
 					} // end if polyloop
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcEdgeLoop> edgeLoop =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdgeLoop>(loop);
-
-					if (edgeLoop) {
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdgeLoop>(ifcloop);
+					if (edgeLoop) 
+					{
 						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge>> edgeList;
 						edgeList.resize(edgeLoop->EdgeList.size());
-
 						std::transform(
 							edgeLoop->EdgeList.begin(),
 							edgeLoop->EdgeList.end(),
@@ -1107,7 +1112,7 @@ namespace OpenInfraPlatform {
 							[](auto &it) {return it.lock(); });
 
 						// go through every edge in the edge list
-						for (auto it_edge = edgeList.begin(); it_edge != edgeList.end(); ++it_edge) {
+						for (auto& it_edge = edgeList.begin(); it_edge != edgeList.end(); ++it_edge) {
 							// edge loop consists of many oriented edges
 							std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge> orientedEdge = (*it_edge);
 							// which are described by the type of its edge element object
@@ -1120,7 +1125,7 @@ namespace OpenInfraPlatform {
 								std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& curveGeom = edgeCurve->EdgeGeometry.lock();
 								std::vector<carve::geom::vector<3>> segmentStartPoints;
 
-								convertIfcCurve(curveGeom, loopPoints, segmentStartPoints);
+								convertIfcCurve(curveGeom, loop, segmentStartPoints);
 
 								continue;
 							}
@@ -1164,105 +1169,44 @@ namespace OpenInfraPlatform {
 					} // end if edge loop
 				} // end convertIfcLoop
 
-				// Function 2c: Convert IfcCartesianPoint (overloaded). 
-				void convertIfcCartesianPoint(const std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>& ifcPoint,
-					carve::geom::vector<3> & point) const
-				{
-					double length_factor = UnitConvert()->getLengthInMeterFactor();
-
-					if (ifcPoint->Coordinates.size() > 2) {
-						double x = ifcPoint->Coordinates[0] * length_factor;
-						double y = ifcPoint->Coordinates[1] * length_factor;
-						double z = ifcPoint->Coordinates[2] * length_factor;
-
-						point = carve::geom::VECTOR(x, y, z);
-					}
-					else if (ifcPoint->Coordinates.size() > 1) {
-						double x = ifcPoint->Coordinates[0] * length_factor;
-						double y = ifcPoint->Coordinates[1] * length_factor;
-
-						point = carve::geom::VECTOR(x, y, 0.0);
-					}
-				}
-
-				static void convertIfcCartesianPoint(const std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>& ifcPoint,
-					carve::geom::vector<3> & point,
-					double lengthFactor)
-				{
-					if (ifcPoint->Coordinates.size() > 2) {
-						double x = ifcPoint->Coordinates[0] * lengthFactor;
-						double y = ifcPoint->Coordinates[1] * lengthFactor;
-						double z = ifcPoint->Coordinates[2] * lengthFactor;
-
-						point = carve::geom::VECTOR(x, y, z);
-					}
-					else if (ifcPoint->Coordinates.size() > 1) {
-						double x = ifcPoint->Coordinates[0] * lengthFactor;
-						double y = ifcPoint->Coordinates[1] * lengthFactor;
-
-						point = carve::geom::VECTOR(x, y, 0.0);
-					}
-				}
-
-				// Function 2d: Convert IfcCartesianPoint vector.
+				/*! \brief Converts an array of \c IfcCartesianPoint-s to a series of points.
+				*
+				* \param[in] points				The array of \c IfcCartesianPoint-s to be converted.
+				* \param[out] loop				The series of points.
+				*/
 				void convertIfcCartesianPointVector(
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>>& points,
 					std::vector<carve::geom::vector<3>>& loop) const
 				{
-					const double length_factor = UnitConvert()->getLengthInMeterFactor();
-					const unsigned int num_points = points.size();
-
-					for (unsigned int i_point = 0; i_point < num_points; ++i_point)
+					carve::geom::vector<3> point = carve::geom::VECTOR(0., 0., 0.);
+					loop.resize(points.size());
+					for ( auto& it = points.begin(); it != points.end(); ++it )
 					{
-						if (points[i_point]->Coordinates.size() > 2) {
-							double x = points[i_point]->Coordinates[0] * length_factor;
-							double y = points[i_point]->Coordinates[1] * length_factor;
-							double z = points[i_point]->Coordinates[2] * length_factor;
-
-							loop.push_back(carve::geom::VECTOR(x, y, z));
-						}
-						else if (points[i_point]->Coordinates.size() > 1) {
-
-							double x = points[i_point]->Coordinates[0] * length_factor;
-							double y = points[i_point]->Coordinates[1] * length_factor;
-
-							loop.push_back(carve::geom::VECTOR(x, y, 0.0));
-						}
-						else {
-							std::cout << "convertIfcCartesianPointVector: ifc_pt->Coordinates.size() != 2"
-								<< std::endl;
-						}
+						placementConverter->convertIfcCartesianPoint(*it, point);
+						loop.push_back(point);
 					}
-				}
+				} // end convertIfcCartesianPointVector
 
-				// Function 2e: Convert IfcCartesianPoint vector and skip duplicates.
+				/*! \brief Converts an array of \c IfcCartesianPoint-s to a series of points.
+				*
+				* \param[in] points				The array of \c IfcCartesianPoint-s to be converted.
+				* \param[out] loop				The series of points.
+				*
+				* \note The function is not fully implemented.
+				*
+				* \internal TODO.
+				*/
 				void convertIfcCartesianPointVectorSkipDuplicates(
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> >& ifcPoints,
 					std::vector<carve::geom::vector<3> >& loop) const
 				{
-					const double length_factor = UnitConvert()->getLengthInMeterFactor();
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> >::const_iterator it_cp; // iterates over points
-					int i = 0;
 					carve::geom::vector<3>  vertex_previous;
 
-					for (it_cp = ifcPoints.begin(); it_cp != ifcPoints.end(); ++it_cp, ++i) {
+					for ( auto& it_cp = ifcPoints.begin(); it_cp != ifcPoints.end(); ++it_cp) {
 						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> cp = (*it_cp);
-						const int cp_id = cp->getId();
 
-						double x = 0.0, y = 0.0, z = 0.0;
-
-						if (cp->Coordinates.size() > 2) {
-							x = cp->Coordinates[0] * length_factor;
-							y = cp->Coordinates[1] * length_factor;
-							z = cp->Coordinates[2] * length_factor;
-						}
-						else if (cp->Coordinates.size() > 1) {
-
-							x = cp->Coordinates[0] * length_factor;
-							y = cp->Coordinates[1] * length_factor;
-						}
-
-						carve::geom::vector<3>  vertex(carve::geom::VECTOR(x, y, z));
+						carve::geom::vector<3>  vertex(carve::geom::VECTOR(0.,0.,0.));
+						placementConverter->convertIfcCartesianPoint(*it_cp, vertex);
 
 						// skip duplicate vertices
 						if (it_cp != ifcPoints.begin()) {
@@ -1270,7 +1214,7 @@ namespace OpenInfraPlatform {
 								if (abs(vertex.y - vertex_previous.y) < 0.00000001) {
 									if (abs(vertex.z - vertex_previous.z) < 0.00000001) {
 										// TODO: is it better to report degenerated loops, or to just omit them?
-										BLUE_LOG(warning) << "Duplicate point in polyloop. IfcPoint #" << it_cp->get()->getId();
+										BLUE_LOG(warning) << "Duplicate point in polyloop. IfcPoint #" << cp->getId();
 										//continue;
 									}
 								}
