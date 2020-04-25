@@ -321,7 +321,9 @@ set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR})
 
 # add IFC generated files to doxygen input directory
 foreach(format ${IFC_FORMATS})	
-	set(DOXYGEN_INPUT ${DOXYGEN_INPUT} "${CMAKE_BINARY_DIR}/EarlyBinding/${format}/src")
+	if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding/${format})
+		set(DOXYGEN_INPUT ${DOXYGEN_INPUT} "${CMAKE_BINARY_DIR}/EarlyBinding/${format}/src")
+	endif()
 endforeach()
 
 include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
