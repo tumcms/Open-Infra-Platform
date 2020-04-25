@@ -3535,8 +3535,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		linebreak(out);
 
 		// Destructor.
-		WriteDoxyComment(out, "Destructor.");
-		writeLine(out, "virtual ~" + entity.getName() + "() {};");
+		writeLine(out, "virtual ~" + entity.getName() + "();");
 		linebreak(out);
 
 		// Swap function.
@@ -4087,6 +4086,11 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		writeLine(out, "}");
 		linebreak(out);
 
+		// Destructor
+		WriteDoxyComment(out, "Destructor.");
+		writeLine(out, "virtual ~" + entity.getName() + "() {};");
+		linebreak(out);
+
 		auto attributes = schema.getAllEntityAttributes(entity);
 
 		// Copy Assignment Operator
@@ -4106,7 +4110,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		linebreak(out);
 
 		// Interpret STEP data
-		WriteDoxyComment(out, "Interprets the STEP seralization.", "", nullptr, nullptr, "An instance of " + entity.getName());
+		WriteDoxyComment(out, "Interprets the STEP serialization.", "", nullptr, nullptr, "An instance of \\c " + entity.getName());
 		writeLine(out, entity.getName() + " " + entity.getName() +"::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
 		writeLine(out, entity.getName() + " entity;");
 		writeLine(out, "entity.setId(stoull(args[0]));");
@@ -4133,8 +4137,11 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 	};
 
 	if (!schema.isAbstract(entity)) {
+
+		initClassAsDefault();
+
 		// Write swap function implementation
-		WriteDoxyComment(out, "Swaps the content between the two entities.");
+		WriteDoxyComment(out, "Swaps the content between the \\c first and \\c second.");
 		writeLine(out, "void swap(" + entity.getName() + "& first, " + entity.getName() + "& second) {");
 		writeLine(out, "using std::swap;");
 		writeLine(out, "swap(first.m_id, second.m_id);");
@@ -4142,9 +4149,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 			writeLine(out, "swap(first." + attr.getName() + ", second." + attr.getName() + ");");
 		}
 		writeLine(out, "};");
-		linebreak(out);
-
-		initClassAsDefault();		
+		linebreak(out);		
 	}
 		
 	writeEndNamespace(out, schema);
