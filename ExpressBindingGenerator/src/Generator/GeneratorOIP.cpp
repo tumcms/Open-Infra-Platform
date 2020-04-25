@@ -4088,7 +4088,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 
 		// Destructor
 		WriteDoxyComment(out, "Destructor.");
-		writeLine(out, "virtual ~" + entity.getName() + "() {};");
+		writeLine(out, entity.getName() + "::~" + entity.getName() + "() {};");
 		linebreak(out);
 
 		auto attributes = schema.getAllEntityAttributes(entity);
