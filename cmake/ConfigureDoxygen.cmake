@@ -54,7 +54,7 @@ configure_file(${DOXYFILE_CMAKE} ${DOXYFILE} @ONLY)
 
 # Documentation for entire OPEN INFRA PLATFORM project.
 doxygen_add_docs(OpenInfraPlatform.GenerateDocumentation ALL
-${CMAKE_CURRENT_SOURCE_DIR} 	# Source code that is (to be) documented located here
+${DOXYGEN_INPUT} 	# Source code that is (to be) documented located here
 WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root. Change if relative base point should be different.
 COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
 
