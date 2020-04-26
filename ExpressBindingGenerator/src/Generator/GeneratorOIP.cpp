@@ -453,7 +453,7 @@ void writeDoxyComment(std::ostream &out,
 
 void writeEntityDestructor(std::ostream &out, const OpenInfraPlatform::ExpressBindingGenerator::Entity &entity, std::string parameters = "", std::string implementation = "")
 {
-	WriteDoxyComment(out, "Destructor for " + entity.getName());
+	//writeDoxyComment(out, "Destructor for " + entity.getName());
 
 	std::string signature = entity.getName() + "::~" + entity.getName() + "(" + parameters + ") {" + implementation + "}";
 	writeLine(out, signature);
