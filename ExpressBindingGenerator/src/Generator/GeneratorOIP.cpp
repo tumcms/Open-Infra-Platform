@@ -529,7 +529,7 @@ void writeValueTypeFile(const Type& type, std::ostream& out) {
 	const std::string basetype = type.getUnderlyingTypeName();
 	
 	
-	writeDoxyComment(out, )
+	writeDoxyComment(out, "\\class " + name + ", subtype of \\class " + basetype);
 	writeLine(out, "class " + name + " : public " + basetype + "{");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
@@ -586,6 +586,7 @@ void writeContainerTypeFile(Schema& schema, Type& type, std::ostream& out) {
 	}
 	const std::string basetype = "EarlyBinding::" + type.getContainerTypeName() + "<" + min + "," + max + "," + valuetype + ">";
 
+	writeDoxyComment(out, "\\class " + name + ", subtype of \\class " + basetype);
 	writeLine(out, "class " + name + ": public " + basetype + ", public EarlyBinding::EXPRESSType {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
@@ -749,6 +750,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 	//linebreak(out);
 
 	const std::string basetype = "EarlyBinding::EnumType<" + enumName + "," + std::to_string(seq.size()) + ">";
+	writeDoxyComment(out, "enum \\class " + name);
 	writeLine(out, "class " + name + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
@@ -974,6 +976,7 @@ void writeSelectTypeFileREFACTORED(Schema& schema, Type& selectType, std::ostrea
 	const std::string basetype = "EarlyBinding::SelectType<" + join(seq, ',') + ">";
 
 	//writeLine(out, "class " + select + " : public " + basetype +", public ExpressBindingGenerator::EXPRESSType {");
+	writeDoxyComment(out, "\\class " + select + ", subtype of \\class " + basetype);
 	writeLine(out, "class " + select + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
