@@ -230,31 +230,6 @@ if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
 endif()
 
 #------------------------------------------------------------------------------
-# DOXYGEN. 
-#------------------------------------------------------------------------------
-Option(DOXYGEN_GENERATE_DOCUMENTATION ON)
-
-if(DOXYGEN_GENERATE_DOCUMENTATION)
-
-find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
-"C:/thirdparty/doxygen"
-)
-
-find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
-"C:/thirdparty/graphviz_dot/release/bin"
-)
-
-find_package(Doxygen
-	REQUIRED dot
-)
-
-include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
-set_target_properties(OpenInfraPlatform.GenerateDocumentation 			PROPERTIES FOLDER "OpenInfraPlatform/Commands")
-else()
-message("DOXYGEN_GENERATE_DOCUMENTATION box not checked. Thus not generating doxygen documentation for TUM Open Infra Platform project. To generate doxygen documentation, check the box next to DOXYGEN_GENERATE_DOCUMENTATION.")
-endif(DOXYGEN_GENERATE_DOCUMENTATION)
-
-#------------------------------------------------------------------------------
 
 FetchContent_Declare(
 	blue_framework
@@ -321,6 +296,42 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/EarlyBinding)
 foreach(format ${IFC_FORMATS})	
 	add_compile_definitions(OIP_MODULE_EARLYBINDING_${format})
 endforeach()
+
+#------------------------------------------------------------------------------
+# DOXYGEN. 
+#------------------------------------------------------------------------------
+Option(DOXYGEN_GENERATE_DOCUMENTATION ON)
+
+if(DOXYGEN_GENERATE_DOCUMENTATION)
+
+find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
+"C:/thirdparty/doxygen"
+)
+
+find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
+"C:/thirdparty/graphviz_dot/release/bin"
+)
+
+find_package(Doxygen
+	REQUIRED dot
+)
+
+# add source code to doxygen input
+set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR})
+
+# add IFC generated files to doxygen input directory
+foreach(format ${IFC_FORMATS})	
+	if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding/${format})
+		set(DOXYGEN_INPUT ${DOXYGEN_INPUT} "${CMAKE_BINARY_DIR}/EarlyBinding/${format}/src")
+	endif()
+endforeach()
+
+include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
+set_target_properties(OpenInfraPlatform.GenerateDocumentation 			PROPERTIES FOLDER "OpenInfraPlatform/Commands")
+
+else()
+message("DOXYGEN_GENERATE_DOCUMENTATION box not checked. Thus not generating doxygen documentation for TUM Open Infra Platform project. To generate doxygen documentation, check the box next to DOXYGEN_GENERATE_DOCUMENTATION.")
+endif(DOXYGEN_GENERATE_DOCUMENTATION)
 
 #----------------------------------------------------------
 # (1/7) Point Cloud Processing ("pcp_module")
