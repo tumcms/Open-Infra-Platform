@@ -336,6 +336,85 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> GetCurveOfPlacement(
 					const std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement);
 
+
+
+                            /*! \brief Retrieves the respective placement type from the \c IfcLocalPlacement and converts it.
+
+                            \param[in]	    local_placement		\c IfcLocalPlacement entity to be interpreted.
+                            \param[in,out]  matrix			Calculated transformation matrix.
+
+                            Retrieves the respective placement type from the \c IfcLocalPlacement and converts it.
+                            The result is stored in matrix. Uses the switch statement to get the correct type.
+                            */
+			    void convertRelativePlacement(carve::math::Matrix& object_placement_matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement)
+			    {
+			        decltype(local_placement->RelativePlacement)& axis2placement = local_placement->RelativePlacement;
+			        switch(axis2placement.which()) {
+			        case 0:
+			            convertIfcAxis2Placement2D(axis2placement.get<0>().lock(), object_placement_matrix);
+			            break;
+			        case 1:
+			            convertIfcAxis2Placement3D(axis2placement.get<1>().lock(), object_placement_matrix);
+			            break;
+			        default:
+			            BLUE_LOG(fatal) << local_placement->getErrorLog() << "RelativePlacement conversion issues.";
+			            break;
+			        }
+			    }
+
+			    void convertIfcLocalPlacementRelationPoint(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement, carve::math::Matrix &relative_placement)
+			    {
+			        // PlacementRelTo
+			        if(local_placement->PlacementRelTo) {
+			            // Reference to ObjectPlacement that provides the relative placement by its local coordinate system. 
+			            convertIfcObjectPlacement(local_placement->PlacementRelTo.get().lock(), relative_placement, alreadyApplied);
+			        }
+			        else {
+                                    BLUE_LOG(warning) << "Context based local placement computation not supported.";
+			            //TODO Georeferencing
+			            // If reference to Object is omitted, then the local placement is given to the WCS, established by the geometric representation context.
+			            //carve::math::Matrix context_matrix( carve::math::Matrix::IDENT() );
+			            //applyContext( context, context_matrix, length_factor, placement_already_applied );
+			            //object_placement_matrix = context_matrix*object_placement_matrix;
+			        }
+			    }
+
+
+                            /*! \brief Converts \c IfcLocalPlacement to a transformation matrix.
+
+                            \param	alreadyApplied		An array of references to already applied \c IfcObjectPlacement-s.
+                            \param[in]	local_placement		\c IfcLocalPlacement entity to be interpreted.
+                            \param[out] matrix			Calculated transformation matrix.
+
+                            Function computes the local placement and stores it in the matrix.
+                            */
+			    void convertIfcLocalPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, carve::math::Matrix& object_placement_matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement)
+			    {
+                                // **************************************************************************************************************************
+                                //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifclocalplacement.htm
+                                // ENTITY IfcLocalPlacement
+                                //	SUBTYPE OF(IfcObjectPlacement);
+                                //		PlacementRelTo: OPTIONAL IfcObjectPlacement; // was promoted to ObjectPlacement from IFC4x2+
+                                //		RelativePlacement: IfcAxis2Placement;
+                                //	WHERE
+                                //		WR21 : IfcCorrectLocalPlacement(RelativePlacement, PlacementRelTo);
+                                // END_ENTITY;
+                                // **************************************************************************************************************************
+
+                                // RelativePlacement				
+                                // TYPE IfcAxis2Placement = SELECT (
+                                //	IfcAxis2Placement2D,
+                                //	IfcAxis2Placement3D);
+                                // END_TYPE;
+                                convertRelativePlacement(object_placement_matrix, local_placement);
+                                carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
+			        convertIfcLocalPlacementRelationPoint(alreadyApplied, local_placement, relative_placement);
+                                object_placement_matrix = relative_placement * object_placement_matrix;
+
+                            }
+
+                            void convertRelativePlacementOriginInIfcLinearPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, carve::math::Matrix& object_placement_matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement);
+
 				/*! \brief Converts \c IfcObjectPlacement to a transformation matrix.
 
 				\param[in]	objectPlacement		\c IfcObjectPlacement entity to be interpreted.
@@ -377,56 +456,9 @@ namespace OpenInfraPlatform {
 					carve::math::Matrix object_placement_matrix(carve::math::Matrix::IDENT());
 
 					// (1/3) IfcLocalPLacement SUBTYPE OF IfcObjectPlacement
-					std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLocalPlacement>(objectPlacement);
-					if(local_placement) {
-						// **************************************************************************************************************************
-						//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifclocalplacement.htm
-						// ENTITY IfcLocalPlacement
-						//	SUBTYPE OF(IfcObjectPlacement);
-						//		PlacementRelTo: OPTIONAL IfcObjectPlacement; // was promoted to ObjectPlacement from IFC4x2+
-						//		RelativePlacement: IfcAxis2Placement;
-						//	WHERE
-						//		WR21 : IfcCorrectLocalPlacement(RelativePlacement, PlacementRelTo);
-						// END_ENTITY;
-						// **************************************************************************************************************************
-						
-						// RelativePlacement				
-						// TYPE IfcAxis2Placement = SELECT (
-						//	IfcAxis2Placement2D,
-						//	IfcAxis2Placement3D);
-						// END_TYPE;
-						decltype(local_placement->RelativePlacement)& axis2placement = local_placement->RelativePlacement;
-						switch(axis2placement.which()) {
-						case 0:
-							convertIfcAxis2Placement2D(axis2placement.get<0>().lock(), object_placement_matrix);
-							break;
-						case 1:
-							convertIfcAxis2Placement3D(axis2placement.get<1>().lock(), object_placement_matrix);
-							break;
-						default:
-							BLUE_LOG(fatal) << local_placement->getErrorLog() << "RelativePlacement conversion issues.";
-							break;
-						}
-						
-						// PlacementRelTo
-						if(local_placement->PlacementRelTo) {
-							// Reference to ObjectPlacement that provides the relative placement by its local coordinate system. 
-							decltype(local_placement->PlacementRelTo)::type& local_object_placement = local_placement->PlacementRelTo;
-							carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
-							// recursive call
-							convertIfcObjectPlacement(local_object_placement.lock(), relative_placement, alreadyApplied);
-							// correct self's placement
-							object_placement_matrix = relative_placement * object_placement_matrix;
-						}
-						else {
-							//TODO Georeferencing
-							// If reference to Object is omitted, then the local placement is given to the WCS, established by the geometric representation context.
-								//carve::math::Matrix context_matrix( carve::math::Matrix::IDENT() );
-								//applyContext( context, context_matrix, length_factor, placement_already_applied );
-								//object_placement_matrix = context_matrix*object_placement_matrix;
-						}
-					} // end if IfcLocalPlacement
+                                        std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLocalPlacement>(objectPlacement);
+			                if(local_placement)
+                                            convertIfcLocalPlacement(alreadyApplied, object_placement_matrix, local_placement);
 
 					// (2/3) IfcGridPlacement SUBTYPE OF IfcObjectPlacement
 					std::shared_ptr<typename IfcEntityTypesT::IfcGridPlacement> grid_placement =
@@ -562,19 +594,7 @@ namespace OpenInfraPlatform {
 							}
 						}
 
-						// PlacementRelTo type IfcObjectPlacement [0:1] (introduced in IFC4x2)
-						std::string linearPlacementTypeName = typeid(typename IfcEntityTypesT::IfcCurve).name();
-						if (   linear_placement->PlacementRelTo
-							&& linearPlacementTypeName.find("IFC4X1") == std::string::npos) // and it's NOT IFC4x1
-						{
-							// Reference to Object that provides the relative placement by its local coordinate system. 
-							decltype(local_placement->PlacementRelTo)::type& local_object_placement = local_placement->PlacementRelTo;
-							carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
-							// recursive call
-							convertIfcObjectPlacement(local_object_placement.lock(), relative_placement, alreadyApplied);
-							// correct self's placement
-							object_placement_matrix = relative_placement * object_placement_matrix;
-						}
+						convertRelativePlacementOriginInIfcLinearPlacement(alreadyApplied, object_placement_matrix, linear_placement);
 					}
 
 					// Set the return value
