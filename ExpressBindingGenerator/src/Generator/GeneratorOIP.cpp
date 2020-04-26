@@ -338,6 +338,7 @@ void writeDoxyCommentEnd(std::ostream &out)
 * The function prepends \c str with \code " * " \endcode and outputs it to the stream \c out.
 * 
 * \note The function adds a new line at the end.
+* \note One must start and finish the doxy comment with ::writeDoxyCommentStart and ::writeDoxyCommentEnd before and after unsing this function.
 *
 * \param out Output stream for the text.
 * \param str The string to be output.
@@ -360,14 +361,14 @@ void writeDoxyLine(std::ostream &out, const std::string &str)
 * \param returns	The content of \return field.
 *
 * \note Each field of this doxycomment has a note in "()" denoting what each input parameter fills (notes).
-* \note \c params is a vector of tuples. The first field fills the optional parameters to \c param (empty / in / out / in,out). 
-	The second parameter is the param's name.
-	The third parameter is the param's description.
+* \note \c params is a vector of tuples. The first field fills the optional parameters to \c \\param (empty / in / out / in,out). 
+*	The second parameter is the param's name.
+*	The third parameter is the param's description.
 * \note At least \c brief or \c desc needs to be filled in.
 *
 * \return Nothing (\c returns).
 */
-void WriteDoxyComment(std::ostream &out,
+void writeDoxyComment(std::ostream &out,
 	const std::string& brief = "",
 	const std::string& desc = "",
 	const std::vector<std::tuple<std::string, std::string, std::string>>* params = nullptr,
@@ -445,7 +446,7 @@ void WriteDoxyComment(std::ostream &out,
 
 	// end comment
 	writeDoxyCommentEnd(out);
-}
+} // end WriteDoxyComment
 
 
 
@@ -528,7 +529,7 @@ void writeValueTypeFile(const Type& type, std::ostream& out) {
 	const std::string basetype = type.getUnderlyingTypeName();
 	
 	
-
+	writeDoxyComment(out, )
 	writeLine(out, "class " + name + " : public " + basetype + "{");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
@@ -3514,7 +3515,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		linebreak(out);
 	}
 
-	WriteDoxyComment(out, "\class " + entity.getName());
+	writeDoxyComment(out, "\\class " + entity.getName());
 
 	writeLine(out, "class " + entity.getName() + " : public " + supertype + " {");
 	writeLine(out, "private:");
@@ -4068,33 +4069,33 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 	auto initClassAsDefault = [&out, &entity, &schema]() {
 
 		// Default constructor
-		WriteDoxyComment(out, "Default constructor");
+		writeDoxyComment(out, "Default constructor");
 		writeLine(out, entity.getName() + "::" + entity.getName() + "() { }");
 		linebreak(out);
 
 		// Copy constructor
-		WriteDoxyComment(out, "Copy constructor");
+		writeDoxyComment(out, "Copy constructor");
 		writeLine(out, entity.getName() + "::" + entity.getName() + "(const " + entity.getName() + "& other) {");
 		writeLine(out, "operator=(other);");
 		writeLine(out, "}");
 		linebreak(out);
 
 		// Move constructor.
-		WriteDoxyComment(out, "Move constructor");
+		writeDoxyComment(out, "Move constructor");
 		writeLine(out, entity.getName() + "::" + entity.getName() + "(" + entity.getName() + "&& other) : " + entity.getName() + "() {");
 		writeLine(out, "swap(*this, other);");
 		writeLine(out, "}");
 		linebreak(out);
 
 		// Destructor
-		WriteDoxyComment(out, "Destructor.");
+		writeDoxyComment(out, "Destructor.");
 		writeLine(out, entity.getName() + "::~" + entity.getName() + "() {};");
 		linebreak(out);
 
 		auto attributes = schema.getAllEntityAttributes(entity);
 
 		// Copy Assignment Operator
-		WriteDoxyComment(out, "Assigns the content of \\c other to \\c this.");
+		writeDoxyComment(out, "Assigns the content of \\c other to \\c this.");
 		writeLine(out, entity.getName() + "& " + entity.getName() + "::operator=(const " + entity.getName() + "& other) {");
 		writeLine(out, "this->m_id = other.m_id;");
 		for (auto& attr : attributes) {
@@ -4105,12 +4106,12 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		linebreak(out);
 
 		// Classname function
-		WriteDoxyComment(out, "Returns the class name.", "", nullptr, nullptr, "\"" + entity.getName() + "\"");
+		writeDoxyComment(out, "Returns the class name.", "", nullptr, nullptr, "\"" + entity.getName() + "\"");
 		writeLine(out, "const std::string " + entity.getName() + "::classname() const { return \"" + entity.getName() + "\";} ");
 		linebreak(out);
 
 		// Interpret STEP data
-		WriteDoxyComment(out, "Interprets the STEP serialization.", "", nullptr, nullptr, "An instance of \\c " + entity.getName());
+		writeDoxyComment(out, "Interprets the STEP serialization.", "", nullptr, nullptr, "An instance of \\c " + entity.getName());
 		writeLine(out, entity.getName() + " " + entity.getName() +"::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
 		writeLine(out, entity.getName() + " entity;");
 		writeLine(out, "entity.setId(stoull(args[0]));");
@@ -4123,7 +4124,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		linebreak(out);
 
 		// Get STEP data
-		WriteDoxyComment(out, "Returns the STEP serialization.", "", nullptr, nullptr, "#ID=" + entity.getName() + "(<attributes>);");
+		writeDoxyComment(out, "Returns the STEP serialization.", "", nullptr, nullptr, "#ID=" + entity.getName() + "(<attributes>);");
 		writeLine(out, "const std::string " + entity.getName() + "::getStepLine() const {");
 		writeLine(out, "std::string classname = this->classname();");
 		writeLine(out, "boost::to_upper(classname);");
@@ -4141,7 +4142,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		initClassAsDefault();
 
 		// Write swap function implementation
-		WriteDoxyComment(out, "Swaps the content between the \\c first and \\c second.");
+		writeDoxyComment(out, "Swaps the content between the \\c first and \\c second.");
 		writeLine(out, "void swap(" + entity.getName() + "& first, " + entity.getName() + "& second) {");
 		writeLine(out, "using std::swap;");
 		writeLine(out, "swap(first.m_id, second.m_id);");
