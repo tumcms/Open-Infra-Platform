@@ -65,6 +65,19 @@ namespace OpenInfraPlatform {
                     object_placement_matrix = relative_placement * object_placement_matrix;
                 }
             }
+
+            template<typename IfcEntityTypesT>
+            bool PlacementConverterT<IfcEntityTypesT>::baseCurveIsBoundedCurve(std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement)
+            {
+                std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve = GetCurveOfPlacement(linear_placement);
+                std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> ifcBoundedCurve =
+                    std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(ifcCurve);
+                if(!ifcBoundedCurve) {
+                    BLUE_LOG(error) << linear_placement->getErrorLog() << ": Linear placement along a " << ifcCurve->classname() << " is not supported!";
+                    return false;
+                }
+                return true;
+            }
         }
     }
 }
