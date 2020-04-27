@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
         const char* filename = sourceFiles.getValue().c_str();
         std::string outputDirectoryName = outputDirectory.getValue();
 
-		cout << filename << std::endl;
+		cout << "Generating .h/.cpp files from " << filename << std::endl;
 
         //std::string filename = "C:/dev/Neuer Ordner/IFC4x1_RC3.exp";
         // std::string filename = "C:/dev/OpenInfraPlatform2/IfcAlignment1x1/schema/IFC4x1_RC3.exp";
