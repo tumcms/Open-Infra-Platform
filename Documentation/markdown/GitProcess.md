@@ -1,6 +1,8 @@
-# Git Procedures 
+# Git Workflow
 
-Here you will find description about Git procedures you need working with OpenInfraPlatform
+![](./fig/Git_Workflow.png)
+
+Here you will find description about Git Workflow you need working with OpenInfraPlatform
 
 ## 1. Clone the repository
 
