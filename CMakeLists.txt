@@ -301,9 +301,7 @@ endforeach()
 # DOXYGEN. 
 #------------------------------------------------------------------------------
 Option(DOXYGEN_GENERATE_DOCUMENTATION ON)
-Option(DOXYGEN_OPTIONAL_COMMENTED_ONLY ON)
 Option(DOXYGEN_OPTIONAL_INCLUDE_GENERATED ON)
-Option(DOXYGEN_OPTIONAL_INCLUDE_INTERNAL ON)
 
 if(DOXYGEN_GENERATE_DOCUMENTATION)
 
