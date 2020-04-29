@@ -397,20 +397,13 @@ namespace OpenInfraPlatform
 						//! NOTE (mk): Could be optimized if we omit cache building and just add triangles (with redundant vertices)
 
 						// clear all descriptions
-						auto& meshDescription = ifcGeometryModel->meshDescription_;
-						meshDescription.vertices.clear();
-						meshDescription.indices.clear();
-
-						auto& polylineDescription = ifcGeometryModel->polylineDescription_;
-						polylineDescription.vertices.clear();
-						polylineDescription.indices.clear();
+						ifcGeometryModel->reset();
 
 						// obtain maximum number of threads supported by machine
 						const unsigned int maxNumThreads = std::thread::hardware_concurrency();
 
-						// gather tasks for all threads
+						// split up tasks for all threads
 						std::vector<std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>> tasks(maxNumThreads);
-
 						uint32_t counter = 0;
 						for(auto it = shapeDatas.begin(); it != shapeDatas.end(); ++it) {
 							std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> shapeData = it->second;
@@ -443,11 +436,9 @@ namespace OpenInfraPlatform
 						//#endif
 						IndexedMeshDescription threadMeshDesc;
 						PolylineDescription threadLineDesc;
-						threadMeshDesc.vertices.clear();
-						threadMeshDesc.indices.clear();
-						threadLineDesc.vertices.clear();
-						threadLineDesc.indices.clear();
 
+						threadMeshDesc.reset();
+						threadLineDesc.reset();
 
 						for(const auto& shapeData : tasks) {
 							const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product = shapeData->ifc_product;
@@ -596,6 +587,7 @@ namespace OpenInfraPlatform
 	}
 }
 
+EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(BoundingBox)
 EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(IfcGeometryModel)
 
 #endif
