@@ -26,6 +26,7 @@ message("Use of DOXYGEN for developers: Please use this project's doxygen docume
 # Doxygen build options. 
 Option(DOXYGEN_OPTIONAL_COMMENTED_ONLY ON)
 Option(DOXYGEN_OPTIONAL_GENERATE_INTERNAL ON)
+Option(DOXYGEN_OPTIONAL_INCLUDE_GENERATED ON)
 
 # CONFIGURATION. Check http://www.doxygen.nl/manual/config.html for all available options and their default values. 
 
@@ -69,11 +70,29 @@ set(DOXYGEN_EXCLUDE_PATTERNS */CurrentlyExcluded/* */cmake/* */deploy/* */Docume
 configure_file(${DOXYFILE_CMAKE} ${DOXYFILE} @ONLY) 
 
 # Documentation for entire OPEN INFRA PLATFORM project.
+if(DOXYGEN_OPTIONAL_INCLUDE_GENERATED)
+
+# add source code to doxygen input
+set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR})
+
+# add IFC generated files to doxygen input directory
+foreach(format ${IFC_FORMATS})	
+	if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding/${format})
+		set(DOXYGEN_INPUT ${DOXYGEN_INPUT} "${CMAKE_BINARY_DIR}/EarlyBinding/${format}/src")
+	endif()
+endforeach()
 doxygen_add_docs(OpenInfraPlatform.GenerateDocumentation ALL
 ${DOXYGEN_INPUT} 	# Source code that is (to be) documented located here
 WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root. Change if relative base point should be different.
 COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
+else()
+doxygen_add_docs(OpenInfraPlatform.GenerateDocumentation ALL
+${CMAKE_CURRENT_SOURCE_DIR} 	# Source code that is (to be) documented located here
+WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root. Change if relative base point should be different.
+COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
+endif(DOXYGEN_OPTIONAL_INCLUDE_GENERATED)
 
+# Automatically open index page of the documentation after building. 
 add_custom_command(TARGET OpenInfraPlatform.GenerateDocumentation POST_BUILD
 	COMMAND "${DOXYGEN_OUTPUT_DIRECTORY}/html/index.html"
 )
