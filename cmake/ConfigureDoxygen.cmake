@@ -37,7 +37,7 @@ set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 # Build related configuration options. 
 set(DOXYGEN_PROJECT_NAME OpenInfraPlatform)
 set(DOXYGEN_PROJECT_BRIEF "Open source software for viewing and converting alignment data.")
-#set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/interface.png)
+set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/Beta1_5_Windows8_1.png)
 set(DOXYGEN_CREATE_SUBDIRS YES)
 set(DOXYGEN_HAVE_DOT YES) # GraphViz Package for diagrams
 
