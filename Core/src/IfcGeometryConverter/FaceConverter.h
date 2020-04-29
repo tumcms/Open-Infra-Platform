@@ -15,7 +15,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*! This is a test for a detailed description using doxygen. 
+/*! \internal testing if the Cmake options to include internal comments works.
 */
 
 #pragma once
