@@ -67,9 +67,10 @@ namespace OpenInfraPlatform
 					update(other.min_, other.max_);
 				}
 				void reset() { min_ = buw::Vector3d(INFINITY, INFINITY, INFINITY); max_ = buw::Vector3d(-INFINITY, -INFINITY, -INFINITY); }
+				bool isDefault() { return min_ == buw::Vector3d(INFINITY, INFINITY, INFINITY) && max_ == buw::Vector3d(-INFINITY, -INFINITY, -INFINITY); }
 				std::string toString() const {
 					return "min: (" + std::to_string(min_.x()) + ", " + std::to_string(min_.y()) + ", " + std::to_string(min_.z())
-						 + "max: (" + std::to_string(max_.x()) + ", " + std::to_string(max_.y()) + ", " + std::to_string(max_.z());
+					   + ") max: (" + std::to_string(max_.x()) + ", " + std::to_string(max_.y()) + ", " + std::to_string(max_.z()) + ")";
 				}
 				buw::Vector3d center() const { return 0.5 * (min_ + max_); }
 			};

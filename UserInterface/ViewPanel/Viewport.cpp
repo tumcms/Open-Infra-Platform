@@ -787,10 +787,8 @@ void Viewport::onChange() {
 
 void Viewport::onChange(ChangeFlag changeFlag) 
 {
-	// preset the extents
+	// the extents
 	oip::BoundingBox bb;
-	bb.min_ = buw::Vector3d(-1, -1, -1);
-    bb.max_ = buw::Vector3d(1, 1, 1);
 
     auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
  //   auto dem = data.getDigitalElevationModel();
@@ -826,6 +824,14 @@ void Viewport::onChange(ChangeFlag changeFlag)
 		BLUE_LOG(trace) << "boundingbox:" << bb.toString();
 	}
 #endif
+
+	// if bounding box is still on default, overwrite
+	if( bb.isDefault() )
+	{
+		bb.min_ = buw::Vector3d(-1, -1, -1);
+		bb.max_ = buw::Vector3d(1, 1, 1);
+	}
+
 	
 
     buw::Vector3d offset = -bb.center();
