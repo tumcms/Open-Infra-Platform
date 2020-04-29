@@ -40,7 +40,7 @@ http://www.doxygen.nl/manual/index.html
 Important: when adding settingsthem in CMake, always use DOXYGEN_ before the standard doxygen tag, e.g. the doxygen tag "PROJECT_BRIEF" has to be "DOXYGEN_PROJECT_BRIEF" in the ConfigureDoxygen.cmake file.
 
 ## Building the documentation
-In Visual studio, build "GenerateDocumentation".
+In Visual studio, build "OpenInfraPlatform.GenerateDocumentation". This target can be found in Visual Studio under OpenInfraPlatform/Commands.
 In your build directory under Doxymentation/html you will then find something called “index.html”. This is a link to the index page of the HTML documentation browser. 
 This index page of the documentation will be opened automatically if the build succeeded.
 
