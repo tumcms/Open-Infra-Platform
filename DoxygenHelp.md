@@ -20,14 +20,18 @@ Alternatively install doxygen and dot yourself:
 If DOXYGEN_GENERATE_DOCUMENTATION is selected in the CMake GUI, CMake will automatically find the doxygen and dot executables. The up-to-date version of the file can be found here:
 https://github.com/tumcms/Open-Infra-Platform/blob/development/CMakeLists.txt
 
+In the CMake GUI, the following options can be selected:
+- DOXYGEN_OPTIONAL_COMMENTED_ONLY: If this is not selected, doxygen will assume that all entities are documented, even if there is no documentation available. 
+- DOXYGEN_OPTIONAL_INCLUDE_INTERNAL: If selected, this will include all comments preceded by "\internal" (comments intended for developers only).
+- DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING: If selected (... and already built), this will include the selected IFC schemas in the documentation. 
+
 ### ConfigureDoxygen.cmake file
 If DOXYGEN_GENERATE_DOCUMENTATION is selected in CMake, CMake will include ConfigureDoxygen.cmake. This file includes all settings for the generation of doxygen documentation for the Open Infra Platform project. Changes to documentation settings should be made here. doxygen_add_docs() creates the GenerateDocumentation target. The up-to-date version of the file can be found here:
 
 https://github.com/tumcms/Open-Infra-Platform/blob/development/cmake/ConfigureDoxygen.cmake
 
-Tags that are more likely to be required to change:
-- DOXYGEN_EXCLUDE: if you want to exclude certain source code directories or files from the documentation, you should add them here.
-- DOXYGEN_INTERNAL_DOCS: set to yes if you want to include comments included for developers in the documentation. 
+A tag that is more likely to be required to change:
+- DOXYGEN_EXCLUDE_PATTERNS: if you want to exclude certain source code directories or files from the documentation, you should add them here.
 
 More settings to be added can be found here:
 http://www.doxygen.nl/manual/index.html
@@ -37,6 +41,7 @@ Important: when adding settingsthem in CMake, always use DOXYGEN_ before the sta
 ## Building the documentation
 In Visual studio, build "GenerateDocumentation".
 In your build directory under Doxymentation/html you will then find something called “index.html”. This is a link to the index page of the HTML documentation browser. 
+This index page of the documentation will be opened automatically if the build succeeded.
 
 ## Style 
 When using doxygen within the Open Infra Platform, please use this style: start a comment block with /*!, start every line with * and end it with */.
