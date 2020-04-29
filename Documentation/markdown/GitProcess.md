@@ -4,14 +4,21 @@
 
 Here you will find description about Git Workflow you need working with OpenInfraPlatform
 
-## 1. Clone the repository
+## Prerequisites 
 
-1.1. Go to OpenInfraPlatform on [GitHub](https://github.com/tumcms/Open-Infra-Platform).
+Before you can proceed to work with Git, there are several steps, which have to be done before Installation: 
 
-1.2. Login to your account and *Fork* OpenInfraPlatform to your account.
+1. Installation of **Git** - 
+2. Creation of **GitHub account** - 
 
-1.3. Select green button *Clone or download* and copy url, which will shows up.
+## Clone the repository
 
-1.4. Open your File Explorer and select the folder, where you want to clone the OpenInfraPlatform (e.g. C:\dev). Right mouse click in this folder and select *Git Bash Here*.
+1. Go to OpenInfraPlatform on [GitHub](https://github.com/tumcms/Open-Infra-Platform).
 
-1.5. In the window, which you have opened, in the command line write down *git clone* and paste link you have just copied. This will start a download.
+2. Login to your account and *Fork* OpenInfraPlatform to your account.
+
+3. Select green button *Clone or download* and copy url, which will shows up.
+
+4. Open your File Explorer and select the folder, where you want to clone the OpenInfraPlatform (e.g. C:\dev). Right mouse click in this folder and select *Git Bash Here*.
+
+5. In the window, which you have opened, in the command line write out *git clone https://github.com/<your_username>/Open-Infra-Platform.git* . This will start a download.
