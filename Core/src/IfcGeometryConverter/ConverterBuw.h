@@ -43,22 +43,56 @@ namespace OpenInfraPlatform
 	namespace Core 
 	{
 		namespace IfcGeometryConverter {
+			struct BoundingBox {
+				buw::Vector3d min_, max_;
+				void update(const double xmin, const double ymin, const double zmin, const double xmax, const double ymax, const double zmax)
+				{
+					min_.x() = std::min(xmin, min_.x());
+					min_.y() = std::min(ymin, min_.y());
+					min_.z() = std::min(zmin, min_.z());
+					max_.x() = std::max(xmax, max_.x());
+					max_.y() = std::max(ymax, max_.y());
+					max_.z() = std::max(zmax, max_.z());
+				}
+				void update(const buw::Vector3d& min, const buw::Vector3d& max)
+				{
+					update(min.x(), min.y(), min.z(), max.x(), max.y(), max.z());
+				}
+				void update(const double x, const double y, const double z)
+				{
+					update(x, y, z, x, y, z);
+				}
+				void update(const BoundingBox& other)
+				{
+					update(other.min_, other.max_);
+				}
+				void reset() { min_ = buw::Vector3d(INFINITY, INFINITY, INFINITY); max_ = buw::Vector3d(-INFINITY, -INFINITY, -INFINITY); }
+				std::string toString() const {
+					return "min: (" + std::to_string(min_.x()) + ", " + std::to_string(min_.y()) + ", " + std::to_string(min_.z())
+						 + "max: (" + std::to_string(max_.x()) + ", " + std::to_string(max_.y()) + ", " + std::to_string(max_.z());
+				}
+				buw::Vector3d center() const { return 0.5 * (min_ + max_); }
+			};
 			struct IndexedMeshDescription {
 				std::vector<uint32_t>		indices;
 				std::vector<VertexLayout>	vertices;
 				bool isEmpty() { return (indices.size() == 0 && vertices.size() == 0); };
+				void reset() { indices.clear(); vertices.clear(); }
 			};
 
 			struct PolylineDescription {
 				std::vector<uint32_t>		indices;
 				std::vector<buw::Vector3f>	vertices;
 				bool isEmpty() { return (indices.size() == 0 && vertices.size() == 0); };
+				void reset() { indices.clear(); vertices.clear(); }
 			};
 
 			struct IfcGeometryModel {
+				BoundingBox			   bb_;
 				IndexedMeshDescription meshDescription_;
 				PolylineDescription    polylineDescription_;
 				bool isEmpty() { return (meshDescription_.isEmpty() && polylineDescription_.isEmpty()); };
+				void reset() { bb_.reset(); meshDescription_.reset(); polylineDescription_.reset(); }
 			};
 
 
