@@ -18,6 +18,7 @@ Alternatively install doxygen and dot yourself:
 
 ### Top-level CMakelists.txt
 If DOXYGEN_GENERATE_DOCUMENTATION is selected in the CMake GUI, CMake will automatically find the doxygen and dot executables. The up-to-date version of the file can be found here:
+
 https://github.com/tumcms/Open-Infra-Platform/blob/development/CMakeLists.txt
 
 In the CMake GUI, the following options can be selected:
