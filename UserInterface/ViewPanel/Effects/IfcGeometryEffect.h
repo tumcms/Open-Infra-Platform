@@ -36,20 +36,23 @@ public:
 
     virtual ~IfcGeometryEffect();
 
-    void setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, buw::Vector3d& offset);
+    void setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const buw::Vector3d& offset);
 
 private:
     void v_init();
     void v_render();
 
 private:
-    buw::ReferenceCounted<buw::IPipelineState> meshPipelineState_ = nullptr, polylinePipelineState_;
+    buw::ReferenceCounted<buw::IPipelineState> meshPipelineState_ = nullptr, polylinePipelineState_ = nullptr;
     buw::ReferenceCounted<buw::IVertexBuffer> meshVertexBuffer_ = nullptr, polylineVertexBuffer_ = nullptr;
     buw::ReferenceCounted<buw::IIndexBuffer> meshIndexBuffer_ = nullptr, polylineIndexBuffer_ = nullptr;
     buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer_ = nullptr;
     buw::ReferenceCounted<buw::IViewport> viewport_ = nullptr;
     buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA_ = nullptr;
     bool valid_ = false;
+
+	buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel_ = nullptr;
+	buw::Vector3d offset_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
