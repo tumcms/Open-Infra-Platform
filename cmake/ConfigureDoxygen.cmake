@@ -21,7 +21,7 @@ find_package(Doxygen
 
 
 if(DOXYGEN_FOUND)
-message("Use of DOXYGEN for developers: Refer to DoxygenHelp.md on how to use DOXYGEN within the OIP.)
+message("Use of DOXYGEN for developers: Refer to DoxygenHelp.md on how to use DOXYGEN within the OIP.")
 
 # Doxygen build options. 
 Option(DOXYGEN_OPTIONAL_COMMENTED_ONLY ON)
@@ -83,13 +83,13 @@ endforeach()
 doxygen_add_docs(OpenInfraPlatform.GenerateDocumentation ALL
 ${DOXYGEN_INPUT} 	# Source code that is (to be) documented located here
 WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root. Change if relative base point should be different.
-USE_STAMP_FILE
+#USE_STAMP_FILE
 COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
 else()
 doxygen_add_docs(OpenInfraPlatform.GenerateDocumentation ALL
 ${CMAKE_CURRENT_SOURCE_DIR} 	# Source code that is (to be) documented located here
 WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root. Change if relative base point should be different.
-USE_STAMP_FILE
+#USE_STAMP_FILE
 COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
 endif(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING)
 
