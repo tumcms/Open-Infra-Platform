@@ -36,9 +36,20 @@ set(DOXYGEN_CREATE_SUBDIRS YES)
 set(DOXYGEN_HAVE_DOT YES) # GraphViz Package for diagrams
 
 # Documentation settings.
-set(DOXYGEN_EXTRACT_ALL YES) # Set to yes if you want to extract all existing documentation  from project. Do this for now, once starting proper documentation change to NO. 
+if(DOXYGEN_OPTIONAL_COMMENTED_ONLY)
+set(DOXYGEN_EXTRACT_ALL NO) # Set to yes if you want to extract all existing documentation  from project. Do this for now, once starting proper documentation change to NO. 
+else()
+set(DOXYGEN_EXTRACT_ALL YES)
+endif(DOXYGEN_OPTIONAL_COMMENTED_ONLY)
+
 set(DOXYGEN_RECURSIVE YES) #Search subdirectories for input files as well.
-set(DOXYGEN_INTERNAL_DOCS NO) # Comments intended for developers and not for users (*! \internal *)
+
+if(DOXYGEN_OPTIONAL_GENERATE_INTERNAL)
+set(DOXYGEN_INTERNAL_DOCS YES) # Comments intended for developers and not for users (*! \internal *)
+else()
+set(DOXYGEN_INTERNAL_DOCS NO)
+endif(DOXYGEN_OPTIONAL_GENERATE_INTERNAL)
+
 set(DOXYGEN_CLASS_DIAGRAMS YES)
 
 # Output (HTML/Latex/...) configuration options.
