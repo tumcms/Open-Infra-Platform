@@ -43,8 +43,10 @@ namespace OpenInfraPlatform
 	namespace Core 
 	{
 		namespace IfcGeometryConverter {
-			struct BoundingBox {
+			class BoundingBox {
 				buw::Vector3d min_, max_;
+			public:
+				BoundingBox() { reset(); }
 				void update(const double xmin, const double ymin, const double zmin, const double xmax, const double ymax, const double zmax)
 				{
 					min_.x() = std::min(xmin, min_.x());
@@ -73,6 +75,10 @@ namespace OpenInfraPlatform
 					   + ") max: (" + std::to_string(max_.x()) + ", " + std::to_string(max_.y()) + ", " + std::to_string(max_.z()) + ")";
 				}
 				buw::Vector3d center() const { return 0.5 * (min_ + max_); }
+				buw::Vector3d min() const { return min_; }
+				buw::Vector3d& min() { return min_; }
+				buw::Vector3d max() const { return max_; }
+				buw::Vector3d& max() { return max_; }
 			};
 			struct IndexedMeshDescription {
 				std::vector<uint32_t>		indices;

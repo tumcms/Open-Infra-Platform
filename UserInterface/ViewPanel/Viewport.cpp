@@ -828,19 +828,19 @@ void Viewport::onChange(ChangeFlag changeFlag)
 	// if bounding box is still on default, overwrite
 	if( bb.isDefault() )
 	{
-		bb.min_ = buw::Vector3d(-1, -1, -1);
-		bb.max_ = buw::Vector3d(1, 1, 1);
+		bb.min() = buw::Vector3d(-1, -1, -1);
+		bb.max() = buw::Vector3d(1, 1, 1);
 	}
 
 	
 
     buw::Vector3d offset = -bb.center();
-    minExtend_ = (bb.min_ + offset).cast<float>();
-    maxExtend_ = (bb.max_ + offset).cast<float>();
+    minExtend_ = (bb.min() + offset).cast<float>();
+    maxExtend_ = (bb.max() + offset).cast<float>();
 	buw::Vector3f extend = maxExtend_ - minExtend_;
 	
 
-    boundingBoxEffect_->setBounds(bb.min_, bb.max_);
+    boundingBoxEffect_->setBounds(bb.min(), bb.max());
 
  //   if(changeFlag & ChangeFlag::DigitalElevationModel && dem) {
  //       demEffect_->setDEM(dem, offset);
