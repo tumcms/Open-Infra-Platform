@@ -37,7 +37,7 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 2. In the *project browser* open *OpenInfraPlatform* project folder. Find folder *Commands*. In the folder *Commands* select project *OpenInfraPlatform.Commands.UpdateBoostMpl*. Right click on this file and select *Build*.
 3. After first project is succesfully built find folder *ExpressBindingGenerator*. Select project *OpenInfraPlatform.ExpressBindingGenerator* and *build* it.
 4. In the folder *ExpressBindingGenerator* find folder *Commands*. There you should select project *Commands.GenerateEarlyBinding.IFC4X3_RC1* and *build* it.
-5. *Improtant*: Open CMake and select *Generate*.
+5. **Improtant**: Open CMake and select *Generate*.
 6. Open again Visual Studio and open folder *EarlyBinding*. Select project *OpenInfraPlatform.IFC4X3_RC1* and *build* it.
 7. Select project *OpenInfraPlatform.Core* and *build* it.
 8. Select project *OpenInfraPlatform.UI* and *build* it.
