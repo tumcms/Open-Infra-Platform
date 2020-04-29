@@ -23,6 +23,7 @@ find_package(Doxygen
 if(DOXYGEN_FOUND)
 message("Use of DOXYGEN for developers: Please use this project's doxygen documentation style specified in ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/doxymentation/StyleSheetOIP.")
 
+# Doxygen build options. 
 Option(DOXYGEN_OPTIONAL_COMMENTED_ONLY ON)
 Option(DOXYGEN_OPTIONAL_GENERATE_INTERNAL ON)
 
