@@ -15,6 +15,15 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+
+/*Kike. April, 2019. Modified code to pass colour information for rendering. 
+In the original version, colours are assigned per triangle and type of object, eg. all the triangles in all the wall objects are rendered in gray.
+Therefore, a random colour is produced before rendering each mesh inside meshSet to colour all the faces (i.e. triangles) of an object. Applied to walls
+
+*/
+
+
+
 // visual studio
 #pragma once
 // unix
@@ -88,8 +97,9 @@ namespace OpenInfraPlatform
 					static bool insertFaceIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::mesh::Face<3>* face,
 						std::vector<VertexLayout>& vertices,
-						std::vector<uint32_t>& indices)
+						std::vector<uint32_t>& indices, buw::Vector3f colour) //Kike. Added colour to pass colour info
 					{
+						
 						const int32_t numVertices = face->nVertices();
 
 						if(numVertices > 4) {
@@ -99,7 +109,7 @@ namespace OpenInfraPlatform
 						}
 
 						//determine color
-						buw::Vector3f color = determineColorFromBaseTypes(product);
+						buw::Vector3f color = determineColorFromBaseTypes(product, colour); //Kike. Added colour
 						//if (color.w() <= FullyTransparentAlphaThreshold) {
 						//	return false; //skip fully transparent vertices
 						//}
@@ -182,8 +192,10 @@ namespace OpenInfraPlatform
 					static bool insertMeshIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::mesh::Mesh<3>* mesh,
 						std::vector<VertexLayout>& vertices,
-						std::vector<uint32_t>& indices)
+						std::vector<uint32_t>& indices, buw::Vector3f colour) //Kike. Added colour
 					{
+
+
 						// walk through all faces of the mesh
 						bool ret = false;
 						for(const auto& face : mesh->faces) {
@@ -193,9 +205,34 @@ namespace OpenInfraPlatform
 								continue;
 							}
 
-							ret |= insertFaceIntoBuffers(product, face, vertices, indices);
+							
+							ret |= insertFaceIntoBuffers(product, face, vertices, indices, colour); //Kike. Added colour
 						}
 						return ret;
+					}
+
+					//Kike. Create a buw::Vector3f with random values between 0 and 1
+					static buw::Vector3f getRandomVector3f() {
+						buw::Vector3f vec;
+
+						// First create an instance of an engine.
+						std::random_device rnd_device;
+						// Specify the engine and distribution.
+						std::mt19937 mersenne_engine{ rnd_device() };  // Generates random integers
+						std::uniform_real_distribution<float> dist{ 0, 1 };
+
+						auto gen = [&dist, &mersenne_engine]() {
+							return dist(mersenne_engine);
+						};
+
+						std::vector<float> v(3);
+						std::generate(begin(v), end(v), gen);
+
+						for (int i = 0; i < 3; i++)
+							vec[i] = v[i];
+
+						return vec;
+
 					}
 
 					static bool insertMeshSetIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
@@ -209,8 +246,13 @@ namespace OpenInfraPlatform
 						}
 
 						// walk through all meshes of the mesh set
+
 						for(const auto& mesh : meshSet->meshes) {
-							ret |= insertMeshIntoBuffers(product, mesh, vertices, indices);
+
+							//Kike. Same colour for all the faces in the mesh
+							buw::Vector3f colour = getRandomVector3f(); 
+
+							ret |= insertMeshIntoBuffers(product, mesh, vertices, indices, colour); //Kike. Added colour
 						}
 						return ret;
 					}
@@ -461,11 +503,17 @@ namespace OpenInfraPlatform
 				protected:
 
 					static buw::Vector3f determineColorFromBaseTypes(
-						const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product)
+						const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product, buw::Vector3f colour) //Kike. Added colour to pass data per object and not triangle
 					{
 						if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcWindow>(product)) {
 							return buw::Vector3f(0.1f, 0.6f, 1.0f);//, 0.4f);
 						}
+						// Kike. Adding colour for walls
+						else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcWall>(product)
+							|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcWallStandardCase>(product)) {
+							return colour;
+						}
+						//
 
 						// Balken
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBeam>(product)
