@@ -187,7 +187,7 @@ namespace OpenInfraPlatform {
                         std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d =
                             std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(placement);
                         if(axis2placement2d) {
-                            convertIfcAxis2Placement2D(axis2placement2d, matrix);
+                            matrix = convertIfcAxis2Placement2D(axis2placement2d);
                             return;
                         }
 
@@ -195,7 +195,7 @@ namespace OpenInfraPlatform {
                         std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d =
                             std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(placement);
                         if(axis2placement3d) {
-                            convertIfcAxis2Placement3D(axis2placement3d, matrix);
+                            matrix = convertIfcAxis2Placement3D(axis2placement3d);
                             return;
                         }
 
@@ -207,9 +207,8 @@ namespace OpenInfraPlatform {
                     \param[in]	axis2placement2d	\c IfcAxis2Placement2D entity to be interpreted.
                     \param[out] matrix				Calculated transformation matrix.
                     */
-                    void convertIfcAxis2Placement2D(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d,
-                        carve::math::Matrix& matrix)
+                    carve::math::Matrix convertIfcAxis2Placement2D(
+                        const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d)
                     {
                         // **************************************************************************************************************************
                         // IfcAxis2Placement2D 
@@ -251,8 +250,7 @@ namespace OpenInfraPlatform {
                         local_y.normalize();
                         local_z.normalize();
 
-                        // produce a quaternion
-                        matrix = carve::math::Matrix(
+                        return carve::math::Matrix(
                             local_x.x, local_y.x, local_z.x, translate.x,
                             local_x.y, local_y.y, local_z.y, translate.y,
                             local_x.z, local_y.z, local_z.z, translate.z,
@@ -264,9 +262,8 @@ namespace OpenInfraPlatform {
                     \param[in]	axis2placement3d	\c IfcAxis2Placement3D entity to be interpreted.
                     \param[out] matrix				Calculated transformation matrix.
                     */
-                    void convertIfcAxis2Placement3D(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d,
-                        carve::math::Matrix& matrix)
+                    carve::math::Matrix convertIfcAxis2Placement3D(
+                        const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d)
                     {
                         // **************************************************************************************************************************
                         // IfcAxis2Placement2D 
@@ -318,7 +315,7 @@ namespace OpenInfraPlatform {
                         local_z.normalize();
 
                         // produce a quaternion
-                        matrix = carve::math::Matrix(
+                        return carve::math::Matrix(
                             local_x.x, local_y.x, local_z.x, translate.x,
                             local_x.y, local_y.y, local_z.y, translate.y,
                             local_x.z, local_y.z, local_z.z, translate.z,
@@ -331,30 +328,43 @@ namespace OpenInfraPlatform {
 
 
 
-                    /*! \brief Retrieves the respective placement type from the \c IfcLocalPlacement and converts it.
-
-                    \param[in]	    local_placement		\c IfcLocalPlacement entity to be interpreted.
-                    \param[in,out]  matrix			Calculated transformation matrix.
-
-                    Retrieves the respective placement type from the \c IfcLocalPlacement and converts it.
-                    The result is stored in matrix. Uses the switch statement to get the correct type.
-                    */
-                    void convertRelativePlacement(carve::math::Matrix& object_placement_matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement)
+                    /**
+                     * @brief 
+                     * 
+                     * @param axis_placement The axis placement to convert
+                     * @return carve::math::Matrix The converted position
+                     */
+                    carve::math::Matrix convertIfcAxis2Placement(typename IfcEntityTypesT::IfcAxis2Placement axis_placement)
                     {
-                        decltype(local_placement->RelativePlacement)& axis2placement = local_placement->RelativePlacement;
-                        switch(axis2placement.which()) {
+                        // RelativePlacement				
+                        // TYPE IfcAxis2Placement = SELECT (
+                        //	IfcAxis2Placement2D,
+                        //	IfcAxis2Placement3D);
+                        // END_TYPE;
+                        
+                        carve::math::Matrix matrix = carve::math::Matrix::IDENT();
+                        switch(axis_placement.which()) {
                         case 0:
-                            convertIfcAxis2Placement2D(axis2placement.get<0>().lock(), object_placement_matrix);
+                            matrix = convertIfcAxis2Placement2D(axis_placement.get<0>().lock());
                             break;
                         case 1:
-                            convertIfcAxis2Placement3D(axis2placement.get<1>().lock(), object_placement_matrix);
+                            matrix = convertIfcAxis2Placement3D(axis_placement.get<1>().lock());
                             break;
                         default:
-                            BLUE_LOG(fatal) << local_placement->getErrorLog() << "RelativePlacement conversion issues.";
+                            BLUE_LOG(fatal) << axis_placement.getErrorLog() << "IfcAxis2Placement conversion issues.";
                             break;
                         }
+
+                        return matrix;
                     }
 
+                    /**
+                     * @brief Get's the origin to which the local placement is related.
+                     * 
+                     * @param alreadyApplied [in] List of already applied transformations, in order to not repeat the same transformation.
+                     * @param local_placement [in] \c IfcLocalPlacement of which to retrieve the relation point.
+                     * @param relative_placement [in, out] Transformation matrix relative to the relation point of local placement.
+                     */
                     void convertIfcLocalPlacementRelationPoint(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement, carve::math::Matrix &relative_placement)
                     {
                         // PlacementRelTo
@@ -394,12 +404,7 @@ namespace OpenInfraPlatform {
                         // END_ENTITY;
                         // **************************************************************************************************************************
 
-                        // RelativePlacement				
-                        // TYPE IfcAxis2Placement = SELECT (
-                        //	IfcAxis2Placement2D,
-                        //	IfcAxis2Placement3D);
-                        // END_TYPE;
-                        convertRelativePlacement(object_placement_matrix, local_placement);
+                        object_placement_matrix = convertIfcAxis2Placement(local_placement->RelativePlacement);
                         carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
                         convertIfcLocalPlacementRelationPoint(alreadyApplied, local_placement, relative_placement);
                         object_placement_matrix = relative_placement * object_placement_matrix;
@@ -413,9 +418,8 @@ namespace OpenInfraPlatform {
                         // ***********************************************************
                         // check with the provided CartesianPosition
                         // CartesianPosition OPTIONAL
-                        carve::math::Matrix absolute_placement(carve::math::Matrix::IDENT());
                         if(linear_placement->CartesianPosition) {
-                            convertIfcAxis2Placement3D(linear_placement->CartesianPosition.get().lock(), absolute_placement);
+                            carve::math::Matrix absolute_placement = convertIfcAxis2Placement3D(linear_placement->CartesianPosition.get().lock());
                             if(absolute_placement != matrix) {
                                 BLUE_LOG(trace) << linear_placement->getErrorLog() << "Absolute placemet and the calculated linear placement do not agree";
                             }
