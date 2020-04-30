@@ -32,8 +32,17 @@ If DOXYGEN_GENERATE_DOCUMENTATION is selected in CMake, CMake will include Confi
 
 https://github.com/tumcms/Open-Infra-Platform/blob/development/cmake/ConfigureDoxygen.cmake
 
-A tag that is more likely to be required to change:
-- DOXYGEN_EXCLUDE_PATTERNS: if you want to exclude certain source code directories or files from the documentation, you should add them here.
+#### ToDos.
+DOXYGEN_EXCLUDE_PATTERNS is a tag that is more likely to be required to change.
+It excludes certain source code directories or files from the documentation. In this project, the following directories including the following patterns are currently excluded:
+- */CurrentlyExcluded/* 
+- */cmake/*
+- */deploy/*
+- */Documentation/* 
+- */external/*
+- */testdata/*
+- */Tools/* 
+- */UserInterface/QtPropertyBrowser/*
 
 More settings to be added can be found here:
 http://www.doxygen.nl/manual/index.html
