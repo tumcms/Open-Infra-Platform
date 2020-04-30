@@ -30,6 +30,7 @@
 
 #include <BlueFramework/Core/Diagnostics/log.h>
 
+#include <EXPRESS/EXPRESSReference.h>
 
 
 /**********************************************************************************************/
@@ -116,14 +117,12 @@ namespace OpenInfraPlatform {
                     /*! \brief Converts \c IfcDirection to a vector.
 
                     \param[in]	ifcDirection	IfcDirection entity to be interpreted.
-                    \param[out] direction		Calculated 2D or 3D vector.
+                    \returns direction		    Calculated 2D or 3D vector.
 
                     \note The direction is normalized.
                     \note The default value for the direction needs to be set outside the function.
                     */
-                    void convertIfcDirection(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcDirection>& ifcDirection,
-                        carve::geom::vector<3>& direction)
+                    carve::geom::vector<3> convertIfcDirection(const EXPRESSReference<typename IfcEntityTypesT::IfcDirection>& ifcDirection)
                     {
                         // **************************************************************************************************************************
                         // IfcDirection
@@ -140,6 +139,7 @@ namespace OpenInfraPlatform {
                         // **************************************************************************************************************************
 
                         auto& ratios = ifcDirection->DirectionRatios;
+                        carve::geom::vector<3> direction;
                         if(ratios.size() > 0) {
                             direction.x = ratios[0];
 
@@ -154,6 +154,7 @@ namespace OpenInfraPlatform {
                         }
                         // normalize the direction
                         direction.normalize();
+                        return direction;
                     }
 
                     /*! \brief Converts \c IfcPlacement to a transformation matrix.
@@ -235,7 +236,7 @@ namespace OpenInfraPlatform {
 
                         // interpret RefDirection [OPTIONAL]
                         if(axis2placement2d->RefDirection) {
-                            convertIfcDirection(axis2placement2d->RefDirection.get().lock(), ref_direction);
+                            ref_direction = convertIfcDirection(axis2placement2d->RefDirection);
                         }
 
                         // calculate
@@ -294,12 +295,12 @@ namespace OpenInfraPlatform {
 
                         // interpret RefDirection [OPTIONAL]
                         if(axis2placement3d->RefDirection) {
-                            convertIfcDirection(axis2placement3d->RefDirection.get().lock(), ref_direction);
+                            ref_direction = convertIfcDirection(axis2placement3d->RefDirection);
                         }
 
                         // interpret Axis [OPTIONAL]
                         if(axis2placement3d->Axis) {
-                            convertIfcDirection(axis2placement3d->Axis.get().lock(), local_z);
+                             local_z = convertIfcDirection(axis2placement3d->Axis);
                         }
 
                         // calculate
@@ -491,8 +492,8 @@ namespace OpenInfraPlatform {
                         auto& orientExpr = linear_placement->Orientation;
                         if(orientExpr) {
                             // convert the attributes
-                            convertIfcDirection(orientExpr->LateralAxisDirection.lock(), local_y);
-                            convertIfcDirection(orientExpr->VerticalAxisDirection.lock(), local_z);
+                            local_y = convertIfcDirection(orientExpr->LateralAxisDirection.lock());
+                            local_z = convertIfcDirection(orientExpr->VerticalAxisDirection.lock());
 
                             local_x = carve::geom::cross(local_y, local_z);
                         }
