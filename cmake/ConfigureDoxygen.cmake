@@ -21,7 +21,9 @@ find_package(Doxygen
 
 
 if(DOXYGEN_FOUND)
-message("Use of DOXYGEN for developers: DOXYGEN_GENERATE_DOCUMENTATION enables building the documentation for the Open Infra Platform. Selecting DOXYGEN_GENERATE_DOCUMENTATION and DOXYGEN_AUTO_OPEN_DOCUMENTATION recommended. Refer to DoxygenHelp.md for the selection of the DOXYGEN_OPTIONALs and on how to use DOXYGEN within project.")
+message("Use of DOXYGEN for developers: DOXYGEN_GENERATE_DOCUMENTATION enables building the documentation for the Open Infra Platform. \n"
+"Selecting DOXYGEN_GENERATE_DOCUMENTATION and DOXYGEN_AUTO_OPEN_DOCUMENTATION recommended. \n"
+"Refer to DoxygenHelp.md for the selection of the DOXYGEN_OPTIONALs and on how to use DOXYGEN within project.")
 
 # Doxygen build options. 
 Option(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY ON)
