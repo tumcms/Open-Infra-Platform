@@ -301,7 +301,6 @@ endforeach()
 # DOXYGEN. 
 #------------------------------------------------------------------------------
 Option(DOXYGEN_GENERATE_DOCUMENTATION ON)
-Option(DOXYGEN_OPTIONAL_INCLUDE_GENERATED ON)
 
 if(DOXYGEN_GENERATE_DOCUMENTATION)
 
@@ -316,18 +315,6 @@ find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
 find_package(Doxygen
 	REQUIRED dot
 )
-
-if(DOXYGEN_OPTIONAL_INCLUDE_GENERATED)
-# add source code to doxygen input
-set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR})
-
-# add IFC generated files to doxygen input directory
-foreach(format ${IFC_FORMATS})	
-	if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding/${format})
-		set(DOXYGEN_INPUT ${DOXYGEN_INPUT} "${CMAKE_BINARY_DIR}/EarlyBinding/${format}/src")
-	endif()
-endforeach()
-endif(DOXYGEN_OPTIONAL_INCLUDE_GENERATED)
 
 include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
 set_target_properties(OpenInfraPlatform.GenerateDocumentation 			PROPERTIES FOLDER "OpenInfraPlatform/Commands")
