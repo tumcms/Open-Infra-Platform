@@ -21,10 +21,10 @@ find_package(Doxygen
 
 
 if(DOXYGEN_FOUND)
-message("Use of DOXYGEN for developers: Refer to DoxygenHelp.md on how to use DOXYGEN within the OIP.")
+message("Use of DOXYGEN for developers: DOXYGEN_GENERATE_DOCUMENTATION enables building the documentation for the Open Infra Platform. Refer to DoxygenHelp.md for the selection of the DOXYGEN_OPTIONALs and on how to use DOXYGEN within project. ")
 
 # Doxygen build options. 
-Option(DOXYGEN_OPTIONAL_COMMENTED_ONLY ON)
+Option(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY ON)
 Option(DOXYGEN_OPTIONAL_GENERATE_INTERNAL ON)
 Option(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING ON)
 
@@ -42,11 +42,11 @@ set(DOXYGEN_CREATE_SUBDIRS YES)
 set(DOXYGEN_HAVE_DOT YES) # GraphViz Package for diagrams
 
 # Documentation settings.
-if(DOXYGEN_OPTIONAL_COMMENTED_ONLY)
+if(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY)
 set(DOXYGEN_EXTRACT_ALL NO) # Set to yes if you want to extract all existing documentation  from project. Do this for now, once starting proper documentation change to NO. 
 else()
 set(DOXYGEN_EXTRACT_ALL YES)
-endif(DOXYGEN_OPTIONAL_COMMENTED_ONLY)
+endif(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY)
 
 set(DOXYGEN_RECURSIVE YES) #Search subdirectories for input files as well.
 
