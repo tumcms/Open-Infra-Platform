@@ -479,26 +479,30 @@ namespace OpenInfraPlatform {
                     /**
                      * @brief Computes the rotation matrix for the linear placement
                      * 
-                     * @param[out] object_placement_matrix Output parameter for the computed matrix
                      * @param linear_placement Linear placement of which to convert the orientation
                      * @param translate Translation component of transformation
                      * @param local_x Local x orientation on top of which the orientation is applied.
                      * @param local_y Local y orientation on top of which the orientation is applied.
                      * @param local_z Local z orientation on top of which the orientation is applied.
+                     * @returns rotation
                      */
-                    void computeRotationMatrix(carve::math::Matrix& object_placement_matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement, carve::geom::vector<3> translate, carve::geom::vector<3> local_x, carve::geom::vector<3> local_y, carve::geom::vector<3> local_z)
+                    carve::math::Matrix computeRotationMatrix(std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement, carve::geom::vector<3> translate)
                     {
+
+                        carve::geom::vector<3> local_y = carve::geom::VECTOR(1.0, 0.0, 0.0);
+                        carve::geom::vector<3> local_z = carve::geom::VECTOR(0.0, 1.0, 0.0);
+                        carve::geom::vector<3> local_x = carve::geom::VECTOR(0.0, 0.0, 1.0);
+
                         auto& orientExpr = linear_placement->Orientation;
                         if(orientExpr) {
                             // convert the attributes
-                            local_y = convertIfcDirection(orientExpr->LateralAxisDirection.lock());
-                            local_z = convertIfcDirection(orientExpr->VerticalAxisDirection.lock());
-
+                            local_y = convertIfcDirection(orientExpr->LateralAxisDirection);
+                            local_z = convertIfcDirection(orientExpr->VerticalAxisDirection);
                             local_x = carve::geom::cross(local_y, local_z);
                         }
 
                         // 5. produce a rotation matrix
-                        object_placement_matrix = carve::math::Matrix(
+                        return carve::math::Matrix(
                             local_x.x, local_y.x, local_z.x, translate.x,
                             local_x.y, local_y.y, local_z.y, translate.y,
                             local_x.z, local_y.z, local_z.z, translate.z,
@@ -590,12 +594,6 @@ namespace OpenInfraPlatform {
                             // Conversion factor for length
                             double length_factor = UnitConvert()->getLengthInMeterFactor();
 
-                            // Initialize intermediate variables
-                            carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
-                            carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
-                            carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
-                            carve::geom::vector<3>  local_z(carve::geom::VECTOR(0.0, 0.0, 1.0));
-
                             // ***********************************************************
                             // calculate the position of the point on the curve + offsets
                             // Distance
@@ -641,7 +639,7 @@ namespace OpenInfraPlatform {
                                 curve_x.y, curve_y.y, curve_z.y, 0.0,
                                 curve_x.z, curve_y.z, curve_z.z, 0.0,
                                 0.0, 0.0, 0.0, 1.0);
-                            translate = pointOnCurve + localPlacementMatrix * offsetFromCurve;
+                            carve::geom::vector<3> translate = pointOnCurve + localPlacementMatrix * offsetFromCurve;
 
                             // 4. calculate the rotations
                             // Orientation OPTIONAL
@@ -650,7 +648,7 @@ namespace OpenInfraPlatform {
                             //	LateralAxisDirection: IfcDirection;
                             //	VerticalAxisDirection: IfcDirection;
                             // END_ENTITY;
-                            computeRotationMatrix(object_placement_matrix, linear_placement, translate, local_x, local_y, local_z);
+                            object_placement_matrix = computeRotationMatrix(linear_placement, translate);
 
                             checkLinearPlacementAgainstAbsolutePlacement(matrix, linear_placement);
 
