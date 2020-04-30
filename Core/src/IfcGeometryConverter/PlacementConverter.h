@@ -451,6 +451,9 @@ namespace OpenInfraPlatform {
                      */
                     carve::geom::vector<3> getOffsetFromCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression> &distExpr)
                     {
+                        // ***********************************************************
+                        // calculate the position of the point on the curve + offsets
+                        // Distance
                         // ENTITY IfcDistanceExpression
                         //  SUBTYPE OF (IfcGeometricRepresentationItem);
                         //   DistanceAlong : IfcLengthMeasure;
@@ -474,13 +477,13 @@ namespace OpenInfraPlatform {
                      * @param length_factor Length factor to convert to meters
                      * @return std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> 
                      */
-                    std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement, double length_factor)
+                    std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement)
                     {
                         carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
                         carve::geom::vector<3> directionOfCurve = carve::geom::VECTOR(1.0, 0.0, 0.0);
                         convertBoundedCurveDistAlongToPoint3D(
                             std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(GetCurveOfPlacement(linear_placement)),
-                            linear_placement->Distance->DistanceAlong * length_factor,
+                            linear_placement->Distance->DistanceAlong * UnitConvert()->getLengthInMeterFactor(),
                             linear_placement->Distance->AlongHorizontal,
                             pointOnCurve,
                             directionOfCurve
@@ -533,6 +536,35 @@ namespace OpenInfraPlatform {
                     bool baseCurveIsBoundedCurve(std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement);
 
                     /**
+                     * @brief Computes the matrix which is multiplied with the offset from the curve to move it to the correct position
+                     * 
+                     * @param directionOfCurve 
+                     * @param alongHorizontal 
+                     * @return carve::math::Matrix 
+                     */
+                    carve::math::Matrix calculateLocalPlacementMatrix(const carve::geom::vector<3> & directionOfCurve, bool alongHorizontal) {
+                        carve::geom::vector<3> curve_x(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, alongHorizontal ? 0.0 : directionOfCurve.z));
+
+                        // 3.b get the perpendicular to the left of the curve in the x-y plane (curve's coordinate system)
+                        carve::geom::vector<3> curve_y(carve::geom::VECTOR(-curve_x.y, curve_x.x, 0.0)); // always lies in the x-y plane
+
+                        // 3.c get the vertical as cross product
+                        carve::geom::vector<3> curve_z = carve::geom::cross(curve_x, curve_y);
+
+                        // normalize the direction vectors
+                        curve_x.normalize();
+                        curve_y.normalize();
+                        curve_z.normalize();
+
+                        // produce the location
+                        return carve::math::Matrix(
+                            curve_x.x, curve_y.x, curve_z.x, 0.0,
+                            curve_x.y, curve_y.y, curve_z.y, 0.0,
+                            curve_x.z, curve_y.z, curve_z.z, 0.0,
+                            0.0, 0.0, 0.0, 1.0);
+                    }
+
+                    /**
                      * @brief Convert \c IfcLinearPlacement
                      * 
                      * @param linear_placement 
@@ -558,12 +590,7 @@ namespace OpenInfraPlatform {
                         if(!baseCurveIsBoundedCurve(linear_placement))
                             return carve::math::Matrix::IDENT();
 
-                        // Conversion factor for length
-                        double length_factor = UnitConvert()->getLengthInMeterFactor();
 
-                        // ***********************************************************
-                        // calculate the position of the point on the curve + offsets
-                        // Distance
 
                         // 1. get offset from curve
                         carve::geom::vector<3> offsetFromCurve = getOffsetFromCurve(linear_placement->Distance);
@@ -571,36 +598,14 @@ namespace OpenInfraPlatform {
                         // 2. calculate the position on and the direction of the base curve
                         carve::geom::vector<3> pointOnCurve;
                         carve::geom::vector<3> directionOfCurve;
-                        std::tie(pointOnCurve, directionOfCurve) = calculatePositionOnAndDirectionOfBaseCurve(
-                            linear_placement,
-                            length_factor);
+                        std::tie(pointOnCurve, directionOfCurve) = calculatePositionOnAndDirectionOfBaseCurve(linear_placement);
 
                         // 3. calculate the position
                         // the position on the curve = pointOnCurve
                         // the direction of the curve's tangent = directionOfCurve
                         // the offsets = offsetFromCurve
                         // 3.a apply the alongHorizontal bool
-                        bool alongHorizontal = linear_placement->Distance->AlongHorizontal;
-                        carve::geom::vector<3> curve_x(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, alongHorizontal ? 0.0 : directionOfCurve.z));
-
-                        // 3.b get the perpendicular to the left of the curve in the x-y plane (curve's coordinate system)
-                        carve::geom::vector<3> curve_y(carve::geom::VECTOR(-curve_x.y, curve_x.x, 0.0)); // always lies in the x-y plane
-
-                        // 3.c get the vertical as cross product
-                        carve::geom::vector<3> curve_z = carve::geom::cross(curve_x, curve_y);
-
-                        // normalize the direction vectors
-                        curve_x.normalize();
-                        curve_y.normalize();
-                        curve_z.normalize();
-
-                        // produce the location
-                        auto localPlacementMatrix = carve::math::Matrix(
-                            curve_x.x, curve_y.x, curve_z.x, 0.0,
-                            curve_x.y, curve_y.y, curve_z.y, 0.0,
-                            curve_x.z, curve_y.z, curve_z.z, 0.0,
-                            0.0, 0.0, 0.0, 1.0);
-
+                        auto localPlacementMatrix = calculateLocalPlacementMatrix(directionOfCurve, linear_placement->Distance->AlongHorizontal);
 
                         // 4. calculate the rotations
                         carve::geom::vector<3> translate = pointOnCurve + localPlacementMatrix * offsetFromCurve;
