@@ -388,11 +388,11 @@ namespace OpenInfraPlatform {
 
                     \param	alreadyApplied		An array of references to already applied \c IfcObjectPlacement-s.
                     \param[in]	local_placement		\c IfcLocalPlacement entity to be interpreted.
-                    \param[out] matrix			Calculated transformation matrix.
+                    \returns matrix			Calculated transformation matrix.
 
                     Function computes the local placement and stores it in the matrix.
                     */
-                    void convertIfcLocalPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, carve::math::Matrix& object_placement_matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement)
+                    carve::math::Matrix convertIfcLocalPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement)
                     {
                         // **************************************************************************************************************************
                         //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifclocalplacement.htm
@@ -405,11 +405,10 @@ namespace OpenInfraPlatform {
                         // END_ENTITY;
                         // **************************************************************************************************************************
 
-                        object_placement_matrix = convertIfcAxis2Placement(local_placement->RelativePlacement);
+                        carve::math::Matrix object_placement_matrix = convertIfcAxis2Placement(local_placement->RelativePlacement);
                         carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
                         convertIfcLocalPlacementRelationPoint(alreadyApplied, local_placement, relative_placement);
-                        object_placement_matrix = relative_placement * object_placement_matrix;
-
+                        return relative_placement * object_placement_matrix;
                     }
 
                     /**
@@ -557,7 +556,7 @@ namespace OpenInfraPlatform {
                         // (1/3) IfcLocalPLacement SUBTYPE OF IfcObjectPlacement
                         std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLocalPlacement>(objectPlacement);
                         if(local_placement)
-                            convertIfcLocalPlacement(alreadyApplied, object_placement_matrix, local_placement);
+                            object_placement_matrix = convertIfcLocalPlacement(alreadyApplied, local_placement);
 
                         // (2/3) IfcGridPlacement SUBTYPE OF IfcObjectPlacement
                         std::shared_ptr<typename IfcEntityTypesT::IfcGridPlacement> grid_placement =
