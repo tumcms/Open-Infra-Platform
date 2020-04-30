@@ -463,7 +463,7 @@ namespace OpenInfraPlatform {
                         //   AlongHorizontal : OPTIONAL IfcBoolean;
                         // END_ENTITY;
 
-                        return UnitConvert()->getLengthInMeterFactor() * carve::geom::VECTOR(
+                        return carve::geom::VECTOR(
                             distExpr->OffsetLongitudinal.value_or(0.0),
                             distExpr->OffsetLateral.value_or(0.0),
                             distExpr->OffsetVertical.value_or(0.0)
@@ -593,7 +593,7 @@ namespace OpenInfraPlatform {
 
 
                         // 1. get offset from curve
-                        carve::geom::vector<3> offsetFromCurve = getOffsetFromCurve(linear_placement->Distance);
+                        carve::geom::vector<3> offsetFromCurve = getOffsetFromCurve(linear_placement->Distance) * UnitConvert()->getLengthInMeterFactor();
                             
                         // 2. calculate the position on and the direction of the base curve
                         carve::geom::vector<3> pointOnCurve;
