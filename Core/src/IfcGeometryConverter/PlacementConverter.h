@@ -424,7 +424,7 @@ namespace OpenInfraPlatform {
                     carve::math::Matrix convertRelativePlacementOriginInIfcLinearPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement);
 
                     /**
-                     * @brief Compare the \c IfcAxis2Placement3D in \c IfcLinearPlacement->Position against the passed matrix
+                     * @brief Compare the \c IfcAxis2Placement3D in \c IfcLinearPlacement->Position against the passed matrix for identity
                      * 
                      * @param matrix Matrix to compare against absolute placement
                      * @param linear_placement IfcLinearPlacement which holds absolute placement position to compare against computed matrix
