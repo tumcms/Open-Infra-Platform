@@ -31,9 +31,9 @@ namespace OpenInfraPlatform {
                 return linearPlacement->PlacementRelTo.lock();
             };
 
-            void PlacementConverterT<emt::IFC4X1EntityTypes>::convertRelativePlacementOriginInIfcLinearPlacement(std::vector<std::shared_ptr<emt::IFC4X1EntityTypes::IfcObjectPlacement>>& alreadyApplied, carve::math::Matrix& object_placement_matrix, std::shared_ptr<emt::IFC4X1EntityTypes::IfcLinearPlacement> linear_placement)
+            carve::math::Matrix PlacementConverterT<emt::IFC4X1EntityTypes>::convertRelativePlacementOriginInIfcLinearPlacement(std::vector<std::shared_ptr<emt::IFC4X1EntityTypes::IfcObjectPlacement>>& alreadyApplied, std::shared_ptr<emt::IFC4X1EntityTypes::IfcLinearPlacement> linear_placement)
             {
-                // Has to application for IFC4X1
+                return carve::math::Matrix::IDENT();
             }
 #endif
 
@@ -54,7 +54,7 @@ namespace OpenInfraPlatform {
             };
 
             template<typename IfcEntityTypesT>
-            void PlacementConverterT<IfcEntityTypesT>::convertRelativePlacementOriginInIfcLinearPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, carve::math::Matrix& object_placement_matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement)
+            carve::math::Matrix PlacementConverterT<IfcEntityTypesT>::convertRelativePlacementOriginInIfcLinearPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement)
             {
                 if(linear_placement->PlacementRelTo) {
                     // Reference to Object that provides the relative placement by its local coordinate system. 
@@ -62,7 +62,7 @@ namespace OpenInfraPlatform {
                     // recursive call
                     convertIfcObjectPlacement(linear_placement->PlacementRelTo.get().lock(), relative_placement, alreadyApplied);
                     // correct self's placement
-                    object_placement_matrix = relative_placement * object_placement_matrix;
+                    return relative_placement;
                 }
             }
 

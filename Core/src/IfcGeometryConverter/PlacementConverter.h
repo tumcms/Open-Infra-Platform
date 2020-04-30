@@ -418,10 +418,10 @@ namespace OpenInfraPlatform {
                      * @brief Converts the relative placement origin in \c IfcLinearPlacement
                      * 
                      * @param alreadyApplied List of already applied transformations. Returns if this one is contained in the list
-                     * @param[out] object_placement_matrix Returned placement matrix
                      * @param linear_placement The linear placement of which to convert the origin
+                     * @return carve::math::Matrix 
                      */
-                    void convertRelativePlacementOriginInIfcLinearPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, carve::math::Matrix& object_placement_matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement);
+                    carve::math::Matrix convertRelativePlacementOriginInIfcLinearPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement);
 
                     /**
                      * @brief Compare the \c IfcAxis2Placement3D in \c IfcLinearPlacement->Position against the passed matrix
@@ -449,8 +449,17 @@ namespace OpenInfraPlatform {
                      * @param distExpr The \c IfcDistanceExpression from which to compute the offset
                      * @return carve::geom::vector<3> The scaled offset
                      */
-                    carve::geom::vector<3> getOffsetFromCurve(double length_factor, std::shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression> distExpr)
+                    carve::geom::vector<3> getOffsetFromCurve(double length_factor, const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression> &distExpr)
                     {
+                        // ENTITY IfcDistanceExpression
+                        //  SUBTYPE OF (IfcGeometricRepresentationItem);
+                        //   DistanceAlong : IfcLengthMeasure;
+                        //   OffsetLateral : OPTIONAL IfcLengthMeasure;
+                        //   OffsetVertical : OPTIONAL IfcLengthMeasure;
+                        //   OffsetLongitudinal : OPTIONAL IfcLengthMeasure;
+                        //   AlongHorizontal : OPTIONAL IfcBoolean;
+                        // END_ENTITY;
+
                         return carve::geom::VECTOR(
                             distExpr->OffsetLongitudinal.value_or(0.0) * length_factor,
                             distExpr->OffsetLateral.value_or(0.0) * length_factor,
@@ -493,6 +502,12 @@ namespace OpenInfraPlatform {
                         carve::geom::vector<3> local_z = carve::geom::VECTOR(0.0, 1.0, 0.0);
                         carve::geom::vector<3> local_x = carve::geom::VECTOR(0.0, 0.0, 1.0);
 
+                        // Orientation OPTIONAL
+                        // ENTITY IfcOrientationExpression
+                        //	SUBTYPE OF(IfcGeometricRepresentationItem);
+                        //	LateralAxisDirection: IfcDirection;
+                        //	VerticalAxisDirection: IfcDirection;
+                        // END_ENTITY;
                         auto& orientExpr = linear_placement->Orientation;
                         if(orientExpr) {
                             // convert the attributes
@@ -597,17 +612,9 @@ namespace OpenInfraPlatform {
                             // ***********************************************************
                             // calculate the position of the point on the curve + offsets
                             // Distance
-                            // ENTITY IfcDistanceExpression
-                            //  SUBTYPE OF (IfcGeometricRepresentationItem);
-                            //   DistanceAlong : IfcLengthMeasure;
-                            //   OffsetLateral : OPTIONAL IfcLengthMeasure;
-                            //   OffsetVertical : OPTIONAL IfcLengthMeasure;
-                            //   OffsetLongitudinal : OPTIONAL IfcLengthMeasure;
-                            //   AlongHorizontal : OPTIONAL IfcBoolean;
-                            // END_ENTITY;
 
                             // 1. get offset from curve
-                            carve::geom::vector<3> offsetFromCurve = getOffsetFromCurve(length_factor, linear_placement->Distance.lock());
+                            carve::geom::vector<3> offsetFromCurve = getOffsetFromCurve(length_factor, linear_placement->Distance);
                             
                             // 2. calculate the position on and the direction of the base curve
                             carve::geom::vector<3> pointOnCurve;
@@ -621,13 +628,15 @@ namespace OpenInfraPlatform {
                             // the direction of the curve's tangent = directionOfCurve
                             // the offsets = offsetFromCurve
                             // 3.a apply the alongHorizontal bool
-                            auto& distExpr = linear_placement->Distance;
                             bool alongHorizontal = linear_placement->Distance->AlongHorizontal;
                             carve::geom::vector<3> curve_x(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, alongHorizontal ? 0.0 : directionOfCurve.z));
+
                             // 3.b get the perpendicular to the left of the curve in the x-y plane (curve's coordinate system)
                             carve::geom::vector<3> curve_y(carve::geom::VECTOR(-curve_x.y, curve_x.x, 0.0)); // always lies in the x-y plane
+
                             // 3.c get the vertical as cross product
                             carve::geom::vector<3> curve_z = carve::geom::cross(curve_x, curve_y);
+
                             // normalize the direction vectors
                             curve_x.normalize();
                             curve_y.normalize();
@@ -639,20 +648,15 @@ namespace OpenInfraPlatform {
                                 curve_x.y, curve_y.y, curve_z.y, 0.0,
                                 curve_x.z, curve_y.z, curve_z.z, 0.0,
                                 0.0, 0.0, 0.0, 1.0);
-                            carve::geom::vector<3> translate = pointOnCurve + localPlacementMatrix * offsetFromCurve;
+
 
                             // 4. calculate the rotations
-                            // Orientation OPTIONAL
-                            // ENTITY IfcOrientationExpression
-                            //	SUBTYPE OF(IfcGeometricRepresentationItem);
-                            //	LateralAxisDirection: IfcDirection;
-                            //	VerticalAxisDirection: IfcDirection;
-                            // END_ENTITY;
+                            carve::geom::vector<3> translate = pointOnCurve + localPlacementMatrix * offsetFromCurve;
                             object_placement_matrix = computeRotationMatrix(linear_placement, translate);
 
                             checkLinearPlacementAgainstAbsolutePlacement(matrix, linear_placement);
 
-                            convertRelativePlacementOriginInIfcLinearPlacement(alreadyApplied, object_placement_matrix, linear_placement);
+                            object_placement_matrix = convertRelativePlacementOriginInIfcLinearPlacement(alreadyApplied, linear_placement) * object_placement_matrix;
                         }
 
                         // Set the return value
