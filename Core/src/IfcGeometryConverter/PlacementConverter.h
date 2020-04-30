@@ -481,9 +481,6 @@ namespace OpenInfraPlatform {
                      * 
                      * @param linear_placement Linear placement of which to convert the orientation
                      * @param translate Translation component of transformation
-                     * @param local_x Local x orientation on top of which the orientation is applied.
-                     * @param local_y Local y orientation on top of which the orientation is applied.
-                     * @param local_z Local z orientation on top of which the orientation is applied.
                      * @returns rotation
                      */
                     carve::math::Matrix computeRotationMatrix(std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement, carve::geom::vector<3> translate)
