@@ -56,14 +56,10 @@ namespace OpenInfraPlatform {
             template<typename IfcEntityTypesT>
             carve::math::Matrix PlacementConverterT<IfcEntityTypesT>::convertRelativePlacementOriginInIfcLinearPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement)
             {
-                if(linear_placement->PlacementRelTo) {
-                    // Reference to Object that provides the relative placement by its local coordinate system. 
-                    carve::math::Matrix relative_placement(carve::math::Matrix::IDENT());
-                    // recursive call
-                    convertIfcObjectPlacement(linear_placement->PlacementRelTo.get().lock(), relative_placement, alreadyApplied);
-                    // correct self's placement
-                    return relative_placement;
-                }
+                if(linear_placement->PlacementRelTo)
+                    return convertIfcObjectPlacement(linear_placement->PlacementRelTo.get().lock(), alreadyApplied);
+                else
+                    return carve::math::Matrix::IDENT();
             }
 
             template<typename IfcEntityTypesT>
