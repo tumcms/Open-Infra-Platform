@@ -27,6 +27,7 @@ message("Use of DOXYGEN for developers: DOXYGEN_GENERATE_DOCUMENTATION enables b
 Option(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY ON)
 Option(DOXYGEN_OPTIONAL_GENERATE_INTERNAL ON)
 Option(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING ON)
+Option(DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION ON)
 
 # CONFIGURATION. Check http://www.doxygen.nl/manual/config.html for all available options and their default values. 
 
@@ -94,9 +95,11 @@ COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
 endif(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING)
 
 # Automatically open index page of the documentation after building. 
+if(DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION)
 add_custom_command(TARGET OpenInfraPlatform.GenerateDocumentation POST_BUILD
 	COMMAND "${DOXYGEN_OUTPUT_DIRECTORY}/html/index.html"
 )
+endif(DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION)
 
 else()
 message("Doxygen not found. Please install doxygen using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Doxygen.cmd to be able to generate documentation for the project. Please also install the GraphViz DOT package using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Dot.cmd for rendering diagrams.")
