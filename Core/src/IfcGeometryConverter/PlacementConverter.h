@@ -330,7 +330,7 @@ namespace OpenInfraPlatform {
 
 
                     /**
-                     * @brief 
+                     * @brief Converts \c IfcAxis2Placement select and returns matrix for possible types.
                      * 
                      * @param axis_placement The axis placement to convert
                      * @return carve::math::Matrix The converted position
