@@ -411,8 +411,21 @@ namespace OpenInfraPlatform {
 
                     }
 
+                    /**
+                     * @brief Converts the relative placement origin in \c IfcLinearPlacement
+                     * 
+                     * @param alreadyApplied List of already applied transformations. Returns if this one is contained in the list
+                     * @param[out] object_placement_matrix Returned placement matrix
+                     * @param linear_placement The linear placement of which to convert the origin
+                     */
                     void convertRelativePlacementOriginInIfcLinearPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, carve::math::Matrix& object_placement_matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement);
 
+                    /**
+                     * @brief Compare the \c IfcAxis2Placement3D in \c IfcLinearPlacement->Position against the passed matrix
+                     * 
+                     * @param matrix Matrix to compare against absolute placement
+                     * @param linear_placement IfcLinearPlacement which holds absolute placement position to compare against computed matrix
+                     */
                     void checkLinearPlacementAgainstAbsolutePlacement(carve::math::Matrix& matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement)
                     {
                         // ***********************************************************
@@ -426,6 +439,13 @@ namespace OpenInfraPlatform {
                         }
                     }
 
+                    /**
+                     * @brief Get the Offset From Curve object
+                     * 
+                     * @param length_factor The length factor for converting to meters
+                     * @param distExpr The \c IfcDistanceExpression from which to compute the offset
+                     * @return carve::geom::vector<3> The scaled offset
+                     */
                     carve::geom::vector<3> getOffsetFromCurve(double length_factor, std::shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression> distExpr)
                     {
                         return carve::geom::VECTOR(
@@ -435,6 +455,13 @@ namespace OpenInfraPlatform {
                         );
                     }
 
+                    /**
+                     * @brief Compute the position of a IfcLinearPlacement on it's described curve and returns the respective point and the direction at that point
+                     * 
+                     * @param linear_placement \c IfcLinearPlacement for which to cumpute the point and direction
+                     * @param length_factor Length factor to convert to meters
+                     * @return std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> 
+                     */
                     std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement, double length_factor)
                     {
                         carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
@@ -449,6 +476,16 @@ namespace OpenInfraPlatform {
                         return { pointOnCurve, directionOfCurve };
                     }
 
+                    /**
+                     * @brief Computes the rotation matrix for the linear placement
+                     * 
+                     * @param[out] object_placement_matrix Output parameter for the computed matrix
+                     * @param linear_placement Linear placement of which to convert the orientation
+                     * @param translate Translation component of transformation
+                     * @param local_x Local x orientation on top of which the orientation is applied.
+                     * @param local_y Local y orientation on top of which the orientation is applied.
+                     * @param local_z Local z orientation on top of which the orientation is applied.
+                     */
                     void computeRotationMatrix(carve::math::Matrix& object_placement_matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement, carve::geom::vector<3> translate, carve::geom::vector<3> local_x, carve::geom::vector<3> local_y, carve::geom::vector<3> local_z)
                     {
                         auto& orientExpr = linear_placement->Orientation;
@@ -468,6 +505,12 @@ namespace OpenInfraPlatform {
                             0, 0, 0, 1);
                     }
 
+                    /**
+                     * @brief Checks if base curve is a bounded curve.
+                     * 
+                     * @param linear_placement 
+                     * @return bool
+                     */
                     bool baseCurveIsBoundedCurve(std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement);
 
                     /*! \brief Converts \c IfcObjectPlacement to a transformation matrix.
