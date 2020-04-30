@@ -333,7 +333,10 @@ namespace OpenInfraPlatform {
                      * @brief Converts \c IfcAxis2Placement select and returns matrix for possible types.
                      * 
                      * @param axis_placement The axis placement to convert
-                     * @return carve::math::Matrix The converted position
+                     * @return carve::math::Matrix The converted position¨
+                     * 
+                     * @note The select type IfcAxis2Placement can either be a \c IfcAxis2Placement2D or an \c IfcAxis2Placement3D
+                     * and the respective convert function for the actually held type is called.
                      */
                     carve::math::Matrix convertIfcAxis2Placement(typename IfcEntityTypesT::IfcAxis2Placement axis_placement)
                     {
