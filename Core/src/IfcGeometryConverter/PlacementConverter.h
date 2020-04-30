@@ -449,7 +449,7 @@ namespace OpenInfraPlatform {
                      * @param distExpr The \c IfcDistanceExpression from which to compute the offset
                      * @return carve::geom::vector<3> The scaled offset
                      */
-                    carve::geom::vector<3> getOffsetFromCurve(double length_factor, const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression> &distExpr)
+                    carve::geom::vector<3> getOffsetFromCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression> &distExpr)
                     {
                         // ENTITY IfcDistanceExpression
                         //  SUBTYPE OF (IfcGeometricRepresentationItem);
@@ -460,10 +460,10 @@ namespace OpenInfraPlatform {
                         //   AlongHorizontal : OPTIONAL IfcBoolean;
                         // END_ENTITY;
 
-                        return carve::geom::VECTOR(
-                            distExpr->OffsetLongitudinal.value_or(0.0) * length_factor,
-                            distExpr->OffsetLateral.value_or(0.0) * length_factor,
-                            distExpr->OffsetVertical.value_or(0.0) * length_factor
+                        return UnitConvert()->getLengthInMeterFactor() * carve::geom::VECTOR(
+                            distExpr->OffsetLongitudinal.value_or(0.0),
+                            distExpr->OffsetLateral.value_or(0.0),
+                            distExpr->OffsetVertical.value_or(0.0)
                         );
                     }
 
@@ -566,7 +566,7 @@ namespace OpenInfraPlatform {
                         // Distance
 
                         // 1. get offset from curve
-                        carve::geom::vector<3> offsetFromCurve = getOffsetFromCurve(length_factor, linear_placement->Distance);
+                        carve::geom::vector<3> offsetFromCurve = getOffsetFromCurve(linear_placement->Distance);
                             
                         // 2. calculate the position on and the direction of the base curve
                         carve::geom::vector<3> pointOnCurve;
