@@ -19,7 +19,10 @@ This document is incomplete. It has been compiled at the beginning of the great 
 ***
 ## Geometry Converter
 
-The main task of the elements within `IfcGeometryConverter` namespace is transforming the definitions of IFC to sequences of points, lines and/or meshes to be consumed by the shader. These are usually of type `carve::geom::vector3d` or similar objects.
+The main task of the elements within `IfcGeometryConverter` namespace is transforming the definitions of IFC to sequences of points, lines and/or meshes to be consumed by the shader. 
+
+Function input: `EXPRESSReference<IfcEntity>`, additional parameters.
+Function output: `carve::geom::vector3d` or similar objects (as `std::tuple<...>`).
 
 ### Unit conversion
 
