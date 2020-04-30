@@ -73,26 +73,21 @@ configure_file(${DOXYFILE_CMAKE} ${DOXYFILE} @ONLY)
 # add source code to doxygen input
 set(DOXYGEN_INPUT ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Documentation for entire OPEN INFRA PLATFORM project.
-if(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING)
 # add IFC generated files to doxygen input directory
+if(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING)
 foreach(format ${IFC_FORMATS})	
 	if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding/${format})
 		set(DOXYGEN_INPUT ${DOXYGEN_INPUT} "${CMAKE_BINARY_DIR}/EarlyBinding/${format}/src")
 	endif()
 endforeach()
+endif(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING)
+
+# Create target for the documentation.
 doxygen_add_docs(OpenInfraPlatform.GenerateDocumentation ALL
 ${DOXYGEN_INPUT} 	# Source code that is (to be) documented located here
 WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root. Change if relative base point should be different.
 #USE_STAMP_FILE
 COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
-else()
-doxygen_add_docs(OpenInfraPlatform.GenerateDocumentation ALL
-${CMAKE_CURRENT_SOURCE_DIR} 	# Source code that is (to be) documented located here
-WORKING DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}	# Current root. Change if relative base point should be different.
-#USE_STAMP_FILE
-COMMENT "Generating doxymentation for TUM Open Infra Platform project.")
-endif(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING)
 
 # Automatically open index page of the documentation after building. 
 if(DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION)
