@@ -37,7 +37,7 @@ A tag that is more likely to be required to change:
 More settings to be added can be found here:
 http://www.doxygen.nl/manual/index.html
 
-Important: when adding settingsthem in CMake, always use DOXYGEN_ before the standard doxygen tag, e.g. the doxygen tag "PROJECT_BRIEF" has to be "DOXYGEN_PROJECT_BRIEF" in the ConfigureDoxygen.cmake file.
+Important: when adding settings in CMake, always use DOXYGEN_ before the standard doxygen tag, e.g. the doxygen tag "PROJECT_BRIEF" has to be "DOXYGEN_PROJECT_BRIEF" in the ConfigureDoxygen.cmake file.
 
 ## Building the documentation
 In Visual studio, build "OpenInfraPlatform.GenerateDocumentation". This target can be found in Visual Studio under OpenInfraPlatform/Commands.
