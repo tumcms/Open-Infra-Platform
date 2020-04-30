@@ -22,9 +22,9 @@ If DOXYGEN_GENERATE_DOCUMENTATION is selected in the CMake GUI, CMake will autom
 https://github.com/tumcms/Open-Infra-Platform/blob/development/CMakeLists.txt
 
 In the CMake GUI, the following options can be selected:
-- DOXYGEN_OPTIONAL_COMMENTED_ONLY: If this is not selected, doxygen will assume that all entities are documented, even if there is no documentation available. 
-- DOXYGEN_OPTIONAL_INCLUDE_INTERNAL: If selected, this will include all comments preceded by "\internal" (comments intended for developers only).
-- DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING: If selected (... and already built), this will include the selected IFC schemas in the documentation. 
+- DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY: If selected, only documentation for explicitly commented entities will be generated. Otherwise, doxygen will assume that all entities are documented, even if there is no documentation available. 
+- DOXYGEN_OPTIONAL_INCLUDE_INTERNAL: If selected, this will include all comments preceded by "\internal". These are comments intended for developers only. So if the generated documentation is intended for external users, this option should not be selected.
+- DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING: If selected (... and already built), this will include the selected IFC schemas in the documentation. Otherwise, the schemas will not be included in the documentation.
 
 ### ConfigureDoxygen.cmake file
 If DOXYGEN_GENERATE_DOCUMENTATION is selected in CMake, CMake will include ConfigureDoxygen.cmake. This file includes all settings for the generation of doxygen documentation for the Open Infra Platform project. Changes to documentation settings should be made here. doxygen_add_docs() creates the GenerateDocumentation target. The up-to-date version of the file can be found here:
