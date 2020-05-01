@@ -187,6 +187,7 @@ namespace OpenInfraPlatform {
 					// (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
 					if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis1Placement>(placement)) {
 						BLUE_LOG(error) << placement->getErrorLog() << ": Not implemented.";
+						throw UnhandledException(placement);
 						return;
 					}
 
@@ -434,6 +435,7 @@ namespace OpenInfraPlatform {
 					if( grid_placement ) {
 						//TODO Not implemented
 						BLUE_LOG(warning) << grid_placement->getErrorLog() << ": Not implemented";
+						throw UnhandledException(objectPlacement);
 					} // end if IfcGridPlacement
 
 					// (3/3) IfcLinearPlacement SUBTYPE OF IfcObjectPlacement
