@@ -33,7 +33,6 @@
 #include "GeomUtils.h"
 #include "GeometryInputData.h"
 #include "PlacementConverter.h"
-#include "UnhandledRepresentationException.h"
 
 #include "BlueFramework/Core/Diagnostics/log.h"
 

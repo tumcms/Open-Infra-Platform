@@ -26,7 +26,6 @@
 #include "ConverterBase.h"
 
 #include "GeomUtils.h"
-#include "UnhandledRepresentationException.h"
 #include "PlacementConverter.h"
 #include "ProfileConverter.h"
 #include "SplineConverter.h"
