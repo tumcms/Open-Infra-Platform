@@ -22,11 +22,11 @@ find_package(Doxygen
 
 if(DOXYGEN_FOUND)
 message("Use of DOXYGEN for developers: DOXYGEN_GENERATE_DOCUMENTATION enables building the documentation for the Open Infra Platform. \n"
-"DOXYGEN_GENERATE_DOCUMENTATION and DOXYGEN_AUTO_OPEN_DOCUMENTATION is are preselected by default. \n"
+"DOXYGEN_GENERATE_DOCUMENTATION, DOXYGEN_INCLUDE_COMMENTED_ONLY and DOXYGEN_AUTO_OPEN_DOCUMENTATION are preselected by default. \n"
 "Refer to DoxygenHelp.md (${CMAKE_CURRENT_SOURCE_DIR}/Documentation/markdown) for the selection of the DOXYGEN_OPTIONALs and on how to use DOXYGEN within project.")
 
 # Doxygen build options. 
-Option(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY OFF)
+Option(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY ON)
 Option(DOXYGEN_OPTIONAL_INCLUDE_INTERNAL OFF)
 Option(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING OFF)
 Option(DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION ON)
