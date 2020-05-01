@@ -249,13 +249,15 @@ namespace OpenInfraPlatform {
 						}
 
 						} // end try
-						catch (UnhandledException ex)
+						catch (const UnhandledException& ex)
 						{
 							BLUE_LOG(error) << ex.what();
+							continue;
 						}
 						catch (...)
 						{
 							BLUE_LOG(error) << "Unknown exception";
+							throw;
 						}
 						//err << "unhandled representation: #" << representation_item->getId() << " = " << representation_item->classname() << std::endl;
 					} // end for each representation item
