@@ -21,7 +21,7 @@ If DOXYGEN_GENERATE_DOCUMENTATION is selected in the CMake GUI, CMake will autom
 
 https://github.com/tumcms/Open-Infra-Platform/blob/development/CMakeLists.txt
 
-In the CMake GUI, the following options can be selected:
+In the CMake GUI, apart from DOXYGEN_GENERATE_DOCUMENTATION, the following options can be selected:
 - DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY: If selected, only documentation for explicitly commented entities will be generated. Otherwise, doxygen will assume that all entities are documented, even if there is no documentation available. 
 - DOXYGEN_OPTIONAL_INCLUDE_INTERNAL: If selected, this will include all comments preceded by "\internal". These are comments intended for developers only. So if the generated documentation is intended for external users, this option should not be selected.
 - DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING: If selected (... and already built), this will include the selected IFC schemas in the documentation. Otherwise, the schemas will not be included in the documentation, but this does not influence the selection of IFC schemas (see EARLYBINDING_ tags in CMake GUI).

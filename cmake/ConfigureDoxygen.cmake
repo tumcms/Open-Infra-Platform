@@ -22,14 +22,14 @@ find_package(Doxygen
 
 if(DOXYGEN_FOUND)
 message("Use of DOXYGEN for developers: DOXYGEN_GENERATE_DOCUMENTATION enables building the documentation for the Open Infra Platform. \n"
-"Selecting DOXYGEN_GENERATE_DOCUMENTATION and DOXYGEN_AUTO_OPEN_DOCUMENTATION recommended. \n"
+"Selecting DOXYGEN_GENERATE_DOCUMENTATION and DOXYGEN_AUTO_OPEN_DOCUMENTATION is recommended. \n"
 "Refer to DoxygenHelp.md for the selection of the DOXYGEN_OPTIONALs and on how to use DOXYGEN within project.")
 
 # Doxygen build options. 
-Option(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY ON)
-Option(DOXYGEN_OPTIONAL_INCLUDE_INTERNAL ON)
-Option(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING ON)
-Option(DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION ON)
+Option(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY OFF)
+Option(DOXYGEN_OPTIONAL_INCLUDE_INTERNAL OFF)
+Option(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING OFF)
+Option(DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION OFF)
 
 # CONFIGURATION. Check http://www.doxygen.nl/manual/config.html for all available options and their default values. 
 

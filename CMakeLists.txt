@@ -300,7 +300,7 @@ endforeach()
 #------------------------------------------------------------------------------
 # DOXYGEN. 
 #------------------------------------------------------------------------------
-Option(DOXYGEN_GENERATE_DOCUMENTATION ON)
+Option(DOXYGEN_GENERATE_DOCUMENTATION OFF)
 
 if(DOXYGEN_GENERATE_DOCUMENTATION)
 
