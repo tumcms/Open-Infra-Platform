@@ -15,8 +15,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*! This is a test for a detailed description using doxygen. 
-*/
+
 
 #pragma once
 #ifndef FACECONVERTER_H
@@ -106,6 +105,9 @@ namespace OpenInfraPlatform {
 						if(convertIfcBSplineSurface(bounded_surface, pos, polyline_data)) {
 							return;
 						}
+
+						/*! \internal testing if the Cmake options to include internal comments works.
+						*/
 
 						// (1/4) IfcBSplineSurface SUBTYPE of IfcBoundedSurface
 						std::shared_ptr<typename IfcEntityTypesT::IfcBSplineSurface> bspline_surface =
