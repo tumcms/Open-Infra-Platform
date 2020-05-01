@@ -25,46 +25,63 @@
 
 #include "CarveHeaders.h"
 
+#include "EXPRESS/EXPRESSObject.h"
+
 namespace OpenInfraPlatform {
 	namespace Core {
 		namespace IfcGeometryConverter {
-			template <
-				class IfcEntityTypesT
-			>
-				class UnhandledRepresentationException : public std::exception {
-				public:
-					UnhandledRepresentationException()
-					{
-					}
-					UnhandledRepresentationException(std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem> item)
-					{
-						item = item;
-					}
 
-					~UnhandledRepresentationException() throw()
-					{
-					}
-
-					const char* what() const throw()
-					{
-						return "Unhandled IFC Representation";
-					}
-
-					std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem> item;
-					//std::shared_ptr<typename IfcEntityTypesT::IfcAbstractSelect> select;
-			};
-
-#ifdef _DEBUG
-
-			class DebugBreakException : public std::exception {
+			/*!
+			\brief Gets thrown if an IFC entity ot type is not supported by OIP.
+			*/
+			class UnhandledException : public std::exception {
 			public:
-				DebugBreakException(std::string reason) { reason = reason; }
-				~DebugBreakException() throw() {}
-				virtual const char* what() const throw() { return reason.c_str(); }
-				std::string reason;
+				//! Constructor
+				UnhandledException() noexcept
+				{
+				}
+				//! Copy Constructor
+				UnhandledException(const UnhandledException& other) noexcept
+					: item_(other.item_)
+				{
+				}
+				/*!
+				\brief Constructor with the unhandled entity.				
+				\param[in] item The entity that is not handled.
+				*/
+				UnhandledException(const std::shared_ptr<oip::EXPRESSObject>& item) noexcept
+				{
+					item_ = item;
+				}
+				//! Destructor
+				~UnhandledException() throw()
+				{
+				}
+				
+				/*!
+				\brief Returns what is not supported.
+				\returns A message with the entity name.
+				*/
+				const char* what() const throw()
+				{
+					std::string s = item_->getErrorLog() + ": Unhandled IFC Representation";
+					return s.c_str();
+				}
+
+				std::shared_ptr<oip::EXPRESSObject> item_;
 			};
 
-#endif
+//#ifdef _DEBUG
+//
+//			class DebugBreakException : public std::exception {
+//			public:
+//				DebugBreakException(std::string reason) { reason = reason; }
+//				~DebugBreakException() throw() {}
+//				virtual const char* what() const throw() { return reason.c_str(); }
+//				std::string reason;
+//			};
+//
+//#endif
 		}
 	}
 }
