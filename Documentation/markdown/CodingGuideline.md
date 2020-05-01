@@ -21,8 +21,8 @@ This document is incomplete. It has been compiled at the beginning of the great 
 
 The main task of the elements within `IfcGeometryConverter` namespace is transforming the definitions of IFC to sequences of points, lines and/or meshes to be consumed by the shader. 
 
-Function input: `EXPRESSReference<IfcEntity>`, additional parameters.
-Function output: `carve::geom::vector3d` or similar objects (as `std::tuple<...>`).
+Function input: `const EXPRESSReference<IfcEntity>&`, additional parameters.
+Function output: `carve::geom::vector<3>` or similar objects (multiple return object as `std::tuple<...>`).
 
 ### Unit conversion
 
@@ -31,7 +31,8 @@ OpenInfraPlatform assumes everything is in SI units (e.g. meters, radians).
 IFC content is scaled according to the specified units within the file.
 The conversion factors can be obtained with `UnitConvert()` member of conversion classes.
 
-**NOTE:** Any `IFC` entity or content has not been scaled, every `carve` entity has been scaled.
+**NOTE:** Abide by this rule:
+> Any `IFC` entity or content has not been scaled, every `carve` entity has been scaled.
 
 ### Tessellation and precision
 
@@ -40,7 +41,7 @@ These can be accessed with `GeomSettings()` member of conversion classes.
 
 ### Case: IFC entity not supported
 
-If an entity is not supported, the code should throw `UnhandledRepresentationException`.
+If an entity is not supported, the code should throw `UnhandledException`.
 
 ### Case: Entity definition changed between IFC versions
 
@@ -48,10 +49,12 @@ If the definition of the entity has changed between versions, these steps need t
 * Define a function that handles this case specifically.
 * Provide the specific implementation as a [template specialization](https://de.cppreference.com/w/cpp/language/template_specialization).
 **NOTE:** This needs to be enclosed in `#ifdef` with the corresponding IFC version.
-* Provide a general implementation also.
+* Do not forget to provide a general implementation.
 
 For an example, see function `PlacementConverterT::GetCurveOfPlacement`.
 
 ***
 ## Data management
 
+ToDo:
+Here comes the descriptions for the data management part of Core.
