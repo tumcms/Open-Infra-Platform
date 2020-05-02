@@ -27,13 +27,13 @@ Before you can proceed to work with Git, there are several steps, which have to 
 
 Adding a remote repository gives you an opportunity to *fetch* all changes from the official repository. While working with OpenInfraPlatform, official repository is https://github.com/tumcms/Open-Infra-Platform. For this reason, it is desired to name this remote **tumcms**, to distinguish it from your **origin** remote repository.  
 
-[More information about updating your fork.](./GitProcess.md#Updating from main repository). 
+[More information about updating your fork.](#Updating). 
 
 As a result you will have two remote repositories: 
 
-		* Your **origin** repository (https://github.com/<your_username>/Open-Infra-Platform).
+	- Your **origin** repository (https://github.com/<your_username>/Open-Infra-Platform).
 
-		* **tumcms** repository (https://github.com/tumcms/Open-Infra-Platform).
+	- **tumcms** repository (https://github.com/tumcms/Open-Infra-Platform).
 
 ## Submit changes 
 
@@ -53,7 +53,7 @@ As a result you will have two remote repositories:
 
 	- In the command line write out *git commit -m "Commit message"* (e.g. *git commit -m "Fixed Bugs"*). **NOTE:** Please be descriptive in your commit message as to what changes are involved in this commit.
 
-4.*Push* changes to remote repository: 
+4. *Push* changes to remote repository: 
 
 	- In the command line write out *git push origin*. As a result, your changes are online on GitHub in your remote repository (https://github.com/<your_username>/Open-Infra-Platform). 
 
@@ -86,7 +86,7 @@ After successfully pushing changes to your remote repository, you should merge y
 
 6. Select *Create pull request*
 
-## Updating from main repository 
+## <a name="Updating"></a> Updating from main repository 
 
 (Fetch all)...
 
