@@ -9,8 +9,8 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 2. **CMake 3.17.0** is installed - find [here](https://cmake.org/download/)
 3. **Qt 5.12.1** is installed and included in the path -  find [here](https://www.qt.io/download-open-source)
 
-	*binaries x64 msvc2017 
-	*mingw
+	* **Mandatory:** binaries x64 msvc2017 
+	* **Mandatory:** mingw
 
 4. **Boost 1_65_1** is installed and included in the path -  find [here](https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/boost_1_65_1-msvc-14.1-64.exe/download)
 5. **Anaconda 2**  - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe)
@@ -37,9 +37,9 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 ![](./fig/CMake_Installation_settings.png)
 
-7. Choose options according to [this](./BuildOptions.md)
+7. For detailed description of options, see [here](./CMakeOptions.md)
 8. After configuration process has successfully finished, click *Generate*.
-9. After generation process is done click *open Project*. It will open OpenInfraPlatform in the Visual Studio.
+9. After generation process is done click *open Project*. It will open OpenInfraPlatform solution in the Visual Studio.
 ***
 ## Building the OpenInfraPlatform in Visual Studio 
 
