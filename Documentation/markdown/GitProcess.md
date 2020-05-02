@@ -23,7 +23,13 @@ Before you can proceed to work with Git, there are several steps, which have to 
 
 	- In the window, which you have opened, in the command line write out *git clone https://github.com/<your_username>/Open-Infra-Platform.git* . This will start a download.
 
-4. Add remote:  In the command line write out *git remote add tumcms https://github.com/tumcms/Open-Infra-Platform.git*. Adding a remote repository gives you an opportunity to *pull* changes from the official repository. While working with OpenInfraPlatform, official repository is https://github.com/tumcms/Open-Infra-Platform.git. For this reason, it is desired to name this repository **tumcms**, to distinguish it from your **origin** repository.  More information about updating your repositories find [here](./GitProcess.md#Updating from main repository). As a result you will have two remote repositories: 
+4. Add remote:  In the command line write out *git remote add tumcms https://github.com/tumcms/Open-Infra-Platform.git*. 
+
+Adding a remote repository gives you an opportunity to *fetch* all changes from the official repository. While working with OpenInfraPlatform, official repository is https://github.com/tumcms/Open-Infra-Platform. For this reason, it is desired to name this remote **tumcms**, to distinguish it from your **origin** remote repository.  
+
+[More information about updating your fork.](./GitProcess.md#Updating from main repository). 
+
+As a result you will have two remote repositories: 
 
 		* Your **origin** repository (https://github.com/<your_username>/Open-Infra-Platform).
 
