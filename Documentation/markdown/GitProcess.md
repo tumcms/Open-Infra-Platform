@@ -94,17 +94,17 @@ Once you have *added a remote*, you can update your local repository with all ch
 
 	- In **Git Bash**, which is working in OpenInfraPlatform folder, in the command line write out *git pull tumcms development*.  
 
-	*tumcms* is a name you gave to OpenInfraPlatform official repository (https://github.com/tumcms/Open-Infra-Platform) while [adding remote](#Remote). 
+	*tumcms* is the name you gave to OpenInfraPlatform official repository (https://github.com/tumcms/Open-Infra-Platform) while [adding remote](#Remote). 
 	
-	*development* is a name of the main branch in this repository. 
+	*development* is the name of the main branch in this repository. 
 
 2. Update your **origin** repository:
 
 	- In the command line write out *git push origin development*. 
 
-	*origin* is a name of your remote repository (https://github.com/<your_username>/Open-Infra-Platform). 
+	*origin* is the name of your remote repository (https://github.com/<your_username>/Open-Infra-Platform). 
 	
-	*development* is a name of the main branch in your remote repository. 
+	*development* is the name of the main branch in your remote repository. 
 
 Now you have both your repositories (local and remote) updated. 
 
