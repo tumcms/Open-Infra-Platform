@@ -31,17 +31,17 @@ Before you can proceed to work with Git, there are several steps, which have to 
 
 	As a result you will have two remote repositories: 
 
-		- Your **origin** repository (https://github.com/<your_username>/Open-Infra-Platform).
+		 Your **origin** repository (https://github.com/<your_username>/Open-Infra-Platform).
 
-		- **tumcms** repository (https://github.com/tumcms/Open-Infra-Platform).
+		 **tumcms** repository (https://github.com/tumcms/Open-Infra-Platform).
 
 ## Submit changes 
 
 1. Before creating any changes, create new branch: 
  
-	- Open OpenInfraPlatform folder and select *Git Bash Here*. You also can open **Git Bash** and write out in the command line *cd "<Path to OpenInfraPlatform>"* (e.g  *cd  "C:\dev\Open-Infra-Platform"*)
+	- Open OpenInfraPlatform folder and select *Git Bash Here*. You also can open **Git Bash** and write out in the command line *cd "<Path to OpenInfraPlatform>"* (e.g  *cd  "C:\dev\Open-Infra-Platform"*).
 
-	- In the command line write out *git checkout -b <branchname>* (e.g. *git checkout -b Fixing_Bugs*)
+	- In the command line write out *git checkout -b <branchname>* (e.g. *git checkout -b Fixing_Bugs*).
 
 2. After creating some changes, *add* these changes:
 
@@ -84,11 +84,11 @@ After successfully pushing changes to your remote repository, you should merge y
 
 5. Assign *Labels* to your *pull request*. (e.g. bug)
 
-6. Select *Create pull request*
+6. Select *Create pull request*.
 
 ## <a name="Updating"></a> Updating from main repository 
 
-Once you have *added a remote*, you are able to update your local repository with all changes made in the official repository. **It is higly recommended to update you local repository every time you start working with it. Otherwise, you will not have access to recent changes**. 
+Once you have *added a remote*, you can update your local repository with all changes made in the official repository. **It is highly recommended to update your local repository every time you start working with it. Otherwise, you will not have access to recent changes**. 
 
 1. Add all updates to your local repository: 
 
