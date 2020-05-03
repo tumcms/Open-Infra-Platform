@@ -31,9 +31,9 @@ Before you can proceed to work with Git, there are several steps, which have to 
 
 	As a result you will have two remote repositories: 
 
-	Your **origin** repository (https://github.com/<your_username>/Open-Infra-Platform).
+		- Your **origin** repository (https://github.com/<your_username>/Open-Infra-Platform).
 
-	**tumcms** repository (https://github.com/tumcms/Open-Infra-Platform).
+		- **tumcms** repository (https://github.com/tumcms/Open-Infra-Platform).
 
 ## Submit changes 
 
