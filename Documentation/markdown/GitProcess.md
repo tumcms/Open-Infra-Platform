@@ -92,7 +92,8 @@ Once you have *added a remote*, you can update your local repository with all ch
 
 1. Add all updates to your local repository: 
 
-	- In **Git Bash**, which is working in OpenInfraPlatform folder, in the command line write out *git pull tumcms development*.  
+	- In **Git Bash**, which is working in OpenInfraPlatform folder, in the command line write out:
+	 > git pull tumcms development
 
 	*tumcms* is the name you gave to OpenInfraPlatform official repository (https://github.com/tumcms/Open-Infra-Platform) while [adding remote](#Remote). 
 	
