@@ -55,6 +55,7 @@ Before you can proceed to work with Git, there are several steps, which have to 
 
 	- In the command line of **Git Bash** write out:
 	 > git add <filename> 
+
 	This will add changes of one file to a commit. 
 
 	- **OR** write out:
@@ -76,7 +77,7 @@ Before you can proceed to work with Git, there are several steps, which have to 
 
 	As a result, your changes are online on GitHub in your remote repository (https://github.com/<your_username>/Open-Infra-Platform). 
 
-##Pull request 
+## Pull request 
 
 After successfully pushing changes to your remote repository, you should merge your branch with the official repository. This can be achieved with *Pull request*:
 
