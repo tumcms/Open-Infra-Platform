@@ -50,7 +50,7 @@ The TUM Open Infra Platform uses doxygen to document its code. The CMake options
 [Go back to overview](#project-options)
 
 ### EarlyBinding
-These options allow you to select which IFC schemas should be built for the project. These options will only be displayed once *OpenInfraPlatform.Commands.UpdateBoostMPL* and *OpenInfraPlatform.ExpressBindingGenerator* have been built (see [Building.md](./Building.md)). Once the desired schema or schemas are selected, you have to generate CMake again. The default value for the schemata are set [here](https://github.com/tumcms/Open-Infra-Platform/blob/development/ExpressBindingGenerator/CMakeLists.txt).
+These options allow you to select which IFC schemas should be built for the project. These options will only be displayed once *OpenInfraPlatform.Commands.UpdateBoostMPL* and *OpenInfraPlatform.ExpressBindingGenerator* have been built (see [SetupHelp.md](./SetupHelp.md)). Once the desired schema or schemas are selected, you have to generate CMake again. The default value for the schemata are set [here](https://github.com/tumcms/Open-Infra-Platform/blob/development/ExpressBindingGenerator/CMakeLists.txt).
 
 | Option                            | Default |
 |-----------------------------------|---------|
