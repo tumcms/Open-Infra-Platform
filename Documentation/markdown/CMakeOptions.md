@@ -4,15 +4,19 @@ This lists all CMake Options that can be set for the TUM Open Infra Platform pro
 ## Overview of files using CMake Options:
 
 Grouping by files or topic? Link to section below.
-- Doxygen
-- EarlyBinding
 
-- External
+- [Toplevel Cmakelists.txt](##toplevel-cmakelists.txt)
+- [Doxygen](##doxygen)
+- [EarlyBinding](##earlybinding)
+- [External](##external)
 
-Default value / preselection etc. 
+What else?
+Default value / preselection etc. Structure (Option, default, description, link).
+
+## Toplevel CMakelists.txt
 
 ## Doxygen
-General desciption what these options are for. Refer to DoxygenHelp.md.
+The TUM Open Infra Platform uses doxygen to document its code. The CMake options listed below allow the user adjust the outcome of the documentation by selecting which parts of the source code should be included in the generated documentation. For more information on how doxygen is used in the TUM Open Infra Platform, please refer to DoxygenHelp.md ([DoxygenHelp.md](https://github.com/tumcms/Open-Infra-Platform/blob/development/Documentation/markdown/DoxygenHelp.md))
 
 | Option                                   | Default | Description                                                                                                                                                                                                                                                                         | Link to file                                          										 				|
 |------------------------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
@@ -23,6 +27,9 @@ General desciption what these options are for. Refer to DoxygenHelp.md.
 | DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION | ON      | If selected, the landing page of the documentation will open automatically. <br>If not selected, you will have to find and open the generated documentation <br>manually (see section below on building the documentation).                                                         | [Go to file](https://github.com/tumcms/Open-Infra-Platform/blob/development/cmake/ConfigureDoxygen.cmake)	|
 
 ## EarlyBinding
+
+## External
+
 
 
 
