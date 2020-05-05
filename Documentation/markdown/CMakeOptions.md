@@ -4,7 +4,7 @@ This lists all CMake Options that can be set for the TUM Open Infra Platform pro
 ## Overview of the CMake Options
 
 A CMake Option is visible in the CMake GUI as a box that can be ticked (or not). 
-**Note that if an option is set to "ON" by default, whatever the option does will be executed, regardless of the option box not being ticked in the CMake GUI.** If you want to return to the default values, you will have to delete the CMake cache and configure again. Refer to the CMake "Option" command [here](https://cmake.org/cmake/help/latest/command/option.html).
+If you have made changes and want to return to the default values, you will have to delete the CMake cache and configure again. Refer to the CMake "Option" command [here](https://cmake.org/cmake/help/latest/command/option.html).
 
 The options that can be set for the TUM Open Infra Platform are grouped as project-specific options and external options (libraries and thirdparty software). Click on the name below to jump to the respective section. There you will find a description of what each option does, what its default value is and where to find the source code where the option is set if you require more information or wish to make changes there. 
 
