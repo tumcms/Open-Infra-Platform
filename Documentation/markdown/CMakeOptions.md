@@ -5,10 +5,10 @@ This lists all CMake Options that can be set for the TUM Open Infra Platform pro
 
 Grouping by files or topic? Link to section below.
 
-- [Toplevel Cmakelists.txt](##toplevel-cmakelists.txt)
-- [Doxygen](##doxygen)
-- [EarlyBinding](##earlybinding)
-- [External](##external)
+- [Toplevel Cmakelists.txt](#toplevel-cmakelists.txt)
+- [Doxygen](#doxygen)
+- [EarlyBinding](#earlybinding)
+- [External](#external)
 
 What else?
 Default value / preselection etc. Structure (Option, default, description, link).
@@ -16,7 +16,7 @@ Default value / preselection etc. Structure (Option, default, description, link)
 ## Toplevel CMakelists.txt
 
 ## Doxygen
-The TUM Open Infra Platform uses doxygen to document its code. The CMake options listed below allow the user adjust the outcome of the documentation by selecting which parts of the source code should be included in the generated documentation. For more information on how doxygen is used in the TUM Open Infra Platform, please refer to DoxygenHelp.md ([DoxygenHelp.md](https://github.com/tumcms/Open-Infra-Platform/blob/development/Documentation/markdown/DoxygenHelp.md))
+The TUM Open Infra Platform uses doxygen to document its code. The CMake options listed below allow the user adjust the outcome of the documentation by selecting which parts of the source code should be included in the generated documentation. For more information on how doxygen is used in the TUM Open Infra Platform, please refer to [DoxygenHelp.md](https://github.com/tumcms/Open-Infra-Platform/blob/development/Documentation/markdown/DoxygenHelp.md)
 
 | Option                                   | Default | Description                                                                                                                                                                                                                                                                         | Link to file                                          										 				|
 |------------------------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
