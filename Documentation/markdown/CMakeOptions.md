@@ -1,19 +1,16 @@
 # CMake Options for the TUM Open Infra Platform.
 This lists all CMake Options that can be set for the TUM Open Infra Platform project.
 
-## Overview of files using CMake Options:
+## Overview of the CMake Options:
 
-Grouping by files or topic? Link to section below.
+The options are grouped thematically. Click on the name below to jump to the respective section. There you will find a description of what each option does, what its default value is and where to find the source code where the option is set if you require more information or wish to make changes there. 
 
-- [Toplevel Cmakelists.txt](#toplevel-cmakelists.txt)
+- [Toplevel CMakeLists](#toplevel-cmakelists)
 - [Doxygen](#doxygen)
 - [EarlyBinding](#earlybinding)
 - [External](#external)
 
-What else?
-Default value / preselection etc. Structure (Option, default, description, link).
-
-## Toplevel CMakelists.txt
+## Toplevel CMakeLists
 
 ## Doxygen
 The TUM Open Infra Platform uses doxygen to document its code. The CMake options listed below allow the user adjust the outcome of the documentation by selecting which parts of the source code should be included in the generated documentation. For more information on how doxygen is used in the TUM Open Infra Platform, please refer to [DoxygenHelp.md](https://github.com/tumcms/Open-Infra-Platform/blob/development/Documentation/markdown/DoxygenHelp.md).
