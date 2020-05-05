@@ -84,7 +84,7 @@ These options allow you to select which IFC schemas should be built for the proj
 [Go back to overview](#project-options)
 
 ### Modules
-These options allow you to include specific modules to the TUM Open Infra Platform project. Currently, only the point cloud processing module is supported. These options are specified [here](https://github.com/tumcms/Open-Infra-Platform/blob/development/CMakeLists.txt9.
+These options allow you to include specific modules to the TUM Open Infra Platform project. Currently, only the point cloud processing module is supported. These options are specified [here](https://github.com/tumcms/Open-Infra-Platform/blob/development/CMakeLists.txt9).
 
 | Option                          | Default | 
 |---------------------------------|---------|
