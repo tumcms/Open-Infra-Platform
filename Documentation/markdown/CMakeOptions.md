@@ -16,7 +16,7 @@ The options that can be set for the TUM Open Infra Platform are grouped as proje
 The following are options specific to the build of the TUM Open Infra Platform project. The options are grouped thematically. Click on the name below to jump to the respective section. 
 If you want to see information about external library and thirdparty software options instead, you can find them [here](#external-options). 
 
-- [Build options](#buil-doptions)
+- [Build options](#build-options)
 - [Doxygen](#doxygen)
 - [EarlyBinding](#earlybinding)
 - [FetchContent](#fetchcontent)
