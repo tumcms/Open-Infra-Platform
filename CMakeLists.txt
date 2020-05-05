@@ -24,6 +24,7 @@ cmake_policy(SET CMP0071 OLD)
 
 project(OpenInfraPlatform)
 
+message(STATUS "Please refer to .../Documentation/markdown/CMakeOptions.md for detail on all options that can be selected in the configuration.")
 #-------------------------------------------------------------------------------------
 # CMake definitions and propertiess
 #-------------------------------------------------------------------------------------
@@ -859,3 +860,4 @@ install(FILES ${Qt5_ICONENGINES_PLUGINS_DLLS}
 	COMPONENT oip_thirdparty)
 	
 include(CPack)
+
