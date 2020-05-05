@@ -3,6 +3,8 @@ This lists all CMake Options that can be set for the TUM Open Infra Platform pro
 
 ## Overview of the CMake Options:
 
+Note that if the default value is set to "ON", whatever the option does will be executed, regardless of the option box being ticked in the CMake GUI or not. (?) Test this. 
+
 The options are grouped thematically. Click on the name below to jump to the respective section. There you will find a description of what each option does, what its default value is and where to find the source code where the option is set if you require more information or wish to make changes there. 
 
 - [Toplevel CMakeLists](#toplevel-cmakelists)
