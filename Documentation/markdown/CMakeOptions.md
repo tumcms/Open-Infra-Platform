@@ -50,16 +50,17 @@ The TUM Open Infra Platform uses doxygen to document its code. The CMake options
 [Go back to overview](#project-options)
 
 ### EarlyBinding
+These options allow you to select which IFC schemas should be built for the project. These options will only be displayed once OpenInfraPlatform.Commands.UpdateBoostMPL and OpenInfraPlatform.ExpressBindingGenerator have been built (see [Building.md](./Building.md). Once the desired schema or schemas are selected, you have to generate CMake again. The default value for the schemata are set [here](https://github.com/tumcms/Open-Infra-Platform/blob/development/ExpressBindingGenerator/CMakeLists.txt).
 
-| Option                            | Default | Description | Link to file |
-|-----------------------------------|---------|-------------|--------------|
-| EARLYBINDING_WITH_IFC2X3          | OFF     |             |              |
-| EARLYBINDING_WITH_IFC4            | OFF     |             |              |
-| EARLYBINDING_WITH_IFC4X1          | OFF     |             |              |
-| EARLYBINDING_WITH_IFC4X2          | OFF     |             |              |
-| EARLYBINDING_WITH_IFC4X2_BIM4ROAD | OFF     |             |              |
-| EARLYBINDING_WITH_IFC4X2_DRAFT_1  | OFF     |             |              |
-| EARLYBINDING_WITH_IFC4X3_RC1      | OFF     |             |              |
+| Option                            | Default |
+|-----------------------------------|---------|
+| EARLYBINDING_WITH_IFC2X3          | OFF     |           
+| EARLYBINDING_WITH_IFC4            | OFF     |           
+| EARLYBINDING_WITH_IFC4X1          | OFF     |
+| EARLYBINDING_WITH_IFC4X2          | OFF     |            
+| EARLYBINDING_WITH_IFC4X2_BIM4ROAD | OFF     |          
+| EARLYBINDING_WITH_IFC4X2_DRAFT_1  | OFF     |       
+| EARLYBINDING_WITH_IFC4X3_RC1      | ON      |  
 
 [Go back to overview](#project-options)
 
