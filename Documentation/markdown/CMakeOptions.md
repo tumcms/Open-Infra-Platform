@@ -34,7 +34,7 @@ If you want to see information about external library and thirdparty software op
 | BUILD_TESTS       | ON      |             |              |
 | BUILD_UTILS       | ON      |             |              |
 
-[Go back to overview of project options](#project-options)
+[Go back to overview](#project-options)
 
 ### Doxygen
 The TUM Open Infra Platform uses doxygen to document its code. The CMake options listed below allow the user adjust the outcome of the documentation by selecting which parts of the source code should be included in the generated documentation. For more information on how doxygen is used in the TUM Open Infra Platform, please refer to [DoxygenHelp.md](https://github.com/tumcms/Open-Infra-Platform/blob/development/Documentation/markdown/DoxygenHelp.md).
@@ -47,7 +47,7 @@ The TUM Open Infra Platform uses doxygen to document its code. The CMake options
 | DOXYGEN_OPTIONAL_INCLUDE_EARLY_BINDING   | OFF     | If selected (... and already built), this will include the selected <br>IFC schemas in the documentation. Otherwise, the schemas will not be <br>included in the documentation, but this does not influence the <br>selection of IFC schemas (see EARLYBINDING_ tags in CMake GUI). | [Go to file](https://github.com/tumcms/Open-Infra-Platform/blob/development/cmake/ConfigureDoxygen.cmake)	|
 | DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION | ON      | If selected, the landing page of the documentation will open automatically. <br>If not selected, you will have to find and open the generated documentation <br>manually (see section below on building the documentation).                                                         | [Go to file](https://github.com/tumcms/Open-Infra-Platform/blob/development/cmake/ConfigureDoxygen.cmake)	|
 
-[Go back to overview of project options](#project-options)
+[Go back to overview](#project-options)
 
 ### EarlyBinding
 
@@ -61,7 +61,7 @@ The TUM Open Infra Platform uses doxygen to document its code. The CMake options
 | EARLYBINDING_WITH_IFC4X2_DRAFT_1  | OFF     |             |              |
 | EARLYBINDING_WITH_IFC4X3_RC1      | OFF     |             |              |
 
-[Go back to overview of project options](#project-options)
+[Go back to overview](#project-options)
 
 ### FetchContent
 
@@ -80,7 +80,7 @@ The TUM Open Infra Platform uses doxygen to document its code. The CMake options
 | FETCHCONTENT_UPDATES_DISCONNECTED_VISIT_STRUCT   | OFF     |             |              |
 | FETCHCONTENT_UPDATES_VISIT_STRUCT_ZLIB           | OFF     |             |              |
 
-[Go back to overview of project options](#project-options)
+[Go back to overview](#project-options)
 
 ### Modules
 
@@ -94,7 +94,7 @@ The TUM Open Infra Platform uses doxygen to document its code. The CMake options
 | MODULES_SLABFIELD               | OFF     |             |              |
 | MODULES_TESSELATION             | OFF     |             |              |
 
-[Go back to overview of project options](#project-options)
+[Go back to overview](#project-options)
 
 ### Project Configuration
 
@@ -106,7 +106,7 @@ The TUM Open Infra Platform uses doxygen to document its code. The CMake options
 | ASM686                                       | OFF     |             |              |
 | gmock_build_tests                            | OFF     |             |              |
 
-[Go back to overview of project options](#project-options)
+[Go back to overview](#project-options)
 
 ## External options
 
@@ -132,7 +132,7 @@ If you want to see information about project-specific options instead, you can f
 | CARVE_USE_EXACT_PREDICATES       | OFF     |             |              |
 | CARVE_WITH_GUI                   | OFF     |             |              |
 
-[Go back to overview of project options](#external-options)
+[Go back to overview](#external-options)
 
 ### CMake
 
@@ -142,7 +142,7 @@ If you want to see information about project-specific options instead, you can f
 | CMAKE_SKIP_RPATH         | OFF     |             |              |
 | CMAKE_VERBOSE_MAKEFILE   | OFF     |             |              |
 
-[Go back to overview of project options](#external-options)
+[Go back to overview](#external-options)
 
 ### Cuda
 
@@ -157,7 +157,7 @@ If you want to see information about project-specific options instead, you can f
 | CUDA_SEPARABLE_COMPILATION             | OFF     |             |              |
 | CUDA_VERBOSE_BUILD                     | OFF     |             |              |
 
-[Go back to overview of project options](#external-options)
+[Go back to overview](#external-options)
 
 ### Eigen
 
@@ -185,7 +185,7 @@ If you want to see information about project-specific options instead, you can f
 | EIGEN_TEST_SYCL                      | OFF     |             |              |
 | EIGEN_TESTX87                        | OFF     |             |              |
 
-[Go back to overview of project options](#external-options)
+[Go back to overview](#external-options)
 
 ### Glew
 
@@ -194,7 +194,7 @@ If you want to see information about project-specific options instead, you can f
 | GLEW_OSMESA | OFF     |             |              |
 | GLEW_REGAL  | OFF     |             |              |
 
-[Go back to overview of project options](#external-options)
+[Go back to overview](#external-options)
 
 ### Gtest
 
@@ -207,7 +207,7 @@ If you want to see information about project-specific options instead, you can f
 | gtest_force_shared_crt                       | OFF     |             |              |
 | gtest_hide_internal_symbols                  | OFF     |             |              |
 
-[Go back to overview of project options](#external-options)
+[Go back to overview](#external-options)
 
 ### MPI
 
@@ -215,4 +215,4 @@ If you want to see information about project-specific options instead, you can f
 |----------------------------------------------|---------|-------------|--------------|
 | MPI_CXX_SKIP_MPICSS                          | OFF     |             |              |
 
-[Go back to overview of project options](#external-options)
+[Go back to overview](#external-options)
