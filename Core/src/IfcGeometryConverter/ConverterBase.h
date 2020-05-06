@@ -40,8 +40,6 @@
 #include "GeometrySettings.h"
 #include "UnitConverter.h"
 
-#include "EXPRESS/EXPRESSReference.h"
-
 namespace OpenInfraPlatform
 {
 	namespace Core 
