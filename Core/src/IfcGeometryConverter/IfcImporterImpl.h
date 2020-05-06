@@ -71,8 +71,9 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 																// OR auto& objectPlacement = optObjectPlacement.get();
 
 		std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>> placementAlreadyApplied;
-		matProduct = repConverter->getPlacementConverter()->convertIfcObjectPlacement(
+		repConverter->getPlacementConverter()->convertIfcObjectPlacement(
 			objectPlacement_ptr,
+			matProduct,
 			placementAlreadyApplied);
 
 #ifdef _DEBUG

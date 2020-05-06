@@ -1,9 +1,0 @@
-/* DOXYGEN license
-Doxygen is the de facto standard tool for generating documentation from annotated C++ sources, but it also supports other popular programming languages such as C, Objective-C, C#, PHP, Java, Python, IDL (Corba, Microsoft, and UNO/OpenOffice flavors), Fortran, VHDL and to some extent D.
-
-Copyright © 1997-2018 by Dimitri van Heesch.
-Permission to use, copy, modify, and distribute this software and its documentation under the terms of the GNU General Public License is hereby granted. No representations are made about the suitability of this software for any purpose. It is provided "as is" without express or implied warranty. See the GNU General Public License for more details.
-
-Documents produced by doxygen are derivative works derived from the input used in their production; they are not affected by this license.
-
-*/
