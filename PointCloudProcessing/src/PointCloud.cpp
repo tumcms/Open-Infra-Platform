@@ -67,7 +67,7 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::
 		CC_FILE_ERROR err;
 		// Load the point cloud from file and store it temporarily.
 		std::shared_ptr<ccHObject> ccTempObject =
-		  std::shared_ptr<ccHObject>(FileIOFilter::LoadFromFile(QString(filename), FileIOFilter::LoadParameters(), FileIOFilter::FindBestFilterForExtension("BIN"), err));
+		  std::shared_ptr<ccHObject>(FileIOFilter::LoadFromFile(QString(filename), FileIOFilter::LoadParameters(), FileIOFilter::FindBestFilterForExtension(extension), err));
 		if (err == CC_FILE_ERROR::CC_FERR_NO_ERROR) {
 			BLUE_LOG(trace) << "Number of child objects:" << QString::number(ccTempObject->getChildrenNumber()).toStdString() << ".";
 			for (size_t i = 0; i < ccTempObject->getChildrenNumber(); i++) {
