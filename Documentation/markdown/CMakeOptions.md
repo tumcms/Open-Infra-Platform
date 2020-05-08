@@ -32,7 +32,6 @@ If you want to see information about external library and thirdparty software op
 | Option            | Default | Description | Link to file |
 |-------------------|---------|-------------|--------------|
 | BUILD_COVERAGE    | OFF     |             |              |
-| BUILD_GMOCK       | ON      |             |              |
 | BUILD_SHARED_LIBS | ON      |             |              |
 | BUILD_TESTING     | ON      |             |              |
 | BUILD_TESTS       | ON      |             |              |
@@ -129,7 +128,7 @@ If you want to see information about project-specific options instead, you can f
 - [Cuda](#cuda)
 - [Eigen](#eigen)
 - [Glew](#glew)
-- [Gtest](#gtest)
+- [Gtest and Gmock](#gtest-and-gmock)
 - [MPI](#mpi)
 
 ### Carve
@@ -210,19 +209,19 @@ Refer to [Eigen](https://github.com/libigl/eigen/blob/master/CMakeLists.txt) to 
 
 [Go back to overview](#external-options)
 
-### Gtest
+### Gtest and Gmock
 
-Googletest helps writing C++ tests.
-Refer to [GoogleTest](https://github.com/google/googletest/blob/master/googletest/CMakeLists.txt) to see what each option executes. 
+Googletest and Googlemock help writing C++ tests.
 
-| Option                                       | Default | 
-|----------------------------------------------|---------|
-| INSTALL_GTEST                                | ON      |          
-| gtest_build_samples                          | OFF     |            
-| gtest_build_tests                            | OFF     |                          
-| gtest_disable_pthreads                       | OFF     |            
-| gtest_force_shared_crt                       | OFF     |             
-| gtest_hide_internal_symbols                  | OFF     |         
+| Option                                       | Default | Description | Link to file |
+|----------------------------------------------|---------|-------------|--------------|
+| INSTALL_GTEST                                | ON      | Enables the installation of Gtest.  | [Go to file](https://github.com/google/googletest/blob/master/CMakeLists.txt)|  
+| BUILD_GMOCK                                  | ON      | Builds the googlemock subproject.  | [Go to file](https://github.com/google/googletest/blob/master/CMakeLists.txt) |      
+| gtest_build_samples                          | OFF     | If selected, builds gtest's sample programs.            | [Go to file](https://github.com/google/googletest/blob/master/googletest/CMakeLists.txt)              |
+| gtest_build_tests                            | OFF     | If selected, builds all of gtest's own tests.           | [Go to file](https://github.com/google/googletest/blob/master/googletest/CMakeLists.txt)|                
+| gtest_disable_pthreads                       | OFF     | If selected, disables uses of pthreads in gtest.       | [Go to file](https://github.com/google/googletest/blob/master/googletest/CMakeLists.txt)|      
+| gtest_force_shared_crt                       | OFF     | If selected, uses shared (DLL) run-time lib even when Google Test is built as static lib.      | [Go to file](https://github.com/google/googletest/blob/master/googletest/CMakeLists.txt) |        
+| gtest_hide_internal_symbols                  | OFF     |  If selected, builds gtest with internal symbols hidden in shared libraries.        | [Go to file](https://github.com/google/googletest/blob/master/googletest/CMakeLists.txt) |
 
 [Go back to overview](#external-options)
 
