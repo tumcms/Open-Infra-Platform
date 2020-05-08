@@ -73,9 +73,9 @@ namespace OpenInfraPlatform {
 				*
 				* \note Calls the other overload CurveConverterT::convertIfcCurve with empty \c IfcTrimmingSelect-s.
 				*/
-				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve,
+				void convertIfcCurve(std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve,
 					std::vector<carve::geom::vector<3>>& loops,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints) const
+					std::vector<carve::geom::vector<3>>& segmentStartPoints)
 				{
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> > trim1Vec;
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> > trim2Vec;
@@ -93,12 +93,12 @@ namespace OpenInfraPlatform {
 				*
 				* \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometryresource/lexical/ifccurve.htm
 				*/
-				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
+				void convertIfcCurve(std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> >& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> >& trim2Vec,
-					const bool senseAgreement) const
+					const bool senseAgreement)
 				{
 					// get the scaling factors from unit converter
 					double length_factor = UnitConvert()->getLengthInMeterFactor();
