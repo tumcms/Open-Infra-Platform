@@ -494,8 +494,7 @@ namespace OpenInfraPlatform {
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(bounded_curve);
 						if (poly_line) {
 							if ( !poly_line->Points.empty() ) {
-								std::vector<carve::geom::vector<3>> loop;
-								convertIfcPolyline(poly_line, loop);
+								std::vector<carve::geom::vector<3>> loop = convertIfcPolyline(poly_line);
 
 								segmentStartPoints.push_back(loop.at(0));
 								targetVec.insert(targetVec.end(), loop.begin(), loop.end());
@@ -1010,10 +1009,12 @@ namespace OpenInfraPlatform {
 				* This function is called from CurveConverterT::convertIfcCurve but is provided for simplicity reasons.
 				*
 				* \param[in] ifcpolyline			The \c IfcPolyline to be converted.
-				* \param[out] loop					The series of points.
+				*
+				* \returns							The series of points.
 				*/
-				void convertIfcPolyline(const std::shared_ptr<typename IfcEntityTypesT::IfcPolyline>& ifcpolyline,
-					std::vector<carve::geom::vector<3>>& loop) const
+				std::vector<carve::geom::vector<3>> convertIfcPolyline(
+					EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& ifcpolyline
+					)
 				{
 					// **************************************************************************************************************************
 					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpolyline.htm

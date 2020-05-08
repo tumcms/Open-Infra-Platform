@@ -428,8 +428,7 @@ namespace OpenInfraPlatform {
 					// (7/9) IfcPolyline SUBTYPE OF IfcGeometricRepresentationItem
 					std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> poly_line = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(geomItem);
 					if(poly_line) {
-						std::vector<carve::geom::vector<3>> poly_vertices;
-						curveConverter->convertIfcPolyline(poly_line, poly_vertices);
+						std::vector<carve::geom::vector<3>> poly_vertices = curveConverter->convertIfcPolyline(EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>(poly_line));
 
 						const unsigned int num_points = poly_vertices.size();
 						std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
