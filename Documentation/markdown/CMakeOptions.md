@@ -4,9 +4,11 @@ This lists all CMake Options that can be set for the TUM Open Infra Platform pro
 ## Overview of the CMake Options
 
 A CMake Option is visible in the CMake GUI as a box that can be ticked (or not). 
-If you have made changes and want to return to the default values, you will have to delete the CMake cache and configure again. Refer to the CMake "Option" command [here](https://cmake.org/cmake/help/latest/command/option.html).
+If you have made changes and want to return to the default values, you will have to delete the CMake cache and configure again. 
+Refer to the CMake "Option" command [here](https://cmake.org/cmake/help/latest/command/option.html).
 
-The options that can be set for the TUM Open Infra Platform are grouped as project-specific options and external options (libraries and thirdparty software). For each, you will find a description of what each option does, what its default value is and where to find the source code where the option is set if you require more information or wish to make changes there. 
+The options that can be set for the TUM Open Infra Platform are grouped as project-specific options and external options (libraries and thirdparty software). 
+For each, you will find a description of what each option does, what its default value is and where to find the source code where the option is set if you require more information or wish to make changes there. 
 Click on the name below to jump to the respective section. 
 
 - [Project options](#project-options)
@@ -14,7 +16,9 @@ Click on the name below to jump to the respective section.
 
 ## Project options
 
-The following are options specific to the build of the TUM Open Infra Platform project. The options are grouped thematically. Click on the name below to jump to the respective section. If you want to see information about external library and thirdparty software options instead, you can find them [here](#external-options). 
+The following are options specific to the build of the TUM Open Infra Platform project. 
+The options are grouped thematically. Click on the name below to jump to the respective section. 
+If you want to see information about external library and thirdparty software options instead, you can find them [here](#external-options). 
 
 - [Build options](#build-options)
 - [Doxygen](#doxygen)
@@ -37,7 +41,9 @@ The following are options specific to the build of the TUM Open Infra Platform p
 [Go back to overview](#project-options)
 
 ### Doxygen
-The TUM Open Infra Platform uses doxygen to document its code. The CMake options listed below allow the user adjust the outcome of the documentation by selecting which parts of the source code should be included in the generated documentation. For more information on how doxygen is used in the TUM Open Infra Platform, please refer to [DoxygenHelp.md](./DoxygenHelp.md).
+The TUM Open Infra Platform uses doxygen to document its code. 
+The CMake options listed below allow the user adjust the outcome of the documentation by selecting which parts of the source code should be included in the generated documentation. 
+For more information on how doxygen is used in the TUM Open Infra Platform, please refer to [DoxygenHelp.md](./DoxygenHelp.md).
 
 | Option                                   | Default | Description                                                                                                                                                                                                                                                                         | Link to file                                          										 				|
 |------------------------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
@@ -50,7 +56,10 @@ The TUM Open Infra Platform uses doxygen to document its code. The CMake options
 [Go back to overview](#project-options)
 
 ### EarlyBinding
-These options allow you to select which IFC schemas should be built for the project. These options will only be displayed once *OpenInfraPlatform.Commands.UpdateBoostMPL* and *OpenInfraPlatform.ExpressBindingGenerator* have been built (see [SetupHelp.md](./SetupHelp.md)). Once the desired schema or schemas are selected, you have to generate CMake again. The default value for the schemata are set [here](https://github.com/tumcms/Open-Infra-Platform/blob/development/ExpressBindingGenerator/CMakeLists.txt).
+These options allow you to select which IFC schemas should be built for the project. 
+These options will only be displayed once *OpenInfraPlatform.Commands.UpdateBoostMPL* and *OpenInfraPlatform.ExpressBindingGenerator* have been built (see [SetupHelp.md](./SetupHelp.md)). 
+Once the desired schema or schemas are selected, you have to generate CMake again. 
+The default value for the schemata are set [here](https://github.com/tumcms/Open-Infra-Platform/blob/development/ExpressBindingGenerator/CMakeLists.txt).
 
 | Option                            | Default |
 |-----------------------------------|---------|
@@ -112,7 +121,9 @@ These options allow you to include specific modules to the TUM Open Infra Platfo
 
 ## External options
 
-The following are options for external libraries and thirdparty software that are used in the TUM Open Infra Platform project that can be set for the build of the TUM Open Infra platform project. Click on the name below to jump to the respective section. If you want to see information about project-specific options instead, you can find them [here](#project-options). 
+The following are options for external libraries and thirdparty software that are used in the TUM Open Infra Platform project that can be set for the build of the TUM Open Infra platform project. 
+Click on the name below to jump to the respective section. 
+If you want to see information about project-specific options instead, you can find them [here](#project-options). 
 
 - [Carve](#carve)
 - [CMake](#cmake)
