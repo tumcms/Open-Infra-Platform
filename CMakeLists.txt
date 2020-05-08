@@ -302,7 +302,7 @@ endforeach()
 #------------------------------------------------------------------------------
 # DOXYGEN. 
 #------------------------------------------------------------------------------
-Option(DOXYGEN_GENERATE_DOCUMENTATION OFF)
+Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM Open Infra Platform." ON)
 
 if(DOXYGEN_GENERATE_DOCUMENTATION)
 
