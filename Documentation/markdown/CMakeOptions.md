@@ -74,20 +74,20 @@ The default value for the schemata are set [here](https://github.com/tumcms/Open
 
 ### FetchContent
 
-| Option                                           | Default | Description | Link to file |
-|--------------------------------------------------|---------|-------------|--------------|
-| FETCHCONTENT_FULLY_DISCONNECTED                  | OFF     |             |              |
-| FETCHCONTENT_QUIET                               | ON      |             |              |
-| FETCHCONTENT_UPDATES_DISCONNECTED                | OFF     |             |              |
-| FETCHCONTENT_UPDATES_DISCONNECTED_BLUE_FRAMEWORK | OFF     |             |              |
-| FETCHCONTENT_UPDATES_DISCONNECTED_DEP_GTEST      | OFF     |             |              |
-| FETCHCONTENT_UPDATES_DISCONNECTED_EIGEN          | OFF     |             |              |
-| FETCHCONTENT_UPDATES_DISCONNECTED_GLEW           | OFF     |             |              |
-| FETCHCONTENT_UPDATES_DISCONNECTED_GTEST          | OFF     |             |              |
-| FETCHCONTENT_UPDATES_DISCONNECTED_TCLAP          | OFF     |             |              |
-| FETCHCONTENT_UPDATES_DISCONNECTED_TINYXML2       | OFF     |             |              |
-| FETCHCONTENT_UPDATES_DISCONNECTED_VISIT_STRUCT   | OFF     |             |              |
-| FETCHCONTENT_UPDATES_VISIT_STRUCT_ZLIB           | OFF     |             |              |
+| Option                                           | Default | 
+|--------------------------------------------------|---------|
+| FETCHCONTENT_FULLY_DISCONNECTED                  | OFF     |          
+| FETCHCONTENT_QUIET                               | ON      |           
+| FETCHCONTENT_UPDATES_DISCONNECTED                | OFF     |           
+| FETCHCONTENT_UPDATES_DISCONNECTED_BLUE_FRAMEWORK | OFF     |    
+| FETCHCONTENT_UPDATES_DISCONNECTED_DEP_GTEST      | OFF     |            
+| FETCHCONTENT_UPDATES_DISCONNECTED_EIGEN          | OFF     |        
+| FETCHCONTENT_UPDATES_DISCONNECTED_GLEW           | OFF     |          
+| FETCHCONTENT_UPDATES_DISCONNECTED_GTEST          | OFF     |       
+| FETCHCONTENT_UPDATES_DISCONNECTED_TCLAP          | OFF     |             
+| FETCHCONTENT_UPDATES_DISCONNECTED_TINYXML2       | OFF     |           
+| FETCHCONTENT_UPDATES_DISCONNECTED_VISIT_STRUCT   | OFF     |        
+| FETCHCONTENT_UPDATES_VISIT_STRUCT_ZLIB           | OFF     |       
 
 [Go back to overview](#project-options)
 
@@ -111,7 +111,7 @@ These options allow you to include specific modules to the TUM Open Infra Platfo
 | Option                                       | Default | Description | Link to file |
 |----------------------------------------------|---------|-------------|--------------|
 | BLUEFRAMEWORK_USE_PREDEFINED_THIRDPARTY_PATH | ON      |             |              |
-| OIP_USE_PREDEFINED_THIRDPARTY_PATH           | ON      |             |              |
+| OIP_USE_PREDEFINED_THIRDPARTY_PATH           | ON      | If selected, CMake tries to find Boost, Eigen3, Qt5 without user input.             | [Go to file](https://github.com/tumcms/Open-Infra-Platform/blob/development/CMakeLists.txt)              |
 | ASMD64                                       | OFF     |             |              |
 | ASM686                                       | OFF     |             |              |
 | gmock_build_tests                            | OFF     |             |              |
@@ -172,38 +172,41 @@ If you want to see information about project-specific options instead, you can f
 
 ### Eigen
 
-| Option                               | Default | Description | Link to file |
-|--------------------------------------|---------|-------------|--------------|
-| EIGEN_DEBUG_ASSERTS                  | OFF     |             |              |
-| EIGEN_DEFAULT_TO_ROW_MAJOR           | OFF     |             |              |
-| EIGEN_FAILTEST                       | OFF     |             |              |
-| EIGEN_INTERNAL_DOCUMENTATION         | OFF     |             |              |
-| EIGEN_NO_ASSERTION_CHECKING          | OFF     |             |              |
-| EIGEN_SPLIT_LARGE_TESTS              | ON      |             |              |
-| EIGEN_TEST_32BIT                     | OFF     |             |              |
-| EIGEN_TEST_BUILD_DOCUMENTATION       | OFF     |             |              |
-| EIGEN_TEST_CUDA                      | OFF     |             |              |
-| EIGEN_TEST_CUDA_CLANG                | OFF     |             |              |
-| EIGEN_TEST_CXX1                      | OFF     |             |              |
-| EIGEN_TEST_EIGEN2                    | OFF     |             |              |
-| EIGEN_TEST_NOQT                      | OFF     |             |              |
-| EIGEN_TEST_NO_EXCEPTIONS             | OFF     |             |              |
-| EIGEN_TEST_NO_EXPLICIT_ALIGNMENT     | OFF     |             |              |
-| EIGEN_TEST_NO_EXPLICIT_VECTORIZATION | OFF     |             |              |
-| EIGEN_TEST_NO_OPENGL                 | OFF     |             |              |
-| EIGEN_TEST_OPENMP                    | OFF     |             |              |
-| EIGEN_TEST_SSE2                      | OFF     |             |              |
-| EIGEN_TEST_SYCL                      | OFF     |             |              |
-| EIGEN_TESTX87                        | OFF     |             |              |
+Eigen is a C++ template library for linear algebra.
+Refer to [Eigen](https://github.com/libigl/eigen/blob/master/CMakeLists.txt) to see what each option executes.
+
+| Option                               | Default | 
+|--------------------------------------|---------|
+| EIGEN_DEBUG_ASSERTS                  | OFF     |          
+| EIGEN_DEFAULT_TO_ROW_MAJOR           | OFF     |                     
+| EIGEN_FAILTEST                       | OFF     |           
+| EIGEN_INTERNAL_DOCUMENTATION         | OFF     |           
+| EIGEN_NO_ASSERTION_CHECKING          | OFF     |          
+| EIGEN_SPLIT_LARGE_TESTS              | ON      |            
+| EIGEN_TEST_32BIT                     | OFF     |          
+| EIGEN_TEST_BUILD_DOCUMENTATION       | OFF     |           
+| EIGEN_TEST_CUDA                      | OFF     |          
+| EIGEN_TEST_CUDA_CLANG                | OFF     |            
+| EIGEN_TEST_CXX1                      | OFF     |        
+| EIGEN_TEST_EIGEN2                    | OFF     |          
+| EIGEN_TEST_NOQT                      | OFF     |             
+| EIGEN_TEST_NO_EXCEPTIONS             | OFF     |          
+| EIGEN_TEST_NO_EXPLICIT_ALIGNMENT     | OFF     |          
+| EIGEN_TEST_NO_EXPLICIT_VECTORIZATION | OFF     |      
+| EIGEN_TEST_NO_OPENGL                 | OFF     |       
+| EIGEN_TEST_OPENMP                    | OFF     |         
+| EIGEN_TEST_SSE2                      | OFF     |        
+| EIGEN_TEST_SYCL                      | OFF     |            
+| EIGEN_TESTX87                        | OFF     |            
 
 [Go back to overview](#external-options)
 
 ### Glew
 
-| Option      | Default | Description | Link to file |
-|-------------|---------|-------------|--------------|
-| GLEW_OSMESA | OFF     |             |              |
-| GLEW_REGAL  | OFF     |             |              |
+| Option      | Default | 
+|-------------|---------|
+| GLEW_OSMESA | OFF     |  
+| GLEW_REGAL  | OFF     |       
 
 [Go back to overview](#external-options)
 
