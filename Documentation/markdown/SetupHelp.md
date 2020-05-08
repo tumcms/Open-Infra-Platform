@@ -49,7 +49,9 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 ![](./fig/CMake_Installation_settings.png)
 
 7. For detailed descriptions of all configuration options that can be selected in the CMake GUI, see [here](./CMakeOptions.md) 
+
 	**HINT:** A few (red) warnings in the lower window of CMake can be ignored as long as it writes 'Configuring done' at the end
+
 8. After configuration process has successfully finished, click *Generate*.
 9. After generation process is done click *open Project*. It will open OpenInfraPlatform solution in the Visual Studio.
 ***
@@ -59,9 +61,15 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 **NOTE:** If you are using Open-Infra-Platform only with point clouds, you can skip these steps.
 
-1. In the *project browser* open **OpenInfraPlatform** project folder. Find folder **Commands**. In the folder **Commands** *build*  **OpenInfraPlatform.Commands.UpdateBoostMpl**. **NOTE:** This must be done only for the first time. 
+1. In the *project browser* open **OpenInfraPlatform** project folder. Find folder **Commands**. In the folder **Commands** *build*  **OpenInfraPlatform.Commands.UpdateBoostMpl**.
+
+	**NOTE:** This must be done only for the first time. 
+
 2. After first project is successfully built find the folder **ExpressBindingGenerator**. *Build* project **OpenInfraPlatform.ExpressBindingGenerator**.
-3. In the folder **ExpressBindingGenerator** find the folder **Commands**. There you should *build* project **Commands.GenerateEarlyBinding.IFC?**. **NOTE:** By the default this will build **Commands.GenerateEarlyBinding.IFC4X3**. If you change a shema to other, you would have to *generate* CMake again.
+3. In the folder **ExpressBindingGenerator** find the folder **Commands**. There you should *build* project **Commands.GenerateEarlyBinding.IFC?**. 
+
+	**NOTE:** By the default this will build **Commands.GenerateEarlyBinding.IFC4X3**. If you change a shema to other, you would have to *generate* CMake again.
+
 4. **Important**: Open CMake and select *Generate* to include newly generated IFC early binding code in the solution.
 
 ### Compiling user interface
