@@ -33,6 +33,7 @@ class EXPRESSObject {
 public:
 	virtual const std::string classname() const = 0;
 	virtual const std::string getStepParameter() const = 0;
+        virtual const std::string getErrorLog() const = 0;
 
 protected:
 //	std::weak_ptr<EXPRESSModel> model;

@@ -31,6 +31,11 @@ class EXPRESSType : public EXPRESSObject {
 public:
 	virtual const std::string classname() const = 0;
 	virtual const std::string getStepParameter() const = 0;
+
+        const std::string getErrorLog() const override
+        {
+            return classname() + ": (" + getStepParameter() + ")";
+        }
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END

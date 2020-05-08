@@ -15,8 +15,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*! This is a test for a detailed description using doxygen. 
-*/
+
 
 #pragma once
 #ifndef FACECONVERTER_H
@@ -107,6 +106,9 @@ namespace OpenInfraPlatform {
 							return;
 						}
 
+						/*! \internal testing if the Cmake options to include internal comments works.
+						*/
+
 						// (1/4) IfcBSplineSurface SUBTYPE of IfcBoundedSurface
 						std::shared_ptr<typename IfcEntityTypesT::IfcBSplineSurface> bspline_surface =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineSurface>(bounded_surface);
@@ -172,8 +174,7 @@ namespace OpenInfraPlatform {
 								std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& basis_surface_placement = basis_surface->Position.lock();
 
 								if(basis_surface_placement) {
-									placementConverter->convertIfcAxis2Placement3D(basis_surface_placement, curve_bounded_plane_matrix);
-									curve_bounded_plane_matrix = pos * curve_bounded_plane_matrix;
+									curve_bounded_plane_matrix = pos * placementConverter->convertIfcAxis2Placement3D(basis_surface_placement);;
 								}
 							}
 
@@ -270,8 +271,7 @@ namespace OpenInfraPlatform {
 
 						carve::math::Matrix elementary_surface_matrix(pos);
 						if(elementary_surface_placement) {
-							placementConverter->convertIfcAxis2Placement3D(elementary_surface_placement, elementary_surface_matrix);
-							elementary_surface_matrix = pos * elementary_surface_matrix;
+							elementary_surface_matrix = pos * placementConverter->convertIfcAxis2Placement3D(elementary_surface_placement);
 						}
 
 						// (1/4) IfcCylindricalSurface SUBTYPE of IfcElementarySurface
@@ -365,8 +365,7 @@ namespace OpenInfraPlatform {
 
 						carve::math::Matrix swept_surface_matrix(pos);
 						if(swept_surface_placement) {
-							placementConverter->convertIfcAxis2Placement3D(swept_surface_placement, swept_surface_matrix);
-							swept_surface_matrix = pos * swept_surface_matrix;
+							swept_surface_matrix = pos * placementConverter->convertIfcAxis2Placement3D(swept_surface_placement);
 						}
 
 						// (1/2) IfcSurfaceOfLinearExtrusion SUBTYPE of IfcSweptSurface

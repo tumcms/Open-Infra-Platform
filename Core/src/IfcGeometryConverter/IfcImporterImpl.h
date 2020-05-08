@@ -71,9 +71,8 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 																// OR auto& objectPlacement = optObjectPlacement.get();
 
 		std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>> placementAlreadyApplied;
-		repConverter->getPlacementConverter()->convertIfcObjectPlacement(
+		matProduct = repConverter->getPlacementConverter()->convertIfcObjectPlacement(
 			objectPlacement_ptr,
-			matProduct,
 			placementAlreadyApplied);
 
 #ifdef _DEBUG
@@ -108,7 +107,7 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 #endif
 	}
 
-	if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product)) {
+	if ( repConverter->isOfType<typename IfcEntityTypesT::IfcAlignment>(product)) {
 		auto alignment = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product);
 		std::shared_ptr<ItemData> itemData(new ItemData());
 		productShape->vec_item_data.push_back(itemData);

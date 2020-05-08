@@ -283,8 +283,8 @@ namespace OpenInfraPlatform
 					if (swept_area_solid->Position)
 					{
 						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> swept_area_position = swept_area_solid->Position;
-						placementConverter->convertIfcAxis2Placement3D(swept_area_position.lock(), swept_area_pos);
-						swept_area_pos = pos * swept_area_pos;
+						
+						swept_area_pos = pos * placementConverter->convertIfcAxis2Placement3D(swept_area_position.lock());
 					}
 
 					// (1/4) IfcExtrudedAreaSolid SUBTYPE of IfcSweptAreaSolid
@@ -1270,14 +1270,11 @@ namespace OpenInfraPlatform
 				double length_factor = UnitConvert()->getLengthInMeterFactor();
 
 				// ENTITY IfcCsgPrimitive3D  ABSTRACT SUPERTYPE OF(ONEOF(IfcBlock, IfcRectangularPyramid, IfcRightCircularCone, IfcRightCircularCylinder, IfcSphere)
-				std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> primitive_placement = csgPrimitive->Position.lock();
+				
+                                carve::math::Matrix primitive_placement_matrix = csgPrimitive->Position ?
+                                    pos * placementConverter->convertIfcAxis2Placement3D(csgPrimitive->Position.lock()) :
+                                    pos;
 
-				carve::math::Matrix primitive_placement_matrix(pos);
-				if (primitive_placement)
-				{
-					placementConverter->convertIfcAxis2Placement3D(primitive_placement, primitive_placement_matrix);
-					primitive_placement_matrix = pos * primitive_placement_matrix;
-				}
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcBlock> block =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBlock>(csgPrimitive);
@@ -1300,14 +1297,14 @@ namespace OpenInfraPlatform
 						z_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->ZLength)*0.5*length_factor;
 					}
 
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(x_length, y_length, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(-x_length, y_length, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(-x_length, -y_length, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(x_length, -y_length, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(x_length, y_length, -z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(-x_length, y_length, -z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(-x_length, -y_length, -z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(x_length, -y_length, -z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, y_length, z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(-x_length, y_length, z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(-x_length, -y_length, z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, -y_length, z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, y_length, -z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(-x_length, y_length, -z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(-x_length, -y_length, -z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, -y_length, -z_length));
 
 					polyhedron_data->addFace(0, 1, 2);
 					polyhedron_data->addFace(2, 3, 0);
@@ -1479,7 +1476,7 @@ namespace OpenInfraPlatform
 					//        /   |   \
 
 					std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, radius)); // top
+					polyhedron_data->addVertex(pos*carve::geom::VECTOR(0.0, 0.0, radius)); // top
 
 					const int nvc = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
 					const double d_horizontal_angle = GeomSettings()->getAngleLength(radius);
@@ -1615,7 +1612,7 @@ namespace OpenInfraPlatform
 					if (base_surface_pos)
 					{
 						placementConverter->getPlane(base_surface_pos, base_surface_plane, base_surface_position, length_factor);
-						placementConverter->convertIfcAxis2Placement3D(base_surface_pos, base_position_matrix);
+                                                base_position_matrix = placementConverter->convertIfcAxis2Placement3D(base_surface_pos);
 					}
 
 					// If the agreement flag is TRUE, then the subset is the one the normal points away from
@@ -1741,7 +1738,7 @@ namespace OpenInfraPlatform
 #ifdef _DEBUG
 							BLUE_LOG(trace) << "Processing IfcPolygonalBoundedHalfSpace.Position: IfcAxis2Placement3D  #" << polygonal_half_space->Position.lock()->getId();
 #endif
-							placementConverter->convertIfcAxis2Placement3D(polygonal_half_space->Position.lock(), boundary_position_matrix);
+                                                        boundary_position_matrix = placementConverter->convertIfcAxis2Placement3D(polygonal_half_space->Position.lock());
 							boundary_plane_normal = carve::geom::VECTOR(boundary_position_matrix._31, boundary_position_matrix._32, boundary_position_matrix._33);
 							boundary_position = carve::geom::VECTOR(boundary_position_matrix._41, boundary_position_matrix._42, boundary_position_matrix._43);
 #ifdef _DEBUG
