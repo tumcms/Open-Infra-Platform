@@ -24,7 +24,7 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 4. **Boost 1_65_1** is installed and included in the path (environment variable) -  find [here](https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/boost_1_65_1-msvc-14.1-64.exe/download)
 5. **Anaconda 2**  - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe) (For Windows users) 
-	 **NOTE:** - If you are using Linux or MacOS, you will find Anaconda installer archive [here](https://repo.anaconda.com/archive/) (Choose the version with **Python 2.7**)
+	 **NOTE:** - If you are using Linux or MacOS, you will find Anaconda installer archive [here](https://repo.anaconda.com/archive/) (Choose the version with **Python 2.7**(**Anaconda2**))
 
 
 ***
@@ -66,6 +66,9 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 	**NOTE:** This must be done only for the first time. 
 
 2. After first project is successfully built find the folder **ExpressBindingGenerator**. *Build* project **OpenInfraPlatform.ExpressBindingGenerator**.
+
+	**HINT:** You can expect that one item will be skipped. This item will be *built* afterwards. 
+
 3. In the folder **ExpressBindingGenerator** find the folder **Commands**. There you should *build* project **Commands.GenerateEarlyBinding.IFC?**. 
 
 	**NOTE:** By the default this will build **Commands.GenerateEarlyBinding.IFC4X3**. If you change a shema to other, you would have to *generate* CMake again.
@@ -80,3 +83,4 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 2. If you are using point clouds *build* project **OpenInfraPlatform.PointCloudProcessing**.
 3. *Build* project **OpenInfraPlatform.Core**.
 4. *Build* project **OpenInfraPlatform.UI**.
+5. *Build* all projects staged in the **Copy** project folder. **NOTE:** execute **Get_OKLABI.cmd** in the source folder (e.g. C:\dev\Open-Infra-Platform\external\) to prevent an error during the build process. 
