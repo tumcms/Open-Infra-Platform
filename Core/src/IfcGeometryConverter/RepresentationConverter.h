@@ -92,6 +92,22 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData,
 					std::stringstream& err)
 				{
+					// **************************************************************************************************************************
+					// IfcRepresentation
+					//  https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcrepresentationresource/lexical/ifcrepresentation.htm
+					// ENTITY IfcRepresentation
+					//	ABSTRACT SUPERTYPE OF(ONEOF(IfcShapeModel, IfcStyleModel));
+					//		ContextOfItems: IfcRepresentationContext;
+					//		RepresentationIdentifier: OPTIONAL IfcLabel;
+					//		RepresentationType: OPTIONAL IfcLabel;
+					//		Items: SET[1:?] OF IfcRepresentationItem;
+					//	INVERSE
+					//		RepresentationMap : SET[0:1] OF IfcRepresentationMap FOR MappedRepresentation;
+					//		LayerAssignments: SET[0:? ] OF IfcPresentationLayerAssignment FOR AssignedItems;
+					//		OfProductRepresentation: SET[0:? ] OF IfcProductRepresentation FOR Representations;
+					// END_ENTITY;
+					// **************************************************************************************************************************
+
 					double length_factor = UnitConvert()->getLengthInMeterFactor();
 
 					for(auto it_representation_items : representation->Items) {
@@ -100,23 +116,19 @@ namespace OpenInfraPlatform {
 						inputData->vec_item_data.push_back(itemData);
 
 						// (1/4) IfcGeometricRepresenationItem SUBTYPE OF IfcRepresentationItem
-						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> geom_item =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(representation_item);
-						if(geom_item) {
-#ifdef _DEBUG
-							BLUE_LOG(trace) << "Processing IfcGeometricRepresentationItem #" << geom_item->getId();
-#endif
-							convertIfcGeometricRepresentationItem(geom_item, objectPlacement, itemData, err);
-#ifdef _DEBUG
-							BLUE_LOG(trace) << "Processed IfcGeometricRepresentationItem #" << geom_item->getId();
-#endif
+						if( isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(representation_item) ) 
+						{
+							convertIfcGeometricRepresentationItem(
+								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(representation_item),
+								objectPlacement, itemData, err);
 							continue;
 						}
 
 						// (2/4) IfcMappedItem SUBTYPE OF IfcRepresentationItem
-						std::shared_ptr<typename IfcEntityTypesT::IfcMappedItem> mapped_item = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcMappedItem>(representation_item);
-						if(mapped_item) {
+						if( isOfType<typename IfcEntityTypesT::IfcMappedItem>(representation_item) ) 
+						{
 							// decltype(mapped_item->MappingSource)::type &map_source = mapped_item->MappingSource;
+							std::shared_ptr<typename IfcEntityTypesT::IfcMappedItem> mapped_item = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcMappedItem>(representation_item);
 							auto& map_source = mapped_item->MappingSource;
 
 							if(!map_source.lock()) {
@@ -168,17 +180,18 @@ namespace OpenInfraPlatform {
 						}
 
 						// (3/4) IfcStyledItem SUBTYPE OF IfcRepresentationItem
-						std::shared_ptr<typename IfcEntityTypesT::IfcStyledItem> styled_item = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcStyledItem>(representation_item);
-						if(styled_item) {
-							BLUE_LOG(warning) << "#" << styled_item->getId() << " = IfcStyledItem: Not implemented yet!";
+						if( isOfType<typename IfcEntityTypesT::IfcStyledItem>(representation_item) ) 
+						{
+							// call the corresponding function
+							convertIfcStyledItem(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcStyledItem>(representation_item), itemData );
 							continue;
 						}
 
 						// (4/4) IfcTopologicalRepresentationItem SUBTYPE OF IfcRepresentationItem
-						std::shared_ptr<typename IfcEntityTypesT::IfcTopologicalRepresentationItem> topo_item =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>(representation_item);
-						if(topo_item) {
+						if( isOfType<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>(representation_item) ) {
 							// IfcTopologicalRepresentationItem ABSTRACT SUPERTYPE OF IfcConnectedFaceSet, IfcEdge, IfcFace*, IfcFaceBound*, IfcLoop*, IfcPath*, IfcVertex*.
+							std::shared_ptr<typename IfcEntityTypesT::IfcTopologicalRepresentationItem> topo_item =
+								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>(representation_item);
 
 							// IfcConnectedFaceSet SUBTYPE OF IfcTopologicalRepresentationItem
 							std::shared_ptr<typename IfcEntityTypesT::IfcConnectedFaceSet> topo_connected_face_set =
@@ -588,14 +601,20 @@ namespace OpenInfraPlatform {
 #endif
 				}
 
-				// Function 3: Convert IfcStyledItem.
-				void convertStyledItem(const std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem>& representation_item, std::shared_ptr<ItemData>& itemData)
+				/*!
+				 * \internal TODO
+				 */
+				void convertIfcStyledItem(
+					const std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem>& representation_item, 
+					std::shared_ptr<ItemData>& itemData)
 				{
-					std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcStyledItem>>& StyledByItem_inverse_vec = representation_item->StyledByItem_inverse;
-					for(unsigned int i = 0; i < StyledByItem_inverse_vec.size(); ++i) {
-						std::weak_ptr<typename IfcEntityTypesT::IfcStyledItem> styled_item_weak = StyledByItem_inverse_vec[i];
-						std::shared_ptr<typename IfcEntityTypesT::IfcStyledItem> styled_item = std::shared_ptr<typename IfcEntityTypesT::IfcStyledItem>(styled_item_weak);
-					}
+					//throw UnhandledException( representation_item );
+
+					//std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcStyledItem>>& StyledByItem_inverse_vec = representation_item->StyledByItem_inverse;
+					//for(unsigned int i = 0; i < StyledByItem_inverse_vec.size(); ++i) {
+					//	std::weak_ptr<typename IfcEntityTypesT::IfcStyledItem> styled_item_weak = StyledByItem_inverse_vec[i];
+					//	std::shared_ptr<typename IfcEntityTypesT::IfcStyledItem> styled_item = std::shared_ptr<typename IfcEntityTypesT::IfcStyledItem>(styled_item_weak);
+					//}
 				}
 
 				// Function 4: Convert openings.
