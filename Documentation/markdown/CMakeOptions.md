@@ -212,14 +212,17 @@ Refer to [Eigen](https://github.com/libigl/eigen/blob/master/CMakeLists.txt) to 
 
 ### Gtest
 
-| Option                                       | Default | Description | Link to file |
-|----------------------------------------------|---------|-------------|--------------|
-| INSTALL_GTEST                                | ON      |             |              |
-| gtest_build_samples                          | OFF     |             |              |
-| gtest_build_tests                            | OFF     |             |              |
-| gtest_disable_pthreads                       | OFF     |             |              |
-| gtest_force_shared_crt                       | OFF     |             |              |
-| gtest_hide_internal_symbols                  | OFF     |             |              |
+Googletest helps writing C++ tests.
+Refer to [GoogleTest](https://github.com/google/googletest/blob/master/googletest/CMakeLists.txt) to see what each option executes. 
+
+| Option                                       | Default | 
+|----------------------------------------------|---------|
+| INSTALL_GTEST                                | ON      |          
+| gtest_build_samples                          | OFF     |            
+| gtest_build_tests                            | OFF     |                          
+| gtest_disable_pthreads                       | OFF     |            
+| gtest_force_shared_crt                       | OFF     |             
+| gtest_hide_internal_symbols                  | OFF     |         
 
 [Go back to overview](#external-options)
 
