@@ -59,7 +59,7 @@ namespace OpenInfraPlatform
 			>
 			class ConverterBaseT {
 			public:
-				//! Default constructor
+				//! default constructor
 				ConverterBaseT(
 					std::shared_ptr<GeometrySettings> geomSettings,
 					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter
@@ -67,17 +67,27 @@ namespace OpenInfraPlatform
 					geomSettings_(geomSettings),
 					unitConverter_(unitConverter)
 				{}
-				//! Default destructor
+				//! default destructor
 				~ConverterBaseT() {}
 
-				//! Getter for geometry settings
+				//! getter for geometry settings
 				std::shared_ptr<GeometrySettings>&				 GeomSettings()		  { return geomSettings_; }
 				//! const-getter for geometry settings
 				std::shared_ptr<GeometrySettings> 				 GeomSettings() const { return geomSettings_; }
-				//! Getter for unit conversion
+				//! getter for unit conversion
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>>& UnitConvert()		  { return unitConverter_; }
 				//! const-getter for unit conversion
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>>  UnitConvert()	const { return unitConverter_; }
+
+				/**
+				 * \brief Tests if a pointer to \c Is can be casted to a pointer to \c Test.
+				 *
+				 * \param[in] object a \c std::shared_ptr of type \c Is
+				 * 
+				 * \returns \c true if dynamic_cast returns anything else but \c nullptr\n \c false otherwise
+				 */
+				template <class Test, class Is>
+				bool isOfType(const std::shared_ptr<Is>& object) { return std::dynamic_pointer_cast<Test>(object) != nullptr; }
 
 			private:
 

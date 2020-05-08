@@ -554,24 +554,7 @@ namespace OpenInfraPlatform {
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConic>(ifcCurve);
 					if (conic) {
 						// determine position
-						typename IfcEntityTypesT::IfcAxis2Placement conic_placement = conic->Position;
-						carve::math::Matrix conic_position_matrix(carve::math::Matrix::IDENT());
-
-						switch (conic_placement.which()) {
-						case 0: // class IfcAxis2Placement2D;
-							placementConverter->convertIfcAxis2Placement2D(
-								conic_placement.get<0>().lock(),
-								conic_position_matrix);
-							break;
-						case 1: // class IfcAxis2Placement3D;
-							placementConverter->convertIfcAxis2Placement3D(
-								conic_placement.get<1>().lock(),
-								conic_position_matrix);
-							break;
-						default:
-							BLUE_LOG(error) << conic->getErrorLog() << ": no position found.";
-							break;
-						} //end switch (conic_placement.which())
+                        carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(conic->Position);
 
 						// (1/2) IfcCircle SUBTYPE OF IfcConic
 						std::shared_ptr<typename IfcEntityTypesT::IfcCircle> circle =
