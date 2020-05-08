@@ -1749,7 +1749,7 @@ namespace OpenInfraPlatform
 						// PolygonalBoundary is given in 2D
 						std::vector<carve::geom::vector<2> > polygonal_boundary;
 						std::vector<carve::geom::vector<2> > segment_start_points_2d;
-						std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve = polygonal_half_space->PolygonalBoundary.lock();
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> bounded_curve = polygonal_half_space->PolygonalBoundary.lock();
 						curveConverter->convertIfcCurve2D(bounded_curve, polygonal_boundary, segment_start_points_2d);
 						ProfileConverterT<IfcEntityTypesT>::deleteLastPointIfEqualToFirst(polygonal_boundary);
 						ProfileConverterT<IfcEntityTypesT>::simplifyPath(polygonal_boundary);

@@ -73,7 +73,7 @@ namespace OpenInfraPlatform {
 				*
 				* \note Calls the other overload CurveConverterT::convertIfcCurve with empty \c IfcTrimmingSelect-s.
 				*/
-				void convertIfcCurve(std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifcCurve,
+				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<3>>& loops,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints)
 				{
@@ -93,7 +93,7 @@ namespace OpenInfraPlatform {
 				*
 				* \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometryresource/lexical/ifccurve.htm
 				*/
-				void convertIfcCurve(std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
+				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> >& trim1Vec,
@@ -963,7 +963,7 @@ namespace OpenInfraPlatform {
 				*/
 				void convertIfcCurve2D(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<2>>& loops,
-					std::vector<carve::geom::vector<2>>& segmentStartPoints) const
+					std::vector<carve::geom::vector<2>>& segmentStartPoints)
 				{
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> trim1Vec;
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> trim2Vec;
@@ -986,7 +986,7 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<2>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement) const
+					const bool senseAgreement)
 				{
 					std::vector<carve::geom::vector<3>> target_vec_3d;
 					std::vector<carve::geom::vector<3>> segment_start_points_3d;
@@ -1034,7 +1034,7 @@ namespace OpenInfraPlatform {
 				* \internal TODO.
 				*/
 				void convertIfcLoop(const std::shared_ptr<typename IfcEntityTypesT::IfcLoop>& ifcloop,
-					std::vector<carve::geom::vector<3>>& loop) const
+					std::vector<carve::geom::vector<3>>& loop)
 				{
 					const std::shared_ptr<typename IfcEntityTypesT::IfcPolyLoop> polyLoop =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyLoop>(ifcloop);
