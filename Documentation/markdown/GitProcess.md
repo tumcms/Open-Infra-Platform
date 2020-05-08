@@ -73,13 +73,13 @@ Now you have both your repositories (local and remote) updated.
 
 Before creating any changes, create new branch: 
  
-	- Open OpenInfraPlatform folder and select *Git Bash Here*. 
+- Open OpenInfraPlatform folder and select *Git Bash Here*. 
 	
-	- You also can open **Git Bash** and write out in the command line:
-	 > cd "Path to OpenInfraPlatform" (e.g  *cd  "C:\dev\Open-Infra-Platform"*).
+- You also can open **Git Bash** and write out in the command line:
+ > cd "Path to OpenInfraPlatform" (e.g  *cd  "C:\dev\Open-Infra-Platform"*).
 
-	- In the command line write out:
-	 > git checkout -b <branchname> (e.g. *git checkout -b Fixing_Bugs*).
+- In the command line write out:
+ > git checkout -b <branchname> (e.g. *git checkout -b Fixing_Bugs*).
 
 
 ### Branch naming convention

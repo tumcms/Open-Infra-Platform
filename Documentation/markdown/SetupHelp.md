@@ -7,13 +7,24 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 1. **Visual Studio 2017** is installed to your computer - find [here](https://my.visualstudio.com/Downloads?q=visual%20studio%202017&wt.mc_id=o~msft~vscom~older-downloads)
 2. **CMake 3.17.0** is installed - find [here](https://cmake.org/download/)
-3. **Qt 5.12.1** is installed and included in the path -  find [here](https://www.qt.io/download-open-source)
+3. **Qt 5.12.1** is installed and included in the path (environment variable)-  find [here](https://www.qt.io/download-open-source)
 
-	* **Mandatory:** binaries x64 msvc2017 
-	* **Mandatory:** mingw
+	*	Download Qt Online Installer 
+	*	In the meantime, your computer is downloading Qt installer, create Qt account. 
+	*	Sign in with your new account to Qt installer and select directory, where Qt will be installed. (** C:\Qt ** should be default option, if not write **this** path out)
+	*	Select components, you want to install:
 
-4. **Boost 1_65_1** is installed and included in the path -  find [here](https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/boost_1_65_1-msvc-14.1-64.exe/download)
-5. **Anaconda 2**  - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe)
+		* Check the *Archive* box
+		* Select *Filter*
+		* Open section **Qt 5.12.1**
+		* **Mandatory:** Select *binaries x64 msvc2017*
+		* **Mandatory:** Select *mingw*
+		
+		![](./fig/Qt_Installation_settings.png)
+
+4. **Boost 1_65_1** is installed and included in the path (environment variable) -  find [here](https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/boost_1_65_1-msvc-14.1-64.exe/download)
+5. **Anaconda 2**  - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe) (For Windows users) 
+	 **NOTE:** - If you are using Linux or MacOS, you will find Anaconda installer archive [here](https://repo.anaconda.com/archive/) (Choose the version with **Python 2.7**)
 
 
 ***
@@ -37,7 +48,8 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 ![](./fig/CMake_Installation_settings.png)
 
-7. For detailed descriptions of all configuration options that can be selected in the CMake GUI, see [here](./CMakeOptions.md)
+7. For detailed descriptions of all configuration options that can be selected in the CMake GUI, see [here](./CMakeOptions.md) 
+	**HINT:** A few (red) warnings in the lower window of CMake can be ignored as long as it writes 'Configuring done' at the end
 8. After configuration process has successfully finished, click *Generate*.
 9. After generation process is done click *open Project*. It will open OpenInfraPlatform solution in the Visual Studio.
 ***
@@ -49,7 +61,7 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 1. In the *project browser* open **OpenInfraPlatform** project folder. Find folder **Commands**. In the folder **Commands** *build*  **OpenInfraPlatform.Commands.UpdateBoostMpl**. **NOTE:** This must be done only for the first time. 
 2. After first project is successfully built find the folder **ExpressBindingGenerator**. *Build* project **OpenInfraPlatform.ExpressBindingGenerator**.
-3. In the folder **ExpressBindingGenerator** find the folder **Commands**. There you should *build* project **Commands.GenerateEarlyBinding.IFC?**. **NOTE:** By the default this will build **Commands.GenerateEarlyBinding.IFC4X3**. If you change a shema to other, you would have to *generate* CMakr again.
+3. In the folder **ExpressBindingGenerator** find the folder **Commands**. There you should *build* project **Commands.GenerateEarlyBinding.IFC?**. **NOTE:** By the default this will build **Commands.GenerateEarlyBinding.IFC4X3**. If you change a shema to other, you would have to *generate* CMake again.
 4. **Important**: Open CMake and select *Generate* to include newly generated IFC early binding code in the solution.
 
 ### Compiling user interface
