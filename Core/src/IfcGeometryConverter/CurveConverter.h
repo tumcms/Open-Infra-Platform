@@ -439,19 +439,8 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<typename IfcEntityTypesT::IfcBSplineCurve> bspline_curve =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineCurve>(bounded_curve);
 						if (bspline_curve) {
-
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> points;
-							points.resize(bspline_curve->ControlPointsList.size());
-
-							std::transform(
-								bspline_curve->ControlPointsList.begin(),
-								bspline_curve->ControlPointsList.end(),
-								points.begin(),
-								[](auto &it) {return it.lock(); });
-
-							std::vector<carve::geom::vector<3>> splinePoints;
-							splinePoints.resize(points.size());
-							convertIfcCartesianPointVector(points, splinePoints);
+							// convert the control points
+							std::vector<carve::geom::vector<3>> splinePoints = convertIfcCartesianPointVector(bspline_curve->ControlPointsList);
 
 							SplineConverterT<typename IfcEntityTypesT>::convertIfcBSplineCurve(bspline_curve, splinePoints, targetVec);
 							return;
@@ -1026,15 +1015,11 @@ namespace OpenInfraPlatform {
 				void convertIfcPolyline(const std::shared_ptr<typename IfcEntityTypesT::IfcPolyline>& ifcpolyline,
 					std::vector<carve::geom::vector<3>>& loop) const
 				{
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> points;
-					points.resize(ifcpolyline->Points.size());
-					std::transform(
-						ifcpolyline->Points.begin(),
-						ifcpolyline->Points.end(),
-						points.begin(),
-						[](auto& it) { return it.lock(); }
-					);
-					convertIfcCartesianPointVector(points, loop);
+					// **************************************************************************************************************************
+					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpolyline.htm
+					// **************************************************************************************************************************
+
+					return convertIfcCartesianPointVector(ifcpolyline->Points);
 				}
 
 				/*! \brief Converts \c IfcLoop and its subtypes to a series of points.
@@ -1152,22 +1137,26 @@ namespace OpenInfraPlatform {
 					} // end if edge loop
 				} // end convertIfcLoop
 
-				/*! \brief Converts an array of \c IfcCartesianPoint-s to a series of points.
+				/*! \brief Converts an array of \c IfcCartesianPoint-s to a series of \c carve points.
 				*
 				* \param[in] points				The array of \c IfcCartesianPoint-s to be converted.
-				* \param[out] loop				The series of points.
+				* \returns						The series of \c carve points.
 				*/
-				void convertIfcCartesianPointVector(
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>>& points,
-					std::vector<carve::geom::vector<3>>& loop) const
+				std::vector<carve::geom::vector<3>> convertIfcCartesianPointVector(
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>& points
+					)
 				{
+					// initialize the return value with enough space
+					std::vector<carve::geom::vector<3>> loop( points.size() );
+					// convert each point individually
 					carve::geom::vector<3> point = carve::geom::VECTOR(0., 0., 0.);
-					loop.reserve( loop.size() + points.size());
-					for ( auto& it = points.begin(); it != points.end(); ++it )
+					for ( auto it = points.begin(); it != points.end(); ++it )
 					{
-						placementConverter->convertIfcCartesianPoint(*it, point);
+						placementConverter->convertIfcCartesianPoint( it->lock(), point);
 						loop.push_back(point);
 					}
+					// return the loop
+					return loop;
 				} // end convertIfcCartesianPointVector
 
 				/*! \brief Converts an array of \c IfcCartesianPoint-s to a series of points.
