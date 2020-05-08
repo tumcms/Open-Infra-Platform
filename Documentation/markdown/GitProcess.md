@@ -1,17 +1,16 @@
-# Git Workflow
+# Git-Process
 
-![](./fig/Git_Workflow.png)
+***
+## GitSetup
 
-Here you will find description about Git Workflow you need working with OpenInfraPlatform
-
-## Prerequisites 
+### Prerequisites 
 
 Before you can proceed to work with Git, there are several steps, which have to be done before Installation: 
 
 1. Installation of **Git** - find [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 2. Creation of **GitHub account** - find [here](https://github.com/)
 
-## Fork the repository
+### Fork the repository
 
 1. Go to OpenInfraPlatform on [GitHub](https://github.com/tumcms/Open-Infra-Platform).
 
@@ -39,9 +38,40 @@ Before you can proceed to work with Git, there are several steps, which have to 
 
 		- **tumcms** repository (https://github.com/tumcms/Open-Infra-Platform).
 
-## Submit changes 
+***
+## Git Workflow
 
-1. Before creating any changes, create new branch: 
+![](./fig/Git_Workflow.png)
+
+Here you will find description about Git Workflow you need when working with OpenInfraPlatform
+
+### <a name="Updating"></a> Updating from main repository 
+
+Once you have *added a remote*, you can update your local repository with all changes made in the official repository. **It is highly recommended to update your local repository every time you start working with it. Otherwise, you will not have access to recent changes**. 
+
+1. Add all updates to your local repository: 
+
+	- In **Git Bash**, which is working in OpenInfraPlatform folder, in the command line write out:
+	 > git pull tumcms development
+
+	*tumcms* is the name you gave to the OpenInfraPlatform official repository remote (https://github.com/tumcms/Open-Infra-Platform) when [adding remote](#Remote). 
+	
+	*development* is the name of the main branch in this repository. 
+
+2. Update your **origin** repository:
+
+	- In the command line write out:
+	 > git push origin development 
+
+	*origin* is the name of your remote repository (https://github.com/<your_username>/Open-Infra-Platform). 
+	
+	*development* is the name of the main branch in your remote repository. 
+
+Now you have both your repositories (local and remote) updated. 
+
+### Creating a branch
+
+Before creating any changes, create new branch: 
  
 	- Open OpenInfraPlatform folder and select *Git Bash Here*. 
 	
@@ -51,7 +81,13 @@ Before you can proceed to work with Git, there are several steps, which have to 
 	- In the command line write out:
 	 > git checkout -b <branchname> (e.g. *git checkout -b Fixing_Bugs*).
 
-2. After creating some changes, *add* these changes:
+
+### Branch naming convention
+
+***
+### Submit changes 
+
+1. After creating some changes, *add* these changes:
 
 	- In the command line of **Git Bash** write out:
 	 > git add <filename> 
@@ -63,21 +99,23 @@ Before you can proceed to work with Git, there are several steps, which have to 
 	 
 	This will add all changes you have made when working to a commit. 
 
-3. *Commit* changes:
+2. *Commit* changes:
 
 	- In the command line write out:
 	 > git commit -m "Commit message" (e.g. *git commit -m "Fixed Bugs"*). 
 	 
 	**NOTE:** Please be descriptive in your commit message as to what changes are involved in this commit.
 
-4. *Push* changes to remote repository: 
+3. *Push* changes to remote repository: 
 
 	- In the command line write out:
-	 > git push origin
+	 >git push origin branchname 
+	 
+	This will push changes to the correct branch / will create remote branch with the same name
 
 	As a result, your changes are online on GitHub in your remote repository (https://github.com/<your_username>/Open-Infra-Platform). 
 
-## Pull request 
+### Pull request 
 
 After successfully pushing changes to your remote repository, you should merge your branch with the official repository. This can be achieved with *Pull request*:
 
@@ -106,28 +144,4 @@ After successfully pushing changes to your remote repository, you should merge y
 
 6. Select *Create pull request*.
 
-## <a name="Updating"></a> Updating from main repository 
 
-Once you have *added a remote*, you can update your local repository with all changes made in the official repository. **It is highly recommended to update your local repository every time you start working with it. Otherwise, you will not have access to recent changes**. 
-
-1. Add all updates to your local repository: 
-
-	- In **Git Bash**, which is working in OpenInfraPlatform folder, in the command line write out:
-	 > git pull tumcms development
-
-	*tumcms* is the name you gave to the OpenInfraPlatform official repository remote (https://github.com/tumcms/Open-Infra-Platform) when [adding remote](#Remote). 
-	
-	*development* is the name of the main branch in this repository. 
-
-2. Update your **origin** repository:
-
-	- In the command line write out:
-	 > git push origin development 
-
-	*origin* is the name of your remote repository (https://github.com/<your_username>/Open-Infra-Platform). 
-	
-	*development* is the name of the main branch in your remote repository. 
-
-Now you have both your repositories (local and remote) updated. 
-
-## Branch naming convention
