@@ -494,7 +494,7 @@ namespace OpenInfraPlatform {
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(bounded_curve);
 						if (poly_line) {
 							if ( !poly_line->Points.empty() ) {
-								std::vector<carve::geom::vector<3>> loop = convertIfcPolyline(poly_line);
+								std::vector<carve::geom::vector<3>> loop = convertIfcPolyline(EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>(poly_line));
 
 								segmentStartPoints.push_back(loop.at(0));
 								targetVec.insert(targetVec.end(), loop.begin(), loop.end());
