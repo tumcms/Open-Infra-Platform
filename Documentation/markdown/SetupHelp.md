@@ -22,9 +22,8 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 		
 		![](./fig/Qt_Installation_settings.png)
 
-4. **Boost 1_65_1** is installed and included in the path (environment variable) -  find [here](https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/boost_1_65_1-msvc-14.1-64.exe/download)
-5. **Anaconda 2**  - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe) (For Windows users) 
-	 **NOTE:** - If you are using Linux or MacOS, you will find Anaconda installer archive [here](https://repo.anaconda.com/archive/) (Choose the version with **Python 2.7**(**Anaconda2**))
+4. **Boost 1_65_1** is installed (find [here](https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/boost_1_65_1-msvc-14.1-64.exe/download)) and a new environment variable called Boost_INCLUDE_DIR is created. This variable should point to the binary folder, where **Boost 1_65_1** is staged (e.g. C:\local\boost_1_65_1\).
+5. **Anaconda 2** (version with Python 2.7)  - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe) (For Windows users) 
 
 
 ***
@@ -83,4 +82,6 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 2. If you are using point clouds *build* project **OpenInfraPlatform.PointCloudProcessing**.
 3. *Build* project **OpenInfraPlatform.Core**.
 4. *Build* project **OpenInfraPlatform.UI**.
-5. *Build* all projects staged in the **Copy** project folder. **NOTE:** execute **Get_OKLABI.cmd** in the source folder (e.g. C:\dev\Open-Infra-Platform\external\) to prevent an error during the build process. 
+5. *Build* all projects staged in the **Copy** project folder. 
+
+	**NOTE:** execute **Get_OKLABI.cmd** in the source folder (e.g. C:\dev\Open-Infra-Platform\external\) to prevent an error during the build process. After the execution of **Get_OKLABI.cmd**, it's necessary to *configure* and *generate* OpenInfraPlatform project once again in CMake.
