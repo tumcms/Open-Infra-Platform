@@ -22,12 +22,14 @@ Before you can proceed to work with Git, there are several steps, which have to 
 
 	- In the window, which you have opened, in the command line write out:
 	 > git clone https://github.com/<your_username>/Open-Infra-Platform.git
-	
+
+	This will start a download.
+
 	**HINT:** Link can also be copy-pasted directly from GitHub after forking a repository
 
 	![](./fig/OIP_clone_or_download_link.png)
 
-	This will start a download.
+	
 
 
  4. <a name="Remote"></a> Add remote:  In the command line write out:
