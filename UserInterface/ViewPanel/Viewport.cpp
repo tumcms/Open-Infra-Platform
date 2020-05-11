@@ -820,16 +820,16 @@ void Viewport::onChange(ChangeFlag changeFlag)
 	if(pointCloud && pointCloud->size() > 0) {
 		CCVector3 minPos, maxPos;
 		pointCloud->getBoundingBox(minPos, maxPos);
-		bb.update(minPos.x, minPos.y, minPos.z, maxPos.x, maxPos.y, maxPos.z);
+		bb.update(minPos.x, minPos.y, minPos.z);
+		bb.update(maxPos.x, maxPos.y, maxPos.z);
 		BLUE_LOG(trace) << "boundingbox:" << bb.toString();
 	}
 #endif
 
 	// if bounding box is still on default, overwrite
-	if( bb.isDefault() )
+	if( bb.isEmpty() )
 	{
-		bb.min() = buw::Vector3d(-1, -1, -1);
-		bb.max() = buw::Vector3d(1, 1, 1);
+		bb.fit( carve::geom::VECTOR( -1., -1., -1. ), carve::geom::VECTOR(  1.,  1.,  1. ));
 	}
 
 	

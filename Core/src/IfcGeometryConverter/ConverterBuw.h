@@ -43,43 +43,70 @@ namespace OpenInfraPlatform
 	namespace Core 
 	{
 		namespace IfcGeometryConverter {
-			class BoundingBox {
-				buw::Vector3d min_, max_;
+			/*!
+			\brief Internal implementation of a bounding box.
+
+			This is a wrapper around the carve's aabb (axis-aligned bounding box).
+			*/
+			struct BoundingBox : public carve::geom::aabb<3> {
+				using base = carve::geom::aabb<3>;
 			public:
+				//! constructor
 				BoundingBox() { reset(); }
-				void update(const double xmin, const double ymin, const double zmin, const double xmax, const double ymax, const double zmax)
+				/*!
+				 * \brief updates the bounding box extent
+				 *
+				 * \param[in] x the x-coordinate of the point
+				 * \param[in] y the y-coordinate of the point
+				 * \param[in] z the z-coordinate of the point
+				 */
+				void update(const float x, const float y, const float z)
 				{
-					min_.x() = std::min(xmin, min_.x());
-					min_.y() = std::min(ymin, min_.y());
-					min_.z() = std::min(zmin, min_.z());
-					max_.x() = std::max(xmax, max_.x());
-					max_.y() = std::max(ymax, max_.y());
-					max_.z() = std::max(zmax, max_.z());
+					if (isEmpty())
+					{
+						base::fit( carve::geom::VECTOR(x, y, z));
+						isFirst = false;
+					}
+					else
+						update( base( carve::geom::VECTOR( x, y, z ), base::mid() ) );
 				}
-				void update(const buw::Vector3d& min, const buw::Vector3d& max)
+				/*!
+				 * \brief updates the bounding box extent
+				 *
+				 * \param[in] other the other bounding box to update self with
+				 */
+				void update(const base& other)
 				{
-					update(min.x(), min.y(), min.z(), max.x(), max.y(), max.z());
+					if (other.isEmpty())
+						return;
+
+					if (isEmpty())
+					{
+						base::operator=( other );
+						isFirst = false;
+					}
+					else
+						base::unionAABB( other );
 				}
-				void update(const double x, const double y, const double z)
-				{
-					update(x, y, z, x, y, z);
-				}
-				void update(const BoundingBox& other)
-				{
-					update(other.min_, other.max_);
-				}
-				void reset() { min_ = buw::Vector3d(INFINITY, INFINITY, INFINITY); max_ = buw::Vector3d(-INFINITY, -INFINITY, -INFINITY); }
-				bool isDefault() { return min_ == buw::Vector3d(INFINITY, INFINITY, INFINITY) && max_ == buw::Vector3d(-INFINITY, -INFINITY, -INFINITY); }
+				//! resets the bounding box to zero
+				void reset() { base::empty(); isFirst = true; }
+				//! is the bounding box empty?
+				bool isEmpty() { return isFirst && base::isEmpty(); }
+				//! returns the min-max extents
 				std::string toString() const {
-					return "min: (" + std::to_string(min_.x()) + ", " + std::to_string(min_.y()) + ", " + std::to_string(min_.z())
-					   + ") max: (" + std::to_string(max_.x()) + ", " + std::to_string(max_.y()) + ", " + std::to_string(max_.z()) + ")";
+					return "min: (" + std::to_string(min().x()) + ", " + std::to_string(min().y()) + ", " + std::to_string(min().z())
+					   + ") max: (" + std::to_string(max().x()) + ", " + std::to_string(max().y()) + ", " + std::to_string(max().z()) + ")";
 				}
-				buw::Vector3d center() const { return 0.5 * (min_ + max_); }
-				buw::Vector3d min() const { return min_; }
-				buw::Vector3d& min() { return min_; }
-				buw::Vector3d max() const { return max_; }
-				buw::Vector3d& max() { return max_; }
+				//! returns the center point of the bounding box
+				buw::Vector3d center() const { return buw::Vector3d( base::mid().x, base::mid().y, base::mid().z); }
+				//! returns the smallest point of the bounding box
+				buw::Vector3d min() const { return buw::Vector3d( base::min().x, base::min().y, base::min().z ); }
+				//! returns the maximal point of the bounding box
+				buw::Vector3d max() const { return buw::Vector3d( base::max().x, base::max().y, base::max().z ); }
+				//! carve::geom::aabb doesn't have a "not set" value, but rather everything is 0,0,0 per default. This variable helps overcome this.
+				bool isFirst = true;
 			};
+
 			struct IndexedMeshDescription {
 				std::vector<uint32_t>		indices;
 				std::vector<VertexLayout>	vertices;
