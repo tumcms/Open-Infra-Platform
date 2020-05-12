@@ -47,20 +47,38 @@ IfcGeometryEffect::~IfcGeometryEffect() {
     depthStencilMSAA_ = nullptr;
 }
 
-void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, buw::Vector3d & offset)
+void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const buw::Vector3d & offset)
 {
+	ifcGeometryModel_ = ifcGeometryModel;
+	offset_ = offset;
+
     if(!ifcGeometryModel->isEmpty()) {
         buw::vertexBufferDescription vbd;
         buw::indexBufferDescription ibd;
-        valid_ = true;
-        if(!ifcGeometryModel->meshDescription_.isEmpty()) {
-            vbd.data = &ifcGeometryModel->meshDescription_.vertices[0];
-            vbd.vertexCount = ifcGeometryModel->meshDescription_.vertices.size();
+        valid_ = true;        
+
+		if(!ifcGeometryModel->meshDescription_.isEmpty()) {
+
+			std::vector< VertexLayout> vertices;
+			vertices.reserve(ifcGeometryModel->meshDescription_.vertices.size());
+			for (auto& vertex : ifcGeometryModel->meshDescription_.vertices)
+			{
+				VertexLayout vtx(vertex);
+				vtx.position[0] += offset.x();
+				vtx.position[1] += offset.y();
+				vtx.position[2] += offset.z();
+				vertices.push_back( vtx );
+			}
+
+			vbd.data = vertices.data(); // &ifcGeometryModel->meshDescription_.vertices[0];
+			vbd.vertexCount = vertices.size(); // ifcGeometryModel->meshDescription_.vertices.size();
             vbd.vertexLayout = buw::VertexPosition3Color3Normal3::getVertexLayout();
             if(meshVertexBuffer_)
                 meshVertexBuffer_->uploadData(vbd);
             else
                 meshVertexBuffer_ = renderSystem()->createVertexBuffer(vbd);
+
+			BLUE_LOG(trace) << "Done creating IFC geometry meshes vertex buffer. Size:" << QString::number(vertices.size()).toStdString();
 
             ibd.data = &ifcGeometryModel->meshDescription_.indices[0];
             ibd.indexCount = ifcGeometryModel->meshDescription_.indices.size();
@@ -76,14 +94,25 @@ void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeome
         }
 
         if(!ifcGeometryModel->polylineDescription_.isEmpty()) {
-            vbd.data = &ifcGeometryModel->polylineDescription_.vertices[0];
-            vbd.vertexCount = ifcGeometryModel->polylineDescription_.vertices.size();
+
+			std::vector< buw::Vector3f > vertices;
+			vertices.reserve(ifcGeometryModel->polylineDescription_.vertices.size());
+			for (auto& vertex : ifcGeometryModel->polylineDescription_.vertices)
+			{
+				buw::Vector3f vtx(vertex);
+				vtx.x() += offset.x();
+				vertices.push_back(vertex + offset.cast<float>());
+			}
+            vbd.data = vertices.data();  //&ifcGeometryModel->polylineDescription_.vertices[0];
+            vbd.vertexCount = vertices.size(); //ifcGeometryModel->polylineDescription_.vertices.size();
             vbd.vertexLayout = buw::VertexPosition3::getVertexLayout();
 
             if(polylineVertexBuffer_)
                 polylineVertexBuffer_->uploadData(vbd);
             else
                 polylineVertexBuffer_ = renderSystem()->createVertexBuffer(vbd);
+
+			BLUE_LOG(trace) << "Done creating IFC geometry polyline vertex buffer. Size:" << QString::number(vertices.size()).toStdString();
 
             ibd.data = &ifcGeometryModel->polylineDescription_.indices[0];
             ibd.indexCount = ifcGeometryModel->polylineDescription_.indices.size();
