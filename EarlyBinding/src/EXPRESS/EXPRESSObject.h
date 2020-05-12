@@ -23,8 +23,6 @@
 
 #include "../EarlyBinding/src/namespace.h"
 
-//#include "EXPRESSModel.h"
-
 #include <string>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
@@ -33,12 +31,20 @@ class EXPRESSObject {
 public:
 	virtual const std::string classname() const = 0;
 	virtual const std::string getStepParameter() const = 0;
-        virtual const std::string getErrorLog() const = 0;
+	
+	/*!
+	\brief Simple access for error logging strings.
 
-protected:
-//	std::weak_ptr<EXPRESSModel> model;
+	\returns <classname> (<stepParameter>)
+	*/
+	const std::string getErrorLog() const {
+		return classname() + " (" + getStepParameter() + ")";
+	}
 };
 
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
+
+EMBED_INTO_OIP_NAMESPACE(EXPRESSObject);
+
 #endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSIObject_e357e824_9a04_46e0_8c91_43c528a6856f_h

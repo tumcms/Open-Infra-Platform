@@ -32,7 +32,6 @@
 #include "GeomUtils.h"
 #include "GeometryInputData.h"
 #include "PlacementConverter.h"
-#include "UnhandledRepresentationException.h"
 
 #include "BlueFramework/Core/Diagnostics/log.h"
 
@@ -342,7 +341,7 @@ namespace OpenInfraPlatform {
 							// TODO: implement		// Interpret values and calculate.
 						}
 
-						throw UnhandledRepresentationException<IfcEntityTypesT>(surface);
+						throw UnhandledException(surface);
 					}
 
 					// ************************************************************************************************************************	//
@@ -400,9 +399,9 @@ namespace OpenInfraPlatform {
 							return;
 						}
 
-						throw UnhandledRepresentationException<IfcEntityTypesT>(surface);
+						throw UnhandledException(surface);
 					}
-					throw UnhandledRepresentationException<IfcEntityTypesT>(surface);
+					throw UnhandledException(surface);
 				}
 
 				// TODO: What is happening here?

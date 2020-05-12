@@ -23,7 +23,8 @@
 
 #include "../EarlyBinding/src/namespace.h"
 
-#include "EXPRESSEntity.h"
+//#include "EXPRESSEntity.h"
+#include "EXPRESSObject.h"
 #include "EXPRESSModel.h"
 
 #include <memory>
@@ -32,7 +33,7 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-template <typename T> class EXPRESSReference : public std::weak_ptr<T> {
+template <typename T> class EXPRESSReference : public std::weak_ptr<T>, public EXPRESSObject {
 	//static_assert(std::is_base_of<EXPRESSEntity, T>::value, "EXPRESSReference can only be specialized with class derived from EXPRESSEntity");
 	using base = std::weak_ptr<T>;
 public:
@@ -62,7 +63,7 @@ public:
 	}
 
 
-	const std::string getStepParameter() const;
+	const std::string getStepParameter() const override;
 	
 
 	T* operator->() { return this->lock().operator->(); }
@@ -93,7 +94,7 @@ public:
 		}
 	}
 
-	const std::string classname() const;
+	const std::string classname() const override;
 	
 
 	friend void swap(EXPRESSReference& first, EXPRESSReference& second)

@@ -111,6 +111,10 @@ namespace OpenInfraPlatform {
 					double length_factor = UnitConvert()->getLengthInMeterFactor();
 
 					for(auto it_representation_items : representation->Items) {
+						
+						try
+						{
+
 						std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationItem>& representation_item = it_representation_items.lock();
 						std::shared_ptr<ItemData> itemData(new ItemData());
 						inputData->vec_item_data.push_back(itemData);
@@ -256,8 +260,20 @@ namespace OpenInfraPlatform {
 								continue;
 							}
 						}
-						err << "unhandled representation: #" << representation_item->getId() << " = " << representation_item->classname() << std::endl;
-					}
+
+						} // end try
+						catch (const UnhandledException& ex)
+						{
+							BLUE_LOG(error) << ex.what();
+							continue;
+						}
+						catch (...)
+						{
+							BLUE_LOG(error) << "Unknown exception";
+							throw;
+						}
+						//err << "unhandled representation: #" << representation_item->getId() << " = " << representation_item->classname() << std::endl;
+					} // end for each representation item
 
 					if(handle_layer_assignments) {
 						// std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcPresentationLayerAssignment>>& LayerAssignments_inverse =
