@@ -1012,7 +1012,7 @@ namespace OpenInfraPlatform {
 				* \returns							The series of points.
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcPolyline(
-					EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& ifcpolyline
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& ifcpolyline
 					)
 				{
 					// **************************************************************************************************************************
@@ -1143,7 +1143,7 @@ namespace OpenInfraPlatform {
 				* \returns						The series of \c carve points.
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcCartesianPointVector(
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>& points
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>& points
 					)
 				{
 					// initialize the return value with enough space
