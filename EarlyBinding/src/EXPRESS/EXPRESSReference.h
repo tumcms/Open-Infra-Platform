@@ -49,7 +49,11 @@ public:
 	using base::base;
 	using base::operator=;
 
-	auto lock() -> decltype(this->base::lock()) {
+	const std::shared_ptr<T> lock() const {
+		return this->base::lock();
+	}
+
+	std::shared_ptr<T> lock() {
 		if (!this->expired() && refId != 0) {
 			return this->base::lock();
 		}
@@ -59,15 +63,6 @@ public:
 		}
 		else {
 			return this->base::lock();
-		}
-	}
-
-	const auto lock() -> const decltype(this->base::lock()) const {
-		if (!this->expired() && refId != 0) {
-			return this->base::lock();
-		}
-		else {
-			return nullptr;
 		}
 	}
 
