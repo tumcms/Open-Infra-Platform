@@ -66,7 +66,6 @@ public:
 		}
 	}
 
-
 	const std::string getStepParameter() const override;
 	
 
@@ -106,6 +105,18 @@ public:
 		first.base::swap(second);
 		std::swap(first.refId, second.refId);
 		std::swap(first.model, second.model);
+	}
+
+	template <typename TTarget> EXPRESSReference<TTarget> as() {
+		return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+	}
+
+	template <typename TTarget> const EXPRESSReference<TTarget> as() const {
+		return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+	}
+
+	template <typename TTarget> bool isOfType() const {
+		return std::dynamic_pointer_cast<TTarget>(this->lock()) != nullptr;
 	}
 
 private:
