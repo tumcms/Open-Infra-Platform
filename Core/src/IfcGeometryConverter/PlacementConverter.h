@@ -1134,7 +1134,7 @@ namespace OpenInfraPlatform {
                                     verSegDistAlong = it_segment->StartDistAlong * length_factor;
                                     if(verSegDistAlong < 0.) {
                                         BLUE_LOG(error) << it_segment->getErrorLog() << ": Start distance along is inconsistent.";
-                                        return;
+                                        //return;
                                     }
 
                                     // Get the segment's length
