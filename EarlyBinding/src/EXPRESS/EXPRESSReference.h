@@ -62,6 +62,15 @@ public:
 		}
 	}
 
+	const auto lock() -> const decltype(this->base::lock()) const {
+		if (!this->expired() && refId != 0) {
+			return this->base::lock();
+		}
+		else {
+			return nullptr;
+		}
+	}
+
 
 	const std::string getStepParameter() const override;
 	
