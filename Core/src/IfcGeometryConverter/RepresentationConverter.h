@@ -89,8 +89,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcRepresentation(const std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>& representation,
 					const carve::math::Matrix& objectPlacement,
-					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData,
-					std::stringstream& err)
+					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData)
 				{
 					// **************************************************************************************************************************
 					// IfcRepresentation
@@ -124,7 +123,7 @@ namespace OpenInfraPlatform {
 						{
 							convertIfcGeometricRepresentationItem(
 								it_representation_items.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(),
-								objectPlacement, itemData, err);
+								objectPlacement, itemData);
 							continue;
 						}
 
@@ -176,7 +175,7 @@ namespace OpenInfraPlatform {
 
 							carve::math::Matrix mapped_pos((map_matrix_origin * objectPlacement) * map_matrix_target);
 
-							convertIfcRepresentation(mapped_representation.lock(), mapped_pos, inputData, err);
+							convertIfcRepresentation(mapped_representation.lock(), mapped_pos, inputData);
 #ifdef _DEBUG
 							BLUE_LOG(trace) << "Processed IfcMappedItem #" << mapped_representation.lock()->getId();
 #endif
@@ -311,8 +310,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcGeometricRepresentationItem(EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationItem>& geomItem,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData> itemData,
-					std::stringstream& err)
+					std::shared_ptr<ItemData> itemData)
 				{
 					// (1/9) IfcFaceBasedSurfaceModel SUBTYPE OF IfcGeometricRepresentationItem
 					if(geomItem.isOfType<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>()) {
@@ -329,7 +327,7 @@ namespace OpenInfraPlatform {
 
 							std::shared_ptr<ItemData> input_data_face_set(new ItemData);
 							try {
-								faceConverter->convertIfcFaceList(vec_ifc_faces, pos, input_data_face_set, err);
+								faceConverter->convertIfcFaceList(vec_ifc_faces, pos, input_data_face_set);
 							}
 							catch(std::exception e) {
 								BLUE_LOG(error) << e.what();
@@ -348,7 +346,7 @@ namespace OpenInfraPlatform {
 					// (2/9) IfcBooleanResult SUBTYPE OF IfcGeometricRepresentationItem
 					if(geomItem.isOfType<typename IfcEntityTypesT::IfcBooleanResult>()) {
 						try {
-							solidConverter->convertIfcBooleanResult(geomItem.as<typename IfcEntityTypesT::IfcBooleanResult>().lock(), pos, itemData, err);
+							solidConverter->convertIfcBooleanResult(geomItem.as<typename IfcEntityTypesT::IfcBooleanResult>().lock(), pos, itemData);
 						}
 						catch(...) {
 							BLUE_LOG(warning) <<  "IfcBooleanResult #"<< geomItem->getId() << " could not be used correctly!";
@@ -358,7 +356,7 @@ namespace OpenInfraPlatform {
 
 					// (3/9) IfcSolidModel SUBTYPE OF IfcGeometricRepresentationItem
 					if(geomItem.isOfType<typename IfcEntityTypesT::IfcSolidModel>()) {
-						solidConverter->convertIfcSolidModel(geomItem.as<typename IfcEntityTypesT::IfcSolidModel>().lock(), pos, itemData, err);
+						solidConverter->convertIfcSolidModel(geomItem.as<typename IfcEntityTypesT::IfcSolidModel>().lock(), pos, itemData);
 						return;
 					}
 
@@ -402,7 +400,7 @@ namespace OpenInfraPlatform {
 							}
 
 							try {
-								faceConverter->convertIfcFaceList(vec_shells, pos, input_data_shells_set, err);
+								faceConverter->convertIfcFaceList(vec_shells, pos, input_data_shells_set);
 							}
 							catch(std::exception e) {
 								BLUE_LOG(error) << e.what();
@@ -481,7 +479,7 @@ namespace OpenInfraPlatform {
 
 					// (9/9) IfcSectionedSpine SUBTYPE OF IfcGeometricRepresentationItem
 					if(geomItem.isOfType<typename IfcEntityTypesT::IfcSectionedSpine>()) {
-						convertIfcSectionedSpine(geomItem.as<typename IfcEntityTypesT::IfcSectionedSpine>().lock(), pos, itemData, err);
+						convertIfcSectionedSpine(geomItem.as<typename IfcEntityTypesT::IfcSectionedSpine>().lock(), pos, itemData);
 						return;
 					}
 
@@ -532,10 +530,10 @@ namespace OpenInfraPlatform {
 						return;
 					}
 
-					if(convertVersionSpecificIfcGeometricRepresentationItem(geomItem.lock(), pos, itemData, err)) {
+					if(convertVersionSpecificIfcGeometricRepresentationItem(geomItem.lock(), pos, itemData)) {
 						return;
 					}
-					err << "Unhandled IFC Representation: #" << geomItem->getId() << "=" << geomItem->classname() << std::endl;
+					throw UnhandledException(geomItem);
 				}
 
 				// ****************************************************************************************************************************************	//
@@ -546,8 +544,7 @@ namespace OpenInfraPlatform {
 				// Function 1:  Convert version specific IfcGeometricRepresentationItem,
 				bool convertVersionSpecificIfcGeometricRepresentationItem(const std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem>& geomItem,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData> itemData,
-					std::stringstream& err)
+					std::shared_ptr<ItemData> itemData)
 				{
 #ifdef _DEBUG
 					std::cout << "Warning\t| Could not find other version specific geometric representations" << std::endl;
@@ -558,8 +555,7 @@ namespace OpenInfraPlatform {
 				// Function 2:  Convert IfcSectionedSpine,
 				void convertIfcSectionedSpine(const std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSpine>& spine,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData> itemData,
-					std::stringstream& err)
+					std::shared_ptr<ItemData> itemData)
 				{
 					const std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurve> spine_curve = spine->SpineCurve.lock();
 					if(!spine_curve) {
@@ -615,8 +611,7 @@ namespace OpenInfraPlatform {
 
 				// Function 4: Convert openings.
 				void convertOpenings(const std::shared_ptr<typename IfcEntityTypesT::IfcElement>& ifcElement,
-					std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& vecOpeningData,
-					std::stringstream& err)
+					std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& vecOpeningData)
 				{
 					//	std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcRelVoidsElement>> vec_rel_voids(
 					//		ifcElement->HasOpenings_inverse);
@@ -683,8 +678,7 @@ namespace OpenInfraPlatform {
 				// Function 5: Subtract openings.
 				void subtractOpenings(const std::shared_ptr<typename IfcEntityTypesT::IfcElement>& ifcElement,
 					std::shared_ptr<ItemData>& itemData,
-					std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& vecOpeningData,
-					std::stringstream& err)
+					std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& vecOpeningData)
 				{
 					const int product_id = ifcElement->getId();
 
@@ -758,10 +752,10 @@ namespace OpenInfraPlatform {
 									// do the subtraction
 									std::shared_ptr<carve::mesh::MeshSet<3>> result;
 									bool csg_op_ok =
-										solidConverter->computeCSG(product_meshset.get(), opening_meshset.get(), carve::csg::CSG::A_MINUS_B, product_id, representation_id, err, result);
+										solidConverter->computeCSG(product_meshset.get(), opening_meshset.get(), carve::csg::CSG::A_MINUS_B, product_id, representation_id, result);
 
 									if(!result || !csg_op_ok) {
-										err << "Error: Subtraction of opening elements #" << ifcElement->getId() << " failed" << std::endl;
+										BLUE_LOG(error) << "Error: Subtraction of opening elements #" << ifcElement->getId() << " failed";
 										continue;
 									}
 

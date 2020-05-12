@@ -94,8 +94,7 @@ namespace OpenInfraPlatform
 
 			void convertIfcSolidModel(const std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				// *****************************************************************************************************************************************//
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
@@ -117,11 +116,11 @@ namespace OpenInfraPlatform
 					switch(csg_select.which()) {
 					case 0:
 						boolean_result = csg_select.get<0>().lock();
-						convertIfcBooleanResult(boolean_result, pos, itemData, err);
+						convertIfcBooleanResult(boolean_result, pos, itemData);
 						break;
 					case 1:
 						csg_primitive3D = csg_select.get<1>().lock();
-						convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData, err);
+						convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData);
 						break;
 					default:
 						break;
@@ -157,7 +156,7 @@ namespace OpenInfraPlatform
 					BLUE_LOG(trace) << "Processing IfcManifoldSolidBrep #" << manifoldSolidBrep->getId();
 #endif
 					// Handle IFC4 advanced boundary representations
-					if (convertAdvancedBrep(manifoldSolidBrep, pos, itemData, err)) {
+					if (convertAdvancedBrep(manifoldSolidBrep, pos, itemData)) {
 #ifdef _DEBUG
 						BLUE_LOG(trace) << "Processed IfcManifoldSolidBrep #" << manifoldSolidBrep->getId();
 #endif
@@ -178,7 +177,7 @@ namespace OpenInfraPlatform
 							std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
 													
 						try {
-							faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell, err);
+							faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell);
 						}
 						catch (...) {
 							//return;
@@ -219,7 +218,7 @@ namespace OpenInfraPlatform
 						return;
 					}
 
-					err << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname() << std::endl;
+					throw UnhandledException(solidModel);
 					return;
 				} //endif manifoldSolidBrep
 
@@ -299,7 +298,7 @@ namespace OpenInfraPlatform
 						double depth = extruded_area->Depth;
 
 
-						convertIfcExtrudedAreaSolid(extruded_area, swept_area_pos, itemData, err);
+						convertIfcExtrudedAreaSolid(extruded_area, swept_area_pos, itemData);
 						return;
 						// TO DO: implement
 					}
@@ -331,7 +330,7 @@ namespace OpenInfraPlatform
 							revolved_area_solid->Axis.lock();
 						double angle = revolved_area_solid->Angle;
 
-						convertIfcRevolvedAreaSolid(revolved_area_solid, swept_area_pos, itemData, err);
+						convertIfcRevolvedAreaSolid(revolved_area_solid, swept_area_pos, itemData);
 						return;
 						// TO DO: implement//
 
@@ -687,7 +686,7 @@ namespace OpenInfraPlatform
 
 
 
-				convertIfcSpecificSolidModel(solidModel, pos, itemData, err);
+				convertIfcSpecificSolidModel(solidModel, pos, itemData);
 
 				BLUE_LOG(error) << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname();
 
@@ -833,8 +832,7 @@ namespace OpenInfraPlatform
 			void convertIfcExtrudedAreaSolid(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcExtrudedAreaSolid>& extrudedArea,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				const int entity_id = extrudedArea->getId();
 #ifdef _DEBUG
@@ -884,6 +882,7 @@ namespace OpenInfraPlatform
 					return;
 				}
 				std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
+				std::stringstream err;
 				GeomUtils::extrude(paths, extrusion_vector, poly_data, err);
 
 				// apply object coordinate system
@@ -905,8 +904,7 @@ namespace OpenInfraPlatform
 			void convertIfcRevolvedAreaSolid(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcRevolvedAreaSolid>& revolvedArea,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcRevolvedAreaSolid #" << revolvedArea->getId();
@@ -1020,18 +1018,18 @@ namespace OpenInfraPlatform
 					carve::triangulate::improve(merged, triangulated);*/
 
 
-					err << "carve::triangulate::incorporateHolesIntoPolygon failed " << std::endl;
+					BLUE_LOG(error) << "carve::triangulate::incorporateHolesIntoPolygon failed ";
 					return;
 				}
 
 				if (profile_coords.size() == 0)
 				{
-					err << "#" << revolvedArea->getId() << " = IfcRevolvedAreaSolid: convertIfcRevolvedAreaSolid: num_loops == 0";
+					BLUE_LOG(error) << "#" << revolvedArea->getId() << " = IfcRevolvedAreaSolid: convertIfcRevolvedAreaSolid: num_loops == 0";
 					return;
 				}
 				if (profile_coords[0].size() < 3)
 				{
-					err << "#" << revolvedArea->getId() << " = IfcRevolvedAreaSolid: convertIfcRevolvedAreaSolid: num_polygon_points < 3";
+					BLUE_LOG(error) << "#" << revolvedArea->getId() << " = IfcRevolvedAreaSolid: convertIfcRevolvedAreaSolid: num_polygon_points < 3";
 					return;
 				}
 
@@ -1140,8 +1138,7 @@ namespace OpenInfraPlatform
 
 			void convertIfcBooleanResult(const std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult>& boolResult,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				const int boolean_result_id = boolResult->getId();
 
@@ -1187,12 +1184,12 @@ namespace OpenInfraPlatform
 					// convert the first operand
 					std::shared_ptr<ItemData> first_operand_data(new ItemData());
 					std::shared_ptr<ItemData> empty_operand;
-					convertIfcBooleanOperand(ifc_first_operand, pos, first_operand_data, empty_operand, err);
+					convertIfcBooleanOperand(ifc_first_operand, pos, first_operand_data, empty_operand);
 					first_operand_data->createMeshSetsFromClosedPolyhedrons();
 
 					// convert the second operand
 					std::shared_ptr<ItemData> second_operand_data(new ItemData());
-					convertIfcBooleanOperand(ifc_second_operand, pos, second_operand_data, first_operand_data, err);
+					convertIfcBooleanOperand(ifc_second_operand, pos, second_operand_data, first_operand_data);
 					second_operand_data->createMeshSetsFromClosedPolyhedrons();
 
 					// for every first operand polyhedrons, apply all second operand polyhedrons
@@ -1246,7 +1243,7 @@ namespace OpenInfraPlatform
 							std::shared_ptr<carve::mesh::MeshSet<3> > result;
 							bool csg_op_ok = computeCSG(first_operand_meshset.get(),
 								second_operand_meshset.get(),
-								csg_operation, id1, id2, err, result);
+								csg_operation, id1, id2, result);
 
 							if (csg_op_ok)
 							{
@@ -1263,8 +1260,7 @@ namespace OpenInfraPlatform
 			void convertIfcCsgPrimitive3D(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D>& csgPrimitive,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 				double length_factor = UnitConvert()->getLengthInMeterFactor();
@@ -1528,14 +1524,13 @@ namespace OpenInfraPlatform
 					itemData->closed_polyhedrons.push_back(polyhedron_data);
 					return;
 				}
-				err << "Unhandled IFC Representation: #" << csgPrimitive->getId() << "=" << csgPrimitive->classname() << std::endl;
+				throw UnhandledException(csgPrimitive);
 			}
 
 			void convertIfcBooleanOperand(typename IfcEntityTypesT::IfcBooleanOperand& operand,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
-				const std::shared_ptr<ItemData>& otherOperand,
-				std::stringstream& err)
+				const std::shared_ptr<ItemData>& otherOperand)
 			{
 				// OPERAND is SELECT of
 				/*
@@ -1585,7 +1580,7 @@ namespace OpenInfraPlatform
 
 				if (solid_model)
 				{
-					convertIfcSolidModel(solid_model, pos, itemData, err);
+					convertIfcSolidModel(solid_model, pos, itemData);
 #ifdef _DEBUG
 					BLUE_LOG(trace) << "Processed IfcSolidModel #" << solid_model->getId();
 #endif
@@ -1761,7 +1756,7 @@ namespace OpenInfraPlatform
 #endif
 							extrusion_depth = extrusion_depth * 2.0;
 						}
-						//std::stringstream err;
+						std::stringstream err;
 						std::vector<std::vector<carve::geom::vector<2> > > paths;
 						paths.push_back(polygonal_boundary);
 						std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
@@ -1910,13 +1905,13 @@ namespace OpenInfraPlatform
 				
 				if (boolean_result)
 				{
-					convertIfcBooleanResult(boolean_result, pos, itemData, err);
+					convertIfcBooleanResult(boolean_result, pos, itemData);
 					return;
 				}
 
 				if (csg_primitive3D)
 				{
-					convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData, err);
+					convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData);
 					return;
 				}
 
@@ -1937,10 +1932,10 @@ namespace OpenInfraPlatform
 				carve::mesh::MeshSet<3>* op2,
 				const carve::csg::CSG::OP operation,
 				const int entity1, const int entity2,
-				std::stringstream& err,
 				std::shared_ptr<carve::mesh::MeshSet<3>>& result)
 			{
 				bool isCSGComputationOk = false;
+				std::stringstream err;
 
 				bool meshset1_ok = GeomUtils::checkMeshSet(op1, err, entity1);
 				bool meshset2_ok = GeomUtils::checkMeshSet(op2, err, entity2);
@@ -2186,16 +2181,14 @@ namespace OpenInfraPlatform
 
 			void convertIfcSpecificSolidModel(const std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				std::cout << "Ifc-specific solid model " << solidModel->classname() << " not supported" << std::endl;
 			}
 
 			bool convertAdvancedBrep(std::shared_ptr<typename IfcEntityTypesT::IfcManifoldSolidBrep>& manifoldSolidBrep,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				return false;
 			}

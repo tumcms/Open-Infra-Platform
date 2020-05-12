@@ -95,7 +95,7 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 #ifdef _DEBUG
 			BLUE_LOG(trace) << "Processing IfcRepresentation #" << rep->getId();
 #endif
-			repConverter->convertIfcRepresentation(rep.lock(), matProduct, productShape, strerr);
+			repConverter->convertIfcRepresentation(rep.lock(), matProduct, productShape);
 #ifdef _DEBUG
 			BLUE_LOG(trace) << "Processed IfcRepresentation #" << rep->getId();
 #endif
