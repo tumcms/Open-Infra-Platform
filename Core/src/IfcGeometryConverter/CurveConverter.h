@@ -577,11 +577,7 @@ namespace OpenInfraPlatform {
 									if (first != trim1Vec.end() && (*first) != nullptr) {
 										BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming begin as IfcCartesianPoint.";
 										try {
-											std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point1 = (*first)->get<0>().lock();
-
-											BLUE_LOG(trace) << trim_point1->getErrorLog();
-											carve::geom::vector<3> trim_point;
-											placementConverter->convertIfcCartesianPoint(trim_point1, trim_point);
+											carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
 
 											trim_angle1 = getAngleOnCircle(circle_center,
 												circle_radius,
@@ -616,11 +612,7 @@ namespace OpenInfraPlatform {
 										BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming end as IfcCartesianPoint.";
 
 										try {
-											std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> trim_point2 = (*first)->get<0>().lock();
-
-											BLUE_LOG(trace) << trim_point2->getErrorLog();
-											carve::geom::vector<3> trim_point;
-											placementConverter->convertIfcCartesianPoint(trim_point2, trim_point);
+											carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
 
 											trim_angle2 = getAngleOnCircle(circle_center,
 												circle_radius,
@@ -757,9 +749,7 @@ namespace OpenInfraPlatform {
 						// Part 1: Get information from IfcLine. 
 
 						// Get IfcLine attributes: line point and line direction. 
-						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_line_point = line->Pnt.lock();
-						carve::geom::vector<3> line_origin;
-						placementConverter->convertIfcCartesianPoint(ifc_line_point, line_origin);
+						carve::geom::vector<3> line_origin = placementConverter->convertIfcCartesianPoint(line->Pnt);
 
 						std::shared_ptr<typename IfcEntityTypesT::IfcVector> line_vec = line->Dir.lock();
 						if (!line_vec) {
@@ -809,9 +799,7 @@ namespace OpenInfraPlatform {
 							std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_trim_point;
 							auto first_point = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select_ptr) { return select_ptr->which() == 0; });
 							if (first_point != trim1Vec.end() && *first_point) {
-								ifc_trim_point = (*first_point)->get<0>().lock();
-								carve::geom::vector<3> trim_point;
-								placementConverter->convertIfcCartesianPoint(ifc_trim_point, trim_point);
+								carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first_point)->get<0>());
 
 								carve::geom::vector<3> closest_point_on_line;
 								GeomUtils::closestPointOnLine(trim_point, line_origin,
@@ -839,9 +827,7 @@ namespace OpenInfraPlatform {
 							auto first_point = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select_ptr) { return select_ptr->which() == 0; });
 
 							if (first_point != trim2Vec.end() && *first_point) {
-								ifc_trim_point = (*first_point)->get<0>().lock();
-								carve::geom::vector<3> trim_point;
-								placementConverter->convertIfcCartesianPoint(ifc_trim_point, trim_point);
+								carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first_point)->get<0>());
 
 								carve::geom::vector<3> closest_point_on_line;
 								GeomUtils::closestPointOnLine(trim_point, line_origin,
@@ -1148,13 +1134,9 @@ namespace OpenInfraPlatform {
 				{
 					// initialize the return value with enough space
 					std::vector<carve::geom::vector<3>> loop( points.size() );
-					// convert each point individually
-					carve::geom::vector<3> point = carve::geom::VECTOR(0., 0., 0.);
-					for ( auto it = points.begin(); it != points.end(); ++it )
-					{
-						placementConverter->convertIfcCartesianPoint( it->lock(), point);
-						loop.push_back(point);
-					}
+					// convert each point individually and add to the return vector
+					for ( auto& it : points )
+						loop.push_back(placementConverter->convertIfcCartesianPoint(it));
 					// return the loop
 					return loop;
 				} // end convertIfcCartesianPointVector
@@ -1177,8 +1159,7 @@ namespace OpenInfraPlatform {
 					for ( auto& it_cp = ifcPoints.begin(); it_cp != ifcPoints.end(); ++it_cp) {
 						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> cp = (*it_cp);
 
-						carve::geom::vector<3>  vertex(carve::geom::VECTOR(0.,0.,0.));
-						placementConverter->convertIfcCartesianPoint(*it_cp, vertex);
+						carve::geom::vector<3>  vertex = placementConverter->convertIfcCartesianPoint( *it_cp );
 
 						// skip duplicate vertices
 						if (it_cp != ifcPoints.begin()) {

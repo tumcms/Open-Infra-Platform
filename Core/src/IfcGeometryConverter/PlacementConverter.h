@@ -265,7 +265,7 @@ namespace OpenInfraPlatform {
                         carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0)); // defaults to (1.0,0.0) according to the specification
 
                         // interpret Location 
-                        convertIfcCartesianPoint(axis2placement2d->Location.lock(), translate);
+						translate = convertIfcCartesianPoint( axis2placement2d->Location );
 
                         // interpret RefDirection [OPTIONAL]
                         if(axis2placement2d->RefDirection) {
@@ -324,7 +324,7 @@ namespace OpenInfraPlatform {
                         carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
 
                         // interpret Location
-                        convertIfcCartesianPoint(axis2placement3d->Location.lock(), translate);
+						translate = convertIfcCartesianPoint(axis2placement3d->Location);
 
                         // interpret RefDirection [OPTIONAL]
                         if(axis2placement3d->RefDirection) {
@@ -1542,8 +1542,7 @@ namespace OpenInfraPlatform {
                             bool bCCW = (curveOut ? bCCWStart : bCCWEnd);
 
                             //  Starting point of the segment
-                            carve::geom::vector<3> startPoint;
-                            convertIfcCartesianPoint(curveSegStartPoint, startPoint);
+                            carve::geom::vector<3> startPoint = convertIfcCartesianPoint(curveSegStartPoint);
 
                             // the transformation matrix
                             carve::math::Matrix matrix(carve::math::Matrix::IDENT());

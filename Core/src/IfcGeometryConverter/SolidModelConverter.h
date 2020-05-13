@@ -928,8 +928,7 @@ namespace OpenInfraPlatform
 
 					if (axis_placement->Location)
 					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> location_point = axis_placement->Location.lock();
-						placementConverter->convertIfcCartesianPoint(location_point, axis_location);
+						axis_location = placementConverter->convertIfcCartesianPoint(axis_placement->Location );
 					}
 
 					if (axis_placement->Axis)
@@ -1636,13 +1635,11 @@ namespace OpenInfraPlatform
 							BLUE_LOG(error) << "IfcBoxedHalfSpace: Enclosure not valid!";
 							return;
 						}
-						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>	bbox_corner = bbox->Corner.lock();
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_x_dim = bbox->XDim;
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_y_dim = bbox->YDim;
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_z_dim = bbox->ZDim;
 
-						carve::geom::vector<3> corner;
-						placementConverter->convertIfcCartesianPoint(bbox_corner, corner);
+						carve::geom::vector<3> corner = placementConverter->convertIfcCartesianPoint(bbox->Corner);
 						carve::math::Matrix box_position_matrix = pos * base_position_matrix*carve::math::Matrix::TRANS(corner);
 
 						// else, its an unbounded half space solid, create simple box
