@@ -101,14 +101,15 @@ namespace OpenInfraPlatform {
                     /*! \brief Converts \c IfcCartesianPoint to a vector.
 
                     \param[in]	cartesianPoint	\c IfcCartesianPoint entity to be interpreted.
-                    \param[out] point			Calculated 2D or 3D vector.
+
+                    \return		Calculated 2D or 3D vector.
 
                     \note The point's coordinates are scaled according to the unit conversion factor.
                     \note The point's coordinates are reset to (0,0,0).
                     */
-                    void convertIfcCartesianPoint(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint,
-                        carve::geom::vector<3>& point)
+					carve::geom::vector<3> convertIfcCartesianPoint(
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint
+                        )
                     {
                         // **************************************************************************************************************************
                         // IfcCartesianPoint
@@ -124,7 +125,7 @@ namespace OpenInfraPlatform {
                         // **************************************************************************************************************************
 
                         // set to default
-                        point = carve::geom::VECTOR(0.0, 0.0, 0.0);
+						carve::geom::vector<3> point = carve::geom::VECTOR(0.0, 0.0, 0.0);
                         // read the coordinates
                         auto& coords = cartesianPoint->Coordinates;
                         if(coords.size() > 0) {
@@ -141,6 +142,8 @@ namespace OpenInfraPlatform {
                         }
                         // scale the lengths according to the unit conversion
                         point *= UnitConvert()->getLengthInMeterFactor();
+						// returns
+						return point;
                     }
 
                     /*! \brief Converts \c IfcDirection to a vector.
