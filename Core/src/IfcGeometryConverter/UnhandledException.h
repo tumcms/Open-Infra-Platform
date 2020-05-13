@@ -26,6 +26,7 @@
 #include "CarveHeaders.h"
 
 #include "EXPRESS/EXPRESSObject.h"
+#include "EXPRESS\EXPRESSReference.h"
 
 namespace OpenInfraPlatform {
 	namespace Core {
@@ -52,6 +53,15 @@ namespace OpenInfraPlatform {
 				UnhandledException(const std::shared_ptr<oip::EXPRESSObject>& item) noexcept
 				{
 					item_ = item;
+				}
+				/*!
+				\brief Constructor with the unhandled entity.
+				\param[in] item The entity that is not handled.
+				*/
+				template <typename T>
+				UnhandledException(const oip::EXPRESSReference<typename T>& item) noexcept
+				{
+					item_ = item.lock();
 				}
 				//! Destructor
 				~UnhandledException() throw()

@@ -127,4 +127,6 @@ private:
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 
 template<typename T> using EXPRESSReference = OpenInfraPlatform::EarlyBinding::EXPRESSReference<T>;
+EMBED_INTO_OIP_NAMESPACE(EXPRESSReference);
+
 #endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSReference_c5a3045b_df30_4a77_aeea_3a16cde5c141_h
