@@ -69,6 +69,35 @@ namespace OpenInfraPlatform {
 
                     }
 
+					/*! \brief Converts \c IfcPoint to a vector.
+
+					\param[in]	point	\c IfcPoint entity to be interpreted.
+
+					\return		Calculated 2D or 3D vector.
+
+					\note The point's coordinates are scaled according to the unit conversion factor.
+					\note The point's coordinates are reset to (0,0,0).
+					*/
+					carve::geom::vector<3> convertIfcPoint(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcPoint>& point
+					)
+					{
+						// **************************************************************************************************************************
+						// ENTITY IfcPoint
+						//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpoint.htm
+						// ABSTRACT SUPERTYPE OF(ONEOF(IfcCartesianPoint, IfcPointOnCurve, IfcPointOnSurface))
+						//	SUBTYPE OF(IfcGeometricRepresentationItem);
+						// END_ENTITY;
+						// **************************************************************************************************************************
+
+						// IfcCartesianPoint
+						if (point.isOfType<typename IfcEntityTypesT::IfcCartesianPoint>())
+							return convertIfcCartesianPoint(point.as<typename IfcEntityTypesT::IfcCartesianPoint>());
+
+						// the rest is not supported
+						throw UnhandledException(point);
+
+					}
                     /*! \brief Converts \c IfcCartesianPoint to a vector.
 
                     \param[in]	cartesianPoint	\c IfcCartesianPoint entity to be interpreted.
