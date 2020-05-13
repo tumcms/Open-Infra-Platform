@@ -49,12 +49,21 @@
 namespace OpenInfraPlatform {
 	namespace Core {
 		namespace IfcGeometryConverter {
+
+			/*! \brief The top converter class.
+			 *
+			 * This class includes top-level converter functions and calls other converters correspondingly.
+			 * This should be used as an entry point to the geometry converter functionalities.
+			 *
+			 * \param IfcEntityTypesT The IFC version templates
+			 */
 			template <
 				class IfcEntityTypesT
 			>
 			class RepresentationConverterT : public ConverterBaseT<IfcEntityTypesT>
 			{
 			public:
+				//! Constructor
 				RepresentationConverterT(
 					std::shared_ptr<GeometrySettings> geomSettings, 
 					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter
@@ -78,6 +87,7 @@ namespace OpenInfraPlatform {
 						std::make_shared<SolidModelConverterT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter, curveConverter, faceConverter, profileCache);
 				}
 
+				//! Destructor
 				~RepresentationConverterT()
 				{
 				}
@@ -91,7 +101,8 @@ namespace OpenInfraPlatform {
 				void convertIfcRepresentation(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& representation,
 					const carve::math::Matrix& objectPlacement,
-					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData)
+					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData
+				) const noexcept
 				{
 					// **************************************************************************************************************************
 					// IfcRepresentation
@@ -126,13 +137,13 @@ namespace OpenInfraPlatform {
 						}
 						catch (const UnhandledException& ex)
 						{
+							// write the error to the console
 							BLUE_LOG(error) << ex.what();
 							continue;
 						}
 						catch (...)
 						{
 							BLUE_LOG(error) << "Unknown exception";
-							throw;
 						}
 
 					} // end for each representation item
@@ -165,16 +176,16 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief Converts \c IfcRepresentationItem to meshes.
-				*
-				* \param[in] reprItem The \c IfcRepresentationItem to be converted.
-				* \param[in] objectPlacement The relative location of the origin of the representation's coordinate system within the global system.
-				* \param[out] itemData A pointer to be filled with the relevant data.
-				*/
+				 *
+				 * \param[in] reprItem The \c IfcRepresentationItem to be converted.
+				 * \param[in] objectPlacement The relative location of the origin of the representation's coordinate system within the global system.
+				 * \param[out] itemData A pointer to be filled with the relevant data.
+				 */
 				void convertIfcRepresentationItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationItem>& reprItem,
 					const carve::math::Matrix& objectPlacement,
-					std::shared_ptr<ItemData> itemData
-				) throw(...)
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
 				{
 					// *************************************************************************************************************************************************************//
 					//	IfcRepresentationItem	
@@ -318,7 +329,8 @@ namespace OpenInfraPlatform {
 				void convertIfcGeometricRepresentationItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationItem>& geomItem,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData> itemData)
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
 				{
 					// (1/9) IfcFaceBasedSurfaceModel SUBTYPE OF IfcGeometricRepresentationItem
 					if(geomItem.isOfType<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>()) {
@@ -550,20 +562,21 @@ namespace OpenInfraPlatform {
 				// ****************************************************************************************************************************************	//
 
 				// Function 1:  Convert version specific IfcGeometricRepresentationItem,
-				bool convertVersionSpecificIfcGeometricRepresentationItem(const std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem>& geomItem,
+				bool convertVersionSpecificIfcGeometricRepresentationItem(
+					const std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem>& geomItem,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData> itemData)
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
 				{
-#ifdef _DEBUG
-					std::cout << "Warning\t| Could not find other version specific geometric representations" << std::endl;
-#endif
+					throw UnhandledException(geomItem);
 					return false;
 				}
 
 				// Function 2:  Convert IfcSectionedSpine,
 				void convertIfcSectionedSpine(const std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSpine>& spine,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData> itemData)
+					std::shared_ptr<ItemData>& itemData
+				) const 
 				{
 					const std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurve> spine_curve = spine->SpineCurve.lock();
 					if(!spine_curve) {
@@ -608,7 +621,8 @@ namespace OpenInfraPlatform {
 				 */
 				void convertIfcStyledItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcStyledItem>& styledItem, 
-					std::shared_ptr<ItemData>& itemData) throw(...)
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
 				{
 					throw UnhandledException( styledItem );
 
