@@ -80,7 +80,7 @@ namespace OpenInfraPlatform {
 					*/
 					carve::geom::vector<3> convertIfcPoint(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcPoint>& point
-					)
+					) const throw(...)
 					{
 						// **************************************************************************************************************************
 						// ENTITY IfcPoint
@@ -109,7 +109,7 @@ namespace OpenInfraPlatform {
                     */
 					carve::geom::vector<3> convertIfcCartesianPoint(
                         const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint
-                        )
+                        ) const noexcept
                     {
                         // **************************************************************************************************************************
                         // IfcCartesianPoint
@@ -212,9 +212,7 @@ namespace OpenInfraPlatform {
 
                         // (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
                         if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis1Placement>(placement)) {
-                            BLUE_LOG(error) << placement->getErrorLog() << ": Not implemented.";
                             throw UnhandledException(placement);
-                            return;
                         }
 
                         // (2/3) IfcAxis2Placement2D SUBTYPE OF IfcPlacement 
@@ -233,7 +231,7 @@ namespace OpenInfraPlatform {
                             return;
                         }
 
-                        BLUE_LOG(error) << placement->getErrorLog() << ": Not supported.";
+						throw UnhandledException(placement);
                     }
 
                     /*! \brief Converts \c IfcAxis2Placement2D to a transformation matrix.
