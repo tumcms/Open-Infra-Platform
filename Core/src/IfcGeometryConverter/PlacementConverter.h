@@ -109,7 +109,7 @@ namespace OpenInfraPlatform {
                     */
 					carve::geom::vector<3> convertIfcCartesianPoint(
                         const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint
-                        ) const noexcept
+                        ) const throw(...)
                     {
                         // **************************************************************************************************************************
                         // IfcCartesianPoint
@@ -127,19 +127,21 @@ namespace OpenInfraPlatform {
                         // set to default
 						carve::geom::vector<3> point = carve::geom::VECTOR(0.0, 0.0, 0.0);
                         // read the coordinates
-                        auto& coords = cartesianPoint->Coordinates;
-                        if(coords.size() > 0) {
-                            point.x = coords[0];
+						auto& coords = cartesianPoint->Coordinates;
+						switch (coords.size())
+						{
+						case 3:
+							point.z = coords[2];
+						case 2:
+							point.y = coords[1];
+						case 1:
+							point.x = coords[0];
+							break;
+						default:
+							BLUE_LOG(trace) << cartesianPoint->getErrorLog() << ": Number of coordinates is inconsistent.";
+							throw std::exception("Number of coordinates is inconsistent.");
+						}
 
-                            if(coords.size() > 1) {
-                                point.y = coords[1];
-
-                                if(coords.size() > 2) {
-                                    point.z = coords[2];
-                                }
-                            }
-
-                        }
                         // scale the lengths according to the unit conversion
                         point *= UnitConvert()->getLengthInMeterFactor();
 						// returns
