@@ -240,7 +240,7 @@ namespace OpenInfraPlatform {
                     \param[out] matrix				Calculated transformation matrix.
                     */
                     carve::math::Matrix convertIfcAxis2Placement2D(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d)
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d)
                     {
                         // **************************************************************************************************************************
                         // IfcAxis2Placement2D 
@@ -295,7 +295,7 @@ namespace OpenInfraPlatform {
                     \param[out] matrix				Calculated transformation matrix.
                     */
                     carve::math::Matrix convertIfcAxis2Placement3D(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d)
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d) throw(...)
                     {
                         // **************************************************************************************************************************
                         // IfcAxis2Placement2D 
@@ -314,6 +314,11 @@ namespace OpenInfraPlatform {
                         //		AxisAndRefDirProvision: NOT((EXISTS(Axis)) XOR(EXISTS(RefDirection)));
                         // END_ENTITY;
                         // **************************************************************************************************************************
+                        if(axis2placement3d.expired()) {
+                            BLUE_LOG(error) << axis2placement3d.getErrorLog() << " expired!";
+                            //TODO: Create ReferenceExpiredException!
+                            throw std::exception(axis2placement3d.getErrorLog().data());
+                        }
 
                         carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
                         carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
@@ -369,7 +374,7 @@ namespace OpenInfraPlatform {
                      * @note The select type IfcAxis2Placement can either be a \c IfcAxis2Placement2D or an \c IfcAxis2Placement3D
                      * and the respective convert function for the actually held type is called.
                      */
-                    carve::math::Matrix convertIfcAxis2Placement(typename IfcEntityTypesT::IfcAxis2Placement axis_placement)
+                    carve::math::Matrix convertIfcAxis2Placement(const typename IfcEntityTypesT::IfcAxis2Placement& axis_placement)
                     {
                         // RelativePlacement				
                         // TYPE IfcAxis2Placement = SELECT (
@@ -380,10 +385,10 @@ namespace OpenInfraPlatform {
                         carve::math::Matrix matrix = carve::math::Matrix::IDENT();
                         switch(axis_placement.which()) {
                         case 0:
-                            matrix = convertIfcAxis2Placement2D(axis_placement.get<0>().lock());
+                            matrix = convertIfcAxis2Placement2D(axis_placement.get<0>());
                             break;
                         case 1:
-                            matrix = convertIfcAxis2Placement3D(axis_placement.get<1>().lock());
+                            matrix = convertIfcAxis2Placement3D(axis_placement.get<1>());
                             break;
                         default:
                             BLUE_LOG(fatal) << axis_placement.getErrorLog() << "IfcAxis2Placement conversion issues.";
