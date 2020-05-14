@@ -95,7 +95,7 @@ namespace OpenInfraPlatform {
 							return convertIfcCartesianPoint(point.as<typename IfcEntityTypesT::IfcCartesianPoint>());
 
 						// the rest is not supported
-						throw UnhandledException(point);
+						throw oip::UnhandledException(point);
 
 					}
                     /*! \brief Converts \c IfcCartesianPoint to a vector.
@@ -214,7 +214,7 @@ namespace OpenInfraPlatform {
 
                         // (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
                         if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis1Placement>(placement)) {
-                            throw UnhandledException(placement);
+                            throw oip::UnhandledException(placement);
                         }
 
                         // (2/3) IfcAxis2Placement2D SUBTYPE OF IfcPlacement 
@@ -233,7 +233,7 @@ namespace OpenInfraPlatform {
                             return;
                         }
 
-						throw UnhandledException(placement);
+						throw oip::UnhandledException(placement);
                     }
 
                     /*! \brief Converts \c IfcAxis2Placement2D to a transformation matrix.
@@ -703,7 +703,7 @@ namespace OpenInfraPlatform {
                             //TODO Not implemented
                             BLUE_LOG(warning) << grid_placement->getErrorLog() << ": Not implemented";
                             object_placement_matrix = carve::math::Matrix::IDENT();
-                            throw UnhandledException(objectPlacement);
+                            throw oip::UnhandledException(objectPlacement);
                         } // end if IfcGridPlacement
 
                         // (3/3) IfcLinearPlacement SUBTYPE OF IfcObjectPlacement

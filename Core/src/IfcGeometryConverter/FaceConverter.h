@@ -341,7 +341,7 @@ namespace OpenInfraPlatform {
 							// TODO: implement		// Interpret values and calculate.
 						}
 
-						throw UnhandledException(surface);
+						throw oip::UnhandledException(surface);
 					}
 
 					// ************************************************************************************************************************	//
@@ -399,9 +399,9 @@ namespace OpenInfraPlatform {
 							return;
 						}
 
-						throw UnhandledException(surface);
+						throw oip::UnhandledException(surface);
 					}
-					throw UnhandledException(surface);
+					throw oip::UnhandledException(surface);
 				}
 
 				// TODO: What is happening here?

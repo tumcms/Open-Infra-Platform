@@ -25,20 +25,16 @@ set(CMAKE_CXX_STANDARD 14)
 file(GLOB Core_Source 								src/*.*)
 file(GLOB Core_DataManagement_Source 				src/DataManagement/*.*)
 file(GLOB Core_DataManagement_General_Source 		src/DataManagement/General/*.*)
-file(GLOB Core_DataManagement_Command_Source		src/DataManagement/Command/*.*)
-#file(GLOB Core_DataManagement_Import_Source		src/DataManagement/Import/*.*)
-#file(GLOB Core_DataManagement_Export_Source		src/DataManagement/Export/*.*)
 file(GLOB Core_IfcGeometryConverter_Source			src/IfcGeometryConverter/*.*)
+file(GLOB Core_Exception_Source						src/Exception/*.*)
 
 source_group(Core								FILES $Core_Source})
 source_group(Core\\DataManagement				FILES ${Core_DataManagement_Source})
 source_group(Core\\DataManagement\\General		FILES ${Core_DataManagement_General_Source})
-source_group(Core\\DataManagement\\Command		FILES ${Core_DataManagement_Command_Source})
-#source_group(Core\\DataManagement\\Import		FILES ${Core_DataManagement_Import_Source})
-#source_group(Core\\DataManagement\\Export		FILES ${Core_DataManagement_Export_Source})
 source_group(Core\\IfcGeometryConverter			FILES ${Core_IfcGeometryConverter_Source})
+source_group(Core\\Exception					FILES ${Core_Exception_Source})
 
-set(PROJECT_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src ${BLUEFRAMEWORK_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/EarlyBinding/src)
+set(PROJECT_INCLUDE_DIRS )
 
 include_directories(${PROJECT_INCLUDE_DIRS})		
 
@@ -46,13 +42,17 @@ add_library(OpenInfraPlatform.Core STATIC
 	${Core_Source}
 	${Core_DataManagement_Source}
 	${Core_DataManagement_General_Source}
-	${Core_DataManagement_Command_Source}
-	#${Core_DataManagement_Import_Source}
-	#${Core_DataManagement_Export_Source}
 	${Core_IfcGeometryConverter_Source}
+	${Core_Exception_Source}
 )
 
-target_include_directories(OpenInfraPlatform.Core PUBLIC ${PROJECT_INCLUDE_DIRS} )
+
+target_include_directories(OpenInfraPlatform.Core
+	PUBLIC 
+		${PROJECT_SOURCE_DIR}/src
+		${BLUEFRAMEWORK_INCLUDE_DIR}
+		${CMAKE_SOURCE_DIR}/EarlyBinding/src
+)
 
 # Thirdparty libraries the project depends upon.
 target_link_libraries(OpenInfraPlatform.Core PRIVATE

@@ -218,7 +218,7 @@ namespace OpenInfraPlatform
 						return;
 					}
 
-					throw UnhandledException(solidModel);
+					throw oip::UnhandledException(solidModel);
 					return;
 				} //endif manifoldSolidBrep
 
@@ -1523,7 +1523,7 @@ namespace OpenInfraPlatform
 					itemData->closed_polyhedrons.push_back(polyhedron_data);
 					return;
 				}
-				throw UnhandledException(csgPrimitive);
+				throw oip::UnhandledException(csgPrimitive);
 			}
 
 			void convertIfcBooleanOperand(typename IfcEntityTypesT::IfcBooleanOperand& operand,

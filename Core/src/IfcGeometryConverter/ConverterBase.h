@@ -39,7 +39,7 @@
 
 #include "GeometrySettings.h"
 #include "UnitConverter.h"
-#include "UnhandledException.h"
+#include "Exception/UnhandledException.h"
 
 namespace OpenInfraPlatform
 {

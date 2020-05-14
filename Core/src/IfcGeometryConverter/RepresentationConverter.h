@@ -135,7 +135,7 @@ namespace OpenInfraPlatform {
 							// only add if no exception was thrown
 							inputData->vec_item_data.push_back(itemData);
 						}
-						catch (const UnhandledException& ex)
+						catch (const oip::UnhandledException& ex)
 						{
 							// write the error to the console
 							BLUE_LOG(error) << ex.what();
@@ -211,14 +211,14 @@ namespace OpenInfraPlatform {
 						auto& map_source = mapped_item->MappingSource;
 
 						if (!map_source.lock()) {
-							throw UnhandledException(reprItem);
+							throw oip::UnhandledException(reprItem);
 							return;
 						}
 
 						// decltype(map_source->Mapped_Representation)::type &mapped_representation = map_source->MappedRepresentation;
 						auto& mapped_representation = map_source->MappedRepresentation;
 						if (!mapped_representation.lock()) {
-							throw UnhandledException(reprItem);
+							throw oip::UnhandledException(reprItem);
 							return;
 						}
 
@@ -280,7 +280,7 @@ namespace OpenInfraPlatform {
 
 						// IfcConnectedFaceSet SUBTYPE OF IfcTopologicalRepresentationItem
 						if (topo_item.isOfType<typename IfcEntityTypesT::IfcConnectedFaceSet>() ) {
-							throw UnhandledException(topo_item);
+							throw oip::UnhandledException(topo_item);
 							return;
 						}
 
@@ -553,7 +553,7 @@ namespace OpenInfraPlatform {
 					if(convertVersionSpecificIfcGeometricRepresentationItem(geomItem.lock(), pos, itemData)) {
 						return;
 					}
-					throw UnhandledException(geomItem);
+					throw oip::UnhandledException(geomItem);
 				}
 
 				// ****************************************************************************************************************************************	//
@@ -568,7 +568,7 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<ItemData>& itemData
 				) const throw(...)
 				{
-					throw UnhandledException(geomItem);
+					throw oip::UnhandledException(geomItem);
 					return false;
 				}
 
@@ -624,7 +624,7 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<ItemData>& itemData
 				) const throw(...)
 				{
-					throw UnhandledException( styledItem );
+					throw oip::UnhandledException( styledItem );
 
 					// code left here for reference, for the future poor soul taking care of styled items
 					//std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcStyledItem>>& StyledByItem_inverse_vec = representation_item->StyledByItem_inverse;
