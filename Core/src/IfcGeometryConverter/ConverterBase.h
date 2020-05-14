@@ -40,6 +40,7 @@
 #include "GeometrySettings.h"
 #include "UnitConverter.h"
 #include "Exception/UnhandledException.h"
+#include "Exception/ReferenceExpiredException.h"
 
 namespace OpenInfraPlatform
 {

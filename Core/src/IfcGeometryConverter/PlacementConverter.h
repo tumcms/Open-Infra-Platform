@@ -317,9 +317,7 @@ namespace OpenInfraPlatform {
                         // END_ENTITY;
                         // **************************************************************************************************************************
                         if(axis2placement3d.expired()) {
-                            BLUE_LOG(error) << axis2placement3d.getErrorLog() << " expired!";
-                            //TODO: Create ReferenceExpiredException!
-                            throw std::exception(axis2placement3d.getErrorLog().data());
+                            throw oip::ReferenceExpiredException(axis2placement3d);
                         }
 
                         carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
