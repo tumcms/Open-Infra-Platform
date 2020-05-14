@@ -94,7 +94,7 @@ namespace OpenInfraPlatform {
 						if (point.isOfType<typename IfcEntityTypesT::IfcCartesianPoint>())
 							return convertIfcCartesianPoint(point.as<typename IfcEntityTypesT::IfcCartesianPoint>());
 
-						// the rest is not supported
+						// IfcPointOnCurve & IfcPointOnSurface are not supported
 						throw oip::UnhandledException(point);
 
 					}
@@ -138,8 +138,7 @@ namespace OpenInfraPlatform {
 							point.x = coords[0];
 							break;
 						default:
-							BLUE_LOG(trace) << cartesianPoint->getErrorLog() << ": Number of coordinates is inconsistent.";
-							throw std::exception("Number of coordinates is inconsistent.");
+							throw oip::InconsistentGeometryException( cartesianPoint, "Number of coordinates is inconsistent.");
 						}
 
                         // scale the lengths according to the unit conversion
