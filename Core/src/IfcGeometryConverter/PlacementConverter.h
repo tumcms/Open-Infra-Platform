@@ -543,19 +543,34 @@ namespace OpenInfraPlatform {
                     }
 
                     /**
-                     * @brief Compute the position of a IfcLinearPlacement on it's described curve and returns the respective point and the direction at that point
+                     * @brief Compute the position of a \c IfcLinearPlacement on it's described curve
+					 *  and returns the respective point and the direction at that point
                      * 
-                     * @param linear_placement \c IfcLinearPlacement for which to cumpute the point and direction
-                     * @param length_factor Length factor to convert to meters
-                     * @return std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> 
+                     * @param[in] linear_placement \c IfcLinearPlacement for which to compute the point and direction.
+					 * @param[in] relativeDistAlong Account for a relative placement in linear placement.
+                     * @return The first vector are the coordinates of the point, the second vector of the direction.
                      */
-                    std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement)
+                    std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement,
+						const double relativeDistAlong = 0.
+					) const throw(...)
                     {
+						// check input
+						if (linear_placement.expired())
+							throw oip::ReferenceExpiredException(linear_placement);
+
+						// defaults
                         carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
                         carve::geom::vector<3> directionOfCurve = carve::geom::VECTOR(1.0, 0.0, 0.0);
+						
+						// account for relative placement
+						double dDistAlong = linear_placement->Distance->DistanceAlong * UnitConvert()->getLengthInMeterFactor()
+							+ relativeDistAlong;
+						
+						// convert the point
                         convertBoundedCurveDistAlongToPoint3D(
-                            std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(GetCurveOfPlacement(linear_placement)),
-                            linear_placement->Distance->DistanceAlong * UnitConvert()->getLengthInMeterFactor(),
+                            GetCurveOfPlacement(linear_placement),
+                            dDistAlong,
                             linear_placement->Distance->AlongHorizontal,
                             pointOnCurve,
                             directionOfCurve
