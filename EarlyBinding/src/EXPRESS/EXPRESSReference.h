@@ -56,7 +56,20 @@ public:
 	}
 
 	using base::base;
-	using base::operator=;
+
+	EXPRESSReference<T>& operator=(const EXPRESSReference<T>& other)
+	{
+		if (this == &other)
+			return *this;
+
+		refId = other.refId;
+		model = other.model;
+
+		if(this->base::expired() && !model.expired() && refId != 0 && model.lock()->entities.count(refId) > 0)
+			this->base::operator=(std::dynamic_pointer_cast<T>(model.lock()->entities[refId]));
+		
+		return *this;
+	}
 
 	const std::shared_ptr<T> lock() const {
 		return this->base::lock();
