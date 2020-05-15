@@ -382,13 +382,7 @@ namespace OpenInfraPlatform {
                             local_x.z, local_y.z, local_z.z, translate.z,
                             0, 0, 0, 1);
                     }
-
-                    // The implementation is in file PlacementConverterImpl.h
-                    std::shared_ptr<typename IfcEntityTypesT::IfcCurve> GetCurveOfPlacement(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement);
-
-
-
+					
                     /**
                      * @brief Converts \c IfcAxis2Placement select and returns matrix for possible types.
                      * 
@@ -542,6 +536,17 @@ namespace OpenInfraPlatform {
                         ) * UnitConvert()->getLengthInMeterFactor();
                     }
 
+					// ************************************************************************************
+					// VERSION SPECIFIC STUFF
+					// The implementation is in file PlacementConverterImpl.h
+					EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve> GetCurveOfPlacement(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement) const throw (...);
+					// This one too
+					double convertRelativePlacement(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement,
+						std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied) const throw(...);
+					// ************************************************************************************
+
                     /**
                      * @brief Compute the position of a \c IfcLinearPlacement on it's described curve
 					 *  and returns the respective point and the direction at that point
@@ -620,13 +625,6 @@ namespace OpenInfraPlatform {
                             0, 0, 0, 1);
                     }
 
-                    /**
-                     * @brief Checks if base curve is a bounded curve.
-                     * 
-                     * @param linear_placement 
-                     * @return bool
-                     */
-                    bool baseCurveIsBoundedCurve(std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement);
 
                     /**
                      * @brief Computes the matrix which is multiplied with the offset from the curve to move it to the correct position
