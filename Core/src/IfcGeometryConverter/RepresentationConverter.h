@@ -241,7 +241,7 @@ namespace OpenInfraPlatform {
 						}
 
 						if (mapping_origin_placement) {
-							placementConverter->convertIfcPlacement(mapping_origin_placement, map_matrix_origin);
+							map_matrix_origin = placementConverter->convertIfcPlacement(mapping_origin_placement);
 						}
 						else {
 							BLUE_LOG(warning) << "#" << mapping_origin_placement->getId() << " = IfcPlacement: !std::dynamic_pointer_cast<IfcPlacement>( mapping_origin ) )";

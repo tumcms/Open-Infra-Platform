@@ -67,12 +67,12 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 
 		//auto& optObjectPlacement = product->ObjectPlacement;	// store optional<weak_ptr> product->ObjectPlacement in optObjectPlacement.
 		//auto& objectPlacement = *optObjectPlacement;			// extract weak_ptr from optional<weak_ptr> optObjectPlacement.
-		auto& objectPlacement_ptr = objectPlacement.lock();		// get std::shared_ptr used to construct the weak_ptr.
+		//auto& objectPlacement_ptr = objectPlacement.lock();		// get std::shared_ptr used to construct the weak_ptr.
 																// OR auto& objectPlacement = optObjectPlacement.get();
 
-		std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>> placementAlreadyApplied;
+		std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>> placementAlreadyApplied;
 		matProduct = repConverter->getPlacementConverter()->convertIfcObjectPlacement(
-			objectPlacement_ptr,
+			objectPlacement,
 			placementAlreadyApplied);
 
 #ifdef _DEBUG
