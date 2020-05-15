@@ -1804,63 +1804,6 @@ namespace OpenInfraPlatform {
                         }
                     }//end convertAlignmentCurveDistAlongToPoint3D
 
-                    //static void PlacementConverter::convertMatrix( const carve::math::Matrix& matrix, 
-                    //									   std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d, 
-                    //									   double length_factor, int& entity_id, 
-                    //										std::vector<std::shared_ptr<IfcEntityT> >& vec_entities )
-                    //{
-                    //	throw std::exception();
-                    //
-                    //
-                    //	if( !axis2placement3d )
-                    //	{
-                    //		axis2placement3d = std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>(new typename IfcEntityTypesT::IfcAxis2Placement3D(entity_id++));
-                    //		vec_entities.push_back( axis2placement3d );
-                    //	}
-                    //
-                    //	carve::geom::vector<3>  local_x( carve::geom::VECTOR( 1.0, 0.0, 0.0 ) );
-                    //	carve::geom::vector<3>  local_y( carve::geom::VECTOR( 0.0, 1.0, 0.0 ) );
-                    //	carve::geom::vector<3>  local_z( carve::geom::VECTOR( 0.0, 0.0, 1.0 ) );
-                    //	carve::geom::vector<3>  translate( carve::geom::VECTOR( 0.0, 0.0, 0.0 ) );
-                    //
-                    //	local_x.x = matrix._11;//(0,0);
-                    //	local_x.y = matrix._12;//(0,1);
-                    //	local_x.z = matrix._13;//(0,2);
-                    //
-                    //	local_y.x = matrix._21;//(1,0);
-                    //	local_y.y = matrix._22;//(1,1);
-                    //	local_y.z = matrix._23;//(1,2);
-                    //
-                    //	local_z.x = matrix._31;//(2,0);
-                    //	local_z.y = matrix._32;//(2,1);
-                    //	local_z.z = matrix._33;//(2,2);
-                    //
-                    //	translate.x = matrix._41;//(3,0);
-                    //	translate.y = matrix._42;//(3,1);
-                    //	translate.z = matrix._43;//(3,2);
-                    //
-                    //	local_x.normalize();
-                    //	local_y.normalize();
-                    //	local_z.normalize();
-                    //
-                    //	axis2placement3d->Location = std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>( new typename IfcEntityTypesT::IfcCartesianPoint( entity_id++ ) );
-                    //	vec_entities.push_back( axis2placement3d->Location );
-                    //	axis2placement3d->Location->Coordinates.push_back( std::shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>( new typename IfcEntityTypesT::IfcLengthMeasure( translate.x/length_factor ) ) );
-                    //	axis2placement3d->Location->Coordinates.push_back( std::shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>( new typename IfcEntityTypesT::IfcLengthMeasure( translate.y/length_factor ) ) );
-                    //	axis2placement3d->Location->Coordinates.push_back( std::shared_ptr<typename IfcEntityTypesT::IfcLengthMeasure>( new typename IfcEntityTypesT::IfcLengthMeasure( translate.z/length_factor ) ) );
-                    //
-                    //	axis2placement3d->Axis = std::shared_ptr<typename IfcEntityTypesT::IfcDirection>( new typename IfcEntityTypesT::IfcDirection( entity_id++ ) );
-                    //	vec_entities.push_back( axis2placement3d->Axis );
-                    //	axis2placement3d->Axis->DirectionRatios.push_back( local_z.x );
-                    //	axis2placement3d->Axis->DirectionRatios.push_back( local_z.y );
-                    //	axis2placement3d->Axis->DirectionRatios.push_back( local_z.z );
-                    //
-                    //	axis2placement3d->RefDirection = std::shared_ptr<typename IfcEntityTypesT::IfcDirection>( new typename IfcEntityTypesT::IfcDirection( entity_id++ ) );
-                    //	vec_entities.push_back( axis2placement3d->RefDirection );
-                    //	axis2placement3d->RefDirection->DirectionRatios.push_back( local_x.x );
-                    //	axis2placement3d->RefDirection->DirectionRatios.push_back( local_x.y );
-                    //	axis2placement3d->RefDirection->DirectionRatios.push_back( local_x.z );
-                    //}
             };
         }
     }
