@@ -511,17 +511,17 @@ namespace OpenInfraPlatform {
                     }
 
                     /**
-                     * @brief Get the Offset From Curve object
+                     * @brief Get the offset from \c IfcDistanceExpression object.
                      * 
-                     * @param length_factor The length factor for converting to meters
-                     * @param distExpr The \c IfcDistanceExpression from which to compute the offset
-                     * @return carve::geom::vector<3> The scaled offset
+                     * @param[in] distExpr The \c IfcDistanceExpression from which to compute the offset.
+					 *
+                     * @return The offsets as 3D vector.
                      */
-                    carve::geom::vector<3> getOffsetFromCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression> &distExpr)
+                    carve::geom::vector<3> convertIfcDistanceExpressionOffsets(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>& distExpr
+					) const throw(...)
                     {
                         // ***********************************************************
-                        // calculate the position of the point on the curve + offsets
-                        // Distance
                         // ENTITY IfcDistanceExpression
                         //  SUBTYPE OF (IfcGeometricRepresentationItem);
                         //   DistanceAlong : IfcLengthMeasure;
@@ -530,12 +530,16 @@ namespace OpenInfraPlatform {
                         //   OffsetLongitudinal : OPTIONAL IfcLengthMeasure;
                         //   AlongHorizontal : OPTIONAL IfcBoolean;
                         // END_ENTITY;
+						// ***********************************************************
+						// check input
+						if (distExpr.expired())
+							throw oip::ReferenceExpiredException(distExpr);
 
                         return carve::geom::VECTOR(
                             distExpr->OffsetLongitudinal.value_or(0.0),
                             distExpr->OffsetLateral.value_or(0.0),
                             distExpr->OffsetVertical.value_or(0.0)
-                        );
+                        ) * UnitConvert()->getLengthInMeterFactor();
                     }
 
                     /**
