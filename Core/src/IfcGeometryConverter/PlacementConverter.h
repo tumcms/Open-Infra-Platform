@@ -315,10 +315,12 @@ namespace OpenInfraPlatform {
                     /*! \brief Converts \c IfcAxis2Placement3D to a transformation matrix.
 
                     \param[in]	axis2placement3d	\c IfcAxis2Placement3D entity to be interpreted.
-                    \param[out] matrix				Calculated transformation matrix.
+
+                    \return				Calculated transformation matrix.
                     */
                     carve::math::Matrix convertIfcAxis2Placement3D(
-                        const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d) throw(...)
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d
+					) const throw(...)
                     {
                         // **************************************************************************************************************************
                         // IfcAxis2Placement2D 
@@ -337,10 +339,11 @@ namespace OpenInfraPlatform {
                         //		AxisAndRefDirProvision: NOT((EXISTS(Axis)) XOR(EXISTS(RefDirection)));
                         // END_ENTITY;
                         // **************************************************************************************************************************
-                        if(axis2placement3d.expired()) {
+                        // check input
+						if(axis2placement3d.expired())
                             throw oip::ReferenceExpiredException(axis2placement3d);
-                        }
 
+						// defaults
                         carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
                         carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
                         carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
