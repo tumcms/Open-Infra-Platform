@@ -1086,11 +1086,12 @@ namespace OpenInfraPlatform {
                     \note Function presets the returns to (0.,0.,0.) and (1.,0.,0.).
                     */
                     void convertBoundedCurveDistAlongToPoint3D(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve>& ifcCurve,
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve>& ifcCurve,
                         const double dDistAlongOfPoint,
                         const bool bDistMeasuredAlongHorizontal,
                         carve::geom::vector<3>& vkt3DtargetPoint,
-                        carve::geom::vector<3>& vkt3DtargetDirection)
+                        carve::geom::vector<3>& vkt3DtargetDirection
+					) const throw(...)
                     {
                         if(!bDistMeasuredAlongHorizontal)
                             BLUE_LOG(info) << __func__ << ": Distance along a 3D curve not supported. Interpretation is along the horizontal distance.";
