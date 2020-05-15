@@ -254,10 +254,12 @@ namespace OpenInfraPlatform {
                     /*! \brief Converts \c IfcAxis2Placement2D to a transformation matrix.
 
                     \param[in]	axis2placement2d	\c IfcAxis2Placement2D entity to be interpreted.
-                    \param[out] matrix				Calculated transformation matrix.
+
+                    \return				Calculated transformation matrix.
                     */
                     carve::math::Matrix convertIfcAxis2Placement2D(
-                        const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d)
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d
+					) const throw(...)
                     {
                         // **************************************************************************************************************************
                         // IfcAxis2Placement2D 
@@ -272,7 +274,11 @@ namespace OpenInfraPlatform {
                         //		LocationIs2D: SELF\IfcPlacement.Location.Dim = 2;
                         // END_ENTITY;
                         // **************************************************************************************************************************
+						// check input
+						if (axis2placement2d.expired())
+							throw oip::ReferenceExpiredException(axis2placement2d);
 
+						// defaults
                         carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
                         carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
                         carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
