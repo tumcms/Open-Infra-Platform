@@ -433,7 +433,7 @@ namespace OpenInfraPlatform
 					itemData->closed_polyhedrons.push_back(pipe_data);
 					std::vector<carve::geom::vector<3> > inner_shape_points;
 
-					const int nvc = GeomSettings()->getNumberOfVerticesForTesselation(radius);
+					const int nvc = GeomSettings()->getNumberOfVerticesForTessellation(radius);
 					double delta_angle = GeomSettings()->getAngleLength(radius);
 
 					std::vector<carve::geom::vector<3> > circle_points;
@@ -1382,7 +1382,7 @@ namespace OpenInfraPlatform
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
 
-					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTesselation(radius);
+					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTessellation(radius);
 					double d_angle = GeomSettings()->getAngleLength(radius);
 					for (double angle = 0.; angle < 2*M_PI; angle += d_angle)
 					{
