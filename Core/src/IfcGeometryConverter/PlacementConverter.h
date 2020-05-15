@@ -490,20 +490,24 @@ namespace OpenInfraPlatform {
                     /**
                      * @brief Compare the \c IfcAxis2Placement3D in \c IfcLinearPlacement->Position against the passed matrix for identity
                      * 
-                     * @param matrix Matrix to compare against absolute placement
-                     * @param linear_placement IfcLinearPlacement which holds absolute placement position to compare against computed matrix
+                     * @param[in] matrix Matrix to compare against absolute placement
+                     * @param[in] linear_placement IfcLinearPlacement which holds absolute placement position to compare against computed matrix
                      */
-                    void checkLinearPlacementAgainstAbsolutePlacement(carve::math::Matrix& matrix, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement)
+                    bool checkLinearPlacementAgainstAbsolutePlacement(
+						carve::math::Matrix& matrix, 
+						const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement
+					) const throw(...)
                     {
-                        // ***********************************************************
-                        // check with the provided CartesianPosition
-                        // CartesianPosition OPTIONAL
-                        if(linear_placement->CartesianPosition) {
-                            carve::math::Matrix absolute_placement = convertIfcAxis2Placement3D(linear_placement->CartesianPosition.get().lock());
-                            if(absolute_placement != matrix) {
-                                BLUE_LOG(trace) << linear_placement->getErrorLog() << "Absolute placemet and the calculated linear placement do not agree";
-                            }
-                        }
+						// check input
+						if (linear_placement.expired())
+							throw oip::ReferenceExpiredException(linear_placement);
+
+                        // check with the provided CartesianPosition [OPTIONAL]
+                        if(    linear_placement->CartesianPosition
+                            && convertIfcAxis2Placement3D(linear_placement->CartesianPosition.get()) != matrix) 
+                                throw InconsistentGeometryException( linear_placement, "Absolute placement and the calculated linear placement do not agree");
+						else
+							return true; // if none provided or it fits
                     }
 
                     /**
