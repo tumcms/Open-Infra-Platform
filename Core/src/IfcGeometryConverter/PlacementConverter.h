@@ -76,7 +76,6 @@ namespace OpenInfraPlatform {
 					\return		Calculated 2D or 3D vector.
 
 					\note The point's coordinates are scaled according to the unit conversion factor.
-					\note The point's coordinates are reset to (0,0,0).
 					*/
 					carve::geom::vector<3> convertIfcPoint(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcPoint>& point
@@ -89,6 +88,9 @@ namespace OpenInfraPlatform {
 						//	SUBTYPE OF(IfcGeometricRepresentationItem);
 						// END_ENTITY;
 						// **************************************************************************************************************************
+						// check input
+						if (point->expired())
+							throw oip::ReferenceExpiredException(cartesianPoint);
 
 						// IfcCartesianPoint
 						if (point.isOfType<typename IfcEntityTypesT::IfcCartesianPoint>())
@@ -96,7 +98,6 @@ namespace OpenInfraPlatform {
 
 						// IfcPointOnCurve & IfcPointOnSurface are not supported
 						throw oip::UnhandledException(point);
-
 					}
                     /*! \brief Converts \c IfcCartesianPoint to a vector.
 
