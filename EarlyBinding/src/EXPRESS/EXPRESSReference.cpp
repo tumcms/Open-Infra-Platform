@@ -38,4 +38,12 @@ template <typename T> const std::string EXPRESSReference<T>::classname() const {
 	//return this->base::lock().get()->classname();
 }
 
+template <typename T> const std::string EXPRESSReference<T>::getErrorLog() const
+{
+    if(this->expired())
+        return "Reference with Id #" + std::to_string(this->refId) + " expired!";
+    else
+        return this->base::lock()->getErrorLog();
+}
+
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
