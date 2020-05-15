@@ -423,22 +423,27 @@ namespace OpenInfraPlatform {
                         }
                     }
 
-
                     /**
-                     * @brief Get's the origin to which the local placement is related.
+                     * @brief Get's the relative placement in which the local placement is located.
                      * 
-                     * @param alreadyApplied [in] List of already applied transformations, in order to not repeat the same transformation.
-                     * @param local_placement [in] \c IfcLocalPlacement of which to retrieve the relation point
-                     * @return carve::math::Matrix 
+                     * @param[in]  alreadyApplied List of already applied transformations, in order to not repeat the same transformation.
+                     * @param[in]  local_placement \c IfcLocalPlacement of which to retrieve the relative coordinate system.
+                     * @return  The converted placement matrix.
                      * 
-                     * @note 
                      */
-                    carve::math::Matrix convertIfcLocalPlacementRelationPoint(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement)
+                    carve::math::Matrix convertRelativePlacement(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcLocalPlacement>& local_placement,
+						std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+					) const throw(...)
                     {
+						// check input
+						if (local_placement.expired())
+							throw oip::ReferenceExpiredException(local_placement);
+
                         // PlacementRelTo
                         if(local_placement->PlacementRelTo) {
                             // Reference to ObjectPlacement that provides the relative placement by its local coordinate system. 
-                            return convertIfcObjectPlacement(local_placement->PlacementRelTo.get().lock(), alreadyApplied);
+                            return convertIfcObjectPlacement(local_placement->PlacementRelTo.get(), alreadyApplied);
                         }
                         else {
                             BLUE_LOG(warning) << "Context based local placement computation not supported.";
