@@ -730,17 +730,19 @@ namespace OpenInfraPlatform {
                     /*! \brief Converts \c IfcObjectPlacement to a transformation matrix.
 
                     \param[in]	objectPlacement		\c IfcObjectPlacement entity to be interpreted.
-                    \param[out] matrix				Calculated transformation matrix.
                     \param		alreadyApplied		An array of references to already applied \c IfcObjectPlacement-s.
+                    
+					\return				Calculated transformation matrix.
 
                     \note Function checks, if \c objectPlacement is contained within \c alreadyApplied.
-                    Returns, if contained. Otherwise, transforms the \c objectPlacement with recursive calls to self.
+                    Throws, if contained. Otherwise, transforms the \c objectPlacement with recursive calls to self.
                     It adds the \c objectPlacement to \c alreadyApplied.
                     This prevents cyclic \c IfcObjectPlacement-s.
                     */
                     carve::math::Matrix convertIfcObjectPlacement(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement,
-                        std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied)
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement,
+                        std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+					) const throw(...)
                     {
                         // **************************************************************************************************************************
                         // IfcObjectPlacement
@@ -754,41 +756,37 @@ namespace OpenInfraPlatform {
                         //		ReferencedByPlacements: SET[0:?] OF IfcLocalPlacement FOR PlacementRelTo;
                         // END_ENTITY;
                         // **************************************************************************************************************************
+						//check input
+						if (objectPlacement.expired())
+							throw oip::ReferenceExpiredException(objectPlacement);
 
                         // Prevent cyclic relative placement
                         if(std::find(alreadyApplied.begin(), alreadyApplied.end(), objectPlacement) != alreadyApplied.end())
-                            return carve::math::Matrix::IDENT();
-
-
+                            throw oip::InconsistentModellingException( objectPlacement, "Placement has been already applied");
+						
                         // Add self to apllied
                         alreadyApplied.push_back(objectPlacement);
 
-                        // The placement matrix - local variable that will get assigned at the end
+                        // The placement matrix - local variable that will get returned at the end
                         carve::math::Matrix object_placement_matrix(carve::math::Matrix::IDENT());
 
                         // (1/3) IfcLocalPLacement SUBTYPE OF IfcObjectPlacement
-                        std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLocalPlacement>(objectPlacement);
-                        if(local_placement)
-                            object_placement_matrix = convertIfcLocalPlacement(alreadyApplied, local_placement);
+                        if( objectPlacement.isOfType<typename IfcEntityTypesT::IfcLocalPlacement>() )
+                            object_placement_matrix = convertIfcLocalPlacement(objectPlacement.as<typename IfcEntityTypesT::IfcLocalPlacement>(), alreadyApplied);
 
                         // (2/3) IfcGridPlacement SUBTYPE OF IfcObjectPlacement
-                        std::shared_ptr<typename IfcEntityTypesT::IfcGridPlacement> grid_placement =
-                            std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGridPlacement>(objectPlacement);
-                        if(grid_placement) {
+                        else if(objectPlacement.isOfType<typename IfcEntityTypesT::IfcGridPlacement>()) {
                             //TODO Not implemented
-                            BLUE_LOG(warning) << grid_placement->getErrorLog() << ": Not implemented";
-                            object_placement_matrix = carve::math::Matrix::IDENT();
                             throw oip::UnhandledException(objectPlacement);
                         } // end if IfcGridPlacement
 
                         // (3/3) IfcLinearPlacement SUBTYPE OF IfcObjectPlacement
-                        std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement > linear_placement =
-                            std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLinearPlacement>(objectPlacement);
-                        if(linear_placement)
-                            object_placement_matrix = convertIfcLinearPlacement(alreadyApplied, linear_placement);
+                        else if(objectPlacement.isOfType<typename IfcEntityTypesT::IfcLinearPlacement>())
+                            object_placement_matrix = convertIfcLinearPlacement(objectPlacement.as<typename IfcEntityTypesT::IfcLinearPlacement>(), alreadyApplied);
 
                         // Remove self from applied
                         alreadyApplied.pop_back();
+						// return the calculated placement matrix
                         return object_placement_matrix;
                    }
 
