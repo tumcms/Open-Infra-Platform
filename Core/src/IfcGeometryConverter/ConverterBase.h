@@ -44,6 +44,7 @@
 #include "Exception/UnhandledException.h"
 #include "Exception/ReferenceExpiredException.h"
 #include "Exception/InconsistentGeometryException.h"
+#include "Exception/InconsistentModelingException.h"
 
 namespace OpenInfraPlatform
 {
