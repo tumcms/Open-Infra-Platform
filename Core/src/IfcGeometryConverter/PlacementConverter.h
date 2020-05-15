@@ -631,17 +631,28 @@ namespace OpenInfraPlatform {
                     /**
                      * @brief Computes the matrix which is multiplied with the offset from the curve to move it to the correct position
                      * 
-                     * @param directionOfCurve 
-                     * @param alongHorizontal 
-                     * @return carve::math::Matrix 
+					 * @param[in] directionOfCurve The tangential 3D direction of the curve at \c pointOnCurve
+                     * @param[in] alongHorizontal Is the transformation matrix to be set only along horizontal or is the 3D tangent to remain as is?
+                     * @return the transformation matrix
                      */
-                    carve::math::Matrix calculateLocalPlacementMatrix(const carve::geom::vector<3> & directionOfCurve, bool alongHorizontal) {
+                    carve::math::Matrix calculateCurveOrientationMatrix(
+						const carve::geom::vector<3>& directionOfCurve, 
+						const bool alongHorizontal
+					) const throw(...)
+					{
+						// check
+						if (   alongHorizontal
+							&& directionOfCurve.x == 0.
+							&& directionOfCurve.y == 0.)
+							throw oip::InconsistentGeometryException("Cannot apply alongHorizontal = true, since the dircetion is strictly vertical!");
+
+						// correct the x-direction
                         carve::geom::vector<3> curve_x(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, alongHorizontal ? 0.0 : directionOfCurve.z));
 
-                        // 3.b get the perpendicular to the left of the curve in the x-y plane (curve's coordinate system)
+                        // get the perpendicular to the left of the curve in the x-y plane (curve's coordinate system)
                         carve::geom::vector<3> curve_y(carve::geom::VECTOR(-curve_x.y, curve_x.x, 0.0)); // always lies in the x-y plane
 
-                        // 3.c get the vertical as cross product
+                        // get the vertical as cross product
                         carve::geom::vector<3> curve_z = carve::geom::cross(curve_x, curve_y);
 
                         // normalize the direction vectors
