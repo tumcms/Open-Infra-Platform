@@ -40,6 +40,16 @@ OpenInfraPlatform::Core::Exception::InconsistentGeometryException::InconsistentG
     message_ = message;
 }
 
+/*!
+\brief Constructor with just the message.
+\param[in] message Optional message to further specify the exception.
+*/
+OpenInfraPlatform::Core::Exception::InconsistentGeometryException::InconsistentGeometryException(
+	const std::string& message) noexcept
+{
+	item_ = nullptr;
+	message_ = message;
+}
 
 //! Destructor
 OpenInfraPlatform::Core::Exception::InconsistentGeometryException::~InconsistentGeometryException() noexcept
@@ -53,6 +63,10 @@ OpenInfraPlatform::Core::Exception::InconsistentGeometryException::~Inconsistent
 */
 const char* OpenInfraPlatform::Core::Exception::InconsistentGeometryException::what() const
 {
-    std::string s = "Geometry is inconsistent at " + item_->getErrorLog() + (message_.empty() ? "." : ": " + message_ );
+	std::string s = "";
+	if( item_ )
+		s += "Geometry is inconsistent at " + item_->getErrorLog() + (message_.empty() ? "." : ": ");
+	if (!message_.empty())
+		s += message_;
     return s.c_str();
 }

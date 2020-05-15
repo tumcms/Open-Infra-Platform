@@ -39,7 +39,8 @@ public:
     InconsistentGeometryException(const InconsistentGeometryException& other) noexcept;
 	virtual ~InconsistentGeometryException() noexcept;
 
-    InconsistentGeometryException(const std::shared_ptr<oip::EXPRESSObject>& item, const std::string& message) noexcept;
+	InconsistentGeometryException(const std::string& message) noexcept;
+	InconsistentGeometryException(const std::shared_ptr<oip::EXPRESSObject>& item, const std::string& message) noexcept;
 
     /*!
     \brief Constructor with the unhandled entity.
