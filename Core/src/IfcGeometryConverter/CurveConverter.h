@@ -281,7 +281,7 @@ namespace OpenInfraPlatform {
 								}
 
 								dHorizontalRadius *= length_factor;
-								nFragments = GeomSettings()->getNumberOfSegmentsForTesselation(dHorizontalRadius);
+								nFragments = GeomSettings()->getNumberOfSegmentsForTessellation(dHorizontalRadius);
 								dFragmentLength = dHorizontalSegLength / (double)(nFragments);
 								// Step 2 finished: We have the necessary information from the horizontal element
 
@@ -370,7 +370,7 @@ namespace OpenInfraPlatform {
 									dVerticalRadius *= length_factor;
 
 									// determine tesselation density
-									int nVerFragments = GeomSettings()->getNumberOfSegmentsForTesselation(dVerticalRadius);
+									int nVerFragments = GeomSettings()->getNumberOfSegmentsForTessellation(dVerticalRadius);
 									double dVerFragmentsLength = dVerticalSegLength / (double)(nVerFragments);
 
 									// Select greater accuracy / more fragments / smaller fragments.
@@ -662,7 +662,7 @@ namespace OpenInfraPlatform {
 								GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
 							}
 
-							int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation( circle_radius, abs(opening_angle) );
+							int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation( circle_radius, abs(opening_angle) );
 
 							const double circle_center_x = 0.0;
 							const double circle_center_y = 0.0;
@@ -705,7 +705,7 @@ namespace OpenInfraPlatform {
 
 									double radiusMax = std::max(xRadius, yRadius);
 									double radiusMin = std::min(xRadius, yRadius);
-									int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation(radiusMin);
+									int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin);
 									double deltaAngle = GeomSettings()->getAngleLength(radiusMin);
 
 									// todo: implement clipping

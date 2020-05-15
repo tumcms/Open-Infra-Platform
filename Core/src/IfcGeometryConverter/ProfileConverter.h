@@ -625,7 +625,7 @@ namespace OpenInfraPlatform {
 					if(radius < 0.000001) {
 						return;
 					}
-					int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
+					int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
 					double d_angle = GeomSettings()->getAngleLength(radius);
 					double angle = 0;
 					for(int i = 0; i < num_segments; ++i) {
@@ -641,7 +641,7 @@ namespace OpenInfraPlatform {
 						angle = 0;
 						double radius2 = radius - hollow->WallThickness * length_factor;
 
-						int num_segments2 = GeomSettings()->getNumberOfSegmentsForTesselation(radius2);
+						int num_segments2 = GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
 						double d_angle2 = GeomSettings()->getAngleLength(radius2);
 						for(int i = 0; i < num_segments2; ++i) {
 							inner_loop.push_back(carve::geom::VECTOR((radius2 * cos(angle)), (radius2 * sin(angle))));
@@ -660,7 +660,7 @@ namespace OpenInfraPlatform {
 							double xRadius = ellipse_profile_def->SemiAxis1 * length_factor;
 							double yRadius = ellipse_profile_def->SemiAxis2 * length_factor;
 							double radiusMax = std::max(xRadius, yRadius);
-							int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation(radiusMax);
+							int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
 							double d_angle = GeomSettings()->getAngleLength(radiusMax);
 							double angle = 0;
 							for(int i = 0; i < num_segments; ++i) {
@@ -1281,7 +1281,7 @@ namespace OpenInfraPlatform {
 			void addArc(std::vector<carve::geom::vector<2>>& coords, double radius, double startAngle, double openingAngle, double xM, double yM, int numSegments = -1) const
 			{
 				if(numSegments < 0) {
-					numSegments = GeomSettings()->getNumberOfSegmentsForTesselation(radius, abs(openingAngle));
+					numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
 				}
 
 				if(numSegments > 100) {
@@ -1299,7 +1299,7 @@ namespace OpenInfraPlatform {
 			// Function 2: Add arc with end point 
 			void addArcWithEndPoint(std::vector<carve::geom::vector<2>>& coords, double radius, double startAngle, double openingAngle, double xM, double yM) const
 			{
-				int numSegments = GeomSettings()->getNumberOfSegmentsForTesselation(radius, abs(openingAngle));
+				int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
 
 				if(numSegments > 100) {
 					numSegments = 100;

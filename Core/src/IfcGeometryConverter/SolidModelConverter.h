@@ -1050,7 +1050,7 @@ namespace OpenInfraPlatform
 				if (revolution_angle > M_PI * 2) revolution_angle = M_PI * 2;
 				if (revolution_angle < -M_PI * 2) revolution_angle = M_PI * 2;
 
-				int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation(biggestRadius, abs(revolution_angle));
+				int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(biggestRadius, abs(revolution_angle));
 				if (num_segments < 6)
 				{
 					num_segments = 6;
@@ -1427,7 +1427,7 @@ namespace OpenInfraPlatform
 					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Height)*length_factor;
 					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Radius)*length_factor;
 
-					int slices = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
+					int slices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
 					double rad = 0;
 
 					double d_angle = GeomSettings()->getAngleLength(radius);
@@ -1473,7 +1473,7 @@ namespace OpenInfraPlatform
 					std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 					polyhedron_data->addVertex(pos*carve::geom::VECTOR(0.0, 0.0, radius)); // top
 
-					const int nvc = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
+					const int nvc = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
 					const double d_horizontal_angle = GeomSettings()->getAngleLength(radius);
 					const int num_vertical_edges = ceil(0.5 * nvc);
 					double d_vertical_angle = M_PI / double(num_vertical_edges - 1);	// TODO: adapt to model size and complexity
