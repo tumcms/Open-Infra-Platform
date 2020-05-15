@@ -392,34 +392,35 @@ namespace OpenInfraPlatform {
                     /**
                      * @brief Converts \c IfcAxis2Placement select and returns matrix for possible types.
                      * 
-                     * @param axis_placement The axis placement to convert
-                     * @return carve::math::Matrix The converted position¨
+                     * @param axis_placement The \c IfcAxis2Placement to convert
+                     * @return The converted position
                      * 
                      * @note The select type IfcAxis2Placement can either be a \c IfcAxis2Placement2D or an \c IfcAxis2Placement3D
                      * and the respective convert function for the actually held type is called.
                      */
-                    carve::math::Matrix convertIfcAxis2Placement(const typename IfcEntityTypesT::IfcAxis2Placement& axis_placement)
+                    carve::math::Matrix convertIfcAxis2Placement(
+						const typename IfcEntityTypesT::IfcAxis2Placement& axis_placement
+					) const throw(...)
                     {
-                        // RelativePlacement				
+						// **************************************************************************************************************************
+						// RelativePlacement				
                         // TYPE IfcAxis2Placement = SELECT (
                         //	IfcAxis2Placement2D,
                         //	IfcAxis2Placement3D);
                         // END_TYPE;
-                        
-                        carve::math::Matrix matrix = carve::math::Matrix::IDENT();
+						// **************************************************************************************************************************
+						// check input
+						if (axis_placement.expired())
+							throw oip::ReferenceExpiredException(axis_placement);
+
                         switch(axis_placement.which()) {
                         case 0:
-                            matrix = convertIfcAxis2Placement2D(axis_placement.get<0>());
-                            break;
+                            return convertIfcAxis2Placement2D(axis_placement.get<0>());
                         case 1:
-                            matrix = convertIfcAxis2Placement3D(axis_placement.get<1>());
-                            break;
+                            return convertIfcAxis2Placement3D(axis_placement.get<1>());
                         default:
-                            BLUE_LOG(fatal) << axis_placement.getErrorLog() << "IfcAxis2Placement conversion issues.";
-                            break;
+                            throw oip::UnhandledException( axis_placement );
                         }
-
-                        return matrix;
                     }
 
 
