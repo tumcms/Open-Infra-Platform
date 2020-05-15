@@ -671,12 +671,14 @@ namespace OpenInfraPlatform {
                     /**
                      * @brief Convert \c IfcLinearPlacement
                      * 
-                     * @param linear_placement 
-                     * @return carve::math::Matrix 
+                     * @param[in] linear_placement The \c IfcLinearPlacement to be converted
+					 * @param[in] alreadyApplied   An array of references to already applied \c IfcObjectPlacement-s.
+					 * @return the transformation matrix
                      */
                     carve::math::Matrix convertIfcLinearPlacement(
-                        std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied,
-                        std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement)
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement,
+                        std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+					) const throw(...)
                     {
                         // **************************************************************************************************************************
                         //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifclinearplacement.htm
@@ -689,33 +691,40 @@ namespace OpenInfraPlatform {
                         //   CartesianPosition: OPTIONAL IfcAxis2Placement3D;
                         // END_ENTITY;
                         // **************************************************************************************************************************
-
-                        // PlacementRelTo / PlacementMeasuredAlong
-                        if(!baseCurveIsBoundedCurve(linear_placement))
-                            return carve::math::Matrix::IDENT();
-
-
+						// check input
+						if (linear_placement.expired())
+							throw oip::ReferenceExpiredException(linear_placement);
 
                         // 1. get offset from curve
-                        carve::geom::vector<3> offsetFromCurve = getOffsetFromCurve(linear_placement->Distance) * UnitConvert()->getLengthInMeterFactor();
+                        carve::geom::vector<3> offsetFromCurve = convertIfcDistanceExpressionOffsets(linear_placement->Distance);
                             
                         // 2. calculate the position on and the direction of the base curve
+						// also applay the relative dist along
                         carve::geom::vector<3> pointOnCurve;
                         carve::geom::vector<3> directionOfCurve;
-                        std::tie(pointOnCurve, directionOfCurve) = calculatePositionOnAndDirectionOfBaseCurve(linear_placement);
+                        std::tie(pointOnCurve, directionOfCurve) = 
+							calculatePositionOnAndDirectionOfBaseCurve(linear_placement, convertRelativePlacement(linear_placement, alreadyApplied) );
 
-                        // 3. calculate the position
-                        // the position on the curve = pointOnCurve
+                        // 3. calculate the rotations
                         // the direction of the curve's tangent = directionOfCurve
-                        // the offsets = offsetFromCurve
-                        // 3.a apply the alongHorizontal bool
-                        auto localPlacementMatrix = calculateLocalPlacementMatrix(directionOfCurve, linear_placement->Distance->AlongHorizontal);
+						carve::math::Matrix localPlacementMatrix = calculateCurveOrientationMatrix(directionOfCurve, linear_placement->Distance->AlongHorizontal.value_or(true));
 
-                        // 4. calculate the rotations
+                        // 4. calculate the position
+                        // the position on the curve = pointOnCurve
+                        // the offsets = offsetFromCurve
                         carve::geom::vector<3> translate = pointOnCurve + localPlacementMatrix * offsetFromCurve;
-                        carve::math::Matrix object_placement_matrix = convertRelativePlacementOriginInIfcLinearPlacement(alreadyApplied, linear_placement) * computeRotationMatrix(linear_placement, translate);
-                        checkLinearPlacementAgainstAbsolutePlacement(object_placement_matrix, linear_placement);
-                        return object_placement_matrix;
+                        carve::math::Matrix object_placement_matrix = convertIfcOrientationExpression(linear_placement->Orientation, translate);
+                        
+						// 5. check against the provided 3D coordinate
+						try {
+							checkLinearPlacementAgainstAbsolutePlacement(object_placement_matrix, linear_placement);
+						}
+						catch (const oip::InconsistentModellingException& ex) {
+							BLUE_LOG(warning) << ex.what();
+						}
+                        
+						// return
+						return object_placement_matrix;
                     }
 
                     /*! \brief Converts \c IfcObjectPlacement to a transformation matrix.
