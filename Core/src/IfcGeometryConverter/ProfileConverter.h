@@ -1247,9 +1247,7 @@ namespace OpenInfraPlatform {
 
 				// local coordinate system
 				if(profileDef->Position) {
-					EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2Placement2D = profileDef->Position;
-					carve::math::Matrix transform(carve::math::Matrix::IDENT());
-					placementConverter->convertIfcPlacement(axis2Placement2D.lock(), transform);
+					carve::math::Matrix transform = placementConverter->convertIfcPlacement(profileDef->Position.get());
 
 					for(int i = 0; i < temp_paths.size(); ++i) {
 						std::vector<carve::geom::vector<2>>& path_loop = temp_paths[i];

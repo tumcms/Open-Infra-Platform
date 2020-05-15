@@ -88,10 +88,6 @@ namespace OpenInfraPlatform {
 						//	SUBTYPE OF(IfcGeometricRepresentationItem);
 						// END_ENTITY;
 						// **************************************************************************************************************************
-						// check input
-						if (point->expired())
-							throw oip::ReferenceExpiredException(cartesianPoint);
-
 						// IfcCartesianPoint
 						if (point.isOfType<typename IfcEntityTypesT::IfcCartesianPoint>())
 							return convertIfcCartesianPoint(point.as<typename IfcEntityTypesT::IfcCartesianPoint>());
@@ -126,7 +122,7 @@ namespace OpenInfraPlatform {
                         // END_ENTITY;
                         // **************************************************************************************************************************
 						// check input
-						if (cartesianPoint->expired())
+						if (cartesianPoint.expired())
 							throw oip::ReferenceExpiredException(cartesianPoint);
 
                         // set to default
@@ -182,7 +178,7 @@ namespace OpenInfraPlatform {
 							throw oip::ReferenceExpiredException(ifcDirection);
 
 						// set to default
-						carve::geom::vector<3> direction = VECTOR(1., 0., 0.);
+						carve::geom::vector<3> direction = carve::geom::VECTOR(1., 0., 0.);
 						// read the coordinates
 						auto& ratios = ifcDirection->DirectionRatios;
 						switch (ratios.size())
@@ -403,10 +399,6 @@ namespace OpenInfraPlatform {
                         //	IfcAxis2Placement3D);
                         // END_TYPE;
 						// **************************************************************************************************************************
-						// check input
-						if (axis_placement.expired())
-							throw oip::ReferenceExpiredException(axis_placement);
-
                         switch(axis_placement.which()) {
                         case 0:
                             return convertIfcAxis2Placement2D(axis_placement.get<0>());
@@ -499,7 +491,7 @@ namespace OpenInfraPlatform {
                         // check with the provided CartesianPosition [OPTIONAL]
                         if(    linear_placement->CartesianPosition
                             && convertIfcAxis2Placement3D(linear_placement->CartesianPosition.get()) != matrix) 
-                                throw InconsistentGeometryException( linear_placement, "Absolute placement and the calculated linear placement do not agree");
+                                throw oip::InconsistentGeometryException( linear_placement, "Absolute placement and the calculated linear placement do not agree");
 						else
 							return true; // if none provided or it fits
                     }
@@ -1102,10 +1094,10 @@ namespace OpenInfraPlatform {
                         double length_factor = UnitConvert()->getLengthInMeterFactor();
                         double plane_angle_factor = UnitConvert()->getAngleInRadianFactor();
 
-                        std::shared_ptr<typename IfcEntityTypesT::IfcAlignmentCurve> alignment_curve =
-                            std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignmentCurve>(ifcCurve);
-                        if(alignment_curve) {
-                            // **************************************************************************************************************************
+                        if(ifcCurve.isOfType<typename IfcEntityTypesT::IfcAlignmentCurve>()) {
+							auto alignment_curve = ifcCurve.as<typename IfcEntityTypesT::IfcAlignmentCurve>();
+
+							// **************************************************************************************************************************
                             // 1. Get information.
                             // Info about the horizontal alignment.
                             std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal>& horizontal = alignment_curve->Horizontal.lock();

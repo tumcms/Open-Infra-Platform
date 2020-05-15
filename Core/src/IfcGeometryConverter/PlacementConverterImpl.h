@@ -95,10 +95,10 @@ namespace OpenInfraPlatform {
                 if(linear_placement->PlacementRelTo)
 				{
 					// check for which type (PlacementRelTo is IfcObjectPlacement)
-					if (linear_placement->PlacementRelTo->isOfType<typename IfcEntityTypesT::IfcLinearPlacement>())
-						return linear_placement->PlacementRelTo->Distance->AlongHorizontal;
+					if (linear_placement->PlacementRelTo.get().isOfType<typename IfcEntityTypesT::IfcLinearPlacement>())
+						return linear_placement->PlacementRelTo.get().as<typename IfcEntityTypesT::IfcLinearPlacement>()->Distance->DistanceAlong;
 					else
-						throw oip::InconsistentModellingException(linear_placement, "Relative placement to a " + linear_placement->PlacementRelTo->getErrorLog() + "?!");
+						throw oip::InconsistentModellingException(linear_placement, "Relative placement to a " + linear_placement->PlacementRelTo.get()->getErrorLog() + "?!");
 				}
                 else
                     return 0.;
