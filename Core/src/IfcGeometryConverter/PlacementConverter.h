@@ -211,11 +211,12 @@ namespace OpenInfraPlatform {
                     /*! \brief Converts \c IfcPlacement to a transformation matrix.
 
                     \param[in]	placement	\c IfcPlacement entity to be interpreted.
-                    \param[out] matrix		Calculated transformation matrix.
+
+                    \returns		Calculated transformation matrix.
                     */
-                    void convertIfcPlacement(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcPlacement>& placement,
-                        carve::math::Matrix& matrix)
+					carve::math::Matrix convertIfcPlacement(
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcPlacement>& placement
+                    ) const throw(...)
                     {
                         // **************************************************************************************************************************
                         // IfcPlacement 
@@ -228,26 +229,23 @@ namespace OpenInfraPlatform {
                         //		Dim : IfcDimensionCount: = Location.Dim;
                         // END_ENTITY;									 
                         // **************************************************************************************************************************
+						// check input
+						if (placement.expired()) 
+							throw oip::ReferenceExpiredException(placement);
 
                         // (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
-                        if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis1Placement>(placement)) {
+                        if(placement.isOfType<typename IfcEntityTypesT::IfcAxis1Placement>()) {
                             throw oip::UnhandledException(placement);
                         }
 
                         // (2/3) IfcAxis2Placement2D SUBTYPE OF IfcPlacement 
-                        std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d =
-                            std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement2D>(placement);
-                        if(axis2placement2d) {
-                            matrix = convertIfcAxis2Placement2D(axis2placement2d);
-                            return;
+                        else if(placement.isOfType<typename IfcEntityTypesT::IfcAxis2Placement2D>()) {
+                            return convertIfcAxis2Placement2D( placement.as<typename IfcEntityTypesT::IfcAxis2Placement2D>() );
                         }
 
                         // (3/3) IfcAxis2Placement3D SUBTYPE OF IfcPlacement
-                        std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d =
-                            std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(placement);
-                        if(axis2placement3d) {
-                            matrix = convertIfcAxis2Placement3D(axis2placement3d);
-                            return;
+                        else if(placement.isOfType<typename IfcEntityTypesT::IfcAxis2Placement3D>()) {
+                            return convertIfcAxis2Placement3D( placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());
                         }
 
 						throw oip::UnhandledException(placement);
