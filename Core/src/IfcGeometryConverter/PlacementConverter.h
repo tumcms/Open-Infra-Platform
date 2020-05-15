@@ -456,7 +456,6 @@ namespace OpenInfraPlatform {
                         }
                     }
 
-
                     /*! \brief Converts \c IfcLocalPlacement to a transformation matrix.
 
                     \param	alreadyApplied		An array of references to already applied \c IfcObjectPlacement-s.
@@ -465,7 +464,10 @@ namespace OpenInfraPlatform {
 
                     Function computes the local placement and stores it in the matrix.
                     */
-                    carve::math::Matrix convertIfcLocalPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, std::shared_ptr<typename IfcEntityTypesT::IfcLocalPlacement> local_placement)
+                    carve::math::Matrix convertIfcLocalPlacement(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcLocalPlacement>& local_placement,
+						std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+					) const throw(...)
                     {
                         // **************************************************************************************************************************
                         //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifclocalplacement.htm
@@ -477,17 +479,13 @@ namespace OpenInfraPlatform {
                         //		WR21 : IfcCorrectLocalPlacement(RelativePlacement, PlacementRelTo);
                         // END_ENTITY;
                         // **************************************************************************************************************************
-                        return convertIfcLocalPlacementRelationPoint(alreadyApplied, local_placement) * convertIfcAxis2Placement(local_placement->RelativePlacement);
-                    }
+                        // check input
+						if (local_placement.expired())
+							throw oip::ReferenceExpiredException(local_placement);
 
-                    /**
-                     * @brief Converts the relative placement origin in \c IfcLinearPlacement
-                     * 
-                     * @param alreadyApplied List of already applied transformations. Returns if this one is contained in the list
-                     * @param linear_placement The linear placement of which to convert the origin
-                     * @return carve::math::Matrix 
-                     */
-                    carve::math::Matrix convertRelativePlacementOriginInIfcLinearPlacement(std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied, std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement);
+						return convertRelativePlacement(local_placement, alreadyApplied)
+							 * convertIfcAxis2Placement(local_placement->RelativePlacement);
+                    }
 
                     /**
                      * @brief Compare the \c IfcAxis2Placement3D in \c IfcLinearPlacement->Position against the passed matrix for identity
