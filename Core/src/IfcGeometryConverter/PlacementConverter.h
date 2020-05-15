@@ -579,15 +579,22 @@ namespace OpenInfraPlatform {
                     }
 
                     /**
-                     * @brief Computes the rotation matrix for the linear placement
+                     * @brief Computes the rotation matrix from an \c IfcOrientationExpression.
                      * 
-                     * @param linear_placement Linear placement of which to convert the orientation
-                     * @param translate Translation component of transformation
-                     * @returns rotation
+                     * @param[in] orientExpr the \c IfcOrientationExpression to convert.
+                     * @param translate Optional translation component of transformation.
+                     * @returns transfomration (rotation+placement) matrix.
                      */
-                    carve::math::Matrix computeRotationMatrix(std::shared_ptr<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement, carve::geom::vector<3> translate)
+                    carve::math::Matrix convertIfcOrientationExpression(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcOrientationExpression>& orientExpr,
+						const carve::geom::vector<3> translate = carve::geom::VECTOR(0.,0.,0.)
+					) const throw(...)
                     {
+						//check input
+						if (orientExpr.expired())
+							throw oip::ReferenceExpiredException(orientExpr);
 
+						// defaults
                         carve::geom::vector<3> local_y = carve::geom::VECTOR(1.0, 0.0, 0.0);
                         carve::geom::vector<3> local_z = carve::geom::VECTOR(0.0, 1.0, 0.0);
                         carve::geom::vector<3> local_x = carve::geom::VECTOR(0.0, 0.0, 1.0);
@@ -598,7 +605,6 @@ namespace OpenInfraPlatform {
                         //	LateralAxisDirection: IfcDirection;
                         //	VerticalAxisDirection: IfcDirection;
                         // END_ENTITY;
-                        auto& orientExpr = linear_placement->Orientation;
                         if(orientExpr) {
                             // convert the attributes
                             local_y = convertIfcDirection(orientExpr->LateralAxisDirection);
@@ -606,7 +612,7 @@ namespace OpenInfraPlatform {
                             local_x = carve::geom::cross(local_y, local_z);
                         }
 
-                        // 5. produce a rotation matrix
+                        // produce a rotation matrix
                         return carve::math::Matrix(
                             local_x.x, local_y.x, local_z.x, translate.x,
                             local_x.y, local_y.y, local_z.y, translate.y,
