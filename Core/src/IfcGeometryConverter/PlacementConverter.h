@@ -152,7 +152,7 @@ namespace OpenInfraPlatform {
 						return point;
                     }
 
-                    /*! \brief Converts \c IfcDirection to a vector.
+                    /*! \brief Converts \c IfcDirection to a 3D vector.
 
                     \param[in]	ifcDirection	IfcDirection entity to be interpreted.
                     \returns direction		    Calculated 2D or 3D vector.
@@ -160,7 +160,9 @@ namespace OpenInfraPlatform {
                     \note The direction is normalized.
                     \note The default value for the direction needs to be set outside the function.
                     */
-                    carve::geom::vector<3> convertIfcDirection(const EXPRESSReference<typename IfcEntityTypesT::IfcDirection>& ifcDirection)
+                    carve::geom::vector<3> convertIfcDirection(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcDirection>& ifcDirection
+					) const throw(...)
                     {
                         // **************************************************************************************************************************
                         // IfcDirection
@@ -175,23 +177,34 @@ namespace OpenInfraPlatform {
                         // END_ENTITY;
                         // read the coordinates
                         // **************************************************************************************************************************
+						// check input
+						if (ifcDirection.expired()) 
+							throw oip::ReferenceExpiredException(ifcDirection);
 
-                        auto& ratios = ifcDirection->DirectionRatios;
-                        carve::geom::vector<3> direction;
-                        if(ratios.size() > 0) {
-                            direction.x = ratios[0];
+						// set to default
+						carve::geom::vector<3> direction = VECTOR(1., 0., 0.);
+						// read the coordinates
+						auto& ratios = ifcDirection->DirectionRatios;
+						switch (ratios.size())
+						{
+						case 3:
+							direction.z = ratios[2];
+						case 2:
+							direction.y = ratios[1];
+						case 1:
+							direction.x = ratios[0];
+							break;
+						default:
+							throw oip::InconsistentGeometryException(ifcDirection, "Number of coordinates is inconsistent.");
+						}
 
-                            if(ratios.size() > 1) {
-                                direction.y = ratios[1];
+						// check
+						if( direction.isZero( GeomSettings()->GetPrecision() ) )
+							throw oip::InconsistentGeometryException(ifcDirection, "Magnitude is zero.");
 
-                                if(ratios.size() > 2) {
-                                    direction.z = ratios[2];
-                                }
-                            }
-
-                        }
                         // normalize the direction
                         direction.normalize();
+						// returns
                         return direction;
                     }
 
