@@ -99,7 +99,8 @@ namespace OpenInfraPlatform {
 						// IfcPointOnCurve & IfcPointOnSurface are not supported
 						throw oip::UnhandledException(point);
 					}
-                    /*! \brief Converts \c IfcCartesianPoint to a vector.
+
+                    /*! \brief Converts \c IfcCartesianPoint to a 3D vector.
 
                     \param[in]	cartesianPoint	\c IfcCartesianPoint entity to be interpreted.
 
@@ -124,6 +125,9 @@ namespace OpenInfraPlatform {
                         //		CP2Dor3D : HIINDEX(Coordinates) >= 2;
                         // END_ENTITY;
                         // **************************************************************************************************************************
+						// check input
+						if (cartesianPoint->expired())
+							throw oip::ReferenceExpiredException(cartesianPoint);
 
                         // set to default
 						carve::geom::vector<3> point = carve::geom::VECTOR(0.0, 0.0, 0.0);
