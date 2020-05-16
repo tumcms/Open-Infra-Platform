@@ -138,12 +138,20 @@ namespace OpenInfraPlatform {
 						catch (const oip::UnhandledException& ex)
 						{
 							// write the error to the console
-							BLUE_LOG(error) << ex.what();
+							BLUE_LOG(warning) << product->getErrorLog() + ": We don't support this (yet). Care to contribute?";
+							BLUE_LOG(warning) << ex.what();
+							continue;
+						}
+						catch (const oip::InconsistentGeometryException& ex)
+						{
+							// write the error to the console
+							BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with geometry.";
+							BLUE_LOG(warning) << ex.what();
 							continue;
 						}
 						catch (...)
 						{
-							BLUE_LOG(error) << "Unknown exception";
+							throw; // throw onwards
 						}
 
 					} // end for each representation item

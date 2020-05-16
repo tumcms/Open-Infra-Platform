@@ -157,5 +157,6 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 	catch (...)
 	{
 		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - unknown error.";
+		throw; // throw onwards
 	}
 }
