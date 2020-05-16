@@ -127,7 +127,7 @@ namespace OpenInfraPlatform
 				/*! returns the precision of the model
 				
 				*/
-				double getPrecision()
+				double getPrecision() const
 				{
 					return carve::EPSILON; //TODO remove constant and replace with content from IFC (i.e. introduce member, getter / setter)
 				}
@@ -135,7 +135,7 @@ namespace OpenInfraPlatform
 				/*! returns the tessellation precision of the model
 
 				*/
-				double getTessellationPrecision()
+				double getTessellationPrecision() const
 				{
 					return 0.01;
 				}

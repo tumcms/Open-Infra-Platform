@@ -195,7 +195,7 @@ namespace OpenInfraPlatform {
 						}
 
 						// check
-						if( direction.isZero( GeomSettings()->GetPrecision() ) )
+						if( direction.isZero( GeomSettings()->getPrecision() ) )
 							throw oip::InconsistentGeometryException(ifcDirection, "Magnitude is zero.");
 
                         // normalize the direction

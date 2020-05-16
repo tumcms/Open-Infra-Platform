@@ -25,7 +25,7 @@ namespace OpenInfraPlatform {
         namespace IfcGeometryConverter {
 
 			// IFC 4x1 specifics
-			#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+		#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
             EXPRESSReference<emt::IFC4X1EntityTypes::IfcBoundedCurve> PlacementConverterT<emt::IFC4X1EntityTypes>::GetCurveOfPlacement(
                 const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linearPlacement
 			) const
@@ -48,7 +48,7 @@ namespace OpenInfraPlatform {
 				// no relative placement in IFC4x1
                 return 0.;
             }
-			#endif
+		#endif
 
             /*! \brief Gets the \c IfcCurve attribute from \c IfcLinearPlacement.
 
