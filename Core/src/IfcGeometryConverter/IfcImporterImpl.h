@@ -48,82 +48,114 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
 	const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter)
 {
-	//#ifdef _DEBUG
-	//				std::cout << "Info\t| IfcGeometryConverter.Importer.RepConverter: Converting IFC product " << product->classname() << " #" << product->getId() << std::endl;
-	//#endif
+	try
+	{
+		//#ifdef _DEBUG
+		//				std::cout << "Info\t| IfcGeometryConverter.Importer.RepConverter: Converting IFC product " << product->classname() << " #" << product->getId() << std::endl;
+		//#endif
 
-	// get id of product
-	const uint32_t productId = product->getId();
+		// get id of product
+		const uint32_t productId = product->getId();
 
-	carve::math::Matrix matProduct(carve::math::Matrix::IDENT());
+		carve::math::Matrix matProduct(carve::math::Matrix::IDENT());
 
-	// check if there's any global object placement for this product
-	// if yes, then apply the placement
-	if (product->ObjectPlacement) {
-		// decltype(x) returns the compile time type of x.
-		//decltype(product->ObjectPlacement)::type &objectPlacement = product->ObjectPlacement;
+		// check if there's any global object placement for this product
+		// if yes, then apply the placement
+		if (product->ObjectPlacement) {
+			// decltype(x) returns the compile time type of x.
+			//decltype(product->ObjectPlacement)::type &objectPlacement = product->ObjectPlacement;
 
-		OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement = product->ObjectPlacement;
+			OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement = product->ObjectPlacement;
 
-		//auto& optObjectPlacement = product->ObjectPlacement;	// store optional<weak_ptr> product->ObjectPlacement in optObjectPlacement.
-		//auto& objectPlacement = *optObjectPlacement;			// extract weak_ptr from optional<weak_ptr> optObjectPlacement.
-		//auto& objectPlacement_ptr = objectPlacement.lock();		// get std::shared_ptr used to construct the weak_ptr.
-																// OR auto& objectPlacement = optObjectPlacement.get();
+			//auto& optObjectPlacement = product->ObjectPlacement;	// store optional<weak_ptr> product->ObjectPlacement in optObjectPlacement.
+			//auto& objectPlacement = *optObjectPlacement;			// extract weak_ptr from optional<weak_ptr> optObjectPlacement.
+			//auto& objectPlacement_ptr = objectPlacement.lock();		// get std::shared_ptr used to construct the weak_ptr.
+																	// OR auto& objectPlacement = optObjectPlacement.get();
 
-		std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>> placementAlreadyApplied;
-		matProduct = repConverter->getPlacementConverter()->convertIfcObjectPlacement(
-			objectPlacement,
-			placementAlreadyApplied);
+			std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>> placementAlreadyApplied;
+			matProduct = repConverter->getPlacementConverter()->convertIfcObjectPlacement(
+				objectPlacement,
+				placementAlreadyApplied);
 
 #ifdef _DEBUG
-		BLUE_LOG(trace) << "Processed IfcObjectPlacement #" << objectPlacement->getId();
-#endif
-	}
-
-	// error string
-	std::stringstream strerr;
-
-	// go through all representations of the product
-	if (product->Representation) {
-#ifdef _DEBUG
-		BLUE_LOG(trace) << "Processing IfcProductRepresentation #" << product->Representation->getId();
-#endif
-		OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcProductRepresentation>& representation = product->Representation;
-		// so evaluate its geometry
-		for (EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& rep : representation->Representations) {
-			// convert each shape of the represenation
-#ifdef _DEBUG
-			BLUE_LOG(trace) << "Processing IfcRepresentation #" << rep->getId();
-#endif
-			repConverter->convertIfcRepresentation(rep, matProduct, productShape);
-#ifdef _DEBUG
-			BLUE_LOG(trace) << "Processed IfcRepresentation #" << rep->getId();
+			BLUE_LOG(trace) << "Processed IfcObjectPlacement #" << objectPlacement->getId();
 #endif
 		}
 
-		IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT>(product, productShape, strerr, repConverter);
+		// error string
+		std::stringstream strerr;
+
+		// go through all representations of the product
+		if (product->Representation) {
 #ifdef _DEBUG
-		BLUE_LOG(trace) << "Processed IfcProductRepresentation #" << representation->getId();
+			BLUE_LOG(trace) << "Processing IfcProductRepresentation #" << product->Representation->getId();
+#endif
+			OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcProductRepresentation>& representation = product->Representation;
+			// so evaluate its geometry
+			for (EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& rep : representation->Representations) {
+				// convert each shape of the represenation
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcRepresentation #" << rep->getId();
+#endif
+				repConverter->convertIfcRepresentation(rep, matProduct, productShape);
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processed IfcRepresentation #" << rep->getId();
+#endif
+			}
+
+			IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT>(product, productShape, strerr, repConverter);
+#ifdef _DEBUG
+			BLUE_LOG(trace) << "Processed IfcProductRepresentation #" << representation->getId();
+#endif
+		}
+
+		if (repConverter->isOfType<typename IfcEntityTypesT::IfcAlignment>(product)) {
+			auto alignment = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product);
+			std::shared_ptr<ItemData> itemData(new ItemData());
+			productShape->vec_item_data.push_back(itemData);
+			std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> axis = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(alignment->Axis.lock());
+			repConverter->convertIfcGeometricRepresentationItem(alignment->Axis.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(), carve::math::Matrix::IDENT(), itemData);
+		}
+
+#ifdef _DEBUG
+		if (strerr.tellp() <= 0) return;
+
+		std::stringstream ss;
+		ss << "log/" << "-" << product->classname()
+			<< "#" << product->getId() << ".txt";
+
+		std::ofstream debugLog(ss.str());
+		debugLog << strerr.str();
+		debugLog.close();
 #endif
 	}
-
-	if ( repConverter->isOfType<typename IfcEntityTypesT::IfcAlignment>(product)) {
-		auto alignment = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product);
-		std::shared_ptr<ItemData> itemData(new ItemData());
-		productShape->vec_item_data.push_back(itemData);
-		std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> axis = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(alignment->Axis.lock());
-		repConverter->convertIfcGeometricRepresentationItem(alignment->Axis.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(), carve::math::Matrix::IDENT(), itemData);
+	catch (const oip::UnhandledException& ex)
+	{
+		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown.";
+		BLUE_LOG(warning) << ex.what();
 	}
-
-#ifdef _DEBUG
-	if (strerr.tellp() <= 0) return;
-
-	std::stringstream ss;
-	ss << "log/" << "-" << product->classname()
-		<< "#" << product->getId() << ".txt";
-
-	std::ofstream debugLog(ss.str());
-	debugLog << strerr.str();
-	debugLog.close();
-#endif
+	catch (const oip::InconsistentGeometryException& ex)
+	{
+		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with geometry.";
+		BLUE_LOG(warning) << ex.what();
+	}
+	catch (const oip::InconsistentModellingException& ex)
+	{
+		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with data modelling:";
+		BLUE_LOG(warning) << ex.what();
+	}
+	catch (const oip::ReferenceExpiredException& ex)
+	{
+		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with internal references:";
+		BLUE_LOG(warning) << ex.what();
+	}
+	catch (const std::exception& ex)
+	{
+		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth is wrong:";
+		BLUE_LOG(warning) << ex.what();
+	}
+	catch (...)
+	{
+		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - unknown error.";
+	}
 }
