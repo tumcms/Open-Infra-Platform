@@ -405,7 +405,7 @@ namespace OpenInfraPlatform {
                         case 1:
                             return convertIfcAxis2Placement3D(axis_placement.get<1>());
                         default:
-                            throw oip::UnhandledException( axis_placement );
+                            throw oip::InconsistentModellingException( axis_placement->getErrorLog() );
                         }
                     }
 

@@ -796,8 +796,8 @@ namespace OpenInfraPlatform {
 							line_origin = line_origin + line_direction * start_parameter;
 						}
 						else {
-							std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_trim_point;
 							auto first_point = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select_ptr) { return select_ptr->which() == 0; });
+
 							if (first_point != trim1Vec.end() && *first_point) {
 								carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first_point)->get<0>());
 
@@ -823,7 +823,6 @@ namespace OpenInfraPlatform {
 							line_end = line_origin + line_direction * line_magnitude;
 						}
 						else {
-							std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_trim_point;
 							auto first_point = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select_ptr) { return select_ptr->which() == 0; });
 
 							if (first_point != trim2Vec.end() && *first_point) {
