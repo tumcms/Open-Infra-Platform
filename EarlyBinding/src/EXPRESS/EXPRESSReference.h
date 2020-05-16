@@ -141,15 +141,8 @@ public:
 		return std::dynamic_pointer_cast<TTarget>(this->lock()) != nullptr;
 	}
 
-        virtual const std::string getErrorLog() const override
-	{
-            if(this->expired())
-                return "Reference with Id #" + std::to_string(refId) + " expired!";
-            else {
-                //TODO: Get error log from actual object
-                return "";
-            }
-	}
+    virtual const std::string getErrorLog() const override;
+	
 private:
 	size_t refId = 0;
 	std::weak_ptr<EXPRESSModel> model;
