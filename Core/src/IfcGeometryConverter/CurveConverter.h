@@ -170,12 +170,7 @@ namespace OpenInfraPlatform {
 							}
 
 							// StartDistAlong type IfcLengthMeasure [0:1]
-							double horStartDistAlong = 0.0;
-							double hStartDistAlong = horizontal->StartDistAlong.get();
-
-							if (hStartDistAlong) {
-								horStartDistAlong = hStartDistAlong * length_factor;
-							}
+							double horStartDistAlong = horizontal->StartDistAlong.value_or(0.0) * length_factor;
 
 							// Segments type IfcAlignment2DHorizontalSegment L[1:?]
 							if (horizontal->Segments.empty()) {

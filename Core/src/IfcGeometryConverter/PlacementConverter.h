@@ -709,7 +709,7 @@ namespace OpenInfraPlatform {
 						try {
 							checkLinearPlacementAgainstAbsolutePlacement(object_placement_matrix, linear_placement);
 						}
-						catch (const oip::InconsistentModellingException& ex) {
+						catch (const oip::InconsistentGeometryException& ex) {
 							BLUE_LOG(warning) << ex.what();
 						}
                         
