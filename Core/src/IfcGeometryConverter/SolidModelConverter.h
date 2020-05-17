@@ -152,14 +152,8 @@ namespace OpenInfraPlatform
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcManifoldSolidBrep>(solidModel);
 
 				if (manifoldSolidBrep) {
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing IfcManifoldSolidBrep #" << manifoldSolidBrep->getId();
-#endif
 					// Handle IFC4 advanced boundary representations
 					if (convertAdvancedBrep(manifoldSolidBrep, pos, itemData)) {
-#ifdef _DEBUG
-						BLUE_LOG(trace) << "Processed IfcManifoldSolidBrep #" << manifoldSolidBrep->getId();
-#endif
 						return;
 					}
 
@@ -1551,27 +1545,15 @@ namespace OpenInfraPlatform
 				switch (operand.which()) {
 				case 0:
 					solid_model = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcSolidModel #" << solid_model->getId();
-#endif
 					break;
 				case 1:
 					half_space_solid = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcHalfSpaceSolid>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcHalfSpaceSolid #" << half_space_solid->getId();
-#endif
 					break;
 				case 2: 
 					boolean_result = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcBooleanResult #" << boolean_result->getId();
-#endif
 					break;
 				case 3:
 					csg_primitive3D = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcCsgPrimitive3D>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcCsgPrimitive3D #" << csg_primitive3D->getId();
-#endif
 					break;
 				default:
 					break;
@@ -1580,9 +1562,6 @@ namespace OpenInfraPlatform
 				if (solid_model)
 				{
 					convertIfcSolidModel(solid_model, pos, itemData);
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processed IfcSolidModel #" << solid_model->getId();
-#endif
 					return;
 				}
 				
