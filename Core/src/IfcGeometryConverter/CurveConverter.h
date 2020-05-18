@@ -191,8 +191,8 @@ namespace OpenInfraPlatform {
 							{
 								// vertical alignment is there
 								if (vertical->Segments.empty()) {
-									BLUE_LOG(error) << "No segments in " << vertical->getErrorLog();
-									return;
+									BLUE_LOG(warning) << "No segments in " << vertical->getErrorLog();
+									bOnlyHorizontal = true;
 								}
 							}
 

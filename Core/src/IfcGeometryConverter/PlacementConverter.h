@@ -1135,11 +1135,14 @@ namespace OpenInfraPlatform {
                             else {
                                 // Segments type IfcAlignment2DHorizontalSegment L[1:?]
                                 if(vertical->Segments.empty()) {
-                                    BLUE_LOG(error) << vertical->getErrorLog() << ": Segments are emtpy!";
-                                    return;
+                                    BLUE_LOG(warning) << vertical->getErrorLog() << ": Segments are emtpy!";
+									bOnlyHorizontal = true;
                                 }
-                                verSegments.resize(vertical->Segments.size());
-                                std::transform(vertical->Segments.begin(), vertical->Segments.end(), verSegments.begin(), [](auto &it) {return it.lock(); });
+								else
+								{
+									verSegments.resize(vertical->Segments.size());
+									std::transform(vertical->Segments.begin(), vertical->Segments.end(), verSegments.begin(), [](auto &it) {return it.lock(); });
+								}
                             }
 
                             // **************************************************************************************************************************
