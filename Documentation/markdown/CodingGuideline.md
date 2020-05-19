@@ -39,10 +39,6 @@ The conversion factors can be obtained with `UnitConvert()` member of conversion
 The curved content is tessellated for the shader according to the precision settings within the IFC file.
 These can be accessed with `GeomSettings()` member of conversion classes.
 
-### Case: IFC entity not supported
-
-If an entity is not supported, the code should throw `UnhandledException`.
-
 ### Case: Entity definition changed between IFC versions
 
 If the definition of the entity has changed between versions, these steps need to be followed:
@@ -52,6 +48,28 @@ If the definition of the entity has changed between versions, these steps need t
 * Do not forget to provide a general implementation.
 
 For an example, see function `PlacementConverterT::GetCurveOfPlacement`.
+
+***
+## Exceptions
+
+### Case: IFC entity not supported
+
+If an entity is not supported, the code should throw `oip::UnhandledException`.
+
+### Case: Inconsistent geometry
+
+If the calculated geometry is inconsistent, the code should throw `oip::InconsistentGeometryException`.
+
+Examples: 
+- `IfcCartesianPoint` can have `[1..3]` coordinate values. Any other number constitutes an exception.
+- `IfcLinearPlacement` has an attribute `CartesianPosition` that provides the 3D position of the reference point. If this position does not agree with the position linearly referenced (attributes `DistanceAlong` and `Distance`), an exception is thrown.
+
+### Case: Inconsistent model data
+
+If there is a problem with the data in the IFC file, the code should throw `oip::InconsistentModellingException`.
+
+Example:
+- `ÌfcLinearPlacement` can only use an `IfcBoundedCurve` as its `Directrix` although the schema allows for `IfcCurve`. If that is not the case, an exception is thrown.
 
 ***
 ## Data management
