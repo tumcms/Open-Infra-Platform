@@ -3,15 +3,14 @@
 ***
 ## Current team
 
-| Name                          | Role                              |
-|-------------------------------|-----------------------------------|
-| Štefan Jaud                   | Product owner & Project manager   |
-| Helge Hecht                   | Lead developer & Project magager  |
-| Cara Coetzee                  | Developer                         |
-| Samuils Rulovs                | Developer                         |
-| Christoph Kaiser              | Developer                         |
-| Mauricio Carlos Platteau      | Developer                         |
-
+| Name                          | Role                              | Affiliation                       |
+|-------------------------------|-----------------------------------|-----------------------------------|
+| Štefan Jaud                   | Product owner & Project manager   | Technical University of Munich    |
+| Helge Hecht                   | Lead developer & Project manager  | None                              |
+| Cara Coetzee                  | Developer                         | Technical University of Munich    |
+| Samuils Rulovs                | Developer                         | Technical University of Munich    |
+| Christoph Kaiser              | Developer                         | Technical University of Munich    |
+| Mauricio Carlos Platteau      | Developer                         | Technical University of Munich    |
 
 ***
 ## Former contributors
