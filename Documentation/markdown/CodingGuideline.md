@@ -30,8 +30,12 @@ This document is incomplete. It has been compiled at the beginning of the great 
 
 The main task of the elements within `IfcGeometryConverter` namespace is transforming the definitions of IFC to sequences of points, lines and/or meshes to be consumed by the shader. 
 
-- Function input: `const EXPRESSReference<IfcEntity>&`, additional parameters.
-- Function output: `carve::geom::vector<3>` or similar objects (multiple return object as `std::tuple<...>`).
+### Function signature
+
+- Input: `const EXPRESSReference<IfcEntity>&`
+- Input: additional parameters
+- Output: `carve` objects (`carve::geom::vector<3>` or similar)
+- Output: multiple return object of different type as `std::tuple<...>`
 
 ### Unit conversion
 
@@ -51,12 +55,12 @@ These can be accessed with `GeomSettings()` member of conversion classes.
 ### Case: Entity definition changed between IFC versions
 
 If the definition of the entity has changed between versions, these steps need to be followed:
+* First, provide a general implementation.
 * Define a function that handles this case specifically.
 * Provide the specific implementation as a [template specialization](https://de.cppreference.com/w/cpp/language/template_specialization).
 **NOTE:** This needs to be enclosed in `#ifdef` with the corresponding IFC version.
-* Do not forget to provide a general implementation.
 
-For an example, see function `PlacementConverterT::GetCurveOfPlacement`.
+Example: see function `PlacementConverterT::GetCurveOfPlacement`.
 
 ***
 ## Exceptions
