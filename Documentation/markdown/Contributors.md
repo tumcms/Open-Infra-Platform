@@ -11,6 +11,8 @@
 | Samuils Rulovs                | Developer                         | Technical University of Munich    |
 | Christoph Kaiser              | Developer                         | Technical University of Munich    |
 | Mauricio Carlos Platteau      | Developer                         | Technical University of Munich    |
+| Enrique Valero Rodriguez      | Developer                         | University of Edinburgh           |
+| Dibya Mohanty                 | Developer                         | University of Edinburgh           |
 
 ***
 ## Former contributors
