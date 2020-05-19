@@ -6,7 +6,7 @@
 This document is incomplete. It has been compiled at the beginning of the great refactor, starting April 2020.
 
 **NOTE:** A lot of code is legacy code and has not yet been approved or refactored. A good rule of thumb is: 
-> no doxy-like comment => no refactor
+> no doxy-like comment => no refactor has occured
 
 ***
 ## General Guidelines
@@ -21,12 +21,12 @@ This document is incomplete. It has been compiled at the beginning of the great 
 
 The main task of the elements within `IfcGeometryConverter` namespace is transforming the definitions of IFC to sequences of points, lines and/or meshes to be consumed by the shader. 
 
-Function input: `const EXPRESSReference<IfcEntity>&`, additional parameters.
-Function output: `carve::geom::vector<3>` or similar objects (multiple return object as `std::tuple<...>`).
+- Function input: `const EXPRESSReference<IfcEntity>&`, additional parameters.
+- Function output: `carve::geom::vector<3>` or similar objects (multiple return object as `std::tuple<...>`).
 
 ### Unit conversion
 
-OpenInfraPlatform assumes everything is in SI units (e.g. meters, radians).
+Open Infra Platform assumes everything is in SI units (e.g. meters, radians).
 
 IFC content is scaled according to the specified units within the file.
 The conversion factors can be obtained with `UnitConvert()` member of conversion classes.
