@@ -9,12 +9,21 @@ This document is incomplete. It has been compiled at the beginning of the great 
 > no doxy-like comment => no refactor has occured
 
 ***
-## General Guidelines
+## Conventions
+
+### Functions
 
 * A function serves one purpose and one purpose only.
 * Ideally, a function is not longer than 10 lines of code.
 * Function's name is descriptive and requires no guessing as to what it does.
+* Name starts with a small letter and follows CamelCase convention.
 * Each function and class has a doxy comment according to the [guidelines](./DoxygenHelp.md).
+
+### Member variable
+
+* The name is post-pended with `_` (underscore).
+* Private with a public getter and optional setter.
+* Name starts with a small letter and follows CamelCase convention.
 
 ***
 ## Geometry Converter
