@@ -533,7 +533,7 @@ namespace OpenInfraPlatform {
 						/*********************************************************************************/
 						if(loopVertices3D.size() == 3) {
 							std::vector<uint32_t> triangleIndices;
-							triangleIndices.resize(3);
+							triangleIndices.reserve(3);
 
 							int pointID = -1;
 							for(const auto& vertex3D : loopVertices3D) {
