@@ -99,9 +99,7 @@ namespace OpenInfraPlatform
 				// *****************************************************************************************************************************************//
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
 				// *****************************************************************************************************************************************//
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcSolidModel #" << solidModel->getId();
-#endif
+
 				std::shared_ptr<typename IfcEntityTypesT::IfcCsgSolid> csg_solid =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgSolid>(solidModel);
 				if (csg_solid)

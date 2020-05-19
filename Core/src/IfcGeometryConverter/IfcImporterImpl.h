@@ -113,8 +113,9 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 			auto alignment = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product);
 			std::shared_ptr<ItemData> itemData(new ItemData());
 			productShape->vec_item_data.push_back(itemData);
-			std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> axis = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(alignment->Axis.lock());
-			repConverter->convertIfcGeometricRepresentationItem(alignment->Axis.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(), carve::math::Matrix::IDENT(), itemData);
+			repConverter->convertIfcGeometricRepresentationItem(
+				alignment->Axis.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(), 
+				carve::math::Matrix::IDENT(), itemData);
 		}
 
 #ifdef _DEBUG
