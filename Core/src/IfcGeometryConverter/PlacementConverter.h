@@ -69,17 +69,47 @@ namespace OpenInfraPlatform {
 
                     }
 
+					/*! \brief Converts \c IfcPoint to a vector.
+
+					\param[in]	point	\c IfcPoint entity to be interpreted.
+
+					\return		Calculated 2D or 3D vector.
+
+					\note The point's coordinates are scaled according to the unit conversion factor.
+					\note The point's coordinates are reset to (0,0,0).
+					*/
+					carve::geom::vector<3> convertIfcPoint(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcPoint>& point
+					) const throw(...)
+					{
+						// **************************************************************************************************************************
+						// ENTITY IfcPoint
+						//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpoint.htm
+						// ABSTRACT SUPERTYPE OF(ONEOF(IfcCartesianPoint, IfcPointOnCurve, IfcPointOnSurface))
+						//	SUBTYPE OF(IfcGeometricRepresentationItem);
+						// END_ENTITY;
+						// **************************************************************************************************************************
+
+						// IfcCartesianPoint
+						if (point.isOfType<typename IfcEntityTypesT::IfcCartesianPoint>())
+							return convertIfcCartesianPoint(point.as<typename IfcEntityTypesT::IfcCartesianPoint>());
+
+						// IfcPointOnCurve & IfcPointOnSurface are not supported
+						throw oip::UnhandledException(point);
+
+					}
                     /*! \brief Converts \c IfcCartesianPoint to a vector.
 
                     \param[in]	cartesianPoint	\c IfcCartesianPoint entity to be interpreted.
-                    \param[out] point			Calculated 2D or 3D vector.
+
+                    \return		Calculated 2D or 3D vector.
 
                     \note The point's coordinates are scaled according to the unit conversion factor.
                     \note The point's coordinates are reset to (0,0,0).
                     */
-                    void convertIfcCartesianPoint(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint,
-                        carve::geom::vector<3>& point)
+					carve::geom::vector<3> convertIfcCartesianPoint(
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint
+                        ) const throw(...)
                     {
                         // **************************************************************************************************************************
                         // IfcCartesianPoint
@@ -95,23 +125,26 @@ namespace OpenInfraPlatform {
                         // **************************************************************************************************************************
 
                         // set to default
-                        point = carve::geom::VECTOR(0.0, 0.0, 0.0);
+						carve::geom::vector<3> point = carve::geom::VECTOR(0.0, 0.0, 0.0);
                         // read the coordinates
-                        auto& coords = cartesianPoint->Coordinates;
-                        if(coords.size() > 0) {
-                            point.x = coords[0];
+						auto& coords = cartesianPoint->Coordinates;
+						switch (coords.size())
+						{
+						case 3:
+							point.z = coords[2];
+						case 2:
+							point.y = coords[1];
+						case 1:
+							point.x = coords[0];
+							break;
+						default:
+							throw oip::InconsistentGeometryException( cartesianPoint, "Number of coordinates is inconsistent.");
+						}
 
-                            if(coords.size() > 1) {
-                                point.y = coords[1];
-
-                                if(coords.size() > 2) {
-                                    point.z = coords[2];
-                                }
-                            }
-
-                        }
                         // scale the lengths according to the unit conversion
                         point *= UnitConvert()->getLengthInMeterFactor();
+						// returns
+						return point;
                     }
 
                     /*! \brief Converts \c IfcDirection to a vector.
@@ -180,9 +213,7 @@ namespace OpenInfraPlatform {
 
                         // (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
                         if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis1Placement>(placement)) {
-                            BLUE_LOG(error) << placement->getErrorLog() << ": Not implemented.";
-                            throw UnhandledException(placement);
-                            return;
+                            throw oip::UnhandledException(placement);
                         }
 
                         // (2/3) IfcAxis2Placement2D SUBTYPE OF IfcPlacement 
@@ -201,7 +232,7 @@ namespace OpenInfraPlatform {
                             return;
                         }
 
-                        BLUE_LOG(error) << placement->getErrorLog() << ": Not supported.";
+						throw oip::UnhandledException(placement);
                     }
 
                     /*! \brief Converts \c IfcAxis2Placement2D to a transformation matrix.
@@ -210,7 +241,7 @@ namespace OpenInfraPlatform {
                     \param[out] matrix				Calculated transformation matrix.
                     */
                     carve::math::Matrix convertIfcAxis2Placement2D(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d)
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d)
                     {
                         // **************************************************************************************************************************
                         // IfcAxis2Placement2D 
@@ -233,7 +264,7 @@ namespace OpenInfraPlatform {
                         carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0)); // defaults to (1.0,0.0) according to the specification
 
                         // interpret Location 
-                        convertIfcCartesianPoint(axis2placement2d->Location.lock(), translate);
+						translate = convertIfcCartesianPoint( axis2placement2d->Location );
 
                         // interpret RefDirection [OPTIONAL]
                         if(axis2placement2d->RefDirection) {
@@ -265,7 +296,7 @@ namespace OpenInfraPlatform {
                     \param[out] matrix				Calculated transformation matrix.
                     */
                     carve::math::Matrix convertIfcAxis2Placement3D(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d)
+                        const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d) throw(...)
                     {
                         // **************************************************************************************************************************
                         // IfcAxis2Placement2D 
@@ -284,6 +315,9 @@ namespace OpenInfraPlatform {
                         //		AxisAndRefDirProvision: NOT((EXISTS(Axis)) XOR(EXISTS(RefDirection)));
                         // END_ENTITY;
                         // **************************************************************************************************************************
+                        if(axis2placement3d.expired()) {
+                            throw oip::ReferenceExpiredException(axis2placement3d);
+                        }
 
                         carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
                         carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
@@ -292,7 +326,7 @@ namespace OpenInfraPlatform {
                         carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
 
                         // interpret Location
-                        convertIfcCartesianPoint(axis2placement3d->Location.lock(), translate);
+						translate = convertIfcCartesianPoint(axis2placement3d->Location);
 
                         // interpret RefDirection [OPTIONAL]
                         if(axis2placement3d->RefDirection) {
@@ -339,7 +373,7 @@ namespace OpenInfraPlatform {
                      * @note The select type IfcAxis2Placement can either be a \c IfcAxis2Placement2D or an \c IfcAxis2Placement3D
                      * and the respective convert function for the actually held type is called.
                      */
-                    carve::math::Matrix convertIfcAxis2Placement(typename IfcEntityTypesT::IfcAxis2Placement axis_placement)
+                    carve::math::Matrix convertIfcAxis2Placement(const typename IfcEntityTypesT::IfcAxis2Placement& axis_placement)
                     {
                         // RelativePlacement				
                         // TYPE IfcAxis2Placement = SELECT (
@@ -350,10 +384,10 @@ namespace OpenInfraPlatform {
                         carve::math::Matrix matrix = carve::math::Matrix::IDENT();
                         switch(axis_placement.which()) {
                         case 0:
-                            matrix = convertIfcAxis2Placement2D(axis_placement.get<0>().lock());
+                            matrix = convertIfcAxis2Placement2D(axis_placement.get<0>());
                             break;
                         case 1:
-                            matrix = convertIfcAxis2Placement3D(axis_placement.get<1>().lock());
+                            matrix = convertIfcAxis2Placement3D(axis_placement.get<1>());
                             break;
                         default:
                             BLUE_LOG(fatal) << axis_placement.getErrorLog() << "IfcAxis2Placement conversion issues.";
@@ -666,7 +700,7 @@ namespace OpenInfraPlatform {
                             //TODO Not implemented
                             BLUE_LOG(warning) << grid_placement->getErrorLog() << ": Not implemented";
                             object_placement_matrix = carve::math::Matrix::IDENT();
-                            throw UnhandledException(objectPlacement);
+                            throw oip::UnhandledException(objectPlacement);
                         } // end if IfcGridPlacement
 
                         // (3/3) IfcLinearPlacement SUBTYPE OF IfcObjectPlacement
@@ -1510,8 +1544,7 @@ namespace OpenInfraPlatform {
                             bool bCCW = (curveOut ? bCCWStart : bCCWEnd);
 
                             //  Starting point of the segment
-                            carve::geom::vector<3> startPoint;
-                            convertIfcCartesianPoint(curveSegStartPoint, startPoint);
+                            carve::geom::vector<3> startPoint = convertIfcCartesianPoint(curveSegStartPoint);
 
                             // the transformation matrix
                             carve::math::Matrix matrix(carve::math::Matrix::IDENT());

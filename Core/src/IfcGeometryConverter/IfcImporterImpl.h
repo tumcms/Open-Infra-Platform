@@ -95,7 +95,7 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 #ifdef _DEBUG
 			BLUE_LOG(trace) << "Processing IfcRepresentation #" << rep->getId();
 #endif
-			repConverter->convertIfcRepresentation(rep.lock(), matProduct, productShape, strerr);
+			repConverter->convertIfcRepresentation(rep.lock(), matProduct, productShape);
 #ifdef _DEBUG
 			BLUE_LOG(trace) << "Processed IfcRepresentation #" << rep->getId();
 #endif
@@ -112,7 +112,7 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 		std::shared_ptr<ItemData> itemData(new ItemData());
 		productShape->vec_item_data.push_back(itemData);
 		std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> axis = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(alignment->Axis.lock());
-		repConverter->convertIfcGeometricRepresentationItem(alignment->Axis.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(), carve::math::Matrix::IDENT(), itemData, strerr);
+		repConverter->convertIfcGeometricRepresentationItem(alignment->Axis.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(), carve::math::Matrix::IDENT(), itemData);
 	}
 
 #ifdef _DEBUG

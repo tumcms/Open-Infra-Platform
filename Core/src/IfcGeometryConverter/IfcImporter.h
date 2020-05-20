@@ -154,7 +154,7 @@ namespace OpenInfraPlatform
 
 					if(element) {
 						// then collect opening data
-						repConverter->convertOpenings(element, openingDatas, strerr);
+						repConverter->convertOpenings(element, openingDatas);
 					}
 
 					// go through all shapes and convert them to meshsets
@@ -164,7 +164,7 @@ namespace OpenInfraPlatform
 
 						// if product is IfcElement, then subtract openings like windows, doors, etc.
 						if(element) {
-							repConverter->subtractOpenings(element, itemData, openingDatas, strerr);
+							repConverter->subtractOpenings(element, itemData, openingDatas);
 						}
 
 						// convert all open polyhedrons to meshsets

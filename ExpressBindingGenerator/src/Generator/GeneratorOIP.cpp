@@ -2600,7 +2600,11 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "std::vector<std::string> lines;");
 	writeLine(file, "try {");
 	writeLine(file, "while (!std::getline(file, lineInFile).eof()) lines.push_back(lineInFile);");
-	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
+	
+	// begin for read file
+	linebreak(file);
+	writeLine(file, "// begin for read file");
+	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); 
 	writeLine(file, "auto line = lines[i];");
 	writeLine(file, "if(line == \"\") continue;");
 	writeLine(file, "line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());");
@@ -2622,6 +2626,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "}"); //end for read file
 
 	linebreak(file);
+	writeLine(file, "// initialize cross-references");
 	writeLine(file, "#pragma omp parallel for");
 	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
 	writeLine(file, "auto line = lines[i];");
@@ -2635,7 +2640,8 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
 			writeLine(file, "if(entityType == \"" + toUpper(entity.getName()) + "\") {");
-			writeLine(file, "model->entities.find(id)->second = std::make_shared<" + entity.getName() + ">(" + entity.getName() + "::readStepData(parseArgs(line), model));");
+            //writeLine(file, "*(model->entities.find(id)->second) = " + entity.getName() + "::readStepData(parseArgs(line), model);");
+			writeLine(file, "(std::dynamic_pointer_cast<" + entity.getName() + ">(model->entities.find(id)->second))->operator=(" + entity.getName() + "::readStepData(parseArgs(line), model));");
 			writeLine(file, "continue;");
 			writeLine(file, "}");
 		}
