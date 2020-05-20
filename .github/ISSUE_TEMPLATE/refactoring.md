@@ -7,10 +7,12 @@ assignees: ''
 
 ---
 
-** File which is being refactored **
+**File which is being refactored**
 
-Please provide the filename here ...
+Please provide the filename here!
 
-** Code Snippets which should be refactored **
+**Functions**
 
-Link to the code which is being refactored ...
+List all functions in the file which have to be refactored with possible code snippets!
+
+- [ ] Listed all functions in the issue.
