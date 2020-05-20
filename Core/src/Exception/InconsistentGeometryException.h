@@ -52,13 +52,17 @@ public:
     {
         item_ = item.lock();
         message_ = message;
+		init();
     }
 
     const char* what() const override;
 
+	virtual void init() noexcept;
+
 private:
     std::shared_ptr<oip::EXPRESSObject> item_;
-    std::string message_;
+	std::string message_;
+	std::string what_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_EXCEPTION_END

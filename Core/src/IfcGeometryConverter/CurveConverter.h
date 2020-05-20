@@ -170,12 +170,7 @@ namespace OpenInfraPlatform {
 							}
 
 							// StartDistAlong type IfcLengthMeasure [0:1]
-							double horStartDistAlong = 0.0;
-							double hStartDistAlong = horizontal->StartDistAlong.get();
-
-							if (hStartDistAlong) {
-								horStartDistAlong = hStartDistAlong * length_factor;
-							}
+							double horStartDistAlong = horizontal->StartDistAlong.value_or(0.0) * length_factor;
 
 							// Segments type IfcAlignment2DHorizontalSegment L[1:?]
 							if (horizontal->Segments.empty()) {
@@ -196,8 +191,8 @@ namespace OpenInfraPlatform {
 							{
 								// vertical alignment is there
 								if (vertical->Segments.empty()) {
-									BLUE_LOG(error) << "No segments in " << vertical->getErrorLog();
-									return;
+									BLUE_LOG(warning) << "No segments in " << vertical->getErrorLog();
+									bOnlyHorizontal = true;
 								}
 							}
 
@@ -281,7 +276,7 @@ namespace OpenInfraPlatform {
 								}
 
 								dHorizontalRadius *= length_factor;
-								nFragments = GeomSettings()->getNumberOfSegmentsForTesselation(dHorizontalRadius);
+								nFragments = GeomSettings()->getNumberOfSegmentsForTessellation(dHorizontalRadius);
 								dFragmentLength = dHorizontalSegLength / (double)(nFragments);
 								// Step 2 finished: We have the necessary information from the horizontal element
 
@@ -370,7 +365,7 @@ namespace OpenInfraPlatform {
 									dVerticalRadius *= length_factor;
 
 									// determine tesselation density
-									int nVerFragments = GeomSettings()->getNumberOfSegmentsForTesselation(dVerticalRadius);
+									int nVerFragments = GeomSettings()->getNumberOfSegmentsForTessellation(dVerticalRadius);
 									double dVerFragmentsLength = dVerticalSegLength / (double)(nVerFragments);
 
 									// Select greater accuracy / more fragments / smaller fragments.
@@ -662,7 +657,7 @@ namespace OpenInfraPlatform {
 								GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
 							}
 
-							int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation( circle_radius, abs(opening_angle) );
+							int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation( circle_radius, abs(opening_angle) );
 
 							const double circle_center_x = 0.0;
 							const double circle_center_y = 0.0;
@@ -705,7 +700,7 @@ namespace OpenInfraPlatform {
 
 									double radiusMax = std::max(xRadius, yRadius);
 									double radiusMin = std::min(xRadius, yRadius);
-									int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation(radiusMin);
+									int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin);
 									double deltaAngle = GeomSettings()->getAngleLength(radiusMin);
 
 									// todo: implement clipping
@@ -796,8 +791,8 @@ namespace OpenInfraPlatform {
 							line_origin = line_origin + line_direction * start_parameter;
 						}
 						else {
-							std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_trim_point;
 							auto first_point = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select_ptr) { return select_ptr->which() == 0; });
+
 							if (first_point != trim1Vec.end() && *first_point) {
 								carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first_point)->get<0>());
 
@@ -823,7 +818,6 @@ namespace OpenInfraPlatform {
 							line_end = line_origin + line_direction * line_magnitude;
 						}
 						else {
-							std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifc_trim_point;
 							auto first_point = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select_ptr) { return select_ptr->which() == 0; });
 
 							if (first_point != trim2Vec.end() && *first_point) {

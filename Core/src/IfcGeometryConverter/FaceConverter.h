@@ -409,9 +409,6 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData> item_data)
 				{
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcFaceList. Size:" << faces.size();
-#endif
 					// carve polygon of the converted face list
 					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 					// contains polygon indices of vertices (x,y,z converted to string)
@@ -444,9 +441,6 @@ namespace OpenInfraPlatform {
 
 					// id of face in step file
 					const uint32_t faceID = face->getId();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcFace #" << faceID;
-#endif
 
 					// all bound definitions of the face (normal bound or outer bound)
 					/*std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFaceBound>>& bounds = face->m_Bounds;*/
@@ -539,7 +533,7 @@ namespace OpenInfraPlatform {
 						/*********************************************************************************/
 						if(loopVertices3D.size() == 3) {
 							std::vector<uint32_t> triangleIndices;
-							triangleIndices.resize(3);
+							triangleIndices.reserve(3);
 
 							int pointID = -1;
 							for(const auto& vertex3D : loopVertices3D) {

@@ -99,9 +99,7 @@ namespace OpenInfraPlatform
 				// *****************************************************************************************************************************************//
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
 				// *****************************************************************************************************************************************//
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcSolidModel #" << solidModel->getId();
-#endif
+
 				std::shared_ptr<typename IfcEntityTypesT::IfcCsgSolid> csg_solid =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgSolid>(solidModel);
 				if (csg_solid)
@@ -152,14 +150,8 @@ namespace OpenInfraPlatform
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcManifoldSolidBrep>(solidModel);
 
 				if (manifoldSolidBrep) {
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing IfcManifoldSolidBrep #" << manifoldSolidBrep->getId();
-#endif
 					// Handle IFC4 advanced boundary representations
 					if (convertAdvancedBrep(manifoldSolidBrep, pos, itemData)) {
-#ifdef _DEBUG
-						BLUE_LOG(trace) << "Processed IfcManifoldSolidBrep #" << manifoldSolidBrep->getId();
-#endif
 						return;
 					}
 
@@ -433,7 +425,7 @@ namespace OpenInfraPlatform
 					itemData->closed_polyhedrons.push_back(pipe_data);
 					std::vector<carve::geom::vector<3> > inner_shape_points;
 
-					const int nvc = GeomSettings()->getNumberOfVerticesForTesselation(radius);
+					const int nvc = GeomSettings()->getNumberOfVerticesForTessellation(radius);
 					double delta_angle = GeomSettings()->getAngleLength(radius);
 
 					std::vector<carve::geom::vector<3> > circle_points;
@@ -1050,7 +1042,7 @@ namespace OpenInfraPlatform
 				if (revolution_angle > M_PI * 2) revolution_angle = M_PI * 2;
 				if (revolution_angle < -M_PI * 2) revolution_angle = M_PI * 2;
 
-				int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation(biggestRadius, abs(revolution_angle));
+				int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(biggestRadius, abs(revolution_angle));
 				if (num_segments < 6)
 				{
 					num_segments = 6;
@@ -1382,7 +1374,7 @@ namespace OpenInfraPlatform
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
 
-					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTesselation(radius);
+					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTessellation(radius);
 					double d_angle = GeomSettings()->getAngleLength(radius);
 					for (double angle = 0.; angle < 2*M_PI; angle += d_angle)
 					{
@@ -1427,7 +1419,7 @@ namespace OpenInfraPlatform
 					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Height)*length_factor;
 					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Radius)*length_factor;
 
-					int slices = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
+					int slices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
 					double rad = 0;
 
 					double d_angle = GeomSettings()->getAngleLength(radius);
@@ -1473,7 +1465,7 @@ namespace OpenInfraPlatform
 					std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 					polyhedron_data->addVertex(pos*carve::geom::VECTOR(0.0, 0.0, radius)); // top
 
-					const int nvc = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
+					const int nvc = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
 					const double d_horizontal_angle = GeomSettings()->getAngleLength(radius);
 					const int num_vertical_edges = ceil(0.5 * nvc);
 					double d_vertical_angle = M_PI / double(num_vertical_edges - 1);	// TODO: adapt to model size and complexity
@@ -1551,27 +1543,15 @@ namespace OpenInfraPlatform
 				switch (operand.which()) {
 				case 0:
 					solid_model = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcSolidModel #" << solid_model->getId();
-#endif
 					break;
 				case 1:
 					half_space_solid = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcHalfSpaceSolid>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcHalfSpaceSolid #" << half_space_solid->getId();
-#endif
 					break;
 				case 2: 
 					boolean_result = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcBooleanResult #" << boolean_result->getId();
-#endif
 					break;
 				case 3:
 					csg_primitive3D = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcCsgPrimitive3D>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcCsgPrimitive3D #" << csg_primitive3D->getId();
-#endif
 					break;
 				default:
 					break;
@@ -1580,9 +1560,6 @@ namespace OpenInfraPlatform
 				if (solid_model)
 				{
 					convertIfcSolidModel(solid_model, pos, itemData);
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processed IfcSolidModel #" << solid_model->getId();
-#endif
 					return;
 				}
 				

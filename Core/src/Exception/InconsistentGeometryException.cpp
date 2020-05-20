@@ -26,6 +26,7 @@ OpenInfraPlatform::Core::Exception::InconsistentGeometryException::InconsistentG
 OpenInfraPlatform::Core::Exception::InconsistentGeometryException::InconsistentGeometryException(
     const InconsistentGeometryException& other) noexcept : item_(other.item_), message_(other.message_)
 {
+	init();
 }
 
 /*!
@@ -38,6 +39,7 @@ OpenInfraPlatform::Core::Exception::InconsistentGeometryException::InconsistentG
 {
     item_ = item;
     message_ = message;
+	init();
 }
 
 /*!
@@ -49,6 +51,7 @@ OpenInfraPlatform::Core::Exception::InconsistentGeometryException::InconsistentG
 {
 	item_ = nullptr;
 	message_ = message;
+	init();
 }
 
 //! Destructor
@@ -63,10 +66,20 @@ OpenInfraPlatform::Core::Exception::InconsistentGeometryException::~Inconsistent
 */
 const char* OpenInfraPlatform::Core::Exception::InconsistentGeometryException::what() const
 {
-	std::string s = "";
-	if( item_ )
-		s += "Geometry is inconsistent at " + item_->getErrorLog() + (message_.empty() ? "." : ": ");
+    return what_.c_str();
+}
+
+/*!
+\brief Initialises the return message (member \c what_)
+*/
+void OpenInfraPlatform::Core::Exception::InconsistentGeometryException::init() noexcept
+{
+	what_ = "";
+	if (item_)
+		what_ += "Geometry is inconsistent at " + item_->getErrorLog() + (message_.empty() ? "." : ": ");
 	if (!message_.empty())
-		s += message_;
-    return s.c_str();
+		what_ += message_;
+	if (what_.back() != '.'
+		&& what_.back() != '!')
+		what_ += ".";
 }

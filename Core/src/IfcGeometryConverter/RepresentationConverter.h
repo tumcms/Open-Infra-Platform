@@ -138,12 +138,20 @@ namespace OpenInfraPlatform {
 						catch (const oip::UnhandledException& ex)
 						{
 							// write the error to the console
-							BLUE_LOG(error) << ex.what();
+							BLUE_LOG(warning) << representation->getErrorLog() + ": We don't support this (yet). Care to contribute?";
+							BLUE_LOG(warning) << ex.what();
+							continue;
+						}
+						catch (const oip::InconsistentGeometryException& ex)
+						{
+							// write the error to the console
+							BLUE_LOG(warning) << representation->getErrorLog() + ": Nothing is shown - sth wrong with geometry.";
+							BLUE_LOG(warning) << ex.what();
 							continue;
 						}
 						catch (...)
 						{
-							BLUE_LOG(error) << "Unknown exception";
+							throw; // throw onwards
 						}
 
 					} // end for each representation item
@@ -241,7 +249,7 @@ namespace OpenInfraPlatform {
 						}
 
 						if (mapping_origin_placement) {
-							placementConverter->convertIfcPlacement(mapping_origin_placement, map_matrix_origin);
+							map_matrix_origin = placementConverter->convertIfcPlacement(mapping_origin_placement);
 						}
 						else {
 							BLUE_LOG(warning) << "#" << mapping_origin_placement->getId() << " = IfcPlacement: !std::dynamic_pointer_cast<IfcPlacement>( mapping_origin ) )";
