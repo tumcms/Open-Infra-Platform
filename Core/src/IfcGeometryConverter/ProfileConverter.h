@@ -530,22 +530,16 @@ namespace OpenInfraPlatform {
 						if(hollow) {
 							if(hollow->WallThickness) {
 								double t = hollow->WallThickness * length_factor;
-								double r1 = 0;
-								if(hollow->OuterFilletRadius) {
-									r1 = hollow->InnerFilletRadius * length_factor;
-								}
-
-								double r2 = 0;
+								double r1 = hollow->InnerFilletRadius.value_or(0.0) * length_factor;
 								double r2 = hollow->InnerFilletRadius.value_or(0.0) * length_factor;
 								// Outer
-								GetRectangleCoordinates(outer_loop, r1, x, y);
+								AddRectangleCoordinates(outer_loop, r1, x, y);
 								
-							
 								// Inner
 								std::vector<carve::geom::vector<2>> inner_loop;
 								x -= 2 * t;
 								y -= 2 * t;
-								GetRectangleCoordinates(inner_loop, r2, x, y);
+								AddRectangleCoordinates(inner_loop, r2, x, y);
 								
 								paths.push_back(outer_loop);
 								paths.push_back(inner_loop);
@@ -559,7 +553,7 @@ namespace OpenInfraPlatform {
 						if(rounded_rectangle) {
 							if(rounded_rectangle->RoundingRadius) {
 								double rr = rounded_rectangle->RoundingRadius * length_factor;
-								GetRectangleCoordinates(outer_loop, rr, x, y);
+								AddRectangleCoordinates(outer_loop, rr, x, y);
 							
 								paths.push_back(outer_loop);
 							}
@@ -567,7 +561,7 @@ namespace OpenInfraPlatform {
 						}
 
 						// Else it's a standard rectangle
-						GetRectangleCoordinates(outer_loop, 0, x, y);
+						AddRectangleCoordinates(outer_loop, 0, x, y);
 						
 						paths.push_back(outer_loop);
 						return;
@@ -583,7 +577,7 @@ namespace OpenInfraPlatform {
 						double xTop = trapezium->TopXDim * length_factor;
 						double xOffset = trapezium->TopXOffset * length_factor;
 						double y = trapezium->YDim * length_factor;
-						GetTrapeziumCoordinates(outer_loop, xBottom, xOffset, xTop, y);
+						AddTrapeziumCoordinates(outer_loop, xBottom, xOffset, xTop, y);
 						paths.push_back(outer_loop);
 					}
 					return;
@@ -599,7 +593,7 @@ namespace OpenInfraPlatform {
 					int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
 					double d_angle = GeomSettings()->getAngleLength(radius);
 					//Function GetCircleCoordinates
-					GetCircleCoordinates(outer_loop, radius, d_angle, num_segments);
+					AddCircleCoordinates(outer_loop, radius, d_angle, num_segments);
 					
 					paths.push_back(outer_loop);
 					
@@ -613,7 +607,7 @@ namespace OpenInfraPlatform {
 						int num_segments2 = GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
 						double d_angle2 = GeomSettings()->getAngleLength(radius2);
 						//Function GetCircleCoordinates
-						GetCircleCoordinates(inner_loop, radius2, d_angle2, num_segments2);
+						AddCircleCoordinates(inner_loop, radius2, d_angle2, num_segments2);
 						
 						paths.push_back(inner_loop);
 						
@@ -671,10 +665,10 @@ namespace OpenInfraPlatform {
 						if(asym_I_profile) {
 							if(asym_I_profile->TopFlangeWidth) {
 								double bTop = asym_I_profile->TopFlangeWidth * length_factor;																
-								double tfTop = asym_I_profile->TopFlangeThickness.value_or(tf);
-								double rTop = asym_I_profile->TopFlangeFilletRadius.value_or(r);
+								double tfTop = asym_I_profile->TopFlangeThickness.value_or(tf/ length_factor) * length_factor;
+								double rTop = asym_I_profile->TopFlangeFilletRadius.value_or(r/ length_factor) * length_factor;
 								//Function GetAsymmetricCoordinates
-								GetAsymmetricIShapeCoordinates(outer_loop, rTop, tw, tfTop, h);
+								AddAsymmetricIShapeCoordinates(outer_loop, rTop, tw, tfTop, h);
 								
 								outer_loop.push_back(carve::geom::VECTOR(bTop * 0.5, (h * 0.5 - tfTop)));
 								outer_loop.push_back(carve::geom::VECTOR(bTop * 0.5, h * 0.5));
@@ -698,15 +692,15 @@ namespace OpenInfraPlatform {
 					if(l_shape->Depth && l_shape->Thickness) {
 						double h = l_shape->Depth * length_factor;
 						
-						double b = l_shape->Width.value_or(h);
+						double b = l_shape->Width.value_or(l_shape->Depth) * length_factor;
 						
 						double t = l_shape->Thickness;
 						
-						double r1 = l_shape->FilletRadius.value_or(0);
+						double r1 = l_shape->FilletRadius.value_or(0.) * length_factor;
 						
-						double r2 = l_shape->EdgeRadius.value_or(0);
+						double r2 = l_shape->EdgeRadius.value_or(0.) * length_factor;
 						
-						double ls = l_shape->LegSlope.value_or(0);
+						double ls = l_shape->LegSlope.value_or(0.) * length_factor;
 						
 						outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, -h * 0.5));
 						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
@@ -750,23 +744,11 @@ namespace OpenInfraPlatform {
 						double b = u_shape->FlangeWidth * length_factor;
 						double tw = u_shape->WebThickness * length_factor;
 						double tf = u_shape->FlangeThickness * length_factor;
-						double r1 = u_shape->FilletRadius.value_or(0);
-						double r2 = u_shape->EdgeRadius.value_or(0);
-						double fs = u_shape->FlangeSlope.value_or(0);
+						double r1 = u_shape->FilletRadius.value_or(0.) * length_factor;
+						double r2 = u_shape->EdgeRadius.value_or(0.) * length_factor;
+						double fs = u_shape->FlangeSlope.value_or(0.) * length_factor;
 						//To Do:
 						
-						/*
-						if(u_shape->FilletRadius) {
-							r1 = u_shape->FilletRadius * length_factor;
-						}
-						double r2 = 0;
-						if(u_shape->EdgeRadius) {
-							r2 = u_shape->EdgeRadius * length_factor;
-						}
-						double fs = 0;
-						if(u_shape->FlangeSlope) {
-							fs = u_shape->FlangeSlope * angle_factor;
-						}*/
 
 						outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, -h * 0.5));
 						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
@@ -1473,7 +1455,7 @@ namespace OpenInfraPlatform {
 
 			// Function 10: Get rectangle coordiantes
 			
-			void GetRectangleCoordinates (std::vector<carve::geom::vector<2>>& coords, const double radius, const double x, const double y) const
+			void AddRectangleCoordinates (std::vector<carve::geom::vector<2>>& coords, const double radius, const double x, const double y) const
 
 			{
 
@@ -1496,7 +1478,7 @@ namespace OpenInfraPlatform {
 		
 
 			//Function 11: GetTrapeziumCoordinates
-			void GetTrapeziumCoordinates(std::vector<carve::geom::vector<2>>& coords, double xBottom, double xOffset, double xTop, double y)const
+			void AddTrapeziumCoordinates(std::vector<carve::geom::vector<2>>& coords, const double xBottom, const double xOffset, const double xTop, const double y)const
 			{
 				coords.push_back(carve::geom::VECTOR(-xBottom * 0.5, -y * 0.5));
 				coords.push_back(carve::geom::VECTOR(xBottom * 0.5, -y * 0.5));
@@ -1505,7 +1487,7 @@ namespace OpenInfraPlatform {
 			}
 
 			//Function 12: GetCircleRadius
-			void GetCircleCoordinates(std::vector<carve::geom::vector<2>>& coords, double radius, double d_angle, int num_segments ) const
+			void AddCircleCoordinates(std::vector<carve::geom::vector<2>>& coords, const double radius, const double d_angle, const int num_segments ) const
 			{
 				
 				double angle = 0;
@@ -1517,7 +1499,7 @@ namespace OpenInfraPlatform {
 			}
 			
 			//Function 13: GetAsymmetricIShapeCoordinates
-			void GetAsymmetricIShapeCoordinates(std::vector<carve::geom::vector<2>>& coords, double radius, double Webthickness, double FlangeThickness, double h) const
+			void AddAsymmetricIShapeCoordinates(std::vector<carve::geom::vector<2>>& coords, const double radius, const double Webthickness, const double FlangeThickness, const double h) const
 			{
 				if (radius != 0) {
 					addArc(coords, radius, M_PI, -M_PI_2, Webthickness * 0.5 + radius, h * 0.5 - FlangeThickness - radius);
