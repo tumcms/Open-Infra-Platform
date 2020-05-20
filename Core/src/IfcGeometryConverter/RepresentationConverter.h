@@ -485,21 +485,21 @@ namespace OpenInfraPlatform {
 				*/
 				void convertIfcMappedItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcMappedItem>& mapped_item,
-					const carve::math::Matrix& pos,
+					const carve::math::Matrix& objectPlacement,
 					std::shared_ptr<ItemData>& itemData
 				) const throw(...)
 				{
 					auto& map_source = mapped_item->MappingSource;
 
 					if (!map_source.lock()) {
-						throw oip::UnhandledException(reprItem);
+						throw oip::UnhandledException(mapped_item);
 						return;
 					}
 
 					// decltype(map_source->Mapped_Representation)::type &mapped_representation = map_source->MappedRepresentation;
 					auto& mapped_representation = map_source->MappedRepresentation;
 					if (!mapped_representation.lock()) {
-						throw oip::UnhandledException(reprItem);
+						throw oip::UnhandledException(mapped_item);
 						return;
 					}
 
@@ -548,7 +548,7 @@ namespace OpenInfraPlatform {
 				*/
 				void convertIfcTopologicalRepresentationItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>& topo_item,
-					const carve::math::Matrix& pos,
+					const carve::math::Matrix& objectPlacement,
 					std::shared_ptr<ItemData>& itemData
 				) const throw(...)
 				{
