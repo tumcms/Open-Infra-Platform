@@ -634,7 +634,7 @@ namespace OpenInfraPlatform {
 						if (   alongHorizontal
 							&& directionOfCurve.x == 0.
 							&& directionOfCurve.y == 0.)
-							throw oip::InconsistentGeometryException("Cannot apply alongHorizontal = true, since the dircetion is strictly vertical!");
+							throw oip::InconsistentGeometryException("Cannot apply alongHorizontal = true, since the direction is strictly vertical!");
 
 						// correct the x-direction
                         carve::geom::vector<3> curve_x(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, alongHorizontal ? 0.0 : directionOfCurve.z));
