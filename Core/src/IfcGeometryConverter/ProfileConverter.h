@@ -1475,7 +1475,8 @@ namespace OpenInfraPlatform {
 
 			// Function 10: Get rectangle coordiantes
 			
-			void GetRectangleCoordinates (std::vector<carve::geom::vector<2>>& coords, double radius, double x, double y) const
+			void GetRectangleCoordinates (std::vector<carve::geom::vector<2>>& coords, const double radius, const double x, const double y) const
+
 			{
 
 				if (radius != 0) {
