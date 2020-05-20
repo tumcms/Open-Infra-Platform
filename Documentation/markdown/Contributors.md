@@ -35,3 +35,7 @@
 | Ugur Buyukdurak               | Developer                         |
 | Max Werner                    | Developer                         |
 | Marcus Boeckle                | Developer                         |
+| Felix Rampf                   | Developer                         |
+| Frederic Gillioz              | Developer                         |
+| Lucas Duckerschein            | Developer                         |
+| Michael Sedlmair              | Developer                         |
