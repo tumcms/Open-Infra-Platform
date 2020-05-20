@@ -536,9 +536,7 @@ namespace OpenInfraPlatform {
 								}
 
 								double r2 = 0;
-								if(hollow->InnerFilletRadius) {
-									r2 = hollow->InnerFilletRadius * length_factor;
-								}
+								double r2 = hollow->InnerFilletRadius.value_or(0.0) * length_factor;
 								// Outer
 								GetRectangleCoordinates(outer_loop, r1, x, y);
 								
