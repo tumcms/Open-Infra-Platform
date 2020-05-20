@@ -92,17 +92,17 @@ namespace OpenInfraPlatform {
 				{
 				}
 
-				/*! \brief Converts \c IfcRepresentation to meshes.
+				/*! \brief Converts \c IfcRepresentation to meshes and polylines.
 				*
 				* \param[in] representation The \c IfcRepresentation to be converted.
-				* \param[in] objectPlacement The relative location of the origin of the representation's coordinate system within the global system.
+				* \param[in] objectPlacement The relative location of the origin of the representation's coordinate system within the geometric context.
 				* \param[out] inputData A pointer to be filled with the relevant data.
 				*/
 				void convertIfcRepresentation(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& representation,
 					const carve::math::Matrix& objectPlacement,
 					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData
-				) const noexcept
+				) const throw(...)
 				{
 					// **************************************************************************************************************************
 					// IfcRepresentation
@@ -186,7 +186,7 @@ namespace OpenInfraPlatform {
 				/*! \brief Converts \c IfcRepresentationItem to meshes.
 				 *
 				 * \param[in] reprItem The \c IfcRepresentationItem to be converted.
-				 * \param[in] objectPlacement The relative location of the origin of the representation's coordinate system within the global system.
+				 * \param[in] objectPlacement The relative location of the origin of the representation's coordinate system within the geometric context.
 				 * \param[out] itemData A pointer to be filled with the relevant data.
 				 */
 				void convertIfcRepresentationItem(
@@ -214,116 +214,33 @@ namespace OpenInfraPlatform {
 					// (2/4) IfcMappedItem SUBTYPE OF IfcRepresentationItem
 					if (reprItem.isOfType<typename IfcEntityTypesT::IfcMappedItem>())
 					{
-						// decltype(mapped_item->MappingSource)::type &map_source = mapped_item->MappingSource;
-						auto mapped_item = reprItem.as<typename IfcEntityTypesT::IfcMappedItem>();
-						auto& map_source = mapped_item->MappingSource;
-
-						if (!map_source.lock()) {
-							throw oip::UnhandledException(reprItem);
-							return;
-						}
-
-						// decltype(map_source->Mapped_Representation)::type &mapped_representation = map_source->MappedRepresentation;
-						auto& mapped_representation = map_source->MappedRepresentation;
-						if (!mapped_representation.lock()) {
-							throw oip::UnhandledException(reprItem);
-							return;
-						}
-
-						carve::math::Matrix map_matrix_target(carve::math::Matrix::IDENT());
-						if (mapped_item->MappingTarget) {
-							auto& transform_operator = mapped_item->MappingTarget;
-
-							PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(transform_operator.lock(), map_matrix_target, UnitConvert()->getLengthInMeterFactor());
-						}
-
-						carve::math::Matrix map_matrix_origin(carve::math::Matrix::IDENT());
-						typename IfcEntityTypesT::IfcAxis2Placement mapping_origin_select = map_source->MappingOrigin;
-
-						std::shared_ptr<typename IfcEntityTypesT::IfcPlacement> mapping_origin_placement = nullptr;
-
-						switch (mapping_origin_select.which()) {
-						case 0: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<0>().lock()); break;
-						case 1: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<1>().lock()); break;
-						default: break;
-						}
-
-						if (mapping_origin_placement) {
-							map_matrix_origin = placementConverter->convertIfcPlacement(mapping_origin_placement);
-						}
-						else {
-							BLUE_LOG(warning) << "#" << mapping_origin_placement->getId() << " = IfcPlacement: !std::dynamic_pointer_cast<IfcPlacement>( mapping_origin ) )";
-							return;
-						}
-
-
-						carve::math::Matrix mapped_pos((map_matrix_origin * objectPlacement) * map_matrix_target);
-
-						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData
-							= std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
-						convertIfcRepresentation(mapped_representation, mapped_pos, inputData);
-
-						std::for_each(  inputData->vec_item_data.begin(),
-										inputData->vec_item_data.end(),
-										[&](const std::shared_ptr<ItemData>& data) { itemData->append(data); });
-#ifdef _DEBUG
-						BLUE_LOG(trace) << "Processed IfcMappedItem #" << mapped_representation.lock()->getId();
-#endif
+						// convert as IfcMappedItem
+						convertIfcMappedItem(
+							reprItem.as<typename IfcEntityTypesT::IfcMappedItem>(),
+							objectPlacement, itemData);
 						return;
 					}
 
 					// (3/4) IfcStyledItem SUBTYPE OF IfcRepresentationItem
 					if (reprItem.isOfType<typename IfcEntityTypesT::IfcStyledItem>())
 					{
-						// call the corresponding function
+						// convert as IfcStyledItem
 						convertIfcStyledItem(reprItem.as<typename IfcEntityTypesT::IfcStyledItem>(), itemData);
 						return;
 					}
 
 					// (4/4) IfcTopologicalRepresentationItem SUBTYPE OF IfcRepresentationItem
-					if (reprItem.isOfType<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>()) {
-						// IfcTopologicalRepresentationItem ABSTRACT SUPERTYPE OF IfcConnectedFaceSet, IfcEdge, IfcFace*, IfcFaceBound*, IfcLoop*, IfcPath*, IfcVertex*.
-						EXPRESSReference<typename IfcEntityTypesT::IfcTopologicalRepresentationItem> topo_item =
-							reprItem.as<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>();
-
-						// IfcConnectedFaceSet SUBTYPE OF IfcTopologicalRepresentationItem
-						if (topo_item.isOfType<typename IfcEntityTypesT::IfcConnectedFaceSet>() ) {
-							throw oip::UnhandledException(topo_item);
-							return;
-						}
-
-						// IfcEdge SUBTYPE OF IfcTopologicalRepresentationItem
-						std::shared_ptr<typename IfcEntityTypesT::IfcEdge> topo_edge = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdge>(topo_item.lock());
-						if (topo_edge) {
-							std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
-							polyline_data->beginPolyline();
-
-							// decltype(vertex_start = topo_edge->EdgeStart)::type& vertex_start = topo_edge->EdgeStart;
-							auto& vertex_start = topo_edge->EdgeStart;
-
-							std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_start_point =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_start.lock());
-							if (vertex_start_point) {
-								carve::geom::vector<3> point = placementConverter->convertIfcPoint(vertex_start_point->VertexGeometry);
-
-								polyline_data->addVertex(objectPlacement * point);
-								polyline_data->addPolylineIndex(0);
-							}
-
-							// decltype(topo_edge->EdgeEnd)::type& vertex_end = topo_edge->EdgeEnd;
-							auto& vertex_end = topo_edge->EdgeEnd;
-							std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_end_point =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_end.lock());
-							if (vertex_end_point) {
-								carve::geom::vector<3> point = placementConverter->convertIfcPoint(vertex_end_point->VertexGeometry);
-
-								polyline_data->addVertex(objectPlacement * point);
-								polyline_data->addPolylineIndex(1);
-							}
-							itemData->polylines.push_back(polyline_data);
-							return;
-						}
+					if (reprItem.isOfType<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>()) 
+					{
+						// convert as IfcStyledItem
+						convertIfcTopologicalRepresentationItem(
+							reprItem.as<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>(),
+							objectPlacement, itemData);
+						return;
 					}
+
+					// should sth be added to the inheritance structure, we don't support it
+					throw oip::UnhandledException(reprItem);
 				}
 
 				// *********************************************************************************************************************************************************************//
@@ -562,6 +479,119 @@ namespace OpenInfraPlatform {
 						return;
 					}
 					throw oip::UnhandledException(geomItem);
+				}
+
+				/*!
+				*/
+				void convertIfcMappedItem(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcMappedItem>& mapped_item,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
+				{
+					auto& map_source = mapped_item->MappingSource;
+
+					if (!map_source.lock()) {
+						throw oip::UnhandledException(reprItem);
+						return;
+					}
+
+					// decltype(map_source->Mapped_Representation)::type &mapped_representation = map_source->MappedRepresentation;
+					auto& mapped_representation = map_source->MappedRepresentation;
+					if (!mapped_representation.lock()) {
+						throw oip::UnhandledException(reprItem);
+						return;
+					}
+
+					carve::math::Matrix map_matrix_target(carve::math::Matrix::IDENT());
+					if (mapped_item->MappingTarget) {
+						auto& transform_operator = mapped_item->MappingTarget;
+
+						PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(transform_operator.lock(), map_matrix_target, UnitConvert()->getLengthInMeterFactor());
+					}
+
+					carve::math::Matrix map_matrix_origin(carve::math::Matrix::IDENT());
+					typename IfcEntityTypesT::IfcAxis2Placement mapping_origin_select = map_source->MappingOrigin;
+
+					std::shared_ptr<typename IfcEntityTypesT::IfcPlacement> mapping_origin_placement = nullptr;
+
+					switch (mapping_origin_select.which()) {
+					case 0: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<0>().lock()); break;
+					case 1: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<1>().lock()); break;
+					default: break;
+					}
+
+					if (mapping_origin_placement) {
+						map_matrix_origin = placementConverter->convertIfcPlacement(mapping_origin_placement);
+					}
+					else {
+						BLUE_LOG(warning) << "#" << mapping_origin_placement->getId() << " = IfcPlacement: !std::dynamic_pointer_cast<IfcPlacement>( mapping_origin ) )";
+						return;
+					}
+
+
+					carve::math::Matrix mapped_pos((map_matrix_origin * objectPlacement) * map_matrix_target);
+
+					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData
+						= std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
+					convertIfcRepresentation(mapped_representation, mapped_pos, inputData);
+
+					std::for_each(inputData->vec_item_data.begin(),
+						inputData->vec_item_data.end(),
+						[&](const std::shared_ptr<ItemData>& data) { itemData->append(data); });
+#ifdef _DEBUG
+					BLUE_LOG(trace) << "Processed IfcMappedItem #" << mapped_representation.lock()->getId();
+#endif
+				}
+
+				/*!
+				*/
+				void convertIfcTopologicalRepresentationItem(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>& topo_item,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
+				{
+					// IfcTopologicalRepresentationItem ABSTRACT SUPERTYPE OF IfcConnectedFaceSet, IfcEdge, IfcFace*, IfcFaceBound*, IfcLoop*, IfcPath*, IfcVertex*.
+
+					// IfcConnectedFaceSet SUBTYPE OF IfcTopologicalRepresentationItem
+					if (topo_item.isOfType<typename IfcEntityTypesT::IfcConnectedFaceSet>()) {
+						throw oip::UnhandledException(topo_item);
+						return;
+					}
+
+					// IfcEdge SUBTYPE OF IfcTopologicalRepresentationItem
+					std::shared_ptr<typename IfcEntityTypesT::IfcEdge> topo_edge = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdge>(topo_item.lock());
+					if (topo_edge) {
+						std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
+						polyline_data->beginPolyline();
+
+						// decltype(vertex_start = topo_edge->EdgeStart)::type& vertex_start = topo_edge->EdgeStart;
+						auto& vertex_start = topo_edge->EdgeStart;
+
+						std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_start_point =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_start.lock());
+						if (vertex_start_point) {
+							carve::geom::vector<3> point = placementConverter->convertIfcPoint(vertex_start_point->VertexGeometry);
+
+							polyline_data->addVertex(objectPlacement * point);
+							polyline_data->addPolylineIndex(0);
+						}
+
+						// decltype(topo_edge->EdgeEnd)::type& vertex_end = topo_edge->EdgeEnd;
+						auto& vertex_end = topo_edge->EdgeEnd;
+						std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_end_point =
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_end.lock());
+						if (vertex_end_point) {
+							carve::geom::vector<3> point = placementConverter->convertIfcPoint(vertex_end_point->VertexGeometry);
+
+							polyline_data->addVertex(objectPlacement * point);
+							polyline_data->addPolylineIndex(1);
+						}
+						itemData->polylines.push_back(polyline_data);
+						return;
+					}
+
 				}
 
 				// ****************************************************************************************************************************************	//
