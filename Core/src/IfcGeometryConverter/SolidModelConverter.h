@@ -94,15 +94,12 @@ namespace OpenInfraPlatform
 
 			void convertIfcSolidModel(const std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				// *****************************************************************************************************************************************//
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
 				// *****************************************************************************************************************************************//
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcSolidModel #" << solidModel->getId();
-#endif
+
 				std::shared_ptr<typename IfcEntityTypesT::IfcCsgSolid> csg_solid =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgSolid>(solidModel);
 				if (csg_solid)
@@ -117,11 +114,11 @@ namespace OpenInfraPlatform
 					switch(csg_select.which()) {
 					case 0:
 						boolean_result = csg_select.get<0>().lock();
-						convertIfcBooleanResult(boolean_result, pos, itemData, err);
+						convertIfcBooleanResult(boolean_result, pos, itemData);
 						break;
 					case 1:
 						csg_primitive3D = csg_select.get<1>().lock();
-						convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData, err);
+						convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData);
 						break;
 					default:
 						break;
@@ -153,14 +150,8 @@ namespace OpenInfraPlatform
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcManifoldSolidBrep>(solidModel);
 
 				if (manifoldSolidBrep) {
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing IfcManifoldSolidBrep #" << manifoldSolidBrep->getId();
-#endif
 					// Handle IFC4 advanced boundary representations
-					if (convertAdvancedBrep(manifoldSolidBrep, pos, itemData, err)) {
-#ifdef _DEBUG
-						BLUE_LOG(trace) << "Processed IfcManifoldSolidBrep #" << manifoldSolidBrep->getId();
-#endif
+					if (convertAdvancedBrep(manifoldSolidBrep, pos, itemData)) {
 						return;
 					}
 
@@ -178,7 +169,7 @@ namespace OpenInfraPlatform
 							std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
 													
 						try {
-							faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell, err);
+							faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell);
 						}
 						catch (...) {
 							//return;
@@ -219,7 +210,7 @@ namespace OpenInfraPlatform
 						return;
 					}
 
-					err << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname() << std::endl;
+					throw oip::UnhandledException(solidModel);
 					return;
 				} //endif manifoldSolidBrep
 
@@ -299,7 +290,7 @@ namespace OpenInfraPlatform
 						double depth = extruded_area->Depth;
 
 
-						convertIfcExtrudedAreaSolid(extruded_area, swept_area_pos, itemData, err);
+						convertIfcExtrudedAreaSolid(extruded_area, swept_area_pos, itemData);
 						return;
 						// TO DO: implement
 					}
@@ -331,7 +322,7 @@ namespace OpenInfraPlatform
 							revolved_area_solid->Axis.lock();
 						double angle = revolved_area_solid->Angle;
 
-						convertIfcRevolvedAreaSolid(revolved_area_solid, swept_area_pos, itemData, err);
+						convertIfcRevolvedAreaSolid(revolved_area_solid, swept_area_pos, itemData);
 						return;
 						// TO DO: implement//
 
@@ -434,7 +425,7 @@ namespace OpenInfraPlatform
 					itemData->closed_polyhedrons.push_back(pipe_data);
 					std::vector<carve::geom::vector<3> > inner_shape_points;
 
-					const int nvc = GeomSettings()->getNumberOfVerticesForTesselation(radius);
+					const int nvc = GeomSettings()->getNumberOfVerticesForTessellation(radius);
 					double delta_angle = GeomSettings()->getAngleLength(radius);
 
 					std::vector<carve::geom::vector<3> > circle_points;
@@ -687,7 +678,7 @@ namespace OpenInfraPlatform
 
 
 
-				convertIfcSpecificSolidModel(solidModel, pos, itemData, err);
+				convertIfcSpecificSolidModel(solidModel, pos, itemData);
 
 				BLUE_LOG(error) << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname();
 
@@ -833,8 +824,7 @@ namespace OpenInfraPlatform
 			void convertIfcExtrudedAreaSolid(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcExtrudedAreaSolid>& extrudedArea,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				const int entity_id = extrudedArea->getId();
 #ifdef _DEBUG
@@ -884,6 +874,7 @@ namespace OpenInfraPlatform
 					return;
 				}
 				std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
+				std::stringstream err;
 				GeomUtils::extrude(paths, extrusion_vector, poly_data, err);
 
 				// apply object coordinate system
@@ -905,8 +896,7 @@ namespace OpenInfraPlatform
 			void convertIfcRevolvedAreaSolid(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcRevolvedAreaSolid>& revolvedArea,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcRevolvedAreaSolid #" << revolvedArea->getId();
@@ -930,8 +920,7 @@ namespace OpenInfraPlatform
 
 					if (axis_placement->Location)
 					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> location_point = axis_placement->Location.lock();
-						placementConverter->convertIfcCartesianPoint(location_point, axis_location);
+						axis_location = placementConverter->convertIfcCartesianPoint(axis_placement->Location );
 					}
 
 					if (axis_placement->Axis)
@@ -1020,18 +1009,18 @@ namespace OpenInfraPlatform
 					carve::triangulate::improve(merged, triangulated);*/
 
 
-					err << "carve::triangulate::incorporateHolesIntoPolygon failed " << std::endl;
+					BLUE_LOG(error) << "carve::triangulate::incorporateHolesIntoPolygon failed ";
 					return;
 				}
 
 				if (profile_coords.size() == 0)
 				{
-					err << "#" << revolvedArea->getId() << " = IfcRevolvedAreaSolid: convertIfcRevolvedAreaSolid: num_loops == 0";
+					BLUE_LOG(error) << "#" << revolvedArea->getId() << " = IfcRevolvedAreaSolid: convertIfcRevolvedAreaSolid: num_loops == 0";
 					return;
 				}
 				if (profile_coords[0].size() < 3)
 				{
-					err << "#" << revolvedArea->getId() << " = IfcRevolvedAreaSolid: convertIfcRevolvedAreaSolid: num_polygon_points < 3";
+					BLUE_LOG(error) << "#" << revolvedArea->getId() << " = IfcRevolvedAreaSolid: convertIfcRevolvedAreaSolid: num_polygon_points < 3";
 					return;
 				}
 
@@ -1053,7 +1042,7 @@ namespace OpenInfraPlatform
 				if (revolution_angle > M_PI * 2) revolution_angle = M_PI * 2;
 				if (revolution_angle < -M_PI * 2) revolution_angle = M_PI * 2;
 
-				int num_segments = GeomSettings()->getNumberOfSegmentsForTesselation(biggestRadius, abs(revolution_angle));
+				int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(biggestRadius, abs(revolution_angle));
 				if (num_segments < 6)
 				{
 					num_segments = 6;
@@ -1140,8 +1129,7 @@ namespace OpenInfraPlatform
 
 			void convertIfcBooleanResult(const std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult>& boolResult,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				const int boolean_result_id = boolResult->getId();
 
@@ -1187,12 +1175,12 @@ namespace OpenInfraPlatform
 					// convert the first operand
 					std::shared_ptr<ItemData> first_operand_data(new ItemData());
 					std::shared_ptr<ItemData> empty_operand;
-					convertIfcBooleanOperand(ifc_first_operand, pos, first_operand_data, empty_operand, err);
+					convertIfcBooleanOperand(ifc_first_operand, pos, first_operand_data, empty_operand);
 					first_operand_data->createMeshSetsFromClosedPolyhedrons();
 
 					// convert the second operand
 					std::shared_ptr<ItemData> second_operand_data(new ItemData());
-					convertIfcBooleanOperand(ifc_second_operand, pos, second_operand_data, first_operand_data, err);
+					convertIfcBooleanOperand(ifc_second_operand, pos, second_operand_data, first_operand_data);
 					second_operand_data->createMeshSetsFromClosedPolyhedrons();
 
 					// for every first operand polyhedrons, apply all second operand polyhedrons
@@ -1246,7 +1234,7 @@ namespace OpenInfraPlatform
 							std::shared_ptr<carve::mesh::MeshSet<3> > result;
 							bool csg_op_ok = computeCSG(first_operand_meshset.get(),
 								second_operand_meshset.get(),
-								csg_operation, id1, id2, err, result);
+								csg_operation, id1, id2, result);
 
 							if (csg_op_ok)
 							{
@@ -1263,8 +1251,7 @@ namespace OpenInfraPlatform
 			void convertIfcCsgPrimitive3D(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D>& csgPrimitive,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 				double length_factor = UnitConvert()->getLengthInMeterFactor();
@@ -1387,7 +1374,7 @@ namespace OpenInfraPlatform
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
 
-					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTesselation(radius);
+					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTessellation(radius);
 					double d_angle = GeomSettings()->getAngleLength(radius);
 					for (double angle = 0.; angle < 2*M_PI; angle += d_angle)
 					{
@@ -1432,7 +1419,7 @@ namespace OpenInfraPlatform
 					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Height)*length_factor;
 					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Radius)*length_factor;
 
-					int slices = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
+					int slices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
 					double rad = 0;
 
 					double d_angle = GeomSettings()->getAngleLength(radius);
@@ -1478,7 +1465,7 @@ namespace OpenInfraPlatform
 					std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 					polyhedron_data->addVertex(pos*carve::geom::VECTOR(0.0, 0.0, radius)); // top
 
-					const int nvc = GeomSettings()->getNumberOfSegmentsForTesselation(radius);
+					const int nvc = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
 					const double d_horizontal_angle = GeomSettings()->getAngleLength(radius);
 					const int num_vertical_edges = ceil(0.5 * nvc);
 					double d_vertical_angle = M_PI / double(num_vertical_edges - 1);	// TODO: adapt to model size and complexity
@@ -1528,14 +1515,13 @@ namespace OpenInfraPlatform
 					itemData->closed_polyhedrons.push_back(polyhedron_data);
 					return;
 				}
-				err << "Unhandled IFC Representation: #" << csgPrimitive->getId() << "=" << csgPrimitive->classname() << std::endl;
+				throw oip::UnhandledException(csgPrimitive);
 			}
 
 			void convertIfcBooleanOperand(typename IfcEntityTypesT::IfcBooleanOperand& operand,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
-				const std::shared_ptr<ItemData>& otherOperand,
-				std::stringstream& err)
+				const std::shared_ptr<ItemData>& otherOperand)
 			{
 				// OPERAND is SELECT of
 				/*
@@ -1557,27 +1543,15 @@ namespace OpenInfraPlatform
 				switch (operand.which()) {
 				case 0:
 					solid_model = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcSolidModel #" << solid_model->getId();
-#endif
 					break;
 				case 1:
 					half_space_solid = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcHalfSpaceSolid>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcHalfSpaceSolid #" << half_space_solid->getId();
-#endif
 					break;
 				case 2: 
 					boolean_result = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcBooleanResult #" << boolean_result->getId();
-#endif
 					break;
 				case 3:
 					csg_primitive3D = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcCsgPrimitive3D>>().lock();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcBooleanOperand as IfcCsgPrimitive3D #" << csg_primitive3D->getId();
-#endif
 					break;
 				default:
 					break;
@@ -1585,10 +1559,7 @@ namespace OpenInfraPlatform
 
 				if (solid_model)
 				{
-					convertIfcSolidModel(solid_model, pos, itemData, err);
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processed IfcSolidModel #" << solid_model->getId();
-#endif
+					convertIfcSolidModel(solid_model, pos, itemData);
 					return;
 				}
 				
@@ -1641,13 +1612,11 @@ namespace OpenInfraPlatform
 							BLUE_LOG(error) << "IfcBoxedHalfSpace: Enclosure not valid!";
 							return;
 						}
-						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>	bbox_corner = bbox->Corner.lock();
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_x_dim = bbox->XDim;
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_y_dim = bbox->YDim;
 						typename IfcEntityTypesT::IfcLengthMeasure	bbox_z_dim = bbox->ZDim;
 
-						carve::geom::vector<3> corner;
-						placementConverter->convertIfcCartesianPoint(bbox_corner, corner);
+						carve::geom::vector<3> corner = placementConverter->convertIfcCartesianPoint(bbox->Corner);
 						carve::math::Matrix box_position_matrix = pos * base_position_matrix*carve::math::Matrix::TRANS(corner);
 
 						// else, its an unbounded half space solid, create simple box
@@ -1761,7 +1730,7 @@ namespace OpenInfraPlatform
 #endif
 							extrusion_depth = extrusion_depth * 2.0;
 						}
-						//std::stringstream err;
+						std::stringstream err;
 						std::vector<std::vector<carve::geom::vector<2> > > paths;
 						paths.push_back(polygonal_boundary);
 						std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
@@ -1910,13 +1879,13 @@ namespace OpenInfraPlatform
 				
 				if (boolean_result)
 				{
-					convertIfcBooleanResult(boolean_result, pos, itemData, err);
+					convertIfcBooleanResult(boolean_result, pos, itemData);
 					return;
 				}
 
 				if (csg_primitive3D)
 				{
-					convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData, err);
+					convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData);
 					return;
 				}
 
@@ -1937,10 +1906,10 @@ namespace OpenInfraPlatform
 				carve::mesh::MeshSet<3>* op2,
 				const carve::csg::CSG::OP operation,
 				const int entity1, const int entity2,
-				std::stringstream& err,
 				std::shared_ptr<carve::mesh::MeshSet<3>>& result)
 			{
 				bool isCSGComputationOk = false;
+				std::stringstream err;
 
 				bool meshset1_ok = GeomUtils::checkMeshSet(op1, err, entity1);
 				bool meshset2_ok = GeomUtils::checkMeshSet(op2, err, entity2);
@@ -2186,16 +2155,14 @@ namespace OpenInfraPlatform
 
 			void convertIfcSpecificSolidModel(const std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				std::cout << "Ifc-specific solid model " << solidModel->classname() << " not supported" << std::endl;
 			}
 
 			bool convertAdvancedBrep(std::shared_ptr<typename IfcEntityTypesT::IfcManifoldSolidBrep>& manifoldSolidBrep,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-				std::stringstream& err)
+				std::shared_ptr<ItemData> itemData)
 			{
 				return false;
 			}

@@ -71,9 +71,9 @@ namespace OpenInfraPlatform
 
 				\return The number of vertices
 				*/
-				int getNumberOfVerticesForTesselation(const double dRadius, const double dArcStart, const double dArcEnd)
+				int getNumberOfVerticesForTessellation(const double dRadius, const double dArcStart, const double dArcEnd)
 				{
-					return getNumberOfVerticesForTesselation(dRadius, abs(dArcStart - dArcEnd));
+					return getNumberOfVerticesForTessellation(dRadius, abs(dArcStart - dArcEnd));
 				}
 				
 				/*! Calculates the number of vertices needed for tessellation of an arc
@@ -83,7 +83,7 @@ namespace OpenInfraPlatform
 
 				\return The number of vertices
 				*/
-				int getNumberOfVerticesForTesselation(const double dRadius, const double dArcExtent = 2. * M_PI)
+				int getNumberOfVerticesForTessellation(const double dRadius, const double dArcExtent = 2. * M_PI)
 				{
 					// if radius is smaller then the precision of the model, it is a straight (curvature -> infinity)
 					if (dRadius < getPrecision())
@@ -91,7 +91,7 @@ namespace OpenInfraPlatform
 
 					// what's the biggest angle so that the precision still holds
 					// that is, the maximum distance between the arc and the line between two points on the arc < precision
-					double alpha = acos((dRadius - getPrecision()) / dRadius);
+					double alpha = acos((dRadius - getTessellationPrecision()) / dRadius);
 
 					// we need at least this many segments along the arc
 					int numOfVertices = (int) ceil(dArcExtent / alpha);
@@ -109,7 +109,7 @@ namespace OpenInfraPlatform
 				*/
 				double getAngleLength(const double dRadius, const double dArcExtent = 2.0 * M_PI)
 				{
-					return dArcExtent / (double)(getNumberOfSegmentsForTesselation(dRadius, dArcExtent));
+					return dArcExtent / (double)(getNumberOfSegmentsForTessellation(dRadius, dArcExtent));
 				}
 
 				/*! Calculates the number of segments when tessellating an arc
@@ -119,17 +119,25 @@ namespace OpenInfraPlatform
 
 				\return The number of segments [in radians]
 				*/
-				int getNumberOfSegmentsForTesselation(const double dRadius, const double dArcExtent = 2.0 * M_PI)
+				int getNumberOfSegmentsForTessellation(const double dRadius, const double dArcExtent = 2.0 * M_PI)
 				{
-					return getNumberOfVerticesForTesselation(dRadius, dArcExtent) - 1;
+					return getNumberOfVerticesForTessellation(dRadius, dArcExtent) - 1;
 				}
 
 				/*! returns the precision of the model
 				
 				*/
-				double getPrecision()
+				double getPrecision() const
 				{
-					return 0.01; //TODO remove constant and replace with content from IFC (i.e. introduce member, getter / setter)
+					return carve::EPSILON; //TODO remove constant and replace with content from IFC (i.e. introduce member, getter / setter)
+				}
+
+				/*! returns the tessellation precision of the model
+
+				*/
+				double getTessellationPrecision() const
+				{
+					return 0.01;
 				}
 
 				/*! \brief Normalizes given angle to lie within the specified interval.

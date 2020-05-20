@@ -39,7 +39,12 @@
 
 #include "GeometrySettings.h"
 #include "UnitConverter.h"
-#include "UnhandledException.h"
+
+// Exceptions
+#include "Exception/UnhandledException.h"
+#include "Exception/ReferenceExpiredException.h"
+#include "Exception/InconsistentGeometryException.h"
+#include "Exception/InconsistentModelingException.h"
 
 namespace OpenInfraPlatform
 {

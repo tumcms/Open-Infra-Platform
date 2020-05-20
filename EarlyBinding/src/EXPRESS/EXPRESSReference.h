@@ -40,14 +40,36 @@ public:
 	typedef base UnderlyingType;
 
 	EXPRESSReference() = default;
-	EXPRESSReference(const EXPRESSReference& other) = default;
-	~EXPRESSReference() { 
+
+	EXPRESSReference(const EXPRESSReference& other)
+        :
+        base(other),
+        refId{other.refId},
+        model{other.model}
+	{
+	    
+	}
+
+	virtual ~EXPRESSReference() { 
 		this->base::reset();
 		this->model.reset();
 	}
 
 	using base::base;
-	using base::operator=;
+
+	EXPRESSReference<T>& operator=(const EXPRESSReference<T>& other)
+	{
+		if (this == &other)
+			return *this;
+
+		refId = other.refId;
+		model = other.model;
+
+		if(this->base::expired() && !model.expired() && refId != 0 && model.lock()->entities.count(refId) > 0)
+			this->base::operator=(std::dynamic_pointer_cast<T>(model.lock()->entities[refId]));
+		
+		return *this;
+	}
 
 	const std::shared_ptr<T> lock() const {
 		return this->base::lock();
@@ -119,6 +141,8 @@ public:
 		return std::dynamic_pointer_cast<TTarget>(this->lock()) != nullptr;
 	}
 
+    virtual const std::string getErrorLog() const override;
+	
 private:
 	size_t refId = 0;
 	std::weak_ptr<EXPRESSModel> model;
@@ -127,4 +151,6 @@ private:
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 
 template<typename T> using EXPRESSReference = OpenInfraPlatform::EarlyBinding::EXPRESSReference<T>;
+EMBED_INTO_OIP_NAMESPACE(EXPRESSReference);
+
 #endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSReference_c5a3045b_df30_4a77_aeea_3a16cde5c141_h
