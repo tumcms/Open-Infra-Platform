@@ -92,7 +92,9 @@ The default value for the schemata are set [here](https://github.com/tumcms/Open
 [Go back to overview](#project-options)
 
 ### Modules
-These options allow you to include specific modules to the TUM Open Infra Platform project. Currently, only the point cloud processing module is supported. These options are specified [here](https://github.com/tumcms/Open-Infra-Platform/blob/development/CMakeLists.txt).
+These options allow you to include specific modules to the TUM Open Infra Platform project. 
+Currently, only the point cloud processing module is supported. 
+These options are specified [here](https://github.com/tumcms/Open-Infra-Platform/blob/development/CMakeLists.txt).
 
 | Option                          | Default | 
 |---------------------------------|---------|
