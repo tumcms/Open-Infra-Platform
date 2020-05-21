@@ -18,7 +18,6 @@ Click on the name below to jump to the respective section.
 
 The following are options specific to the build of the TUM Open Infra Platform project. 
 The options are grouped thematically. Click on the name below to jump to the respective section. 
-If you want to see information about external library and thirdparty software options instead, you can find them [here](#external-options). 
 
 - [Build options](#build-options)
 - [Doxygen](#doxygen)
@@ -26,6 +25,8 @@ If you want to see information about external library and thirdparty software op
 - [FetchContent](#fetchcontent)
 - [Modules](#modules)
 - [Project configuration](#project-configuration)
+
+If you want to see information about external library and thirdparty software options instead, you can find them [here](#external-options). 
 
 ### Build options
 
@@ -121,7 +122,6 @@ These options allow you to include specific modules to the TUM Open Infra Platfo
 
 The following are options for external libraries and thirdparty software that are used in the TUM Open Infra Platform project that can be set for the build of the TUM Open Infra platform project. 
 Click on the name below to jump to the respective section. 
-If you want to see information about project-specific options instead, you can find them [here](#project-options). 
 
 - [Carve](#carve)
 - [CMake](#cmake)
@@ -130,6 +130,8 @@ If you want to see information about project-specific options instead, you can f
 - [Glew](#glew)
 - [Gtest and Gmock](#gtest-and-gmock)
 - [MPI](#mpi)
+
+If you want to see information about project-specific options instead, you can find them [here](#project-options). 
 
 ### Carve
 
