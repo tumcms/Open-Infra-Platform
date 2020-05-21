@@ -23,7 +23,8 @@
 
 #include "../EarlyBinding/src/namespace.h"
 
-#include "EXPRESSEntity.h"
+//#include "EXPRESSEntity.h"
+#include "EXPRESSObject.h"
 #include "EXPRESSModel.h"
 
 #include <memory>
@@ -32,23 +33,49 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-template <typename T> class EXPRESSReference : public std::weak_ptr<T> {
+template <typename T> class EXPRESSReference : public std::weak_ptr<T>, public EXPRESSObject {
 	//static_assert(std::is_base_of<EXPRESSEntity, T>::value, "EXPRESSReference can only be specialized with class derived from EXPRESSEntity");
 	using base = std::weak_ptr<T>;
 public:
 	typedef base UnderlyingType;
 
 	EXPRESSReference() = default;
-	EXPRESSReference(const EXPRESSReference& other) = default;
-	~EXPRESSReference() { 
+
+	EXPRESSReference(const EXPRESSReference& other)
+        :
+        base(other),
+        refId{other.refId},
+        model{other.model}
+	{
+	    
+	}
+
+	virtual ~EXPRESSReference() { 
 		this->base::reset();
 		this->model.reset();
 	}
 
 	using base::base;
-	using base::operator=;
 
-	auto lock() -> decltype(this->base::lock()) {
+	EXPRESSReference<T>& operator=(const EXPRESSReference<T>& other)
+	{
+		if (this == &other)
+			return *this;
+
+		refId = other.refId;
+		model = other.model;
+
+		if(this->base::expired() && !model.expired() && refId != 0 && model.lock()->entities.count(refId) > 0)
+			this->base::operator=(std::dynamic_pointer_cast<T>(model.lock()->entities[refId]));
+		
+		return *this;
+	}
+
+	const std::shared_ptr<T> lock() const {
+		return this->base::lock();
+	}
+
+	std::shared_ptr<T> lock() {
 		if (!this->expired() && refId != 0) {
 			return this->base::lock();
 		}
@@ -61,8 +88,7 @@ public:
 		}
 	}
 
-
-	const std::string getStepParameter() const;
+	const std::string getStepParameter() const override;
 	
 
 	T* operator->() { return this->lock().operator->(); }
@@ -93,7 +119,7 @@ public:
 		}
 	}
 
-	const std::string classname() const;
+	const std::string classname() const override;
 	
 
 	friend void swap(EXPRESSReference& first, EXPRESSReference& second)
@@ -103,6 +129,20 @@ public:
 		std::swap(first.model, second.model);
 	}
 
+	template <typename TTarget> EXPRESSReference<TTarget> as() {
+		return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+	}
+
+	template <typename TTarget> const EXPRESSReference<TTarget> as() const {
+		return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+	}
+
+	template <typename TTarget> bool isOfType() const {
+		return std::dynamic_pointer_cast<TTarget>(this->lock()) != nullptr;
+	}
+
+    virtual const std::string getErrorLog() const override;
+	
 private:
 	size_t refId = 0;
 	std::weak_ptr<EXPRESSModel> model;
@@ -111,4 +151,6 @@ private:
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 
 template<typename T> using EXPRESSReference = OpenInfraPlatform::EarlyBinding::EXPRESSReference<T>;
+EMBED_INTO_OIP_NAMESPACE(EXPRESSReference);
+
 #endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSReference_c5a3045b_df30_4a77_aeea_3a16cde5c141_h

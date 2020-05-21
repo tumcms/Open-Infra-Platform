@@ -32,7 +32,6 @@
 #include "GeomUtils.h"
 #include "GeometryInputData.h"
 #include "PlacementConverter.h"
-#include "UnhandledRepresentationException.h"
 
 #include "BlueFramework/Core/Diagnostics/log.h"
 
@@ -342,7 +341,7 @@ namespace OpenInfraPlatform {
 							// TODO: implement		// Interpret values and calculate.
 						}
 
-						throw UnhandledRepresentationException<IfcEntityTypesT>(surface);
+						throw oip::UnhandledException(surface);
 					}
 
 					// ************************************************************************************************************************	//
@@ -400,20 +399,16 @@ namespace OpenInfraPlatform {
 							return;
 						}
 
-						throw UnhandledRepresentationException<IfcEntityTypesT>(surface);
+						throw oip::UnhandledException(surface);
 					}
-					throw UnhandledRepresentationException<IfcEntityTypesT>(surface);
+					throw oip::UnhandledException(surface);
 				}
 
 				// TODO: What is happening here?
 				void convertIfcFaceList(const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>>& faces,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData> item_data,
-					std::stringstream& strs_err)
+					std::shared_ptr<ItemData> item_data)
 				{
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcFaceList. Size:" << faces.size();
-#endif
 					// carve polygon of the converted face list
 					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 					// contains polygon indices of vertices (x,y,z converted to string)
@@ -423,7 +418,7 @@ namespace OpenInfraPlatform {
 					for(auto it = faces.cbegin(); it != faces.cend(); ++it) {
 						std::shared_ptr<typename IfcEntityTypesT::IfcFace> face = (*it);
 
-						if(!convertIfcFace(face, pos, polygon, polygonIndices, strs_err)) {
+						if(!convertIfcFace(face, pos, polygon, polygonIndices)) {
 							std::stringstream text;
 							text << "IFC Face convertion failed with faces #" << faces.at(0)->getId() << "-" << faces.at(faces.size() - 1)->getId();
 
@@ -439,17 +434,13 @@ namespace OpenInfraPlatform {
 				bool convertIfcFace(const std::shared_ptr<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices,
-					std::stringstream& strs_err)
+					std::map<std::string, uint32_t>& polygonIndices)
 				{
 					// indicates if convertion has failed
 					bool convertionFailed = false;
 
 					// id of face in step file
 					const uint32_t faceID = face->getId();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Converting IfcFace #" << faceID;
-#endif
 
 					// all bound definitions of the face (normal bound or outer bound)
 					/*std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFaceBound>>& bounds = face->m_Bounds;*/
@@ -542,7 +533,7 @@ namespace OpenInfraPlatform {
 						/*********************************************************************************/
 						if(loopVertices3D.size() == 3) {
 							std::vector<uint32_t> triangleIndices;
-							triangleIndices.resize(3);
+							triangleIndices.reserve(3);
 
 							int pointID = -1;
 							for(const auto& vertex3D : loopVertices3D) {

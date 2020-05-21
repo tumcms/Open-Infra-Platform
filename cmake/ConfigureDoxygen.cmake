@@ -39,8 +39,8 @@ set(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
 # Build related configuration options. 
 set(DOXYGEN_PROJECT_NAME OpenInfraPlatform)
-set(DOXYGEN_PROJECT_BRIEF "Open source software for viewing and converting alignment data.")
-set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/Documentation/Beta1_5_Windows8_1.png)
+set(DOXYGEN_PROJECT_BRIEF "Open source software for viewing IFC and point cloud data.")
+set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/UserInterface/Resources/icons/icon_72x72.png)
 set(DOXYGEN_CREATE_SUBDIRS YES)
 set(DOXYGEN_HAVE_DOT YES) # GraphViz Package for diagrams
 
@@ -65,6 +65,7 @@ set(DOXYGEN_CLASS_DIAGRAMS YES)
 set(DOXYGEN_GENERATE_HTML YES)
 set(DOXYGEN_GENERATE_LATEX NO)
 set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Doxymentation)
+set(DOXYGEN_USE_MDFILE_AS_MAINPAGE ${CMAKE_CURRENT_SOURCE_DIR}/Readme.md)
 set(DOXYGEN_SEARCHENGINE YES)
 set(DOXYGEN_SOURCE_BROWSER YES)
 set(DOXYGEN_SUBGROUPING YES)

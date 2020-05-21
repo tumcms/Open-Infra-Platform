@@ -54,6 +54,15 @@ namespace OpenInfraPlatform {
 				std::vector<std::shared_ptr<carve::input::PolylineSetData>> polylines;
 				std::vector<std::shared_ptr<carve::mesh::MeshSet<3>>>		meshsets;
 				void createMeshSetsFromClosedPolyhedrons();
+
+				void append(const std::shared_ptr<ItemData>& other)
+				{
+					std::copy(other->closed_polyhedrons.begin(),         other->closed_polyhedrons.end(),         std::back_inserter(this->closed_polyhedrons));
+					std::copy(other->open_polyhedrons.begin(),           other->open_polyhedrons.end(),           std::back_inserter(this->open_polyhedrons));
+					std::copy(other->open_or_closed_polyhedrons.begin(), other->open_or_closed_polyhedrons.end(), std::back_inserter(this->open_or_closed_polyhedrons));
+					std::copy(other->polylines.begin(),                  other->polylines.end(),                  std::back_inserter(this->polylines));
+					std::copy(other->meshsets.begin(),                   other->meshsets.end(),                   std::back_inserter(this->meshsets));
+				}
 			};
 
 			/**************************************************************************************/

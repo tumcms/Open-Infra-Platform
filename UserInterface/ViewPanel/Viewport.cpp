@@ -785,24 +785,18 @@ void Viewport::onChange() {
     onChange(data.getLatesChangeFlag());
 }
 
-void Viewport::onChange(ChangeFlag changeFlag) {
+void Viewport::onChange(ChangeFlag changeFlag) 
+{
+	// the extents
+	oip::BoundingBox bb;
+
     auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
  //   auto dem = data.getDigitalElevationModel();
  //   auto alignment = data.getAlignmentModel();
  //   auto trafficSignModel = data.getTrafficSignModel();
  //   auto girderModel = data.getGirderModel();
  //   auto slabFieldModel = data.getSlabFieldModel();
-    auto ifcGeometryModel = data.getIfcGeometryModel();
-#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-	auto pointCloud = data.getPointCloud();
-#endif
-
 	//auto proxyModel = data.getProxyModel();
-
-    buw::Vector3d min, max;
-    min = buw::Vector3d(-1, -1, -1);
-    max = buw::Vector3d(1, 1, 1);
-
    /* if (dem && dem->getSurfaceCount() > 0)
         dem->getSurfacesExtend(min, max);
     else if (alignment && alignment->getAlignmentCount() > 0) {
@@ -810,26 +804,43 @@ void Viewport::onChange(ChangeFlag changeFlag) {
         min = bb.getMinimum();
         max = bb.getMaximum();
 	}*/
+
+	// get the extents of the IFC model
+    auto ifcGeometryModel = data.getIfcGeometryModel();
+	if (ifcGeometryModel && !ifcGeometryModel->isEmpty())
+	{
+		bb.update(ifcGeometryModel->bb_);
+		BLUE_LOG(trace) << "boundingbox:" << bb.toString();
+	}
+
+
+	// get the extents of the point cloud
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+	auto pointCloud = data.getPointCloud();
 	if(pointCloud && pointCloud->size() > 0) {
 		CCVector3 minPos, maxPos;
 		pointCloud->getBoundingBox(minPos, maxPos);
-		min = buw::Vector3d(minPos.x, minPos.y, minPos.z);
-		max = buw::Vector3d(maxPos.x, maxPos.y, maxPos.z);
-
-		BLUE_LOG(trace) << "min:" << min;
-		BLUE_LOG(trace) << "max:" << max;
+		bb.update(minPos.x, minPos.y, minPos.z);
+		bb.update(maxPos.x, maxPos.y, maxPos.z);
+		BLUE_LOG(trace) << "boundingbox:" << bb.toString();
 	}
 #endif
+
+	// if bounding box is still on default, overwrite
+	if( bb.isEmpty() )
+	{
+		bb.fit( carve::geom::VECTOR( -1., -1., -1. ), carve::geom::VECTOR(  1.,  1.,  1. ));
+	}
+
 	
 
-    buw::Vector3d offset = (min + max) / -2.f;
-    minExtend_ = (min + offset).cast<float>();
-    maxExtend_ = (max + offset).cast<float>();
+    buw::Vector3d offset = -bb.center();
+    minExtend_ = (bb.min() + offset).cast<float>();
+    maxExtend_ = (bb.max() + offset).cast<float>();
 	buw::Vector3f extend = maxExtend_ - minExtend_;
 	
 
-    boundingBoxEffect_->setBounds(min, max);
+    boundingBoxEffect_->setBounds(bb.min(), bb.max());
 
  //   if(changeFlag & ChangeFlag::DigitalElevationModel && dem) {
  //       demEffect_->setDEM(dem, offset);

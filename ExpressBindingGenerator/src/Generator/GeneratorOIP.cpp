@@ -529,7 +529,7 @@ void writeValueTypeFile(const Type& type, std::ostream& out) {
 	const std::string basetype = type.getUnderlyingTypeName();
 	
 	
-	writeDoxyComment(out, "\\class " + name + ", subtype of \\class " + basetype);
+	writeDoxyComment(out, "Type, subtype of  " + basetype);
 	writeLine(out, "class " + name + " : public " + basetype + "{");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
@@ -586,8 +586,8 @@ void writeContainerTypeFile(Schema& schema, Type& type, std::ostream& out) {
 	}
 	const std::string basetype = "EarlyBinding::" + type.getContainerTypeName() + "<" + min + "," + max + "," + valuetype + ">";
 
-	writeDoxyComment(out, "\\class " + name + ", subtype of \\class " + basetype);
-	writeLine(out, "class " + name + ": public " + basetype + ", public EarlyBinding::EXPRESSType {");
+	writeDoxyComment(out, "Container of " + type.getContainerType() + ", with cardinalities [" + min + "," + max + "]");
+	writeLine(out, "class " + name + " : public " + basetype + ", public EarlyBinding::EXPRESSType {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, name + "() = default;");
@@ -642,7 +642,7 @@ void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostr
 	*/
 	const std::string enumName = "e" + name;
 
-	writeLine(out, "enum class "+ enumName + ": int {");
+	writeLine(out, "enum class "+ enumName + " : int {");
 	for (int i = 0; i < seq.size(); i++) {
 		if (i != seq.size() - 1) {
 			writeLine(out, seq[i] + " = " + std::to_string(i) + ",");
@@ -724,7 +724,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 		elem = "ENUM_" + elem;
 	});
 
-	writeLine(out, "enum class " + enumName + ": int {");
+	writeLine(out, "enum class " + enumName + " : int {");
 	for (int i = 0; i < seq.size(); i++) {
 		if (i != seq.size() - 1) {
 			writeLine(out, seq[i] + " = " + std::to_string(i) + ",");
@@ -750,7 +750,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 	//linebreak(out);
 
 	const std::string basetype = "EarlyBinding::EnumType<" + enumName + "," + std::to_string(seq.size()) + ">";
-	writeDoxyComment(out, "enum \\class " + name);
+	writeDoxyComment(out, "EnumType of " + std::to_string(seq.size()) + " elements");
 	writeLine(out, "class " + name + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
@@ -971,12 +971,13 @@ void writeSelectTypeFileREFACTORED(Schema& schema, Type& selectType, std::ostrea
 	std::vector<std::string> seq = selectType.getTypes();
 	//std::sort(seq.begin(), seq.end(), [](const std::string& lhs, const std::string& rhs) ->bool {return lhs < rhs; });
 
+	writeDoxyComment(out, "SelectType of " + join(seq, ','));
+
 	std::transform(seq.begin(), seq.end(), seq.begin(), [&schema](std::string elem)->std::string {return schema.hasEntity(elem) ? "EXPRESSReference<" + elem + ">" : elem; });
 
 	const std::string basetype = "EarlyBinding::SelectType<" + join(seq, ',') + ">";
 
 	//writeLine(out, "class " + select + " : public " + basetype +", public ExpressBindingGenerator::EXPRESSType {");
-	writeDoxyComment(out, "\\class " + select + ", subtype of \\class " + basetype);
 	writeLine(out, "class " + select + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
@@ -2599,7 +2600,11 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "std::vector<std::string> lines;");
 	writeLine(file, "try {");
 	writeLine(file, "while (!std::getline(file, lineInFile).eof()) lines.push_back(lineInFile);");
-	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
+	
+	// begin for read file
+	linebreak(file);
+	writeLine(file, "// begin for read file");
+	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); 
 	writeLine(file, "auto line = lines[i];");
 	writeLine(file, "if(line == \"\") continue;");
 	writeLine(file, "line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());");
@@ -2621,6 +2626,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "}"); //end for read file
 
 	linebreak(file);
+	writeLine(file, "// initialize cross-references");
 	writeLine(file, "#pragma omp parallel for");
 	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
 	writeLine(file, "auto line = lines[i];");
@@ -2634,7 +2640,8 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
 			writeLine(file, "if(entityType == \"" + toUpper(entity.getName()) + "\") {");
-			writeLine(file, "model->entities.find(id)->second = std::make_shared<" + entity.getName() + ">(" + entity.getName() + "::readStepData(parseArgs(line), model));");
+            //writeLine(file, "*(model->entities.find(id)->second) = " + entity.getName() + "::readStepData(parseArgs(line), model);");
+			writeLine(file, "(std::dynamic_pointer_cast<" + entity.getName() + ">(model->entities.find(id)->second))->operator=(" + entity.getName() + "::readStepData(parseArgs(line), model));");
 			writeLine(file, "continue;");
 			writeLine(file, "}");
 		}
@@ -3518,7 +3525,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		linebreak(out);
 	}
 
-	writeDoxyComment(out, "\\class " + entity.getName());
+	writeDoxyComment(out, "Entity" + entity.hasSupertype() ? " subtype of " + supertype : "");
 
 	writeLine(out, "class " + entity.getName() + " : public " + supertype + " {");
 	writeLine(out, "private:");
@@ -4109,8 +4116,8 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		linebreak(out);
 
 		// Classname function
-		writeDoxyComment(out, "Returns the class name.", "", nullptr, nullptr, "\"" + entity.getName() + "\"");
-		writeLine(out, "const std::string " + entity.getName() + "::classname() const { return \"" + entity.getName() + "\";} ");
+		writeDoxyComment(out, "Returns the class name.", "", nullptr, nullptr, "\"" + toUpper(entity.getName()) + "\"");
+		writeLine(out, "const std::string " + entity.getName() + "::classname() const { return \"" + toUpper(entity.getName()) + "\";} ");
 		linebreak(out);
 
 		// Interpret STEP data
