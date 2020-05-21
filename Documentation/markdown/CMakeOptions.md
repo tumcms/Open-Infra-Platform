@@ -30,13 +30,14 @@ If you want to see information about external library and thirdparty software op
 
 ### Build options
 
-| Option            | Default | Description | Link to file |
-|-------------------|---------|-------------|--------------|
-| BUILD_COVERAGE    | OFF     |             |              |
-| BUILD_SHARED_LIBS | ON      |             |              |
-| BUILD_TESTING     | ON      |             |              |
-| BUILD_TESTS       | ON      |             |              |
-| BUILD_UTILS       | ON      |             |              |
+| Option            | Default | Description | 
+|-------------------|---------|-------------|
+| BUILD_COVERAGE    | OFF     | Compile with gcov             |            
+| BUILD_SHARED_LIBS | ON      | Compile libcarve as shared              |              
+| BUILD_TESTING     | ON      | Build the testing tree             |              
+| BUILD_TESTS       | ON      | Deprecated, use BUILD_TESTING             |              
+| BUILD_UTILS       | ON      | Build utilities             |       
+| BUILD_GMOCK      | ON      | Build GoogleMock subproject             |   
 
 [Go back to overview](#project-options)
 
@@ -116,7 +117,6 @@ These options are specified [here](https://github.com/tumcms/Open-Infra-Platform
 | OIP_USE_PREDEFINED_THIRDPARTY_PATH           | ON      | If selected, CMake tries to find Boost, Eigen3, Qt5 without user input.             | [Go to file](https://github.com/tumcms/Open-Infra-Platform/blob/development/CMakeLists.txt)              |
 | ASMD64                                       | OFF     |             |              |
 | ASM686                                       | OFF     |             |              |
-| gmock_build_tests                            | OFF     |             |              |
 
 [Go back to overview](#project-options)
 
@@ -137,14 +137,16 @@ If you want to see information about project-specific options instead, you can f
 
 ### Carve
 
-| Option                           | Default | Description | Link to file |
-|----------------------------------|---------|-------------|--------------|
-| CARVE_DEBUG                      | OFF     |             |              |
-| CARVE_DEBUG_WRITE_PLY_DATA       | OFF     |             |              |
-| CARVE_GTESTS_TESTS               | OFF     |             |              |
-| CARVE_INTERSECT_GLU_TRIANGULATOR | OFF     |             |              |
-| CARVE_USE_EXACT_PREDICATES       | OFF     |             |              |
-| CARVE_WITH_GUI                   | OFF     |             |              |
+Refer to [Carve](https://github.com/PyMesh/carve/blob/master/CMakeLists.txt) to see what each option executes.
+
+| Option                           | Default | 
+|----------------------------------|---------|
+| CARVE_DEBUG                      | OFF     |           
+| CARVE_DEBUG_WRITE_PLY_DATA       | OFF     |            
+| CARVE_GTESTS_TESTS               | OFF     |           
+| CARVE_INTERSECT_GLU_TRIANGULATOR | OFF     |           
+| CARVE_USE_EXACT_PREDICATES       | OFF     |          
+| CARVE_WITH_GUI                   | OFF     |           
 
 [Go back to overview](#external-options)
 
@@ -152,24 +154,24 @@ If you want to see information about project-specific options instead, you can f
 
 | Option                   | Default | Description | Link to file |
 |--------------------------|---------|-------------|--------------|
-| CMAKE_SKIP_INSTALL_RPATH | OFF     |             |              |
-| CMAKE_SKIP_RPATH         | OFF     |             |              |
-| CMAKE_VERBOSE_MAKEFILE   | OFF     |             |              |
+| CMAKE_SKIP_INSTALL_RPATH | OFF     | Do not include RPATHs in the install tree.             | 
+| CMAKE_SKIP_RPATH         | OFF     | If this is set to TRUE, then the rpath information is not added to compiled executables.             |              |
+| CMAKE_VERBOSE_MAKEFILE   | OFF     | Get more verbose output from Makefile builds and show each command line as it is launched.             |             
 
 [Go back to overview](#external-options)
 
 ### Cuda
 
-| Option                                 | Default | Description | Link to file |
-|----------------------------------------|---------|-------------|--------------|
-| CUDA_64_BIT_DEVICE_CODE                | ON      |             |              |
-| CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE | ON      |             |              |
-| CUDA_BUILD_EMULATION                   | OFF     |             |              |
-| CUDA_CUDART_LIBRARY                    | OFF     |             |              |
-| CUDA_HOST_COMPILATION_CPP              | ON      |             |              |
-| CUDA_PROPAGATE_HOST_FLAGS              | ON      |             |              |
-| CUDA_SEPARABLE_COMPILATION             | OFF     |             |              |
-| CUDA_VERBOSE_BUILD                     | OFF     |             |              |
+| Option                                 | Default | 
+|----------------------------------------|---------|
+| CUDA_64_BIT_DEVICE_CODE                | ON      |             
+| CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE | ON      |             
+| CUDA_BUILD_EMULATION                   | OFF     |            
+| CUDA_CUDART_LIBRARY                    | OFF     |             
+| CUDA_HOST_COMPILATION_CPP              | ON      |           
+| CUDA_PROPAGATE_HOST_FLAGS              | ON      |          
+| CUDA_SEPARABLE_COMPILATION             | OFF     |           
+| CUDA_VERBOSE_BUILD                     | OFF     |           
 
 [Go back to overview](#external-options)
 
@@ -231,8 +233,8 @@ Googletest and Googlemock help writing C++ tests.
 
 ### MPI
 
-| Option                                       | Default | Description | Link to file |
-|----------------------------------------------|---------|-------------|--------------|
-| MPI_CXX_SKIP_MPICSS                          | OFF     |             |              |
+| Option                                       | Default |
+|----------------------------------------------|---------|
+| MPI_CXX_SKIP_MPICSS                          | OFF     |     
 
 [Go back to overview](#external-options)
