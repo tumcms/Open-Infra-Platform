@@ -537,8 +537,8 @@ namespace OpenInfraPlatform {
 								
 								// Inner
 								std::vector<carve::geom::vector<2>> inner_loop;
-								x -= 2 * t;
-								y -= 2 * t;
+								x -= 2.0 * t;
+								y -= 2.0 * t;
 								AddRectangleCoordinates(inner_loop, r2, x, y);
 								
 								paths.push_back(outer_loop);
@@ -561,7 +561,7 @@ namespace OpenInfraPlatform {
 						}
 
 						// Else it's a standard rectangle
-						AddRectangleCoordinates(outer_loop, 0, x, y);
+						AddRectangleCoordinates(outer_loop, 0.0, x, y);
 						
 						paths.push_back(outer_loop);
 						return;
@@ -625,7 +625,7 @@ namespace OpenInfraPlatform {
 							double radiusMax = std::max(xRadius, yRadius);
 							int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
 							double d_angle = GeomSettings()->getAngleLength(radiusMax);
-							double angle = 0;
+							double angle = 0.0;
 							for(int i = 0; i < num_segments; ++i) {
 								outer_loop.push_back(carve::geom::VECTOR((xRadius * cos(angle)), (yRadius * sin(angle))));
 								angle += d_angle;
@@ -644,7 +644,7 @@ namespace OpenInfraPlatform {
 						double b = i_shape->OverallWidth * length_factor;
 						double tw = i_shape->WebThickness * length_factor;
 						double tf = i_shape->FlangeThickness * length_factor;
-						double r = 0;
+						double r = 0.0;
 						if(i_shape->FilletRadius) {
 							r = i_shape->FilletRadius * length_factor;
 						}
@@ -652,7 +652,7 @@ namespace OpenInfraPlatform {
 						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
 						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, (-h * 0.5 + tf)));
 
-						if(r != 0) {
+						if(r != 0.0) {
 							addArc(outer_loop, r, 3 * M_PI_2, -M_PI_2, tw * 0.5 + r, -h * 0.5 + tf + r);
 						}
 						else {
@@ -705,7 +705,7 @@ namespace OpenInfraPlatform {
 						outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, -h * 0.5));
 						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
 						//To Do:
-						if(r2 != 0) {
+						if(r2 != 0.0) {
 							addArc(outer_loop, r2, 0, M_PI_2 - ls, b * 0.5 - r2, -h * 0.5 + t - r2);
 						}
 						else {
@@ -716,14 +716,14 @@ namespace OpenInfraPlatform {
 						double c = cos(ls);
 						double z1 = (-s * ((c - s) * (r1 + r2 + t) - c * b + s * h)) / (2 * c * c - 1);
 						double z2 = (-s * ((c - s) * (r1 + r2 + t) - c * h + s * b)) / (2 * c * c - 1);
-						if(r1 != 0) {
+						if(r1 != 0.0) {
 							addArc(outer_loop, r1, 3 * M_PI_2 - ls, -M_PI_2 + 2 * ls, -b * 0.5 + t + z2 + r1, -h * 0.5 + t + z1 + r1);
 						}
 						else {
 							outer_loop.push_back(carve::geom::VECTOR((-b * 0.5 + t + z2), (-h * 0.5 + t + z1)));
 						}
 
-						if(r2 != 0) {
+						if(r2 != 0.0) {
 							addArc(outer_loop, r2, ls, M_PI_2 - ls, -b * 0.5 + t - r2, h * 0.5 - r2);
 						}
 						else {
@@ -744,9 +744,9 @@ namespace OpenInfraPlatform {
 						double b = u_shape->FlangeWidth * length_factor;
 						double tw = u_shape->WebThickness * length_factor;
 						double tf = u_shape->FlangeThickness * length_factor;
-						double r1 = u_shape->FilletRadius.value_or(0.) * length_factor;
-						double r2 = u_shape->EdgeRadius.value_or(0.) * length_factor;
-						double fs = u_shape->FlangeSlope.value_or(0.) * length_factor;
+						double r1 = u_shape->FilletRadius.value_or(0.0) * length_factor;
+						double r2 = u_shape->EdgeRadius.value_or(0.0) * length_factor;
+						double fs = u_shape->FlangeSlope.value_or(0.0) * length_factor;
 						//To Do:
 						
 
@@ -754,7 +754,7 @@ namespace OpenInfraPlatform {
 						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
 
 						double z = tan(fs) * (b * 0.5 - r2);
-						if(r2 != 0) {
+						if(r2 != 0.0) {
 							addArc(outer_loop, r2, 0, M_PI_2 - fs, b * 0.5 - r2, -h * 0.5 + tf - z - r2);
 						}
 						else {
@@ -762,7 +762,7 @@ namespace OpenInfraPlatform {
 						}
 
 						z = tan(fs) * (b * 0.5 - tw - r1);
-						if(r1 != 0) {
+						if(r1 != 0.0) {
 							addArc(outer_loop, r1, 3 * M_PI_2 - fs, -M_PI_2 + fs, -b * 0.5 + tw + r1, -h * 0.5 + tf + z + r1);
 						}
 						else {
@@ -784,19 +784,19 @@ namespace OpenInfraPlatform {
 						double b = c_shape->Width * length_factor;
 						double g = c_shape->Girth * length_factor;
 						double t = c_shape->WallThickness * length_factor;
-						double r1 = 0;
+						double r1 = 0.0;
 						if(c_shape->InternalFilletRadius) {
 							r1 = c_shape->InternalFilletRadius * length_factor;
 						}
 
-						if(r1 != 0) {
+						if(r1 != 0.0) {
 							addArc(outer_loop, r1 + t, M_PI, M_PI_2, -b * 0.5 + t + r1, -h * 0.5 + t + r1);
 						}
 						else {
 							outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, -h * 0.5));
 						}
 
-						if(r1 != 0) {
+						if(r1 != 0.0) {
 							addArc(outer_loop, r1 + t, 3 * M_PI_2, M_PI_2, b * 0.5 - t - r1, -h * 0.5 + t + r1);
 						}
 						else {
@@ -806,14 +806,14 @@ namespace OpenInfraPlatform {
 						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, (-h * 0.5 + g)));
 						outer_loop.push_back(carve::geom::VECTOR((b * 0.5 - t), (-h * 0.5 + g)));
 
-						if(r1 != 0) {
+						if(r1 != 0.0) {
 							addArc(outer_loop, r1, 0, -M_PI_2, b * 0.5 - t - r1, -h * 0.5 + t + r1);
 						}
 						else {
 							outer_loop.push_back(carve::geom::VECTOR((b * 0.5 - t), (-h * 0.5 + t)));
 						}
 
-						if(r1 != 0) {
+						if(r1 != 0.0) {
 							addArc(outer_loop, r1, 3 * M_PI_2, -M_PI_2, -b * 0.5 + t + r1, -h * 0.5 + t + r1);
 						}
 						else {
@@ -834,12 +834,12 @@ namespace OpenInfraPlatform {
 						double b = z_shape->FlangeWidth * length_factor;
 						double tw = z_shape->WebThickness * length_factor;
 						double tf = z_shape->FlangeThickness * length_factor;
-						double r1 = 0;
+						double r1 = 0.0;
 						if(z_shape->FilletRadius) {
 							r1 = z_shape->FilletRadius * length_factor;
 						}
 
-						double r2 = 0;
+						double r2 = 0.0;
 						if(z_shape->EdgeRadius) {
 							r2 = z_shape->EdgeRadius * length_factor;
 						}
@@ -847,14 +847,14 @@ namespace OpenInfraPlatform {
 						outer_loop.push_back(carve::geom::VECTOR((-tw * 0.5), -h * 0.5));
 						outer_loop.push_back(carve::geom::VECTOR((b - tw * 0.5), -h * 0.5));
 
-						if(r2 != 0) {
+						if(r2 != 0.0) {
 							addArc(outer_loop, r2, 0, M_PI_2, b - tw * 0.5 - r2, -h * 0.5 + tf - r2);
 						}
 						else {
 							outer_loop.push_back(carve::geom::VECTOR((b - tw * 0.5), (-h * 0.5 + tf)));
 						}
 
-						if(r1 != 0) {
+						if(r1 != 0.0) {
 							addArc(outer_loop, r1, 3 * M_PI_2, -M_PI_2, tw * 0.5 + r1, -h * 0.5 + tf + r1);
 						}
 						else {
@@ -875,27 +875,27 @@ namespace OpenInfraPlatform {
 					const double b = t_shape->FlangeWidth * length_factor;
 					const double tw = t_shape->WebThickness * length_factor * 0.5;
 					const double tf = t_shape->FlangeThickness * length_factor;
-
-					double r1 = 0;
+					//Redo
+					double r1 = 0.0;
 					if(t_shape->FilletRadius) {
 						r1 = t_shape->FilletRadius * length_factor;
 					}
-
+					//Redo
 					double r2 = 0;
 					if(t_shape->FlangeEdgeRadius) {
 						r2 = t_shape->FlangeEdgeRadius * length_factor;
 					}
-
+					//Redo
 					double r3 = 0;
 					if(t_shape->WebEdgeRadius) {
 						r3 = t_shape->WebEdgeRadius * length_factor;
 					}
 					double fs = 0;
-
+					//Redo
 					if(t_shape->FlangeSlope) {
 						fs = t_shape->FlangeSlope * angle_factor;
 					}
-
+					//Redo
 					double ws = 0;
 					if(t_shape->WebSlope) {
 						ws = t_shape->WebSlope * angle_factor;
