@@ -26,7 +26,7 @@ message("Use of DOXYGEN for developers: DOXYGEN_GENERATE_DOCUMENTATION enables b
 "Refer to DoxygenHelp.md (${CMAKE_CURRENT_SOURCE_DIR}/Documentation/markdown) for the selection of the DOXYGEN_OPTIONALs and on how to use DOXYGEN within project.")
 
 # Doxygen build options. 
-Option(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY "Documentation for explicitly commented entities only." ON)
+Option(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY "Produce documentation only for explicitly commented entities." ON)
 Option(DOXYGEN_OPTIONAL_INCLUDE_INTERNAL "Include comments intended for developers in documentation." OFF)
 Option(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING "Include documentation for selected IFC schemas in documentation." OFF)
 Option(DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION "Open landing page of .html documentation browser automatically." ON)
