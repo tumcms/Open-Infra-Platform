@@ -197,9 +197,13 @@ namespace OpenInfraPlatform
 				if (sectioned_solid)
 				{
 					//Get directrix and cross sections (attributes 1-2).
-					//std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
-					//	sectioned_solid->Directrix.lock();	// TO DO: next level
-					//TODO: Handle cross sections
+					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> & directrix =
+						sectioned_solid->Directrix.lock();	
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
+					vec_cross_sections.resize(sectioned_solid->CrossSections.size());
+					std::transform(sectioned_solid->CrossSections.begin(),
+						sectioned_solid->CrossSections.end(),
+						vec_cross_sections.begin(), [](auto& it) {return it.lock(); });
 					//TODO: next level
 					//TODO: implement, check for formal propositions. 
 
