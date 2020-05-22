@@ -412,53 +412,37 @@ namespace OpenInfraPlatform {
 				}
 
 
-				/*! \internal Still to refactor */
+				/*! \brief Converts \c IfcTopologicalRepresentationItem to meshes and polylines.
+				 *
+				 * \param[in] mapped_item The \c IfcTopologicalRepresentationItem to be converted.
+				 * \param[in] pos The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \param[out] itemData A pointer to be filled with the relevant data.
+				 */
 				void convertIfcTopologicalRepresentationItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>& topo_item,
 					const carve::math::Matrix& objectPlacement,
 					std::shared_ptr<ItemData>& itemData
 				) const throw(...)
 				{
-					// IfcTopologicalRepresentationItem ABSTRACT SUPERTYPE OF IfcConnectedFaceSet, IfcEdge, IfcFace*, IfcFaceBound*, IfcLoop*, IfcPath*, IfcVertex*.
+					// IfcTopologicalRepresentationItem 
+					//  ABSTRACT SUPERTYPE OF IfcConnectedFaceSet*, IfcEdge, IfcFace*, IfcFaceBound*, IfcLoop*, IfcPath*, IfcVertex*.
 
-					// IfcConnectedFaceSet SUBTYPE OF IfcTopologicalRepresentationItem
+					// (1/*) IfcConnectedFaceSet SUBTYPE OF IfcTopologicalRepresentationItem
 					if (topo_item.isOfType<typename IfcEntityTypesT::IfcConnectedFaceSet>()) {
 						throw oip::UnhandledException(topo_item);
-						return;
 					}
 
-					// IfcEdge SUBTYPE OF IfcTopologicalRepresentationItem
+					// (2/*) IfcEdge SUBTYPE OF IfcTopologicalRepresentationItem
 					std::shared_ptr<typename IfcEntityTypesT::IfcEdge> topo_edge = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdge>(topo_item.lock());
-					if (topo_edge) {
+					if (topo_item.isOfType<typename IfcEntityTypesT::IfcEdge>() ) {
 						std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
-						polyline_data->beginPolyline();
-
-						// decltype(vertex_start = topo_edge->EdgeStart)::type& vertex_start = topo_edge->EdgeStart;
-						auto& vertex_start = topo_edge->EdgeStart;
-
-						std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_start_point =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_start.lock());
-						if (vertex_start_point) {
-							carve::geom::vector<3> point = placementConverter->convertIfcPoint(vertex_start_point->VertexGeometry);
-
-							polyline_data->addVertex(objectPlacement * point);
-							polyline_data->addPolylineIndex(0);
-						}
-
-						// decltype(topo_edge->EdgeEnd)::type& vertex_end = topo_edge->EdgeEnd;
-						auto& vertex_end = topo_edge->EdgeEnd;
-						std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_end_point =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_end.lock());
-						if (vertex_end_point) {
-							carve::geom::vector<3> point = placementConverter->convertIfcPoint(vertex_end_point->VertexGeometry);
-
-							polyline_data->addVertex(objectPlacement * point);
-							polyline_data->addPolylineIndex(1);
-						}
+						curveConverter->convertIfcEdge(topo_item.as<typename IfcEntityTypesT::IfcEdge>(), objectPlacement, polyline_data);
 						itemData->polylines.push_back(polyline_data);
 						return;
 					}
 
+					// the rest is not supported
+					throw oip::UnhandledException(topo_item);
 				}
 
 				/*! \internal Still to refactor */
