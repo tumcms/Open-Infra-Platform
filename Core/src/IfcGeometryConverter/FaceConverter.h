@@ -407,7 +407,8 @@ namespace OpenInfraPlatform {
 				// TODO: What is happening here?
 				void convertIfcFaceList(const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>>& faces,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData> item_data)
+					std::shared_ptr<ItemData> item_data
+				) const throw(...)
 				{
 					// carve polygon of the converted face list
 					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
@@ -434,7 +435,7 @@ namespace OpenInfraPlatform {
 				bool convertIfcFace(const std::shared_ptr<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices)
+					std::map<std::string, uint32_t>& polygonIndices) const throw(...)
 				{
 					// indicates if convertion has failed
 					bool convertionFailed = false;
@@ -636,7 +637,7 @@ namespace OpenInfraPlatform {
 					ProjectionPlane& plane,
 					std::vector<carve::geom2d::P2>& loopVertices2D,
 					std::vector<carve::geom::vector<3>>& loopVertices3D,
-					bool& faceLoopReversed)
+					bool& faceLoopReversed) const throw(...)
 				{
 					// compute normal of polygon
 					carve::geom::vector<3> normal = GeomUtils::computePolygonNormal(loopVertices3D);
@@ -708,7 +709,7 @@ namespace OpenInfraPlatform {
 					const std::vector<carve::geom::vector<3>>& faceVertices3D,
 					const bool faceLoopReversed,
 					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices)
+					std::map<std::string, uint32_t>& polygonIndices) const throw(...)
 				{
 					// indices after carve triangulation of merged vertices
 					std::vector<carve::triangulate::tri_idx> triangulatedIndices;

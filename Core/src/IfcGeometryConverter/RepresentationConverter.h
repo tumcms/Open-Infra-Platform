@@ -183,7 +183,7 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-				/*! \brief Converts \c IfcRepresentationItem to meshes.
+				/*! \brief Converts \c IfcRepresentationItem to meshes and polylines.
 				 *
 				 * \param[in] reprItem The \c IfcRepresentationItem to be converted.
 				 * \param[in] objectPlacement The relative location of the origin of the representation's coordinate system within the geometric context.
@@ -232,7 +232,7 @@ namespace OpenInfraPlatform {
 					// (4/4) IfcTopologicalRepresentationItem SUBTYPE OF IfcRepresentationItem
 					if (reprItem.isOfType<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>()) 
 					{
-						// convert as IfcStyledItem
+						// convert as IfcTopologicalRepresentationItem
 						convertIfcTopologicalRepresentationItem(
 							reprItem.as<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>(),
 							objectPlacement, itemData);
@@ -481,8 +481,8 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(geomItem);
 				}
 
-				/*!
-				*/
+
+				/*! \internal Still to refactor */
 				void convertIfcMappedItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcMappedItem>& mapped_item,
 					const carve::math::Matrix& objectPlacement,
@@ -544,8 +544,8 @@ namespace OpenInfraPlatform {
 #endif
 				}
 
-				/*!
-				*/
+
+				/*! \internal Still to refactor */
 				void convertIfcTopologicalRepresentationItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>& topo_item,
 					const carve::math::Matrix& objectPlacement,
@@ -611,10 +611,11 @@ namespace OpenInfraPlatform {
 				}
 
 				// Function 2:  Convert IfcSectionedSpine,
-				void convertIfcSectionedSpine(const std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSpine>& spine,
+				void convertIfcSectionedSpine(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSpine>& spine,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-				) const 
+				) const throw(...)
 				{
 					const std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurve> spine_curve = spine->SpineCurve.lock();
 					if(!spine_curve) {
