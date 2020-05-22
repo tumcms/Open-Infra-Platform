@@ -92,53 +92,88 @@ namespace OpenInfraPlatform
 
 			*/
 
+                        void convertIfcCsgSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid) throw(...)
+                        {
+                            if(csg_solid.expired())
+                                throw oip::ReferenceExpiredException(csg_solid);
+
+                            switch(csg_solid->TreeRootExpression.which()) {
+                            case 0:
+                                convertIfcBooleanResult(csg_solid->TreeRootExpression.get<0>().lock(), pos, itemData);
+                                break;
+                            case 1:
+                                convertIfcCsgPrimitive3D(csg_solid->TreeRootExpression.get<1>().lock(), pos, itemData);
+                                break;
+                            default:
+                                throw oip::InconsistentModellingException("IfcCsgSolid->TreeRootExpression has no value set.");
+                                break;
+                            }
+                        }
+
+                        void convertIfcManifoldSolidBrepOuterShell(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell)
+                        {
+                            // first convert outer shell
+						
+                            std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_facesOuterShell;
+                            std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
+
+						
+                            vec_facesOuterShell.resize(outerShell->CfsFaces.size());
+                            std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
+													
+                            try {
+                                faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell);
+                            }
+                            catch (...) {
+                                //return;
+                            }
+                            std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
+                                      inputDataOuterShell->open_or_closed_polyhedrons.end(),
+                                      std::back_inserter(itemData->closed_polyhedrons));
+                        }
+
+                        void convertIfcManifoldSolidBrep(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep) throw(...)
+                        {
+                            if(manifoldSolidBrep.expired())
+                                throw oip::ReferenceExpiredException(manifoldSolidBrep);
+
+                            // Get outer (attribute 1).
+                            if (manifoldSolidBrep->Outer) {
+                                convertIfcManifoldSolidBrepOuterShell(pos, itemData, manifoldSolidBrep->Outer);
+                            } //endif outer
+                            else {
+                                BLUE_LOG(warning) << "IfcManifoldSolidBrep.Outer = IfcClosedShell not set.";
+                            }
+
+                            // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
+                            if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>())
+                            {
+                                throw oip::UnhandledException(manifoldSolidBrep.as<typename IfcEntityTypesT::IfcAdvancedBrep>());
+                            } // endif advanced_brep
+
+                            // (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
+                            if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
+                                throw oip::UnhandledException(manifoldSolidBrep.as<typename IfcEntityTypesT::IfcFacetedBrep>());
+                            }
+
+                            throw oip::UnhandledException(manifoldSolidBrep);
+                        }
+
 			void convertIfcSolidModel(const std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
-				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData)
-			{
+                                                  const carve::math::Matrix& pos,
+                                                  std::shared_ptr<ItemData> itemData)
+			    {
 				// *****************************************************************************************************************************************//
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
 				// *****************************************************************************************************************************************//
+				//
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcCsgSolid> csg_solid =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgSolid>(solidModel);
-				if (csg_solid)
+                            auto solid_model_ref = oip::EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>(solidModel);
+
+				if (solid_model_ref.isOfType<typename IfcEntityTypesT::IfcCsgSolid>())
 				{
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing IfcCsgSolid #" << csg_solid->getId();
-#endif
-					// Get tree root expression (attribute 1). 
-					typename IfcEntityTypesT::IfcCsgSelect csg_select = csg_solid->TreeRootExpression;
-					std::shared_ptr < typename IfcEntityTypesT::IfcBooleanResult> boolean_result = nullptr ; 
-					std::shared_ptr < typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D = nullptr;//noch richtigen Datentyp nachschauen
-					switch(csg_select.which()) {
-					case 0:
-						boolean_result = csg_select.get<0>().lock();
-						convertIfcBooleanResult(boolean_result, pos, itemData);
-						break;
-					case 1:
-						csg_primitive3D = csg_select.get<1>().lock();
-						convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData);
-						break;
-					default:
-						break;
-					}
-					/*if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select))
-					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> csg_select_boolean_result =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanResult>(csg_select);
-						convertIfcBooleanResult(csg_select_boolean_result, pos, itemData, err);
-					}
-					else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(csg_select))
-					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_select_primitive_3d =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCsgPrimitive3D>(csg_select);
-						convertIfcCsgPrimitive3D(csg_select_primitive_3d, pos, itemData, err);
-					}*/
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processed IfcCsgSolid #" << csg_solid->getId();
-#endif
-					return;
+                                    convertIfcCsgSolid(pos, itemData, solid_model_ref.as<typename IfcEntityTypesT::IfcCsgSolid>());
+				    return;
 				} //endif csg_solid
 
 				// *****************************************************************************************************************************************//
@@ -146,73 +181,10 @@ namespace OpenInfraPlatform
 				//	ABSTRACT SUPERTYPE of IfcAdvancedBrep, IfcFacetedBrep																					//
 				// *****************************************************************************************************************************************//
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcManifoldSolidBrep> manifoldSolidBrep =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcManifoldSolidBrep>(solidModel);
-
-				if (manifoldSolidBrep) {
-					// Handle IFC4 advanced boundary representations
-					if (convertAdvancedBrep(manifoldSolidBrep, pos, itemData)) {
-						return;
-					}
-
-					// Get outer (attribute 1).
-					std::shared_ptr<typename IfcEntityTypesT::IfcClosedShell>& outerShell =  manifoldSolidBrep->Outer.lock();
-
-					if (outerShell) {
-						// first convert outer shell
-						
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_facesOuterShell;
-						std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
-
-						
-							vec_facesOuterShell.resize(outerShell->CfsFaces.size());
-							std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
-													
-						try {
-							faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell);
-						}
-						catch (...) {
-							//return;
-						}
-						std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
-							inputDataOuterShell->open_or_closed_polyhedrons.end(),
-							std::back_inserter(itemData->closed_polyhedrons));
-					} //endif outer
-					else {
-						BLUE_LOG(warning) << "IfcManifoldSolidBrep.Outer = IfcClosedShell not set.";
-					}
-
-					  // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
-					std::shared_ptr<typename IfcEntityTypesT::IfcAdvancedBrep> advanced_brep =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAdvancedBrep>(manifoldSolidBrep);
-					if (advanced_brep)
-					{
-						// TO DO: formal proposition: every face shall be of the type IfcAdvancedFace.
-						// TO DO: implement
-
-						// IfcAdvancedBrepWithVoids SUBTYPE of IfcAdvancedBrep
-						std::shared_ptr<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids> advanced_brep_with_voids =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids>(advanced_brep);
-						if (advanced_brep_with_voids)
-						{
-							// Get voids (attribute 2). 
-							//TODO
-
-						} //endif advanced_brep_with_voids
-					} // endif advanced_brep
-
-					// (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
-					std::shared_ptr<typename IfcEntityTypesT::IfcFacetedBrep> faceted_brep =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFacetedBrep>(manifoldSolidBrep);
-					if (faceted_brep) {
-						// No additional attributes
-						// TO DO: informal propositions: all bounding loops are IfcPolyLoop, all vertices shall be referenced by all polyloops, i.e. each cartesian point referenced by at least three polyloops. 
-						return;
-					}
-
-					throw oip::UnhandledException(solidModel);
-					return;
-				} //endif manifoldSolidBrep
+				if (solid_model_ref.isOfType<typename IfcEntityTypesT::IfcManifoldSolidBrep>()) {
+                                    convertIfcManifoldSolidBrep(pos, itemData, solid_model_ref.as<typename IfcEntityTypesT::IfcManifoldSolidBrep>());
+                                    return;
+                                } //endif manifoldSolidBrep
 
 				// *****************************************************************************************************************************************//
 				//	IfcSectionedSolid SUBTYPE of IfcSolidModel																							  //
@@ -648,7 +620,7 @@ namespace OpenInfraPlatform
 					}
 
 					return;
-				}// endif swept_disp_solid
+				} // endif swept_disp_solid
 
 				//std::shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh =
 				//	std::dynamic_pointer_cast<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
@@ -683,6 +655,7 @@ namespace OpenInfraPlatform
 				BLUE_LOG(error) << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname();
 
 			}
+
 			//end convertIfcSolidModel
 
 			//void convertIfcSectionedSolidHorizontal(
@@ -2160,12 +2133,6 @@ namespace OpenInfraPlatform
 				std::cout << "Ifc-specific solid model " << solidModel->classname() << " not supported" << std::endl;
 			}
 
-			bool convertAdvancedBrep(std::shared_ptr<typename IfcEntityTypesT::IfcManifoldSolidBrep>& manifoldSolidBrep,
-				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData)
-			{
-				return false;
-			}
 
 			// triangulate polyline data to flat triangulated geometry
 			void triangulatePolyline(const std::shared_ptr<typename IfcEntityTypesT::IfcPolyline>& polyline,
