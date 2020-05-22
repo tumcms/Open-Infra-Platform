@@ -24,6 +24,8 @@ cmake_policy(SET CMP0071 OLD)
 
 project(OpenInfraPlatform)
 
+message(STATUS "Please refer to ./Documentation/markdown/CMakeOptions.md for documentation on all options that can be selected in the configuration.")
+
 #-------------------------------------------------------------------------------------
 # CMake definitions and propertiess
 #-------------------------------------------------------------------------------------
@@ -300,7 +302,7 @@ endforeach()
 #------------------------------------------------------------------------------
 # DOXYGEN. 
 #------------------------------------------------------------------------------
-Option(DOXYGEN_GENERATE_DOCUMENTATION OFF)
+Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM Open Infra Platform." ON)
 
 if(DOXYGEN_GENERATE_DOCUMENTATION)
 

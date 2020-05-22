@@ -26,10 +26,11 @@ message("Use of DOXYGEN for developers: DOXYGEN_GENERATE_DOCUMENTATION enables b
 "Refer to DoxygenHelp.md (${CMAKE_CURRENT_SOURCE_DIR}/Documentation/markdown) for the selection of the DOXYGEN_OPTIONALs and on how to use DOXYGEN within project.")
 
 # Doxygen build options. 
-Option(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY ON)
-Option(DOXYGEN_OPTIONAL_INCLUDE_INTERNAL OFF)
-Option(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING OFF)
-Option(DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION ON)
+Option(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY "Produce documentation only for explicitly commented entities." ON)
+Option(DOXYGEN_OPTIONAL_INCLUDE_INTERNAL "Include comments intended for developers in documentation." OFF)
+Option(DOXYGEN_OPTIONAL_INCLUDE_EARLYBINDING "Include documentation for selected IFC schemas in documentation." OFF)
+Option(DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION "Open the landing page of .html documentation automatically." ON)
+
 
 # CONFIGURATION. Check http://www.doxygen.nl/manual/config.html for all available options and their default values. 
 
@@ -102,5 +103,4 @@ endif(DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION)
 else()
 message("Doxygen not found. Please install doxygen using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Doxygen.cmd to be able to generate documentation for the project. Please also install the GraphViz DOT package using ${CMAKE_CURRENT_SOURCE_DIR}/external/Get_Dot.cmd for rendering diagrams.")
 endif(DOXYGEN_FOUND)
-
 
