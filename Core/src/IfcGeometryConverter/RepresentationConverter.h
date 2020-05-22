@@ -359,66 +359,56 @@ namespace OpenInfraPlatform {
 				}
 
 
-				/*! \internal Still to refactor */
+				/*! \brief Converts \c IfcMappedItem to meshes and polylines.
+				 *
+				 * \param[in] mapped_item The \c IfcMappedItem to be converted.
+				 * \param[in] pos The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \param[out] itemData A pointer to be filled with the relevant data.
+				 */
 				void convertIfcMappedItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcMappedItem>& mapped_item,
 					const carve::math::Matrix& objectPlacement,
 					std::shared_ptr<ItemData>& itemData
 				) const throw(...)
 				{
+					// *********************************************************************************************************************************************************************//
+					//  https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/link/ifcmappeditem.htm
+					// ENTITY IfcMappedItem
+					//	SUBTYPE OF(IfcRepresentationItem);
+					//	 MappingSource: IfcRepresentationMap;
+					//	 MappingTarget: IfcCartesianTransformationOperator;
+					// END_ENTITY;
+					// *********************************************************************************************************************************************************************//
 					auto& map_source = mapped_item->MappingSource;
-
-					if (!map_source.lock()) {
-						throw oip::UnhandledException(mapped_item);
-						return;
-					}
-
-					// decltype(map_source->Mapped_Representation)::type &mapped_representation = map_source->MappedRepresentation;
+					
+					// *********************************************************************************************************************************************************************//
+					// ENTITY IfcRepresentationMap;
+					//  MappingOrigin: IfcAxis2Placement;
+					//  MappedRepresentation: IfcRepresentation;
+					// INVERSE
+					//	HasShapeAspects : SET[0:?] OF IfcShapeAspect FOR PartOfProductDefinitionShape;
+					//  MapUsage: SET[0:?] OF IfcMappedItem FOR MappingSource;
+					// WHERE
+					//	ApplicableMappedRepr : 'IFCREPRESENTATIONRESOURCE.IfcShapeModel' IN TYPEOF(MappedRepresentation);
+					// END_ENTITY;
+					// *********************************************************************************************************************************************************************//
 					auto& mapped_representation = map_source->MappedRepresentation;
-					if (!mapped_representation.lock()) {
-						throw oip::UnhandledException(mapped_item);
-						return;
-					}
-
+					
+					// get the position
 					carve::math::Matrix map_matrix_target(carve::math::Matrix::IDENT());
-					if (mapped_item->MappingTarget) {
-						auto& transform_operator = mapped_item->MappingTarget;
-
-						PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(transform_operator.lock(), map_matrix_target, UnitConvert()->getLengthInMeterFactor());
-					}
-
-					carve::math::Matrix map_matrix_origin(carve::math::Matrix::IDENT());
-					typename IfcEntityTypesT::IfcAxis2Placement mapping_origin_select = map_source->MappingOrigin;
-
-					std::shared_ptr<typename IfcEntityTypesT::IfcPlacement> mapping_origin_placement = nullptr;
-
-					switch (mapping_origin_select.which()) {
-					case 0: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<0>().lock()); break;
-					case 1: mapping_origin_placement = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPlacement>(mapping_origin_select.get<1>().lock()); break;
-					default: break;
-					}
-
-					if (mapping_origin_placement) {
-						map_matrix_origin = placementConverter->convertIfcPlacement(mapping_origin_placement);
-					}
-					else {
-						BLUE_LOG(warning) << "#" << mapping_origin_placement->getId() << " = IfcPlacement: !std::dynamic_pointer_cast<IfcPlacement>( mapping_origin ) )";
-						return;
-					}
-
-
+					PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(mapped_item->MappingTarget.lock(), map_matrix_target, UnitConvert()->getLengthInMeterFactor());
+					carve::math::Matrix map_matrix_origin = placementConverter->convertIfcAxis2Placement(map_source->MappingOrigin);
 					carve::math::Matrix mapped_pos((map_matrix_origin * objectPlacement) * map_matrix_target);
 
+					// convert the mapped representation
 					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData
 						= std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
 					convertIfcRepresentation(mapped_representation, mapped_pos, inputData);
 
+					// add to the return data
 					std::for_each(inputData->vec_item_data.begin(),
 						inputData->vec_item_data.end(),
 						[&](const std::shared_ptr<ItemData>& data) { itemData->append(data); });
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processed IfcMappedItem #" << mapped_representation.lock()->getId();
-#endif
 				}
 
 
