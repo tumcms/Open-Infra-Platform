@@ -41,7 +41,7 @@ namespace OpenInfraPlatform
 		template <
 			class IfcEntityTypesT
 		>
-		class SolidModelConverterT : public ConverterBaseT<IfcEntityTypesT>
+			class SolidModelConverterT : public ConverterBaseT<IfcEntityTypesT>
 		{
 		public:
 			SolidModelConverterT(
@@ -92,72 +92,114 @@ namespace OpenInfraPlatform
 
 			*/
 
-                        void convertIfcCsgSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid) throw(...)
-                        {
-                            if(csg_solid.expired())
-                                throw oip::ReferenceExpiredException(csg_solid);
+			void convertIfcCsgSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid) throw(...)
+			{
+				if (csg_solid.expired())
+					throw oip::ReferenceExpiredException(csg_solid);
 
-                            switch(csg_solid->TreeRootExpression.which()) {
-                            case 0:
-                                convertIfcBooleanResult(csg_solid->TreeRootExpression.get<0>().lock(), pos, itemData);
-                                break;
-                            case 1:
-                                convertIfcCsgPrimitive3D(csg_solid->TreeRootExpression.get<1>().lock(), pos, itemData);
-                                break;
-                            default:
-                                throw oip::InconsistentModellingException("IfcCsgSolid->TreeRootExpression has no value set.");
-                                break;
-                            }
-                        }
+				switch (csg_solid->TreeRootExpression.which()) {
+				case 0:
+					convertIfcBooleanResult(csg_solid->TreeRootExpression.get<0>().lock(), pos, itemData);
+					break;
+				case 1:
+					convertIfcCsgPrimitive3D(csg_solid->TreeRootExpression.get<1>().lock(), pos, itemData);
+					break;
+				default:
+					throw oip::InconsistentModellingException("IfcCsgSolid->TreeRootExpression has no value set.");
+					break;
+				}
+			}
 
-                        void convertIfcManifoldSolidBrepOuterShell(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell)
-                        {
-                            // first convert outer shell
-						
-                            std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_facesOuterShell;
-                            std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
+			void convertIfcManifoldSolidBrepOuterShell(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell)
+			{
+				// first convert outer shell
 
-						
-                            vec_facesOuterShell.resize(outerShell->CfsFaces.size());
-                            std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
-													
-                            try {
-                                faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell);
-                            }
-                            catch (...) {
-                                //return;
-                            }
-                            std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
-                                      inputDataOuterShell->open_or_closed_polyhedrons.end(),
-                                      std::back_inserter(itemData->closed_polyhedrons));
-                        }
+				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_facesOuterShell;
+				std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
 
-                        void convertIfcManifoldSolidBrep(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep) throw(...)
-                        {
-                            if(manifoldSolidBrep.expired())
-                                throw oip::ReferenceExpiredException(manifoldSolidBrep);
 
-                            // Get outer (attribute 1).
-                            if (manifoldSolidBrep->Outer) {
-                                convertIfcManifoldSolidBrepOuterShell(pos, itemData, manifoldSolidBrep->Outer);
-                            } //endif outer
-                            else {
-                                BLUE_LOG(warning) << "IfcManifoldSolidBrep.Outer = IfcClosedShell not set.";
-                            }
+				vec_facesOuterShell.resize(outerShell->CfsFaces.size());
+				std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
 
-                            // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
-                            if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>())
-                            {
-                                throw oip::UnhandledException(manifoldSolidBrep.as<typename IfcEntityTypesT::IfcAdvancedBrep>());
-                            } // endif advanced_brep
+				try {
+					faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell);
+				}
+				catch (...) {
+					//return;
+				}
+				std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
+					inputDataOuterShell->open_or_closed_polyhedrons.end(),
+					std::back_inserter(itemData->closed_polyhedrons));
+			}
 
-                            // (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
-                            if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
-                                throw oip::UnhandledException(manifoldSolidBrep.as<typename IfcEntityTypesT::IfcFacetedBrep>());
-                            }
+			void convertIfcManifoldSolidBrep(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep) throw(...)
+			{
+				if (manifoldSolidBrep.expired())
+					throw oip::ReferenceExpiredException(manifoldSolidBrep);
 
-                            throw oip::UnhandledException(manifoldSolidBrep);
-                        }
+				// Get outer (attribute 1).
+				if (manifoldSolidBrep->Outer) {
+					convertIfcManifoldSolidBrepOuterShell(pos, itemData, manifoldSolidBrep->Outer);
+				} //endif outer
+				else {
+					BLUE_LOG(warning) << "IfcManifoldSolidBrep.Outer = IfcClosedShell not set.";
+				}
+
+				// (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
+				if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>()){
+					throw oip::UnhandledException(manifoldSolidBrep.as<typename IfcEntityTypesT::IfcAdvancedBrep>());
+				} // endif advanced_brep
+
+				// (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
+				if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
+					throw oip::UnhandledException(manifoldSolidBrep.as<typename IfcEntityTypesT::IfcFacetedBrep>());
+				}
+
+				throw oip::UnhandledException(manifoldSolidBrep);
+			}
+
+			void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal) throw(...)
+			{
+				if (sectioned_solid_horizontal.expired())
+					throw oip::ReferenceExpiredException(sectioned_solid_horizontal);
+
+				// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
+		
+					// Get cross section positions and fixed axis vertical (attributes 3-4).
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression>> vec_cross_section_positions;
+					vec_cross_section_positions.resize(sectioned_solid_horizontal->CrossSectionPositions.size());
+					std::transform(sectioned_solid_horizontal->CrossSectionPositions.begin(),
+						sectioned_solid_horizontal->CrossSectionPositions.end(),
+						vec_cross_section_positions.begin(), [](auto& it) {return it.lock(); });
+					bool fixed_axis_vertical = sectioned_solid_horizontal->FixedAxisVertical;
+
+					BLUE_LOG(warning) << "Geometry conversion for IfcSectionedSolidHorizontal not implemented.";
+					// TO DO: implement, check for formal propositions. 
+
+				 //endif sectioned_solid_horizontal
+			}
+
+			void convertIfcSectionedSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolid>& sectioned_solid) throw(...)
+			{
+				if (sectioned_solid.expired())
+					throw oip::ReferenceExpiredException(sectioned_solid);
+
+				//Get directrix and cross sections (attributes 1-2).
+				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> & directrix =
+					sectioned_solid->Directrix.lock();
+				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
+				vec_cross_sections.resize(sectioned_solid->CrossSections.size());
+				std::transform(sectioned_solid->CrossSections.begin(),
+					sectioned_solid->CrossSections.end(),
+					vec_cross_sections.begin(), [](auto& it) {return it.lock(); });
+
+				// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
+				if (sectioned_solid.isOfType<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>())
+				{
+					convertIfcSectionedSolidHorizontal(pos, itemData, sectioned_solid.as<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>());
+					return;
+				}
+			}
 
 			void convertIfcSolidModel(const std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
                                                   const carve::math::Matrix& pos,
@@ -181,53 +223,22 @@ namespace OpenInfraPlatform
 				//	ABSTRACT SUPERTYPE of IfcAdvancedBrep, IfcFacetedBrep																					//
 				// *****************************************************************************************************************************************//
 
-				if (solid_model_ref.isOfType<typename IfcEntityTypesT::IfcManifoldSolidBrep>()) {
-                                    convertIfcManifoldSolidBrep(pos, itemData, solid_model_ref.as<typename IfcEntityTypesT::IfcManifoldSolidBrep>());
-                                    return;
-                                } //endif manifoldSolidBrep
+				if (solid_model_ref.isOfType<typename IfcEntityTypesT::IfcManifoldSolidBrep>())
+				{
+                    convertIfcManifoldSolidBrep(pos, itemData, solid_model_ref.as<typename IfcEntityTypesT::IfcManifoldSolidBrep>());
+                     return;
+                } //endif manifoldSolidBrep
 
 				// *****************************************************************************************************************************************//
 				//	IfcSectionedSolid SUBTYPE of IfcSolidModel																							  //
 				//	ABSTRACT SUPERTYPE of IfcSectionedSolidHorizontal																					  //
 				// *****************************************************************************************************************************************//
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSolid> sectioned_solid =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolid>(solidModel);
-
-				if (sectioned_solid)
+				if (solid_model_ref.isOfType<typename IfcEntityTypesT::IfcSectionedSolid>())
 				{
-					//Get directrix and cross sections (attributes 1-2).
-					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> & directrix =
-						sectioned_solid->Directrix.lock();	
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
-					vec_cross_sections.resize(sectioned_solid->CrossSections.size());
-					std::transform(sectioned_solid->CrossSections.begin(),
-						sectioned_solid->CrossSections.end(),
-						vec_cross_sections.begin(), [](auto& it) {return it.lock(); });
-					//TODO: next level
-					//TODO: implement, check for formal propositions. 
-
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing IfcSectionedSolid #" << sectioned_solid->getId();
-#endif
-					// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
-					std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSolidHorizontal> sectioned_solid_horizontal =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>(sectioned_solid);
-
-					if (sectioned_solid_horizontal)
-					{
-						// Get cross section positions and fixed axis vertical (attributes 3-4).
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression>> vec_cross_section_positions;
-							vec_cross_section_positions.resize(sectioned_solid_horizontal->CrossSectionPositions.size());
-						std::transform(sectioned_solid_horizontal->CrossSectionPositions.begin(),
-							sectioned_solid_horizontal->CrossSectionPositions.end(),
-							vec_cross_section_positions.begin(), [](auto& it) {return it.lock(); });
-						bool fixed_axis_vertical = sectioned_solid_horizontal->FixedAxisVertical;
-
-						BLUE_LOG(warning) << "Geometry conversion for IfcSectionedSolidHorizontal not implemented.";
-						// TO DO: implement, check for formal propositions. 
-
-					} //endif sectioned_solid_horizontal
+					convertIfcSectionedSolid(pos, itemData, solid_model_ref.as<typename IfcEntityTypesT::IfcSectionedSolid>());
+					return;
+					
 				} //endif sectioned_solid
 
 				// *****************************************************************************************************************************************//
