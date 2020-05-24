@@ -158,7 +158,7 @@ namespace OpenInfraPlatform
 				throw oip::UnhandledException(manifoldSolidBrep);
 			}
 
-			void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal) throw(...)
+			void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal) throw(...)
 			{
 				if (sectioned_solid_horizontal.expired())
 					throw oip::ReferenceExpiredException(sectioned_solid_horizontal);
@@ -179,14 +179,14 @@ namespace OpenInfraPlatform
 				 //endif sectioned_solid_horizontal
 			}
 
-			void convertIfcSectionedSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolid>& sectioned_solid) throw(...)
+			void convertIfcSectionedSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolid>& sectioned_solid) throw(...)
 			{
 				if (sectioned_solid.expired())
 					throw oip::ReferenceExpiredException(sectioned_solid);
 
 				//Get directrix and cross sections (attributes 1-2).
-				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> & directrix =
-					sectioned_solid->Directrix.lock();
+				const EXPRESSReference<typename IfcEntityTypesT::IfcCurve> & directrix =
+					sectioned_solid->Directrix;
 				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
 				vec_cross_sections.resize(sectioned_solid->CrossSections.size());
 				std::transform(sectioned_solid->CrossSections.begin(),
