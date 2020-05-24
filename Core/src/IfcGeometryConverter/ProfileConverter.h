@@ -1476,17 +1476,6 @@ namespace OpenInfraPlatform {
 				coords.push_back(carve::geom::VECTOR(-xBottom * 0.5 + xOffset, y * 0.5));
 			}
 
-			//Function 12: GetAsymmetricIShapeCoordinates
-			void AddAsymmetricIShapeCoordinates(std::vector<carve::geom::vector<2>>& coords, const double radius, const double Webthickness, const double FlangeThickness, const double h) const
-			{
-				if (radius != 0) {
-					addArc(coords, radius, M_PI, -M_PI_2, Webthickness * 0.5 + radius, h * 0.5 - FlangeThickness - radius);
-				}
-				else {
-					coords.push_back(carve::geom::VECTOR(Webthickness * 0.5, (h * 0.5 - FlangeThickness)));
-				}
-			}
-
 			void addArc_or_push_back(std::vector<carve::geom::vector<2>>& coords, double  radius, double startAngle, double openingAngle, double xM, double yM, double push_back_x, double push_back_y, int numSegments = -1) const
 			{
 				if (radius != 0.0) {
