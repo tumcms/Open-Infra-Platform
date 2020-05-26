@@ -138,22 +138,20 @@ namespace OpenInfraPlatform
                                 throw oip::ReferenceExpiredException(manifoldSolidBrep);
 
                             // Get outer (attribute 1).
-                            if (manifoldSolidBrep->Outer) {
-                                convertIfcManifoldSolidBrepOuterShell(pos, itemData, manifoldSolidBrep->Outer);
-                            } //endif outer
-                            else {
-                                BLUE_LOG(warning) << "IfcManifoldSolidBrep.Outer = IfcClosedShell not set.";
-                            }
+                            convertIfcManifoldSolidBrepOuterShell(pos, itemData, manifoldSolidBrep->Outer);
 
                             // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
                             if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>())
                             {
-                                throw oip::UnhandledException(manifoldSolidBrep.as<typename IfcEntityTypesT::IfcAdvancedBrep>());
+                                throw oip::UnhandledException(manifoldSolidBrep);
                             } // endif advanced_brep
 
                             // (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
                             if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
-                                throw oip::UnhandledException(manifoldSolidBrep.as<typename IfcEntityTypesT::IfcFacetedBrep>());
+								if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrepWithVoids>())
+									throw oip::UnhandledException(manifoldSolidBrep);
+								else
+									return;
                             }
 
                             throw oip::UnhandledException(manifoldSolidBrep);
