@@ -92,73 +92,72 @@ namespace OpenInfraPlatform
 
 			*/
 
-			void convertIfcCsgSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid) throw(...)
-			{
-				if (csg_solid.expired())
-					throw oip::ReferenceExpiredException(csg_solid);
+                        void convertIfcCsgSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid) throw(...)
+                        {
+                            if(csg_solid.expired())
+                                throw oip::ReferenceExpiredException(csg_solid);
 
-				switch (csg_solid->TreeRootExpression.which()) {
-				case 0:
-					convertIfcBooleanResult(csg_solid->TreeRootExpression.get<0>().lock(), pos, itemData);
-					break;
-				case 1:
-					convertIfcCsgPrimitive3D(csg_solid->TreeRootExpression.get<1>().lock(), pos, itemData);
-					break;
-				default:
-					throw oip::InconsistentModellingException("IfcCsgSolid->TreeRootExpression has no value set.");
-					break;
-				}
-			}
+                            switch(csg_solid->TreeRootExpression.which()) {
+                            case 0:
+                                convertIfcBooleanResult(csg_solid->TreeRootExpression.get<0>().lock(), pos, itemData);
+                                break;
+                            case 1:
+                                convertIfcCsgPrimitive3D(csg_solid->TreeRootExpression.get<1>().lock(), pos, itemData);
+                                break;
+                            default:
+                                throw oip::InconsistentModellingException("IfcCsgSolid->TreeRootExpression has no value set.");
+                                break;
+                            }
+                        }
 
-			void convertIfcManifoldSolidBrepOuterShell(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell)
-			{
-				// first convert outer shell
+                        void convertIfcManifoldSolidBrepOuterShell(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell)
+                        {
+                            // first convert outer shell
+						
+                            std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_facesOuterShell;
+                            std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
 
-				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_facesOuterShell;
-				std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
+						
+                            vec_facesOuterShell.resize(outerShell->CfsFaces.size());
+                            std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
+													
+                            try {
+                                faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell);
+                            }
+                            catch (...) {
+                                //return;
+                            }
+                            std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
+                                      inputDataOuterShell->open_or_closed_polyhedrons.end(),
+                                      std::back_inserter(itemData->closed_polyhedrons));
+                        }
 
+                        void convertIfcManifoldSolidBrep(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep) throw(...)
+                        {
+                            if(manifoldSolidBrep.expired())
+                                throw oip::ReferenceExpiredException(manifoldSolidBrep);
 
-				vec_facesOuterShell.resize(outerShell->CfsFaces.size());
-				std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
+                            // Get outer (attribute 1).
+                            convertIfcManifoldSolidBrepOuterShell(pos, itemData, manifoldSolidBrep->Outer);
 
-				try {
-					faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell);
-				}
-				catch (...) {
-					//return;
-				}
-				std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
-					inputDataOuterShell->open_or_closed_polyhedrons.end(),
-					std::back_inserter(itemData->closed_polyhedrons));
-			}
+                            // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
+                            if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>())
+                            {
+                                throw oip::UnhandledException(manifoldSolidBrep);
+                            } // endif advanced_brep
 
-			void convertIfcManifoldSolidBrep(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep) throw(...)
-			{
-				if (manifoldSolidBrep.expired())
-					throw oip::ReferenceExpiredException(manifoldSolidBrep);
+                            // (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
+                            if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
+								if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrepWithVoids>())
+									throw oip::UnhandledException(manifoldSolidBrep);
+								else
+									return;
+                            }
 
-				// Get outer (attribute 1).
-				if (manifoldSolidBrep->Outer) {
-					convertIfcManifoldSolidBrepOuterShell(pos, itemData, manifoldSolidBrep->Outer);
-				} //endif outer
-				else {
-					BLUE_LOG(warning) << "IfcManifoldSolidBrep.Outer = IfcClosedShell not set.";
-				}
+                            throw oip::UnhandledException(manifoldSolidBrep);
+                        }
 
-				// (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
-				if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>()){
-					throw oip::UnhandledException(manifoldSolidBrep.as<typename IfcEntityTypesT::IfcAdvancedBrep>());
-				} // endif advanced_brep
-
-				// (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
-				if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
-					throw oip::UnhandledException(manifoldSolidBrep.as<typename IfcEntityTypesT::IfcFacetedBrep>());
-				}
-
-				throw oip::UnhandledException(manifoldSolidBrep);
-			}
-
-			void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal) throw(...)
+	void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal) throw(...)
 			{
 				if (sectioned_solid_horizontal.expired())
 					throw oip::ReferenceExpiredException(sectioned_solid_horizontal);
@@ -200,7 +199,7 @@ namespace OpenInfraPlatform
 					return;
 				}
 			}
-
+			
 			void convertIfcSolidModel(const std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
                                                   const carve::math::Matrix& pos,
                                                   std::shared_ptr<ItemData> itemData)

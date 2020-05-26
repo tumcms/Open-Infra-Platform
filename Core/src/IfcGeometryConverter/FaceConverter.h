@@ -407,7 +407,8 @@ namespace OpenInfraPlatform {
 				// TODO: What is happening here?
 				void convertIfcFaceList(const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>>& faces,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData> item_data)
+					std::shared_ptr<ItemData> item_data
+				) const throw(...)
 				{
 					// carve polygon of the converted face list
 					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
@@ -434,7 +435,7 @@ namespace OpenInfraPlatform {
 				bool convertIfcFace(const std::shared_ptr<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices)
+					std::map<std::string, uint32_t>& polygonIndices) const throw(...)
 				{
 					// indicates if convertion has failed
 					bool convertionFailed = false;
@@ -636,7 +637,7 @@ namespace OpenInfraPlatform {
 					ProjectionPlane& plane,
 					std::vector<carve::geom2d::P2>& loopVertices2D,
 					std::vector<carve::geom::vector<3>>& loopVertices3D,
-					bool& faceLoopReversed)
+					bool& faceLoopReversed) const throw(...)
 				{
 					// compute normal of polygon
 					carve::geom::vector<3> normal = GeomUtils::computePolygonNormal(loopVertices3D);
@@ -708,7 +709,7 @@ namespace OpenInfraPlatform {
 					const std::vector<carve::geom::vector<3>>& faceVertices3D,
 					const bool faceLoopReversed,
 					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices)
+					std::map<std::string, uint32_t>& polygonIndices) const throw(...)
 				{
 					// indices after carve triangulation of merged vertices
 					std::vector<carve::triangulate::tri_idx> triangulatedIndices;
@@ -808,6 +809,119 @@ namespace OpenInfraPlatform {
 								std::cout << "convertIfcCartesianPointVector: ifc_pt->Coordinates.size() != 2" << std::endl;
 							}
 						}
+					}
+				}
+
+				/*! \internal Still to refactor */
+				void convertIfcFaceBasedSurfaceModel(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>& surface_model,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
+				{
+					auto& vec_face_sets = surface_model->FbsmFaces;
+
+					for (auto& it_face_sets : vec_face_sets) {
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_ifc_faces;
+						vec_ifc_faces.resize(it_face_sets->CfsFaces.size());
+						std::transform(it_face_sets->CfsFaces.begin(), it_face_sets->CfsFaces.end(), vec_ifc_faces.begin(), [](auto& it) { return it.lock(); });
+
+						// 
+						std::shared_ptr<ItemData> input_data_face_set(new ItemData);
+						// convert
+						convertIfcFaceList(vec_ifc_faces, pos, input_data_face_set);
+						// copy the data
+						std::copy(input_data_face_set->open_or_closed_polyhedrons.begin(),
+							input_data_face_set->open_or_closed_polyhedrons.end(),
+							std::back_inserter(itemData->open_polyhedrons));
+					}
+
+				}
+
+
+				/*! \internal Still to refactor */
+				void convertIfcShellBasedSurfaceModel(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcShellBasedSurfaceModel>& surface_model,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
+				{
+					//auto vec_shells = shell_based_surface_model->SbsmBoundary;
+					for (auto& it_shells : surface_model->SbsmBoundary) {
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_shells;
+						std::shared_ptr<ItemData> input_data_shells_set(new ItemData);
+
+						switch (it_shells.which()) {
+						case 0:
+							vec_shells.resize(it_shells.get<0>()->CfsFaces.size());
+							std::transform(it_shells.get<0>()->CfsFaces.begin(), it_shells.get<0>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock(); });
+							break;
+						case 1:
+							vec_shells.resize(it_shells.get<1>()->CfsFaces.size());
+							std::transform(it_shells.get<1>()->CfsFaces.begin(), it_shells.get<1>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock(); });
+							break;
+						}
+
+						convertIfcFaceList(vec_shells, pos, input_data_shells_set);
+						std::copy(input_data_shells_set->open_or_closed_polyhedrons.begin(),
+							input_data_shells_set->open_or_closed_polyhedrons.end(),
+							std::back_inserter(itemData->closed_polyhedrons));
+
+					}
+				}
+
+
+				/*! \internal Still to refactor */
+				void convertIfcTessellatedItem(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedItem>& tessItem,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
+				{
+					if( tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>())
+					{
+						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+						auto& faceSet = tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>();
+
+						double length_factor = UnitConvert()->getLengthInMeterFactor();
+
+						// obtain vertices from coordinates list and add them to the new polygon
+						for (const auto& point : faceSet->Coordinates->CoordList)
+						{
+							carve::geom::vector<3> vertex =
+								carve::geom::VECTOR(point[0],
+									point[1],
+									point[2]) * length_factor;
+
+							// apply transformation
+							vertex = pos * vertex;
+
+							polygon->addVertex(vertex);
+						}
+
+						auto& coordinatesIndices = faceSet->CoordIndex;
+						auto& pnIndices = faceSet->PnIndex; // optional
+															//auto& normals = faceSet->Normals; // TODO implement normals
+
+															// read coordinates index list and create faces
+						for (auto& indices : coordinatesIndices)
+						{
+							if (indices.size() < 3)
+							{
+								throw oip::InconsistentModellingException(tessItem, "invalid size of coordIndex attribute.");
+							}
+
+							if (pnIndices)
+								polygon->addFace(pnIndices.get()[indices[0] - 1] - 1,
+									pnIndices.get()[indices[1] - 1] - 1,
+									pnIndices.get()[indices[2] - 1] - 1);
+							else
+								polygon->addFace(indices[0] - 1,
+									indices[1] - 1,
+									indices[2] - 1);
+						}
+
+						itemData->open_or_closed_polyhedrons.push_back(polygon);
 					}
 				}
 
