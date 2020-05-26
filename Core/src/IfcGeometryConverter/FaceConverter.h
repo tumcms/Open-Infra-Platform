@@ -76,7 +76,6 @@ namespace OpenInfraPlatform {
 					\param		surface	\c IfcSurface entity to be interpreted.
 					\param		pos
 					\param		polylineData
-					\return
 					\note		The \c IfcSurface subtypes are \c IfcBoundedSurface,  \c IfcElementarySurface and  \c IfcSweptSurface.
 				*/
 
@@ -114,7 +113,6 @@ namespace OpenInfraPlatform {
 					\param		surface	\c IfcBoundedSurface entity to be interpreted.
 					\param		pos
 					\param		polylineData
-					\return
 					\note		The \c IfcBoundedSurface subtypes are: \c IfcBSplineSurface, \c IfcCurveBoundedPlane, \c IfcCurveBoundedSurface and \c IfcRectangularTrimmedSurface.
 					*/
 
@@ -167,7 +165,6 @@ namespace OpenInfraPlatform {
 					\param		surface	\c IfcElementarySurface entity to be interpreted.
 					\param		pos
 					\param		polylineData
-					\return
 					\note		The \c IfcElementarySurface subtypes are \c IfcCylindricalSurface, \c IfcPlane, \c IfcSphericalPlane and \c IfcToroidalSurface.
 					*/
 
@@ -220,7 +217,6 @@ namespace OpenInfraPlatform {
 					\param		surface	\c IfcSweptSurface entity to be interpreted.
 					\param		pos
 					\param		polylineData
-					\return
 					\note		The \c IfcSweptSurface subtypes are \c IfcSurfaceOfLinearExtrusion and \c IfcSurfaceOfRevolution.
 					*/
 
@@ -255,7 +251,6 @@ namespace OpenInfraPlatform {
 					\param	surface	\c IfcBSplineSurface entity to be interpreted.
 					\param	pos
 					\param	polylineData
-					\return
 					\note	The \c IfcBSplineSurface is a subtype of \c IfcBoundedSurface.
 				*/
 
@@ -305,7 +300,6 @@ namespace OpenInfraPlatform {
 					\param	surface	\c IfcCurveBoundedPlane entity to be interpreted.
 					\param	pos
 					\param	polylineData
-					\return
 					\note	The \c IfcCurveBoundedPlane is a subtype of \c IfcBoundedSurface.
 				*/
 
@@ -357,7 +351,6 @@ namespace OpenInfraPlatform {
 				\param	surface	\c IfcCurveBoundedSurface entity to be interpreted.
 				\param	pos
 				\param	polylineData
-				\return
 				\note	The \c IfcCurveBoundedSurface is a subtype of \c IfcBoundedSurface.
 				*/
 
@@ -392,7 +385,6 @@ namespace OpenInfraPlatform {
 				\param	surface	\c IfcRectangularTrimmedSurface entity to be interpreted.
 				\param	pos
 				\param	polylineData
-				\return
 				\note	The \c IfcRectangularTrimmedSurface is a subtype of \c IfcBoundedSurface.
 				*/
 
@@ -423,7 +415,6 @@ namespace OpenInfraPlatform {
 				\param	surface	\c IfcCylindricalSurface entity to be interpreted.
 				\param	pos
 				\param	polylineData
-				\return
 				\note	The \c IfcCylindricalSurface is a subtype of \c IfcElementarySurface.
 				*/
 
@@ -445,7 +436,6 @@ namespace OpenInfraPlatform {
 				\param	surface	\c IfcPlane entity to be interpreted.
 				\param	pos
 				\param	polylineData
-				\return
 				\note	The \c IfcPlane is a subtype of \c IfcElementarySurface.
 				*/
 
@@ -485,7 +475,6 @@ namespace OpenInfraPlatform {
 				\param	surface	\c IfcSphericalPlane entity to be interpreted.
 				\param	pos
 				\param	polylineData
-				\return
 				\note	The \c IfcSphericalPlane is a subtype of \c IfcElementarySurface.
 				*/
 
@@ -507,7 +496,6 @@ namespace OpenInfraPlatform {
 				\param	surface	\c IfcToroidalSurface entity to be interpreted.
 				\param	pos
 				\param	polylineData
-				\return
 				\note	The \c IfcToroidalSurface is a subtype of \c IfcElementarySurface.
 				*/
 
@@ -530,7 +518,6 @@ namespace OpenInfraPlatform {
 				\param	surface	\c IfcSurfaceOfLinearExtrusion entity to be interpreted.
 				\param	pos
 				\param	polylineData
-				\return
 				\note	The \c IfcSurfaceOfLinearExtrusion is a subtype of \c IfcSweptSurface.
 				*/
 
@@ -572,7 +559,6 @@ namespace OpenInfraPlatform {
 				\param	surface	\c IfcSurfaceOfRevolution entity to be interpreted.
 				\param	pos
 				\param	polylineData
-				\return
 				\note	The \c IfcSurfaceOfRevolution is a subtype of \c IfcSweptSurface.
 				*/
 
@@ -591,10 +577,10 @@ namespace OpenInfraPlatform {
 					*/
 				}
 
-			//--------------------------------------------------------------------------------------------
+			//------------------------------------------------------------------------------------------------------------
 			// FaceConverter functions:
-			// convertIfcFaceList, convertIfcFace, convert3DPointsTo2D, triangulateFace, 
-			//--------------------------------------------------------------------------------------------
+			// convertIfcFaceList, convertIfcFace, convert3DPointsTo2D, triangulateFace, convertIfcCartesianPoint2DVector
+			//------------------------------------------------------------------------------------------------------------
 
 				/*! \brief  Converts \c IfcFace to a polygon and adds it to the carve PolyhedronData vector.
 				\param	faces \c IfcFace entity to be interpreted.
