@@ -264,7 +264,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					throw oip::UnhandledException(surface);
+					const throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedPlane to ...
@@ -279,7 +279,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					throw oip::UnhandledException(surface);
+					const throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedSurface to ...
@@ -294,7 +294,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					throw oip::UnhandledException(surface);
+					const throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcRectangularTrimmedSurface to ...
@@ -309,7 +309,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					throw oip::UnhandledException(surface);
+					const throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcCylindricalSurface to ...
@@ -324,7 +324,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					throw oip::UnhandledException(surface);
+					const throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcPlane to ...
@@ -339,7 +339,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					throw oip::UnhandledException(surface);
+					const throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcSphericalPlane to ...
@@ -354,7 +354,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					throw oip::UnhandledException(surface);
+					const throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcToroidalSurface to ...
@@ -369,7 +369,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					throw oip::UnhandledException(surface);
+					const throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcSurfaceOfLinearExtrusion to ...
@@ -384,7 +384,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					throw oip::UnhandledException(surface);
+					const throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcSurfaceOfRevolution to ...
@@ -399,7 +399,7 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					throw oip::UnhandledException(surface);
+					const throw oip::UnhandledException(surface);
 				}
 			}
 		}
