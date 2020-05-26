@@ -184,7 +184,7 @@ namespace OpenInfraPlatform {
 					// (2/4) IfcPlane SUBTYPE of IfcElementarySurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcPlane>()) {
 
-						return convertIfcIfcPlane(
+						return convertIfcPlane(
 							surface.as<typename IfcEntityTypesT::IfcPlane>(),
 							pos,
 							polylineData);
