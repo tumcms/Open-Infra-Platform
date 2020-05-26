@@ -107,9 +107,9 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-				//--------------------------------------------------------------------------------------------
-				// IfcBoundedSurface
-				//--------------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------------
+			// IfcBoundedSurface
+			//--------------------------------------------------------------------------------------------
 
 					/*! \brief  Converts \c IfcBoundedSurface by calling the conversion function according to subtype.
 					\param		surface	\c IfcBoundedSurface entity to be interpreted.
@@ -160,9 +160,9 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-				//--------------------------------------------------------------------------------------------
-				// IfcElementarySurface
-				//--------------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------------
+			// IfcElementarySurface
+			//--------------------------------------------------------------------------------------------
 
 					/*! \brief  Converts \c IfcElementarySurface by calling the conversion function according to subtype.
 					\param		surface	\c IfcElementarySurface entity to be interpreted.
@@ -213,9 +213,9 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-				//--------------------------------------------------------------------------------------------
-				// IfcSweptSurface
-				//--------------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------------
+			// IfcSweptSurface
+			//--------------------------------------------------------------------------------------------
 
 					/*! \brief  Converts \c IfcSweptSurface by calling the conversion function according to subtype.
 					\param		surface	\c IfcSweptSurface entity to be interpreted.
@@ -248,9 +248,9 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-				//--------------------------------------------------------------------------------------------
-				// Conversion functions
-				//--------------------------------------------------------------------------------------------
+			//--------------------------------------------------------------------------------------------
+			// Conversion functions
+			//--------------------------------------------------------------------------------------------
 
 				/*! \brief  Converts \c IfcBsplineSurface to ...
 					\param	surface	\c IfcBSplineSurface entity to be interpreted.
@@ -264,7 +264,42 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					const throw oip::UnhandledException(surface);
+					throw oip::UnhandledException(surface);
+
+					/* TO DO: Finish implementation of convertIfcBSplineSurface
+
+					if(surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>()) {
+
+					}
+					else {
+					
+						// Get attributes 1-4.
+						int uDegree = surface->UDegree;
+						int vDegree = surface->VDegree;
+
+						auto controlPointList = surface->ControlPointsList;
+						for (auto& itControlPointList : controlPointList) {
+							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>()> vectorControlPointList;
+							EXPRESSReference<ItemData> input_data_cpl_set(new ItemData);
+
+							vectorControlPointList.resize(itControlPointList.size());
+							std::transform(itControlPointList.begin(),
+								itControlPointList.end(),
+								vectorControlPointList.begin(),
+								[](EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> it) { return it.lock(); });
+
+						}
+
+						// TO DO: Add enum PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED
+						typename IfcEntityTypesT::IfcBSplineSurfaceForm surfaceForm = surface->SurfaceForm;
+
+						// Get attributes 5-7. For information only.
+						typename IfcEntityTypesT::IfcLogical uClosed = surface->UClosed;
+						typename IfcEntityTypesT::IfcLogical vClosed = surface->VClosed;
+						typename IfcEntityTypesT::IfcLogical selfIntersect = surface->SelfIntersect;
+					}
+					*/
+
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedPlane to ...
@@ -280,6 +315,43 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
 					const throw oip::UnhandledException(surface);
+
+					/* TO DO: Finish implementation of convertIfcCurveBoundedPlane.
+
+					// Get basis surface, outer boundary and inner boundaries.
+					EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& basisSurface = surface->BasisSurface.lock();
+
+					if(basisSurface) {
+
+					// Get basis surface position.
+					EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& basisSurfacePlacement = basisSurface->Position.lock();
+
+					if(basisSurfacePlacement) {
+						surfaceMatrix = pos * placementConverter->convertIfcAxis2Placement3D(basisSurfacePlacement);
+						}
+
+					}
+
+					EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& outerBoundary = surface->OuterBoundary.lock();
+					
+					if(outerBoundary) {
+					}
+
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCurve>> vInnerBoundaries;
+					vInnerBoundaries.resize(surface->InnerBoundaries.size());
+
+					std::transform(
+						surface->InnerBoundaries.begin(),
+						surface->InnerBoundaries.end(),
+						vInnerBoundaries.begin(),
+						[](auto& it) { return it.lock(); }
+						);
+
+					for(unsigned int i = 0; i < vInnerBoundaries.size(); ++i) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& innerCurve = vInnerBoundaries[i];
+					}
+
+					*/
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedSurface to ...
@@ -295,6 +367,26 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
 					const throw oip::UnhandledException(surface);
+
+					/* TO DO: Finish implementation of convertIfcCurveBoundedSurface.
+
+					// Get basis surface, boundaries and implicit outer.
+					EXPRESSReference<typename IfcEntityTypesT::IfcSurface> basisSurface = surface->BasisSurface.lock();
+					EXPRESSReference<typename IfcEntityTypesT::IfcBoundaryCurve> boundaries = surface->Boundaries;
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcBoundaryCurve>> vBoundaries;
+
+					vBoundaries.resize(surface->Boundaries.size());
+					std::transform(
+						surface->Boundaries.begin(),
+						surface->Boundaries.end(),
+						vBoundaries.begin(),
+						[](auto& it)
+						{ return it.lock(); });
+					EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> controlPointList = surface->ControlPointsList;
+
+					bool implicitOuter = surface->ImplicitOuter;
+
+					*/
 				}
 
 				/*! \brief  Converts \c IfcRectangularTrimmedSurface to ...
@@ -310,7 +402,23 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
 					const throw oip::UnhandledException(surface);
-				}
+
+					/* TO DO: Finish implementation of convertIfcRectangularTrimmedSurface.
+
+					EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& basisSurface = surface->BasisSurface.lock();
+					if(basisSurface) {
+						convertIfcSurface(basisSurface, pos, polylineData);
+					}
+
+					// Get attributes 1-7.
+					typename IfcEntityTypesT::IfcParameterValue& u1 = surface->m_U1;
+					typename IfcEntityTypesT::IfcParameterValue& v1 = surface->m_V1;
+					typename IfcEntityTypesT::IfcParameterValue& u2 = surface->m_U2;
+					typename IfcEntityTypesT::IfcParameterValue& v2 = surface->m_V2;
+					typename IfcEntityTypesT::IfcBoolean& uSense = *(surface->m_Usense);
+					typename IfcEntityTypesT::IfcBoolean& vSense = *(surface->m_Vsense);
+
+					}
 
 				/*! \brief  Converts \c IfcCylindricalSurface to ...
 				\param	surface	\c IfcCylindricalSurface entity to be interpreted.
@@ -325,6 +433,13 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
 					const throw oip::UnhandledException(surface);
+
+					/* TO DO: Finish implementation of convertIfcCylindricalSurface.
+
+					// Get radius.
+					double cylindricalRadius = surface->Radius;
+
+					*/
 				}
 
 				/*! \brief  Converts \c IfcPlane to ...
@@ -339,7 +454,32 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
-					const throw oip::UnhandledException(surface);
+					// Get basis surface.
+					EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& basisSurface = surface->BasisSurface.lock();
+
+					if (basisSurface) {
+
+						// Get basis surface position.
+						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& basisSurfacePlacement = basisSurface->Position.lock();
+
+						if (basisSurfacePlacement) {
+							surfaceMatrix = pos * placementConverter->convertIfcAxis2Placement3D(basisSurfacePlacement);
+						}
+
+					}
+
+					double planeSpan = HALF_SPACE_BOX_SIZE;
+					polylineData->beginPolyline();
+					polylineData->addVertex(surfaceMatrix * carve::geom::VECTOR(planeSpan, planeSpan, 0.0));
+					polylineData->addVertex(surfaceMatrix * carve::geom::VECTOR(-planeSpan, planeSpan, 0.0));
+					polylineData->addVertex(surfaceMatrix * carve::geom::VECTOR(-planeSpan, -planeSpan, 0.0));
+					polylineData->addVertex(surfaceMatrix * carve::geom::VECTOR(planeSpan, -planeSpan, 0.0));
+
+					polylineData->addPolylineIndex(0);
+					polylineData->addPolylineIndex(1);
+					polylineData->addPolylineIndex(2);
+					polylineData->addPolylineIndex(3);
+
 				}
 
 				/*! \brief  Converts \c IfcSphericalPlane to ...
@@ -355,6 +495,13 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
 					const throw oip::UnhandledException(surface);
+
+					/* TO DO: Finish implementation of convertIfcSphericalPlane.
+
+					// Get radius.
+					double sphericalRadius = surface->Radius;
+
+					*/
 				}
 
 				/*! \brief  Converts \c IfcToroidalSurface to ...
@@ -370,6 +517,14 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
 					const throw oip::UnhandledException(surface);
+
+					/* TO DO: Finish implementation of convertIfcToroidalSurface.
+
+						// Get major and minor radius.
+						double majorRadius = surface->MajorRadius;
+						double minorRadius = surface->MinorRadius;
+
+					*/
 				}
 
 				/*! \brief  Converts \c IfcSurfaceOfLinearExtrusion to ...
@@ -385,6 +540,33 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
 					const throw oip::UnhandledException(surface);
+
+					/* TO DO: Finish implementation of convertIfcSurfaceOfLinearExtrusion.
+
+					// Get swept curve and position.
+					EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> sweptSurfaceProfile = surface->SweptCurve.lock();
+					EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> sweptSurfacePlacement = nullptr;
+
+					if (surface->Position) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> ref = surface->Position;
+						sweptSurfacePlacement = ref.lock();
+					}
+					else {
+						BLUE_LOG(warning) << "#" << swept_surface->getId() << " IfcSweptSurface without placement found.";
+					}
+
+					carve::math::Matrix surfaceMatrix(pos);
+					if (sweptSurfacePlacement) {
+						surfaceMatrix = pos * placementConverter->convertIfcAxis2Placement3D(sweptSurfacePlacement);
+					}
+
+
+					// Get extrude direction and depth.
+					EXPRESSReference<typename IfcEntityTypesT::IfcDirection>& linearExtrusionDirection = surface->ExtrudedDirection.lock();
+					double linearExtrusionDepth = surface->Depth;
+
+					*/
+
 				}
 
 				/*! \brief  Converts \c IfcSurfaceOfRevolution to ...
@@ -400,6 +582,14 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
 					const throw oip::UnhandledException(surface);
+
+					/* TO DO: Finish implementation of convertIfcSurfaceOfRevolution.
+
+						// Get axis position.
+						EXPRESSReference<typename IfcEntityTypesT::IfcAxis1Placement>& axisPosition =
+							surface->AxisPosition.lock();
+
+					*/
 				}
 			}
 		}
