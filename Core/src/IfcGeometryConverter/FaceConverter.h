@@ -54,10 +54,10 @@ namespace OpenInfraPlatform {
 			public:
 
 				//! Constructor
-				FaceConverterT(EXPRESSReference<GeometrySettings> geomSettings,
-					EXPRESSReference<UnitConverter<IfcEntityTypesT>> unitConverter,
-					EXPRESSReference<PlacementConverterT<IfcEntityTypesT>> pc,
-					EXPRESSReference<CurveConverterT<IfcEntityTypesT>> cc)
+				FaceConverterT(std::shared_ptr<GeometrySettings> geomSettings,
+					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc,
+					std::shared_ptr<CurveConverterT<IfcEntityTypesT>> cc)
 					:
 					ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
 					placementConverter(pc),
