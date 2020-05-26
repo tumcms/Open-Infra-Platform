@@ -1117,6 +1117,37 @@ namespace OpenInfraPlatform {
 					} // end if edge loop
 				} // end convertIfcLoop
 
+				/*! \internal TODO refactor*/
+				void convertIfcEdge(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcEdge>& ifcEdge,
+					const carve::math::Matrix& objectPlacement,
+					std::shared_ptr<carve::input::PolylineSetData> polyline_data
+				) const throw(...)
+				{
+					polyline_data->beginPolyline();
+
+					auto& vertex_start = ifcEdge->EdgeStart;
+					std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_start_point =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_start.lock());
+					if (vertex_start_point) {
+						carve::geom::vector<3> point = placementConverter->convertIfcPoint(vertex_start_point->VertexGeometry);
+
+						polyline_data->addVertex(objectPlacement * point);
+						polyline_data->addPolylineIndex(0);
+					}
+
+					auto& vertex_end = ifcEdge->EdgeEnd;
+					std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_end_point =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_end.lock());
+					if (vertex_end_point) {
+						carve::geom::vector<3> point = placementConverter->convertIfcPoint(vertex_end_point->VertexGeometry);
+
+						polyline_data->addVertex(objectPlacement * point);
+						polyline_data->addPolylineIndex(1);
+					}
+				}
+
+
 				/*! \brief Converts an array of \c IfcCartesianPoint-s to a series of \c carve points.
 				*
 				* \param[in] points				The array of \c IfcCartesianPoint-s to be converted.

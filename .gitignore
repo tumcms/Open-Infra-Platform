@@ -1,6 +1,7 @@
 
 syntax: glob
 *.cso
+*.cache
 Infrastructure.Net/TestProject/bin
 Infrastructure.Net/TestProject/obj
 Infrastructure.Net/Infrastructure.Net/obj
