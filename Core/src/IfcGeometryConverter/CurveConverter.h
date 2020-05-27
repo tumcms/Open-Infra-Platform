@@ -65,6 +65,32 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief Converts an \c IfcCurve to an array of segments to be rendered on screen.
+				 *
+				 * \param[in] ifcCurve		The \c IfcCurve to be converted.
+				 * \param[in] pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \param[out] itemData		A pointer to be filled with the relevant data.
+				 *
+				 * \note Calls the other overload CurveConverterT::convertIfcCurve with corresponding input parameters. Adds their result to itemData.
+				 */
+				void convertIfcCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
+				{
+					std::vector<carve::geom::vector<3>> loops;
+					std::vector<carve::geom::vector<3>> segment_start_points;
+					convertIfcCurve(ifcCurve.lock(), loops, segment_start_points);
+
+					std::shared_ptr<carve::input::PolylineSetData> polylineData(new carve::input::PolylineSetData());
+					polylineData->beginPolyline();
+					for (int i = 0; i < loops.size(); ++i) {
+						polylineData->addVertex(pos * loops.at(i));
+						polylineData->addPolylineIndex(i);
+					}
+					itemData->polylines.push_back(polylineData);
+				}
+
+				/*! \brief Converts an \c IfcCurve to an array of segments to be rendered on screen.
 				*
 				* \param[in] ifcCurve				The \c IfcCurve to be converted.
 				* \param[out] loops					The loops (?)

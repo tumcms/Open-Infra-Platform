@@ -298,19 +298,9 @@ namespace OpenInfraPlatform {
 
 					// (4/*) IfcCurve SUBTYPE OF IfcGeometricRepresentationItem
 					if(geomItem.isOfType<typename IfcEntityTypesT::IfcCurve>()) {
-						std::vector<carve::geom::vector<3>> loops;
-						std::vector<carve::geom::vector<3>> segment_start_points;
-						curveConverter->convertIfcCurve(geomItem.as<typename IfcEntityTypesT::IfcCurve>().lock(), 
-							loops, segment_start_points);
-
-						std::shared_ptr<carve::input::PolylineSetData> polylineData(new carve::input::PolylineSetData());
-						polylineData->beginPolyline();
-						for(int i = 0; i < loops.size(); ++i) {
-							polylineData->addVertex(pos * loops.at(i));
-							polylineData->addPolylineIndex(i);
-						}
-						itemData->polylines.push_back(polylineData);
-
+						curveConverter->convertIfcCurve(
+							geomItem.as<typename IfcEntityTypesT::IfcCurve>().lock(), 
+							pos, itemData);
 						return;
 					}
 
