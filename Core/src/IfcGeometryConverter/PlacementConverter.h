@@ -378,35 +378,35 @@ namespace OpenInfraPlatform {
                 }
 					
 
-					/**
-					 * @brief Converts \c IfcAxis2Placement select and returns transformation matrix.
-					 * 
-					 * @param axis_placement The \c IfcAxis2Placement to convert
-					 * @return The converted position
-					 *  
-					 * @note The select type IfcAxis2Placement can either be a \c IfcAxis2Placement2D or an \c IfcAxis2Placement3D
-					 * and the respective convert function for the actually held type is called.
-					 */
-					carve::math::Matrix convertIfcAxis2Placement(
-						const typename IfcEntityTypesT::IfcAxis2Placement& axis_placement
-					) const throw(...)
-                    {
-						// **************************************************************************************************************************
-						// RelativePlacement				
-                        // TYPE IfcAxis2Placement = SELECT (
-                        //	IfcAxis2Placement2D,
-                        //	IfcAxis2Placement3D);
-                        // END_TYPE;
-						// **************************************************************************************************************************
-                        switch(axis_placement.which()) {
-                        case 0:
-                            return convertIfcAxis2Placement2D(axis_placement.get<0>());
-                        case 1:
-                            return convertIfcAxis2Placement3D(axis_placement.get<1>());
-                        default:
-                            throw oip::InconsistentModellingException( axis_placement->getErrorLog() );
-                        }
+				/**
+				 * @brief Converts \c IfcAxis2Placement select and returns transformation matrix.
+				 * 
+				 * @param axis_placement The \c IfcAxis2Placement to convert
+				 * @return The converted position
+				 *  
+				 * @note The select type IfcAxis2Placement can either be a \c IfcAxis2Placement2D or an \c IfcAxis2Placement3D
+				 * and the respective convert function for the actually held type is called.
+				 */
+				carve::math::Matrix convertIfcAxis2Placement(
+					const typename IfcEntityTypesT::IfcAxis2Placement& axis_placement
+				) const throw(...)
+                {
+					// **************************************************************************************************************************
+					// RelativePlacement				
+                    // TYPE IfcAxis2Placement = SELECT (
+                    //	IfcAxis2Placement2D,
+                    //	IfcAxis2Placement3D);
+                    // END_TYPE;
+					// **************************************************************************************************************************
+                    switch(axis_placement.which()) {
+                    case 0:
+                        return convertIfcAxis2Placement2D(axis_placement.get<0>());
+                    case 1:
+                        return convertIfcAxis2Placement3D(axis_placement.get<1>());
+                    default:
+                        throw oip::InconsistentModellingException( axis_placement->getErrorLog() );
                     }
+                }
 
                     /**
                      * @brief Get's the relative placement in which the local placement is located.
