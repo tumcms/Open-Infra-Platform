@@ -201,48 +201,51 @@ namespace OpenInfraPlatform {
                     return direction;
                 }
 
-                    /*! \brief Converts \c IfcPlacement to a transformation matrix.
 
-                    \param[in]	placement	\c IfcPlacement entity to be interpreted.
+                /*! \brief Converts \c IfcPlacement to a transformation matrix.
+				 * 
+                 * \param[in]	placement	\c IfcPlacement entity to be interpreted.
+				 *
+                 * \returns		Calculated transformation matrix.
+                 */
+				carve::math::Matrix convertIfcPlacement(
+                    const EXPRESSReference<typename IfcEntityTypesT::IfcPlacement>& placement
+                ) const throw(...)
+                {
+                    // **************************************************************************************************************************
+                    // IfcPlacement 
+                    //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcplacement.htm
+                    // ENTITY IfcPlacement
+                    //	ABSTRACT SUPERTYPE OF(ONEOF(IfcAxis1Placement, IfcAxis2Placement2D, IfcAxis2Placement3D))
+                    //	SUBTYPE OF(IfcGeometricRepresentationItem);
+                    //		Location: IfcCartesianPoint;
+                    //	DERIVE
+                    //		Dim : IfcDimensionCount: = Location.Dim;
+                    // END_ENTITY;									 
+                    // **************************************************************************************************************************
+					// check input
+					if (placement.expired()) 
+						throw oip::ReferenceExpiredException(placement);
 
-                    \returns		Calculated transformation matrix.
-                    */
-					carve::math::Matrix convertIfcPlacement(
-                        const EXPRESSReference<typename IfcEntityTypesT::IfcPlacement>& placement
-                    ) const throw(...)
-                    {
-                        // **************************************************************************************************************************
-                        // IfcPlacement 
-                        //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcplacement.htm
-                        // ENTITY IfcPlacement
-                        //	ABSTRACT SUPERTYPE OF(ONEOF(IfcAxis1Placement, IfcAxis2Placement2D, IfcAxis2Placement3D))
-                        //	SUBTYPE OF(IfcGeometricRepresentationItem);
-                        //		Location: IfcCartesianPoint;
-                        //	DERIVE
-                        //		Dim : IfcDimensionCount: = Location.Dim;
-                        // END_ENTITY;									 
-                        // **************************************************************************************************************************
-						// check input
-						if (placement.expired()) 
-							throw oip::ReferenceExpiredException(placement);
-
-                        // (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
-                        if(placement.isOfType<typename IfcEntityTypesT::IfcAxis1Placement>()) {
-                            throw oip::UnhandledException(placement);
-                        }
-
-                        // (2/3) IfcAxis2Placement2D SUBTYPE OF IfcPlacement 
-                        else if(placement.isOfType<typename IfcEntityTypesT::IfcAxis2Placement2D>()) {
-                            return convertIfcAxis2Placement2D( placement.as<typename IfcEntityTypesT::IfcAxis2Placement2D>() );
-                        }
-
-                        // (3/3) IfcAxis2Placement3D SUBTYPE OF IfcPlacement
-                        else if(placement.isOfType<typename IfcEntityTypesT::IfcAxis2Placement3D>()) {
-                            return convertIfcAxis2Placement3D( placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());
-                        }
-
-						throw oip::UnhandledException(placement);
+                    // (1/3) IfcAxis1Placement SUBTYPE OF IfcPlacement
+                    if(placement.isOfType<typename IfcEntityTypesT::IfcAxis1Placement>()) {
+                        throw oip::UnhandledException(placement);
                     }
+                    // (2/3) IfcAxis2Placement2D SUBTYPE OF IfcPlacement 
+                    else if(placement.isOfType<typename IfcEntityTypesT::IfcAxis2Placement2D>()) {
+                        return convertIfcAxis2Placement2D( placement.as<typename IfcEntityTypesT::IfcAxis2Placement2D>() );
+                    }
+                    // (3/3) IfcAxis2Placement3D SUBTYPE OF IfcPlacement
+                    else if(placement.isOfType<typename IfcEntityTypesT::IfcAxis2Placement3D>()) {
+                        return convertIfcAxis2Placement3D( placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());
+                    }
+					// anything else is not supported
+					throw oip::UnhandledException(placement);
+                }
+
+
+
+
 
                     /*! \brief Converts \c IfcAxis2Placement2D to a transformation matrix.
 
