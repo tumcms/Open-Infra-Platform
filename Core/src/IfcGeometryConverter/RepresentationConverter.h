@@ -776,65 +776,8 @@ namespace OpenInfraPlatform {
 				bool handle_styled_items;
 				bool handle_layer_assignments;
 
-			}; // namespace IfcGeometryConverter
-			   // template <>
-			// inline bool RepresentationConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter,
-			// OpenInfraPlatform::Ifc4::Ifc4Entity>::convertVersionSpecificIfcGeometricRepresentationItem(
-			//	const std::shared_ptr<emt::Ifc4EntityTypes::IfcGeometricRepresentationItem>& geomItem,
-			//	const carve::math::Matrix& pos,
-			//	std::shared_ptr<ItemData> itemData,
-			//	std::stringstream& err)
-			//{
-			//	const double lengthFactor = unitConverter->getLengthInMeterFactor();
-			//
-			//	std::shared_ptr<emt::Ifc4EntityTypes::IfcTessellatedItem>  tessellatedItem =
-			//		std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcTessellatedItem>(geomItem);
-			//
-			//	if (tessellatedItem)
-			//	{
-			//		std::shared_ptr<emt::Ifc4EntityTypes::IfcTriangulatedFaceSet> faceSet =
-			//			std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcTriangulatedFaceSet>(tessellatedItem);
-			//
-			//		if (faceSet)
-			//		{
-			//			std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
-			//
-			//			std::vector<std::vector<int>>& coordinatesIndices = faceSet->CoordIndex;
-			//			std::vector<std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcLengthMeasure>>>& pointList = faceSet->Coordinates->CoordList;
-			//
-			//			// obtain vertices from coordination list and add them to the new polygon
-			//			for (const auto& point : pointList)
-			//			{
-			//				carve::geom::vector<3> vertex =
-			//					carve::geom::VECTOR(point[0] * lengthFactor,
-			//					point[1] * lengthFactor,
-			//					point[2] * lengthFactor);
-			//
-			//				// apply transformation
-			//				vertex = pos * vertex;
-			//
-			//				polygon->addVertex(vertex);
-			//			}
-			//
-			//			// read coordinates index list and create faces
-			//			for (const std::vector<int>& indices : coordinatesIndices)
-			//			{
-			//				if (indices.size() < 3)
-			//				{
-			//					throw std::exception("invalid size of coordIndex of tessellated item.");
-			//				}
-			//
-			//				polygon->addFace(indices[0] - 1, indices[1] - 1, indices[2] - 1);
-			//			}
-			//
-			//			itemData->open_or_closed_polyhedrons.push_back(polygon);
-			//
-			//			return true;
-			//		}
-			//	}
-			//
-			//	return false;
-			//}
+			}; // end class RepresentationConverterT
+
 		} // namespace IfcGeometryConverter
 	} // namespace Core
 } // namespace OpenInfraPlatform
