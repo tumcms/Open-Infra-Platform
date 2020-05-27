@@ -145,61 +145,61 @@ namespace OpenInfraPlatform {
 					return point * UnitConvert()->getLengthInMeterFactor();
                 }
 
-                    /*! \brief Converts \c IfcDirection to a 3D vector.
+                /*! \brief Converts \c IfcDirection to a 3D vector.
+				 *
+                 * \param[in]	ifcDirection	IfcDirection entity to be interpreted.
+                 * \returns    Calculated 2D or 3D vector.
+				 * 
+                 * \note The direction is normalized.
+                 * \note The default value for the direction needs to be set outside the function.
+                 */
+                carve::geom::vector<3> convertIfcDirection(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcDirection>& ifcDirection
+				) const throw(...)
+                {
+                    // **************************************************************************************************************************
+                    // IfcDirection
+                    //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcdirection.htm
+                    // ENTITY IfcDirection
+                    //	SUBTYPE OF(IfcGeometricRepresentationItem);
+                    //		DirectionRatios: LIST[2:3] OF IfcReal;
+                    //	DERIVE
+                    //		Dim : IfcDimensionCount: = HIINDEX(DirectionRatios);
+                    //	WHERE
+                    //		MagnitudeGreaterZero : SIZEOF(QUERY(Tmp < *DirectionRatios | Tmp <> 0.0)) > 0;
+                    // END_ENTITY;
+                    // read the coordinates
+                    // **************************************************************************************************************************
+					// check input
+					if (ifcDirection.expired()) 
+						throw oip::ReferenceExpiredException(ifcDirection);
 
-                    \param[in]	ifcDirection	IfcDirection entity to be interpreted.
-                    \returns direction		    Calculated 2D or 3D vector.
+					// set to default
+					carve::geom::vector<3> direction = carve::geom::VECTOR(1., 0., 0.);
+					// read the coordinates
+					auto& ratios = ifcDirection->DirectionRatios;
+					switch (ratios.size())
+					{
+					case 3:
+						direction.z = ratios[2];
+					case 2:
+						direction.y = ratios[1];
+					case 1:
+						direction.x = ratios[0];
+						break;
+					default:
+						throw oip::InconsistentGeometryException(ifcDirection, "Number of coordinates is inconsistent.");
+					}
 
-                    \note The direction is normalized.
-                    \note The default value for the direction needs to be set outside the function.
-                    */
-                    carve::geom::vector<3> convertIfcDirection(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcDirection>& ifcDirection
-					) const throw(...)
-                    {
-                        // **************************************************************************************************************************
-                        // IfcDirection
-                        //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcdirection.htm
-                        // ENTITY IfcDirection
-                        //	SUBTYPE OF(IfcGeometricRepresentationItem);
-                        //		DirectionRatios: LIST[2:3] OF IfcReal;
-                        //	DERIVE
-                        //		Dim : IfcDimensionCount: = HIINDEX(DirectionRatios);
-                        //	WHERE
-                        //		MagnitudeGreaterZero : SIZEOF(QUERY(Tmp < *DirectionRatios | Tmp <> 0.0)) > 0;
-                        // END_ENTITY;
-                        // read the coordinates
-                        // **************************************************************************************************************************
-						// check input
-						if (ifcDirection.expired()) 
-							throw oip::ReferenceExpiredException(ifcDirection);
+					// check
+					if( direction.isZero( GeomSettings()->getPrecision() ) )
+						throw oip::InconsistentGeometryException(ifcDirection, "Magnitude is zero.");
 
-						// set to default
-						carve::geom::vector<3> direction = carve::geom::VECTOR(1., 0., 0.);
-						// read the coordinates
-						auto& ratios = ifcDirection->DirectionRatios;
-						switch (ratios.size())
-						{
-						case 3:
-							direction.z = ratios[2];
-						case 2:
-							direction.y = ratios[1];
-						case 1:
-							direction.x = ratios[0];
-							break;
-						default:
-							throw oip::InconsistentGeometryException(ifcDirection, "Number of coordinates is inconsistent.");
-						}
-
-						// check
-						if( direction.isZero( GeomSettings()->getPrecision() ) )
-							throw oip::InconsistentGeometryException(ifcDirection, "Magnitude is zero.");
-
-                        // normalize the direction
-                        direction.normalize();
-						// returns
-                        return direction;
-                    }
+                    // normalize the direction
+                    direction.normalize();
+					// returns
+                    return direction;
+                }
 
                     /*! \brief Converts \c IfcPlacement to a transformation matrix.
 
