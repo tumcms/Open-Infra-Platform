@@ -96,57 +96,54 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(point);
 				}
 
-                    /*! \brief Converts \c IfcCartesianPoint to a 3D vector.
+                /*! \brief Converts \c IfcCartesianPoint to a 3D vector.
+				 * 
+                 * \param[in]	cartesianPoint	\c IfcCartesianPoint entity to be interpreted.
+				 *
+                 * \return		Calculated 2D or 3D vector.
+				 *
+                 * \note The point's coordinates are scaled according to the unit conversion factor.
+                 */
+				carve::geom::vector<3> convertIfcCartesianPoint(
+                    const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint
+                ) const throw(...)
+                {
+                    // **************************************************************************************************************************
+                    // IfcCartesianPoint
+                    //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifccartesianpoint.htm
+                    // ENTITY IfcCartesianPoint
+                    //	SUBTYPE OF(IfcPoint);
+                    //		Coordinates: LIST[1:3] OF IfcLengthMeasure;
+                    //	DERIVE
+                    //		Dim : IfcDimensionCount: = HIINDEX(Coordinates);
+                    //	WHERE
+                    //		CP2Dor3D : HIINDEX(Coordinates) >= 2;
+                    // END_ENTITY;
+                    // **************************************************************************************************************************
+					// check input
+					if (cartesianPoint.expired())
+						throw oip::ReferenceExpiredException(cartesianPoint);
 
-                    \param[in]	cartesianPoint	\c IfcCartesianPoint entity to be interpreted.
+                    // set to default
+					carve::geom::vector<3> point = carve::geom::VECTOR(0.0, 0.0, 0.0);
+                    // read the coordinates
+					auto& coords = cartesianPoint->Coordinates;
+					switch (coords.size())
+					{
+					case 3:
+						point.z = coords[2];
+					case 2:
+						point.y = coords[1];
+					case 1:
+						point.x = coords[0];
+						break;
+					default:
+						throw oip::InconsistentGeometryException( cartesianPoint, "Number of coordinates is inconsistent.");
+					}
 
-                    \return		Calculated 2D or 3D vector.
-
-                    \note The point's coordinates are scaled according to the unit conversion factor.
-                    \note The point's coordinates are reset to (0,0,0).
-                    */
-					carve::geom::vector<3> convertIfcCartesianPoint(
-                        const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint
-                        ) const throw(...)
-                    {
-                        // **************************************************************************************************************************
-                        // IfcCartesianPoint
-                        //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifccartesianpoint.htm
-                        // ENTITY IfcCartesianPoint
-                        //	SUBTYPE OF(IfcPoint);
-                        //		Coordinates: LIST[1:3] OF IfcLengthMeasure;
-                        //	DERIVE
-                        //		Dim : IfcDimensionCount: = HIINDEX(Coordinates);
-                        //	WHERE
-                        //		CP2Dor3D : HIINDEX(Coordinates) >= 2;
-                        // END_ENTITY;
-                        // **************************************************************************************************************************
-						// check input
-						if (cartesianPoint.expired())
-							throw oip::ReferenceExpiredException(cartesianPoint);
-
-                        // set to default
-						carve::geom::vector<3> point = carve::geom::VECTOR(0.0, 0.0, 0.0);
-                        // read the coordinates
-						auto& coords = cartesianPoint->Coordinates;
-						switch (coords.size())
-						{
-						case 3:
-							point.z = coords[2];
-						case 2:
-							point.y = coords[1];
-						case 1:
-							point.x = coords[0];
-							break;
-						default:
-							throw oip::InconsistentGeometryException( cartesianPoint, "Number of coordinates is inconsistent.");
-						}
-
-                        // scale the lengths according to the unit conversion
-                        point *= UnitConvert()->getLengthInMeterFactor();
-						// returns
-						return point;
-                    }
+                    // scale the lengths according to the unit conversion & return
+					return point * UnitConvert()->getLengthInMeterFactor();
+                }
 
                     /*! \brief Converts \c IfcDirection to a 3D vector.
 
