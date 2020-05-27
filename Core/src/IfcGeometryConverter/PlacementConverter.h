@@ -244,17 +244,14 @@ namespace OpenInfraPlatform {
                 }
 
 
-
-
-
-                    /*! \brief Converts \c IfcAxis2Placement2D to a transformation matrix.
-
-                    \param[in]	axis2placement2d	\c IfcAxis2Placement2D entity to be interpreted.
-
-                    \return				Calculated transformation matrix.
-                    */
-                    carve::math::Matrix convertIfcAxis2Placement2D(
-                        const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d
+					/*! \brief Converts \c IfcAxis2Placement2D to a transformation matrix.
+					 *
+					 * \param[in]	axis2placement2d	\c IfcAxis2Placement2D entity to be interpreted.
+					 * 
+					 * \return				Calculated transformation matrix.
+					 */
+					carve::math::Matrix convertIfcAxis2Placement2D(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d
 					) const throw(...)
                     {
                         // **************************************************************************************************************************
@@ -308,14 +305,16 @@ namespace OpenInfraPlatform {
                             0, 0, 0, 1);
                     }
 
-                    /*! \brief Converts \c IfcAxis2Placement3D to a transformation matrix.
 
-                    \param[in]	axis2placement3d	\c IfcAxis2Placement3D entity to be interpreted.
 
-                    \return				Calculated transformation matrix.
-                    */
-                    carve::math::Matrix convertIfcAxis2Placement3D(
-                        const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d
+					/*! \brief Converts \c IfcAxis2Placement3D to a transformation matrix.
+					 *
+					 * \param[in]	axis2placement3d	\c IfcAxis2Placement3D entity to be interpreted.
+					 *
+					 * \return				Calculated transformation matrix.
+					 */
+					carve::math::Matrix convertIfcAxis2Placement3D(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d
 					) const throw(...)
                     {
                         // **************************************************************************************************************************
@@ -379,16 +378,17 @@ namespace OpenInfraPlatform {
                             0, 0, 0, 1);
                     }
 					
-                    /**
-                     * @brief Converts \c IfcAxis2Placement select and returns matrix for possible types.
-                     * 
-                     * @param axis_placement The \c IfcAxis2Placement to convert
-                     * @return The converted position
-                     * 
-                     * @note The select type IfcAxis2Placement can either be a \c IfcAxis2Placement2D or an \c IfcAxis2Placement3D
-                     * and the respective convert function for the actually held type is called.
-                     */
-                    carve::math::Matrix convertIfcAxis2Placement(
+
+					/**
+					 * @brief Converts \c IfcAxis2Placement select and returns transformation matrix.
+					 * 
+					 * @param axis_placement The \c IfcAxis2Placement to convert
+					 * @return The converted position
+					 *  
+					 * @note The select type IfcAxis2Placement can either be a \c IfcAxis2Placement2D or an \c IfcAxis2Placement3D
+					 * and the respective convert function for the actually held type is called.
+					 */
+					carve::math::Matrix convertIfcAxis2Placement(
 						const typename IfcEntityTypesT::IfcAxis2Placement& axis_placement
 					) const throw(...)
                     {
