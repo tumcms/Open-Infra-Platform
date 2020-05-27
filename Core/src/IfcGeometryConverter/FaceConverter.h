@@ -62,6 +62,20 @@ namespace OpenInfraPlatform {
 				{
 				}
 
+				void convertIfcSurface(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData
+				) throw(...)
+				{
+					std::shared_ptr<carve::input::PolylineSetData> polyline =
+						std::make_shared<carve::input::PolylineSetData>();
+					convertIfcSurface(surface.lock(), pos, polyline);
+					if (polyline->getVertexCount() > 1) {
+						itemData->polylines.push_back(polyline);
+					}
+				}
+
 				void convertIfcSurface(const std::shared_ptr<typename IfcEntityTypesT::IfcSurface>& surface,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolylineSetData>& polyline_data)

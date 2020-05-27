@@ -314,11 +314,9 @@ namespace OpenInfraPlatform {
 
 					// (6/*) IfcSurface SUBTYPE OF IfcGeometricRepresentationItem
 					if(geomItem.isOfType<typename IfcEntityTypesT::IfcSurface>()) {
-						std::shared_ptr<carve::input::PolylineSetData> polyline(new carve::input::PolylineSetData());
-						faceConverter->convertIfcSurface(geomItem.as<typename IfcEntityTypesT::IfcSurface>().lock(), pos, polyline);
-						if(polyline->getVertexCount() > 1) {
-							itemData->polylines.push_back(polyline);
-						}
+						faceConverter->convertIfcSurface(
+							geomItem.as<typename IfcEntityTypesT::IfcSurface>(), 
+							pos, itemData);
 						return;
 					}
 
@@ -471,12 +469,7 @@ namespace OpenInfraPlatform {
 							break;
 						case 2:
 						{
-							std::shared_ptr<carve::input::PolylineSetData> polyline = 
-								std::make_shared<carve::input::PolylineSetData>();
-							faceConverter->convertIfcSurface(it_set_elements.get<2>().lock(), pos, polyline);
-							if (polyline->getVertexCount() > 1) {
-								itemData->polylines.push_back(polyline);
-							}
+							faceConverter->convertIfcSurface(it_set_elements.get<2>(), pos, itemData);
 						}
 							break;
 						default: 
