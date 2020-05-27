@@ -306,76 +306,76 @@ namespace OpenInfraPlatform {
                 }
 
 
-					/*! \brief Converts \c IfcAxis2Placement3D to a transformation matrix.
-					 *
-					 * \param[in]	axis2placement3d	\c IfcAxis2Placement3D entity to be interpreted.
-					 *
-					 * \return				Calculated transformation matrix.
-					 */
-					carve::math::Matrix convertIfcAxis2Placement3D(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d
-					) const throw(...)
-                    {
-                        // **************************************************************************************************************************
-                        // IfcAxis2Placement2D 
-                        //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcaxis2placement3d.htm
-                        // ENTITY IfcAxis2Placement3D
-                        //	SUBTYPE OF(IfcPlacement);
-                        //		Axis: OPTIONAL IfcDirection;
-                        //		RefDirection: OPTIONAL IfcDirection;
-                        //	DERIVE
-                        //		P : LIST[3:3] OF IfcDirection : = IfcBuildAxes(Axis, RefDirection);
-                        //	WHERE
-                        //		LocationIs3D : SELF\IfcPlacement.Location.Dim = 3;
-                        //		AxisIs3D: (NOT(EXISTS(Axis))) OR(Axis.Dim = 3);
-                        //		RefDirIs3D: (NOT(EXISTS(RefDirection))) OR(RefDirection.Dim = 3);
-                        //		AxisToRefDirPosition: (NOT(EXISTS(Axis))) OR(NOT(EXISTS(RefDirection))) OR(IfcCrossProduct(Axis, RefDirection).Magnitude > 0.0);
-                        //		AxisAndRefDirProvision: NOT((EXISTS(Axis)) XOR(EXISTS(RefDirection)));
-                        // END_ENTITY;
-                        // **************************************************************************************************************************
-                        // check input
-						if(axis2placement3d.expired())
-                            throw oip::ReferenceExpiredException(axis2placement3d);
+				/*! \brief Converts \c IfcAxis2Placement3D to a transformation matrix.
+				 *
+				 * \param[in]	axis2placement3d	\c IfcAxis2Placement3D entity to be interpreted.
+				 *
+				 * \return				Calculated transformation matrix.
+				 */
+				carve::math::Matrix convertIfcAxis2Placement3D(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d
+				) const throw(...)
+                {
+                    // **************************************************************************************************************************
+                    // IfcAxis2Placement2D 
+                    //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcaxis2placement3d.htm
+                    // ENTITY IfcAxis2Placement3D
+                    //	SUBTYPE OF(IfcPlacement);
+                    //		Axis: OPTIONAL IfcDirection;
+                    //		RefDirection: OPTIONAL IfcDirection;
+                    //	DERIVE
+                    //		P : LIST[3:3] OF IfcDirection : = IfcBuildAxes(Axis, RefDirection);
+                    //	WHERE
+                    //		LocationIs3D : SELF\IfcPlacement.Location.Dim = 3;
+                    //		AxisIs3D: (NOT(EXISTS(Axis))) OR(Axis.Dim = 3);
+                    //		RefDirIs3D: (NOT(EXISTS(RefDirection))) OR(RefDirection.Dim = 3);
+                    //		AxisToRefDirPosition: (NOT(EXISTS(Axis))) OR(NOT(EXISTS(RefDirection))) OR(IfcCrossProduct(Axis, RefDirection).Magnitude > 0.0);
+                    //		AxisAndRefDirProvision: NOT((EXISTS(Axis)) XOR(EXISTS(RefDirection)));
+                    // END_ENTITY;
+                    // **************************************************************************************************************************
+                    // check input
+					if(axis2placement3d.expired())
+                        throw oip::ReferenceExpiredException(axis2placement3d);
 
-						// defaults
-                        carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
-                        carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
-                        carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
-                        carve::geom::vector<3>  local_z(carve::geom::VECTOR(0.0, 0.0, 1.0));
-                        carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
+					// defaults
+                    carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
+                    carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
+                    carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
+                    carve::geom::vector<3>  local_z(carve::geom::VECTOR(0.0, 0.0, 1.0));
+                    carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
 
-                        // interpret Location
-						translate = convertIfcCartesianPoint(axis2placement3d->Location);
+                    // interpret Location
+					translate = convertIfcCartesianPoint(axis2placement3d->Location);
 
-                        // interpret RefDirection [OPTIONAL]
-                        if(axis2placement3d->RefDirection) {
-                            ref_direction = convertIfcDirection(axis2placement3d->RefDirection);
-                        }
-
-                        // interpret Axis [OPTIONAL]
-                        if(axis2placement3d->Axis) {
-                             local_z = convertIfcDirection(axis2placement3d->Axis);
-                        }
-
-                        // calculate
-                        local_x = ref_direction;
-                        // ref_direction can be just in the x-z-plane, not perpendicular to y and z.
-                        //  --> so re-compute local x					
-                        local_y = carve::geom::cross(local_z, local_x);
-                        local_x = carve::geom::cross(local_y, local_z);
-
-                        // normalize the direction vectors
-                        local_x.normalize();
-                        local_y.normalize();
-                        local_z.normalize();
-
-                        // produce a quaternion
-                        return carve::math::Matrix(
-                            local_x.x, local_y.x, local_z.x, translate.x,
-                            local_x.y, local_y.y, local_z.y, translate.y,
-                            local_x.z, local_y.z, local_z.z, translate.z,
-                            0, 0, 0, 1);
+                    // interpret RefDirection [OPTIONAL]
+                    if(axis2placement3d->RefDirection) {
+                        ref_direction = convertIfcDirection(axis2placement3d->RefDirection);
                     }
+
+                    // interpret Axis [OPTIONAL]
+                    if(axis2placement3d->Axis) {
+                            local_z = convertIfcDirection(axis2placement3d->Axis);
+                    }
+
+                    // calculate
+                    local_x = ref_direction;
+                    // ref_direction can be just in the x-z-plane, not perpendicular to y and z.
+                    //  --> so re-compute local x					
+                    local_y = carve::geom::cross(local_z, local_x);
+                    local_x = carve::geom::cross(local_y, local_z);
+
+                    // normalize the direction vectors
+                    local_x.normalize();
+                    local_y.normalize();
+                    local_z.normalize();
+
+                    // produce a quaternion
+                    return carve::math::Matrix(
+                        local_x.x, local_y.x, local_z.x, translate.x,
+                        local_x.y, local_y.y, local_z.y, translate.y,
+                        local_x.z, local_y.z, local_z.z, translate.z,
+                        0, 0, 0, 1);
+                }
 					
 
 					/**
