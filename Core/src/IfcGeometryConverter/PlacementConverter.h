@@ -52,49 +52,49 @@ namespace OpenInfraPlatform {
             template <
                 class IfcEntityTypesT
             >
-                class PlacementConverterT : public ConverterBaseT<IfcEntityTypesT> {
-                public:
-                    //! Constructor
-                    PlacementConverterT(
-                        std::shared_ptr<GeometrySettings> geomSettings,
-                        std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter)
-                        :
-                        ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter)
-                    {
-                    }
+            class PlacementConverterT : public ConverterBaseT<IfcEntityTypesT> {
+            public:
+                //! Constructor
+                PlacementConverterT(
+                    std::shared_ptr<GeometrySettings> geomSettings,
+                    std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter)
+                    :
+                    ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter)
+                {
+                }
 
-                    //! Virtual destructor
-                    virtual ~PlacementConverterT()
-                    {
+                //! Virtual destructor
+                virtual ~PlacementConverterT()
+                {
 
-                    }
+                }
 
-					/*! \brief Converts \c IfcPoint to a vector.
+				/*! \brief Converts \c IfcPoint to a vector.
+				 * 
+				 * \param[in]	point	\c IfcPoint entity to be interpreted.
+				 * 
+				 * \return		Calculated 2D or 3D vector.
+				 * 
+				 * \note The point's coordinates are scaled according to the unit conversion factor.
+				 */
+				carve::geom::vector<3> convertIfcPoint(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPoint>& point
+				) const throw(...)
+				{
+					// **************************************************************************************************************************
+					// ENTITY IfcPoint
+					//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpoint.htm
+					// ABSTRACT SUPERTYPE OF(ONEOF(IfcCartesianPoint, IfcPointOnCurve, IfcPointOnSurface))
+					//	SUBTYPE OF(IfcGeometricRepresentationItem);
+					// END_ENTITY;
+					// **************************************************************************************************************************
+					// IfcCartesianPoint
+					if (point.isOfType<typename IfcEntityTypesT::IfcCartesianPoint>())
+						return convertIfcCartesianPoint(point.as<typename IfcEntityTypesT::IfcCartesianPoint>());
 
-					\param[in]	point	\c IfcPoint entity to be interpreted.
-
-					\return		Calculated 2D or 3D vector.
-
-					\note The point's coordinates are scaled according to the unit conversion factor.
-					*/
-					carve::geom::vector<3> convertIfcPoint(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcPoint>& point
-					) const throw(...)
-					{
-						// **************************************************************************************************************************
-						// ENTITY IfcPoint
-						//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpoint.htm
-						// ABSTRACT SUPERTYPE OF(ONEOF(IfcCartesianPoint, IfcPointOnCurve, IfcPointOnSurface))
-						//	SUBTYPE OF(IfcGeometricRepresentationItem);
-						// END_ENTITY;
-						// **************************************************************************************************************************
-						// IfcCartesianPoint
-						if (point.isOfType<typename IfcEntityTypesT::IfcCartesianPoint>())
-							return convertIfcCartesianPoint(point.as<typename IfcEntityTypesT::IfcCartesianPoint>());
-
-						// IfcPointOnCurve & IfcPointOnSurface are not supported
-						throw oip::UnhandledException(point);
-					}
+					// IfcPointOnCurve & IfcPointOnSurface are not supported
+					throw oip::UnhandledException(point);
+				}
 
                     /*! \brief Converts \c IfcCartesianPoint to a 3D vector.
 
