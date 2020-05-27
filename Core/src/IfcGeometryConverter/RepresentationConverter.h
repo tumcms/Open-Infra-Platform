@@ -435,35 +435,67 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(topo_item);
 				}
 
-				/*! \internal Still to refactor */
+				/*! \brief Converts \c IfcGeometricSet to meshes and polylines.
+				 *
+				 * \param[in] geomSet The \c IfcGeometricSet to be converted.
+				 * \param[in] pos The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \param[out] itemData A pointer to be filled with the relevant data.
+				 */
 				void convertIfcGeometricSet(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricSet>& geomSet,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
 				) const throw(...)
 				{
+					// loop over the elements
 					for (auto& it_set_elements : geomSet->Elements) {
-						// TYPE IfcGeometricSetSelect = SELECT (IfcPoint, IfcCurve, IfcSurface);
-						std::shared_ptr<carve::input::PolylineSetData> polyline = nullptr;
+						// TYPE IfcGeometricSetSelect = SELECT (IfcCurve, IfcPoint, IfcSurface);
 						switch (it_set_elements.which()) {
-						case 0: std::cout << "Warning\t| IfcCurve not implemented" << std::endl; break;
-						case 1: std::cout << "Warning\t| IfcPoint not implemented" << std::endl; break;
+						case 0: 
+						{
+							curveConverter->convertIfcCurve(it_set_elements.get<0>().lock(), pos, itemData);
+						}
+							break;
+						case 1:
+						{
+							std::shared_ptr<carve::input::PolylineSetData> polyline =
+								std::make_shared<carve::input::PolylineSetData>();
+							carve::geom::vector<3> point = placementConverter->convertIfcPoint(it_set_elements.get<1>());
+							polyline->addVertex(pos * point);
+							polyline->addPolylineIndex(0);
+							polyline->addVertex(pos * point);
+							polyline->addPolylineIndex(1);
+							itemData->polylines.push_back(polyline);
+						}
+							break;
 						case 2:
-							polyline = std::make_shared<carve::input::PolylineSetData>();
+						{
+							std::shared_ptr<carve::input::PolylineSetData> polyline = 
+								std::make_shared<carve::input::PolylineSetData>();
 							faceConverter->convertIfcSurface(it_set_elements.get<2>().lock(), pos, polyline);
 							if (polyline->getVertexCount() > 1) {
 								itemData->polylines.push_back(polyline);
 							}
+						}
 							break;
-						default: break;
+						default: 
+							// what else?
+							break;
 						}
 					}
 
-
 					if (geomSet.isOfType<typename IfcEntityTypesT::IfcGeometricCurveSet>()) {
-						BLUE_LOG(warning) << "Warning\t| IfcGeometricCurveSet not implemented.";
-						return;
+						// ENTITY IfcGeometricCurveSet
+						//  SUBTYPE OF(IfcGeometricSet);
+						//  WHERE
+						//	 NoSurfaces : SIZEOF(QUERY(Temp < *SELF\IfcGeometricSet.Elements |
+						//		'IFCGEOMETRYRESOURCE.IfcSurface' IN TYPEOF(Temp))) = 0;
+						//  END_ENTITY;
+
+						// we're done - it's just a Where, which we don't care about yet
 					}
+					
+					return;
 				}
 
 				// ****************************************************************************************************************************************	//
