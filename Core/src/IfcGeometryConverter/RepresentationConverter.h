@@ -299,7 +299,7 @@ namespace OpenInfraPlatform {
 					// (4/*) IfcCurve SUBTYPE OF IfcGeometricRepresentationItem
 					if(geomItem.isOfType<typename IfcEntityTypesT::IfcCurve>()) {
 						curveConverter->convertIfcCurve(
-							geomItem.as<typename IfcEntityTypesT::IfcCurve>().lock(), 
+							geomItem.as<typename IfcEntityTypesT::IfcCurve>(), 
 							pos, itemData);
 						return;
 					}
@@ -340,7 +340,8 @@ namespace OpenInfraPlatform {
 
 					// (9/*) IfcTessellatedItem SUBTYPE OF IfcGeometricRepresentationItem
 					if (geomItem.isOfType<typename IfcEntityTypesT::IfcTessellatedItem>()) {
-						faceConverter->convertIfcTessellatedItem(geomItem.as<typename IfcEntityTypesT::IfcTessellatedItem>(),
+						faceConverter->convertIfcTessellatedItem(
+							geomItem.as<typename IfcEntityTypesT::IfcTessellatedItem>(),
 							pos, itemData);
 						return;
 					}
@@ -503,6 +504,11 @@ namespace OpenInfraPlatform {
 				//	convertVersionSpecificIfcGeometricRepresentationItem, convertIfcSectionedSpine, convertStyledItem, convertOpenings, subtractOpenings	//
 				// ****************************************************************************************************************************************	//
 
+				/*!
+				 * \internal TODO
+				 *
+				 * The function is not refactored.
+				 */
 				// Function 2:  Convert IfcSectionedSpine,
 				void convertIfcSectionedSpine(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSpine>& spine,
