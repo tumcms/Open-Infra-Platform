@@ -74,7 +74,8 @@ namespace OpenInfraPlatform {
 				*/
 				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<3>>& loops,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints)
+					std::vector<carve::geom::vector<3>>& segmentStartPoints
+				) const throw(...)
 				{
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> > trim1Vec;
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> > trim2Vec;
@@ -97,7 +98,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> >& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> >& trim2Vec,
-					const bool senseAgreement)
+					const bool senseAgreement
+				) const throw(...)
 				{
 					// get the scaling factors from unit converter
 					double length_factor = UnitConvert()->getLengthInMeterFactor();
@@ -942,7 +944,8 @@ namespace OpenInfraPlatform {
 				*/
 				void convertIfcCurve2D(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<2>>& loops,
-					std::vector<carve::geom::vector<2>>& segmentStartPoints)
+					std::vector<carve::geom::vector<2>>& segmentStartPoints
+				) const throw(...)
 				{
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> trim1Vec;
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> trim2Vec;
@@ -965,7 +968,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<2>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement)
+					const bool senseAgreement
+				) const throw(...)
 				{
 					std::vector<carve::geom::vector<3>> target_vec_3d;
 					std::vector<carve::geom::vector<3>> segment_start_points_3d;
@@ -993,7 +997,7 @@ namespace OpenInfraPlatform {
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcPolyline(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& ifcpolyline
-					)
+				) const throw(...)
 				{
 					// **************************************************************************************************************************
 					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpolyline.htm
@@ -1013,7 +1017,8 @@ namespace OpenInfraPlatform {
 				* \internal TODO.
 				*/
 				void convertIfcLoop(const std::shared_ptr<typename IfcEntityTypesT::IfcLoop>& ifcloop,
-					std::vector<carve::geom::vector<3>>& loop)
+					std::vector<carve::geom::vector<3>>& loop
+				) const throw(...)
 				{
 					const std::shared_ptr<typename IfcEntityTypesT::IfcPolyLoop> polyLoop =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyLoop>(ifcloop);
@@ -1155,7 +1160,7 @@ namespace OpenInfraPlatform {
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcCartesianPointVector(
 					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>& points
-					)
+				) const throw(...)
 				{
 					// initialize the return value with enough space
 					std::vector<carve::geom::vector<3>> loop( points.size() );
@@ -1177,7 +1182,8 @@ namespace OpenInfraPlatform {
 				*/
 				void convertIfcCartesianPointVectorSkipDuplicates(
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> >& ifcPoints,
-					std::vector<carve::geom::vector<3> >& loop) const
+					std::vector<carve::geom::vector<3> >& loop
+				) const throw(...)
 				{
 					carve::geom::vector<3>  vertex_previous;
 
@@ -1204,9 +1210,10 @@ namespace OpenInfraPlatform {
 				}
 
 				// Function 3: Get angle on circle (returns angle if the given point lies on the circle; if not, -1 is returned). 
-				static double getAngleOnCircle(const carve::geom::vector<3>& circleCenter,
+				double getAngleOnCircle(const carve::geom::vector<3>& circleCenter,
 					double circleRadius,
-					const carve::geom::vector<3>& trimPoint)
+					const carve::geom::vector<3>& trimPoint
+				) const throw(...)
 				{
 					double result_angle = -1.0;
 					carve::geom::vector<3> center_trim_point = trimPoint - circleCenter;
