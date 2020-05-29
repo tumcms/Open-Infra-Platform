@@ -446,6 +446,11 @@ namespace OpenInfraPlatform {
 
 					}
 
+					// 1-----0	create big rectangular plane
+					// |	 |	^ y
+					// |	 |	|
+					// 2-----3	---> x
+
 					double planeSpan = HALF_SPACE_BOX_SIZE;
 					polylineData->beginPolyline();
 					polylineData->addVertex(surfaceMatrix * carve::geom::VECTOR(planeSpan, planeSpan, 0.0));
