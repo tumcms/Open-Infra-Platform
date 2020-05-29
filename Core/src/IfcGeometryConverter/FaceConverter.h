@@ -290,6 +290,8 @@ namespace OpenInfraPlatform {
 					}
 					*/
 
+					throw oip::UnhandledException(surface);
+
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedPlane to ...
@@ -339,6 +341,8 @@ namespace OpenInfraPlatform {
 					}
 
 					*/
+
+					throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedSurface to ...
@@ -371,6 +375,8 @@ namespace OpenInfraPlatform {
 					bool implicitOuter = surface->ImplicitOuter;
 
 					*/
+
+					throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcRectangularTrimmedSurface to ...
@@ -400,6 +406,8 @@ namespace OpenInfraPlatform {
 					bool vSense = *(surface->m_Vsense);
 
 					*/
+
+					throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcCylindricalSurface to ...
@@ -419,6 +427,8 @@ namespace OpenInfraPlatform {
 					double cylindricalRadius = surface->Radius;
 
 					*/
+
+					throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcPlane to ...
@@ -463,6 +473,8 @@ namespace OpenInfraPlatform {
 					polylineData->addPolylineIndex(2);
 					polylineData->addPolylineIndex(3);
 
+					throw oip::UnhandledException(surface);
+
 				}
 
 				/*! \brief  Converts \c IfcSphericalPlane to ...
@@ -482,6 +494,8 @@ namespace OpenInfraPlatform {
 					double sphericalRadius = surface->Radius;
 
 					*/
+
+					throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcToroidalSurface to ...
@@ -502,6 +516,8 @@ namespace OpenInfraPlatform {
 						double minorRadius = surface->MinorRadius;
 
 					*/
+
+					throw oip::UnhandledException(surface);
 				}
 
 				/*! \brief  Converts \c IfcSurfaceOfLinearExtrusion to ...
@@ -541,6 +557,8 @@ namespace OpenInfraPlatform {
 
 					*/
 
+					throw oip::UnhandledException(surface);
+
 				}
 
 				/*! \brief  Converts \c IfcSurfaceOfRevolution to ...
@@ -561,6 +579,8 @@ namespace OpenInfraPlatform {
 							surface->AxisPosition;
 
 					*/
+
+					throw oip::UnhandledException(surface);
 				}
 
 				//------------------------------------------------------------------------------------------------------------
