@@ -70,8 +70,6 @@ namespace OpenInfraPlatform {
 				{
 				}
 
-				double lengthFactor = UnitConvert()->getLengthInMeterFactor();
-
 				/*! \brief Converts \c IfcSurface to a according to subtype.
 					\param		surface	\c IfcSurface entity to be interpreted.
 					\param		pos
