@@ -306,12 +306,12 @@ namespace OpenInfraPlatform {
 					/* TO DO: Finish implementation of convertIfcCurveBoundedPlane.
 
 					// Get basis surface, outer boundary and inner boundaries.
-					EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& basisSurface = surface->BasisSurface.lock();
+					EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& basisSurface = surface->BasisSurface;
 
 					if(basisSurface) {
 
 					// Get basis surface position.
-					EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& basisSurfacePlacement = basisSurface->Position.lock();
+					EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& basisSurfacePlacement = basisSurface->Position;
 
 					if(basisSurfacePlacement) {
 						surfaceMatrix = pos * placementConverter->convertIfcAxis2Placement3D(basisSurfacePlacement);
@@ -319,7 +319,7 @@ namespace OpenInfraPlatform {
 
 					}
 
-					EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& outerBoundary = surface->OuterBoundary.lock();
+					EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& outerBoundary = surface->OuterBoundary;
 
 					if(outerBoundary) {
 					}
@@ -355,7 +355,7 @@ namespace OpenInfraPlatform {
 					/* TO DO: Finish implementation of convertIfcCurveBoundedSurface.
 
 					// Get basis surface, boundaries and implicit outer.
-					EXPRESSReference<typename IfcEntityTypesT::IfcSurface> basisSurface = surface->BasisSurface.lock();
+					EXPRESSReference<typename IfcEntityTypesT::IfcSurface> basisSurface = surface->BasisSurface;
 					EXPRESSReference<typename IfcEntityTypesT::IfcBoundaryCurve> boundaries = surface->Boundaries;
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcBoundaryCurve>> vBoundaries;
 
@@ -386,18 +386,18 @@ namespace OpenInfraPlatform {
 
 					/* TO DO: Finish implementation of convertIfcRectangularTrimmedSurface.
 
-					EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& basisSurface = surface->BasisSurface.lock();
+					EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& basisSurface = surface->BasisSurface;
 					if(basisSurface) {
 						convertIfcSurface(basisSurface, pos, polylineData);
 					}
 
 					// Get attributes 1-7.
-					typename IfcEntityTypesT::IfcParameterValue& u1 = surface->m_U1;
-					typename IfcEntityTypesT::IfcParameterValue& v1 = surface->m_V1;
-					typename IfcEntityTypesT::IfcParameterValue& u2 = surface->m_U2;
-					typename IfcEntityTypesT::IfcParameterValue& v2 = surface->m_V2;
-					typename IfcEntityTypesT::IfcBoolean& uSense = *(surface->m_Usense);
-					typename IfcEntityTypesT::IfcBoolean& vSense = *(surface->m_Vsense);
+					double = surface->m_U1;
+					double v1 = surface->m_V1;
+					double u2 = surface->m_U2;
+					double v2 = surface->m_V2;
+					bool uSense = *(surface->m_Usense);
+					bool vSense = *(surface->m_Vsense);
 
 					*/
 				}
@@ -433,12 +433,12 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<carve::input::PolylineSetData>& polylineData) {
 
 					// Get basis surface.
-					EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& basisSurface = surface->BasisSurface.lock();
+					EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& basisSurface = surface->BasisSurface;
 
 					if (basisSurface) {
 
 						// Get basis surface position.
-						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& basisSurfacePlacement = basisSurface->Position.lock();
+						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& basisSurfacePlacement = basisSurface->Position;
 
 						if (basisSurfacePlacement) {
 							surfaceMatrix = pos * placementConverter->convertIfcAxis2Placement3D(basisSurfacePlacement);
@@ -518,12 +518,12 @@ namespace OpenInfraPlatform {
 					/* TO DO: Finish implementation of convertIfcSurfaceOfLinearExtrusion.
 
 					// Get swept curve and position.
-					EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> sweptSurfaceProfile = surface->SweptCurve.lock();
+					EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> sweptSurfaceProfile = surface->SweptCurve;
 					EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> sweptSurfacePlacement = nullptr;
 
 					if (surface->Position) {
 						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> ref = surface->Position;
-						sweptSurfacePlacement = ref.lock();
+						sweptSurfacePlacement;
 					}
 					else {
 						BLUE_LOG(warning) << "#" << swept_surface->getId() << " IfcSweptSurface without placement found.";
@@ -536,7 +536,7 @@ namespace OpenInfraPlatform {
 
 
 					// Get extrude direction and depth.
-					EXPRESSReference<typename IfcEntityTypesT::IfcDirection>& linearExtrusionDirection = surface->ExtrudedDirection.lock();
+					EXPRESSReference<typename IfcEntityTypesT::IfcDirection>& linearExtrusionDirection = surface->ExtrudedDirection;
 					double linearExtrusionDepth = surface->Depth;
 
 					*/
@@ -558,7 +558,7 @@ namespace OpenInfraPlatform {
 
 						// Get axis position.
 						EXPRESSReference<typename IfcEntityTypesT::IfcAxis1Placement>& axisPosition =
-							surface->AxisPosition.lock();
+							surface->AxisPosition;
 
 					*/
 				}
@@ -661,7 +661,7 @@ namespace OpenInfraPlatform {
 						boundID++;
 
 						//	IfcLoop <- IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
-						EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound.lock();
+						EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
 						bool polyOrientation = bound->Orientation;
 						if (!loop) {
 							BLUE_LOG(warning) << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " no valid loop.";
