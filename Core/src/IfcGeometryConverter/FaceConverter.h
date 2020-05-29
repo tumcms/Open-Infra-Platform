@@ -258,7 +258,7 @@ namespace OpenInfraPlatform {
 
 					/* TO DO: Finish implementation of convertIfcBSplineSurface
 
-					if(surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>()) {
+					if(surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>()) const throw(...) {
 
 					}
 					else {
@@ -1039,9 +1039,9 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedItem>& tessItem,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...)
+					) const throw(...)
 				{
-					if( tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>())
+					if (tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>())
 					{
 						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 						auto& faceSet = tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>();
@@ -1086,15 +1086,17 @@ namespace OpenInfraPlatform {
 
 						itemData->open_or_closed_polyhedrons.push_back(polygon);
 					}
-				
+
+				}
+
 				protected:
 
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
 				std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter;
 
-		};
+			};
+		}
 	}
-}
 
 #endif
 
