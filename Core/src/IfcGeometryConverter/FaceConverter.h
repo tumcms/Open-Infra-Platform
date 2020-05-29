@@ -992,6 +992,32 @@ namespace OpenInfraPlatform {
 				}
 				
 				/*! \internal Still to refactor */
+				void convertIfcFaceBasedSurfaceModel(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>& surface_model,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
+				{
+					auto& vec_face_sets = surface_model->FbsmFaces;
+
+					for (auto& it_face_sets : vec_face_sets) {
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_ifc_faces;
+						vec_ifc_faces.resize(it_face_sets->CfsFaces.size());
+						std::transform(it_face_sets->CfsFaces.begin(), it_face_sets->CfsFaces.end(), vec_ifc_faces.begin(), [](auto& it) { return it.lock(); });
+
+						// 
+						std::shared_ptr<ItemData> input_data_face_set(new ItemData);
+						// convert
+						convertIfcFaceList(vec_ifc_faces, pos, input_data_face_set);
+						// copy the data
+						std::copy(input_data_face_set->open_or_closed_polyhedrons.begin(),
+							input_data_face_set->open_or_closed_polyhedrons.end(),
+							std::back_inserter(itemData->open_polyhedrons));
+					}
+
+				}
+				
+				/*! \internal Still to refactor */
 				void convertIfcShellBasedSurfaceModel(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcShellBasedSurfaceModel>& surface_model,
 					const carve::math::Matrix& pos,
@@ -1075,9 +1101,12 @@ namespace OpenInfraPlatform {
 
 						itemData->open_or_closed_polyhedrons.push_back(polygon);
 					}
+				
+				protected:
 
+				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
+				std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter;
 
-			};
 		};
 	}
 }
