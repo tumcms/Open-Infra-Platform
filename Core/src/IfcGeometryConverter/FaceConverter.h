@@ -270,7 +270,7 @@ namespace OpenInfraPlatform {
 						auto controlPointList = surface->ControlPointsList;
 						for (auto& itControlPointList : controlPointList) {
 							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>()> vectorControlPointList;
-							EXPRESSReference<ItemData> input_data_cpl_set(new ItemData);
+							std::shared_ptr<ItemData> input_data_cpl_set(new ItemData);
 
 							vectorControlPointList.resize(itControlPointList.size());
 							std::transform(itControlPointList.begin(),
@@ -578,10 +578,10 @@ namespace OpenInfraPlatform {
 
 				void convertIfcFaceList(const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFace>>& faces,
 					const carve::math::Matrix& pos,
-					EXPRESSReference<ItemData> itemData) {
+					std::shared_ptr<ItemData> itemData) {
 
 					// Carve polygon of the converted face list
-					EXPRESSReference<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 
 					// Contains polygon indices of vertices (x,y,z converted to string)
 					std::map<std::string, uint32_t> polygonIndices;
@@ -613,7 +613,7 @@ namespace OpenInfraPlatform {
 
 				bool convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
-					EXPRESSReference<carve::input::PolyhedronData> polygon,
+					std::shared_ptr<carve::input::PolyhedronData> polygon,
 					std::map<std::string, uint32_t>& polygonIndices) {
 
 					// Indicates if conversion has failed
@@ -884,7 +884,7 @@ namespace OpenInfraPlatform {
 				void triangulateFace(const std::vector<carve::geom::vector<2>>& faceVertices2D,
 					const std::vector<carve::geom::vector<3>>& faceVertices3D,
 					const bool faceLoopReversed,
-					EXPRESSReference<carve::input::PolyhedronData> polygon,
+					std::shared_ptr<carve::input::PolyhedronData> polygon,
 					std::map<std::string, uint32_t>& polygonIndices)
 				{
 					// indices after carve triangulation of merged vertices
