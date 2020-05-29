@@ -990,6 +990,91 @@ namespace OpenInfraPlatform {
 						}
 					}
 				}
+				
+				/*! \internal Still to refactor */
+				void convertIfcShellBasedSurfaceModel(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcShellBasedSurfaceModel>& surface_model,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
+				{
+					//auto vec_shells = shell_based_surface_model->SbsmBoundary;
+					for (auto& it_shells : surface_model->SbsmBoundary) {
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_shells;
+						std::shared_ptr<ItemData> input_data_shells_set(new ItemData);
+
+						switch (it_shells.which()) {
+						case 0:
+							vec_shells.resize(it_shells.get<0>()->CfsFaces.size());
+							std::transform(it_shells.get<0>()->CfsFaces.begin(), it_shells.get<0>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock(); });
+							break;
+						case 1:
+							vec_shells.resize(it_shells.get<1>()->CfsFaces.size());
+							std::transform(it_shells.get<1>()->CfsFaces.begin(), it_shells.get<1>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock(); });
+							break;
+						}
+
+						convertIfcFaceList(vec_shells, pos, input_data_shells_set);
+						std::copy(input_data_shells_set->open_or_closed_polyhedrons.begin(),
+							input_data_shells_set->open_or_closed_polyhedrons.end(),
+							std::back_inserter(itemData->closed_polyhedrons));
+
+					}
+				}
+
+
+				/*! \internal Still to refactor */
+				void convertIfcTessellatedItem(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedItem>& tessItem,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
+				{
+					if( tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>())
+					{
+						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+						auto& faceSet = tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>();
+
+						double length_factor = UnitConvert()->getLengthInMeterFactor();
+
+						// obtain vertices from coordinates list and add them to the new polygon
+						for (const auto& point : faceSet->Coordinates->CoordList)
+						{
+							carve::geom::vector<3> vertex =
+								carve::geom::VECTOR(point[0],
+									point[1],
+									point[2]) * length_factor;
+
+							// apply transformation
+							vertex = pos * vertex;
+
+							polygon->addVertex(vertex);
+						}
+
+						auto& coordinatesIndices = faceSet->CoordIndex;
+						auto& pnIndices = faceSet->PnIndex; // optional
+															//auto& normals = faceSet->Normals; // TODO implement normals
+
+															// read coordinates index list and create faces
+						for (auto& indices : coordinatesIndices)
+						{
+							if (indices.size() < 3)
+							{
+								throw oip::InconsistentModellingException(tessItem, "invalid size of coordIndex attribute.");
+							}
+
+							if (pnIndices)
+								polygon->addFace(pnIndices.get()[indices[0] - 1] - 1,
+									pnIndices.get()[indices[1] - 1] - 1,
+									pnIndices.get()[indices[2] - 1] - 1);
+							else
+								polygon->addFace(indices[0] - 1,
+									indices[1] - 1,
+									indices[2] - 1);
+						}
+
+						itemData->open_or_closed_polyhedrons.push_back(polygon);
+					}
 
 
 			};
