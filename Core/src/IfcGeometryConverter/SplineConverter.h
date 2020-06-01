@@ -274,7 +274,7 @@ namespace OpenInfraPlatform
 
 				private:
 
-			};
+			}; // end class SplineConverterT
 
 			//template<>
 			//inline void SplineConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::convertIfcBSplineCurve(
