@@ -44,6 +44,7 @@ namespace OpenInfraPlatform
 
 					static void convertIfcBSplineCurve(
 						const std::shared_ptr<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve,
+						//const EXPRESSReference<IfcEntityTypesT::IfcBSplineCurve>& splineCurve,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
 						std::vector<carve::geom::vector<3>>& loops)
 					{
