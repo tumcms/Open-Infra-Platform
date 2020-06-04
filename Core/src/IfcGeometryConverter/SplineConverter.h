@@ -48,6 +48,61 @@ namespace OpenInfraPlatform
 						const std::vector<carve::geom::vector<3>>& controlPoints,
 						std::vector<carve::geom::vector<3>>& loops)
 					{
+						const int degree = splineCurve->m_Degree;
+						const int order = degree + 1;
+						const int numControlPoints = splineCurve->m_ControlPointsList.size();
+						const int numKnots = order + numControlPoints;
+
+						std::vector<double> knots;
+						knots.reserve(numKnots);
+
+						std::vector<double> weights;
+
+						std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots> rationalBSplineCurve =
+							std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots>(splineCurve);
+
+						if (rationalBSplineCurve)
+						{
+							//std::cout << "ERROR: IfcRationalBSplineCurveWithKnots not implemented" << std::endl;
+							weights = rationalBSplineCurve->m_WeightsData;
+						}
+
+						std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots> bspline =
+							std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots>(splineCurve);
+
+						if (bspline)
+						{
+							const std::vector<int>& knotMults = bspline->m_KnotMultiplicities;
+							const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnots = bspline->m_Knots;
+							//const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>& splinePoints = bspline->m_ControlPointsList;
+
+							if (knotMults.size() != splineKnots.size())
+							{
+								std::cout << "ERROR: knot multiplicity does not correspond number of knots" << std::endl;
+								return;
+							}
+
+							// obtain knots
+							for (int i = 0; i < splineKnots.size(); ++i)
+							{
+								double knot = splineKnots[i]->m_value;
+								const int knotMult = knotMults[i];
+								// look at the multiplicity of the current knot
+								for (int j = 0; j < knotMult; ++j)
+								{
+									knots.push_back(knot);
+								}
+							}
+
+							//! TEMPORARY default number of curve points
+							const uint8_t numCurvePoints = numKnots * 10;
+							std::vector<carve::geom::vector<3>> curvePoints;
+							curvePoints.reserve(numCurvePoints);
+
+							computeBSplineCurve(order, numCurvePoints, numControlPoints, controlPoints, weights, knots, curvePoints);
+
+							GeomUtils::appendPointsToCurve(curvePoints, loops);
+						}
 					}
 
 					static void convertIfcBSplineSurface(
