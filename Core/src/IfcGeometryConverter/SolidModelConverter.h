@@ -162,8 +162,16 @@ namespace OpenInfraPlatform
 				if (sectioned_solid_horizontal.expired())
 					throw oip::ReferenceExpiredException(sectioned_solid_horizontal);
 
-				// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
-		
+				//Get directrix and cross sections (attributes 1-2).
+				const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix =
+					sectioned_solid_horizontal->Directrix;
+				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
+				vec_cross_sections.resize(sectioned_solid_horizontal->CrossSections.size());
+				std::transform(sectioned_solid_horizontal->CrossSections.begin(),
+					sectioned_solid_horizontal->CrossSections.end(),
+					vec_cross_sections.begin(), [](auto& it) {return it.lock(); });
+
+
 					// Get cross section positions and fixed axis vertical (attributes 3-4).
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression>> vec_cross_section_positions;
 					vec_cross_section_positions.resize(sectioned_solid_horizontal->CrossSectionPositions.size());
@@ -174,9 +182,69 @@ namespace OpenInfraPlatform
 
 					BLUE_LOG(warning) << "Geometry conversion for IfcSectionedSolidHorizontal not implemented.";
 					// TO DO: implement, check for formal propositions. 
+                 
 
-				 //endif sectioned_solid_horizontal
-			}
+				//check dimensions and correct attributes sizes
+                if(vec_cross_sections.size() != vec_cross_section_positions.size())
+				{
+					std::cout << "CrossSections and CrossSectionsPositions are not equal in size " << std::endl;
+					return;
+				}
+				if ((vec_cross_sections.size() - vec_cross_section_positions.size()) > 1)
+				{
+					std::cout << "vec_cross_sections size decreased by one" << std::endl;
+					vec_cross_sections.pop_back();
+				}
+				else if ((vec_cross_section_positions.size() - vec_cross_sections.size()) > 1)
+				{
+					std::cout << "vec_cross_section_positions decreased by one" << std::endl;
+					vec_cross_section_positions.pop_back();
+				}
+
+                 //TO DO: check lenght conversions on the ProfileDistanceExpression L[2:?] CrossSectionPostitions
+				double length_in_meter = UnitConvert()->getLengthInMeterFactor();
+
+
+				 //Give directrix to Curve converter
+		    	 std::vector<carve::geom::vector<3> > segment_start_points;
+	     		 std::vector<carve::geom::vector<3> > basis_curve_points;
+				 curveConverter->convertIfcCurve(directrix.lock(), basis_curve_points, segment_start_points);
+
+				 std::shared_ptr<carve::input::PolyhedronData> pipe_data(new carve::input::PolyhedronData());
+				 itemData->closed_polyhedrons.push_back(pipe_data);
+				 //std::vector<carve::geom::vector<3> > inner_shape_points;  //TO DO: find out if i need inner_shape_points for the CrossSections
+
+				 int num_curve_points = basis_curve_points.size();
+				 carve::math::Matrix matrix_sweep;
+
+				 // Less than two points is a point
+				 if (num_curve_points < 2)
+				 {
+					 std::cout << "IfcSectionedSolidHoritzontal: num curve points < 2" << std::endl;
+					 return;
+				 }
+				 
+				 //Get coordinates from the ProfileConverter for the ProfileDef
+				 for (int i = 0; i <= vec_cross_sections.size(); ++i)
+			     {       
+					     //activate profile converter for each Cross Section 
+						 std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
+						 profile_converter->simplifyPaths();
+						 //Save coordinates in paths
+						 const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
+		         }
+  
+			     // check if paths has been filled with the coordinates of the ProfileDef. if it is empty -> return;
+				 if (paths.size() == 0)
+				 {
+					 std::cout << "Profile converter could not find coordinates" << std::endl;
+					 return;
+				 }
+				
+
+				//TO DO: first normalize vectors to start the extrusion along the Directrix. For each CrossSection along the DIrectrix also one CrossSection Position.
+
+			}//endif sectioned_solid_horizontal
 
 			void convertIfcSectionedSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolid>& sectioned_solid) throw(...)
 			{
