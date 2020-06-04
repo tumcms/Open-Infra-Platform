@@ -24,7 +24,11 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 		* **HINT:** There are components, which Qt Online Installer selects as default options. You can uncheck these components for saving computer memory.
 
-4. **Boost 1_65_1** is installed (find [here](https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/boost_1_65_1-msvc-14.1-64.exe/download)) and a new environment variable called Boost_INCLUDE_DIR is created. This variable should point to the binary folder, where **Boost 1_65_1** is staged (e.g. C:\local\boost_1_65_1\).
+4. **Boost 1_65_1** is installed (find [here](https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/boost_1_65_1-msvc-14.1-64.exe/download)).
+
+	* Create a folder named thirdparty in C:\ and install **Boost 1_65_1** to C:\thirdparty\vs2015\x64\boost_1_65_1.
+	* Add this path into the environment variables. (Create new environment variable called Boost_INCLUDE_DIR. This variable should point to the binary folder, where **Boost 1_65_1** is staged (e.g. C:\thirdparty\vs2015\x64\boost_1_65_1).
+
 5. **Anaconda 2** (version with Python 2.7)  - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe) (For Windows users) 
 
 
@@ -34,6 +38,14 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 ### Download source code 
 
  Clone **OpenInfraPlatform** repository  - more information you can find [here](./GitProcess.md)
+
+ Get Dot and Doxygen:
+
+	 1. After cloning **OpenInfraPlatform** repository open OpenInfraPlatform source folder. 
+	 2. Open folder **external**
+	 3. Open files:
+		* GetDot.cmd  
+		* GetDoxygen.cmd
 
 ### Preparing solution 
 
