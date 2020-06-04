@@ -253,41 +253,10 @@ namespace OpenInfraPlatform {
 
 							uint32_t index1, index2, index3, index4;
 
-							auto itFound = polygonIndices.find(vID.str());
-							if(itFound != polygonIndices.end()) {
-								index1 = itFound->second;
-							}
-							else {
-								index1 = polygon->addVertex(position);
-								polygonIndices[vID.str()] = index1;
-							}
-
-							itFound = polygonIndices.find(vID2.str());
-							if(itFound != polygonIndices.end()) {
-								index2 = itFound->second;
-							}
-							else {
-								index2 = polygon->addVertex(position2);
-								polygonIndices[vID2.str()] = index2;
-							}
-
-							itFound = polygonIndices.find(vID3.str());
-							if(itFound != polygonIndices.end()) {
-								index3 = itFound->second;
-							}
-							else {
-								index3 = polygon->addVertex(nextPosition);
-								polygonIndices[vID3.str()] = index3;
-							}
-
-							itFound = polygonIndices.find(vID4.str());
-							if(itFound != polygonIndices.end()) {
-								index4 = itFound->second;
-							}
-							else {
-								index4 = polygon->addVertex(nextPosition2);
-								polygonIndices[vID4.str()] = index4;
-							}
+							SearchExistingVertex(vID, index1, position);
+							SearchExistingVertex(vID2, index2, position2);
+							SearchExistingVertex(vID3, index3, nextPosition);
+							SearchExistingVertex(vID4, index4, nextPosition2);
 
 							polygon->addFace(index1, index3, index4);
 							polygon->addFace(index4, index2, index1);
@@ -427,7 +396,6 @@ namespace OpenInfraPlatform {
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
-					//TODO If..
 					if(parameterized) {
 						convertIfcParameterizedProfileDefWithPosition(parameterized, paths);
 						continue;
@@ -996,42 +964,12 @@ namespace OpenInfraPlatform {
 								vID4 << nextPosition2.x << " " << nextPosition2.y << " " << nextPosition2.z;
 
 								uint32_t index1, index2, index3, index4;
-								//TODO?
-								auto itFound = polygonIndices.find(vID.str());
-								if(itFound != polygonIndices.end()) {
-									index1 = itFound->second;
-								}
-								else {
-									index1 = polygon->addVertex(position);
-									polygonIndices[vID.str()] = index1;
-								}
 
-								itFound = polygonIndices.find(vID2.str());
-								if(itFound != polygonIndices.end()) {
-									index2 = itFound->second;
-								}
-								else {
-									index2 = polygon->addVertex(position2);
-									polygonIndices[vID2.str()] = index2;
-								}
-
-								itFound = polygonIndices.find(vID3.str());
-								if(itFound != polygonIndices.end()) {
-									index3 = itFound->second;
-								}
-								else {
-									index3 = polygon->addVertex(nextPosition);
-									polygonIndices[vID3.str()] = index3;
-								}
-
-								itFound = polygonIndices.find(vID4.str());
-								if(itFound != polygonIndices.end()) {
-									index4 = itFound->second;
-								}
-								else {
-									index4 = polygon->addVertex(nextPosition2);
-									polygonIndices[vID4.str()] = index4;
-								}
+								SearchExistingVertex(vID, index1, position);
+								SearchExistingVertex(vID2, index2, position2);
+								SearchExistingVertex(vID3, index3, nextPosition);
+								SearchExistingVertex(vID4, index4, nextPosition2);
+								
 
 								polygon->addFace(index1, index3, index4);
 								polygon->addFace(index4, index2, index1);
@@ -1390,6 +1328,18 @@ namespace OpenInfraPlatform {
 				//Default 
 				else {
 					coords.push_back(carve::geom::VECTOR(push_back_x, push_back_y));
+				}
+			}
+
+			void SearchExistingVertex(std::stringstream ID, uint32_t index, carve::geom::vector<3> position) const
+			{
+				auto itFound = polygonIndices.find(ID.str());
+				if (itFound != polygonIndices.end()) {
+					index = itFound->second;
+				}
+				else {
+					index = polygon->addVertex(position);
+					polygonIndices[ID.str()] = index;
 				}
 			}
 
