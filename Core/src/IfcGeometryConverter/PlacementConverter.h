@@ -408,38 +408,38 @@ namespace OpenInfraPlatform {
                     }
                 }
 
-                    /**
-                     * @brief Get's the relative placement in which the local placement is located.
-                     * 
-                     * @param[in]  alreadyApplied List of already applied transformations, in order to not repeat the same transformation.
-                     * @param[in]  local_placement \c IfcLocalPlacement of which to retrieve the relative coordinate system.
-                     * @return  The converted placement matrix.
-                     * 
-                     */
-                    carve::math::Matrix convertRelativePlacement(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcLocalPlacement>& local_placement,
-						std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
-					) const throw(...)
-                    {
-						// check input
-						if (local_placement.expired())
-							throw oip::ReferenceExpiredException(local_placement);
+                /**
+                 * @brief Gets the relative placement in which the local placement is located.
+                 * 
+                 * @param[in]  alreadyApplied List of already applied transformations, in order to not repeat the same transformation.
+                 * @param[in]  local_placement \c IfcLocalPlacement of which to retrieve the relative coordinate system.
+                 * @return  The converted placement matrix.
+                 * 
+                 */
+                carve::math::Matrix convertRelativePlacement(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcLocalPlacement>& local_placement,
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+				) const throw(...)
+                {
+					// check input
+					if (local_placement.expired())
+						throw oip::ReferenceExpiredException(local_placement);
 
-                        // PlacementRelTo
-                        if(local_placement->PlacementRelTo) {
-                            // Reference to ObjectPlacement that provides the relative placement by its local coordinate system. 
-                            return convertIfcObjectPlacement(local_placement->PlacementRelTo.get(), alreadyApplied);
-                        }
-                        else {
-                            BLUE_LOG(warning) << "Context based local placement computation not supported.";
-                            //TODO Georeferencing
-                            // If reference to Object is omitted, then the local placement is given to the WCS, established by the geometric representation context.
-                            //carve::math::Matrix context_matrix( carve::math::Matrix::IDENT() );
-                            //applyContext( context, context_matrix, length_factor, placement_already_applied );
-                            //object_placement_matrix = context_matrix*object_placement_matrix;
-                            return carve::math::Matrix::IDENT();
-                        }
+                    // PlacementRelTo
+                    if(local_placement->PlacementRelTo) {
+                        // Reference to ObjectPlacement that provides the relative placement by its local coordinate system. 
+                        return convertIfcObjectPlacement(local_placement->PlacementRelTo.get(), alreadyApplied);
                     }
+                    else {
+                        BLUE_LOG(warning) << "Context based local placement computation not supported.";
+                        //TODO Georeferencing
+                        // If reference to Object is omitted, then the local placement is given to the WCS, established by the geometric representation context.
+                        //carve::math::Matrix context_matrix( carve::math::Matrix::IDENT() );
+                        //applyContext( context, context_matrix, length_factor, placement_already_applied );
+                        //object_placement_matrix = context_matrix*object_placement_matrix;
+                        return carve::math::Matrix::IDENT();
+                    }
+                }
 
                     /*! \brief Converts \c IfcLocalPlacement to a transformation matrix.
 
