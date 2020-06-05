@@ -187,18 +187,7 @@ namespace OpenInfraPlatform
 				//check dimensions and correct attributes sizes
                 if(vec_cross_sections.size() != vec_cross_section_positions.size())
 				{
-					std::cout << "CrossSections and CrossSectionsPositions are not equal in size " << std::endl;
-					return;
-				}
-				if ((vec_cross_sections.size() - vec_cross_section_positions.size()) > 1)
-				{
-					std::cout << "vec_cross_sections size decreased by one" << std::endl;
-					vec_cross_sections.pop_back();
-				}
-				else if ((vec_cross_section_positions.size() - vec_cross_sections.size()) > 1)
-				{
-					std::cout << "vec_cross_section_positions decreased by one" << std::endl;
-					vec_cross_section_positions.pop_back();
+					oip::InconsistentModellingException("CrossSections and CrossSectionsPositions are not equal in size.");
 				}
 
                  //TO DO: check lenght conversions on the ProfileDistanceExpression L[2:?] CrossSectionPostitions
@@ -210,8 +199,8 @@ namespace OpenInfraPlatform
 	     		 std::vector<carve::geom::vector<3> > basis_curve_points;
 				 curveConverter->convertIfcCurve(directrix.lock(), basis_curve_points, segment_start_points);
 
-				 std::shared_ptr<carve::input::PolyhedronData> pipe_data(new carve::input::PolyhedronData());
-				 itemData->closed_polyhedrons.push_back(pipe_data);
+				 std::shared_ptr<carve::input::PolyhedronData> body_data = std::make_shared<carve::input::PolyhedronData>();
+				 itemData->closed_polyhedrons.push_back(body_data);
 				 //std::vector<carve::geom::vector<3> > inner_shape_points;  //TO DO: find out if i need inner_shape_points for the CrossSections
 
 				 int num_curve_points = basis_curve_points.size();
@@ -220,28 +209,25 @@ namespace OpenInfraPlatform
 				 // Less than two points is a point
 				 if (num_curve_points < 2)
 				 {
-					 std::cout << "IfcSectionedSolidHoritzontal: num curve points < 2" << std::endl;
-					 return;
-				 }
-				 
+					 throw oip::InconsistentModellingException("IfcSectionedSolidHoritzontal: num curve points < 2");
+				 }			 
+
 				 //Get coordinates from the ProfileConverter for the ProfileDef
 				 for (int i = 0; i <= vec_cross_sections.size(); ++i)
 			     {       
-					     //activate profile converter for each Cross Section 
-						 std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
-						 profile_converter->simplifyPaths();
-						 //Save coordinates in paths
-						 const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
-		         }
-  
-			     // check if paths has been filled with the coordinates of the ProfileDef. if it is empty -> return;
-				 if (paths.size() == 0)
-				 {
-					 std::cout << "Profile converter could not find coordinates" << std::endl;
-					 return;
-				 }
-				
+					 //activate profile converter for each Cross Section 
+					 std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
+					 profile_converter->simplifyPaths();
+					 //Save coordinates in paths
+					 const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
 
+					     //check if paths has been filled with the coordinates of the ProfileDef. if empty -> throw Exception
+						 if (paths.size() == 0)
+						 {
+							 throw oip::InconsistentModellingException("Profile converter could not find coordinates");
+						 }
+		         }
+				 
 				//TO DO: first normalize vectors to start the extrusion along the Directrix. For each CrossSection along the DIrectrix also one CrossSection Position.
 
 			}//endif sectioned_solid_horizontal
