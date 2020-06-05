@@ -22,8 +22,8 @@ function(CreateIfcFileUnitTestForSchema test_name schema)
 
     file(GLOB OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}	src/*.cpp)
 
-    source_group(UnitTests\\Schema\\${schema}\\${test_name}   	FILES ${OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}})
-    source_group(UnitTests                   	                FILES ${OpenInfraPlatform_UnitTests_Source})
+    source_group(UnitTests\\${test_name}   	FILES ${OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}})
+    source_group(UnitTests                  FILES ${OpenInfraPlatform_UnitTests_Source})
 
     set(UnitTest_Executable_Name ${test_name})
 
