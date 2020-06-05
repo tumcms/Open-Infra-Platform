@@ -472,28 +472,32 @@ namespace OpenInfraPlatform {
 						 * convertIfcAxis2Placement(local_placement->RelativePlacement);
                 }
 
-                    /**
-                     * @brief Compare the \c IfcAxis2Placement3D in \c IfcLinearPlacement->Position against the passed matrix for identity
-                     * 
-                     * @param[in] matrix Matrix to compare against absolute placement
-                     * @param[in] linear_placement IfcLinearPlacement which holds absolute placement position to compare against computed matrix
-                     */
-                    bool checkLinearPlacementAgainstAbsolutePlacement(
-						carve::math::Matrix& matrix, 
-						const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement
-					) const throw(...)
-                    {
-						// check input
-						if (linear_placement.expired())
-							throw oip::ReferenceExpiredException(linear_placement);
+                /**
+                 * @brief Compare the provided absolute placement in \c IfcLinearPlacement->Position against the passed matrix for identity.
+                 * 
+                 * @param[in] matrix			Matrix to compare against absolute placement.
+                 * @param[in] linear_placement	\c IfcLinearPlacement which holds absolute placement position to compare against computed matrix.
+				 *
+				 * @exception oip::InconsistentGeometryException the positions do not agree.
+				 * @exception oip::ReferenceExpiredException linear_placement reference has expired.
+				 * @returns \c true, if the basolute position is not provided or if both positions are the same, otherwise throws oip::InconsistentGeometryException.
+                 */
+                bool checkLinearPlacementAgainstAbsolutePlacement(
+					carve::math::Matrix& matrix, 
+					const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement
+				) const throw(...)
+                {
+					// check input
+					if (linear_placement.expired())
+						throw oip::ReferenceExpiredException(linear_placement);
 
-                        // check with the provided CartesianPosition [OPTIONAL]
-                        if(    linear_placement->CartesianPosition
-                            && convertIfcAxis2Placement3D(linear_placement->CartesianPosition.get()) != matrix) 
-                                throw oip::InconsistentGeometryException( linear_placement, "Absolute placement and the calculated linear placement do not agree");
-						else
-							return true; // if none provided or it fits
-                    }
+                    // check with the provided CartesianPosition [OPTIONAL]
+                    if(    linear_placement->CartesianPosition
+                        && convertIfcAxis2Placement3D(linear_placement->CartesianPosition.get()) != matrix) 
+                            throw oip::InconsistentGeometryException( linear_placement, "Absolute placement and the calculated linear placement do not agree");
+					else
+						return true; // if none provided or it fits
+                }
 
                     /**
                      * @brief Get the offset from \c IfcDistanceExpression object.
