@@ -441,36 +441,36 @@ namespace OpenInfraPlatform {
                     }
                 }
 
-                    /*! \brief Converts \c IfcLocalPlacement to a transformation matrix.
+                /*! \brief Converts \c IfcLocalPlacement to a transformation matrix.
+				 * 
+                 * \param		alreadyApplied		An array of references to already applied \c IfcObjectPlacement-s.
+                 * \param[in]	local_placement		\c IfcLocalPlacement entity to be interpreted.
+                 * \returns		matrix				Calculated transformation matrix.
 
-                    \param	alreadyApplied		An array of references to already applied \c IfcObjectPlacement-s.
-                    \param[in]	local_placement		\c IfcLocalPlacement entity to be interpreted.
-                    \returns matrix			Calculated transformation matrix.
+                 * Function computes the local placement and stores it in the matrix.
+                 */
+                carve::math::Matrix convertIfcLocalPlacement(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcLocalPlacement>& local_placement,
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+				) const throw(...)
+                {
+                    // **************************************************************************************************************************
+                    //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifclocalplacement.htm
+                    // ENTITY IfcLocalPlacement
+                    //	SUBTYPE OF(IfcObjectPlacement);
+                    //		PlacementRelTo: OPTIONAL IfcObjectPlacement; // was promoted to ObjectPlacement from IFC4x2+
+                    //		RelativePlacement: IfcAxis2Placement;
+                    //	WHERE
+                    //		WR21 : IfcCorrectLocalPlacement(RelativePlacement, PlacementRelTo);
+                    // END_ENTITY;
+                    // **************************************************************************************************************************
+                    // check input
+					if (local_placement.expired())
+						throw oip::ReferenceExpiredException(local_placement);
 
-                    Function computes the local placement and stores it in the matrix.
-                    */
-                    carve::math::Matrix convertIfcLocalPlacement(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcLocalPlacement>& local_placement,
-						std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
-					) const throw(...)
-                    {
-                        // **************************************************************************************************************************
-                        //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifclocalplacement.htm
-                        // ENTITY IfcLocalPlacement
-                        //	SUBTYPE OF(IfcObjectPlacement);
-                        //		PlacementRelTo: OPTIONAL IfcObjectPlacement; // was promoted to ObjectPlacement from IFC4x2+
-                        //		RelativePlacement: IfcAxis2Placement;
-                        //	WHERE
-                        //		WR21 : IfcCorrectLocalPlacement(RelativePlacement, PlacementRelTo);
-                        // END_ENTITY;
-                        // **************************************************************************************************************************
-                        // check input
-						if (local_placement.expired())
-							throw oip::ReferenceExpiredException(local_placement);
-
-						return convertRelativePlacement(local_placement, alreadyApplied)
-							 * convertIfcAxis2Placement(local_placement->RelativePlacement);
-                    }
+					return convertRelativePlacement(local_placement, alreadyApplied)
+						 * convertIfcAxis2Placement(local_placement->RelativePlacement);
+                }
 
                     /**
                      * @brief Compare the \c IfcAxis2Placement3D in \c IfcLinearPlacement->Position against the passed matrix for identity
