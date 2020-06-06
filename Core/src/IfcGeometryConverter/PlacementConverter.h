@@ -622,45 +622,45 @@ namespace OpenInfraPlatform {
                 }
 
 
-                    /**
-                     * @brief Computes the matrix which is multiplied with the offset from the curve to move it to the correct position
-                     * 
-					 * @param[in] directionOfCurve The tangential 3D direction of the curve at \c pointOnCurve
-                     * @param[in] alongHorizontal Is the transformation matrix to be set only along horizontal or is the 3D tangent to remain as is?
-                     * @return the transformation matrix
-                     */
-                    carve::math::Matrix calculateCurveOrientationMatrix(
-						const carve::geom::vector<3>& directionOfCurve, 
-						const bool alongHorizontal
-					) const throw(...)
-					{
-						// check
-						if (   alongHorizontal
-							&& directionOfCurve.x == 0.
-							&& directionOfCurve.y == 0.)
-							throw oip::InconsistentGeometryException("Cannot apply alongHorizontal = true, since the direction is strictly vertical!");
+                /**
+                 * @brief Computes the matrix which is multiplied with the offset from the curve to move it to the correct position
+                 * 
+				 * @param[in] directionOfCurve The tangential 3D direction of the curve at \c pointOnCurve
+                 * @param[in] alongHorizontal Is the transformation matrix to be set only along horizontal or is the 3D tangent to remain as is?
+                 * @return the transformation matrix
+                 */
+                carve::math::Matrix calculateCurveOrientationMatrix(
+					const carve::geom::vector<3>& directionOfCurve, 
+					const bool alongHorizontal
+				) const throw(...)
+				{
+					// check
+					if (   alongHorizontal
+						&& directionOfCurve.x == 0.
+						&& directionOfCurve.y == 0.)
+						throw oip::InconsistentGeometryException("Cannot apply alongHorizontal = true, since the direction is strictly vertical!");
 
-						// correct the x-direction
-                        carve::geom::vector<3> curve_x(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, alongHorizontal ? 0.0 : directionOfCurve.z));
+					// correct the x-direction
+                    carve::geom::vector<3> curve_x(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, alongHorizontal ? 0.0 : directionOfCurve.z));
 
-                        // get the perpendicular to the left of the curve in the x-y plane (curve's coordinate system)
-                        carve::geom::vector<3> curve_y(carve::geom::VECTOR(-curve_x.y, curve_x.x, 0.0)); // always lies in the x-y plane
+                    // get the perpendicular to the left of the curve in the x-y plane (curve's coordinate system)
+                    carve::geom::vector<3> curve_y(carve::geom::VECTOR(-curve_x.y, curve_x.x, 0.0)); // always lies in the x-y plane
 
-                        // get the vertical as cross product
-                        carve::geom::vector<3> curve_z = carve::geom::cross(curve_x, curve_y);
+                    // get the vertical as cross product
+                    carve::geom::vector<3> curve_z = carve::geom::cross(curve_x, curve_y);
 
-                        // normalize the direction vectors
-                        curve_x.normalize();
-                        curve_y.normalize();
-                        curve_z.normalize();
+                    // normalize the direction vectors
+                    curve_x.normalize();
+                    curve_y.normalize();
+                    curve_z.normalize();
 
-                        // produce the location
-                        return carve::math::Matrix(
-                            curve_x.x, curve_y.x, curve_z.x, 0.0,
-                            curve_x.y, curve_y.y, curve_z.y, 0.0,
-                            curve_x.z, curve_y.z, curve_z.z, 0.0,
-                            0.0, 0.0, 0.0, 1.0);
-                    }
+                    // produce the conversion matrix
+                    return carve::math::Matrix(
+                        curve_x.x, curve_y.x, curve_z.x, 0.0,
+                        curve_x.y, curve_y.y, curve_z.y, 0.0,
+                        curve_x.z, curve_y.z, curve_z.z, 0.0,
+                        0.0, 0.0, 0.0, 1.0);
+                }
 
                     /**
                      * @brief Convert \c IfcLinearPlacement
