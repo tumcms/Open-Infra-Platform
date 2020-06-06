@@ -531,16 +531,16 @@ namespace OpenInfraPlatform {
                     ) * UnitConvert()->getLengthInMeterFactor();
                 }
 
-					// ************************************************************************************
-					// VERSION SPECIFIC STUFF
-					// The implementation is in file PlacementConverterImpl.h
-					EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve> GetCurveOfPlacement(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement) const throw (...);
-					// This one too
-					double convertRelativePlacement(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement,
-						std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied) const throw(...);
-					// ************************************************************************************
+				// ************************************************************************************
+				// VERSION SPECIFIC STUFF
+				// The implementation is in file PlacementConverterImpl.h
+				EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve> getCurveOfPlacement(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement) const throw (...);
+				// This one too
+				double convertRelativePlacement(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement,
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied) const throw(...);
+				// ************************************************************************************
 
                     /**
                      * @brief Compute the position of a \c IfcLinearPlacement on it's described curve
