@@ -721,71 +721,71 @@ namespace OpenInfraPlatform {
 					return object_placement_matrix;
                 }
 
-                    /*! \brief Converts \c IfcObjectPlacement to a transformation matrix.
+                /*! \brief Converts \c IfcObjectPlacement to a transformation matrix.
+				 * 
+                 * \param[in]	objectPlacement		\c IfcObjectPlacement entity to be interpreted.
+                 * \param		alreadyApplied		An array of references to already applied \c IfcObjectPlacement-s.
+                 * 
+				 * \return				Calculated transformation matrix.
+				 *
+                 * \note Function checks, if \c objectPlacement is contained within \c alreadyApplied.
+                 * Throws, if contained. Otherwise, transforms the \c objectPlacement with recursive calls to self.
+                 * It adds the \c objectPlacement to \c alreadyApplied.
+                 * This prevents cyclic \c IfcObjectPlacement-s.
+                 */
+				carve::math::Matrix convertIfcObjectPlacement(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement,
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+				) const throw(...)
+				{
+					// **************************************************************************************************************************
+					// IfcObjectPlacement
+					//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifcobjectplacement.htm
+					// ENTITY IfcObjectPlacement
+					//	ABSTRACT SUPERTYPE OF(ONEOF(IfcGridPlacement, IfcLinearPlacement, IfcLocalPlacement));
+					//   PlacementRelTo : IfcObjectPlacement;			// from IFC4x2+
+					//       ( PlacementRelTo is handled by each subtype individually )
+					//	INVERSE
+					//		PlacesObject : SET[0:?] OF IfcProduct FOR ObjectPlacement;
+					//		ReferencedByPlacements: SET[0:?] OF IfcLocalPlacement FOR PlacementRelTo;
+					// END_ENTITY;
+					// **************************************************************************************************************************
+					//check input
+					if (objectPlacement.expired())
+						throw oip::ReferenceExpiredException(objectPlacement);
 
-                    \param[in]	objectPlacement		\c IfcObjectPlacement entity to be interpreted.
-                    \param		alreadyApplied		An array of references to already applied \c IfcObjectPlacement-s.
-                    
-					\return				Calculated transformation matrix.
+					// Prevent cyclic relative placement
+					// this doesn't work as long as there is no comparisson operator==
+					//if(std::find(alreadyApplied.begin(), alreadyApplied.end(), objectPlacement) != alreadyApplied.end())
+					for (const auto& el : alreadyApplied)
+						if (el->getId() == objectPlacement->getId())
+							throw oip::InconsistentModellingException(objectPlacement, "Cyclic application of IfcObjectPlacement!");
 
-                    \note Function checks, if \c objectPlacement is contained within \c alreadyApplied.
-                    Throws, if contained. Otherwise, transforms the \c objectPlacement with recursive calls to self.
-                    It adds the \c objectPlacement to \c alreadyApplied.
-                    This prevents cyclic \c IfcObjectPlacement-s.
-                    */
-                    carve::math::Matrix convertIfcObjectPlacement(
-                        const EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement,
-                        std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
-					) const throw(...)
-                    {
-                        // **************************************************************************************************************************
-                        // IfcObjectPlacement
-                        //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifcobjectplacement.htm
-                        // ENTITY IfcObjectPlacement
-                        //	ABSTRACT SUPERTYPE OF(ONEOF(IfcGridPlacement, IfcLinearPlacement, IfcLocalPlacement));
-                        //   PlacementRelTo : IfcObjectPlacement;			// from IFC4x2+
-                        //       ( PlacementRelTo is handled by each subtype individually )
-                        //	INVERSE
-                        //		PlacesObject : SET[0:?] OF IfcProduct FOR ObjectPlacement;
-                        //		ReferencedByPlacements: SET[0:?] OF IfcLocalPlacement FOR PlacementRelTo;
-                        // END_ENTITY;
-                        // **************************************************************************************************************************
-						//check input
-						if (objectPlacement.expired())
-							throw oip::ReferenceExpiredException(objectPlacement);
+					// Add self to apllied
+					alreadyApplied.push_back(objectPlacement);
 
-                        // Prevent cyclic relative placement
-                        // this doesn't work as long as there is no comparisson operator==
-						//if(std::find(alreadyApplied.begin(), alreadyApplied.end(), objectPlacement) != alreadyApplied.end())
-						for ( const auto& el : alreadyApplied )
-							if( el->getId() == objectPlacement->getId() )
-								throw oip::InconsistentModellingException( objectPlacement, "Placement has been already applied");
-						
-                        // Add self to apllied
-                        alreadyApplied.push_back(objectPlacement);
+					// The placement matrix - local variable that will get returned at the end
+					carve::math::Matrix object_placement_matrix(carve::math::Matrix::IDENT());
 
-                        // The placement matrix - local variable that will get returned at the end
-                        carve::math::Matrix object_placement_matrix(carve::math::Matrix::IDENT());
+					// (1/3) IfcLocalPLacement SUBTYPE OF IfcObjectPlacement
+					if (objectPlacement.isOfType<typename IfcEntityTypesT::IfcLocalPlacement>())
+						object_placement_matrix = convertIfcLocalPlacement(objectPlacement.as<typename IfcEntityTypesT::IfcLocalPlacement>(), alreadyApplied);
 
-                        // (1/3) IfcLocalPLacement SUBTYPE OF IfcObjectPlacement
-                        if( objectPlacement.isOfType<typename IfcEntityTypesT::IfcLocalPlacement>() )
-                            object_placement_matrix = convertIfcLocalPlacement(objectPlacement.as<typename IfcEntityTypesT::IfcLocalPlacement>(), alreadyApplied);
+					// (2/3) IfcGridPlacement SUBTYPE OF IfcObjectPlacement
+					else if (objectPlacement.isOfType<typename IfcEntityTypesT::IfcGridPlacement>()) {
+						//TODO Not implemented
+						throw oip::UnhandledException(objectPlacement);
+					} // end if IfcGridPlacement
 
-                        // (2/3) IfcGridPlacement SUBTYPE OF IfcObjectPlacement
-                        else if(objectPlacement.isOfType<typename IfcEntityTypesT::IfcGridPlacement>()) {
-                            //TODO Not implemented
-                            throw oip::UnhandledException(objectPlacement);
-                        } // end if IfcGridPlacement
+					// (3/3) IfcLinearPlacement SUBTYPE OF IfcObjectPlacement
+					else if (objectPlacement.isOfType<typename IfcEntityTypesT::IfcLinearPlacement>())
+						object_placement_matrix = convertIfcLinearPlacement(objectPlacement.as<typename IfcEntityTypesT::IfcLinearPlacement>(), alreadyApplied);
 
-                        // (3/3) IfcLinearPlacement SUBTYPE OF IfcObjectPlacement
-                        else if(objectPlacement.isOfType<typename IfcEntityTypesT::IfcLinearPlacement>())
-                            object_placement_matrix = convertIfcLinearPlacement(objectPlacement.as<typename IfcEntityTypesT::IfcLinearPlacement>(), alreadyApplied);
-
-                        // Remove self from applied
-                        alreadyApplied.pop_back();
-						// return the calculated placement matrix
-                        return object_placement_matrix;
-                   }
+					// Remove self from applied
+					alreadyApplied.pop_back();
+					// return the calculated placement matrix
+					return object_placement_matrix;
+				}
 
                     // Function 4: Get World Coordinate System. 
                     static void getWorldCoordinateSystem(
