@@ -499,37 +499,37 @@ namespace OpenInfraPlatform {
 						return true; // if none provided or it fits
                 }
 
-                    /**
-                     * @brief Get the offset from \c IfcDistanceExpression object.
-                     * 
-                     * @param[in] distExpr The \c IfcDistanceExpression from which to compute the offset.
-					 *
-                     * @return The offsets as 3D vector.
-                     */
-                    carve::geom::vector<3> convertIfcDistanceExpressionOffsets(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>& distExpr
-					) const throw(...)
-                    {
-                        // ***********************************************************
-                        // ENTITY IfcDistanceExpression
-                        //  SUBTYPE OF (IfcGeometricRepresentationItem);
-                        //   DistanceAlong : IfcLengthMeasure;
-                        //   OffsetLateral : OPTIONAL IfcLengthMeasure;
-                        //   OffsetVertical : OPTIONAL IfcLengthMeasure;
-                        //   OffsetLongitudinal : OPTIONAL IfcLengthMeasure;
-                        //   AlongHorizontal : OPTIONAL IfcBoolean;
-                        // END_ENTITY;
-						// ***********************************************************
-						// check input
-						if (distExpr.expired())
-							throw oip::ReferenceExpiredException(distExpr);
+                /**
+                 * @brief Get the offset from \c IfcDistanceExpression object.
+                 * 
+                 * @param[in] distExpr The \c IfcDistanceExpression from which to compute the offset.
+				 *
+                 * @return The offsets as 3D vector.
+                 */
+                carve::geom::vector<3> convertIfcDistanceExpressionOffsets(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>& distExpr
+				) const throw(...)
+                {
+                    // ***********************************************************
+                    // ENTITY IfcDistanceExpression
+                    //  SUBTYPE OF (IfcGeometricRepresentationItem);
+                    //   DistanceAlong : IfcLengthMeasure;
+                    //   OffsetLateral : OPTIONAL IfcLengthMeasure;
+                    //   OffsetVertical : OPTIONAL IfcLengthMeasure;
+                    //   OffsetLongitudinal : OPTIONAL IfcLengthMeasure;
+                    //   AlongHorizontal : OPTIONAL IfcBoolean;
+                    // END_ENTITY;
+					// ***********************************************************
+					// check input
+					if (distExpr.expired())
+						throw oip::ReferenceExpiredException(distExpr);
 
-                        return carve::geom::VECTOR(
-                            distExpr->OffsetLongitudinal.value_or(0.0),
-                            distExpr->OffsetLateral.value_or(0.0),
-                            distExpr->OffsetVertical.value_or(0.0)
-                        ) * UnitConvert()->getLengthInMeterFactor();
-                    }
+                    return carve::geom::VECTOR(
+                        distExpr->OffsetLongitudinal.value_or(0.0),
+                        distExpr->OffsetLateral.value_or(0.0),
+                        distExpr->OffsetVertical.value_or(0.0)
+                    ) * UnitConvert()->getLengthInMeterFactor();
+                }
 
 					// ************************************************************************************
 					// VERSION SPECIFIC STUFF
