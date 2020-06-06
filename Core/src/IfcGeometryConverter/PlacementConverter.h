@@ -579,47 +579,47 @@ namespace OpenInfraPlatform {
                     return { pointOnCurve, directionOfCurve };
                 }
 
-                    /**
-                     * @brief Computes the rotation matrix from an \c IfcOrientationExpression.
-                     * 
-                     * @param[in] orientExpr the \c IfcOrientationExpression to convert.
-                     * @param translate Optional translation component of transformation.
-                     * @returns transfomration (rotation+placement) matrix.
-                     */
-                    carve::math::Matrix convertIfcOrientationExpression(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcOrientationExpression>& orientExpr,
-						const carve::geom::vector<3> translate = carve::geom::VECTOR(0.,0.,0.)
-					) const throw(...)
-                    {
-						//check input
-						if (orientExpr.expired())
-							throw oip::ReferenceExpiredException(orientExpr);
+                /**
+                 * @brief Computes the rotation matrix from an \c IfcOrientationExpression.
+                 * 
+                 * @param[in] orientExpr the \c IfcOrientationExpression to convert.
+                 * @param[in] translate Optional translation component of transformation.
+                 * @returns transformation (rotation+placement) matrix.
+                 */
+                carve::math::Matrix convertIfcOrientationExpression(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcOrientationExpression>& orientExpr,
+					const carve::geom::vector<3> translate = carve::geom::VECTOR(0.,0.,0.)
+				) const throw(...)
+                {
+					//check input
+					if (orientExpr.expired())
+						throw oip::ReferenceExpiredException(orientExpr);
 
-						// defaults
-                        carve::geom::vector<3> local_y = carve::geom::VECTOR(1.0, 0.0, 0.0);
-                        carve::geom::vector<3> local_z = carve::geom::VECTOR(0.0, 1.0, 0.0);
-                        carve::geom::vector<3> local_x = carve::geom::VECTOR(0.0, 0.0, 1.0);
+					// defaults
+                    carve::geom::vector<3> local_x = carve::geom::VECTOR(1.0, 0.0, 0.0);
+                    carve::geom::vector<3> local_y = carve::geom::VECTOR(0.0, 1.0, 0.0);
+                    carve::geom::vector<3> local_z = carve::geom::VECTOR(0.0, 0.0, 1.0);
 
-                        // Orientation OPTIONAL
-                        // ENTITY IfcOrientationExpression
-                        //	SUBTYPE OF(IfcGeometricRepresentationItem);
-                        //	LateralAxisDirection: IfcDirection;
-                        //	VerticalAxisDirection: IfcDirection;
-                        // END_ENTITY;
-                        if(orientExpr) {
-                            // convert the attributes
-                            local_y = convertIfcDirection(orientExpr->LateralAxisDirection);
-                            local_z = convertIfcDirection(orientExpr->VerticalAxisDirection);
-                            local_x = carve::geom::cross(local_y, local_z);
-                        }
-
-                        // produce a rotation matrix
-                        return carve::math::Matrix(
-                            local_x.x, local_y.x, local_z.x, translate.x,
-                            local_x.y, local_y.y, local_z.y, translate.y,
-                            local_x.z, local_y.z, local_z.z, translate.z,
-                            0, 0, 0, 1);
+                    // Orientation OPTIONAL
+                    // ENTITY IfcOrientationExpression
+                    //	SUBTYPE OF(IfcGeometricRepresentationItem);
+                    //	LateralAxisDirection: IfcDirection;
+                    //	VerticalAxisDirection: IfcDirection;
+                    // END_ENTITY;
+                    if(orientExpr) {
+                        // convert the attributes
+                        local_y = convertIfcDirection(orientExpr->LateralAxisDirection);
+                        local_z = convertIfcDirection(orientExpr->VerticalAxisDirection);
+                        local_x = carve::geom::cross(local_y, local_z);
                     }
+
+                    // produce a rotation matrix
+                    return carve::math::Matrix(
+                        local_x.x, local_y.x, local_z.x, translate.x,
+                        local_x.y, local_y.y, local_z.y, translate.y,
+                        local_x.z, local_y.z, local_z.z, translate.z,
+                        0, 0, 0, 1);
+                }
 
 
                     /**
