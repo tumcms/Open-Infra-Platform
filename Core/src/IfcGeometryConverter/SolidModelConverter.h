@@ -183,16 +183,14 @@ namespace OpenInfraPlatform
 					BLUE_LOG(warning) << "Geometry conversion for IfcSectionedSolidHorizontal not implemented.";
 					// TO DO: implement, check for formal propositions. 
                  
-
 				//check dimensions and correct attributes sizes
                 if(vec_cross_sections.size() != vec_cross_section_positions.size())
 				{
-					oip::InconsistentModellingException("CrossSections and CrossSectionsPositions are not equal in size.");
+					oip::InconsistentModellingException(sectioned_solid_horizontal, "CrossSections and CrossSectionsPositions are not equal in size.");
 				}
 
                  //TO DO: check lenght conversions on the ProfileDistanceExpression L[2:?] CrossSectionPostitions
 				double length_in_meter = UnitConvert()->getLengthInMeterFactor();
-
 
 				 //Give directrix to Curve converter
 		    	 std::vector<carve::geom::vector<3> > segment_start_points;
@@ -209,24 +207,24 @@ namespace OpenInfraPlatform
 				 // Less than two points is a point
 				 if (num_curve_points < 2)
 				 {
-					 throw oip::InconsistentModellingException("IfcSectionedSolidHoritzontal: num curve points < 2");
+					 throw oip::InconsistentModellingException(sectioned_solid_horizontal, " num curve points < 2");
 				 }			 
 
 				 //Get coordinates from the ProfileConverter for the ProfileDef
 				 for (int i = 0; i <= vec_cross_sections.size(); ++i)
 			     {       
-					 //activate profile converter for each Cross Section 
 					 std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
 					 profile_converter->simplifyPaths();
 					 //Save coordinates in paths
 					 const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
-
+					 
 					     //check if paths has been filled with the coordinates of the ProfileDef. if empty -> throw Exception
 						 if (paths.size() == 0)
 						 {
-							 throw oip::InconsistentModellingException("Profile converter could not find coordinates");
+							 throw oip::InconsistentModellingException(sectioned_solid_horizontal, "Profile converter could not find coordinates");
 						 }
 		         }
+				 
 				 
 				//TO DO: first normalize vectors to start the extrusion along the Directrix. For each CrossSection along the DIrectrix also one CrossSection Position.
 
