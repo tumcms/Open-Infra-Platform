@@ -81,7 +81,7 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>> segment_start_points;
 					convertIfcCurve(ifcCurve, loops, segment_start_points);
 
-					std::shared_ptr<carve::input::PolylineSetData> polylineData(new carve::input::PolylineSetData());
+					std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					polylineData->beginPolyline();
 					for (int i = 0; i < loops.size(); ++i) {
 						polylineData->addVertex(pos * loops.at(i));
