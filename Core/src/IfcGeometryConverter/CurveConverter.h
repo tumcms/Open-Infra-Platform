@@ -1016,13 +1016,11 @@ namespace OpenInfraPlatform {
 				} //end convertIfcCurve2D
 
 				/*! \brief Converts \c IfcPolyline to a series of points.
-				*
-				* This function is called from CurveConverterT::convertIfcCurve but is provided for simplicity reasons.
-				*
-				* \param[in] ifcpolyline			The \c IfcPolyline to be converted.
-				*
-				* \returns							The series of points.
-				*/
+				 *
+				 * \param[in] ifcpolyline			The \c IfcPolyline to be converted.
+				 *
+				 * \returns							The series of points.
+				 */
 				std::vector<carve::geom::vector<3>> convertIfcPolyline(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& ifcpolyline
 				) const throw(...)
