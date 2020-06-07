@@ -79,7 +79,7 @@ namespace OpenInfraPlatform {
 				{
 					std::vector<carve::geom::vector<3>> loops;
 					std::vector<carve::geom::vector<3>> segment_start_points;
-					convertIfcCurve(ifcCurve.lock(), loops, segment_start_points);
+					convertIfcCurve(ifcCurve, loops, segment_start_points);
 
 					std::shared_ptr<carve::input::PolylineSetData> polylineData(new carve::input::PolylineSetData());
 					polylineData->beginPolyline();
@@ -98,7 +98,7 @@ namespace OpenInfraPlatform {
 				*
 				* \note Calls the other overload CurveConverterT::convertIfcCurve with empty \c IfcTrimmingSelect-s.
 				*/
-				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
+				void convertIfcCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<3>>& loops,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
@@ -119,7 +119,7 @@ namespace OpenInfraPlatform {
 				*
 				* \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometryresource/lexical/ifccurve.htm
 				*/
-				void convertIfcCurve(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
+				void convertIfcCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> >& trim1Vec,
@@ -130,11 +130,6 @@ namespace OpenInfraPlatform {
 					// get the scaling factors from unit converter
 					double length_factor = UnitConvert()->getLengthInMeterFactor();
 					double plane_angle_factor = UnitConvert()->getAngleInRadianFactor();
-
-					// log to the console
-					#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing " << ifcCurve->getErrorLog();
-					#endif
 
 					/*	CurveConverter.h (IFC 4x1)
 
@@ -178,10 +173,11 @@ namespace OpenInfraPlatform {
 					//	IfcBoundedCurve SUBTYPE of IfcCurve																									//
 					//	ABSTRACT SUPERTYPE of IfcAlignmentCurve, IfcBsplineCurve, IfcCompositeCurve, IfcIndexedPolycurve, IfcPolyline, IfcIfcTrimmedCurve	//
 					// ************************************************************************************************************************************	//
-					std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBoundedCurve>(ifcCurve);
-					if (bounded_curve)
+					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcBoundedCurve>())
 					{
+						std::shared_ptr<typename IfcEntityTypesT::IfcBoundedCurve> bounded_curve =
+							ifcCurve.as<typename IfcEntityTypesT::IfcBoundedCurve>().lock();
+
 						// (1/6) IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
 						std::shared_ptr<typename IfcEntityTypesT::IfcAlignmentCurve> alignment_curve =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignmentCurve>(bounded_curve);
@@ -560,9 +556,11 @@ namespace OpenInfraPlatform {
 					//	IfcConic SUPTYPE of IfcCurve																							//
 					//	ABSTRACT SUPERTYPE of IfcCircle, IfcEllipse																				//
 					// ************************************************************************************************************************	//
-					std::shared_ptr<typename IfcEntityTypesT::IfcConic> conic =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConic>(ifcCurve);
-					if (conic) {
+					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcConic>())
+					{
+						std::shared_ptr<typename IfcEntityTypesT::IfcConic> conic =
+							ifcCurve.as<typename IfcEntityTypesT::IfcConic>().lock();
+
 						// determine position
                         carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(conic->Position);
 
@@ -765,10 +763,11 @@ namespace OpenInfraPlatform {
 					// ************************************************************************************************************************	//
 					//	IfcLine SUPTYPE of IfcCurve																								//
 					// ************************************************************************************************************************	//
-					std::shared_ptr<typename IfcEntityTypesT::IfcLine> line =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLine>(ifcCurve);
-					if (line)
+					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
 					{
+						std::shared_ptr<typename IfcEntityTypesT::IfcLine> line =
+							ifcCurve.as<typename IfcEntityTypesT::IfcLine>().lock();
+
 						// Part 1: Get information from IfcLine. 
 
 						// Get IfcLine attributes: line point and line direction. 
@@ -877,9 +876,11 @@ namespace OpenInfraPlatform {
 					//	ABSTRACT SUPERTYPE OF IfcOffsetCurve2D, IfcOffsetCurve3D, IfcOffsetCurveByDistances										//
 					// ************************************************************************************************************************	//
 					// TODO: IMPLEMENT OFFSETCURVE, PCURVE, SURFACECURVE
-					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve> offset_curve =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve>(ifcCurve);
-					if (offset_curve) {
+					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcOffsetCurve>())
+					{
+						std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve> offset_curve =
+							ifcCurve.as<typename IfcEntityTypesT::IfcOffsetCurve>().lock();
+
 						BLUE_LOG(warning) << offset_curve->getErrorLog() << ": Not supported";
 						return;
 						/*
@@ -918,10 +919,11 @@ namespace OpenInfraPlatform {
 					// ************************************************************************************************************************	//
 					//	IfcPcurve SUPTYPE of IfcCurve																							//
 					// ************************************************************************************************************************	//
-					std::shared_ptr<typename IfcEntityTypesT::IfcPcurve> p_curve =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPcurve>(ifcCurve);
-					if (p_curve)
+					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcPcurve>())
 					{
+						std::shared_ptr<typename IfcEntityTypesT::IfcPcurve> p_curve =
+							ifcCurve.as<typename IfcEntityTypesT::IfcPcurve>().lock();
+
 						BLUE_LOG(warning) << p_curve->getErrorLog() << ": Not supported";
 						return;
 						// TO DO: implement
@@ -931,10 +933,11 @@ namespace OpenInfraPlatform {
 					//	IfcSurfaceCurve SUPTYPE of IfcCurve																						//
 					//	ABSTRACT SUPERTYPE OF IfcIntersectionCurve, IfcSeamCurve																//
 					// ************************************************************************************************************************	//
-					std::shared_ptr<typename IfcEntityTypesT::IfcSurfaceCurve> surface_curve =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSurfaceCurve>(ifcCurve);
-					if (surface_curve)
+					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcSurfaceCurve>())
 					{
+						std::shared_ptr<typename IfcEntityTypesT::IfcSurfaceCurve> surface_curve =
+							ifcCurve.as<typename IfcEntityTypesT::IfcSurfaceCurve>().lock();
+
 						BLUE_LOG(warning) << surface_curve->getErrorLog() << ": Not supported";
 						return;
 						/*
@@ -956,8 +959,7 @@ namespace OpenInfraPlatform {
 						*/
 					} // end if IfcSurfaceCurve
 
-					BLUE_LOG(warning) << ifcCurve->getErrorLog() << ": Not supported";
-					return;
+					throw oip::UnhandledException(ifcCurve);
 				} // end convertIfcCurve (function)
 
 				/*! \brief Calls CurveConverterT::convertIfcCurve and converts the results to 2D.
@@ -968,7 +970,7 @@ namespace OpenInfraPlatform {
 				*
 				* \note Calls the other overload CurveConverterT::convertIfcCurve2D with empty \c IfcTrimmingSelect-s.
 				*/
-				void convertIfcCurve2D(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
+				void convertIfcCurve2D(const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<2>>& loops,
 					std::vector<carve::geom::vector<2>>& segmentStartPoints
 				) const throw(...)
@@ -989,7 +991,7 @@ namespace OpenInfraPlatform {
 				*
 				* \note Calls the CurveConverterT::convertIfcCurve and converts the results to 2D.
 				*/
-				void convertIfcCurve2D(const std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
+				void convertIfcCurve2D(const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& ifcCurve,
 					std::vector<carve::geom::vector<2>>& targetVec,
 					std::vector<carve::geom::vector<2>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
@@ -1042,23 +1044,13 @@ namespace OpenInfraPlatform {
 				*
 				* \internal TODO.
 				*/
-				void convertIfcLoop(const std::shared_ptr<typename IfcEntityTypesT::IfcLoop>& ifcloop,
+				void convertIfcLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& ifcloop,
 					std::vector<carve::geom::vector<3>>& loop
 				) const throw(...)
 				{
-					const std::shared_ptr<typename IfcEntityTypesT::IfcPolyLoop> polyLoop =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyLoop>(ifcloop);
-					if (polyLoop) 
-					{
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint>> ifcPoints;
-						ifcPoints.resize(polyLoop->Polygon.size());
-						std::transform(
-							polyLoop->Polygon.begin(),
-							polyLoop->Polygon.end(),
-							ifcPoints.begin(),
-							[](auto &it) { return it.lock(); });
-
-						convertIfcCartesianPointVectorSkipDuplicates(ifcPoints, loop);
+					if (ifcloop.isOfType<typename IfcEntityTypesT::IfcPolyLoop>()) 
+					{						
+						convertIfcCartesianPointVectorSkipDuplicates(ifcloop.as<typename IfcEntityTypesT::IfcPolyLoop>()->Polygon, loop);
 
 						// If first and last point have same coordinates, remove last point
 						while (loop.size() > 2) {
@@ -1078,10 +1070,11 @@ namespace OpenInfraPlatform {
 						return;
 					} // end if polyloop
 
-					std::shared_ptr<typename IfcEntityTypesT::IfcEdgeLoop> edgeLoop =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdgeLoop>(ifcloop);
-					if (edgeLoop) 
+					if (ifcloop.isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
 					{
+						std::shared_ptr<typename IfcEntityTypesT::IfcEdgeLoop> edgeLoop =
+							ifcloop.as<typename IfcEntityTypesT::IfcEdgeLoop>().lock();
+
 						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge>> edgeList;
 						edgeList.resize(edgeLoop->EdgeList.size());
 						std::transform(
@@ -1189,7 +1182,8 @@ namespace OpenInfraPlatform {
 				) const throw(...)
 				{
 					// initialize the return value with enough space
-					std::vector<carve::geom::vector<3>> loop( points.size() );
+					std::vector<carve::geom::vector<3>> loop;
+					loop.reserve(points.size());
 					// convert each point individually and add to the return vector
 					for ( auto& it : points )
 						loop.push_back(placementConverter->convertIfcCartesianPoint(it));
@@ -1207,19 +1201,20 @@ namespace OpenInfraPlatform {
 				* \internal TODO.
 				*/
 				void convertIfcCartesianPointVectorSkipDuplicates(
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> >& ifcPoints,
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> >& ifcPoints,
 					std::vector<carve::geom::vector<3> >& loop
 				) const throw(...)
 				{
 					carve::geom::vector<3>  vertex_previous;
+					bool first = true;
 
-					for ( auto& it_cp = ifcPoints.begin(); it_cp != ifcPoints.end(); ++it_cp) {
-						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> cp = (*it_cp);
+					for ( auto& it_cp : ifcPoints) {
+						std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> cp = it_cp.lock();
 
-						carve::geom::vector<3>  vertex = placementConverter->convertIfcCartesianPoint( *it_cp );
+						carve::geom::vector<3>  vertex = placementConverter->convertIfcCartesianPoint( it_cp );
 
 						// skip duplicate vertices
-						if (it_cp != ifcPoints.begin()) {
+						if (!first) {
 							if (abs(vertex.x - vertex_previous.x) < 0.00000001) {
 								if (abs(vertex.y - vertex_previous.y) < 0.00000001) {
 									if (abs(vertex.z - vertex_previous.z) < 0.00000001) {
@@ -1230,6 +1225,9 @@ namespace OpenInfraPlatform {
 								}
 							}
 						}
+						else
+							first = false;
+
 						loop.push_back(vertex);
 						vertex_previous = vertex;
 					}
