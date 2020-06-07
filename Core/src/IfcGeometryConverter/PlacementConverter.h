@@ -1094,7 +1094,7 @@ namespace OpenInfraPlatform {
 				) const throw(...)
                 {
                     if(!bDistMeasuredAlongHorizontal)
-                        BLUE_LOG(info) << __func__ << ": Distance along a 3D curve not supported. Interpretation is along the horizontal distance.";
+						throw oip::UnhandledException("Function convertAlignmentCurveDistAlongToPoint3D: Distance along a 3D curve not supported.";
 
                     // preset the return values
                     vkt3DtargetPoint = carve::geom::VECTOR(0., 0., 0.);
@@ -1104,7 +1104,10 @@ namespace OpenInfraPlatform {
                     double length_factor = UnitConvert()->getLengthInMeterFactor();
                     double plane_angle_factor = UnitConvert()->getAngleInRadianFactor();
 
-                    if(ifcCurve.isOfType<typename IfcEntityTypesT::IfcAlignmentCurve>()) {
+					if (!ifcCurve.isOfType<typename IfcEntityTypesT::IfcAlignmentCurve>())
+						throw oip::UnhandledException("Function convertAlignmentCurveDistAlongToPoint3D exclusively handles IfcAlignmentCurve.");
+					else
+					{
 						auto alignment_curve = ifcCurve.as<typename IfcEntityTypesT::IfcAlignmentCurve>();
 
 						// **************************************************************************************************************************
@@ -1804,9 +1807,6 @@ namespace OpenInfraPlatform {
                         vkt3DtargetDirection.normalize();
 
                     }//end if alignment curve
-                    else {
-                        BLUE_LOG(error) << ifcCurve->getErrorLog() << ": Function convertAlignmentCurveDistAlongToPoint3D exclusively handles alignment curves.";
-                    }
                 }//end convertAlignmentCurveDistAlongToPoint3D
 
             };
