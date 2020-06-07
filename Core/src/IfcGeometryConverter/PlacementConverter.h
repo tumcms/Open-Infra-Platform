@@ -570,7 +570,7 @@ namespace OpenInfraPlatform {
 					
 					// convert the point
                     convertBoundedCurveDistAlongToPoint3D(
-                        GetCurveOfPlacement(linear_placement),
+                        getCurveOfPlacement(linear_placement),
                         dDistAlong,
                         linear_placement->Distance->AlongHorizontal.value_or(true),
                         pointOnCurve,
