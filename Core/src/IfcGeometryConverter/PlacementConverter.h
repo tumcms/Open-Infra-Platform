@@ -787,12 +787,13 @@ namespace OpenInfraPlatform {
 					return object_placement_matrix;
 				}
 
-                    // Function 4: Get World Coordinate System. 
-                    static void getWorldCoordinateSystem(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationContext>& context,
-                        carve::math::Matrix& matrix, double length_factor,
-                        std::set<int>& already_applied)
-                    {
+                // Function 4: Get World Coordinate System. 
+				// \internal TODO refactoring
+                static void getWorldCoordinateSystem(
+                    const std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationContext>& context,
+                    carve::math::Matrix& matrix, double length_factor,
+                    std::set<int>& already_applied)
+                {
                         if(!context) {
                             return;
                         }
@@ -844,14 +845,15 @@ namespace OpenInfraPlatform {
                                 getWorldCoordinateSystem(parent_context, matrix, length_factor, already_applied);
                             }
                         }
-                    }
+                }
 
-                    // Function 5: Convert Transformation Operator. 
-                    static void convertTransformationOperator(
-                        const std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator> transform_operator,
-                        carve::math::Matrix& matrix,
-                        double length_factor)
-                    {
+                // Function 5: Convert Transformation Operator. 
+				// \internal TODO refactoring
+				static void convertTransformationOperator(
+                    const std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator> transform_operator,
+                    carve::math::Matrix& matrix,
+                    double length_factor)
+                {
                         // IfcCartesianTransformationOperator ABSTRACT SUPERTYPE OF IfcCartesianTransformationOperator2D, IfcCartesianTransformationOperator3D
                         carve::geom::vector<3>  translate(carve::geom::VECTOR(0.0, 0.0, 0.0));
                         carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
@@ -1014,14 +1016,15 @@ namespace OpenInfraPlatform {
                             local_x.z, local_y.z, local_z.z, translate.z,
                             0, 0, 0, 1);
                         matrix = rotate_translate * carve::math::Matrix::SCALE(scale, scale_y, scale_z);
-                    }
+                }
 
-                    // Function 6: Get Plane. 
-                    static void getPlane(const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d,
-                        carve::geom::plane<3>& plane,
-                        carve::geom::vector<3>& translate,
-                        double length_factor)
-                    {
+                // Function 6: Get Plane. 
+				// \internal TODO refactoring
+				static void getPlane(const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d,
+                    carve::geom::plane<3>& plane,
+                    carve::geom::vector<3>& translate,
+                    double length_factor)
+                {
                         carve::geom::vector<3>  location(carve::geom::VECTOR(0.0, 0.0, 0.0));
                         carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
                         carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
@@ -1068,7 +1071,7 @@ namespace OpenInfraPlatform {
                         plane.d = p.d;
                         plane.N = local_z;
                         translate = location;
-                    }
+                }
 
                     /*! \brief Calculates a point and the tangent at the point along a \c IfcCurve.
 
