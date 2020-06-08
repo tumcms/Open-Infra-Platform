@@ -881,15 +881,17 @@ namespace OpenInfraPlatform {
 				\param	faceVertices2D to be triangulated using carve
 				\param	faceVertices3D to be added to the triangulation
 				\param	faceLoopReversed to adapt order of adding vertices of a new face
-				\param	polygon to compare triangulated vertices with existing ones in polygon, and only add them if they're new
+				\return	polygon to compare triangulated vertices with existing ones in polygon, and only add them if they're new
 				\param	polygonIndices
 				*/
 
-				void triangulateFace(const std::vector<carve::geom::vector<2>>& faceVertices2D,
+				std::shared_ptr<carve::input::PolyhedronData> triangulateFace(const std::vector<carve::geom::vector<2>>& faceVertices2D,
 					const std::vector<carve::geom::vector<3>>& faceVertices3D,
 					const bool faceLoopReversed,
-					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices)  const throw(...) {
+					std::map<std::string, uint32_t>& polygonIndices)  const throw(...) 
+					{
+
+					std::shared_ptr<carve::input::PolyhedronData> polygon = std::shared_ptr<carve::input::PolyhedronData>();
 					// indices after carve triangulation of merged vertices
 					std::vector<carve::triangulate::tri_idx> triangulatedIndices;
 					std::map<uint32_t, uint32_t> mergedIndices;
@@ -935,6 +937,7 @@ namespace OpenInfraPlatform {
 						else
 							polygon->addFace(v0, v1, v2);
 					}
+					return polygon;
 				}
 
 				/*! \brief Converts \c IfcCartesianPoint to a 2D vector.
@@ -942,8 +945,9 @@ namespace OpenInfraPlatform {
 				\param	faceVertices3D to be added to the triangulation
 				*/
 
-				void convertIfcCartesianPoint2DVector(const std::vector<std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points2D,
-					std::vector<std::vector<carve::geom::vector<3>>>& loop2D)  const throw(...) {
+				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPoint2DVector(const std::vector<std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points2D)  const throw(...)
+				{
+					std::vector<std::vector<carve::geom::vector<3>>> loop2D = std::vector<std::vector<carve::geom::vector<3>>>();
 					const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
 					const uint32_t numPointsY = points2D.size();
 					loop2D.resize(numPointsY);
@@ -964,12 +968,14 @@ namespace OpenInfraPlatform {
 								double y = coords[1] * lengthFactor;
 								double z = coords[2] * lengthFactor;
 								loop2D[j].push_back(carve::geom::VECTOR(x, y, z));
+								return loop2D;
 							}
 							else if (coords.size() > 1) {
 								double x = coords[0] * lengthFactor;
 								double y = coords[1] * lengthFactor;
 
 								loop2D[j].push_back(carve::geom::VECTOR(x, y, 0.0));
+								return loop2D;
 							}
 							else {
 								std::cout << "convertIfcCartesianPointVector: ifc_pt->Coordinates.size() != 2" << std::endl;
