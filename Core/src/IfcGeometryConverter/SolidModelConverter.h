@@ -186,7 +186,7 @@ namespace OpenInfraPlatform
 				//check dimensions and correct attributes sizes
                 if(vec_cross_sections.size() != vec_cross_section_positions.size())
 				{
-					oip::InconsistentModellingException(sectioned_solid_horizontal, "CrossSections and CrossSectionsPositions are not equal in size.");
+					throw oip::InconsistentModellingException(sectioned_solid_horizontal, "CrossSections and CrossSectionsPositions are not equal in size.");
 				}
 
                  //TO DO: check lenght conversions on the ProfileDistanceExpression L[2:?] CrossSectionPostitions
@@ -210,34 +210,23 @@ namespace OpenInfraPlatform
 					 throw oip::InconsistentModellingException(sectioned_solid_horizontal, " num curve points < 2");
 				 }			 
 
-				 std::vector<std::shared_ptr<ProfileConverterT<IfcEntityTypesT>>> profile_converter;
+				 // define Vector to fill with the coordinates of the CrossSections
+				 std::vector<std::vector<std::vector<carve::geom::vector<2>>>> paths;
 				 //Get coordinates from the ProfileConverter for the ProfileDef
 				 for (int i = 0; i <= vec_cross_sections.size(); ++i)
-			     {       
-					 profile_converter.push_back (profileCache->getProfileConverter(vec_cross_sections[i]));
-					
+			     {      
 					 //Save coordinates in paths
-					 std::vector<std::vector<carve::geom::vector<2>>> paths = profile_converter[i]->getCoordinates();
+					 paths.push_back(profileCache->getProfileConverter(vec_cross_sections[i])->getCoordinates());
 					 
 					     //check if paths has been filled with the coordinates of the ProfileDef. if empty -> throw Exception
-						 if (paths.size() == 0)
+						 if (paths[i].size() == 0)
 						 {
 							 throw oip::InconsistentModellingException(sectioned_solid_horizontal, "Profile converter could not find coordinates");
 						 }
 		         }
-				 // Define a vector of pointers.Revolved and Extruded only use a single profile, so they do not need vectors.
-					 //	std::vector< std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> > profile_converter;
-					 //	
-					 //	// Give crossSection information (profileDefs) to profileConverter (iterator: number of CrossSectionElements)
-					 //	for (int element = 0; element <= crossSections.size(); ++element)
-					 //	{
-					 //		// Fill vector profile_converter with one profileConverter per crossSection. ProfileConverter sweeps across an area within the boundaries of the profile definition (which may only be a curve).
-					 //		//profile_converter.push_back( profileCache->getProfileConverter(crossSections[element]) );
-					 //		
-					 //		// Get profile coordinates: Vector of multiple profiles. -> Vector of multiple lines makes a profile. -> Vector of multiple coordinates make a line. -> Vector of 2 makes a pair of coordinates.
-					 //		// const std::vector<std::vector<std::vector<carve::geom::vector<2> > > >& profile_coords = profile_converter[crossSectionElement]->getCoordinates();
-					 //	}
 				 
+
+
 				//TO DO: first normalize vectors to start the extrusion along the Directrix. For each CrossSection along the DIrectrix also one CrossSection Position.
 
 			}//endif sectioned_solid_horizontal
