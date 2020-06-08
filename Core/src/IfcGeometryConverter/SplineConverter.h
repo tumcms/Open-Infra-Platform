@@ -48,33 +48,63 @@ namespace OpenInfraPlatform
 						const std::vector<carve::geom::vector<3>>& controlPoints,
 						std::vector<carve::geom::vector<3>>& loops)
 					{
-						const int degree = splineCurve->m_Degree;
+						
+						//const int degree = splineCurve->m_Degree;
+						const int degree = splineCurve->Degree;
 						const int order = degree + 1;
-						const int numControlPoints = splineCurve->m_ControlPointsList.size();
+						//const int numControlPoints = splineCurve->m_ControlPointsList.size();
+						const int numControlPoints = splineCurve->ControlPointsList.size();
 						const int numKnots = order + numControlPoints;
 
 						std::vector<double> knots;
 						knots.reserve(numKnots);
 
 						std::vector<double> weights;
-
-						std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots> rationalBSplineCurve =
-							std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots>(splineCurve);
+						
+						//std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots> rationalBSplineCurve =
+						//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots>(splineCurve);
+						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve =
+							splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>();
 
 						if (rationalBSplineCurve)
 						{
-							//std::cout << "ERROR: IfcRationalBSplineCurveWithKnots not implemented" << std::endl;
-							weights = rationalBSplineCurve->m_WeightsData;
+							// //std::cout << "ERROR: IfcRationalBSplineCurveWithKnots not implemented" << std::endl;
+							//weights = rationalBSplineCurve->m_WeightsData;
+							weights.resize(rationalBSplineCurve->WeightsData.size());
+							std::transform(
+								rationalBSplineCurve->WeightsData.begin(),
+								rationalBSplineCurve->WeightsData.end(),
+								weights.begin(),
+								[](auto &it) -> double { return it; });
+								// convert 'it' (WeightsData) from IfcReal to double ?
 						}
-
-						std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots> bspline =
-							std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots>(splineCurve);
+						
+						//std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots> bspline =
+						//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots>(splineCurve);
+						EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots> bspline = 
+							splineCurve.as<IfcEntityTypesT::IfcBSplineCurveWithKnots>();
 
 						if (bspline)
 						{
-							const std::vector<int>& knotMults = bspline->m_KnotMultiplicities;
-							const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnots = bspline->m_Knots;
-							//const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>& splinePoints = bspline->m_ControlPointsList;
+							//const std::vector<int>& knotMults = bspline->m_KnotMultiplicities;
+							std::vector<int> knotMults;
+							knotMults.resize(bspline->KnotMultiplicities.size());
+							std::transform(
+								bspline->KnotMultiplicities.begin(),
+								bspline->KnotMultiplicities.end(),
+								knotMults.begin(),
+								[](auto &it) -> int { return it; });
+							    // convert 'it' (KnotMultiplicities) from IfcInteger to int ?
+
+							// //const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>& splinePoints = bspline->m_ControlPointsList;
+							//const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnots = bspline->m_Knots;
+							std::vector<double> splineKnots;
+							std::transform(
+								bspline->Knots.begin(),
+								bspline->Knots.end(),
+								splineKnots.begin(),
+								[](auto &it) { return it; });
+							    // convert 'it' (Knots) from IfcParameterValue to double ?
 
 							if (knotMults.size() != splineKnots.size())
 							{
@@ -85,7 +115,8 @@ namespace OpenInfraPlatform
 							// obtain knots
 							for (int i = 0; i < splineKnots.size(); ++i)
 							{
-								double knot = splineKnots[i]->m_value;
+								//double knot = splineKnots[i]->m_value;
+								double knot = splineKnots[i];
 								const int knotMult = knotMults[i];
 								// look at the multiplicity of the current knot
 								for (int j = 0; j < knotMult; ++j)
