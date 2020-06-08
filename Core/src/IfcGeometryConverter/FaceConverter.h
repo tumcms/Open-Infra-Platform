@@ -77,29 +77,29 @@ namespace OpenInfraPlatform {
 					\note		The \c IfcSurface subtypes are \c IfcBoundedSurface,  \c IfcElementarySurface and  \c IfcSweptSurface.
 				*/
 
-				void convertIfcSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface,
-					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolylineSetData>& polylineData) const throw(...) {
+				carve::input::PolylineSetData convertIfcSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface,
+					const carve::math::Matrix& pos) const throw(...) 
+					{
 
 					// (1/3) IfcBoundedSurface SUBTYPE of IfcSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcBoundedSurface>()) {
-						return convertIfcBoundedSurface(surface.as<typename IfcEntityTypesT::IfcBoundedSurface(),
-							pos,
-							polylineData);
+						polylinedata = convertIfcBoundedSurface(surface.as<typename IfcEntityTypesT::IfcBoundedSurface(),
+							pos);
+						return polylinedata;
 					}
 
 					// (2/3) IfcElementarySurface SUBTYPE of IfcSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcElementarySurface>()) const throw(...) {
-						return convertIfcElementarySurface(surface.as<typename IfcEntityTypesT::IfcElementarySurface(),
-							pos,
-							polylineData);
+						polylinedata = convertIfcElementarySurface(surface.as<typename IfcEntityTypesT::IfcElementarySurface(),
+							pos);
+						return polylinedata;
 					}
 
 					// (3/3) IfcSweptSurface SUBTYPE of IfcSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcSweptSurface>())  const throw(...) {
-						return convertIfcSweptSurface(surface.as<typename IfcEntityTypesT::IfcSweptSurface(),
-							pos,
-							polylineData);
+						polylinedata = convertIfcSweptSurface(surface.as<typename IfcEntityTypesT::IfcSweptSurface(),
+							pos);
+						return polylinedata;
 					}
 				}
 
