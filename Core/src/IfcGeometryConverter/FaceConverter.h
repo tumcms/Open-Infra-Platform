@@ -73,11 +73,11 @@ namespace OpenInfraPlatform {
 				/*! \brief Converts \c IfcSurface to a according to subtype.
 					\param		surface	\c IfcSurface entity to be interpreted.
 					\param		pos
-					\param		polylineData
+					\return		polylineData
 					\note		The \c IfcSurface subtypes are \c IfcBoundedSurface,  \c IfcElementarySurface and  \c IfcSweptSurface.
 				*/
 
-				carve::input::PolylineSetData convertIfcSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface,
+				std::shared_ptr<carve::input::PolylineSetData> convertIfcSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 					{
 
@@ -110,7 +110,7 @@ namespace OpenInfraPlatform {
 						/*! \brief  Converts \c IfcBoundedSurface by calling the conversion function according to subtype.
 						\param		surface	\c IfcBoundedSurface entity to be interpreted.
 						\param		pos
-						\param		polylineData
+						\return		polylineData
 						\note		The \c IfcBoundedSurface subtypes are: \c IfcBSplineSurface, \c IfcCurveBoundedPlane, \c IfcCurveBoundedSurface and \c IfcRectangularTrimmedSurface.
 						*/
 
@@ -162,7 +162,7 @@ namespace OpenInfraPlatform {
 						/*! \brief  Converts \c IfcElementarySurface by calling the conversion function according to subtype.
 						\param		surface	\c IfcElementarySurface entity to be interpreted.
 						\param		pos
-						\param		polylineData
+						\return		polylineData
 						\note		The \c IfcElementarySurface subtypes are \c IfcCylindricalSurface, \c IfcPlane, \c IfcSphericalPlane and \c IfcToroidalSurface.
 						*/
 
@@ -214,7 +214,7 @@ namespace OpenInfraPlatform {
 						/*! \brief  Converts \c IfcSweptSurface by calling the conversion function according to subtype.
 						\param		surface	\c IfcSweptSurface entity to be interpreted.
 						\param		pos
-						\param		polylineData
+						\return		polylineData
 						\note		The \c IfcSweptSurface subtypes are \c IfcSurfaceOfLinearExtrusion and \c IfcSurfaceOfRevolution.
 						*/
 
@@ -248,7 +248,7 @@ namespace OpenInfraPlatform {
 					/*! \brief  Converts \c IfcBsplineSurface to ...
 						\param	surface	\c IfcBSplineSurface entity to be interpreted.
 						\param	pos
-						\param	polylineData
+						\return	polylineData
 						\note	The \c IfcBSplineSurface is a subtype of \c IfcBoundedSurface.
 					*/
 
@@ -297,7 +297,7 @@ namespace OpenInfraPlatform {
 				/*! \brief  Converts \c IfcCurveBoundedPlane to ...
 					\param	surface	\c IfcCurveBoundedPlane entity to be interpreted.
 					\param	pos
-					\param	polylineData
+					\return	polylineData
 					\note	The \c IfcCurveBoundedPlane is a subtype of \c IfcBoundedSurface.
 				*/
 
@@ -348,7 +348,7 @@ namespace OpenInfraPlatform {
 				/*! \brief  Converts \c IfcCurveBoundedSurface to ...
 				\param	surface	\c IfcCurveBoundedSurface entity to be interpreted.
 				\param	pos
-				\param	polylineData
+				\return	polylineData
 				\note	The \c IfcCurveBoundedSurface is a subtype of \c IfcBoundedSurface.
 				*/
 
@@ -382,7 +382,7 @@ namespace OpenInfraPlatform {
 				/*! \brief  Converts \c IfcRectangularTrimmedSurface to ...
 				\param	surface	\c IfcRectangularTrimmedSurface entity to be interpreted.
 				\param	pos
-				\param	polylineData
+				\return	polylineData
 				\note	The \c IfcRectangularTrimmedSurface is a subtype of \c IfcBoundedSurface.
 				*/
 
@@ -413,7 +413,7 @@ namespace OpenInfraPlatform {
 				/*! \brief  Converts \c IfcCylindricalSurface to ...
 				\param	surface	\c IfcCylindricalSurface entity to be interpreted.
 				\param	pos
-				\param	polylineData
+				\return	polylineData
 				\note	The \c IfcCylindricalSurface is a subtype of \c IfcElementarySurface.
 				*/
 
@@ -434,7 +434,7 @@ namespace OpenInfraPlatform {
 				/*! \brief  Converts \c IfcPlane to ...
 				\param	surface	\c IfcPlane entity to be interpreted.
 				\param	pos
-				\param	polylineData
+				\return	polylineData
 				\note	The \c IfcPlane is a subtype of \c IfcElementarySurface.
 				*/
 
@@ -480,7 +480,7 @@ namespace OpenInfraPlatform {
 				/*! \brief  Converts \c IfcSphericalPlane to ...
 				\param	surface	\c IfcSphericalPlane entity to be interpreted.
 				\param	pos
-				\param	polylineData
+				\return	polylineData
 				\note	The \c IfcSphericalPlane is a subtype of \c IfcElementarySurface.
 				*/
 
@@ -564,7 +564,7 @@ namespace OpenInfraPlatform {
 				/*! \brief  Converts \c IfcSurfaceOfRevolution to ...
 				\param	surface	\c IfcSurfaceOfRevolution entity to be interpreted.
 				\param	pos
-				\param	polylineData
+				\return	polylineData
 				\note	The \c IfcSurfaceOfRevolution is a subtype of \c IfcSweptSurface.
 				*/
 
