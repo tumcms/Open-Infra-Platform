@@ -22,10 +22,10 @@ function(CreateIfcFileUnitTestForSchema test_name schema)
 
     file(GLOB OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}	src/*.cpp)
 
-    source_group(UnitTests\\Schema\\${schema}\\${test_name}   	FILES ${OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}})
-    source_group(UnitTests                   	                FILES ${OpenInfraPlatform_UnitTests_Source})
+    source_group(UnitTests\\${test_name}   	FILES ${OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}})
+    source_group(UnitTests                  FILES ${OpenInfraPlatform_UnitTests_Source})
 
-    set(UnitTest_Executable_Name OpenInfraPlatform.UnitTests.Schema.${schema}.${test_name})
+    set(UnitTest_Executable_Name ${test_name})
 
     add_executable(${UnitTest_Executable_Name}
         ${OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}}
@@ -62,3 +62,17 @@ function(CreateIfcFileUnitTestForSchema test_name schema)
     )
 
 endfunction()
+
+
+# see https://stackoverflow.com/questions/7787823/cmake-how-to-get-the-name-of-all-subdirectories-of-a-directory
+# get all subdirectories of a directory
+MACRO(SUBDIRLIST result curdir)
+  FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
+  SET(dirlist "")
+  FOREACH(child ${children})
+    IF(IS_DIRECTORY ${curdir}/${child} AND EXISTS ${curdir}/${child}/CMakeLists.txt)
+      LIST(APPEND dirlist ${child})
+    ENDIF()
+  ENDFOREACH()
+  SET(${result} ${dirlist})
+ENDMACRO()
