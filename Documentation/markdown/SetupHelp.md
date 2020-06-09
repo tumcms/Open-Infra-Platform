@@ -1,7 +1,25 @@
 # OpenInfraPlatform Installation 
 
 ***
-## Prerequisites 
+
+This short guide shows you how to compile the project TUM Open Infra Platform.
+**Warning:** This document is only snapshot of the current state and may be become obsolete in the future.
+
+***
+
+## Content 
+
+1. [Prereguisites](#Prerequisites)
+2. [Setup](#Setup) 
+	* [Download source code](#Source_code)
+	* [Preparing solution](#Prep_solution) 
+3. [Building the OpenInfraPlatform in Visual Studio](#Building_OIP) 
+	* [Generating IFC early binding](#generating_EarlyBinding)
+	* [Compiling user interface](#Compiling_interface)
+4. [Generating documentation](#Generating_Doc)
+	* [Get Dot and Doxygen](#Get_Dot)
+
+## <a name="Prerequisites"></a> Prerequisites 
 
 Before you can proceed to the Installation of **OpenInfraPlatform**, check, if these steps are completed:
 
@@ -33,21 +51,13 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 
 ***
-## Setup
+## <a name="Setup"></a> Setup
 
-### Download source code 
+### <a name="Source_code"></a> Download source code 
 
  Clone **OpenInfraPlatform** repository  - more information you can find [here](./GitProcess.md)
 
- Get Dot and Doxygen:
-
-	 1. After cloning **OpenInfraPlatform** repository open OpenInfraPlatform source folder. 
-	 2. Open folder **external**
-	 3. Open files:
-		* GetDot.cmd  
-		* GetDoxygen.cmd
-
-### Preparing solution 
+### <a name="Prep_solution"></a> Preparing solution 
 
 1. Open CMake.
 2. In the line **Where is the source code:** copy the path to your source folder (e.g. C:\dev\Open-Infra-Platform).
@@ -68,9 +78,9 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 8. After configuration process has successfully finished, click *Generate*.
 9. After generation process is done click *open Project*. It will open OpenInfraPlatform solution in the Visual Studio.
 ***
-## Building the OpenInfraPlatform in Visual Studio 
+## <a name="Building_OIP"></a> Building the OpenInfraPlatform in Visual Studio 
 
-### Generating IFC early binding
+### <a name="generating_EarlyBinding"></a> Generating IFC early binding
 
 **NOTE:** If you are using Open-Infra-Platform only with point clouds, you can skip these steps.
 
@@ -88,7 +98,7 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 4. **Important**: Open CMake and select *Generate* to include newly generated IFC early binding code in the solution.
 
-### Compiling user interface
+### <a name="Compiling_interface"></a> Compiling user interface
 
 **NOTE:** Build dependencies are set, so building only the last step should automatically build all.
 
@@ -99,3 +109,14 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 5. *Build* all projects staged in the **Copy** project folder. 
 
 	**NOTE:** execute **Get_OKLABI.cmd** in the source folder (e.g. C:\dev\Open-Infra-Platform\external\) to prevent an error during the build process. After the execution of **Get_OKLABI.cmd**, it's necessary to *configure* and *generate* OpenInfraPlatform project once again in CMake.
+
+
+## <a name="Generating_Doc"></a> Generating documentation
+
+### <a name="Get_Dot"></a> Get Dot and Doxygen
+
+1. After cloning **OpenInfraPlatform** repository open OpenInfraPlatform source folder. 
+2. Open folder **external**
+3. Open files:
+	* GetDot.cmd  
+	* GetDoxygen.cmd
