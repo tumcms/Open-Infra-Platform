@@ -29,7 +29,7 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 	*	Download Qt Online Installer 
 	*	In the meantime, your computer is downloading Qt installer, create Qt account. 
-	*	Sign in with your new account to Qt installer and select directory, where Qt will be installed. (** C:\Qt ** should be default option, if not write **this** path out)
+	*	Sign in with your new account to Qt installer and select directory, where Qt will be installed. (`C:\Qt` should be default option, if not write **this** path out)
 	*	Select components, you want to install:
 
 		* Check the *Archive* box
@@ -60,8 +60,8 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 ### <a name="Prep_solution"></a> Preparing solution 
 
 1. Open CMake.
-2. In the line **Where is the source code:** copy the path to your source folder (e.g. C:\dev\Open-Infra-Platform).
-3. In the line **Where to build the binaries:**  copy the path to the binaries folder (e.g. C:\dev\project_OIP). **NOTE:** The source folder as well as *Program Files* and *Windows* folders are **invalid** locations for the binary folder.
+2. In the line **Where is the source code:** copy the path to your source folder (e.g. `C:\dev\Open-Infra-Platform`).
+3. In the line **Where to build the binaries:**  copy the path to the binaries folder (e.g. `C:\dev\project_OIP`). **NOTE:** The source folder as well as *Program Files* and *Windows* folders are **invalid** locations for the binary folder.
 4. Check the *Grouped* and *Advanced* boxes (top right in CMake GUI)..
 5. Click *Configure*. 
 6. Select the Generator:
@@ -108,7 +108,7 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 4. *Build* project **OpenInfraPlatform.UI**.
 5. *Build* all projects staged in the **Copy** project folder. 
 
-	**NOTE:** execute **Get_OKLABI.cmd** in the source folder (e.g. C:\dev\Open-Infra-Platform\external\) to prevent an error during the build process. After the execution of **Get_OKLABI.cmd**, it's necessary to *configure* and *generate* OpenInfraPlatform project once again in CMake.
+	**NOTE:** execute **Get_OKLABI.cmd** in the source folder (e.g. `C:\dev\Open-Infra-Platform\external`) to prevent an error during the build process. After the execution of **Get_OKLABI.cmd**, it's necessary to *configure* and *generate* OpenInfraPlatform project once again in CMake.
 
 
 ## <a name="Generating_Doc"></a> Generating documentation
