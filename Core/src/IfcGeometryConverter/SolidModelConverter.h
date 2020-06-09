@@ -173,25 +173,46 @@ namespace OpenInfraPlatform
 
 
 					// Get cross section positions and fixed axis vertical (attributes 3-4).
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcDistanceExpression>> vec_cross_section_positions;
-					vec_cross_section_positions.resize(sectioned_solid_horizontal->CrossSectionPositions.size());
-					std::transform(sectioned_solid_horizontal->CrossSectionPositions.begin(),
-						sectioned_solid_horizontal->CrossSectionPositions.end(),
-						vec_cross_section_positions.begin(), [](auto& it) {return it.lock(); });
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>>& cross_section_positions =
+						sectioned_solid_horizontal->CrossSectionPositions;
+					
 					bool fixed_axis_vertical = sectioned_solid_horizontal->FixedAxisVertical;
 
 					BLUE_LOG(warning) << "Geometry conversion for IfcSectionedSolidHorizontal not implemented.";
 					// TO DO: implement, check for formal propositions. 
                  
 				//check dimensions and correct attributes sizes
-                if(vec_cross_sections.size() != vec_cross_section_positions.size())
+                if(vec_cross_sections.size() != cross_section_positions.size())
 				{
 					throw oip::InconsistentModellingException(sectioned_solid_horizontal, "CrossSections and CrossSectionsPositions are not equal in size.");
 				}
 
-                 //TO DO: check lenght conversions on the ProfileDistanceExpression L[2:?] CrossSectionPostitions
-				double length_in_meter = UnitConvert()->getLengthInMeterFactor();
+				/*//Define Vectors for the Attributes of the IfcDistanceExpressions (Cross Section Position)
+				std::vector<double> cross_section_dist_along;
+				std::vector<double> cross_section_offset_lateral; 
+				std::vector<double> cross_section_offset_vertical; 
+				std::vector<double> cross_section_offset_longitudinal; 
+				std::vector< bool > cross_section_along_horizontal;
 
+				// fill the Vectors with the CrossSectionPostions list in Unit m for L[2:?] (Unit conversion)
+				for (int i = 0; i < cross_section_positions.size(); ++i)
+				{
+					//DistanceAlong
+			    	cross_section_dist_along.push_back(cross_section_positions[i]->DistanceAlong * UnitConvert()->getLengthInMeterFactor());
+							
+					//OffsetLateral
+				    cross_section_offset_lateral.push_back(cross_section_positions[i]->OffsetLateral * UnitConvert()->getLengthInMeterFactor());
+						 
+				    //OffsetVertical
+					cross_section_offset_vertical.push_back(cross_section_positions[i]->OffsetVertical * UnitConvert()->getLengthInMeterFactor());
+
+					//OffsetLongitudinal
+					cross_section_offset_longitudinal.push_back(cross_section_positions[i]->OffsetLongitudinal * UnitConvert()->getLengthInMeterFactor());
+				
+					//AlongHorizontal
+					cross_section_along_horizontal.push_back(cross_section_positions[i]->AlongHorizontal * UnitConvert()->getLengthInMeterFactor());
+				}*/
+		
 				 //Give directrix to Curve converter
 		    	 std::vector<carve::geom::vector<3> > segment_start_points;
 	     		 std::vector<carve::geom::vector<3> > basis_curve_points;
@@ -225,9 +246,31 @@ namespace OpenInfraPlatform
 						 }
 		         }
 				 
+                //TO DO: write new version of calculatePositionOnAndDirectionOfBaseCurve, exchange Linearplacement for vec_cross_section_positions[i]
+	
+				 std::vector<carve::geom::vector<3>> offsetFromCurve;
 
+				 for (int pos = 0; pos < cross_section_positions.size(); ++pos)
+				 {
+					 // 1. get offset from curve    //TO DO: convertIfcDistanceExpressionOffsets nimmt nur EXPRESSReference, CrossSectionPositions ist aber shared_ptr
+					 offsetFromCurve.push_back(placementConverter->convertIfcDistanceExpressionOffsets(cross_section_positions[pos])); 
 
-				//TO DO: first normalize vectors to start the extrusion along the Directrix. For each CrossSection along the DIrectrix also one CrossSection Position.
+					 // 2. calculate the position on and the direction of the base curve
+				     // also applay the relative dist along
+					 /*carve::geom::vector<3> pointOnCurve;
+					 carve::geom::vector<3> directionOfCurve;
+					 std::tie(pointOnCurve, directionOfCurve) =
+						 calculatePositionOnAndDirectionOfBaseCurve(linear_placement, convertRelativePlacement(linear_placement, alreadyApplied));
+					 // 3. calculate the rotations
+				     // the direction of the curve's tangent = directionOfCurve
+
+   				     // 4. calculate the position
+				     // the position on the curve = pointOnCurve
+				     // the offsets = offsetFromCurve
+				     // 5. check against the provided 3D coordinate*/
+				 }
+				 
+				//TO DO: first normalize vectors to start the extrusion along the Directrix. For each CrossSection along the Directrix also one CrossSection Position.
 
 			}//endif sectioned_solid_horizontal
 
