@@ -253,10 +253,10 @@ namespace OpenInfraPlatform {
 
 							uint32_t index1, index2, index3, index4;
 
-							SearchExistingVertex(vID, index1, position);
-							SearchExistingVertex(vID2, index2, position2);
-							SearchExistingVertex(vID3, index3, nextPosition);
-							SearchExistingVertex(vID4, index4, nextPosition2);
+							SearchExistingVertex(vID.str(), index1, position, polygonIndices, polygon);
+							SearchExistingVertex(vID2.str(), index2, position2, polygonIndices, polygon);
+							SearchExistingVertex(vID3.str(), index3, nextPosition, polygonIndices, polygon);
+							SearchExistingVertex(vID4.str(), index4, nextPosition2, polygonIndices, polygon);
 
 							polygon->addFace(index1, index3, index4);
 							polygon->addFace(index4, index2, index1);
@@ -965,10 +965,10 @@ namespace OpenInfraPlatform {
 
 								uint32_t index1, index2, index3, index4;
 
-								SearchExistingVertex(vID, index1, position);
-								SearchExistingVertex(vID2, index2, position2);
-								SearchExistingVertex(vID3, index3, nextPosition);
-								SearchExistingVertex(vID4, index4, nextPosition2);
+								SearchExistingVertex(vID.str(), index1, position, polygonIndices, polygon);
+								SearchExistingVertex(vID2.str(), index2, position2, polygonIndices, polygon);
+								SearchExistingVertex(vID3.str(), index3, nextPosition, polygonIndices, polygon);
+								SearchExistingVertex(vID4.str(), index4, nextPosition2, polygonIndices, polygon);
 								
 
 								polygon->addFace(index1, index3, index4);
@@ -1331,15 +1331,15 @@ namespace OpenInfraPlatform {
 				}
 			}
 
-			void SearchExistingVertex(std::stringstream ID, uint32_t index, carve::geom::vector<3> position) const
+			void SearchExistingVertex(std::string ID, const uint32_t  & index, carve::geom::vector<3> position, std::map<std::string, uint32_t> polygonIndices, std::shared_ptr<carve::input::PolyhedronData> polygon) const
 			{
-				auto itFound = polygonIndices.find(ID.str());
+				auto itFound = polygonIndices.find(ID);
 				if (itFound != polygonIndices.end()) {
 					index = itFound->second;
 				}
 				else {
 					index = polygon->addVertex(position);
-					polygonIndices[ID.str()] = index;
+					polygonIndices[ID] = index;
 				}
 			}
 
