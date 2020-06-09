@@ -1331,6 +1331,13 @@ namespace OpenInfraPlatform {
 				}
 			}
 
+			/*! \brief searhes Existing Vertex and adds to \c IfcArbitraryClosedProfileDef.
+			* \param[in] ID 
+			* \param[in] position A position of the Vertex
+			* \param[in] polygonIndices Indices of the polygon line
+			* \param[in] polygon A pointer to the polygon line
+			* \param[out] index 
+			*/
 			void SearchExistingVertex(std::string ID, const uint32_t  & index, carve::geom::vector<3> position, std::map<std::string, uint32_t> polygonIndices, std::shared_ptr<carve::input::PolyhedronData> polygon) const
 			{
 				auto itFound = polygonIndices.find(ID);
