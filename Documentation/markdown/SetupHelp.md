@@ -10,7 +10,7 @@ This short guide shows you how to compile the project TUM Open Infra Platform.
 
 ## Content 
 
-1. [Prereguisites](#Prerequisites)
+1. [Prerequisites](#Prerequisites)
 2. [Setup](#Setup) 
 	* [Download source code](#Source_code)
 	* [Preparing solution](#Prep_solution) 
