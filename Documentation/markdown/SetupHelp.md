@@ -3,6 +3,7 @@
 ***
 
 This short guide shows you how to compile the project TUM Open Infra Platform.
+
 **Warning:** This document is only snapshot of the current state and may be become obsolete in the future.
 
 ***
@@ -73,7 +74,7 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 7. For detailed descriptions of all configuration options that can be selected in the CMake GUI, see [here](./CMakeOptions.md) 
 
-	**HINT:** A few (red) warnings in the lower window of CMake can be ignored as long as it writes 'Configuring done' at the end
+	**HINT:** A few (red) warnings in the lower window of CMake can be ignored as long as it writes *Configuring done* at the end
 
 8. After configuration process has successfully finished, click *Generate*.
 9. After generation process is done click *open Project*. It will open OpenInfraPlatform solution in the Visual Studio.
