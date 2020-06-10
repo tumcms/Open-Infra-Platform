@@ -54,12 +54,16 @@ namespace OpenInfraPlatform
 						const int order = degree + 1;
 						//const int numControlPoints = splineCurve->m_ControlPointsList.size();
 						const int numControlPoints = splineCurve->ControlPointsList.size();
-						const int numKnots = order + numControlPoints;
+						const int numKnotsArray = order + numControlPoints;
+						// rename numKnots -> numKnotsArray to prevent confusion between 'knots' and 'knotsArray'
+						// in ifc-documentation it's called UpperIndexOnKnots := SIZEOF(Knots)
 
-						std::vector<double> knots;
-						knots.reserve(numKnots);
+						std::vector<double> knotArray;
+						// renamed knots -> knotArray, according to Entity definition in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurve.htm
+						knotArray.reserve(numKnotsArray);
 
-						std::vector<double> weights;
+						std::vector<double> weightsData;
+						// renamed weights -> weightsData, according to Attribute definitions in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcrationalbsplinecurvewithknots.htm
 						
 						//std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots> rationalBSplineCurve =
 						//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots>(splineCurve);
@@ -70,11 +74,11 @@ namespace OpenInfraPlatform
 						{
 							// //std::cout << "ERROR: IfcRationalBSplineCurveWithKnots not implemented" << std::endl;
 							//weights = rationalBSplineCurve->m_WeightsData;
-							weights.resize(rationalBSplineCurve->WeightsData.size());
+							weightsData.resize(rationalBSplineCurve->WeightsData.size());
 							std::transform(
 								rationalBSplineCurve->WeightsData.begin(),
 								rationalBSplineCurve->WeightsData.end(),
-								weights.begin(),
+								weightsData.begin(),
 								[](auto &it) -> double { return it; });
 								// convert 'it' (WeightsData) from IfcReal to double ?
 						}
@@ -98,39 +102,40 @@ namespace OpenInfraPlatform
 
 							// //const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>& splinePoints = bspline->m_ControlPointsList;
 							//const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnots = bspline->m_Knots;
-							std::vector<double> splineKnots;
+							std::vector<double> knots;
+							// renamed splineKnots -> knots, according to Attribute definitions in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurvewithknots.htm
 							std::transform(
 								bspline->Knots.begin(),
 								bspline->Knots.end(),
-								splineKnots.begin(),
+								knots.begin(),
 								[](auto &it) { return it; });
 							    // convert 'it' (Knots) from IfcParameterValue to double ?
 
-							if (knotMults.size() != splineKnots.size())
+							if (knotMults.size() != knots.size())
 							{
 								std::cout << "ERROR: knot multiplicity does not correspond number of knots" << std::endl;
 								return;
 							}
 
 							// obtain knots
-							for (int i = 0; i < splineKnots.size(); ++i)
+							for (int i = 0; i < knots.size(); ++i)
 							{
 								//double knot = splineKnots[i]->m_value;
-								double knot = splineKnots[i];
+								double knot = knots[i];
 								const int knotMult = knotMults[i];
 								// look at the multiplicity of the current knot
 								for (int j = 0; j < knotMult; ++j)
 								{
-									knots.push_back(knot);
+									knotArray.push_back(knot);
 								}
 							}
 
 							//! TEMPORARY default number of curve points
-							const uint8_t numCurvePoints = numKnots * 10;
+							const uint8_t numCurvePoints = numKnotsArray * 10;
 							std::vector<carve::geom::vector<3>> curvePoints;
 							curvePoints.reserve(numCurvePoints);
 
-							computeBSplineCurve(order, numCurvePoints, numControlPoints, controlPoints, weights, knots, curvePoints);
+							computeBSplineCurve(order, numCurvePoints, numControlPoints, controlPoints, weightsData, knotArray, curvePoints);
 
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
 						}
