@@ -1338,7 +1338,7 @@ namespace OpenInfraPlatform {
 			* \param[in] polygon A pointer to the polygon line
 			* \param[out] index 
 			*/
-			void SearchExistingVertex(std::string ID, const uint32_t  & index, carve::geom::vector<3> position, std::map<std::string, uint32_t> polygonIndices, std::shared_ptr<carve::input::PolyhedronData> polygon) const
+			void SearchExistingVertex(const std::string & ID, const uint32_t & index, carve::geom::vector<3> position, std::map<std::string, uint32_t> & polygonIndices, std::shared_ptr<carve::input::PolyhedronData> polygon) const
 			{
 				auto itFound = polygonIndices.find(ID);
 				if (itFound != polygonIndices.end()) {
