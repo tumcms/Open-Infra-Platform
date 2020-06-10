@@ -118,6 +118,8 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 1. After cloning **OpenInfraPlatform** repository open OpenInfraPlatform source folder. 
 2. Open folder **external**
-3. Open files:
+3. Execute:
 	* GetDot.cmd  
 	* GetDoxygen.cmd
+
+**NOTE:** Read more about Doxygen in our [guidelines](./DoxygenHelp.md)
