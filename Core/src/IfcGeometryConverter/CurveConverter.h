@@ -620,201 +620,22 @@ namespace OpenInfraPlatform {
 					const bool senseAgreement
 				) const throw(...)
 				{
-					//	ABSTRACT SUPERTYPE of IfcCircle, IfcEllipse																				//
-
-					// determine position
-					carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(conic->Position);
+					// ABSTRACT SUPERTYPE of IfcCircle, IfcEllipse
 
 					// (1/2) IfcCircle SUBTYPE OF IfcConic
 					std::shared_ptr<typename IfcEntityTypesT::IfcCircle> circle =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircle>(conic.lock());
-					if (circle) {
-						// Get radius
-						double circle_radius = 0.0;
-						if (circle->Radius) {
-							circle_radius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
-						}
-						else {
-							BLUE_LOG(error) << circle->getErrorLog() << ": No radius!";
-							return;
-						}
-
-						carve::geom::vector<3> circle_center =
-							conic_position_matrix * carve::geom::VECTOR(0, 0, 0);
-
-						double trim_angle1 = 0.0;
-						double trim_angle2 = M_PI * 2.0;
-
-						// Check for trimming begin
-						if (trim1Vec.size() > 0) {
-							BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming begin.";
-							auto first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 1; });
-							if (first != trim1Vec.end() && *first) {
-								BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming begin as IfcParameterValue.";
-								typename IfcEntityTypesT::IfcParameterValue trim_par1 = (*first)->get<1>();
-								trim_angle1 = trim_par1 * UnitConvert()->getAngleInRadianFactor();
-							}
-							else {
-								first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 0; });
-								if (first != trim1Vec.end() && (*first) != nullptr) {
-									BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming begin as IfcCartesianPoint.";
-									try {
-										carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
-
-										trim_angle1 = getAngleOnCircle(circle_center,
-											circle_radius,
-											trim_point);
-									}
-									catch (...) {
-										BLUE_LOG(error) << "Processing " << circle->getErrorLog() << ": Exception occured!";
-										return;
-									}
-								}
-								else {
-									BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": No trimming begin.";
-								}
-							}
-						}
-						else {
-							BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": trim1vec is empty!";
-						}
-
-						if (trim2Vec.size() > 0) {
-							// check for trimming end
-							BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming end.";
-							auto first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 1; });
-							if (first != trim2Vec.end()) {
-								BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming end as IfcParameterValue.";
-								typename IfcEntityTypesT::IfcParameterValue trim_par2 = (*first)->get<1>();
-								trim_angle1 = trim_par2 * UnitConvert()->getAngleInRadianFactor();
-							}
-							else {
-								first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 0; });
-								if (first != trim2Vec.end()) {
-									BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming end as IfcCartesianPoint.";
-
-									try {
-										carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
-
-										trim_angle2 = getAngleOnCircle(circle_center,
-											circle_radius,
-											trim_point);
-									}
-									catch (...) {
-										BLUE_LOG(error) << "Processing " << circle->getErrorLog() << ": Exception occured!";
-										return;
-									}
-								}
-								else {
-									BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": No trimming end.";
-								}
-							}
-						}
-						else {
-							BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": trim2vec is empty!";
-						}
-
-						double start_angle = trim_angle1;
-						double opening_angle = 0.0;
-
-						if (senseAgreement) {
-							if (trim_angle1 < trim_angle2) {
-								opening_angle = trim_angle2 - trim_angle1;
-							}
-							else {
-								// circle passes 0 angle
-								opening_angle = trim_angle2 - trim_angle1 + 2.0*M_PI;
-							}
-						}
-						else {
-							if (trim_angle1 > trim_angle2) {
-								opening_angle = trim_angle2 - trim_angle1;
-							}
-							else {
-								// circle passes 0 angle
-								opening_angle = trim_angle2 - trim_angle1 - 2.0*M_PI;
-							}
-						}
-
-						// correct for -2*PI <= angle <= 2*PI
-						if (opening_angle > 0) {
-							GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
-						}
-						else {
-							GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
-						}
-
-						int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(circle_radius, abs(opening_angle));
-
-						const double circle_center_x = 0.0;
-						const double circle_center_y = 0.0;
-						std::vector<carve::geom::vector<2> > circle_points;
-						ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
-							circle_points, circle_radius,
-							start_angle, opening_angle,
-							circle_center_x, circle_center_y,
-							num_segments);
-
-						if (circle_points.size() > 0) {
-							// apply position
-							for (unsigned int i = 0; i < circle_points.size(); ++i) {
-								carve::geom::vector<2>&  point = circle_points.at(i);
-								carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
-								point3d = conic_position_matrix * point3d;
-								point.x = point3d.x;
-								point.y = point3d.y;
-							}
-
-							GeomUtils::appendPointsToCurve(circle_points, targetVec);
-							segmentStartPoints.push_back(carve::geom::VECTOR(
-								circle_points.at(0).x,
-								circle_points.at(0).y,
-								0));
-						}
-
-						return;
+					if (conic.isOfType<typename IfcEntityTypesT::IfcCircle>()) 
+					{
+						return convertIfcCircle( conic.as<typename IfcEntityTypesT::IfcCircle>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
 					} // end if IfcCircle
 
 					// (2/2) IfcEllipse SUBTYPE OF IfcConic
-					std::shared_ptr<typename IfcEntityTypesT::IfcEllipse> ellipse =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEllipse>(conic.lock());
-					if (ellipse) {
-						if (ellipse->SemiAxis1) {
-							if (ellipse->SemiAxis2) {
-
-								double xRadius = ellipse->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
-								double yRadius = ellipse->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
-
-								double radiusMax = std::max(xRadius, yRadius);
-								double radiusMin = std::min(xRadius, yRadius);
-								int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin);
-								double deltaAngle = GeomSettings()->getAngleLength(radiusMin);
-
-								// todo: implement clipping
-								if (!trim1Vec.empty() || !trim2Vec.empty())
-									BLUE_LOG(warning) << ellipse->getErrorLog() << ": Trimming not supported";
-
-								std::vector<carve::geom::vector<3> > ellipse_points;
-								double angle = 0.0;
-								for (int i = 0; i < num_segments; ++i) {
-									ellipse_points.push_back(carve::geom::vector<3>(
-										carve::geom::VECTOR(
-											xRadius * cos(angle),
-											yRadius * sin(angle),
-											0)));
-									angle += deltaAngle;
-								}
-
-								// apply position
-								for (unsigned int i = 0; i < ellipse_points.size(); ++i) {
-									carve::geom::vector<3>& point = ellipse_points.at(i);
-									point = conic_position_matrix * point;
-								}
-								GeomUtils::appendPointsToCurve(ellipse_points, targetVec);
-								segmentStartPoints.push_back(ellipse_points.at(0));
-							}
-						}
-						return;
+					else if (conic.isOfType<typename IfcEntityTypesT::IfcEllipse>())
+					{
+						return convertIfcEllipse(conic.as<typename IfcEntityTypesT::IfcEllipse>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
 					} // end if ellipse
 
 					// the rest we do not support
@@ -931,6 +752,217 @@ namespace OpenInfraPlatform {
 
 					GeomUtils::appendPointsToCurve(points_vec, targetVec);
 					segmentStartPoints.push_back(line_origin);
+					return;
+				}
+
+
+				void convertIfcCircle(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
+				{
+					// determine position
+					carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(circle->Position);
+
+					// Get radius
+					double circle_radius = 0.0;
+					if (circle->Radius) {
+						circle_radius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
+					}
+					else {
+						BLUE_LOG(error) << circle->getErrorLog() << ": No radius!";
+						return;
+					}
+
+					carve::geom::vector<3> circle_center =
+						conic_position_matrix * carve::geom::VECTOR(0, 0, 0);
+
+					double trim_angle1 = 0.0;
+					double trim_angle2 = M_PI * 2.0;
+
+					// Check for trimming begin
+					if (trim1Vec.size() > 0) {
+						BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming begin.";
+						auto first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 1; });
+						if (first != trim1Vec.end() && *first) {
+							BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming begin as IfcParameterValue.";
+							typename IfcEntityTypesT::IfcParameterValue trim_par1 = (*first)->get<1>();
+							trim_angle1 = trim_par1 * UnitConvert()->getAngleInRadianFactor();
+						}
+						else {
+							first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 0; });
+							if (first != trim1Vec.end() && (*first) != nullptr) {
+								BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming begin as IfcCartesianPoint.";
+								try {
+									carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
+
+									trim_angle1 = getAngleOnCircle(circle_center,
+										circle_radius,
+										trim_point);
+								}
+								catch (...) {
+									BLUE_LOG(error) << "Processing " << circle->getErrorLog() << ": Exception occured!";
+									return;
+								}
+							}
+							else {
+								BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": No trimming begin.";
+							}
+						}
+					}
+					else {
+						BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": trim1vec is empty!";
+					}
+
+					if (trim2Vec.size() > 0) {
+						// check for trimming end
+						BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming end.";
+						auto first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 1; });
+						if (first != trim2Vec.end()) {
+							BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming end as IfcParameterValue.";
+							typename IfcEntityTypesT::IfcParameterValue trim_par2 = (*first)->get<1>();
+							trim_angle1 = trim_par2 * UnitConvert()->getAngleInRadianFactor();
+						}
+						else {
+							first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 0; });
+							if (first != trim2Vec.end()) {
+								BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming end as IfcCartesianPoint.";
+
+								try {
+									carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
+
+									trim_angle2 = getAngleOnCircle(circle_center,
+										circle_radius,
+										trim_point);
+								}
+								catch (...) {
+									BLUE_LOG(error) << "Processing " << circle->getErrorLog() << ": Exception occured!";
+									return;
+								}
+							}
+							else {
+								BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": No trimming end.";
+							}
+						}
+					}
+					else {
+						BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": trim2vec is empty!";
+					}
+
+					double start_angle = trim_angle1;
+					double opening_angle = 0.0;
+
+					if (senseAgreement) {
+						if (trim_angle1 < trim_angle2) {
+							opening_angle = trim_angle2 - trim_angle1;
+						}
+						else {
+							// circle passes 0 angle
+							opening_angle = trim_angle2 - trim_angle1 + 2.0*M_PI;
+						}
+					}
+					else {
+						if (trim_angle1 > trim_angle2) {
+							opening_angle = trim_angle2 - trim_angle1;
+						}
+						else {
+							// circle passes 0 angle
+							opening_angle = trim_angle2 - trim_angle1 - 2.0*M_PI;
+						}
+					}
+
+					// correct for -2*PI <= angle <= 2*PI
+					if (opening_angle > 0) {
+						GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
+					}
+					else {
+						GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
+					}
+
+					int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(circle_radius, abs(opening_angle));
+
+					const double circle_center_x = 0.0;
+					const double circle_center_y = 0.0;
+					std::vector<carve::geom::vector<2> > circle_points;
+					ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
+						circle_points, circle_radius,
+						start_angle, opening_angle,
+						circle_center_x, circle_center_y,
+						num_segments);
+
+					if (circle_points.size() > 0) {
+						// apply position
+						for (unsigned int i = 0; i < circle_points.size(); ++i) {
+							carve::geom::vector<2>&  point = circle_points.at(i);
+							carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
+							point3d = conic_position_matrix * point3d;
+							point.x = point3d.x;
+							point.y = point3d.y;
+						}
+
+						GeomUtils::appendPointsToCurve(circle_points, targetVec);
+						segmentStartPoints.push_back(carve::geom::VECTOR(
+							circle_points.at(0).x,
+							circle_points.at(0).y,
+							0));
+					}
+
+					return;
+				}
+
+
+
+				void convertIfcEllipse(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
+				{
+					// determine position
+					carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
+
+					if (ellipse->SemiAxis1) {
+						if (ellipse->SemiAxis2) {
+
+							double xRadius = ellipse->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
+							double yRadius = ellipse->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
+
+							double radiusMax = std::max(xRadius, yRadius);
+							double radiusMin = std::min(xRadius, yRadius);
+							int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin);
+							double deltaAngle = GeomSettings()->getAngleLength(radiusMin);
+
+							// todo: implement clipping
+							if (!trim1Vec.empty() || !trim2Vec.empty())
+								BLUE_LOG(warning) << ellipse->getErrorLog() << ": Trimming not supported";
+
+							std::vector<carve::geom::vector<3> > ellipse_points;
+							double angle = 0.0;
+							for (int i = 0; i < num_segments; ++i) {
+								ellipse_points.push_back(carve::geom::vector<3>(
+									carve::geom::VECTOR(
+										xRadius * cos(angle),
+										yRadius * sin(angle),
+										0)));
+								angle += deltaAngle;
+							}
+
+							// apply position
+							for (unsigned int i = 0; i < ellipse_points.size(); ++i) {
+								carve::geom::vector<3>& point = ellipse_points.at(i);
+								point = conic_position_matrix * point;
+							}
+							GeomUtils::appendPointsToCurve(ellipse_points, targetVec);
+							segmentStartPoints.push_back(ellipse_points.at(0));
+						}
+					}
 					return;
 				}
 
