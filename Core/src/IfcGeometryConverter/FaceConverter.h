@@ -459,7 +459,6 @@ namespace OpenInfraPlatform {
 					polylineData->addPolylineIndex(3);
 
 					return polylineData;
-					throw oip::UnhandledException(surface);
 
 				}
 
