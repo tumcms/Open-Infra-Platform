@@ -273,7 +273,7 @@ namespace OpenInfraPlatform {
 					}
 					*/
 
-					return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					// return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
 
 				}
@@ -325,7 +325,7 @@ namespace OpenInfraPlatform {
 
 					*/
 
-					return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					//return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
 				}
 
@@ -359,7 +359,7 @@ namespace OpenInfraPlatform {
 
 					*/
 
-					return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					//return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
 				}
 
@@ -390,7 +390,7 @@ namespace OpenInfraPlatform {
 
 					*/
 
-					return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					//return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
 				}
 
@@ -411,7 +411,7 @@ namespace OpenInfraPlatform {
 
 					*/
 
-					return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					//return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
 				}
 
@@ -480,7 +480,7 @@ namespace OpenInfraPlatform {
 
 					*/
 
-					return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					//return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
 				}
 
@@ -502,7 +502,7 @@ namespace OpenInfraPlatform {
 
 					*/
 
-					return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					//return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
 				}
 
@@ -542,7 +542,7 @@ namespace OpenInfraPlatform {
 
 					*/
 
-					return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					//return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
 				}
 
@@ -563,7 +563,7 @@ namespace OpenInfraPlatform {
 							surface->AxisPosition;
 
 					*/
-					return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					//return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
 				}
 
