@@ -82,19 +82,22 @@ namespace OpenInfraPlatform {
 					{
 
 					// (1/3) IfcBoundedSurface SUBTYPE of IfcSurface
-					if (surface.isOfType<typename IfcEntityTypesT::IfcBoundedSurface>()) {
+					if (surface.isOfType<typename IfcEntityTypesT::IfcBoundedSurface>()) 
+					{
 						return convertIfcBoundedSurface(surface.as<typename IfcEntityTypesT::IfcBoundedSurface(),
 							pos);
 					}
 
 					// (2/3) IfcElementarySurface SUBTYPE of IfcSurface
-					if (surface.isOfType<typename IfcEntityTypesT::IfcElementarySurface>()) const throw(...) {
+					if (surface.isOfType<typename IfcEntityTypesT::IfcElementarySurface>()) const throw(...) 
+					{
 						return convertIfcElementarySurface(surface.as<typename IfcEntityTypesT::IfcElementarySurface(),
 							pos);
 					}
 
 					// (3/3) IfcSweptSurface SUBTYPE of IfcSurface
-					if (surface.isOfType<typename IfcEntityTypesT::IfcSweptSurface>())  const throw(...) {
+					if (surface.isOfType<typename IfcEntityTypesT::IfcSweptSurface>())  const throw(...) 
+					{
 						return convertIfcSweptSurface(surface.as<typename IfcEntityTypesT::IfcSweptSurface(),
 							pos);
 					}
@@ -115,32 +118,32 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos)  const throw(...) 
 				{
 					// (1/4) IfcBSplineSurface SUBTYPE of IfcBoundedSurface
-					if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurface>()) {
-
+					if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurface>()) 
+					{
 						return convertIfcBSplineSurface(
 							surface.as<typename IfcEntityTypesT::IfcBSplineSurface>(),
 							pos);
 					}
 
 					// (2/4) IfcCurveBoundedPlane SUBTYPE OF IfcBoundedSurface.
-					else if (surface.isOfType<typename IfcEntityTypesT::IfcCurveBoundedPlane>()) {
-
+					else if (surface.isOfType<typename IfcEntityTypesT::IfcCurveBoundedPlane>()) 
+					{
 						return convertIfcCurveBoundedPlane(
 							surface.as<typename IfcEntityTypesT::IfcCurveBoundedPlane>(),
 							pos);
 					}
 
 					// (3/4) IfcCurveBoundedSurface SUBTYPE of IfcBoundedSurface.
-					else if (surface.isOfType<typename IfcEntityTypesT::IfcCurveBoundedSurface>()) {
-
+					else if (surface.isOfType<typename IfcEntityTypesT::IfcCurveBoundedSurface>()) 
+					{
 						return convertIfcCurveBoundedSurface(
 							surface.as<typename IfcEntityTypesT::IfcCurveBoundedSurface>(),
 							pos);
 					}
 
 					// (4/4) IfcRectangularTrimmedSurface SUBTYPE of IfcBoundedSurface.
-					else if (surface.isOfType<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>())  {
-
+					else if (surface.isOfType<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>())  
+					{
 						return convertIfcRectangularTrimmedSurface(
 							surface.as<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>(),
 							pos);
@@ -162,32 +165,32 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos)  const throw(...) 
 				{
 					// (1/4) IfcCylindricalSurface SUBTYPE of IfcElementarySurface
-					if (surface.isOfType<typename IfcEntityTypesT::IfcCylindricalSurface>()) {
-
+					if (surface.isOfType<typename IfcEntityTypesT::IfcCylindricalSurface>()) 
+					{
 						return convertIfcCylindricalSurface(
 							surface.as<typename IfcEntityTypesT::IfcCylindricalSurface>(),
 							pos);
 					}
 
 					// (2/4) IfcPlane SUBTYPE of IfcElementarySurface
-					if (surface.isOfType<typename IfcEntityTypesT::IfcPlane>()) {
-
+					if (surface.isOfType<typename IfcEntityTypesT::IfcPlane>()) 
+					{
 						return convertIfcPlane(
 							surface.as<typename IfcEntityTypesT::IfcPlane>(),
 							pos);
 					}
 
 					// (3/4) IfcSphericalPlane SUBTYPE of IfcElementarySurface
-					if (surface.isOfType<typename IfcEntityTypesT::IfcSphericalPlane>()) {
-
+					if (surface.isOfType<typename IfcEntityTypesT::IfcSphericalPlane>()) 
+					{
 						return convertIfcSphericalPlane(
 							surface.as<typename IfcEntityTypesT::IfcSphericalPlane>(),
 							pos);
 					}
 
 					// (1/4) IfcToroidalSurface SUBTYPE of IfcElementarySurface
-					if (surface.isOfType<typename IfcEntityTypesT::IfcToroidalSurface >()) {
-
+					if (surface.isOfType<typename IfcEntityTypesT::IfcToroidalSurface >()) 
+					{
 						return convertIfcToroidalSurface(
 							surface.as<typename IfcEntityTypesT::IfcToroidalSurface>(),
 							pos);
@@ -209,16 +212,16 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos)  const throw(...) 
 				{
 					// (1/2) IfcSurfaceOfLinearExtrusion SUBTYPE of IfcSweptSurface
-					if (surface.isOfType<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>()) {
-
+					if (surface.isOfType<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>()) 
+					{
 						return convertIfcSurfaceOfLinearExtrusion(
 							surface.as<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>(),
 							pos);
 					}
 
 					// (2/2) IfcSurfaceOfRevolution SUBTYPE of IfcSweptSurface
-					else if (surface.isOfType<typename IfcEntityTypesT::IfcSurfaceOfRevolution>()) {
-
+					else if (surface.isOfType<typename IfcEntityTypesT::IfcSurfaceOfRevolution>()) 
+					{
 						return convertIfcSurfaceOfRevolution(
 							surface.as<typename IfcEntityTypesT::IfcSurfaceOfRevolution>(),
 							pos);
@@ -241,11 +244,12 @@ namespace OpenInfraPlatform {
 				{
 					/* TO DO: Finish implementation of convertIfcBSplineSurface
 
-					if(surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>()) const throw(...) {
+					if(surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>()) const throw(...) 
+					{
 
 					}
-					else {
-
+					else 
+					{
 						// Get attributes 1-4.
 						int uDegree = surface->UDegree;
 						int vDegree = surface->VDegree;
@@ -293,20 +297,23 @@ namespace OpenInfraPlatform {
 					// Get basis surface, outer boundary and inner boundaries.
 					EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& basisSurface = surface->BasisSurface;
 
-					if(basisSurface) {
+					if(basisSurface) 
+					{
 
 					// Get basis surface position.
 					EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& basisSurfacePlacement = basisSurface->Position;
 
-					if(basisSurfacePlacement) {
+					if(basisSurfacePlacement) 
+					{
 						surfaceMatrix = pos * placementConverter->convertIfcAxis2Placement3D(basisSurfacePlacement);
-						}
+					}
 
 					}
 
 					EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& outerBoundary = surface->OuterBoundary;
 
-					if(outerBoundary) {
+					if(outerBoundary) 
+					{
 					}
 
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCurve>> vInnerBoundaries;
@@ -319,7 +326,8 @@ namespace OpenInfraPlatform {
 						[](auto& it) { return it.lock(); }
 						);
 
-					for(unsigned int i = 0; i < vInnerBoundaries.size(); ++i) {
+					for(unsigned int i = 0; i < vInnerBoundaries.size(); ++i) 
+					{
 						EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& innerCurve = vInnerBoundaries[i];
 					}
 
@@ -376,7 +384,8 @@ namespace OpenInfraPlatform {
 					/* TO DO: Finish implementation of convertIfcRectangularTrimmedSurface.
 
 					EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& basisSurface = surface->BasisSurface;
-					if(basisSurface) {
+					if(basisSurface) 
+					{
 						convertIfcSurface(basisSurface, pos, polylineData);
 					}
 
@@ -428,12 +437,13 @@ namespace OpenInfraPlatform {
 					// Get basis surface.
 					EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& basisSurface = surface->BasisSurface;
 
-					if (basisSurface) {
-
+					if (basisSurface) 
+					{
 						// Get basis surface position.
 						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& basisSurfacePlacement = basisSurface->Position;
 
-						if (basisSurfacePlacement) {
+						if (basisSurfacePlacement) 
+						{
 							surfaceMatrix = pos * placementConverter->convertIfcAxis2Placement3D(basisSurfacePlacement);
 						}
 
@@ -521,16 +531,19 @@ namespace OpenInfraPlatform {
 					EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> sweptSurfaceProfile = surface->SweptCurve;
 					EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> sweptSurfacePlacement = nullptr;
 
-					if (surface->Position) {
+					if (surface->Position) 
+					{
 						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> ref = surface->Position;
 						sweptSurfacePlacement;
 					}
-					else {
+					else 
+					{
 						BLUE_LOG(warning) << "#" << swept_surface->getId() << " IfcSweptSurface without placement found.";
 					}
 
 					carve::math::Matrix surfaceMatrix(pos);
-					if (sweptSurfacePlacement) {
+					if (sweptSurfacePlacement) 
+					{
 						surfaceMatrix = pos * placementConverter->convertIfcAxis2Placement3D(sweptSurfacePlacement);
 					}
 
@@ -581,8 +594,8 @@ namespace OpenInfraPlatform {
 
 				void convertIfcFaceList(const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFace>>& faces,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData> itemData)  const throw(...) {
-
+					std::shared_ptr<ItemData> itemData)  const throw(...) 
+				{
 					// Carve polygon of the converted face list
 					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 
@@ -590,10 +603,12 @@ namespace OpenInfraPlatform {
 					std::map<std::string, uint32_t> polygonIndices;
 
 					// Loop through all faces
-					for (auto it = faces.cbegin(); it != faces.cend(); ++it) {
+					for (auto it = faces.cbegin(); it != faces.cend(); ++it) 
+					{
 						EXPRESSReference<typename IfcEntityTypesT::IfcFace> face = (*it);
 
-						if (!convertIfcFace(face, pos, polygon, polygonIndices)) {
+						if (!convertIfcFace(face, pos, polygon, polygonIndices)) 
+						{
 							std::stringstream text;
 							text << "IFC Face conversion failed with faces #" << faces.at(0)->getId() << "-" << faces.at(faces.size() - 1)->getId();
 
@@ -617,8 +632,8 @@ namespace OpenInfraPlatform {
 				bool convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices)  const throw(...) {
-
+					std::map<std::string, uint32_t>& polygonIndices)  const throw(...) 
+				{
 					// Indicates if conversion has failed
 					bool conversionFailed = false;
 
@@ -647,20 +662,24 @@ namespace OpenInfraPlatform {
 					ProjectionPlane plane = UNDEFINED;
 
 					// As carve expects outer boundary of face to be at first index, outer boundary has index 0 and inner boundary has index 1
-					for (auto it = bounds.cbegin(); it != bounds.cend(); ++it) {
+					for (auto it = bounds.cbegin(); it != bounds.cend(); ++it) 
+					{
 						EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound> bound = *it;
 						EXPRESSReference<typename IfcEntityTypesT::IfcFaceOuterBound> outerBound = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFaceOuterBound>(bound);
 
-						if (outerBound) {
+						if (outerBound) 
+						{
 							modBounds.insert(modBounds.begin(), outerBound);
 						}
-						else {
+						else 
+						{
 							modBounds.push_back(bound);
 						}
 					}
 					modBounds.shrink_to_fit();
 
-					for (const auto& bound : modBounds) {
+					for (const auto& bound : modBounds) 
+					{
 						boundID++;
 
 						//	IfcLoop <- IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
@@ -669,10 +688,12 @@ namespace OpenInfraPlatform {
 						if (!loop) {
 							BLUE_LOG(warning) << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " no valid loop.";
 
-							if (boundID == 0) {
+							if (boundID == 0) 
+							{
 								break;
 							}
-							else {
+							else 
+							{
 								continue;
 							}
 						}
@@ -681,33 +702,40 @@ namespace OpenInfraPlatform {
 						std::vector<carve::geom::vector<3>> loopVertices3D;
 						curveConverter->convertIfcLoop(loop, loopVertices3D);
 
-						for (auto& vertex : loopVertices3D) {
+						for (auto& vertex : loopVertices3D) 
+						{
 							vertex = pos * vertex;
 						}
 
-						if (loopVertices3D.size() < 3) {
+						if (loopVertices3D.size() < 3) 
+						{
 							BLUE_LOG(warning) << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " Number of vertices < 2.";
 
-							if (boundID == 0) {
+							if (boundID == 0) 
+							{
 								break;
 							}
-							else {
+							else 
+							{
 								continue;
 							}
 						}
 
 						// Check for orientation and reverse vertices order if FALSE
-						if (!polyOrientation) {
+						if (!polyOrientation) 
+						{
 							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
 						}
 
 						//	3 Vertices Triangle
-						if (loopVertices3D.size() == 3) {
+						if (loopVertices3D.size() == 3) 
+						{
 							std::vector<uint32_t> triangleIndices;
 							triangleIndices.reserve(3);
 
 							int pointID = -1;
-							for (const auto& vertex3D : loopVertices3D) {
+							for (const auto& vertex3D : loopVertices3D) 
+							{
 								pointID++;
 
 								// apply global transformation to vertex
@@ -719,10 +747,12 @@ namespace OpenInfraPlatform {
 								auto itFound = polygonIndices.find(vertexString.str());
 
 								uint32_t index = 0;
-								if (itFound != polygonIndices.end()) {
+								if (itFound != polygonIndices.end()) 
+								{
 									index = itFound->second;
 								}
-								else {
+								else 
+								{
 									index = polygon->addVertex(v);
 									polygonIndices[vertexString.str()] = index;
 								}
@@ -736,13 +766,15 @@ namespace OpenInfraPlatform {
 						//	> 3 Vertices Triangle					
 						std::vector<carve::geom2d::P2> loopVertices2D;
 
-						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed)) {
+						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed)) 
+						{
 							conversionFailed = true;
 							BLUE_LOG(warning) << "#" << faceID << "= IfcFace: loop could not be projected";
 							continue;
 						}
 
-						if (loopVertices2D.size() < 3) {
+						if (loopVertices2D.size() < 3) 
+						{
 							conversionFailed = true;
 							BLUE_LOG(warning) << "#" << faceID << "= IfcFace: path_loop.size() < 3";
 							continue;
@@ -754,7 +786,8 @@ namespace OpenInfraPlatform {
 					}
 
 					// If no faceVertices were collected, no carve operations are required
-					if (faceVertices2D.empty()) {
+					if (faceVertices2D.empty()) 
+					{
 						return false;
 					}
 
@@ -765,10 +798,12 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom2d::P2> mergedVertices2D;
 					std::vector<carve::geom::vector<3>> mergedVertices3D;
 
-					try {
+					try 
+					{
 						incorporatedIndices = carve::triangulate::incorporateHolesIntoPolygon(faceVertices2D);
 
-						for (const auto& incorpIndex : incorporatedIndices) {
+						for (const auto& incorpIndex : incorporatedIndices) 
+						{
 							size_t loopIndex = incorpIndex.first;
 							size_t vertexIndex = incorpIndex.second;
 
@@ -815,41 +850,51 @@ namespace OpenInfraPlatform {
 					// Compute normal of polygon
 					carve::geom::vector<3> normal = GeomUtils::computePolygonNormal(loopVertices3D);
 
-					if (boundID == 0) {
+					if (boundID == 0) 
+					{
 						const double nx = std::abs(normal.x);
 						const double ny = std::abs(normal.y);
 						const double nz = std::abs(normal.z);
 
 						const double nMax = std::max(std::max(nx, ny), nz);
 
-						if (nMax == nx) {
+						if (nMax == nx) 
+						{
 							plane = ProjectionPlane::YZ_PLANE;
 						}
-						else if (nMax == ny) {
+						else if (nMax == ny) 
+						{
 							plane = ProjectionPlane::XZ_PLANE;
 						}
-						else if (nMax == nz) {
+						else if (nMax == nz) 
+						{
 							plane = ProjectionPlane::XY_PLANE;
 						}
-						else {
+						else 
+						{
 							return false;
 						}
 					}
 
 					// Now collect all vertices in 2D
-					for (const auto& vertex : loopVertices3D) {
-						if (plane == ProjectionPlane::YZ_PLANE) {
+					for (const auto& vertex : loopVertices3D) 
+					{
+						if (plane == ProjectionPlane::YZ_PLANE) 
+						{
 							loopVertices2D.push_back(carve::geom::VECTOR(vertex.y, vertex.z));
 						}
 
-						else if (plane == ProjectionPlane::XZ_PLANE) {
+						else if (plane == ProjectionPlane::XZ_PLANE) 
+						{
 							loopVertices2D.push_back(carve::geom::VECTOR(vertex.x, vertex.z));
 						}
 
-						else if (plane == ProjectionPlane::XY_PLANE) {
+						else if (plane == ProjectionPlane::XY_PLANE) 
+						{
 							loopVertices2D.push_back(carve::geom::VECTOR(vertex.x, vertex.y));
 						}
-						else {
+						else 
+						{
 							std::cout << "ERROR: plane is undefined, what??" << std::endl;
 							return false;
 						}
@@ -858,21 +903,24 @@ namespace OpenInfraPlatform {
 					// Check winding order of 2D polygon
 					carve::geom3d::Vector normal2D = GeomUtils::computePolygon2DNormal(loopVertices2D);
 
-					if (boundID == 0) {
-						if (normal2D.z < 0) {
+					if (boundID == 0) 
+					{
+						if (normal2D.z < 0) 
+						{
 							std::reverse(loopVertices2D.begin(), loopVertices2D.end());
 							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
 							faceLoopReversed = true;
 						}
 					}
-					else {
-						if (normal2D.z > 0) {
+					else 
+					{
+						if (normal2D.z > 0) 
+						{
 							std::reverse(loopVertices2D.begin(), loopVertices2D.end());
 							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
 							// faceLoopReversed = true;
 						}
 					}
-
 					return true;
 				}
 
@@ -900,7 +948,8 @@ namespace OpenInfraPlatform {
 					carve::triangulate::improve(faceVertices2D, triangulatedIndices);
 
 					// add new vertices to polygon or get index of existing vertex
-					for (uint32_t i = 0; i < faceVertices3D.size(); ++i) {
+					for (uint32_t i = 0; i < faceVertices3D.size(); ++i) 
+					{
 						const carve::geom::vector<3>& v = faceVertices3D[i];
 
 						// set string id and search for existing vertex in polygon
@@ -910,19 +959,21 @@ namespace OpenInfraPlatform {
 						auto itFound = polygonIndices.find(vertexString.str());
 						uint32_t index = 0;
 
-						if (itFound != polygonIndices.end()) {
+						if (itFound != polygonIndices.end()) 
+						{
 							index = itFound->second;
 						}
-						else {
+						else 
+						{
 							index = polygon->addVertex(v);
 							polygonIndices[vertexString.str()] = index;
 						}
-
 						mergedIndices[i] = index;
 					}
 
 					// go through triangulated result and add new faces to polygon
-					for (const auto& triangle : triangulatedIndices) {
+					for (const auto& triangle : triangulatedIndices) 
+					{
 						const uint32_t i0 = triangle.a;
 						const uint32_t i1 = triangle.b;
 						const uint32_t i2 = triangle.c;
@@ -951,14 +1002,17 @@ namespace OpenInfraPlatform {
 					const uint32_t numPointsY = points2D.size();
 					loop2D.reserve(numPointsY);
 
-					for (unsigned int j = 0; j < numPointsY; ++j) {
+					for (unsigned int j = 0; j < numPointsY; ++j) 
+					{
 						const uint32_t numPointsX = points2D[j].size();
 						const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>& points = points2D[j];
-						for (unsigned int i = 0; i < numPointsX; ++i) {
+						for (unsigned int i = 0; i < numPointsX; ++i) 
+						{
 							/*const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcLengthMeasure>>& coords =
 								points[i]->m_Coordinates;*/
 							const std::vector<double>& coords = points[i]->Coordinates;
-							if (coords.size() > 2) {
+							if (coords.size() > 2) 
+							{
 								/*double x = coords[0]->m_value * lengthFactor;
 								double y = coords[1]->m_value * lengthFactor;
 								double z = coords[2]->m_value * lengthFactor;
@@ -968,13 +1022,15 @@ namespace OpenInfraPlatform {
 								double z = coords[2] * lengthFactor;
 								loop2D[j].push_back(carve::geom::VECTOR(x, y, z));
 							}
-							else if (coords.size() > 1) {
+							else if (coords.size() > 1) 
+							{
 								double x = coords[0] * lengthFactor;
 								double y = coords[1] * lengthFactor;
 
 								loop2D[j].push_back(carve::geom::VECTOR(x, y, 0.0));
 							}
-							else {
+							else 
+							{
 								std::cout << "convertIfcCartesianPointVector: ifc_pt->Coordinates.size() != 2" << std::endl;
 							}
 						}
@@ -991,7 +1047,8 @@ namespace OpenInfraPlatform {
 				{
 					auto& vec_face_sets = surface_model->FbsmFaces;
 
-					for (auto& it_face_sets : vec_face_sets) {
+					for (auto& it_face_sets : vec_face_sets) 
+					{
 						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_ifc_faces;
 						vec_ifc_faces.resize(it_face_sets->CfsFaces.size());
 						std::transform(it_face_sets->CfsFaces.begin(), it_face_sets->CfsFaces.end(), vec_ifc_faces.begin(), [](auto& it) { return it.lock(); });
@@ -1013,13 +1070,16 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcShellBasedSurfaceModel>& surface_model,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...) {
+				) const throw(...) 
+				{
 					//auto vec_shells = shell_based_surface_model->SbsmBoundary;
-					for (auto& it_shells : surface_model->SbsmBoundary) {
+					for (auto& it_shells : surface_model->SbsmBoundary) 
+					{
 						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_shells;
 						std::shared_ptr<ItemData> input_data_shells_set(new ItemData);
 
-						switch (it_shells.which()) {
+						switch (it_shells.which()) 
+						{
 						case 0:
 							vec_shells.resize(it_shells.get<0>()->CfsFaces.size());
 							std::transform(it_shells.get<0>()->CfsFaces.begin(), it_shells.get<0>()->CfsFaces.end(), vec_shells.begin(), [](auto& it) {return it.lock(); });
@@ -1044,7 +1104,8 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedItem>& tessItem,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-					) const throw(...) {
+					) const throw(...) 
+				{
 					if (tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>())
 					{
 						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
