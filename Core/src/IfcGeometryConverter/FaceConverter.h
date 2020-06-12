@@ -949,7 +949,7 @@ namespace OpenInfraPlatform {
 					std::vector<std::vector<carve::geom::vector<3>>> loop2D = std::vector<std::vector<carve::geom::vector<3>>>();
 					const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
 					const uint32_t numPointsY = points2D.size();
-					loop2D.resize(numPointsY);
+					loop2D.reserve(numPointsY);
 
 					for (unsigned int j = 0; j < numPointsY; ++j) {
 						const uint32_t numPointsX = points2D[j].size();
@@ -967,20 +967,19 @@ namespace OpenInfraPlatform {
 								double y = coords[1] * lengthFactor;
 								double z = coords[2] * lengthFactor;
 								loop2D[j].push_back(carve::geom::VECTOR(x, y, z));
-								return loop2D;
 							}
 							else if (coords.size() > 1) {
 								double x = coords[0] * lengthFactor;
 								double y = coords[1] * lengthFactor;
 
 								loop2D[j].push_back(carve::geom::VECTOR(x, y, 0.0));
-								return loop2D;
 							}
 							else {
 								std::cout << "convertIfcCartesianPointVector: ifc_pt->Coordinates.size() != 2" << std::endl;
 							}
 						}
 					}
+					return loop2D;
 				}
 				
 				/*! \internal Still to refactor */
