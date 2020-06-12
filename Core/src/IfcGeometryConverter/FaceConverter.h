@@ -83,19 +83,19 @@ namespace OpenInfraPlatform {
 
 					// (1/3) IfcBoundedSurface SUBTYPE of IfcSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcBoundedSurface>()) {
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcBoundedSurface(surface.as<typename IfcEntityTypesT::IfcBoundedSurface(),
+						return convertIfcBoundedSurface(surface.as<typename IfcEntityTypesT::IfcBoundedSurface(),
 							pos);
 					}
 
 					// (2/3) IfcElementarySurface SUBTYPE of IfcSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcElementarySurface>()) const throw(...) {
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcElementarySurface(surface.as<typename IfcEntityTypesT::IfcElementarySurface(),
+						return convertIfcElementarySurface(surface.as<typename IfcEntityTypesT::IfcElementarySurface(),
 							pos);
 					}
 
 					// (3/3) IfcSweptSurface SUBTYPE of IfcSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcSweptSurface>())  const throw(...) {
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcSweptSurface(surface.as<typename IfcEntityTypesT::IfcSweptSurface(),
+						return convertIfcSweptSurface(surface.as<typename IfcEntityTypesT::IfcSweptSurface(),
 							pos);
 					}
 				}
@@ -117,7 +117,7 @@ namespace OpenInfraPlatform {
 					// (1/4) IfcBSplineSurface SUBTYPE of IfcBoundedSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurface>()) {
 
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcBSplineSurface(
+						return convertIfcBSplineSurface(
 							surface.as<typename IfcEntityTypesT::IfcBSplineSurface>(),
 							pos);
 					}
@@ -125,7 +125,7 @@ namespace OpenInfraPlatform {
 					// (2/4) IfcCurveBoundedPlane SUBTYPE OF IfcBoundedSurface.
 					else if (surface.isOfType<typename IfcEntityTypesT::IfcCurveBoundedPlane>()) {
 
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcCurveBoundedPlane(
+						return convertIfcCurveBoundedPlane(
 							surface.as<typename IfcEntityTypesT::IfcCurveBoundedPlane>(),
 							pos);
 					}
@@ -133,7 +133,7 @@ namespace OpenInfraPlatform {
 					// (3/4) IfcCurveBoundedSurface SUBTYPE of IfcBoundedSurface.
 					else if (surface.isOfType<typename IfcEntityTypesT::IfcCurveBoundedSurface>()) {
 
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcCurveBoundedSurface(
+						return convertIfcCurveBoundedSurface(
 							surface.as<typename IfcEntityTypesT::IfcCurveBoundedSurface>(),
 							pos);
 					}
@@ -141,7 +141,7 @@ namespace OpenInfraPlatform {
 					// (4/4) IfcRectangularTrimmedSurface SUBTYPE of IfcBoundedSurface.
 					else if (surface.isOfType<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>())  {
 
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcRectangularTrimmedSurface(
+						return convertIfcRectangularTrimmedSurface(
 							surface.as<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>(),
 							pos);
 					}
@@ -164,7 +164,7 @@ namespace OpenInfraPlatform {
 					// (1/4) IfcCylindricalSurface SUBTYPE of IfcElementarySurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcCylindricalSurface>()) {
 
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcCylindricalSurface(
+						return convertIfcCylindricalSurface(
 							surface.as<typename IfcEntityTypesT::IfcCylindricalSurface>(),
 							pos);
 					}
@@ -172,7 +172,7 @@ namespace OpenInfraPlatform {
 					// (2/4) IfcPlane SUBTYPE of IfcElementarySurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcPlane>()) {
 
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcPlane(
+						return convertIfcPlane(
 							surface.as<typename IfcEntityTypesT::IfcPlane>(),
 							pos);
 					}
@@ -180,7 +180,7 @@ namespace OpenInfraPlatform {
 					// (3/4) IfcSphericalPlane SUBTYPE of IfcElementarySurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcSphericalPlane>()) {
 
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcSphericalPlane(
+						return convertIfcSphericalPlane(
 							surface.as<typename IfcEntityTypesT::IfcSphericalPlane>(),
 							pos);
 					}
@@ -188,7 +188,7 @@ namespace OpenInfraPlatform {
 					// (1/4) IfcToroidalSurface SUBTYPE of IfcElementarySurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcToroidalSurface >()) {
 
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcToroidalSurface(
+						return convertIfcToroidalSurface(
 							surface.as<typename IfcEntityTypesT::IfcToroidalSurface>(),
 							pos);
 					}
@@ -211,7 +211,7 @@ namespace OpenInfraPlatform {
 					// (1/2) IfcSurfaceOfLinearExtrusion SUBTYPE of IfcSweptSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>()) {
 
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcSurfaceOfLinearExtrusion(
+						return convertIfcSurfaceOfLinearExtrusion(
 							surface.as<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>(),
 							pos);
 					}
@@ -219,7 +219,7 @@ namespace OpenInfraPlatform {
 					// (2/2) IfcSurfaceOfRevolution SUBTYPE of IfcSweptSurface
 					else if (surface.isOfType<typename IfcEntityTypesT::IfcSurfaceOfRevolution>()) {
 
-						return std::shared_ptr<carve::input::PolylineSetData> polylineData = convertIfcSurfaceOfRevolution(
+						return convertIfcSurfaceOfRevolution(
 							surface.as<typename IfcEntityTypesT::IfcSurfaceOfRevolution>(),
 							pos);
 					}
