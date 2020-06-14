@@ -157,7 +157,38 @@ namespace OpenInfraPlatform
                             throw oip::UnhandledException(manifoldSolidBrep);
                         }
 
-	void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal) throw(...)
+						std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(
+							const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix,
+							const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>& cross_section_positions,
+							const double relativeDistAlong = 0.
+						) const throw(...)
+						{
+							// check input
+							if (directrix.expired())
+								throw oip::ReferenceExpiredException(directrix);
+							if (cross_section_positions.expired())
+								throw oip::ReferenceExpiredException(cross_section_positions);
+							
+							// defaults
+							carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
+							carve::geom::vector<3> directionOfCurve = carve::geom::VECTOR(1.0, 0.0, 0.0);
+
+							// account for relative placement
+							double dDistAlong = cross_section_positions->DistanceAlong * UnitConvert()->getLengthInMeterFactor()
+								+ relativeDistAlong;
+
+							// convert the point  
+							placementConverter->convertBoundedCurveDistAlongToPoint3D(
+								directrix.as<typename IfcEntityTypesT::IfcBoundedCurve>(),
+								dDistAlong,
+								cross_section_positions->AlongHorizontal.value_or(true),
+								pointOnCurve,
+								directionOfCurve
+							);
+							return { pointOnCurve, directionOfCurve };
+						}
+
+	        void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal) throw(...)
 			{
 				if (sectioned_solid_horizontal.expired())
 					throw oip::ReferenceExpiredException(sectioned_solid_horizontal);
@@ -246,28 +277,49 @@ namespace OpenInfraPlatform
 						 }
 		         }
 				 
-                //TO DO: write new version of calculatePositionOnAndDirectionOfBaseCurve, exchange Linearplacement for vec_cross_section_positions[i]
-	
-				 std::vector<carve::geom::vector<3>> offsetFromCurve;
+			
 
+				 // TO DO: declare Variables to fill with the information of the Cross Section Positions
+				  std::vector<carve::geom::vector<3>> offsetFromCurve;
+				  std::vector<carve::math::Matrix> localPlacementMatrix;
+				  std::vector<carve::geom::vector<3>> translate;
+				  std::vector<carve::math::Matrix> object_placement_matrix;
 				 for (int pos = 0; pos < cross_section_positions.size(); ++pos)
 				 {
-					 // 1. get offset from curve    //TO DO: convertIfcDistanceExpressionOffsets nimmt nur EXPRESSReference, CrossSectionPositions ist aber shared_ptr
+					 // 1. get offset from curve    
 					 offsetFromCurve.push_back(placementConverter->convertIfcDistanceExpressionOffsets(cross_section_positions[pos])); 
 
 					 // 2. calculate the position on and the direction of the base curve
 				     // also applay the relative dist along
-					 /*carve::geom::vector<3> pointOnCurve;
+					 
+					 carve::geom::vector<3> pointOnCurve;
 					 carve::geom::vector<3> directionOfCurve;
 					 std::tie(pointOnCurve, directionOfCurve) =
-						 calculatePositionOnAndDirectionOfBaseCurve(linear_placement, convertRelativePlacement(linear_placement, alreadyApplied));
+						 calculatePositionOnAndDirectionOfBaseCurve(directrix, cross_section_positions[pos]);
+
 					 // 3. calculate the rotations
 				     // the direction of the curve's tangent = directionOfCurve
+   				     // now that localPLacement Matrix is a Vector ----> 1 Matrix for each CrossSectionPosition saved in the Vector localPlacementMatrix
 
-   				     // 4. calculate the position
+					 localPlacementMatrix.push_back(placementConverter->calculateCurveOrientationMatrix(directionOfCurve, cross_section_positions[pos]->AlongHorizontal.value_or(true)));
+
+
+					  // 4. calculate the position
 				     // the position on the curve = pointOnCurve
 				     // the offsets = offsetFromCurve
+					 //carve::geom::vector<3> translate = pointOnCurve + localPlacementMatrix * offsetFromCurve;
+					 //carve::math::Matrix object_placement_matrix = convertIfcOrientationExpression(linear_placement->Orientation, translate);
+
+					   // 4. TO DO: OrientationExpression for convertIfcOrientationExpression
+					  // the position on the curve = pointOnCurve
+					  // the offsets = offsetFromCurve
+					  translate.push_back (pointOnCurve + localPlacementMatrix[pos] * offsetFromCurve[pos]);
+					  object_placement_matrix.push_back(placementConverter->convertIfcOrientationExpression(cross_section_positions[pos], translate[pos]));
+
 				     // 5. check against the provided 3D coordinate*/
+
+
+					 //return object_placement_matrix; TO DO: is this necessery? object_placement_matrix is now a Vector defined outside of the for.
 				 }
 				 
 				//TO DO: first normalize vectors to start the extrusion along the Directrix. For each CrossSection along the Directrix also one CrossSection Position.
