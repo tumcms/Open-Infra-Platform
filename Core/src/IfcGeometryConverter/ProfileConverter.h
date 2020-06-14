@@ -62,7 +62,7 @@ namespace OpenInfraPlatform {
 
 			// *************************************************************************************************************************************************************//
 			//	IfcProfileDef		(http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcprofileresource/lexical/ifcprofiledef.htm)							//
-			//	ABSTRACT SUPERTYPE OF IfcArbitraryClosedProfileDef, IfcArbitraryOpenProfileDef, IfcCompositeProfileDef, IfcDerivedProfileDef, IfcParameterizedProfileDef	//
+			//	ABSTRACT SUPERTYPE OF IfcArbitraryClosedProfileDef, IfcArbitraryOpenProfileDef, IfcCompositeProfileDef, IfcDerivedProfileDef, IfcOpenCrossProfileDef, IfcParameterizedProfileDef	//
 			// *************************************************************************************************************************************************************//
 			void computeProfile(std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> profileDef)
 			{
@@ -468,7 +468,17 @@ namespace OpenInfraPlatform {
 #endif
 			}
 
-			// Function 5: Convert IfcParametrizedProfileDef
+			/*! \internal TODO
+			*
+			*/
+			// Function 5: Convert IfcOpenCrossProfileDef
+			void convertIfcOpenCrossProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcOpenCrossProfileDef>& profileDef,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
+			{	
+				throw oip::UnhandledException(convertIfcOpenCrossProfileDef);
+			}
+
+			// Function 6: Convert IfcParametrizedProfileDef
 			void convertIfcParameterizedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
@@ -868,7 +878,7 @@ namespace OpenInfraPlatform {
 			}
 			*/
 
-			// Function 6: Convert IfcArbitraryProfileWithVoids
+			// Function 7: Convert IfcArbitraryProfileWithVoids
 			void convertIfcArbitraryProfileWithVoids(const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids>& profile_with_voids,
 				const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids>& next_profile_with_voids,
 				const carve::math::Matrix& placement,
@@ -985,7 +995,7 @@ namespace OpenInfraPlatform {
 #endif
 			}
 
-			// Function 7: Convert IfcParametrizedProfileDefWithPosition
+			// Function 8: Convert IfcParametrizedProfileDefWithPosition
 			void convertIfcParameterizedProfileDefWithPosition(const std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
@@ -1332,11 +1342,11 @@ namespace OpenInfraPlatform {
 			}
 
 			/*! \brief searhes Existing Vertex and adds to \c IfcArbitraryClosedProfileDef.
-			* \param[in] ID 
-			* \param[in] position A position of the Vertex
-			* \param[in] polygonIndices Indices of the polygon line
-			* \param[in] polygon A pointer to the polygon line
-			* \param[out] index 
+			* \param[in] ID id of the string to search for existing vertex. 
+			* \param[in] position A position of the Vertex in polygon.
+			* \param[in] polygonIndices Indices of the polygon.
+			* \param[in] polygon A pointer to the polygon, where to search existing vertex.
+			* \param[out] index value to fill in the faceIndices.
 			*/
 			void SearchExistingVertex(const std::string & ID, const uint32_t & index, carve::geom::vector<3> position, std::map<std::string, uint32_t> & polygonIndices, std::shared_ptr<carve::input::PolyhedronData> polygon) const
 			{
