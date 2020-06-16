@@ -188,141 +188,122 @@ namespace OpenInfraPlatform
 							return { pointOnCurve, directionOfCurve };
 						}
 
-	        void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal) throw(...)
-			{
-				if (sectioned_solid_horizontal.expired())
-					throw oip::ReferenceExpiredException(sectioned_solid_horizontal);
+						void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal) throw(...)
+						{
+							if (sectioned_solid_horizontal.expired())
+								throw oip::ReferenceExpiredException(sectioned_solid_horizontal);
 
-				//Get directrix and cross sections (attributes 1-2).
-				const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix =
-					sectioned_solid_horizontal->Directrix;
-				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
-				vec_cross_sections.resize(sectioned_solid_horizontal->CrossSections.size());
-				std::transform(sectioned_solid_horizontal->CrossSections.begin(),
-					sectioned_solid_horizontal->CrossSections.end(),
-					vec_cross_sections.begin(), [](auto& it) {return it.lock(); });
-
-
-					// Get cross section positions and fixed axis vertical (attributes 3-4).
-					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>>& cross_section_positions =
-						sectioned_solid_horizontal->CrossSectionPositions;
-					
-					bool fixed_axis_vertical = sectioned_solid_horizontal->FixedAxisVertical;
-
-					BLUE_LOG(warning) << "Geometry conversion for IfcSectionedSolidHorizontal not implemented.";
-					// TO DO: implement, check for formal propositions. 
-                 
-				//check dimensions and correct attributes sizes
-                if(vec_cross_sections.size() != cross_section_positions.size())
-				{
-					throw oip::InconsistentModellingException(sectioned_solid_horizontal, "CrossSections and CrossSectionsPositions are not equal in size.");
-				}
-
-				/*//Define Vectors for the Attributes of the IfcDistanceExpressions (Cross Section Position)
-				std::vector<double> cross_section_dist_along;
-				std::vector<double> cross_section_offset_lateral; 
-				std::vector<double> cross_section_offset_vertical; 
-				std::vector<double> cross_section_offset_longitudinal; 
-				std::vector< bool > cross_section_along_horizontal;
-
-				// fill the Vectors with the CrossSectionPostions list in Unit m for L[2:?] (Unit conversion)
-				for (int i = 0; i < cross_section_positions.size(); ++i)
-				{
-					//DistanceAlong
-			    	cross_section_dist_along.push_back(cross_section_positions[i]->DistanceAlong * UnitConvert()->getLengthInMeterFactor());
-							
-					//OffsetLateral
-				    cross_section_offset_lateral.push_back(cross_section_positions[i]->OffsetLateral * UnitConvert()->getLengthInMeterFactor());
-						 
-				    //OffsetVertical
-					cross_section_offset_vertical.push_back(cross_section_positions[i]->OffsetVertical * UnitConvert()->getLengthInMeterFactor());
-
-					//OffsetLongitudinal
-					cross_section_offset_longitudinal.push_back(cross_section_positions[i]->OffsetLongitudinal * UnitConvert()->getLengthInMeterFactor());
-				
-					//AlongHorizontal
-					cross_section_along_horizontal.push_back(cross_section_positions[i]->AlongHorizontal * UnitConvert()->getLengthInMeterFactor());
-				}*/
-		
-				 //Give directrix to Curve converter
-		    	 std::vector<carve::geom::vector<3> > segment_start_points;
-	     		 std::vector<carve::geom::vector<3> > basis_curve_points;
-				 curveConverter->convertIfcCurve(directrix.lock(), basis_curve_points, segment_start_points);
-
-				 std::shared_ptr<carve::input::PolyhedronData> body_data = std::make_shared<carve::input::PolyhedronData>();
-				 itemData->closed_polyhedrons.push_back(body_data);
-				 //std::vector<carve::geom::vector<3> > inner_shape_points;  //TO DO: find out if i need inner_shape_points for the CrossSections
-
-				 int num_curve_points = basis_curve_points.size();
-				 carve::math::Matrix matrix_sweep;
-
-				 // Less than two points is a point
-				 if (num_curve_points < 2)
-				 {
-					 throw oip::InconsistentModellingException(sectioned_solid_horizontal, " num curve points < 2");
-				 }			 
-
-				 // define Vector to fill with the coordinates of the CrossSections
-				 std::vector<std::vector<std::vector<carve::geom::vector<2>>>> paths;
-				 //Get coordinates from the ProfileConverter for the ProfileDef
-				 for (int i = 0; i <= vec_cross_sections.size(); ++i)
-			     {      
-					 //Save coordinates in paths
-					 paths.push_back(profileCache->getProfileConverter(vec_cross_sections[i])->getCoordinates());
-					 
-					     //check if paths has been filled with the coordinates of the ProfileDef. if empty -> throw Exception
-						 if (paths[i].size() == 0)
-						 {
-							 throw oip::InconsistentModellingException(sectioned_solid_horizontal, "Profile converter could not find coordinates");
-						 }
-		         }
-				 
-			
-
-				 // TO DO: declare Variables to fill with the information of the Cross Section Positions
-				  std::vector<carve::geom::vector<3>> offsetFromCurve;
-				  std::vector<carve::math::Matrix> localPlacementMatrix;
-				  std::vector<carve::geom::vector<3>> translate;
-				  std::vector<carve::math::Matrix> object_placement_matrix;
-				 for (int pos = 0; pos < cross_section_positions.size(); ++pos)
-				 {
-					 // 1. get offset from curve    
-					 offsetFromCurve.push_back(placementConverter->convertIfcDistanceExpressionOffsets(cross_section_positions[pos])); 
-
-					 // 2. calculate the position on and the direction of the base curve
-				     // also applay the relative dist along
-					 
-					 carve::geom::vector<3> pointOnCurve;
-					 carve::geom::vector<3> directionOfCurve;
-					 std::tie(pointOnCurve, directionOfCurve) =
-						 calculatePositionOnAndDirectionOfBaseCurve(directrix, cross_section_positions[pos]);
-
-					 // 3. calculate the rotations
-				     // the direction of the curve's tangent = directionOfCurve
-   				     // now that localPLacement Matrix is a Vector ----> 1 Matrix for each CrossSectionPosition saved in the Vector localPlacementMatrix
-
-					 localPlacementMatrix.push_back(placementConverter->calculateCurveOrientationMatrix(directionOfCurve, cross_section_positions[pos]->AlongHorizontal.value_or(true)));
+							//Get directrix and cross sections (attributes 1-2).
+							const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix =
+								sectioned_solid_horizontal->Directrix;
+							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
+							vec_cross_sections.resize(sectioned_solid_horizontal->CrossSections.size());
+							std::transform(sectioned_solid_horizontal->CrossSections.begin(),
+								sectioned_solid_horizontal->CrossSections.end(),
+								vec_cross_sections.begin(), [](auto& it) {return it.lock(); });
 
 
-					  // 4. calculate the position
-				     // the position on the curve = pointOnCurve
-				     // the offsets = offsetFromCurve
-					 //carve::geom::vector<3> translate = pointOnCurve + localPlacementMatrix * offsetFromCurve;
-					 //carve::math::Matrix object_placement_matrix = convertIfcOrientationExpression(linear_placement->Orientation, translate);
+							// Get cross section positions and fixed axis vertical (attributes 3-4).
+							const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>>& cross_section_positions =
+								sectioned_solid_horizontal->CrossSectionPositions;
 
-					   // 4. TO DO: OrientationExpression for convertIfcOrientationExpression
-					  // the position on the curve = pointOnCurve
-					  // the offsets = offsetFromCurve
-					  translate.push_back (pointOnCurve + localPlacementMatrix[pos] * offsetFromCurve[pos]);
-					  object_placement_matrix.push_back(placementConverter->convertIfcOrientationExpression(cross_section_positions[pos], translate[pos]));
+							bool fixed_axis_vertical = sectioned_solid_horizontal->FixedAxisVertical;
 
-				     // 5. check against the provided 3D coordinate*/
+							BLUE_LOG(warning) << "Geometry conversion for IfcSectionedSolidHorizontal not implemented.";
+							// TO DO: implement, check for formal propositions. 
+
+						//check dimensions and correct attributes sizes
+							if (vec_cross_sections.size() != cross_section_positions.size())
+							{
+								throw oip::InconsistentModellingException(sectioned_solid_horizontal, "CrossSections and CrossSectionsPositions are not equal in size.");
+							}
+
+							//Give directrix to Curve converter
+							std::vector<carve::geom::vector<3> > segment_start_points;
+							std::vector<carve::geom::vector<3> > basis_curve_points;
+							curveConverter->convertIfcCurve(directrix.lock(), basis_curve_points, segment_start_points);
+
+							std::shared_ptr<carve::input::PolyhedronData> body_data = std::make_shared<carve::input::PolyhedronData>();
+							itemData->closed_polyhedrons.push_back(body_data);
+							//std::vector<carve::geom::vector<3> > inner_shape_points;  //TO DO: find out if i need inner_shape_points for the CrossSections
+
+							int num_curve_points = basis_curve_points.size();
+							carve::math::Matrix matrix_sweep;
+
+							// Less than two points is a point
+							if (num_curve_points < 2)
+							{
+								throw oip::InconsistentModellingException(sectioned_solid_horizontal, " num curve points < 2");
+							}
+
+							// define Vector to fill with the coordinates of the CrossSections
+							std::vector<std::vector<std::vector<carve::geom::vector<2>>>> paths;
+							//Get coordinates from the ProfileConverter for the ProfileDef
+							for (int i = 0; i <= vec_cross_sections.size(); ++i)
+							{
+								//Save coordinates in paths
+								paths.push_back(profileCache->getProfileConverter(vec_cross_sections[i])->getCoordinates());
+
+								//check if paths has been filled with the coordinates of the ProfileDef. if empty -> throw Exception
+								if (paths[i].size() == 0)
+								{
+									throw oip::InconsistentModellingException(sectioned_solid_horizontal, "Profile converter could not find coordinates");
+								}
+							}
+
+							//declare Variables to fill with the information of the Cross Section Positions
+							std::vector<carve::geom::vector<3>> offsetFromCurve;
+							std::vector<carve::math::Matrix> localPlacementMatrix;
+							std::vector<carve::geom::vector<3>> pointsOnCurve;
+							std::vector<carve::geom::vector<3>> directionsOfCurve;
+
+							for (int pos = 0; pos < cross_section_positions.size(); ++pos)
+							{
+								// 1. get offset from curve    
+								offsetFromCurve.push_back(placementConverter->convertIfcDistanceExpressionOffsets(cross_section_positions[pos]));
+
+								// 2. calculate the position on and the direction of the base curve
+								// also applay the relative dist along	 
+								std::tie(pointsOnCurve[pos], directionsOfCurve[pos]) = calculatePositionOnAndDirectionOfBaseCurve(directrix, cross_section_positions[pos]);
+								pointsOnCurve.push_back(pointsOnCurve[pos]);
+								directionsOfCurve.push_back(directionsOfCurve[pos]);
+
+								// 3. calculate the rotations
+								// the direction of the curve's tangent = directionOfCurve
+								// now that localPLacement Matrix is a Vector ----> 1 Matrix for each CrossSectionPosition saved in the Vector localPlacementMatrix
+								localPlacementMatrix.push_back(placementConverter->calculateCurveOrientationMatrix(directionsOfCurve[pos], cross_section_positions[pos]->AlongHorizontal.value_or(true)));
+
+							}
+
+							/*// 1. TO DO: Compare basis_curve_points with pointsOnCurve.
+							// If pointOnCurve is missing in base_curve_point then it needs to be added to the new vector
+							// points_for_tesselation = If( base_curve_point == pointsOnCurve -> then add just the pointOnCurve and  direction_for_tesselation = directionsOfCurve
+							// points_for_tesselation = if( base_curve_point != pointsOnCurve -> then add the base_curve_point and interpolate between the pointsOnCurve to get the direction.
+							//                          direction_for_tesselation = (interpolation of the pointOnCurve before and after the base_curve_point)
 
 
-					 //return object_placement_matrix; TO DO: is this necessery? object_placement_matrix is now a Vector defined outside of the for.
-				 }
-				 
-				//TO DO: first normalize vectors to start the extrusion along the Directrix. For each CrossSection along the Directrix also one CrossSection Position.
+							// declare a new vector which will include all points for the Tesselation
+							std::vector<carve::geom::vector<3>> points_for_tesselation;
+							std::vector<carve::geom::vector<3>> direction_for_tesselation;
+
+							//points of base_curve_points
+							for (i = 0; i < num_curve_points; ++i)
+							{
+								//points of pointsOfCurve
+								for (j = 0; j < pointsOnCurve.size(); ++j)
+								{
+
+								}
+								
+							}
+
+							// 2. TO DO: on each pointOnCurve[i] is a CrossSection( IfcProfileDef) -> addFace(paths[i]),
+							      //2.1 for the points between the pointsOnCurve we have to interpolate the Profile. The OpenPolyhedron (Mantelfläche) needs to be calculated.
+
+				             // 2. TO DO: an jeder CrossSectionPosition muss jetzt ein addFace mit den entsprechenden paths[i]
+				             // durch den ProfileConverter sind die coordenaten bereits in der richtigen stelle und somit kann dann das profil entlang der directrix aufgebaut werden.
+				             // Verständnis -> directrix wurde mit offsets und pointOnCurve auf die richtigen position gebracht unter berücksichtigung von CrossSectionPositions.
+				             */
 
 			}//endif sectioned_solid_horizontal
 
@@ -784,177 +765,12 @@ namespace OpenInfraPlatform
 					return;
 				} // endif swept_disp_solid
 
-				//std::shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh =
-				//	std::dynamic_pointer_cast<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
-				//if (ssh)
-				//{
-				//
-				//	//	ENTITY IfcRepresentationItem;
-				//	//	INVERSE
-				//	//		LayerAssignments	 : 	SET OF IfcPresentationLayerAssignment FOR AssignedItems;
-				//	//		StyledByItem	 : 	SET [0:1] OF IfcStyledItem FOR Item;
-				//	//	ENTITY IfcGeometricRepresentationItem;
-				//	//	ENTITY IfcSolidModel;
-				//	//		DERIVE
-				//	//		Dim	 : 	IfcDimensionCount :=  3;
-				//	// ENTITY IfcSectionedSolid
-				//	//	    Directrix: IfcCurve;
-				//	//	    CrossSections: LIST[2:? ] OF IfcProfileDef;					
-				//	// ENTITY IfcSectionedSolidHorizontal
-				//	//      CrossSectionPositions: LIST[2:? ] OF IfcDistanceExpression;
-				//	//      FixedAxisVertical: IfcBoolean;
-				//	// END_ENTITY;
-				//
-				//	convertIfcSectionedSolidHorizontal(ssh, itemData, err);
-				//
-				//	return;
-				//}
-
-
-
 				convertIfcSpecificSolidModel(solidModel, pos, itemData);
 
 				BLUE_LOG(error) << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname();
 
 			}
 
-			//end convertIfcSolidModel
-
-			//void convertIfcSectionedSolidHorizontal(
-			//	std::shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh,
-			//	std::shared_ptr<ItemData> itemData,
-			//	std::stringstream& err)
-			//
-			//{
-			//	// Validate data.
-			//	if (!ssh->Directrix)
-			//	{
-			//		err << "Invalid Directrix" << std::endl;
-			//		return;
-			//	}
-			//
-			//	//	    CrossSections: LIST[2:? ] OF IfcProfileDef;	
-			//	if ( ssh->CrossSections.size() < 2 )
-			//	{
-			//		err << "Invalid CrossSections" << std::endl;
-			//		return;
-			//	}
-			//
-			//	//      CrossSectionPositions: LIST[2:? ] OF IfcDistanceExpression;
-			//	if ( ssh->CrossSectionPositions.size() < 2 )
-			//	{
-			//		err << "Invalid CrossSectionPositions" << std::endl;
-			//		return;
-			//	}
-			//
-			//	if (!ssh->FixedAxisVertical)
-			//	{
-			//		err << "Invalid FixedAxisVertical" << std::endl;
-			//		return;
-			//	}
-			//
-			//	// Retrieve data from IfcSectionedSolidHorizontal.
-			//	std::shared_ptr<emt::Ifc4x1EntityTypes::IfcCurve>& directrixCurve = ssh->Directrix;
-			//	std::vector<std::shared_ptr<emt::Ifc4x1EntityTypes::IfcProfileDef>>& crossSections = ssh->CrossSections;
-			//	std::vector<std::shared_ptr<emt::Ifc4x1EntityTypes::IfcDistanceExpression>>& crossSectionPositions = ssh->CrossSectionPositions;
-			//	std::shared_ptr<emt::Ifc4x1EntityTypes::IfcBoolean>& fixedAxisVertical = ssh->FixedAxisVertical;
-			//
-			//	// Check whether the same amount of crossSections and crossSectionPositions exist. CrossSections and CrossSectionPositions are lists L[2:?]
-			//	int crossSectionsSize = crossSections.size();
-			//	int crossSectionPositionsSize = crossSectionPositions.size();
-			//	if (crossSectionsSize != crossSectionPositionsSize)
-			//	{
-			//		// If only one value is missing, delete the last value of the other list and continue anyway.
-			//		if ( abs (crossSectionsSize - crossSectionPositionsSize) > 1 )
-			//		{ 
-			//			err << "CrossSectionPositions and CrossSections are not equal in size." << std::endl; 
-			//			return; 
-			//		}
-			//		if (crossSectionsSize > crossSectionPositionsSize)
-			//		{
-			//			err << "CrossSections size decreased by one." << std::endl;
-			//			crossSections.pop_back();
-			//		}
-			//		else if(crossSectionPositionsSize > crossSectionsSize)
-			//		{
-			//			err << "CrossSectionPositions size decreased by one." << std::endl;
-			//			crossSectionPositions.pop_back();
-			//		}
-			//	}
-			//	
-			//	// Get unit conversion factor (to do: multiply by value to convert units)
-			//	double length_in_meter = unitConverter->getLengthInMeterFactor();
-			//	//double angle_factor = unitConverter->getAngleInRadianFactor(); (necessary?)
-			//
-			//	
-			//	// Declare vectors of doubles for every element of the distance expressions
-			//	std::vector< double > crossSectionDistanceAlong;
-			//	std::vector< double > crossSectionOffsetLateral;
-			//	std::vector< double > crossSectionOffsetVertical;
-			//	std::vector< double > crossSectionOffsetLongitudinal;
-			//	std::vector< bool > crossSectionAlongHorizontal;
-			//
-			//	// Iterate over all crossSectionPositions, convert units
-			//	for (int position = 0; position <= crossSectionPositions.size(); ++position)
-			//	{
-			//		auto distExpr = crossSectionPositions[position];
-			//		// Save distance expressions to vectors of doubles.
-			//		if (distExpr->DistanceAlong)
-			//			crossSectionDistanceAlong.push_back(distExpr->DistanceAlong-> length_in_meter);
-			//		else
-			//		{
-			//			err << "Missing DistanceAlong." << endl;
-			//			return;
-			//		}
-			//
-			//		if (distExpr->OffsetLateral)
-			//			crossSectionOffsetLateral.push_back(distExpr->OffsetLateral->length_in_meter);
-			//		else
-			//			crossSectionOffsetLateral.push_back(0.);
-			//
-			//		if (distExpr->OffsetVertical)
-			//			crossSectionOffestVertical.push_back(distExpr->OffsetLateral-> length_in_meter);
-			//		else
-			//			crossSectionOffsetVertical.push_back(0.);
-			//
-			//		if (distExpr->OffsetLongitudinal)
-			//			crossSectionOffsetLongitudinal.push_back(distExpr->OffsetLongitudinal->length_in_meter);
-			//		else
-			//			crossSectionOffsetLongitudinal.push_back(0.);
-			//
-			//		if (distExpr->AlongHorizontal)
-			//			crossSectionAlongHorizontal.push_back(distExpr->AlongHorizontal);
-			//		else
-			//			crossSectionAlongHorizontal.push_back(false);
-			//
-			//	}
-			//
-			//	// Define a vector of pointers. Revolved and Extruded only use a single profile, so they do not need vectors.
-			//	std::vector< std::shared_ptr<ProfileConverterT<IfcEntityTypesT, IfcUnitConverterT>> > profile_converter;
-			//	
-			//	// Give crossSection information (profileDefs) to profileConverter (iterator: number of CrossSectionElements)
-			//	for (int element = 0; element <= crossSections.size(); ++element)
-			//	{
-			//		// Fill vector profile_converter with one profileConverter per crossSection. ProfileConverter sweeps across an area within the boundaries of the profile definition (which may only be a curve).
-			//		//profile_converter.push_back( profileCache->getProfileConverter(crossSections[element]) );
-			//		
-			//		// Get profile coordinates: Vector of multiple profiles. -> Vector of multiple lines makes a profile. -> Vector of multiple coordinates make a line. -> Vector of 2 makes a pair of coordinates.
-			//		// const std::vector<std::vector<std::vector<carve::geom::vector<2> > > >& profile_coords = profile_converter[crossSectionElement]->getCoordinates();
-			//	}
-			//
-			//	// Give directrix to curveConverter. convertIfcCurve is a member function of curveConverter that returns void. (see also: surface_curve_swept_area_solid)
-			//	// segment_start_points and basis_curve_points are return parameters (&)
-			//	std::vector<carve::geom::vector<3> > segment_start_points;
-			//	std::vector<carve::geom::vector<3> > basis_curve_points;
-			//	//curveConverter->convertIfcCurve(directrixCurve, basis_curve_points, segment_start_points);
-			//
-			//	//IfcDistanceExpression: 4 IfcLengthMeasures of type double, usually in mm: DistanceAlong, OffsetLateral, OffsetVertical, OffsetLongitudinal. 1 IfcBoolean: AlongHorizontal.
-			//
-			//	// Get positions
-			//	// Tesselation?
-			//	// Compute the normal according to axis
-			//
-			//}
 
 			void convertIfcExtrudedAreaSolid(
 				const std::shared_ptr<typename IfcEntityTypesT::IfcExtrudedAreaSolid>& extrudedArea,
