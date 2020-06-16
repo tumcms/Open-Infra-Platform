@@ -288,8 +288,8 @@ namespace OpenInfraPlatform {
 #endif
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.lock();
 				CurveConverterT<IfcEntityTypesT> c_converter(GeomSettings(), UnitConvert(), placementConverter);
-
-				std::shared_ptr<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def =
+				
+				EXPRESSReference<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCenterLineProfileDef>(profileDef);
 				if(center_line_profile_def) {
 					if(center_line_profile_def->Thickness) {
@@ -504,7 +504,7 @@ namespace OpenInfraPlatform {
 						double y = rectangle_profile->YDim * length_factor;
 
 						// IfcRectangleHollowProfileDef SUBTYPE OF IfcRectangleProfile 
-						std::shared_ptr<typename IfcEntityTypesT::IfcRectangleHollowProfileDef> hollow =
+						EXPRESSReference<typename IfcEntityTypesT::IfcRectangleHollowProfileDef> hollow =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>(rectangle_profile);
 						if(hollow) {
 							if(hollow->WallThickness) {
@@ -527,7 +527,7 @@ namespace OpenInfraPlatform {
 						}
 
 						// IfcRoundedRectangleProfileDef SUBTYPE OF IfcRectangleProfile 
-						std::shared_ptr<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef> rounded_rectangle =
+						EXPRESSReference<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef> rounded_rectangle =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>(rectangle_profile);
 						if(rounded_rectangle) {
 							if(rounded_rectangle->RoundingRadius) {
@@ -544,7 +544,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (2/10) IfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcTrapeziumProfileDef> trapezium = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(profileDef);
+				EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef> trapezium = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(profileDef);
 				if(trapezium) {
 					if(trapezium->BottomXDim && trapezium->TopXDim && trapezium->TopXOffset && trapezium->YDim) {
 						double xBottom = trapezium->BottomXDim * length_factor;
@@ -573,7 +573,7 @@ namespace OpenInfraPlatform {
 					
 					// IfcCircleHollowProfileDef SUBTYPE OF IfcCircleProfileDef
 					std::vector<carve::geom::vector<2>> inner_loop;
-					std::shared_ptr<typename IfcEntityTypesT::IfcCircleHollowProfileDef> hollow = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleHollowProfileDef>(profileDef);
+					EXPRESSReference<typename IfcEntityTypesT::IfcCircleHollowProfileDef> hollow = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleHollowProfileDef>(profileDef);
 					if(hollow) {
 						double radius2 = radius - hollow->WallThickness * length_factor;
 						int num_segments2 = GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
@@ -586,7 +586,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (4/10) IfcEllipseProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcEllipseProfileDef> ellipse_profile_def = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEllipseProfileDef>(profileDef);
+				EXPRESSReference<typename IfcEntityTypesT::IfcEllipseProfileDef> ellipse_profile_def = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEllipseProfileDef>(profileDef);
 				if(ellipse_profile_def) {
 					if(ellipse_profile_def->SemiAxis1) {
 						if(ellipse_profile_def->SemiAxis2) {
@@ -623,7 +623,7 @@ namespace OpenInfraPlatform {
 						addArc_or_push_back(outer_loop, r, 3 * M_PI_2, -M_PI_2, (tw * 0.5 + r), (-h * 0.5 + tf + r), (tw * 0.5), (-h * 0.5 + tf));
 				
 						// IfcAsymmetricIShapeProfileDef SUBTYPE OF IfcIShapeProfileDef
-						std::shared_ptr<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef> asym_I_profile =
+						EXPRESSReference<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef> asym_I_profile =
 							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef>(i_shape);
 						if(asym_I_profile) {
 							if(asym_I_profile->TopFlangeWidth) {
@@ -649,7 +649,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (6/10) IfcLShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcLShapeProfileDef> l_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLShapeProfileDef>(profileDef);
+				EXPRESSReference<typename IfcEntityTypesT::IfcLShapeProfileDef> l_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLShapeProfileDef>(profileDef);
 				if(l_shape) {
 					if(l_shape->Depth && l_shape->Thickness) {
 						double h = l_shape->Depth * length_factor;
@@ -679,7 +679,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (7/10) IfcUShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcUShapeProfileDef> u_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcUShapeProfileDef>(profileDef);
+				EXPRESSReference<typename IfcEntityTypesT::IfcUShapeProfileDef> u_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcUShapeProfileDef>(profileDef);
 				if(u_shape) {
 					if(u_shape->Depth && u_shape->FlangeWidth && u_shape->WebThickness && u_shape->FlangeThickness) {
 						double h = u_shape->Depth * length_factor;
@@ -707,7 +707,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (8/10) IfcCShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcCShapeProfileDef> c_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCShapeProfileDef>(profileDef);
+				EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef> c_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCShapeProfileDef>(profileDef);
 				if(c_shape) {
 					if(c_shape->Depth && c_shape->Width && c_shape->Girth && c_shape->WallThickness) {
 						double h = c_shape->Depth * length_factor;
@@ -733,7 +733,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (9/10) IfcZShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcZShapeProfileDef> z_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcZShapeProfileDef>(profileDef);
+				EXPRESSReference<typename IfcEntityTypesT::IfcZShapeProfileDef> z_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcZShapeProfileDef>(profileDef);
 				if(z_shape) {
 					if(z_shape->Depth && z_shape->FlangeWidth && z_shape->WebThickness && z_shape->FlangeThickness) {
 						double h = z_shape->Depth * length_factor;
@@ -757,7 +757,7 @@ namespace OpenInfraPlatform {
 				}
 
 				// (10/10) IfcTShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcTShapeProfileDef> t_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTShapeProfileDef>(profileDef);
+				EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef> t_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTShapeProfileDef>(profileDef);
 				if(t_shape) {
 					const double h = t_shape->Depth * length_factor;
 					const double b = t_shape->FlangeWidth * length_factor;
