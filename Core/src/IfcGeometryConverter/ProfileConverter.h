@@ -498,49 +498,7 @@ namespace OpenInfraPlatform {
 				// (1/10) IfcRectangleProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				std::shared_ptr<typename IfcEntityTypesT::IfcRectangleProfileDef> rectangle_profile = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleProfileDef>(profileDef);		
 				if(rectangle_profile) {
-
-					if(rectangle_profile->XDim && rectangle_profile->YDim) {
-						double x = rectangle_profile->XDim * length_factor;
-						double y = rectangle_profile->YDim * length_factor;
-
-						// IfcRectangleHollowProfileDef SUBTYPE OF IfcRectangleProfile 
-						EXPRESSReference<typename IfcEntityTypesT::IfcRectangleHollowProfileDef> hollow =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>(rectangle_profile);
-						if(hollow) {
-							if(hollow->WallThickness) {
-								double t = hollow->WallThickness * length_factor;
-								double r1 = hollow->InnerFilletRadius.value_or(0.0) * length_factor;
-								double r2 = hollow->InnerFilletRadius.value_or(0.0) * length_factor;
-								// Outer
-								AddRectangleCoordinates(outer_loop, r1, x, y);
-								
-								// Inner
-								std::vector<carve::geom::vector<2>> inner_loop;
-								x -= 2.0 * t;
-								y -= 2.0 * t;
-								AddRectangleCoordinates(inner_loop, r2, x, y);
-								
-								paths.push_back(outer_loop);
-								paths.push_back(inner_loop);
-							}
-							return;
-						}
-
-						// IfcRoundedRectangleProfileDef SUBTYPE OF IfcRectangleProfile 
-						EXPRESSReference<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef> rounded_rectangle =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>(rectangle_profile);
-						if(rounded_rectangle) {
-							if(rounded_rectangle->RoundingRadius) {
-								AddRectangleCoordinates(outer_loop, rounded_rectangle->RoundingRadius * length_factor, x, y);
-								paths.push_back(outer_loop);
-							}
-							return;
-						}
-						// Else it's a standard rectangle
-						AddRectangleCoordinates(outer_loop, 0.0, x, y);
-						paths.push_back(outer_loop);
-						return;
-					}
+					convertIfcRectangleProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>(rectangle_profile), paths, outer_loop);					
 				}
 
 				// (2/10) IfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
@@ -799,6 +757,51 @@ namespace OpenInfraPlatform {
 				throw std::runtime_error(sstr.str().c_str());
 			}
 
+			void convertIfcRectangleProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>& rectangle_profile,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
+					if(rectangle_profile->XDim && rectangle_profile->YDim) {
+						double x = rectangle_profile->XDim * UnitConvert()->getLengthInMeterFactor();
+						double y = rectangle_profile->YDim * UnitConvert()->getLengthInMeterFactor();
+
+						// IfcRectangleHollowProfileDef SUBTYPE OF IfcRectangleProfile 
+						if(rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>()) {
+							EXPRESSReference<typename IfcEntityTypesT::IfcRectangleHollowProfileDef> hollow = rectangle_profile.as<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>();
+
+							if(hollow->WallThickness) {
+								double t = hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
+								double r1 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+								double r2 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+								// Outer
+								AddRectangleCoordinates(outer_loop, r1, x, y);
+								
+								// Inner
+								std::vector<carve::geom::vector<2>> inner_loop;
+								x -= 2.0 * t;
+								y -= 2.0 * t;
+								AddRectangleCoordinates(inner_loop, r2, x, y);
+								
+								paths.push_back(outer_loop);
+								paths.push_back(inner_loop);
+							}
+							return;
+						}
+
+						// IfcRoundedRectangleProfileDef SUBTYPE OF IfcRectangleProfile 
+
+						if(rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>()) {
+							auto rounded_rectangle = rectangle_profile.as<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>();
+							if(rounded_rectangle->RoundingRadius) {
+								AddRectangleCoordinates(outer_loop, rounded_rectangle->RoundingRadius * UnitConvert()->getLengthInMeterFactor(), x, y);
+								paths.push_back(outer_loop);
+							}
+							return;
+						}
+						// Else it's a standard rectangle
+						AddRectangleCoordinates(outer_loop, 0.0, x, y);
+						paths.push_back(outer_loop);
+						return;
+					}
+				}
 			/*
 			void ProfileConverter::convertIfcNurbsProfile(const std::shared_ptr<IfcNurbsProfile>& nurbs_profile,
 			std::vector<std::vector<carve::geom::vector<3>>>& paths )
