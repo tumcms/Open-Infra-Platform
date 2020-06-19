@@ -496,51 +496,21 @@ namespace OpenInfraPlatform {
 				std::vector<carve::geom::vector<2>> outer_loop;
 
 				// (1/10) IfcRectangleProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcRectangleProfileDef> rectangle_profile = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleProfileDef>(profileDef);		
+				std::shared_ptr<typename IfcEntityTypesT::IfcRectangleProfileDef> rectangle_profile = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleProfileDef>(profileDef);
 				if(rectangle_profile) {
-					convertIfcRectangleProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>(rectangle_profile), paths, outer_loop);					
+					convertIfcRectangleProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>(rectangle_profile), paths, outer_loop);
 				}
 
 				// (2/10) IfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef> trapezium = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(profileDef);
 				if(trapezium) {
-					if(trapezium->BottomXDim && trapezium->TopXDim && trapezium->TopXOffset && trapezium->YDim) {
-						double xBottom = trapezium->BottomXDim * length_factor;
-						double xTop = trapezium->TopXDim * length_factor;
-						double xOffset = trapezium->TopXOffset * length_factor;
-						double y = trapezium->YDim * length_factor;
-
-						AddTrapeziumCoordinates(outer_loop, xBottom, xOffset, xTop, y);
-						paths.push_back(outer_loop);
-					}
-					return;
+					convertIfcTrapeziumProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(trapezium), paths, outer_loop);
 				}
 
 				// (3/10) IfcCircleProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				std::shared_ptr<typename IfcEntityTypesT::IfcCircleProfileDef> circle_profile_def = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleProfileDef>(profileDef);
 				if(circle_profile_def) {
-					double radius = circle_profile_def->Radius * length_factor;
-					if(radius < GeomSettings()->getPrecision()) {
-						return;
-					}
-					int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
-					double d_angle = GeomSettings()->getAngleLength(radius);
-					
-					addArc(outer_loop, radius, 0.0, d_angle, 0.0, 0.0, num_segments);
-					paths.push_back(outer_loop);
-					
-					// IfcCircleHollowProfileDef SUBTYPE OF IfcCircleProfileDef
-					std::vector<carve::geom::vector<2>> inner_loop;
-					EXPRESSReference<typename IfcEntityTypesT::IfcCircleHollowProfileDef> hollow = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleHollowProfileDef>(profileDef);
-					if(hollow) {
-						double radius2 = radius - hollow->WallThickness * length_factor;
-						int num_segments2 = GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
-						double d_angle2 = GeomSettings()->getAngleLength(radius2);
-				
-						addArc(inner_loop, radius2, 0.0, d_angle2, 0.0, 0.0, num_segments2);
-						paths.push_back(inner_loop);
-					}
-					return;
+					convertIfcCircleProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcCircleProfileDef>(circle_profile_def), paths, outer_loop);
 				}
 
 				// (4/10) IfcEllipseProfileDef SUBTYPE OF IfcParametrizedProfileDef
@@ -757,51 +727,94 @@ namespace OpenInfraPlatform {
 				throw std::runtime_error(sstr.str().c_str());
 			}
 
+			// Function 6.1  convertIfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
 			void convertIfcRectangleProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>& rectangle_profile,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
-					if(rectangle_profile->XDim && rectangle_profile->YDim) {
-						double x = rectangle_profile->XDim * UnitConvert()->getLengthInMeterFactor();
-						double y = rectangle_profile->YDim * UnitConvert()->getLengthInMeterFactor();
+				if(rectangle_profile->XDim && rectangle_profile->YDim) {
+					double x = rectangle_profile->XDim * UnitConvert()->getLengthInMeterFactor();
+					double y = rectangle_profile->YDim * UnitConvert()->getLengthInMeterFactor();
 
-						// IfcRectangleHollowProfileDef SUBTYPE OF IfcRectangleProfile 
-						if(rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>()) {
-							EXPRESSReference<typename IfcEntityTypesT::IfcRectangleHollowProfileDef> hollow = rectangle_profile.as<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>();
+					// IfcRectangleHollowProfileDef SUBTYPE OF IfcRectangleProfile 
+					if(rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>()) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcRectangleHollowProfileDef> hollow = rectangle_profile.as<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>();
 
-							if(hollow->WallThickness) {
-								double t = hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
-								double r1 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
-								double r2 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
-								// Outer
-								AddRectangleCoordinates(outer_loop, r1, x, y);
-								
-								// Inner
-								std::vector<carve::geom::vector<2>> inner_loop;
-								x -= 2.0 * t;
-								y -= 2.0 * t;
-								AddRectangleCoordinates(inner_loop, r2, x, y);
-								
-								paths.push_back(outer_loop);
-								paths.push_back(inner_loop);
-							}
-							return;
+						if(hollow->WallThickness) {
+							double t = hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
+							double r1 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+							double r2 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+							// Outer
+							AddRectangleCoordinates(outer_loop, r1, x, y);
+
+							// Inner
+							std::vector<carve::geom::vector<2>> inner_loop;
+							x -= 2.0 * t;
+							y -= 2.0 * t;
+							AddRectangleCoordinates(inner_loop, r2, x, y);
+
+							paths.push_back(outer_loop);
+							paths.push_back(inner_loop);
 						}
-
-						// IfcRoundedRectangleProfileDef SUBTYPE OF IfcRectangleProfile 
-
-						if(rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>()) {
-							auto rounded_rectangle = rectangle_profile.as<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>();
-							if(rounded_rectangle->RoundingRadius) {
-								AddRectangleCoordinates(outer_loop, rounded_rectangle->RoundingRadius * UnitConvert()->getLengthInMeterFactor(), x, y);
-								paths.push_back(outer_loop);
-							}
-							return;
-						}
-						// Else it's a standard rectangle
-						AddRectangleCoordinates(outer_loop, 0.0, x, y);
-						paths.push_back(outer_loop);
 						return;
 					}
+
+					// IfcRoundedRectangleProfileDef SUBTYPE OF IfcRectangleProfile 
+
+					if(rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>()) {
+						auto rounded_rectangle = rectangle_profile.as<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>();
+						if (rounded_rectangle->RoundingRadius) {
+							AddRectangleCoordinates(outer_loop, rounded_rectangle->RoundingRadius * UnitConvert()->getLengthInMeterFactor(), x, y);
+							paths.push_back(outer_loop);
+						}
+						return;
+					}
+					// Else it's a standard rectangle
+					AddRectangleCoordinates(outer_loop, 0.0, x, y);
+					paths.push_back(outer_loop);
+					return;
 				}
+			}
+
+			// Function 6.2  convertIfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
+			void convertIfcTrapeziumProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef>& trapezium,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
+				if(trapezium->BottomXDim && trapezium->TopXDim && trapezium->TopXOffset && trapezium->YDim) {
+					double xBottom = trapezium->BottomXDim * UnitConvert()->getLengthInMeterFactor();
+					double xTop = trapezium->TopXDim * UnitConvert()->getLengthInMeterFactor();
+					double xOffset = trapezium->TopXOffset * UnitConvert()->getLengthInMeterFactor();
+					double y = trapezium->YDim * UnitConvert()->getLengthInMeterFactor();
+
+					AddTrapeziumCoordinates(outer_loop, xBottom, xOffset, xTop, y);
+					paths.push_back(outer_loop);
+				}
+				return;
+			} 
+
+			// 
+			void convertIfcCircleProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcCircleProfileDef> & circle_profile_def,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
+				double radius = circle_profile_def->Radius * UnitConvert()->getLengthInMeterFactor();
+				if(radius < GeomSettings()->getPrecision()) {
+					return;
+				}
+				int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
+				double d_angle = GeomSettings()->getAngleLength(radius);
+
+				addArc(outer_loop, radius, 0.0, d_angle, 0.0, 0.0, num_segments);
+				paths.push_back(outer_loop);
+
+				// IfcCircleHollowProfileDef SUBTYPE OF IfcCircleProfileDef
+				std::vector<carve::geom::vector<2>> inner_loop;
+				if(circle_profile_def.isOfType<typename IfcEntityTypesT::IfcCircleHollowProfileDef>()) {
+					auto hollow = circle_profile_def.as<typename IfcEntityTypesT::IfcCircleHollowProfileDef>();
+					double radius2 = radius - hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
+					int num_segments2 = GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
+					double d_angle2 = GeomSettings()->getAngleLength(radius2);
+
+					addArc(inner_loop, radius2, 0.0, d_angle2, 0.0, 0.0, num_segments2);
+					paths.push_back(inner_loop);
+				}
+				return;
+			}
 			/*
 			void ProfileConverter::convertIfcNurbsProfile(const std::shared_ptr<IfcNurbsProfile>& nurbs_profile,
 			std::vector<std::vector<carve::geom::vector<3>>>& paths )
