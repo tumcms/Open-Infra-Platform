@@ -534,116 +534,25 @@ namespace OpenInfraPlatform {
 				// (7/10) IfcUShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcUShapeProfileDef> u_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcUShapeProfileDef>(profileDef);
 				if (u_shape) {
-					/*if (u_shape->Depth && u_shape->FlangeWidth && u_shape->WebThickness && u_shape->FlangeThickness) {
-						double h = u_shape->Depth * length_factor;
-						double b = u_shape->FlangeWidth * length_factor;
-						double tw = u_shape->WebThickness * length_factor;
-						double tf = u_shape->FlangeThickness * length_factor;
-						double r1 = u_shape->FilletRadius.value_or(0.0) * length_factor;
-						double r2 = u_shape->EdgeRadius.value_or(0.0) * length_factor;
-						double fs = u_shape->FlangeSlope.value_or(0.0) * length_factor;
-
-						outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, -h * 0.5));
-						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
-
-						double z = tan(fs) * (b * 0.5 - r2);
-						addArc_or_push_back(outer_loop, r2, 0, (M_PI_2 - fs), (b * 0.5 - r2), (-h * 0.5 + tf - z - r2), (b * 0.5), (-h * 0.5 + tf - z));
-
-						z = tan(fs) * (b * 0.5 - tw - r1);
-						addArc_or_push_back(outer_loop, r1, (3 * M_PI_2 - fs), (-M_PI_2 + fs), (-b * 0.5 + tw + r1), (-h * 0.5 + tf + z + r1), (-b * 0.5 + tw), (-h * 0.5 + tf + z));
-
-						// mirror horizontally along x-Axis
-						mirrorCopyPathReverse(outer_loop, false, true);
-						paths.push_back(outer_loop);
-					}
-					return;*/
 					convertUShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcUShapeProfileDef> (u_shape), paths, outer_loop);
 				}
 
 				// (8/10) IfcCShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef> c_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCShapeProfileDef>(profileDef);
 				if (c_shape) {
-					if (c_shape->Depth && c_shape->Width && c_shape->Girth && c_shape->WallThickness) {
-						double h = c_shape->Depth * length_factor;
-						double b = c_shape->Width * length_factor;
-						double g = c_shape->Girth * length_factor;
-						double t = c_shape->WallThickness * length_factor;
-						double r1 = c_shape->InternalFilletRadius.value_or(0.) * length_factor;
-
-						addArc_or_push_back(outer_loop, (r1 + t), M_PI, M_PI_2, (-b * 0.5 + t + r1), (-h * 0.5 + t + r1), (-b * 0.5), (-h * 0.5));
-						addArc_or_push_back(outer_loop, (r1 + t), 3 * M_PI_2, M_PI_2, (b * 0.5 - t - r1), (-h * 0.5 + t + r1), (b * 0.5), (-h * 0.5));
-
-						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, (-h * 0.5 + g)));
-						outer_loop.push_back(carve::geom::VECTOR((b * 0.5 - t), (-h * 0.5 + g)));
-
-						addArc_or_push_back(outer_loop, r1, 0, -M_PI_2, (b * 0.5 - t - r1), (-h * 0.5 + t + r1), (b * 0.5 - t), (-h * 0.5 + t));
-						addArc_or_push_back(outer_loop, r1, 3 * M_PI_2, -M_PI_2, (-b * 0.5 + t + r1), (-h * 0.5 + t + r1), (-b * 0.5 + t), (-h * 0.5 + t));
-
-						// mirror horizontally along x-Axis
-						mirrorCopyPathReverse(outer_loop, false, true);
-						paths.push_back(outer_loop);
-					}
-					return;
+					convertIfcCShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef> (c_shape), paths, outer_loop);
 				}
 
 				// (9/10) IfcZShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcZShapeProfileDef> z_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcZShapeProfileDef>(profileDef);
 				if (z_shape) {
-					if (z_shape->Depth && z_shape->FlangeWidth && z_shape->WebThickness && z_shape->FlangeThickness) {
-						double h = z_shape->Depth * length_factor;
-						double b = z_shape->FlangeWidth * length_factor;
-						double tw = z_shape->WebThickness * length_factor;
-						double tf = z_shape->FlangeThickness * length_factor;
-						double r1 = z_shape->FilletRadius.value_or(0.) * length_factor;
-						double r2 = z_shape->EdgeRadius.value_or(0.) * length_factor;
-
-						outer_loop.push_back(carve::geom::VECTOR((-tw * 0.5), -h * 0.5));
-						outer_loop.push_back(carve::geom::VECTOR((b - tw * 0.5), -h * 0.5));
-
-						addArc_or_push_back(outer_loop, r2, 0, M_PI_2, (b - tw * 0.5 - r2), (-h * 0.5 + tf - r2), (b - tw * 0.5), (-h * 0.5 + tf));
-						addArc_or_push_back(outer_loop, r1, 3 * M_PI_2, -M_PI_2, (tw * 0.5 + r1), (-h * 0.5 + tf + r1), (tw * 0.5), (-h * 0.5 + tf));
-
-						// mirror horizontally and vertically
-						mirrorCopyPath(outer_loop, true, true);
-						paths.push_back(outer_loop);
-					}
-					return;
+					convertZShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcZShapeProfileDef> (z_shape), paths, outer_loop);
 				}
 
 				// (10/10) IfcTShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef> t_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTShapeProfileDef>(profileDef);
 				if (t_shape) {
-					const double h = t_shape->Depth * length_factor;
-					const double b = t_shape->FlangeWidth * length_factor;
-					const double tw = t_shape->WebThickness * length_factor * 0.5;
-					const double tf = t_shape->FlangeThickness * length_factor;
-					double r1 = t_shape->FilletRadius.value_or(0.0) * length_factor;
-					double r2 = r2 = t_shape->FlangeEdgeRadius.value_or(0.0) * length_factor;
-					double r3 = t_shape->WebEdgeRadius.value_or(0.0) * length_factor;
-					double fs = t_shape->FlangeSlope.value_or(0.0) * angle_factor;
-					double ws = t_shape->WebSlope.value_or(0.0) * angle_factor;
-
-					outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, h * 0.5));
-
-					double zf = tan(fs) * (b * 0.25 - r2);
-					double zw = tan(ws) * (h * 0.5 - r3);
-
-					addArc_or_push_back(outer_loop, r2, M_PI, M_PI_2 - fs, (-b * 0.5 + r2), (h * 0.5 - tf + zf + r2), (-b * 0.5), (h * 0.5 - tf + zf));
-
-					double cf = cos(fs);
-					double sf = sin(fs);
-					double cw = cos(ws);
-					double sw = sin(ws);
-					double z1 = (sf * ((b - 2 * (r1 + r2 + tw - zw)) * cw - 2 * (h - r3 - r1 - tf + zf) * sw)) / (2 * (cf * cw - sf * sw));
-					double z2 = tan(ws) * (h - r3 - r1 - z1 - tf + zf);
-
-					addArc_or_push_back(outer_loop, r1, (M_PI_2 - fs), (-M_PI_2 + fs + ws), (-tw + zw - z2 - r1), (h * 0.5 - tf + zf - z1 - r1), (-tw + zw - z2), (h * 0.5 - tf + zf - z1));
-					addArc_or_push_back(outer_loop, r3, (M_PI + ws), (M_PI_2 - ws), (-tw + zw + r3), (-h * 0.5 + r3), (-tw + zw), (-h * 0.5));
-
-					// mirror vertically along y-Axis
-					mirrorCopyPathReverse(outer_loop, true, false);
-					paths.push_back(outer_loop);
-					return;
+					convertTShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef> (t_shape), paths, outer_loop);
 				}
 
 				// Not supported ProfileDef
@@ -831,6 +740,8 @@ namespace OpenInfraPlatform {
 				}
 				return;
 			}
+
+
 			void convertUShapeProfileDef(EXPRESSReference <typename IfcEntityTypesT::IfcUShapeProfileDef>& u_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
 				if (u_shape->Depth && u_shape->FlangeWidth && u_shape->WebThickness && u_shape->FlangeThickness) {
@@ -857,6 +768,91 @@ namespace OpenInfraPlatform {
 				}
 				return;
 			}
+
+
+			void convertIfcCShapeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef>& c_shape,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
+				if (c_shape->Depth && c_shape->Width && c_shape->Girth && c_shape->WallThickness) {
+					double h = c_shape->Depth * UnitConvert()->getLengthInMeterFactor();
+					double b = c_shape->Width * UnitConvert()->getLengthInMeterFactor();
+					double g = c_shape->Girth * UnitConvert()->getLengthInMeterFactor();
+					double t = c_shape->WallThickness * UnitConvert()->getLengthInMeterFactor();
+					double r1 = c_shape->InternalFilletRadius.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
+
+					addArc_or_push_back(outer_loop, (r1 + t), M_PI, M_PI_2, (-b * 0.5 + t + r1), (-h * 0.5 + t + r1), (-b * 0.5), (-h * 0.5));
+					addArc_or_push_back(outer_loop, (r1 + t), 3 * M_PI_2, M_PI_2, (b * 0.5 - t - r1), (-h * 0.5 + t + r1), (b * 0.5), (-h * 0.5));
+
+					outer_loop.push_back(carve::geom::VECTOR(b * 0.5, (-h * 0.5 + g)));
+					outer_loop.push_back(carve::geom::VECTOR((b * 0.5 - t), (-h * 0.5 + g)));
+
+					addArc_or_push_back(outer_loop, r1, 0, -M_PI_2, (b * 0.5 - t - r1), (-h * 0.5 + t + r1), (b * 0.5 - t), (-h * 0.5 + t));
+					addArc_or_push_back(outer_loop, r1, 3 * M_PI_2, -M_PI_2, (-b * 0.5 + t + r1), (-h * 0.5 + t + r1), (-b * 0.5 + t), (-h * 0.5 + t));
+
+					// mirror horizontally along x-Axis
+					mirrorCopyPathReverse(outer_loop, false, true);
+					paths.push_back(outer_loop);
+				}
+				return;
+			}
+
+			void convertZShapeProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcZShapeProfileDef>& z_shape,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
+				if (z_shape->Depth && z_shape->FlangeWidth && z_shape->WebThickness && z_shape->FlangeThickness) {
+					double h = z_shape->Depth * UnitConvert()->getLengthInMeterFactor();
+					double b = z_shape->FlangeWidth * UnitConvert()->getLengthInMeterFactor();
+					double tw = z_shape->WebThickness * UnitConvert()->getLengthInMeterFactor();
+					double tf = z_shape->FlangeThickness * UnitConvert()->getLengthInMeterFactor();
+					double r1 = z_shape->FilletRadius.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
+					double r2 = z_shape->EdgeRadius.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
+
+					outer_loop.push_back(carve::geom::VECTOR((-tw * 0.5), -h * 0.5));
+					outer_loop.push_back(carve::geom::VECTOR((b - tw * 0.5), -h * 0.5));
+
+					addArc_or_push_back(outer_loop, r2, 0, M_PI_2, (b - tw * 0.5 - r2), (-h * 0.5 + tf - r2), (b - tw * 0.5), (-h * 0.5 + tf));
+					addArc_or_push_back(outer_loop, r1, 3 * M_PI_2, -M_PI_2, (tw * 0.5 + r1), (-h * 0.5 + tf + r1), (tw * 0.5), (-h * 0.5 + tf));
+
+					// mirror horizontally and vertically
+					mirrorCopyPath(outer_loop, true, true);
+					paths.push_back(outer_loop);
+				}
+				return;
+			}
+
+			void convertTShapeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef>& t_shape,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
+				const double h = t_shape->Depth * UnitConvert()->getLengthInMeterFactor();
+				const double b = t_shape->FlangeWidth * UnitConvert()->getLengthInMeterFactor();
+				const double tw = t_shape->WebThickness * UnitConvert()->getLengthInMeterFactor() * 0.5;
+				const double tf = t_shape->FlangeThickness * UnitConvert()->getLengthInMeterFactor();
+				double r1 = t_shape->FilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+				double r2 = r2 = t_shape->FlangeEdgeRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+				double r3 = t_shape->WebEdgeRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+				double fs = t_shape->FlangeSlope.value_or(0.0) * UnitConvert()->getAngleInRadianFactor();
+				double ws = t_shape->WebSlope.value_or(0.0) * UnitConvert()->getAngleInRadianFactor();
+
+				outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, h * 0.5));
+
+				double zf = tan(fs) * (b * 0.25 - r2);
+				double zw = tan(ws) * (h * 0.5 - r3);
+
+				addArc_or_push_back(outer_loop, r2, M_PI, M_PI_2 - fs, (-b * 0.5 + r2), (h * 0.5 - tf + zf + r2), (-b * 0.5), (h * 0.5 - tf + zf));
+
+				double cf = cos(fs);
+				double sf = sin(fs);
+				double cw = cos(ws);
+				double sw = sin(ws);
+				double z1 = (sf * ((b - 2 * (r1 + r2 + tw - zw)) * cw - 2 * (h - r3 - r1 - tf + zf) * sw)) / (2 * (cf * cw - sf * sw));
+				double z2 = tan(ws) * (h - r3 - r1 - z1 - tf + zf);
+
+				addArc_or_push_back(outer_loop, r1, (M_PI_2 - fs), (-M_PI_2 + fs + ws), (-tw + zw - z2 - r1), (h * 0.5 - tf + zf - z1 - r1), (-tw + zw - z2), (h * 0.5 - tf + zf - z1));
+				addArc_or_push_back(outer_loop, r3, (M_PI + ws), (M_PI_2 - ws), (-tw + zw + r3), (-h * 0.5 + r3), (-tw + zw), (-h * 0.5));
+
+				// mirror vertically along y-Axis
+				mirrorCopyPathReverse(outer_loop, true, false);
+				paths.push_back(outer_loop);
+				return;
+			}
+
 			/*
 			void ProfileConverter::convertIfcNurbsProfile(const std::shared_ptr<IfcNurbsProfile>& nurbs_profile,
 			std::vector<std::vector<carve::geom::vector<3>>>& paths )
