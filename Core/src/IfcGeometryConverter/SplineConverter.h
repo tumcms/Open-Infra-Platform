@@ -65,13 +65,13 @@ namespace OpenInfraPlatform
 						std::vector<double> weightsData;
 						// renamed weights -> weightsData, according to Attribute definitions in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcrationalbsplinecurvewithknots.htm
 						
-						//std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots> rationalBSplineCurve =
-						//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots>(splineCurve);
-						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve =
-							splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>();
-
-						if (rationalBSplineCurve)
+						if (splineCurve.isOfType<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>())
 						{
+							//std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots> rationalBSplineCurve =
+							//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots>(splineCurve);
+							const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve =
+								splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>();
+
 							// //std::cout << "ERROR: IfcRationalBSplineCurveWithKnots not implemented" << std::endl;
 							//weights = rationalBSplineCurve->m_WeightsData;
 							weightsData.resize(rationalBSplineCurve->WeightsData.size());
@@ -83,13 +83,13 @@ namespace OpenInfraPlatform
 								// convert 'it' (WeightsData) from IfcReal to double ?
 						}
 						
-						//std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots> bspline =
-						//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots>(splineCurve);
-						EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots> bspline = 
-							splineCurve.as<IfcEntityTypesT::IfcBSplineCurveWithKnots>();
-
-						if (bspline)
+						if (splineCurve.isOfType<IfcEntityTypesT::IfcBSplineCurveWithKnots>())
 						{
+							//std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots> bspline =
+							//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots>(splineCurve);
+							EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots> bspline = 
+								splineCurve.as<IfcEntityTypesT::IfcBSplineCurveWithKnots>();
+
 							//const std::vector<int>& knotMults = bspline->m_KnotMultiplicities;
 							std::vector<int> knotMults;
 							knotMults.resize(bspline->KnotMultiplicities.size());
