@@ -41,11 +41,11 @@ namespace OpenInfraPlatform {
 		template <
 			class IfcEntityTypesT
 		>
-		class ProfileConverterT : public ConverterBaseT<IfcEntityTypesT>
+			class ProfileConverterT : public ConverterBaseT<IfcEntityTypesT>
 		{
 		public:
 			ProfileConverterT(
-				std::shared_ptr<GeometrySettings> geomSettings, 
+				std::shared_ptr<GeometrySettings> geomSettings,
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc
 			)
@@ -72,7 +72,7 @@ namespace OpenInfraPlatform {
 				// (1/5) IfcArbitraryClosedProfileDef SUBTYPE OF IfcProfileDef
 				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
-				if(arbitrary_closed) {
+				if (arbitrary_closed) {
 					convertIfcArbitraryClosedProfileDef(arbitrary_closed, paths);
 					removeDuplicates(paths);
 					return;
@@ -81,7 +81,7 @@ namespace OpenInfraPlatform {
 				// (2/5) IfcArbitraryOpenProfileDef SUBTYPE OF IfcProfileDef
 				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> arbitrary_open =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>(profileDef);
-				if(arbitrary_open) {
+				if (arbitrary_open) {
 					convertIfcArbitraryOpenProfileDef(arbitrary_open, paths);
 					removeDuplicates(paths);
 					return;
@@ -89,7 +89,7 @@ namespace OpenInfraPlatform {
 
 				// (3/5) IfcCompositeProfileDef SUBTYPE OF IfcProfileDef
 				std::shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeProfileDef>(profileDef);
-				if(composite) {
+				if (composite) {
 					convertIfcCompositeProfileDef(composite, paths);
 					removeDuplicates(paths);
 					return;
@@ -97,7 +97,7 @@ namespace OpenInfraPlatform {
 
 				// (4/5) IfcDerivedProfileDef SUBTYPE OF IfcProfileDef
 				std::shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDerivedProfileDef>(profileDef);
-				if(derived) {
+				if (derived) {
 					convertIfcDerivedProfileDef(derived, paths);
 					removeDuplicates(paths);
 					return;
@@ -106,7 +106,7 @@ namespace OpenInfraPlatform {
 				// (5/5) IfcParameterizedProfileDef SUBTYPE OF IfcProfileDef
 				std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
-				if(parameterized) {
+				if (parameterized) {
 					convertIfcParameterizedProfileDefWithPosition(parameterized, paths);
 					removeDuplicates(paths);
 					return;
@@ -130,7 +130,7 @@ namespace OpenInfraPlatform {
 			//	convertIfcArbitraryClosedProfileDef, convertIfcArbitraryOpenProfileDef, convertIfcCompositeProfileDef, convertIfcDerivedProfileDef		//
 			//	convertIfcArbitraryProfileWithVoids, convertIfcParameterizedProfileDefWithPosition														//
 			// ****************************************************************************************************************************************	//
-			
+
 			// Function 1: Convert IfcArbitraryClosedProfileDef
 			void convertIfcArbitraryClosedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
@@ -156,12 +156,12 @@ namespace OpenInfraPlatform {
 				// IfcArbitraryProfileDefWithVoids
 				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids> profile_with_voids =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids>(profileDef);
-				if(profile_with_voids) {
+				if (profile_with_voids) {
 #ifdef _DEBUG
 					BLUE_LOG(trace) << "Processing IfcArbitraryProfileDefWithVoids #" << profile_with_voids->getId();
 #endif
 
-					for(auto it : profile_with_voids->InnerCurves) {
+					for (auto it : profile_with_voids->InnerCurves) {
 						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> inner_ifc_curve = it.lock();
 						std::vector<carve::geom::vector<2>> inner_curve_polygon;
 						std::vector<carve::geom::vector<2>> segment_start_points;
@@ -194,7 +194,7 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profile->OuterCurve;
 				std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> polyline = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(outer_curve);
 
-				if(polyline) {
+				if (polyline) {
 					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> next_outer_curve = next_profile->OuterCurve;
 					std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> next_polyline = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(next_outer_curve);
 
@@ -205,7 +205,7 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 					std::map<std::string, uint32_t> polygonIndices;
 
-					for(int i = 0; i < polyline->Points.size(); ++i) {
+					for (int i = 0; i < polyline->Points.size(); ++i) {
 						int j = (i + 1) % polyline->Points.size();
 
 						carve::geom::vector<3> position =
@@ -227,8 +227,8 @@ namespace OpenInfraPlatform {
 						size_t i2 = polylineData->addVertex(nextPosition);
 						polylineData->addPolylineIndex(i2);
 
-						if(next_polyline) {
-							if(polyline->Points.size() != next_polyline->Points.size()) {
+						if (next_polyline) {
+							if (polyline->Points.size() != next_polyline->Points.size()) {
 								return;
 							}
 
@@ -288,18 +288,18 @@ namespace OpenInfraPlatform {
 #endif
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.lock();
 				CurveConverterT<IfcEntityTypesT> c_converter(GeomSettings(), UnitConvert(), placementConverter);
-				
+
 				EXPRESSReference<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCenterLineProfileDef>(profileDef);
-				if(center_line_profile_def) {
-					if(center_line_profile_def->Thickness) {
+				if (center_line_profile_def) {
+					if (center_line_profile_def->Thickness) {
 						const double thickness = center_line_profile_def->Thickness * UnitConvert()->getLengthInMeterFactor();
 						std::vector<carve::geom::vector<3>> segment_start_points;
 						std::vector<carve::geom::vector<3>> basis_curve_points;
 						c_converter.convertIfcCurve(ifc_curve, basis_curve_points, segment_start_points);
 
 						int num_base_points = basis_curve_points.size();
-						if(num_base_points < 2) {
+						if (num_base_points < 2) {
 							std::cout << "IfcCenterLineProfileDef: num curve points < 2";
 							return;
 						}
@@ -311,17 +311,17 @@ namespace OpenInfraPlatform {
 						carve::geom::vector<3> point_left(carve::geom::VECTOR(0.0, -thickness * 0.5, 0.0));
 						carve::geom::vector<3> point_right(carve::geom::VECTOR(0.0, thickness * 0.5, 0.0));
 
-						for(int ii = 0; ii < num_base_points; ++ii) {
+						for (int ii = 0; ii < num_base_points; ++ii) {
 							carve::geom::vector<3> vertex_current = basis_curve_points.at(ii);
 							carve::geom::vector<3> vertex_next;
 							carve::geom::vector<3> vertex_before;
-							if(ii == 0) {
+							if (ii == 0) {
 								// first point
 								vertex_next = basis_curve_points.at(ii + 1);
 								carve::geom::vector<3> delta_element = vertex_next - vertex_current;
 								vertex_before = vertex_current - (delta_element);
 							}
-							else if(ii == num_base_points - 1) {
+							else if (ii == num_base_points - 1) {
 								// last point
 								vertex_before = basis_curve_points.at(ii - 1);
 								carve::geom::vector<3> delta_element = vertex_current - vertex_before;
@@ -336,7 +336,7 @@ namespace OpenInfraPlatform {
 							carve::geom::vector<3> bisecting_normal;
 							GeomUtils::bisectingPlane(vertex_before, vertex_current, vertex_next, bisecting_normal);
 
-							if(ii == num_base_points - 1) {
+							if (ii == num_base_points - 1) {
 								bisecting_normal *= -1.0;
 							}
 
@@ -351,11 +351,11 @@ namespace OpenInfraPlatform {
 
 						std::reverse(right_points.begin(), right_points.end());
 						std::vector<carve::geom::vector<2>> polygon;
-						for(int i2 = 0; i2 < left_points.size(); ++i2) {
+						for (int i2 = 0; i2 < left_points.size(); ++i2) {
 							carve::geom::vector<3>& point3d = left_points[i2];
 							polygon.push_back(carve::geom::VECTOR(point3d.x, point3d.y));
 						}
-						for(int i2 = 0; i2 < right_points.size(); ++i2) {
+						for (int i2 = 0; i2 < right_points.size(); ++i2) {
 							carve::geom::vector<3>& point3d = right_points[i2];
 							polygon.push_back(carve::geom::VECTOR(point3d.x, point3d.y));
 						}
@@ -391,37 +391,37 @@ namespace OpenInfraPlatform {
 					profiles.begin(),
 					[](auto& it) {return it.lock(); });
 
-				for(auto profileDef :profiles) {
+				for (auto profileDef : profiles) {
 					//std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> profileDef = it;
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
-					if(parameterized) {
+					if (parameterized) {
 						convertIfcParameterizedProfileDefWithPosition(parameterized, paths);
 						continue;
 					}
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> open = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>(profileDef);
-					if(open) {
+					if (open) {
 						convertIfcArbitraryOpenProfileDef(open, paths);
 						continue;
 					}
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> closed =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
-					if(closed) {
+					if (closed) {
 						convertIfcArbitraryClosedProfileDef(closed, paths);
 						continue;
 					}
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeProfileDef>(profileDef);
-					if(composite) {
+					if (composite) {
 						convertIfcCompositeProfileDef(composite, paths);
 						continue;
 					}
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDerivedProfileDef>(profileDef);
-					if(derived) {
+					if (derived) {
 						convertIfcDerivedProfileDef(derived, paths);
 						continue;
 					}
@@ -450,11 +450,11 @@ namespace OpenInfraPlatform {
 
 				carve::math::Matrix transform(carve::math::Matrix::IDENT());
 				placementConverter->convertTransformationOperator(transf_op_2D, transform, UnitConvert()->getLengthInMeterFactor());
-				for(int i = 0; i < parent_paths.size(); ++i) {
+				for (int i = 0; i < parent_paths.size(); ++i) {
 					const std::vector<carve::geom::vector<2>>& loop_parent = parent_paths[i];
 					std::vector<carve::geom::vector<2>> loop;
 
-					for(int j = 0; j < loop_parent.size(); ++j) {
+					for (int j = 0; j < loop_parent.size(); ++j) {
 						const carve::geom::vector<2>& pt = loop_parent.at(j);
 						carve::geom::vector<3> pt3d(carve::geom::VECTOR(pt.x, pt.y, 0));
 						pt3d = transform * pt3d;
@@ -474,7 +474,7 @@ namespace OpenInfraPlatform {
 			// Function 5: Convert IfcOpenCrossProfileDef
 			void convertIfcOpenCrossProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcOpenCrossProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
-			{	
+			{
 				throw oip::UnhandledException(convertIfcOpenCrossProfileDef);
 			}
 
@@ -482,7 +482,7 @@ namespace OpenInfraPlatform {
 			void convertIfcParameterizedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
-				
+
 				// *************************************************************************************************************************************************************//
 				// IfcParameterizedProfileDef	(http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcprofileresource/lexical/ifcparameterizedprofiledef.htm)		//
 				// ABSTRACT SUPERTYPE OF IfcCShapeProfileDef, IfcCircleProfileDef, IfcEllipseProfileDef, IfcIShapeProfileDef, IfcLShapeProfileDef,								//
@@ -497,119 +497,44 @@ namespace OpenInfraPlatform {
 
 				// (1/10) IfcRectangleProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				std::shared_ptr<typename IfcEntityTypesT::IfcRectangleProfileDef> rectangle_profile = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleProfileDef>(profileDef);
-				if(rectangle_profile) {
+				if (rectangle_profile) {
 					convertIfcRectangleProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>(rectangle_profile), paths, outer_loop);
 				}
 
 				// (2/10) IfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef> trapezium = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(profileDef);
-				if(trapezium) {
+				if (trapezium) {
 					convertIfcTrapeziumProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(trapezium), paths, outer_loop);
 				}
 
 				// (3/10) IfcCircleProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				std::shared_ptr<typename IfcEntityTypesT::IfcCircleProfileDef> circle_profile_def = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleProfileDef>(profileDef);
-				if(circle_profile_def) {
+				if (circle_profile_def) {
 					convertIfcCircleProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcCircleProfileDef>(circle_profile_def), paths, outer_loop);
 				}
 
 				// (4/10) IfcEllipseProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcEllipseProfileDef> ellipse_profile_def = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEllipseProfileDef>(profileDef);
-				if(ellipse_profile_def) {
-					if(ellipse_profile_def->SemiAxis1) {
-						if(ellipse_profile_def->SemiAxis2) {
-							double xRadius = ellipse_profile_def->SemiAxis1 * length_factor;
-							double yRadius = ellipse_profile_def->SemiAxis2 * length_factor;
-							double radiusMax = std::max(xRadius, yRadius);
-							int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
-							double d_angle = GeomSettings()->getAngleLength(radiusMax);
-							double angle = 0.0;
-
-							for(int i = 0; i < num_segments; ++i) {
-								outer_loop.push_back(carve::geom::VECTOR((xRadius * cos(angle)), (yRadius * sin(angle))));
-								angle += d_angle;
-							}
-							paths.push_back(outer_loop);
-						}
-					}
-					return;
+				if (ellipse_profile_def) {
+					convertEllipseProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcEllipseProfileDef>(ellipse_profile_def), paths, outer_loop);
 				}
 
 				// (5/10) IfcIShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				std::shared_ptr<typename IfcEntityTypesT::IfcIShapeProfileDef> i_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcIShapeProfileDef>(profileDef);
-				if(i_shape) {
-					if(i_shape->OverallDepth && i_shape->OverallWidth && i_shape->WebThickness && i_shape->FlangeThickness) {
-						double h = i_shape->OverallDepth * length_factor;
-						double b = i_shape->OverallWidth * length_factor;
-						double tw = i_shape->WebThickness * length_factor;
-						double tf = i_shape->FlangeThickness * length_factor;
-						double r = i_shape->FilletRadius.value_or(0.0) * length_factor;
-
-						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
-						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, (-h * 0.5 + tf)));
-
-						addArc_or_push_back(outer_loop, r, 3 * M_PI_2, -M_PI_2, (tw * 0.5 + r), (-h * 0.5 + tf + r), (tw * 0.5), (-h * 0.5 + tf));
-				
-						// IfcAsymmetricIShapeProfileDef SUBTYPE OF IfcIShapeProfileDef
-						EXPRESSReference<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef> asym_I_profile =
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef>(i_shape);
-						if(asym_I_profile) {
-							if(asym_I_profile->TopFlangeWidth) {
-								double bTop = asym_I_profile->TopFlangeWidth * length_factor;																
-								double tfTop = asym_I_profile->TopFlangeThickness.value_or(i_shape->FlangeThickness) * length_factor;
-								double rTop = asym_I_profile->TopFlangeFilletRadius.value_or(i_shape->FilletRadius.value_or(0.0)) * length_factor;
-								addArc_or_push_back(outer_loop, rTop, M_PI, -M_PI_2, (tw * 0.5 + rTop), (h * 0.5 - tfTop - rTop), (tw * 0.5), (h * 0.5 - tfTop));
-								
-								outer_loop.push_back(carve::geom::VECTOR(bTop * 0.5, (h * 0.5 - tfTop)));
-								outer_loop.push_back(carve::geom::VECTOR(bTop * 0.5, h * 0.5));
-							}
-						}
-						else {
-							// symmetric: mirror horizontally along x-Axis
-							mirrorCopyPathReverse(outer_loop, false, true);
-						}
-
-						// mirror vertically along y-axis
-						mirrorCopyPathReverse(outer_loop, true, false);
-						paths.push_back(outer_loop);
-					}
-					return;
+				if (i_shape) {
+					convertIShapeProfileDef(EXPRESSReference <typename IfcEntityTypesT::IfcIShapeProfileDef>(i_shape), paths, outer_loop);
 				}
 
 				// (6/10) IfcLShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcLShapeProfileDef> l_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLShapeProfileDef>(profileDef);
-				if(l_shape) {
-					if(l_shape->Depth && l_shape->Thickness) {
-						double h = l_shape->Depth * length_factor;
-						double b = l_shape->Width.value_or(l_shape->Depth) * length_factor;
-						double t = l_shape->Thickness;
-						double r1 = l_shape->FilletRadius.value_or(0.) * length_factor;
-						double r2 = l_shape->EdgeRadius.value_or(0.) * length_factor;
-						double ls = l_shape->LegSlope.value_or(0.) * length_factor;
-						
-						outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, -h * 0.5));
-						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
-
-						addArc_or_push_back(outer_loop, r2, 0.0, M_PI_2 - ls, b * 0.5 - r2, -h * 0.5 + t - r2, b * 0.5, (-h * 0.5 + t));
-						
-						double s = sin(ls);
-						double c = cos(ls);
-						double z1 = (-s * ((c - s) * (r1 + r2 + t) - c * b + s * h)) / (2 * c * c - 1);
-						double z2 = (-s * ((c - s) * (r1 + r2 + t) - c * h + s * b)) / (2 * c * c - 1);
-						
-						addArc_or_push_back(outer_loop, r1, (3 * M_PI_2 - ls), (-M_PI_2 + 2 * ls), (-b * 0.5 + t + z2 + r1), (-h * 0.5 + t + z1 + r1), (-b * 0.5 + t + z2), (-h * 0.5 + t + z1));
-						addArc_or_push_back(outer_loop, r2, ls, (M_PI_2 - ls), (-b * 0.5 + t - r2), (h * 0.5 - r2), (-b * 0.5 + t), (h * 0.5));
-
-						outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, h * 0.5));
-						paths.push_back(outer_loop);
-					}
-					return;
+				if (l_shape) {
+					convertLShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcLShapeProfileDef>(l_shape), paths, outer_loop);
 				}
 
 				// (7/10) IfcUShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcUShapeProfileDef> u_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcUShapeProfileDef>(profileDef);
-				if(u_shape) {
-					if(u_shape->Depth && u_shape->FlangeWidth && u_shape->WebThickness && u_shape->FlangeThickness) {
+				if (u_shape) {
+					/*if (u_shape->Depth && u_shape->FlangeWidth && u_shape->WebThickness && u_shape->FlangeThickness) {
 						double h = u_shape->Depth * length_factor;
 						double b = u_shape->FlangeWidth * length_factor;
 						double tw = u_shape->WebThickness * length_factor;
@@ -617,13 +542,13 @@ namespace OpenInfraPlatform {
 						double r1 = u_shape->FilletRadius.value_or(0.0) * length_factor;
 						double r2 = u_shape->EdgeRadius.value_or(0.0) * length_factor;
 						double fs = u_shape->FlangeSlope.value_or(0.0) * length_factor;
-						
+
 						outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, -h * 0.5));
 						outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
 
 						double z = tan(fs) * (b * 0.5 - r2);
 						addArc_or_push_back(outer_loop, r2, 0, (M_PI_2 - fs), (b * 0.5 - r2), (-h * 0.5 + tf - z - r2), (b * 0.5), (-h * 0.5 + tf - z));
-						
+
 						z = tan(fs) * (b * 0.5 - tw - r1);
 						addArc_or_push_back(outer_loop, r1, (3 * M_PI_2 - fs), (-M_PI_2 + fs), (-b * 0.5 + tw + r1), (-h * 0.5 + tf + z + r1), (-b * 0.5 + tw), (-h * 0.5 + tf + z));
 
@@ -631,19 +556,20 @@ namespace OpenInfraPlatform {
 						mirrorCopyPathReverse(outer_loop, false, true);
 						paths.push_back(outer_loop);
 					}
-					return;
+					return;*/
+					convertUShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcUShapeProfileDef> (u_shape), paths, outer_loop);
 				}
 
 				// (8/10) IfcCShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef> c_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCShapeProfileDef>(profileDef);
-				if(c_shape) {
-					if(c_shape->Depth && c_shape->Width && c_shape->Girth && c_shape->WallThickness) {
+				if (c_shape) {
+					if (c_shape->Depth && c_shape->Width && c_shape->Girth && c_shape->WallThickness) {
 						double h = c_shape->Depth * length_factor;
 						double b = c_shape->Width * length_factor;
 						double g = c_shape->Girth * length_factor;
 						double t = c_shape->WallThickness * length_factor;
 						double r1 = c_shape->InternalFilletRadius.value_or(0.) * length_factor;
-						
+
 						addArc_or_push_back(outer_loop, (r1 + t), M_PI, M_PI_2, (-b * 0.5 + t + r1), (-h * 0.5 + t + r1), (-b * 0.5), (-h * 0.5));
 						addArc_or_push_back(outer_loop, (r1 + t), 3 * M_PI_2, M_PI_2, (b * 0.5 - t - r1), (-h * 0.5 + t + r1), (b * 0.5), (-h * 0.5));
 
@@ -652,7 +578,7 @@ namespace OpenInfraPlatform {
 
 						addArc_or_push_back(outer_loop, r1, 0, -M_PI_2, (b * 0.5 - t - r1), (-h * 0.5 + t + r1), (b * 0.5 - t), (-h * 0.5 + t));
 						addArc_or_push_back(outer_loop, r1, 3 * M_PI_2, -M_PI_2, (-b * 0.5 + t + r1), (-h * 0.5 + t + r1), (-b * 0.5 + t), (-h * 0.5 + t));
-						
+
 						// mirror horizontally along x-Axis
 						mirrorCopyPathReverse(outer_loop, false, true);
 						paths.push_back(outer_loop);
@@ -662,21 +588,21 @@ namespace OpenInfraPlatform {
 
 				// (9/10) IfcZShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcZShapeProfileDef> z_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcZShapeProfileDef>(profileDef);
-				if(z_shape) {
-					if(z_shape->Depth && z_shape->FlangeWidth && z_shape->WebThickness && z_shape->FlangeThickness) {
+				if (z_shape) {
+					if (z_shape->Depth && z_shape->FlangeWidth && z_shape->WebThickness && z_shape->FlangeThickness) {
 						double h = z_shape->Depth * length_factor;
 						double b = z_shape->FlangeWidth * length_factor;
 						double tw = z_shape->WebThickness * length_factor;
 						double tf = z_shape->FlangeThickness * length_factor;
 						double r1 = z_shape->FilletRadius.value_or(0.) * length_factor;
 						double r2 = z_shape->EdgeRadius.value_or(0.) * length_factor;
-						
+
 						outer_loop.push_back(carve::geom::VECTOR((-tw * 0.5), -h * 0.5));
 						outer_loop.push_back(carve::geom::VECTOR((b - tw * 0.5), -h * 0.5));
 
 						addArc_or_push_back(outer_loop, r2, 0, M_PI_2, (b - tw * 0.5 - r2), (-h * 0.5 + tf - r2), (b - tw * 0.5), (-h * 0.5 + tf));
 						addArc_or_push_back(outer_loop, r1, 3 * M_PI_2, -M_PI_2, (tw * 0.5 + r1), (-h * 0.5 + tf + r1), (tw * 0.5), (-h * 0.5 + tf));
-					
+
 						// mirror horizontally and vertically
 						mirrorCopyPath(outer_loop, true, true);
 						paths.push_back(outer_loop);
@@ -686,7 +612,7 @@ namespace OpenInfraPlatform {
 
 				// (10/10) IfcTShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef> t_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTShapeProfileDef>(profileDef);
-				if(t_shape) {
+				if (t_shape) {
 					const double h = t_shape->Depth * length_factor;
 					const double b = t_shape->FlangeWidth * length_factor;
 					const double tw = t_shape->WebThickness * length_factor * 0.5;
@@ -694,16 +620,16 @@ namespace OpenInfraPlatform {
 					double r1 = t_shape->FilletRadius.value_or(0.0) * length_factor;
 					double r2 = r2 = t_shape->FlangeEdgeRadius.value_or(0.0) * length_factor;
 					double r3 = t_shape->WebEdgeRadius.value_or(0.0) * length_factor;
-					double fs = t_shape->FlangeSlope.value_or(0.0) * angle_factor ;
+					double fs = t_shape->FlangeSlope.value_or(0.0) * angle_factor;
 					double ws = t_shape->WebSlope.value_or(0.0) * angle_factor;
-					
+
 					outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, h * 0.5));
 
 					double zf = tan(fs) * (b * 0.25 - r2);
 					double zw = tan(ws) * (h * 0.5 - r3);
 
 					addArc_or_push_back(outer_loop, r2, M_PI, M_PI_2 - fs, (-b * 0.5 + r2), (h * 0.5 - tf + zf + r2), (-b * 0.5), (h * 0.5 - tf + zf));
-				
+
 					double cf = cos(fs);
 					double sf = sin(fs);
 					double cw = cos(ws);
@@ -713,7 +639,7 @@ namespace OpenInfraPlatform {
 
 					addArc_or_push_back(outer_loop, r1, (M_PI_2 - fs), (-M_PI_2 + fs + ws), (-tw + zw - z2 - r1), (h * 0.5 - tf + zf - z1 - r1), (-tw + zw - z2), (h * 0.5 - tf + zf - z1));
 					addArc_or_push_back(outer_loop, r3, (M_PI + ws), (M_PI_2 - ws), (-tw + zw + r3), (-h * 0.5 + r3), (-tw + zw), (-h * 0.5));
-					
+
 					// mirror vertically along y-Axis
 					mirrorCopyPathReverse(outer_loop, true, false);
 					paths.push_back(outer_loop);
@@ -727,18 +653,18 @@ namespace OpenInfraPlatform {
 				throw std::runtime_error(sstr.str().c_str());
 			}
 
-			// Function 6.1  convertIfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
+			// Function 6.1  convertIfcRectangleProfileDef SUBTYPE OF IfcParametrizedProfileDef
 			void convertIfcRectangleProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>& rectangle_profile,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
-				if(rectangle_profile->XDim && rectangle_profile->YDim) {
+				if (rectangle_profile->XDim && rectangle_profile->YDim) {
 					double x = rectangle_profile->XDim * UnitConvert()->getLengthInMeterFactor();
 					double y = rectangle_profile->YDim * UnitConvert()->getLengthInMeterFactor();
 
 					// IfcRectangleHollowProfileDef SUBTYPE OF IfcRectangleProfile 
-					if(rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>()) {
+					if (rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>()) {
 						EXPRESSReference<typename IfcEntityTypesT::IfcRectangleHollowProfileDef> hollow = rectangle_profile.as<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>();
 
-						if(hollow->WallThickness) {
+						if (hollow->WallThickness) {
 							double t = hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
 							double r1 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
 							double r2 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
@@ -759,7 +685,7 @@ namespace OpenInfraPlatform {
 
 					// IfcRoundedRectangleProfileDef SUBTYPE OF IfcRectangleProfile 
 
-					if(rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>()) {
+					if (rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>()) {
 						auto rounded_rectangle = rectangle_profile.as<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>();
 						if (rounded_rectangle->RoundingRadius) {
 							AddRectangleCoordinates(outer_loop, rounded_rectangle->RoundingRadius * UnitConvert()->getLengthInMeterFactor(), x, y);
@@ -777,7 +703,7 @@ namespace OpenInfraPlatform {
 			// Function 6.2  convertIfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
 			void convertIfcTrapeziumProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef>& trapezium,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
-				if(trapezium->BottomXDim && trapezium->TopXDim && trapezium->TopXOffset && trapezium->YDim) {
+				if (trapezium->BottomXDim && trapezium->TopXDim && trapezium->TopXOffset && trapezium->YDim) {
 					double xBottom = trapezium->BottomXDim * UnitConvert()->getLengthInMeterFactor();
 					double xTop = trapezium->TopXDim * UnitConvert()->getLengthInMeterFactor();
 					double xOffset = trapezium->TopXOffset * UnitConvert()->getLengthInMeterFactor();
@@ -787,13 +713,13 @@ namespace OpenInfraPlatform {
 					paths.push_back(outer_loop);
 				}
 				return;
-			} 
+			}
 
 			// 
 			void convertIfcCircleProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcCircleProfileDef> & circle_profile_def,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
 				double radius = circle_profile_def->Radius * UnitConvert()->getLengthInMeterFactor();
-				if(radius < GeomSettings()->getPrecision()) {
+				if (radius < GeomSettings()->getPrecision()) {
 					return;
 				}
 				int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
@@ -804,7 +730,7 @@ namespace OpenInfraPlatform {
 
 				// IfcCircleHollowProfileDef SUBTYPE OF IfcCircleProfileDef
 				std::vector<carve::geom::vector<2>> inner_loop;
-				if(circle_profile_def.isOfType<typename IfcEntityTypesT::IfcCircleHollowProfileDef>()) {
+				if (circle_profile_def.isOfType<typename IfcEntityTypesT::IfcCircleHollowProfileDef>()) {
 					auto hollow = circle_profile_def.as<typename IfcEntityTypesT::IfcCircleHollowProfileDef>();
 					double radius2 = radius - hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
 					int num_segments2 = GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
@@ -812,6 +738,122 @@ namespace OpenInfraPlatform {
 
 					addArc(inner_loop, radius2, 0.0, d_angle2, 0.0, 0.0, num_segments2);
 					paths.push_back(inner_loop);
+				}
+				return;
+			}
+
+			void convertEllipseProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcEllipseProfileDef> & ellipse_profile_def,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
+				if (ellipse_profile_def->SemiAxis1) {
+					if (ellipse_profile_def->SemiAxis2) {
+						double xRadius = ellipse_profile_def->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
+						double yRadius = ellipse_profile_def->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
+						double radiusMax = std::max(xRadius, yRadius);
+						int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
+						double d_angle = GeomSettings()->getAngleLength(radiusMax);
+						double angle = 0.0;
+
+						for (int i = 0; i < num_segments; ++i) {
+							outer_loop.push_back(carve::geom::VECTOR((xRadius * cos(angle)), (yRadius * sin(angle))));
+							angle += d_angle;
+						}
+						paths.push_back(outer_loop);
+					}
+				}
+				return;
+			}
+
+			void convertIShapeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcIShapeProfileDef> i_shape,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
+				if (i_shape->OverallDepth && i_shape->OverallWidth && i_shape->WebThickness && i_shape->FlangeThickness) {
+					double h = i_shape->OverallDepth * UnitConvert()->getLengthInMeterFactor();
+					double b = i_shape->OverallWidth * UnitConvert()->getLengthInMeterFactor();
+					double tw = i_shape->WebThickness * UnitConvert()->getLengthInMeterFactor();
+					double tf = i_shape->FlangeThickness * UnitConvert()->getLengthInMeterFactor();
+					double r = i_shape->FilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+
+					outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
+					outer_loop.push_back(carve::geom::VECTOR(b * 0.5, (-h * 0.5 + tf)));
+
+					addArc_or_push_back(outer_loop, r, 3 * M_PI_2, -M_PI_2, (tw * 0.5 + r), (-h * 0.5 + tf + r), (tw * 0.5), (-h * 0.5 + tf));
+
+					// IfcAsymmetricIShapeProfileDef SUBTYPE OF IfcIShapeProfileDef
+					if (i_shape.isOfType<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef>()) {
+						auto asym_I_profile = i_shape.as<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef>();
+
+						if (asym_I_profile->TopFlangeWidth) {
+							double bTop = asym_I_profile->TopFlangeWidth * UnitConvert()->getLengthInMeterFactor();
+							double tfTop = asym_I_profile->TopFlangeThickness.value_or(i_shape->FlangeThickness) * UnitConvert()->getLengthInMeterFactor();
+							double rTop = asym_I_profile->TopFlangeFilletRadius.value_or(i_shape->FilletRadius.value_or(0.0)) * UnitConvert()->getLengthInMeterFactor();
+							addArc_or_push_back(outer_loop, rTop, M_PI, -M_PI_2, (tw * 0.5 + rTop), (h * 0.5 - tfTop - rTop), (tw * 0.5), (h * 0.5 - tfTop));
+
+							outer_loop.push_back(carve::geom::VECTOR(bTop * 0.5, (h * 0.5 - tfTop)));
+							outer_loop.push_back(carve::geom::VECTOR(bTop * 0.5, h * 0.5));
+						}
+					}
+					else {
+						// symmetric: mirror horizontally along x-Axis
+						mirrorCopyPathReverse(outer_loop, false, true);
+					}
+
+					// mirror vertically along y-axis
+					mirrorCopyPathReverse(outer_loop, true, false);
+					paths.push_back(outer_loop);
+				}
+				return;
+			}
+
+			void convertLShapeProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcLShapeProfileDef >& l_shape,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
+				if (l_shape->Depth && l_shape->Thickness) {
+					double h = l_shape->Depth * UnitConvert()->getLengthInMeterFactor();
+					double b = l_shape->Width.value_or(l_shape->Depth) * UnitConvert()->getLengthInMeterFactor();
+					double t = l_shape->Thickness;
+					double r1 = l_shape->FilletRadius.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
+					double r2 = l_shape->EdgeRadius.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
+					double ls = l_shape->LegSlope.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
+
+					outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, -h * 0.5));
+					outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
+
+					addArc_or_push_back(outer_loop, r2, 0.0, M_PI_2 - ls, b * 0.5 - r2, -h * 0.5 + t - r2, b * 0.5, (-h * 0.5 + t));
+
+					double s = sin(ls);
+					double c = cos(ls);
+					double z1 = (-s * ((c - s) * (r1 + r2 + t) - c * b + s * h)) / (2 * c * c - 1);
+					double z2 = (-s * ((c - s) * (r1 + r2 + t) - c * h + s * b)) / (2 * c * c - 1);
+
+					addArc_or_push_back(outer_loop, r1, (3 * M_PI_2 - ls), (-M_PI_2 + 2 * ls), (-b * 0.5 + t + z2 + r1), (-h * 0.5 + t + z1 + r1), (-b * 0.5 + t + z2), (-h * 0.5 + t + z1));
+					addArc_or_push_back(outer_loop, r2, ls, (M_PI_2 - ls), (-b * 0.5 + t - r2), (h * 0.5 - r2), (-b * 0.5 + t), (h * 0.5));
+
+					outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, h * 0.5));
+					paths.push_back(outer_loop);
+				}
+				return;
+			}
+			void convertUShapeProfileDef(EXPRESSReference <typename IfcEntityTypesT::IfcUShapeProfileDef>& u_shape,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
+				if (u_shape->Depth && u_shape->FlangeWidth && u_shape->WebThickness && u_shape->FlangeThickness) {
+					double h = u_shape->Depth * UnitConvert()->getLengthInMeterFactor();
+					double b = u_shape->FlangeWidth * UnitConvert()->getLengthInMeterFactor();
+					double tw = u_shape->WebThickness * UnitConvert()->getLengthInMeterFactor();
+					double tf = u_shape->FlangeThickness * UnitConvert()->getLengthInMeterFactor();
+					double r1 = u_shape->FilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+					double r2 = u_shape->EdgeRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+					double fs = u_shape->FlangeSlope.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+
+					outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, -h * 0.5));
+					outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
+
+					double z = tan(fs) * (b * 0.5 - r2);
+					addArc_or_push_back(outer_loop, r2, 0, (M_PI_2 - fs), (b * 0.5 - r2), (-h * 0.5 + tf - z - r2), (b * 0.5), (-h * 0.5 + tf - z));
+
+					z = tan(fs) * (b * 0.5 - tw - r1);
+					addArc_or_push_back(outer_loop, r1, (3 * M_PI_2 - fs), (-M_PI_2 + fs), (-b * 0.5 + tw + r1), (-h * 0.5 + tf + z + r1), (-b * 0.5 + tw), (-h * 0.5 + tf + z));
+
+					// mirror horizontally along x-Axis
+					mirrorCopyPathReverse(outer_loop, false, true);
+					paths.push_back(outer_loop);
 				}
 				return;
 			}
