@@ -220,14 +220,14 @@ namespace OpenInfraPlatform
 
 							//Give directrix to Curve converter
 							std::vector<carve::geom::vector<3> > segment_start_points;
-							std::vector<carve::geom::vector<3> > basis_curve_points;
-							curveConverter->convertIfcCurve(directrix.lock(), basis_curve_points, segment_start_points);
+							std::vector<carve::geom::vector<3> > BasisCurvePoints;
+							curveConverter->convertIfcCurve(directrix.lock(), BasisCurvePoints, segment_start_points);
 
 							std::shared_ptr<carve::input::PolyhedronData> body_data = std::make_shared<carve::input::PolyhedronData>();
 							itemData->closed_polyhedrons.push_back(body_data);
 							//std::vector<carve::geom::vector<3> > inner_shape_points;  //TO DO: find out if i need inner_shape_points for the CrossSections
 
-							int num_curve_points = basis_curve_points.size();
+							int num_curve_points = BasisCurvePoints.size();
 							carve::math::Matrix matrix_sweep;
 
 							// Less than two points is a point
@@ -236,8 +236,9 @@ namespace OpenInfraPlatform
 								throw oip::InconsistentModellingException(sectioned_solid_horizontal, " num curve points < 2");
 							}
 
-							// define Vector to fill with the coordinates of the CrossSections
+							//define Vector to fill with the coordinates of the CrossSections
 							std::vector<std::vector<std::vector<carve::geom::vector<2>>>> paths;
+
 							//Get coordinates from the ProfileConverter for the ProfileDef
 							for (int i = 0; i <= vec_cross_sections.size(); ++i)
 							{
@@ -254,48 +255,124 @@ namespace OpenInfraPlatform
 							//declare Variables to fill with the information of the Cross Section Positions
 							std::vector<carve::geom::vector<3>> offsetFromCurve;
 							std::vector<carve::math::Matrix> localPlacementMatrix;
-							std::vector<carve::geom::vector<3>> pointsOnCurve;
+							std::vector<carve::geom::vector<3>> CrossSectionPoints;
 							std::vector<carve::geom::vector<3>> directionsOfCurve;
 
 							for (int pos = 0; pos < cross_section_positions.size(); ++pos)
 							{
-								// 1. get offset from curve    
+								//1. get offset from curve    
 								offsetFromCurve.push_back(placementConverter->convertIfcDistanceExpressionOffsets(cross_section_positions[pos]));
 
-								// 2. calculate the position on and the direction of the base curve
-								// also applay the relative dist along	 
-								std::tie(pointsOnCurve[pos], directionsOfCurve[pos]) = calculatePositionOnAndDirectionOfBaseCurve(directrix, cross_section_positions[pos]);
-								pointsOnCurve.push_back(pointsOnCurve[pos]);
+								//2. calculate the position on and the direction of the base curve
+								//also applay the relative dist along	 
+								std::tie(CrossSectionPoints[pos], directionsOfCurve[pos]) = calculatePositionOnAndDirectionOfBaseCurve(directrix, cross_section_positions[pos]);
+								CrossSectionPoints.push_back(CrossSectionPoints[pos]);
 								directionsOfCurve.push_back(directionsOfCurve[pos]);
 
-								// 3. calculate the rotations
-								// the direction of the curve's tangent = directionOfCurve
-								// now that localPLacement Matrix is a Vector ----> 1 Matrix for each CrossSectionPosition saved in the Vector localPlacementMatrix
+								//3. calculate the rotations
+								//the direction of the curve's tangent = directionOfCurve
+								//now that localPLacement Matrix is a Vector ----> 1 Matrix for each CrossSectionPosition saved in the Vector localPlacementMatrix
 								localPlacementMatrix.push_back(placementConverter->calculateCurveOrientationMatrix(directionsOfCurve[pos], cross_section_positions[pos]->AlongHorizontal.value_or(true)));
-
 							}
 
-							/*// 1. TO DO: Compare basis_curve_points with pointsOnCurve.
-							// If pointOnCurve is missing in base_curve_point then it needs to be added to the new vector
-							// points_for_tesselation = If( base_curve_point == pointsOnCurve -> then add just the pointOnCurve and  direction_for_tesselation = directionsOfCurve
-							// points_for_tesselation = if( base_curve_point != pointsOnCurve -> then add the base_curve_point and interpolate between the pointsOnCurve to get the direction.
-							//                          direction_for_tesselation = (interpolation of the pointOnCurve before and after the base_curve_point)
-
-
-							// declare a new vector which will include all points for the Tesselation
+							// 1. TO DO: Compare basis_curve_points with pointsOnCurve.
+					
+							//Declare a new vector which will include all points for the Tesselation
 							std::vector<carve::geom::vector<3>> points_for_tesselation;
 							std::vector<carve::geom::vector<3>> direction_for_tesselation;
+							int i = 0;
+						    int j = 0;
+							double dist_1 = 0;
+							double dist_2 = 0;
 
-							//points of base_curve_points
-							for (i = 0; i < num_curve_points; ++i)
+							//iterate BasisCurvePoints[] until it gets to CrossSectionPoints[0]
+							//if dist_1 is bigger than dist_2 they are before CrossSectionPoints[0], else they are after that point
+							while (dist_1 > dist_2)
 							{
-								//points of pointsOfCurve
-								for (j = 0; j < pointsOnCurve.size(); ++j)
-								{
-
-								}
-								
+							  dist_1 = distance(BasisCurvePoints[i], CrossSectionPoints[0]);
+							  dist_2 = distance(BasisCurvePoints[i+1], CrossSectionPoints[0]);
+								++i;
 							}
+
+							//The first point for tesselation is where the Profile Starts
+							points_for_tesselation.push_back(CrossSectionPoints[0]);
+							++j;
+							//now that CrossSectionPoints[0] is reached iterate and fill points_for_tesselation
+			                while ( i < BasisCurvePoints.size() && j < CrossSectionPoints.size()) // TO DO: <= ?
+							{
+
+			      				//if basis_curve_points[i]==pointsOnCurve[j] ->save the information of pointsOnCurve
+					     		if (BasisCurvePoints[i] == CrossSectionPoints[j])
+								{
+									//1. save the information of pointsOnCurve in the new vector
+									points_for_tesselation.push_back(CrossSectionPoints[j]);
+									direction_for_tesselation.push_back(directionsOfCurve[j]);
+
+									//2. Also addFace of the Cross Section paths[j] while putting the profile in the right place with the position of the CrossSectionPositions
+									
+									//3. go to the next element in both lists
+									++i;
+									++j;
+								}
+
+								//if basis_curve_points[i]!=pointsOnCurve[j]
+								else if (BasisCurvePoints[i] != CrossSectionPoints[j])
+								{
+									// get the distance of the points 
+									double distCrossSectionPositions;
+									double distBasisCurvePoints;
+									
+									//calculate the distance from the point in basis_curve_points to the last element in the joint list
+									int last = points_for_tesselation.size();
+									carve::geom::vector<3> back = points_for_tesselation.at(last);
+									carve::geom::vector<3> currentBCP = BasisCurvePoints.at(i);
+									carve::geom::vector<3> dist_vectorBCP;
+
+									dist_vectorBCP = currentBCP - back;
+									distBasisCurvePoints = abs(sqrt(dot(dist_vectorBCP, dist_vectorBCP))); //TO DO: euklidische norm berechnen sqrt( dot(dist_vektor,dist_vektor))
+	
+								    //calculate the distance from the point in CrossSectionPoints to the last element in the joint list
+									carve::geom::vector<3> currentCSP = CrossSectionPoints.at(j);
+									carve::geom::vector<3> dist_vectorCSP;
+
+									dist_vectorCSP = currentCSP - back;
+									distCrossSectionPositions = abs(sqrt(dot(dist_vectorCSP, dist_vectorCSP)));
+
+
+									if (distCrossSectionPositions < distBasisCurvePoints)
+									{
+										//Save the point in the curve in the new vector
+										points_for_tesselation.push_back(CrossSectionPoints[j]);
+
+										//Save the direction of the point
+										direction_for_tesselation.push_back(directionsOfCurve[j]);
+
+										//get Profile
+										// addVertex and addFace ( also Offsets and localplacementMatrix * pos)
+									    // body_data->addFace(.....)
+
+										//increment based on its position on the directrix
+										++j;
+								    }
+									
+									else if (distCrossSectionPositions > distBasisCurvePoints)
+									{
+										//  Save the point in the curve in the new vector
+										points_for_tesselation.push_back(BasisCurvePoints[i]);
+
+										//  calculate the direction of the point (Interpolate with the pointOnCurve before and after that point)
+
+
+										//  calculate the Profile (Interpolate the Profile on the pointOnCurve before and after that point to get the right Profile)
+
+										//increment based on its position on the directrix
+										++i;
+									}
+								}
+							}
+                                    
+									
+							
 
 							// 2. TO DO: on each pointOnCurve[i] is a CrossSection( IfcProfileDef) -> addFace(paths[i]),
 							      //2.1 for the points between the pointsOnCurve we have to interpolate the Profile. The OpenPolyhedron (Mantelfläche) needs to be calculated.
@@ -303,7 +380,7 @@ namespace OpenInfraPlatform
 				             // 2. TO DO: an jeder CrossSectionPosition muss jetzt ein addFace mit den entsprechenden paths[i]
 				             // durch den ProfileConverter sind die coordenaten bereits in der richtigen stelle und somit kann dann das profil entlang der directrix aufgebaut werden.
 				             // Verständnis -> directrix wurde mit offsets und pointOnCurve auf die richtigen position gebracht unter berücksichtigung von CrossSectionPositions.
-				             */
+				             
 
 			}//endif sectioned_solid_horizontal
 
