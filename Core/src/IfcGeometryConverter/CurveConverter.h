@@ -1222,7 +1222,7 @@ namespace OpenInfraPlatform {
 				{
 					// initialize the return value with enough space
 					std::vector<carve::geom::vector<3>> loop;
-					loop.reserve(points.size());
+					loop.reserve( points.size() );
 					// convert each point individually and add to the return vector
 					for ( auto& it : points )
 						loop.push_back(placementConverter->convertIfcCartesianPoint(it));

@@ -15,5 +15,15 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-add_subdirectory(IFC4X1)
-   
+include(CreateUnitTests)
+
+# get all subdirectories (that is, unit tests)
+SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_LIST_DIR})
+
+# add to the solution
+FOREACH(subdir ${SUBDIRS})
+  # only if the schema has been included in the project and built already
+  if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding/${subdir})
+    ADD_SUBDIRECTORY(${subdir})
+  endif()
+ENDFOREACH()
