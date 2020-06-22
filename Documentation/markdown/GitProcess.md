@@ -1,16 +1,32 @@
 # Git-Process
 
 ***
-## GitSetup
+This short guide shows you how to use Git-Process for better structuring a group project.
 
-### Prerequisites 
+***
+
+## Content 
+
+1. [GitSetup](#GitSetup)
+	* [Prerequisites](#Prerequisites) 
+	* [Fork the repository](#Fork)
+2. [Git Workflow](#Workflow) 
+	* [Updating from main repository](#Updating)
+	* [Creating a branch](#Create_branch)
+	* [Branch naming convention](#Naming_convention)
+	* [Submit changes](#Submit)
+	* [Pull request](#Pull_request)
+
+## <a name="GitSetup"></a> GitSetup
+
+### <a name="Prerequisites"></a> Prerequisites 
 
 Before you can proceed to work with Git, there are several steps, which have to be done before Installation: 
 
 1. Installation of **Git** - find [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 2. Creation of **GitHub account** - find [here](https://github.com/)
 
-### Fork the repository
+### <a name="Fork"></a> Fork the repository
 
 1. Go to OpenInfraPlatform on [GitHub](https://github.com/tumcms/Open-Infra-Platform).
 
@@ -46,7 +62,7 @@ Before you can proceed to work with Git, there are several steps, which have to 
 		- **tumcms** repository (https://github.com/tumcms/Open-Infra-Platform).
 
 ***
-## Git Workflow
+## <a name="Workflow"></a> Git Workflow
 
 ![](./fig/Git_Workflow.png)
 
@@ -76,7 +92,7 @@ Once you have *added a remote*, you can update your local repository with all ch
 
 Now you have both your repositories (local and remote) updated. 
 
-### Creating a branch
+### <a name="Create_branch"></a> Creating a branch
 
 Before creating any changes, create new branch: 
  
@@ -89,10 +105,10 @@ Before creating any changes, create new branch:
  > git checkout -b <branchname> (e.g. *git checkout -b Fixing_Bugs*).
 
 
-### Branch naming convention
+### <a name="Naming_convention"></a> Branch naming convention
 
 ***
-### Submit changes 
+### <a name="Submit"></a> Submit changes 
 
 1. After creating some changes, *add* these changes:
 
@@ -122,7 +138,7 @@ Before creating any changes, create new branch:
 
 	As a result, your changes are online on GitHub in your remote repository (https://github.com/<your_username>/Open-Infra-Platform). 
 
-### Pull request 
+### <a name="Pull_request"></a> Pull request 
 
 After successfully pushing changes to your remote repository, you should merge your branch with the official repository. This can be achieved with *Pull request*:
 

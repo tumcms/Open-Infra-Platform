@@ -1,7 +1,26 @@
 # OpenInfraPlatform Installation 
 
 ***
-## Prerequisites 
+
+This short guide shows you how to compile the project TUM Open Infra Platform.
+
+**Warning:** This document is only snapshot of the current state and may be become obsolete in the future.
+
+***
+
+## Content 
+
+1. [Prerequisites](#Prerequisites)
+2. [Setup](#Setup) 
+	* [Download source code](#Source_code)
+	* [Preparing solution](#Prep_solution) 
+3. [Building the OpenInfraPlatform in Visual Studio](#Building_OIP) 
+	* [Generating IFC early binding](#generating_EarlyBinding)
+	* [Compiling user interface](#Compiling_interface)
+4. [Generating documentation](#Generating_Doc)
+	* [Get Dot and Doxygen](#Get_Dot)
+
+## <a name="Prerequisites"></a> Prerequisites 
 
 Before you can proceed to the Installation of **OpenInfraPlatform**, check, if these steps are completed:
 
@@ -11,7 +30,7 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 	*	Download Qt Online Installer 
 	*	In the meantime, your computer is downloading Qt installer, create Qt account. 
-	*	Sign in with your new account to Qt installer and select directory, where Qt will be installed. (** C:\Qt ** should be default option, if not write **this** path out)
+	*	Sign in with your new account to Qt installer and select directory, where Qt will be installed. (`C:\Qt` should be default option, if not write **this** path out)
 	*	Select components, you want to install:
 
 		* Check the *Archive* box
@@ -24,22 +43,26 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 		* **HINT:** There are components, which Qt Online Installer selects as default options. You can uncheck these components for saving computer memory.
 
-4. **Boost 1_65_1** is installed (find [here](https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/boost_1_65_1-msvc-14.1-64.exe/download)) and a new environment variable called Boost_INCLUDE_DIR is created. This variable should point to the binary folder, where **Boost 1_65_1** is staged (e.g. C:\local\boost_1_65_1\).
+4. **Boost 1_65_1** is installed (find [here](https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/boost_1_65_1-msvc-14.1-64.exe/download)).
+
+	* Create a folder named thirdparty in `C:\` and install **Boost 1_65_1** to `C:\thirdparty\vs2015\x64\boost_1_65_1`.
+	* Add this path into the environment variables. (Create new environment variable called `Boost_INCLUDE_DIR`. This variable should point to the binary folder, where **Boost 1_65_1** is staged (e.g. `C:\thirdparty\vs2015\x64\boost_1_65_1`).
+
 5. **Anaconda 2** (version with Python 2.7)  - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe) (For Windows users) 
 
 
 ***
-## Setup
+## <a name="Setup"></a> Setup
 
-### Download source code 
+### <a name="Source_code"></a> Download source code 
 
  Clone **OpenInfraPlatform** repository  - more information you can find [here](./GitProcess.md)
 
-### Preparing solution 
+### <a name="Prep_solution"></a> Preparing solution 
 
 1. Open CMake.
-2. In the line **Where is the source code:** copy the path to your source folder (e.g. C:\dev\Open-Infra-Platform).
-3. In the line **Where to build the binaries:**  copy the path to the binaries folder (e.g. C:\dev\project_OIP). **NOTE:** The source folder as well as *Program Files* and *Windows* folders are **invalid** locations for the binary folder.
+2. In the line **Where is the source code:** copy the path to your source folder (e.g. `C:\dev\Open-Infra-Platform`).
+3. In the line **Where to build the binaries:**  copy the path to the binaries folder (e.g. `C:\dev\project_OIP`). **NOTE:** The source folder as well as *Program Files* and *Windows* folders are **invalid** locations for the binary folder.
 4. Check the *Grouped* and *Advanced* boxes (top right in CMake GUI)..
 5. Click *Configure*. 
 6. Select the Generator:
@@ -51,14 +74,14 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 7. For detailed descriptions of all configuration options that can be selected in the CMake GUI, see [here](./CMakeOptions.md) 
 
-	**HINT:** A few (red) warnings in the lower window of CMake can be ignored as long as it writes 'Configuring done' at the end
+	**HINT:** A few (red) warnings in the lower window of CMake can be ignored as long as it writes *Configuring done* at the end
 
 8. After configuration process has successfully finished, click *Generate*.
 9. After generation process is done click *open Project*. It will open OpenInfraPlatform solution in the Visual Studio.
 ***
-## Building the OpenInfraPlatform in Visual Studio 
+## <a name="Building_OIP"></a> Building the OpenInfraPlatform in Visual Studio 
 
-### Generating IFC early binding
+### <a name="generating_EarlyBinding"></a> Generating IFC early binding
 
 **NOTE:** If you are using Open-Infra-Platform only with point clouds, you can skip these steps.
 
@@ -76,7 +99,7 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 
 4. **Important**: Open CMake and select *Generate* to include newly generated IFC early binding code in the solution.
 
-### Compiling user interface
+### <a name="Compiling_interface"></a> Compiling user interface
 
 **NOTE:** Build dependencies are set, so building only the last step should automatically build all.
 
@@ -86,4 +109,17 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 4. *Build* project **OpenInfraPlatform.UI**.
 5. *Build* all projects staged in the **Copy** project folder. 
 
-	**NOTE:** execute **Get_OKLABI.cmd** in the source folder (e.g. C:\dev\Open-Infra-Platform\external\) to prevent an error during the build process. After the execution of **Get_OKLABI.cmd**, it's necessary to *configure* and *generate* OpenInfraPlatform project once again in CMake.
+	**NOTE:** execute **Get_OKLABI.cmd** in the source folder (e.g. `C:\dev\Open-Infra-Platform\external`) to prevent an error during the build process. After the execution of **Get_OKLABI.cmd**, it's necessary to *configure* and *generate* OpenInfraPlatform project once again in CMake.
+
+
+## <a name="Generating_Doc"></a> Generating documentation
+
+### <a name="Get_Dot"></a> Get Dot and Doxygen
+
+1. After cloning **OpenInfraPlatform** repository open OpenInfraPlatform source folder. 
+2. Open folder **external**
+3. Execute:
+	* GetDot.cmd  
+	* GetDoxygen.cmd
+
+**NOTE:** Read more about Doxygen in our [guidelines](./DoxygenHelp.md)
