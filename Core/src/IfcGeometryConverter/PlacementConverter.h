@@ -1094,7 +1094,7 @@ namespace OpenInfraPlatform {
 				) const throw(...)
                 {
                     if(!bDistMeasuredAlongHorizontal)
-						throw oip::UnhandledException("Function convertAlignmentCurveDistAlongToPoint3D: Distance along a 3D curve not supported.";
+						throw oip::UnhandledException("Function convertAlignmentCurveDistAlongToPoint3D: Distance along a 3D curve not supported.");
 
                     // preset the return values
                     vkt3DtargetPoint = carve::geom::VECTOR(0., 0., 0.);
