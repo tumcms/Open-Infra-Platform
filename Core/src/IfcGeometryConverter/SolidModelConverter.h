@@ -286,7 +286,7 @@ namespace OpenInfraPlatform
 							double dist_2 = 0;
 
 							//iterate BasisCurvePoints[] until it gets to CrossSectionPoints[0]
-							//if dist_1 is bigger than dist_2 they are before CrossSectionPoints[0], else they are after that point
+							//if dist_1 is bigger than dist_2 they are before CrossSectionPoints[0], else they are after that pointa
 							while (dist_1 > dist_2)
 							{
 							  dist_1 = distance(BasisCurvePoints[i], CrossSectionPoints[0]);
@@ -296,9 +296,10 @@ namespace OpenInfraPlatform
 
 							//The first point for tesselation is where the Profile Starts
 							points_for_tesselation.push_back(CrossSectionPoints[0]);
+							direction_for_tesselation.push_back(directionsOfCurve[0]);
 							++j;
 							//now that CrossSectionPoints[0] is reached iterate and fill points_for_tesselation
-			                while ( i < BasisCurvePoints.size() && j < CrossSectionPoints.size()) // TO DO: <= ?
+			                while ( i < BasisCurvePoints.size() && j < CrossSectionPoints.size()) 
 							{
 
 			      				//if basis_curve_points[i]==pointsOnCurve[j] ->save the information of pointsOnCurve
@@ -324,20 +325,23 @@ namespace OpenInfraPlatform
 									
 									//calculate the distance from the point in basis_curve_points to the last element in the joint list
 									int last = points_for_tesselation.size();
-									carve::geom::vector<3> back = points_for_tesselation.at(last);
+
+									/* carve::geom::vector<3> back = points_for_tesselation.at(last);
 									carve::geom::vector<3> currentBCP = BasisCurvePoints.at(i);
 									carve::geom::vector<3> dist_vectorBCP;
 
 									dist_vectorBCP = currentBCP - back;
-									distBasisCurvePoints = abs(sqrt(dot(dist_vectorBCP, dist_vectorBCP))); //TO DO: euklidische norm berechnen sqrt( dot(dist_vektor,dist_vektor))
+									distBasisCurvePoints = abs(sqrt(dot(dist_vectorBCP, dist_vectorBCP))); 
 	
 								    //calculate the distance from the point in CrossSectionPoints to the last element in the joint list
 									carve::geom::vector<3> currentCSP = CrossSectionPoints.at(j);
 									carve::geom::vector<3> dist_vectorCSP;
 
 									dist_vectorCSP = currentCSP - back;
-									distCrossSectionPositions = abs(sqrt(dot(dist_vectorCSP, dist_vectorCSP)));
+									distCrossSectionPositions = abs(sqrt(dot(dist_vectorCSP, dist_vectorCSP))); */
 
+									distCrossSectionPositions = distance(points_for_tesselation.at(last), CrossSectionPoints.at(j));
+									distBasisCurvePoints = distance(points_for_tesselation.at(last), BasisCurvePoints.at(i));
 
 									if (distCrossSectionPositions < distBasisCurvePoints)
 									{
@@ -357,13 +361,22 @@ namespace OpenInfraPlatform
 									
 									else if (distCrossSectionPositions > distBasisCurvePoints)
 									{
-										//  Save the point in the curve in the new vector
+										//Save the point in the curve in the new vector
 										points_for_tesselation.push_back(BasisCurvePoints[i]);
 
-										//  calculate the direction of the point (Interpolate with the pointOnCurve before and after that point)
+										//calculate the direction of the point (Interpolate with the pointOnCurve before and after that point)
+										carve::geom::vector<3> interpolatedDirection;
+										int directionSize = direction_for_tesselation.size();
+										int lastPoint = points_for_tesselation.size();
+										double totalDistance = distance(points_for_tesselation.at(lastPoint-1), CrossSectionPoints[j + 1]);
+										double factorBefore = distance(points_for_tesselation.at(lastPoint-1), BasisCurvePoints[i]);
+										double factorAfter = distance(BasisCurvePoints[i], CrossSectionPoints[j + 1]);
 
+										interpolatedDirection = (direction_for_tesselation.at(directionSize)*factorBefore ) + (directionsOfCurve[j + 1]*factorAfter);
 
-										//  calculate the Profile (Interpolate the Profile on the pointOnCurve before and after that point to get the right Profile)
+										direction_for_tesselation.push_back(interpolatedDirection);
+
+										//calculate the Profile (Interpolate the Profile on the pointOnCurve before and after that point to get the right Profile)
 
 										//increment based on its position on the directrix
 										++i;
