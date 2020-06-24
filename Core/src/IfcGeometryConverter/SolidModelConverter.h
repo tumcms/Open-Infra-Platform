@@ -316,7 +316,7 @@ namespace OpenInfraPlatform
 									++j;
 								}
 
-								//if basis_curve_points[i]!=pointsOnCurve[j]
+								//if basis_curve_points[i]!=pointsOnCurve[j] alternate depending on distance
 								else if (BasisCurvePoints[i] != CrossSectionPoints[j])
 								{
 									// get the distance of the points 
@@ -369,14 +369,23 @@ namespace OpenInfraPlatform
 										int directionSize = direction_for_tesselation.size();
 										int lastPoint = points_for_tesselation.size();
 										double totalDistance = distance(points_for_tesselation.at(lastPoint-1), CrossSectionPoints[j + 1]);
-										double factorBefore = distance(points_for_tesselation.at(lastPoint-1), BasisCurvePoints[i]);
-										double factorAfter = distance(BasisCurvePoints[i], CrossSectionPoints[j + 1]);
+										double factorBefore = (distance(points_for_tesselation.at(lastPoint-1), BasisCurvePoints[i]))/totalDistance;
+										double factorAfter = (distance(BasisCurvePoints[i], CrossSectionPoints[j + 1]))/totalDistance;
 
-										interpolatedDirection = (direction_for_tesselation.at(directionSize)*factorBefore ) + (directionsOfCurve[j + 1]*factorAfter);
+										interpolatedDirection = (direction_for_tesselation.at(directionSize)*factorBefore ) + (directionsOfCurve[j + 1]*factorAfter);// durch totaldistance
 
 										direction_for_tesselation.push_back(interpolatedDirection);
 
 										//calculate the Profile (Interpolate the Profile on the pointOnCurve before and after that point to get the right Profile)
+										/*carve::geom::vector<3> interpolatedProfile;
+										
+										//get factors for Interpolation
+										double ProfileDistance = distance(CrossSectionPoints[j], CrossSectionPoints[j + 1]);
+										double factorProfileBefore = (distance(CrossSectionPoints[j], points_for_tesselation.at(lastPoint)))/ProfileDistance;
+										double factorProfileAfter = (distance(points_for_tesselation.at(lastPoint), CrossSectionPoints[j + 1]))/ProfileDistance;
+
+										//interpolate profile
+										interpolatedProfile = (paths[j] * factorProfileBefore) + (paths[j + 1] * factorProfileAfter);*/
 
 										//increment based on its position on the directrix
 										++i;
