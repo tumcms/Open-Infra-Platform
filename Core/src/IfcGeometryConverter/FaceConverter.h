@@ -89,14 +89,14 @@ namespace OpenInfraPlatform {
 					}
 
 					// (2/3) IfcElementarySurface SUBTYPE of IfcSurface
-					if (surface.isOfType<typename IfcEntityTypesT::IfcElementarySurface>()) const throw(...) 
+					if (surface.isOfType<typename IfcEntityTypesT::IfcElementarySurface>()) 
 					{
 						return convertIfcElementarySurface(surface.as<typename IfcEntityTypesT::IfcElementarySurface(),
 							pos);
 					}
 
 					// (3/3) IfcSweptSurface SUBTYPE of IfcSurface
-					if (surface.isOfType<typename IfcEntityTypesT::IfcSweptSurface>())  const throw(...) 
+					if (surface.isOfType<typename IfcEntityTypesT::IfcSweptSurface>())  
 					{
 						return convertIfcSweptSurface(surface.as<typename IfcEntityTypesT::IfcSweptSurface(),
 							pos);
