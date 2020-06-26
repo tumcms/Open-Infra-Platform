@@ -475,7 +475,7 @@ namespace OpenInfraPlatform {
 			void convertIfcOpenCrossProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcOpenCrossProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
-				throw oip::UnhandledException(convertIfcOpenCrossProfileDef);
+				throw oip::UnhandledException(profileDef);
 			}
 
 			// Function 6: Convert IfcParametrizedProfileDef
@@ -544,10 +544,13 @@ namespace OpenInfraPlatform {
 				}
 
 				// Not supported ProfileDef
+				throw oip::UnhandledException(profileDef);
+				/*
 				BLUE_LOG(error) << "IfcProfileDef #" << profileDef->getId() << " not supported: " << profileDef->classname();
 				std::stringstream sstr;
 				sstr << "IfcProfileDef not supported: " << profileDef->classname() << " #" << profileDef->getId(); // << __func__;
 				throw std::runtime_error(sstr.str().c_str());
+				*/
 			}
 
 			// Function 6.1  convertIfcRectangleProfileDef SUBTYPE OF IfcParametrizedProfileDef
