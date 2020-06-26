@@ -495,62 +495,52 @@ namespace OpenInfraPlatform {
 
 				// (1/10) IfcRectangleProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcRectangleProfileDef>()) {
-					EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef> rectangle_profile = profileDef.as<typename IfcEntityTypesT::IfcRectangleProfileDef>();
-					convertIfcRectangleProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>(rectangle_profile), paths, outer_loop);
+					convertIfcRectangleProfileDef(profileDef.as<typename IfcEntityTypesT::IfcRectangleProfileDef>(), paths, outer_loop);
 				}
 
 				// (2/10) IfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcTrapeziumProfileDef>()) {
-					EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef> trapezium = profileDef.as<typename IfcEntityTypesT::IfcTrapeziumProfileDef>();
-					convertIfcTrapeziumProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(trapezium), paths, outer_loop);
+					convertIfcTrapeziumProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(), paths, outer_loop);
 				}
 
 				// (3/10) IfcCircleProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCircleProfileDef>()) {
-					EXPRESSReference<typename IfcEntityTypesT::IfcCircleProfileDef> circle_profile_def = profileDef.as<typename IfcEntityTypesT::IfcCircleProfileDef>();
-					convertIfcCircleProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcCircleProfileDef>(circle_profile_def), paths, outer_loop);
+					convertIfcCircleProfileDef(profileDef.as<typename IfcEntityTypesT::IfcCircleProfileDef>(), paths, outer_loop);
 				}
 
 				// (4/10) IfcEllipseProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcEllipseProfileDef>()) {
-					EXPRESSReference<typename IfcEntityTypesT::IfcEllipseProfileDef> ellipse_profile_def = profileDef.as<typename IfcEntityTypesT::IfcEllipseProfileDef>();
-					convertEllipseProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcEllipseProfileDef>(ellipse_profile_def), paths, outer_loop);
+					convertEllipseProfileDef(profileDef.as<typename IfcEntityTypesT::IfcEllipseProfileDef>(), paths, outer_loop);
 				}
 
 				// (5/10) IfcIShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcIShapeProfileDef>()) {
-					EXPRESSReference<typename IfcEntityTypesT::IfcIShapeProfileDef> i_shape = profileDef.as<typename IfcEntityTypesT::IfcIShapeProfileDef>();
-					convertIShapeProfileDef(EXPRESSReference <typename IfcEntityTypesT::IfcIShapeProfileDef>(i_shape), paths, outer_loop);
+					convertIShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcIShapeProfileDef>(), paths, outer_loop);
 				}
 
 				// (6/10) IfcLShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcLShapeProfileDef>()) {
-					EXPRESSReference<typename IfcEntityTypesT::IfcLShapeProfileDef> l_shape = profileDef.as<typename IfcEntityTypesT::IfcLShapeProfileDef>();
-					convertLShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcLShapeProfileDef>(l_shape), paths, outer_loop);
+					convertLShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcLShapeProfileDef>(), paths, outer_loop);
 				}
 
 				// (7/10) IfcUShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcUShapeProfileDef>()) {
-					EXPRESSReference<typename IfcEntityTypesT::IfcUShapeProfileDef> u_shape = profileDef.as<typename IfcEntityTypesT::IfcUShapeProfileDef>();
-					convertUShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcUShapeProfileDef> (u_shape), paths, outer_loop);
+					convertUShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcUShapeProfileDef>(), paths, outer_loop);
 				}
 
 				// (8/10) IfcCShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCShapeProfileDef>()) {
-					EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef> c_shape = profileDef.as<typename IfcEntityTypesT::IfcCShapeProfileDef>();
-					convertIfcCShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef> (c_shape), paths, outer_loop);
+					convertIfcCShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcCShapeProfileDef>(), paths, outer_loop);
 				}
 
 				// (9/10) IfcZShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcZShapeProfileDef>()) {
-					EXPRESSReference<typename IfcEntityTypesT::IfcZShapeProfileDef> z_shape = profileDef.as<typename IfcEntityTypesT::IfcZShapeProfileDef>();
-					convertZShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcZShapeProfileDef> (z_shape), paths, outer_loop);
+					convertZShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcZShapeProfileDef>(), paths, outer_loop);
 				}
 
 				// (10/10) IfcTShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcTShapeProfileDef>()) {
-					EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef>t_shape = profileDef.as<typename IfcEntityTypesT::IfcTShapeProfileDef> ();
-					convertTShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef> (t_shape), paths, outer_loop);
+					convertTShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTShapeProfileDef>(), paths, outer_loop);
 				}
 
 				// Not supported ProfileDef
@@ -740,7 +730,7 @@ namespace OpenInfraPlatform {
 			}
 
 
-			void convertUShapeProfileDef(EXPRESSReference <typename IfcEntityTypesT::IfcUShapeProfileDef>& u_shape,
+			void convertUShapeProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcUShapeProfileDef>& u_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths, std::vector<carve::geom::vector<2>> outer_loop) const {
 				if (u_shape->Depth && u_shape->FlangeWidth && u_shape->WebThickness && u_shape->FlangeThickness) {
 					double h = u_shape->Depth * UnitConvert()->getLengthInMeterFactor();
