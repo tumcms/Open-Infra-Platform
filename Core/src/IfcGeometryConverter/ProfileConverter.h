@@ -132,7 +132,7 @@ namespace OpenInfraPlatform {
 			// ****************************************************************************************************************************************	//
 
 			// Function 1: Convert IfcArbitraryClosedProfileDef
-			void convertIfcArbitraryClosedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& profileDef,
+			void convertIfcArbitraryClosedProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
 #ifdef _DEBUG
@@ -154,13 +154,11 @@ namespace OpenInfraPlatform {
 				addAvoidingDuplicates(curve_polygon, paths);
 
 				// IfcArbitraryProfileDefWithVoids
-				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids> profile_with_voids =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids>(profileDef);
-				if (profile_with_voids) {
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids> profile_with_voids = profileDef.as<typename IfcEntityTypesT::IfcArbitraryProfileDefWithVoids>();
 #ifdef _DEBUG
 					BLUE_LOG(trace) << "Processing IfcArbitraryProfileDefWithVoids #" << profile_with_voids->getId();
 #endif
-
 					for (auto it : profile_with_voids->InnerCurves) {
 						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> inner_ifc_curve = it.lock();
 						std::vector<carve::geom::vector<2>> inner_curve_polygon;
@@ -276,7 +274,7 @@ namespace OpenInfraPlatform {
 			}
 
 			// Function 2: Convert IfcArbitraryOpenProfileDef
-			void convertIfcArbitraryOpenProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>& profileDef,
+			void convertIfcArbitraryOpenProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
 				// ENTITY IfcArbitraryOpenProfileDef
@@ -289,9 +287,10 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.lock();
 				CurveConverterT<IfcEntityTypesT> c_converter(GeomSettings(), UnitConvert(), placementConverter);
 
-				EXPRESSReference<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCenterLineProfileDef>(profileDef);
-				if (center_line_profile_def) {
+				//EXPRESSReference<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def =
+					//std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCenterLineProfileDef>(profileDef);
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCenterLineProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def = profileDef.as<typename IfcEntityTypesT::IfcCenterLineProfileDef>();
 					if (center_line_profile_def->Thickness) {
 						const double thickness = center_line_profile_def->Thickness * UnitConvert()->getLengthInMeterFactor();
 						std::vector<carve::geom::vector<3>> segment_start_points;
@@ -374,7 +373,7 @@ namespace OpenInfraPlatform {
 			}
 
 			// Function 3: Convert IfcCompositeProfileDef
-			void convertIfcCompositeProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef>& compositeProfileDef,
+			void convertIfcCompositeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcCompositeProfileDef>& compositeProfileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
 #ifdef _DEBUG
@@ -383,7 +382,7 @@ namespace OpenInfraPlatform {
 				std::vector<int> temploop_counts;
 				std::vector<int> tempcontour_counts;
 
-				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> profiles;
+				std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef>> profiles;
 				profiles.reserve(compositeProfileDef->Profiles.size());
 				std::transform(
 					compositeProfileDef->Profiles.begin(),
@@ -394,34 +393,32 @@ namespace OpenInfraPlatform {
 				for (auto profileDef : profiles) {
 					//std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> profileDef = it;
 
-					std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
-					if (parameterized) {
+					if (profileDef.isOfType<typename IfcEntityTypesT::IfcParameterizedProfileDef>()) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized = profileDef.as<typename IfcEntityTypesT::IfcParameterizedProfileDef>();
 						convertIfcParameterizedProfileDefWithPosition(parameterized, paths);
 						continue;
 					}
 
-					std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> open = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>(profileDef);
-					if (open) {
+					if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>()) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> open = profileDef.as<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>();
 						convertIfcArbitraryOpenProfileDef(open, paths);
 						continue;
 					}
 
-					std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> closed =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
-					if (closed) {
+					if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>()) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> closed = profileDef.as<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>();
 						convertIfcArbitraryClosedProfileDef(closed, paths);
 						continue;
 					}
 
-					std::shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeProfileDef>(profileDef);
-					if (composite) {
+					if (profileDef.isOfType<typename IfcEntityTypesT::IfcCompositeProfileDef>()) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = profileDef.as<typename IfcEntityTypesT::IfcCompositeProfileDef>();
 						convertIfcCompositeProfileDef(composite, paths);
 						continue;
 					}
 
-					std::shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDerivedProfileDef>(profileDef);
-					if (derived) {
+					if (profileDef.isOfType<typename IfcEntityTypesT::IfcDerivedProfileDef>()) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = profileDef.as<typename IfcEntityTypesT::IfcDerivedProfileDef>();
 						convertIfcDerivedProfileDef(derived, paths);
 						continue;
 					}
@@ -436,7 +433,7 @@ namespace OpenInfraPlatform {
 			}
 
 			// Function 4: Convert IfcDerivedProfileDef
-			void convertIfcDerivedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef>& profileDef,
+			void convertIfcDerivedProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcDerivedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
 #ifdef _DEBUG
@@ -1041,7 +1038,7 @@ namespace OpenInfraPlatform {
 			}
 
 			// Function 8: Convert IfcParametrizedProfileDefWithPosition
-			void convertIfcParameterizedProfileDefWithPosition(const std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
+			void convertIfcParameterizedProfileDefWithPosition(const EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
 				std::vector<std::vector<carve::geom::vector<2>>> temp_paths;
