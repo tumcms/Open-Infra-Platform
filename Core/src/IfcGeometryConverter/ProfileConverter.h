@@ -479,7 +479,7 @@ namespace OpenInfraPlatform {
 			}
 
 			// Function 6: Convert IfcParametrizedProfileDef
-			void convertIfcParameterizedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
+			void convertIfcParameterizedProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
 
@@ -491,67 +491,65 @@ namespace OpenInfraPlatform {
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcParameterizedProfileDef #" << profileDef->getId();
 #endif
-				double length_factor = UnitConvert()->getLengthInMeterFactor();
-				double angle_factor = UnitConvert()->getAngleInRadianFactor();
 				std::vector<carve::geom::vector<2>> outer_loop;
 
 				// (1/10) IfcRectangleProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcRectangleProfileDef> rectangle_profile = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangleProfileDef>(profileDef);
-				if (rectangle_profile) {
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcRectangleProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef> rectangle_profile = profileDef.as<typename IfcEntityTypesT::IfcRectangleProfileDef>();
 					convertIfcRectangleProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>(rectangle_profile), paths, outer_loop);
 				}
 
 				// (2/10) IfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef> trapezium = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(profileDef);
-				if (trapezium) {
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcTrapeziumProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef> trapezium = profileDef.as<typename IfcEntityTypesT::IfcTrapeziumProfileDef>();
 					convertIfcTrapeziumProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(trapezium), paths, outer_loop);
 				}
 
 				// (3/10) IfcCircleProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcCircleProfileDef> circle_profile_def = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircleProfileDef>(profileDef);
-				if (circle_profile_def) {
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCircleProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcCircleProfileDef> circle_profile_def = profileDef.as<typename IfcEntityTypesT::IfcCircleProfileDef>();
 					convertIfcCircleProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcCircleProfileDef>(circle_profile_def), paths, outer_loop);
 				}
 
 				// (4/10) IfcEllipseProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				EXPRESSReference<typename IfcEntityTypesT::IfcEllipseProfileDef> ellipse_profile_def = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEllipseProfileDef>(profileDef);
-				if (ellipse_profile_def) {
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcEllipseProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcEllipseProfileDef> ellipse_profile_def = profileDef.as<typename IfcEntityTypesT::IfcEllipseProfileDef>();
 					convertEllipseProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcEllipseProfileDef>(ellipse_profile_def), paths, outer_loop);
 				}
 
 				// (5/10) IfcIShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcIShapeProfileDef> i_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcIShapeProfileDef>(profileDef);
-				if (i_shape) {
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcIShapeProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcIShapeProfileDef> i_shape = profileDef.as<typename IfcEntityTypesT::IfcIShapeProfileDef>();
 					convertIShapeProfileDef(EXPRESSReference <typename IfcEntityTypesT::IfcIShapeProfileDef>(i_shape), paths, outer_loop);
 				}
 
 				// (6/10) IfcLShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				EXPRESSReference<typename IfcEntityTypesT::IfcLShapeProfileDef> l_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcLShapeProfileDef>(profileDef);
-				if (l_shape) {
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcLShapeProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcLShapeProfileDef> l_shape = profileDef.as<typename IfcEntityTypesT::IfcLShapeProfileDef>();
 					convertLShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcLShapeProfileDef>(l_shape), paths, outer_loop);
 				}
 
 				// (7/10) IfcUShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				EXPRESSReference<typename IfcEntityTypesT::IfcUShapeProfileDef> u_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcUShapeProfileDef>(profileDef);
-				if (u_shape) {
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcUShapeProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcUShapeProfileDef> u_shape = profileDef.as<typename IfcEntityTypesT::IfcUShapeProfileDef>();
 					convertUShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcUShapeProfileDef> (u_shape), paths, outer_loop);
 				}
 
 				// (8/10) IfcCShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef> c_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCShapeProfileDef>(profileDef);
-				if (c_shape) {
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCShapeProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef> c_shape = profileDef.as<typename IfcEntityTypesT::IfcCShapeProfileDef>();
 					convertIfcCShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef> (c_shape), paths, outer_loop);
 				}
 
 				// (9/10) IfcZShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				EXPRESSReference<typename IfcEntityTypesT::IfcZShapeProfileDef> z_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcZShapeProfileDef>(profileDef);
-				if (z_shape) {
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcZShapeProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcZShapeProfileDef> z_shape = profileDef.as<typename IfcEntityTypesT::IfcZShapeProfileDef>();
 					convertZShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcZShapeProfileDef> (z_shape), paths, outer_loop);
 				}
 
 				// (10/10) IfcTShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef> t_shape = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTShapeProfileDef>(profileDef);
-				if (t_shape) {
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcTShapeProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef>t_shape = profileDef.as<typename IfcEntityTypesT::IfcTShapeProfileDef> ();
 					convertTShapeProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef> (t_shape), paths, outer_loop);
 				}
 
