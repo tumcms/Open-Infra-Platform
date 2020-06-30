@@ -124,10 +124,7 @@ namespace OpenInfraPlatform {
 				//	convertIfcNurbsProfile( nurbs, paths );
 				//	return;
 				//}
-				BLUE_LOG(error) << "IfcProfileDef #" << profileDef->getId() << " not supported: " << profileDef->classname();
-				std::stringstream sstr;
-				sstr << "ProfileDef not supported: " << profileDef->classname() << " ";
-				throw std::runtime_error(sstr.str().c_str());
+				throw oip::UnhandledException(profileDef);
 			}
 
 			// ****************************************************************************************************************************************	//
@@ -182,8 +179,8 @@ namespace OpenInfraPlatform {
 #endif
 			}
 
-			void convertIfcArbitraryClosedProfileDef(const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& profile,
-				const std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& next_profile,
+			void convertIfcArbitraryClosedProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& profile,
+				const EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& next_profile,
 				const carve::math::Matrix& placement,
 				std::shared_ptr<ItemData> itemData,
 				const carve::geom::vector<3>& abscissa,
@@ -292,8 +289,6 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.lock();
 				CurveConverterT<IfcEntityTypesT> c_converter(GeomSettings(), UnitConvert(), placementConverter);
 
-				//EXPRESSReference<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def =
-					//std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCenterLineProfileDef>(profileDef);
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCenterLineProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def = profileDef.as<typename IfcEntityTypesT::IfcCenterLineProfileDef>();
 					if (center_line_profile_def->Thickness) {
@@ -427,10 +422,7 @@ namespace OpenInfraPlatform {
 						convertIfcDerivedProfileDef(derived, paths);
 						continue;
 					}
-
-					std::stringstream sstr;
-					sstr << "ProfileDef not supported: " << compositeProfileDef->classname() << " "; //<< __func__;
-					throw std::runtime_error(sstr.str().c_str());
+					throw oip::UnhandledException(profileDef);
 				}
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processed IfcCompositeProfileDef #" << compositeProfileDef->getId();
@@ -559,6 +551,7 @@ namespace OpenInfraPlatform {
 					double x = rectangle_profile->XDim * UnitConvert()->getLengthInMeterFactor();
 					double y = rectangle_profile->YDim * UnitConvert()->getLengthInMeterFactor();
 					std::vector<carve::geom::vector<2>> outer_loop;
+					std::vector<carve::geom::vector<2>> inner_loop;
 
 					// IfcRectangleHollowProfileDef SUBTYPE OF IfcRectangleProfile 
 					if (rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>()) {
@@ -572,7 +565,6 @@ namespace OpenInfraPlatform {
 							AddRectangleCoordinates(outer_loop, r1, x, y);
 
 							// Inner
-							std::vector<carve::geom::vector<2>> inner_loop;
 							x -= 2.0 * t;
 							y -= 2.0 * t;
 							AddRectangleCoordinates(inner_loop, r2, x, y);
@@ -584,7 +576,6 @@ namespace OpenInfraPlatform {
 					}
 
 					// IfcRoundedRectangleProfileDef SUBTYPE OF IfcRectangleProfile 
-
 					if (rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>()) {
 						auto rounded_rectangle = rectangle_profile.as<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>();
 						if (rounded_rectangle->RoundingRadius) {
@@ -704,6 +695,7 @@ namespace OpenInfraPlatform {
 							double bTop = asym_I_profile->TopFlangeWidth * UnitConvert()->getLengthInMeterFactor();
 							double tfTop = asym_I_profile->TopFlangeThickness.value_or(i_shape->FlangeThickness) * UnitConvert()->getLengthInMeterFactor();
 							double rTop = asym_I_profile->TopFlangeFilletRadius.value_or(i_shape->FilletRadius.value_or(0.0)) * UnitConvert()->getLengthInMeterFactor();
+							
 							addArc_or_push_back(outer_loop, rTop, M_PI, -M_PI_2, (tw * 0.5 + rTop), (h * 0.5 - tfTop - rTop), (tw * 0.5), (h * 0.5 - tfTop));
 
 							outer_loop.push_back(carve::geom::VECTOR(bTop * 0.5, (h * 0.5 - tfTop)));
