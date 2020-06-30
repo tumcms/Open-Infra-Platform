@@ -471,17 +471,23 @@ namespace OpenInfraPlatform {
 			{
 				throw oip::UnhandledException(profileDef);
 			}
-
+			/*! \brief  Defines a 2D position coordinate system to which the parameters of the different profiles relate to.
+			*  \param[in] profileDef A pointer to data from IfcProfileDef.
+			*  \param[out] paths A pointer to be filled with the relevant data
+			*/
 			// Function 6: Convert IfcParametrizedProfileDef
 			void convertIfcParameterizedProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
 
-				// *************************************************************************************************************************************************************//
-				// IfcParameterizedProfileDef	(http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcprofileresource/lexical/ifcparameterizedprofiledef.htm)		//
-				// ABSTRACT SUPERTYPE OF IfcCShapeProfileDef, IfcCircleProfileDef, IfcEllipseProfileDef, IfcIShapeProfileDef, IfcLShapeProfileDef,								//
-				// IfcRectangleProfileDef, IfcTShapeProfileDef, IfcTrapeziumProfileDef, IfcUShapeProfileDef, IfcZShapeProfileDef												//
-				// *************************************************************************************************************************************************************//
+				// *************************************************************************************************************************************************************
+				// ENTITY IfcParameterizedProfileDef	
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcparameterizedprofiledef.htm		
+				// ABSTRACT SUPERTYPE OF (IfcCShapeProfileDef, IfcCircleProfileDef, IfcEllipseProfileDef, IfcIShapeProfileDef, IfcLShapeProfileDef,								
+				// IfcRectangleProfileDef, IfcTShapeProfileDef, IfcTrapeziumProfileDef, IfcUShapeProfileDef, IfcZShapeProfileDef)	
+				// SUBTYPE OF (IfcProfileDef);
+				// END_ENTITY
+				// *************************************************************************************************************************************************************
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcParameterizedProfileDef #" << profileDef->getId();
 #endif
@@ -541,48 +547,32 @@ namespace OpenInfraPlatform {
 			}
 			
 
-			/*! \brief \c convertIfcRectangleProfileDef is SUBTYPE of \c IfcParametrizedProfileDef
+			/*! \brief defines a rectangle as the profile definition
 			*  \param[in] rectangle_profile A pointer to data from \c IfcParametrizedProfileDef
 			*  \param[out] paths A pointer to be filled with the relevant data
 			*/
 			void convertIfcRectangleProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>& rectangle_profile,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcRectangleProfileDef
+				//  https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcrectangleprofiledef.htm
+				// ABSTRACT SUPERTYPE OF(IfcRectangleHollowProfileDef, IfcRoundedRectangleProfileDef)
+				//  SUBTYPE OF(IfcParametrizedProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
 				if (rectangle_profile->XDim && rectangle_profile->YDim) {
 					double x = rectangle_profile->XDim * UnitConvert()->getLengthInMeterFactor();
 					double y = rectangle_profile->YDim * UnitConvert()->getLengthInMeterFactor();
 					std::vector<carve::geom::vector<2>> outer_loop;
-					std::vector<carve::geom::vector<2>> inner_loop;
 
 					// IfcRectangleHollowProfileDef SUBTYPE OF IfcRectangleProfile 
 					if (rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>()) {
-						EXPRESSReference<typename IfcEntityTypesT::IfcRectangleHollowProfileDef> hollow = rectangle_profile.as<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>();
-
-						if (hollow->WallThickness) {
-							double t = hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
-							double r1 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
-							double r2 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
-							// Outer
-							AddRectangleCoordinates(outer_loop, r1, x, y);
-
-							// Inner
-							x -= 2.0 * t;
-							y -= 2.0 * t;
-							AddRectangleCoordinates(inner_loop, r2, x, y);
-
-							paths.push_back(outer_loop);
-							paths.push_back(inner_loop);
-						}
-						return;
+						convertIfcRectangleHollowProfileDef(rectangle_profile.as<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>(), paths);
 					}
 
 					// IfcRoundedRectangleProfileDef SUBTYPE OF IfcRectangleProfile 
 					if (rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>()) {
-						auto rounded_rectangle = rectangle_profile.as<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>();
-						if (rounded_rectangle->RoundingRadius) {
-							AddRectangleCoordinates(outer_loop, rounded_rectangle->RoundingRadius * UnitConvert()->getLengthInMeterFactor(), x, y);
-							paths.push_back(outer_loop);
-						}
-						return;
+						convertIfcRoundedRectangleProfileDef(rectangle_profile.as<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>(), paths);
 					}
 					// Else it's a standard rectangle
 					AddRectangleCoordinates(outer_loop, 0.0, x, y);
@@ -591,12 +581,74 @@ namespace OpenInfraPlatform {
 				}
 			}
 
-			/*! \brief \c onvertIfcTrapeziumProfileDef is SUBTYPE of \c IfcParametrizedProfileDef
-			*  \param[in] rectangle_profile A pointer to data from \c IfcParametrizedProfileDef
+			/*! \brief provides the defining parameters of a rectangular hollow section
+			*  \param[in] hollow A pointer to data from \c IfcRectangleProfileDef
+			*  \param[out] paths A pointer to be filled with the relevant data
+			*/
+			void convertIfcRectangleHollowProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>& hollow, 
+				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcRectangleHollowProfileDef
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcrectanglehollowprofiledef.htm
+				// SUBTYPE OF(IfcRectangleProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
+				double x = hollow->XDim * UnitConvert()->getLengthInMeterFactor();
+				double y = hollow->YDim * UnitConvert()->getLengthInMeterFactor();
+				std::vector<carve::geom::vector<2>> outer_loop;
+				std::vector<carve::geom::vector<2>> inner_loop;
+				if (hollow->WallThickness) {
+					double t = hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
+					double r1 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+					double r2 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+					// Outer
+					AddRectangleCoordinates(outer_loop, r1, x, y);
+
+					// Inner
+					x -= 2.0 * t;
+					y -= 2.0 * t;
+					AddRectangleCoordinates(inner_loop, r2, x, y);
+
+					paths.push_back(outer_loop);
+					paths.push_back(inner_loop);
+				}
+				return;
+			}
+
+			/*! \brief defines a rectangle with equally rounded corners as the profile definition
+			*  \param[in] rounded_rectangle A pointer to data from \c IfcRectangleProfileDef
+			*  \param[out] paths A pointer to be filled with the relevant data
+			*/
+			void convertIfcRoundedRectangleProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>& rounded_rectangle,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcRoundedRectangleProfileDef
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcroundedrectangleprofiledef.htm
+				// SUBTYPE OF(IfcRectangleProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
+				double x = rounded_rectangle->XDim * UnitConvert()->getLengthInMeterFactor();
+				double y = rounded_rectangle->YDim * UnitConvert()->getLengthInMeterFactor();
+				std::vector<carve::geom::vector<2>> outer_loop;
+				if (rounded_rectangle->RoundingRadius) {
+					AddRectangleCoordinates(outer_loop, rounded_rectangle->RoundingRadius * UnitConvert()->getLengthInMeterFactor(), x, y);
+					paths.push_back(outer_loop);
+				}
+				return;
+			}
+
+			/*! \brief defines a trapezium as the profile definition
+			*  \param[in] trapezium A pointer to data from \c IfcParametrizedProfileDef
 			*  \param[out] paths A pointer to be filled with the relevant data
 			*/
 			void convertIfcTrapeziumProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcTrapeziumProfileDef>& trapezium,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcTrapeziumProfileDef
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifctrapeziumprofiledef.htm
+				// SUBTYPE OF(IfcParametrizedProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (trapezium->BottomXDim && trapezium->TopXDim && trapezium->TopXOffset && trapezium->YDim) {
 					double xBottom = trapezium->BottomXDim * UnitConvert()->getLengthInMeterFactor();
@@ -610,12 +662,19 @@ namespace OpenInfraPlatform {
 				return;
 			}
 
-			/*! \brief \c convertIfcCircleProfileDef is SUBTYPE of \c IfcParametrizedProfileDef
-			*  \param[in] rectangle_profile A pointer to data from \c IfcParametrizedProfileDef
+			/*! \brief defines a circle as the profile definition
+			*  \param[in] circle_profile_def A pointer to data from \c IfcParametrizedProfileDef
 			*  \param[out] paths A pointer to be filled with the relevant data.
 			*/
 			void convertIfcCircleProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcCircleProfileDef> & circle_profile_def,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcCircleProfileDef
+				//  https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifccircleprofiledef.htm
+				// ABSTRACT SUPERTYPE OF(IfcCircleHollowProfileDef)
+				//  SUBTYPE OF(IfcParametrizedProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				double radius = circle_profile_def->Radius * UnitConvert()->getLengthInMeterFactor();
 				if (radius < GeomSettings()->getPrecision()) {
@@ -628,17 +687,31 @@ namespace OpenInfraPlatform {
 				paths.push_back(outer_loop);
 
 				// IfcCircleHollowProfileDef SUBTYPE OF IfcCircleProfileDef
-				std::vector<carve::geom::vector<2>> inner_loop;
 				if (circle_profile_def.isOfType<typename IfcEntityTypesT::IfcCircleHollowProfileDef>()) {
-					auto hollow = circle_profile_def.as<typename IfcEntityTypesT::IfcCircleHollowProfileDef>();
-					double radius2 = radius - hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
-					int num_segments2 = GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
-					double d_angle2 = GeomSettings()->getAngleLength(radius2);
-
-					addArc(inner_loop, radius2, 0.0, d_angle2, 0.0, 0.0, num_segments2);
-					paths.push_back(inner_loop);
+					convertIfcCircleHollowProfileDef(circle_profile_def.as<typename IfcEntityTypesT::IfcCircleHollowProfileDef>(), paths);
 				}
 				return;
+			}
+
+			/*! \brief defines a section profile that provides the defining parameters of a circular hollow section
+			*  \param[in] hollow A pointer to data from \c IfcCircleProfileDef
+			*  \param[out] paths A pointer to be filled with the relevant data.
+			*/
+			void convertIfcCircleHollowProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcCircleHollowProfileDef>& hollow,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcCircleHollowProfileDef
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifccirclehollowprofiledef.htm
+				// SUBTYPE OF(IfcCircleProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
+				std::vector<carve::geom::vector<2>> inner_loop;	
+				double radius2 = hollow->Radius * UnitConvert()->getLengthInMeterFactor() - hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
+				int num_segments2 = GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
+				double d_angle2 = GeomSettings()->getAngleLength(radius2);
+
+				addArc(inner_loop, radius2, 0.0, d_angle2, 0.0, 0.0, num_segments2);
+				paths.push_back(inner_loop);
 			}
 
 			/*! \brief \c convertEllipseProfileDef is SUBTYPE of \c IfcParametrizedProfileDef
