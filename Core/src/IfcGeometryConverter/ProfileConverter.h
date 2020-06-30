@@ -64,49 +64,54 @@ namespace OpenInfraPlatform {
 			//	IfcProfileDef		(http://www.buildingsmart-tech.org/ifc/IFC4x1/final/html/schema/ifcprofileresource/lexical/ifcprofiledef.htm)							//
 			//	ABSTRACT SUPERTYPE OF IfcArbitraryClosedProfileDef, IfcArbitraryOpenProfileDef, IfcCompositeProfileDef, IfcDerivedProfileDef, IfcOpenCrossProfileDef, IfcParameterizedProfileDef	//
 			// *************************************************************************************************************************************************************//
-			void computeProfile(std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> profileDef)
+			void computeProfile(EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> profileDef)
 			{
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcProfileDef #" << profileDef->getId();
 #endif
 				// (1/5) IfcArbitraryClosedProfileDef SUBTYPE OF IfcProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
-				if (arbitrary_closed) {
+				//std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed =
+				//std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed = profileDef.as<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>();
 					convertIfcArbitraryClosedProfileDef(arbitrary_closed, paths);
 					removeDuplicates(paths);
 					return;
 				}
 
 				// (2/5) IfcArbitraryOpenProfileDef SUBTYPE OF IfcProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> arbitrary_open =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>(profileDef);
-				if (arbitrary_open) {
+				//std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> arbitrary_open =
+				//	std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>(profileDef);
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> arbitrary_open = profileDef.as<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>();
 					convertIfcArbitraryOpenProfileDef(arbitrary_open, paths);
 					removeDuplicates(paths);
 					return;
 				}
 
 				// (3/5) IfcCompositeProfileDef SUBTYPE OF IfcProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeProfileDef>(profileDef);
-				if (composite) {
+				//std::shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeProfileDef>(profileDef);
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCompositeProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = profileDef.as<typename IfcEntityTypesT::IfcCompositeProfileDef>();
 					convertIfcCompositeProfileDef(composite, paths);
 					removeDuplicates(paths);
 					return;
 				}
 
 				// (4/5) IfcDerivedProfileDef SUBTYPE OF IfcProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDerivedProfileDef>(profileDef);
-				if (derived) {
+				//std::shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDerivedProfileDef>(profileDef);
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcDerivedProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = profileDef.as<typename IfcEntityTypesT::IfcDerivedProfileDef>();
 					convertIfcDerivedProfileDef(derived, paths);
 					removeDuplicates(paths);
 					return;
 				}
 
 				// (5/5) IfcParameterizedProfileDef SUBTYPE OF IfcProfileDef
-				std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
-				if (parameterized) {
+				//std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
+				//	std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcParameterizedProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized = profileDef.as<typename IfcEntityTypesT::IfcParameterizedProfileDef>();
 					convertIfcParameterizedProfileDefWithPosition(parameterized, paths);
 					removeDuplicates(paths);
 					return;
