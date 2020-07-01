@@ -509,22 +509,22 @@ namespace OpenInfraPlatform {
 
 				// (4/10) IfcEllipseProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcEllipseProfileDef>()) {
-					convertEllipseProfileDef(profileDef.as<typename IfcEntityTypesT::IfcEllipseProfileDef>(), paths);
+					convertIfcEllipseProfileDef(profileDef.as<typename IfcEntityTypesT::IfcEllipseProfileDef>(), paths);
 				}
 
 				// (5/10) IfcIShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcIShapeProfileDef>()) {
-					convertIShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcIShapeProfileDef>(), paths);
+					convertIfcIShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcIShapeProfileDef>(), paths);
 				}
 
 				// (6/10) IfcLShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcLShapeProfileDef>()) {
-					convertLShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcLShapeProfileDef>(), paths);
+					convertIfcLShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcLShapeProfileDef>(), paths);
 				}
 
 				// (7/10) IfcUShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcUShapeProfileDef>()) {
-					convertUShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcUShapeProfileDef>(), paths);
+					convertIfcUShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcUShapeProfileDef>(), paths);
 				}
 
 				// (8/10) IfcCShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
@@ -534,12 +534,12 @@ namespace OpenInfraPlatform {
 
 				// (9/10) IfcZShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcZShapeProfileDef>()) {
-					convertZShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcZShapeProfileDef>(), paths);
+					convertIfcZShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcZShapeProfileDef>(), paths);
 				}
 
 				// (10/10) IfcTShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcTShapeProfileDef>()) {
-					convertTShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTShapeProfileDef>(), paths);
+					convertIfcTShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTShapeProfileDef>(), paths);
 				}
 
 				// Not supported ProfileDef
@@ -561,23 +561,18 @@ namespace OpenInfraPlatform {
 				// END_ENTITY;
 				// **************************************************************************************************************************
 				if (rectangle_profile->XDim && rectangle_profile->YDim) {
-					double x = rectangle_profile->XDim * UnitConvert()->getLengthInMeterFactor();
-					double y = rectangle_profile->YDim * UnitConvert()->getLengthInMeterFactor();
-					std::vector<carve::geom::vector<2>> outer_loop;
-
 					// IfcRectangleHollowProfileDef SUBTYPE OF IfcRectangleProfile 
 					if (rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>()) {
 						convertIfcRectangleHollowProfileDef(rectangle_profile.as<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>(), paths);
 					}
-
 					// IfcRoundedRectangleProfileDef SUBTYPE OF IfcRectangleProfile 
-					if (rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>()) {
+					else if (rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>()) {
 						convertIfcRoundedRectangleProfileDef(rectangle_profile.as<typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>(), paths);
 					}
 					// Else it's a standard rectangle
-					AddRectangleCoordinates(outer_loop, 0.0, x, y);
-					paths.push_back(outer_loop);
-					return;
+					else {
+						convertIfcStandardRectangleProfileDef(rectangle_profile, paths);
+					}
 				}
 			}
 
@@ -636,6 +631,25 @@ namespace OpenInfraPlatform {
 				}
 				return;
 			}
+			/*! \brief defines a standard rectangle
+			*  \param[in] rectangle_profile A pointer to data from \c IfcRectangleProfileDef
+			*  \param[out] paths A pointer to be filled with the relevant data
+			*/
+			void convertIfcStandardRectangleProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>& rectangle_profile, 
+				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcStandardRectangleProfileDef
+				// -
+				// SUBTYPE OF(IfcRectangleProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
+				double x = rectangle_profile->XDim * UnitConvert()->getLengthInMeterFactor();
+				double y = rectangle_profile->YDim * UnitConvert()->getLengthInMeterFactor();
+				std::vector<carve::geom::vector<2>> outer_loop;
+				AddRectangleCoordinates(outer_loop, 0.0, x, y);
+				paths.push_back(outer_loop);
+				return;
+			}
 
 			/*! \brief defines a trapezium as the profile definition
 			*  \param[in] trapezium A pointer to data from \c IfcParametrizedProfileDef
@@ -688,38 +702,30 @@ namespace OpenInfraPlatform {
 
 				// IfcCircleHollowProfileDef SUBTYPE OF IfcCircleProfileDef
 				if (circle_profile_def.isOfType<typename IfcEntityTypesT::IfcCircleHollowProfileDef>()) {
-					convertIfcCircleHollowProfileDef(circle_profile_def.as<typename IfcEntityTypesT::IfcCircleHollowProfileDef>(), paths);
+					EXPRESSReference<typename IfcEntityTypesT::IfcCircleHollowProfileDef> hollow = circle_profile_def.as<typename IfcEntityTypesT::IfcCircleHollowProfileDef>();
+					std::vector<carve::geom::vector<2>> inner_loop;
+					double radius2 = radius - hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
+					int num_segments2 = GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
+					double d_angle2 = GeomSettings()->getAngleLength(radius2);
+
+					addArc(inner_loop, radius2, 0.0, d_angle2, 0.0, 0.0, num_segments2);
+					paths.push_back(inner_loop);
 				}
 				return;
 			}
 
-			/*! \brief defines a section profile that provides the defining parameters of a circular hollow section
-			*  \param[in] hollow A pointer to data from \c IfcCircleProfileDef
+			/*! \brief defines an ellipse as the profile definition
+			*  \param[in] ellipse_profile_def A pointer to data from \c IfcParametrizedProfileDef
 			*  \param[out] paths A pointer to be filled with the relevant data.
 			*/
-			void convertIfcCircleHollowProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcCircleHollowProfileDef>& hollow,
+			void convertIfcEllipseProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcEllipseProfileDef> & ellipse_profile_def,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
 				// **************************************************************************************************************************
-				// ENTITY IfcCircleHollowProfileDef
-				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifccirclehollowprofiledef.htm
-				// SUBTYPE OF(IfcCircleProfileDef);
+				// ENTITY IfcEllipseProfileDef
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcellipseprofiledef.htm
+				// SUBTYPE OF(IfcParametrizedProfileDef);
 				// END_ENTITY;
 				// **************************************************************************************************************************
-				std::vector<carve::geom::vector<2>> inner_loop;	
-				double radius2 = hollow->Radius * UnitConvert()->getLengthInMeterFactor() - hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
-				int num_segments2 = GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
-				double d_angle2 = GeomSettings()->getAngleLength(radius2);
-
-				addArc(inner_loop, radius2, 0.0, d_angle2, 0.0, 0.0, num_segments2);
-				paths.push_back(inner_loop);
-			}
-
-			/*! \brief \c convertEllipseProfileDef is SUBTYPE of \c IfcParametrizedProfileDef
-			*  \param[in] rectangle_profile A pointer to data from \c IfcParametrizedProfileDef
-			*  \param[out] paths A pointer to be filled with the relevant data.
-			*/
-			void convertEllipseProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcEllipseProfileDef> & ellipse_profile_def,
-				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (ellipse_profile_def->SemiAxis1) {
 					if (ellipse_profile_def->SemiAxis2) {
@@ -740,13 +746,19 @@ namespace OpenInfraPlatform {
 				return;
 			}
 
-			/*! \brief \c convertIShapeProfileDef is SUBTYPE of \c IfcParametrizedProfileDef
+			/*! \brief defines a section profile that provides the defining parameters of an 'I' or 'H' section
 			*  \param[in] rectangle_profile A pointer to data from \c IfcParametrizedProfileDef
 			*  \param[out] paths A pointer to be filled with the relevant data.
-			*  \param outer_loop 
 			*/
-			void convertIShapeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcIShapeProfileDef> i_shape,
+			void convertIfcIShapeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcIShapeProfileDef> i_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcIShapeProfileDef
+				//  https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcishapeprofiledef.htm
+				// ABSTRACT SUPERTYPE OF(IfcAsymmetricIShapeProfileDef)
+				//  SUBTYPE OF(IfcParametrizedProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (i_shape->OverallDepth && i_shape->OverallWidth && i_shape->WebThickness && i_shape->FlangeThickness) {
 					double h = i_shape->OverallDepth * UnitConvert()->getLengthInMeterFactor();
@@ -787,13 +799,20 @@ namespace OpenInfraPlatform {
 				return;
 			}
 
-			/*! \brief \c convertLShapeProfileDef is SUBTYPE of \c IfcParametrizedProfileDef
-			*  \param[in] rectangle_profile A pointer to data from \c IfcParametrizedProfileDef
+
+			/*! \brief defines a section profile that provides the defining parameters of an L-shaped section
+			*  \param[in] l_shape A pointer to data from \c IfcParametrizedProfileDef
 			*  \param[out] paths A pointer to be filled with the relevant data.
 			*/
-			void convertLShapeProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcLShapeProfileDef >& l_shape,
+			void convertIfcLShapeProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcLShapeProfileDef >& l_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
 				std::vector<carve::geom::vector<2>> outer_loop;
+				// **************************************************************************************************************************
+				// ENTITY IfcLShapeProfileDef
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifclshapeprofiledef.htm
+				// SUBTYPE OF(IfcParametrizedProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
 				if (l_shape->Depth && l_shape->Thickness) {
 					double h = l_shape->Depth * UnitConvert()->getLengthInMeterFactor();
 					double b = l_shape->Width.value_or(l_shape->Depth) * UnitConvert()->getLengthInMeterFactor();
@@ -821,12 +840,18 @@ namespace OpenInfraPlatform {
 				return;
 			}
 
-			/*! \brief \c convertUShapeProfileDef is SUBTYPE of \c IfcParametrizedProfileDef
-			*  \param[in] rectangle_profile A pointer to data from \c IfcParametrizedProfileDef
+			/*! \brief defines a section profile that provides the defining parameters of a U-shape (channel) section
+			*  \param[in] u_shape A pointer to data from \c IfcParametrizedProfileDef
 			*  \param[out] paths A pointer to be filled with the relevant data.
 			*/
-			void convertUShapeProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcUShapeProfileDef>& u_shape,
+			void convertIfcUShapeProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcUShapeProfileDef>& u_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcUShapeProfileDef
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcushapeprofiledef.htm
+				// SUBTYPE OF(IfcParametrizedProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (u_shape->Depth && u_shape->FlangeWidth && u_shape->WebThickness && u_shape->FlangeThickness) {
 					double h = u_shape->Depth * UnitConvert()->getLengthInMeterFactor();
@@ -853,12 +878,18 @@ namespace OpenInfraPlatform {
 				return;
 			}
 
-			/*! \brief \c convertIfcCShapeProfileDef is SUBTYPE of \c IfcParametrizedProfileDef
-			*  \param[in] rectangle_profile A pointer to data from \c IfcParametrizedProfileDef
+			/*! \brief defines a section profile that provides the defining parameters of a C-shaped section
+			*  \param[in] c_shape A pointer to data from \c IfcParametrizedProfileDef
 			*  \param[out] paths A pointer to be filled with the relevant data.
 			*/
 			void convertIfcCShapeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef>& c_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcCShapeProfileDef
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifccshapeprofiledef.htm
+				// SUBTYPE OF(IfcParametrizedProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (c_shape->Depth && c_shape->Width && c_shape->Girth && c_shape->WallThickness) {
 					double h = c_shape->Depth * UnitConvert()->getLengthInMeterFactor();
@@ -883,12 +914,18 @@ namespace OpenInfraPlatform {
 				return;
 			}
 
-			/*! \brief \c convertZShapeProfileDef is SUBTYPE of \c IfcParametrizedProfileDef
-			*  \param[in] rectangle_profile A pointer to data from \c IfcParametrizedProfileDef
+			/*! \brief defines a section profile that provides the defining parameters of a Z-shape section
+			*  \param[in] z_shape A pointer to data from \c IfcParametrizedProfileDef
 			*  \param[out] paths A pointer to be filled with the relevant data.
 			*/
-			void convertZShapeProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcZShapeProfileDef>& z_shape,
+			void convertIfcZShapeProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcZShapeProfileDef>& z_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcZShapeProfileDef
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifczshapeprofiledef.htm
+				// SUBTYPE OF(IfcParametrizedProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (z_shape->Depth && z_shape->FlangeWidth && z_shape->WebThickness && z_shape->FlangeThickness) {
 					double h = z_shape->Depth * UnitConvert()->getLengthInMeterFactor();
@@ -911,12 +948,18 @@ namespace OpenInfraPlatform {
 				return;
 			}
 
-			/*! \brief \c convertTShapeProfileDef is SUBTYPE of \c IfcParametrizedProfileDef
-			*  \param[in] rectangle_profile A pointer to data from \c IfcParametrizedProfileDef
+			/*! \brief defines a section profile that provides the defining parameters of a T-shaped section
+			*  \param[in] t_shape A pointer to data from \c IfcParametrizedProfileDef
 			*  \param[out] paths A pointer to be filled with the relevant data.
 			*/
-			void convertTShapeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef>& t_shape,
+			void convertIfcTShapeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef>& t_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
+				// **************************************************************************************************************************
+				// ENTITY IfcTShapeProfileDef
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifctshapeprofiledef.htm
+				// SUBTYPE OF(IfcParametrizedProfileDef);
+				// END_ENTITY;
+				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				const double h = t_shape->Depth * UnitConvert()->getLengthInMeterFactor();
 				const double b = t_shape->FlangeWidth * UnitConvert()->getLengthInMeterFactor();
