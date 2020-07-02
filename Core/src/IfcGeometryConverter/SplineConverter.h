@@ -83,12 +83,12 @@ namespace OpenInfraPlatform
 								// convert 'it' (WeightsData) from IfcReal to double ?
 						}
 						
-						if (splineCurve.isOfType<IfcEntityTypesT::IfcBSplineCurveWithKnots>())
+						if (splineCurve.isOfType<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>())
 						{
 							//std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots> bspline =
 							//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots>(splineCurve);
 							EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots> bspline = 
-								splineCurve.as<IfcEntityTypesT::IfcBSplineCurveWithKnots>();
+								splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>();
 
 							//const std::vector<int>& knotMults = bspline->m_KnotMultiplicities;
 							std::vector<int> knotMults;
