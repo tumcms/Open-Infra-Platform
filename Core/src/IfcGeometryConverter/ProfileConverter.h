@@ -481,12 +481,24 @@ namespace OpenInfraPlatform {
 			{
 
 				// *************************************************************************************************************************************************************
-				// ENTITY IfcParameterizedProfileDef	
-				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcparameterizedprofiledef.htm		
-				// ABSTRACT SUPERTYPE OF (IfcCShapeProfileDef, IfcCircleProfileDef, IfcEllipseProfileDef, IfcIShapeProfileDef, IfcLShapeProfileDef,								
-				// IfcRectangleProfileDef, IfcTShapeProfileDef, IfcTrapeziumProfileDef, IfcUShapeProfileDef, IfcZShapeProfileDef)	
-				// SUBTYPE OF (IfcProfileDef);
-				// END_ENTITY
+				//	ENTITY IfcParameterizedProfileDef	
+				//	https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcparameterizedprofiledef.htm		
+				//	ABSTRACT SUPERTYPE OF(ONEOF
+				//	(IfcAsymmetricIShapeProfileDef
+				//		, IfcCShapeProfileDef
+				//		, IfcCircleProfileDef
+				//		, IfcEllipseProfileDef
+				//		, IfcIShapeProfileDef
+				//		, IfcLShapeProfileDef
+				//		, IfcRectangleProfileDef
+				//		, IfcTShapeProfileDef
+				//		, IfcTrapeziumProfileDef
+				//		, IfcUShapeProfileDef
+				//		, IfcZShapeProfileDef))
+				//	SUBTYPE OF(IfcProfileDef);
+				//	Position: OPTIONAL IfcAxis2Placement2D;
+				//	END_ENTITY;
+				//
 				// *************************************************************************************************************************************************************
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcParameterizedProfileDef #" << profileDef->getId();
@@ -494,52 +506,52 @@ namespace OpenInfraPlatform {
 
 				// (1/10) IfcRectangleProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcRectangleProfileDef>()) {
-					convertIfcRectangleProfileDef(profileDef.as<typename IfcEntityTypesT::IfcRectangleProfileDef>(), paths);
+					return convertIfcRectangleProfileDef(profileDef.as<typename IfcEntityTypesT::IfcRectangleProfileDef>(), paths);
 				}
 
 				// (2/10) IfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcTrapeziumProfileDef>()) {
-					convertIfcTrapeziumProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(), paths);
+					return convertIfcTrapeziumProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(), paths);
 				}
 
 				// (3/10) IfcCircleProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCircleProfileDef>()) {
-					convertIfcCircleProfileDef(profileDef.as<typename IfcEntityTypesT::IfcCircleProfileDef>(), paths);
+					return convertIfcCircleProfileDef(profileDef.as<typename IfcEntityTypesT::IfcCircleProfileDef>(), paths);
 				}
 
 				// (4/10) IfcEllipseProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcEllipseProfileDef>()) {
-					convertIfcEllipseProfileDef(profileDef.as<typename IfcEntityTypesT::IfcEllipseProfileDef>(), paths);
+					return convertIfcEllipseProfileDef(profileDef.as<typename IfcEntityTypesT::IfcEllipseProfileDef>(), paths);
 				}
 
 				// (5/10) IfcIShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcIShapeProfileDef>()) {
-					convertIfcIShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcIShapeProfileDef>(), paths);
+					return convertIfcIShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcIShapeProfileDef>(), paths);
 				}
 
 				// (6/10) IfcLShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcLShapeProfileDef>()) {
-					convertIfcLShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcLShapeProfileDef>(), paths);
+					return convertIfcLShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcLShapeProfileDef>(), paths);
 				}
 
 				// (7/10) IfcUShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcUShapeProfileDef>()) {
-					convertIfcUShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcUShapeProfileDef>(), paths);
+					return convertIfcUShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcUShapeProfileDef>(), paths);
 				}
 
 				// (8/10) IfcCShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCShapeProfileDef>()) {
-					convertIfcCShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcCShapeProfileDef>(), paths);
+					return convertIfcCShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcCShapeProfileDef>(), paths);
 				}
 
 				// (9/10) IfcZShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcZShapeProfileDef>()) {
-					convertIfcZShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcZShapeProfileDef>(), paths);
+					return convertIfcZShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcZShapeProfileDef>(), paths);
 				}
 
 				// (10/10) IfcTShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcTShapeProfileDef>()) {
-					convertIfcTShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTShapeProfileDef>(), paths);
+					return convertIfcTShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTShapeProfileDef>(), paths);
 				}
 
 				// Not supported ProfileDef
@@ -553,13 +565,16 @@ namespace OpenInfraPlatform {
 			*/
 			void convertIfcRectangleProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>& rectangle_profile,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
-				// **************************************************************************************************************************
-				// ENTITY IfcRectangleProfileDef
-				//  https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcrectangleprofiledef.htm
-				// ABSTRACT SUPERTYPE OF(IfcRectangleHollowProfileDef, IfcRoundedRectangleProfileDef)
-				//  SUBTYPE OF(IfcParametrizedProfileDef);
-				// END_ENTITY;
-				// **************************************************************************************************************************
+				//	**************************************************************************************************************************
+				//	ENTITY IfcRectangleProfileDef
+				//	SUPERTYPE OF(ONEOF
+				//		(IfcRectangleHollowProfileDef
+				//		, IfcRoundedRectangleProfileDef))
+				//	SUBTYPE OF(IfcParameterizedProfileDef);
+				//		XDim: IfcPositiveLengthMeasure;
+				//		YDim: IfcPositiveLengthMeasure;
+				//	END_ENTITY;
+				//	**************************************************************************************************************************
 				if (rectangle_profile->XDim && rectangle_profile->YDim) {
 					// IfcRectangleHollowProfileDef SUBTYPE OF IfcRectangleProfile 
 					if (rectangle_profile.isOfType<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>()) {
@@ -582,12 +597,23 @@ namespace OpenInfraPlatform {
 			*/
 			void convertIfcRectangleHollowProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangleHollowProfileDef>& hollow, 
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
-				// **************************************************************************************************************************
-				// ENTITY IfcRectangleHollowProfileDef
-				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcrectanglehollowprofiledef.htm
-				// SUBTYPE OF(IfcRectangleProfileDef);
-				// END_ENTITY;
-				// **************************************************************************************************************************
+				//	**************************************************************************************************************************
+				//	ENTITY IfcRectangleHollowProfileDef
+				//  SUBTYPE OF(IfcRectangleProfileDef);
+				//		WallThickness: IfcPositiveLengthMeasure;
+				//		InnerFilletRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//		OuterFilletRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//  WHERE
+				//		ValidWallThickness : (WallThickness < (SELF\IfcRectangleProfileDef.XDim / 2.)) AND
+				//		(WallThickness < (SELF\IfcRectangleProfileDef.YDim / 2.));
+				//		ValidInnerRadius: NOT(EXISTS(InnerFilletRadius)) OR
+				//		((InnerFilletRadius <= (SELF\IfcRectangleProfileDef.XDim / 2. - WallThickness)) AND
+				//		(InnerFilletRadius <= (SELF\IfcRectangleProfileDef.YDim / 2. - WallThickness)));
+				//		ValidOuterRadius: NOT(EXISTS(OuterFilletRadius)) OR
+				//		((OuterFilletRadius <= (SELF\IfcRectangleProfileDef.XDim / 2.)) AND
+				//		(OuterFilletRadius <= (SELF\IfcRectangleProfileDef.YDim / 2.)));
+				//	END_ENTITY;
+				//	**************************************************************************************************************************
 				double x = hollow->XDim * UnitConvert()->getLengthInMeterFactor();
 				double y = hollow->YDim * UnitConvert()->getLengthInMeterFactor();
 				std::vector<carve::geom::vector<2>> outer_loop;
@@ -616,12 +642,16 @@ namespace OpenInfraPlatform {
 			*/
 			void convertIfcRoundedRectangleProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcRoundedRectangleProfileDef>& rounded_rectangle,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
-				// **************************************************************************************************************************
-				// ENTITY IfcRoundedRectangleProfileDef
-				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcroundedrectangleprofiledef.htm
-				// SUBTYPE OF(IfcRectangleProfileDef);
-				// END_ENTITY;
-				// **************************************************************************************************************************
+				//	**************************************************************************************************************************
+				//	ENTITY IfcRoundedRectangleProfileDef
+				//	https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcroundedrectangleprofiledef.htm
+				//	SUBTYPE OF(IfcRectangleProfileDef);
+				//		RoundingRadius: IfcPositiveLengthMeasure;
+				//	WHERE
+				//		ValidRadius : ((RoundingRadius <= (SELF\IfcRectangleProfileDef.XDim / 2.)) AND
+				//		(RoundingRadius <= (SELF\IfcRectangleProfileDef.YDim / 2.)));
+				//	END_ENTITY;
+				//	**************************************************************************************************************************
 				double x = rounded_rectangle->XDim * UnitConvert()->getLengthInMeterFactor();
 				double y = rounded_rectangle->YDim * UnitConvert()->getLengthInMeterFactor();
 				std::vector<carve::geom::vector<2>> outer_loop;
@@ -637,12 +667,7 @@ namespace OpenInfraPlatform {
 			*/
 			void convertIfcStandardRectangleProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>& rectangle_profile, 
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
-				// **************************************************************************************************************************
-				// ENTITY IfcStandardRectangleProfileDef
-				// -
-				// SUBTYPE OF(IfcRectangleProfileDef);
-				// END_ENTITY;
-				// **************************************************************************************************************************
+				
 				double x = rectangle_profile->XDim * UnitConvert()->getLengthInMeterFactor();
 				double y = rectangle_profile->YDim * UnitConvert()->getLengthInMeterFactor();
 				std::vector<carve::geom::vector<2>> outer_loop;
@@ -659,8 +684,12 @@ namespace OpenInfraPlatform {
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
 				// **************************************************************************************************************************
 				// ENTITY IfcTrapeziumProfileDef
-				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifctrapeziumprofiledef.htm
-				// SUBTYPE OF(IfcParametrizedProfileDef);
+				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifctrapeziumprofiledef.htm			
+				// SUBTYPE OF(IfcParameterizedProfileDef);
+				//		BottomXDim: IfcPositiveLengthMeasure;
+				//		TopXDim: IfcPositiveLengthMeasure;
+				//		YDim: IfcPositiveLengthMeasure;
+				//		TopXOffset: IfcLengthMeasure;
 				// END_ENTITY;
 				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
@@ -685,8 +714,10 @@ namespace OpenInfraPlatform {
 				// **************************************************************************************************************************
 				// ENTITY IfcCircleProfileDef
 				//  https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifccircleprofiledef.htm
-				// ABSTRACT SUPERTYPE OF(IfcCircleHollowProfileDef)
-				//  SUBTYPE OF(IfcParametrizedProfileDef);
+				// SUPERTYPE OF(ONEOF
+				// (IfcCircleHollowProfileDef))
+				// SUBTYPE OF(IfcParameterizedProfileDef);
+				// Radius: IfcPositiveLengthMeasure;
 				// END_ENTITY;
 				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
@@ -723,7 +754,10 @@ namespace OpenInfraPlatform {
 				// **************************************************************************************************************************
 				// ENTITY IfcEllipseProfileDef
 				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcellipseprofiledef.htm
-				// SUBTYPE OF(IfcParametrizedProfileDef);
+				// ENTITY IfcEllipseProfileDef
+				// SUBTYPE OF(IfcParameterizedProfileDef);
+				//		SemiAxis1: IfcPositiveLengthMeasure;
+				//		SemiAxis2: IfcPositiveLengthMeasure;
 				// END_ENTITY;
 				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
@@ -755,8 +789,20 @@ namespace OpenInfraPlatform {
 				// **************************************************************************************************************************
 				// ENTITY IfcIShapeProfileDef
 				//  https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcishapeprofiledef.htm
-				// ABSTRACT SUPERTYPE OF(IfcAsymmetricIShapeProfileDef)
-				//  SUBTYPE OF(IfcParametrizedProfileDef);
+				// SUBTYPE OF(IfcParameterizedProfileDef);
+				//		OverallWidth: IfcPositiveLengthMeasure;
+				//		OverallDepth: IfcPositiveLengthMeasure;
+				//		WebThickness: IfcPositiveLengthMeasure;
+				//		FlangeThickness: IfcPositiveLengthMeasure;
+				//		FilletRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//		FlangeEdgeRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//		FlangeSlope: OPTIONAL IfcPlaneAngleMeasure;
+				// WHERE
+				//		ValidFlangeThickness : (2. * FlangeThickness) < OverallDepth;
+				//		ValidWebThickness: WebThickness < OverallWidth;
+				//		ValidFilletRadius: NOT(EXISTS(FilletRadius)) OR
+				//		((FilletRadius <= (OverallWidth - WebThickness) / 2.) AND
+				//		(FilletRadius <= (OverallDepth - (2. * FlangeThickness)) / 2.));
 				// END_ENTITY;
 				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
@@ -808,10 +854,18 @@ namespace OpenInfraPlatform {
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
 				std::vector<carve::geom::vector<2>> outer_loop;
 				// **************************************************************************************************************************
-				// ENTITY IfcLShapeProfileDef
-				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifclshapeprofiledef.htm
-				// SUBTYPE OF(IfcParametrizedProfileDef);
-				// END_ENTITY;
+				//  ENTITY IfcLShapeProfileDef
+				//  https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifclshapeprofiledef.htm
+				//	SUBTYPE OF(IfcParameterizedProfileDef);
+				//		Depth: IfcPositiveLengthMeasure;
+				//		Width: OPTIONAL IfcPositiveLengthMeasure;
+				//		Thickness: IfcPositiveLengthMeasure;
+				//		FilletRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//		EdgeRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//		LegSlope: OPTIONAL IfcPlaneAngleMeasure;
+				//	WHERE
+				//		ValidThickness : (Thickness < Depth) AND(NOT(EXISTS(Width)) OR(Thickness < Width));
+				//	END_ENTITY;
 				// **************************************************************************************************************************
 				if (l_shape->Depth && l_shape->Thickness) {
 					double h = l_shape->Depth * UnitConvert()->getLengthInMeterFactor();
@@ -847,10 +901,20 @@ namespace OpenInfraPlatform {
 			void convertIfcUShapeProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcUShapeProfileDef>& u_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
 				// **************************************************************************************************************************
-				// ENTITY IfcUShapeProfileDef
-				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcushapeprofiledef.htm
-				// SUBTYPE OF(IfcParametrizedProfileDef);
-				// END_ENTITY;
+				//	ENTITY IfcUShapeProfileDef
+				//	https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifcushapeprofiledef.htm
+				//	SUBTYPE OF(IfcParameterizedProfileDef);
+				//		Depth: IfcPositiveLengthMeasure;
+				//		FlangeWidth: IfcPositiveLengthMeasure;
+				//		WebThickness: IfcPositiveLengthMeasure;
+				//		FlangeThickness: IfcPositiveLengthMeasure;
+				//		FilletRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//		EdgeRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//		FlangeSlope: OPTIONAL IfcPlaneAngleMeasure;
+				//	WHERE
+				//		ValidFlangeThickness : FlangeThickness < (Depth / 2.);
+				//		ValidWebThickness: WebThickness < FlangeWidth;
+				//	END_ENTITY;
 				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (u_shape->Depth && u_shape->FlangeWidth && u_shape->WebThickness && u_shape->FlangeThickness) {
@@ -884,12 +948,22 @@ namespace OpenInfraPlatform {
 			*/
 			void convertIfcCShapeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcCShapeProfileDef>& c_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
-				// **************************************************************************************************************************
-				// ENTITY IfcCShapeProfileDef
-				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifccshapeprofiledef.htm
-				// SUBTYPE OF(IfcParametrizedProfileDef);
-				// END_ENTITY;
-				// **************************************************************************************************************************
+				//  **************************************************************************************************************************
+				//	ENTITY IfcCShapeProfileDef
+				//	https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifccshapeprofiledef.htm
+				//	SUBTYPE OF(IfcParameterizedProfileDef);
+				//		Depth: IfcPositiveLengthMeasure;
+				//		Width: IfcPositiveLengthMeasure;
+				//		WallThickness: IfcPositiveLengthMeasure;
+				//		Girth: IfcPositiveLengthMeasure;
+				//		InternalFilletRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//	WHERE
+				//		ValidGirth : Girth < (Depth / 2.);
+				//		ValidInternalFilletRadius: NOT(EXISTS(InternalFilletRadius)) OR
+				//		((InternalFilletRadius <= Width / 2. - WallThickness) AND(InternalFilletRadius <= Depth / 2. - WallThickness));
+				//		ValidWallThickness: (WallThickness < Width / 2.) AND(WallThickness < Depth / 2.);
+				//	END_ENTITY;
+				//	**************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (c_shape->Depth && c_shape->Width && c_shape->Girth && c_shape->WallThickness) {
 					double h = c_shape->Depth * UnitConvert()->getLengthInMeterFactor();
@@ -920,12 +994,20 @@ namespace OpenInfraPlatform {
 			*/
 			void convertIfcZShapeProfileDef(const EXPRESSReference <typename IfcEntityTypesT::IfcZShapeProfileDef>& z_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
-				// **************************************************************************************************************************
-				// ENTITY IfcZShapeProfileDef
-				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifczshapeprofiledef.htm
-				// SUBTYPE OF(IfcParametrizedProfileDef);
-				// END_ENTITY;
-				// **************************************************************************************************************************
+				//	**************************************************************************************************************************
+				//	ENTITY IfcZShapeProfileDef
+				//	https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifczshapeprofiledef.htm
+				//	SUBTYPE OF(IfcParameterizedProfileDef);
+				//		Depth: IfcPositiveLengthMeasure;
+				//		FlangeWidth: IfcPositiveLengthMeasure;
+				//		WebThickness: IfcPositiveLengthMeasure;
+				//		FlangeThickness: IfcPositiveLengthMeasure;
+				//		FilletRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//		EdgeRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//	WHERE
+				//		ValidFlangeThickness : FlangeThickness < (Depth / 2.);
+				//	END_ENTITY;
+				//	**************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (z_shape->Depth && z_shape->FlangeWidth && z_shape->WebThickness && z_shape->FlangeThickness) {
 					double h = z_shape->Depth * UnitConvert()->getLengthInMeterFactor();
@@ -954,12 +1036,24 @@ namespace OpenInfraPlatform {
 			*/
 			void convertIfcTShapeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcTShapeProfileDef>& t_shape,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
-				// **************************************************************************************************************************
-				// ENTITY IfcTShapeProfileDef
-				// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifctshapeprofiledef.htm
-				// SUBTYPE OF(IfcParametrizedProfileDef);
-				// END_ENTITY;
-				// **************************************************************************************************************************
+				//	**************************************************************************************************************************
+				//	ENTITY IfcTShapeProfileDef
+				//	https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcprofileresource/lexical/ifctshapeprofiledef.htm
+				//	SUBTYPE OF(IfcParameterizedProfileDef);
+				//		Depth: IfcPositiveLengthMeasure;
+				//		FlangeWidth: IfcPositiveLengthMeasure;
+				//		WebThickness: IfcPositiveLengthMeasure;
+				//		FlangeThickness: IfcPositiveLengthMeasure;
+				//		FilletRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//		FlangeEdgeRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//		WebEdgeRadius: OPTIONAL IfcNonNegativeLengthMeasure;
+				//		WebSlope: OPTIONAL IfcPlaneAngleMeasure;
+				//		FlangeSlope: OPTIONAL IfcPlaneAngleMeasure;
+				//	WHERE
+				//		ValidFlangeThickness : FlangeThickness < Depth;
+				//		ValidWebThickness: WebThickness < FlangeWidth;
+				//	END_ENTITY;
+				//	**************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				const double h = t_shape->Depth * UnitConvert()->getLengthInMeterFactor();
 				const double b = t_shape->FlangeWidth * UnitConvert()->getLengthInMeterFactor();
