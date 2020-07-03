@@ -432,29 +432,34 @@ namespace OpenInfraPlatform
 										double factorProfileAfter = (distance(points_for_tesselation.at(lastPoint), CrossSectionPoints[j + 1]))/ProfileDistance;
 
 										//interpolate profile
-										//Multiply every point like this = pointCoordsBefor*factorProfileBefore + pointsCoordAfter*factorProfileAfter
-										/*std::vector<std::vector<carve::geom::vector<2> > >& compositeProfile = paths[j];
+										// Informal proposition: for the Interpolation to work the Profiles of the CrossSection before and afer need to have the same amount of points and loops.
+										//
+										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileBefore = paths[j];
+										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileAfter = paths[j + 1];
+
 										std::vector<std::vector<carve::geom::vector<3> > > Tcompositeprofile;
-										for (int w = 0; w < compositeProfile.size(); ++w)
+										for (int w = 0; w < compositeProfileBefore.size(); ++w)
 										{
-											std::vector<carve::geom::vector<2> >& loop = compositeProfile[w];
+											std::vector<carve::geom::vector<2> >& loopBefore = compositeProfileBefore[w];
+											std::vector<carve::geom::vector<2> >& loopAfter = compositeProfileAfter[w];
+
 											std::vector<carve::geom::vector<3>> Tloop;
-											for (int k = 0; k < loop.size(); ++k)
+											for (int k = 0; k < loopBefore.size(); ++k)
 											{
-												carve::geom::vector<2>& point = loop[k];
+												carve::geom::vector<2>& pointBefore = loopBefore[k];
+												carve::geom::vector<2>& pointAfter = loopAfter[k];
 
-												carve::geom::vector<3> Tpointbefore = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]);
-												//TO DO: get point from k+1 iteration of the loop for the interpolation
-												carve::geom::vector<3> Tpointafter = localPLacementMatrix[j+1] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j+1]);
+												carve::geom::vector<3> Tpointbefore = localPlacementMatrix[j] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) + offsetFromCurve[j]);
+												carve::geom::vector<3> Tpointafter = localPlacementMatrix[j+1] * (carve::geom::VECTOR(pointAfter.x, pointAfter.y, 0) + offsetFromCurve[j+1]);
 
-												Tpoint = Tpointbefore * factorProfileBefore + Tpointafter * factorProfileAfter;
+												carve::geom::vector<3> Tpoint = Tpointbefore * factorProfileBefore + Tpointafter * factorProfileAfter;
 												Tloop.push_back(Tpoint);
 											}
 											Tcompositeprofile.push_back(Tloop);
 										}
 										
 										paths_for_tesselation.push_back(Tcompositeprofile);
-										*/
+										
 										//increment based on its position on the directrix
 										++i;
 									}
@@ -477,7 +482,37 @@ namespace OpenInfraPlatform
 									}
 								}
 							}
-							//2. TO DO: addFaces 3 phases: 1.Front Profile   2.Mantelfläche  3.Close Prolygon and profiles
+							
+							/*//2. TO DO: addFaces 3 phases: 1.Front Profile   2.Mantelfläche  3.Close Prolygon and profiles
+							for (i = 0; i < paths_for_tesselation.size(); ++i)
+							{
+								//1. Add Profile Face of each CrossSection
+								std::vector<std::vector<carve::geom::vector<3> > >& compositeProfile = paths_for_tesselation[i];
+								for (int w = 0; w < compositeProfile.size(); ++w)
+								{
+									std::vector<carve::geom::vector<3> >& loop = compositeProfile[w];
+									for (int k = 0; k < loop.size(); ++k)
+									{
+
+										//if()
+										carve::geom::vector<3>& point1 = loop[k];
+										carve::geom::vector<3>& point2 = loop[k + 1];
+										carve::geom::vector<3>& point3 = loop[k + 2];
+
+										carve::geom::vector<3> segment1 = point1 + point2;
+										carve::geom::vector<3> segment2 = point2 + point3;
+										carve::geom::vector<3> segment3 = point3 + point1;
+									
+										body_data->addFace(segment1, segment2, segment3);
+										
+									}
+								
+								}
+
+								//2. Add Faces between Cross Sections to create a body along the Directrix
+
+								//3. Close the polygons 
+							}*/
 
 
 				             
