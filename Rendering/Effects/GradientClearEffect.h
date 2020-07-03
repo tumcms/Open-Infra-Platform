@@ -19,23 +19,13 @@
 #ifndef OpenInfraPlatform_UserInterface_GradientClearEffect_afbb68df_d61c_4c33_97ea_562ed68cda3c_h
 #define OpenInfraPlatform_UserInterface_GradientClearEffect_afbb68df_d61c_4c33_97ea_562ed68cda3c_h
 
-#include "ViewPanel/Viewport.h"
-
-#include "UnitTesting/Benchmark.h"
-#include "ViewPanel/RenderResources.h"
+#include <Resources/RenderResources.h>
 #include "namespace.h"
 
-#include <buw.Engine.h>
 #include <buw.Rasterizer.h>
 
-#include <QDir>
-#include <QTimer>
-#include <QtXml>
-#include <QtXmlPatterns>
 
-#include <iomanip>
-
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 class GradientClearEffect : public buw::Effect {
 public:
@@ -66,6 +56,6 @@ private:
 	bool										snow_ = false;
 };
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
 
 #endif // end define OpenInfraPlatform_UserInterface_GradientClearEffect_afbb68df_d61c_4c33_97ea_562ed68cda3c_h

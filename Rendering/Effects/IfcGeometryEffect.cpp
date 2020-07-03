@@ -17,10 +17,10 @@
 
 #include "IfcGeometryEffect.h"
 
-#include "../UserInterface/ViewPanel/RenderResources.h"
+#include <Resources/RenderResources.h>
 #include <BlueFramework/Rasterizer/vertex.h>
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 
 IfcGeometryEffect::IfcGeometryEffect(buw::IRenderSystem * renderSystem,
@@ -184,4 +184,4 @@ void IfcGeometryEffect::v_render()
     }
 }
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END

@@ -25,7 +25,7 @@
 #include <buw.Rasterizer.h>
 #include <map>
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 class IfcGeometryEffect: public buw::Effect {
 public:
@@ -55,5 +55,5 @@ private:
 	buw::Vector3d offset_;
 };
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
 #endif // end define OpenInfraPlatform_UserInterface_IfcGeometryEffect_d170662a_b003_4afa_a25b_a9d772f3013d_h

@@ -20,11 +20,11 @@
 #define BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h
 
 #include "namespace.h"
-#include "../UserInterface/ViewPanel/RenderResources.h"
+#include <Resources/RenderResources.h>
 #include <buw.Engine.h>
 #include <buw.Rasterizer.h>
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 class BoundingBoxEffect : public buw::Effect {
 public:
@@ -64,6 +64,6 @@ private:
 	buw::Vector3d minExtend_, maxExtend_;
 };
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
 
 #endif // end define BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h

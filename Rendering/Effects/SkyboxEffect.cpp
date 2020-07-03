@@ -17,10 +17,10 @@
 
 #include "SkyboxEffect.h"
 
-#include "../UserInterface/ViewPanel/RenderResources.h"
+#include <Resources/RenderResources.h>
 #include <boost/filesystem.hpp>
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 SkyboxEffect::SkyboxEffect(buw::IRenderSystem * renderSystem, buw::ReferenceCounted<buw::IViewport> viewport, buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer)
     :
@@ -113,4 +113,4 @@ void SkyboxEffect::v_render() {
     drawIndexed(indexBuffer_->getIndexCount());
 }
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END

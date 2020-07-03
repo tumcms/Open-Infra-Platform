@@ -19,7 +19,7 @@
 
 #include <QPainter>
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 //taken from the javascript of http://www.deine-berge.de/umrechner_koordinaten.php
 buw::Vector2d pod2wgs(const buw::Vector2d& pod)
@@ -493,4 +493,4 @@ BoundingBoxEffect::BoundingBoxEffect(buw::IRenderSystem* renderSystem, buw::Refe
     drawMap_(false) {
 }
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END

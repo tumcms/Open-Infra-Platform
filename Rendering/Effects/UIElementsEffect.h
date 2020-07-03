@@ -20,11 +20,11 @@
 #define BlueFramework_UserInterface_UIElementsEffect_ce3ae2a7_9ba0_4302_9860_f5d26081abd7_h
 
 #include "namespace.h"
-#include "../UserInterface/ViewPanel/RenderResources.h"
+#include <Resources/RenderResources.h>
 #include <buw.Engine.h>
 #include <buw.Rasterizer.h>
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 struct ViewportBuffer {
 	int width, height;
@@ -56,6 +56,6 @@ private:
 	buw::ReferenceCounted<buw::VertexCacheLineT<buw::VertexPosition3Color3Size1>> vertexCacheLine_;
 };
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
 
 #endif // end define BlueFramework_UserInterface_UIElementsEffect_ce3ae2a7_9ba0_4302_9860_f5d26081abd7_h

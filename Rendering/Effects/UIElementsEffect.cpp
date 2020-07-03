@@ -17,7 +17,7 @@
 
 #include "UIElementsEffect.h"
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 void UIElements::v_render() {
 	setPipelineState(pipelineState_);
@@ -100,4 +100,4 @@ UIElements::UIElements(buw::IRenderSystem* renderSystem, buw::ReferenceCounted<b
 	viewportBuffer_ = nullptr;
 }
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
