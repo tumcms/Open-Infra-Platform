@@ -494,6 +494,7 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT O
 target_link_libraries( OpenInfraPlatform.UI
 	PUBLIC
 		OpenInfraPlatform.Core
+		OpenInfraPlatform.Rendering
 		Qt5::WinMain  # New target available via find_package ( Qt5Core )
 		Qt5::Core
 		Qt5::Gui
