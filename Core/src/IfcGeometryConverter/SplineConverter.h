@@ -60,7 +60,6 @@ namespace OpenInfraPlatform
 
 						std::vector<double> knotArray;
 						// renamed knots -> knotArray, according to Entity definition in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurve.htm
-						knotArray.reserve(numKnotsArray);
 
 						std::vector<double> weightsData;
 						// renamed weights -> weightsData, according to Attribute definitions in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcrationalbsplinecurvewithknots.htm
@@ -69,66 +68,20 @@ namespace OpenInfraPlatform
 						{
 							//std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots> rationalBSplineCurve =
 							//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots>(splineCurve);
-							const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve =
-								splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>();
+							//const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve =
+							//	splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>();
 
-							// //std::cout << "ERROR: IfcRationalBSplineCurveWithKnots not implemented" << std::endl;
-							//weights = rationalBSplineCurve->m_WeightsData;
-							weightsData.resize(rationalBSplineCurve->WeightsData.size());
-							std::transform(
-								rationalBSplineCurve->WeightsData.begin(),
-								rationalBSplineCurve->WeightsData.end(),
-								weightsData.begin(),
-								[](auto &it) -> double { return it; });
-								// convert 'it' (WeightsData) from IfcReal to double ?
+							weightsData = loadWeightsData(splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>());
 						}
 						
 						if (splineCurve.isOfType<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>())
 						{
 							//std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots> bspline =
 							//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots>(splineCurve);
-							EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots> bspline = 
-								splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>();
+							//EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots> bspline = 
+							//	splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>();
 
-							//const std::vector<int>& knotMults = bspline->m_KnotMultiplicities;
-							std::vector<int> knotMults;
-							knotMults.resize(bspline->KnotMultiplicities.size());
-							std::transform(
-								bspline->KnotMultiplicities.begin(),
-								bspline->KnotMultiplicities.end(),
-								knotMults.begin(),
-								[](auto &it) -> int { return it; });
-							    // convert 'it' (KnotMultiplicities) from IfcInteger to int ?
-
-							// //const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>& splinePoints = bspline->m_ControlPointsList;
-							//const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnots = bspline->m_Knots;
-							std::vector<double> knots;
-							// renamed splineKnots -> knots, according to Attribute definitions in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurvewithknots.htm
-							std::transform(
-								bspline->Knots.begin(),
-								bspline->Knots.end(),
-								knots.begin(),
-								[](auto &it) { return it; });
-							    // convert 'it' (Knots) from IfcParameterValue to double ?
-
-							if (knotMults.size() != knots.size())
-							{
-								std::cout << "ERROR: knot multiplicity does not correspond number of knots" << std::endl;
-								return;
-							}
-
-							// obtain knots
-							for (int i = 0; i < knots.size(); ++i)
-							{
-								//double knot = splineKnots[i]->m_value;
-								double knot = knots[i];
-								const int knotMult = knotMults[i];
-								// look at the multiplicity of the current knot
-								for (int j = 0; j < knotMult; ++j)
-								{
-									knotArray.push_back(knot);
-								}
-							}
+							knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
 
 							//! TEMPORARY default number of curve points
 							const uint8_t numCurvePoints = numKnotsArray * 10;
@@ -366,6 +319,74 @@ namespace OpenInfraPlatform
 					}
 
 				private:
+					static std::vector<double> loadKnotArray(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline,
+						const int& numKnotsArray)
+					{
+						std::vector<double> knotArray;
+						knotArray.reserve(numKnotsArray);
+
+						// //const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>& splinePoints = bspline->m_ControlPointsList;
+						//const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnots = bspline->m_Knots;
+						std::vector<double> knots;
+						// renamed splineKnots -> knots, according to Attribute definitions in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurvewithknots.htm
+						std::transform(
+							bspline->Knots.begin(),
+							bspline->Knots.end(),
+							knots.begin(),
+							[](auto &it) { return it; });
+						// convert 'it' (Knots) from IfcParameterValue to double ?
+
+						//const std::vector<int>& knotMults = bspline->m_KnotMultiplicities;
+						std::vector<int> knotMults;
+						knotMults.resize(bspline->KnotMultiplicities.size());
+						std::transform(
+							bspline->KnotMultiplicities.begin(),
+							bspline->KnotMultiplicities.end(),
+							knotMults.begin(),
+							[](auto &it) -> int { return it; });
+						// convert 'it' (KnotMultiplicities) from IfcInteger to int ?
+
+						//if (knotMults.size() != knots.size())
+						//{
+						//	std::cout << "ERROR: knot multiplicity does not correspond number of knots" << std::endl;
+						//	return;
+						//}
+
+						// obtain knots
+						for (int i = 0; i < knots.size(); ++i)
+						{
+							//double knot = splineKnots[i]->m_value;
+							double knot = knots[i];
+							const int knotMult = knotMults[i];
+							// look at the multiplicity of the current knot
+							for (int j = 0; j < knotMult; ++j)
+							{
+								knotArray.push_back(knot);
+							}
+						}
+
+						return knotArray;
+					}
+
+
+					static std::vector<double> loadWeightsData(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve)
+					{
+						std::vector<double> weightsData;
+
+						// //std::cout << "ERROR: IfcRationalBSplineCurveWithKnots not implemented" << std::endl;
+						//weights = rationalBSplineCurve->m_WeightsData;
+						weightsData.resize(rationalBSplineCurve->WeightsData.size());
+						std::transform(
+							rationalBSplineCurve->WeightsData.begin(),
+							rationalBSplineCurve->WeightsData.end(),
+							weightsData.begin(),
+							[](auto &it) -> double { return it; });
+						// convert 'it' (WeightsData) from IfcReal to double ?
+
+						return weightsData;
+					}
 
 			}; // end class SplineConverterT
 
