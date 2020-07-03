@@ -306,16 +306,17 @@ namespace OpenInfraPlatform
 						const uint32_t numControlPoints,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
 						const std::vector<double>& weights,
-						const std::vector<double>& knotVector,
+						const std::vector<double>& knotArray,
 						std::vector<carve::geom::vector<3>>& curvePoints)
 					{
+						// renamed knotVector -> knotArray, according to Entity definition in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurve.htm
 
 						// curve is defined for [t_p;t_m-p], m := number of knots - 1
 						const uint32_t firstIndex = order - 1;
-						const uint32_t lastIndex = knotVector.size() - order;
+						const uint32_t lastIndex = knotArray.size() - order;
 
-						const double knotStart = knotVector[firstIndex];
-						const double knotEnd = knotVector[lastIndex];
+						const double knotStart = knotArray[firstIndex];
+						const double knotEnd = knotArray[lastIndex];
 						const double knotRange = knotEnd - knotStart;
 
 						// compute step size
@@ -331,7 +332,7 @@ namespace OpenInfraPlatform
 							if(i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
 							// 1) Evaluate basis functions at curve point t
-							computeBSplineBasisFunctions(order, t, numControlPoints, knotVector, basisFuncs);
+							computeBSplineBasisFunctions(order, t, numControlPoints, knotArray, basisFuncs);
 							// 2) Compute exact point
 							carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
 							// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
