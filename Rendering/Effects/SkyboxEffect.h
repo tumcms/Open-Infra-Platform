@@ -53,4 +53,5 @@ private:
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
 
+EMBED_RENDERING_INTO_OIP_NAMESPACE(SkyboxEffect)
 #endif // end define BlueFramework_UserInterface_SkyboxEffect_34f22a43_6c1f_4b9f_99f5_ca188f4c0343_h

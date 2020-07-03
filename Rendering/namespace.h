@@ -28,8 +28,8 @@ namespace Rendering {
 }\
 }
 #endif
-#if !defined EMBED_INTO_OIP_NAMESPACE
-#define EMBED_INTO_OIP_NAMESPACE(X) \
+#if !defined EMBED_RENDERING_INTO_OIP_NAMESPACE
+#define EMBED_RENDERING_INTO_OIP_NAMESPACE(X) \
 namespace oip { \
 using OpenInfraPlatform::Rendering::X; \
 }

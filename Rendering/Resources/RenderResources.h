@@ -43,4 +43,4 @@ private:
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
 
-EMBED_INTO_OIP_NAMESPACE(RenderResources)
+namespace oip { using OpenInfraPlatform::Rendering::RenderResources; }

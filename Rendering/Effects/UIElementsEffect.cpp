@@ -19,7 +19,7 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
-void UIElements::v_render() {
+void UIElementsEffect::v_render() {
 	setPipelineState(pipelineState_);
 	setRenderTarget(renderSystem()->getBackBufferTarget(), depthStencil_);
 	setViewport(viewport_);
@@ -32,7 +32,7 @@ void UIElements::v_render() {
 }
 
 
-void UIElements::v_init() {
+void UIElementsEffect::v_init() {
 	try {
 		int width = renderSystem()->getBackBufferTarget()->width();
 		int height = renderSystem()->getBackBufferTarget()->height();
@@ -67,7 +67,7 @@ void UIElements::v_init() {
 	}
 }
 
-void UIElements::resize(const buw::viewportDescription& vpd) {
+void UIElementsEffect::resize(const buw::viewportDescription& vpd) {
 	int size = 130;
 	viewport_->resize(buw::viewportDescription(std::min((int)vpd.width, size), std::min((int)vpd.height, size), 0, std::max((int)vpd.height - size, 0)));
 
@@ -79,7 +79,7 @@ void UIElements::resize(const buw::viewportDescription& vpd) {
 	viewportBuffer_->uploadData(cbd);
 }
 
-void UIElements::loadShader() {
+void UIElementsEffect::loadShader() {
 	buw::pipelineStateDescription psd;
 	psd.effectFilename = buw::Singleton<RenderResources>::instance().getResourceRootDir() + "/Shader/UIElementsEffect.be";
 	psd.pipelineStateName = "";
@@ -93,7 +93,7 @@ void UIElements::loadShader() {
 	pipelineState_ = createPipelineState(psd);
 }
 
-UIElements::UIElements(buw::IRenderSystem* renderSystem, buw::ReferenceCounted<buw::ITexture2D> depthStencil, 
+UIElementsEffect::UIElementsEffect(buw::IRenderSystem* renderSystem, buw::ReferenceCounted<buw::ITexture2D> depthStencil, 
 	buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer)
     : Effect(renderSystem), depthStencil_(depthStencil), worldBuffer_(worldBuffer) {
 	viewport_ = nullptr;

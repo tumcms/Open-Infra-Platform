@@ -31,9 +31,9 @@ struct ViewportBuffer {
 	int p1, p2;
 };
 
-class UIElements : public buw::Effect {
+class UIElementsEffect : public buw::Effect {
 public:
-	UIElements(
+	UIElementsEffect(
 		buw::IRenderSystem* renderSystem,
 		buw::ReferenceCounted<buw::ITexture2D> depthStencil,
 		buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer);
@@ -57,5 +57,8 @@ private:
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
+
+EMBED_RENDERING_INTO_OIP_NAMESPACE(UIElementsEffect)
+EMBED_RENDERING_INTO_OIP_NAMESPACE(ViewportBuffer)
 
 #endif // end define BlueFramework_UserInterface_UIElementsEffect_ce3ae2a7_9ba0_4302_9860_f5d26081abd7_h

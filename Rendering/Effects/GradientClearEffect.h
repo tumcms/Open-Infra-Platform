@@ -58,4 +58,6 @@ private:
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
 
+EMBED_RENDERING_INTO_OIP_NAMESPACE(GradientClearEffect)
+
 #endif // end define OpenInfraPlatform_UserInterface_GradientClearEffect_afbb68df_d61c_4c33_97ea_562ed68cda3c_h

@@ -20,7 +20,7 @@
 #ifndef OpenInfraPlatform_UserInterface_IfcGeometryEffect_d170662a_b003_4afa_a25b_a9d772f3013d_h
 #define OpenInfraPlatform_UserInterface_IfcGeometryEffect_d170662a_b003_4afa_a25b_a9d772f3013d_h
 #include "IfcGeometryConverter/ConverterBuw.h"
-#include "namespace.h"
+#include <namespace.h>
 
 #include <buw.Rasterizer.h>
 #include <map>
@@ -56,4 +56,6 @@ private:
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
+
+EMBED_RENDERING_INTO_OIP_NAMESPACE(IfcGeometryEffect)
 #endif // end define OpenInfraPlatform_UserInterface_IfcGeometryEffect_d170662a_b003_4afa_a25b_a9d772f3013d_h

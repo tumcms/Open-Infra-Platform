@@ -19,10 +19,9 @@
 #ifndef BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h
 #define BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h
 
-#include "namespace.h"
 #include <Resources/RenderResources.h>
-#include <buw.Engine.h>
 #include <buw.Rasterizer.h>
+#include <namespace.h>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
@@ -65,5 +64,7 @@ private:
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
+
+EMBED_RENDERING_INTO_OIP_NAMESPACE(BoundingBoxEffect)
 
 #endif // end define BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h
