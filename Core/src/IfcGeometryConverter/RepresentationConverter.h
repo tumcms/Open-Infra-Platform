@@ -269,7 +269,7 @@ namespace OpenInfraPlatform {
 					//   IfcCompositeCurveSegment, *IfcCsgPrimitive3D*, *IfcCurve*, IfcDirection, IfcDistanceExpression, *IfcFaceBasedSurfaceModel*, 
 					//   IfcFillAreaStyleHatching, IfcFillAreaStyleTiles, *IfcGeometricSet*, IfcHalfSpaceSolid, IfcLightSource, IfcLinearAxisWithInclination, 
 					//   IfcOrientationExpression, IfcPlacement, IfcPlanarExtent, IfcPoint, IfcSectionedSpine, *IfcShellBasedSurfaceModel*, *IfcSolidModel*, 
-					//   *IfcSurface*, *IfcTessellatedItem*, IfcTextLiteral, IfcVector))
+					//   *IfcSurface*, *IfcTessellatedItem*, IfcTextLiteral, *IfcVector*))
 					// *********************************************************************************************************************************************************************//
 
 					// (1/*) IfcFaceBasedSurfaceModel SUBTYPE OF IfcGeometricRepresentationItem
@@ -341,6 +341,23 @@ namespace OpenInfraPlatform {
 						faceConverter->convertIfcTessellatedItem(
 							geomItem.as<typename IfcEntityTypesT::IfcTessellatedItem>(),
 							pos, itemData);
+						return;
+					}
+
+					// (10/*) IfcVector SUBTYPE OF IfcGeometricRepresentationItem
+					if (geomItem.isOfType<typename IfcEntityTypesT::IfcVector>()) {
+						carve::geom::vector<3> vct = placementConverter->convertIfcVector(
+							geomItem.as<typename IfcEntityTypesT::IfcVector>());
+
+						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+						polylineData->beginPolyline();
+
+						polylineData->addVertex(pos * carve::geom::VECTOR(0.,0.,0.));
+						polylineData->addPolylineIndex(0);
+						polylineData->addVertex(pos * vct);
+						polylineData->addPolylineIndex(1);
+
+						itemData->polylines.push_back(polylineData);
 						return;
 					}
 

@@ -151,7 +151,6 @@ namespace OpenInfraPlatform {
                  * \returns    Calculated 2D or 3D vector.
 				 * 
                  * \note The direction is normalized.
-                 * \note The default value for the direction needs to be set outside the function.
                  */
                 carve::geom::vector<3> convertIfcDirection(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcDirection>& ifcDirection
@@ -168,7 +167,6 @@ namespace OpenInfraPlatform {
                     //	WHERE
                     //		MagnitudeGreaterZero : SIZEOF(QUERY(Tmp < *DirectionRatios | Tmp <> 0.0)) > 0;
                     // END_ENTITY;
-                    // read the coordinates
                     // **************************************************************************************************************************
 					// check input
 					if (ifcDirection.expired()) 
@@ -200,6 +198,44 @@ namespace OpenInfraPlatform {
 					// returns
                     return direction;
                 }
+
+				/*! \brief Converts \c IfcVector to a 3D vector.
+				 *
+				 * \param[in]	ifcVector	IfcVector entity to be interpreted.
+				 * \returns    Calculated 2D or 3D vector.
+				 */
+				carve::geom::vector<3> convertIfcVector(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcVector>& ifcVector
+				) const throw(...)
+				{
+					// **************************************************************************************************************************
+					// IfcVector
+					//  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifcvector.htm
+					//	ENTITY IfcVector
+					//		SUBTYPE OF(IfcGeometricRepresentationItem);
+					//		Orientation: IfcDirection;
+					//		Magnitude: IfcLengthMeasure;
+					//	DERIVE
+					//		Dim : IfcDimensionCount: = Orientation.Dim;
+					//	WHERE
+					//		MagGreaterOrEqualZero : Magnitude >= 0.0;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+					// check input
+					if (ifcVector.expired())
+						throw oip::ReferenceExpiredException(ifcVector);
+
+					// read direction
+					carve::geom::vector<3> direction = convertIfcDirection(ifcVector->Orientation);
+
+					// ignore magnitude if == 0
+					if (ifcVector->Magnitude != 0.)
+						// scale the lengths according to the unit conversion & return
+						return direction * ifcVector->Magnitude * UnitConvert()->getLengthInMeterFactor();
+					else
+						// otherwise return normalized direction
+						return direction;
+				}
 
 
                 /*! \brief Converts \c IfcPlacement to a transformation matrix.
