@@ -25,7 +25,7 @@
 #include "MainWindow.h"
 #include <BlueFramework/Core/Diagnostics/log.h>
 #include <BlueFramework/Core/Version.h>
-#include "ViewPanel/RenderResources.h"
+#include <Resources/RenderResources.h>
 #include <QApplication>
 #include <QDockWidget>
 #include <QMainWindow>
@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
         //*(int *)0 = 0;// Baaaaaaad thing that should never happen
         // throw std::runtime_error("muh");
 
-        std::string basePath = buw::Singleton<OpenInfraPlatform::UserInterface::RenderResources>::instance().getResourceRootDir() + "/Style/blueform.qss";
+        std::string basePath = buw::Singleton<oip::RenderResources>::instance().getResourceRootDir() + "/Style/blueform.qss";
 
         QFile styleSheet(basePath.c_str());
 

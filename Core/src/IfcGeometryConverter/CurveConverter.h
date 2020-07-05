@@ -611,18 +611,6 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException( bounded_curve );
 				}
 
-
-				/*! \brief Converts \c IfcConic to a sequence of points.
-				*
-				* \param[in] ifcCurve				The \c IfcConic to be converted.
-				* \param[out] targetVec				The sequence of points describing the curve.
-				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcConic.
-				*
-				* \note Calls the corresponding specialized functions.
-				*/
 				void convertIfcConic(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcConic>& conic,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -631,13 +619,12 @@ namespace OpenInfraPlatform {
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
 					const bool senseAgreement
 				) const throw(...)
-				{					
-					// check input
-					if (conic.expired())
-						throw oip::ReferenceExpiredException(conic);
-					
+				{
 					// ABSTRACT SUPERTYPE of IfcCircle, IfcEllipse
+
 					// (1/2) IfcCircle SUBTYPE OF IfcConic
+					std::shared_ptr<typename IfcEntityTypesT::IfcCircle> circle =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircle>(conic.lock());
 					if (conic.isOfType<typename IfcEntityTypesT::IfcCircle>()) 
 					{
 						return convertIfcCircle( conic.as<typename IfcEntityTypesT::IfcCircle>(),
@@ -649,21 +636,13 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcEllipse(conic.as<typename IfcEntityTypesT::IfcEllipse>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
-					} // end if IfcEllipse
+					} // end if ellipse
 
 					// the rest we do not support
 					throw oip::UnhandledException(conic);
 				}
 
-				/*! \brief Converts \c IfcLine to a sequence of 2 points.
-				*
-				* \param[in] ifcCurve				The \c IfcLine to be converted.
-				* \param[out] targetVec				The sequence of points describing the curve.
-				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcLine.
-				*/
+
 				void convertIfcLine(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLine>& line,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -673,32 +652,54 @@ namespace OpenInfraPlatform {
 					const bool senseAgreement
 				) const throw(...)
 				{
-					//**************************************************************
-					//	ENTITY IfcLine
-					//		SUBTYPE OF(IfcCurve);
-					//		Pnt: IfcCartesianPoint;
-					//		Dir: IfcVector;
-					//	WHERE
-					//		SameDim : Dir.Dim = Pnt.Dim;
-					//	END_ENTITY;
-					//**************************************************************
-
 					// Part 1: Get information from IfcLine. 
+
 					// Get IfcLine attributes: line point and line direction. 
 					carve::geom::vector<3> line_origin = placementConverter->convertIfcCartesianPoint(line->Pnt);
-					carve::geom::vector<3> line_direction = placementConverter->convertIfcVector(line->Dir);
+
+					std::shared_ptr<typename IfcEntityTypesT::IfcVector> line_vec = line->Dir.lock();
+					if (!line_vec) {
+						BLUE_LOG(error) << line->getErrorLog() << ": No direction specified";
+						return;
+					}
+					// Get IfcVector attributes: line orientation and magnitude. 
+
+					// Orientation type IfcDirection
+					auto ifc_line_direction = line_vec->Orientation;
+
+					// Get IfcDirection attribute: direction ratios. 
+					std::vector<double> direction_ratios(ifc_line_direction->DirectionRatios.size());
+					for (int i = 0; i < direction_ratios.size(); ++i) {
+						direction_ratios[i] = ifc_line_direction->DirectionRatios[i];
+					}
+
+					carve::geom::vector<3> line_direction;
+					if (direction_ratios.size() > 1) {
+						if (direction_ratios.size() > 2) {
+							line_direction = carve::geom::VECTOR(direction_ratios[0],
+								direction_ratios[1],
+								direction_ratios[2]);
+						}
+						else {
+							line_direction = carve::geom::VECTOR(direction_ratios[0],
+								direction_ratios[1], 0);
+						}
+					}
+					line_direction.normalize();
+
+					// Magnitude type IfcLengthMeasure
+					double line_magnitude = line_vec->Magnitude * UnitConvert()->getLengthInMeterFactor();
 
 					// Part 2: Trimming
-					carve::geom::vector<3> line_start;
-					carve::geom::vector<3> line_end;
 
 					// Check for trimming at beginning of line
-					//TODO trimming refactor
+					double start_parameter = 0.0;
 					typename IfcEntityTypesT::IfcParameterValue trim_par1;
 					auto first_par_val = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select_ptr) { return select_ptr->which() == 1; });
 					if (first_par_val != trim1Vec.end()) {
 						trim_par1 = (*first_par_val)->get<1>();
-						line_start = line_origin + line_direction * trim_par1 * UnitConvert()->getLengthInMeterFactor();
+						start_parameter = trim_par1;
+						line_origin = line_origin + line_direction * start_parameter;
 					}
 					else {
 						auto first_point = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select_ptr) { return select_ptr->which() == 0; });
@@ -712,20 +713,20 @@ namespace OpenInfraPlatform {
 
 							if ((closest_point_on_line - trim_point).length() < 0.0001) {
 								// trimming point is on the line
-								line_start = trim_point;
+								line_origin = trim_point;
 							}
-							else
-								throw oip::InconsistentGeometryException((*first_point)->get<0>(), "The start point does not lie on the line " + line->getErrorLog());
 						}
 					}
 
 					// Check for trimming at end of line
+					carve::geom::vector<3> line_end;
 					typename IfcEntityTypesT::IfcParameterValue trim_par2;
 					first_par_val = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select_ptr) { return select_ptr->which() == 1; });
 
 					if (first_par_val != trim2Vec.end()) {
 						trim_par2 = (*first_par_val)->get<1>();
-						line_end = line_origin + line_direction * trim_par2 * UnitConvert()->getLengthInMeterFactor();
+						line_magnitude = trim_par2 * UnitConvert()->getLengthInMeterFactor();
+						line_end = line_origin + line_direction * line_magnitude;
 					}
 					else {
 						auto first_point = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select_ptr) { return select_ptr->which() == 0; });
@@ -741,18 +742,16 @@ namespace OpenInfraPlatform {
 								// trimming point is on the line
 								line_end = trim_point;
 							}
-							else
-								throw oip::InconsistentGeometryException((*first_point)->get<0>(), "The end point does not lie on the line " + line->getErrorLog());
 						}
 					}
 
 					// Part 3: Add line points
 					std::vector<carve::geom::vector<3> > points_vec;
-					points_vec.push_back(line_start);
+					points_vec.push_back(line_origin);
 					points_vec.push_back(line_end);
 
 					GeomUtils::appendPointsToCurve(points_vec, targetVec);
-					segmentStartPoints.push_back(line_start);
+					segmentStartPoints.push_back(line_origin);
 					return;
 				}
 
@@ -1223,7 +1222,7 @@ namespace OpenInfraPlatform {
 				{
 					// initialize the return value with enough space
 					std::vector<carve::geom::vector<3>> loop;
-					loop.reserve( points.size() );
+					loop.reserve(points.size());
 					// convert each point individually and add to the return vector
 					for ( auto& it : points )
 						loop.push_back(placementConverter->convertIfcCartesianPoint(it));
