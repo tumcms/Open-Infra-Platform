@@ -46,11 +46,7 @@ add_library(OpenInfraPlatform.Rendering STATIC
 	${OpenInfraPlatform_Rendering_Resources_Source}
 )
 
-target_include_directories(OpenInfraPlatform.Rendering 
-	PUBLIC
-		${CMAKE_CURRENT_SOURCE_DIR}
-	INTERFACE 
-		${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(OpenInfraPlatform.Rendering INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(OpenInfraPlatform.Rendering
     PUBLIC
