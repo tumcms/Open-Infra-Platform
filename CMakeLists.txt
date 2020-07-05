@@ -672,6 +672,7 @@ set_target_properties(QSimpleUpdaterCopyBinaries						PROPERTIES FOLDER "OpenInf
 
 set_target_properties(OpenInfraPlatform.UI								PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.Core							PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.Rendering						PROPERTIES FOLDER "OpenInfraPlatform")
 
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator			PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
