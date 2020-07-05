@@ -264,16 +264,12 @@ namespace OpenInfraPlatform
 					{
 						// renamed knotVector -> knotArray, according to Entity definition in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurve.htm
 
-						// curve is defined for [t_p;t_m-p], m := number of knots - 1
-						const uint32_t firstIndex = order - 1;
-						const uint32_t lastIndex = knotArray.size() - order;
+						// The following parameters corresponds to the parameter t of a curve c(t)
+						double knotStart;
+						double knotEnd;
+						double step;
 
-						const double knotStart = knotArray[firstIndex];
-						const double knotEnd = knotArray[lastIndex];
-						const double knotRange = knotEnd - knotStart;
-
-						// compute step size
-						const double step = knotRange / static_cast<double>(numCurvePoints - 1);
+						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
 
 						std::vector<double> basisFuncs(numControlPoints, 0.0);
 						// start with first valid knot
@@ -387,7 +383,25 @@ namespace OpenInfraPlatform
 
 						return weightsData;
 					}
+					
+					static std::tuple<double, double, double> obtainKnotRange(
+						const uint8_t& order, 
+						const std::vector<double>& knotArray,
+						const uint32_t& numCurvePoints)
+					{
+						// curve is defined for [t_p;t_m-p], m := number of knots - 1
+						const uint32_t firstIndex = order - 1;
+						const uint32_t lastIndex = knotArray.size() - order;
 
+						const double knotStart = knotArray[firstIndex];
+						const double knotEnd = knotArray[lastIndex];
+						const double knotRange = knotEnd - knotStart;
+
+						// compute step size
+						const double step = knotRange / static_cast<double>(numCurvePoints - 1);
+
+						return { knotStart, knotEnd, step };
+					}
 			}; // end class SplineConverterT
 
 			//template<>
