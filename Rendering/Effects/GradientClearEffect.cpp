@@ -16,6 +16,7 @@
 */
 
 #include "GradientClearEffect.h"
+#include <Resources/RenderResources.h>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 

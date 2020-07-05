@@ -21,7 +21,7 @@
 
 #include <Resources/RenderResources.h>
 #include <buw.Rasterizer.h>
-#include <namespace.h>
+#include "..\namespace.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 

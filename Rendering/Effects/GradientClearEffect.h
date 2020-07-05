@@ -19,11 +19,10 @@
 #ifndef OpenInfraPlatform_UserInterface_GradientClearEffect_afbb68df_d61c_4c33_97ea_562ed68cda3c_h
 #define OpenInfraPlatform_UserInterface_GradientClearEffect_afbb68df_d61c_4c33_97ea_562ed68cda3c_h
 
-#include <Resources/RenderResources.h>
-#include "namespace.h"
-
 #include <buw.Rasterizer.h>
+#include <chrono>
 
+#include "..\namespace.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
@@ -51,9 +50,9 @@ public:
 private:
 	buw::ReferenceCounted<buw::IPipelineState>	pipelineState_;
 	buw::ReferenceCounted<buw::IViewport>		viewport_;
-	buw::ReferenceCounted<buw::IConstantBuffer> constantBuffer_;
-	std::chrono::nanoseconds					start_;
-	bool										snow_ = false;
+	buw::ReferenceCounted<buw::IConstantBuffer>     constantBuffer_;
+	std::chrono::nanoseconds			start_;
+	bool					        snow_ = false;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END

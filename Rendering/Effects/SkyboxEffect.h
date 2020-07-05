@@ -20,12 +20,13 @@
 #ifndef OpenInfraPlatform_UserInterface_SkyboxEffect_34f22a43_6c1f_4b9f_99f5_ca188f4c0343_h
 #define OpenInfraPlatform_UserInterface_SkyboxEffect_34f22a43_6c1f_4b9f_99f5_ca188f4c0343_h
 
-#include "namespace.h"
 
 #include <buw.Engine.h>
 #include <buw.ImageProcessing.h>
 #include <buw.Rasterizer.h>
 #include <map>
+
+#include "..\namespace.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 

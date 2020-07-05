@@ -20,12 +20,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef OpenInfraPlatform_UserInterface_BoxEffect_F594ABC3_4E77_4E7B_BB89_2A31CD33156A_h
 #define OpenInfraPlatform_UserInterface_BoxEffect_F594ABC3_4E77_4E7B_BB89_2A31CD33156A_h
 
-#include "namespace.h"
-
 #include <buw.Rasterizer.h>
 #include <buw.Engine.h>
 #include <map>
 #include <tuple>
+
+#include "..\namespace.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
