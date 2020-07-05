@@ -36,7 +36,6 @@ endif()
 
 file(GLOB OpenInfraPlatform_UnitTests_Source *.cpp)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Import/IFC2X3)
 add_subdirectory(Schemas)
 
 
