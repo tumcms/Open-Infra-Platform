@@ -102,12 +102,11 @@ namespace OpenInfraPlatform
 					}
 
 					// Compute B-Spline basis functions for given curve value t
-					static void computeBSplineBasisFunctions(
+					static std::vector<double> computeBSplineBasisFunctions(
 						const uint8_t order, // k: order of basis and polynomial of degree k - 1
 						const double t, // t: arbitrary value on B-Spline curve
 						const uint32_t numControlPoints, // n + 1 control points
-						const std::vector<double>& knotVector, // t_i: knot points
-						std::vector<double>& basisFuncs)
+						const std::vector<double>& knotVector) // t_i: knot points
 					{
 						const uint8_t degree = order - 1;
 						const uint16_t numBasisFuncs = degree + numControlPoints;
@@ -153,10 +152,13 @@ namespace OpenInfraPlatform
 							}
 						}
 
+						std::vector<double> basisFuncs;
+						basisFuncs.reserve(numControlPoints);
 						const uint32_t numBasis = numControlPoints;
 						for(int j = 0; j < numBasis; ++j) {
 							basisFuncs[j] = tempBasisFuncs[j];
 						}
+						return basisFuncs;
 					}
 
 					// B-Spline surface definition according to: 
@@ -271,7 +273,7 @@ namespace OpenInfraPlatform
 
 						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
 
-						std::vector<double> basisFuncs(numControlPoints, 0.0);
+						std::vector<double> basisFuncs;
 						// start with first valid knot
 						double t = knotStart;
 						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
@@ -281,7 +283,7 @@ namespace OpenInfraPlatform
 							if(i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
 							// 1) Evaluate basis functions at curve point t
-							computeBSplineBasisFunctions(order, t, numControlPoints, knotArray, basisFuncs);
+							basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
 							// 2) Compute exact point
 							carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
 							// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
