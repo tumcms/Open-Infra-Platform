@@ -121,11 +121,7 @@ namespace OpenInfraPlatform
 
                 std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
 
-                std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_facesOuterShell;							
-                vec_facesOuterShell.resize(outerShell->CfsFaces.size());
-                std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
-									
-                faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell);
+                faceConverter->convertIfcFaceList(outerShell->CfsFaces, pos, inputDataOuterShell);
 
                 std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
                             inputDataOuterShell->open_or_closed_polyhedrons.end(),
@@ -345,8 +341,8 @@ namespace OpenInfraPlatform
 						std::vector<carve::geom::vector<3> > basis_curve_points;
 						curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);
 
-						std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
-						faceConverter->convertIfcSurface(surface_curve_swept_area_solid->ReferenceSurface.lock(), swept_area_pos, polyline_data);
+						std::shared_ptr<carve::input::PolylineSetData> polyline_data =
+							faceConverter->convertIfcSurface(surface_curve_swept_area_solid->ReferenceSurface, swept_area_pos);
 
 #ifdef _DEBUG
 						BLUE_LOG(trace) << "Processed IfcSurfaceCurveSweptAreaSolid #" << surface_curve_swept_area_solid->getId();
@@ -1793,8 +1789,8 @@ namespace OpenInfraPlatform
 
 						if (var == 0)
 						{
-							std::shared_ptr<carve::input::PolylineSetData> surface_data(new carve::input::PolylineSetData());
-							faceConverter->convertIfcSurface(base_surface, carve::math::Matrix::IDENT(), surface_data);
+							std::shared_ptr<carve::input::PolylineSetData> surface_data = 
+								faceConverter->convertIfcSurface(base_surface, carve::math::Matrix::IDENT());
 							std::vector<carve::geom::vector<3>> base_surface_points = surface_data->points;
 
 							if (base_surface_points.size() != 4)
