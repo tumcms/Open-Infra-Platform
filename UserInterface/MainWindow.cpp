@@ -47,6 +47,8 @@
 #include <shlobj.h>
 #include <stdlib.h>
 
+#include <Resources/RenderResources.h>
+
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 #include <PointCloudProcessing.h>
 #include <PointCloud.h>
