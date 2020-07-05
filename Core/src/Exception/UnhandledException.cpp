@@ -17,28 +17,44 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "UnhandledException.h"
 
+//! Constructor
 OpenInfraPlatform::Core::Exception::UnhandledException::UnhandledException() noexcept
+	: item_(nullptr), message_("")
 {
 }
 
+//! Copy Constructor
 OpenInfraPlatform::Core::Exception::UnhandledException::UnhandledException(
-    const UnhandledException& other) noexcept: item_(other.item_)
+    const UnhandledException& other) noexcept : item_(other.item_), message_(other.message_)
 {
 }
 
+/*!
+\brief Constructor with the unhandled entity.
+\param[in] item The entity that is not handled.
+*/
 OpenInfraPlatform::Core::Exception::UnhandledException::UnhandledException(
     const std::shared_ptr<oip::EXPRESSObject>& item) noexcept
 {
     item_ = item;
+	message_ = item_->getErrorLog() + ": IFC Entity not supported.";
 }
 
-
-OpenInfraPlatform::Core::Exception::UnhandledException::~UnhandledException() noexcept
+/*!
+\brief Constructor with the arbitrary string.
+\param[in] message The message.
+*/
+OpenInfraPlatform::Core::Exception::UnhandledException::UnhandledException(
+	const std::string& message) noexcept
 {
+	message_ = message;
 }
 
+/*!
+\brief Returns what is not supported.
+\returns A message with the entity name.
+*/
 const char* OpenInfraPlatform::Core::Exception::UnhandledException::what() const noexcept
 {
-    std::string s = item_->getErrorLog() + ": IFC Entity not supported.";
-    return s.c_str();
+    return message_.c_str();
 }

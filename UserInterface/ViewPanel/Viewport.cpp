@@ -16,9 +16,8 @@
 */
 
 #include "Viewport.h"
-#include "UnitTesting/Benchmark.h"
 #include "DataManagement/General/Data.h"
-#include "ViewPanel/RenderResources.h"
+#include <Resources/RenderResources.h>
 
 //#include "OpenInfraPlatform/DataManagement/Command/SelectAlignment.h"
 //#include "OpenInfraPlatform/Infrastructure/Import/ImportLandXml.h"
@@ -35,13 +34,7 @@
 #include "ViewPanel/Effects/PointCloudProcessing/PointCloudEffect.h"
 #endif
 
-//Effects
-#include "ViewPanel/Effects/UIElementsEffect.h"
-#include "ViewPanel/Effects/BoundingBoxEffect.h"
-#include "ViewPanel/Effects/SkyboxEffect.h"
-#include "ViewPanel/Effects/BoxEffect.h"
-#include "ViewPanel/Effects/IfcGeometryEffect.h"
-#include "ViewPanel/Effects/GradientClearEffect.h"
+
 
 
 #include <buw.Engine.h>
@@ -120,10 +113,10 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     cbd0.data = nullptr;
     worldBuffer_ = renderSystem_->createConstantBuffer(cbd0);
 
-	ViewportBuffer buffer = { width(), height() };
+	oip::ViewportBuffer buffer = { width(), height() };
 
 	buw::constantBufferDescription cbd1;
-	cbd1.sizeInBytes = sizeof(ViewportBuffer);
+	cbd1.sizeInBytes = sizeof(oip::ViewportBuffer);
 	cbd1.data = &buffer;
     viewportBuffer_ = renderSystem_->createConstantBuffer(cbd1);
 
@@ -132,10 +125,10 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     cbd2.data = nullptr;
     pickIdBuffer_ = renderSystem_->createConstantBuffer(cbd2);
 
-    viewCube_ = buw::makeReferenceCounted<buw::ViewCube>(renderSystem_, pickBuffer_, pickIdBuffer_, cameraController_, buw::Singleton<RenderResources>::instance().getResourceRootDir());
+    viewCube_ = buw::makeReferenceCounted<buw::ViewCube>(renderSystem_, pickBuffer_, pickIdBuffer_, cameraController_, buw::Singleton<oip::RenderResources>::instance().getResourceRootDir());
 
     BLUE_LOG(trace) << "Creating effects (1)";
-    gradientClearEffect_ = buw::makeReferenceCounted<GradientClearEffect>(renderSystem_.get(), viewport_);
+    gradientClearEffect_ = buw::makeReferenceCounted<oip::GradientClearEffect>(renderSystem_.get(), viewport_);
     BLUE_LOG(trace) << "Creating effects (1.1)";
     gradientClearEffect_->init();
 
@@ -161,11 +154,11 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     slabFieldEffect_->init();*/
 
     BLUE_LOG(trace) << "Creating effects (7)";
-    uiElements_ = buw::makeReferenceCounted<UIElements>(renderSystem_.get(), depthStencilMSAA_, worldBuffer_);
+    uiElements_ = buw::makeReferenceCounted<oip::UIElementsEffect>(renderSystem_.get(), depthStencilMSAA_, worldBuffer_);
     uiElements_->init();
 
     BLUE_LOG(trace) << "Creating effects (8)";
-    boundingBoxEffect_ = buw::makeReferenceCounted<BoundingBoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+    boundingBoxEffect_ = buw::makeReferenceCounted<oip::BoundingBoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
     boundingBoxEffect_->init();
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
@@ -185,11 +178,11 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 	billboardEffect_->init();*/
 
     BLUE_LOG(trace) << "Creating IfcGeometry effects";
-    ifcGeometryEffect_ = buw::makeReferenceCounted<IfcGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+    ifcGeometryEffect_ = buw::makeReferenceCounted<oip::IfcGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
     ifcGeometryEffect_->init();
 
     BLUE_LOG(trace) << "Creating Skybox effect";
-    skyboxEffect_ = buw::makeReferenceCounted<SkyboxEffect>(renderSystem_.get(), viewport_, worldBuffer_);
+    skyboxEffect_ = buw::makeReferenceCounted<oip::SkyboxEffect>(renderSystem_.get(), viewport_, worldBuffer_);
     skyboxEffect_->init();
 
     timer_ = new QTimer();
@@ -197,7 +190,7 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     timer_->setSingleShot(false);
     connect(timer_, SIGNAL(timeout()), this, SLOT(tick()));
 
-    buw::Singleton<RenderResources>::instance().init(renderSystem_);
+    buw::Singleton<oip::RenderResources>::instance().init(renderSystem_);
 
     lastTick_ = std::chrono::high_resolution_clock::now().time_since_epoch();
     timer_->start();
@@ -211,7 +204,7 @@ Viewport::~Viewport() {
     OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Change.disconnect(boost::bind(&Viewport::onChange, this));
     OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Clear.disconnect(boost::bind(&Viewport::onClear, this));
 
-    buw::Singleton<RenderResources>::instance().release();
+    buw::Singleton<oip::RenderResources>::instance().release();
     activeEffects_.clear();
 
     delete timer_;
@@ -622,10 +615,10 @@ void Viewport::resizeEvent(QResizeEvent*) {
 
         depthBuffer_.resize(width(), height());
 
-        ViewportBuffer buffer = {width(), height()};
+        oip::ViewportBuffer buffer = {width(), height()};
 
         buw::constantBufferDescription cbd;
-        cbd.sizeInBytes = sizeof(ViewportBuffer);
+        cbd.sizeInBytes = sizeof(oip::ViewportBuffer);
         cbd.data = &buffer;
         viewportBuffer_->uploadData(cbd);
     }
