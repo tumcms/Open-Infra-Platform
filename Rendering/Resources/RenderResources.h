@@ -21,9 +21,10 @@
 #include <BlueFramework/Rasterizer/IRenderSystem.h>
 #include <BlueFramework/Rasterizer/Resources/ISampler.h>
 #include "IfcGeometryConverter/ConverterBuw.h"
-#include <namespace.h>
+#include "..\namespace.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
+
 class RenderResources {
 public:
     RenderResources();

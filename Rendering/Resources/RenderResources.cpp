@@ -77,7 +77,7 @@ std::string RenderResources::getResourceRootDir() {
             }
 
             //resourceRootDir_ += "/src/OpenInfraPlatform";
-            resourceRootDir_ += "/UserInterface";
+            resourceRootDir_ += "/Rendering";
         }
     }
 
