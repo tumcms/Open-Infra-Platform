@@ -34,7 +34,7 @@ protected:
     }
 
 
-    const std::string filename = "UnitTests/Schemas/IFC4X3/GeomConverter/basin-faceted-brep/Data/basin-faceted-brep.ifc";
+    const std::string filename = "UnitTests/Schemas/IFC4X3_RC1/basin-faceted-brep/Data/basin-faceted-brep.ifc";
     std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 
 };
