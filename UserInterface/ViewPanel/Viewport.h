@@ -132,7 +132,7 @@ namespace OpenInfraPlatform {
 			void showRoadBodySolid(const bool checked);
 
 			buw::ReferenceCounted<buw::ViewCube> getViewCube();
-			buw::ReferenceCounted<oip::AlignmentEffect> getAlignmentEffect();
+			//buw::ReferenceCounted<oip::AlignmentEffect> getAlignmentEffect();
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 		public Q_SLOTS:
@@ -186,11 +186,11 @@ namespace OpenInfraPlatform {
 			buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer_, viewportBuffer_, pickIdBuffer_;
 
 			buw::ReferenceCounted<oip::GradientClearEffect> gradientClearEffect_;
-			buw::ReferenceCounted<oip::DEMEffect> demEffect_;
-			buw::ReferenceCounted<oip::TrafficSignEffect> trafficSignEffect_;
-			buw::ReferenceCounted<oip::AlignmentEffect> alignmentEffect_;
-			buw::ReferenceCounted<oip::GirderEffect> girderEffect_;
-			buw::ReferenceCounted<oip::SlabFieldEffect> slabFieldEffect_;
+			//buw::ReferenceCounted<oip::DEMEffect> demEffect_;
+			//buw::ReferenceCounted<oip::TrafficSignEffect> trafficSignEffect_;
+			//buw::ReferenceCounted<oip::AlignmentEffect> alignmentEffect_;
+			//buw::ReferenceCounted<oip::GirderEffect> girderEffect_;
+			//buw::ReferenceCounted<oip::SlabFieldEffect> slabFieldEffect_;
 			buw::ReferenceCounted<oip::IfcGeometryEffect> ifcGeometryEffect_;
 			buw::ReferenceCounted<oip::UIElementsEffect> uiElements_;
 			buw::ReferenceCounted<oip::BoundingBoxEffect> boundingBoxEffect_;
@@ -201,7 +201,7 @@ namespace OpenInfraPlatform {
 			buw::ReferenceCounted<BoxEffect> sectionsBoundingBoxEffect_ = nullptr;
 #endif
 
-			buw::ReferenceCounted<oip::BillboardEffect> billboardEffect_;
+			//buw::ReferenceCounted<oip::BillboardEffect> billboardEffect_;
 			std::vector<buw::ReferenceCounted<buw::Effect>> activeEffects_;
 
 			// Clear
