@@ -611,6 +611,18 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException( bounded_curve );
 				}
 
+
+				/*! \brief Converts \c IfcConic to a sequence of points.
+				*
+				* \param[in] ifcCurve				The \c IfcConic to be converted.
+				* \param[out] targetVec				The sequence of points describing the curve.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcConic.
+				*
+				* \note Calls the corresponding specialized functions.
+				*/
 				void convertIfcConic(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcConic>& conic,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -619,12 +631,13 @@ namespace OpenInfraPlatform {
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
 					const bool senseAgreement
 				) const throw(...)
-				{
+				{					
+					// check input
+					if (conic.expired())
+						throw oip::ReferenceExpiredException(conic);
+					
 					// ABSTRACT SUPERTYPE of IfcCircle, IfcEllipse
-
 					// (1/2) IfcCircle SUBTYPE OF IfcConic
-					std::shared_ptr<typename IfcEntityTypesT::IfcCircle> circle =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircle>(conic.lock());
 					if (conic.isOfType<typename IfcEntityTypesT::IfcCircle>()) 
 					{
 						return convertIfcCircle( conic.as<typename IfcEntityTypesT::IfcCircle>(),
@@ -636,7 +649,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcEllipse(conic.as<typename IfcEntityTypesT::IfcEllipse>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
-					} // end if ellipse
+					} // end if IfcEllipse
 
 					// the rest we do not support
 					throw oip::UnhandledException(conic);
