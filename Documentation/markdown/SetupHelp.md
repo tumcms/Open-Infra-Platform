@@ -104,10 +104,11 @@ Before you can proceed to the Installation of **OpenInfraPlatform**, check, if t
 **NOTE:** Build dependencies are set, so building only the last step should automatically build all.
 
 1. Open Visual Studio and find the folder **EarlyBinding**. *Build* project **OpenInfraPlatform.IFC?**.
-2. If you are using point clouds *build* project **OpenInfraPlatform.PointCloudProcessing**.
-3. *Build* project **OpenInfraPlatform.Core**.
-4. *Build* project **OpenInfraPlatform.UI**.
-5. *Build* all projects staged in the **Copy** project folder. 
+1. If you are using point clouds *build* project **OpenInfraPlatform.PointCloudProcessing**.
+1. *Build* project **OpenInfraPlatform.Core**.
+1. *Build* project **OpenInfraPlatform.Rendering**.
+1. *Build* project **OpenInfraPlatform.UI**.
+1. *Build* all projects staged in the **Copy** project folder. 
 
 	**NOTE:** execute **Get_OKLABI.cmd** in the source folder (e.g. `C:\dev\Open-Infra-Platform\external`) to prevent an error during the build process. After the execution of **Get_OKLABI.cmd**, it's necessary to *configure* and *generate* OpenInfraPlatform project once again in CMake.
 
