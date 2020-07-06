@@ -21,7 +21,6 @@
 
 #include "DataManagement/General/Data.h"
 #include "IfcGeometryConverter/ConverterBuw.h"
-#include "ViewPanel/Tool.h"
 #include "ViewPanel/eView.h"
 
 #include "namespace.h"
@@ -40,22 +39,17 @@
 #include <QWidget>
 #include <buw.h>
 
+//Effects
+#include <Effects/UIElementsEffect.h>
+#include <Effects/BoundingBoxEffect.h>
+#include <Effects/SkyboxEffect.h>
+#include <Effects/BoxEffect.h>
+#include <Effects/IfcGeometryEffect.h>
+#include <Effects/GradientClearEffect.h>
+
+
 namespace OpenInfraPlatform {
 	namespace UserInterface {
-		class GradientClearEffect;
-		class DEMEffect;
-		class TrafficSignEffect;
-		class AlignmentEffect;
-		class GirderEffect;
-		class SlabFieldEffect;
-		class IfcGeometryEffect;
-		class SkyboxEffect;
-		class UIElements;
-		class BoundingBoxEffect;
-		class PointCloudEffect;
-		class BillboardEffect;
-		class BoxEffect;
-
 		class Viewport : public QWidget {
 			Q_OBJECT;
 			typedef OpenInfraPlatform::Core::DataManagement::ChangeFlag ChangeFlag;
@@ -138,7 +132,7 @@ namespace OpenInfraPlatform {
 			void showRoadBodySolid(const bool checked);
 
 			buw::ReferenceCounted<buw::ViewCube> getViewCube();
-			buw::ReferenceCounted<AlignmentEffect> getAlignmentEffect();
+			//buw::ReferenceCounted<oip::AlignmentEffect> getAlignmentEffect();
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 		public Q_SLOTS:
@@ -191,23 +185,23 @@ namespace OpenInfraPlatform {
 
 			buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer_, viewportBuffer_, pickIdBuffer_;
 
-			buw::ReferenceCounted<GradientClearEffect> gradientClearEffect_;
-			buw::ReferenceCounted<DEMEffect> demEffect_;
-			buw::ReferenceCounted<TrafficSignEffect> trafficSignEffect_;
-			buw::ReferenceCounted<AlignmentEffect> alignmentEffect_;
-			buw::ReferenceCounted<GirderEffect> girderEffect_;
-			buw::ReferenceCounted<SlabFieldEffect> slabFieldEffect_;
-			buw::ReferenceCounted<IfcGeometryEffect> ifcGeometryEffect_;
-			buw::ReferenceCounted<UIElements> uiElements_;
-			buw::ReferenceCounted<BoundingBoxEffect> boundingBoxEffect_;
-			buw::ReferenceCounted<SkyboxEffect> skyboxEffect_;
+			buw::ReferenceCounted<oip::GradientClearEffect> gradientClearEffect_;
+			//buw::ReferenceCounted<oip::DEMEffect> demEffect_;
+			//buw::ReferenceCounted<oip::TrafficSignEffect> trafficSignEffect_;
+			//buw::ReferenceCounted<oip::AlignmentEffect> alignmentEffect_;
+			//buw::ReferenceCounted<oip::GirderEffect> girderEffect_;
+			//buw::ReferenceCounted<oip::SlabFieldEffect> slabFieldEffect_;
+			buw::ReferenceCounted<oip::IfcGeometryEffect> ifcGeometryEffect_;
+			buw::ReferenceCounted<oip::UIElementsEffect> uiElements_;
+			buw::ReferenceCounted<oip::BoundingBoxEffect> boundingBoxEffect_;
+			buw::ReferenceCounted<oip::SkyboxEffect> skyboxEffect_;
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 			buw::ReferenceCounted<PointCloudEffect> pointCloudEffect_ = nullptr;
 			buw::ReferenceCounted<BoxEffect> sectionsBoundingBoxEffect_ = nullptr;
 #endif
 
-			buw::ReferenceCounted<BillboardEffect> billboardEffect_;
+			//buw::ReferenceCounted<oip::BillboardEffect> billboardEffect_;
 			std::vector<buw::ReferenceCounted<buw::Effect>> activeEffects_;
 
 			// Clear

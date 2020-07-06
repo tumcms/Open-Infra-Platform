@@ -26,7 +26,7 @@ namespace OpenInfraPlatform {
 
 			// IFC 4x1 specifics
 		#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-            EXPRESSReference<emt::IFC4X1EntityTypes::IfcBoundedCurve> PlacementConverterT<emt::IFC4X1EntityTypes>::GetCurveOfPlacement(
+            EXPRESSReference<emt::IFC4X1EntityTypes::IfcBoundedCurve> PlacementConverterT<emt::IFC4X1EntityTypes>::getCurveOfPlacement(
                 const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linearPlacement
 			) const
             {
@@ -60,7 +60,7 @@ namespace OpenInfraPlatform {
             \return		\c IfcBoundedCurve that \c IfcLinearPlacement references.
             */
             template<typename IfcEntityTypesT>
-            EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve> PlacementConverterT<IfcEntityTypesT>::GetCurveOfPlacement(
+            EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve> PlacementConverterT<IfcEntityTypesT>::getCurveOfPlacement(
                 const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linearPlacement
 			) const
             {
@@ -96,7 +96,13 @@ namespace OpenInfraPlatform {
 				{
 					// check for which type (PlacementRelTo is IfcObjectPlacement)
 					if (linear_placement->PlacementRelTo.get().isOfType<typename IfcEntityTypesT::IfcLinearPlacement>())
-						return linear_placement->PlacementRelTo.get().as<typename IfcEntityTypesT::IfcLinearPlacement>()->Distance->DistanceAlong;
+					{
+						alreadyApplied.push_back(linear_placement);
+						const auto linearPlacementRelTo = linear_placement->PlacementRelTo.get().as<typename IfcEntityTypesT::IfcLinearPlacement>();
+						double ret = linearPlacementRelTo->Distance->DistanceAlong + convertRelativePlacement(linearPlacementRelTo, alreadyApplied);
+						alreadyApplied.pop_back();
+						return ret;
+					}
 					else
 						throw oip::InconsistentModellingException(linear_placement, "Relative placement to a " + linear_placement->PlacementRelTo.get()->getErrorLog() + "?!");
 				}

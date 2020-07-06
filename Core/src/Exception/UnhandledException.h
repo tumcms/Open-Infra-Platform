@@ -34,37 +34,29 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_EXCEPTION_BEGIN
 */
 class UnhandledException : public std::exception {
 public:
-    //! Constructor
     UnhandledException() noexcept;
-    //! Copy Constructor
     UnhandledException(const UnhandledException& other) noexcept;
 
-    /*!
-    \brief Constructor with the unhandled entity.
-    \param[in] item The entity that is not handled.
-    */
-    UnhandledException(const std::shared_ptr<oip::EXPRESSObject>& item) noexcept;
+	UnhandledException(const std::string& message) noexcept;
+	UnhandledException(const std::shared_ptr<oip::EXPRESSObject>& item) noexcept;
 
     /*!
     \brief Constructor with the unhandled entity.
-    \param[in] item The entity that is not handled.
+    \param[in] item The reference to the entity that is not handled.
     */
     template <typename T>
     UnhandledException(const oip::EXPRESSReference<typename T>& item) noexcept
+		: UnhandledException(item.lock())
     {
-        item_ = item.lock();
     }
 
     //! Destructor
-    ~UnhandledException() noexcept;
+	~UnhandledException() noexcept {}
 
-    /*!
-    \brief Returns what is not supported.
-    \returns A message with the entity name.
-    */
     const char* what() const noexcept override;
 
     std::shared_ptr<oip::EXPRESSObject> item_;
+	std::string							message_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_EXCEPTION_END

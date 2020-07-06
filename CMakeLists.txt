@@ -338,9 +338,7 @@ endif()
 
 
 add_subdirectory(Core)
-
-
-
+add_subdirectory(Rendering)
 add_subdirectory(UnitTests)
 
 # Do currently not work. Located in Other. 
@@ -361,16 +359,10 @@ file(GLOB OpenInfraPlatform_UserInterface_Forms_Source 				UserInterface/Forms/*
 file(GLOB OpenInfraPlatform_UserInterface_ColorPicker_Source		UserInterface/ColorPicker/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_Dialogues_Source 			UserInterface/Dialogues/*.*)
 file(GLOB OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source 	UserInterface/QtPropertyBrowser/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_Shader_Source 			UserInterface/Shader/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_Shader_D3D_Source 		UserInterface/Shader/D3D/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			UserInterface/ViewPanel/*.*)
-file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source 	UserInterface/ViewPanel/Effects/*.h UserInterface/ViewPanel/Effects/*.cpp)
 
-if(MODULES_POINT_CLOUD_PROCESSING)
-	file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Effects_PointCloudProcessing_Source 	UserInterface/ViewPanel/Effects/PointCloudProcessing/*.*)
-	source_group(UserInterface\\ViewPanel\\Effects\\PointCloudProcessing	FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_PointCloudProcessing_Source})
-	list(APPEND OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_PointCloudProcessing_Source})
-endif()
+file(GLOB OpenInfraPlatform_UserInterface_ViewPanel_Source 			UserInterface/ViewPanel/*.*)
+
+
 
 
 file(GLOB OpenInfraPlatform_UserInterface_QCustomPlot_Source 		external/qcustomplot/*.*)
@@ -435,10 +427,7 @@ source_group(UserInterface\\Forms				FILES ${OpenInfraPlatform_UserInterface_For
 source_group(UserInterface\\ColorPicker			FILES ${OpenInfraPlatform_UserInterface_ColorPicker_Source})
 source_group(UserInterface\\Dialogues			FILES ${OpenInfraPlatform_UserInterface_Dialogues_Source})
 source_group(UserInterface\\QtPropertyBrowser	FILES ${OpenInfraPlatform_UserInterface_QtPropertyBrowser_Source})
-source_group(UserInterface\\Shader				FILES ${OpenInfraPlatform_UserInterface_Shader_Source})
-source_group(UserInterface\\Shader\\D3D			FILES ${OpenInfraPlatform_UserInterface_Shader_D3D_Source})
 source_group(UserInterface\\ViewPanel			FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Source})
-source_group(UserInterface\\ViewPanel\\Effects	FILES ${OpenInfraPlatform_UserInterface_ViewPanel_Effects_Source})
 source_group(UserInterface\\QCustomPlot			FILES ${OpenInfraPlatform_UserInterface_QCustomPlot_Source})
 source_group(UserInterface\\Resources			FILES ${OpenInfraPlatform_UserInterface_Resources_Source})
 
@@ -454,9 +443,7 @@ source_group(UserInterface\\UnitTesting  		FILES ${OpenInfraPlatform_UserInterfa
 # Set source group properties
 #------------------------------------------------------------------------------
 
-# Set HEADER_FILES_ONLY to true to make them show up in the IDE but be excluded from compiling
-set_source_files_properties(${OpenInfraPlatform_UserInterface_Shader_Source} 		PROPERTIES HEADER_FILE_ONLY TRUE)
-set_source_files_properties(${OpenInfraPlatform_UserInterfaces_Shader_D3D_Source} 	PROPERTIES HEADER_FILE_ONLY TRUE)
+
 
 # Qt related stuff
 #QT5_ADD_RESOURCES(OpenInfraPlatform_UserInterface_Resources_Source_SRCS ${OpenInfraPlatform_UserInterface_Resources_Source})
@@ -507,6 +494,7 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT O
 target_link_libraries( OpenInfraPlatform.UI
 	PUBLIC
 		OpenInfraPlatform.Core
+		OpenInfraPlatform.Rendering
 		Qt5::WinMain  # New target available via find_package ( Qt5Core )
 		Qt5::Core
 		Qt5::Gui
@@ -684,6 +672,7 @@ set_target_properties(QSimpleUpdaterCopyBinaries						PROPERTIES FOLDER "OpenInf
 
 set_target_properties(OpenInfraPlatform.UI								PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.Core							PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.Rendering						PROPERTIES FOLDER "OpenInfraPlatform")
 
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator			PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 

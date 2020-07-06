@@ -1,0 +1,735 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!--
+This sample page was also "borrowed" from Sparkle (IIRC), so:
+
+	Copyright 2007 Andy Matuschak. All rights reserved.
+-->
+
+
+<html lang="lt" xml:lang="lt" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>Overview</title>
+	<meta name="robots" content="anchors" />
+	<style type="text/css" media="all">
+	
+	body {
+		margin: 12px;
+	}
+
+	h1 {
+		font-size: 11pt;
+		font-family: "Lucida Grande", Arial, sans-serif;
+		margin-bottom: 0
+	}
+
+	h2 {
+		font-size: 9pt;
+		font-family: "Lucida Grande", Arial, sans-serif;
+		margin-top: 0;
+		margin-bottom: -10px
+	}
+
+	h3 {
+		font-size: 9pt;
+		font-family: "Lucida Grande", Arial, sans-serif;
+		font-weight: bold;
+		margin-top: -4px;
+		margin-bottom: -4px
+	}
+
+	p {
+		font-size: 9pt;
+		font-family: "Lucida Grande", Arial, sans-serif;
+		line-height: 12pt;
+		text-decoration: none
+	}
+
+	ol {
+		font-size: 9pt;
+		font-family: "Lucida Grande", Arial, sans-serif;
+		line-height: 12pt;
+		list-style-position: outside;
+		margin-top: 12px;
+		margin-bottom: 12px;
+		margin-left: -18px;
+		padding-left: 40px
+	}
+
+	ol li {
+		margin-top: 6px;
+		margin-bottom: 6px
+	}
+
+	ol p {
+		margin-top: 6px;
+		margin-bottom: 6px
+	}
+
+	ul {
+		font-size: 9pt;
+		font-family: "Lucida Grande", Arial, sans-serif;
+		line-height: 12pt;
+		list-style-type: square;
+		list-style-position: outside;
+		margin-top: 12px;
+		margin-bottom: 12px;
+		margin-left: -24px;
+		padding-left: 40px
+	}
+
+	ul li {
+		margin-top: 6px;
+		margin-bottom: 6px
+	}
+
+	ul p {
+		margin-top: 6px;
+		margin-bottom: 6px
+	}
+
+	a {
+		color: #4183C4;
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+
+	hr {
+		text-decoration: none;
+		border: solid 1px #bfbfbf
+	}
+
+	td {
+		padding: 6px
+	}
+
+	#banner {
+		background-color: #f2f2f2;
+		background-repeat: no-repeat;
+		padding: -2px 6px 0;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 1.2em;
+		float: left;
+		border: solid 1px #bfbfbf;
+	}
+
+	#caticon {
+		margin-top: 3px;
+		margin-bottom: -3px;
+		margin-right: 5px;
+		float: left;
+	}
+
+	#pagetitle {
+		margin-top: 12px;
+		margin-bottom: 0px;
+		margin-left: 40px;
+		width: 88%;
+		border: solid 1px #fff
+	}
+
+	#mainbox {
+		margin-top: 2349px;
+		padding-right: 6px
+	}
+
+	#taskbox {
+		background-color: #e6edff;
+		list-style-type: decimal;
+		list-style-position: outside;
+		margin: 12px 0;
+		padding: 2px 12px;
+		border: solid 1px #bfbfbf
+	}
+
+	#taskbox h2 {
+		margin-top: 8;
+		margin-bottom: -4px
+	}
+
+	#machelp {
+		position: absolute;
+		top: 2px;
+		left: 10px;
+	}
+
+	#index {
+		background-color: #f2f2f2;
+		padding-right: 25px;
+		top: 2px;
+		right: 12px;
+		width: auto;
+		float: right
+	}
+
+	#next {
+		position: absolute;
+		top: 49px;
+		left: 88%
+	}
+
+	#asindent {
+		margin-left: 22px;
+		font-size: 9pt;
+		font-family: Verdana, Courier, sans-serif;
+	}
+
+	.bread {
+		color: #00f;
+		font-size: 8pt;
+		margin: -9px 0 -6px
+	}
+
+	.leftborder {
+		color: #00f;
+		font-size: 8pt;
+		margin: -9px 0 -6px;
+		padding-top: 2px;
+		padding-bottom: 3px;
+		padding-left: 8px;
+		border-left: 1px solid #bfbfbf
+	}
+
+	.mult {
+		margin-top: -8px
+	}
+
+	.type_bugfix {
+		background-color: #ffe6e6;
+		margin-top: -3px;
+		margin-bottom: -3px;
+		padding-top: -3px;
+		padding-bottom: -3px
+	}
+
+	.type_feature {
+		background-color: #e6ffe6;
+		margin-top: -3px;
+		margin-bottom: -3px;
+		padding-top: -3px;
+		padding-bottom: -3px
+	}
+
+	.type_other {
+		background-color: #e6e6ff;
+		margin-top: -3px;
+		margin-bottom: -3px;
+		padding-top: -3px;
+		padding-bottom: -3px
+	}
+
+	.rightfloater {
+		float: right;
+		margin-left: 15px;
+	}
+
+	.rules {
+		border-bottom: 1px dotted #ccc
+	}
+
+	.dots {
+		border: dotted 1px #ccc
+	}
+
+	.seealso {
+		margin-top: 4px;
+		margin-bottom: 4px
+	}
+
+	code {
+		color: black;
+		font-size: 9pt;
+		font-family: Verdana, Courier, sans-serif;
+	}
+	img {
+		max-width: 100%
+	}
+</style>
+</head>
+<body>
+<h1>Basic usage: Camera control</h1>
+<p>Alt + Left Mouse Button + Move: Rotate camera </p>
+<p>Right Mouse Button + Move: Pan camera </p>
+<p>Mouse wheel or Middle Mouse Button + Move: Zoom camera </p>
+<p>Key T: Switch between Model and Spectator camera</p>
+<p>Key H: Home to initial camera orientation.</p>
+<p>Key +: Increase near clip plane.</p>
+<p>Key -: Decrease near clip plane.</p>
+<p>Spectator camera mode only
+W, A, S, D or Arrow keys: Move camera </p>
+<p>Left Mouse Button:: Rotate camera </p>
+<p>Mouse wheel: Increase/Decrease move speed</p>
+<h1>TUM Open Infra Platform</h1>
+<h1>End User Documentation</h1>
+<h2>Content</h2>
+<ul>
+<li><a href="#1">1. General functions and advantages of the application</a></li>
+<li><a href="#2">2.	Starting the application</a></li>
+<li><a href="#3">3.	Known Problems</a></li>
+<li><a href="#4">4.	Drag and Drop</a></li>
+<li><a href="#5">5.	Camera Control</a></li>
+<li><a href="#6">6.	View cube</a></li>
+<li><a href="#7">7.	Menu bar</a></li>
+<li><a href="#8">7.1.	File</a></li>
+<li><a href="#9">7.1.1.	Save As…</a></li>
+<li><a href="#10">7.1.2.	New</a></li>
+<li><a href="#11">7.1.3.	Open</a></li>
+<li><a href="#12">7.1.4.	Import</a></li>
+<li><a href="#13">7.1.5.	Merge</a></li>
+<li><a href="#14">7.1.6.	Export</a></li>
+<li><a href="#15">7.1.7.	Recent Files…</a></li>
+<li><a href="#16">7.1.8.	Exit</a></li>
+<li><a href="#17">7.2.	Edit</a></li>
+<li><a href="#18">7.2.1.	Preference</a></li>
+<li><a href="#19">7.3.	Design View</a></li>
+<li><a href="#20">7.3.1.	Horizontal Alignment</a></li>
+<li><a href="#21">7.3.2.	3D</a></li>
+<li><a href="#22">7.3.3.	Vertical Alignment</a></li>
+<li><a href="#23">7.3.4.	Curvature</a></li>
+<li><a href="#24">7.4.	Terrain</a></li>
+<li><a href="#25">7.4.1.	Hide</a></li>
+<li><a href="#26">7.4.2.	Wireframe</a></li>
+<li><a href="#27">7.4.3.	Textured</a></li>
+<li><a href="#28">7.4.4.	Gradient Ramp</a></li>
+<li><a href="#29">7.4.5.	Iso Lines</a></li>
+<li><a href="#30">7.4.6.	Generate Random Terrain</a></li>
+<li><a href="#31">7.4.7.	Create Terrain from Heightmap</a></li>
+<li><a href="#32">7.5.	Cross Section</a></li>
+<li><a href="#33">7.5.1.	Show Cross Section</a></li>
+<li><a href="#34">7.5.2.	Show Design Cross Section</a></li>
+<li><a href="#35">7.5.3.	Road body wireframe</a></li>
+<li><a href="#36">7.5.4.	Road body solid</a></li>
+<li><a href="#37">7.5.5.	Draw Road Texture</a></li>
+<li><a href="#38">7.6.	Tools</a></li>
+<li><a href="#39">7.6.1.	Create Alignment Points</a></li>
+<li><a href="#40">7.6.2.	Create Alignment</a></li>
+<li><a href="#41">7.6.3.	Create Line Clothoid</a></li>
+<li><a href="#42">7.6.4.	Create Line Clothoid Clothoid Line</a></li>
+<li><a href="#43">7.6.5.	Create Line Clothoid Arc Clothoid Line</a></li>
+<li><a href="#44">7.6.6.	Create Arc Clothoid Arc (input one arc-center)</a></li>
+<li><a href="#45">7.6.7.	Create Arc Clothoid Arc (input two arc-centers)</a></li>
+<li><a href="#46">7.6.8.	Create Arc Clothoid Clothoid Arc (input clothoid-startpoint)</a></li>
+<li><a href="#47">7.6.9.	Create Arc Clothoid Clothoid Arc (input two arc-centers)</a></li>
+<li><a href="#48">7.7.	Help</a></li>
+<li><a href="#49">7.7.1.	Show Help…</a></li>
+<li><a href="#50">7.7.2.	Check for Updates…</a></li>
+<li><a href="#51">7.7.3.	About</a></li>
+<li><a href="#52">8.	    Tabs</a></li>
+<li><a href="#53">8.1.	Alignment</a></li>
+<li><a href="#54">8.2.	Terrain</a></li>
+<li><a href="#55">8.3.	Laser Scan</a></li>
+<li><a href="#56">8.4.	Map</a></li>
+<li><a href="#57">9.	    Symbol bar</a></li>
+<li><a href="#58">9.1.	Open</a></li>
+<li><a href="#59">9.2.	Undo</a></li>
+<li><a href="#60">9.3.	Redo</a></li>
+<li><a href="#61">10.	View bar</a></li>
+<li><a href="#62">10.1.	View</a></li>
+<li><a href="#63">10.2.	Projection</a></li>
+<li><a href="#64">10.3.	Home</a></li>
+<li><a href="#65">10.4.	Spectator camera mode</a></li>
+</ul>
+<h1 id="1">1. General functions and advantages of the application</h1>
+<p>The TUM Open Infra Platform supports several file formats for alignment and digital elevation data. It has export and import functions for IFC Alignment, LandXML and OKSTRA. Furthermore it allows to import ASCII-XYZ data and laser scan data in the LAS 1.1/1.2 format.</p>
+<p><img src="UserHelpPictures\a.png" alt="Alt text" /></p>
+<p>IFC becomes more and more important in civil engineering and will be obligatory in England in a few years (see <a href="http://www.buildingsmart.org/">http://www.buildingsmart.org/</a>). You can see in <a href="#14">chapter 7.1.6</a> how to generate an excel file which contains all names, attributes and coordinates of an IFC file. Further you can change the language of buttons, tabs and the menu from English to Spanish or German (see <a href="#18">chapter 7.2.1</a>). You can design random terrains, clothoids, pure alignments and various clothoid-arc-constructions (see <a href="#38">chapter 7.6</a> and <a href="#30">7.4.6</a>). Further you can create charts of vertical alignment heights, charts of curvature (see <a href="#19">chapter 7.3</a>) and svg graphics which are useful for internet applications (see <a href="#d">chapter 7.1.6.6</a>). OIP (abbreviation for  TUM Open Infra Platform) can help you with the presentation of your constructions. There are some YouTube videos which demonstrate this: <a href="https://www.youtube.com/watch?v=3MfXjaBGXZ4">motorway</a> and <a href="https://www.youtube.com/watch?v=rPxiyt32heo">old city</a></p>
+<p>Off course this are not all advantages of OIP. A look in the content would reveal more benefits that were not mentioned in this chapter (like OpenStreetMap <a href="#12">chapter 7.1.4</a> and Google Earth <a href="#56">chapter 8.4</a>).</p>
+<h1 id="2">2. Starting the application</h1>
+<p>After downloading the file "TUM Open Infra Platform.msi" you should double-click on it to start setup. If you use Windows 8.1 it is possible that you get the error-message &quot;missing VCRuntime140.dll&quot;. In order to solve this problem you should install Microsoft Visual C++ 2015 Redistributable (x64).</p>
+<p>In order to start <strong>TUM Open Infra Platform</strong> double click on the link <strong>&quot; TUM Open Infra Platform&quot;</strong> which has been created automatically on your desktop.</p>
+<p><img src="UserHelpPictures\b.png" alt="Alt text" /></p>
+<p>The start screen should look like the next picture (the red boxes will be explained later):</p>
+<p><img src="UserHelpPictures\c.png" alt="Alt text" /></p>
+<p>If a problem occurs, when starting the application or if the application crashes, send a bug report to <a href="&#109;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#106;&#x75;&#x6c;&#105;&#97;n&#46;&#x61;&#109;&#x61;&#x6e;&#110;&#x40;&#116;&#117;&#109;&#46;&#x64;&#x65;">&#106;&#117;&#x6c;&#x69;&#97;&#x6e;&#x2e;&#97;&#109;&#x61;&#110;&#x6e;&#x40;&#116;&#117;&#109;&#x2e;&#x64;&#x65;</a>. But before that make sure that your error occurred in the current version of TUM Open Infra Platform. Therefore updated your version as shown in the next picture and try the problematic function again.</p>
+<p><img src="UserHelpPictures\d.png" alt="Alt text" /></p>
+<p>Please also include in your report the log file written by the application in your bug report. The log file can be found at the same place as the TUM Open Infra Platform.exe. It is named log.txt.</p>
+<p><img src="UserHelpPictures\e.png" alt="Alt text" /></p>
+<p>The log file contains information about your system (used operating system, CPU and GPU) and diagnostic information of the program execution.</p>
+<h1 id="3">3. Known Problems</h1> 
+<p>If you are working on Windows 7 and the application fails with D3DERR_INVALIDCALL please install the &quot;Platform Update for Windows 7&quot; which can be downloaded from  <a href="http://www.microsoft.com/en-us/download/details.aspx?id=36805">http://www.microsoft.com/en-us/download/details.aspx?id=36805</a>. This will fix the problem.</p>
+<h1 id="4">4. Drag and Drop</h1>
+<p>You can open files easily by dragging and dropping them into the window of Open Infra Platform. You can open landXML, IFCRoad, IFCBridge, IFC4 and IFC2x3 files with this method in the moment.</p>
+<h1 id="5">5. Camera Control</h1>
+<p>If you are not in spectator mode (that means that the ghost in the right corner is just white) by pressing the <strong>ALT key</strong> and <strong>simultaneously</strong> the <strong>left mouse button</strong> with moving the <strong>mouse cursor,</strong> the camera of the viewport can be rotated:</p>
+<p>By pressing the <strong>middle mouse button</strong> and <strong>simultaneously</strong> moving the <strong>mouse cursor</strong> ( <strong>or by turning the mouse wheel</strong> ) the camera of the viewport can be used to zoom in and zoom out of the scene.</p>
+<p><img src="UserHelpPictures\f.png" alt="Alt text" /></p>
+<p>By pressing the <strong>right mouse button</strong> and <strong>simultaneously</strong> moving the <strong>mouse cursor</strong> the camera of the viewport can be translated.</p>
+<p><img src="UserHelpPictures\g.png" alt="Alt text" /></p>
+<p>If you have difficulties with this camera control you can use the spectator camera mode in order to change the view continuously, too. See therefore <a href="#65">chapter 10.4</a> &quot;Spectator camera mode&quot;.</p>
+<h1 id="6">6. View cube</h1>
+<p><img src="UserHelpPictures\h.png" alt="Alt text" /></p>
+<p>The view cube is a very elegant tool for changing the view by clicking on the areas of the cube. A further function is to help the user with his orientation. You can see that the view cube changes its orientation simultaneously when you change the view with the camera control.</p>
+<h1 id="7">7. Menu bar</h1>
+<p><img src="UserHelpPictures\i.png" alt="Alt text" /></p>
+<p>At the top of the OIP window you can see the menu bar. The next part of this documentation will discuss all buttons of this bar.</p>
+<h2 id="8">7.1. File</h2> 
+<p><img src="UserHelpPictures\j.png" alt="Alt text" /></p>
+<p>The &quot;File&quot; button contains various options mainly to open, merge and save files.</p>
+<h3 id="9">7.1.1 Save As...</h3>   
+<p>By clicking on &quot;Save As...&quot; you can save your current file with the ending bic or any other ending that you wish. It is better to save with the ending bic if you want to edit your saved data with OIP later. Be aware that with this button just alignments will be saved, that means that all information about the terrain will be lost. For saving a terrain with or without alignments see &quot;Export-&gt;LandXML 1.2&quot; or <a href="#c">chapter 7.1.6.4</a>.</p>
+<h3 id="10">7.1.2 New</h3>
+<p>Press this button if you want to clear your workspace from all data.</p>
+<h3 id="11">7.1.3 Open</h3>
+<p>In the moment you can open with this function landXML, IFCRoad, IFCBridge, IFC4 and IFC2x3 files. You can find example landXML files in the folder &quot;TUM Open Infra Platform/testdata/LandXML&quot; (the folder &quot;testdata&quot; is in the same folder where TUM Open Infra Platform.exe and log.txt appear) or you can load your own landXML files. For opening other files see &quot;Import&quot; and &quot;Merge&quot;.</p>
+<p><img src="UserHelpPictures\k.png" alt="Alt text" /></p>
+<h3 id="12">7.1.4. Import</h3>
+<p>&quot;Import&quot; is similar to &quot;Open&quot;. The difference is that you can open with import OpenStreetMap files (abbreviation: osm).</p>
+<h4>7.1.4.1 Import OSM File</h4>
+<p>In order to import an osm file click on the according button and search for one of your osm files in the appearing window. After you have confirmed that you have found your osm data by clicking on &quot;Open&quot; the next window appears:</p>
+<p>The window is divided into two sections: In the upper section you can select a filter so that just streets with the filtered attribute will be visible in the scene. However for most osm files this upper section is unimportant so that it does not matter which filter you select because many osm files just have no street specification.</p>
+<p><img src="UserHelpPictures\l.png" alt="Alt text" /></p>
+<p>The second part of the window gives you the opportunity to connect the different street alignments automatically by distinguished attributes. You can select these attributes by clicking on the combo box named &quot;Connection mode&quot;. The selectable attributes are &quot;None&quot;, &quot;Based on angle&quot;, &quot;Based on street name&quot; and &quot;Combined&quot;. Because the given names make clear the meaning of the attributes just &quot;Based on angle&quot; should be explained. It means that all alignment segments which have an intersection angle around 200 gon will be connected. The next two pictures illustrate this (left: &quot;Based on angle&quot; right: &quot;None&quot;).</p>
+<p><img src="UserHelpPictures\m.png" alt="Alt text" />         <img src="UserHelpPictures\n.png" alt="Alt text" /></p>
+<h3 id="13">7.1.5. Merge</h3>
+<p><img src="UserHelpPictures\o.png" alt="Alt text" /></p>
+<p>You can use &quot;Merge&quot; to open or merge files with the ending xyz, txt (&quot;Merge XYZ File&quot;), obj (&quot;Merge Mesh&quot;), or LAS (&quot;Merge LAS File&quot;).  The advantage of merge is that you can merge different files if they have the same file type. However you should create an empty file before you use merge. LAS is an exception and compatible with all other file types so that you can merge LAS with all other file types without losing information.</p>
+<h4>7.1.5.1. Merge XYZ File</h4>
+<p>This is the procedure for merging a xyz file:</p>
+<ul>
+<li>Get some XYZ Data ... for instance you can use this data here: <a href="http://vermessung.bayern.de/file/zip/5658/DGM_50m-at.zip">http://vermessung.bayern.de/file/zip/5658/DGM_50m-at.zip</a></li>
+<li>Create an empty document via the menu &quot;File -&gt; New&quot;</li>
+<li>Click &quot;File -&gt; Merge -&gt;Merge XYZ File&quot;</li>
+<li>In the appearing window called &quot;XYZ Import&quot; select a filename via &quot;Browse&quot;(maybe you have to change .xyz to .txt in the right down corner of the then appeared &quot;Open File&quot; window in order to make your files visible) and hit the &quot;Import&quot; button as shown in the next picture:</li>
+</ul>
+<p><img src="UserHelpPictures\p.png" alt="Alt text" /></p>
+<p>There is the radio button called &quot;Restrict from&quot; in the next picture. Click on it and insert in the line edit boxes the area of the xyz file that you want to load. Please take note that the coordinates will be interpreted absolutely and not relatively. Therefore do not wonder if you see nothing after you have inserted some values in these four boxes. The solution could be to check the absolute coordinates which are shown in the alignment tab (see <a href="#53">chapter 8.1</a>). Sometimes the coordinates of an element have values like 5,000,000 m. If you would restrict the area from 0 to 1000 in X- and Y-direction you would see nothing. </p>
+<p>The next picture shows what happens if you merge two txt files without any restrictions. (Besides: It is unimportant if the ending of your xyz file has the ending xyz or txt or whatever ... in all cases and for all functions of the tool &quot;Open Infra Platform&quot; not the ending but the content is that what counts.) </p>
+<p><img src="UserHelpPictures\q.png" alt="Alt text" /></p>
+<p>Near the y-axis is a 2-dimensional wall that separates the merged txt files.</p>
+<h4>7.1.5.2. Merge Mesh</h4>
+<p>For importing an obj file create an empty document via the menu &quot;File -&gt; New&quot;. Then click in the menu bar &quot;File -&gt; Merge-&gt; Merge Mesh&quot; and select an obj file via the &quot;Open File&quot; window.</p>
+<p>The next picture shows an obj file opened with &quot;Merge Mesh&quot;:</p>
+<p><img src="UserHelpPictures\r.png" alt="Alt text" /> </p>
+<h4>7.1.5.3. Merge LAS File</h4>
+<p>For importing a LAS file click menu &quot;File -&gt; Merge -&gt; Merge LAS File&quot; and select a LAS file via the &quot;Open File&quot; button in the appeared window. After some zooming and rotating of the camera and some settings in the tab &quot;Laser Scan&quot; (see <a href="#55">chapter 8.3</a>) such a picture could be visible: </p>
+<p><img src="UserHelpPictures\s.png" alt="Alt text" /></p>
+<h3 id="14">7.1.6. Export</h3>
+<p><img src="UserHelpPictures\t.png" alt="Alt text" /></p>
+<p>The option &quot;Export&quot; contains various options for saving your file in different formats. Therefore &quot;Export&quot; can be used as a converter for all files (LAS, xml, xyz, obj, mesh, osm...) to xml, svg, IFC, cte, txt...</p>
+<h4>7.1.6.1. IFC Alignment buildingSMART P6 (*.IFC, *.IFCzip)</h4>
+<p>Open Infra Platform can be used to convert landXML data to our IFC based alignment data model and vice versa.</p>
+<p>In order to convert to IFC go to &quot;File -&gt; Export... -&gt; IFC Alignment buildingSMART P6&quot;. Then the next window appears, click on export... </p>
+<p><img src="UserHelpPictures\u.png" alt="Alt text" /></p>
+<p>select a directory, a filename and click on &quot;Save&quot; or &quot;Speichern&quot; if your Microsoft Windows version is adjusted for German.</p>
+<p>Details to our IFCAlignment Proposal can be found in our paper:</p>
+<p>Amann, J.; Borrmann, A,; Hegemann, F.; Jubierre, J.R.; Flurl, M.; Koch, C.; Koenig, M.:
+ <a href="http://www.cms.bgu.tum.de/publications/Amann_2013_ICCBEI.pdf"><strong>A Refined Product Model for Shield Tunnels Based on a Generalized Approach for Alignment Representation</strong></a>
+In: Proc. of the ICCBEI 2013, Tokyo, Japan, 2013</p>
+<h4>7.1.6.2. IFC Alignment buildingSMART P6 Excel Comparison Report (*.xlsx)</h4>
+<p>The procedure in order to export file data for a comparison report which could be opened with the program &quot;Excel&quot;:</p>
+<ol>
+<li>Click &quot;File -&gt; Export -&gt;IFC Alignment buildingSMART P6 Excel Comparison Report (*.xlsx)&quot;</li>
+<li>Select in the appearing dialog window radiant or degree for the angle measurement and click on &quot;Export&quot;.</li>
+<p><img src="UserHelpPictures\w.png" alt="Alt text" /></p>
+<li>Search after a folder for the generated Excel file in the appearing window and edit a file name.</li>
+</ol>
+<p><img src="UserHelpPictures\v.png" alt="Alt text" /></p>
+<p>The next page shows some screen shots of an excel file which offers an impression about the advantages of this function: The first and second chart describe the horizontal alignment elements while the last chart describes the vertical alignment elements. It should be considered that the charts sum up all important data of the alignment like clothoid constant, radius, start- and end position, start- and end station, start- and end height... A further advantage is that P6 IFC Alignment attributes are also listed and could be compared with landXML attributes.</p>
+<p><img src="UserHelpPictures\x.png" alt="Alt text" /></p>
+<p><img src="UserHelpPictures\y.png" alt="Alt text" /></p>
+<p><img src="UserHelpPictures\z.png" alt="Alt text" /></p>
+<h4 id="a">7.1.6.3. IFCRoad (TUM Proposal) ICCBEI 2015 (\*.IFC, \*.IFCzip)</h4>
+<p>The procedure in order to export a file so that it could be opened with IFCRoad (TUM Proposal) ICCBEI 2015: Click on the fitting button, select a filename, a folder and click on &quot;Save&quot;.</p>
+<h4 id="c">7.1.6.4. LandXML 1.2 (\*.xml)</h4>
+<p>The procedure in order to export a file so that it could be opened with LandXML 1.2 is similar to <a href="#a">chapter 7.1.6.3</a>.</p>
+<h4>7.1.6.5.OKSTRA  (*.xml, *.cte)</h4>
+<p>Okstra is a very famous program for civil engineering in Germany. The procedure in order to export a file so that it could be opened with Okstra is easy and the same as in <a href="#a">chapter 7.1.6.3</a>. Different is that you can choose between xml and cte as ending of file name.</p>
+<h4 id="d">7.1.6.6.Horizontal Alignment and Terrain (\*.svg)</h4>
+<p><img src="UserHelpPictures\1.png" alt="Alt text" /></p>
+<p>The abbreviation &quot;svg&quot; means scalable vector graphic. Pictures in such a format have the advantages that its size is very small and that they do not consist of pixels like most picture formats. Therefore svg files are often used for internet applications.</p>
+<p>If you click on &quot;File -&gt; Export... -&gt; Horizontal Alignment and Terrain&quot; you get two options for storing your model: either &quot;Usual&quot; or &quot;Advanced&quot;. If you choose &quot;Advanced&quot; you can edit the generated svg file later (e.g. with the program &quot;Inkscape&quot;) with the option that you can select every element on an alignment group. In the case of &quot;Usual&quot; you do not have this option. But what is an alignment group? This will be answered by the next picture, which is a typical result of the export with &quot;Horizontal Alignment and Terrain (*.svg)&quot;. It is always the projection of the x-y-plane with view direction to negative z-axis. Terrains are yellow, while alignments become blue and the borders of a terrain surface become grey.</p>
+<p><img src="UserHelpPictures\2.png" alt="Alt text" />
+.</p>
+<h4 id="b">7.1.6.7. Vertical Alignment</h4>
+<p>For the options of vertical alignment diagram see <a href="#22">chapter 7.3.3.</a> You can export the vertical alignment diagram as an image file. Go to &quot;Design View -&gt; Vertical Alignment&quot; then select your wished alignment from the dropdown box or by clicking on an alignment. Then go to &quot;Export... -&gt; Vertical Alignment&quot; and choose a filename, folder and file type.</p>
+<p><img src="UserHelpPictures\3.png" alt="Alt text" /></p>
+<p>You can open the image using your favorite image processing application ... in this example we use the free available vector image tool Inkscape.</p>
+<p><img src="UserHelpPictures\4.png" alt="Alt text" /></p>
+<h4>7.1.6.8. Curvature</h4>
+<p>The procedure in order to export a curvature diagram of an alignment so that it could be opened with every image processing application (e.g. Microsoft Paint or Inkscape) is similar to <a href="#b">chapter 7.1.6.7.</a> For the options of curvature diagram see <a href="#23">chapter 7.3.4.</a></p>
+<h4>7.1.6.9. Export Terrain As Heightmap</h4>
+<p>The procedure in order to export a terrain so that it could be opened with every image processing application (e.g. Microsoft Paint) is similar to <a href="#a">chapter 7.1.6.3.</a> The next picture shows the result of such an export: You can see the x-y-plane projection of the terrain in white while the space is expressed in black.</p>
+<p><img src="UserHelpPictures\5.png" alt="Alt text" /></p>
+<h4>7.1.6.10. View as Screenshot</h4>
+<p>The procedure in order to save a screenshot of the current scene in png, jpeg, bmp or tif format so that it could be opened with every graphics editor (e.g. Microsoft Paint) is similar to <a href="#a">chapter 7.1.6.3.</a></p>
+<h4>7.1.6.11. Alignments as 3D Points (*.txt)</h4>
+<p>The procedure in order to export alignment data so that it could be opened with every text editor is similar to <a href="#a">chapter 7.1.6.3</a>. The picture at the right side shows a typical result of such a txt file. Just the coordinates of the alignments and not the terrains will be listed. Every file part starts with the name of alignment (here Kreis1) followed by start station and end station. Then a list of coordinates that are ascendingly sorted by the station follows. The first number means x-, the second y-, the third z-coordinate while the last number in each row means the corresponding station of alignment. The station step width is one meter.</p>
+<p><img src="UserHelpPictures\6.png" alt="Alt text" /></p>
+<h3 id="15">7.1.7. Recent Files... Edit</h3> 
+<p>If you click on this button a list of (at most ten) paths to files that you opened with OIP appears. Click on one of these paths to open the connected file. By clicking on the last element of this list called &quot;Clear Menu&quot; the path-list will be cleared.</p>
+<h3 id="16">7.1.8. Exit</h3> 
+<p>If you click on &quot;Exit&quot; the application will be closed.</p>
+<h2 id="17">7.2. Edit</h2> 
+<p>If you click on &quot;Edit&quot; you have the chance to click on &quot;Undo&quot;, &quot;Redo&quot; and &quot;Preference&quot;. Because &quot;Undo&quot; and &quot;Redo&quot; is explained by their names, just &quot;Preference&quot; will be explained:</p>
+<h3 id="18">7.2.1. Preference</h3>
+<p>If you click on &quot;Preference&quot; the next window appears with the tabs &quot;Viewport&quot;, &quot;Camera&quot;, &quot;Render System&quot; and &quot;Common&quot;:</p>
+<p><img src="UserHelpPictures\7.png" alt="Alt text" /></p>
+<h4>7.2.1.1. Viewport</h4>
+<p>At the top of the window you can see a rainbow colored circle and a triangular inside. For changing the color of your background rotate the circle with your mouse and click into the triangular in order to change gray tone. To store your chosen color click on the right button called &quot;Pick a color&quot;.</p>
+<p>You just see a quiet gray background that has very slightly the chosen color because by default &quot;Gradient clear&quot; is checked. Uncheck it if you want a single colored background.</p>
+<p>You can show or hide the reference coordinate system (click &quot;Show Reference Coordinate System&quot;). Further you can change the background of the scene so that clouds appear (by clicking on &quot;Skybox&quot;). Furthermore you can show or hide the view cube (click &quot;Show View Cube&quot;).</p>
+<p>By clicking on &quot;Show Frame Times&quot; the time (in milliseconds) for every computation will be shown on the left upper corner of the scene.</p>
+<p>On the bottom of the window you have the function &quot;Alignment line width&quot;. An alignment has per definition no width. You can change the width of the alignments <strong>in the scene</strong> by changing the value in the right down corner.</p>
+<h4>7.2.1.2. Camera</h4>
+<p><img src="UserHelpPictures\8.png" alt="Alt text" /></p>
+ <table>
+      <tr>
+        <th>SpinBox</th>
+        <th>Explanation</th>
+      </tr>
+      <tr>
+        <td>Smooth View Transition Time:</td>
+        <td>It changes the time that passes while the view is changing</td>
+      </tr>
+      <tr>
+        <td>Near Clipping Plane Distance:</td>
+        <td>It changes the near clipping plane distance</td>
+      </tr>
+	  <tr>
+        <td>Far Clipping Plane Distance:</td>
+        <td>It changes the far clipping plane distance</td>
+      </tr>
+      <tr>
+        <td>Pan Speed (Spectator Camera Mode Only):</td>
+        <td>It changes the pan speed if you are in spectator camera mode</td>
+      </tr>
+    </table>
+<p>For Spectator Camera Mode see <a href="#65">chapter 10.4.</a> </p>
+<h4>7.2.1.3. Render System</h4>
+<p>In this tab you can choose the used render system. By default Direct3D 11 is used but you can change to OpenGL 4.x, too. Further you can enable Multisample anti-aliasing by clicking on the checkbox with the name &quot;enable Multisample anti-aliasing&quot;.</p>
+<h4>7.2.1.4. Common</h4>
+<p>Here you can switch the used language to English, German or Spain.</p>
+<h2 id="19">7.3. Design View</h2>  
+<p><img src="UserHelpPictures\9.png" alt="Alt text" /></p>
+<p>The button &quot;Design View&quot; hides options for expressing alignments in 3D or plane and options for opening diagrams for the vertical coordinate and the curvature of alignments.</p>
+<h3 id="20">7.3.1. Horizontal Alignment</h3> 
+<p>By default alignments are shown 3-dimensional (see next chapter). If you are only interested in the horizontal alignment you can select &quot;Design View -&gt; Horizontal Alignment&quot;. If you click on this button all alignments will be projected on the x-y-plane with z-coordinate = 0 meter as shown in the next picture. The disadvantage of this view is that you cannot see alignments, if parts of the terrain are higher than z = 0 meter.</p>
+<p><img src="UserHelpPictures\10.png" alt="Alt text" /></p>
+<h3 id="21">7.3.2. 3D</h3>
+<p>If you click on &quot;Design View -&gt; 3D&quot; all alignments will be located at their original position as you can see in the next picture.</p>
+<p><img src="UserHelpPictures\11.png" alt="Alt text" /></p>
+<h3 id="22">7.3.3. Vertical Alignment</h3> 
+<p>If you click on this button a window will be opened that should look similar to the next picture:</p>
+<p><img src="UserHelpPictures\12.png" alt="Alt text" /></p>
+<p>The name of the window in the red box consists of the function name and the name of the selected alignment. Therefore do not wonder that your window will have slightly other name. Go with your cursor to the upper frame of the new window until the cursor becomes a doubled arrow. Then press your left mouse button while you move the cursor upward in order to get a better view of the diagram.</p>
+<p>You can select an alignment that shall be analyzed in the vertical alignment window by clicking on it or by using the dropdown box (highlighted in red). Then the window will get the name of the chosen alignment and the alignment diagram will be changed. If you click on the button &quot;Load Surfaceprofile&quot; the surface profile of terrain will be shown as yellow line. Take note that you can use your mouse wheel for magnifying or downsizing the diagram. The unit of horizontal axis is the station (which do not have to start with 0 meter) of chosen alignment while the vertical axis shows the z-coordinate. If you click on the button &quot;Display Points&quot; all special points of the alignment will be visible in the diagram. Finally you should take note that the scale of z-coordinate to station is 10:1 because there is very often just a small slope in civil engineering. You can change the scale if you press the <strong>CTRL key</strong> and turn simultaneously the <strong>mouse wheel</strong>. Finally you can click on &quot;Different colors for vertical alignment elements&quot; in the tab &quot;Alignment&quot; (see <a href="#53">chapter 8.1</a>). After doing so parabolic parts with the same curvature, straight lines with the same slope and in general all parts of the diagram that have no differentiable borders (mathematically spoken) will be set apart.</p>
+<p><img src="UserHelpPictures\13.png" alt="Alt text" /></p>
+<h3 id="23">7.3.4. Curvature</h3> 
+<p>The curvature diagram window is very similar to the window described in the chapter before. The differences are that you neither have the button &quot;Display Points&quot; nor &quot;Load Surfaceprofile&quot; nor &quot;Different colors for vertical alignment elements&quot;. The scale between curvature and station is 200:1 and can be changed with <strong>CTRL key</strong> and <strong>mouse wheel</strong>.</p>
+<h2 id="24">7.4. Terrain</h2> 
+<p><img src="UserHelpPictures\14.png" alt="Alt text" /></p>
+<p>Behind the button &quot;Terrain&quot; in the menu bar are all functions that can change or create surfaces. For importing a surface file see <a href="#13">chapter 7.1.5</a> and <a href="#11">7.1.3</a>. The green and orange lines in the next picture show alignments and are only partial visible because they are occluded by the digital elevation model. In order to enable that you can see all alignments you can use the buttons &quot;Hide&quot; or &quot;Wireframe&quot; as explained in the next chapters:</p>
+<p><img src="UserHelpPictures\15.png" alt="Alt text" /></p>
+<h3 id="25">7.4.1. Hide</h3> 
+<p>If you click on the button &quot;Hide&quot; the terrain will become invisible. By clicking on the button again the terrain will become visible.</p>
+<p><img src="UserHelpPictures\16.png" alt="Alt text" /></p>
+<h3 id="26">7.4.2. Wireframe</h3> 
+<p>A terrain (that is a digital elevation model) is a network consisting of nodes and branches. By default the digital elevation model has a grey surface that covers all branches of network. Click on &quot;Terrain -&gt; Wireframe&quot; if you want to see all alignments and the borders of terrain. By clicking on &quot;Wireframe&quot; again you can deactivate this mode.</p>
+<p><img src="UserHelpPictures\17.png" alt="Alt text" /></p>
+<h3 id="27">7.4.3. Textured</h3> 
+<p>There is also the option to map a texture to the terrain data:</p>
+<p><img src="UserHelpPictures\18.png" alt="Alt text" /></p>
+<h3 id="28">7.4.4. Gradient Ramp</h3> 
+<p>As you can see in the next picture areas with equal z-coordinates will be painted with the same color if you click on &quot;Gradient Ramp&quot;. Deep areas get dark colors while high areas become more yellow until red while the highest areas become white. Equivalent to &quot;Gradient Ramp&quot; is &quot;Iso Lines&quot;. This will be described in the following chapter.</p>
+<p><img src="UserHelpPictures\19.png" alt="Alt text" /></p>
+<h3 id="29">7.4.5. Iso Lines</h3> 
+<p>As you can see in the next picture &quot;Iso Lines&quot; marks contour lines (a contour line marks a surface with the same height).</p>
+<p><img src="UserHelpPictures\20.png" alt="Alt text" /></p>
+<h3 id="30">7.4.6. Generate Random Terrain</h3> 
+<p>With this function you can insert into your model a hilly terrain which main random parameters you can design.</p>
+<p>If you click on &quot;Generate Random Terrain&quot; the next window appears:</p>
+<p><img src="UserHelpPictures\21.png" alt="Alt text" /></p>
+<p>&quot;Number of octaves&quot; has a range from 1 until 8 and controls the smoothness of the terrain but not the amplitude of its hills. 1 means like a sinus-curve and 8 like real mountains (with high and less high peaks).</p>
+<p>&quot;Noise frequency&quot; has a range from 1 to 8 and controls the amount of highest hills. So you have many high hills for noise frequency = 8 and just a few high hills for frequency = 1.</p>
+<p>The random terrain consists of tiles of a distinguished size. So the side-length of the random terrain square can be computed with the formula: side length = tile size * size.</p>
+<p>&quot;Tile Size&quot; has a range from 1 to 5. A random terrain with tile size= 2 and size = 64 has less hills than a terrain with tile size =1 and size = 128, though both have the same area and random parameters. The reason is that &quot;noise frequency and number of octaves&quot; will be applied for every tile.</p>
+<p>&quot;Size&quot; has a range from 64 meter to 1024 meter in the steps of 64, 128, 256, 512 and 1024.</p>
+<p>If you click on &quot;Generate&quot; a random terrain will be added to your scene. It will be placed in the near of the coordinate system.</p>
+<p><img src="UserHelpPictures\22.png" alt="Alt text" /></p>
+<h3 id="31">7.4.7. Create Terrain from Heightmap</h3> 
+<p>A height map is a grayscale image where each pixel color value corresponds to a height value as shown in the next picture.</p>
+<p><img src="UserHelpPictures\23.png" alt="Alt text" /></p>
+<p>For using this function create an empty document via the menu &quot;File -&gt; New&quot; and then &quot;Terrain -&gt; Create Terrain from Heightmap&quot;. Then select a height map image (png, jpeg, bmp or tif format) in the appearing &quot;Open File&quot; dialog and hit the &quot;OK&quot; button. The result is shown in the next picture:</p>
+<p><img src="UserHelpPictures\24.png" alt="Alt text" /></p>
+<h2 id="32">7.5. Cross Section</h2> 
+<p><img src="UserHelpPictures\25.png" alt="Alt text" /></p>
+<p>The tab &quot;Cross Section&quot; contains various tools for making visible the parts of a road. However you cannot use this functions with every road. Important is that the road or the structure has cross sections. The next picture shows a textured terrain with a line that is the center line of a highway. You can see that the line runs sometimes under and sometimes over the landscape. In order to have a better view to the motorway all following pictures will be in &quot;Terrain -&gt; Wireframe&quot; mode. Please take note that the terrain is just an approximation of the real terrain with the aim of illustration. The real terrain is described by cross sections in the next chapters.</p>
+<p><img src="UserHelpPictures\26.png" alt="Alt text" /></p>
+<h3 id="33">7.5.1. Show Cross Section</h3> 
+<p>By clicking on the button &quot;Show Cross Section&quot; the center line gets &quot;fish bones&quot;. These cross sections were measured by surveyors and show the real surface structure of the terrain. As mentioned in the chapter before the cross sections do not fit perfectly with the terrain. However you won't see this difference if you use the function from <a href="#36">chapter 7.5.4.</a></p>
+<p><img src="UserHelpPictures\27.png" alt="Alt text" /></p>
+<h3 id="34">7.5.2. Show Design Cross Section</h3> 
+<p>If you click on the next button the cross sections that have to be designed in order to build the highway appear. These design cross sections can be &quot;positive&quot; - then you need earth or &quot;negative&quot; - then you have to remove earth. You can see a &quot;negative&quot; design cross section in the red circle.</p>
+<p><img src="UserHelpPictures\28.png" alt="Alt text" /></p>
+<h3 id="35">7.5.3. Road body wireframe</h3> 
+<p>This function connects the ends of design cross sections. Thereby you can see the area around the highway that has to be lifted up or lowered.</p>
+<p><img src="UserHelpPictures\29.png" alt="Alt text" /></p>
+<h3 id="36">7.5.4. Road body solid</h3> 
+<p>If you click on this button the road body will be painted. Parts of the road body which are higher than the cross sections will become green while the ones that are deeper will be painted in red.</p>
+<p><img src="UserHelpPictures\30.png" alt="Alt text" /></p>
+<h3 id="37">7.5.5. Draw Road Texture</h3> 
+<p>Use this function if you want to put a cover over the road in order to improve the realism of your model.</p>
+<p><img src="UserHelpPictures\31.png" alt="Alt text" /></p>
+<h2 id="38">7.6. Tools</h2>
+<p>Behind the button &quot;Tools&quot; hide various functions for the creation of alignments. Please take note that every alignment generated with a function from there will have the z-coordinate = 0 meter.</p>
+<p><img src="UserHelpPictures\32.png" alt="Alt text" /></p>
+<h3 id="39">7.6.1. Create Alignment Points</h3>  
+<p>In order to use this function click on the according button and then hold down the <strong>Ctrl key</strong> and <strong>press simultaneously the left mouse button</strong> to create the ends of straight line alignment segments.</p>
+<p><img src="UserHelpPictures\33.png" alt="Alt text" /></p>
+<p>The red lines mean that it is not an alignment yet but just connected points. These lines are the base for all following functions of the tab &quot;Tools&quot;.</p>
+<h3 id="40">7.6.2. Create Alignment</h3>
+<p>When you want to draw straight alignments select &quot;Tools -&gt; Create Alignment&quot; so the currently created line segments will be converted to an alignment:</p>
+<p><img src="UserHelpPictures\34.png" alt="Alt text" /></p>
+<p>You can see that an alignment has been created, because the color of the lines has changed from red to orange. Besides you can store all alignments as bic file with &quot;Save As...&quot; as LandXML or IFCAlignment files (see chapter <a href="#14">7.1.6</a> and <a href="#9">7.1.1</a>).</p>
+<h3 id="41">7.6.3. Create Line Clothoid</h3> 
+<p>After clicking &quot;Tools -&gt; Create Line Clothoid&quot; a new dialog appears which has its instructions in its head. For every tool it is nearly the same text, which says that you have to create at first some alignment points before you can click &quot;Generate&quot;. Therefore close the dialog and click on the view cube's top-site or click in the view bar &quot;View -&gt; Top&quot; in order to make the next steps easier.</p>
+<p><img src="UserHelpPictures\35.png" alt="Alt text" /></p>
+<p>Then make sure that &quot;Tools -&gt; Create Alignment Points&quot; is still checked and then hold down the <strong>Ctrl key</strong> and <strong>press simultaneously the left mouse button</strong> to create (in the case of &quot;Create Line Clothoid&quot;) at least two alignment points.</p>
+<p>Open the &quot;Create Line Clothoid&quot;-dialog again and insert some values. (Please take note that in this special dialog you have to leave R or L or A at 0 meter. The parameter with the zero will be computed and if you want to see its result click on the clothoid and look on the right site in the tab &quot;Alignment&quot; after you have clicked on &quot;Generate&quot;.) Finally press &quot;Generate&quot;.</p>
+<p>The only limit for this function and all others is that the spiral angle of clothoid has to be less than 200 gon. Therefore you will get an error message if your inserts would cause a spiral angle over 200 gon. You should further know some things about the parameter step-distance. This value is just necessary for the parallel clothoids around the middle-line. They are created by many connected lines, which length is nearly equal to &quot;step-distance&quot;.</p>
+<p>For the values L=0 m; R=200 m; A=300 m; clockwise checked; Step-distance = 0.01 m and Carriageway-width = 6 m the next picture appears:</p>
+<h3 id="42">7.6.4. Create Line Clothoid Clothoid Line</h3>
+<p>Different to &quot;Create Line Clothoid&quot; is that you have to generate at least three points. Further you should know that A1 is the clothoid parameter for the first created line and A2 for the second. If you create three lines (that means four points) then two further clothoids will be drawn and so on... The sequence of the clothoid parameter for the clothoids is A1, A2, A1, A2... (That means that the last clothoid has always the clothoid parameter A2). It is important to leave R or A1 or A2 at 0 m (like in &quot;Create Line Clothoid&quot;). Further this function changes the length of your first and last created line however does not change the angle between any lines or orientations (That means that just the last and first alignment point will be moved along your created lines). For the inserted picture were used the following parameter: R=50 m; A1=60 m; A2=0 m; Step-distance=0.01 m and Carriageway-width = 5 m</p>
+<p><img src="UserHelpPictures\36.png" alt="Alt text" /></p>
+<h3 id="43">7.6.5. Create Line Clothoid Arc Clothoid Line</h3> 
+<p>You should use this function if you want that an arc connects every pair of clothoids. Different to the function &quot;Create Line Clothoid Clothoid Line&quot; is that you cannot generate more than five points and that you must not leave a value of A1, A2 or R at 0 m. For the next picture were used the following parameter: A1=60 m; A2=50 m; R = 50 m; Step-distance = 0.01 m and Carriageway-width = 5 m.</p>
+<p><img src="UserHelpPictures\37.png" alt="Alt text" /></p>
+<h3 id="44">7.6.6. Create Arc Clothoid Arc (input one arc-center)</h3> 
+<p>Different to &quot;Create Line Clothoid&quot; is in the now discussed function that you have to generate just two points. The first created point is an arc-center (you inform the computer about the name of this arc-center by clicking in the checkbox &quot;radius 1 drawn&quot; or &quot;radius 2 drawn&quot;). The second created point marks the intersection between clothoid and this arc. It is further important to know that this function has the limitation that you just can reach arc2 if you go counterclockwise along clothoid. This limitation has the aim of definiteness and does not reduce the possibilities of this function. The only limit is that the spiral angle of clothoid has to be less than 200 gon. For the picture were used the following parameter: Drawn radius length = 40 m; not drawn radius = 100 m; A = 70 m; L = 0 m; Step-distance = 0.01 m; &quot;radius 1 drawn&quot; checked, Carriageway-width = 5 m; phi1 = 20 gon; phi2 = 20 gon.</p>
+<p><img src="UserHelpPictures\38.png" alt="Alt text" /></p>
+<h3 id="45">7.6.7. Create Arc Clothoid Arc (input two arc-centers)</h3>
+<p>Different to &quot;Create Arc Clothoid Arc (input one arc-center&quot; is that your created points will be the arc-centers (first point for R1 and second point for R2). A big advantage of this method is that you do not need to insert the clothoid parameter A. However the use of this function can be much more difficult though you have less parameter to insert because for mathematical reasons. Therefore we give the following advice: At first you should insert in the function &quot;Create Arc Clothoid Arc (input one arc-center)&quot; estimated values in order to get in the near of your aimed arc-center. After this step you can use the function &quot;Create Arc Clothoid Arc (input two arc-centers)&quot; with the used or similar R1 and R2 of the first step and your wished positions of arc-center one and two.</p>
+<p><img src="UserHelpPictures\39.png" alt="Alt text" /></p>
+<p>It is further important to know that this function has the limitation that you can reach arc2 just if you go counterclockwise along clothoid. This limitation has the aim of definiteness and does not reduce the possibilities of this function. The only limit is that the spiral angle of clothoid has to be less than 200 gon. For the picture above were used the following parameter: R1 = 150 m; R2 = 90 m; phi1 = 20 gon; phi2 = 20 gon; Step-distance = 0.01 m and Carriageway-width = 5 m</p>
+<h3 id="46">7.6.8. Create Arc Clothoid Clothoid Arc (input clothoid-startpoint)</h3>
+<p>The differences to &quot;Create Line Clothoid&quot; are that you generate just two points. While the first created point is the start of both clothoids (in other words the intersection of the clothoids) the second point just determines the direction of the second clothoid with parameters A2 and R2. For the picture were used the following parameter: R1 = 100 m; R2 = 50 m; A1 = 60 m; A2 = 50 m; phi1 = 70 gon; phi2 = 70 gon; Step-distance = 0.01 m; Carriageway-width = 5 m and s-form checked.</p>
+<p><img src="UserHelpPictures\40.png" alt="Alt text" /></p>
+<h3 id="47">7.6.9. Create Arc Clothoid Clothoid Arc (input two arc-centers)</h3>
+<p>The difference to &quot;Create Arc Clothoid Clothoid Arc (input clothoid-startpoint)&quot; is that your generated points will be the arc-centers (first point for R1 and second point for R2). A big advantage of this method is that you can but do not need to insert the clothoid parameter A. That means that you have three options:</p>
+<p><img src="UserHelpPictures\41.png" alt="Alt text" /></p>
+<ol>
+<li>
+<p>Insert neither A1 nor A2</p>
+</li>
+<li>
+<p>Insert just A1 and let A2 = 0 m</p>
+</li>
+<li>
+<p>Let A1 = 0 m and insert just A2</p>
+</li>
+</ol>
+<p>For the picture were used the following parameter: R1 = 40 m; R2 = 80 m; A1 = 60 m; A2 = 0 m; phi1 = 70 gon; phi2 = 80 gon; Step-distance = 0.01 m; Carriageway-width = 5 m and z-form checked.</p>
+<h2 id="48">7.7 Help</h2> 
+<p>If problems appear do not hesitate to use the &quot;Help&quot; tab. It has the next three parts:</p>
+<p><img src="UserHelpPictures\42.png" alt="Alt text" /></p>
+<h3 id="49">7.7.1.Show Help...</h3> 
+<p>By clicking on the button &quot;Show Help...&quot; commands for camera control will pop up in a new window:</p>
+<p><img src="UserHelpPictures\43.png" alt="Alt text" /></p>
+<h3 id="50">7.7.2.Check for Updates...</h3>
+<p>Every time you startOpen Infra Platform it will search for updates automatically if your computer is connected to the internet. If an update is available you will be asked for the allowance to update. If you deny you have the chance to check for updates with the button &quot;Check for Updates&quot; later.</p>
+<h3 id="51">7.7.3.About</h3>
+<p>By clicking on the button &quot;About&quot; a window pops up that has information about your current version and contact possibilities. Please do not be shy if you have suggestions for improvements or problems with your Open Infra Platform.</p>
+<p><img src="UserHelpPictures\44.png" alt="Alt text" /></p>
+<h1 id="52">8. Tabs</h1>
+<p><img src="UserHelpPictures\45.png" alt="Alt text" /></p>
+<p>The tabs are located on the right side of the main window and help you to delete graphical elements, to see the parameters of alignments and to change the parameters of laser scans.</p>
+<h2 id="53">8.1. Alignment</h2>
+<p>The first check box of the tab &quot;Alignment&quot; is checked by default and causes that a selected alignment segment changes its color to orange.</p>
+<p><img src="UserHelpPictures\46.png" alt="Alt text" /></p>
+<p>If you select the check box &quot;Different colors for alignment elements&quot; the alignment elements, which are lines become green, arcs become red and transition curves like clothoids become yellow.</p>
+<p>The last check box called &quot;Different colors for vertical alignment elements&quot; is explained by its name. Please take notet hat you just can use this function if you click in the menu bar &quot;Design View -&gt; Vertical Alignment&quot; (see <a href="#22">chapter 7.3.3</a>).</p>
+<p>In order to delete a line, select it by clicking on it and then click &quot;Delete selected alignment&quot;.</p>
+<p>Under the button &quot;Delete selected alignment&quot; is a combo box by which you can select the alignments, too. The names for each alignment element cannot be edited in the combo box and will be empty if you generate the alignments with OIP.</p>
+<p>The last part of the tab &quot;Alignment&quot; is the biggest part, too. It contains information about the selected alignment like start/end station, start/end coordinates, length, clothoid constant and radius. It is possible that an alignment consists of more than one element. In this case the list of features would consist of the features of all elements of the alignment as shown in the next picture (&quot;Horizontal Alignment (Line)&quot; appears in the picture two times but with different features.</p>
+<h2 id="54">8.2. Terrain</h2>
+<p><img src="UserHelpPictures\47.png" alt="Alt text" /></p>
+<p>If you click on the tab &quot;Terrain&quot; you have the options to select a terrain and to delete it.</p>
+<h2 id="55">8.3. Laser Scan</h2>
+<p><img src="UserHelpPictures\48.png" alt="Alt text" /></p>
+<p>Normally a laser scan is executed by a car that has a laser on its roof and drives over a street (e.g. Google Street View). Through that laser the surrounding is approximated by a cloud of points in various colors and various sizes.</p>
+<p>With the first check box of &quot;Laser Scan&quot; called &quot;Use uniform color&quot; you can paint white all points of the laser scan picture.</p>
+<p>The checked check box &quot;Use uniform size&quot; magnifies all laser points to the size that is written in the combo box below the check box.</p>
+<p>With the horizontal slider called &quot;Point Size&quot; or with the combo box you can set the size of the largest laser points. The smaller ones will enlarge in the same degree as the largest points so that all points of point cloud become larger to the same extent.</p>
+<h2 id="56">8.4. Map</h2>
+<p><img src="UserHelpPictures\49.png" alt="Alt text" /></p>
+<p>This tool is not finished yet ... therefore it does not work. When it will work the following description should be valid: The very big advantage of the tab &quot;Map&quot; is that it works with &quot;Google Maps&quot; from the internet. Therefore you need internet access in order to run this function. The combo box called &quot;Size&quot; gives you the opportunity to change the scale between 1:1, 1:2, 1:4 and 1:8. If you click on the check box called &quot;Show Map&quot; something amazing happens: Your model will be located in a satellite map from the program &quot;Google Maps&quot;.</p>
+<h1 id="57">9. Symbol bar</h1> 
+<p>Until now just three symbols are visible in the Open Infra Platform. They are links for often used actions. If you wish, we can create more symbols.</p>
+<h2 id="58">9.1. Open</h2>
+<p><img src="UserHelpPictures\50.png" alt="Alt text" /></p>
+<p>With this button you can browse for a file that you want to open.</p>
+<h2 id="59">9.2. Undo</h2>
+<p><img src="UserHelpPictures\51.png" alt="Alt text" /></p>
+<p>Use this button if you want to undo an action that you did.</p>
+<h2 id="60">9.3. Redo</h2> 
+<p><img src="UserHelpPictures\52.png" alt="Alt text" /></p>
+<p>Use this button if you want to undo a click on &quot;Undo&quot;.</p>
+<h1 id="61">10. View bar</h1> 
+<p>The view bar consists of the buttons &quot;View&quot;, &quot;Projection&quot; and the sign for home. These buttons have the aim of giving the user shortcuts for preferred views on his model.</p>
+<h2 id="62"> 10.1. View</h2>
+<p>If you click on the button &quot;View&quot; a list of seven specific views will appear. The specific view rotates the camera so that you see your model from there.</p>
+<p><img src="UserHelpPictures\53.png" alt="Alt text" /></p>
+ <table>
+      <tr>
+        <th>View</th>
+        <th>Explanation</th>
+      </tr>
+      <tr>
+        <td>Top</td>
+        <td>You see the x-y-plane towards negative z-axis</td>
+      </tr>
+      <tr>
+        <td>Bottom</td>
+        <td>You see the x-y-plane towards positive z-axis </td>
+      </tr>
+	   <tr>
+        <td>Left</td>
+        <td>You see the z-y-plane towards positive x-axis </td>
+      </tr>
+      <tr>
+        <td>Right</td>
+        <td>You see the z-y-plane towards negative x-axis</td>
+      </tr>
+	   <tr>
+        <td>Front</td>
+        <td>You see the x-z-plane in direction of positive y-axis</td>
+      </tr>
+      <tr>
+        <td>Back</td>
+        <td>You see the x-z-plane towards negative y-axis</td>
+      </tr>
+	  <tr>
+        <td>Axonometric/Isometric</td>
+        <td>Camera looks towards x = -1 m, y = 1 m, z = -1 m</td>
+      </tr>
+ </table>
+<h2 id="63">10.2. Projection</h2>
+<p><img src="UserHelpPictures\54.png" alt="Alt text" /></p>
+<p>By clicking on the button &quot;Projection&quot; you can switch between the two projections &quot;Orthographic&quot; and &quot;Perspective&quot;. By default the projection &quot;Perspective&quot; is checked. The difference between these two projections is shown in the next picture:</p>
+<p><img src="UserHelpPictures\55.png" alt="Alt text" /></p>
+<p>(Left hand:  perspective projection, right hand: orthographic projection)</p>
+<h2 id="64">10.3. Home</h2>
+<p><img src="UserHelpPictures\56.png" alt="Alt text" /></p>
+<p>By clicking on this sign or pressing the key &quot;H&quot; the start-view will be restored. This can be useful if you have lost your object because you rotated too much the camera of the viewport.</p>
+<h2 id="65">10. 4.Spectator camera mode </h2>
+<p><img src="UserHelpPictures\57.png" alt="Alt text" /></p>
+<p>By clicking on this sign or pressing the key &quot;T&quot; the symbol becomes blue and you get in spectator camera mode. Keyboard and mouse work different in this mode. By clicking on the &quot;ghost&quot; again (or by pressing the key &quot;T&quot;) you exit this mode and you can see that the color of the symbol has become white again.</p>
+<p>This mode is useful for making movies or presentation of your model because of the advantages of a smooth and quick camera move.</p>
+<p>In spectator mode you can move the camera to the left, right, up and down with the arrow keys or with the keys W (for up), A (for left), S (for down) and D (for right).</p>
+<p>If you click with the left mouse button and move the mouse cursor simultaneously the camera will rotate.</p>
+<p>The mouse wheel increases or decreases the move speed of the camera. That means that you do not need to press an arrow key (or W, A, S, D) as long or short time as before in order to get to a view. You can see directly the changes caused by the mouse wheel if you press the arrow keys and turn the mouse wheel simultaneously.</p>
+<p>For the functions of mouse and keyboard outside spectator camera mode see chapter 5 called &quot;Camera Control&quot;.</p>
+
+</body>
+</html>
+<!-- This document was created with MarkdownPad, the Markdown editor for Windows (http://markdownpad.com) -->
+

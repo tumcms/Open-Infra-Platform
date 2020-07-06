@@ -1,0 +1,133 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION (
+        ('ViewDefinition [CoordinationView]'),
+        '2;1');
+FILE_NAME (
+        'building_element_configuration_wall.ifc',
+        '2011-12-12T22:18:35',
+        ('Architect'),
+        ('Test Office'),
+        'IFC Engine DLL version 1.03 beta',
+        'Geometry example',
+        'The authorising person');
+FILE_SCHEMA (('IFC4x1'));
+ENDSEC;
+DATA;
+
+/* --------------------------------------------------------------------------------------------- */
+/* general entities required for all IFC data sets, defining the context for the exchange ------ */
+#1 = IFCPROJECT('28hypXUBvBefc20SI8kfA$', #2, 'Default Project', 'Description of Default Project', $, $, $, (#20), #7);
+
+/* single owner history sufficient if not otherwise required by the view definition ------------ */
+/* provides the person and application creating the data set, and the time it is created ------- */
+#2 = IFCOWNERHISTORY(#3, #6, $, .NOTDEFINED., $, $, $, 1323724715);
+#3 = IFCPERSONANDORGANIZATION(#4, #5, $);
+#4 = IFCPERSON($, 'Bonsma', 'Peter', $, $, $, $, $);
+#5 = IFCORGANIZATION($, 'RDF', 'RDF Ltd.', $, $);
+#6 = IFCAPPLICATION(#5, '0.10', 'Test Application', 'TA 1001');
+
+/* each IFC data set containing geometry has to define at absolute minimum length and angle ---- */
+/* here length is milli metre as SI unit, and plane angle is 'degree' as non SI unit ----------- */
+#7 = IFCUNITASSIGNMENT((#8, #9, #10, #11, #15, #16, #17, #18, #19));
+#8 = IFCSIUNIT(*, .LENGTHUNIT., .MILLI., .METRE.);
+#9 = IFCSIUNIT(*, .AREAUNIT., $, .SQUARE_METRE.);
+#10 = IFCSIUNIT(*, .VOLUMEUNIT., $, .CUBIC_METRE.);
+#11 = IFCCONVERSIONBASEDUNIT(#12, .PLANEANGLEUNIT., 'DEGREE', #13);
+#12 = IFCDIMENSIONALEXPONENTS(0, 0, 0, 0, 0, 0, 0);
+#13 = IFCMEASUREWITHUNIT(IFCPLANEANGLEMEASURE(1.745E-2), #14);
+#14 = IFCSIUNIT(*, .PLANEANGLEUNIT., $, .RADIAN.);
+#15 = IFCSIUNIT(*, .SOLIDANGLEUNIT., $, .STERADIAN.);
+#16 = IFCSIUNIT(*, .MASSUNIT., $, .GRAM.);
+#17 = IFCSIUNIT(*, .TIMEUNIT., $, .SECOND.);
+#18 = IFCSIUNIT(*, .THERMODYNAMICTEMPERATUREUNIT., $, .DEGREE_CELSIUS.);
+#19 = IFCSIUNIT(*, .LUMINOUSINTENSITYUNIT., $, .LUMEN.);
+#20 = IFCGEOMETRICREPRESENTATIONCONTEXT($, 'Model', 3, 1.E-5, #21, #23);
+/* no rotation - z and x axes set to '$' are therefore identical to "world coordinate system" -- */
+#21 = IFCAXIS2PLACEMENT3D(#22, $, $);
+#22 = IFCCARTESIANPOINT((0., 0., 0.));
+#23 = IFCDIRECTION((0., 1.));
+
+/* shared coordinates - it is permissable to share common instances to reduce file size -------- */
+#24 = IFCCARTESIANPOINT((0., 0., 0.));
+#25 = IFCDIRECTION((1., 0., 0.));
+#26 = IFCDIRECTION((0., 1., 0.));
+#27 = IFCDIRECTION((0., 0., 1.));
+#28 = IFCDIRECTION((-1., 0., 0.));
+#29 = IFCDIRECTION((0., -1., 0.));
+#30 = IFCDIRECTION((0., 0., -1.));
+
+/* if site is irrelevant Building could be connected to project directly ----------------------- */
+#31 = IFCSITE('1cwlDi_hLEvPsClAelBNnz', #2, 'Default Site', 'Description of Default Site', $, #32, $, $, .ELEMENT., (24, 28, 0), (54, 25, 0), 10., $, $);
+#32 = IFCLOCALPLACEMENT($, #33);
+/* no rotation - z and x axes set to '$' are therefore identical to "world coordinate system" -- */
+#33 = IFCAXIS2PLACEMENT3D(#24, $, $);
+
+/* each IFC data set containing elements in a building context has to include a building ------- */
+/* at absolute minimum (could have a site and stories as well) --------------------------------- */
+#34 = IFCBUILDING('0AqAhXVxvCy9m0OX1nxY1A', #2, 'Default Building', 'Description of Default Building', $, #35, $, $, .ELEMENT., $, $, #37);
+/* if the building is the uppermost spatial structure element it defines the absolut position -- */
+#35 = IFCLOCALPLACEMENT(#32, #36);
+/* no rotation - z and x axes set to '$' are therefore identical to "world coordinate system" -- */
+#36 = IFCAXIS2PLACEMENT3D(#24, $, $);
+#37 = IFCPOSTALADDRESS($, $, $, $, ('RDF Ltd.', 'Main Office'), '32', 'Bankya', 'Sofia', '1320', 'Bulgaria');
+#38 = IFCBUILDINGSTOREY('2GNgSHJ5j9BRUjqT$7tE8w', #2, 'Default Building Storey', 'Description of Default Building Storey', $, #39, $, $, .ELEMENT., 0.);
+#39 = IFCLOCALPLACEMENT(#35, #40);
+/* no rotation - z and x axes set to '$' are therefore identical to "world coordinate system" -- */
+#40 = IFCAXIS2PLACEMENT3D(#24, $, $);
+#41 = IFCRELAGGREGATES('1Lm3qeFdPFmvCQm$QtrkO_', #2, 'BuildingContainer', 'BuildingContainer for BuildigStories', #34, (#38));
+#42 = IFCRELAGGREGATES('16zMrDm_P2fv4w8_JewkSy', #2, 'SiteContainer', 'SiteContainer For Buildings', #31, (#34));
+#43 = IFCRELAGGREGATES('3IdcKtxyTFSPDjAagDGuOq', #2, 'ProjectContainer', 'ProjectContainer for Sites', #1, (#31));
+#44 = IFCRELCONTAINEDINSPATIALSTRUCTURE('0w_L$jTK98v8wOzKFGjTuo', #2, 'Default Building', 'Contents of Building Storey', (#45), #38);
+
+/* the wall itself ----------------------------------------------------------------------------- */
+#45 = IFCWALL('3ZYW59sxj8lei475l7EhLU', #2, 'Wall for Test Example', 'Description of Wall', $, #46, #48, $, $);
+#46 = IFCLOCALPLACEMENT(#39, #47);
+/* no rotation - z and x axes set to '$' are therefore identical to "world coordinate system" -- */
+#47 = IFCAXIS2PLACEMENT3D(#24, $, $);
+#48 = IFCPRODUCTDEFINITIONSHAPE($, $, (#66, #70));
+
+/* properties for the wall, standard property set from PSet collection ------------------------- */
+#49 = IFCPROPERTYSET('3nMqHLyZHAegWs5Yyxh1ry', #2, 'Pset_WallCommon', $, (#50, #51, #52, #53, #54, #55, #56, #57, #58, #59));
+#50 = IFCPROPERTYSINGLEVALUE('Reference', 'Reference', IFCIDENTIFIER(''), $);
+#51 = IFCPROPERTYSINGLEVALUE('AcousticRating', 'AcousticRating', IFCLABEL(''), $);
+#52 = IFCPROPERTYSINGLEVALUE('FireRating', 'FireRating', IFCLABEL(''), $);
+#53 = IFCPROPERTYSINGLEVALUE('Combustible', 'Combustible', IFCBOOLEAN(.F.), $);
+#54 = IFCPROPERTYSINGLEVALUE('SurfaceSpreadOfFlame', 'SurfaceSpreadOfFlame', IFCLABEL(''), $);
+#55 = IFCPROPERTYSINGLEVALUE('ThermalTransmittance', 'ThermalTransmittance', IFCTHERMALTRANSMITTANCEMEASURE(2.4E-1), $);
+#56 = IFCPROPERTYSINGLEVALUE('IsExternal', 'IsExternal', IFCBOOLEAN(.T.), $);
+#57 = IFCPROPERTYSINGLEVALUE('ExtendToStructure', 'ExtendToStructure', IFCBOOLEAN(.F.), $);
+#58 = IFCPROPERTYSINGLEVALUE('LoadBearing', 'LoadBearing', IFCBOOLEAN(.F.), $);
+#59 = IFCPROPERTYSINGLEVALUE('Compartmentation', 'Compartmentation', IFCBOOLEAN(.F.), $);
+/* connection of properties to the wall -------------------------------------------------------- */
+#60 = IFCRELDEFINESBYPROPERTIES('29JB4VSyHEhx7go0x$VxZ2', #2, $, $, (#45), #49);
+
+/* material (layers) of the wall --------------------------------------------------------------- */
+#61 = IFCMATERIALLAYERSETUSAGE(#62, .AXIS2., .POSITIVE., -150., $);
+#62 = IFCMATERIALLAYERSET((#63), $, $);
+#63 = IFCMATERIALLAYER(#64, 300., $, $, $, $, $);
+#64 = IFCMATERIAL('Name of the material used for the wall', $, $);
+/* connection of material description to the wall ---------------------------------------------- */
+#65 = IFCRELASSOCIATESMATERIAL('3DQ2_rihzBm8nLF98euhbs', #2, $, $, (#45), #61);
+
+/* line (shape) representation) of the object -------------------------------------------------- */
+#66 = IFCSHAPEREPRESENTATION(#20, 'Axis', 'Curve2D', (#67));
+#67 = IFCPOLYLINE((#68, #69));
+#68 = IFCCARTESIANPOINT((0., 150.));
+#69 = IFCCARTESIANPOINT((3000., 150.));
+
+/* geometry (shape representation), extruded polygon in z direction ---------------------------- */
+#70 = IFCSHAPEREPRESENTATION(#20, 'Body', 'SweptSolid', (#71));
+#71 = IFCEXTRUDEDAREASOLID(#72, #79, #27, 2000.);
+#72 = IFCARBITRARYCLOSEDPROFILEDEF(.AREA., $, #73);
+#73 = IFCPOLYLINE((#74, #75, #76, #77, #78));
+#74 = IFCCARTESIANPOINT((0., 0.));
+#75 = IFCCARTESIANPOINT((0., 300.));
+#76 = IFCCARTESIANPOINT((3000., 300.));
+#77 = IFCCARTESIANPOINT((3000., 0.));
+#78 = IFCCARTESIANPOINT((0., 0.));
+/* no rotation - z and x axes set to '$' are therefore identical to "world coordinate system" -- */
+#79 = IFCAXIS2PLACEMENT3D(#24, $, $);
+
+ENDSEC;
+END-ISO-10303-21;
