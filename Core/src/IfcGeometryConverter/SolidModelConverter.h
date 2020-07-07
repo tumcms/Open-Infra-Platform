@@ -534,21 +534,14 @@ namespace OpenInfraPlatform
 				if (sectioned_solid.expired())
 					throw oip::ReferenceExpiredException(sectioned_solid);
 
-				//Get directrix and cross sections (attributes 1-2).
-				const EXPRESSReference<typename IfcEntityTypesT::IfcCurve> & directrix =
-					sectioned_solid->Directrix;
-				std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
-				vec_cross_sections.resize(sectioned_solid->CrossSections.size());
-				std::transform(sectioned_solid->CrossSections.begin(),
-					sectioned_solid->CrossSections.end(),
-					vec_cross_sections.begin(), [](auto& it) {return it.lock(); });
-
 				// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
 				if (sectioned_solid.isOfType<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>())
 				{
 					convertIfcSectionedSolidHorizontal(pos, itemData, sectioned_solid.as<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>());
 					return;
 				}
+
+				throw oip::UnhandledException(sectioned_solid);
 			}
 			
 			void convertIfcSolidModel(const std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
@@ -575,7 +568,7 @@ namespace OpenInfraPlatform
 
 				if (solid_model_ref.isOfType<typename IfcEntityTypesT::IfcManifoldSolidBrep>())
 				{
-                    convertIfcManifoldSolidBrep(pos, itemData, solid_model_ref.as<typename IfcEntityTypesT::IfcManifoldSolidBrep>());
+                    convertIfcManifoldSolidBrep(solid_model_ref.as<typename IfcEntityTypesT::IfcManifoldSolidBrep>(), pos, itemData);
                      return;
                 } //endif manifoldSolidBrep
 
