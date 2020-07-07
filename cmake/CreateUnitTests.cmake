@@ -63,6 +63,11 @@ function(CreateIfcFileUnitTestForSchema test_name schema)
 
 endfunction()
 
+function(CreateIfcFileVisualUnitTestForSchema test_name schema)
+  CreateIfcFileUnitTestForSchema(${test_name} ${schema})
+  target_link_libraries(${test_name} PUBLIC OpenInfraPlatform.Rendering)
+endfunction(CreateIfcFileVisualUnitTestForSchema)
+
 
 # see https://stackoverflow.com/questions/7787823/cmake-how-to-get-the-name-of-all-subdirectories-of-a-directory
 # get all subdirectories of a directory

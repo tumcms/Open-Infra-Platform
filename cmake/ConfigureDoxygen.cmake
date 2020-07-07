@@ -44,6 +44,8 @@ set(DOXYGEN_PROJECT_BRIEF "Open source software for viewing IFC and point cloud 
 set(DOXYGEN_PROJECT_LOGO ${CMAKE_CURRENT_SOURCE_DIR}/UserInterface/Resources/icons/icon_72x72.png)
 set(DOXYGEN_CREATE_SUBDIRS YES)
 set(DOXYGEN_HAVE_DOT YES) # GraphViz Package for diagrams
+set(DOXYGEN_CALL_GRAPH YES) 
+set(DOXYGEN_CALLER_GRAPH YES)
 
 # Documentation settings.
 if(DOXYGEN_OPTIONAL_INCLUDE_COMMENTED_ONLY)

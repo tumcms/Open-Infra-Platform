@@ -23,7 +23,7 @@ SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_LIST_DIR})
 # add to the solution
 FOREACH(subdir ${SUBDIRS})
   # only if the schema has been included in the project and built already
-  if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding/${subdir})
+  if(EXISTS ${CMAKE_BINARY_DIR}/EarlyBinding/${subdir} AND EARLYBINDING_WITH_${subdir})
     ADD_SUBDIRECTORY(${subdir})
   endif()
 ENDFOREACH()

@@ -110,52 +110,62 @@ namespace OpenInfraPlatform
                             }
                         }
 
-                        void convertIfcManifoldSolidBrepOuterShell(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell)
-                        {
-                            // first convert outer shell
-						
-                            std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcFace>> vec_facesOuterShell;
-                            std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
+            void convertIfcClosedShell(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell, 
+				const carve::math::Matrix& pos, 
+				std::shared_ptr<ItemData>& itemData
+			) const throw(...)
+            {
+				if (outerShell.expired())
+					throw oip::ReferenceExpiredException(outerShell);
 
-						
-                            vec_facesOuterShell.resize(outerShell->CfsFaces.size());
-                            std::transform(outerShell->CfsFaces.begin(), outerShell->CfsFaces.end(), vec_facesOuterShell.begin(), [](auto& it) {return it.lock(); });
-													
-                            try {
-                                faceConverter->convertIfcFaceList(vec_facesOuterShell, pos, inputDataOuterShell);
-                            }
-                            catch (...) {
-                                //return;
-                            }
-                            std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
-                                      inputDataOuterShell->open_or_closed_polyhedrons.end(),
-                                      std::back_inserter(itemData->closed_polyhedrons));
-                        }
+                std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
 
-                        void convertIfcManifoldSolidBrep(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep) throw(...)
-                        {
-                            if(manifoldSolidBrep.expired())
-                                throw oip::ReferenceExpiredException(manifoldSolidBrep);
+                faceConverter->convertIfcFaceList(outerShell->CfsFaces, pos, inputDataOuterShell);
 
-                            // Get outer (attribute 1).
-                            convertIfcManifoldSolidBrepOuterShell(pos, itemData, manifoldSolidBrep->Outer);
+                std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
+                            inputDataOuterShell->open_or_closed_polyhedrons.end(),
+                            std::back_inserter(itemData->closed_polyhedrons));
+            }
 
-                            // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
-                            if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>())
-                            {
-                                throw oip::UnhandledException(manifoldSolidBrep);
-                            } // endif advanced_brep
+			/*! \brief Converts \c IfcManifoldSolidBrep to meshes.
+			 *
+			 * \param[in] manifoldSolidBrep The \c IfcManifoldSolidBrep to be converted.
+			 * \param[in] pos The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData A pointer to be filled with the relevant data.
+			 */
+            void convertIfcManifoldSolidBrep(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep,
+				const carve::math::Matrix& pos,  
+				std::shared_ptr<ItemData> itemData
+			) const throw(...)
+            {
+				// check input
+                if(manifoldSolidBrep.expired())
+                    throw oip::ReferenceExpiredException(manifoldSolidBrep);
 
-                            // (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
-                            if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
-								if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrepWithVoids>())
-									throw oip::UnhandledException(manifoldSolidBrep);
-								else
-									return;
-                            }
+                // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
+                if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>())
+                    throw oip::UnhandledException(manifoldSolidBrep);
 
-                            throw oip::UnhandledException(manifoldSolidBrep);
-                        }
+                // (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
+                if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
+					// (1/2) IfcFacetedBrepWithVoids SUBTYPE of IfcFacetedBrep
+					if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrepWithVoids>())
+						throw oip::UnhandledException(manifoldSolidBrep);
+					// (2/2) IfcFacetedBrep
+					else
+					{
+						// Get outer (attribute 1).
+						convertIfcClosedShell(manifoldSolidBrep->Outer, pos, itemData);
+						// Done
+						return; 
+					}
+                }
+				
+				// the rest is not supported
+                throw oip::UnhandledException(manifoldSolidBrep);
+            }
 
 						std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(
 							const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix,
@@ -688,8 +698,8 @@ namespace OpenInfraPlatform
 						std::vector<carve::geom::vector<3> > basis_curve_points;
 						curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);
 
-						std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
-						faceConverter->convertIfcSurface(surface_curve_swept_area_solid->ReferenceSurface.lock(), swept_area_pos, polyline_data);
+						std::shared_ptr<carve::input::PolylineSetData> polyline_data =
+							faceConverter->convertIfcSurface(surface_curve_swept_area_solid->ReferenceSurface, swept_area_pos);
 
 #ifdef _DEBUG
 						BLUE_LOG(trace) << "Processed IfcSurfaceCurveSweptAreaSolid #" << surface_curve_swept_area_solid->getId();
@@ -1971,8 +1981,8 @@ namespace OpenInfraPlatform
 
 						if (var == 0)
 						{
-							std::shared_ptr<carve::input::PolylineSetData> surface_data(new carve::input::PolylineSetData());
-							faceConverter->convertIfcSurface(base_surface, carve::math::Matrix::IDENT(), surface_data);
+							std::shared_ptr<carve::input::PolylineSetData> surface_data = 
+								faceConverter->convertIfcSurface(base_surface, carve::math::Matrix::IDENT());
 							std::vector<carve::geom::vector<3>> base_surface_points = surface_data->points;
 
 							if (base_surface_points.size() != 4)
