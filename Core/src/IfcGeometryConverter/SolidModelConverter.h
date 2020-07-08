@@ -248,12 +248,14 @@ namespace OpenInfraPlatform
 
 							//define Vector to fill with the coordinates of the CrossSections
 							std::vector<std::vector<std::vector<carve::geom::vector<2> > > > paths;
-
+							std::vector<std::vector<carve::geom::vector<2> > > push;
 							//Get coordinates from the ProfileConverter for the ProfileDef
 							for (int i = 0; i <= vec_cross_sections.size(); ++i)
 							{
+						        //Save in local variable
+								push = profileCache->getProfileConverter(vec_cross_sections[i])->getCoordinates();
 								//Save coordinates in paths
-								paths.push_back(profileCache->getProfileConverter(vec_cross_sections[i])->getCoordinates());
+								paths.push_back(push); 
 
 								//check if paths has been filled with the coordinates of the ProfileDef. if empty -> throw Exception
 								if (paths[i].size() == 0)
@@ -268,14 +270,17 @@ namespace OpenInfraPlatform
 							std::vector<carve::geom::vector<3>> CrossSectionPoints;
 							std::vector<carve::geom::vector<3>> directionsOfCurve;
 							carve::math::Matrix FixedAxisVerticalMatrix;
-
+							
 							for (int pos = 0; pos < cross_section_positions.size(); ++pos)
 							{
-								//1. get offset from curve    
-								offsetFromCurve.push_back(placementConverter->convertIfcDistanceExpressionOffsets(cross_section_positions[pos]));
+								
+								//1. get offset from curve   
+								carve::geom::vector<3> offset = placementConverter->convertIfcDistanceExpressionOffsets(cross_section_positions[pos]);
+								offsetFromCurve.push_back(offset);//TO DO: push_back is not working
 
 								//2. calculate the position on and the direction of the base curve
-								//also applay the relative dist along	 
+								//also applay the relative dist along	
+								//TO DO: speichern von return in zwei locale variablen und dann variable push_back in CrossSectionPoints und directionsOfCurve
 								std::tie(CrossSectionPoints[pos], directionsOfCurve[pos]) = calculatePositionOnAndDirectionOfBaseCurve(directrix, cross_section_positions[pos]);
 								CrossSectionPoints.push_back(CrossSectionPoints[pos]);
 								directionsOfCurve.push_back(directionsOfCurve[pos]);
@@ -286,11 +291,13 @@ namespace OpenInfraPlatform
 									directionsOfCurve[pos].z = 0;
 									directionsOfCurve[pos].normalize();
 								}
-
+								
 								//4. calculate the rotations
 								//the direction of the curve's tangent = directionOfCurve
 								//now that localPLacement Matrix is a Vector ----> 1 Matrix for each CrossSectionPosition saved in the Vector localPlacementMatrix
-								localPlacementMatrix.push_back(placementConverter->calculateCurveOrientationMatrix(directionsOfCurve[pos], cross_section_positions[pos]->AlongHorizontal.value_or(true)));
+								carve::math::Matrix localm = placementConverter->calculateCurveOrientationMatrix(directionsOfCurve[pos], cross_section_positions[pos]->AlongHorizontal.value_or(true));
+								//localPlacementMatrix.push_back(placementConverter->calculateCurveOrientationMatrix(directionsOfCurve[pos], cross_section_positions[pos]->AlongHorizontal.value_or(true)));
+								localPlacementMatrix.push_back(localm);
 							}
 							
 
@@ -493,36 +500,31 @@ namespace OpenInfraPlatform
 								}
 							}
 							
-							/*//2. TO DO: addFaces 3 phases: 1.Front Profile   2.Mantelfläche  3.Close Prolygon and profiles
-							for (i = 0; i < paths_for_tesselation.size(); ++i)
-							{
-								//1. Add Profile Face of each CrossSection
-								std::vector<std::vector<carve::geom::vector<3> > >& compositeProfile = paths_for_tesselation[i];
-								for (int w = 0; w < compositeProfile.size(); ++w)
+							  //2. TO DO: addFaces 3 phases: 1.Front Profile   2.Mantelfläche  3.Close Prolygon and profiles
+
+					
+								/*//2. Add Faces between Cross Sections to create a body along the Directrix
+							    size_t num_vertices = body_data->getVertexCount();
+								for (int i = 0; i < paths_for_tesselation.size(); ++i)
 								{
-									std::vector<carve::geom::vector<3> >& loop = compositeProfile[w];
-									for (int k = 0; k < loop.size(); ++k)
+									int i_offset = i * ppoint;
+									int i_offset_next = (i + 1)*ppoint;
+
+									for (int jj = 0; jj < num_vertices; ++jj)
 									{
-
-										//if()
-										carve::geom::vector<3>& point1 = loop[k];
-										carve::geom::vector<3>& point2 = loop[k + 1];
-										carve::geom::vector<3>& point3 = loop[k + 2];
-
-										carve::geom::vector<3> segment1 = point1 + point2;
-										carve::geom::vector<3> segment2 = point2 + point3;
-										carve::geom::vector<3> segment3 = point3 + point1;
-									
-										body_data->addFace(segment1, segment2, segment3);
+										// NCS= Next Cross Section
+										int current_loop_pt = jj + i_offset;
+										int current_loop_pt_NCS = (jj + 1) % ppoint + i_offset_next;
 										
+										int next_loop_pt = jj + i_offset_next;
+										int next_loop_pt_NCS = (jj + 1) % ppoint + i_offset_next;
+										body_data->addFace(current_loop_pt, next_loop_pt, next_loop_pt_NCS, current_loop_pt_NCS);
 									}
-								
+									
 								}
-
-								//2. Add Faces between Cross Sections to create a body along the Directrix
-
+								*/
 								//3. Close the polygons 
-							}*/
+							
 
 
 				             
