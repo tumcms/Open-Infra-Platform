@@ -449,11 +449,8 @@ namespace OpenInfraPlatform
 
 							for (int j = 0; j < numControlPoints; ++j) 
 							{
-								const double basisFunc = basisFuncs[j];
-								const carve::geom::vector<3>& controlPoint = controlPoints[j];
-
 								// 3b) apply formula for normal B-spline curves
-								point += basisFunc * controlPoint;
+								point += basisFuncs[j] * controlPoints[j];
 							}
 
 							curvePoints.push_back(point);
@@ -501,12 +498,9 @@ namespace OpenInfraPlatform
 
 							for (int j = 0; j < numControlPoints; ++j)
 							{
-								const double basisFunc = basisFuncs[j];
-								const carve::geom::vector<3>& controlPoint = controlPoints[j];
-
 								// 3a) apply formula for rational B-spline surfaces
-								const double weightProduct = weightsData[j] * basisFunc;
-								point += weightProduct * controlPoint;
+								const double weightProduct = weightsData[j] * basisFuncs[j];
+								point += weightProduct * controlPoints[j];
 								weightSum += weightProduct;
 							}
 
