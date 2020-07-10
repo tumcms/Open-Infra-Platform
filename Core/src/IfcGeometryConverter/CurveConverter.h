@@ -1152,6 +1152,8 @@ namespace OpenInfraPlatform {
 					// **************************************************************************************************************************
 					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpolyline.htm
 					// **************************************************************************************************************************
+					if (ifcpolyline.expired())
+						throw oip::ReferenceExpiredException(ifcpolyline);
 
 					return convertIfcCartesianPointVector(ifcpolyline->Points);
 				}
