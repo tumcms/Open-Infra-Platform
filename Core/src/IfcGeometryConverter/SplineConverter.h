@@ -83,10 +83,7 @@ namespace OpenInfraPlatform
 
 							knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
 
-							//! TEMPORARY default number of curve points
-							const uint8_t numCurvePoints = numKnotsArray * 10;
-
-							std::vector<carve::geom::vector<3>> curvePoints = computeBSplineCurve(order, numCurvePoints, numControlPoints, controlPoints, weightsData, knotArray);
+							std::vector<carve::geom::vector<3>> curvePoints = computeBSplineCurve(order, numControlPoints, controlPoints, weightsData, knotArray);
 
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
 						}
@@ -255,13 +252,17 @@ namespace OpenInfraPlatform
 					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
 					static std::vector<carve::geom::vector<3>> computeBSplineCurve(
 						const uint8_t order,
-						const uint32_t numCurvePoints,
 						const uint32_t numControlPoints,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
 						const std::vector<double>& weights,
 						const std::vector<double>& knotArray)
 					{
 						// renamed knotVector -> knotArray, according to Entity definition in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurve.htm
+
+						uint32_t numCurvePoints;
+						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
+						double accuracy;
+						std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
 
 						// The following parameters corresponds to the parameter t of a curve c(t)
 						double knotStart;
@@ -276,8 +277,6 @@ namespace OpenInfraPlatform
 
 						// start with first valid knot
 						double t = knotStart;
-						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
-						const double accuracy = 0.0000001;
 
 						for(auto i = 0; i < numCurvePoints; ++i) {
 							if(i == numCurvePoints - 1) { t = knotEnd - accuracy; }
@@ -408,6 +407,17 @@ namespace OpenInfraPlatform
 						const double step = knotRange / static_cast<double>(numCurvePoints - 1);
 
 						return { knotStart, knotEnd, step };
+					}
+
+					static std::tuple<const uint32_t, const double> obtainProperties(const int& numKnotsArray)
+					{
+						//! TEMPORARY default number of curve points
+						const uint32_t numCurvePoints = numKnotsArray * 10;
+
+						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
+						const double accuracy = 0.0000001;
+
+						return { numCurvePoints, accuracy };
 					}
 			}; // end class SplineConverterT
 
