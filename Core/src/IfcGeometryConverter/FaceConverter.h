@@ -629,10 +629,7 @@ namespace OpenInfraPlatform {
 
 						if (!convertIfcFace(face, pos, polygon, polygonIndices)) 
 						{
-							std::stringstream text;
-							text << "IFC Face conversion failed with faces #" << faces.at(0)->getId() << "-" << faces.at(faces.size() - 1)->getId();
-
-							throw std::exception(text.str().c_str());
+							throw oip::UnhandledException(face); 
 						}
 					}
 
@@ -698,8 +695,7 @@ namespace OpenInfraPlatform {
 						const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
 						bool polyOrientation = bound->Orientation;
 						if (!loop) {
-							BLUE_LOG(warning) << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " no valid loop.";
-
+							throw oip::InconsistentGeometryException(face, " no valid loop.");
 							if (boundID == 0) 
 							{
 								break;
@@ -721,8 +717,8 @@ namespace OpenInfraPlatform {
 
 						if (loopVertices3D.size() < 3) 
 						{
-							BLUE_LOG(warning) << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " Number of vertices < 2.";
-
+							//BLUE_LOG(warning) << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " Number of vertices < 2.";
+							throw oip::InconsistentGeometryException(face, " Number of vertices < 2.");
 							if (boundID == 0) 
 							{
 								break;
@@ -781,14 +777,14 @@ namespace OpenInfraPlatform {
 						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed)) 
 						{
 							conversionFailed = true;
-							BLUE_LOG(warning) << "#" << faceID << "= IfcFace: loop could not be projected";
+							throw oip::UnhandledException(face);
 							continue;
 						}
 
 						if (loopVertices2D.size() < 3) 
 						{
 							conversionFailed = true;
-							BLUE_LOG(warning) << "#" << faceID << "= IfcFace: path_loop.size() < 3";
+							throw oip::UnhandledException(face);
 							continue;
 						}
 
@@ -831,8 +827,7 @@ namespace OpenInfraPlatform {
 					catch (std::exception e) // catch carve error if holes cannot be incorporated
 					{
 						conversionFailed = true;
-						BLUE_LOG(error) << "convertIfcFaceList: #" << faceID << " = IfcFace: carve::triangulate::incorporateHolesIntoPolygon failed ";
-						BLUE_LOG(error) << e.what();
+						throw oip::InconsistentGeometryException(face, "carve::triangulate::incorporateHolesIntoPolygon failed");
 						// continue;
 
 						mergedVertices2D = faceVertices2D.at(0);
