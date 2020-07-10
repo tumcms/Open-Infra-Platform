@@ -998,34 +998,37 @@ namespace OpenInfraPlatform {
 					if (polycurve->Segments)
 					{
 						std::vector<carve::geom::vector<3>> loop;
-						for (const auto& seg : polycurve->Segments)
+						for ( const auto& seg : polycurve->Segments.get() )
 						{
 							switch (seg.which())
 							{
 							case 0: 
+							{
 								// TYPE IfcArcIndex = LIST [3:3] OF IfcPositiveInteger;
 								auto arcIndex = seg.get<0>();
 
 								if (arcIndex.size() != 3)
-									throw oip::InconsistentModellingException(arcIndex, "The number of indices is not 3!");
+									throw oip::InconsistentModellingException(polycurve, "The number of indices for one of IfcArcIndex is not 3!");
 
 								carve::geom::vector<3> arcStart = points[arcIndex[0]];
 								carve::geom::vector<3> arcMid = points[arcIndex[1]];
 								carve::geom::vector<3> arcEnd = points[arcIndex[2]];
 
 								//TODO implement IfcArcIndex
-								throw oip::UnhandledException(arcIndex);
+								throw oip::UnhandledException(polycurve);
 
 								break;
+							}
 							case 1: 
+							{
 								// TYPE IfcLineIndex = LIST [2:?] OF IfcPositiveInteger;
 								auto lineIndex = seg.get<1>();
 
 								if (lineIndex.size() < 2)
-									throw oip::InconsistentModellingException(lineIndex, "The number of indices is less than 2!");
+									throw oip::InconsistentModellingException(polycurve, "The number of indices for one of IfcLineIndex is less than 2!");
 
 								std::vector<carve::geom::vector<3>> loop_intern;
-								for (const auto& i : lineIndex)
+								for ( const auto& i : lineIndex )
 								{
 									loop_intern.push_back(points[i]);
 								}
@@ -1035,17 +1038,20 @@ namespace OpenInfraPlatform {
 
 								break;
 							}
+							default:
+								throw oip::UnhandledException(polycurve);
+							}
 						}
 
 						// add the calculated points to the return values
 						GeomUtils::appendPointsToCurve(loop, targetVec);
-						segmentsStartPoints.push_back(loop[0]);
+						segmentStartPoints.push_back(loop[0]);
 					}
 					else
 					{
 						// no segments are there -> it's just a polyline ..
 						GeomUtils::appendPointsToCurve(points, targetVec);
-						segmentsStartPoints.push_back(points[0]);
+						segmentStartPoints.push_back(points[0]);
 					}
 
 				}
@@ -1361,6 +1367,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPointList>& pointlist
 				) const throw(...)
 				{
+					// **************************************************************************************************************************
 					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4/ADD1/HTML/link/ifccartesianpointlist.htm
 					// ENTITY IfcCartesianPointList
 					// ABSTRACT SUPERTYPE OF(ONEOF(IfcCartesianPointList2D, IfcCartesianPointList3D))
@@ -1375,12 +1382,13 @@ namespace OpenInfraPlatform {
 					//	SUBTYPE OF(IfcCartesianPointList);
 					//	CoordList: LIST[1:? ] OF LIST[3:3] OF IfcLengthMeasure;
 					// END_ENTITY;
+					// **************************************************************************************************************************
 
 					// check input
 					if (pointlist.expired())
 						throw oip::ReferenceExpiredException(pointlist);
 					
-					std::vector<carve::geom::vector<3> >& loop;
+					std::vector<carve::geom::vector<3> > loop;
 					// interpret the points
 					if (pointlist.isOfType<typename IfcEntityTypesT::IfcCartesianPointList2D>())
 					{
