@@ -321,13 +321,18 @@ namespace OpenInfraPlatform
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline,
 						const int& numKnotsArray)
 					{
-						std::vector<double> knotArray;
-						knotArray.reserve(numKnotsArray);
+						// check whether data in ifc matches the definition in documentation
+						if (bspline->KnotMultiplicities.size() != bspline->Knots.size())
+						{
+							//std::cout << "ERROR: knot multiplicity does not correspond number of knots" << std::endl;
+							throw oip::UnhandledException("Function convertIfcBSplineCurve::loadKnotArray: Knot multiplicity does not correspond number of  distinct knots; unable to construct a knot array.");
+						}
 
 						// //const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>& splinePoints = bspline->m_ControlPointsList;
 						//const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnots = bspline->m_Knots;
 						std::vector<double> knots;
 						// renamed splineKnots -> knots, according to Attribute definitions in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurvewithknots.htm
+						knots.resize(bspline->Knots.size());
 						std::transform(
 							bspline->Knots.begin(),
 							bspline->Knots.end(),
@@ -345,11 +350,9 @@ namespace OpenInfraPlatform
 							[](auto &it) -> int { return it; });
 						// convert 'it' (KnotMultiplicities) from IfcInteger to int ?
 
-						//if (knotMults.size() != knots.size())
-						//{
-						//	std::cout << "ERROR: knot multiplicity does not correspond number of knots" << std::endl;
-						//	return;
-						//}
+						// preset target vector
+						std::vector<double> knotArray;
+						knotArray.reserve(numKnotsArray);
 
 						// obtain knots
 						for (int i = 0; i < knots.size(); ++i)
