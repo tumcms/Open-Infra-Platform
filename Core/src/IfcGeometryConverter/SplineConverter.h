@@ -85,10 +85,8 @@ namespace OpenInfraPlatform
 
 							//! TEMPORARY default number of curve points
 							const uint8_t numCurvePoints = numKnotsArray * 10;
-							std::vector<carve::geom::vector<3>> curvePoints;
-							curvePoints.reserve(numCurvePoints);
 
-							computeBSplineCurve(order, numCurvePoints, numControlPoints, controlPoints, weightsData, knotArray, curvePoints);
+							std::vector<carve::geom::vector<3>> curvePoints = computeBSplineCurve(order, numCurvePoints, numControlPoints, controlPoints, weightsData, knotArray);
 
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
 						}
@@ -255,14 +253,13 @@ namespace OpenInfraPlatform
 
 
 					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
-					static void computeBSplineCurve(
+					static std::vector<carve::geom::vector<3>> computeBSplineCurve(
 						const uint8_t order,
 						const uint32_t numCurvePoints,
 						const uint32_t numControlPoints,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
 						const std::vector<double>& weights,
-						const std::vector<double>& knotArray,
-						std::vector<carve::geom::vector<3>>& curvePoints)
+						const std::vector<double>& knotArray)
 					{
 						// renamed knotVector -> knotArray, according to Entity definition in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurve.htm
 
@@ -270,10 +267,13 @@ namespace OpenInfraPlatform
 						double knotStart;
 						double knotEnd;
 						double step;
-
 						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
 
 						std::vector<double> basisFuncs;
+
+						std::vector<carve::geom::vector<3>> curvePoints;
+						curvePoints.reserve(numCurvePoints);
+
 						// start with first valid knot
 						double t = knotStart;
 						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
@@ -314,6 +314,8 @@ namespace OpenInfraPlatform
 
 							t += step;
 						}
+
+						return curvePoints;
 					}
 
 				private:
