@@ -250,7 +250,7 @@ namespace OpenInfraPlatform
 							std::vector<std::vector<std::vector<carve::geom::vector<2> > > > paths;
 							std::vector<std::vector<carve::geom::vector<2> > > push;
 							//Get coordinates from the ProfileConverter for the ProfileDef
-							for (int i = 0; i <= vec_cross_sections.size(); ++i)
+							for (int i = 0; i < vec_cross_sections.size(); ++i)
 							{
 						        //Save in local variable
 								push = profileCache->getProfileConverter(vec_cross_sections[i])->getCoordinates();
@@ -303,7 +303,7 @@ namespace OpenInfraPlatform
 							}
 							
 							//Declare Variable for the addFace
-							std::vector<carve::geom::vector<3>> Tloop;
+							int ppoints;
 
 							//Declare a new vector which will include all points for the Tesselation
 							std::vector<carve::geom::vector<3>> points_for_tesselation;
@@ -311,8 +311,8 @@ namespace OpenInfraPlatform
 							std::vector<std::vector<std::vector<carve::geom::vector<3>>>> paths_for_tesselation;
 							int i = 0;
 						    int j = 0;
-							double dist_1 = 0;
-							double dist_2 = 0;
+							double dist_1 = distance(BasisCurvePoints[0], CrossSectionPoints[0]);
+							double dist_2 = distance(BasisCurvePoints[1], CrossSectionPoints[0]);
 
 							//iterate BasisCurvePoints[] until it gets to CrossSectionPoints[0]
 							//if dist_1 is bigger than dist_2 they are before CrossSectionPoints[0], else they are after that pointa
@@ -333,6 +333,7 @@ namespace OpenInfraPlatform
 							for (int w = 0; w < compositeProfile.size(); ++w)
 							{
 								std::vector<carve::geom::vector<2> >& loop = compositeProfile[w];
+								ppoints = loop.size();
 								std::vector<carve::geom::vector<3>> Tloop;
 								for (int k = 0; k < loop.size(); ++k)
 								{
@@ -391,10 +392,10 @@ namespace OpenInfraPlatform
 									double distBasisCurvePoints;
 									
 									//calculate the distance from the point in basis_curve_points to the last element in the joint list
-									int last = points_for_tesselation.size();
+									int last = points_for_tesselation.size() - 1;
 
-									distCrossSectionPositions = distance(points_for_tesselation.at(last), CrossSectionPoints.at(j));
-									distBasisCurvePoints = distance(points_for_tesselation.at(last), BasisCurvePoints.at(i));
+									distCrossSectionPositions = distance(points_for_tesselation[last], CrossSectionPoints[j]);
+									distBasisCurvePoints = distance(points_for_tesselation[last], BasisCurvePoints[i]);
 
 									if (distCrossSectionPositions < distBasisCurvePoints)
 									{
@@ -433,29 +434,24 @@ namespace OpenInfraPlatform
 
 										//calculate the direction of the point (Interpolate with the pointOnCurve before and after that point)
 										carve::geom::vector<3> interpolatedDirection;
-										int directionSize = direction_for_tesselation.size();
-										int lastPoint = points_for_tesselation.size();
-										double totalDistance = distance(points_for_tesselation.at(lastPoint-1), CrossSectionPoints[j + 1]);
-										double factorBefore = (distance(points_for_tesselation.at(lastPoint-1), BasisCurvePoints[i]))/totalDistance;
-										double factorAfter = (distance(BasisCurvePoints[i], CrossSectionPoints[j + 1]))/totalDistance;
+										int directionSize = direction_for_tesselation.size()-1;
+										int lastPoint = points_for_tesselation.size() -1;
 
-										interpolatedDirection = (direction_for_tesselation.at(directionSize)*factorBefore ) + (directionsOfCurve[j + 1]*factorAfter);
+										double totalDistance = distance(CrossSectionPoints[j - 1], CrossSectionPoints[j]);
+										double factorBefore = (distance(CrossSectionPoints[j - 1], BasisCurvePoints[i]))/totalDistance;
+										double factorAfter = (distance(BasisCurvePoints[i], CrossSectionPoints[j]))/totalDistance;
+
+										interpolatedDirection = (direction_for_tesselation[directionSize]*factorBefore ) + (directionsOfCurve[j]*factorAfter);
 
 										direction_for_tesselation.push_back(interpolatedDirection);
 
 										//calculate the Profile (Interpolate the Profile on the pointOnCurve before and after that point to get the right Profile)
-										
-										
-										//get factors for Interpolation
-										double ProfileDistance = distance(CrossSectionPoints[j], CrossSectionPoints[j + 1]);
-										double factorProfileBefore = (distance(CrossSectionPoints[j], points_for_tesselation.at(lastPoint)))/ProfileDistance;
-										double factorProfileAfter = (distance(points_for_tesselation.at(lastPoint), CrossSectionPoints[j + 1]))/ProfileDistance;
 
 										//interpolate profile
 										// Informal proposition: for the Interpolation to work the Profiles of the CrossSection before and afer need to have the same amount of points and loops.
 										//
-										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileBefore = paths[j];
-										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileAfter = paths[j + 1];
+										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileBefore = paths[j - 1];
+										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileAfter = paths[j];
 
 										std::vector<std::vector<carve::geom::vector<3> > > Tcompositeprofile;
 										for (int w = 0; w < compositeProfileBefore.size(); ++w)
@@ -469,10 +465,10 @@ namespace OpenInfraPlatform
 												carve::geom::vector<2>& pointBefore = loopBefore[k];
 												carve::geom::vector<2>& pointAfter = loopAfter[k];
 
-												carve::geom::vector<3> Tpointbefore = localPlacementMatrix[j] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) + offsetFromCurve[j]);
-												carve::geom::vector<3> Tpointafter = localPlacementMatrix[j+1] * (carve::geom::VECTOR(pointAfter.x, pointAfter.y, 0) + offsetFromCurve[j+1]);
+												carve::geom::vector<3> Tpointbefore = localPlacementMatrix[j - 1] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) + offsetFromCurve[j - 1]);
+												carve::geom::vector<3> Tpointafter = localPlacementMatrix[j] * (carve::geom::VECTOR(pointAfter.x, pointAfter.y, 0) + offsetFromCurve[j]);
 
-												carve::geom::vector<3> Tpoint = Tpointbefore * factorProfileBefore + Tpointafter * factorProfileAfter;
+												carve::geom::vector<3> Tpoint = Tpointbefore * factorBefore + Tpointafter * factorAfter;
 												Tloop.push_back(Tpoint);
 											}
 											Tcompositeprofile.push_back(Tloop);
@@ -507,7 +503,7 @@ namespace OpenInfraPlatform
 							// Step2: close the Profile front and back
 
 							//1. Add Faces between Cross Sections to create a body along the Directrix
-						    int ppoints = Tloop.size(); //size of Tloop has to be the same for every Profile
+						    //size of Tloop has to be the same for every Profile
 						    size_t num_vertices = body_data->getVertexCount();
 							int PFTS = paths_for_tesselation.size();
 							for (int i = 0; i < PFTS ; ++i)
@@ -542,7 +538,7 @@ namespace OpenInfraPlatform
 							{
 								body_data->addFace(back_offset, back_offset + jj + 2, back_offset + jj + 1);
 							}
-							
+	
 			            }//endif sectioned_solid_horizontal
 
 			void convertIfcSectionedSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolid>& sectioned_solid) throw(...)
