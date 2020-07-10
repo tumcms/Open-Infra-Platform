@@ -48,7 +48,6 @@ namespace OpenInfraPlatform
 						const std::vector<carve::geom::vector<3>>& controlPoints,
 						std::vector<carve::geom::vector<3>>& loops)
 					{
-						
 						//const int degree = splineCurve->m_Degree;
 						const int degree = splineCurve->Degree;
 						const int order = degree + 1;
@@ -58,34 +57,49 @@ namespace OpenInfraPlatform
 						// rename numKnots -> numKnotsArray to prevent confusion between 'knots' and 'knotsArray'
 						// in ifc-documentation it's called UpperIndexOnKnots := SIZEOF(Knots)
 
-						std::vector<double> knotArray;
-						// renamed knots -> knotArray, according to Entity definition in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurve.htm
-
-						std::vector<double> weightsData;
-						// renamed weights -> weightsData, according to Attribute definitions in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcrationalbsplinecurvewithknots.htm
-						
+						// IfcRationalBSplineCurveWithKnots is a subtype of IfcBSplineCurveWithKnots which is a subtype of IfcBSplineCurve, 
+						// it represents a rational B-Spline / a NURBS.
 						if (splineCurve.isOfType<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>())
 						{
-							//std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots> rationalBSplineCurve =
-							//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots>(splineCurve);
-							//const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve =
-							//	splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>();
+							std::vector<double> knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
+							// renamed knots -> knotArray, according to Entity definition in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurve.htm
 
-							weightsData = loadWeightsData(splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>());
-						}
-						
-						if (splineCurve.isOfType<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>())
-						{
-							//std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots> bspline =
-							//	std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots>(splineCurve);
-							//EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots> bspline = 
-							//	splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>();
+							std::vector<double> weightsData = loadWeightsData(splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>());
+							// renamed weights -> weightsData, according to Attribute definitions in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcrationalbsplinecurvewithknots.htm
 
-							knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
-
-							std::vector<carve::geom::vector<3>> curvePoints = computeBSplineCurve(order, numControlPoints, controlPoints, weightsData, knotArray);
+							//computeBSplineCurve(order, numCurvePoints, numControlPoints, controlPoints, weightsData, knotArray, curvePoints);
+							std::vector<carve::geom::vector<3>> curvePoints = computeIfcRationalBSplineCurveWithKnots(order, knotArray, controlPoints, numControlPoints, weightsData);
 
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
+							// return loops;
+						}
+						// IfcBSplineCurveWithKnots is a subtype of IfcBSplineCurve, 
+						// it represents a B-Spline
+						else if (splineCurve.isOfType<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>())
+						{
+							std::vector<double> knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
+							// renamed knots -> knotArray, according to Entity definition in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurve.htm
+
+							//computeBSplineCurve(order, numCurvePoints, numControlPoints, controlPoints, weightsData, knotArray, curvePoints);
+							std::vector<carve::geom::vector<3>> curvePoints = computeIfcBSplineCurveWithKnots(order, knotArray, controlPoints, numControlPoints);
+
+							GeomUtils::appendPointsToCurve(curvePoints, loops);
+							// return loops;
+						}
+						// there is no further subtype, which is known now (ifc 4x3 RC 1)
+						else if (numControlPoints == order)
+						{
+							// if the number of control points is equal to the order ( = degree + 1 ), there are enough information 
+							// to calculate a Bezier Curve - but it isn't mentioned in the ifc documentation
+
+							// TODO: has to be implemented,
+							//       the knotArray has to be set in a specific way
+							//       with this special knotArray the function computeBSplineCurveWithKnots can be called for calculation
+						}
+						// it's unknown what to do with this ifc entity
+						else
+						{
+							throw oip::UnhandledException(splineCurve);
 						}
 					}
 
