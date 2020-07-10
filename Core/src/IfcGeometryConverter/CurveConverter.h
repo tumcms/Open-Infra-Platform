@@ -557,14 +557,15 @@ namespace OpenInfraPlatform {
 						return;
 					} // end if IfcCompositeCurve
 
-					/* TO DO: IMPLEMENT
-					// (4/6) IfcIndexedPolyline SUBTYPE OF IfcBoundedCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcIndexedPolyline> index_poly_line =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcIndexedPolyline>(bounded_curve.lock());
-					if (index_poly_line)
+					// (4/6) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve
+					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcIndexedPolyCurve>())
 					{
-						// TO DO: implement
-					}*/
+						return convertIfcIndexedPolyCurve(
+							bounded_curve.as<typename IfcEntityTypesT::IfcIndexedPolyCurve>(),
+							targetVec, segmentStartPoints,
+							trim1Vec, trim2Vec, senseAgreement
+						);
+					}
 
 					// (5/6) IfcPolyline SUBTYPE OF IfcBoundedCurve
 					std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> poly_line =
@@ -967,6 +968,88 @@ namespace OpenInfraPlatform {
 				}
 
 
+				void convertIfcIndexedPolyCurve(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcIndexedPolyCurve>& polycurve,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
+				{
+					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4/ADD1/HTML/schema/ifcgeometryresource/lexical/ifcindexedpolycurve.htm
+					//	ENTITY IfcIndexedPolyCurve
+					//		SUBTYPE OF(IfcBoundedCurve);
+					//		Points: IfcCartesianPointList;
+					//		Segments: OPTIONAL LIST[1:? ] OF IfcSegmentIndexSelect;
+					//		SelfIntersect: OPTIONAL IfcBoolean;
+					//	WHERE
+					//		Consecutive : (SIZEOF(Segments) = 0) OR IfcConsecutiveSegments(Segments);
+					//	END_ENTITY;
+
+					// check input
+					if (polycurve.expired())
+						throw oip::ReferenceExpiredException(polycurve);
+
+					// get the points
+					std::vector<carve::geom::vector<3>> points = convertIfcCartesianPointList(polycurve->Points);
+
+					// are segments there?
+					if (polycurve->Segments)
+					{
+						std::vector<carve::geom::vector<3>> loop;
+						for (const auto& seg : polycurve->Segments)
+						{
+							switch (seg.which())
+							{
+							case 0: 
+								// TYPE IfcArcIndex = LIST [3:3] OF IfcPositiveInteger;
+								auto arcIndex = seg.get<0>();
+
+								if (arcIndex.size() != 3)
+									throw oip::InconsistentModellingException(arcIndex, "The number of indices is not 3!");
+
+								carve::geom::vector<3> arcStart = points[arcIndex[0]];
+								carve::geom::vector<3> arcMid = points[arcIndex[1]];
+								carve::geom::vector<3> arcEnd = points[arcIndex[2]];
+
+								//TODO implement IfcArcIndex
+								throw oip::UnhandledException(arcIndex);
+
+								break;
+							case 1: 
+								// TYPE IfcLineIndex = LIST [2:?] OF IfcPositiveInteger;
+								auto lineIndex = seg.get<1>();
+
+								if (lineIndex.size() < 2)
+									throw oip::InconsistentModellingException(lineIndex, "The number of indices is less than 2!");
+
+								std::vector<carve::geom::vector<3>> loop_intern;
+								for (const auto& i : lineIndex)
+								{
+									loop_intern.push_back(points[i]);
+								}
+
+								// skips same points
+								GeomUtils::appendPointsToCurve(loop_intern, loop);
+
+								break;
+							}
+						}
+
+						// add the calculated points to the return values
+						GeomUtils::appendPointsToCurve(loop, targetVec);
+						segmentsStartPoints.push_back(loop[0]);
+					}
+					else
+					{
+						// no segments are there -> it's just a polyline ..
+						GeomUtils::appendPointsToCurve(points, targetVec);
+						segmentsStartPoints.push_back(points[0]);
+					}
+
+				}
+
 				void convertIfcOffsetCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve>& offset_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -1069,6 +1152,8 @@ namespace OpenInfraPlatform {
 					// **************************************************************************************************************************
 					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpolyline.htm
 					// **************************************************************************************************************************
+					if (ifcpolyline.expired())
+						throw oip::ReferenceExpiredException(ifcpolyline);
 
 					return convertIfcCartesianPointVector(ifcpolyline->Points);
 				}
@@ -1271,6 +1356,52 @@ namespace OpenInfraPlatform {
 						vertex_previous = vertex;
 					}
 				}
+
+				std::vector<carve::geom::vector<3> > convertIfcCartesianPointList(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPointList>& pointlist
+				) const throw(...)
+				{
+					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4/ADD1/HTML/link/ifccartesianpointlist.htm
+					// ENTITY IfcCartesianPointList
+					// ABSTRACT SUPERTYPE OF(ONEOF(IfcCartesianPointList2D, IfcCartesianPointList3D))
+
+					// ENTITY IfcCartesianPointList2D
+					//	SUBTYPE OF(IfcCartesianPointList);
+					//	CoordList: LIST[1:? ] OF LIST[2:2] OF IfcLengthMeasure;
+					// END_ENTITY;
+
+					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4/ADD1/HTML/link/ifccartesianpointlist3d.htm
+					// ENTITY IfcCartesianPointList3D
+					//	SUBTYPE OF(IfcCartesianPointList);
+					//	CoordList: LIST[1:? ] OF LIST[3:3] OF IfcLengthMeasure;
+					// END_ENTITY;
+
+					// check input
+					if (pointlist.expired())
+						throw oip::ReferenceExpiredException(pointlist);
+					
+					std::vector<carve::geom::vector<3> >& loop;
+					// interpret the points
+					if (pointlist.isOfType<typename IfcEntityTypesT::IfcCartesianPointList2D>())
+					{
+						const auto& pointlist2d = pointlist.as<typename IfcEntityTypesT::IfcCartesianPointList2D>();
+						loop.reserve(pointlist2d->CoordList.size());
+						for (const auto& point : pointlist2d->CoordList)
+							loop.push_back(carve::geom::VECTOR(point[0], point[1], 0.));
+					}
+					else if (pointlist.isOfType<typename IfcEntityTypesT::IfcCartesianPointList3D>())
+					{
+						const auto& pointlist3d = pointlist.as<typename IfcEntityTypesT::IfcCartesianPointList3D>();
+						loop.reserve(pointlist3d->CoordList.size());
+						for (const auto& point : pointlist3d->CoordList)
+							loop.push_back(carve::geom::VECTOR(point[0], point[1], point[2]));
+					}
+					else
+						throw oip::UnhandledException(pointlist);
+
+					return loop;
+				}
+
 
 				// Function 3: Get angle on circle (returns angle if the given point lies on the circle; if not, -1 is returned). 
 				double getAngleOnCircle(const carve::geom::vector<3>& circleCenter,
