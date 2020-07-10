@@ -419,6 +419,139 @@ namespace OpenInfraPlatform
 
 						return { numCurvePoints, accuracy };
 					}
+
+					static std::vector<carve::geom::vector<3>> computeIfcBSplineCurveWithKnots(
+						const int& order,
+						std::vector<double>& knotArray,
+						const std::vector<carve::geom::vector<3>>& controlPoints,
+						const int& numControlPoints)
+					{
+						// renamed knotVector -> knotArray, according to Entity definition in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurve.htm
+
+						uint32_t numCurvePoints;
+						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
+						double accuracy;
+						std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
+
+						// The following parameters corresponds to the parameter t of a curve c(t)
+						double knotStart;
+						double knotEnd;
+						double step;
+						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
+
+						std::vector<double> basisFuncs;
+
+						std::vector<carve::geom::vector<3>> curvePoints;
+						curvePoints.reserve(numCurvePoints);
+
+						// start with first valid knot
+						double t = knotStart;
+
+						for (auto i = 0; i < numCurvePoints; ++i) {
+							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
+
+							// 1) Evaluate basis functions at curve point t
+							basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
+							// 2) Compute exact point
+							carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+							// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
+							double weightSum = 0.0;
+
+							for (int j = 0; j < numControlPoints; ++j) {
+								const double basisFunc = basisFuncs[j];
+								const carve::geom::vector<3>& controlPoint = controlPoints[j];
+
+								if (!weights.empty()) {
+									// 3a) apply formula for rational B-spline surfaces
+									const double weightProduct = weights[j] * basisFunc;
+									point += weightProduct * controlPoint;
+									weightSum += weightProduct;
+								}
+								else {
+									// 3b) apply formula for normal B-spline curves
+									point += basisFunc * controlPoint;
+								}
+
+							}
+
+							if (!weights.empty()) {
+								point /= weightSum;
+							}
+
+							curvePoints.push_back(point);
+
+							t += step;
+						}
+
+						return curvePoints;
+					}
+
+					static std::vector<carve::geom::vector<3>> computeIfcRationalBSplineCurveWithKnots(
+						const int& order,
+						std::vector<double>& knotArray,
+						const std::vector<carve::geom::vector<3>>& controlPoints,
+						const int& numControlPoints,
+						std::vector<double>& weightsData)
+					{
+						// renamed knotVector -> knotArray, according to Entity definition in https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/schema/ifcgeometryresource/lexical/ifcbsplinecurve.htm
+
+						uint32_t numCurvePoints;
+						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
+						double accuracy;
+						std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
+
+						// The following parameters corresponds to the parameter t of a curve c(t)
+						double knotStart;
+						double knotEnd;
+						double step;
+						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
+
+						std::vector<double> basisFuncs;
+
+						std::vector<carve::geom::vector<3>> curvePoints;
+						curvePoints.reserve(numCurvePoints);
+
+						// start with first valid knot
+						double t = knotStart;
+
+						for (auto i = 0; i < numCurvePoints; ++i) {
+							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
+
+							// 1) Evaluate basis functions at curve point t
+							basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
+							// 2) Compute exact point
+							carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+							// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
+							double weightSum = 0.0;
+
+							for (int j = 0; j < numControlPoints; ++j) {
+								const double basisFunc = basisFuncs[j];
+								const carve::geom::vector<3>& controlPoint = controlPoints[j];
+
+								if (!weights.empty()) {
+									// 3a) apply formula for rational B-spline surfaces
+									const double weightProduct = weights[j] * basisFunc;
+									point += weightProduct * controlPoint;
+									weightSum += weightProduct;
+								}
+								else {
+									// 3b) apply formula for normal B-spline curves
+									point += basisFunc * controlPoint;
+								}
+
+							}
+
+							if (!weights.empty()) {
+								point /= weightSum;
+							}
+
+							curvePoints.push_back(point);
+
+							t += step;
+						}
+
+						return curvePoints;
+					}
 			}; // end class SplineConverterT
 
 			//template<>
