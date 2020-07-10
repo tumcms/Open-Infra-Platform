@@ -454,32 +454,17 @@ namespace OpenInfraPlatform
 							basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
 							// 2) Compute exact point
 							carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
-							// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
-							double weightSum = 0.0;
 
-							for (int j = 0; j < numControlPoints; ++j) {
+							for (int j = 0; j < numControlPoints; ++j) 
+							{
 								const double basisFunc = basisFuncs[j];
 								const carve::geom::vector<3>& controlPoint = controlPoints[j];
 
-								if (!weights.empty()) {
-									// 3a) apply formula for rational B-spline surfaces
-									const double weightProduct = weights[j] * basisFunc;
-									point += weightProduct * controlPoint;
-									weightSum += weightProduct;
-								}
-								else {
-									// 3b) apply formula for normal B-spline curves
-									point += basisFunc * controlPoint;
-								}
-
-							}
-
-							if (!weights.empty()) {
-								point /= weightSum;
+								// 3b) apply formula for normal B-spline curves
+								point += basisFunc * controlPoint;
 							}
 
 							curvePoints.push_back(point);
-
 							t += step;
 						}
 
