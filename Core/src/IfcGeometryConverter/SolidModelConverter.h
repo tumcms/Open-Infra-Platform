@@ -246,7 +246,7 @@ namespace OpenInfraPlatform
 								throw oip::InconsistentModellingException(sectioned_solid_horizontal, " num curve points < 2");
 							}
 
-							//define Vector to fill with the coordinates of the CrossSections
+							////define Vector to fill with the coordinates of the CrossSections
 							std::vector<std::vector<std::vector<carve::geom::vector<2> > > > paths;
 							std::vector<std::vector<carve::geom::vector<2> > > push;
 							//Get coordinates from the ProfileConverter for the ProfileDef
@@ -263,6 +263,25 @@ namespace OpenInfraPlatform
 									throw oip::InconsistentModellingException(sectioned_solid_horizontal, "Profile converter could not find coordinates");
 								}
 							}
+							//for (int i = 0; i < vec_cross_sections.size(); ++i)
+							//{
+							//   std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
+							//   const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profile_converter->getCoordinates();
+
+							//   // tesselate
+							//   std::vector<std::vector<carve::geom::vector<2> > > profile_coords_2d;
+							//   for (int i = 0; i < profile_coords.size(); ++i)
+							//   {
+							//	  const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[i];
+							//	  //std::vector<carve::geom::vector<2> > profile_loop_2d;
+							//	  //for( int j = 0; j<profile_loop.size(); ++j )
+							//	  //{
+							//	  //	profile_loop_2d.push_back( carve::geom::VECTOR( profile_loop[j].x, profile_loop[j].y ) );
+							//	  //}
+							//	  profile_coords_2d.push_back(profile_loop);
+							//   }
+							//   paths.push_back(profile_coords_2d);
+							//}
 
 							//declare Variables to fill with the information of the Cross Section Positions
 							std::vector<carve::geom::vector<3>> offsetFromCurve;
@@ -311,18 +330,25 @@ namespace OpenInfraPlatform
 							std::vector<std::vector<std::vector<carve::geom::vector<3>>>> paths_for_tesselation;
 							int i = 0;
 						    int j = 0;
-							double dist_1 = distance(BasisCurvePoints[0], CrossSectionPoints[0]);
-							double dist_2 = distance(BasisCurvePoints[1], CrossSectionPoints[0]);
 
-							//iterate BasisCurvePoints[] until it gets to CrossSectionPoints[0]
-							//if dist_1 is bigger than dist_2 they are before CrossSectionPoints[0], else they are after that pointa
-							while (dist_1 > dist_2)
+							if (BasisCurvePoints[0] == CrossSectionPoints[0])
 							{
-							   dist_1 = distance(BasisCurvePoints[i], CrossSectionPoints[0]);
-							   dist_2 = distance(BasisCurvePoints[i+1], CrossSectionPoints[0]);
 								++i;
+								++j;
 							}
+							else
+							{//iterate BasisCurvePoints[] until it gets to CrossSectionPoints[0]
+							//if dist_1 is bigger than dist_2 they are before CrossSectionPoints[0], else they are after that pointa
+								double dist_1 = distance(BasisCurvePoints[0], CrossSectionPoints[0]);
+								double dist_2 = distance(BasisCurvePoints[1], CrossSectionPoints[0]);
 
+								while (dist_1 > dist_2)
+								{
+									dist_1 = distance(BasisCurvePoints[i], CrossSectionPoints[0]);
+									dist_2 = distance(BasisCurvePoints[i + 1], CrossSectionPoints[0]);
+									++i;
+								}
+							}
 							//The first point for tesselation is where the Profile Starts
 							points_for_tesselation.push_back(CrossSectionPoints[0]);
 							direction_for_tesselation.push_back(directionsOfCurve[0]);
@@ -346,8 +372,6 @@ namespace OpenInfraPlatform
 							}
 							//The first profile for tesselation
 							paths_for_tesselation.push_back(TFcompositeprofile);
-
-							++j;
 
 							//now that CrossSectionPoints[0] is reached iterate and fill points_for_tesselation
 			                while ( i < BasisCurvePoints.size() && j < CrossSectionPoints.size()) 
