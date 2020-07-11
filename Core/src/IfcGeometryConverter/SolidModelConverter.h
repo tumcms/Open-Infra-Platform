@@ -248,40 +248,40 @@ namespace OpenInfraPlatform
 
 							////define Vector to fill with the coordinates of the CrossSections
 							std::vector<std::vector<std::vector<carve::geom::vector<2> > > > paths;
-							std::vector<std::vector<carve::geom::vector<2> > > push;
-							//Get coordinates from the ProfileConverter for the ProfileDef
-							for (int i = 0; i < vec_cross_sections.size(); ++i)
-							{
-						        //Save in local variable
-								push = profileCache->getProfileConverter(vec_cross_sections[i])->getCoordinates();
-								//Save coordinates in paths
-								paths.push_back(push); 
-
-								//check if paths has been filled with the coordinates of the ProfileDef. if empty -> throw Exception
-								if (paths[i].size() == 0)
-								{
-									throw oip::InconsistentModellingException(sectioned_solid_horizontal, "Profile converter could not find coordinates");
-								}
-							}
+							//std::vector<std::vector<carve::geom::vector<2> > > push;
+							////Get coordinates from the ProfileConverter for the ProfileDef
 							//for (int i = 0; i < vec_cross_sections.size(); ++i)
 							//{
-							//   std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
-							//   const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profile_converter->getCoordinates();
+						 //       //Save in local variable
+							//	push = profileCache->getProfileConverter(vec_cross_sections[i])->getCoordinates();
+							//	//Save coordinates in paths
+							//	paths.push_back(push); 
 
-							//   // tesselate
-							//   std::vector<std::vector<carve::geom::vector<2> > > profile_coords_2d;
-							//   for (int i = 0; i < profile_coords.size(); ++i)
-							//   {
-							//	  const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[i];
-							//	  //std::vector<carve::geom::vector<2> > profile_loop_2d;
-							//	  //for( int j = 0; j<profile_loop.size(); ++j )
-							//	  //{
-							//	  //	profile_loop_2d.push_back( carve::geom::VECTOR( profile_loop[j].x, profile_loop[j].y ) );
-							//	  //}
-							//	  profile_coords_2d.push_back(profile_loop);
-							//   }
-							//   paths.push_back(profile_coords_2d);
+							//	//check if paths has been filled with the coordinates of the ProfileDef. if empty -> throw Exception
+							//	if (paths[i].size() == 0)
+							//	{
+							//		throw oip::InconsistentModellingException(sectioned_solid_horizontal, "Profile converter could not find coordinates");
+							//	}
 							//}
+							for (int i = 0; i < vec_cross_sections.size(); ++i)
+							{
+							   std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
+							   const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profile_converter->getCoordinates();
+
+							   // tesselate
+							   std::vector<std::vector<carve::geom::vector<2> > > profile_coords_2d;
+							   for (int p = 0; p < profile_coords.size(); ++p)
+							   {
+								  const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[p];
+								  //std::vector<carve::geom::vector<2> > profile_loop_2d;
+								  //for( int j = 0; j<profile_loop.size(); ++j )
+								  //{
+								  //	profile_loop_2d.push_back( carve::geom::VECTOR( profile_loop[j].x, profile_loop[j].y ) );
+								  //}
+								  profile_coords_2d.push_back(profile_loop);
+							   }
+							   paths.push_back(profile_coords_2d);
+							}
 
 							//declare Variables to fill with the information of the Cross Section Positions
 							std::vector<carve::geom::vector<3>> offsetFromCurve;
@@ -322,7 +322,7 @@ namespace OpenInfraPlatform
 							}
 							
 							//Declare Variable for the addFace
-							int ppoints;
+							int  ppoints = 0;
 
 							//Declare a new vector which will include all points for the Tesselation
 							std::vector<carve::geom::vector<3>> points_for_tesselation;
@@ -510,7 +510,7 @@ namespace OpenInfraPlatform
 							//paths_for_tesselation.size() == points_for_tesselation.size()
 							for (i = 0; i < paths_for_tesselation.size(); ++i)
 							{
-								std::vector<std::vector<carve::geom::vector<3> > >& compositeProfile = paths_for_tesselation[j];
+								std::vector<std::vector<carve::geom::vector<3> > >& compositeProfile = paths_for_tesselation[i];
 								for (int w = 0; w < compositeProfile.size(); ++w)
 								{
 									std::vector<carve::geom::vector<3> >& loop = compositeProfile[w];
@@ -532,36 +532,27 @@ namespace OpenInfraPlatform
 							int PFTS = paths_for_tesselation.size();
 							for (int i = 0; i < PFTS ; ++i)
 							{
-								int i_offset = i * ppoints;
-								int i_offset_next = (i + 1)*ppoints;
-
-								for (int jj = 0; jj < num_vertices; ++jj)
+								for (int j = 0; j < ppoints; ++j)
 								{
-										// NCS= Next Cross Section
-										int current_loop_pt = jj + i_offset;
-										int current_loop_pt_NCS = (jj + 1) % ppoints + i_offset_next;
-										
-										int next_loop_pt = jj + i_offset_next;
-										int next_loop_pt_NCS = (jj + 1) % ppoints + i_offset_next;
-										body_data->addFace(current_loop_pt, next_loop_pt, next_loop_pt_NCS, current_loop_pt_NCS);
-								}
-									
+									body_data->addFace(i*ppoints +j, i*ppoints +j+1, (i+1)*ppoints +j);
+									body_data->addFace(i*ppoints+j+1, (i+1)*ppoints+j, (i+1)*ppoints+j+1);
+							    }
 							}
 								
 							//2. Close the polygons 
 						
-							// front cap, create triangle fan
-							for (int jj = 0; jj < ppoints - 2; ++jj)
-							{
-								body_data->addFace(0, jj + 1, jj + 2);
-							}
+							//// front cap, create triangle fan
+							//for (int jj = 0; jj < ppoints - 2; ++jj)
+							//{
+							//	body_data->addFace(0, jj + 1, jj + 2);
+							//}
 
-							// back cap
-							int back_offset = (PFTS - 1) * ppoints;
-							for (int jj = 0; jj < ppoints - 2; ++jj)
-							{
-								body_data->addFace(back_offset, back_offset + jj + 2, back_offset + jj + 1);
-							}
+							//// back cap
+							//int back_offset = (PFTS - 1) * ppoints;
+							//for (int jj = 0; jj < ppoints - 2; ++jj)
+							//{
+							//	body_data->addFace(back_offset, back_offset + jj + 2, back_offset + jj + 1);
+							//}
 	
 			            }//endif sectioned_solid_horizontal
 
