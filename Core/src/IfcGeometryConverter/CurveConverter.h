@@ -1395,14 +1395,14 @@ namespace OpenInfraPlatform {
 						const auto& pointlist2d = pointlist.as<typename IfcEntityTypesT::IfcCartesianPointList2D>();
 						loop.reserve(pointlist2d->CoordList.size());
 						for (const auto& point : pointlist2d->CoordList)
-							loop.push_back(carve::geom::VECTOR(point[0], point[1], 0.));
+							loop.push_back(carve::geom::VECTOR(point[0], point[1], 0.) * UnitConvert()->getLengthInMeterFactor());
 					}
 					else if (pointlist.isOfType<typename IfcEntityTypesT::IfcCartesianPointList3D>())
 					{
 						const auto& pointlist3d = pointlist.as<typename IfcEntityTypesT::IfcCartesianPointList3D>();
 						loop.reserve(pointlist3d->CoordList.size());
 						for (const auto& point : pointlist3d->CoordList)
-							loop.push_back(carve::geom::VECTOR(point[0], point[1], point[2]));
+							loop.push_back(carve::geom::VECTOR(point[0], point[1], point[2]) * UnitConvert()->getLengthInMeterFactor());
 					}
 					else
 						throw oip::UnhandledException(pointlist);
