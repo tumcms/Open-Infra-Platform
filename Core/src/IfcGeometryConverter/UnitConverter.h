@@ -225,6 +225,10 @@ namespace OpenInfraPlatform
 						double value = convertValue(conversionBasedUnit->ConversionFactor->ValueComponent);
 						double unitFactor = convertUnit(conversionBasedUnit->ConversionFactor->UnitComponent);
 
+						//tweak until #36 gets resolved
+						if (conversionBasedUnit->Name == "'degree'")
+							value = 0.017453293;
+
 						return value * unitFactor;
 					}
 
@@ -397,6 +401,36 @@ namespace OpenInfraPlatform
 				double convertValue(const typename IfcEntityTypesT::IfcValue& value) const
 				{
 					//TODO IfcValue conversion
+
+					// TYPE IfcValue = SELECT (
+					//	IfcMeasureValue,
+					//	IfcSimpleValue,
+					//	IfcDerivedMeasureValue);
+					// END_TYPE;
+
+					//switch (value.which())
+					//{
+					//case 0:
+					//{
+					//	// IfcDerivedMeasureValue
+					//	auto& derivedMeasureValue = value.get<EXPRESSReference<typename IfcEntityTypesT::IfcDerivedMeasureValue>>().lock();
+					//	throw oip::UnhandledException(derivedMeasureValue);
+					//}
+					//case 1:
+					//{
+					//	// IfcMeasureValue
+					//	auto& measureValue = value.get<EXPRESSReference<typename IfcEntityTypesT::IfcMeasureValue>>().lock();
+					//	double val = (double)measureValue->m_value;
+					//	return val;
+					//}
+					//case 2:
+					//{
+					//	// IfcSimpleValue
+					//	auto& simpleValue = value.get<EXPRESSReference<typename IfcEntityTypesT::IfcSimpleValue>>().lock();
+					//	throw oip::UnhandledException(simpleValue);
+					//}
+					//} // end switch (value.which())
+
 					return 1.;
 				}
 
