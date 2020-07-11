@@ -529,10 +529,10 @@ namespace OpenInfraPlatform
 							//1. Add Faces between Cross Sections to create a body along the Directrix
 						    //size of Tloop has to be the same for every Profile
 						    size_t num_vertices = body_data->getVertexCount();
-							int PFTS = paths_for_tesselation.size();
+							int PFTS = paths_for_tesselation.size() -1;
 							for (int i = 0; i < PFTS ; ++i)
 							{
-								for (int j = 0; j < ppoints; ++j)
+								for (int j = 0; j < ppoints -1; ++j)
 								{
 									body_data->addFace(i*ppoints +j, i*ppoints +j+1, (i+1)*ppoints +j);
 									body_data->addFace(i*ppoints+j+1, (i+1)*ppoints+j, (i+1)*ppoints+j+1);
