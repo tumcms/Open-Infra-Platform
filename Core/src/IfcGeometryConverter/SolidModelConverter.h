@@ -273,11 +273,7 @@ namespace OpenInfraPlatform
 							   for (int p = 0; p < profile_coords.size(); ++p)
 							   {
 								  const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[p];
-								  //std::vector<carve::geom::vector<2> > profile_loop_2d;
-								  //for( int j = 0; j<profile_loop.size(); ++j )
-								  //{
-								  //	profile_loop_2d.push_back( carve::geom::VECTOR( profile_loop[j].x, profile_loop[j].y ) );
-								  //}
+								
 								  profile_coords_2d.push_back(profile_loop);
 							   }
 							   paths.push_back(profile_coords_2d);
@@ -295,29 +291,34 @@ namespace OpenInfraPlatform
 								
 								//1. get offset from curve   
 								carve::geom::vector<3> offset = placementConverter->convertIfcDistanceExpressionOffsets(cross_section_positions[pos]);
-								offsetFromCurve.push_back(offset);//TO DO: push_back is not working
+								offsetFromCurve.push_back(offset);
 
 								//2. calculate the position on and the direction of the base curve
 								//also applay the relative dist along	
-								//TO DO: speichern von return in zwei locale variablen und dann variable push_back in CrossSectionPoints und directionsOfCurve
 								carve::geom::vector<3> pointOnCurve;
 								carve::geom::vector<3> directionOfCurve;
 								std::tie(pointOnCurve, directionOfCurve) = calculatePositionOnAndDirectionOfBaseCurve(directrix, cross_section_positions[pos]);
 								CrossSectionPoints.push_back(pointOnCurve);
 								directionsOfCurve.push_back(directionOfCurve);
 
-								//3. get information from FixedAxisVertical
+								//TO DO:
+								//3. get information from FixedAxisVertical 
 								if (fixed_axis_vertical == true)
 								{
-									directionsOfCurve[pos].z = 0;
+									//directionsOfCurve[pos].z *= 1;
+									directionsOfCurve[pos].z = 0;// if True .z *1 false *-1 ?
 									directionsOfCurve[pos].normalize();
 								}
+								/*else
+								{
+									directionsOfCurve[pos].z *= -1;
+									directionsOfCurve[pos].normalize();
+								}*/
 								
 								//4. calculate the rotations
 								//the direction of the curve's tangent = directionOfCurve
 								//now that localPLacement Matrix is a Vector ----> 1 Matrix for each CrossSectionPosition saved in the Vector localPlacementMatrix
 								carve::math::Matrix localm = placementConverter->calculateCurveOrientationMatrix(directionsOfCurve[pos], cross_section_positions[pos]->AlongHorizontal.value_or(true));
-								//localPlacementMatrix.push_back(placementConverter->calculateCurveOrientationMatrix(directionsOfCurve[pos], cross_section_positions[pos]->AlongHorizontal.value_or(true)));
 								localPlacementMatrix.push_back(localm);
 							}
 							
@@ -364,8 +365,9 @@ namespace OpenInfraPlatform
 								for (int k = 0; k < loop.size(); ++k)
 								{
 									carve::geom::vector<2>& point = loop[k];
-
-									carve::geom::vector<3>  Tpoint = localPlacementMatrix[0] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[0]);
+									//carve::geom::vector<3>  Tpoint = localPlacementMatrix[0] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[0]);
+									//carve::geom::vector<3>  Tpoint = localPlacementMatrix[0] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[0] + points_for_tesselation[0])-points_for_tesselation[0];
+									carve::geom::vector<3>  Tpoint = localPlacementMatrix[0] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[0]) + points_for_tesselation[0];
 									Tloop.push_back(Tpoint);
 								}
 								TFcompositeprofile.push_back(Tloop);
@@ -374,7 +376,7 @@ namespace OpenInfraPlatform
 							paths_for_tesselation.push_back(TFcompositeprofile);
 
 							//now that CrossSectionPoints[0] is reached iterate and fill points_for_tesselation
-			                while ( i < BasisCurvePoints.size() && j < CrossSectionPoints.size()) 
+			                while (j < CrossSectionPoints.size()) 
 							{
 
 			      				//if basis_curve_points[i]==pointsOnCurve[j] ->save the information of pointsOnCurve
@@ -394,8 +396,9 @@ namespace OpenInfraPlatform
 										for (int k = 0; k < loop.size(); ++k)
 										{
 											carve::geom::vector<2>& point = loop[k];
-
-											carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]);
+											//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]);
+											//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j] + points_for_tesselation[j])- points_for_tesselation[j];
+											carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]) + points_for_tesselation[j];
 											Tloop.push_back(Tpoint);
 										}
 										Tcompositeprofile.push_back(Tloop);
@@ -437,8 +440,9 @@ namespace OpenInfraPlatform
 											for (int k = 0; k < loop.size(); ++k)
 											{
 												carve::geom::vector<2>& point = loop[k];
-
-												carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]);
+												//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]);
+												//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j] + points_for_tesselation[j]) - points_for_tesselation[j];
+												carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]) + points_for_tesselation[j];
 												Tloop.push_back(Tpoint);
 											}
 											Tcompositeprofile.push_back(Tloop);
@@ -473,7 +477,7 @@ namespace OpenInfraPlatform
 
 										//interpolate profile
 										// Informal proposition: for the Interpolation to work the Profiles of the CrossSection before and afer need to have the same amount of points and loops.
-										//
+									
 										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileBefore = paths[j - 1];
 										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileAfter = paths[j];
 
@@ -488,10 +492,13 @@ namespace OpenInfraPlatform
 											{
 												carve::geom::vector<2>& pointBefore = loopBefore[k];
 												carve::geom::vector<2>& pointAfter = loopAfter[k];
-
-												carve::geom::vector<3> Tpointbefore = localPlacementMatrix[j - 1] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) + offsetFromCurve[j - 1]);
-												carve::geom::vector<3> Tpointafter = localPlacementMatrix[j] * (carve::geom::VECTOR(pointAfter.x, pointAfter.y, 0) + offsetFromCurve[j]);
-
+												//carve::geom::vector<3> Tpointbefore = localPlacementMatrix[j - 1] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) + offsetFromCurve[j - 1]);
+												//carve::geom::vector<3> Tpointafter = localPlacementMatrix[j] * (carve::geom::VECTOR(pointAfter.x, pointAfter.y, 0) + offsetFromCurve[j]);
+												//carve::geom::vector<3> Tpointbefore = localPlacementMatrix[j - 1] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) + offsetFromCurve[j-1] + points_for_tesselation[j-1])- points_for_tesselation[j - 1];
+												//carve::geom::vector<3> Tpointafter = localPlacementMatrix[j] * (carve::geom::VECTOR(pointAfter.x, pointAfter.y, 0) + offsetFromCurve[j] + points_for_tesselation[j])- points_for_tesselation[j];
+												//carve::geom::vector<3> Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) /*+ offsetFromCurve[j-1]*/ + points_for_tesselation[j])- points_for_tesselation[j];
+												carve::geom::vector<3> Tpointbefore = localPlacementMatrix[j - 1] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) + offsetFromCurve[j - 1] ) + points_for_tesselation[j - 1];
+												carve::geom::vector<3> Tpointafter = localPlacementMatrix[j] * (carve::geom::VECTOR(pointAfter.x, pointAfter.y, 0) + offsetFromCurve[j] + points_for_tesselation[j]) + points_for_tesselation[j];
 												carve::geom::vector<3> Tpoint = Tpointbefore * factorBefore + Tpointafter * factorAfter;
 												Tloop.push_back(Tpoint);
 											}
@@ -516,7 +523,6 @@ namespace OpenInfraPlatform
 									std::vector<carve::geom::vector<3> >& loop = compositeProfile[w];
 									for (int k = 0; k < loop.size(); ++k)
 									{
-										//TO DO: has the local Placement matrix alread been multiplied with the point because of the way it was saved?
 										carve::geom::vector<3>& point = loop[k];
 										body_data->addVertex(pos*point);
 									}
