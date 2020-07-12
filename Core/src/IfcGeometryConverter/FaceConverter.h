@@ -629,7 +629,9 @@ namespace OpenInfraPlatform {
 
 						if (!convertIfcFace(face, pos, polygon, polygonIndices)) 
 						{
-							throw oip::UnhandledException(face); 
+							std::stringstream ExceptionMessage;
+							ExceptionMessage << "IFC Face conversion failed with faces #" << faces.at(0)->getId() << "-" << faces.at(faces.size() - 1)->getId();
+							throw oip::InconsistentGeometryException(face, ExceptionMessage.str().c_str());
 						}
 					}
 
@@ -718,7 +720,7 @@ namespace OpenInfraPlatform {
 						if (loopVertices3D.size() < 3) 
 						{
 							//BLUE_LOG(warning) << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " Number of vertices < 2.";
-							throw oip::InconsistentGeometryException(face, " Number of vertices < 2.");
+							throw oip::InconsistentGeometryException(loop, " Number of vertices < 2.");
 							if (boundID == 0) 
 							{
 								break;
@@ -777,14 +779,18 @@ namespace OpenInfraPlatform {
 						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed)) 
 						{
 							conversionFailed = true;
-							throw oip::UnhandledException(face);
+							std::stringstream ExceptionMessage;
+							ExceptionMessage << "#" << face->getId() << "= IfcFace: loop could not be projected";
+							throw oip::InconsistentGeometryException(face, ExceptionMessage.str().c_str());
 							continue;
 						}
 
 						if (loopVertices2D.size() < 3) 
 						{
 							conversionFailed = true;
-							throw oip::UnhandledException(face);
+							std::stringstream ExceptionMessage;
+							ExceptionMessage << "#" << face->getId() << "= IfcFace: path_loop.size() < 3";
+							throw oip::InconsistentGeometryException(face, ExceptionMessage.str().c_str());
 							continue;
 						}
 
