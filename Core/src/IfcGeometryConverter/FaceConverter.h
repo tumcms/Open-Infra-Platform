@@ -696,17 +696,15 @@ namespace OpenInfraPlatform {
 						//	IfcLoop <- IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
 						const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
 						bool polyOrientation = bound->Orientation;
+
 						if (!loop) {
 							throw oip::InconsistentGeometryException(face, " no valid loop.");
-							if (boundID == 0) 
-							{
-								break;
-							}
-							else 
-							{
-								continue;
-							}
 						}
+						if (boundID == 0) 
+						{
+							break;
+						}
+						
 
 						// Collect all vertices of the current loop
 						std::vector<carve::geom::vector<3>> loopVertices3D;
@@ -719,17 +717,14 @@ namespace OpenInfraPlatform {
 
 						if (loopVertices3D.size() < 3) 
 						{
-							//BLUE_LOG(warning) << "FaceConverter Problem with Face #" << faceID << ": IfcLoop #" << loop->getId() << " Number of vertices < 2.";
 							throw oip::InconsistentGeometryException(loop, " Number of vertices < 2.");
-							if (boundID == 0) 
-							{
-								break;
-							}
-							else 
-							{
-								continue;
-							}
+							
 						}
+						if (boundID == 0) 
+						{
+							break;
+						}
+
 
 						// Check for orientation and reverse vertices order if FALSE
 						if (!polyOrientation) 
@@ -782,7 +777,6 @@ namespace OpenInfraPlatform {
 							std::stringstream ExceptionMessage;
 							ExceptionMessage << "#" << face->getId() << "= IfcFace: loop could not be projected";
 							throw oip::InconsistentGeometryException(face, ExceptionMessage.str().c_str());
-							continue;
 						}
 
 						if (loopVertices2D.size() < 3) 
@@ -791,7 +785,6 @@ namespace OpenInfraPlatform {
 							std::stringstream ExceptionMessage;
 							ExceptionMessage << "#" << face->getId() << "= IfcFace: path_loop.size() < 3";
 							throw oip::InconsistentGeometryException(face, ExceptionMessage.str().c_str());
-							continue;
 						}
 
 						// push back vertices to all faceVertices
