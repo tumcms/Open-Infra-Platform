@@ -665,7 +665,7 @@ namespace OpenInfraPlatform {
 
 					// Loop through all faces
 					for (auto it = faces.cbegin(); it != faces.cend(); ++it) 
-					{
+					{ //TODO Stefan
 						EXPRESSReference<typename IfcEntityTypesT::IfcFace> face = (*it);
 
 						if (face.expired()) {
@@ -1194,7 +1194,6 @@ namespace OpenInfraPlatform {
 	}
 }
 #endif
-
 
 
 
