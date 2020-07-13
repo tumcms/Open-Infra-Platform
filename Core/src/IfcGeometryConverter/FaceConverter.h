@@ -100,7 +100,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 				{
-
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					// (1/3) IfcBoundedSurface SUBTYPE of IfcSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcBoundedSurface>()) 
 					{
@@ -140,6 +142,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedSurface>& surface,
 					const carve::math::Matrix& pos)  const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					// (1/4) IfcBSplineSurface SUBTYPE of IfcBoundedSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurface>()) 
 					{
@@ -190,6 +195,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcElementarySurface(const EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface>& surface,
 					const carve::math::Matrix& pos)  const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					// (1/4) IfcCylindricalSurface SUBTYPE of IfcElementarySurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcCylindricalSurface>()) 
 					{
@@ -240,6 +248,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcSweptSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSweptSurface>& surface,
 					const carve::math::Matrix& pos)  const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					// (1/2) IfcSurfaceOfLinearExtrusion SUBTYPE of IfcSweptSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>()) 
 					{
@@ -274,6 +285,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcBSplineSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurface>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					/* TO DO: Finish implementation of convertIfcBSplineSurface
 
 					if(surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>()) const throw(...) 
@@ -324,6 +338,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcCurveBoundedPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedPlane>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					/* TO DO: Finish implementation of convertIfcCurveBoundedPlane.
 
 					// Get basis surface, outer boundary and inner boundaries.
@@ -379,6 +396,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcCurveBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedSurface>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					/* TO DO: Finish implementation of convertIfcCurveBoundedSurface.
 
 					// Get basis surface, boundaries and implicit outer.
@@ -413,6 +433,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcRectangularTrimmedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					/* TO DO: Finish implementation of convertIfcRectangularTrimmedSurface.
 
 					EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& basisSurface = surface->BasisSurface;
@@ -445,6 +468,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcCylindricalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCylindricalSurface>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					/* TO DO: Finish implementation of convertIfcCylindricalSurface.
 
 					// Get radius.
@@ -466,6 +492,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& surface,
 					const carve::math::Matrix& pos)  const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					// Get surface position.					
 					carve::math::Matrix surfaceMatrix  = pos * placementConverter->convertIfcAxis2Placement3D(surface->Position);
 
@@ -502,6 +531,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcSphericalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSphericalSurface>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					/* TO DO: Finish implementation of convertIfcSphericalPlane.
 
 					// Get radius.
@@ -523,6 +555,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData>  convertIfcToroidalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcToroidalSurface>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					/* TO DO: Finish implementation of convertIfcToroidalSurface.
 
 						// Get major and minor radius.
@@ -545,6 +580,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcSurfaceOfLinearExtrusion(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					/* TO DO: Finish implementation of convertIfcSurfaceOfLinearExtrusion.
 
 					// Get swept curve and position.
@@ -588,6 +626,9 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<carve::input::PolylineSetData> convertIfcSurfaceOfRevolution(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfRevolution>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 				{
+					if (surface.expired()) {
+						throw oip::ReferenceExpiredException(surface);
+					}
 					/* TO DO: Finish implementation of convertIfcSurfaceOfRevolution.
 
 						// Get axis position.
@@ -627,6 +668,10 @@ namespace OpenInfraPlatform {
 					{
 						EXPRESSReference<typename IfcEntityTypesT::IfcFace> face = (*it);
 
+						if (face.expired()) {
+							throw oip::ReferenceExpiredException(face);
+						}
+
 						if (!convertIfcFace(face, pos, polygon, polygonIndices)) 
 						{
 							throw oip::InconsistentGeometryException(face, "IFC Face conversion failed with these faces");
@@ -651,6 +696,9 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<carve::input::PolyhedronData> polygon,
 					std::map<std::string, uint32_t>& polygonIndices)  const throw(...) 
 				{
+					if (face.expired()) {
+						throw oip::ReferenceExpiredException(face);
+					}
 					// Indicates if conversion has failed
 					bool conversionFailed = false;
 
@@ -711,7 +759,6 @@ namespace OpenInfraPlatform {
 						if (loopVertices3D.size() < 3) 
 						{
 							throw oip::InconsistentGeometryException(loop, " Number of vertices < 3");
-							
 						}
 						
 
@@ -778,7 +825,7 @@ namespace OpenInfraPlatform {
 					// If no faceVertices were collected, no carve operations are required
 					if (faceVertices2D.empty()) 
 					{
-						return false;
+						throw oip::InconsistentGeometryException(face, "no faceVertices were collected"); 
 					}
 
 					// Result after incorporating holes in polygons if defined
@@ -978,17 +1025,22 @@ namespace OpenInfraPlatform {
 				\param	faceVertices3D to be added to the triangulation
 				*/
 
-				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPoint2DVector(const std::vector<std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points2D)  const throw(...)
+				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPoint2DVector(
+					const std::vector<std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points2D)  const throw(...)
 				{
+					if (points2D.expired()) {
+						throw oip::ReferenceExpiredException(points2D);
+					}
 					std::vector<std::vector<carve::geom::vector<3>>> loop2D = std::vector<std::vector<carve::geom::vector<3>>>();
 					const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
 					const uint32_t numPointsY = points2D.size();
 					loop2D.reserve(numPointsY);
 
-					for (unsigned int j = 0; j < numPointsY; ++j) 
+					for (unsigned int j = 0; j < numPointsY; ++j) //TODO Štefan:
 					{
 						const uint32_t numPointsX = points2D[j].size();
 						const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>& points = points2D[j];
+
 						for (unsigned int i = 0; i < numPointsX; ++i) 
 						{
 							/*const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcLengthMeasure>>& coords =
@@ -1014,7 +1066,7 @@ namespace OpenInfraPlatform {
 							}
 							else 
 							{
-								std::cout << "convertIfcCartesianPointVector: ifc_pt->Coordinates.size() != 2" << std::endl;
+								throw oip::InconsistentGeometryException(points2D, "ifc_pt->Coordinates.size() != 2");
 							}
 						}
 					}
