@@ -744,7 +744,7 @@ namespace OpenInfraPlatform {
 						bool polyOrientation = bound->Orientation;
 
 						if (!loop) {
-							throw oip::InconsistentGeometryException(face, " No valid loop");
+							throw oip::InconsistentModellingException(face, " No valid loop");
 						}
 						
 						// Collect all vertices of the current loop
@@ -1036,7 +1036,7 @@ namespace OpenInfraPlatform {
 					const uint32_t numPointsY = points2D.size();
 					loop2D.reserve(numPointsY);
 
-					for (unsigned int j = 0; j < numPointsY; ++j) //TODO Štefan:
+					for (unsigned int j = 0; j < numPointsY; ++j) //TODO ÂŠtefan:
 					{
 						const uint32_t numPointsX = points2D[j].size();
 						const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>& points = points2D[j];
@@ -1194,7 +1194,6 @@ namespace OpenInfraPlatform {
 	}
 }
 #endif
-
 
 
 
