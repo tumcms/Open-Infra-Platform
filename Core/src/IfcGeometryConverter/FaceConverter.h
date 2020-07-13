@@ -1036,7 +1036,7 @@ namespace OpenInfraPlatform {
 					const uint32_t numPointsY = points2D.size();
 					loop2D.reserve(numPointsY);
 
-					for (unsigned int j = 0; j < numPointsY; ++j) //TODO tefan:
+					for (unsigned int j = 0; j < numPointsY; ++j) //TODO Stefan
 					{
 						const uint32_t numPointsX = points2D[j].size();
 						const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>& points = points2D[j];
