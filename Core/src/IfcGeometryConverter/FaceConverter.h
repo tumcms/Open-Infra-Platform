@@ -629,9 +629,7 @@ namespace OpenInfraPlatform {
 
 						if (!convertIfcFace(face, pos, polygon, polygonIndices)) 
 						{
-							std::stringstream ExceptionMessage;
-							ExceptionMessage << "IFC Face conversion failed with faces #" << faces.at(0)->getId() << "-" << faces.at(faces.size() - 1)->getId();
-							throw oip::InconsistentGeometryException(face, ExceptionMessage.str().c_str());
+							throw oip::InconsistentGeometryException(face, "IFC Face conversion failed with these faces");
 						}
 					}
 
@@ -698,14 +696,9 @@ namespace OpenInfraPlatform {
 						bool polyOrientation = bound->Orientation;
 
 						if (!loop) {
-							throw oip::InconsistentGeometryException(face, " no valid loop.");
-						}
-						if (boundID == 0) 
-						{
-							break;
+							throw oip::InconsistentGeometryException(face, " No valid loop");
 						}
 						
-
 						// Collect all vertices of the current loop
 						std::vector<carve::geom::vector<3>> loopVertices3D;
 						curveConverter->convertIfcLoop(loop, loopVertices3D);
@@ -717,14 +710,10 @@ namespace OpenInfraPlatform {
 
 						if (loopVertices3D.size() < 3) 
 						{
-							throw oip::InconsistentGeometryException(loop, " Number of vertices < 2.");
+							throw oip::InconsistentGeometryException(loop, " Number of vertices < 3");
 							
 						}
-						if (boundID == 0) 
-						{
-							break;
-						}
-
+						
 
 						// Check for orientation and reverse vertices order if FALSE
 						if (!polyOrientation) 
@@ -773,18 +762,12 @@ namespace OpenInfraPlatform {
 
 						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed)) 
 						{
-							conversionFailed = true;
-							std::stringstream ExceptionMessage;
-							ExceptionMessage << "#" << face->getId() << "= IfcFace: loop could not be projected";
-							throw oip::InconsistentGeometryException(face, ExceptionMessage.str().c_str());
+							throw oip::InconsistentGeometryException(face, "loop could not be projected");
 						}
 
 						if (loopVertices2D.size() < 3) 
 						{
-							conversionFailed = true;
-							std::stringstream ExceptionMessage;
-							ExceptionMessage << "#" << face->getId() << "= IfcFace: path_loop.size() < 3";
-							throw oip::InconsistentGeometryException(face, ExceptionMessage.str().c_str());
+							throw oip::InconsistentGeometryException(face, "loopVertices2D.size() < 3");
 						}
 
 						// push back vertices to all faceVertices
@@ -825,12 +808,7 @@ namespace OpenInfraPlatform {
 					}
 					catch (std::exception e) // catch carve error if holes cannot be incorporated
 					{
-						conversionFailed = true;
 						throw oip::InconsistentGeometryException(face, "carve::triangulate::incorporateHolesIntoPolygon failed");
-						// continue;
-
-						mergedVertices2D = faceVertices2D.at(0);
-						mergedVertices3D = faceVertices3D.at(0);
 					}
 
 					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polygon, polygonIndices);
