@@ -856,7 +856,7 @@ namespace OpenInfraPlatform {
 						}
 						else 
 						{
-							return false;
+							throw oip::InconsistentGeometryException( "It is not possible to define plane in other dimension");
 						}
 					}
 
@@ -879,8 +879,7 @@ namespace OpenInfraPlatform {
 						}
 						else 
 						{
-							std::cout << "ERROR: plane is undefined, what??" << std::endl;
-							return false;
+							throw oip::InconsistentGeometryException("plane is undefined");
 						}
 					}
 
