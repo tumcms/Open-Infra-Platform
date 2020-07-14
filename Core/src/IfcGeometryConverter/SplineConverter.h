@@ -327,7 +327,7 @@ namespace OpenInfraPlatform
 						if (bspline->KnotMultiplicities.size() != bspline->Knots.size())
 						{
 							//std::cout << "ERROR: knot multiplicity does not correspond number of knots" << std::endl;
-							throw oip::UnhandledException("Function convertIfcBSplineCurve::loadKnotArray: Knot multiplicity does not correspond number of  distinct knots; unable to construct a knot array.");
+							throw oip::InconsistentModellingException(bspline, "Function convertIfcBSplineCurve::loadKnotArray: Knot multiplicity does not correspond number of distinct knots; unable to construct a knot array.");
 						}
 
 						std::vector<double> knots;
