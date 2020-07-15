@@ -167,6 +167,22 @@ namespace OpenInfraPlatform
                 throw oip::UnhandledException(manifoldSolidBrep);
             }
 
+			carve::math::Matrix multiplyMatrixWithFactor(const carve::math::Matrix &A, const double &factor)
+			{
+				return carve::math::Matrix(A._11 * factor, A._12 * factor ,A._13 * factor, A._14 * factor,
+					                       A._21 * factor, A._22 * factor, A._23 * factor, A._24 * factor,
+					                       A._31 * factor, A._32 * factor, A._33 * factor, A._34 * factor,
+					                       A._41 * factor, A._42 * factor, A._43 * factor, A._44 * factor);
+			}
+
+			carve::math::Matrix addTwoMatrices(const carve::math::Matrix &A, const carve::math::Matrix &B)
+			{
+				return carve::math::Matrix(A._11 + B._11, A._12 + B._12, A._13 + B._13, A._14 + B._14,
+					                       A._21 + B._21, A._22 + B._22, A._23 + B._23, A._24 + B._24,
+					                       A._31 + B._31, A._32 + B._32, A._33 + B._33, A._34 + B._34,
+					                       A._41 + B._41, A._42 + B._42, A._43 + B._43, A._43 + B._44);
+			}
+
 			std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(
 				const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix,
 				const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>& cross_section_positions,
@@ -268,7 +284,7 @@ namespace OpenInfraPlatform
 							   std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
 							   const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profile_converter->getCoordinates();
 
-							   // tesselate
+							   // Save profile coords in paths
 							   std::vector<std::vector<carve::geom::vector<2> > > profile_coords_2d;
 							   for (int p = 0; p < profile_coords.size(); ++p)
 							   {
@@ -277,6 +293,12 @@ namespace OpenInfraPlatform
 								  profile_coords_2d.push_back(profile_loop);
 							   }
 							   paths.push_back(profile_coords_2d);
+
+							}
+
+							if (paths.size() == 0)
+							{
+								throw oip::InconsistentModellingException(sectioned_solid_horizontal, "Profile converter could not find coordinates");
 							}
 
 							//declare Variables to fill with the information of the Cross Section Positions
@@ -365,8 +387,7 @@ namespace OpenInfraPlatform
 								for (int k = 0; k < loop.size(); ++k)
 								{
 									carve::geom::vector<2>& point = loop[k];
-									//carve::geom::vector<3>  Tpoint = localPlacementMatrix[0] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[0]);
-									//carve::geom::vector<3>  Tpoint = localPlacementMatrix[0] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[0] + points_for_tesselation[0])-points_for_tesselation[0];
+									//carve::geom::vector<3>  Tpoint = localPlacementMatrix[0] * (points_for_tesselation[0] + offsetFromCurve[0]) + carve::geom::VECTOR(point.x, point.y, 0);
 									carve::geom::vector<3>  Tpoint = localPlacementMatrix[0] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[0]) + points_for_tesselation[0];
 									Tloop.push_back(Tpoint);
 								}
@@ -396,8 +417,7 @@ namespace OpenInfraPlatform
 										for (int k = 0; k < loop.size(); ++k)
 										{
 											carve::geom::vector<2>& point = loop[k];
-											//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]);
-											//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j] + points_for_tesselation[j])- points_for_tesselation[j];
+											//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * ( points_for_tesselation[j] + offsetFromCurve[j]) + carve::geom::VECTOR(point.x, point.y, 0);
 											carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]) + points_for_tesselation[j];
 											Tloop.push_back(Tpoint);
 										}
@@ -440,8 +460,7 @@ namespace OpenInfraPlatform
 											for (int k = 0; k < loop.size(); ++k)
 											{
 												carve::geom::vector<2>& point = loop[k];
-												//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]);
-												//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j] + points_for_tesselation[j]) - points_for_tesselation[j];
+
 												carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]) + points_for_tesselation[j];
 												Tloop.push_back(Tpoint);
 											}
@@ -469,15 +488,19 @@ namespace OpenInfraPlatform
 										double factorBefore = (distance(CrossSectionPoints[j - 1], BasisCurvePoints[i]))/totalDistance;
 										double factorAfter = (distance(BasisCurvePoints[i], CrossSectionPoints[j]))/totalDistance;
 
-										interpolatedDirection = (direction_for_tesselation[directionSize]*factorBefore ) + (directionsOfCurve[j]*factorAfter);
+										interpolatedDirection = (direction_for_tesselation[directionSize]*factorAfter ) + (directionsOfCurve[j]*factorBefore);
 
 										direction_for_tesselation.push_back(interpolatedDirection);
 
 										//calculate the Profile (Interpolate the Profile on the pointOnCurve before and after that point to get the right Profile)
 
 										//Interpolate Matrix
-										//carve::math::Matrix interpolatedMatrix = localPlacementMatrix[j - 1] * factorBefore + localPlacementMatrix[j] * factorAfter;
-										carve::geom::vector<3> IoffsetFromCurve = offsetFromCurve[j - 1] * factorBefore + offsetFromCurve[j] * factorAfter;
+										carve::math::Matrix Matrixbefore = multiplyMatrixWithFactor(localPlacementMatrix[j - 1], factorAfter);
+										carve::math::Matrix Matrixafter  = multiplyMatrixWithFactor(localPlacementMatrix[j], factorBefore);
+										carve::math::Matrix interpolatedMatrix = addTwoMatrices(Matrixbefore, Matrixafter);
+
+
+										carve::geom::vector<3> IoffsetFromCurve = offsetFromCurve[j - 1] * factorAfter + offsetFromCurve[j] * factorBefore;
 										//interpolate profile
 										// Informal proposition: for the Interpolation to work the Profiles of the CrossSection before and afer need to have the same amount of points and loops.
 									
@@ -495,15 +518,12 @@ namespace OpenInfraPlatform
 											{
 												carve::geom::vector<2>& pointBefore = loopBefore[k];
 												carve::geom::vector<2>& pointAfter = loopAfter[k];
-												//carve::geom::vector<3> Tpointbefore = localPlacementMatrix[j - 1] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) + offsetFromCurve[j - 1]);
-												//carve::geom::vector<3> Tpointafter = localPlacementMatrix[j] * (carve::geom::VECTOR(pointAfter.x, pointAfter.y, 0) + offsetFromCurve[j]);
-												//carve::geom::vector<3> Tpointbefore = localPlacementMatrix[j - 1] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) + offsetFromCurve[j-1] + points_for_tesselation[j-1])- points_for_tesselation[j - 1];
-												//carve::geom::vector<3> Tpointafter = localPlacementMatrix[j] * (carve::geom::VECTOR(pointAfter.x, pointAfter.y, 0) + offsetFromCurve[j] + points_for_tesselation[j])- points_for_tesselation[j];
-												//carve::geom::vector<3> Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) /*+ offsetFromCurve[j-1]*/ + points_for_tesselation[j])- points_for_tesselation[j];
-												//carve::geom::vector<3> Tpointbefore = localPlacementMatrix[j - 1] * (carve::geom::VECTOR(pointBefore.x, pointBefore.y, 0) + offsetFromCurve[j - 1] ) + points_for_tesselation[j - 1];
-												//carve::geom::vector<3> Tpointafter = localPlacementMatrix[j] * (carve::geom::VECTOR(pointAfter.x, pointAfter.y, 0) + offsetFromCurve[j] + points_for_tesselation[j]) + points_for_tesselation[j];
-												//carve::geom::vector<3> Tpoint = Tpointbefore * factorBefore + Tpointafter * factorAfter;
-												carve::geom::vector<3> Tpoint = /*interpolatedMatrix*/ localPlacementMatrix[j] * (carve::geom::VECTOR(pointAfter.x, pointAfter.y, 0) + IoffsetFromCurve) + BasisCurvePoints[i];
+												
+												carve::geom::vector<2> deltapoint = carve::geom::VECTOR(pointAfter.x - pointBefore.x, pointAfter.y - pointBefore.y);
+												carve::geom::vector<2> Tpoint2D = carve::geom::VECTOR(deltapoint.x * factorBefore + pointBefore.x, deltapoint.y * factorBefore + pointBefore.y);
+												
+												carve::geom::vector<3> Tpoint = interpolatedMatrix *(carve::geom::VECTOR(Tpoint2D.x, Tpoint2D.y, 0) + IoffsetFromCurve) + BasisCurvePoints[i];
+												//carve::geom::vector<3> Tpoint = /*interpolatedMatrix*/ localPlacementMatrix[j] *(BasisCurvePoints[i] + IoffsetFromCurve) + carve::geom::VECTOR(Tpoint2D.x, Tpoint2D.y, 0);
 												Tloop.push_back(Tpoint);
 											}
 											Tcompositeprofile.push_back(Tloop);
