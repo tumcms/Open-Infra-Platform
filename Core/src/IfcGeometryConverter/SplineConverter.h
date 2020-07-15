@@ -39,7 +39,13 @@ namespace OpenInfraPlatform
 			class SplineConverterT : public ConverterBaseT<IfcEntityTypesT> // TODO 2020.04.08.: spline converter does not apply length corrections
 			{
 				public:
-					SplineConverterT() {}
+					SplineConverterT(
+						std::shared_ptr<GeometrySettings> geomSettings,
+						std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter)
+						:
+						ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter) 
+					{}
+
 					virtual ~SplineConverterT() {}
 
 					static void convertIfcBSplineCurve(
