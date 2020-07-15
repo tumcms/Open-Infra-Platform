@@ -56,7 +56,7 @@ namespace OpenInfraPlatform
 				void setIfcProject(const std::shared_ptr<typename IfcEntityTypesT::IfcProject>& project)
 				{
 					if(!project->UnitsInContext) {
-						return;
+						throw oip::InconsistentModellingException(project, "project->UnitsInContext is not defined");
 					}
 
 					// remember units in context
@@ -72,8 +72,11 @@ namespace OpenInfraPlatform
 				*/
 				double getFactorFor(const typename IfcEntityTypesT::IfcUnitEnum& unit_type) const
 				{
-					if (!m_unit_assignment)
-						return 1.;
+					
+					if (!m_unit_assignment) {
+						throw oip::InconsistentModellingException(m_unit_assignment, "m_unit_assignmentt is not defined");
+					}
+						
 
 					for (auto& unit : m_unit_assignment->Units)
 					{
@@ -121,8 +124,9 @@ namespace OpenInfraPlatform
 				*/
 				double getFactorFor(const typename IfcEntityTypesT::IfcDerivedUnitEnum& unit_type) const
 				{
-					if (!m_unit_assignment)
-						return 1.;
+					if (!m_unit_assignment) {
+						throw oip::InconsistentModellingException(m_unit_assignment, "m_unit_assignmentt is not defined");
+					}
 
 					for (auto& unit : m_unit_assignment->Units)
 					{
