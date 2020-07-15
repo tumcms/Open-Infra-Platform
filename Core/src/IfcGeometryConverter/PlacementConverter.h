@@ -467,7 +467,7 @@ namespace OpenInfraPlatform {
                         return convertIfcObjectPlacement(local_placement->PlacementRelTo.get(), alreadyApplied);
                     }
                     else {
-                        BLUE_LOG(warning) << "Context based local placement computation not supported.";
+						throw oip::InconsistentModellingException(local_placement, "Context based local placement computation not supported.");
                         //TODO Georeferencing
                         // If reference to Object is omitted, then the local placement is given to the WCS, established by the geometric representation context.
                         //carve::math::Matrix context_matrix( carve::math::Matrix::IDENT() );
@@ -826,61 +826,61 @@ namespace OpenInfraPlatform {
                 // Function 4: Get World Coordinate System. 
 				// \internal TODO refactoring
                 static void getWorldCoordinateSystem(
-                    const std::shared_ptr<typename IfcEntityTypesT::IfcRepresentationContext>& context,
+                    const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationContext>& context,
                     carve::math::Matrix& matrix, double length_factor,
                     std::set<int>& already_applied)
                 {
-                        if(!context) {
+					if (context.expired())
+						throw oip::ReferenceExpiredException(context);
+
+					if (!context) {
+						throw oip::InconsistentModellingException(context, "context is not defined");
+					}
+                    if(!context.isOfType< typename IfcEntityTypesT::IfcGeometricRepresentationContext >()) {
+						throw oip::InconsistentModellingException(context, "context is not of type IfcGeometricRepresentationContext");
+                    }
+					EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext> geom_context = context.as< typename IfcEntityTypesT::IfcGeometricRepresentationContext >();
+
+                    // Prevent cyclic relative placement
+                    const int placement_id = context->getId();
+                    if(placement_id > 0) {
+                        if(already_applied.find(placement_id) != already_applied.end()) {
                             return;
                         }
+                        already_applied.insert(placement_id);
+                    }
 
-                        std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationContext> geom_context =
-                            std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationContext>(context);
-                        if(!geom_context) {
-                            return;
+                    // Get attributes. 
+                    // CoordinateSpaceDimension type IfcDimensionCount, Precision type IfcReal [OPTIONAL], World Coordinate System type IfcAxis2Placement, TrueNorth type IfcDirection [OPTIONAL].
+                    int dim_count = geom_context->CoordinateSpaceDimension;
+                    double	precision = geom_context->Precision;
+                    EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement>& world_coords = geom_context->WorldCoordinateSystem;
+                    double true_north = geom_context->TrueNorth;
+
+                    // Inverse attributes: std::vector<weak_ptr<IfcGeometricRepresentationSubContext> >	HasSubContexts_inverse;
+
+                    carve::math::Matrix world_coords_matrix(carve::math::Matrix::IDENT());
+                    if(world_coords.isOfType<typename IfcEntityTypesT::IfcAxis2Placement3D>()) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> world_coords_3d = world_coords.as<typename IfcEntityTypesT::IfcAxis2Placement3D>();
+                        PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(world_coords_3d, world_coords_matrix, length_factor);
+                    }
+
+                    matrix = matrix * world_coords_matrix;
+
+                    // Get inverse attribute.
+                    if(geom_context.isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext> geom_sub_context = geom_context.as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>();
+                        // Get attributes.
+                        // ParentContext type IfcGeometricRepresentationContext, TargetScale type IfcPositiveRatioMeasure [OPTIONAL], TargetView type IfcGeometricProjectionEnum, UserDefinedTargetView type IfcLabel [OPTIONAL]
+                        std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& parent_context = geom_sub_context->ParentContext;
+                        double target_scale = geom_sub_context->TargetScale;
+                        std::shared_ptr<typename IfcEntityTypesT::IfcGeometricProjectionEnum>& target_view = geom_sub_context->TargetView;
+                        std::shared_ptr<typename IfcEntityTypesT::IfcLabel>& user_target_view = geom_sub_context->UserDefinedTargetView;
+
+                        if(parent_context) {
+                            getWorldCoordinateSystem(parent_context, matrix, length_factor, already_applied);
                         }
-
-                        // Prevent cyclic relative placement
-                        const int placement_id = context->getId();
-                        if(placement_id > 0) {
-                            if(already_applied.find(placement_id) != already_applied.end()) {
-                                return;
-                            }
-                            already_applied.insert(placement_id);
-                        }
-
-                        // Get attributes. 
-                        // CoordinateSpaceDimension type IfcDimensionCount, Precision type IfcReal [OPTIONAL], World Coordinate System type IfcAxis2Placement, TrueNorth type IfcDirection [OPTIONAL].
-                        int dim_count = geom_context->CoordinateSpaceDimension;
-                        double	precision = geom_context->Precision;
-                        std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement>& world_coords = geom_context->WorldCoordinateSystem;
-                        double true_north = geom_context->TrueNorth;
-
-                        // Inverse attributes: std::vector<weak_ptr<IfcGeometricRepresentationSubContext> >	HasSubContexts_inverse;
-
-                        carve::math::Matrix world_coords_matrix(carve::math::Matrix::IDENT());
-                        std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> world_coords_3d = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAxis2Placement3D>(world_coords);
-                        if(world_coords_3d) {
-                            PlacementConverterT<IfcEntityTypesT>::convertIfcAxis2Placement3D(world_coords_3d, world_coords_matrix, length_factor);
-                        }
-
-                        matrix = matrix * world_coords_matrix;
-
-                        // Get inverse attribute.
-                        std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext> geom_sub_context =
-                            std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>(geom_context);
-                        if(geom_sub_context) {
-                            // Get attributes.
-                            // ParentContext type IfcGeometricRepresentationContext, TargetScale type IfcPositiveRatioMeasure [OPTIONAL], TargetView type IfcGeometricProjectionEnum, UserDefinedTargetView type IfcLabel [OPTIONAL]
-                            std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& parent_context = geom_sub_context->ParentContext;
-                            double target_scale = geom_sub_context->TargetScale;
-                            std::shared_ptr<typename IfcEntityTypesT::IfcGeometricProjectionEnum>& target_view = geom_sub_context->TargetView;
-                            std::shared_ptr<typename IfcEntityTypesT::IfcLabel>& user_target_view = geom_sub_context->UserDefinedTargetView;
-
-                            if(parent_context) {
-                                getWorldCoordinateSystem(parent_context, matrix, length_factor, already_applied);
-                            }
-                        }
+                    }
                 }
 
                 // Function 5: Convert Transformation Operator. 
