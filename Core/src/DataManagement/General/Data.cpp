@@ -219,7 +219,10 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 
 void OpenInfraPlatform::Core::DataManagement::Data::showError(QString errorMessage, QString errorTitle)
 {
-	QMessageBox(QMessageBox::Icon::Critical, errorTitle, errorMessage, QMessageBox::StandardButton::Ok, nullptr).exec();
+	BLUE_LOG(error) << "[" << errorTitle.toStdString() << "]: " << errorMessage.toStdString();
+	// show error message only if GUI thread
+	if( QThread::currentThread() == QCoreApplication::instance()->thread() )
+		QMessageBox(QMessageBox::Icon::Critical, errorTitle, errorMessage, QMessageBox::StandardButton::Ok, nullptr).exec();
 }
 
 void OpenInfraPlatform::Core::DataManagement::Data::IFCVersionNotCompiled( std::string schema )
