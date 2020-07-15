@@ -409,7 +409,8 @@ namespace OpenInfraPlatform
 						const uint32_t numCurvePoints = numKnotsArray * 10;
 
 						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
-						const double accuracy = 0.0000001;
+						//const double accuracy = 0.0000001;
+						double accuracy = GeomSettings()->getPrecision();
 
 						return { numCurvePoints, accuracy };
 					}
