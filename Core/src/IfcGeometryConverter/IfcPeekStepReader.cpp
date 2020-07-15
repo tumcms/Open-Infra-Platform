@@ -16,6 +16,7 @@
 */
 
 #include "IfcPeekStepReader.h"
+#include "../Exception/IfcPeekReaderException.h"
 
 #include <map>
 #include <set>
@@ -101,7 +102,7 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 							}
 							catch(...)
 							{
-								throw std::exception("IFC schema is not specified or could not be determined.");
+								throw oip::IfcPeekReaderException("IFC schema [" + schema + "] is unknown to OIP. Please include it in the build process.");
 								return IfcSchema::UNKNOWN;
 							}	
 						}
@@ -112,11 +113,11 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 		else if (line.find("DATA") != std::string::npos)
 		{
 			ifcFile.close();
-			throw std::exception("IFC schema is not specified or could not be determined.");
+			throw oip::IfcPeekReaderException("IFC schema is not specified or could not be determined.");
 			//return IfcSchema::UNKNOWN;
 		}
 	}
 
 	ifcFile.close();
-	throw std::exception("IFC schema is not specified or could not be determined.");
+	throw oip::IfcPeekReaderException("IFC schema is not specified or could not be determined.");
 }

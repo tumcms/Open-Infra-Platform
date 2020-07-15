@@ -46,6 +46,7 @@
 #include "IfcGeometryConverter\GeometryInputData.h"
 #include "IfcGeometryConverter\IfcPeekStepReader.h"
 #include "IfcGeometryConverter\IfcImporterImpl.h"
+#include "Exception\IfcPeekReaderException.h"
 
 #include <QtXml>
 #include <QtXmlPatterns>
@@ -153,7 +154,16 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 	if (filetype == ".ifc" || filetype == ".stp")
 	{
 		using OpenInfraPlatform::Core::IfcGeometryConverter::IfcPeekStepReader;
-		IfcPeekStepReader::IfcSchema ifcSchema = IfcPeekStepReader::parseIfcHeader(filename);
+		IfcPeekStepReader::IfcSchema ifcSchema;
+		try
+		{
+			ifcSchema = IfcPeekStepReader::parseIfcHeader(filename);
+		}
+		catch (oip::IfcPeekReaderException ex)
+		{
+			showError(ex.what(), "IFC version not known to OIP.");
+			return;
+		}
 		tempIfcGeometryModel_ = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
 
 
