@@ -40,11 +40,13 @@ namespace OpenInfraPlatform {
 					ProfileCacheT(
 						std::shared_ptr<GeometrySettings> geomSettings,
 						std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
-						std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc
+						std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc,
+						std::shared_ptr<SplineConverterT<IfcEntityTypesT>> sc
 					)
 						: 
 						ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
-						placementConverter(pc)
+						placementConverter(pc),
+						splineConverter(sc)
 					{
 
 					}
@@ -74,7 +76,7 @@ namespace OpenInfraPlatform {
 							BLUE_LOG(trace) << "Creating ProfileConverterT for IfcProfile #" << profile_id;
 #endif
 							std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter =
-								std::make_shared<ProfileConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert(), placementConverter);
+								std::make_shared<ProfileConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert(), placementConverter, splineConverter);
 
 							profile_converter->computeProfile(ifcProfile);
 
@@ -95,6 +97,7 @@ namespace OpenInfraPlatform {
 				protected:
 
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
+					std::shared_ptr<SplineConverterT<IfcEntityTypesT>> splineConverter;
 					std::map<int, std::shared_ptr<ProfileConverterT<IfcEntityTypesT>>> profileCache;
 			};
 		}

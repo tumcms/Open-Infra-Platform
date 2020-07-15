@@ -29,6 +29,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "GeomUtils.h"
 #include "GeometryInputData.h"
 #include "PlacementConverter.h"
+#include "SplineConverter.h"
 
 #include "BlueFramework/Core/Diagnostics/log.h"
 
@@ -47,11 +48,13 @@ namespace OpenInfraPlatform {
 			ProfileConverterT(
 				std::shared_ptr<GeometrySettings> geomSettings,
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
-				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc
+				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc,
+				std::shared_ptr<SplineConverterT<IfcEntityTypesT>> sc
 			)
 				:
 				ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
-				placementConverter(pc)
+				placementConverter(pc),
+				splineConverter(sc)
 			{
 				// std::cout << "Usage of ProfileConverterT" << std::endl;
 			}
@@ -147,7 +150,7 @@ namespace OpenInfraPlatform {
 				std::vector<carve::geom::vector<2>> curve_polygon;
 				std::vector<carve::geom::vector<2>> segment_start_points;
 
-				CurveConverterT<IfcEntityTypesT> c_conv(GeomSettings(), UnitConvert(), placementConverter);
+				CurveConverterT<IfcEntityTypesT> c_conv(GeomSettings(), UnitConvert(), placementConverter, splineConverter);
 				c_conv.convertIfcCurve2D(outer_curve, curve_polygon, segment_start_points);
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processed IfcArbitraryClosedProfileDef.OuterCurve IfcCurve #" << outer_curve->getId();
@@ -287,7 +290,7 @@ namespace OpenInfraPlatform {
 				BLUE_LOG(trace) << "Processing IfcArbitraryOpenProfileDef #" << profileDef->getId();
 #endif
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.lock();
-				CurveConverterT<IfcEntityTypesT> c_converter(GeomSettings(), UnitConvert(), placementConverter);
+				CurveConverterT<IfcEntityTypesT> c_converter(GeomSettings(), UnitConvert(), placementConverter, splineConverter);
 
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCenterLineProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def = profileDef.as<typename IfcEntityTypesT::IfcCenterLineProfileDef>();
@@ -436,7 +439,7 @@ namespace OpenInfraPlatform {
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcDerivedProfileDef #" << profileDef->getId();
 #endif
-				ProfileConverterT<IfcEntityTypesT> temp_profiler(GeomSettings(), UnitConvert(), placementConverter);
+				ProfileConverterT<IfcEntityTypesT> temp_profiler(GeomSettings(), UnitConvert(), placementConverter, splineConverter);
 				temp_profiler.computeProfile(profileDef->ParentProfile.lock());
 				const std::vector<std::vector<carve::geom::vector<2>>>& parent_paths = temp_profiler.getCoordinates();
 
@@ -1652,6 +1655,7 @@ namespace OpenInfraPlatform {
 		protected:
 
 			std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
+			std::shared_ptr<SplineConverterT<IfcEntityTypesT>> splineConverter;
 
 			std::vector<std::vector<carve::geom::vector<2>>> paths;
 		};
