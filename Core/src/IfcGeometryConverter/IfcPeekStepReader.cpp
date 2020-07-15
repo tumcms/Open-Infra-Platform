@@ -16,6 +16,7 @@
 */
 
 #include "IfcPeekStepReader.h"
+#include "../Exception/IfcPeekReaderException.h"
 
 #include <map>
 #include <set>
@@ -54,7 +55,6 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 	if (!ifcFile.is_open())
 	{
 		throw std::exception("Could not open IFC file in ifc peek step reader.");
-		return IfcSchema::UNKNOWN;
 	}
 
 	std::string line;
@@ -95,14 +95,16 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 							
 							try
 							{
-								if(schemata.count(schema) > 0) {
+								if (schemata.count(schema) > 0) {
 									return schemata[schema];
-								}						
+								}
+								else
+									throw std::exception();
 							}
 							catch(...)
 							{
-								throw std::exception("IFC schema is not specified or could not be determined.");
-								return IfcSchema::UNKNOWN;
+								ifcFile.close();
+								throw oip::IfcPeekReaderException("IFC schema [" + schema + "] is unknown to OIP. Please include it in the build process.");
 							}	
 						}
 					}
@@ -112,11 +114,10 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 		else if (line.find("DATA") != std::string::npos)
 		{
 			ifcFile.close();
-			throw std::exception("IFC schema is not specified or could not be determined.");
-			//return IfcSchema::UNKNOWN;
+			throw oip::IfcPeekReaderException("IFC schema is not specified or could not be determined.");
 		}
 	}
 
 	ifcFile.close();
-	throw std::exception("IFC schema is not specified or could not be determined.");
+	throw oip::IfcPeekReaderException("IFC schema is not specified or could not be determined.");
 }
