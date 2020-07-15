@@ -99,7 +99,7 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 									return schemata[schema];
 								}
 								else
-									throw;
+									throw std::exception();
 							}
 							catch(...)
 							{
