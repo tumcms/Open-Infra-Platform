@@ -523,10 +523,6 @@ namespace OpenInfraPlatform {
 
 						splineConverter->convertIfcBSplineCurve(bspline_curve, splinePoints, targetVec);
 						return;
-
-						// TO DO: Implement IfcBSplineCurveWithKnots
-						// TO DO: IfcRationalBSplineCurveWithKnots
-
 					} // end if IfcBSplineCurve
 
 					// (3/6) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
