@@ -51,7 +51,7 @@ namespace OpenInfraPlatform
 
 					virtual ~SplineConverterT() {}
 
-					static void convertIfcBSplineCurve(
+					void convertIfcBSplineCurve(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
 						std::vector<carve::geom::vector<3>>& loops)
@@ -101,7 +101,7 @@ namespace OpenInfraPlatform
 						}
 					}
 
-					static void convertIfcBSplineSurface(
+					void convertIfcBSplineSurface(
 						const std::shared_ptr<typename IfcEntityTypesT::IfcBoundedSurface>& splineSurface,
 						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
 						std::shared_ptr<carve::input::PolylineSetData>& polylineData)
@@ -109,7 +109,7 @@ namespace OpenInfraPlatform
 					}
 
 					// Compute B-Spline basis functions for given curve value t
-					static std::vector<double> computeBSplineBasisFunctions(
+					std::vector<double> computeBSplineBasisFunctions(
 						const uint8_t order, // k: order of basis and polynomial of degree k - 1
 						const double t, // t: arbitrary value on B-Spline curve
 						const uint32_t numControlPoints, // n + 1 control points
@@ -170,7 +170,7 @@ namespace OpenInfraPlatform
 
 					// B-Spline surface definition according to: 
 					// http://www.buildingsmart-tech.org/ifc/IFC4/final/html/schema/ifcgeometryresource/lexical/ifcbsplinesurface.htm
-					static void computeBSplineSurface(
+					void computeBSplineSurface(
 						const uint8_t orderU,
 						const uint8_t orderV,
 						const uint32_t numCurvePointsU,
@@ -262,7 +262,7 @@ namespace OpenInfraPlatform
 
 
 					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
-					static std::vector<carve::geom::vector<3>> computeBSplineCurve(
+					std::vector<carve::geom::vector<3>> computeBSplineCurve(
 						const uint8_t order,
 						const uint32_t numControlPoints,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
@@ -328,7 +328,7 @@ namespace OpenInfraPlatform
 					}
 
 				private:
-					static std::vector<double> loadKnotArray(
+					std::vector<double> loadKnotArray(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline,
 						const int& numKnotsArray)
 					{
@@ -377,7 +377,7 @@ namespace OpenInfraPlatform
 					}
 
 
-					static std::vector<double> loadWeightsData(
+					std::vector<double> loadWeightsData(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve)
 					{
 						std::vector<double> weightsData;
@@ -393,7 +393,7 @@ namespace OpenInfraPlatform
 						return weightsData;
 					}
 					
-					static std::tuple<double, double, double> obtainKnotRange(
+					std::tuple<double, double, double> obtainKnotRange(
 						const uint8_t& order, 
 						const std::vector<double>& knotArray,
 						const uint32_t& numCurvePoints)
@@ -412,7 +412,7 @@ namespace OpenInfraPlatform
 						return { knotStart, knotEnd, step };
 					}
 
-					static std::tuple<const uint32_t, const double> obtainProperties(const int& numKnotsArray)
+					std::tuple<const uint32_t, const double> obtainProperties(const int& numKnotsArray)
 					{
 						//! TEMPORARY default number of curve points
 						const uint32_t numCurvePoints = numKnotsArray * 10;
@@ -424,7 +424,7 @@ namespace OpenInfraPlatform
 						return { numCurvePoints, accuracy };
 					}
 
-					static std::vector<carve::geom::vector<3>> computeIfcBSplineCurveWithKnots(
+					std::vector<carve::geom::vector<3>> computeIfcBSplineCurveWithKnots(
 						const int& order,
 						std::vector<double>& knotArray,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
@@ -470,7 +470,7 @@ namespace OpenInfraPlatform
 						return curvePoints;
 					}
 
-					static std::vector<carve::geom::vector<3>> computeIfcRationalBSplineCurveWithKnots(
+					std::vector<carve::geom::vector<3>> computeIfcRationalBSplineCurveWithKnots(
 						const int& order,
 						std::vector<double>& knotArray,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
