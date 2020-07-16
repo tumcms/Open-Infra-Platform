@@ -149,6 +149,13 @@ namespace OpenInfraPlatform {
 							BLUE_LOG(warning) << ex.what();
 							continue;
 						}
+						catch (const oip::InconsistentModellingException& ex)
+						{
+							// write the error to the console
+							BLUE_LOG(warning) << representation->getErrorLog() + ": Nothing is shown - sth wrong with IFC model.";
+							BLUE_LOG(warning) << ex.what();
+							continue;
+						}
 						catch (...)
 						{
 							throw; // throw onwards
