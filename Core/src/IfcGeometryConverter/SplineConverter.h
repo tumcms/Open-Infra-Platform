@@ -44,9 +44,10 @@ namespace OpenInfraPlatform
 					SplineConverterT(
 						std::shared_ptr<GeometrySettings> geomSettings,
 						std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
-						std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter)
+						std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc)
 						:
-						ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter) 
+						ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
+						placementConverter(pc)
 					{}
 
 					virtual ~SplineConverterT() {}
