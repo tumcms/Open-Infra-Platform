@@ -48,26 +48,13 @@ namespace OpenInfraPlatform {
 			{
 			public:
 				//! Constructor
-				//CurveConverterT(
-				//	std::shared_ptr<GeometrySettings> geomSettings,
-				//	std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
-				//	std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc)
-				//	:
-				//	ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
-				//	placementConverter(pc)
-				//{
-				//}
-
-				//! Constructor
 				CurveConverterT(
 					std::shared_ptr<GeometrySettings> geomSettings,
 					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
-					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc,
-					std::shared_ptr<SplineConverterT<IfcEntityTypesT>> sc)
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc)
 					:
 					ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
-					placementConverter(pc),
-					splineConverter(sc)
+					placementConverter(pc)
 				{
 				}
 
@@ -532,7 +519,7 @@ namespace OpenInfraPlatform {
 						// convert the control points
 						std::vector<carve::geom::vector<3>> splinePoints = convertIfcCartesianPointVector(bspline_curve->ControlPointsList);
 
-						splineConverter->convertIfcBSplineCurve(bspline_curve, splinePoints, targetVec);
+						SplineConverterT<typename IfcEntityTypesT>::convertIfcBSplineCurve(bspline_curve, splinePoints, targetVec);
 						return;
 					} // end if IfcBSplineCurve
 
@@ -1317,7 +1304,6 @@ namespace OpenInfraPlatform {
 			protected:
 
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
-				std::shared_ptr<SplineConverterT<IfcEntityTypesT>> splineConverter;
 
 			}; // end class
 		}; // end namespace IfcGeometryConverter

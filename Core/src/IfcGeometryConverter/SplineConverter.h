@@ -43,8 +43,7 @@ namespace OpenInfraPlatform
 				public:
 					SplineConverterT(
 						std::shared_ptr<GeometrySettings> geomSettings,
-						std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
-						std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter)
+						std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter)
 						:
 						ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter) 
 					{}
@@ -522,11 +521,6 @@ namespace OpenInfraPlatform
 
 						return curvePoints;
 					}
-					
-					protected:
-
-						std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
-
 			}; // end class SplineConverterT
 
 			//template<>

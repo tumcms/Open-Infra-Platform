@@ -78,13 +78,11 @@ namespace OpenInfraPlatform {
 
 					// styles_converter = shared_ptr<StylesConverter>( new StylesConverter() );
 
-					splineConverter = std::make_shared<SplineConverterT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter);
-
-					curveConverter = std::make_shared<CurveConverterT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter, splineConverter);
+					curveConverter = std::make_shared<CurveConverterT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter);
 
 					faceConverter = std::make_shared<FaceConverterT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter, curveConverter);
 
-					profileCache = std::make_shared<ProfileCacheT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter, splineConverter);
+					profileCache = std::make_shared<ProfileCacheT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter);
 					solidConverter =
 						std::make_shared<SolidModelConverterT<IfcEntityTypesT>>(geomSettings, unitConverter, placementConverter, curveConverter, faceConverter, profileCache);
 				}
@@ -786,7 +784,6 @@ namespace OpenInfraPlatform {
 
 				// std::shared_ptr<StylesConverter>	stylesConverter;
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
-				std::shared_ptr<SplineConverterT<IfcEntityTypesT>> splineConverter;
 				std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter;
 				std::shared_ptr<SolidModelConverterT<IfcEntityTypesT>> solidConverter;
 				std::shared_ptr<FaceConverterT<IfcEntityTypesT>> faceConverter;
