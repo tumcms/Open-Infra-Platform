@@ -28,6 +28,8 @@
 #include "GeometryInputData.h"
 #include "GeomUtils.h"
 
+#include "ConverterBase.h"
+
 
 namespace OpenInfraPlatform
 {
