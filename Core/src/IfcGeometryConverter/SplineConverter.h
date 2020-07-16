@@ -38,7 +38,7 @@ namespace OpenInfraPlatform
 			template <
 				class IfcEntityTypesT
 			>
-			class SplineConverterT : public ConverterBaseT<IfcEntityTypesT> // TODO 2020.04.08.: spline converter does not apply length corrections
+			class SplineConverterT : public ConverterBaseT<IfcEntityTypesT> // TODO 2020.04.08.: spline converter does not apply length corrections: UnitConverter()->getLengthinMeterFactor()
 			{
 				public:
 					SplineConverterT(
