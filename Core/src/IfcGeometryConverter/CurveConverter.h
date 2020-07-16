@@ -48,17 +48,6 @@ namespace OpenInfraPlatform {
 			{
 			public:
 				//! Constructor
-				//CurveConverterT(
-				//	std::shared_ptr<GeometrySettings> geomSettings,
-				//	std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
-				//	std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc)
-				//	:
-				//	ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
-				//	placementConverter(pc)
-				//{
-				//}
-
-				//! Constructor
 				CurveConverterT(
 					std::shared_ptr<GeometrySettings> geomSettings,
 					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
