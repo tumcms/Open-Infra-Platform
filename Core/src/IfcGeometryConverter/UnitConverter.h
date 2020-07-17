@@ -73,12 +73,9 @@ namespace OpenInfraPlatform
 				*/
 				double getFactorFor(const typename IfcEntityTypesT::IfcUnitEnum& unit_type) const
 				{
+					if (!m_unit_assignment)
+						return 1.;
 					
-					if (!m_unit_assignment) {
-						throw oip::InconsistentModellingException(m_unit_assignment, "m_unit_assignmentt is not defined");
-					}
-						
-
 					for (auto& unit : m_unit_assignment->Units)
 					{
 						// TYPE IfcUnit = SELECT(
@@ -125,9 +122,8 @@ namespace OpenInfraPlatform
 				*/
 				double getFactorFor(const typename IfcEntityTypesT::IfcDerivedUnitEnum& unit_type) const
 				{
-					if (!m_unit_assignment) {
-						throw oip::InconsistentModellingException(m_unit_assignment, "m_unit_assignmentt is not defined");
-					}
+					if (!m_unit_assignment)
+						return 1.;
 
 					for (auto& unit : m_unit_assignment->Units)
 					{
@@ -348,7 +344,7 @@ namespace OpenInfraPlatform
 						//	Exponent: INTEGER;
 						// END_ENTITY;
 
-						double element_factor = convertUnit( unitElement->Unit.lock() );
+						double element_factor = convertUnit( unitElement->Unit);
 						factor *= pow(element_factor, unitElement->Exponent);
 					}
 
@@ -374,21 +370,21 @@ namespace OpenInfraPlatform
 					case 0:
 					{
 						// IfcDerivedUnit
-						auto& derivedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcDerivedUnit>>().lock();
+						auto& derivedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcDerivedUnit>>();
 
 						return convertUnit(derivedUnit); // call recursively the other overload
 					}
 					case 1:
 					{
 						// IfcMonetaryUnit
-						auto& monetaryUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcMonetaryUnit>>().lock();
+						auto& monetaryUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcMonetaryUnit>>();
 						BLUE_LOG(warning) << monetaryUnit->getErrorLog() << ": Not supported.";
 						break;
 					}
 					case 2:
 					{
 						// IfcNamedUnit
-						auto& namedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcNamedUnit>>().lock();
+						auto& namedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcNamedUnit>>();
 
 						return convertUnit(namedUnit); // call recursively the other overload
 					}
