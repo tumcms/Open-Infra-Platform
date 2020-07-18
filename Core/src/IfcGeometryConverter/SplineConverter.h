@@ -35,6 +35,10 @@ namespace OpenInfraPlatform
 {
 	namespace Core {
 		namespace IfcGeometryConverter {
+			/*! \brief Converter functionality for \c IfcBSplineCurve's and \c IfcBSplineSurface's subtypes.
+			*
+			* \param IfcEntityTypesT The IFC version templates
+			*/
 			template <
 				class IfcEntityTypesT
 			>
@@ -50,6 +54,16 @@ namespace OpenInfraPlatform
 
 					virtual ~SplineConverterT() {}
 
+					/*! \brief Converts \c IfcBSplineCurve subtypes to a vector of curve points, which can be print on the screen.
+					 *
+					 * This converter can handle
+					 * \c IfcBSplineCurveWithKnots and
+					 * \c IfcRationalBSplineCurveWithKnots, which are subtypes of IfcBSplineCurve.
+					 *
+					 * \param[in]	splineCurve		\c IfcBSplineCurve entity to be converted.
+					 * \param[in]	controlPoints	A vector of the B-Spline control points, must be obtain from the \c IfcBSplineCurve entity.
+					 * \param[out]	loops			The vector of curve points, which can be print on the screen.
+					 */
 					void convertIfcBSplineCurve(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
@@ -100,6 +114,19 @@ namespace OpenInfraPlatform
 						}
 					}
 
+					/*! \brief Converts \c IfcBSplineSurface subtypes to ploylineSetData.
+					 *
+					 * This convert function can handle
+					 * \c IfcBSplineSurfaceWithKnots and
+					 * \c IfcRationalBSplineSurfaceWithKnots.
+					 *
+					 * \param[in]	splineSurface		\c IfcBSplineSurface entity to be converted.
+					 * \param[in]	controlPoints		A vector of the B-Spline control points, must be obtain from the \c IfcBSplineSurface entity.
+					 * \param[out]	polylineData		ploylineSetData (?)
+					 *
+					 * \note		At the moment, this converter isn't implemented.
+					 * \internal	The Code of the function is in the commented out part at the end of the file.
+					 */
 					void convertIfcBSplineSurface(
 						const std::shared_ptr<typename IfcEntityTypesT::IfcBoundedSurface>& splineSurface,
 						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
@@ -107,7 +134,18 @@ namespace OpenInfraPlatform
 					{
 					}
 
-					// Compute B-Spline basis functions for given curve value t
+					/*! \brief Computes the B-Spline basis functions for given curve value t.
+					 *
+					 * For one specific value of t the function composes and evaluates the basis functions (=blending functions) of a B-Spline.
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	t					Evaluation point of the curve c(t)
+					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+					 * \param[in]	knotVector			The array / vector of knots obtained from \c IfcBSplineCurveWithKnots, 
+					 *									the function \c loadKnotArray gives this vector.
+					 *
+					 * \return							Vector of evaluated basis functions, vector size is equal to number of control points.
+					 */
 					std::vector<double> computeBSplineBasisFunctions(
 						const uint8_t order, // k: order of basis and polynomial of degree k - 1
 						const double t, // t: arbitrary value on B-Spline curve
@@ -259,7 +297,18 @@ namespace OpenInfraPlatform
 						}
 					}
 
-
+					/*! \brief Computes the curve points of the B-Spline.
+					 *
+					 * All information has to be loaded from an appropriate ifc entity before calling this function. 
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+					 * \param[in]	controlPoints		The vector of the B-Spline control points.
+					 * \param[in]	weights				The vector with the wight values per knot, the function \c loadWeightsData gives this vector.
+					 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
+					 *
+					 * \return		The vector of curve points, which can be print on the screen after correction by \c GeomUtils::appendPointsToCurve.
+					 */
 					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
 					std::vector<carve::geom::vector<3>> computeBSplineCurve(
 						const uint8_t order,
@@ -327,6 +376,14 @@ namespace OpenInfraPlatform
 					}
 
 				private:
+
+					/*! \brief Loads the knot array from an \c IfcBSplineCurveWithKnots.
+					 *
+					 * \param[in]	bspline				The \c IfcBSplineCurveWithKnots entity from where the knots have to be loaded.
+					 * \param[in]	numKnotsArray		The total number of knots, which define the basis functions ( = order + total number of control points )
+					 *
+					 * \return		The array / vector of knots.
+					 */
 					std::vector<double> loadKnotArray(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline,
 						const int& numKnotsArray)
@@ -375,7 +432,12 @@ namespace OpenInfraPlatform
 						return knotArray;
 					}
 
-
+					/*! \brief Loads the knot weights from an \c IfcRationalBSplineCurveWithKnots.
+					 *
+					 * \param[in]	rationalBSplineCurve	The \c IfcRationalBSplineCurveWithKnots entity from where the weights have to be loaded.
+					 *
+					 * \return		The vector of weights per knot.
+					 */
 					std::vector<double> loadWeightsData(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve)
 					{
@@ -392,6 +454,16 @@ namespace OpenInfraPlatform
 						return weightsData;
 					}
 					
+					/*! \brief Obtains the range of knot values and the step size of curve parameter t.
+					 *
+					 * \param[in]	order			Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	knotArray		The array / vector of knots, the function \c loadKnotArray gives this vector.
+					 * \param[in]	numCurvePoints	The number of curve points where the curve c(t) has to be evaluated.
+					 *
+					 * \return		First valid knot value, correspondes to t_start
+					 * \return		Last valid knot value, correspondes to t_end
+					 * \return		Step size of curve parameter t between start and end
+					 */
 					std::tuple<double, double, double> obtainKnotRange(
 						const uint8_t& order, 
 						const std::vector<double>& knotArray,
@@ -411,9 +483,19 @@ namespace OpenInfraPlatform
 						return { knotStart, knotEnd, step };
 					}
 
+					/*! \brief Loads general properties, which are used in the calculation.
+					 *
+					 * \param[in]	numKnotsArray	The total number of knots, which define the basis functions ( = order + total number of control points )
+					 *
+					 * \return		Number of curve points
+					 * \return		Accuracy which is technically needed in the calculation.
+					 *
+					 * \note	The number of curve points \c numCurvePoints, where the curve c(t) has to be evaluated,
+					 *			is temporary preset with a default value proportional to the number of knots.
+					 */
 					std::tuple<const uint32_t, const double> obtainProperties(const int& numKnotsArray)
 					{
-						//! TEMPORARY default number of curve points
+						// ! TEMPORARY default number of curve points
 						const uint32_t numCurvePoints = numKnotsArray * 10;
 
 						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
@@ -423,6 +505,17 @@ namespace OpenInfraPlatform
 						return { numCurvePoints, accuracy };
 					}
 
+					/*! \brief Computes the curve points of the B-Spline.
+					 *
+					 * All information has to be loaded from an \c IfcBSplineCurveWithKnots entity before calling this function.
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
+					 * \param[in]	controlPoints		The vector of the B-Spline control points.
+					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+					 *
+					 * \return		The vector of curve points, which can be print on the screen after correction by \c GeomUtils::appendPointsToCurve.
+					 */
 					std::vector<carve::geom::vector<3>> computeIfcBSplineCurveWithKnots(
 						const int& order,
 						std::vector<double>& knotArray,
@@ -469,6 +562,18 @@ namespace OpenInfraPlatform
 						return curvePoints;
 					}
 
+					/*! \brief Computes the curve points of the rational B-Spline.
+					 *
+					 * All information has to be loaded from an \c IfcRationalBSplineCurveWithKnots entity before calling this function.
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
+					 * \param[in]	controlPoints		The vector of the B-Spline control points.
+					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+					 * \param[in]	weightsData			The vector with the wight values per knot, the function \c loadWeightsData gives this vector.
+					 *
+					 * \return		The vector of curve points, which can be print on the screen after correction by \c GeomUtils::appendPointsToCurve.
+					 */
 					std::vector<carve::geom::vector<3>> computeIfcRationalBSplineCurveWithKnots(
 						const int& order,
 						std::vector<double>& knotArray,
