@@ -297,84 +297,6 @@ namespace OpenInfraPlatform
 						}
 					}
 
-					/*! \brief Computes the curve points of the B-Spline.
-					 *
-					 * All information has to be loaded from an appropriate ifc entity before calling this function. 
-					 *
-					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
-					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
-					 * \param[in]	controlPoints		The vector of the B-Spline control points.
-					 * \param[in]	weights				The vector with the wight values per knot, the function \c loadWeightsData gives this vector.
-					 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
-					 *
-					 * \return		The vector of curve points, which can be print on the screen after correction by \c GeomUtils::appendPointsToCurve.
-					 */
-					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
-					std::vector<carve::geom::vector<3>> computeBSplineCurve(
-						const uint8_t order,
-						const uint32_t numControlPoints,
-						const std::vector<carve::geom::vector<3>>& controlPoints,
-						const std::vector<double>& weights,
-						const std::vector<double>& knotArray)
-					{
-						uint32_t numCurvePoints;
-						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
-						double accuracy;
-						std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
-
-						// The following parameters corresponds to the parameter t of a curve c(t)
-						double knotStart;
-						double knotEnd;
-						double step;
-						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
-
-						std::vector<double> basisFuncs;
-
-						std::vector<carve::geom::vector<3>> curvePoints;
-						curvePoints.reserve(numCurvePoints);
-
-						// start with first valid knot
-						double t = knotStart;
-
-						for(auto i = 0; i < numCurvePoints; ++i) {
-							if(i == numCurvePoints - 1) { t = knotEnd - accuracy; }
-
-							// 1) Evaluate basis functions at curve point t
-							basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
-							// 2) Compute exact point
-							carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
-							// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
-							double weightSum = 0.0;
-
-							for(int j = 0; j < numControlPoints; ++j) {
-								const double basisFunc = basisFuncs[j];
-								const carve::geom::vector<3>& controlPoint = controlPoints[j];
-
-								if(!weights.empty()) {
-									// 3a) apply formula for rational B-spline surfaces
-									const double weightProduct = weights[j] * basisFunc;
-									point += weightProduct * controlPoint;
-									weightSum += weightProduct;
-								}
-								else {
-									// 3b) apply formula for normal B-spline curves
-									point += basisFunc * controlPoint;
-								}
-
-							}
-
-							if(!weights.empty()) {
-								point /= weightSum;
-							}
-
-							curvePoints.push_back(point);
-
-							t += step;
-						}
-
-						return curvePoints;
-					}
-
 				private:
 
 					/*! \brief Loads the knot array from an \c IfcBSplineCurveWithKnots.
@@ -516,6 +438,7 @@ namespace OpenInfraPlatform
 					 *
 					 * \return		The vector of curve points, which can be print on the screen after correction by \c GeomUtils::appendPointsToCurve.
 					 */
+					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
 					std::vector<carve::geom::vector<3>> computeIfcBSplineCurveWithKnots(
 						const int& order,
 						std::vector<double>& knotArray,
@@ -574,6 +497,7 @@ namespace OpenInfraPlatform
 					 *
 					 * \return		The vector of curve points, which can be print on the screen after correction by \c GeomUtils::appendPointsToCurve.
 					 */
+					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
 					std::vector<carve::geom::vector<3>> computeIfcRationalBSplineCurveWithKnots(
 						const int& order,
 						std::vector<double>& knotArray,
