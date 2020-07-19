@@ -106,6 +106,8 @@ namespace OpenInfraPlatform
 							// TODO: has to be implemented,
 							//       the knotArray has to be set in a specific way
 							//       with this special knotArray the function computeBSplineCurveWithKnots can be called for calculation
+
+							throw oip::UnhandledException(splineCurve);
 						}
 						// it's unknown what to do with this ifc entity
 						else
@@ -132,6 +134,8 @@ namespace OpenInfraPlatform
 						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
 						std::shared_ptr<carve::input::PolylineSetData>& polylineData)
 					{
+						// not implemented, code in commented out part at the end of the file
+						throw oip::UnhandledException("IfcBSplineSurface isn't implementet at the moment");
 					}
 
 				private:
