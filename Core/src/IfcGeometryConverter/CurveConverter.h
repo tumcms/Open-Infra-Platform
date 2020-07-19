@@ -520,6 +520,8 @@ namespace OpenInfraPlatform {
 						std::vector<carve::geom::vector<3>> splinePoints = convertIfcCartesianPointVector(bspline_curve->ControlPointsList);
 
 						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert());
+						// splineConverter.convertIfcBSplineCurve can handle IfcBSplineCurveWithKnots and IfcRationalBsplineWithKnots, 
+						// both are subtypes of IfcBSplineCurve
 						splineConverter.convertIfcBSplineCurve(bspline_curve, splinePoints, targetVec);
 						return;
 					} // end if IfcBSplineCurve
