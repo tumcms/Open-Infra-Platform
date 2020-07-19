@@ -134,169 +134,6 @@ namespace OpenInfraPlatform
 					{
 					}
 
-					/*! \brief Computes the B-Spline basis functions for given curve value t.
-					 *
-					 * For one specific value of t the function composes and evaluates the basis functions (=blending functions) of a B-Spline.
-					 *
-					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
-					 * \param[in]	t					Evaluation point of the curve c(t)
-					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
-					 * \param[in]	knotVector			The array / vector of knots obtained from \c IfcBSplineCurveWithKnots, 
-					 *									the function \c loadKnotArray gives this vector.
-					 *
-					 * \return							Vector of evaluated basis functions, vector size is equal to number of control points.
-					 */
-					std::vector<double> computeBSplineBasisFunctions(
-						const uint8_t order, // k: order of basis and polynomial of degree k - 1
-						const double t, // t: arbitrary value on B-Spline curve
-						const uint32_t numControlPoints, // n + 1 control points
-						const std::vector<double>& knotVector) // t_i: knot points
-					{
-						const uint8_t degree = order - 1;
-						const uint16_t numBasisFuncs = degree + numControlPoints;
-						const uint16_t numKnots = order + numControlPoints;
-						// create temporary basis functions of size k + n (or d + (n + 1), with d = k - 1)
-						std::vector<double> tempBasisFuncs(numBasisFuncs, 0.0);
-
-						// intialize first order basis functions
-						for(auto i = 0; i < numBasisFuncs; ++i) {
-							const double knot = knotVector[i];
-							const double knotNext = knotVector[i + 1];
-							if(t >= knot && t < knotNext && knot < knotNext) {
-								tempBasisFuncs[i] = 1.0;
-							}
-						}
-
-						double basisFuncFirst = 0.0;
-						double basisFuncSecond = 0.0;
-
-						// build basis functions of higher order up-to order = degree
-						for(int k = 1; k <= degree; ++k) {
-							for(int i = 0; i < numBasisFuncs - k; ++i) {
-								const double t_i = knotVector[i];
-								const double t_ik = knotVector[i + k];
-								const double t_ik1 = knotVector[i + k + 1];
-								const double t_i1 = knotVector[i + 1];
-								// function is zero if basis is zero or denominator is zero
-								if(tempBasisFuncs[i] == 0 || t_ik == t_i) { basisFuncFirst = 0.0; }
-								else {
-									// apply formula of first part
-									basisFuncFirst = (t - t_i) / (t_ik - t_i) * tempBasisFuncs[i];
-								}
-
-								// function is zero if basis is zero or denominator is zero
-								if(tempBasisFuncs[i + 1] == 0 || t_ik1 == t_i1) { basisFuncSecond = 0.0; }
-								else {
-									// apply formula of first part
-									basisFuncSecond = (t_ik1 - t) / (t_ik1 - t_i1) * tempBasisFuncs[i + 1];
-								}
-
-								// compute sum and set as basis function for next order
-								tempBasisFuncs[i] = basisFuncFirst + basisFuncSecond;
-							}
-						}
-
-						std::vector<double> basisFuncs;
-						basisFuncs.reserve(numControlPoints);
-						const uint32_t numBasis = numControlPoints;
-						for(int j = 0; j < numBasis; ++j) {
-							basisFuncs[j] = tempBasisFuncs[j];
-						}
-						return basisFuncs;
-					}
-
-					// B-Spline surface definition according to: 
-					// http://www.buildingsmart-tech.org/ifc/IFC4/final/html/schema/ifcgeometryresource/lexical/ifcbsplinesurface.htm
-					void computeBSplineSurface(
-						const uint8_t orderU,
-						const uint8_t orderV,
-						const uint32_t numCurvePointsU,
-						const uint32_t numCurvePointsV,
-						const uint32_t numControlPointsU,
-						const uint32_t numControlPointsV,
-						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
-						const std::vector<std::vector<double>>& weights,
-						const std::vector<double>& knotVectorU,
-						const std::vector<double>& knotVectorV,
-						std::vector<carve::geom::vector<3>>& curvePoints)
-					{
-						// curve is defined for [t_p;t_m-p], m := number of knots - 1
-						const uint32_t firstIndexU = orderU - 1;
-						const uint32_t lastIndexU = knotVectorU.size() - orderU;
-						const uint32_t firstIndexV = orderV - 1;
-						const uint32_t lastIndexV = knotVectorV.size() - orderV;
-
-						const double knotStartU = knotVectorU[firstIndexU];
-						const double knotEndU = knotVectorU[lastIndexU];
-						const double knotRangeU = knotEndU - knotStartU;
-
-						const double knotStartV = knotVectorV[firstIndexV];
-						const double knotEndV = knotVectorV[lastIndexV];
-						const double knotRangeV = knotEndV - knotStartV;
-
-						// compute step size for each direction
-						const double stepU = knotRangeU / static_cast<double>(numCurvePointsU - 1);
-						const double stepV = knotRangeV / static_cast<double>(numCurvePointsV - 1);
-
-						std::vector<double> basisFuncsU(numControlPointsU, 0.0);
-						std::vector<double> basisFuncsV(numControlPointsV, 0.0);
-
-						const double accuracy = 0.0000001;
-
-						// start with first valid knot in each direction
-						double tV = knotStartV;
-
-						for(int j = 0; j < numCurvePointsV; ++j) {
-							if(j == numCurvePointsV - 1) { tV = knotEndV - accuracy; }
-
-							double tU = knotStartU;
-
-							for(int i = 0; i < numCurvePointsU; ++i) {
-								if(i == numCurvePointsU - 1) { tU = knotEndU - accuracy; }
-
-								// 1) Evaluate basis functions at curve point tU and tV
-								computeBSplineBasisFunctions(orderU, tU, numControlPointsU, knotVectorU, basisFuncsU);
-								computeBSplineBasisFunctions(orderV, tV, numControlPointsV, knotVectorV, basisFuncsV);
-
-								// 2) Compute exact point on surface
-								carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
-
-								// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
-								double weightSum = 0.0;
-
-								for(int x = 0; x < numControlPointsU; ++x) {
-									const double basisFuncU = basisFuncsU[x];
-
-									for(int y = 0; y < numControlPointsV; ++y) {
-										const double basisFuncV = basisFuncsV[y];
-										const carve::geom::vector<3>& controlPoint = controlPoints[x][y];
-
-										if(!weights.empty()) {
-											// 3a) apply formula for rational B-spline surfaces
-											const double weightProduct = weights[x][y] * basisFuncU * basisFuncV;
-											point += weightProduct * controlPoint;
-											weightSum += weightProduct;
-										}
-										else {
-											// 3b) apply formula for normal B-spline surfaces
-											point += basisFuncU * basisFuncV * controlPoint;
-										}
-									}
-								}
-
-								if(!weights.empty()) {
-									point /= weightSum;
-								}
-
-								curvePoints.push_back(point);
-
-								tU += stepU;
-							}
-
-							tV += stepV;
-						}
-					}
-
 				private:
 
 					/*! \brief Loads the knot array from an \c IfcBSplineCurveWithKnots.
@@ -549,6 +386,169 @@ namespace OpenInfraPlatform
 						}
 
 						return curvePoints;
+					}
+
+					/*! \brief Computes the B-Spline basis functions for given curve value t.
+					 *
+					 * For one specific value of t the function composes and evaluates the basis functions (=blending functions) of a B-Spline.
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	t					Evaluation point of the curve c(t)
+					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+					 * \param[in]	knotVector			The array / vector of knots obtained from \c IfcBSplineCurveWithKnots,
+					 *									the function \c loadKnotArray gives this vector.
+					 *
+					 * \return							Vector of evaluated basis functions, vector size is equal to number of control points.
+					 */
+					std::vector<double> computeBSplineBasisFunctions(
+						const uint8_t order, // k: order of basis and polynomial of degree k - 1
+						const double t, // t: arbitrary value on B-Spline curve
+						const uint32_t numControlPoints, // n + 1 control points
+						const std::vector<double>& knotVector) // t_i: knot points
+					{
+						const uint8_t degree = order - 1;
+						const uint16_t numBasisFuncs = degree + numControlPoints;
+						const uint16_t numKnots = order + numControlPoints;
+						// create temporary basis functions of size k + n (or d + (n + 1), with d = k - 1)
+						std::vector<double> tempBasisFuncs(numBasisFuncs, 0.0);
+
+						// intialize first order basis functions
+						for (auto i = 0; i < numBasisFuncs; ++i) {
+							const double knot = knotVector[i];
+							const double knotNext = knotVector[i + 1];
+							if (t >= knot && t < knotNext && knot < knotNext) {
+								tempBasisFuncs[i] = 1.0;
+							}
+						}
+
+						double basisFuncFirst = 0.0;
+						double basisFuncSecond = 0.0;
+
+						// build basis functions of higher order up-to order = degree
+						for (int k = 1; k <= degree; ++k) {
+							for (int i = 0; i < numBasisFuncs - k; ++i) {
+								const double t_i = knotVector[i];
+								const double t_ik = knotVector[i + k];
+								const double t_ik1 = knotVector[i + k + 1];
+								const double t_i1 = knotVector[i + 1];
+								// function is zero if basis is zero or denominator is zero
+								if (tempBasisFuncs[i] == 0 || t_ik == t_i) { basisFuncFirst = 0.0; }
+								else {
+									// apply formula of first part
+									basisFuncFirst = (t - t_i) / (t_ik - t_i) * tempBasisFuncs[i];
+								}
+
+								// function is zero if basis is zero or denominator is zero
+								if (tempBasisFuncs[i + 1] == 0 || t_ik1 == t_i1) { basisFuncSecond = 0.0; }
+								else {
+									// apply formula of first part
+									basisFuncSecond = (t_ik1 - t) / (t_ik1 - t_i1) * tempBasisFuncs[i + 1];
+								}
+
+								// compute sum and set as basis function for next order
+								tempBasisFuncs[i] = basisFuncFirst + basisFuncSecond;
+							}
+						}
+
+						std::vector<double> basisFuncs;
+						basisFuncs.reserve(numControlPoints);
+						const uint32_t numBasis = numControlPoints;
+						for (int j = 0; j < numBasis; ++j) {
+							basisFuncs[j] = tempBasisFuncs[j];
+						}
+						return basisFuncs;
+					}
+
+					// B-Spline surface definition according to: 
+					// http://www.buildingsmart-tech.org/ifc/IFC4/final/html/schema/ifcgeometryresource/lexical/ifcbsplinesurface.htm
+					void computeBSplineSurface(
+						const uint8_t orderU,
+						const uint8_t orderV,
+						const uint32_t numCurvePointsU,
+						const uint32_t numCurvePointsV,
+						const uint32_t numControlPointsU,
+						const uint32_t numControlPointsV,
+						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
+						const std::vector<std::vector<double>>& weights,
+						const std::vector<double>& knotVectorU,
+						const std::vector<double>& knotVectorV,
+						std::vector<carve::geom::vector<3>>& curvePoints)
+					{
+						// curve is defined for [t_p;t_m-p], m := number of knots - 1
+						const uint32_t firstIndexU = orderU - 1;
+						const uint32_t lastIndexU = knotVectorU.size() - orderU;
+						const uint32_t firstIndexV = orderV - 1;
+						const uint32_t lastIndexV = knotVectorV.size() - orderV;
+
+						const double knotStartU = knotVectorU[firstIndexU];
+						const double knotEndU = knotVectorU[lastIndexU];
+						const double knotRangeU = knotEndU - knotStartU;
+
+						const double knotStartV = knotVectorV[firstIndexV];
+						const double knotEndV = knotVectorV[lastIndexV];
+						const double knotRangeV = knotEndV - knotStartV;
+
+						// compute step size for each direction
+						const double stepU = knotRangeU / static_cast<double>(numCurvePointsU - 1);
+						const double stepV = knotRangeV / static_cast<double>(numCurvePointsV - 1);
+
+						std::vector<double> basisFuncsU(numControlPointsU, 0.0);
+						std::vector<double> basisFuncsV(numControlPointsV, 0.0);
+
+						const double accuracy = 0.0000001;
+
+						// start with first valid knot in each direction
+						double tV = knotStartV;
+
+						for (int j = 0; j < numCurvePointsV; ++j) {
+							if (j == numCurvePointsV - 1) { tV = knotEndV - accuracy; }
+
+							double tU = knotStartU;
+
+							for (int i = 0; i < numCurvePointsU; ++i) {
+								if (i == numCurvePointsU - 1) { tU = knotEndU - accuracy; }
+
+								// 1) Evaluate basis functions at curve point tU and tV
+								computeBSplineBasisFunctions(orderU, tU, numControlPointsU, knotVectorU, basisFuncsU);
+								computeBSplineBasisFunctions(orderV, tV, numControlPointsV, knotVectorV, basisFuncsV);
+
+								// 2) Compute exact point on surface
+								carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+
+								// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
+								double weightSum = 0.0;
+
+								for (int x = 0; x < numControlPointsU; ++x) {
+									const double basisFuncU = basisFuncsU[x];
+
+									for (int y = 0; y < numControlPointsV; ++y) {
+										const double basisFuncV = basisFuncsV[y];
+										const carve::geom::vector<3>& controlPoint = controlPoints[x][y];
+
+										if (!weights.empty()) {
+											// 3a) apply formula for rational B-spline surfaces
+											const double weightProduct = weights[x][y] * basisFuncU * basisFuncV;
+											point += weightProduct * controlPoint;
+											weightSum += weightProduct;
+										}
+										else {
+											// 3b) apply formula for normal B-spline surfaces
+											point += basisFuncU * basisFuncV * controlPoint;
+										}
+									}
+								}
+
+								if (!weights.empty()) {
+									point /= weightSum;
+								}
+
+								curvePoints.push_back(point);
+
+								tU += stepU;
+							}
+
+							tV += stepV;
+						}
 					}
 			}; // end class SplineConverterT
 
