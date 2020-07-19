@@ -67,7 +67,7 @@ namespace OpenInfraPlatform
 					void convertIfcBSplineCurve(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
-						std::vector<carve::geom::vector<3>>& loops)
+						std::vector<carve::geom::vector<3>>& loops) throw(...)
 					{
 						const int degree = splineCurve->Degree;
 						const int order = degree + 1;
@@ -132,7 +132,7 @@ namespace OpenInfraPlatform
 					void convertIfcBSplineSurface(
 						const std::shared_ptr<typename IfcEntityTypesT::IfcBoundedSurface>& splineSurface,
 						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
-						std::shared_ptr<carve::input::PolylineSetData>& polylineData)
+						std::shared_ptr<carve::input::PolylineSetData>& polylineData) throw(...)
 					{
 						// not implemented, code in commented out part at the end of the file
 						throw oip::UnhandledException("IfcBSplineSurface isn't implementet at the moment");
@@ -149,7 +149,7 @@ namespace OpenInfraPlatform
 					 */
 					std::vector<double> loadKnotArray(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline,
-						const int& numKnotsArray)
+						const int& numKnotsArray) throw(...)
 					{
 						// check whether data in ifc matches the definition in documentation
 						if (bspline->KnotMultiplicities.size() != bspline->Knots.size())
@@ -202,7 +202,7 @@ namespace OpenInfraPlatform
 					 * \return		The vector of weights per knot.
 					 */
 					std::vector<double> loadWeightsData(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve)
+						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve) throw(...)
 					{
 						std::vector<double> weightsData;
 
@@ -230,7 +230,7 @@ namespace OpenInfraPlatform
 					std::tuple<double, double, double> obtainKnotRange(
 						const uint8_t& order, 
 						const std::vector<double>& knotArray,
-						const uint32_t& numCurvePoints)
+						const uint32_t& numCurvePoints) throw(...)
 					{
 						// curve is defined for [t_p;t_m-p], m := number of knots - 1
 						const uint32_t firstIndex = order - 1;
@@ -256,7 +256,7 @@ namespace OpenInfraPlatform
 					 * \note	The number of curve points \c numCurvePoints, where the curve c(t) has to be evaluated,
 					 *			is temporary preset with a default value proportional to the number of knots.
 					 */
-					std::tuple<const uint32_t, const double> obtainProperties(const int& numKnotsArray)
+					std::tuple<const uint32_t, const double> obtainProperties(const int& numKnotsArray) throw(...)
 					{
 						// ! TEMPORARY default number of curve points
 						const uint32_t numCurvePoints = numKnotsArray * 10;
@@ -282,9 +282,9 @@ namespace OpenInfraPlatform
 					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
 					std::vector<carve::geom::vector<3>> computeIfcBSplineCurveWithKnots(
 						const int& order,
-						std::vector<double>& knotArray,
+						const std::vector<double>& knotArray,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
-						const int& numControlPoints)
+						const int& numControlPoints) throw(...)
 					{
 						uint32_t numCurvePoints;
 						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
@@ -341,10 +341,10 @@ namespace OpenInfraPlatform
 					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
 					std::vector<carve::geom::vector<3>> computeIfcRationalBSplineCurveWithKnots(
 						const int& order,
-						std::vector<double>& knotArray,
+						const std::vector<double>& knotArray,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
 						const int& numControlPoints,
-						std::vector<double>& weightsData)
+						const std::vector<double>& weightsData) throw(...)
 					{
 						uint32_t numCurvePoints;
 						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
@@ -408,7 +408,8 @@ namespace OpenInfraPlatform
 						const uint8_t order, // k: order of basis and polynomial of degree k - 1
 						const double t, // t: arbitrary value on B-Spline curve
 						const uint32_t numControlPoints, // n + 1 control points
-						const std::vector<double>& knotVector) // t_i: knot points
+						const std::vector<double>& knotVector // t_i: knot points
+					) throw(...)
 					{
 						const uint8_t degree = order - 1;
 						const uint16_t numBasisFuncs = degree + numControlPoints;
@@ -476,7 +477,7 @@ namespace OpenInfraPlatform
 						const std::vector<std::vector<double>>& weights,
 						const std::vector<double>& knotVectorU,
 						const std::vector<double>& knotVectorV,
-						std::vector<carve::geom::vector<3>>& curvePoints)
+						std::vector<carve::geom::vector<3>>& curvePoints) throw(...)
 					{
 						// curve is defined for [t_p;t_m-p], m := number of knots - 1
 						const uint32_t firstIndexU = orderU - 1;
