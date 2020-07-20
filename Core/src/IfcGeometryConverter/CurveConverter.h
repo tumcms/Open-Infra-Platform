@@ -516,13 +516,10 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<typename IfcEntityTypesT::IfcBSplineCurve> bspline_curve =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineCurve>(bounded_curve.lock());
 					if (bspline_curve) {
-						// convert the control points
-						std::vector<carve::geom::vector<3>> splinePoints = convertIfcCartesianPointVector(bspline_curve->ControlPointsList);
-
-						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert());
+						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
 						// splineConverter.convertIfcBSplineCurve can handle IfcBSplineCurveWithKnots and IfcRationalBsplineWithKnots, 
 						// both are subtypes of IfcBSplineCurve
-						splineConverter.convertIfcBSplineCurve(bspline_curve, splinePoints, targetVec);
+						splineConverter.convertIfcBSplineCurve(bspline_curve, targetVec);
 						return;
 					} // end if IfcBSplineCurve
 

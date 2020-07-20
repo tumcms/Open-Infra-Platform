@@ -29,6 +29,8 @@
 #include "GeomUtils.h"
 
 #include "ConverterBase.h"
+#include "PlacementConverter.h"
+#include "CurveConverter.h"
 
 
 namespace OpenInfraPlatform
@@ -47,9 +49,11 @@ namespace OpenInfraPlatform
 				public:
 					SplineConverterT(
 						std::shared_ptr<GeometrySettings> geomSettings,
-						std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter)
+						std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
+						std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc)
 						:
-						ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter) 
+						ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
+						placementConverter(pc)
 					{}
 
 					virtual ~SplineConverterT() {}
@@ -61,18 +65,19 @@ namespace OpenInfraPlatform
 					 * \c IfcRationalBSplineCurveWithKnots, which are subtypes of IfcBSplineCurve.
 					 *
 					 * \param[in]	splineCurve		\c IfcBSplineCurve entity to be converted.
-					 * \param[in]	controlPoints	A vector of the B-Spline control points, must be obtain from the \c IfcBSplineCurve entity.
 					 * \param[out]	loops			The array of curve points, which can be rendered in a viewport.
 					 */
 					void convertIfcBSplineCurve(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve,
-						const std::vector<carve::geom::vector<3>>& controlPoints,
 						std::vector<carve::geom::vector<3>>& loops) const throw(...)
 					{
 						const int degree = splineCurve->Degree;
 						const int order = degree + 1;
 						const int numControlPoints = splineCurve->ControlPointsList.size();
 						const int numKnotsArray = order + numControlPoints;
+
+						CurveConverterT<IfcEntityTypesT> curveConverter(GeomSettings(), UnitConvert(), placementConverter);
+						const std::vector<carve::geom::vector<3>> controlPoints = curveConverter.convertIfcCartesianPointVector(splineCurve->ControlPointsList);
 
 						// IfcRationalBSplineCurveWithKnots is a subtype of IfcBSplineCurveWithKnots which is a subtype of IfcBSplineCurve, 
 						// it represents a rational B-Spline / a NURBS.
@@ -555,6 +560,11 @@ namespace OpenInfraPlatform
 							tV += stepV;
 						}
 					}
+
+				protected:
+
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
+
 			}; // end class SplineConverterT
 
 			//template<>
