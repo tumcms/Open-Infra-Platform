@@ -310,7 +310,7 @@ namespace OpenInfraPlatform
 						// start with first valid knot
 						double t = knotStart;
 
-						for (uint32_t i = 0; i < numCurvePoints; ++i) {
+						for (size_t i = 0; i < numCurvePoints; ++i) {
 							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
 							// 1) Evaluate basis functions at curve point t
@@ -370,7 +370,7 @@ namespace OpenInfraPlatform
 						// start with first valid knot
 						double t = knotStart;
 
-						for (uint32_t i = 0; i < numCurvePoints; ++i) {
+						for (size_t i = 0; i < numCurvePoints; ++i) {
 							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
 							// 1) Evaluate basis functions at curve point t
@@ -463,7 +463,7 @@ namespace OpenInfraPlatform
 						std::vector<double> basisFuncs;
 						basisFuncs.reserve(numControlPoints);
 						const uint32_t numBasis = numControlPoints;
-						for (uint32_t j = 0; j < numBasis; ++j) {
+						for (size_t j = 0; j < numBasis; ++j) {
 							basisFuncs[j] = tempBasisFuncs[j];
 						}
 						return basisFuncs;
