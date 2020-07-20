@@ -23,6 +23,7 @@
 #include <memory>
 #include <vector>
 
+#include "EXPRESS/EXPRESSReference.h"
 #include "BlueFramework/Core/Diagnostics/log.h"
 
 namespace OpenInfraPlatform 
@@ -53,10 +54,10 @@ namespace OpenInfraPlatform
 
 				\param[in] project A pointer to the IfcProject entity within the model.
 				*/
-				void setIfcProject(const std::shared_ptr<typename IfcEntityTypesT::IfcProject>& project)
+				void setIfcProject(const EXPRESSReference<typename IfcEntityTypesT::IfcProject>& project) 
 				{
 					if(!project->UnitsInContext) {
-						return;
+						throw oip::InconsistentModellingException(project, "project->UnitsInContext is not defined");
 					}
 
 					// remember units in context
@@ -74,7 +75,7 @@ namespace OpenInfraPlatform
 				{
 					if (!m_unit_assignment)
 						return 1.;
-
+					
 					for (auto& unit : m_unit_assignment->Units)
 					{
 						// TYPE IfcUnit = SELECT(
@@ -170,7 +171,7 @@ namespace OpenInfraPlatform
 
 				\return The factor to obtain the SI equivalent unit.
 				*/
-				double convertUnit(const std::shared_ptr<typename IfcEntityTypesT::IfcNamedUnit>& unit) const
+				double convertUnit(const EXPRESSReference<typename IfcEntityTypesT::IfcNamedUnit>& unit) const
 				{
 					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcmeasureresource/lexical/ifcnamedunit.htm
 					// ENTITY IfcNamedUnit
@@ -180,22 +181,21 @@ namespace OpenInfraPlatform
 					// WHERE
 					//	WR1 : IfcCorrectDimensions(SELF.UnitType, SELF.Dimensions);
 					// END_ENTITY;
-
+				
 					// (1/3) IfcContextDependentUnit
-					std::shared_ptr<typename IfcEntityTypesT::IfcContextDependentUnit> contextDependentUnit =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcContextDependentUnit>(unit);
-					if (contextDependentUnit)
+					//std::shared_ptr<typename IfcEntityTypesT::IfcContextDependentUnit> contextDependentUnit =
+					//	std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcContextDependentUnit>(unit);
+					if (unit.isOfType<typename IfcEntityTypesT::IfcContextDependentUnit>())
 					{
+						EXPRESSReference<typename IfcEntityTypesT::IfcContextDependentUnit> contextDependentUnit = unit.as<typename IfcEntityTypesT::IfcContextDependentUnit>();
 						//TODO
-						BLUE_LOG(warning) << contextDependentUnit->getErrorLog() << ": Not supported";
-						BLUE_LOG(warning) << "Context dependent units make little to no sense in OIP, right?";
-						return 1.;
+						throw oip::UnhandledException(unit);
 					}
 
 					// (2/3) IfcConversionBasedUnit
-					std::shared_ptr<typename IfcEntityTypesT::IfcConversionBasedUnit> conversionBasedUnit =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConversionBasedUnit>(unit);
-					if (conversionBasedUnit)
+					//std::shared_ptr<typename IfcEntityTypesT::IfcConversionBasedUnit> conversionBasedUnit =
+						//std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConversionBasedUnit>(unit);
+					if (unit.isOfType<typename IfcEntityTypesT::IfcConversionBasedUnit>())
 					{
 						// ENTITY IfcConversionBasedUnit
 						//	SUPERTYPE OF(IfcConversionBasedUnitWithOffset)
@@ -205,16 +205,17 @@ namespace OpenInfraPlatform
 						// INVERSE
 						//	HasExternalReference : SET[0:? ] OF IfcExternalReferenceRelationship FOR RelatedResourceObjects;
 						// END_ENTITY;
-
-						if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConversionBasedUnitWithOffset>(conversionBasedUnit))
+						EXPRESSReference<typename IfcEntityTypesT::IfcConversionBasedUnit> conversionBasedUnit = unit.as<typename IfcEntityTypesT::IfcConversionBasedUnit >();
+						if (conversionBasedUnit.isOfType<typename IfcEntityTypesT::IfcConversionBasedUnitWithOffset>())
 						{
-							BLUE_LOG(warning) << conversionBasedUnit->getErrorLog() << ": .. with offset is not supported.";
+							/*BLUE_LOG(warning) << conversionBasedUnit->getErrorLog() << ": .. with offset is not supported.";
 							BLUE_LOG(trace) << "Add "
 											<< std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcConversionBasedUnitWithOffset>(conversionBasedUnit)->ConversionOffset
 											<< " to all values of with unit "
 											<< conversionBasedUnit->Name
 											<< " of type "
-											<< conversionBasedUnit->UnitType.getStepParameter();
+											<< conversionBasedUnit->UnitType.getStepParameter();*/
+							throw oip::UnhandledException(unit);
 						}
 
 						// ENTITY IfcMeasureWithUnit;
@@ -233,9 +234,9 @@ namespace OpenInfraPlatform
 					}
 
 					// (3/3) IfcSIUnit
-					std::shared_ptr<typename IfcEntityTypesT::IfcSIUnit> SIUnit =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSIUnit>(unit);
-					if (SIUnit)
+					//std::shared_ptr<typename IfcEntityTypesT::IfcSIUnit> SIUnit =
+						//std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSIUnit>(unit);
+					if (unit.isOfType<typename IfcEntityTypesT::IfcSIUnit>())
 					{
 						// ENTITY IfcSIUnit
 						//	SUBTYPE OF(IfcNamedUnit);
@@ -244,7 +245,7 @@ namespace OpenInfraPlatform
 						// DERIVE
 						//	SELF\IfcNamedUnit.Dimensions : IfcDimensionalExponents: = IfcDimensionsForSiUnit(SELF.Name);
 						// END_ENTITY;
-
+						EXPRESSReference<typename IfcEntityTypesT::IfcSIUnit> SIUnit = unit.as<typename IfcEntityTypesT::IfcSIUnit>();
 						// get the prefix factor
 						double dPrefixFactor = 1.;
 						if( SIUnit->Prefix)
@@ -317,7 +318,7 @@ namespace OpenInfraPlatform
 
 				\return The factor to obtain the SI equivalent unit.
 				*/
-				double convertUnit(const std::shared_ptr<typename IfcEntityTypesT::IfcDerivedUnit>& unit) const
+				double convertUnit(const EXPRESSReference<typename IfcEntityTypesT::IfcDerivedUnit>& unit) const
 				{
 					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcmeasureresource/lexical/ifcderivedunit.htm
 					// ENTITY IfcDerivedUnit;
@@ -343,7 +344,7 @@ namespace OpenInfraPlatform
 						//	Exponent: INTEGER;
 						// END_ENTITY;
 
-						double element_factor = convertUnit( unitElement->Unit.lock() );
+						double element_factor = convertUnit( unitElement->Unit);
 						factor *= pow(element_factor, unitElement->Exponent);
 					}
 
@@ -369,21 +370,21 @@ namespace OpenInfraPlatform
 					case 0:
 					{
 						// IfcDerivedUnit
-						auto& derivedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcDerivedUnit>>().lock();
+						auto& derivedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcDerivedUnit>>();
 
 						return convertUnit(derivedUnit); // call recursively the other overload
 					}
 					case 1:
 					{
 						// IfcMonetaryUnit
-						auto& monetaryUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcMonetaryUnit>>().lock();
+						auto& monetaryUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcMonetaryUnit>>();
 						BLUE_LOG(warning) << monetaryUnit->getErrorLog() << ": Not supported.";
 						break;
 					}
 					case 2:
 					{
 						// IfcNamedUnit
-						auto& namedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcNamedUnit>>().lock();
+						auto& namedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcNamedUnit>>();
 
 						return convertUnit(namedUnit); // call recursively the other overload
 					}
