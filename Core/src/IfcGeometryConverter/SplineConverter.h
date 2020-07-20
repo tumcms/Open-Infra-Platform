@@ -405,13 +405,13 @@ namespace OpenInfraPlatform
 					 * \return							Vector of evaluated basis functions, vector size is equal to number of control points.
 					 */
 					std::vector<double> computeBSplineBasisFunctions(
-						const uint8_t order, // k: order of basis and polynomial of degree k - 1
+						const int order, // k: order of basis and polynomial of degree k - 1
 						const double t, // t: arbitrary value on B-Spline curve
 						const uint32_t numControlPoints, // n + 1 control points
 						const std::vector<double>& knotVector // t_i: knot points
 					) throw(...)
 					{
-						const uint8_t degree = order - 1;
+						const int degree = order - 1;
 						const uint16_t numBasisFuncs = degree + numControlPoints;
 						const uint16_t numKnots = order + numControlPoints;
 						// create temporary basis functions of size k + n (or d + (n + 1), with d = k - 1)
