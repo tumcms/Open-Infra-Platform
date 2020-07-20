@@ -54,7 +54,7 @@ namespace OpenInfraPlatform
 
 					virtual ~SplineConverterT() {}
 
-					/*! \brief Converts \c IfcBSplineCurve subtypes to a vector of curve points, which can be print on the screen.
+					/*! \brief Converts \c IfcBSplineCurve subtypes to an array of curve points, which can be rendered in a viewport.
 					 *
 					 * This converter can handle
 					 * \c IfcBSplineCurveWithKnots and
@@ -62,7 +62,7 @@ namespace OpenInfraPlatform
 					 *
 					 * \param[in]	splineCurve		\c IfcBSplineCurve entity to be converted.
 					 * \param[in]	controlPoints	A vector of the B-Spline control points, must be obtain from the \c IfcBSplineCurve entity.
-					 * \param[out]	loops			The vector of curve points, which can be print on the screen.
+					 * \param[out]	loops			The array of curve points, which can be rendered in a viewport.
 					 */
 					void convertIfcBSplineCurve(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve,
@@ -277,7 +277,7 @@ namespace OpenInfraPlatform
 					 * \param[in]	controlPoints		The vector of the B-Spline control points.
 					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
 					 *
-					 * \return		The vector of curve points, which can be print on the screen after correction by \c GeomUtils::appendPointsToCurve.
+					 * \return		The array of curve points, which can be rendered in a viewport after correction by \c GeomUtils::appendPointsToCurve.
 					 */
 					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
 					std::vector<carve::geom::vector<3>> computeIfcBSplineCurveWithKnots(
@@ -336,7 +336,7 @@ namespace OpenInfraPlatform
 					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
 					 * \param[in]	weightsData			The vector with the wight values per knot, the function \c loadWeightsData gives this vector.
 					 *
-					 * \return		The vector of curve points, which can be print on the screen after correction by \c GeomUtils::appendPointsToCurve.
+					 * \return		The array of curve points, which can be rendered in a viewport after correction by \c GeomUtils::appendPointsToCurve.
 					 */
 					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
 					std::vector<carve::geom::vector<3>> computeIfcRationalBSplineCurveWithKnots(
