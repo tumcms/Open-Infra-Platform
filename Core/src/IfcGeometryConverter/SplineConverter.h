@@ -140,7 +140,7 @@ namespace OpenInfraPlatform
 						std::shared_ptr<carve::input::PolylineSetData>& polylineData) const throw(...)
 					{
 						// not implemented, code in commented out part at the end of the file
-						throw oip::UnhandledException("IfcBSplineSurface isn't implementet at the moment");
+						throw oip::UnhandledException(splineSurface);
 					}
 
 				private:
