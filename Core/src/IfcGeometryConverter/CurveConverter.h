@@ -1182,9 +1182,8 @@ namespace OpenInfraPlatform {
 					double horStartDistAlong = horizontal->StartDistAlong.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
 
 					// Segments type IfcAlignment2DHorizontalSegment L[1:?]
-					if (horizontal->Segments.empty()) {
+					if (horizontal->Segments.empty())
 						throw oip::InconsistentModellingException(horizontal, "No segments");
-					}
 
 					// is it going to be only a horizontal alignment?
 					bool bOnlyHorizontal = false;
@@ -1226,15 +1225,13 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<typename IfcEntityTypesT::IfcCurveSegment2D> horCurveGeometry = (*itHorizontalSegment)->CurveGeometry.lock();
 
 						// Get and interpret information from IfcCurveSegment2D.
-						if (!horCurveGeometry) {
+						if (!horCurveGeometry) 
 							throw oip::InconsistentModellingException(*itHorizontalSegment, "No curve geometry");
-						}
 
 						// SegmentLength type IfcPositiveLengthMeasure [1:1]
-						if (horCurveGeometry->SegmentLength <= 0) {
-							BLUE_LOG(error) << "Curve segment length is " << std::to_string(horCurveGeometry->SegmentLength) << " in " << horCurveGeometry->getErrorLog();
-							return;
-						}
+						if (horCurveGeometry->SegmentLength <= 0.) 
+							throw oip::InconsistentGeometryException(horCurveGeometry, "Curve segment length is " + std::to_string(horCurveGeometry->SegmentLength));
+						
 						double dHorizontalSegLength = horCurveGeometry->SegmentLength * UnitConvert()->getLengthInMeterFactor();
 						double dHorizontalSegEnd = dHorizontalSegStart + dHorizontalSegLength;
 
@@ -1276,8 +1273,7 @@ namespace OpenInfraPlatform {
 						}
 						else
 						{
-							BLUE_LOG(error) << (*itHorizontalSegment)->getErrorLog() << ": Could not determine tesselation values.";
-							return;
+							throw oip::InconsistentModellingException(*itHorizontalSegment, "Could not determine tesselation values.");
 						}
 
 						dHorizontalRadius *= UnitConvert()->getLengthInMeterFactor();
@@ -1301,10 +1297,9 @@ namespace OpenInfraPlatform {
 								dVerticalSegStart = (*itVerticalSegment)->StartDistAlong * UnitConvert()->getLengthInMeterFactor();
 
 								// HorizontalLength type IfcPositiveLengthMeasure [1:1]
-								if ((*itVerticalSegment)->HorizontalLength <= 0.0) {
-									BLUE_LOG(error) << (*itVerticalSegment)->getErrorLog() << ": Invalid horizontal length.";
-									return;
-								}
+								if ((*itVerticalSegment)->HorizontalLength <= 0.0) 
+									throw oip::InconsistentGeometryException(*itVerticalSegment, "Invalid horizontal length.");
+								
 								dVerticalSegLength = (*itVerticalSegment)->HorizontalLength * UnitConvert()->getLengthInMeterFactor();
 								dVerticalSegEnd = dVerticalSegStart + dVerticalSegLength;
 
@@ -1331,10 +1326,7 @@ namespace OpenInfraPlatform {
 
 								// option 8
 								if (dVerticalSegStart > dHorizontalSegEnd)
-								{
-									BLUE_LOG(error) << (*itVerticalSegment)->getErrorLog() << ": Invalid sequence of vertical elements.";
-									return;
-								}
+									throw oip::InconsistentModellingException(*itVerticalSegment, "Invalid sequence of vertical elements.");
 
 								// take the next element
 								if (bLoop)
@@ -1363,8 +1355,7 @@ namespace OpenInfraPlatform {
 							}
 							else
 							{
-								BLUE_LOG(error) << (*itVerticalSegment)->getErrorLog() << ": Could not determine tesselation values.";
-								return;
+								throw oip::InconsistentModellingException(*itVerticalSegment, "Could not determine tesselation values.");
 							}
 
 							dVerticalRadius *= UnitConvert()->getLengthInMeterFactor();
