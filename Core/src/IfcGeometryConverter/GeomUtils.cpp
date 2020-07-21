@@ -129,16 +129,25 @@ void GeomUtils::extrude(
 	{
 		std::cout << "extrude: face_loops_input.size() == 0" << std::endl;
 		return;
+		/*
+		throw oip::InconsistentModellingException(face_loops_input, "face_loops_input.size() == 0");
+		*/
 	}
 	if( poly_data->points.size() > 0 )
 	{
 		std::cout << "extrude: points vec should be empty" << std::endl;
 		return;
+		/*
+		throw oip::InconsistentModellingException(poly_data, "points vec should be empty");
+		*/
 	}
 	if( poly_data->getFaceCount() > 0 )
 	{
 		std::cout << "extrude: PolyhedronData::faceCount should be 0" << std::endl;
 		return;
+		/*
+		throw oip::InconsistentModellingException(poly_data, "PolyhedronData::faceCount should be 0");
+		*/
 	}
 
 	// figure 1: loops and indexes
@@ -159,6 +168,9 @@ void GeomUtils::extrude(
 
 		if( loop.size() < 3 )
 		{
+			/*
+			throw oip::InconsistentGeometryException(face_loops_input, "loop.size() < 3");
+			*/
 			err << "loop.size() < 3" << std::endl;
 			if( it_face_loops == face_loops_input.begin() )
 			{
@@ -198,6 +210,9 @@ void GeomUtils::extrude(
 		if( loop_2d.size() < 3 )
 		{
 			err << "extrude: loop_2d.size() < 3" << std::endl;
+			/*
+			throw oip::InconsistentGeometryException(face_loops_input, "loop_2d.size() < 3");
+			*/
 		}
 		
 		// close loop, insert first point at end if not already there
@@ -550,6 +565,9 @@ void GeomUtils::computeInverse( const carve::math::Matrix& matrix_a, carve::math
 		std::stringstream ss;
 		ss << "cannot compute inverse of matrix " << __FUNCTION__;
 		throw GeomException(ss.str());
+		/*
+		throw oip::InconsistentGeometryException(matrix_a, "cannot compute inverse of matrix ");
+		*/
 	}
 	
 	inv._11 = a[0][4];
@@ -588,6 +606,9 @@ void GeomUtils::closestPointOnLine( const carve::geom::vector<3>& point, const
 		ss << "Line is degenerated: the line's direction vector is a null vector! " 
 			<< __FUNCTION__;
 		throw GeomException(ss.str());
+		/*
+		throw oip::InconsistentGeometryException(line_direction, "Line is degenerated : the line's direction vector is a null vector!");
+		*/
 	}
 	double lambda = denom/numer;
 	closest = carve::geom::VECTOR(line_origin.x+lambda*line_direction.x, line_origin.y+lambda*line_direction.y, line_origin.z+lambda*line_direction.z);
@@ -609,6 +630,9 @@ void GeomUtils::closestPointOnLine( const buw::Vector3f& point,
 		ss << "Line is degenerated: the line's direction vector is a null vector! " 
 			<< __FUNCTION__;
 		throw GeomException(ss.str());
+		/*
+		throw oip::InconsistentGeometryException(line_direction, "Line is degenerated : the line's direction vector is a null vector!");
+		*/
 	}
 	double lambda = denom/numer;
 	closest = buw::Vector3f(line_origin.x()+lambda*line_direction.x(), line_origin.y()+lambda*line_direction.y(), line_origin.z()+lambda*line_direction.z());
@@ -632,6 +656,9 @@ bool GeomUtils::isPointOnLineSegment( double& target_lambda,
 		ss << "Line is degenerated: the line's direction vector is a null vector! " 
 			<< __FUNCTION__;
 		throw GeomException(ss.str());
+		/*
+		throw oip::InconsistentGeometryException(line_direction, "Line is degenerated : the line's direction vector is a null vector!");
+		*/
 	}
 	const double lambda = denom/numer;
 	buw::Vector3f closest( line_origin.x()+lambda*line_direction.x(), line_origin.y()+lambda*line_direction.y(), line_origin.z()+lambda*line_direction.z() );
