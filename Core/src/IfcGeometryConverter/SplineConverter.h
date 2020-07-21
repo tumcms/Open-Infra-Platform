@@ -28,53 +28,405 @@
 #include "GeometryInputData.h"
 #include "GeomUtils.h"
 
+#include "ConverterBase.h"
+#include "PlacementConverter.h"
+#include "CurveConverter.h"
+
 
 namespace OpenInfraPlatform
 {
 	namespace Core {
 		namespace IfcGeometryConverter {
+			/*! \brief Converter functionality for \c IfcBSplineCurve's and \c IfcBSplineSurface's subtypes.
+			*
+			* \param IfcEntityTypesT The IFC version templates
+			*/
 			template <
 				class IfcEntityTypesT
 			>
-			class SplineConverterT : public ConverterBaseT<IfcEntityTypesT> // TODO 2020.04.08.: spline converter does not apply length corrections
+			class SplineConverterT : public ConverterBaseT<IfcEntityTypesT> // TODO 2020.04.08.: spline converter does not apply length corrections: UnitConverter()->getLengthinMeterFactor()
 			{
 				public:
-					SplineConverterT() {}
+					SplineConverterT(
+						std::shared_ptr<GeometrySettings> geomSettings,
+						std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
+						std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> pc)
+						:
+						ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
+						placementConverter(pc)
+					{}
+
 					virtual ~SplineConverterT() {}
 
-					static void convertIfcBSplineCurve(
-						const std::shared_ptr<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve,
-						const std::vector<carve::geom::vector<3>>& controlPoints,
-						std::vector<carve::geom::vector<3>>& loops)
+					/*! \brief Converts \c IfcBSplineCurve subtypes to an array of curve points, which can be rendered in a viewport.
+					 *
+					 * This converter can handle
+					 * \c IfcBSplineCurveWithKnots and
+					 * \c IfcRationalBSplineCurveWithKnots, which are subtypes of IfcBSplineCurve.
+					 *
+					 * \param[in]	splineCurve		\c IfcBSplineCurve entity to be converted.
+					 * \param[out]	loops			The array of curve points, which can be rendered in a viewport.
+					 */
+					void convertIfcBSplineCurve(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve,
+						std::vector<carve::geom::vector<3>>& loops) const throw(...)
 					{
+						const int degree = splineCurve->Degree;
+						const int order = degree + 1;
+						const int numControlPoints = splineCurve->ControlPointsList.size();
+						const int numKnotsArray = order + numControlPoints;
+
+						CurveConverterT<IfcEntityTypesT> curveConverter(GeomSettings(), UnitConvert(), placementConverter);
+						const std::vector<carve::geom::vector<3>> controlPoints = curveConverter.convertIfcCartesianPointVector(splineCurve->ControlPointsList);
+
+						// IfcRationalBSplineCurveWithKnots is a subtype of IfcBSplineCurveWithKnots which is a subtype of IfcBSplineCurve, 
+						// it represents a rational B-Spline / a NURBS.
+						if (splineCurve.isOfType<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>())
+						{
+							const std::vector<double> knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
+							const std::vector<double> weightsData = loadWeightsData(splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>());
+
+							std::vector<carve::geom::vector<3>> curvePoints = computeIfcRationalBSplineCurveWithKnots(order, knotArray, controlPoints, numControlPoints, weightsData);
+
+							GeomUtils::appendPointsToCurve(curvePoints, loops);
+							// return loops;
+						}
+						// IfcBSplineCurveWithKnots is a subtype of IfcBSplineCurve, 
+						// it represents a B-Spline
+						else if (splineCurve.isOfType<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>())
+						{
+							const std::vector<double> knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
+
+							std::vector<carve::geom::vector<3>> curvePoints = computeIfcBSplineCurveWithKnots(order, knotArray, controlPoints, numControlPoints);
+
+							GeomUtils::appendPointsToCurve(curvePoints, loops);
+							// return loops;
+						}
+						// there is no further subtype, which is known now (ifc 4x3 RC 1)
+						else if (numControlPoints == order)
+						{
+							// if the number of control points is equal to the order ( = degree + 1 ), there are enough information 
+							// to calculate a Bezier Curve - but it isn't mentioned in the ifc documentation
+
+							// TODO: has to be implemented,
+							//       the knotArray has to be set in a specific way
+							//       with this special knotArray the function computeBSplineCurveWithKnots can be called for calculation
+
+							throw oip::UnhandledException(splineCurve);
+						}
+						// it's unknown what to do with this ifc entity
+						else
+						{
+							throw oip::UnhandledException(splineCurve);
+						}
 					}
 
-					static void convertIfcBSplineSurface(
+					/*! \brief Converts \c IfcBSplineSurface subtypes to ploylineSetData.
+					 *
+					 * This convert function can handle
+					 * \c IfcBSplineSurfaceWithKnots and
+					 * \c IfcRationalBSplineSurfaceWithKnots.
+					 *
+					 * \param[in]	splineSurface		\c IfcBSplineSurface entity to be converted.
+					 * \param[in]	controlPoints		A vector of the B-Spline control points, must be obtain from the \c IfcBSplineSurface entity.
+					 * \param[out]	polylineData		ploylineSetData (?)
+					 *
+					 * \note		At the moment, this converter isn't implemented.
+					 * \internal	The Code of the function is in the commented out part at the end of the file.
+					 */
+					void convertIfcBSplineSurface(
 						const std::shared_ptr<typename IfcEntityTypesT::IfcBoundedSurface>& splineSurface,
 						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
-						std::shared_ptr<carve::input::PolylineSetData>& polylineData)
+						std::shared_ptr<carve::input::PolylineSetData>& polylineData) const throw(...)
 					{
+						// not implemented, code in commented out part at the end of the file
+						throw oip::UnhandledException(splineSurface);
 					}
 
-					// Compute B-Spline basis functions for given curve value t
-					static void computeBSplineBasisFunctions(
-						const uint8_t order, // k: order of basis and polynomial of degree k - 1
+				private:
+
+					/*! \brief Loads the knot array from an \c IfcBSplineCurveWithKnots.
+					 *
+					 * \param[in]	bspline				The \c IfcBSplineCurveWithKnots entity from where the knots have to be loaded.
+					 * \param[in]	numKnotsArray		The total number of knots, which define the basis functions ( = order + total number of control points )
+					 *
+					 * \return		The array / vector of knots.
+					 */
+					std::vector<double> loadKnotArray(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline,
+						const int& numKnotsArray) const throw(...)
+					{
+						// check whether data in ifc matches the definition in documentation
+						if (bspline->KnotMultiplicities.size() != bspline->Knots.size())
+						{
+							//std::cout << "ERROR: knot multiplicity does not correspond number of knots" << std::endl;
+							throw oip::InconsistentModellingException(bspline, "Function convertIfcBSplineCurve::loadKnotArray: Knot multiplicity does not correspond number of distinct knots; unable to construct a knot array.");
+						}
+
+						std::vector<double> knots;
+						knots.resize(bspline->Knots.size());
+						std::transform(
+							bspline->Knots.begin(),
+							bspline->Knots.end(),
+							knots.begin(),
+							[](auto &it) { return it; });
+						// convert 'it' (Knots) from IfcParameterValue to double ?
+
+						std::vector<int> knotMults;
+						knotMults.resize(bspline->KnotMultiplicities.size());
+						std::transform(
+							bspline->KnotMultiplicities.begin(),
+							bspline->KnotMultiplicities.end(),
+							knotMults.begin(),
+							[](auto &it) -> int { return it; });
+						// convert 'it' (KnotMultiplicities) from IfcInteger to int ?
+
+						// preset target vector
+						std::vector<double> knotArray;
+						knotArray.reserve(numKnotsArray);
+
+						// obtain knots
+						for (int i = 0; i < knots.size(); ++i)
+						{
+							const double knot = knots[i];
+							const int knotMult = knotMults[i];
+							// look at the multiplicity of the current knot
+							for (int j = 0; j < knotMult; ++j)
+							{
+								knotArray.push_back(knot);
+							}
+						}
+
+						return knotArray;
+					}
+
+					/*! \brief Loads the knot weights from an \c IfcRationalBSplineCurveWithKnots.
+					 *
+					 * \param[in]	rationalBSplineCurve	The \c IfcRationalBSplineCurveWithKnots entity from where the weights have to be loaded.
+					 *
+					 * \return		The vector of weights per knot.
+					 */
+					std::vector<double> loadWeightsData(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve) const throw(...)
+					{
+						std::vector<double> weightsData;
+
+						weightsData.resize(rationalBSplineCurve->WeightsData.size());
+						std::transform(
+							rationalBSplineCurve->WeightsData.begin(),
+							rationalBSplineCurve->WeightsData.end(),
+							weightsData.begin(),
+							[](auto &it) -> double { return it; });
+						// convert 'it' (WeightsData) from IfcReal to double ?
+
+						return weightsData;
+					}
+					
+					/*! \brief Obtains the range of knot values and the step size of curve parameter t.
+					 *
+					 * \param[in]	order			Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	knotArray		The array / vector of knots, the function \c loadKnotArray gives this vector.
+					 * \param[in]	numCurvePoints	The number of curve points where the curve c(t) has to be evaluated.
+					 *
+					 * \return		First valid knot value, correspondes to t_start
+					 * \return		Last valid knot value, correspondes to t_end
+					 * \return		Step size of curve parameter t between start and end
+					 */
+					std::tuple<double, double, double> obtainKnotRange(
+						const uint8_t& order, 
+						const std::vector<double>& knotArray,
+						const uint32_t& numCurvePoints) const throw(...)
+					{
+						// curve is defined for [t_p;t_m-p], m := number of knots - 1
+						const uint32_t firstIndex = order - 1;
+						const uint32_t lastIndex = knotArray.size() - order;
+
+						const double knotStart = knotArray[firstIndex];
+						const double knotEnd = knotArray[lastIndex];
+						const double knotRange = knotEnd - knotStart;
+
+						// compute step size
+						const double step = knotRange / static_cast<double>(numCurvePoints - 1);
+
+						return { knotStart, knotEnd, step };
+					}
+
+					/*! \brief Loads general properties, which are used in the calculation.
+					 *
+					 * \param[in]	numKnotsArray	The total number of knots, which define the basis functions ( = order + total number of control points )
+					 *
+					 * \return		Number of curve points
+					 * \return		Accuracy which is technically needed in the calculation.
+					 *
+					 * \note	The number of curve points \c numCurvePoints, where the curve c(t) has to be evaluated,
+					 *			is temporary preset with a default value proportional to the number of knots.
+					 */
+					std::tuple<const uint32_t, const double> obtainProperties(const int& numKnotsArray) const throw(...)
+					{
+						// ! TEMPORARY default number of curve points
+						const uint32_t numCurvePoints = numKnotsArray * 10;
+
+						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
+						//const double accuracy = 0.0000001;
+						double accuracy = GeomSettings()->getPrecision();
+
+						return { numCurvePoints, accuracy };
+					}
+
+					/*! \brief Computes the curve points of the B-Spline.
+					 *
+					 * All information has to be loaded from an \c IfcBSplineCurveWithKnots entity before calling this function.
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
+					 * \param[in]	controlPoints		The vector of the B-Spline control points.
+					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+					 *
+					 * \return		The array of curve points, which can be rendered in a viewport after correction by \c GeomUtils::appendPointsToCurve.
+					 */
+					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
+					std::vector<carve::geom::vector<3>> computeIfcBSplineCurveWithKnots(
+						const int& order,
+						const std::vector<double>& knotArray,
+						const std::vector<carve::geom::vector<3>>& controlPoints,
+						const int& numControlPoints) const throw(...)
+					{
+						uint32_t numCurvePoints;
+						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
+						double accuracy;
+						std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
+
+						// The following parameters corresponds to the parameter t of a curve c(t)
+						double knotStart;
+						double knotEnd;
+						double step;
+						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
+
+						std::vector<double> basisFuncs;
+
+						std::vector<carve::geom::vector<3>> curvePoints;
+						curvePoints.reserve(numCurvePoints);
+
+						// start with first valid knot
+						double t = knotStart;
+
+						for (size_t i = 0; i < numCurvePoints; ++i) {
+							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
+
+							// 1) Evaluate basis functions at curve point t
+							basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
+							// 2) Compute exact point
+							carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+
+							for (int j = 0; j < numControlPoints; ++j) 
+							{
+								// 3b) apply formula for normal B-spline curves
+								point += basisFuncs[j] * controlPoints[j];
+							}
+
+							curvePoints.push_back(point);
+							t += step;
+						}
+
+						return curvePoints;
+					}
+
+					/*! \brief Computes the curve points of the rational B-Spline.
+					 *
+					 * All information has to be loaded from an \c IfcRationalBSplineCurveWithKnots entity before calling this function.
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
+					 * \param[in]	controlPoints		The vector of the B-Spline control points.
+					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+					 * \param[in]	weightsData			The vector with the wight values per knot, the function \c loadWeightsData gives this vector.
+					 *
+					 * \return		The array of curve points, which can be rendered in a viewport after correction by \c GeomUtils::appendPointsToCurve.
+					 */
+					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
+					std::vector<carve::geom::vector<3>> computeIfcRationalBSplineCurveWithKnots(
+						const int& order,
+						const std::vector<double>& knotArray,
+						const std::vector<carve::geom::vector<3>>& controlPoints,
+						const int& numControlPoints,
+						const std::vector<double>& weightsData) const throw(...)
+					{
+						uint32_t numCurvePoints;
+						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
+						double accuracy;
+						std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
+
+						// The following parameters corresponds to the parameter t of a curve c(t)
+						double knotStart;
+						double knotEnd;
+						double step;
+						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
+
+						std::vector<double> basisFuncs;
+
+						std::vector<carve::geom::vector<3>> curvePoints;
+						curvePoints.reserve(numCurvePoints);
+
+						// start with first valid knot
+						double t = knotStart;
+
+						for (size_t i = 0; i < numCurvePoints; ++i) {
+							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
+
+							// 1) Evaluate basis functions at curve point t
+							basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
+							// 2) Compute exact point
+							carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+							// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
+							double weightSum = 0.0;
+
+							for (int j = 0; j < numControlPoints; ++j)
+							{
+								// 3a) apply formula for rational B-spline surfaces
+								const double weightProduct = weightsData[j] * basisFuncs[j];
+								point += weightProduct * controlPoints[j];
+								weightSum += weightProduct;
+							}
+
+							point /= weightSum;
+
+							curvePoints.push_back(point);
+							t += step;
+						}
+
+						return curvePoints;
+					}
+
+					/*! \brief Computes the B-Spline basis functions for given curve value t.
+					 *
+					 * For one specific value of t the function composes and evaluates the basis functions (=blending functions) of a B-Spline.
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	t					Evaluation point of the curve c(t)
+					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+					 * \param[in]	knotVector			The array / vector of knots obtained from \c IfcBSplineCurveWithKnots,
+					 *									the function \c loadKnotArray gives this vector.
+					 *
+					 * \return							Vector of evaluated basis functions, vector size is equal to number of control points.
+					 */
+					std::vector<double> computeBSplineBasisFunctions(
+						const int order, // k: order of basis and polynomial of degree k - 1
 						const double t, // t: arbitrary value on B-Spline curve
 						const uint32_t numControlPoints, // n + 1 control points
-						const std::vector<double>& knotVector, // t_i: knot points
-						std::vector<double>& basisFuncs)
+						const std::vector<double>& knotVector // t_i: knot points
+					) const throw(...)
 					{
-						const uint8_t degree = order - 1;
+						const int degree = order - 1;
 						const uint16_t numBasisFuncs = degree + numControlPoints;
 						const uint16_t numKnots = order + numControlPoints;
 						// create temporary basis functions of size k + n (or d + (n + 1), with d = k - 1)
 						std::vector<double> tempBasisFuncs(numBasisFuncs, 0.0);
 
 						// intialize first order basis functions
-						for(auto i = 0; i < numBasisFuncs; ++i) {
+						for (auto i = 0; i < numBasisFuncs; ++i) {
 							const double knot = knotVector[i];
 							const double knotNext = knotVector[i + 1];
-							if(t >= knot && t < knotNext && knot < knotNext) {
+							if (t >= knot && t < knotNext && knot < knotNext) {
 								tempBasisFuncs[i] = 1.0;
 							}
 						}
@@ -83,21 +435,21 @@ namespace OpenInfraPlatform
 						double basisFuncSecond = 0.0;
 
 						// build basis functions of higher order up-to order = degree
-						for(int k = 1; k <= degree; ++k) {
-							for(int i = 0; i < numBasisFuncs - k; ++i) {
+						for (int k = 1; k <= degree; ++k) {
+							for (int i = 0; i < numBasisFuncs - k; ++i) {
 								const double t_i = knotVector[i];
 								const double t_ik = knotVector[i + k];
 								const double t_ik1 = knotVector[i + k + 1];
 								const double t_i1 = knotVector[i + 1];
 								// function is zero if basis is zero or denominator is zero
-								if(tempBasisFuncs[i] == 0 || t_ik == t_i) { basisFuncFirst = 0.0; }
+								if (tempBasisFuncs[i] == 0 || t_ik == t_i) { basisFuncFirst = 0.0; }
 								else {
 									// apply formula of first part
 									basisFuncFirst = (t - t_i) / (t_ik - t_i) * tempBasisFuncs[i];
 								}
 
 								// function is zero if basis is zero or denominator is zero
-								if(tempBasisFuncs[i + 1] == 0 || t_ik1 == t_i1) { basisFuncSecond = 0.0; }
+								if (tempBasisFuncs[i + 1] == 0 || t_ik1 == t_i1) { basisFuncSecond = 0.0; }
 								else {
 									// apply formula of first part
 									basisFuncSecond = (t_ik1 - t) / (t_ik1 - t_i1) * tempBasisFuncs[i + 1];
@@ -108,15 +460,18 @@ namespace OpenInfraPlatform
 							}
 						}
 
+						std::vector<double> basisFuncs;
+						basisFuncs.reserve(numControlPoints);
 						const uint32_t numBasis = numControlPoints;
-						for(int j = 0; j < numBasis; ++j) {
+						for (size_t j = 0; j < numBasis; ++j) {
 							basisFuncs[j] = tempBasisFuncs[j];
 						}
+						return basisFuncs;
 					}
 
 					// B-Spline surface definition according to: 
 					// http://www.buildingsmart-tech.org/ifc/IFC4/final/html/schema/ifcgeometryresource/lexical/ifcbsplinesurface.htm
-					static void computeBSplineSurface(
+					void computeBSplineSurface(
 						const uint8_t orderU,
 						const uint8_t orderV,
 						const uint32_t numCurvePointsU,
@@ -127,7 +482,7 @@ namespace OpenInfraPlatform
 						const std::vector<std::vector<double>>& weights,
 						const std::vector<double>& knotVectorU,
 						const std::vector<double>& knotVectorV,
-						std::vector<carve::geom::vector<3>>& curvePoints)
+						std::vector<carve::geom::vector<3>>& curvePoints) const throw(...)
 					{
 						// curve is defined for [t_p;t_m-p], m := number of knots - 1
 						const uint32_t firstIndexU = orderU - 1;
@@ -155,13 +510,13 @@ namespace OpenInfraPlatform
 						// start with first valid knot in each direction
 						double tV = knotStartV;
 
-						for(int j = 0; j < numCurvePointsV; ++j) {
-							if(j == numCurvePointsV - 1) { tV = knotEndV - accuracy; }
+						for (int j = 0; j < numCurvePointsV; ++j) {
+							if (j == numCurvePointsV - 1) { tV = knotEndV - accuracy; }
 
 							double tU = knotStartU;
 
-							for(int i = 0; i < numCurvePointsU; ++i) {
-								if(i == numCurvePointsU - 1) { tU = knotEndU - accuracy; }
+							for (int i = 0; i < numCurvePointsU; ++i) {
+								if (i == numCurvePointsU - 1) { tU = knotEndU - accuracy; }
 
 								// 1) Evaluate basis functions at curve point tU and tV
 								computeBSplineBasisFunctions(orderU, tU, numControlPointsU, knotVectorU, basisFuncsU);
@@ -173,14 +528,14 @@ namespace OpenInfraPlatform
 								// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
 								double weightSum = 0.0;
 
-								for(int x = 0; x < numControlPointsU; ++x) {
+								for (int x = 0; x < numControlPointsU; ++x) {
 									const double basisFuncU = basisFuncsU[x];
 
-									for(int y = 0; y < numControlPointsV; ++y) {
+									for (int y = 0; y < numControlPointsV; ++y) {
 										const double basisFuncV = basisFuncsV[y];
 										const carve::geom::vector<3>& controlPoint = controlPoints[x][y];
 
-										if(!weights.empty()) {
+										if (!weights.empty()) {
 											// 3a) apply formula for rational B-spline surfaces
 											const double weightProduct = weights[x][y] * basisFuncU * basisFuncV;
 											point += weightProduct * controlPoint;
@@ -193,7 +548,7 @@ namespace OpenInfraPlatform
 									}
 								}
 
-								if(!weights.empty()) {
+								if (!weights.empty()) {
 									point /= weightSum;
 								}
 
@@ -206,139 +561,12 @@ namespace OpenInfraPlatform
 						}
 					}
 
+				protected:
 
-					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
-					static void computeBSplineCurve(
-						const uint8_t order,
-						const uint32_t numCurvePoints,
-						const uint32_t numControlPoints,
-						const std::vector<carve::geom::vector<3>>& controlPoints,
-						const std::vector<double>& weights,
-						const std::vector<double>& knotVector,
-						std::vector<carve::geom::vector<3>>& curvePoints)
-					{
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
 
-						// curve is defined for [t_p;t_m-p], m := number of knots - 1
-						const uint32_t firstIndex = order - 1;
-						const uint32_t lastIndex = knotVector.size() - order;
+			}; // end class SplineConverterT
 
-						const double knotStart = knotVector[firstIndex];
-						const double knotEnd = knotVector[lastIndex];
-						const double knotRange = knotEnd - knotStart;
-
-						// compute step size
-						const double step = knotRange / static_cast<double>(numCurvePoints - 1);
-
-						std::vector<double> basisFuncs(numControlPoints, 0.0);
-						// start with first valid knot
-						double t = knotStart;
-						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
-						const double accuracy = 0.0000001;
-
-						for(auto i = 0; i < numCurvePoints; ++i) {
-							if(i == numCurvePoints - 1) { t = knotEnd - accuracy; }
-
-							// 1) Evaluate basis functions at curve point t
-							computeBSplineBasisFunctions(order, t, numControlPoints, knotVector, basisFuncs);
-							// 2) Compute exact point
-							carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
-							// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
-							double weightSum = 0.0;
-
-							for(int j = 0; j < numControlPoints; ++j) {
-								const double basisFunc = basisFuncs[j];
-								const carve::geom::vector<3>& controlPoint = controlPoints[j];
-
-								if(!weights.empty()) {
-									// 3a) apply formula for rational B-spline surfaces
-									const double weightProduct = weights[j] * basisFunc;
-									point += weightProduct * controlPoint;
-									weightSum += weightProduct;
-								}
-								else {
-									// 3b) apply formula for normal B-spline curves
-									point += basisFunc * controlPoint;
-								}
-
-							}
-
-							if(!weights.empty()) {
-								point /= weightSum;
-							}
-
-							curvePoints.push_back(point);
-
-							t += step;
-						}
-					}
-
-				private:
-
-			};
-
-			//template<>
-			//inline void SplineConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::convertIfcBSplineCurve(
-			//	const std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineCurve>& splineCurve,
-			//	const std::vector<carve::geom::vector<3>>& controlPoints,
-			//	std::vector<carve::geom::vector<3>>& loops)
-			//{
-			//	const int degree = splineCurve->m_Degree;
-			//	const int order = degree + 1;
-			//	const int numControlPoints = splineCurve->m_ControlPointsList.size();
-			//	const int numKnots = order + numControlPoints;
-			//
-			//	std::vector<double> knots;
-			//	knots.reserve(numKnots);
-			//
-			//	std::vector<double> weights;
-			//
-			//	std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots> rationalBSplineCurve =
-			//		std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineCurveWithKnots>(splineCurve);
-			//
-			//	if (rationalBSplineCurve)
-			//	{
-			//		//std::cout << "ERROR: IfcRationalBSplineCurveWithKnots not implemented" << std::endl;
-			//		weights = rationalBSplineCurve->m_WeightsData;
-			//	}
-			//
-			//	std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots> bspline =
-			//		std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineCurveWithKnots>(splineCurve);
-			//
-			//	if (bspline)
-			//	{
-			//		const std::vector<int>& knotMults = bspline->m_KnotMultiplicities;
-			//		const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnots = bspline->m_Knots;
-			//		//const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcCartesianPoint>>& splinePoints = bspline->m_ControlPointsList;
-			//
-			//		if (knotMults.size() != splineKnots.size()) 
-			//		{ 
-			//			std::cout << "ERROR: knot multiplicity does not correspond number of knots" << std::endl;
-			//			return; 
-			//		}
-			//
-			//		// obtain knots
-			//		for (int i = 0; i < splineKnots.size(); ++i)
-			//		{
-			//			double knot = splineKnots[i]->m_value;
-			//			const int knotMult = knotMults[i];
-			//			// look at the multiplicity of the current knot
-			//			for (int j = 0; j < knotMult; ++j)
-			//			{
-			//				knots.push_back(knot);
-			//			}
-			//		}
-			//
-			//		//! TEMPORARY default number of curve points
-			//		const uint8_t numCurvePoints = numKnots * 10;
-			//		std::vector<carve::geom::vector<3>> curvePoints;
-			//		curvePoints.reserve(numCurvePoints);
-			//		
-			//		computeBSplineCurve(order, numCurvePoints, numControlPoints, controlPoints, weights, knots, curvePoints);
-			//
-			//		GeomUtils::appendPointsToCurve(curvePoints, loops);
-			//	}
-			//}
-			//
 			//template<>
 			//inline void SplineConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::convertIfcBSplineSurface(
 			//	const std::shared_ptr<emt::Ifc4EntityTypes::IfcBoundedSurface>& splineSurfaceWithKnots,
