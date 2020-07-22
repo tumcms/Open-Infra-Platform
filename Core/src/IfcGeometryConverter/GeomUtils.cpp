@@ -1043,6 +1043,9 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 	// check opening polyhedron
 	if( !mesh_set )
 	{
+		/*
+		throw oip::InconsistentModellingException(mesh_set, "MeshSet of resulting mesh not valid");
+		*/
 #ifdef _DEBUG
 		if (entity_id == -1) 
 			err_poly << "MeshSet of resulting mesh not valid" << std::endl;
@@ -1053,6 +1056,9 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 	}
 	if( mesh_set->meshes.size() == 0 )
 	{
+		/*
+		throw oip::InconsistentModellingException(mesh_set, "MeshSet of resulting mesh is empty");
+		*/
 #ifdef _DEBUG
 		if (entity_id == -1) 
 			err_poly << "MeshSet of resulting mesh is empty" << std::endl;
@@ -1201,6 +1207,9 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 
 	if( err.tellp() > 0 )
 	{
+		/*
+		throw oip::InconsistentModellingException(mesh_set, "MeshSet of resulting mesh has problems");
+		*/
 #ifdef _DEBUG
 		if (entity_id == -1) {
 			err_poly << "MeshSet of resulting mesh has problems:" << std::endl;
