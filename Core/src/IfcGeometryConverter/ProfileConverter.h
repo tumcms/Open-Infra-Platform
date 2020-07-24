@@ -469,8 +469,51 @@ namespace OpenInfraPlatform {
 			void convertIfcOpenCrossProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcOpenCrossProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
-				throw oip::UnhandledException(profileDef);
+				if (profileDef->expired())
+					throw oip::ReferenceExpiredException(profileDef);
+
+				std::vector<carve::geom::vector<2>> outer_loop;
+
+				bool horizontal = profileDef->HorizontalWidths;
+				vector<double> b = profileDef->Widths * UnitConvert()->getLengthInMeterFactor();
+				vector<double> slope = profileDef->Slopes * UnitConvert()->getAngleInRadianFactor();
+
+				if (sizeof(b) != sizeof(slope)) {
+					throw oip::InconsistentModellingException(profileDef, "Number of Widths is not even to number of Slopes");
+				}
+				else {
+					double TagX = 0.0;
+					double TAgY = 0.0;
+
+					for (int i = 0; i < sizeof(b) / 8; i++) {
+						paths.push_back(carve::geom::VECTOR(TagX, TagY));
+						double x, y = AddXYCoordinates(horizontal, b(i), slope(i));
+						TagX = TagX + x;
+						TagY = TagY + y;
+					}
+
+				paths.push_back(carve::geom::VECTOR(TagX, TagY));
+				}
 			}
+
+			double AddXYCoordinates(bool horizontal, double b, double slope) const {
+				if (horizontal) {
+					if (slope == M_PI_2) {
+						throw oip::InconsistentGeometryException(profileDef, "slope can not be 90 degree");
+					}
+					else
+					{
+						double x = b;
+						double y = b / tan(slope);
+					}
+				}
+				else {
+					double x = b * cos(slope);
+					double y = b * sin(slope);
+				}
+				return x, y;
+			}
+
 			/*! \brief  Defines a 2D position coordinate system to which the parameters of the different profiles relate to.
 			*  \param[in] profileDef A pointer to data from IfcProfileDef.
 			*  \param[out] paths A pointer to be filled with the relevant data
