@@ -475,11 +475,25 @@ namespace OpenInfraPlatform {
 				std::vector<carve::geom::vector<2>> outer_loop;
 
 				bool horizontal = profileDef->HorizontalWidths;
-				vector<double> b = profileDef->Widths * UnitConvert()->getLengthInMeterFactor();
-				vector<double> slope = profileDef->Slopes * UnitConvert()->getAngleInRadianFactor();
 
-				if (sizeof(b) != sizeof(slope)) {
-					throw oip::InconsistentModellingException(profileDef, "Number of Widths is not even to number of Slopes");
+				std::vector<double> widths;
+				widths.reserve(profileDef->Widths.size());
+				std::transform(
+					profileDef->Widths.begin(),
+					profileDef->Widths.end(),
+					widths.begin(),
+					[](auto& it) {return it * UnitConvert()->getLengthInMeterFactor(); });
+
+				std::vector<double> slopes;
+				slopes.reserve(profileDef->Slopes.size());
+				std::transform(
+					profileDef->Slopes.begin(),
+					profileDef->Slopes.end(),
+					slopes.begin(),
+					[](auto& it) {return it * UnitConvert()->getAngleInRadianFactor(); });
+
+				if (widths.size() != slopes.size()) {
+					throw oip::InconsistentModellingException(profileDef, "Number of Widths is not equal to the number of Slopes");
 				}
 				else {
 					double TagX = 0.0;
