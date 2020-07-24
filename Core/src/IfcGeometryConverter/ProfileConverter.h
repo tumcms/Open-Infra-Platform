@@ -499,33 +499,34 @@ namespace OpenInfraPlatform {
 					double TagX = 0.0;
 					double TAgY = 0.0;
 
-					for (int i = 0; i < sizeof(b) / 8; i++) {
+					for (int i = 0; i < widths.size(); i++) {
 						paths.push_back(carve::geom::VECTOR(TagX, TagY));
-						double x, y = AddXYCoordinates(horizontal, b(i), slope(i));
+						std::tuple<double,double>(x, y) = AddXYCoordinates(horizontal, widths[i], slopes[i]);
 						TagX = TagX + x;
 						TagY = TagY + y;
 					}
 
-				paths.push_back(carve::geom::VECTOR(TagX, TagY));
+					paths.push_back(carve::geom::VECTOR(TagX, TagY));
 				}
 			}
 
-			double AddXYCoordinates(bool horizontal, double b, double slope) const {
+			std::tuple<double,double> AddXYCoordinates(const bool& horizontal, const double& width, const double& slope) const throw(...) {
 				if (horizontal) {
 					if (slope == M_PI_2) {
 						throw oip::InconsistentGeometryException(profileDef, "slope can not be 90 degree");
 					}
 					else
 					{
-						double x = b;
-						double y = b / tan(slope);
+						double x = width;
+						double y = width / tan(slope);
+						return std::tuple<double, double>(x, y);
 					}
 				}
 				else {
-					double x = b * cos(slope);
-					double y = b * sin(slope);
+					double x = width * cos(slope);
+					double y = width * sin(slope);
+					return std::tuple<double,double>(x, y);
 				}
-				return x, y;
 			}
 
 			/*! \brief  Defines a 2D position coordinate system to which the parameters of the different profiles relate to.
