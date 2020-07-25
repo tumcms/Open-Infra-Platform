@@ -1,6 +1,5 @@
 # Contributors of TUM Open Infra Platform
 
-***
 ## Current team
 
 | Name                          | Role                              | Affiliation                       |
@@ -14,28 +13,29 @@
 | Enrique Valero Rodriguez      | Developer                         | University of Edinburgh           |
 | Dibya Mohanty                 | Developer                         | University of Edinburgh           |
 
-***
 ## Former contributors
+
+Listed alphabetically.
 
 | Name                          | Role                              |
 |-------------------------------|-----------------------------------|
 | Julian Amann                  | Product owner & Project manager   |
-| Fabian Schoettl               | Lead developer                    |
-| Javier Jubierre               | User experience engineer          |
-| Dominic Singer                | Project manager                   |
-| Fabian Ritter                 | Project manager                   |
-| Alexander Widner              | Developer                         |
-| Michael Kern                  | Developer                         |
 | Daniel Below                  | Developer                         |
-| Patrick Geisler               | Developer                         |
-| Nishant Gupta                 | Developer                         |
-| Ahmed Mustafa                 | Developer                         |
-| Lena Fuchs                    | Developer                         |
-| Rebecca Schill                | Developer                         |
-| Ugur Buyukdurak               | Developer                         |
-| Max Werner                    | Developer                         |
 | Marcus Boeckle                | Developer                         |
-| Felix Rampf                   | Developer                         |
-| Frederic Gillioz              | Developer                         |
+| Ugur Buyukdurak               | Developer                         |
 | Lucas Duckerschein            | Developer                         |
+| Lena Fuchs                    | Developer                         |
+| Patrick Geisler               | Developer                         |
+| Frederic Gillioz              | Developer                         |
+| Nishant Gupta                 | Developer                         |
+| Javier Jubierre               | User experience engineer          |
+| Michael Kern                  | Developer                         |
+| Ahmed Mustafa                 | Developer                         |
+| Felix Rampf                   | Developer                         |
+| Fabian Ritter                 | Project manager                   |
+| Rebecca Schill                | Developer                         |
+| Fabian Schoettl               | Lead developer                    |
 | Michael Sedlmair              | Developer                         |
+| Dominic Singer                | Project manager                   |
+| Max Werner                    | Developer                         |
+| Alexander Widner              | Developer                         |
