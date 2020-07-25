@@ -495,32 +495,26 @@ namespace OpenInfraPlatform {
 				if (widths.size() != slopes.size()) {
 					throw oip::InconsistentModellingException(profileDef, "Number of Widths is not equal to the number of Slopes");
 				}
-				else {
-					double TagX = 0.0;
-					double TAgY = 0.0;
+				double TagX = 0.0;
+				double TAgY = 0.0;
 
-					for (int i = 0; i < widths.size(); i++) {
-						paths.push_back(carve::geom::VECTOR(TagX, TagY));
-						std::tuple<double,double>(x, y) = AddXYCoordinates(horizontal, widths[i], slopes[i]);
-						TagX = TagX + x;
-						TagY = TagY + y;
-					}
-
+				for (int i = 0; i < widths.size(); i++) {
 					paths.push_back(carve::geom::VECTOR(TagX, TagY));
+					std::tie(x, y) = CalculateXYFromPolar(horizontal, widths[i], slopes[i]);
+					TagX = TagX + x;
+					TagY = TagY + y;
 				}
+				paths.push_back(carve::geom::VECTOR(TagX, TagY));
 			}
 
-			std::tuple<double,double> AddXYCoordinates(const bool& horizontal, const double& width, const double& slope) const throw(...) {
+			std::tuple<double,double> CalculateXYFromPolar(const bool& horizontal, const double& width, const double& slope) const throw(...) {
 				if (horizontal) {
 					if (slope == M_PI_2) {
 						throw oip::InconsistentGeometryException(profileDef, "slope can not be 90 degree");
 					}
-					else
-					{
-						double x = width;
-						double y = width / tan(slope);
-						return std::tuple<double, double>(x, y);
-					}
+					double x = width;
+					double y = width / tan(slope);
+					return std::tuple<double, double>(x, y);
 				}
 				else {
 					double x = width * cos(slope);
