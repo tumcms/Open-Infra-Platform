@@ -186,6 +186,7 @@ namespace OpenInfraPlatform
 			//TO DO: it has to work for ssh
 			carve::math::Matrix convertIfcOrientationExpression(
 				const carve::geom::vector<3> directionOfCurve,
+				const bool fixed_axis_vertical,
 				const carve::geom::vector<3> translate = carve::geom::VECTOR(0., 0., 0.)
 			) const throw(...)
 			{
@@ -193,30 +194,29 @@ namespace OpenInfraPlatform
 			
 
 				// defaults
-				carve::geom::vector<3> local_x = carve::geom::VECTOR(1.0, 0.0, 0.0);
+				/*carve::geom::vector<3> local_x = carve::geom::VECTOR(1.0, 0.0, 0.0);
 				carve::geom::vector<3> local_y = carve::geom::VECTOR(0.0, 1.0, 0.0);
-				carve::geom::vector<3> local_z = carve::geom::VECTOR(0.0, 0.0, 1.0);
+				carve::geom::vector<3> local_z = carve::geom::VECTOR(0.0, 0.0, 1.0);*/
 
 				
-				// convert the attributes /erster versuch...
-				//local_y = carve::geom::VECTOR(0.0, directionOfCurve.y, 0.0);
-				//local_z = carve::geom::VECTOR(0.0, 0.0, directionOfCurve.z);
-				//local_x = carve::geom::cross(local_y, local_z);
+				// convert the attributes /
 
-				//// correct the x-direction / zweiter versuch?
+				// correct the x-direction / zweiter versuch?
 				//carve::geom::vector<3> curve_x(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, alongHorizontal ? 0.0 : directionOfCurve.z));
-				//// get the perpendicular to the left of the curve in the x-y plane (curve's coordinate system)
-				//carve::geom::vector<3> curve_y(carve::geom::VECTOR(-curve_x.y, curve_x.x, 0.0)); // always lies in the x-y plane
-				//// get the vertical as cross product
-				//carve::geom::vector<3> curve_z = carve::geom::cross(curve_x, curve_y);
-				//// normalize the direction vectors
-				//curve_x.normalize();
-				//curve_y.normalize();
-				//curve_z.normalize();
+				carve::geom::vector<3> local_x(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, fixed_axis_vertical ? 0.0 : directionOfCurve.z));
 
-				local_x = carve::geom::VECTOR(directionOfCurve.x, 0.0, 0.0);
-				local_y = carve::geom::VECTOR(0.0, directionOfCurve.y, 0.0);
-				local_z = carve::geom::cross(local_x, local_y);
+				// get the perpendicular to the left of the curve in the x-y plane (curve's coordinate system)
+				//carve::geom::vector<3> curve_y(carve::geom::VECTOR(-curve_x.y, curve_x.x, 0.0)); // always lies in the x-y plane
+				carve::geom::vector<3> local_y(carve::geom::VECTOR(-local_x.y, local_x.x, 0.0)); // always lies in the x-y plane
+
+				// get the vertical as cross product
+				//carve::geom::vector<3> curve_z = carve::geom::cross(curve_x, curve_y);
+				carve::geom::vector<3> local_z = carve::geom::cross(local_x, local_y);
+
+				// normalize the direction vectors
+				local_x.normalize();
+				local_y.normalize();
+				local_z.normalize();
 
 			// normalize local_x, local_y, local_z ?
 
@@ -387,7 +387,7 @@ namespace OpenInfraPlatform
 					            // the position on the curve = pointOnCurve
 					            // the offsets = offsetFromCurve
 								carve::geom::vector<3> translate = CrossSectionPoints[pos] + localPlacementMatrix[pos] * offsetFromCurve[pos];
-								carve::math::Matrix object_placement_matrix_pos = convertIfcOrientationExpression(directionsOfCurve[pos], translate);
+								carve::math::Matrix object_placement_matrix_pos = convertIfcOrientationExpression(directionsOfCurve[pos], fixed_axis_vertical, translate);
 								object_placement_matrix.push_back(object_placement_matrix_pos);
 							}
 							
@@ -435,8 +435,8 @@ namespace OpenInfraPlatform
 								{
 									carve::geom::vector<2>& point = loop[k];
 									//carve::geom::vector<3>  Tpoint = localPlacementMatrix[0] *offsetFromCurve[0] + points_for_tesselation[0] + carve::geom::VECTOR(point.x, point.y, 0);
-									carve::geom::vector<3> Tpoint = localPlacementMatrix[0] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[0]) + points_for_tesselation[0]; // worked in 2 D
-									//carve::geom::vector<3> Tpoint = object_placement_matrix[0] * (carve::geom::VECTOR(point.x, point.y, 0)); //neuer ansatz falls Objekt..funktioniert
+									//carve::geom::vector<3> Tpoint = localPlacementMatrix[0] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[0]) + points_for_tesselation[0]; // worked in 2 D
+									carve::geom::vector<3> Tpoint = object_placement_matrix[0] * (carve::geom::VECTOR(point.x, point.y, 0)); //neuer ansatz falls Objekt..funktioniert
 									Tloop.push_back(Tpoint);
 								}
 								TFcompositeprofile.push_back(Tloop);
@@ -466,7 +466,8 @@ namespace OpenInfraPlatform
 										{
 											carve::geom::vector<2>& point = loop[k];
 											//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * ( points_for_tesselation[j] + offsetFromCurve[j]) + carve::geom::VECTOR(point.x, point.y, 0);
-											carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]) + points_for_tesselation[j];
+											//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]) + points_for_tesselation[j];
+											carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
 											Tloop.push_back(Tpoint);
 										}
 										Tcompositeprofile.push_back(Tloop);
@@ -509,8 +510,9 @@ namespace OpenInfraPlatform
 											{
 												carve::geom::vector<2>& point = loop[k];
 												//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * offsetFromCurve[j] + points_for_tesselation[j] + carve::geom::VECTOR(point.x, point.y, 0);
-												carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]) + points_for_tesselation[j]; //worked in 2D
+												//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]) + points_for_tesselation[j]; //worked in 2D
 												//carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0)); //neuer ansatz falls objekt_placement_matrix richtig
+												carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
 												Tloop.push_back(Tpoint);
 											}
 											Tcompositeprofile.push_back(Tloop);
@@ -548,7 +550,7 @@ namespace OpenInfraPlatform
 										// the position on the curve = pointOnCurve
 										// the offsets = offsetFromCurve
 										carve::geom::vector<3> translate = BasisCurvePoints[i] + localm * IoffsetFromCurve;
-										carve::math::Matrix object_placement_matrix_pos = convertIfcOrientationExpression(BasisPointDirection[i], translate);
+										carve::math::Matrix object_placement_matrix_pos = convertIfcOrientationExpression(BasisPointDirection[i], fixed_axis_vertical, translate);
 									
 
 										//interpolate profile
@@ -572,7 +574,7 @@ namespace OpenInfraPlatform
 												carve::geom::vector<2> deltapoint = carve::geom::VECTOR(pointAfter.x - pointBefore.x, pointAfter.y - pointBefore.y);
 												carve::geom::vector<2> Tpoint2D = carve::geom::VECTOR(deltapoint.x * factorBefore + pointBefore.x, deltapoint.y * factorBefore + pointBefore.y);
 												
-												carve::geom::vector<3> Tpoint = object_placement_matrix_pos *(carve::geom::VECTOR(Tpoint2D.x, Tpoint2D.y, 0) + IoffsetFromCurve) + BasisCurvePoints[i];
+												carve::geom::vector<3> Tpoint = object_placement_matrix_pos *(carve::geom::VECTOR(Tpoint2D.x, Tpoint2D.y, 0));
 												//carve::geom::vector<3> Tpoint = /*interpolatedMatrix*/ localPlacementMatrix[j] *(BasisCurvePoints[i] + IoffsetFromCurve) + carve::geom::VECTOR(Tpoint2D.x, Tpoint2D.y, 0);
 												Tloop.push_back(Tpoint);
 											}
