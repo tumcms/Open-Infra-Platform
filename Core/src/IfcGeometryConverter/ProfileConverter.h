@@ -497,6 +497,7 @@ namespace OpenInfraPlatform {
 				}
 				double TagX = 0.0;
 				double TAgY = 0.0;
+				double x, y;
 
 				for (int i = 0; i < widths.size(); i++) {
 					paths.push_back(carve::geom::VECTOR(TagX, TagY));
@@ -507,19 +508,21 @@ namespace OpenInfraPlatform {
 				paths.push_back(carve::geom::VECTOR(TagX, TagY));
 			}
 
+			/*! \brief Calculates X and Y coordinates using slope and width 
+			* \param[in] horizontal A bool variable which defines, if width shall be measured horizontally or along the slope
+			* \param[in] width A double which indicates the horizontal width or distance along the slope for the segment in the profile
+			* \param[in] slope A double which indicates slope measure 
+			* \param[out] x,y X and Y coordinates of the slope end
+			*/
 			std::tuple<double,double> CalculateXYFromPolar(const bool& horizontal, const double& width, const double& slope) const throw(...) {
 				if (horizontal) {
 					if (slope == M_PI_2) {
-						throw oip::InconsistentGeometryException(profileDef, "slope can not be 90 degree");
+						throw oip::InconsistentGeometryException("slope can not be 90 degree");
 					}
-					double x = width;
-					double y = width / tan(slope);
-					return std::tuple<double, double>(x, y);
+					return std::tuple<double, double>(width,  width / tan(slope));
 				}
 				else {
-					double x = width * cos(slope);
-					double y = width * sin(slope);
-					return std::tuple<double,double>(x, y);
+					return std::tuple<double,double>(width * cos(slope), width * sin(slope));
 				}
 			}
 
