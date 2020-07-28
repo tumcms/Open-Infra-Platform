@@ -1558,9 +1558,6 @@ abstract_supertype_declaration:
 	TOKEN_ABSTRACT TOKEN_SUPERTYPE subtype_constraint
   | TOKEN_ABSTRACT TOKEN_SUPERTYPE;
 
-subtype_constraint:
-	TOKEN_OF TOKEN_BRACKET_OPEN supertype_expression TOKEN_BRACKET_CLOSE;
-
 supertype_expression:
 	supertype_factor;
 
