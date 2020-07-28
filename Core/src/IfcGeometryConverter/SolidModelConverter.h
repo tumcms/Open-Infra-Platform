@@ -184,41 +184,25 @@ namespace OpenInfraPlatform
 			}
 
 			//TO DO: it has to work for ssh
-			carve::math::Matrix convertIfcOrientationExpression(
+			carve::math::Matrix convertCurveOrientation(
 				const carve::geom::vector<3> directionOfCurve,
 				const bool fixed_axis_vertical,
 				const carve::geom::vector<3> translate = carve::geom::VECTOR(0., 0., 0.)
 			) const throw(...)
 			{
-				//check input
-			
+						
+				carve::geom::vector<3> local_z(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, fixed_axis_vertical ? 0.0 : directionOfCurve.z));
 
-				// defaults
-				/*carve::geom::vector<3> local_x = carve::geom::VECTOR(1.0, 0.0, 0.0);
-				carve::geom::vector<3> local_y = carve::geom::VECTOR(0.0, 1.0, 0.0);
-				carve::geom::vector<3> local_z = carve::geom::VECTOR(0.0, 0.0, 1.0);*/
-
-				
-				// convert the attributes /
-
-				// correct the x-direction / zweiter versuch?
-				//carve::geom::vector<3> curve_x(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, alongHorizontal ? 0.0 : directionOfCurve.z));
-				carve::geom::vector<3> local_x(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, fixed_axis_vertical ? 0.0 : directionOfCurve.z));
-
-				// get the perpendicular to the left of the curve in the x-y plane (curve's coordinate system)
-				//carve::geom::vector<3> curve_y(carve::geom::VECTOR(-curve_x.y, curve_x.x, 0.0)); // always lies in the x-y plane
-				carve::geom::vector<3> local_y(carve::geom::VECTOR(-local_x.y, local_x.x, 0.0)); // always lies in the x-y plane
+				// get the perpendicular to the left of the curve in the z-y plane (curve's coordinate system)
+				carve::geom::vector<3> local_y(carve::geom::VECTOR(-local_z.y, local_z.x, 0.0)); // always lies in the z-y plane(Curve (and x-y 2D-Profile)
 
 				// get the vertical as cross product
-				//carve::geom::vector<3> curve_z = carve::geom::cross(curve_x, curve_y);
-				carve::geom::vector<3> local_z = carve::geom::cross(local_x, local_y);
+				carve::geom::vector<3> local_x = carve::geom::cross(local_z, local_y);
 
 				// normalize the direction vectors
 				local_x.normalize();
 				local_y.normalize();
 				local_z.normalize();
-
-			// normalize local_x, local_y, local_z ?
 
 				// produce a rotation matrix
 				return carve::math::Matrix(
@@ -387,7 +371,7 @@ namespace OpenInfraPlatform
 					            // the position on the curve = pointOnCurve
 					            // the offsets = offsetFromCurve
 								carve::geom::vector<3> translate = CrossSectionPoints[pos] + localPlacementMatrix[pos] * offsetFromCurve[pos];
-								carve::math::Matrix object_placement_matrix_pos = convertIfcOrientationExpression(directionsOfCurve[pos], fixed_axis_vertical, translate);
+								carve::math::Matrix object_placement_matrix_pos = convertCurveOrientation(directionsOfCurve[pos], fixed_axis_vertical, translate);
 								object_placement_matrix.push_back(object_placement_matrix_pos);
 							}
 							
@@ -408,7 +392,7 @@ namespace OpenInfraPlatform
 							}
 							else
 							{//iterate BasisCurvePoints[] until it gets to CrossSectionPoints[0]
-							//if dist_1 is bigger than dist_2 they are before CrossSectionPoints[0], else they are after that pointa
+							//if dist_1 is bigger than dist_2 they are before CrossSectionPoints[0], else they are after that point
 								double dist_1 = distance(BasisCurvePoints[0], CrossSectionPoints[0]);
 								double dist_2 = distance(BasisCurvePoints[1], CrossSectionPoints[0]);
 
@@ -434,9 +418,8 @@ namespace OpenInfraPlatform
 								for (int k = 0; k < loop.size(); ++k)
 								{
 									carve::geom::vector<2>& point = loop[k];
-									//carve::geom::vector<3>  Tpoint = localPlacementMatrix[0] *offsetFromCurve[0] + points_for_tesselation[0] + carve::geom::VECTOR(point.x, point.y, 0);
-									//carve::geom::vector<3> Tpoint = localPlacementMatrix[0] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[0]) + points_for_tesselation[0]; // worked in 2 D
-									carve::geom::vector<3> Tpoint = object_placement_matrix[0] * (carve::geom::VECTOR(point.x, point.y, 0)); //neuer ansatz falls Objekt..funktioniert
+
+									carve::geom::vector<3> Tpoint = object_placement_matrix[0] * (carve::geom::VECTOR(point.x, point.y, 0)); 
 									Tloop.push_back(Tpoint);
 								}
 								TFcompositeprofile.push_back(Tloop);
@@ -465,8 +448,7 @@ namespace OpenInfraPlatform
 										for (int k = 0; k < loop.size(); ++k)
 										{
 											carve::geom::vector<2>& point = loop[k];
-											//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * ( points_for_tesselation[j] + offsetFromCurve[j]) + carve::geom::VECTOR(point.x, point.y, 0);
-											//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]) + points_for_tesselation[j];
+
 											carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
 											Tloop.push_back(Tpoint);
 										}
@@ -509,9 +491,7 @@ namespace OpenInfraPlatform
 											for (int k = 0; k < loop.size(); ++k)
 											{
 												carve::geom::vector<2>& point = loop[k];
-												//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * offsetFromCurve[j] + points_for_tesselation[j] + carve::geom::VECTOR(point.x, point.y, 0);
-												//carve::geom::vector<3>  Tpoint = localPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0) + offsetFromCurve[j]) + points_for_tesselation[j]; //worked in 2D
-												//carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0)); //neuer ansatz falls objekt_placement_matrix richtig
+			
 												carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
 												Tloop.push_back(Tpoint);
 											}
@@ -550,7 +530,7 @@ namespace OpenInfraPlatform
 										// the position on the curve = pointOnCurve
 										// the offsets = offsetFromCurve
 										carve::geom::vector<3> translate = BasisCurvePoints[i] + localm * IoffsetFromCurve;
-										carve::math::Matrix object_placement_matrix_pos = convertIfcOrientationExpression(BasisPointDirection[i], fixed_axis_vertical, translate);
+										carve::math::Matrix object_placement_matrix_pos = convertCurveOrientation(BasisPointDirection[i], fixed_axis_vertical, translate);
 									
 
 										//interpolate profile
@@ -575,7 +555,6 @@ namespace OpenInfraPlatform
 												carve::geom::vector<2> Tpoint2D = carve::geom::VECTOR(deltapoint.x * factorBefore + pointBefore.x, deltapoint.y * factorBefore + pointBefore.y);
 												
 												carve::geom::vector<3> Tpoint = object_placement_matrix_pos *(carve::geom::VECTOR(Tpoint2D.x, Tpoint2D.y, 0));
-												//carve::geom::vector<3> Tpoint = /*interpolatedMatrix*/ localPlacementMatrix[j] *(BasisCurvePoints[i] + IoffsetFromCurve) + carve::geom::VECTOR(Tpoint2D.x, Tpoint2D.y, 0);
 												Tloop.push_back(Tpoint);
 											}
 											Tcompositeprofile.push_back(Tloop);
@@ -591,12 +570,9 @@ namespace OpenInfraPlatform
 
                             // Add Vertex, each point is a vertex. for each paths_for_tesselation
 							//paths_for_tesselation.size() == points_for_tesselation.size()
-							//carve::math::Matrix m;
 							
 							for (i = 0; i < paths_for_tesselation.size(); ++i)
 							{
-								//m = carve::math::Matrix::ROT(angle, direction_for_tesselation[i]); //TODO: angle CurveConverter?
-								//m = object_placement_matrix[i];
 								std::vector<std::vector<carve::geom::vector<3> > >& compositeProfile = paths_for_tesselation[i];
 								for (int w = 0; w < compositeProfile.size(); ++w)
 								{
@@ -618,27 +594,30 @@ namespace OpenInfraPlatform
 							int PFTS = paths_for_tesselation.size() -1;
 							for (int i = 0; i < PFTS ; ++i)
 							{
-								for (int j = 0; j < ppoints -1; ++j)
+								for (int j = 0; j < ppoints - 1; ++j)
 								{
-									body_data->addFace(i*ppoints +j, i*ppoints +j+1, (i+1)*ppoints +j);
-									body_data->addFace(i*ppoints+j+1, (i+1)*ppoints+j, (i+1)*ppoints+j+1);
+									body_data->addFace(i*ppoints + j, i*ppoints + j + 1, (i + 1)*ppoints + j);
+									body_data->addFace(i*ppoints + j + 1, (i + 1)*ppoints + j, (i + 1)*ppoints + j + 1);
 							    }
+								//TO DO: close the Body
+							
 							}
-								
-							////2. Close the polygons 
+							//body_data->addFace()
+							//2. Close the polygons 
 						
-							//// front cap, create triangle fan
-							//for (int jj = 0; jj < ppoints - 2; ++jj)
-							//{
-							//   body_data->addFace(0, jj + 1, jj + 2);
-							//}
+							// close front cap
+							for (int jj = 0; jj < ppoints - 2; ++jj)
+							{
+							   body_data->addFace(0, jj + 1, jj + 2);
+							}
 
-							//// back cap
-							//int back_offset = (PFTS - 1) * ppoints;
-							//for (int jj = 0; jj < ppoints - 2; ++jj)
-							//{
-							//	body_data->addFace(back_offset, back_offset + jj + 2, back_offset + jj + 1);
-							//}
+							// close back cap
+							int BackCapVertex = num_vertices - ppoints;
+							for (int jj = BackCapVertex; jj < num_vertices ; ++jj)
+							{
+								int last = num_vertices - 1;
+								body_data->addFace(last, jj - 1, jj - 2);
+							}
 	
 			            }//endif sectioned_solid_horizontal
 
