@@ -472,27 +472,7 @@ namespace OpenInfraPlatform {
 				if (profileDef->expired())
 					throw oip::ReferenceExpiredException(profileDef);
 
-				std::vector<carve::geom::vector<2>> outer_loop;
-
-				bool horizontal = profileDef->HorizontalWidths;
-
-				std::vector<double> widths;
-				widths.reserve(profileDef->Widths.size());
-				std::transform(
-					profileDef->Widths.begin(),
-					profileDef->Widths.end(),
-					widths.begin(),
-					[](auto& it) {return it * UnitConvert()->getLengthInMeterFactor(); });
-
-				std::vector<double> slopes;
-				slopes.reserve(profileDef->Slopes.size());
-				std::transform(
-					profileDef->Slopes.begin(),
-					profileDef->Slopes.end(),
-					slopes.begin(),
-					[](auto& it) {return it * UnitConvert()->getAngleInRadianFactor(); });
-
-				if (widths.size() != slopes.size()) {
+				if (profileDef->Widths.size() != profileDef->Slopes.size()) {
 					throw oip::InconsistentModellingException(profileDef, "Number of Widths is not equal to the number of Slopes");
 				}
 				double TagX = 0.0;
@@ -501,7 +481,9 @@ namespace OpenInfraPlatform {
 
 				for (int i = 0; i < widths.size(); i++) {
 					paths.push_back(carve::geom::VECTOR(TagX, TagY));
-					std::tie(x, y) = CalculateXYFromPolar(horizontal, widths[i], slopes[i]);
+					std::tie(x, y) = CalculateXYFromPolar(profileDef->HorizontalWidths,
+						profileDef->Widths[i] * UnitConvert()->getLengthInMeterFactor(), 
+						profileDef->Slopes[i] * UnitConvert()->getAngleInRadianFactor());
 					TagX = TagX + x;
 					TagY = TagY + y;
 				}
@@ -512,7 +494,8 @@ namespace OpenInfraPlatform {
 			* \param[in] horizontal A bool variable which defines, if width shall be measured horizontally or along the slope
 			* \param[in] width A double which indicates the horizontal width or distance along the slope for the segment in the profile
 			* \param[in] slope A double which indicates slope measure 
-			* \param[out] x,y X and Y coordinates of the slope end
+			* \return x,y X and Y coordinates of the slope end 
+			* \(coordinates of the slope start(0,0) lies at the beginning of the vector)
 			*/
 			std::tuple<double,double> CalculateXYFromPolar(const bool& horizontal, const double& width, const double& slope) const throw(...) {
 				if (horizontal) {
