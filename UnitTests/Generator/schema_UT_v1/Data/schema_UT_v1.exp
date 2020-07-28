@@ -1,0 +1,214 @@
+
+SCHEMA schema_UT_v1;
+
+(* IFC2x3 taken as basis *)
+
+TYPE IfcInteger = INTEGER;
+END_TYPE;
+TYPE IfcLabel = STRING;
+END_TYPE;
+TYPE IfcLengthMeasure = REAL;
+END_TYPE;
+TYPE IfcLogical = LOGICAL;
+END_TYPE;
+TYPE IfcParameterValue = REAL;
+END_TYPE;
+TYPE IfcReal = REAL;
+END_TYPE;
+
+TYPE IfcDimensionCount = INTEGER;
+ WHERE
+	WR1 : { 0 < SELF <= 3 };
+END_TYPE;
+
+TYPE IfcBSplineCurveForm = ENUMERATION OF
+	(POLYLINE_FORM
+	,CIRCULAR_ARC
+	,HYPERBOLIC_ARC
+	,UNSPECIFIED);
+END_TYPE;
+
+TYPE IfcGeometricSetSelect = SELECT
+	(IfcPoint
+	,IfcCurve);
+END_TYPE;
+
+TYPE IfcMeasureValue = SELECT
+	(IfcLengthMeasure
+	,IfcParameterValue);
+END_TYPE;
+
+TYPE IfcTrimmingSelect = SELECT
+	(IfcCartesianPoint
+	,IfcParameterValue);
+END_TYPE;
+
+ENTITY IfcBSplineCurve
+ ABSTRACT SUPERTYPE OF (ONEOF
+	(IfcBezierCurve))
+ SUBTYPE OF (IfcCurve);
+	Degree : INTEGER;
+	ControlPointsList : LIST [2:?] OF IfcCartesianPoint;
+	CurveForm : IfcBSplineCurveForm;
+	ClosedCurve : LOGICAL;
+	SelfIntersect : LOGICAL;
+ DERIVE
+	ControlPoints : ARRAY [0:255] OF IfcCartesianPoint := IfcListToArray(ControlPointsList,0,UpperIndexOnControlPoints);
+	UpperIndexOnControlPoints : INTEGER := (SIZEOF(ControlPointsList) - 1);
+ WHERE
+	WR41 : SIZEOF(QUERY(Temp <* ControlPointsList |
+               Temp.Dim <> ControlPointsList[1].Dim))
+             = 0;
+END_ENTITY;
+
+ENTITY IfcBezierCurve
+ SUBTYPE OF (IfcBSplineCurve);
+	WeightsData : LIST [2:?] OF REAL;
+ DERIVE
+	Weights : ARRAY [0:255] OF REAL := IfcListToArray(WeightsData,0,SELF\IfcBSplineCurve.UpperIndexOnControlPoints);
+ WHERE
+	WR1 : SIZEOF(WeightsData) = SIZEOF(SELF\IfcBSplineCurve.ControlPointsList);
+	WR2 : IfcCurveWeightsPositive(SELF);
+END_ENTITY;
+
+ENTITY IfcCartesianPoint
+ SUBTYPE OF (IfcPoint);
+	Coordinates : LIST [1:3] OF IfcLengthMeasure;
+ DERIVE
+	Dim : IfcDimensionCount := HIINDEX(Coordinates);
+ WHERE
+	WR1 : HIINDEX(Coordinates) >= 2;
+END_ENTITY;
+
+ENTITY IfcCurve
+ ABSTRACT SUPERTYPE OF (ONEOF
+	(IfcBSplineCurve
+	,IfcPolyline
+	,IfcLine))
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+ DERIVE
+	Dim : IfcDimensionCount := IfcCurveDim(SELF);
+END_ENTITY;
+
+ENTITY IfcDirection
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+	DirectionRatios : LIST [2:3] OF REAL;
+ DERIVE
+	Dim : IfcDimensionCount := HIINDEX(DirectionRatios);
+END_ENTITY;
+
+ENTITY IfcGeometricRepresentationItem
+ ABSTRACT SUPERTYPE OF (ONEOF
+	(IfcCurve
+	,IfcDirection
+	,IfcGeometricSet
+	,IfcPoint
+	,IfcVector));
+END_ENTITY;
+
+ENTITY IfcGeometricSet
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+	Elements : SET [1:?] OF IfcGeometricSetSelect;
+ DERIVE
+	Dim : IfcDimensionCount := Elements[1].Dim;
+ WHERE
+	WR21 : SIZEOF(QUERY(Temp <* Elements |
+               Temp.Dim <> Elements[1].Dim))
+             = 0;
+END_ENTITY;
+
+ENTITY IfcLine
+ SUBTYPE OF (IfcCurve);
+	Pnt : IfcCartesianPoint;
+	Dir : IfcVector;
+ WHERE
+	WR1 : Dir.Dim = Pnt.Dim;
+END_ENTITY;
+
+ENTITY IfcPoint
+ ABSTRACT SUPERTYPE OF (ONEOF
+	(IfcCartesianPoint
+	,IfcPointOnCurve))
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+END_ENTITY;
+
+ENTITY IfcPointOnCurve
+ SUBTYPE OF (IfcPoint);
+	BasisCurve : IfcCurve;
+	PointParameter : IfcParameterValue;
+ DERIVE
+	Dim : IfcDimensionCount := BasisCurve.Dim;
+END_ENTITY;
+
+ENTITY IfcPolyline
+ SUBTYPE OF (IfcCurve);
+	Points : LIST [2:?] OF IfcCartesianPoint;
+ WHERE
+	WR41 : SIZEOF(QUERY(Temp <* Points | Temp.Dim <> Points[1].Dim)) = 0;
+END_ENTITY;
+
+ENTITY IfcVector
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+	Orientation : IfcDirection;
+	Magnitude : IfcLengthMeasure;
+ DERIVE
+	Dim : IfcDimensionCount := Orientation.Dim;
+ WHERE
+	WR1 : Magnitude >= 0.0;
+END_ENTITY;
+
+
+
+FUNCTION IfcListToArray
+(Lis : LIST [0:?] OF GENERIC : T;
+       Low,U : INTEGER) : ARRAY OF GENERIC : T;
+   LOCAL
+     N   : INTEGER;
+     Res : ARRAY [Low:U] OF GENERIC : T;
+   END_LOCAL;
+      
+   N := SIZEOF(Lis);
+   IF (N <> (U-Low +1)) THEN
+     RETURN(?);
+   ELSE
+     Res := [Lis[1] : N];
+     REPEAT i := 2 TO N;
+       Res[Low+i-1] := Lis[i];
+     END_REPEAT;
+     RETURN(Res);
+   END_IF;
+END_FUNCTION;
+
+FUNCTION IfcCurveWeightsPositive
+	(B: IfcRationalBezierCurve)
+	: BOOLEAN;
+     LOCAL
+       Result : BOOLEAN := TRUE;
+     END_LOCAL;
+  
+     REPEAT i := 0 TO B.UpperIndexOnControlPoints;
+       IF B.Weights[i] <= 0.0  THEN
+         Result := FALSE;
+         RETURN(Result);
+       END_IF;
+     END_REPEAT;
+     RETURN(Result);
+END_FUNCTION;
+
+FUNCTION IfcCurveDim
+	(Curve : IfcCurve)
+	: IfcDimensionCount;
+  
+    IF ('schema_UT_v1.IFCLINE' IN TYPEOF(Curve))
+      THEN RETURN(Curve\IfcLine.Pnt.Dim);
+    END_IF;
+    IF ('schema_UT_v1.IFCPOLYLINE' IN TYPEOF(Curve))
+      THEN RETURN(Curve\IfcPolyline.Points[1].Dim);
+    END_IF;
+    IF ('schema_UT_v1.IFCBSPLINECURVE' IN TYPEOF(Curve))
+      THEN RETURN(Curve\IfcBSplineCurve.ControlPointsList[1].Dim);
+    END_IF;
+  RETURN (?);
+END_FUNCTION;
+
+END_SCHEMA;
