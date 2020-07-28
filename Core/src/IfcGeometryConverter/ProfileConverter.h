@@ -494,7 +494,7 @@ namespace OpenInfraPlatform {
 			* \param[in] horizontal A bool variable which defines, if width shall be measured horizontally or along the slope
 			* \param[in] width A double which indicates the horizontal width or distance along the slope for the segment in the profile
 			* \param[in] slope A double which indicates slope measure 
-			* \return x,y X and Y coordinates of the slope end 
+			* \return X and Y coordinates of the vector's end 
 			* beginning of the vector lie in (0,0)
 			*/
 			std::tuple<double,double> CalculateXYFromPolar(const bool& horizontal, const double& width, const double& slope) const throw(...) {
