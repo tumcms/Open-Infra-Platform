@@ -1338,6 +1338,7 @@ explicit_attr:
 		EntityAttribute att;
 		att.name = attribute_ids.top();
 		att.optional = true;
+        att.inverse = false;
 		att.type = attribute_types.top();
 		attribute_types.pop();
 
@@ -1370,6 +1371,7 @@ explicit_attr:
 		EntityAttribute att;
 		att.name = attribute_ids.top();
 		att.optional = false;
+        att.inverse = false;
 		att.type = attribute_types.top();
 		attribute_types.pop();
 

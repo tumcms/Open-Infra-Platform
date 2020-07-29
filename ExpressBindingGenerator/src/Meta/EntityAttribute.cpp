@@ -42,6 +42,10 @@ bool EntityAttribute::isOptional() const {
 	return optional;
 }
 
+bool EntityAttribute::isInverse() const {
+	return inverse;
+}
+
 const std::string EntityAttribute::toString(const Schema & schema) const {
 	std::string typeName = type->toString();
 	std::string prefix = "ExpressBindingGenerator::";

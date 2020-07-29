@@ -155,9 +155,11 @@ class EntityAttribute {
 
     std::string getName() const;
     bool isOptional() const;
+    bool isInverse() const;
 
     std::string name;
     bool optional;
+    bool inverse;
 
     ReferenceCounted<IEntityAttributeType> type;
 
