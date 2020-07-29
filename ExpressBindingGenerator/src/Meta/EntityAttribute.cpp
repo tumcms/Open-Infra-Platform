@@ -46,9 +46,17 @@ bool EntityAttribute::isInverse() const {
 	return inverse;
 }
 
+bool EntityAttribute::hasInverseCounterpart() const {
+	return inverseCounterpart;
+}
+
+std::string EntityAttribute::getInverseName() const {
+	return inverseName;
+}
+
 const std::string EntityAttribute::toString(const Schema & schema) const {
 	std::string typeName = type->toString();
-	std::string prefix = "ExpressBindingGenerator::";
+	//std::string prefix = "ExpressBindingGenerator::";
 
 	if (type->getType() == eEntityAttributeParameterType::TypeNamed || type->getType() == eEntityAttributeParameterType::Simple) {
 		if (schema.hasType(typeName)) {
