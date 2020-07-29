@@ -2649,6 +2649,13 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "}"); //end if line[0] == '#'
 	writeLine(file, "}"); //end for read file
 	linebreak(file);
+	writeLine(file, "// Initialize inverse parameters");
+	writeLine(file, "size_t numEntities = model->entities.size()");
+	writeLine(file, "#pragma omp parallel for");
+	writeLine(file, "for(size_t i = 0; i < numEntitites; i++) {"); // begin for each entity
+	writeLine(file, "model->entities[i]->second->linkInverse();");
+	writeLine(file, "}"); // end for each entity
+	linebreak(file);
 	writeLine(file, "return model;");
 	writeLine(file, "}"); //end try 
 	writeLine(file, "catch(std::exception e) {"); // begin catch
@@ -4144,6 +4151,16 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \");\";");
 		writeLine(out, "return stepLine;");
 		writeLine(out, "}");
+		linebreak(out);
+
+		// Set inverse attributes
+		writeLine(out, "// Set the inverse attributes");
+		writeLine(out, "void " + entity.getName() + "::linkInverse() {");
+		for (auto attr : schema.getAllEntityAttributes(entity, true))
+			if (attr.hasInverseCounterpart())
+				writeLine(out, "this->" + attr.getName() + "->" + attr.getInverseName() + ".push_back(this);");
+		writeLine(out, "}");
+		linebreak(out);
 	};
 
 	if (!schema.isAbstract(entity)) {
