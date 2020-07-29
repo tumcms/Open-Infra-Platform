@@ -1034,7 +1034,7 @@ void resolveSelectTypeIncludes(Schema& schema, std::set<std::string>& entityAttr
 }
 
 void resolveEntityIncludes(Schema& schema, const Entity& entity, std::set<std::string>& entityAttributes, std::set<std::string>& resolvedClasses) {
-	auto attributes = schema.getAllEntityAttributes(entity);
+	auto attributes = schema.getAllEntityAttributes(entity, true);
 
 	std::set<std::string> newEntityAttributes;
 	for (auto attr : attributes) {
@@ -3403,7 +3403,7 @@ void GeneratorOIP::generateEntityHeaderFile(OpenInfraPlatform::ExpressBindingGen
 	writeEndNamespace(out, schema);
 	
 	//Make structure visitable
-	auto attributes = schema.getAllEntityAttributesNames(entity);
+	auto attributes = schema.getAllEntityAttributesNames(entity, true);
 	if(!attributes.empty())
 	{
 		out << "\n";
@@ -3534,7 +3534,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 	
 	//writeLine(out, "typedef " + entity.getName() + " UnderlyingType;");
 	
-	auto initClassAsDefault = [&out, &entity, &schema]() {
+	if (!schema.isAbstract(entity)) {
 		// Default constructor.
 		writeLine(out, entity.getName() + "();");
 
@@ -3569,11 +3569,11 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		writeLine(out, "virtual const std::string getStepLine() const override;");
 		linebreak(out);
 
-		writeLine(out, "using base::getStepParameter;");		
-	};
+		// Initialize INVERSE parameters
+		writeLine(out, "void linkInverse();");
+		linebreak(out);
 
-	if (!schema.isAbstract(entity)) {
-		initClassAsDefault();
+		writeLine(out, "using base::getStepParameter;");		
 	}
 	else {
 		//writeLine(out, "virtual " + entity.getName() + "& operator=(" + entity.getName() + " other) = 0;");
@@ -3593,7 +3593,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 	writeEndNamespace(out, schema);
 
 	//Make structure visitable
-	auto attributeNames = schema.getAllEntityAttributesNames(entity);
+	auto attributeNames = schema.getAllEntityAttributesNames(entity, true);
 	if (!attributeNames.empty())
 	{
 		linebreak(out);
@@ -3721,7 +3721,7 @@ void GeneratorOIP::generateEntitySourceFile(Schema &schema, const Entity &entity
 	std::ofstream out(ssHeaderFilename.str());
 
 	auto superTypes = schema.getSuperTypes(entity);
-	auto attributes = schema.getAllEntityAttributesNames(entity);
+	auto attributes = schema.getAllEntityAttributesNames(entity, false);
 
 	indentation = 0;
 	writeLicenseAndNotice(out);
@@ -3742,7 +3742,7 @@ void GeneratorOIP::generateEntitySourceFile(Schema &schema, const Entity &entity
 	// Include all types forward declared in header.
 	std::set<std::string> includes = std::set<std::string>();
 
-	for(auto att : schema.getAllEntityAttributes(entity)) {
+	for(auto att : schema.getAllEntityAttributes(entity, false)) {
 		auto type = att.type;
 
 		// Get type from container until we end up with a TypeNamed or Simple.
@@ -3802,7 +3802,7 @@ void GeneratorOIP::generateEntitySourceFile(Schema &schema, const Entity &entity
 	// getStepLine	
 	statements += "stream << \"#\" << m_id << \"=" + toUpper(entity.getName()) + "\" << \"(\";";
 	
-	auto attributeVector = schema.getAllEntityAttributes(entity);
+	auto attributeVector = schema.getAllEntityAttributes(entity, false);
 	for (int i = 0; i < attributeVector.size(); i++) {
 		const EntityAttribute &att = attributeVector[i];
 
@@ -4011,7 +4011,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 	writeInclude(out, entity.getName() + ".h");
 	linebreak(out);
 
-	auto attributes = schema.getAllEntityAttributes(entity);
+	auto attributes = schema.getAllEntityAttributes(entity, false);
 
 	std::set<std::string> typeAttributes, entityAttributes;
 
@@ -4102,13 +4102,11 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		writeLine(out, entity.getName() + "::~" + entity.getName() + "() {};");
 		linebreak(out);
 
-		auto attributes = schema.getAllEntityAttributes(entity);
-
 		// Copy Assignment Operator
 		writeDoxyComment(out, "Assigns the content of \\c other to \\c this.");
 		writeLine(out, entity.getName() + "& " + entity.getName() + "::operator=(const " + entity.getName() + "& other) {");
 		writeLine(out, "this->m_id = other.m_id;");
-		for (auto& attr : attributes) {
+		for (auto& attr : schema.getAllEntityAttributes(entity, true)) {
 			writeLine(out, "this->" + attr.getName() + " = other." + attr.getName() + ";");
 		}
 		writeLine(out, "return *this;");
@@ -4125,6 +4123,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		writeLine(out, entity.getName() + " " + entity.getName() +"::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
 		writeLine(out, entity.getName() + " entity;");
 		writeLine(out, "entity.setId(stoull(args[0]));");
+		auto attributes = schema.getAllEntityAttributes(entity, false);
 		for (int i = 0; i < attributes.size(); i++) {
 			auto attr = attributes[i];
 			writeLine(out, "entity." + attr.getName() + " = decltype(" + attr.getName() + ")::readStepData(args[" + std::to_string(i + 1) + "], model);");
@@ -4156,7 +4155,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		writeLine(out, "void swap(" + entity.getName() + "& first, " + entity.getName() + "& second) {");
 		writeLine(out, "using std::swap;");
 		writeLine(out, "swap(first.m_id, second.m_id);");
-		for (auto attr : schema.getAllEntityAttributes(entity)) {
+		for (auto attr : schema.getAllEntityAttributes(entity, true)) {
 			writeLine(out, "swap(first." + attr.getName() + ", second." + attr.getName() + ");");
 		}
 		writeLine(out, "};");
