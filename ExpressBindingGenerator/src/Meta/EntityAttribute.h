@@ -37,8 +37,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_BEGIN
 
 class Schema;
 
-enum class eCardinality { Undefined, Single, Vector, Vector2D, Vector3D };
-
 enum class eEntityAttributeParameterType { Simple, TypeNamed, eGeneralizedType };
 
 class IEntityAttributeType {
@@ -159,7 +157,6 @@ class EntityAttribute {
     bool isOptional() const;
 
     std::string name;
-    eCardinality cardinality;
     bool optional;
 
     ReferenceCounted<IEntityAttributeType> type;

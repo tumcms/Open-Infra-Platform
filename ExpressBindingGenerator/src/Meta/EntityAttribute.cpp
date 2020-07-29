@@ -28,12 +28,10 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_BEGIN
 
 EntityAttribute::EntityAttribute(const std::string& name) {
 	this->name = name;
-	this->cardinality = eCardinality::Undefined;
 }
 
 EntityAttribute::EntityAttribute() {
 	this->name = "";
-	this->cardinality = eCardinality::Undefined;
 }
 
 std::string EntityAttribute::getName() const {
