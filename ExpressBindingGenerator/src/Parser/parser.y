@@ -1564,9 +1564,11 @@ redeclared_attribute:
 qualified_attribute:
 	TOKEN_SELF group_qualifier attribute_qualifier
 	{
-		//std::cout << "qualified_attribute: " << ids.top() << "." << attribute_ids.top() << std::endl;
+		std::cout << "qualified_attribute: " << ids.top() << "." << attribute_ids.top() << std::endl;
 
 		currentEntity.addQualifiedAttribute(ids.top(), attribute_ids.top());
+        ids.pop();
+        attribute_ids.pop();
 		//currentEntity.addSelfDerivedAttribute(ids.top(), attribute_ids.top());
 	};
 
