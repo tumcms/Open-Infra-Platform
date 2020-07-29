@@ -255,6 +255,24 @@ const bool Schema::isAbstract(const Entity & entity) const
 {
 	return getAllEntityAttributes(entity, true).size() == 0;
 }
+
+void Schema::linkInverses()
+{
+	for (auto ent : entities_)
+	{
+		for (auto attr : ent.getAttributes())
+		{
+			if (attr.isInverse())
+			{
+				auto p = std::static_pointer_cast<EntityAttributeGeneralizedType>(attr.type);
+				std::string inverseEntity = p->elementType->toString();
+
+				for( auto it = entities_.begin(); it != entities_.end(); it++ )
+					if( it->getName() == inverseEntity )
+						it->setInverseCounterpart(attr.getInverseName(), attr.getName());
+			}
+		}
+	}
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END

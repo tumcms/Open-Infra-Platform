@@ -56,6 +56,9 @@ class Schema {
 
 	const bool isAbstract(const Entity &entity) const;
 
+	// link the inverses (can only happen AFTER the whole schema is parsed)
+	void linkInverses();
+
     //---------------------------------------------------------------
     // Types
     //---------------------------------------------------------------

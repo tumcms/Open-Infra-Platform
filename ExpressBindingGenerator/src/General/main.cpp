@@ -82,6 +82,8 @@ int main(int argc, char **argv) {
 
         std::ostream &out = ofs; // std::cout;
 		       
+		//link inverse attributes
+		oip::Schema::getInstance().linkInverses();
        
         GeneratorOIP cppgen(outputDirectoryName);
         cppgen.generateREFACTORED(out, oip::Schema::getInstance());
