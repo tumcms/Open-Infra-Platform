@@ -207,7 +207,7 @@ bool Schema::hasType(const std::string& typeName) const {
 	return false;
 }
 
-std::vector<std::string> Schema::getAllEntityAttributesNames(const Entity& entity) {
+std::vector<std::string> Schema::getAllEntityAttributesNames(const Entity& entity, const bool includingInverse) {
 	std::vector<std::string> result;
 
 	auto superTypes = getSuperTypes(entity);
@@ -216,18 +216,20 @@ std::vector<std::string> Schema::getAllEntityAttributesNames(const Entity& entit
 		Entity x = getEntityByName(superTypes[i]);
 
 		for (int ai = 0; ai < x.getAttributeCount(); ++ai) {
-			result.push_back(x.getAttribute(ai).getName());
+			if (includingInverse || !x.getAttribute(ai).isInverse())
+				result.push_back(x.getAttribute(ai).getName());
 		}
 	}
 
 	for (int ai = 0; ai < entity.getAttributeCount(); ai++) {
-		result.push_back(entity.getAttribute(ai).getName());
+		if (includingInverse || !entity.getAttribute(ai).isInverse())
+			result.push_back(entity.getAttribute(ai).getName());
 	}
 
 	return result;
 }
 
-std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity) const {
+std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity, const bool includingInverse) const {
 	std::vector<EntityAttribute> result;
 
 	auto superTypes = getSuperTypes(entity);
@@ -236,12 +238,14 @@ std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity
 		Entity x = getEntityByName(superTypes[i]);
 
 		for (int ai = 0; ai < x.getAttributeCount(); ++ai) {
-			result.push_back(x.getAttribute(ai));
+			if( includingInverse || !x.getAttribute(ai).isInverse() )
+				result.push_back(x.getAttribute(ai));
 		}
 	}
 
 	for (int ai = 0; ai < entity.getAttributeCount(); ai++) {
-		result.push_back(entity.getAttribute(ai));
+		if (includingInverse || !entity.getAttribute(ai).isInverse())
+			result.push_back(entity.getAttribute(ai));
 	}
 
 	return result;
@@ -249,7 +253,8 @@ std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity
 
 const bool Schema::isAbstract(const Entity & entity) const
 {
-	return getAllEntityAttributes(entity).size() == 0;
+	return getAllEntityAttributes(entity, true).size() == 0;
+}
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END

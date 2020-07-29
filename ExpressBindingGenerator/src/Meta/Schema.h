@@ -50,9 +50,9 @@ class Schema {
 	
 	bool hasEntity(const std::string &name) const;
 
-    std::vector<std::string> getAllEntityAttributesNames(const Entity &entity);
+    std::vector<std::string> getAllEntityAttributesNames(const Entity &entity, const bool includingInverse);
 
-    std::vector<EntityAttribute> getAllEntityAttributes(const Entity &entity) const;
+    std::vector<EntityAttribute> getAllEntityAttributes(const Entity &entity, const bool includingInverse) const;
 
 	const bool isAbstract(const Entity &entity) const;
 
