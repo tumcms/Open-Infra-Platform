@@ -253,7 +253,7 @@ std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity
 
 const bool Schema::isAbstract(const Entity & entity) const
 {
-	return getAllEntityAttributes(entity, true).size() == 0;
+	return getAllEntityAttributes(entity, false).size() == 0;
 }
 
 void Schema::linkInverses()

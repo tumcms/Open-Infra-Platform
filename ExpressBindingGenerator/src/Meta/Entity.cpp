@@ -89,7 +89,7 @@ void Entity::setInverseCounterpart(const std::string& attrName, const std::strin
 			return;
 		}
 	}
-	std::string err = "ERROR: Could not locate inverse attribute with name " + attrName;
+	std::string err = getName() + ": ERROR: Could not locate inverse attribute with name " + attrName + " to link with " + inverseName;
 	throw std::runtime_error(err.c_str());
 }
 
