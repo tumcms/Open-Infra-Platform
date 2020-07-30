@@ -4162,10 +4162,19 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 			if (attr.hasInverseCounterpart())
 			{
 				if (attr.isOptional())
+				{
 					writeLine(out, "if( this->" + attr.getName() + " ) {");
-				writeLine(out, "this->" + attr.getName() + "->" + attr.getInverseName() + ".push_back(this);");
-				if (attr.isOptional())
+					writeLine(out, "if( this->" + attr.getName() + "->isOfType<" + attr.getInverseEntity() + ">() ) {");
+					writeLine(out, "this->" + attr.getName() + "->as<" + attr.getInverseEntity() + ">()->" + attr.getInverseName() + ".push_back(this);");
 					writeLine(out, "}");
+					writeLine(out, "}");
+				}
+				else
+				{
+					writeLine(out, "if( this->" + attr.getName() + ".isOfType<" + attr.getInverseEntity() + ">() ) {");
+					writeLine(out, "this->" + attr.getName() + ".as<" + attr.getInverseEntity() + ">()->" + attr.getInverseName() + ".push_back(this);");
+					writeLine(out, "}");
+				}
 			}
 		writeLine(out, "}");
 		linebreak(out);

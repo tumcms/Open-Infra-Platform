@@ -270,7 +270,7 @@ void Schema::linkInverses()
 				//	auto superTypes = getSuperTypes(*it);
 				//	auto found = std::find(superTypes.begin(), superTypes.end(), inverseEntity);
 				//	if( found != superTypes.end() )
-						it->setInverseCounterpart(attr.getInverseName(), attr.getName());
+						it->setInverseCounterpart(attr.getInverseName(), ent.getName(), attr.getName());
 				}
 			}
 		}
