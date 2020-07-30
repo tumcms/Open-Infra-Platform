@@ -130,7 +130,7 @@ void GeomUtils::extrude(
 		std::cout << "extrude: face_loops_input.size() == 0" << std::endl;
 		return;
 		/*
-		throw oip::InconsistentModellingException(face_loops_input, "face_loops_input.size() == 0");
+		throw oip::InconsistentModellingException("face_loops_input.size() == 0");
 		*/
 	}
 	if( poly_data->points.size() > 0 )
@@ -138,7 +138,7 @@ void GeomUtils::extrude(
 		std::cout << "extrude: points vec should be empty" << std::endl;
 		return;
 		/*
-		throw oip::InconsistentModellingException(poly_data, "points vec should be empty");
+		throw oip::InconsistentModellingException("points vec should be empty");
 		*/
 	}
 	if( poly_data->getFaceCount() > 0 )
@@ -146,7 +146,7 @@ void GeomUtils::extrude(
 		std::cout << "extrude: PolyhedronData::faceCount should be 0" << std::endl;
 		return;
 		/*
-		throw oip::InconsistentModellingException(poly_data, "PolyhedronData::faceCount should be 0");
+		throw oip::InconsistentModellingException("PolyhedronData::faceCount should be 0");
 		*/
 	}
 
@@ -169,7 +169,7 @@ void GeomUtils::extrude(
 		if( loop.size() < 3 )
 		{
 			/*
-			throw oip::InconsistentGeometryException(face_loops_input, "loop.size() < 3");
+			throw oip::InconsistentGeometryException("loop.size() < 3");
 			*/
 			err << "loop.size() < 3" << std::endl;
 			if( it_face_loops == face_loops_input.begin() )
@@ -211,7 +211,7 @@ void GeomUtils::extrude(
 		{
 			err << "extrude: loop_2d.size() < 3" << std::endl;
 			/*
-			throw oip::InconsistentGeometryException(face_loops_input, "loop_2d.size() < 3");
+			throw oip::InconsistentGeometryException("loop_2d.size() < 3");
 			*/
 		}
 		
@@ -566,7 +566,7 @@ void GeomUtils::computeInverse( const carve::math::Matrix& matrix_a, carve::math
 		ss << "cannot compute inverse of matrix " << __FUNCTION__;
 		throw GeomException(ss.str());
 		/*
-		throw oip::InconsistentGeometryException(matrix_a, "cannot compute inverse of matrix ");
+		throw oip::InconsistentGeometryException("cannot compute inverse of matrix ");
 		*/
 	}
 	
@@ -607,7 +607,7 @@ void GeomUtils::closestPointOnLine( const carve::geom::vector<3>& point, const
 			<< __FUNCTION__;
 		throw GeomException(ss.str());
 		/*
-		throw oip::InconsistentGeometryException(line_direction, "Line is degenerated : the line's direction vector is a null vector!");
+		throw oip::InconsistentGeometryException("Line is degenerated : the line's direction vector is a null vector!");
 		*/
 	}
 	double lambda = denom/numer;
@@ -631,7 +631,7 @@ void GeomUtils::closestPointOnLine( const buw::Vector3f& point,
 			<< __FUNCTION__;
 		throw GeomException(ss.str());
 		/*
-		throw oip::InconsistentGeometryException(line_direction, "Line is degenerated : the line's direction vector is a null vector!");
+		throw oip::InconsistentGeometryException("Line is degenerated : the line's direction vector is a null vector!");
 		*/
 	}
 	double lambda = denom/numer;
@@ -657,7 +657,7 @@ bool GeomUtils::isPointOnLineSegment( double& target_lambda,
 			<< __FUNCTION__;
 		throw GeomException(ss.str());
 		/*
-		throw oip::InconsistentGeometryException(line_direction, "Line is degenerated : the line's direction vector is a null vector!");
+		throw oip::InconsistentGeometryException("Line is degenerated : the line's direction vector is a null vector!");
 		*/
 	}
 	const double lambda = denom/numer;
@@ -1044,7 +1044,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 	if( !mesh_set )
 	{
 		/*
-		throw oip::InconsistentModellingException(mesh_set, "MeshSet of resulting mesh not valid");
+		throw oip::InconsistentModellingException("MeshSet of resulting mesh not valid");
 		*/
 #ifdef _DEBUG
 		if (entity_id == -1) 
@@ -1057,7 +1057,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 	if( mesh_set->meshes.size() == 0 )
 	{
 		/*
-		throw oip::InconsistentModellingException(mesh_set, "MeshSet of resulting mesh is empty");
+		throw oip::InconsistentModellingException("MeshSet of resulting mesh is empty");
 		*/
 #ifdef _DEBUG
 		if (entity_id == -1) 
@@ -1208,7 +1208,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 	if( err.tellp() > 0 )
 	{
 		/*
-		throw oip::InconsistentModellingException(mesh_set, "MeshSet of resulting mesh has problems");
+		throw oip::InconsistentModellingException("MeshSet of resulting mesh has problems");
 		*/
 #ifdef _DEBUG
 		if (entity_id == -1) {
