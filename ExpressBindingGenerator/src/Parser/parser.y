@@ -1322,10 +1322,10 @@ inverse_attr:
         ids.pop();
         std::string entityName = currentEntity.getName();
 
-        std::cout << entityName << "." << attrName
-                  << " --> [" << bound1 << "," << bound2 << "] "
-                  << relatingEntityName << "." << relatingAttrName
-                  << std::endl;
+        //std::cout << entityName << "." << attrName
+        //          << " --> [" << bound1 << "," << bound2 << "] "
+        //          << relatingEntityName << "." << relatingAttrName
+        //          << std::endl;
 
         auto attrType =  makeReferenceCounted<EntityAttributeGeneralizedType>();
                         
@@ -1565,7 +1565,7 @@ redeclared_attribute:
 qualified_attribute:
 	TOKEN_SELF group_qualifier attribute_qualifier
 	{
-		std::cout << "qualified_attribute: " << ids.top() << "." << attribute_ids.top() << std::endl;
+		//std::cout << "qualified_attribute: " << ids.top() << "." << attribute_ids.top() << std::endl;
 
 		currentEntity.addQualifiedAttribute(ids.top(), attribute_ids.top());
         ids.pop();
