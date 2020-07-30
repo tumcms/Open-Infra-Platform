@@ -371,8 +371,6 @@ namespace OpenInfraPlatform
 						double step;
 						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
 
-						std::vector<double> basisFuncs;
-
 						std::vector<carve::geom::vector<3>> curvePoints;
 						curvePoints.reserve(numCurvePoints);
 
@@ -382,28 +380,41 @@ namespace OpenInfraPlatform
 						for (size_t i = 0; i < numCurvePoints; ++i) {
 							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
-							// 1) Evaluate basis functions at curve point t
-							basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
-							// 2) Compute exact point
-							carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
-							// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
-							double weightSum = 0.0;
-
-							for (int j = 0; j < numControlPoints; ++j)
-							{
-								// 3a) apply formula for rational B-spline surfaces
-								const double weightProduct = weightsData[j] * basisFuncs[j];
-								point += weightProduct * controlPoints[j];
-								weightSum += weightProduct;
-							}
-
-							point /= weightSum;
-
-							curvePoints.push_back(point);
+							curvePoints.push_back(computePointOfRationalBSpline(order, t, controlPoints, numControlPoints, knotArray, weightsData));
 							t += step;
 						}
 
 						return curvePoints;
+					}
+
+					carve::geom::vector<3> computePointOfRationalBSpline(
+						const int& order,
+						const double& t,
+						const std::vector<carve::geom::vector<3>>& controlPoints,
+						const int& numControlPoints,
+						const std::vector<double>& knotArray,
+						const std::vector<double>& weightsData) const throw(...)
+					{
+						// 1) Evaluate basis functions at curve point t
+						std::vector<double> basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
+
+						// 2) Compute exact point
+						carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+
+						// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
+						double weightSum = 0.0;
+
+						for (int j = 0; j < numControlPoints; ++j)
+						{
+							// 3a) apply formula for rational B-spline surfaces
+							const double weightProduct = weightsData[j] * basisFuncs[j];
+							point += weightProduct * controlPoints[j];
+							weightSum += weightProduct;
+						}
+
+						point /= weightSum;
+
+						return point;
 					}
 
 					/*! \brief Computes the B-Spline basis functions for given curve value t.
