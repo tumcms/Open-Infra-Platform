@@ -429,16 +429,7 @@ namespace OpenInfraPlatform
 						const uint16_t numBasisFuncs = degree + numControlPoints;
 						const uint16_t numKnots = order + numControlPoints;
 						// create temporary basis functions of size k + n (or d + (n + 1), with d = k - 1)
-						std::vector<double> tempBasisFuncs(numBasisFuncs, 0.0);
-
-						// intialize first order basis functions
-						for (auto i = 0; i < numBasisFuncs; ++i) {
-							const double knot = knotVector[i];
-							const double knotNext = knotVector[i + 1];
-							if (t >= knot && t < knotNext && knot < knotNext) {
-								tempBasisFuncs[i] = 1.0;
-							}
-						}
+						std::vector<double> tempBasisFuncs = obtainBasisFunctionFirstOrder(t, numBasisFuncs, knotVector);
 
 						double basisFuncFirst = 0.0;
 						double basisFuncSecond = 0.0;
@@ -476,6 +467,25 @@ namespace OpenInfraPlatform
 							basisFuncs[j] = tempBasisFuncs[j];
 						}
 						return basisFuncs;
+					}
+
+					std::vector<double> obtainBasisFunctionFirstOrder(
+						const double& t,
+						const uint16_t& numBasisFuncs,
+						const std::vector<double>& knotVector) const throw(...)
+					{
+						std::vector<double> tempBasisFuncs(numBasisFuncs, 0.0);
+
+						// intialize first order basis functions
+						for (auto i = 0; i < numBasisFuncs; ++i) {
+							const double knot = knotVector[i];
+							const double knotNext = knotVector[i + 1];
+							if (t >= knot && t < knotNext && knot < knotNext) {
+								tempBasisFuncs[i] = 1.0;
+							}
+						}
+
+						return tempBasisFuncs;
 					}
 
 					// B-Spline surface definition according to: 
