@@ -4156,9 +4156,17 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		// Set inverse attributes
 		writeLine(out, "// Set the inverse attributes");
 		writeLine(out, "void " + entity.getName() + "::linkInverse() {");
+		if( entity.hasSupertype() )
+			writeLine(out, entity.getSupertype() + "::linkInverse();");
 		for (auto attr : schema.getAllEntityAttributes(entity, true))
 			if (attr.hasInverseCounterpart())
+			{
+				if (attr.isOptional())
+					writeLine(out, "if( this->" + attr.getName() + " ) {");
 				writeLine(out, "this->" + attr.getName() + "->" + attr.getInverseName() + ".push_back(this);");
+				if (attr.isOptional())
+					writeLine(out, "}");
+			}
 		writeLine(out, "}");
 		linebreak(out);
 	};
