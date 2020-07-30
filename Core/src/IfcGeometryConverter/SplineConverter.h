@@ -431,33 +431,11 @@ namespace OpenInfraPlatform
 						// create temporary basis functions of size k + n (or d + (n + 1), with d = k - 1)
 						std::vector<double> tempBasisFuncs = obtainBasisFunctionFirstOrder(t, numBasisFuncs, knotVector);
 
-						double basisFuncFirst = 0.0;
-						double basisFuncSecond = 0.0;
-
 						// build basis functions of higher order up-to order = degree
-						for (int k = 1; k <= degree; ++k) {
-							for (int i = 0; i < numBasisFuncs - k; ++i) {
-								const double t_i = knotVector[i];
-								const double t_ik = knotVector[i + k];
-								const double t_ik1 = knotVector[i + k + 1];
-								const double t_i1 = knotVector[i + 1];
-								// function is zero if basis is zero or denominator is zero
-								if (tempBasisFuncs[i] == 0 || t_ik == t_i) { basisFuncFirst = 0.0; }
-								else {
-									// apply formula of first part
-									basisFuncFirst = (t - t_i) / (t_ik - t_i) * tempBasisFuncs[i];
-								}
-
-								// function is zero if basis is zero or denominator is zero
-								if (tempBasisFuncs[i + 1] == 0 || t_ik1 == t_i1) { basisFuncSecond = 0.0; }
-								else {
-									// apply formula of first part
-									basisFuncSecond = (t_ik1 - t) / (t_ik1 - t_i1) * tempBasisFuncs[i + 1];
-								}
-
-								// compute sum and set as basis function for next order
-								tempBasisFuncs[i] = basisFuncFirst + basisFuncSecond;
-							}
+						for (int k = 1; k <= degree; ++k)
+						{
+							obtainBasisFunctionNextOrder(numBasisFuncs, k, t, knotVector, tempBasisFuncs);
+							// tempBasisFuncs is the return value by reference
 						}
 
 						std::vector<double> basisFuncs;
@@ -486,6 +464,50 @@ namespace OpenInfraPlatform
 						}
 
 						return tempBasisFuncs;
+					}
+
+					void obtainBasisFunctionNextOrder(
+						const uint16_t& numBasisFuncs, 
+						const int& k,
+						const double& t,
+						const std::vector<double>& knotVector,
+						std::vector<double>& tempBasisFuncs) const throw(...)
+					{
+						double basisFuncFirst;
+						double basisFuncSecond;
+
+						for (int i = 0; i < numBasisFuncs - k; ++i) {
+							const double t_i = knotVector[i];
+							const double t_ik = knotVector[i + k];
+							const double t_ik1 = knotVector[i + k + 1];
+							const double t_i1 = knotVector[i + 1];
+
+							// function is zero if basis is zero or denominator is zero
+							if (tempBasisFuncs[i] == 0 || t_ik == t_i) 
+							{ 
+								basisFuncFirst = 0.0; 
+							}
+							else
+							{
+								// apply formula of first part
+								basisFuncFirst = (t - t_i) / (t_ik - t_i) * tempBasisFuncs[i];
+							}
+
+							// function is zero if basis is zero or denominator is zero
+							if (tempBasisFuncs[i + 1] == 0 || t_ik1 == t_i1) 
+							{ 
+								basisFuncSecond = 0.0; 
+							}
+							else 
+							{
+								// apply formula of first part
+								basisFuncSecond = (t_ik1 - t) / (t_ik1 - t_i1) * tempBasisFuncs[i + 1];
+							}
+
+							// compute sum and set as basis function for next order
+							tempBasisFuncs[i] = basisFuncFirst + basisFuncSecond;
+						}
+						// return tempBasisFuncs;
 					}
 
 					// B-Spline surface definition according to: 
