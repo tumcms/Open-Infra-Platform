@@ -599,12 +599,20 @@ namespace OpenInfraPlatform
 									body_data->addFace(i*ppoints + j, i*ppoints + j + 1, (i + 1)*ppoints + j);
 									body_data->addFace(i*ppoints + j + 1, (i + 1)*ppoints + j, (i + 1)*ppoints + j + 1);
 							    }
-								//TO DO: close the Body
-							
 							}
-							//body_data->addFace()
-							//2. Close the polygons 
 						
+						
+							//close the first positions of the body
+							body_data->addFace(0, ppoints - 1, ppoints);
+							
+							//close the body
+							int closingBodyVertices = num_vertices / ppoints;
+							for (int ii = 1; ii < closingBodyVertices - 2; ++ii)
+							{
+								body_data->addFace(ii*ppoints, ii*ppoints - 1, (ii+1)*ppoints);
+								body_data->addFace((ii + 1)*ppoints, ii*ppoints - 1, (ii + 2)*ppoints - 1);
+							}
+					
 							// close front cap
 							for (int jj = 0; jj < ppoints - 2; ++jj)
 							{
