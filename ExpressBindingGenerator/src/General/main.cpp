@@ -73,7 +73,9 @@ int main(int argc, char **argv) {
         // set flex to read from it instead of defaulting to STDIN:
         yyin = myfile;
 
-        // parse through the input until there is no more:
+		cout << "Parsing the schema file ..." << endl;
+
+		// parse through the input until there is no more:
         do {
             yyparse();
         } while (!feof(yyin));
@@ -83,11 +85,18 @@ int main(int argc, char **argv) {
         std::ostream &out = ofs; // std::cout;
 		       
 		//link inverse attributes
+		cout << "Linking inverse attributes ..." << endl;
+
 		oip::Schema::getInstance().linkInverses();
        
+		cout << "Generating files ..." << endl;
+
         GeneratorOIP cppgen(outputDirectoryName);
-        cppgen.generateREFACTORED(out, oip::Schema::getInstance());
+		cppgen.generateREFACTORED(out, oip::Schema::getInstance());
         
+		// delete the temporary test.txt file
+
+		cout << "Done!" << endl;
 
         ofs.close();
 
