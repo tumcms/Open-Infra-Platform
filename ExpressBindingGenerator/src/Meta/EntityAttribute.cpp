@@ -54,6 +54,10 @@ std::string EntityAttribute::getInverseName() const {
 	return inverseName;
 }
 
+std::string EntityAttribute::getInverseEntity() const {
+	return inverseEntity;
+}
+
 const std::string EntityAttribute::toString(const Schema & schema) const {
 	std::string typeName = type->toString();
 	//std::string prefix = "ExpressBindingGenerator::";

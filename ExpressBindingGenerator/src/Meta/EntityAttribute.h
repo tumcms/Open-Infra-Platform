@@ -158,12 +158,14 @@ class EntityAttribute {
     bool isInverse() const;
 	bool hasInverseCounterpart() const;
 	std::string getInverseName() const;
+	std::string getInverseEntity() const;
 
     std::string name;
     bool optional;
     bool inverse;
 	bool inverseCounterpart;
 	std::string inverseName;
+	std::string inverseEntity;
 
     ReferenceCounted<IEntityAttributeType> type;
 

@@ -264,12 +264,14 @@ void Schema::linkInverses()
 		{
 			if (attr.isInverse())
 			{
-				auto p = std::static_pointer_cast<EntityAttributeGeneralizedType>(attr.type);
-				std::string inverseEntity = p->elementType->toString();
-
 				for( auto it = entities_.begin(); it != entities_.end(); it++ )
-					if( it->getName() == inverseEntity )
+				{
+					if( it->getName() == attr.getInverseEntity() )
+				//	auto superTypes = getSuperTypes(*it);
+				//	auto found = std::find(superTypes.begin(), superTypes.end(), inverseEntity);
+				//	if( found != superTypes.end() )
 						it->setInverseCounterpart(attr.getInverseName(), attr.getName());
+				}
 			}
 		}
 	}
