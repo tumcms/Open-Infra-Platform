@@ -2665,7 +2665,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "}"); //end for read file
 	linebreak(file);
 	writeLine(file, "// Initialize inverse parameters");
-	writeLine(file, "size_t numEntities = model->entities.size()");
+	writeLine(file, "size_t numEntities = model->entities.size();");
 	writeLine(file, "#pragma omp parallel for");
 	writeLine(file, "for(long i = 0; i < numEntitites; i++) {"); // begin for each entity
 	writeLine(file, "model->entities[i]->second->linkInverse(model);");
