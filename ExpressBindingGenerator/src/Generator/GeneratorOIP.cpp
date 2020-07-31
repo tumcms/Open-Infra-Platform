@@ -1254,40 +1254,46 @@ void GeneratorOIP::generateREFACTORED(std::ostream & out, Schema & schema)
 		fs::create_directory(typePath_);
 	}
 
+	std::cout << "Generating CMakeLists ... ";
 	generateCMakeListsFileREFACTORED(schema);
-	std::cout << "Generated CMakeLists" << std::endl;
+	std::cout << "done." << std::endl;
 
+	std::cout << "Generating headers ... ";
 	generateSchemaHeader(schema);
 	generateEMTFiles(schema);
 	generateNamespaceHeader(schema);
-	std::cout << "Generated headers" << std::endl;
+	std::cout << "done." << std::endl;
 
+	std::cout << "Generating readers ... ";
 	generateReaderFiles(schema);
-	std::cout << "Generated readers" << std::endl;
+	std::cout << "done." << std::endl;
 
 	// Types.h
 	createTypesHeaderFileREFACTORED(schema);
 
 	// Entities.h
+	std::cout << "Generating common headers ... ";
 	createEntitiesHeaderFileREFACTORED(schema);
-	std::cout << "Generated common headers" << std::endl;
+	std::cout << "done." << std::endl;
 
-//#pragma omp parallel for
+	std::cout << "Generating types:" << std::endl;
+	//#pragma omp parallel for
 	int typeCount = schema.getTypeCount();
 	for (int i = 0; i < typeCount; i++) {
 		auto &type = schema.getTypeByIndex(i);
 		generateTypeHeaderFileREFACTORED(schema, type);
 		generateTypeSourceFileREFACTORED(schema, type);
-		std::cout << "Generated type " + std::to_string(i) + "/" + std::to_string(typeCount) + ": " + type.getName() << std::endl;
+		std::cout << std::to_string(i+1) + "/" + std::to_string(typeCount) + ": " + type.getName() << std::endl;
 	}
 
 //#pragma omp parallel for
+	std::cout << "Generating entities:" << std::endl;
 	int entityCount = schema.getEntityCount();
 	for (int i = 0; i < entityCount; i++) {
 		auto &entity = schema.getEntityByIndex(i);
 		generateEntityHeaderFileREFACTORED(schema, entity);
 		generateEntitySourceFileREFACTORED(schema, entity);
-		std::cout << "Generated entity " + std::to_string(i) + "/" + std::to_string(entityCount) + ": " + entity.getName() << std::endl;
+		std::cout << std::to_string(i+1) + "/" + std::to_string(entityCount) + ": " + entity.getName() << std::endl;
 	}
 }
 
