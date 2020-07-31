@@ -109,14 +109,19 @@ public:
 		}
 		else {
 			size_t refId = std::stoull(arg.substr(1, arg.size() - 1));
-			EXPRESSReference<T> reference;
-			if (model->entities.count(refId) > 0) {
-				reference.base::operator=(std::dynamic_pointer_cast<T>(model->entities[refId]));
-			}
-			reference.refId = refId;
-			reference.model = model;
-			return reference;
+			return constructInstance(refId, model);
 		}
+	}
+
+	static EXPRESSReference<T> constructInstance(const size_t refId, const std::shared_ptr<EXPRESSModel>& model)
+	{
+		EXPRESSReference<T> reference;
+		if (model->entities.count(refId) > 0) {
+			reference.base::operator=(std::dynamic_pointer_cast<T>(model->entities[refId]));
+		}
+		reference.refId = refId;
+		reference.model = model;
+		return reference;
 	}
 
 	const std::string classname() const override;
