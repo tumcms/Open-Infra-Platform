@@ -2668,7 +2668,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "size_t numEntities = model->entities.size()");
 	writeLine(file, "#pragma omp parallel for");
 	writeLine(file, "for(long i = 0; i < numEntitites; i++) {"); // begin for each entity
-	writeLine(file, "model->entities[i]->second->linkInverse();");
+	writeLine(file, "model->entities[i]->second->linkInverse(model);");
 	writeLine(file, "}"); // end for each entity
 	linebreak(file);
 	writeLine(file, "return model;");
@@ -3592,7 +3592,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		linebreak(out);
 
 		// Initialize INVERSE parameters
-		writeLine(out, "void linkInverse();");
+		writeLine(out, "void linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
 		linebreak(out);
 
 		writeLine(out, "using base::getStepParameter;");		
@@ -4168,29 +4168,37 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		writeLine(out, "}");
 		linebreak(out);
 
+		// predeclare the for each function
+		auto fctWriteInverse = [](std::ofstream &out, EntityAttribute& attr, const std::string& entityName, const std::string& inverseEntity, const std::string& inverseAttrName) {
+			int dim = 0;
+			auto elementType = attr.type;
+			std::string get = "";
+			if (attr.isOptional())
+			{
+				writeLine(out, "if( this->" + attr.getName() + " ) {");
+				get = ".get()";
+			}
+			writeLine(out, "auto " + attr.getName() + "_0 = " + attr.getName() + get + ";");
+			while( elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+				dim++;
+				writeLine(out, "for( auto " + attr.getName() + "_" + std::to_string(dim) + " : " + attr.getName() + "_" + std::to_string(dim-1) + " ) {");
+				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
+			}
+			writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + inverseEntity + ">() ) {");
+			writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + inverseEntity + ">()->" + inverseAttrName + ".push_back(EXPRESSReference<" + entityName + ">::constructInstance(this->getId(), model));");
+			writeLine(out, "}");
+			while( dim --> 0 ) // while dim goes to zero
+				writeLine(out, "}");
+			if (attr.isOptional())
+				writeLine(out, "}");
+		};
+		
 		// Set inverse attributes
-		writeLine(out, "// Set the inverse attributes");
-		writeLine(out, "void " + entity.getName() + "::linkInverse() {");
-		if( entity.hasSupertype() )
-			writeLine(out, entity.getSupertype() + "::linkInverse();");
+		writeDoxyComment(out, "Sets the inverse attributes.", "", nullptr, nullptr, "");
+		writeLine(out, "void " + entity.getName() + "::linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
 		for (auto attr : schema.getAllEntityAttributes(entity, true))
 			if (attr.hasInverseCounterpart())
-			{
-				if (attr.isOptional())
-				{
-					writeLine(out, "if( this->" + attr.getName() + " ) {");
-					writeLine(out, "if( this->" + attr.getName() + "->isOfType<" + attr.getInverseEntity() + ">() ) {");
-					writeLine(out, "this->" + attr.getName() + "->as<" + attr.getInverseEntity() + ">()->" + attr.getInverseName() + ".push_back(this);");
-					writeLine(out, "}");
-					writeLine(out, "}");
-				}
-				else
-				{
-					writeLine(out, "if( this->" + attr.getName() + ".isOfType<" + attr.getInverseEntity() + ">() ) {");
-					writeLine(out, "this->" + attr.getName() + ".as<" + attr.getInverseEntity() + ">()->" + attr.getInverseName() + ".push_back(this);");
-					writeLine(out, "}");
-				}
-			}
+				fctWriteInverse(out, attr, entity.getName(), attr.getInverseEntity(), attr.getInverseName());
 		writeLine(out, "}");
 		linebreak(out);
 	};
