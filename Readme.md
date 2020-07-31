@@ -2,21 +2,28 @@
 
 ## Info
 
-`TUM Open Infra Platform`is a software for viewing and converting alignment data. Currently it offers partial support for LandXML, our IFC based Alignment proposal, IFC Alignment 1.0, IFC Alignment 1.1 (work in progress) and OKSTRA.
+`TUM Open Infra Platform` (OIP in short) is a software for checking and viewing IFC data. 
+It comes with its own `EXPRESS` parser and `C++` classes generator.
+
 
 ![Beta1_5_Windows8_1.png](Documentation/Beta1_5_Windows8_1.png)
 
 ## Documentation
 
-[Installation, Usage & Updating](docs/markdown/User.md)
+- [Building OIP on your machine](Documentation/markdown/SetupHelp.md)
+- [CMake Options Documentation](Documentation/markdown/CMakeOptions.md)
+- [Git process Guideline](Documentation/markdown/GitProcess.md)
+- [Coding Guideline](Documentation/markdown/CodingGuideline.md)
+- [Doxymentation Guideline](Documentation/markdown/DoxygenHelp.md)
+- [List of Contributors](Documentation/markdown/Contributors.md)
 
-[Building](docs/markdown/Building.md)
+Out-of-sync:
 
-[Developer Documentation](docs/markdown/DeveloperDocumentation.md)
+[Installation, Usage & Updating](Documentation/markdown/User.md)
 
 ## License
 
-Copyright (c) 2018 Technical University of Munich
+Copyright (c) 2020 Technical University of Munich
 Chair of Computational Modeling and Simulation.
 
 TUM Open Infra Platform is free software; you can redistribute it and/or modify
