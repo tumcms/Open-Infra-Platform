@@ -4128,7 +4128,8 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		writeDoxyComment(out, "Assigns the content of \\c other to \\c this.");
 		writeLine(out, entity.getName() + "& " + entity.getName() + "::operator=(const " + entity.getName() + "& other) {");
 		writeLine(out, "this->m_id = other.m_id;");
-		for (auto& attr : schema.getAllEntityAttributes(entity, true)) {
+		auto allAttributes = schema.getAllEntityAttributes(entity, true);
+		for (auto& attr : allAttributes) {
 			writeLine(out, "this->" + attr.getName() + " = other." + attr.getName() + ";");
 		}
 		writeLine(out, "return *this;");
