@@ -1255,30 +1255,39 @@ void GeneratorOIP::generateREFACTORED(std::ostream & out, Schema & schema)
 	}
 
 	generateCMakeListsFileREFACTORED(schema);
+	std::cout << "Generated CMakeLists" << std::endl;
 
 	generateSchemaHeader(schema);
-	generateReaderFiles(schema);
 	generateEMTFiles(schema);
 	generateNamespaceHeader(schema);
+	std::cout << "Generated headers" << std::endl;
+
+	generateReaderFiles(schema);
+	std::cout << "Generated readers" << std::endl;
 
 	// Types.h
 	createTypesHeaderFileREFACTORED(schema);
 
 	// Entities.h
 	createEntitiesHeaderFileREFACTORED(schema);
+	std::cout << "Generated common headers" << std::endl;
 
 //#pragma omp parallel for
-	for (int i = 0; i < schema.getTypeCount(); i++) {
+	int typeCount = schema.getTypeCount();
+	for (int i = 0; i < typeCount; i++) {
 		auto &type = schema.getTypeByIndex(i);
 		generateTypeHeaderFileREFACTORED(schema, type);
 		generateTypeSourceFileREFACTORED(schema, type);
+		std::cout << "Generated type " + std::to_string(i) + "/" + std::to_string(typeCount) + ": " + type.getName() << std::endl;
 	}
 
 //#pragma omp parallel for
-	for (int i = 0; i < schema.getEntityCount(); i++) {
+	int entityCount = schema.getEntityCount();
+	for (int i = 0; i < entityCount; i++) {
 		auto &entity = schema.getEntityByIndex(i);
 		generateEntityHeaderFileREFACTORED(schema, entity);
 		generateEntitySourceFileREFACTORED(schema, entity);
+		std::cout << "Generated entity " + std::to_string(i) + "/" + std::to_string(entityCount) + ": " + entity.getName() << std::endl;
 	}
 }
 
