@@ -27,6 +27,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <chrono>  // for high_resolution_clock
 using namespace std;
 
 #include "Parser/node.h"
@@ -60,6 +61,9 @@ int main(int argc, char **argv) {
         std::string outputDirectoryName = outputDirectory.getValue();
 
 		cout << "Generating .h/.cpp files from " << filename << std::endl;
+		
+		// Record start time
+		auto start = std::chrono::high_resolution_clock::now();
 
         //std::string filename = "C:/dev/Neuer Ordner/IFC4x1_RC3.exp";
         // std::string filename = "C:/dev/OpenInfraPlatform2/IfcAlignment1x1/schema/IFC4x1_RC3.exp";
@@ -73,30 +77,31 @@ int main(int argc, char **argv) {
         // set flex to read from it instead of defaulting to STDIN:
         yyin = myfile;
 
-		cout << "Parsing the schema file ..." << endl;
-
+		cout << "Parsing the schema file ... ";
 		// parse through the input until there is no more:
         do {
             yyparse();
         } while (!feof(yyin));
+		std::cout << "done." << std::endl;
 
         std::ofstream ofs("test.txt", std::ofstream::out);
 
         std::ostream &out = ofs; // std::cout;
 		       
 		//link inverse attributes
-		cout << "Linking inverse attributes ..." << endl;
+		cout << "Linking inverse attributes ... ";
 
 		oip::Schema::getInstance().linkInverses();
-       
-		cout << "Generating files ..." << endl;
+		std::cout << "done." << std::endl;
 
+		cout << "Generating files:";
         GeneratorOIP cppgen(outputDirectoryName);
 		cppgen.generateREFACTORED(out, oip::Schema::getInstance());
-        
-		// delete the temporary test.txt file
-
-		cout << "Done!" << endl;
+		
+		// Record end time
+		auto finish = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> elapsed = finish - start; 
+		std::cout << "Done! Elapsed time: " << elapsed.count() << " s\n";
 
         ofs.close();
 
