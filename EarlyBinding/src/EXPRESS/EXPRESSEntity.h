@@ -50,6 +50,8 @@ public:
 
 	virtual const std::string getStepLine() const = 0;
 
+	virtual void linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) = 0;
+
 protected:
 	size_t m_id;
 };

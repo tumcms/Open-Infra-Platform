@@ -3592,7 +3592,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		linebreak(out);
 
 		// Initialize INVERSE parameters
-		writeLine(out, "void linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
+		writeLine(out, "virtual void linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) override;");
 		linebreak(out);
 
 		writeLine(out, "using base::getStepParameter;");		
@@ -3601,6 +3601,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		//writeLine(out, "virtual " + entity.getName() + "& operator=(" + entity.getName() + " other) = 0;");
 		writeLine(out, "virtual const std::string classname() const = 0;");
 		writeLine(out, "virtual const std::string getStepLine() const = 0;");
+		writeLine(out, "virtual void linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) = 0;");
 	}
 
 	//GetAttributes
@@ -4196,7 +4197,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		
 		// Set inverse attributes
 		writeDoxyComment(out, "Sets the inverse attributes.", "", nullptr, nullptr, "");
-		writeLine(out, "void " + entity.getName() + "::linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
+		writeLine(out, "virtual void " + entity.getName() + "::linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
 		for (auto attr : schema.getAllEntityAttributes(entity, true))
 			if (attr.hasInverseCounterpart())
 				fctWriteInverse(out, attr, entity.getName(), attr.getInverseEntity(), attr.getInverseName());
