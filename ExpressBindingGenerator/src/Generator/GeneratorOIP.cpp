@@ -4034,7 +4034,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 	writeInclude(out, entity.getName() + ".h");
 	linebreak(out);
 
-	auto attributes = schema.getAllEntityAttributes(entity, false);
+	auto attributes = schema.getAllEntityAttributes(entity, true);
 
 	std::set<std::string> typeAttributes, entityAttributes;
 
