@@ -76,8 +76,7 @@ namespace OpenInfraPlatform
 						const int numControlPoints = splineCurve->ControlPointsList.size();
 						const int numKnotsArray = order + numControlPoints;
 
-						CurveConverterT<IfcEntityTypesT> curveConverter(GeomSettings(), UnitConvert(), placementConverter);
-						const std::vector<carve::geom::vector<3>> controlPoints = curveConverter.convertIfcCartesianPointVector(splineCurve->ControlPointsList);
+						const std::vector<carve::geom::vector<3>> controlPoints = loadControlPoints(splineCurve);
 
 						// IfcRationalBSplineCurveWithKnots is a subtype of IfcBSplineCurveWithKnots which is a subtype of IfcBSplineCurve, 
 						// it represents a rational B-Spline / a NURBS.
@@ -160,6 +159,18 @@ namespace OpenInfraPlatform
 					}
 
 				private:
+					/*! \brief Loads the control points from an IfcBSplineCurve-entity
+					 *
+					 * \param[in] splineCurve	The IfcBSplineCurve-entity which contains the control points
+					 *
+					 * \return	  A vector with the B-Spline control points
+					 */
+					std::vector<carve::geom::vector<3>> loadControlPoints(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve) const throw(...)
+					{
+						CurveConverterT<IfcEntityTypesT> curveConverter(GeomSettings(), UnitConvert(), placementConverter);
+						return curveConverter.convertIfcCartesianPointVector(splineCurve->ControlPointsList);
+					}
 
 					/*! \brief Loads the knot array from an \c IfcBSplineCurveWithKnots.
 					 *
