@@ -318,6 +318,18 @@ namespace OpenInfraPlatform
 						return curvePoints;
 					}
 
+					/*! \brief Computes the B-Spline point at the location t.
+					 *
+					 * This function is for B-Splines from an IfcBSplineCurveWithKnots-entity.
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	t					The parameter value t of the curve c(t).
+					 * \param[in]	controlPoints		The vector of the B-Spline control points.
+					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+					 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
+					 *
+					 * \return		The B-Spline point at the position t.
+					 */
 					carve::geom::vector<3> computePointOfBSpline(
 						const int& order,
 						const double& t,
@@ -387,6 +399,19 @@ namespace OpenInfraPlatform
 						return curvePoints;
 					}
 
+					/*! \brief Computes the rational-B-Spline point at the location t.
+					 *
+					 * This function is for rational B-Splines from an IfcRationalBSplineCurveWithKnots-entity.
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	t					The parameter value t of the curve c(t).
+					 * \param[in]	controlPoints		The vector of the B-Spline control points.
+					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+					 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
+					 * \param[in]	weightsData			The vector with the wight values per knot, the function \c loadWeightsData gives this vector.
+					 *
+					 * \return		The rational-B-Spline point at the position t.
+					 */
 					carve::geom::vector<3> computePointOfRationalBSpline(
 						const int& order,
 						const double& t,
@@ -445,7 +470,7 @@ namespace OpenInfraPlatform
 						// build basis functions of higher order up-to order = degree
 						for (int k = 1; k <= degree; ++k)
 						{
-							obtainBasisFunctionNextOrder(numBasisFuncs, k, t, knotVector, tempBasisFuncs);
+							obtainBasisFunctionNextOrder(k, t, knotVector, tempBasisFuncs);
 							// tempBasisFuncs is the return value by reference
 						}
 
@@ -458,6 +483,14 @@ namespace OpenInfraPlatform
 						return basisFuncs;
 					}
 
+					/*! \brief Sets the basis functions of order one
+					 *
+					 * \param[in]	t				Evaluation point of the curve c(t)
+					 * \param[in]	numBasisFuncs	Number of basis functions in first order
+					 * \param[in]	knotVector		The array / vector of knots obtained from \c IfcBSplineCurveWithKnots.
+					 *
+					 * \return		A vector of the basis functions 'order one'
+					 */
 					std::vector<double> obtainBasisFunctionFirstOrder(
 						const double& t,
 						const uint16_t& numBasisFuncs,
@@ -477,8 +510,18 @@ namespace OpenInfraPlatform
 						return tempBasisFuncs;
 					}
 
+					/*! \brief Computes the basis functions of next higher order.
+					 *
+					 * Increases the order of basis functions from k-1 to k.
+					 *
+					 * \param[in] k				 Order k of basis functions which should be computed.
+					 * \param[in] t				 Evaluation point of the curve c(t)
+					 * \param[in] knotVector	 The array / vector of knots obtained from \c IfcBSplineCurveWithKnots.
+					 * \param[in] tempBasisFuncs Vector of basis functions of order k-1
+					 *
+					 * \return	  Vector of basis functions of order k
+					 */
 					void obtainBasisFunctionNextOrder(
-						const uint16_t& numBasisFuncs, 
 						const int& k,
 						const double& t,
 						const std::vector<double>& knotVector,
@@ -487,7 +530,7 @@ namespace OpenInfraPlatform
 						double basisFuncFirst;
 						double basisFuncSecond;
 
-						for (int i = 0; i < numBasisFuncs - k; ++i) {
+						for (size_t i = 0; i < tempBasisFuncs.size() - k; ++i) {
 							const double t_i = knotVector[i];
 							const double t_ik = knotVector[i + k];
 							const double t_ik1 = knotVector[i + k + 1];
