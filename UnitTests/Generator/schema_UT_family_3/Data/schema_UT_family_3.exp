@@ -1,0 +1,38 @@
+SCHEMA schema_UT_family_3;
+
+TYPE Name = STRING;
+END_TYPE;
+
+ENTITY Person
+   ABSTRACT SUPERTYPE OF (ONEOF (Male, Female));
+     name : Name;
+     mother : OPTIONAL Female;
+     father: OPTIONAL Male;
+   INVERSE
+     involvedIn : SET [0:?] OF RelInvolves FOR person;
+END_ENTITY;
+
+ENTITY Female
+   SUBTYPE OF (Person);
+   INVERSE
+     motherof : SET [0:?] OF Person FOR mother;
+END_ENTITY;
+
+ENTITY Male
+   SUBTYPE OF (Person);
+   INVERSE
+     fatherof : SET [0:?] OF Person FOR father;
+END_ENTITY;
+
+ENTITY Hobby;
+     name : Name;
+   INVERSE
+     involves : SET [0:?] OF RelInvolves FOR hobby;
+END_ENTITY;
+
+ENTITY RelInvolves;
+   person : LIST [1:?] OF Person;
+   hobby : Hobby;
+END_ENTITY;
+
+END_SCHEMA;
