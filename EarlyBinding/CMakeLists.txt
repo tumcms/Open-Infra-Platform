@@ -29,3 +29,19 @@ foreach(format ${IFC_FORMATS})
 		message(WARNING "Files for format ${format} not found.")
 	endif()
 endforeach()
+
+macro(add_unit_test_generated schema)
+    if(EXISTS ${CMAKE_BINARY_DIR}/UnitTests/Generator/${schema}/Generated/${schema})
+        add_subdirectory(${CMAKE_BINARY_DIR}/UnitTests/Generator/${schema}/Generated/${schema} ${CMAKE_BINARY_DIR}/UnitTests/Generator/${schema}/Generated/${schema})
+        set_target_properties(OpenInfraPlatform.${schema} PROPERTIES FOLDER "OpenInfraPlatform/UnitTests/Generator/${schema}")
+    endif()
+endmacro()
+
+add_unit_test_generated(schema_UT_family_1)
+add_unit_test_generated(schema_UT_family_2)
+add_unit_test_generated(schema_UT_family_3)
+
+add_unit_test_generated(schema_UT_v1)
+add_unit_test_generated(schema_UT_v2)
+add_unit_test_generated(schema_UT_v3)
+
