@@ -4197,7 +4197,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		
 		// Set inverse attributes
 		writeDoxyComment(out, "Sets the inverse attributes.", "", nullptr, nullptr, "");
-		writeLine(out, "virtual void " + entity.getName() + "::linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
+		writeLine(out, "void " + entity.getName() + "::linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
 		for (auto attr : schema.getAllEntityAttributes(entity, true))
 			if (attr.hasInverseCounterpart())
 				fctWriteInverse(out, attr, entity.getName(), attr.getInverseEntity(), attr.getInverseName());
