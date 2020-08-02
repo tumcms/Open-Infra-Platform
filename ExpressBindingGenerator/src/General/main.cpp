@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 		oip::Schema::getInstance().linkInverses();
 		std::cout << "done." << std::endl;
 
-		cout << "Generating files:";
+		std::cout << "Generating files:" << std::endl;
         GeneratorOIP cppgen(outputDirectoryName);
 		cppgen.generateREFACTORED(out, oip::Schema::getInstance());
 		
