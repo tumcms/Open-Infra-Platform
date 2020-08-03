@@ -4062,16 +4062,16 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 			if (schema.hasType(elementType->toString())) {
 				typeAttributes.insert(elementType->toString());
 			}
-			if (attr.isInverse()) {
-				if (schema.hasEntity(attr.getInverseEntity())) {
-					if( entityAttributes.find(attr.getInverseEntity()) == entityAttributes.end()) {
-							entityAttributes.insert(attr.getInverseEntity());
-					}
+		}
+		if (attr.isInverse()) {
+			if (schema.hasEntity(attr.getInverseEntity())) {
+				if( entityAttributes.find(attr.getInverseEntity()) == entityAttributes.end()) {
+					entityAttributes.insert(attr.getInverseEntity());
 				}
-				if (schema.hasType(attr.getInverseEntity())) {
-					if (typeAttributes.find(attr.getInverseEntity()) == typeAttributes.end()) {
-						typeAttributes.insert(attr.getInverseEntity());
-					}
+			}
+			if (schema.hasType(attr.getInverseEntity())) {
+				if (typeAttributes.find(attr.getInverseEntity()) == typeAttributes.end()) {
+					typeAttributes.insert(attr.getInverseEntity());
 				}
 			}
 		}
@@ -4216,9 +4216,9 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 					Type t = schema.getTypeByName(elementType->toString());
 
 					writeLine(out, "switch( " + attr.getName() + "_" + std::to_string(dim) + ".which() ) {");
-					for (int k = 0; k < t.getTypeCount(); ++k) { // t.getType(k) -> entity name
+					for (int k = 0; k < t.getTypeCount(); ++k) {
 						writeLine(out, "case " + std::to_string(k) + ":");
-						writeLine(out, "{");
+						writeLine(out, "{\t// " + t.getType(k));
 						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + attr.getInverseName() + ".push_back(EXPRESSReference<" + entity.getName() + ">::constructInstance(this->getId(), model));");
 						writeLine(out, "break;");
 						writeLine(out, "}");
