@@ -47,15 +47,16 @@ bool EntityAttribute::isInverse() const {
 }
 
 bool EntityAttribute::hasInverseCounterpart() const {
-	return inverseCounterpart;
+	return !isInverse() && !inverses.empty();
 }
 
-std::string EntityAttribute::getInverseName() const {
-	return inverseName;
+std::vector<std::pair<std::string, std::string>> EntityAttribute::getInverses() const {
+	return inverses;
 }
 
-std::string EntityAttribute::getInverseEntity() const {
-	return inverseEntity;
+void EntityAttribute::addInverseCounterpart(const std::string& entity, const std::string& attr) {
+	if( std::find_if(inverses.begin(), inverses.end(), [&](auto &el) { return el.first == entity; }) == inverses.end() )
+		inverses.push_back(std::pair<std::string, std::string>(entity, attr));
 }
 
 const std::string EntityAttribute::toString(const Schema & schema) const {

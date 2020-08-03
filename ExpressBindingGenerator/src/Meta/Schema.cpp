@@ -264,13 +264,17 @@ void Schema::linkInverses()
 		{
 			if (attr.isInverse())
 			{
+				if (attr.getInverses().empty())
+					throw std::runtime_error("Inverse attribute was empty!");
+
+				const std::string entity = attr.getInverses().front().first;
 				for( auto it = entities_.begin(); it != entities_.end(); it++ )
 				{
-					if( it->getName() == attr.getInverseEntity() )
+					if( it->getName() == entity )
 				//	auto superTypes = getSuperTypes(*it);
 				//	auto found = std::find(superTypes.begin(), superTypes.end(), inverseEntity);
 				//	if( found != superTypes.end() )
-						it->setInverseCounterpart(attr.getInverseName(), ent.getName(), attr.getName());
+						it->addInverseCounterpart(attr.getInverses().front().second, ent.getName(), attr.getName());
 				}
 			}
 		}

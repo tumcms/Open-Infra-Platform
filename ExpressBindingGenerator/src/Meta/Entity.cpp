@@ -78,15 +78,13 @@ bool Entity::hasSupertype() const {
 	return !parentEntity_.empty();
 }
 
-void Entity::setInverseCounterpart(const std::string& attrName, const std::string& inverseEntity, const std::string& inverseAttr)
+void Entity::addInverseCounterpart(const std::string& attrName, const std::string& inverseEntity, const std::string& inverseAttr)
 {
 	for (auto it = attributes_.begin(); it != attributes_.end(); it++)
 	{
 		if (it->getName() == attrName)
 		{
-			it->inverseCounterpart = true;
-			it->inverseName = inverseAttr;
-			it->inverseEntity = inverseEntity;
+			it->addInverseCounterpart(inverseEntity, inverseAttr);
 			return;
 		}
 	}

@@ -157,15 +157,13 @@ class EntityAttribute {
     bool isOptional() const;
     bool isInverse() const;
 	bool hasInverseCounterpart() const;
-	std::string getInverseName() const;
-	std::string getInverseEntity() const;
+	std::vector<std::pair<std::string, std::string>> getInverses() const;
+	void addInverseCounterpart(const std::string&, const std::string&);
 
     std::string name;
     bool optional;
     bool inverse;
-	bool inverseCounterpart;
-	std::string inverseName;
-	std::string inverseEntity;
+	std::vector<std::pair<std::string, std::string>> inverses; // entity - attribute
 
     ReferenceCounted<IEntityAttributeType> type;
 

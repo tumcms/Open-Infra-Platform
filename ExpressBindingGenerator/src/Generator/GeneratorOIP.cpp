@@ -4064,14 +4064,17 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 			}
 		}
 		if (attr.isInverse()) {
-			if (schema.hasEntity(attr.getInverseEntity())) {
-				if( entityAttributes.find(attr.getInverseEntity()) == entityAttributes.end()) {
-					entityAttributes.insert(attr.getInverseEntity());
+			for( auto inverse : attr.getInverses() )
+			{
+				if (schema.hasEntity(inverse.first)) {
+					if( entityAttributes.find(inverse.first) == entityAttributes.end()) {
+						entityAttributes.insert(inverse.first);
+					}
 				}
-			}
-			if (schema.hasType(attr.getInverseEntity())) {
-				if (typeAttributes.find(attr.getInverseEntity()) == typeAttributes.end()) {
-					typeAttributes.insert(attr.getInverseEntity());
+				if (schema.hasType(inverse.first)) {
+					if (typeAttributes.find(inverse.first) == typeAttributes.end()) {
+						typeAttributes.insert(inverse.first);
+					}
 				}
 			}
 		}
@@ -4208,20 +4211,31 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 
 				// treat differently for reference-to-entity and selecttype attributes
 				if (schema.hasEntity(elementType->toString())) {
-					writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + attr.getInverseEntity() + ">() ) {");
-					writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + attr.getInverseEntity() + ">()->" + attr.getInverseName() + ".push_back(EXPRESSReference<" + entity.getName() + ">::constructInstance(this->getId(), model));");
-					writeLine(out, "}");
+					for( auto inverse : attr.getInverses() )
+					{
+						writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + inverse.first + ">() ) {");
+						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + inverse.first + ">()->" + inverse.second + ".push_back(EXPRESSReference<" + entity.getName() + ">::constructInstance(this->getId(), model));");
+						writeLine(out, "}");
+					}
 				}
 				else if (schema.hasType(elementType->toString()) && schema.getTypeByName(elementType->toString()).isSelectType()) {
 					Type t = schema.getTypeByName(elementType->toString());
 
 					writeLine(out, "switch( " + attr.getName() + "_" + std::to_string(dim) + ".which() ) {");
 					for (int k = 0; k < t.getTypeCount(); ++k) {
-						writeLine(out, "case " + std::to_string(k) + ":");
-						writeLine(out, "{\t// " + t.getType(k));
-						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + attr.getInverseName() + ".push_back(EXPRESSReference<" + entity.getName() + ">::constructInstance(this->getId(), model));");
-						writeLine(out, "break;");
-						writeLine(out, "}");
+						auto inverses = attr.getInverses();
+
+						// only write if there is also an inverse for this select type
+						auto inverse = std::find_if(inverses.begin(), inverses.end(), [&t, &k](const auto &el) { return el.first == t.getType(k); });
+
+						if ( inverse != inverses.end())
+						{
+							writeLine(out, "case " + std::to_string(k) + ":");
+							writeLine(out, "{\t// " + t.getType(k));
+							writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + inverse->second + ".push_back(EXPRESSReference<" + entity.getName() + ">::constructInstance(this->getId(), model));");
+							writeLine(out, "break;");
+							writeLine(out, "}");
+						}
 					}
 					writeLine(out, "}"); // end switch
 				}

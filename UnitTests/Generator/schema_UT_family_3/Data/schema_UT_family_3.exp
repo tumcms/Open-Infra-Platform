@@ -39,7 +39,7 @@ ENTITY Party;
      name : Name;
      president : Person;
    INVERSE
-     involves : SET [0:?] OF RelInvolves FOR activity;
+     involvesGroups : SET [0:?] OF RelInvolves FOR activity;
 END_ENTITY;
 
 ENTITY RelInvolves;
