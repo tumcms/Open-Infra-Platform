@@ -4062,6 +4062,18 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 			if (schema.hasType(elementType->toString())) {
 				typeAttributes.insert(elementType->toString());
 			}
+			if (attr.isInverse()) {
+				if (schema.hasEntity(attr.getInverseEntity())) {
+					if( entityAttributes.find(attr.getInverseEntity()) == entityAttributes.end()) {
+							entityAttributes.insert(attr.getInverseEntity());
+					}
+				}
+				if (schema.hasType(attr.getInverseEntity())) {
+					if (typeAttributes.find(attr.getInverseEntity()) == typeAttributes.end()) {
+						typeAttributes.insert(attr.getInverseEntity());
+					}
+				}
+			}
 		}
 	}
 
