@@ -4181,38 +4181,59 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		writeLine(out, "return stepLine;");
 		writeLine(out, "}");
 		linebreak(out);
-
-		// predeclare the for each function
-		auto fctWriteInverse = [](std::ofstream &out, EntityAttribute& attr, const std::string& entityName, const std::string& inverseEntity, const std::string& inverseAttrName) {
-			int dim = 0;
-			auto elementType = attr.type;
-			std::string get = "";
-			if (attr.isOptional())
-			{
-				writeLine(out, "if( this->" + attr.getName() + " ) {");
-				get = ".get()";
-			}
-			writeLine(out, "auto " + attr.getName() + "_0 = " + attr.getName() + get + ";");
-			while( elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-				dim++;
-				writeLine(out, "for( auto " + attr.getName() + "_" + std::to_string(dim) + " : " + attr.getName() + "_" + std::to_string(dim-1) + " ) {");
-				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
-			}
-			writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + inverseEntity + ">() ) {");
-			writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + inverseEntity + ">()->" + inverseAttrName + ".push_back(EXPRESSReference<" + entityName + ">::constructInstance(this->getId(), model));");
-			writeLine(out, "}");
-			while( dim --> 0 ) // while dim goes to zero
-				writeLine(out, "}");
-			if (attr.isOptional())
-				writeLine(out, "}");
-		};
-		
+				
 		// Set inverse attributes
 		writeDoxyComment(out, "Sets the inverse attributes.", "", nullptr, nullptr, "");
 		writeLine(out, "void " + entity.getName() + "::linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
 		for (auto attr : schema.getAllEntityAttributes(entity, true))
+		{
 			if (attr.hasInverseCounterpart())
-				fctWriteInverse(out, attr, entity.getName(), attr.getInverseEntity(), attr.getInverseName());
+			{
+				int dim = 0;
+				auto elementType = attr.type;
+				std::string get = "";
+				if (attr.isOptional())
+				{
+					writeLine(out, "if( this->" + attr.getName() + " ) {");
+					get = ".get()";
+				}
+				writeLine(out, "auto " + attr.getName() + "_0 = " + attr.getName() + get + ";");
+
+				// if the attribute is a container, we need to get to the inner most entity
+				while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+					dim++;
+					writeLine(out, "for( auto " + attr.getName() + "_" + std::to_string(dim) + " : " + attr.getName() + "_" + std::to_string(dim - 1) + " ) {");
+					elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
+				}
+
+				// treat differently for reference-to-entity and selecttype attributes
+				if (schema.hasEntity(elementType->toString())) {
+					writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + attr.getInverseEntity() + ">() ) {");
+					writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + attr.getInverseEntity() + ">()->" + attr.getInverseName() + ".push_back(EXPRESSReference<" + entity.getName() + ">::constructInstance(this->getId(), model));");
+					writeLine(out, "}");
+				}
+				else if (schema.hasType(elementType->toString()) && schema.getTypeByName(elementType->toString()).isSelectType()) {
+					Type t = schema.getTypeByName(elementType->toString());
+
+					writeLine(out, "switch( " + attr.getName() + "_" + std::to_string(dim) + ".which() ) {");
+					for (int k = 0; k < t.getTypeCount(); ++k) { // t.getType(k) -> entity name
+						writeLine(out, "case " + std::to_string(k) + ":");
+						writeLine(out, "{");
+						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + attr.getInverseName() + ".push_back(EXPRESSReference<" + entity.getName() + ">::constructInstance(this->getId(), model));");
+						writeLine(out, "break;");
+						writeLine(out, "}");
+					}
+					writeLine(out, "}"); // end switch
+				}
+
+				// close the for loops from above
+				while (dim --> 0) // while dim goes to zero
+					writeLine(out, "}");
+				// close the if( this->" + attr.getName() + " )
+				if (attr.isOptional())
+					writeLine(out, "}");
+			}
+		}
 		writeLine(out, "}");
 		linebreak(out);
 	};
