@@ -726,6 +726,143 @@ namespace OpenInfraPlatform
 						// return basisFuncsDerivativeOne;
 					}
 
+					/*! \brief Computes the vector of second derivative at the location \c t.
+					 *
+					 * This function is for B-Splines from an \c IfcBSplineCurveWithKnots entity.
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	t					The parameter value t of the curve c(t).
+					 * \param[in]	controlPoints		The vector of the B-Spline control points.
+					 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
+					 *
+					 * \return		The vector of second derivative at the position t.
+					 */
+					carve::geom::vector<3> computePointOfDerivativeTwo(
+						const int& order,
+						const double& t,
+						const std::vector<carve::geom::vector<3>>& controlPoints,
+						const std::vector<double>& knotArray)const throw(...)
+					{
+						// 1) Evaluate basis functions of first derivative at curve point t
+						const std::vector<double> basisFuncs = computeDerivativeTwoBasisFunctions(order, t, controlPoints.size(), knotArray);
+
+						// 2) Compute exact point
+						carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+
+						for (size_t j = 0; j < controlPoints.size(); ++j)
+						{
+							// 3b) apply formula for normal B-spline curves
+							point += basisFuncs[j] * controlPoints[j];
+						}
+
+						return point;
+					}
+
+					/*! \brief Computes the second derivative of basis functions for given curve value \c t.
+					 *
+					 * For one specific value of t the function composes and evaluates the basis functions (=blending functions) of the second derivative.
+					 *
+					 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	t					Evaluation point of the curve c(t)
+					 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+					 * \param[in]	knotArray			The array / vector of knots obtained from \c IfcBSplineCurveWithKnots,
+					 *									the function \c loadKnotArray gives this vector.
+					 *
+					 * \return							Vector of evaluated second derivative basis functions, vector size is equal to number of control points.
+					 */
+					std::vector<double> computeDerivativeTwoBasisFunctions(
+						const int& order,
+						const double& t,
+						const size_t& numControlPoints,
+						const std::vector<double>& knotArray) const throw(...)
+					{
+						const uint16_t numBasisFuncs = order - 1 + numControlPoints;
+
+						std::vector<double> basisFuncsBSpline = obtainBasisFunctionFirstOrder(t, numBasisFuncs, knotArray);
+						std::vector<double> basisFuncsDerivativeOne = obtainBasisFunctionDerivativeFirstOrder(numBasisFuncs);
+						std::vector<double> basisFuncsDerivativeTwo = obtainBasisFunctionDerivativeFirstOrder(numBasisFuncs);
+
+						// in C++, k goes from 0 to order-1 = degree; k=0 is done with obtain..FirstOrder()
+						// in mathematical definition, k goes from 1 to order
+						for (int k = 1; k < order; k++)
+						{
+							obtainBasisFunctionDerivativeTwoNextOrder(k, t, knotArray, basisFuncsBSpline, basisFuncsDerivativeOne, basisFuncsDerivativeTwo);
+							// basisFuncsDerivativeTwo is the return value by reference
+
+							obtainBasisFunctionDerivativeOneNextOrder(k, t, knotArray, basisFuncsBSpline, basisFuncsDerivativeOne);
+							// basisFuncsDerivativeOne is the return value by reference
+
+							obtainBasisFunctionNextOrder(k, t, knotArray, basisFuncsBSpline);
+							// basisFuncsBSpline is the return value by reference
+						}
+
+						std::vector<double> basisFuncs;
+						basisFuncs.reserve(numControlPoints);
+						const size_t numBasis = numControlPoints;
+						for (size_t j = 0; j < numBasis; ++j) {
+							basisFuncs[j] = basisFuncsDerivativeTwo[j];
+						}
+						return basisFuncs;
+					}
+
+					/*! \brief Computes the second derivative basis functions of next higher order.
+					 *
+					 * Increases the order of second derivative basis functions from k-1 to k.
+					 *
+					 * \param[in] k						   Order k of basis functions which should be computed.
+					 * \param[in] t						   Evaluation point of the curve c(t)
+					 * \param[in] knotVector			   The array / vector of knots obtained from \c IfcBSplineCurveWithKnots.
+					 * \param[in] basisFuncsBSpline		   Vector of basis functions of order k-1
+					 * \param[in] basisFuncsDerivativeOne  Vector of first derivative basis functions of order k-1
+					 * \param[in] basisFuncsDerivativeTwo  Vector of second derivative basis functions of order k-1
+					 *
+					 * \return	  Vector of second derivative basis functions of order k
+					 */
+					void obtainBasisFunctionDerivativeTwoNextOrder(
+						const int& k,
+						const double& t,
+						const std::vector<double>& knotVector,
+						const std::vector<double>& basisFuncsBSpline,
+						const std::vector<double>& basisFuncsDerivativeOne,
+						std::vector<double>& basisFuncsDerivativeTwo) const throw(...)
+					{
+						if (k == 2)
+						{
+							for (size_t i = 0; i < basisFuncsDerivativeTwo.size() - k; ++i)
+								basisFuncsDerivativeTwo[i] = 0;
+						}
+						else
+						{
+							double firstSummand;
+							double secondSummand;
+
+							for (size_t i = 0; i < basisFuncsDerivativeTwo.size() - k; ++i) {
+								const double t_i = knotVector[i];
+								const double t_ik = knotVector[i + k];
+								const double t_ik1 = knotVector[i + k + 1];
+								const double t_i1 = knotVector[i + 1];
+
+								// function is zero if denominator is zero
+								if (t_ik == t_i)
+									firstSummand = 0.0;
+								else
+									// apply formula of first part
+									firstSummand = (2*basisFuncsDerivativeOne[i] + (t - t_i)*basisFuncsDerivativeTwo[i]) / (t_ik - t_i);
+
+								// function is zero if denominator is zero
+								if (t_ik1 == t_i1)
+									secondSummand = 0.0;
+								else
+									// apply formula of first part
+									secondSummand = ((t_ik1 - t)*basisFuncsDerivativeTwo[i + 1] - 2* basisFuncsDerivativeOne[i + 1]) / (t_ik1 - t_i1);
+
+								// compute sum and set as basis function for next order
+								basisFuncsDerivativeTwo[i] = firstSummand + secondSummand;
+							}
+							// return basisFuncsDerivativeTwo;
+						}
+					}
+
 					// B-Spline surface definition according to: 
 					// http://www.buildingsmart-tech.org/ifc/IFC4/final/html/schema/ifcgeometryresource/lexical/ifcbsplinesurface.htm
 					void computeBSplineSurface(
