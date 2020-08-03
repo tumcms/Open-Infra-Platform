@@ -158,6 +158,76 @@ namespace OpenInfraPlatform
 						std::tie(length, curvature) = computeCurvatureOfIfcBSplineCurveWithKnots(bspline);
 					}
 
+					/*! \brief Computes the length and curvature of an \c IfcBSplineCurveWithKnots entity
+					 *
+					 * This function calculates the curvature of a B-Spline. As well, a vector with the corresponding curve length is calculated. 
+					 * The \c length is necessary to display or analyse the \c curvature in dependency to the true curve length.
+					 * The parameter \c t along a B-Spline curve doesn't represent the true length along the curve because the calculated curve points aren't evenly spaced.\n
+					 * Both return vectors have the same size. They come back as a \c std::tuple in the order \c length, \c curvature.
+					 *
+					 * \param[in]	bspline	 A B-Spline as \c IfcBSplineCurveWithKnots entity
+					 *
+					 * \return		Vector with curve length
+					 * \return		Vector with curve curvature
+					 */
+					std::tuple<std::vector<double>, std::vector<double>> computeCurvatureOfIfcBSplineCurveWithKnots(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline) const throw(...)
+					{
+						const int order = bspline->Degree + 1;
+						const int numControlPoints = bspline->ControlPointsList.size();
+						const int numKnotsArray = order + numControlPoints;
+
+						const std::vector<carve::geom::vector<3>> controlPoints = loadControlPoints(bspline);
+						const std::vector<double> knotArray = loadKnotArray(bspline, numKnotsArray);
+
+						uint32_t numCurvePoints;
+						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
+						double accuracy;
+						std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
+
+						// The following parameters corresponds to the parameter t of a curve c(t)
+						double knotStart;
+						double knotEnd;
+						double step;
+						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
+
+						std::vector<double> length;
+						length.reserve(numCurvePoints);
+						std::vector<double> curvature;
+						curvature.reserve(numCurvePoints);
+
+						// start with first valid knot
+						double t = knotStart;
+
+						carve::geom::vector<3> curvePoint;
+						carve::geom::vector<3> curvePointPrevious;
+						carve::geom::vector<3> derivativeOne;
+						carve::geom::vector<3> derivativeTwo;
+
+						for (size_t i = 0; i < numCurvePoints; ++i) {
+							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
+
+							curvePoint = computePointOfBSpline(order, t, controlPoints, numControlPoints, knotArray);
+							if (i == 0)
+								length[0] = 0;
+							else
+								length[i] = length[i-1] + (curvePoint - curvePointPrevious).length();
+							curvePointPrevious = curvePoint;
+
+							derivativeOne = computePointOfDerivativeOne(order, t, controlPoints, knotArray);
+							derivativeTwo = computePointOfDerivativeTwo(order, t, controlPoints, knotArray);
+
+							// curvature of curve c(t) in xy-plane
+							// according to definition 3.500 in Bronstein et al., Taschenbuch der Mathematik, 10. Auflage, 2016
+							curvature[i] = (derivativeOne.x*derivativeTwo.y - derivativeTwo.x*derivativeOne.y) 
+								/ (std::pow( std::pow(derivativeOne.x,2) + std::pow(derivativeOne.y,2), 3/2));
+
+							t += step;
+						}
+
+						return { length, curvature };
+					}
+
 				private:
 					/*! \brief Loads the control points from an IfcBSplineCurve-entity
 					 *
