@@ -56,7 +56,7 @@ class Schema_UT_family_3_Test : public Test {
 TEST_F(Schema_UT_family_3_Test, AllFilesAreGenerated) {
 	EXPECT_THAT(getNumberOfFilesInFolder(filepathGenerated, true), Eq(9));
 	EXPECT_THAT(getNumberOfFilesInFolder(filepathGenerated, false), Eq(6));
-	EXPECT_THAT(getNumberOfFilesInFolder(filepathGenerated + "/entity", false), Eq(10));
+	EXPECT_THAT(getNumberOfFilesInFolder(filepathGenerated + "/entity", false), Eq(12));
 	EXPECT_THAT(getNumberOfFilesInFolder(filepathGenerated + "/reader", false), Eq(2));
-	EXPECT_THAT(getNumberOfFilesInFolder(filepathGenerated + "/type", false), Eq(2));
+	EXPECT_THAT(getNumberOfFilesInFolder(filepathGenerated + "/type", false), Eq(4));
 }

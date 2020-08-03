@@ -3,6 +3,11 @@ SCHEMA schema_UT_family_3;
 TYPE Name = STRING;
 END_TYPE;
 
+TYPE AvtivitySelect = SELECT
+  (Hobby
+  ,Party);
+END_TYPE;
+
 ENTITY Person
    ABSTRACT SUPERTYPE OF (ONEOF (Male, Female));
      name : Name;
@@ -27,12 +32,19 @@ END_ENTITY;
 ENTITY Hobby;
      name : Name;
    INVERSE
-     involves : SET [0:?] OF RelInvolves FOR hobby;
+     involves : SET [0:?] OF RelInvolves FOR activity;
+END_ENTITY;
+
+ENTITY Party;
+     name : Name;
+     president : Person;
+   INVERSE
+     involves : SET [0:?] OF RelInvolves FOR activity;
 END_ENTITY;
 
 ENTITY RelInvolves;
    person : LIST [1:?] OF Person;
-   hobby : Hobby;
+   activity : ActivitySelect;
 END_ENTITY;
 
 END_SCHEMA;
