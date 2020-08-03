@@ -4063,7 +4063,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 				typeAttributes.insert(elementType->toString());
 			}
 		}
-		if (attr.isInverse()) {
+		if ( attr.isInverse() || attr.hasInverseCounterpart() ) {
 			for( auto inverse : attr.getInverses() )
 			{
 				if (schema.hasEntity(inverse.first)) {
