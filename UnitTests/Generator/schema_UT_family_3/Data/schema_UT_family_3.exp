@@ -3,7 +3,7 @@ SCHEMA schema_UT_family_3;
 TYPE Name = STRING;
 END_TYPE;
 
-TYPE AvtivitySelect = SELECT
+TYPE ActivitySelect = SELECT
   (Hobby
   ,Party);
 END_TYPE;
