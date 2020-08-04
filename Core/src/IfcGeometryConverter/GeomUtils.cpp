@@ -127,27 +127,15 @@ void GeomUtils::extrude(
 {
 	if( face_loops_input.size() == 0 )
 	{
-		std::cout << "extrude: face_loops_input.size() == 0" << std::endl;
-		return;
-		/*
-		throw oip::InconsistentModellingException("face_loops_input.size() == 0");
-		*/
+		throw oip::InconsistentModellingException("face_loops_input.size() == 0");	
 	}
 	if( poly_data->points.size() > 0 )
 	{
-		std::cout << "extrude: points vec should be empty" << std::endl;
-		return;
-		/*
 		throw oip::InconsistentModellingException("points vec should be empty");
-		*/
 	}
 	if( poly_data->getFaceCount() > 0 )
 	{
-		std::cout << "extrude: PolyhedronData::faceCount should be 0" << std::endl;
-		return;
-		/*
 		throw oip::InconsistentModellingException("PolyhedronData::faceCount should be 0");
-		*/
 	}
 
 	// figure 1: loops and indexes
@@ -168,18 +156,7 @@ void GeomUtils::extrude(
 
 		if( loop.size() < 3 )
 		{
-			/*
 			throw oip::InconsistentGeometryException("loop.size() < 3");
-			*/
-			err << "loop.size() < 3" << std::endl;
-			if( it_face_loops == face_loops_input.begin() )
-			{
-				break;
-			}
-			else
-			{
-				continue;
-			}
 		}
 
 		// check winding order
@@ -209,10 +186,7 @@ void GeomUtils::extrude(
 				
 		if( loop_2d.size() < 3 )
 		{
-			err << "extrude: loop_2d.size() < 3" << std::endl;
-			/*
 			throw oip::InconsistentGeometryException("loop_2d.size() < 3");
-			*/
 		}
 		
 		// close loop, insert first point at end if not already there
@@ -562,12 +536,7 @@ void GeomUtils::computeInverse( const carve::math::Matrix& matrix_a, carve::math
 
 	if( err_flag )
 	{
-		std::stringstream ss;
-		ss << "cannot compute inverse of matrix " << __FUNCTION__;
-		throw GeomException(ss.str());
-		/*
 		throw oip::InconsistentGeometryException("cannot compute inverse of matrix ");
-		*/
 	}
 	
 	inv._11 = a[0][4];
@@ -602,13 +571,7 @@ void GeomUtils::closestPointOnLine( const carve::geom::vector<3>& point, const
 	double numer = line_direction.x*line_direction.x + line_direction.y*line_direction.y + line_direction.z*line_direction.z;
 	if(numer == 0)
 	{
-		std::stringstream ss;
-		ss << "Line is degenerated: the line's direction vector is a null vector! " 
-			<< __FUNCTION__;
-		throw GeomException(ss.str());
-		/*
 		throw oip::InconsistentGeometryException("Line is degenerated : the line's direction vector is a null vector!");
-		*/
 	}
 	double lambda = denom/numer;
 	closest = carve::geom::VECTOR(line_origin.x+lambda*line_direction.x, line_origin.y+lambda*line_direction.y, line_origin.z+lambda*line_direction.z);
@@ -626,13 +589,7 @@ void GeomUtils::closestPointOnLine( const buw::Vector3f& point,
 	double numer = line_direction.x()*line_direction.x() + line_direction.y()*line_direction.y() + line_direction.z()*line_direction.z();
 	if(numer == 0)
 	{
-		std::stringstream ss;
-		ss << "Line is degenerated: the line's direction vector is a null vector! " 
-			<< __FUNCTION__;
-		throw GeomException(ss.str());
-		/*
 		throw oip::InconsistentGeometryException("Line is degenerated : the line's direction vector is a null vector!");
-		*/
 	}
 	double lambda = denom/numer;
 	closest = buw::Vector3f(line_origin.x()+lambda*line_direction.x(), line_origin.y()+lambda*line_direction.y(), line_origin.z()+lambda*line_direction.z());
@@ -652,13 +609,7 @@ bool GeomUtils::isPointOnLineSegment( double& target_lambda,
 	const double numer = line_direction.x()*line_direction.x() + line_direction.y()*line_direction.y() + line_direction.z()*line_direction.z();
 	if(numer == 0)
 	{
-		std::stringstream ss;
-		ss << "Line is degenerated: the line's direction vector is a null vector! " 
-			<< __FUNCTION__;
-		throw GeomException(ss.str());
-		/*
 		throw oip::InconsistentGeometryException("Line is degenerated : the line's direction vector is a null vector!");
-		*/
 	}
 	const double lambda = denom/numer;
 	buw::Vector3f closest( line_origin.x()+lambda*line_direction.x(), line_origin.y()+lambda*line_direction.y(), line_origin.z()+lambda*line_direction.z() );
@@ -1043,29 +994,11 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 	// check opening polyhedron
 	if( !mesh_set )
 	{
-		/*
 		throw oip::InconsistentModellingException("MeshSet of resulting mesh not valid");
-		*/
-#ifdef _DEBUG
-		if (entity_id == -1) 
-			err_poly << "MeshSet of resulting mesh not valid" << std::endl;
-		else 
-			err_poly << "MeshSet of entity #" << entity_id << " not valid" << std::endl;
-#endif
-		return false;
 	}
 	if( mesh_set->meshes.size() == 0 )
 	{
-		/*
 		throw oip::InconsistentModellingException("MeshSet of resulting mesh is empty");
-		*/
-#ifdef _DEBUG
-		if (entity_id == -1) 
-			err_poly << "MeshSet of resulting mesh is empty" << std::endl;
-		else
-			err_poly << "MeshSet of entity #" << entity_id << " has no meshes" << std::endl;
-#endif
-		return false;
 	}
 
 	std::stringstream err;
@@ -1207,20 +1140,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 
 	if( err.tellp() > 0 )
 	{
-		/*
 		throw oip::InconsistentModellingException("MeshSet of resulting mesh has problems");
-		*/
-#ifdef _DEBUG
-		if (entity_id == -1) {
-			err_poly << "MeshSet of resulting mesh has problems:" << std::endl;
-			err_poly << err.str().c_str();
-		} else  {
-			err_poly << "MeshSet of entity #" << entity_id << " has problems:" << std::endl;
-			err_poly << err.str().c_str();
-		}
-		
-#endif
-		return false;
 	}
 	return true;
 }
