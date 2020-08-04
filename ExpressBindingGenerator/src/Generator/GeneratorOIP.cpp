@@ -2222,9 +2222,6 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 		
 	writeInclude(out, type.getName() + ".h");
 	writeInclude(out, "EXPRESS/EXPRESSOptional.h");
-	if (!type.isSelectType()) {
-		writeInclude(out, "EXPRESS/EXPRESSOptional.cpp");
-	}
 	linebreak(out);
 
 	std::set<std::string> types, entities;
@@ -2265,10 +2262,6 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 			linebreak(out);
 		}
 
-
-
-		writeInclude(out, "EXPRESS/EXPRESSOptional.cpp");
-		writeInclude(out, "EXPRESS/EXPRESSReference.cpp");
 		linebreak(out);
 	}
 	   	
@@ -4069,8 +4062,6 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		linebreak(out);
 	}
 
-	writeInclude(out, "EXPRESS/EXPRESSOptional.cpp");
-	writeInclude(out, "EXPRESS/EXPRESSReference.cpp");
 	linebreak(out);
 
 	writeBeginNamespace(out, schema);
