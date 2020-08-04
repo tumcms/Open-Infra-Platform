@@ -1,0 +1,309 @@
+
+SCHEMA schema_UT_v3;
+
+(* IFC4x3 taken as basis *)
+
+TYPE IfcInteger = INTEGER;
+END_TYPE;
+TYPE IfcLabel = STRING(255);
+END_TYPE;
+TYPE IfcLengthMeasure = REAL;
+END_TYPE;
+TYPE IfcLogical = LOGICAL;
+END_TYPE;
+TYPE IfcParameterValue = REAL;
+END_TYPE;
+TYPE IfcReal = REAL;
+END_TYPE;
+
+TYPE IfcDimensionCount = INTEGER;
+ WHERE
+	WR1 : { 0 < SELF <= 3 };
+END_TYPE;
+
+TYPE IfcBSplineCurveForm = ENUMERATION OF
+    (POLYLINE_FORM
+    ,CIRCULAR_ARC
+    ,ELLIPTIC_ARC
+    ,PARABOLIC_ARC
+    ,HYPERBOLIC_ARC
+    ,UNSPECIFIED);
+END_TYPE;
+
+TYPE IfcGeometricSetSelect = SELECT
+	(IfcPoint
+	,IfcCurve);
+END_TYPE;
+
+TYPE IfcKnotType = ENUMERATION OF
+    (UNIFORM_KNOTS
+    ,QUASI_UNIFORM_KNOTS
+    ,PIECEWISE_BEZIER_KNOTS
+    ,UNSPECIFIED);
+END_TYPE;
+
+TYPE IfcMeasureValue = SELECT
+	(IfcLengthMeasure
+	,IfcParameterValue);
+END_TYPE;
+
+TYPE IfcTrimmingSelect = SELECT
+	(IfcCartesianPoint
+	,IfcParameterValue);
+END_TYPE;
+
+ENTITY IfcAlignment2DHorizontal
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+ INVERSE
+    ToAlignmentCurve : SET [1:?] OF IfcAlignmentCurve FOR Horizontal;
+END_ENTITY;
+
+ENTITY IfcAlignment2DVertical
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+ INVERSE
+    ToAlignmentCurve : SET [1:1] OF IfcAlignmentCurve FOR Vertical;
+END_ENTITY;
+
+ENTITY IfcAlignmentCurve
+ SUBTYPE OF (IfcBoundedCurve);
+    Horizontal : IfcAlignment2DHorizontal;
+    Vertical : OPTIONAL IfcAlignment2DVertical;
+    Tag : OPTIONAL IfcLabel;
+END_ENTITY;
+
+ENTITY IfcBoundedCurve
+ ABSTRACT SUPERTYPE OF (ONEOF
+    (IfcAlignmentCurve
+    ,IfcBSplineCurve
+    ,IfcPolyline))
+ SUBTYPE OF (IfcCurve);
+END_ENTITY;
+
+ENTITY IfcBSplineCurve
+ ABSTRACT SUPERTYPE OF (ONEOF
+    (IfcBSplineCurveWithKnots))
+ SUBTYPE OF (IfcBoundedCurve);
+    Degree : IfcInteger;
+    ControlPointsList : LIST [2:?] OF IfcCartesianPoint;
+    CurveForm : IfcBSplineCurveForm;
+    ClosedCurve : IfcLogical;
+    SelfIntersect : IfcLogical;
+ DERIVE
+    UpperIndexOnControlPoints : IfcInteger := (SIZEOF(ControlPointsList) - 1);
+    ControlPoints : ARRAY [0:UpperIndexOnControlPoints] OF IfcCartesianPoint := IfcListToArray(ControlPointsList,0,UpperIndexOnControlPoints);
+ WHERE
+    SameDim : SIZEOF(QUERY(Temp <* ControlPointsList |
+  Temp.Dim <> ControlPointsList[1].Dim)) = 0;
+END_ENTITY;
+
+ENTITY IfcBSplineCurveWithKnots
+ SUPERTYPE OF (ONEOF
+    (IfcRationalBSplineCurveWithKnots))
+ SUBTYPE OF (IfcBSplineCurve);
+    KnotMultiplicities : LIST [2:?] OF IfcInteger;
+    Knots : LIST [2:?] OF IfcParameterValue;
+    KnotSpec : IfcKnotType;
+ DERIVE
+    UpperIndexOnKnots : IfcInteger := SIZEOF(Knots);
+ WHERE
+    ConsistentBSpline : IfcConstraintsParamBSpline(Degree, UpperIndexOnKnots,
+UpperIndexOnControlPoints, KnotMultiplicities, Knots);
+    CorrespondingKnotLists : SIZEOF(KnotMultiplicities) = UpperIndexOnKnots;
+END_ENTITY;
+
+ENTITY IfcCartesianPoint
+ SUBTYPE OF (IfcPoint);
+	Coordinates : LIST [1:3] OF IfcLengthMeasure;
+ DERIVE
+	Dim : IfcDimensionCount := HIINDEX(Coordinates);
+ WHERE
+    CP2Dor3D : HIINDEX(Coordinates) >= 2;
+END_ENTITY;
+
+ENTITY IfcCurve
+ ABSTRACT SUPERTYPE OF (ONEOF
+    (IfcBoundedCurve
+    ,IfcLine))
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+ DERIVE
+	Dim : IfcDimensionCount := IfcCurveDim(SELF);
+END_ENTITY;
+
+ENTITY IfcDirection
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+	DirectionRatios : LIST [2:3] OF REAL;
+ DERIVE
+	Dim : IfcDimensionCount := HIINDEX(DirectionRatios);
+ WHERE
+    MagnitudeGreaterZero : SIZEOF(QUERY(Tmp <* DirectionRatios | Tmp <> 0.0)) > 0;
+END_ENTITY;
+
+ENTITY IfcGeometricRepresentationItem
+ ABSTRACT SUPERTYPE OF (ONEOF
+    (IfcAlignment2DHorizontal
+    ,IfcAlignment2DVertical
+	,IfcCurve
+	,IfcDirection
+	,IfcGeometricSet
+	,IfcPoint
+	,IfcVector));
+END_ENTITY;
+
+ENTITY IfcGeometricSet
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+	Elements : SET [1:?] OF IfcGeometricSetSelect;
+ DERIVE
+	Dim : IfcDimensionCount := Elements[1].Dim;
+ WHERE
+    ConsistentDim : SIZEOF(QUERY(Temp <* Elements |
+  Temp.Dim <> Elements[1].Dim)) = 0;
+END_ENTITY;
+
+ENTITY IfcLine
+ SUBTYPE OF (IfcCurve);
+	Pnt : IfcCartesianPoint;
+	Dir : IfcVector;
+ WHERE
+	SameDim : Dir.Dim = Pnt.Dim;
+END_ENTITY;
+
+ENTITY IfcPoint
+ ABSTRACT SUPERTYPE OF (ONEOF
+	(IfcCartesianPoint
+	,IfcPointOnCurve))
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+END_ENTITY;
+
+ENTITY IfcPointOnCurve
+ SUBTYPE OF (IfcPoint);
+	BasisCurve : IfcCurve;
+	PointParameter : IfcParameterValue;
+ DERIVE
+	Dim : IfcDimensionCount := BasisCurve.Dim;
+END_ENTITY;
+
+ENTITY IfcPolyline
+ SUBTYPE OF (IfcBoundedCurve);
+	Points : LIST [2:?] OF IfcCartesianPoint;
+ WHERE
+	SameDim : SIZEOF(QUERY(Temp <* Points | Temp.Dim <> Points[1].Dim)) = 0;
+END_ENTITY;
+
+ENTITY IfcVector
+ SUBTYPE OF (IfcGeometricRepresentationItem);
+	Orientation : IfcDirection;
+	Magnitude : IfcLengthMeasure;
+ DERIVE
+	Dim : IfcDimensionCount := Orientation.Dim;
+ WHERE
+	MagGreaterOrEqualZero : Magnitude >= 0.0;
+END_ENTITY;
+
+
+
+FUNCTION IfcListToArray
+(Lis : LIST [0:?] OF GENERIC : T;
+       Low,U : INTEGER) : ARRAY OF GENERIC : T;
+   LOCAL
+     N   : INTEGER;
+     Res : ARRAY [Low:U] OF GENERIC : T;
+   END_LOCAL;
+      
+   N := SIZEOF(Lis);
+   IF (N <> (U-Low +1)) THEN
+     RETURN(?);
+   ELSE
+     Res := [Lis[1] : N];
+     REPEAT i := 2 TO N;
+       Res[Low+i-1] := Lis[i];
+     END_REPEAT;
+     RETURN(Res);
+   END_IF;
+END_FUNCTION;
+
+FUNCTION IfcCurveWeightsPositive
+	(B: IfcRationalBSplineCurveWithKnots)
+	: BOOLEAN;
+     LOCAL
+       Result : BOOLEAN := TRUE;
+     END_LOCAL;
+  
+     REPEAT i := 0 TO B.UpperIndexOnControlPoints;
+       IF B.Weights[i] <= 0.0  THEN
+         Result := FALSE;
+         RETURN(Result);
+       END_IF;
+     END_REPEAT;
+     RETURN(Result);
+END_FUNCTION;
+
+FUNCTION IfcCurveDim
+	(Curve : IfcCurve)
+	: IfcDimensionCount;
+  
+    IF ('schema_UT_v3.IFCLINE' IN TYPEOF(Curve))
+      THEN RETURN(Curve\IfcLine.Pnt.Dim);
+    END_IF;
+    IF ('schema_UT_v3.IFCPOLYLINE' IN TYPEOF(Curve))
+      THEN RETURN(Curve\IfcPolyline.Points[1].Dim);
+    END_IF;
+    IF ('schema_UT_v3.IFCBSPLINECURVE' IN TYPEOF(Curve))
+      THEN RETURN(Curve\IfcBSplineCurve.ControlPointsList[1].Dim);
+    END_IF;
+    IF ('IFC4X3_RC1.IFCALIGNMENTCURVE' IN TYPEOF(Curve))
+      THEN RETURN(3);
+    END_IF;
+  RETURN (?);
+END_FUNCTION;
+
+FUNCTION IfcConstraintsParamBSpline
+( Degree, UpKnots, UpCp : INTEGER;
+  KnotMult : LIST OF INTEGER;
+  Knots : LIST OF IfcParameterValue ) 
+: BOOLEAN;
+
+
+  LOCAL
+    Result : BOOLEAN := TRUE;
+    K, Sum : INTEGER;
+  END_LOCAL;
+
+  (* Find sum of knot multiplicities. *)
+  Sum := KnotMult[1];
+  REPEAT i := 2 TO UpKnots;
+    Sum := Sum + KnotMult[i];
+  END_REPEAT;
+
+  (* Check limits holding for all B-spline parametrisations *)
+  IF (Degree < 1) OR (UpKnots < 2) OR (UpCp < Degree) OR
+    (Sum <> (Degree + UpCp + 2)) THEN
+    Result := FALSE;
+    RETURN(Result);
+  END_IF;
+
+  K := KnotMult[1];
+  IF (K < 1) OR (K > Degree + 1) THEN
+    Result := FALSE;
+    RETURN(Result);
+  END_IF;
+
+  REPEAT i := 2 TO UpKnots;
+    IF (KnotMult[i] < 1) OR (Knots[i] <= Knots[i-1]) THEN
+      Result := FALSE;
+      RETURN(Result);
+    END_IF;
+    K := KnotMult[i];
+    IF (i < UpKnots) AND (K > Degree) THEN
+      Result := FALSE;
+      RETURN(Result);
+    END_IF;
+    IF (i = UpKnots) AND (K > Degree + 1) THEN
+      Result := FALSE;
+      RETURN(Result);
+    END_IF;
+  END_REPEAT;
+
+  RETURN(result);
+END_FUNCTION;
+
+END_SCHEMA;

@@ -29,5 +29,13 @@ int main(int argc, char **argv) {
 		std::cout << "Unit test crashed..." << e.what() << std::endl;
 	}
 
+	if( result )
+	{
+		// only pause for user input if the result is not 0 ( != OK )
+		std::cout << "Observe the results." << std::endl;
+		std::cout << "Press Enter to exit ...";
+		getchar();
+	}
+
 	return result;
 }
