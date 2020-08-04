@@ -59,21 +59,21 @@ class Entity {
     // Subtypes
     //---------------------------------------------------------------
 
-    int getSubtypeCount() const;
+	size_t getSubtypeCount() const;
 
     void addSubtype(const std::string &subtype);
 
-    std::string getSubtypeByIndex(const int index) const;
+    std::string getSubtypeByIndex(const size_t index) const;
 
     //---------------------------------------------------------------
     // Attributes
     //---------------------------------------------------------------
 
-    int getAttributeCount() const;
+	size_t getAttributeCount() const;
 
     void addAttribute(const EntityAttribute &att);
 
-    const EntityAttribute &getAttribute(const int index) const;
+    const EntityAttribute &getAttribute(const size_t index) const;
 
 	const std::vector<EntityAttribute> getAttributes() const;
 
@@ -92,22 +92,18 @@ class Entity {
 		qualifiedAttributes_.push_back(attribute);
 	}
 
-	int getQualifiedAttributeCount() const {
-		return static_cast<int>(qualifiedAttributes_.size());
+	size_t getQualifiedAttributeCount() const {
+		return qualifiedAttributes_.size();
 	}
 
-	qualifiedAttribute getQualifiedAttributeByIndex(const int index) const {
+	qualifiedAttribute getQualifiedAttributeByIndex(const size_t index) const {
 		return qualifiedAttributes_[index];
 	}
 
 	bool hasQualifiedAttribute(const std::string& attributeQualifier) const {
-		for (int i = 0; i < qualifiedAttributes_.size(); ++i)
-		{
-			if (qualifiedAttributes_[i].attributeQualifier == attributeQualifier)
-			{
+		for (auto qa : qualifiedAttributes_)
+			if (qa.attributeQualifier == attributeQualifier)
 				return true;
-			}
-		}
 
 		return false;
 	}
