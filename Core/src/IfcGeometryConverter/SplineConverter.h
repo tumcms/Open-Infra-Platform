@@ -153,33 +153,40 @@ namespace OpenInfraPlatform
 					 */
 					void junkfunctionToCallForCompiler(const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline) const throw(...)
 					{
+						const int order = bspline->Degree + 1;
+						const int numControlPoints = bspline->ControlPointsList.size();
+						const int numKnotsArray = order + numControlPoints;
+						const std::vector<double> knotArray = loadKnotArray(bspline, numKnotsArray);
+
+						const std::vector<carve::geom::vector<3>> controlPoints = loadControlPoints(bspline);
+
 						std::vector<double> length;
 						std::vector<double> curvature;
-						std::tie(length, curvature) = computeCurvatureOfIfcBSplineCurveWithKnots(bspline);
+						std::tie(length, curvature) = computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
 					}
 
-					/*! \brief Computes the length and curvature of an \c IfcBSplineCurveWithKnots entity
+					/*! \brief Computes the length and curvature of an B-Spline curve
 					 *
-					 * This function calculates the curvature of a B-Spline. As well, a vector with the corresponding curve length is calculated. 
+					 * This function calculates the curvature of a B-Spline; rational B-Splines can't be handled from this function. 
+					 * As well, a vector with the corresponding curve length is calculated. 
 					 * The \c length is necessary to display or analyse the \c curvature in dependency to the true curve length.
-					 * The parameter \c t along a B-Spline curve doesn't represent the true length along the curve because the calculated curve points aren't evenly spaced.\n
+					 * The parameter \c t along a B-Spline curve doesn't represent the true length along the curve because the 
+					 * calculated curve points aren't evenly spaced.\n
 					 * Both return vectors have the same size. They come back as a \c std::tuple in the order \c length, \c curvature.
 					 *
-					 * \param[in]	bspline	 A B-Spline as \c IfcBSplineCurveWithKnots entity
+					 * \param[in]	order			Order of the B-Spline or rather the basis functions ( =degree+1 )
+					 * \param[in]	controlPoints	The vector of the B-Spline control points.
+					 * \param[in]	knotArray		The array / vector of knots.
 					 *
 					 * \return		Vector with curve length
 					 * \return		Vector with curve curvature
 					 */
-					std::tuple<std::vector<double>, std::vector<double>> computeCurvatureOfIfcBSplineCurveWithKnots(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline) const throw(...)
+					std::tuple<std::vector<double>, std::vector<double>> computeCurvatureOfBSplineCurveWithKnots(
+						const int& order,
+						const std::vector<carve::geom::vector<3>>& controlPoints,
+						const std::vector<double>& knotArray) const throw(...)
 					{
-						const int order = bspline->Degree + 1;
-						const int numControlPoints = bspline->ControlPointsList.size();
-						const int numKnotsArray = order + numControlPoints;
-
-						const std::vector<carve::geom::vector<3>> controlPoints = loadControlPoints(bspline);
-						const std::vector<double> knotArray = loadKnotArray(bspline, numKnotsArray);
-
+						const size_t numControlPoints = controlPoints.size();
 						uint32_t numCurvePoints;
 						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
 						double accuracy;
