@@ -16,45 +16,45 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "EXPRESSOptional.h"
-
-OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
-
-template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator= (const ForwardType& other) {
-	T obj;
-	obj = other;
-	boost::optional<T>::operator=(obj); /*this->base::emplace(other);*/ return *this;
-}
-
-template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator=(const T& other) { boost::optional<T>::operator=(other); return *this; };
-
-template <typename T> const std::string EXPRESSOptional<T>::classname() const {
-	if (this->is_initialized()) {
-		return this->get().classname();
-	}
-	else {
-		return "uninitialized";
-	}
-}
-
-
-template <typename T> const std::string EXPRESSOptional<T>::getStepParameter() const {
-	if (this->is_initialized()) {
-		return this->get().getStepParameter();
-	}
-	else {
-		return "$";
-	}
-}
-
-template <typename T> EXPRESSOptional<T> EXPRESSOptional<T>::readStepData(const std::string& value, const std::shared_ptr<EXPRESSModel>& model) {
-	EXPRESSOptional opt;
-	T val;
-	if (value != "$") {
-		val = T::readStepData(value, model);
-		opt = val;
-	}
-	return opt;
-}
-
-OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
+//#include "EXPRESSOptional.h"
+//
+//OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
+//
+//template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator= (const ForwardType& other) {
+//	T obj;
+//	obj = other;
+//	boost::optional<T>::operator=(obj); /*this->base::emplace(other);*/ return *this;
+//}
+//
+//template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator=(const T& other) { boost::optional<T>::operator=(other); return *this; };
+//
+//template <typename T> const std::string EXPRESSOptional<T>::classname() const {
+//	if (this->is_initialized()) {
+//		return this->get().classname();
+//	}
+//	else {
+//		return "uninitialized";
+//	}
+//}
+//
+//
+//template <typename T> const std::string EXPRESSOptional<T>::getStepParameter() const {
+//	if (this->is_initialized()) {
+//		return this->get().getStepParameter();
+//	}
+//	else {
+//		return "$";
+//	}
+//}
+//
+//template <typename T> EXPRESSOptional<T> EXPRESSOptional<T>::readStepData(const std::string& value, const std::shared_ptr<EXPRESSModel>& model) {
+//	EXPRESSOptional opt;
+//	T val;
+//	if (value != "$") {
+//		val = T::readStepData(value, model);
+//		opt = val;
+//	}
+//	return opt;
+//}
+//
+//OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END

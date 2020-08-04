@@ -16,34 +16,34 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "EXPRESSReference.h"
-
-OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
-
-template <typename T> const std::string EXPRESSReference<T>::getStepParameter() const {
-	const std::shared_ptr<T> ptr = this->base::lock();
-	return ptr.get()->getStepParameter();
-	//return this->base::lock().get()->getStepParameter();
-}
-
-template <typename T> const std::string EXPRESSReference<T>::classname() const {
-	const std::shared_ptr<T> ptr = this->base::lock();
-	// Lock on this and return runtime classname or if empty construct T and return T.classname()
-	if (ptr) {
-		return ptr.get()->classname();
-	}
-	else {
-		return "unknown";
-	}
-	//return this->base::lock().get()->classname();
-}
-
-template <typename T> const std::string EXPRESSReference<T>::getErrorLog() const
-{
-    if(this->expired())
-        return "Reference with Id #" + std::to_string(this->refId) + " expired!";
-    else
-        return this->base::lock()->getErrorLog();
-}
-
-OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
+//#include "EXPRESSReference.h"
+//
+//OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
+//
+//template <typename T> const std::string EXPRESSReference<T>::getStepParameter() const {
+//	const std::shared_ptr<T> ptr = this->base::lock();
+//	return ptr.get()->getStepParameter();
+//	//return this->base::lock().get()->getStepParameter();
+//}
+//
+//template <typename T> const std::string EXPRESSReference<T>::classname() const {
+//	const std::shared_ptr<T> ptr = this->base::lock();
+//	// Lock on this and return runtime classname or if empty construct T and return T.classname()
+//	if (ptr) {
+//		return ptr.get()->classname();
+//	}
+//	else {
+//		return "unknown";
+//	}
+//	//return this->base::lock().get()->classname();
+//}
+//
+//template <typename T> const std::string EXPRESSReference<T>::getErrorLog() const
+//{
+//    if(this->expired())
+//        return "Reference with Id #" + std::to_string(this->refId) + " expired!";
+//    else
+//        return this->base::lock()->getErrorLog();
+//}
+//
+//OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END

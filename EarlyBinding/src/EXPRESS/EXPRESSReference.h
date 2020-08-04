@@ -88,7 +88,12 @@ public:
 		}
 	}
 
-	const std::string getStepParameter() const override;
+	const std::string getStepParameter() const override 
+	{
+		const std::shared_ptr<T> ptr = this->base::lock();
+		return ptr.get()->getStepParameter();
+		//return this->base::lock().get()->getStepParameter();
+	}
 	
 
 	T* operator->() { return this->lock().operator->(); }
@@ -102,24 +107,41 @@ public:
 		return this->lock().operator bool();
 	}
 
-	static EXPRESSReference<T> readStepData(const std::string arg, const std::shared_ptr<EXPRESSModel>& model) {
+	static EXPRESSReference<T> readStepData(const std::string arg, const std::shared_ptr<EXPRESSModel>& model) 
+	{
 		if (arg == "*") {
 			//TODO
 			return EXPRESSReference<T>();
 		}
 		else {
 			size_t refId = std::stoull(arg.substr(1, arg.size() - 1));
-			EXPRESSReference<T> reference;
-			if (model->entities.count(refId) > 0) {
-				reference.base::operator=(std::dynamic_pointer_cast<T>(model->entities[refId]));
-			}
-			reference.refId = refId;
-			reference.model = model;
-			return reference;
+			return constructInstance(refId, model);
 		}
 	}
 
-	const std::string classname() const override;
+	static EXPRESSReference<T> constructInstance(const size_t refId, const std::shared_ptr<EXPRESSModel>& model)
+	{
+		EXPRESSReference<T> reference;
+		if (model->entities.count(refId) > 0) {
+			reference.base::operator=(std::dynamic_pointer_cast<T>(model->entities[refId]));
+		}
+		reference.refId = refId;
+		reference.model = model;
+		return reference;
+	}
+
+	const std::string classname() const override
+	{
+		const std::shared_ptr<T> ptr = this->base::lock();
+		// Lock on this and return runtime classname or if empty construct T and return T.classname()
+		if (ptr) {
+			return ptr.get()->classname();
+		}
+		else {
+			return "unknown";
+		}
+		//return this->base::lock().get()->classname();
+	}
 	
 
 	friend void swap(EXPRESSReference& first, EXPRESSReference& second)
@@ -141,7 +163,13 @@ public:
 		return std::dynamic_pointer_cast<TTarget>(this->lock()) != nullptr;
 	}
 
-    virtual const std::string getErrorLog() const override;
+    virtual const std::string getErrorLog() const override
+	{
+	    if(this->expired())
+	        return "Reference with Id #" + std::to_string(this->refId) + " expired!";
+	    else
+	        return this->base::lock()->getErrorLog();
+	}
 	
 private:
 	size_t refId = 0;

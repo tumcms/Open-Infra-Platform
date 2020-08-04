@@ -57,13 +57,22 @@ public:
 	// Assignment Operators
 
 	// = default
-	EXPRESSOptional& operator= (const ForwardType& other);
+	EXPRESSOptional& operator= (const ForwardType& other)
+	{
+		T obj;
+		obj = other;
+		boost::optional<T>::operator=(obj); /*this->base::emplace(other);*/ return *this;
+	}
 	//EXPRESSOptional& operator= (const ForwardType& other) { this->base::emplace(other); return *this; }
 
 	EXPRESSOptional& operator= (const EXPRESSOptional& other) = default;
 	//EXPRESSOptional& operator= (const EXPRESSOptional& other) { base::operator=(other.get_value_or(T())); return *this; };
 
-	EXPRESSOptional& operator=(const T& other);
+	EXPRESSOptional& operator=(const T& other)
+	{ 
+		boost::optional<T>::operator=(other); 
+		return *this; 
+	}
 	//EXPRESSOptional& operator=(const T& other) { boost::optional<T>::operator=(other); return *this; };
 
 	
@@ -78,9 +87,26 @@ public:
 	
 	// Functions
 
-	const std::string classname() const;
+	const std::string classname() const
+	{
+		if (this->is_initialized()) {
+			return this->get().classname();
+		}
+		else {
+			return "uninitialized";
+		}
+	}
 
-	const std::string getStepParameter() const;
+	const std::string getStepParameter() const
+	{
+		if (this->is_initialized()) {
+			return this->get().getStepParameter();
+		}
+		else {
+			return "$";
+		}
+	}
+
 	//const std::string getStepParameter() const {
 	//	if (this->is_initialized()) {
 	//		return this->get().getStepParameter();
@@ -90,7 +116,16 @@ public:
 	//	}
 	//}
 
-	static EXPRESSOptional readStepData(const std::string& value, const std::shared_ptr<EXPRESSModel>& model);
+	static EXPRESSOptional readStepData(const std::string& value, const std::shared_ptr<EXPRESSModel>& model)
+	{
+		EXPRESSOptional opt;
+		T val;
+		if (value != "$") {
+			val = T::readStepData(value, model);
+			opt = val;
+		}
+		return opt;
+	}
 	//static EXPRESSOptional readStepData(const std::string& value, const std::shared_ptr<EXPRESSModel>& model) {
 	//	EXPRESSOptional opt;
 	//	T val;
