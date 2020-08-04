@@ -65,7 +65,7 @@ std::string license =
 
 std::string license_cmake =
 "#\n\
-#    Copyright(c) 2018 Technical University of Munich\n\
+#    Copyright(c) 2020 Technical University of Munich\n\
 #    Chair of Computational Modeling and Simulation.\n\
 #\n\
 #    TUM Open Infra Platform is free software; you can redistribute it and/or modify\n\
@@ -85,17 +85,17 @@ std::string license_cmake =
 std::string notice =
   "\
 /* This file has been automatically generated using the TUM Open Infra Platform\n\
-Early Binding EXPRESS Generator. Any changes to this file my be lost in the future. */";
+Early Binding EXPRESS Generator. Any changes to this file may be lost in the future. */";
 
 std::string notice_cmake =
 "\
 # This file has been automatically generated using the TUM Open Infra Platform\n\
-# Early Binding EXPRESS Generator. Any changes to this file my be lost in the future.";
+# Early Binding EXPRESS Generator. Any changes to this file may be lost in the future.";
 
 static size_t indentation = 0;
 
 enum eKeepDelimCharacter {None, Left, Right, Standalone};
-std::vector<std::string> split(std::string text, char delim, eKeepDelimCharacter value)
+std::vector<std::string> split(const std::string& text, const char delim, const eKeepDelimCharacter value)
 {
 	if(text.find(delim) == std::string::npos) {
 		return { text };
@@ -166,14 +166,14 @@ std::vector<std::string> split(std::string text, char delim, eKeepDelimCharacter
 	}
 }
 
-std::string join(std::vector<std::string>& params, char sep) {
+std::string join(const std::vector<std::string>& params, char sep) {
 	std::string text;
-	for (auto val : params)
+	for (const auto val : params)
 		text += val + sep;
 	text.pop_back();
 	return text;
 }
-std::string createIfElseStatement(std::string condition, std::string doThen, std::string doElse = "")
+std::string createIfElseStatement(const std::string& condition, const std::string& doThen, const std::string& doElse = "")
 {
 	std::string statement = "if(" + condition + ") {" + doThen + "}";
 
@@ -1384,8 +1384,8 @@ void GeneratorOIP::createTypesHeaderFileREFACTORED(Schema & schema)
 	writeLine(out, "#define " + define);
 	linebreak(out);
 
-	for (int i = 0; i < schema.getTypeCount(); i++) {
-		auto &type = schema.getTypeByIndex(i);
+	for (size_t i = 0; i < schema.getTypeCount(); i++) {
+		auto type = schema.getTypeByIndex(i);
 
 		out << "#include \"type/" << type.getName() << ".h\"" << std::endl;
 	}
@@ -1403,8 +1403,8 @@ void GeneratorOIP::createEntitiesHeaderFile(Schema &schema) {
 	out << std::endl;
 	out << "#pragma once" << std::endl;
 
-	for (int i = 0; i < schema.getEntityCount(); i++) {
-		auto &entity = schema.getEntityByIndex(i);
+	for (size_t i = 0; i < schema.getEntityCount(); i++) {
+		auto entity = schema.getEntityByIndex(i);
 
 		out << "#include \"OpenInfraPlatform/" + schema.getName() + "/entity/" << entity.getName() << ".h\"" << std::endl;
 	}
@@ -2238,7 +2238,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 	writeInclude(out, type.getName() + ".h");
 	writeInclude(out, "EXPRESS/EXPRESSOptional.h");
 	if (!type.isSelectType()) {
-		writeInclude(out, "EXPRESS/EXPRESSOptional.cpp");
+		writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
 	}
 	linebreak(out);
 
@@ -2280,10 +2280,8 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type
 			linebreak(out);
 		}
 
-
-
-		writeInclude(out, "EXPRESS/EXPRESSOptional.cpp");
-		writeInclude(out, "EXPRESS/EXPRESSReference.cpp");
+		writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
+		writeInclude(out, "EXPRESS/EXPRESSReferenceImpl.h");
 		linebreak(out);
 	}
 	   	
@@ -4107,8 +4105,8 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		linebreak(out);
 	}
 
-	writeInclude(out, "EXPRESS/EXPRESSOptional.cpp");
-	writeInclude(out, "EXPRESS/EXPRESSReference.cpp");
+	writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
+	writeInclude(out, "EXPRESS/EXPRESSReferenceImpl.h");
 	linebreak(out);
 
 	writeBeginNamespace(out, schema);

@@ -35,20 +35,20 @@ void Entity::setName(const std::string& value) {
 	name_ = value;
 }
 
-int Entity::getSubtypeCount() const {
-	return static_cast<int>(subtypes_.size());
+size_t Entity::getSubtypeCount() const {
+	return subtypes_.size();
 }
 
 void Entity::addSubtype(const std::string& subtype) {
 	subtypes_.push_back(subtype);
 }
 
-std::string Entity::getSubtypeByIndex(const int index) const {
+std::string Entity::getSubtypeByIndex(const size_t index) const {
 	return subtypes_[index];
 }
 
-int Entity::getAttributeCount() const {
-	return static_cast<int>(attributes_.size());
+size_t Entity::getAttributeCount() const {
+	return attributes_.size();
 }
 
 void Entity::addAttribute(const EntityAttribute& att)
@@ -56,7 +56,7 @@ void Entity::addAttribute(const EntityAttribute& att)
 	attributes_.push_back(att);
 }
 
-const EntityAttribute& Entity::getAttribute(const int index) const
+const EntityAttribute& Entity::getAttribute(const size_t index) const
 {
 	return attributes_[index];
 }
