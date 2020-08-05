@@ -36,9 +36,9 @@ public:
 
     virtual ~GeneratorOIP();
 
-    void generate(std::ostream &out, Schema &schema);
+    void generate(const Schema &schema);
 
-	void generateREFACTORED(std::ostream &out, Schema &schema);
+	void generateREFACTORED(const Schema &schema);
 
 private:
     void createEntitiesMapHeaderFile(const Schema &schema);
@@ -51,7 +51,7 @@ private:
 
 	void createEntitiesHeaderFileREFACTORED(const Schema &schema);
 
-	void generateEntitySourceFile(Schema &schema, const Entity &entity);
+	void generateEntitySourceFile(const Schema &schema, const Entity &entity);
 
 	void generateEntitySourceFileREFACTORED(const Schema &schema, const Entity &entity) const;
 

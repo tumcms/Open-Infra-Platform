@@ -173,6 +173,7 @@ std::string join(const std::vector<std::string>& params, char sep) {
 	text.pop_back();
 	return text;
 }
+
 std::string createIfElseStatement(const std::string& condition, const std::string& doThen, const std::string& doElse = "")
 {
 	std::string statement = "if(" + condition + ") {" + doThen + "}";
@@ -1090,7 +1091,7 @@ OpenInfraPlatform::ExpressBindingGenerator::GeneratorOIP::GeneratorOIP(const std
 GeneratorOIP::~GeneratorOIP() {
 }
 
-void GeneratorOIP::generate(std::ostream &out, OpenInfraPlatform::ExpressBindingGenerator::Schema &schema) {
+void GeneratorOIP::generate( const Schema &schema) {
 	rootDirectory_ = outputDirectory_ + "/" + schema.getName();
 
 	std::string schemaDirectory = rootDirectory_ + "/schema";
@@ -1217,7 +1218,7 @@ void GeneratorOIP::generate(std::ostream &out, OpenInfraPlatform::ExpressBinding
 	generateSchemaHeader(schema);
 }
 
-void GeneratorOIP::generateREFACTORED(std::ostream & out, Schema & schema)
+void GeneratorOIP::generateREFACTORED( const Schema & schema)
 {
 	rootDirectory_ = outputDirectory_ + "/" + schema.getName();
 
@@ -3669,7 +3670,7 @@ void GeneratorOIP::generateNamespaceHeader(const Schema & schema)
 	file.close();
 }
 
-void GeneratorOIP::generateEntitySourceFile(Schema &schema, const Entity &entity) {
+void GeneratorOIP::generateEntitySourceFile(const Schema &schema, const Entity &entity) {
 	std::stringstream ssHeaderFilename;
 	ssHeaderFilename << entityPath_ << "/" << entity.getName() << ".cpp";
 	std::cout << ssHeaderFilename.str() << std::endl;
