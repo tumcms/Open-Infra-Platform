@@ -181,7 +181,7 @@ bool Schema::isSelectType(const std::string& name) const {
 	throw std::runtime_error("Type does not exist.");
 }
 
-const Type& Schema::getTypeByName(const std::string& name) const {
+Type Schema::getTypeByName(const std::string& name) const {
 	for (const auto typ : types_)
 		if (typ.getName() == name)
 			return typ;
@@ -197,7 +197,7 @@ bool Schema::hasType(const std::string& name) const {
 	return false;
 }
 
-std::vector<std::string> Schema::getAllEntityAttributesNames(const Entity& entity) {
+std::vector<std::string> Schema::getAllEntityAttributesNames(const Entity& entity) const {
 	std::vector<EntityAttribute> attributes = getAllEntityAttributes(entity);
 	std::vector<std::string> result(attributes.size());
 	std::transform(attributes.begin(), attributes.end(), result.begin(), [](const auto it) { return it.getName(); });

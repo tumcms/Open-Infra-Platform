@@ -50,7 +50,7 @@ class Schema {
 	
 	bool hasEntity(const std::string &name) const;
 
-    std::vector<std::string> getAllEntityAttributesNames(const Entity &entity);
+    std::vector<std::string> getAllEntityAttributesNames(const Entity &entity) const;
 
     std::vector<EntityAttribute> getAllEntityAttributes(const Entity &entity) const;
 
@@ -66,8 +66,8 @@ class Schema {
 
     Type getTypeByIndex(size_t index) const;
 
-    const Type &getTypeByName(const std::string &typeName) const;
-	const Type &getUnderlyingType(const std::string &name) const {
+    Type getTypeByName(const std::string &typeName) const;
+	Type getUnderlyingType(const std::string &name) const {
 		return getTypeByName(getTypeByName(name).getUnderlyingTypeName());
 	}
 

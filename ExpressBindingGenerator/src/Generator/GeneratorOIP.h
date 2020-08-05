@@ -41,29 +41,29 @@ public:
 	void generateREFACTORED(std::ostream &out, Schema &schema);
 
 private:
-    void createEntitiesMapHeaderFile(Schema &schema);
+    void createEntitiesMapHeaderFile(const Schema &schema);
 
-    void createTypesHeaderFile(Schema &schema);
+    void createTypesHeaderFile(const Schema &schema);
 
-	void createTypesHeaderFileREFACTORED(Schema &schema);
+	void createTypesHeaderFileREFACTORED(const Schema &schema);
 	
-	void createEntitiesHeaderFile(Schema &schema);
+	void createEntitiesHeaderFile(const Schema &schema);
 
-	void createEntitiesHeaderFileREFACTORED(Schema &schema);
+	void createEntitiesHeaderFileREFACTORED(const Schema &schema);
 
 	void generateEntitySourceFile(Schema &schema, const Entity &entity);
 
-	void generateEntitySourceFileREFACTORED(Schema &schema, const Entity &entity);
+	void generateEntitySourceFileREFACTORED(const Schema &schema, const Entity &entity) const;
 
-    void generateTypeHeaderFile(Schema &schema, Type &type);
+    void generateTypeHeaderFile(const Schema &schema, const Type &type);
 
-	void generateTypeHeaderFileREFACTORED(Schema &schema, Type &type);
+	void generateTypeHeaderFileREFACTORED(const Schema &schema, const Type &type) const ;
 
-    void generateTypeSourceFile(Schema &schema, Type &type);
+    void generateTypeSourceFile(const Schema &schema, const Type &type);
     
-	void generateTypeSourceFileREFACTORED(Schema &schema, Type &type);
+	void generateTypeSourceFileREFACTORED(const Schema &schema, const Type &type) const;
 
-    void generateTypeSourceFileGetStepParameter(const Type &type, std::ofstream &out, Schema &schema);
+    void generateTypeSourceFileGetStepParameter(const Type &type, std::ofstream &out, const Schema &schema);
 
 	void generateReaderFiles(const Schema &schema);
 
@@ -71,7 +71,7 @@ private:
 
 	void generateEMTFiles(const Schema &schema);
 
-    std::string convertSimpleTypeToCPPType(Schema &schema, std::string simpleType) const;
+    std::string convertSimpleTypeToCPPType(const Schema &schema, std::string simpleType) const;
 
     void includeFile(const std::string &filename, std::ofstream &file);
 
@@ -80,17 +80,17 @@ private:
 	void generateCMakeListsFileREFACTORED(const Schema &schema);
 
 
-    void createEntityBrokerCPPFile(Schema &schema);
+    void createEntityBrokerCPPFile(const Schema &schema);
 
-    void generateEntityHeaderFile(Schema &schema, Entity &entity);
+    void generateEntityHeaderFile(const Schema &schema, const Entity &entity);
 
-	void generateEntityHeaderFileREFACTORED(Schema &schema, Entity &entity);
+	void generateEntityHeaderFileREFACTORED(const Schema &schema, const Entity &entity)const;
 
-    void generateEntityEnumsHeaderFile(Schema &schema);
+    void generateEntityEnumsHeaderFile(const Schema &schema);
 
-	void generateSchemaHeader(Schema& schema);
+	void generateSchemaHeader(const Schema& schema);
 
-	void generateNamespaceHeader(Schema &schema);
+	void generateNamespaceHeader(const Schema &schema);
 
 private:
     std::string outputDirectory_;
