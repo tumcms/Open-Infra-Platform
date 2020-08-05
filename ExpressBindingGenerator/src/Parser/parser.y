@@ -571,13 +571,13 @@ type_decl:
 
 		if(type.getType() == oip::eType::Enumeration)
 		{
-			std::vector<std::string> types;
+			std::vector<std::string> ttypes;
 			while(enum_ids.size() > 0)
 			{
-				types.insert(types.begin(), enum_ids.top());
+				ttypes.insert(ttypes.begin(), enum_ids.top());
 				enum_ids.pop();
 			}
-			type.setTypes(types);
+			type.setTypes(ttypes);
 			type.setType(oip::eType::Enumeration);
 		}
 
