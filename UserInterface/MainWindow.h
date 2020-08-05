@@ -122,6 +122,7 @@ namespace OpenInfraPlatform
 			//void on_actionCreate_Line_Clothoid_Clothoid_Line_triggered();
 			//void on_actionCreate_Line_Clothoid_triggered();
 			//void on_actionCreateClothoid_triggered();
+			void on_actionStroke_To_Alignment_triggered();
 			//void on_actionCurvature_triggered();
 			//void on_actionShow_IFC_tree_triggered();
 			void on_actionExit_triggered();

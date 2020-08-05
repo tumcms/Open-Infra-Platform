@@ -3142,6 +3142,8 @@
     <addaction name="actionCreateClothoid"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_Georeference"/>
+    <addaction name="separator"/>
+    <addaction name="actionStroke_To_Alignment"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -3870,6 +3872,11 @@
    <property name="toolTip">
     <string>Create Clothoid</string>
    </property>
+  </action>
+  <action name="actionStroke_To_Alignment">
+    <property name="text">
+      <string>Convert Stroke to Alignment</string>
+    </property>
   </action>
   <action name="actionIFC_Alignment_1_1_Export">
    <property name="text">
