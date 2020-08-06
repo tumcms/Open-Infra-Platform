@@ -236,7 +236,7 @@ endif()
 FetchContent_Declare(
 	blue_framework
 	GIT_REPOSITORY https://github.com/tumcms/Blue-Framework.git
-	GIT_TAG a0.0.5
+	GIT_TAG a0.0.6
 )
   
 FetchContent_GetProperties(blue_framework)
