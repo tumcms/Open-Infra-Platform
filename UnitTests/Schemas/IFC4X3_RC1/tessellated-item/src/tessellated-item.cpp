@@ -29,6 +29,8 @@
 #include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
 
+#include <boost/dll/runtime_symbol_info.hpp>
+
 using namespace testing;
 
 struct WorldBuffer {
@@ -177,15 +179,22 @@ protected:
 
 class TessellatedItemTest : public VisualTest {
     protected:
+
+    // Test standard values
+    buw::Image4b _background = buw::Image4b(0, 0);
+
     virtual void SetUp() override {
         VisualTest::SetUp();
 
-        express_model = OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader::FromFile(filename);
+        express_model = OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader::FromFile(filename.string());
         importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC1EntityTypes>>();
         importer->collectGeometryData(express_model);
 	oip::ConverterBuwT<emt::IFC4X3_RC1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
 
         renderer->setModel(model);
+
+        renderer->clearBackBuffer();
+        _background = renderer->getBackBufferImage();
     }
 
     virtual void TearDown() override {
@@ -193,8 +202,9 @@ class TessellatedItemTest : public VisualTest {
         VisualTest::TearDown();
     }
 
+    const boost::filesystem::path filename = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X3_RC1\\tessellated-item\\Data\\tessellated-item.ifc");
 
-    const std::string filename = "UnitTests/Schemas/IFC4X3_RC1/tessellated-item/Data/tessellated-item.ifc";
+
     std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
     buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC1EntityTypes>> importer = nullptr;
     buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
@@ -206,5 +216,12 @@ TEST_F(TessellatedItemTest, AllEntitiesAreRead) {
 
 TEST_F(TessellatedItemTest, ImageIsSaved)
 {
-    EXPECT_NO_THROW(buw::storeImage("UnitTests/Schemas/IFC4X3_RC1/tessellated-item/Data/tessellated-item.png", renderer->captureImage()));
+    // Arrange
+    buw::Image4b image = renderer->captureImage();
+
+    // Act
+    buw::storeImage("UnitTests/Schemas/IFC4X3_RC1/tessellated-item/Data/tessellated-item.png", image);
+
+    // Assert
+    EXPECT_NE(image,_background);
 }
