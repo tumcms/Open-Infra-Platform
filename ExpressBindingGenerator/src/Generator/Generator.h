@@ -27,6 +27,10 @@
 #include "Meta/Schema.h"
 #include <iostream>
 
+#include <chrono>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_BEGIN
 
 class Generator {
@@ -34,7 +38,16 @@ class Generator {
     Generator() {}
     virtual ~Generator() {}
 
-    virtual void generate(std::ostream &out, Schema &schema) = 0;
+    virtual void generate(const Schema &schema) = 0;
+
+    virtual std::string getRandomGUID() const
+    {        
+        boost::mt19937 ran;
+        auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        ran.seed((uint32_t) time( &now)); // one should likely seed in a better way
+        boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
+        return boost::uuids::to_string(gen());
+    }
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END

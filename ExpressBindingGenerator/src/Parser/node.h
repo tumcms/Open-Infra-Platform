@@ -40,12 +40,12 @@ public:
 	virtual void visit(Node *node) = 0;
 };
 
-class GeneratCppDomainRule : public NodeVisitor {
-public:
-	virtual void visit(Node *node) {
-
-	}
-};
+//class GeneratCppDomainRule : public NodeVisitor {
+//public:
+//	virtual void visit(Node *node) {
+//
+//	}
+//};
 
 class Node {
 public:

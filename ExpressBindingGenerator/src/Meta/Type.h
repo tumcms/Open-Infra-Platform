@@ -48,6 +48,12 @@ enum class eType {
 class Type {
 public:
 	Type();
+	virtual ~Type() {}
+    
+    Type( const Type& other ) = default;
+    Type( Type&& other ) = default;
+
+    Type& operator=( const Type& other ) = default;
 
 	std::string getName() const;
 	void setName(std::string val);
