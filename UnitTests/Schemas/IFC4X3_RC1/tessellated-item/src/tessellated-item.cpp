@@ -133,8 +133,10 @@ public:
     {
         auto backBufferImage = buw::Image4b(width, height);
         buw::ReferenceCounted<buw::ITexture2D> backBuffer = renderSystem_->getBackBufferTarget();
+
         if (!backBuffer->isCPUReadable())
             backBuffer->makeCPUReadable();
+
         renderSystem_->downloadTexture(backBuffer, backBufferImage);
         return backBufferImage;
     }
@@ -220,7 +222,7 @@ TEST_F(TessellatedItemTest, ImageIsSaved)
     buw::Image4b image = renderer->captureImage();
 
     // Act
-    buw::storeImage("UnitTests/Schemas/IFC4X3_RC1/tessellated-item/Data/tessellated-item.png", image);
+    buw::storeImage(boost::dll::program_location().parent_path().concat("\\tessellated-item.png").string(), image);
 
     // Assert
     EXPECT_NE(image,_background);
