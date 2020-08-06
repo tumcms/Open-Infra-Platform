@@ -69,9 +69,7 @@ namespace OpenInfraPlatform {
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcProfileDef #" << profileDef->getId();
 #endif
-				// (1/5) IfcArbitraryClosedProfileDef SUBTYPE OF IfcProfileDef
-				//std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed =
-				//std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
+				// (1/8) IfcArbitraryClosedProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed = profileDef.as<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>();
 					convertIfcArbitraryClosedProfileDef(arbitrary_closed, paths);
@@ -79,9 +77,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (2/5) IfcArbitraryOpenProfileDef SUBTYPE OF IfcProfileDef
-				//std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> arbitrary_open =
-				//	std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>(profileDef);
+				// (2/8) IfcArbitraryOpenProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> arbitrary_open = profileDef.as<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>();
 					convertIfcArbitraryOpenProfileDef(arbitrary_open, paths);
@@ -89,8 +85,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (3/5) IfcCompositeProfileDef SUBTYPE OF IfcProfileDef
-				//std::shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeProfileDef>(profileDef);
+				// (3/8) IfcCompositeProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCompositeProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = profileDef.as<typename IfcEntityTypesT::IfcCompositeProfileDef>();
 					convertIfcCompositeProfileDef(composite, paths);
@@ -98,8 +93,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (4/5) IfcDerivedProfileDef SUBTYPE OF IfcProfileDef
-				//std::shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDerivedProfileDef>(profileDef);
+				// (4/8) IfcDerivedProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcDerivedProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = profileDef.as<typename IfcEntityTypesT::IfcDerivedProfileDef>();
 					convertIfcDerivedProfileDef(derived, paths);
@@ -107,9 +101,17 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (5/5) IfcParameterizedProfileDef SUBTYPE OF IfcProfileDef
-				//std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
-				//	std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
+				// (5/8) IfcOpenCrossProfileDef SUBTYPE OF IfcProfileDef (exists starting IFC4x3)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4) || defined(OIP_MODULE_EARLYBINDING_IFC2X3)
+#else
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcOpenCrossProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcOpenCrossProfileDef> open_cross = profileDef.as<typename IfcEntityTypesT::IfcOpenCrossProfileDef>();
+					convertIfcOpenCrossProfileDef(open_cross, paths);
+					removeDuplicates(paths);
+					return;
+				}
+#endif
+				// (6/8) IfcParameterizedProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcParameterizedProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized = profileDef.as<typename IfcEntityTypesT::IfcParameterizedProfileDef>();
 					convertIfcParameterizedProfileDefWithPosition(parameterized, paths);
