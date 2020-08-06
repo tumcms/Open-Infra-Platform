@@ -5,8 +5,30 @@
 #include <cstdlib>
 
 #include "SimpleTreeModel.h"
-#include "OpenInfraPlatform/Infrastructure/Export/IfcAlignment1x1Caster.h"
-#include "OpenInfraPlatform/IfcAlignment1x1/model/Object.h"
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC2X3
+#include "reader/IFC2X3Reader.h"
+#include "EMTIFC2X3EntityTypes.h"
+#include "IFC2X3.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4
+#include "reader/IFC4Reader.h"
+#include "EMTIFC4EntityTypes.h"
+#include "IFC4.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+#include "reader/IFC4X1Reader.h"
+#include "EMTIFC4X1EntityTypes.h"
+#include "IFC4X1.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+#include "reader/IFC4X3_RC1Reader.h"
+#include "EMTIFC4X3_RC1EntityTypes.h"
+#include "IFC4X3_RC1.h"
+#endif
 
 #include <BlueFramework\Core\Exception.h>
 #include <BlueFramework\Core\memory.h>
@@ -15,7 +37,7 @@
 
 
 
-OpenInfraPlatform::UserInterface::TreeItem::TreeItem(std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> &data, TreeItem * parent)
+OpenInfraPlatform::UserInterface::TreeItem::TreeItem(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSObject> &data, TreeItem * parent)
 	: m_managedData(data), m_parentItem(parent), parser_()
 {
 	parser_.thisPtr = this;
@@ -74,7 +96,7 @@ void OpenInfraPlatform::UserInterface::TreeItem::createChildren()
 			//else {
 			//	child = new TreeItem(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object(), this);
 			//}
-			std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+			std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSObject> ptr = nullptr;
 			child = new TreeItem(ptr, this);
 			QList<QVariant> itemData;
 			itemData << QVariant(name) << QVariant("") << QVariant(typeid(value).name());
@@ -87,8 +109,9 @@ void OpenInfraPlatform::UserInterface::TreeItem::createChildren()
 	};
 
 	if(m_managedData && m_managedData.get() != nullptr) {
-		if(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(m_managedData))
-			OpenInfraPlatform::IfcAlignment1x1::castToVisitableAndCall<decltype(parse), void>(std::dynamic_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>(m_managedData), parse);
+		if(std::dynamic_pointer_cast<OpenInfraPlatform::EarlyBinding::EXPRESSEntity>(m_managedData)){
+			//OpenInfraPlatform::IfcAlignment1x1::castToVisitableAndCall<decltype(parse), void>(std::dynamic_pointer_cast<OpenInfraPlatform::EarlyBinding::EXPRESSEntity>(m_managedData), parse);
+		}
 	}
 }
 
