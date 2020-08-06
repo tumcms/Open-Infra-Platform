@@ -461,9 +461,12 @@ namespace OpenInfraPlatform {
 				BLUE_LOG(trace) << "Processed IfcDerivedProfileDef #" << profileDef->getId();
 #endif
 			}
-
-			/*! \internal TODO
-			*
+			// IfcOpenCrossProfileDef exists starting IFC4x3
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4) || defined(OIP_MODULE_EARLYBINDING_IFC2X3)
+#else
+			/*! \brief defines a two-dimensional open profile. 
+			* \param[in] profileDef A pointer to data from IfcProfileDef.
+			* \param[out] paths A pointer to be filled with the relevant data.
 			*/
 			// Function 5: Convert IfcOpenCrossProfileDef
 			void convertIfcOpenCrossProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcOpenCrossProfileDef>& profileDef,
@@ -489,13 +492,14 @@ namespace OpenInfraPlatform {
 				}
 				paths.push_back(carve::geom::VECTOR(TagX, TagY));
 			}
+#endif
 
-			/*! \brief Calculates X and Y coordinates using slope and width 
-			* \param[in] horizontal A bool variable which defines, if width shall be measured horizontally or along the slope
-			* \param[in] width A double which indicates the horizontal width or distance along the slope for the segment in the profile
-			* \param[in] slope A double which indicates slope measure 
-			* \return X and Y coordinates of the vector's end 
-			* beginning of the vector lie in (0,0)
+			/*! \brief Calculates X and Y coordinates using slope and width.
+			* \param[in] horizontal A bool variable which defines, if width shall be measured horizontally or along the slope.
+			* \param[in] width A double which indicates the horizontal width or distance along the slope for the segment in the profile.
+			* \param[in] slope A double which indicates slope measure. 
+			* \return X and Y coordinates of the vector's end. 
+			* beginning of the vector lie in (0,0).
 			*/
 			std::tuple<double,double> CalculateXYFromPolar(const bool& horizontal, const double& width, const double& slope) const throw(...) {
 				if (horizontal) {
@@ -511,7 +515,7 @@ namespace OpenInfraPlatform {
 
 			/*! \brief  Defines a 2D position coordinate system to which the parameters of the different profiles relate to.
 			*  \param[in] profileDef A pointer to data from IfcProfileDef.
-			*  \param[out] paths A pointer to be filled with the relevant data
+			*  \param[out] paths A pointer to be filled with the relevant data.
 			*/
 			// Function 6: Convert IfcParametrizedProfileDef
 			void convertIfcParameterizedProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
