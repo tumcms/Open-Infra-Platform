@@ -1,4 +1,28 @@
 #pragma once
+#ifdef OIP_MODULE_EARLYBINDING_IFC2X3
+#include "reader/IFC2X3Reader.h"
+#include "EMTIFC2X3EntityTypes.h"
+#include "IFC2X3.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4
+#include "reader/IFC4Reader.h"
+#include "EMTIFC4EntityTypes.h"
+#include "IFC4.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+#include "reader/IFC4X1Reader.h"
+#include "EMTIFC4X1EntityTypes.h"
+#include "IFC4X1.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+#include "reader/IFC4X3_RC1Reader.h"
+#include "EMTIFC4X3_RC1EntityTypes.h"
+#include "IFC4X3_RC1.h"
+#include "EXPRESS/EXPRESSReference.h"
+#endif
 
 #include <QAbstractItemModel>
 #include <QString>
@@ -14,7 +38,7 @@ namespace OpenInfraPlatform {
 			Q_OBJECT;
 
 		public:
-			TreeModel(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>> &data, QObject *parent = 0);
+			TreeModel(std::map<size_t, std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity>>& data, QObject *parent = 0);
 			//explicit TreeModel(const QString &data, QObject *parent = 0);
 			~TreeModel();
 

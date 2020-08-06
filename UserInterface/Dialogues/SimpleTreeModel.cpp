@@ -1,6 +1,30 @@
 #include "SimpleTreeItem.h"
 #include "SimpleTreeModel.h"
-#include "OpenInfraPlatform/Infrastructure/Export/IfcAlignment1x1Caster.h"
+//#include "OpenInfraPlatform/Infrastructure/Export/IfcAlignment1x1Caster.h"
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC2X3
+#include "reader/IFC2X3Reader.h"
+#include "EMTIFC2X3EntityTypes.h"
+#include "IFC2X3.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4
+#include "reader/IFC4Reader.h"
+#include "EMTIFC4EntityTypes.h"
+#include "IFC4.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+#include "reader/IFC4X1Reader.h"
+#include "EMTIFC4X1EntityTypes.h"
+#include "IFC4X1.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+#include "reader/IFC4X3_RC1Reader.h"
+#include "EMTIFC4X3_RC1EntityTypes.h"
+#include "IFC4X3_RC1.h"
+#endif
 
 #include <QStringList>
 #include <sstream>
@@ -13,16 +37,16 @@ template <typename T, typename S> T cast(S s)
 	return dynamic_cast<T>(s);
 }
 
-OpenInfraPlatform::UserInterface::TreeModel::TreeModel(std::map<int, shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Entity>> &data, QObject *parent)
+OpenInfraPlatform::UserInterface::TreeModel::TreeModel(std::map<size_t, std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity>>& data, QObject *parent)
 	: QAbstractItemModel(parent) 
 {
-	std::shared_ptr<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object> ptr = nullptr;
+	std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSObject> ptr = nullptr;
 	rootItem = new TreeItem (ptr, nullptr);
 	
 	for(auto entity : data) {
-		TreeItem* child = new TreeItem(std::static_pointer_cast<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object>(entity.second), rootItem);
+		TreeItem* child = new TreeItem(std::static_pointer_cast<OpenInfraPlatform::EarlyBinding::EXPRESSObject>(entity.second), rootItem);
 		QList<QVariant> itemData;
-		itemData << QVariant(entity.first) << QVariant(entity.second->classname()) << QVariant("");
+		itemData << QVariant(entity.first);// << QVariant(entity.second->classname()) << QVariant("");
 		child->setItemData(itemData);
 		child->createChildren(); 
 		rootItem->appendChild(child);
