@@ -48,6 +48,7 @@ function(CreateIfcFileUnitTestForSchema test_name schema)
             gmock
             gtest
             gtest_main
+			Boost::filesystem
     )
 
     gtest_discover_tests(${UnitTest_Executable_Name})
