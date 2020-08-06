@@ -474,25 +474,27 @@ namespace OpenInfraPlatform {
 			void convertIfcOpenCrossProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcOpenCrossProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
-				if (profileDef->expired())
+				if (profileDef.expired())
 					throw oip::ReferenceExpiredException(profileDef);
 
 				if (profileDef->Widths.size() != profileDef->Slopes.size()) {
 					throw oip::InconsistentModellingException(profileDef, "Number of Widths is not equal to the number of Slopes");
 				}
+				std::vector<carve::geom::vector<2>> outer_loop;
 				double TagX = 0.0;
-				double TAgY = 0.0;
+				double TagY = 0.0;
 				double x, y;
 
-				for (int i = 0; i < widths.size(); i++) {
-					paths.push_back(carve::geom::VECTOR(TagX, TagY));
+				for (int i = 0; i < profileDef->Widths.size(); i++) {
+					outer_loop.push_back(carve::geom::VECTOR(TagX, TagY));
 					std::tie(x, y) = CalculateXYFromPolar(profileDef->HorizontalWidths,
 						profileDef->Widths[i] * UnitConvert()->getLengthInMeterFactor(), 
 						profileDef->Slopes[i] * UnitConvert()->getAngleInRadianFactor());
 					TagX = TagX + x;
 					TagY = TagY + y;
 				}
-				paths.push_back(carve::geom::VECTOR(TagX, TagY));
+				outer_loop.push_back(carve::geom::VECTOR(TagX, TagY));
+				paths.push_back(outer_loop);
 			}
 #endif
 
