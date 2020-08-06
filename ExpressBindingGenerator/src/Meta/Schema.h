@@ -40,17 +40,17 @@ class Schema {
     //---------------------------------------------------------------
 
     // Total count of entities
-    int getEntityCount() const;
+	size_t getEntityCount() const;
 
     void addEntity(const Entity &entity);
 
-    Entity getEntityByIndex(int index) const;
+    Entity getEntityByIndex(size_t index) const;
 
     Entity getEntityByName(const std::string &name) const;
 	
 	bool hasEntity(const std::string &name) const;
 
-    std::vector<std::string> getAllEntityAttributesNames(const Entity &entity);
+    std::vector<std::string> getAllEntityAttributesNames(const Entity &entity) const;
 
     std::vector<EntityAttribute> getAllEntityAttributes(const Entity &entity) const;
 
@@ -62,12 +62,12 @@ class Schema {
 
     void addType(Type type);
 
-    int getTypeCount() const;
+	size_t getTypeCount() const;
 
-    Type getTypeByIndex(int index) const;
+    Type getTypeByIndex(size_t index) const;
 
-    const Type &getTypeByName(const std::string &typeName) const;
-	const Type &getUnderlyingType(const std::string &name) const {
+    Type getTypeByName(const std::string &typeName) const;
+	Type getUnderlyingType(const std::string &name) const {
 		return getTypeByName(getTypeByName(name).getUnderlyingTypeName());
 	}
 

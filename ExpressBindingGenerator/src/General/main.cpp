@@ -76,18 +76,10 @@ int main(int argc, char **argv) {
         // parse through the input until there is no more:
         do {
             yyparse();
-        } while (!feof(yyin));
-
-        std::ofstream ofs("test.txt", std::ofstream::out);
-
-        std::ostream &out = ofs; // std::cout;
-		       
+        } while (!feof(yyin));     
        
         GeneratorOIP cppgen(outputDirectoryName);
-        cppgen.generateREFACTORED(out, oip::Schema::getInstance());
-        
-
-        ofs.close();
+        cppgen.generateREFACTORED( oip::Schema::getInstance());
 
     } catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;

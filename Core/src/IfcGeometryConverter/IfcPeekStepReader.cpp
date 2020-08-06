@@ -54,7 +54,7 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 
 	if (!ifcFile.is_open())
 	{
-		throw std::exception("Could not open IFC file in ifc peek step reader.");
+		throw oip::IfcPeekReaderException("Could not open IFC file <" + filename + "> in IfcPeekStepReader.");
 	}
 
 	std::string line;
