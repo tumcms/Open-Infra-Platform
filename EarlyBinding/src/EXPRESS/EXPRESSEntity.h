@@ -27,10 +27,14 @@
 
 #include <tuple>
 #include <utility>
+#include <algorithm>
+#include <vector>
 
+#include <boost/algorithm/string/case_conv.hpp>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
+class EXPRESSModel;
 
 class EXPRESSEntity : public EXPRESSObject {
 public:
@@ -48,7 +52,36 @@ public:
 
 	virtual const std::string classname() const = 0;
 
-	virtual const std::string getStepLine() const = 0;
+	virtual const std::string getStepLine() const {
+        std::string classname = this->classname();
+		boost::to_upper(classname);
+		std::vector<std::string> params;
+		this->getStepLineParameters(params);
+		auto join = [](const std::vector<std::string>& params, char sep) {
+			std::string text;
+			for (const auto val : params)
+				text += val + sep;
+			text.pop_back();
+			return text;
+		};
+        std::reverse(params.begin(), params.end());
+        return getStepParameter() + "=" + classname + "(" + join(params, ',') + ");";
+    }
+
+    virtual const void getStepLineParameters(std::vector<std::string>& attrStepParameters) const = 0;
+
+    virtual void assign(const std::shared_ptr<EXPRESSEntity>& other) {
+        setId(other->getId());
+    }
+
+    virtual void interpretStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {
+        setId(stoull(args[0])); 
+        model; // to remove C4100 compiler warning
+    }
+
+    void swap(EXPRESSEntity* first, EXPRESSEntity* second) {
+        std::swap(first->m_id, second->m_id);
+    }
 
 protected:
 	size_t m_id;

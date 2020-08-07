@@ -1036,6 +1036,7 @@ void resolveSelectTypeIncludes(const Schema& schema, std::set<std::string>& enti
 
 void resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<std::string>& entityAttributes, std::set<std::string>& resolvedClasses) {
 	auto attributes = schema.getAllEntityAttributes(entity);
+	//auto attributes = entity.getAttributes();
 
 	std::set<std::string> newEntityAttributes;
 	for (const auto attr : attributes) {
@@ -2597,7 +2598,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
 		auto entity = schema.getEntityByIndex(idx);
-		if (!schema.isAbstract(entity)) {
+		if (!schema.isAbstract(entity) && schema.getAllEntityAttributes(entity).size() != 0) {
 			writeLine(file, "if(entityType == \"" + toUpper(entity.getName()) + "\") {");
 			//writeLine(file, "std::shared_ptr<" + entity.getName() + "> entity = std::make_shared<" + entity.getName() + ">(" + entity.getName() + "::readStepData(parseArgs(line), model));"); //TODO
 			writeLine(file, "model->entities.insert({id, std::make_shared<" + entity.getName() + ">()});");
@@ -2617,18 +2618,19 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());");
 	writeLine(file, "if(line[0] == '#') {");
 	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=') - 1));");
-	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
-	writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
-	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
-		auto entity = schema.getEntityByIndex(idx);
-		if (!schema.isAbstract(entity)) {
-			writeLine(file, "if(entityType == \"" + toUpper(entity.getName()) + "\") {");
+	//writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
+	//writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
+	//for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
+	//	auto entity = schema.getEntityByIndex(idx);
+	//	if (!schema.isAbstract(entity) && schema.getAllEntityAttributes(entity).size() != 0) {
+	//		writeLine(file, "if(entityType == \"" + toUpper(entity.getName()) + "\") {");
             //writeLine(file, "*(model->entities.find(id)->second) = " + entity.getName() + "::readStepData(parseArgs(line), model);");
-			writeLine(file, "(std::dynamic_pointer_cast<" + entity.getName() + ">(model->entities.find(id)->second))->operator=(" + entity.getName() + "::readStepData(parseArgs(line), model));");
-			writeLine(file, "continue;");
-			writeLine(file, "}");
-		}
-	}
+			//writeLine(file, "(std::dynamic_pointer_cast<" + entity.getName() + ">(model->entities.find(id)->second))->operator=(" + entity.getName() + "::readStepData(parseArgs(line), model));");
+			writeLine(file, "model->entities.find(id)->second->interpretStepData(parseArgs(line), model);");
+	//		writeLine(file, "continue;");
+	//		writeLine(file, "}");
+	//	}
+	//}
 	writeLine(file, "}"); //end if line[0] == '#'
 	writeLine(file, "}"); //end for read file
 	linebreak(file);
@@ -3425,7 +3427,6 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 		linebreak(out);
 	}
 
-
 	auto attributes = entity.getAttributes();
 
 	std::set<std::string> typeAttributes, entityAttributes;
@@ -3463,8 +3464,9 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 	//}
 
 	auto self = entityAttributes.find(entity.getName());
-	if (self != entityAttributes.end()) {
+	while (self != entityAttributes.end()) {
 		entityAttributes.erase(self);
+		self = entityAttributes.find(entity.getName());
 	}
 
 	//if (!entityAttributes.empty()) {
@@ -3496,13 +3498,36 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 	writeDoxyComment(out, "Entity" + entity.hasSupertype() ? " subtype of " + supertype : "");
 
 	writeLine(out, "class " + entity.getName() + " : public " + supertype + " {");
-	writeLine(out, "private:");
-	writeLine(out, "using base = " + supertype + ";");
+	//writeLine(out, "private:");
+	//writeLine(out, "using base = " + supertype + ";");
 	writeLine(out, "public:");
 	
 	//writeLine(out, "typedef " + entity.getName() + " UnderlyingType;");
-	
-	auto initClassAsDefault = [&out, &entity, &schema]() {
+
+	// Destructor.
+	writeLine(out, "virtual ~" + entity.getName() + "();");
+	linebreak(out);
+
+	//Interpret STEP data
+	writeLine(out, "virtual void interpretStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
+	linebreak(out);
+
+	//Get STEP data
+	//writeLine(out, "virtual " + entity.getName() + "& operator=(" + entity.getName() + " other) = 0;");
+    writeLine(out, "virtual const void getStepLineParameters(std::vector<std::string>& attrStepParameters) const;");
+	linebreak(out);
+
+	if( entity.isAbstract() || schema.getAllEntityAttributes(entity).size() == 0 )	
+	{
+		// Classname function.
+		writeLine(out, "virtual const std::string classname() const = 0;");
+		linebreak(out);
+
+		if( !entity.isAbstract() && schema.getAllEntityAttributes(entity).size() == 0 )
+			std::cout << "Why is entity " + entity.getName() + " not abstract if it has zero attributes?" << std::endl;
+	}
+	else // if( entity.isAbstract() )	
+	{
 		// Default constructor.
 		writeLine(out, entity.getName() + "();");
 
@@ -3513,41 +3538,27 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 		writeLine(out, entity.getName() + "(" + entity.getName() + "&& other);");
 		linebreak(out);
 
-		// Destructor.
-		writeLine(out, "virtual ~" + entity.getName() + "();");
-		linebreak(out);
-
-		// Swap function.
-		writeLine(out, "friend void swap(" + entity.getName() + "& first, " + entity.getName() + "& second);");
-		linebreak(out);
-
 		// Assignment operator.
 		writeLine(out, "virtual " + entity.getName() + "& operator=(const " + entity.getName() + "& other);");
 		linebreak(out);
-
-		// Classname function.
-		writeLine(out, "virtual const std::string classname() const override;");
-		linebreak(out); 
 
 		//Interpret STEP data
 		writeLine(out, "static " + entity.getName() + " readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
 		linebreak(out);
 
-		//Get STEP data
-		writeLine(out, "virtual const std::string getStepLine() const override;");
+		// Classname function.
+		writeLine(out, "virtual const std::string classname() const override;");
 		linebreak(out);
 
-		writeLine(out, "using base::getStepParameter;");		
-	};
+		// Swap function.
+		writeLine(out, "void swap(" + entity.getName() + "* first, " + entity.getName() + "* second);");
+		linebreak(out);
 
-	if (!schema.isAbstract(entity)) {
-		initClassAsDefault();
-	}
-	else {
-		//writeLine(out, "virtual " + entity.getName() + "& operator=(" + entity.getName() + " other) = 0;");
-		writeLine(out, "virtual const std::string classname() const = 0;");
-		writeLine(out, "virtual const std::string getStepLine() const = 0;");
-	}
+		// Copy Assignment function.
+		writeLine(out, "virtual void assign(const std::shared_ptr<" + entity.getName() + ">& other);");
+		linebreak(out);
+
+	} // if( entity.isAbstract() )	
 
 	//GetAttributes
 	if (!attributes.empty()) {
@@ -3965,71 +3976,135 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 	writeInclude(out, entity.getName() + ".h");
 	linebreak(out);
 
-	auto attributes = schema.getAllEntityAttributes(entity);
+	auto allAttributes = schema.getAllEntityAttributes(entity);
+	auto attributes = entity.getAttributes();
 
-	std::set<std::string> typeAttributes, entityAttributes;
+	//std::set<std::string> typeAttributes, entityAttributes;
 
-	for (const auto attr : attributes) {
-		if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
-			if (schema.hasEntity(attr.type->toString())) {
-				entityAttributes.insert(attr.type->toString());
-			}
-			if (schema.hasType(attr.type->toString())) {
-				typeAttributes.insert(attr.type->toString());
-			}
-		}
-		else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-			auto elementType = attr.type;
+	//for (const auto attr : allAttributes) {
+	//	if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
+	//		if (schema.hasEntity(attr.type->toString())) {
+	//			entityAttributes.insert(attr.type->toString());
+	//		}
+	//		if (schema.hasType(attr.type->toString())) {
+	//			typeAttributes.insert(attr.type->toString());
+	//		}
+	//	}
+	//	else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+	//		auto elementType = attr.type;
 
-			while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
-			}
+	//		while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+	//			elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
+	//		}
 
-			if (schema.hasEntity(elementType->toString())) {
-				entityAttributes.insert(elementType->toString());
-			}
-			if (schema.hasType(elementType->toString())) {
-				typeAttributes.insert(elementType->toString());
-			}
-		}
-	}
+	//		if (schema.hasEntity(elementType->toString())) {
+	//			entityAttributes.insert(elementType->toString());
+	//		}
+	//		if (schema.hasType(elementType->toString())) {
+	//			typeAttributes.insert(elementType->toString());
+	//		}
+	//	}
+	//}
 
-	auto self = entityAttributes.find(entity.getName());
-	if (self != entityAttributes.end()) {
-		entityAttributes.erase(self);
-	}
+	//auto self = entityAttributes.find(entity.getName());
+	//while (self != entityAttributes.end()) {
+	//	entityAttributes.erase(self);
+	//	self = entityAttributes.find(entity.getName());
+	//}
 
-	// Initialize set of resolved classes.
-	std::set<std::string> resolvedClasses = {};
+	//// Initialize set of resolved classes.
+	//std::set<std::string> resolvedClasses = {};
 
-	for (auto typeName : typeAttributes) {
-		auto type = schema.getTypeByName(typeName);
-		if (type.isSelectType()) {
-			resolveSelectTypeIncludes(schema, entityAttributes, type, resolvedClasses);
-		}
-	}
+	//for (const auto typeName : typeAttributes) {
+	//	if (schema.isSelectType(typeName)) {
+	//		resolveSelectTypeIncludes(schema, entityAttributes, schema.getTypeByName(typeName), resolvedClasses);
+	//	}
+	//}
 
-	for (const auto attributeEntityName : entityAttributes) {
-		auto attributeEntity = schema.getEntityByName(attributeEntityName);
-		resolveEntityIncludes(schema, attributeEntity, entityAttributes, resolvedClasses);
-	}
+	//for (const auto attributeEntityName : entityAttributes) {
+	//	auto attributeEntity = schema.getEntityByName(attributeEntityName);
+	//	resolveEntityIncludes(schema, attributeEntity, entityAttributes, resolvedClasses);
+	//}
 
-	if (!entityAttributes.empty()) {
-		for (const auto entityAttribute : entityAttributes) {
-			writeInclude(out, entityAttribute + ".h");
-		}
-		linebreak(out);
-	}
+	//if (!entityAttributes.empty()) {
+	//	for (const auto entityAttribute : entityAttributes) {
+	//		writeInclude(out, entityAttribute + ".h");
+	//	}
+	//	linebreak(out);
+	//}
 
-	writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
-	writeInclude(out, "EXPRESS/EXPRESSReferenceImpl.h");
+	//writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
+	//writeInclude(out, "EXPRESS/EXPRESSReferenceImpl.h");
 	linebreak(out);
 
 	writeBeginNamespace(out, schema);
 	
+	// Destructor
+	writeDoxyComment(out, "Destructor.");
+	writeLine(out, entity.getName() + "::~" + entity.getName() + "() {};");
+	linebreak(out);
 
-	auto initClassAsDefault = [&out, &entity, &schema]() {
+	//Interpret STEP data
+	writeDoxyComment(out, "Interprets the STEP serialization.", "", nullptr, nullptr, "An instance of \\c " + entity.getName());
+	writeLine(out, "void " + entity.getName() + "::interpretStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
+	if (entity.hasSupertype())
+		writeLine(out, entity.getSupertype() + "::interpretStepData(args, model);");
+	else
+		writeLine(out, "EXPRESSEntity::interpretStepData(args, model);");
+	if (!attributes.empty())
+	{
+		size_t allAttr = schema.getAllEntityAttributes(entity).size();
+		size_t myAttr = attributes.size();
+		for (size_t i = allAttr; i > allAttr - myAttr; i--) { // back to front for all explicit entity->attributes
+			auto attr = attributes[myAttr - (allAttr - i) - 1];
+			if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
+				if (schema.hasEntity(attr.type->toString())) {
+					writeLine(out, "this->" + attr.getName() + ".readStepData(args[" + std::to_string(i) + "], model);");
+				}
+				if (schema.hasType(attr.type->toString())) {
+					writeLine(out, "this->" + attr.getName() + " = decltype(" + attr.getName() + ")::readStepData(args[" + std::to_string(i) + "], model);");
+				}
+			}
+			else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+				//auto elementType = attr.type;
 
+				//while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+				//	elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
+				//}
+
+				//if (schema.hasEntity(elementType->toString())) {
+				//	writeLine(out, "this->" + attr.getName() + ".readStepData(args[" + std::to_string(i) + "], model);");
+				//}
+				//if (schema.hasType(elementType->toString())) {
+					writeLine(out, "this->" + attr.getName() + " = decltype(" + attr.getName() + ")::readStepData(args[" + std::to_string(i) + "], model);");
+				//}
+			}
+		}
+	}
+	writeLine(out, "}");
+	linebreak(out);
+
+	// Get STEP data
+	writeDoxyComment(out, "Returns the STEP serialization of attributes.", "", nullptr, nullptr, "The content of attributes --> #ID=" + entity.getName() + "(<attributes>);");
+	writeLine(out, "const void " + entity.getName() + "::getStepLineParameters(std::vector<std::string>& attrStepParameters) const {");
+	if (entity.hasSupertype())
+		writeLine(out, entity.getSupertype() + "::getStepLineParameters(attrStepParameters);");
+	if (!attributes.empty())
+	{
+		size_t allAttr = schema.getAllEntityAttributes(entity).size();
+		size_t myAttr = attributes.size();
+		for (size_t i = allAttr; i > allAttr - myAttr; i--) { // back to front for all explicitly entity->attributes
+			auto attr = attributes[myAttr - (allAttr - i) - 1];
+			writeLine(out, "attrStepParameters.insert(attrStepParameters.begin(), " + attr.getName() + ".getStepParameter());");
+		}
+	}
+	writeLine(out, "}");
+	
+	if (entity.isAbstract() || schema.getAllEntityAttributes(entity).size() == 0)
+	{
+	}
+	else // if( entity.isAbstract() )	
+	{
 		// Default constructor
 		writeDoxyComment(out, "Default constructor");
 		writeLine(out, entity.getName() + "::" + entity.getName() + "() { }");
@@ -4045,24 +4120,14 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		// Move constructor.
 		writeDoxyComment(out, "Move constructor");
 		writeLine(out, entity.getName() + "::" + entity.getName() + "(" + entity.getName() + "&& other) : " + entity.getName() + "() {");
-		writeLine(out, "swap(*this, other);");
+		writeLine(out, "swap(this, &other);");
 		writeLine(out, "}");
 		linebreak(out);
 
-		// Destructor
-		writeDoxyComment(out, "Destructor.");
-		writeLine(out, entity.getName() + "::~" + entity.getName() + "() {};");
-		linebreak(out);
-
-		auto attributes = schema.getAllEntityAttributes(entity);
-
 		// Copy Assignment Operator
-		writeDoxyComment(out, "Assigns the content of \\c other to \\c this.");
+		writeDoxyComment(out, "Assigns the content of \\c other to \\c this.", "Calls ::assign()");
 		writeLine(out, entity.getName() + "& " + entity.getName() + "::operator=(const " + entity.getName() + "& other) {");
-		writeLine(out, "this->m_id = other.m_id;");
-		for (auto& attr : attributes) {
-			writeLine(out, "this->" + attr.getName() + " = other." + attr.getName() + ";");
-		}
+		writeLine(out, "this->assign(std::make_shared<" + entity.getName() + ">(other));");
 		writeLine(out, "return *this;");
 		writeLine(out, "}");
 		linebreak(out);
@@ -4074,51 +4139,45 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 
 		// Interpret STEP data
 		writeDoxyComment(out, "Interprets the STEP serialization.", "", nullptr, nullptr, "An instance of \\c " + entity.getName());
-		writeLine(out, entity.getName() + " " + entity.getName() +"::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
+		writeLine(out, entity.getName() + " " + entity.getName() + "::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
 		writeLine(out, entity.getName() + " entity;");
-		writeLine(out, "entity.setId(stoull(args[0]));");
-		for (int i = 0; i < attributes.size(); i++) {
-			auto attr = attributes[i];
-			writeLine(out, "entity." + attr.getName() + " = decltype(" + attr.getName() + ")::readStepData(args[" + std::to_string(i + 1) + "], model);");
-		}
+		writeLine(out, "entity.interpretStepData(args, model);");
 		writeLine(out, "return entity;");
 		writeLine(out, "}");
 		linebreak(out);
 
-		// Get STEP data
-		writeDoxyComment(out, "Returns the STEP serialization.", "", nullptr, nullptr, "#ID=" + entity.getName() + "(<attributes>);");
-		writeLine(out, "const std::string " + entity.getName() + "::getStepLine() const {");
-		writeLine(out, "std::string classname = this->classname();");
-		writeLine(out, "boost::to_upper(classname);");
-		writeLine(out, "std::string stepLine = this->getStepParameter() + \"=\" + classname + \"(\";");
-		for (int i = 0; i < attributes.size() - 1; i++) {
-			writeLine(out, "stepLine += " + attributes[i].getName() + ".getStepParameter() + \",\";");
-		}
-		writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \");\";");
-		writeLine(out, "return stepLine;");
-		writeLine(out, "}");
-	};
-
-	if (!schema.isAbstract(entity)) {
-
-		initClassAsDefault();
-
-		// Write swap function implementation
+		// Swap function implementation
 		writeDoxyComment(out, "Swaps the content between the \\c first and \\c second.");
-		writeLine(out, "void swap(" + entity.getName() + "& first, " + entity.getName() + "& second) {");
-		writeLine(out, "using std::swap;");
-		writeLine(out, "swap(first.m_id, second.m_id);");
-		for (auto attr : schema.getAllEntityAttributes(entity)) {
-			writeLine(out, "swap(first." + attr.getName() + ", second." + attr.getName() + ");");
-		}
+		writeLine(out, "void " + entity.getName() + "::swap(" + entity.getName() + "* first, " + entity.getName() + "* second) {");
+		if (entity.hasSupertype())
+			writeLine(out, entity.getSupertype() + "::swap(first, second);");
+		else
+			writeLine(out, "EXPRESSEntity::swap(first, second);");
+		if (!attributes.empty())
+			for (auto attr : attributes)
+				writeLine(out, "std::swap(first->" + attr.getName() + ", second->" + attr.getName() + ");");
 		writeLine(out, "};");
-		linebreak(out);		
-	}
-		
+		linebreak(out);
+
+		// Copy Assignment Function
+		writeDoxyComment(out, "Assigns the content of \\c other to \\c this.");
+		writeLine(out, "void " + entity.getName() + "::assign(const std::shared_ptr<" + entity.getName() + ">& other) {");
+		if( entity.hasSupertype() )
+			writeLine(out, entity.getSupertype() + "::assign(other);");
+		else
+			writeLine(out, "EXPRESSEntity::assign(other);");
+		if( !attributes.empty() )
+			for (auto& attr : attributes) 
+				writeLine(out, "this->" + attr.getName() + " = other->" + attr.getName() + ";");
+		writeLine(out, "}");
+		linebreak(out);
+
+	} // end else from if (entity.isAbstract() )
+
 	writeEndNamespace(out, schema);
 
-	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">;");
-	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">" + ">;");
+	//writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">;");
+	//writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">" + ">;");
 	out.close();
 }
 
