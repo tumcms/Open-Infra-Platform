@@ -137,13 +137,10 @@ namespace OpenInfraPlatform {
 			void convertIfcArbitraryClosedProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcArbitraryClosedProfileDef #" << profileDef->getId();
-#endif
+				if (profileDef.expired())
+					throw oip::ReferenceExpiredException(profileDef);
+
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profileDef->OuterCurve.lock();
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcArbitraryClosedProfileDef.OuterCurve IfcCurve #" << outer_curve->getId();
-#endif
 				std::vector<carve::geom::vector<2>> curve_polygon;
 				std::vector<carve::geom::vector<2>> segment_start_points;
 
@@ -184,11 +181,11 @@ namespace OpenInfraPlatform {
 				const carve::math::Matrix& placement,
 				std::shared_ptr<ItemData> itemData,
 				const carve::geom::vector<3>& abscissa,
-				const carve::geom::vector<3>& next_abscissa) const
-			{
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcArbitraryClosedProfileDef #" << profile->getId();
-#endif
+				const carve::geom::vector<3>& next_abscissa) const{
+
+				if (profileDef.expired())
+					throw oip::ReferenceExpiredException(profileDef);
+
 				const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profile->OuterCurve;
@@ -283,9 +280,10 @@ namespace OpenInfraPlatform {
 				//	SUPERTYPE OF(IfcCenterLineProfileDef)
 				//	SUBTYPE OF IfcProfileDef;
 				//	Curve	 :	IfcBoundedCurve;
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcArbitraryOpenProfileDef #" << profileDef->getId();
-#endif
+
+				if (profileDef.expired())
+					throw oip::ReferenceExpiredException(profileDef);
+
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.lock();
 				CurveConverterT<IfcEntityTypesT> c_converter(GeomSettings(), UnitConvert(), placementConverter);
 
@@ -376,9 +374,9 @@ namespace OpenInfraPlatform {
 			void convertIfcCompositeProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcCompositeProfileDef>& compositeProfileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcCompositeProfileDef #" << compositeProfileDef->getId();
-#endif
+				if (compositeProfileDef.expired()) 
+					throw oip::ReferenceExpiredException(compositeProfileDef);
+				
 				std::vector<int> temploop_counts;
 				std::vector<int> tempcontour_counts;
 
@@ -394,9 +392,9 @@ namespace OpenInfraPlatform {
 			void convertIfcDerivedProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcDerivedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcDerivedProfileDef #" << profileDef->getId();
-#endif
+				if (profileDef.expired())
+					throw oip::ReferenceExpiredException(profileDef);
+
 				ProfileConverterT<IfcEntityTypesT> temp_profiler(GeomSettings(), UnitConvert(), placementConverter);
 				temp_profiler.computeProfile(profileDef->ParentProfile.lock());
 				const std::vector<std::vector<carve::geom::vector<2>>>& parent_paths = temp_profiler.getCoordinates();
@@ -505,9 +503,9 @@ namespace OpenInfraPlatform {
 				//	END_ENTITY;
 				//
 				// *************************************************************************************************************************************************************
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcParameterizedProfileDef #" << profileDef->getId();
-#endif
+				
+				if (profileDef.expired())
+					throw oip::ReferenceExpiredException(profileDef);
 
 				std::vector<std::vector<carve::geom::vector<2>>> temp_paths;
 
