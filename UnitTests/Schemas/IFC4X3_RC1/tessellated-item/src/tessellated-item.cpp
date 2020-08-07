@@ -85,10 +85,9 @@ class TessellatedItemTest : public VisualTest {
         importer->collectGeometryData(express_model);
 	oip::ConverterBuwT<emt::IFC4X3_RC1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
 
+        _background = renderer->captureImage();
         renderer->setModel(model);
 
-        renderer->clearBackBuffer();
-        _background = renderer->getBackBufferImage();
     }
 
     virtual void TearDown() override {
@@ -118,4 +117,17 @@ TEST_F(TessellatedItemTest, ImageIsSaved)
 
     // Assert
     EXPECT_NE(image,_background);
+}
+
+TEST_F(TessellatedItemTest, TopView)
+{
+    // Arrange
+    renderer->setViewDirection(buw::eViewDirection::Top);
+    buw::Image4b image = renderer->captureImage();
+
+    // Act
+    buw::storeImage(boost::dll::program_location().parent_path().concat("\\tessellated-item_top.png").string(), image);
+
+    // Assert
+    EXPECT_NE(image, _background);
 }
