@@ -21,7 +21,7 @@
 #include <reader/IFC4X3_RC1Reader.h>
 #include <namespace.h>
 
-#include "IfcGeometryModelRenderer.h"
+#include <IfcGeometryModelRenderer.h>
 
 #include <buw.Engine.h>
 #include <buw.ImageProcessing.h>

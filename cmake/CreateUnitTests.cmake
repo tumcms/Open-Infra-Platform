@@ -69,7 +69,7 @@ endfunction()
 
 function(CreateIfcFileVisualUnitTestForSchema test_name schema)
   CreateIfcFileUnitTestForSchema(${test_name} ${schema})
-  target_link_libraries(${test_name} PUBLIC OpenInfraPlatform.Rendering)
+  target_link_libraries(${test_name} PUBLIC OpenInfraPlatform.Rendering IfcGeometryModelRenderer)
 endfunction(CreateIfcFileVisualUnitTestForSchema)
 
 
