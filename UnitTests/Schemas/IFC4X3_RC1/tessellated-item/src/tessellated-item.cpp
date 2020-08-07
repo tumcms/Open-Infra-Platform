@@ -21,10 +21,10 @@
 #include <reader/IFC4X3_RC1Reader.h>
 #include <namespace.h>
 
+#include "IfcGeometryModelRenderer.h"
+
 #include <buw.Engine.h>
 #include <buw.ImageProcessing.h>
-
-#include <Effects/IfcGeometryEffect.h>
 
 #include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
@@ -33,143 +33,35 @@
 
 using namespace testing;
 
-struct WorldBuffer {
-    buw::Matrix44f viewProjection;
-    buw::Matrix44f projection;
-    buw::Matrix44f view;
-    buw::Vector3f cam;
-    buw::Matrix44f rotation;
-};
-
-class IfcGeometryModelRenderer
-{
-public:
-    IfcGeometryModelRenderer()
-    {
-        camera_ = buw::makeReferenceCounted<buw::Camera>();
-        cameraController_ = buw::makeReferenceCounted<buw::CameraController>(camera_);
-
-        camera_->frustum() = buw::CameraFrustum(width, height, 0.5f, 50000.f, buw::eProjectionType::Perspective);
-        camera_->transformation().offset() = 15;
-        camera_->transformation().yaw() = buw::constantsf::pi_over_4();
-
-        buw::renderSystemDescription scd;
-        scd.width = width;
-        scd.height = height;
-        scd.windowId = (void*) this;
-        scd.forceWarpDevice = false;
-        scd.enableMSAA = true;
-        scd.renderAPI = BlueFramework::Rasterizer::eRenderAPI::Direct3D11;
-
-        renderSystem_ = BlueFramework::Rasterizer::createRenderSystem(scd);
-
-        buw::texture2DDescription dsvTD;
-        dsvTD.width = width;
-        dsvTD.height = height;
-        dsvTD.format = buw::eTextureFormat::D24_UnsignedNormalizedInt_S8_UnsignedInt;
-        dsvTD.data = nullptr;
-        dsvTD.isCpuReadable = false;
-        dsvTD.useMSAA = true;
-        depthStencilMSAA_ = renderSystem_->createTexture2D(dsvTD, buw::eTextureBindType::DSV);
-
-        viewport_ = renderSystem_->createViewport(buw::viewportDescription(width, height));
-
-        buw::constantBufferDescription cbd0;
-        cbd0.sizeInBytes = sizeof(WorldBuffer);
-        cbd0.data = nullptr;
-        worldBuffer_ = renderSystem_->createConstantBuffer(cbd0);
-
-        WorldBuffer world;
-        world.viewProjection = camera_->viewProjectionMatrix();
-        world.projection = camera_->frustum().projectionMatrix();
-        world.view = camera_->transformation().viewMatrix();
-        world.cam = (camera_->transformation().transformationMatrix() * buw::Vector4f(0, 0, 0, 1)).block<3, 1>(0, 0);
-        world.rotation = camera_->transformation().rotationMatrix();
-
-        buw::constantBufferDescription cbd;
-        cbd.sizeInBytes = sizeof(WorldBuffer);
-        cbd.data = &world;
-        worldBuffer_->uploadData(cbd);
-
-        ifcGeometryEffect_ = buw::makeReferenceCounted<oip::IfcGeometryEffect>(
-            renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
-        ifcGeometryEffect_->init();
-    }
-
-    virtual ~IfcGeometryModelRenderer()
-    {
-        ifcGeometryEffect_.reset();
-        worldBuffer_.reset();
-        viewport_.reset();
-        depthStencilMSAA_.reset();
-        renderSystem_.reset();
-        cameraController_.reset();
-        camera_.reset();
-    }
-
-    void setModel(const std::shared_ptr<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>& model)
-    {
-        ifcGeometryEffect_->setIfcGeometryModel(model, -model->bb_.center());
-        cameraController_->fitToView(model->bb_.min().cast<float>(), model->bb_.max().cast<float>());
-        cameraController_->tick(1.0f);
-        camera_->tick(1.0f);
-    }
-
-    void clearBackBuffer()
-    {
-        float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-        renderSystem_->clearRenderTarget(renderSystem_->getBackBufferTarget(), color);
-        renderSystem_->clearDepthStencilView(depthStencilMSAA_);
-    }
-
-    void repaint()
-    {
-        clearBackBuffer();
-        ifcGeometryEffect_->render();
-        renderSystem_->present();
-    }
-
-    buw::Image4b getBackBufferImage()
-    {
-        auto backBufferImage = buw::Image4b(width, height);
-        buw::ReferenceCounted<buw::ITexture2D> backBuffer = renderSystem_->getBackBufferTarget();
-
-        if (!backBuffer->isCPUReadable())
-            backBuffer->makeCPUReadable();
-
-        renderSystem_->downloadTexture(backBuffer, backBufferImage);
-        return backBufferImage;
-    }
-
-    buw::Image4b captureImage()
-    {
-        repaint();
-        return getBackBufferImage();
-    }
-
-
-private:
-    int width = 640;
-    int height = 480;
-
-    buw::ReferenceCounted<BlueFramework::Engine::Camera> camera_;
-    buw::ReferenceCounted<BlueFramework::Engine::CameraController> cameraController_;
-    buw::ReferenceCounted<BlueFramework::Rasterizer::IRenderSystem> renderSystem_;
-    buw::ReferenceCounted<BlueFramework::Rasterizer::IViewport> viewport_;
-    buw::ReferenceCounted<OpenInfraPlatform::Rendering::IfcGeometryEffect> ifcGeometryEffect_;
-    buw::ReferenceCounted<BlueFramework::Rasterizer::ITexture2D> depthStencilMSAA_;
-    buw::ReferenceCounted<BlueFramework::Rasterizer::IConstantBuffer> worldBuffer_;
-};
 
 class VisualTest : public Test
 {
 protected:
 
+    buw::ReferenceCounted<buw::IRenderSystem> renderSystem_ = nullptr;
     buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = nullptr;
+
+    VisualTest()
+    {
+        buw::renderSystemDescription scd;
+        scd.width = 640;
+        scd.height = 480;
+        scd.windowId = static_cast<void*>(this);
+        scd.forceWarpDevice = false;
+        scd.enableMSAA = true;
+        scd.renderAPI = BlueFramework::Rasterizer::eRenderAPI::Direct3D11;
+
+        renderSystem_ = BlueFramework::Rasterizer::createRenderSystem(scd);
+    }
+
+    virtual ~VisualTest()
+    {
+        renderSystem_.reset();
+    }
 
     virtual void SetUp() override
     {
-        renderer = buw::makeReferenceCounted<IfcGeometryModelRenderer>();
+        renderer = buw::makeReferenceCounted<IfcGeometryModelRenderer>(renderSystem_);
         
     }
 
