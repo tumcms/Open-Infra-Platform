@@ -17,9 +17,14 @@
 
 project(IfcGeometryModelRenderer)
 
+set(CMAKE_AUTOMOC OFF)
+
 file(GLOB OpenInfraPlatform_UnitTests_Utilities_IfcGeometryModelRenderer_Source src/*.*)
 
+source_group(src FILES ${OpenInfraPlatform_UnitTests_Utilities_IfcGeometryModelRenderer_Source})
+
 add_library(IfcGeometryModelRenderer STATIC ${OpenInfraPlatform_UnitTests_Utilities_IfcGeometryModelRenderer_Source})
+
 
 target_include_directories(IfcGeometryModelRenderer
 	PUBLIC
