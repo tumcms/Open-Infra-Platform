@@ -112,7 +112,7 @@ namespace OpenInfraPlatform {
 				//	std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcParameterizedProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized = profileDef.as<typename IfcEntityTypesT::IfcParameterizedProfileDef>();
-					convertIfcParameterizedProfileDefWithPosition(parameterized, paths);
+					convertIfcParameterizedProfileDef(parameterized, paths);
 					removeDuplicates(paths);
 					return;
 				}
@@ -395,7 +395,7 @@ namespace OpenInfraPlatform {
 
 					if (profileDef.isOfType<typename IfcEntityTypesT::IfcParameterizedProfileDef>()) {
 						EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized = profileDef.as<typename IfcEntityTypesT::IfcParameterizedProfileDef>();
-						convertIfcParameterizedProfileDefWithPosition(parameterized, paths);
+						convertIfcParameterizedProfileDef(parameterized, paths);
 						continue;
 					}
 
@@ -471,6 +471,7 @@ namespace OpenInfraPlatform {
 			{
 				throw oip::UnhandledException(profileDef);
 			}
+
 			/*! \brief  Defines a 2D position coordinate system to which the parameters of the different profiles relate to.
 			*  \param[in] profileDef A pointer to data from IfcProfileDef.
 			*  \param[out] paths A pointer to be filled with the relevant data
@@ -504,58 +505,65 @@ namespace OpenInfraPlatform {
 				BLUE_LOG(trace) << "Processing IfcParameterizedProfileDef #" << profileDef->getId();
 #endif
 
+				std::vector<std::vector<carve::geom::vector<2>>> temp_paths;
+
 				// (1/10) IfcRectangleProfileDef SUBTYPE OF IfcParametrizedProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcRectangleProfileDef>()) {
-					return convertIfcRectangleProfileDef(profileDef.as<typename IfcEntityTypesT::IfcRectangleProfileDef>(), paths);
+					convertIfcRectangleProfileDef(profileDef.as<typename IfcEntityTypesT::IfcRectangleProfileDef>(), temp_paths);
 				}
 
 				// (2/10) IfcTrapeziumProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				if (profileDef.isOfType<typename IfcEntityTypesT::IfcTrapeziumProfileDef>()) {
-					return convertIfcTrapeziumProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(), paths);
+				else if (profileDef.isOfType<typename IfcEntityTypesT::IfcTrapeziumProfileDef>()) {
+					convertIfcTrapeziumProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTrapeziumProfileDef>(), temp_paths);
 				}
 
 				// (3/10) IfcCircleProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCircleProfileDef>()) {
-					return convertIfcCircleProfileDef(profileDef.as<typename IfcEntityTypesT::IfcCircleProfileDef>(), paths);
+				else if (profileDef.isOfType<typename IfcEntityTypesT::IfcCircleProfileDef>()) {
+					convertIfcCircleProfileDef(profileDef.as<typename IfcEntityTypesT::IfcCircleProfileDef>(), temp_paths);
 				}
 
 				// (4/10) IfcEllipseProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				if (profileDef.isOfType<typename IfcEntityTypesT::IfcEllipseProfileDef>()) {
-					return convertIfcEllipseProfileDef(profileDef.as<typename IfcEntityTypesT::IfcEllipseProfileDef>(), paths);
+				else if (profileDef.isOfType<typename IfcEntityTypesT::IfcEllipseProfileDef>()) {
+					convertIfcEllipseProfileDef(profileDef.as<typename IfcEntityTypesT::IfcEllipseProfileDef>(), temp_paths);
 				}
 
 				// (5/10) IfcIShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				if (profileDef.isOfType<typename IfcEntityTypesT::IfcIShapeProfileDef>()) {
-					return convertIfcIShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcIShapeProfileDef>(), paths);
+				else if (profileDef.isOfType<typename IfcEntityTypesT::IfcIShapeProfileDef>()) {
+					convertIfcIShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcIShapeProfileDef>(), temp_paths);
 				}
 
 				// (6/10) IfcLShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				if (profileDef.isOfType<typename IfcEntityTypesT::IfcLShapeProfileDef>()) {
-					return convertIfcLShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcLShapeProfileDef>(), paths);
+				else if (profileDef.isOfType<typename IfcEntityTypesT::IfcLShapeProfileDef>()) {
+					convertIfcLShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcLShapeProfileDef>(), temp_paths);
 				}
 
 				// (7/10) IfcUShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				if (profileDef.isOfType<typename IfcEntityTypesT::IfcUShapeProfileDef>()) {
-					return convertIfcUShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcUShapeProfileDef>(), paths);
+				else if (profileDef.isOfType<typename IfcEntityTypesT::IfcUShapeProfileDef>()) {
+					convertIfcUShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcUShapeProfileDef>(), temp_paths);
 				}
 
 				// (8/10) IfcCShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCShapeProfileDef>()) {
-					return convertIfcCShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcCShapeProfileDef>(), paths);
+				else if (profileDef.isOfType<typename IfcEntityTypesT::IfcCShapeProfileDef>()) {
+					convertIfcCShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcCShapeProfileDef>(), temp_paths);
 				}
 
 				// (9/10) IfcZShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				if (profileDef.isOfType<typename IfcEntityTypesT::IfcZShapeProfileDef>()) {
-					return convertIfcZShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcZShapeProfileDef>(), paths);
+				else if (profileDef.isOfType<typename IfcEntityTypesT::IfcZShapeProfileDef>()) {
+					convertIfcZShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcZShapeProfileDef>(), temp_paths);
 				}
 
 				// (10/10) IfcTShapeProfileDef SUBTYPE OF IfcParametrizedProfileDef
-				if (profileDef.isOfType<typename IfcEntityTypesT::IfcTShapeProfileDef>()) {
-					return convertIfcTShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTShapeProfileDef>(), paths);
+				else if (profileDef.isOfType<typename IfcEntityTypesT::IfcTShapeProfileDef>()) {
+					convertIfcTShapeProfileDef(profileDef.as<typename IfcEntityTypesT::IfcTShapeProfileDef>(), temp_paths);
 				}
 
-				// Not supported ProfileDef
-				throw oip::UnhandledException(profileDef);
+				else {
+					// Not supported ProfileDef
+					throw oip::UnhandledException(profileDef);
+				}
+
+				convertIfcParameterizedProfileDefWithPosition(profileDef, temp_paths, paths);
+
 			}
 			
 
@@ -1284,36 +1292,6 @@ namespace OpenInfraPlatform {
 #endif
 			}
 
-			// Function 8: Convert IfcParametrizedProfileDefWithPosition
-			void convertIfcParameterizedProfileDefWithPosition(const EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
-				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
-			{
-				std::vector<std::vector<carve::geom::vector<2>>> temp_paths;
-				convertIfcParameterizedProfileDef(profileDef, temp_paths);
-
-				// local coordinate system
-				if(profileDef->Position) {
-					carve::math::Matrix transform = placementConverter->convertIfcPlacement(profileDef->Position.get());
-
-					for(int i = 0; i < temp_paths.size(); ++i) {
-						std::vector<carve::geom::vector<2>>& path_loop = temp_paths[i];
-						for(int j = 0; j < path_loop.size(); ++j) {
-							carve::geom::vector<2>& pt = path_loop.at(j);
-							carve::geom::vector<3> pt_3d(carve::geom::VECTOR(pt.x, pt.y, 0));
-							pt_3d = transform * pt_3d;
-							pt.x = pt_3d.x;
-							pt.y = pt_3d.y;
-						}
-						paths.push_back(path_loop);
-					}
-				}
-				else {
-					for(int i = 0; i < temp_paths.size(); ++i) {
-						std::vector<carve::geom::vector<2>>& path_loop = temp_paths[i];
-						paths.push_back(path_loop);
-					}
-				}
-			}
 
 			// ****************************************************************************************************************************************	//
 			//	General Functions																														//			
@@ -1564,6 +1542,38 @@ namespace OpenInfraPlatform {
 			const std::vector<std::vector<carve::geom::vector<2>>>& getCoordinates()
 			{
 				return paths;
+			}
+
+			/*! brief Converts 2D position of the object according to starting position. 
+			*  \param[in] profileDef A pointer to data from IfcProfileDef.
+			*  \param[in] temp_paths A pointer to coordinates of the profile
+			*  \param[out] paths A pointer to be filled with the relevant data.
+			*/
+			void convertIfcParameterizedProfileDefWithPosition(const EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
+				std::vector<std::vector<carve::geom::vector<2>>> temp_paths,
+				std::vector<std::vector<carve::geom::vector<2>>>& paths) const throw(){
+
+				if (profileDef->Position) {
+					carve::math::Matrix transform = placementConverter->convertIfcPlacement(profileDef->Position.get());
+
+					for (int i = 0; i < temp_paths.size(); ++i) {
+						std::vector<carve::geom::vector<2>>& path_loop = temp_paths[i];
+						for (int j = 0; j < path_loop.size(); ++j) {
+							carve::geom::vector<2>& pt = path_loop.at(j);
+							carve::geom::vector<3> pt_3d(carve::geom::VECTOR(pt.x, pt.y, 0));
+							pt_3d = transform * pt_3d;
+							pt.x = pt_3d.x;
+							pt.y = pt_3d.y;
+						}
+						paths.push_back(path_loop);
+					}
+				}
+				else {
+					for (int i = 0; i < temp_paths.size(); ++i) {
+						std::vector<carve::geom::vector<2>>& path_loop = temp_paths[i];
+						paths.push_back(path_loop);
+					}
+				}
 			}
 
 			/*! \brief adds Coordinates to \c IfcRectangleProfileDef.
