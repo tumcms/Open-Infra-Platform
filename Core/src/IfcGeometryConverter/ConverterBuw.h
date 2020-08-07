@@ -567,17 +567,17 @@ namespace OpenInfraPlatform
 							return buw::Vector3f(0.6f, 0.6f, 0.4f);//, 1.0f);
 						}
 
-						// Geländer
+						// Gelï¿½nder
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRailing>(product)) {
 							return buw::Vector3f(0.7f, 0.7f, 0.2f);//, 1.0f);
 						}
 
-						// Geländer
+						// Gelï¿½nder
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPile>(product)) {
 							return buw::Vector3f(0.15f, 0.7f, 0.0f);//, 1.0f);
 						}
 
-						// Möbel
+						// Mï¿½bel
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFurnishingElement>(product)) {
 							return buw::Vector3f(0.8f, 0.6f, 0.2f);//, 1.0f);
 						}
@@ -590,7 +590,7 @@ namespace OpenInfraPlatform
 							|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDistributionFlowElement>(product)) {
 							return buw::Vector3f(0.4f, 0.4f, 0.6f);//, 1.0f);
 						}
-						// Platte als Dach oder Geländer?
+						// Platte als Dach oder Gelï¿½nder?
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSlab>(product)) {
 							const std::shared_ptr<typename IfcEntityTypesT::IfcSlab>& slab =
 								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSlab>(product);
@@ -635,5 +635,6 @@ namespace OpenInfraPlatform
 
 EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(BoundingBox)
 EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(IfcGeometryModel)
+EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(ConverterBuwT)
 
 #endif

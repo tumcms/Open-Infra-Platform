@@ -17,8 +17,9 @@
 
 #include "RenderResources.h"
 
-#include <QCoreApplication>
 #include <boost/algorithm/string.hpp>
+#include <boost/dll.hpp>
+
 #include <fstream>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
@@ -42,7 +43,7 @@ std::string RenderResources::getResourceRootDir() {
         firstCall = false;
 
         // find executable
-        resourceRootDir_ = QCoreApplication::applicationDirPath().toStdString();
+        resourceRootDir_ = boost::dll::program_location().parent_path().generic_string();
 
         bool runingStandalone = true;
 
