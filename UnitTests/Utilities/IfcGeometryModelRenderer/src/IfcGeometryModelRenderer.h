@@ -25,31 +25,62 @@
 
 #include <Effects/IfcGeometryEffect.h>
 
-struct WorldBuffer {
-    buw::Matrix44f viewProjection;
-    buw::Matrix44f projection;
-    buw::Matrix44f view;
-    buw::Vector3f cam;
-    buw::Matrix44f rotation;
-};
 
+
+/*!
+ * \brief Utility class to render \c IfcGeometryModel data without UI for automated unit tests.
+ * 
+ */
 class IfcGeometryModelRenderer
 {
 public:
-    IfcGeometryModelRenderer(const buw::ReferenceCounted<buw::IRenderSystem> &renderSystem);
+    /*!
+     * \brief Constructs the renderer by injecting the rendering system. 
+     * \param renderSystem
+     */
+    IfcGeometryModelRenderer(const buw::ReferenceCounted<buw::IRenderSystem>& renderSystem);
 
+    /*!
+     * \brief Releases all resources. 
+     */
     virtual ~IfcGeometryModelRenderer();
 
+    /*!
+     * \brief Set the model to be rendered. 
+     * \param model
+     * \note This also moves the camera to it's default position.
+     */
     void setModel(const std::shared_ptr<oip::IfcGeometryModel>& model);
 
-    void clearBackBuffer();
-
-    void repaint();
-
-    buw::Image4b getBackBufferImage() const;
-
+    /*!
+     * \brief Repaints and returns back buffer image.
+     * \return Rendered back buffer image.
+     */
     buw::Image4b captureImage();
 
+protected:
+
+    /*!
+    * \brief Moves the camera such that it focuses on the model.
+    */
+    void fitViewToModel() const;
+
+    /*!
+    * \brief Clears the back buffer image and depth stencil.
+    * \note Current clear color is RGBA(0,0,0,0).
+    */
+    void clearBackBuffer();
+
+    /*!
+     * \brief Renders the model and updates the front buffer so that the image is presented.
+     */
+    void repaint();
+
+    /*!
+     * \brief Copies the current back buffer texture content into the returned image.
+     * \return Rendered back buffer image.
+     */
+    buw::Image4b getBackBufferImage() const;
 
 private:
     int width_ = 640;
@@ -63,6 +94,7 @@ private:
     buw::ReferenceCounted<BlueFramework::Rasterizer::ITexture2D> depthStencilMSAA_ = nullptr;
     buw::ReferenceCounted<BlueFramework::Rasterizer::IConstantBuffer> worldBuffer_ = nullptr;
     buw::ReferenceCounted<BlueFramework::Rasterizer::ITexture2D> backBuffer_ = nullptr;
+    buw::ReferenceCounted<oip::IfcGeometryModel> model_ = nullptr;
 };
 
 #endif // IFCGEOMETRYMODELRENDERER_H

@@ -17,10 +17,18 @@
 
 #include "IfcGeometryModelRenderer.h"
 
+struct WorldBuffer
+{
+    buw::Matrix44f viewProjection;
+    buw::Matrix44f projection;
+    buw::Matrix44f view;
+    buw::Vector3f cam;
+    buw::Matrix44f rotation;
+};
+
 IfcGeometryModelRenderer::IfcGeometryModelRenderer(const buw::ReferenceCounted<buw::IRenderSystem>& renderSystem)
     : renderSystem_{renderSystem}
 {
-
     backBuffer_ = renderSystem_->getBackBufferTarget();
     backBuffer_->makeCPUReadable();
 
@@ -40,7 +48,7 @@ IfcGeometryModelRenderer::IfcGeometryModelRenderer(const buw::ReferenceCounted<b
     dsvTD.format = buw::eTextureFormat::D24_UnsignedNormalizedInt_S8_UnsignedInt;
     dsvTD.data = nullptr;
     dsvTD.isCpuReadable = false;
-    dsvTD.useMSAA = true;
+    dsvTD.useMSAA = renderSystem_->getMSAAEnabled();
     depthStencilMSAA_ = renderSystem_->createTexture2D(dsvTD, buw::eTextureBindType::DSV);
 
     viewport_ = renderSystem_->createViewport(buw::viewportDescription(width_, height_));
@@ -69,6 +77,7 @@ IfcGeometryModelRenderer::IfcGeometryModelRenderer(const buw::ReferenceCounted<b
 
 IfcGeometryModelRenderer::~IfcGeometryModelRenderer()
 {
+    model_.reset();
     ifcGeometryEffect_.reset();
     worldBuffer_.reset();
     viewport_.reset();
@@ -79,13 +88,20 @@ IfcGeometryModelRenderer::~IfcGeometryModelRenderer()
     camera_.reset();
 }
 
+void IfcGeometryModelRenderer::fitViewToModel() const
+{
+    cameraController_->fitToView(model_->bb_.min().cast<float>(), model_->bb_.max().cast<float>());
+    cameraController_->tick(1.0f);
+    camera_->tick(1.0f);
+}
+
 void IfcGeometryModelRenderer::setModel(
     const std::shared_ptr<oip::IfcGeometryModel>& model)
 {
-    ifcGeometryEffect_->setIfcGeometryModel(model, -model->bb_.center());
-    cameraController_->fitToView(model->bb_.min().cast<float>(), model->bb_.max().cast<float>());
-    cameraController_->tick(1.0f);
-    camera_->tick(1.0f);
+    model_.reset();
+    model_ = model;
+    ifcGeometryEffect_->setIfcGeometryModel(model_, -model_->bb_.center());
+    fitViewToModel();
 }
 
 void IfcGeometryModelRenderer::clearBackBuffer()
