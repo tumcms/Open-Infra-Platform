@@ -20,15 +20,18 @@ include(GoogleTest)
 
 function(CreateIfcFileUnitTestForSchema test_name schema)
 
-    file(GLOB OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}	src/*.cpp)
+    file(GLOB OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}		src/*.cpp)
+    file(GLOB OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}_h	src/*.h)
 
     source_group(UnitTests\\${test_name}   	FILES ${OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}})
+    source_group(UnitTests\\${test_name}   	FILES ${OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}_h})
     source_group(UnitTests                  FILES ${OpenInfraPlatform_UnitTests_Source})
 
     set(UnitTest_Executable_Name ${test_name})
 
     add_executable(${UnitTest_Executable_Name}
         ${OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}}
+        ${OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}_h}
         ${OpenInfraPlatform_UnitTests_Source}
     )
 
