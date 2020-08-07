@@ -35,6 +35,14 @@ void Entity::setName(const std::string& value) {
 	name_ = value;
 }
 
+bool Entity::isAbstract() const { 
+	return abstract_;
+}
+
+void Entity::setAbstract( const bool b ) { 
+	abstract_ = b;
+}
+
 size_t Entity::getSubtypeCount() const {
 	return subtypes_.size();
 }

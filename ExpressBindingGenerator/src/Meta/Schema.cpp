@@ -226,7 +226,7 @@ std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity
 
 const bool Schema::isAbstract(const Entity & entity) const
 {
-	return getAllEntityAttributes(entity).size() == 0;
+	return entity.isAbstract();
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END

@@ -51,6 +51,14 @@ class Entity {
     void setName(const std::string &value);
 
     //---------------------------------------------------------------
+    // Abstract
+    //---------------------------------------------------------------
+
+    bool isAbstract() const;
+
+    void setAbstract( const bool b );
+
+    //---------------------------------------------------------------
     // Supertypes
     //---------------------------------------------------------------
 
@@ -115,6 +123,7 @@ class Entity {
 
 
   private:
+    bool abstract_;
     std::string parentEntity_;
     std::string name_;
     std::vector<std::string> subtypes_;

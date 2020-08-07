@@ -26,6 +26,7 @@
 	#include <sstream>
 	std::string g_parentName = "";
 	bool g_hasParent = false;
+	bool g_isAbstract = false;
 
 
 	std::stack<int>									integers;
@@ -1165,6 +1166,7 @@ entity_decl:
 		oip::Schema::getInstance().addEntity(currentEntity);
 		currentEntity = Entity();
 		g_hasParent = false;
+        g_isAbstract = false;
 
 		clear(attribute_types);
 	};
@@ -1176,6 +1178,8 @@ entity_head:
 		entity_ids.pop();
 		
 		currentEntity.setName(entityName);
+
+        currentEntity.setAbstract(g_isAbstract);
 	}
   | TOKEN_ENTITY entity_id subsuper TOKEN_SEMICOLON
   	{
@@ -1186,6 +1190,8 @@ entity_head:
 				
 		if(g_hasParent)
 			currentEntity.setParentEntity(g_parentName);
+
+        currentEntity.setAbstract(g_isAbstract);
 	};
 
 entity_id:
@@ -1556,7 +1562,14 @@ type_id:
 
 abstract_supertype_declaration:
 	TOKEN_ABSTRACT TOKEN_SUPERTYPE subtype_constraint
-  | TOKEN_ABSTRACT TOKEN_SUPERTYPE;
+    {
+        g_isAbstract = true;
+    }
+  | TOKEN_ABSTRACT TOKEN_SUPERTYPE
+    {
+        g_isAbstract = true;
+    }
+  ;
 
 subtype_constraint:
 	TOKEN_OF TOKEN_BRACKET_OPEN supertype_expression TOKEN_BRACKET_CLOSE;
