@@ -69,9 +69,7 @@ namespace OpenInfraPlatform {
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcProfileDef #" << profileDef->getId();
 #endif
-				// (1/5) IfcArbitraryClosedProfileDef SUBTYPE OF IfcProfileDef
-				//std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed =
-				//std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profileDef);
+				// (1/6) IfcArbitraryClosedProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed = profileDef.as<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>();
 					convertIfcArbitraryClosedProfileDef(arbitrary_closed, paths);
@@ -79,9 +77,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (2/5) IfcArbitraryOpenProfileDef SUBTYPE OF IfcProfileDef
-				//std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> arbitrary_open =
-				//	std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>(profileDef);
+				// (2/6) IfcArbitraryOpenProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> arbitrary_open = profileDef.as<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>();
 					convertIfcArbitraryOpenProfileDef(arbitrary_open, paths);
@@ -89,8 +85,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (3/5) IfcCompositeProfileDef SUBTYPE OF IfcProfileDef
-				//std::shared_ptr<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeProfileDef>(profileDef);
+				// (3/6) IfcCompositeProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCompositeProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = profileDef.as<typename IfcEntityTypesT::IfcCompositeProfileDef>();
 					convertIfcCompositeProfileDef(composite, paths);
@@ -98,8 +93,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (4/5) IfcDerivedProfileDef SUBTYPE OF IfcProfileDef
-				//std::shared_ptr<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDerivedProfileDef>(profileDef);
+				// (4/6) IfcDerivedProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcDerivedProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = profileDef.as<typename IfcEntityTypesT::IfcDerivedProfileDef>();
 					convertIfcDerivedProfileDef(derived, paths);
@@ -107,9 +101,16 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (5/5) IfcParameterizedProfileDef SUBTYPE OF IfcProfileDef
-				//std::shared_ptr<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized =
-				//	std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcParameterizedProfileDef>(profileDef);
+				// (5/6) IfcOpenCrossProfileDef SUBTYPE OF IfcProfileDef (exists starting IFC4x3)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+				if (profileDef.isOfType<typename IfcEntityTypesT::IfcOpenCrossProfileDef>()) {
+					EXPRESSReference<typename IfcEntityTypesT::IfcOpenCrossProfileDef> open_cross = profileDef.as<typename IfcEntityTypesT::IfcOpenCrossProfileDef>();
+					convertIfcOpenCrossProfileDef(open_cross, paths);
+					removeDuplicates(paths);
+					return;
+				}
+#endif
+				// (6/6) IfcParameterizedProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcParameterizedProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized = profileDef.as<typename IfcEntityTypesT::IfcParameterizedProfileDef>();
 					convertIfcParameterizedProfileDef(parameterized, paths);
@@ -461,20 +462,62 @@ namespace OpenInfraPlatform {
 				BLUE_LOG(trace) << "Processed IfcDerivedProfileDef #" << profileDef->getId();
 #endif
 			}
-
-			/*! \internal TODO
-			*
+			// IfcOpenCrossProfileDef exists starting IFC4x3
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+			/*! \brief defines a two-dimensional open profile. 
+			* \param[in] profileDef A pointer to data from c\ IfcOpenCrossProfileDef
+			* \param[out] paths A pointer to be filled with the relevant data.
 			*/
 			// Function 5: Convert IfcOpenCrossProfileDef
 			void convertIfcOpenCrossProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcOpenCrossProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
 			{
-				throw oip::UnhandledException(profileDef);
+				if (profileDef.expired())
+					throw oip::ReferenceExpiredException(profileDef);
+
+				if (profileDef->Widths.size() != profileDef->Slopes.size()) {
+					throw oip::InconsistentModellingException(profileDef, "Number of Widths is not equal to the number of Slopes");
+				}
+				std::vector<carve::geom::vector<2>> outer_loop;
+				double TagX = 0.0;
+				double TagY = 0.0;
+				double x, y;
+
+				for (int i = 0; i < profileDef->Widths.size(); i++) {
+					outer_loop.push_back(carve::geom::VECTOR(TagX, TagY));
+					std::tie(x, y) = CalculateXYFromPolar(profileDef->HorizontalWidths,
+						profileDef->Widths[i] * UnitConvert()->getLengthInMeterFactor(), 
+						profileDef->Slopes[i] * UnitConvert()->getAngleInRadianFactor());
+					TagX = TagX + x;
+					TagY = TagY + y;
+				}
+				outer_loop.push_back(carve::geom::VECTOR(TagX, TagY));
+				paths.push_back(outer_loop);
+			}
+#endif
+
+			/*! \brief Calculates X and Y coordinates using slope and width.
+			* \param[in] horizontal A bool variable which defines, if width shall be measured horizontally or along the slope.
+			* \param[in] width A double which indicates the horizontal width or distance along the slope for the segment in the profile.
+			* \param[in] slope A double which indicates slope measure. 
+			* \return X and Y coordinates of the vector's end. 
+			* beginning of the vector lie in (0,0).
+			*/
+			std::tuple<double,double> CalculateXYFromPolar(const bool& horizontal, const double& width, const double& slope) const throw(...) {
+				if (horizontal) {
+					if (slope == M_PI_2) {
+						throw oip::InconsistentGeometryException("slope can not be 90 degree");
+					}
+					return std::tuple<double, double>(width,  width / tan(slope));
+				}
+				else {
+					return std::tuple<double,double>(width * cos(slope), width * sin(slope));
+				}
 			}
 
 			/*! \brief  Defines a 2D position coordinate system to which the parameters of the different profiles relate to.
 			*  \param[in] profileDef A pointer to data from IfcProfileDef.
-			*  \param[out] paths A pointer to be filled with the relevant data
+			*  \param[out] paths A pointer to be filled with the relevant data.
 			*/
 			// Function 6: Convert IfcParametrizedProfileDef
 			void convertIfcParameterizedProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
