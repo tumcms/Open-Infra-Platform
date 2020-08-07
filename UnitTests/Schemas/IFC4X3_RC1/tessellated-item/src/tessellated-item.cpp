@@ -81,6 +81,7 @@ class TessellatedItemTest : public VisualTest {
         VisualTest::SetUp();
 
         express_model = OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader::FromFile(filename.string());
+
         importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC1EntityTypes>>();
         importer->collectGeometryData(express_model);
 	oip::ConverterBuwT<emt::IFC4X3_RC1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
@@ -96,6 +97,8 @@ class TessellatedItemTest : public VisualTest {
     }
 
     const boost::filesystem::path filename = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X3_RC1\\tessellated-item\\Data\\tessellated-item.ifc");
+
+    const boost::filesystem::path baseImageFilename_ = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X3_RC1\\tessellated-item\\Data\\tessellated-item.png");
 
 
     std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
@@ -130,4 +133,18 @@ TEST_F(TessellatedItemTest, TopView)
 
     // Assert
     EXPECT_NE(image, _background);
+}
+
+TEST_F(TessellatedItemTest, GivenNewImage_AfterHome_AreEqual)
+{
+    // Arrange
+    const auto expected = buw::loadImage4b(baseImageFilename_.string());
+
+    // Act
+    const buw::Image4b image = renderer->captureImage();
+
+    // Assert
+    EXPECT_EQ(image, expected);
+
+    // Annihilate
 }
