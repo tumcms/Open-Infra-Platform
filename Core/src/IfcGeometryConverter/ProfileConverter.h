@@ -566,8 +566,7 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(profileDef);
 				}
 
-				convertIfcParameterizedProfileDefWithPosition(profileDef, temp_paths, paths);
-
+				ApplyPosition(profileDef, temp_paths, paths);
 			}
 			
 
@@ -1553,17 +1552,15 @@ namespace OpenInfraPlatform {
 			*  \param[in] temp_paths A pointer to coordinates of the profile
 			*  \param[out] paths A pointer to be filled with the relevant data.
 			*/
-			void convertIfcParameterizedProfileDefWithPosition(const EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
+			void ApplyPosition(const EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>> temp_paths,
-				std::vector<std::vector<carve::geom::vector<2>>>& paths) const throw(){
+				std::vector<std::vector<carve::geom::vector<2>>>& paths) const throw(...){
 
 				if (profileDef->Position) {
 					carve::math::Matrix transform = placementConverter->convertIfcPlacement(profileDef->Position.get());
 
-					for (int i = 0; i < temp_paths.size(); ++i) {
-						std::vector<carve::geom::vector<2>>& path_loop = temp_paths[i];
-						for (int j = 0; j < path_loop.size(); ++j) {
-							carve::geom::vector<2>& pt = path_loop.at(j);
+					for (std::vector<carve::geom::vector<2>> path_loop : temp_paths) {
+						for (carve::geom::vector<2> pt : path_loop) {
 							carve::geom::vector<3> pt_3d(carve::geom::VECTOR(pt.x, pt.y, 0));
 							pt_3d = transform * pt_3d;
 							pt.x = pt_3d.x;
@@ -1573,8 +1570,7 @@ namespace OpenInfraPlatform {
 					}
 				}
 				else {
-					for (int i = 0; i < temp_paths.size(); ++i) {
-						std::vector<carve::geom::vector<2>>& path_loop = temp_paths[i];
+					for (std::vector<carve::geom::vector<2>> path_loop : temp_paths) {
 						paths.push_back(path_loop);
 					}
 				}
