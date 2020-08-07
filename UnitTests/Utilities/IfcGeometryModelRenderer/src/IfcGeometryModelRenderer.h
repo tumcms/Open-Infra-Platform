@@ -58,6 +58,12 @@ public:
      */
     buw::Image4b captureImage();
 
+    /*!
+     * \brief Set the viewing angle.
+     * \param direction
+     */
+    void setViewDirection(const buw::eViewDirection &direction);
+
 protected:
 
     /*!
@@ -77,10 +83,16 @@ protected:
     void repaint();
 
     /*!
+     * \brief Updates the world buffer with camera matrices.
+     */
+    void updateWorldBuffer();
+
+    /*!
      * \brief Copies the current back buffer texture content into the returned image.
      * \return Rendered back buffer image.
      */
     buw::Image4b getBackBufferImage() const;
+
 
 private:
     int width_ = 640;

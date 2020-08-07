@@ -114,8 +114,24 @@ void IfcGeometryModelRenderer::clearBackBuffer()
 void IfcGeometryModelRenderer::repaint()
 {
     clearBackBuffer();
+    updateWorldBuffer();
     ifcGeometryEffect_->render();
     renderSystem_->present();
+}
+
+void IfcGeometryModelRenderer::updateWorldBuffer()
+{
+    WorldBuffer world;
+    world.viewProjection = camera_->viewProjectionMatrix();
+    world.projection = camera_->frustum().projectionMatrix();
+    world.view = camera_->transformation().viewMatrix();
+    world.cam = (camera_->transformation().transformationMatrix() * buw::Vector4f(0, 0, 0, 1)).block<3, 1>(0, 0);
+    world.rotation = camera_->transformation().rotationMatrix();
+
+    buw::constantBufferDescription cbd;
+    cbd.sizeInBytes = sizeof(WorldBuffer);
+    cbd.data = &world;
+    worldBuffer_->uploadData(cbd);
 }
 
 buw::Image4b IfcGeometryModelRenderer::getBackBufferImage() const
@@ -129,4 +145,13 @@ buw::Image4b IfcGeometryModelRenderer::captureImage()
 {
     repaint();
     return getBackBufferImage();
+}
+
+void IfcGeometryModelRenderer::setViewDirection(const buw::eViewDirection& direction)
+{   
+    cameraController_->setViewDirection(buw::CameraController::getViewDirectionVector(direction));
+
+    // Operation takes 0.5 seconds
+    cameraController_->tick(1.0f);
+    camera_->tick(1.0f);
 }
