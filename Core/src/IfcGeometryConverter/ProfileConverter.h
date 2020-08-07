@@ -69,7 +69,7 @@ namespace OpenInfraPlatform {
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcProfileDef #" << profileDef->getId();
 #endif
-				// (1/8) IfcArbitraryClosedProfileDef SUBTYPE OF IfcProfileDef
+				// (1/6) IfcArbitraryClosedProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> arbitrary_closed = profileDef.as<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>();
 					convertIfcArbitraryClosedProfileDef(arbitrary_closed, paths);
@@ -77,7 +77,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (2/8) IfcArbitraryOpenProfileDef SUBTYPE OF IfcProfileDef
+				// (2/6) IfcArbitraryOpenProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef> arbitrary_open = profileDef.as<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>();
 					convertIfcArbitraryOpenProfileDef(arbitrary_open, paths);
@@ -85,7 +85,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (3/8) IfcCompositeProfileDef SUBTYPE OF IfcProfileDef
+				// (3/6) IfcCompositeProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCompositeProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcCompositeProfileDef> composite = profileDef.as<typename IfcEntityTypesT::IfcCompositeProfileDef>();
 					convertIfcCompositeProfileDef(composite, paths);
@@ -93,7 +93,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (4/8) IfcDerivedProfileDef SUBTYPE OF IfcProfileDef
+				// (4/6) IfcDerivedProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcDerivedProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcDerivedProfileDef> derived = profileDef.as<typename IfcEntityTypesT::IfcDerivedProfileDef>();
 					convertIfcDerivedProfileDef(derived, paths);
@@ -101,9 +101,8 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (5/8) IfcOpenCrossProfileDef SUBTYPE OF IfcProfileDef (exists starting IFC4x3)
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4) || defined(OIP_MODULE_EARLYBINDING_IFC2X3)
-#else
+				// (5/6) IfcOpenCrossProfileDef SUBTYPE OF IfcProfileDef (exists starting IFC4x3)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcOpenCrossProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcOpenCrossProfileDef> open_cross = profileDef.as<typename IfcEntityTypesT::IfcOpenCrossProfileDef>();
 					convertIfcOpenCrossProfileDef(open_cross, paths);
@@ -111,7 +110,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 #endif
-				// (6/8) IfcParameterizedProfileDef SUBTYPE OF IfcProfileDef
+				// (6/6) IfcParameterizedProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcParameterizedProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef> parameterized = profileDef.as<typename IfcEntityTypesT::IfcParameterizedProfileDef>();
 					convertIfcParameterizedProfileDefWithPosition(parameterized, paths);
@@ -464,10 +463,9 @@ namespace OpenInfraPlatform {
 #endif
 			}
 			// IfcOpenCrossProfileDef exists starting IFC4x3
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4) || defined(OIP_MODULE_EARLYBINDING_IFC2X3)
-#else
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 			/*! \brief defines a two-dimensional open profile. 
-			* \param[in] profileDef A pointer to data from IfcProfileDef.
+			* \param[in] profileDef A pointer to data from c\ IfcOpenCrossProfileDef
 			* \param[out] paths A pointer to be filled with the relevant data.
 			*/
 			// Function 5: Convert IfcOpenCrossProfileDef
