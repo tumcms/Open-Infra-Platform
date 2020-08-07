@@ -3979,62 +3979,62 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 	auto allAttributes = schema.getAllEntityAttributes(entity);
 	auto attributes = entity.getAttributes();
 
-	//std::set<std::string> typeAttributes, entityAttributes;
+	std::set<std::string> typeAttributes, entityAttributes;
 
-	//for (const auto attr : allAttributes) {
-	//	if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
-	//		if (schema.hasEntity(attr.type->toString())) {
-	//			entityAttributes.insert(attr.type->toString());
-	//		}
-	//		if (schema.hasType(attr.type->toString())) {
-	//			typeAttributes.insert(attr.type->toString());
-	//		}
-	//	}
-	//	else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-	//		auto elementType = attr.type;
+	for (const auto attr : allAttributes) {
+		if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
+			if (schema.hasEntity(attr.type->toString())) {
+				entityAttributes.insert(attr.type->toString());
+			}
+			if (schema.hasType(attr.type->toString())) {
+				typeAttributes.insert(attr.type->toString());
+			}
+		}
+		else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+			auto elementType = attr.type;
 
-	//		while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-	//			elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
-	//		}
+			while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
+			}
 
-	//		if (schema.hasEntity(elementType->toString())) {
-	//			entityAttributes.insert(elementType->toString());
-	//		}
-	//		if (schema.hasType(elementType->toString())) {
-	//			typeAttributes.insert(elementType->toString());
-	//		}
-	//	}
-	//}
+			if (schema.hasEntity(elementType->toString())) {
+				entityAttributes.insert(elementType->toString());
+			}
+			if (schema.hasType(elementType->toString())) {
+				typeAttributes.insert(elementType->toString());
+			}
+		}
+	}
 
-	//auto self = entityAttributes.find(entity.getName());
-	//while (self != entityAttributes.end()) {
-	//	entityAttributes.erase(self);
-	//	self = entityAttributes.find(entity.getName());
-	//}
+	auto self = entityAttributes.find(entity.getName());
+	while (self != entityAttributes.end()) {
+		entityAttributes.erase(self);
+		self = entityAttributes.find(entity.getName());
+	}
 
-	//// Initialize set of resolved classes.
-	//std::set<std::string> resolvedClasses = {};
+	// Initialize set of resolved classes.
+	std::set<std::string> resolvedClasses = {};
 
-	//for (const auto typeName : typeAttributes) {
-	//	if (schema.isSelectType(typeName)) {
-	//		resolveSelectTypeIncludes(schema, entityAttributes, schema.getTypeByName(typeName), resolvedClasses);
-	//	}
-	//}
+	for (const auto typeName : typeAttributes) {
+		if (schema.isSelectType(typeName)) {
+			resolveSelectTypeIncludes(schema, entityAttributes, schema.getTypeByName(typeName), resolvedClasses);
+		}
+	}
 
-	//for (const auto attributeEntityName : entityAttributes) {
-	//	auto attributeEntity = schema.getEntityByName(attributeEntityName);
-	//	resolveEntityIncludes(schema, attributeEntity, entityAttributes, resolvedClasses);
-	//}
+	for (const auto attributeEntityName : entityAttributes) {
+		auto attributeEntity = schema.getEntityByName(attributeEntityName);
+		resolveEntityIncludes(schema, attributeEntity, entityAttributes, resolvedClasses);
+	}
 
-	//if (!entityAttributes.empty()) {
-	//	for (const auto entityAttribute : entityAttributes) {
-	//		writeInclude(out, entityAttribute + ".h");
-	//	}
-	//	linebreak(out);
-	//}
+	if (!entityAttributes.empty()) {
+		for (const auto entityAttribute : entityAttributes) {
+			writeInclude(out, entityAttribute + ".h");
+		}
+		linebreak(out);
+	}
 
-	//writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
-	//writeInclude(out, "EXPRESS/EXPRESSReferenceImpl.h");
+	writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
+	writeInclude(out, "EXPRESS/EXPRESSReferenceImpl.h");
 	linebreak(out);
 
 	writeBeginNamespace(out, schema);
@@ -4176,8 +4176,8 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 
 	writeEndNamespace(out, schema);
 
-	//writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">;");
-	//writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">" + ">;");
+	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">;");
+	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">" + ">;");
 	out.close();
 }
 
