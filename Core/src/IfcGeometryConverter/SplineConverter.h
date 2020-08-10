@@ -160,28 +160,27 @@ namespace OpenInfraPlatform
 
 						const std::vector<carve::geom::vector<3>> controlPoints = loadControlPoints(bspline);
 
-						std::vector<double> length;
-						std::vector<double> curvature;
-						std::tie(length, curvature) = computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
+						std::vector<std::pair<double, double>> curvature;
+						curvature = computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
 					}
 
 					/*! \brief Computes the length and curvature of an B-Spline curve
 					 *
 					 * This function calculates the curvature of a B-Spline; rational B-Splines can't be handled from this function. 
-					 * As well, a vector with the corresponding curve length is calculated. 
+					 * As well, the corresponding curve length is calculated. 
 					 * The \c length is necessary to display or analyse the \c curvature in dependency to the true curve length.
 					 * The parameter \c t along a B-Spline curve doesn't represent the true length along the curve because the 
 					 * calculated curve points aren't evenly spaced.\n
-					 * Both return vectors have the same size. They come back as a \c std::tuple in the order \c length, \c curvature.
+					 * The result comes back as a vector of \c std::pair in the order \c length, \c curvature.
+					 * Access the members by \c .first to get the length and \c .second to get the curvature.
 					 *
 					 * \param[in]	order			Order of the B-Spline or rather the basis functions ( =degree+1 )
 					 * \param[in]	controlPoints	The vector of the B-Spline control points.
 					 * \param[in]	knotArray		The array / vector of knots.
 					 *
-					 * \return		Vector with curve length
-					 * \return		Vector with curve curvature
+					 * \return		Vector of pairs with curve length and curvature.
 					 */
-					std::tuple<std::vector<double>, std::vector<double>> computeCurvatureOfBSplineCurveWithKnots(
+					std::vector<std::pair<double, double>> computeCurvatureOfBSplineCurveWithKnots(
 						const int& order,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
 						const std::vector<double>& knotArray) const throw(...)
@@ -198,9 +197,7 @@ namespace OpenInfraPlatform
 						double step;
 						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
 
-						std::vector<double> length;
-						length.reserve(numCurvePoints);
-						std::vector<double> curvature;
+						std::vector<std::pair<double, double>> curvature;
 						curvature.reserve(numCurvePoints);
 
 						// start with first valid knot
@@ -211,14 +208,17 @@ namespace OpenInfraPlatform
 						carve::geom::vector<3> derivativeOne;
 						carve::geom::vector<3> derivativeTwo;
 
+						double length_i;
+						double curvature_i;
+
 						for (size_t i = 0; i < numCurvePoints; ++i) {
 							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
 							curvePoint = computePointOfBSpline(order, t, controlPoints, numControlPoints, knotArray);
 							if (i == 0)
-								length[0] = 0;
+								length_i = 0;
 							else
-								length[i] = length[i-1] + (curvePoint - curvePointPrevious).length();
+								length_i = curvature[i-1].first + (curvePoint - curvePointPrevious).length();
 							curvePointPrevious = curvePoint;
 
 							derivativeOne = computePointOfDerivativeOne(order, t, controlPoints, knotArray);
@@ -226,13 +226,15 @@ namespace OpenInfraPlatform
 
 							// curvature of curve c(t) in xy-plane
 							// according to definition 3.500 in Bronstein et al., Taschenbuch der Mathematik, 10. Auflage, 2016
-							curvature[i] = (derivativeOne.x*derivativeTwo.y - derivativeTwo.x*derivativeOne.y) 
+							curvature_i = (derivativeOne.x*derivativeTwo.y - derivativeTwo.x*derivativeOne.y) 
 								/ (std::pow( std::pow(derivativeOne.x,2) + std::pow(derivativeOne.y,2), 3/2));
+
+							curvature[i] = std::pair<double, double> (length_i, curvature_i);
 
 							t += step;
 						}
 
-						return { length, curvature };
+						return curvature;
 					}
 
 				private:
