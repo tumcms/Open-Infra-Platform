@@ -208,27 +208,24 @@ namespace OpenInfraPlatform
 						carve::geom::vector<3> derivativeOne;
 						carve::geom::vector<3> derivativeTwo;
 
-						double length_i;
-						double curvature_i;
-
 						for (size_t i = 0; i < numCurvePoints; ++i) {
 							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
 							curvePoint = computePointOfBSpline(order, t, controlPoints, numControlPoints, knotArray);
 
-							length_i = (i == 0 ? 0 : lengthsWithCurvatures[i - 1].first + (curvePoint - curvePointPrevious).length());
-							curvePointPrevious = curvePoint;
-
 							derivativeOne = computePointOfDerivativeOne(order, t, controlPoints, knotArray);
 							derivativeTwo = computePointOfDerivativeTwo(order, t, controlPoints, knotArray);
 
-							// curvature of curve c(t) in xy-plane
-							// according to definition 3.500 in Bronstein et al., Taschenbuch der Mathematik, 10. Auflage, 2016
-							curvature_i = (derivativeOne.x*derivativeTwo.y - derivativeTwo.x*derivativeOne.y) 
-								/ (std::pow( std::pow(derivativeOne.x,2) + std::pow(derivativeOne.y,2), 3/2));
+							// create lengthsWithCurvatures[i] = {length_i, curvature_i}
+							lengthsWithCurvatures[i] = std::pair<double, double> (
+								// length_i:
+								(i == 0 ? 0 : lengthsWithCurvatures[i - 1].first + (curvePoint - curvePointPrevious).length()),
+								// curvature_i of curve c(t) in xy-plane
+								// according to definition 3.500 in Bronstein et al., Taschenbuch der Mathematik, 10. Auflage, 2016
+								(derivativeOne.x*derivativeTwo.y - derivativeTwo.x*derivativeOne.y)
+								/ (std::pow(std::pow(derivativeOne.x, 2) + std::pow(derivativeOne.y, 2), 3 / 2)));
 
-							lengthsWithCurvatures[i] = std::pair<double, double> (length_i, curvature_i);
-
+							curvePointPrevious = curvePoint;
 							t += step;
 						}
 
