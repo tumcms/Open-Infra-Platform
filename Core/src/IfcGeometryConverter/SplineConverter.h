@@ -200,7 +200,7 @@ namespace OpenInfraPlatform
 						std::vector<std::pair<double, double>> lengthsWithCurvatures;
 						lengthsWithCurvatures.reserve(numCurvePoints);
 
-						// start with first valid knot
+						// t: representative of the parameter vector, start with first valid knot
 						double t = knotStart;
 
 						carve::geom::vector<3> curvePoint;
@@ -209,6 +209,7 @@ namespace OpenInfraPlatform
 						carve::geom::vector<3> derivativeTwo;
 
 						for (size_t i = 0; i < numCurvePoints; ++i) {
+							// the for-loop iterates over all values t of the parameter vector
 							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
 							curvePoint = computePointOfBSpline(order, t, controlPoints, numControlPoints, knotArray);
@@ -226,6 +227,8 @@ namespace OpenInfraPlatform
 								/ (std::pow(std::pow(derivativeOne.x, 2) + std::pow(derivativeOne.y, 2), 3 / 2)));
 
 							curvePointPrevious = curvePoint;
+
+							// go to next representative t of the parameter vector (= increase its value)
 							t += step;
 						}
 
@@ -406,13 +409,16 @@ namespace OpenInfraPlatform
 						std::vector<carve::geom::vector<3>> curvePoints;
 						curvePoints.reserve(numCurvePoints);
 
-						// start with first valid knot
+						// t: representative of the parameter vector, start with first valid knot
 						double t = knotStart;
 
 						for (size_t i = 0; i < numCurvePoints; ++i) {
+							// the for-loop iterates over all values t of the parameter vector
 							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
 							curvePoints.push_back(computePointOfBSpline(order, t, controlPoints, numControlPoints, knotArray));
+
+							// go to next representative t of the parameter vector (= increase its value)
 							t += step;
 						}
 
@@ -487,13 +493,16 @@ namespace OpenInfraPlatform
 						std::vector<carve::geom::vector<3>> curvePoints;
 						curvePoints.reserve(numCurvePoints);
 
-						// start with first valid knot
+						// t: representative of the parameter vector, start with first valid knot
 						double t = knotStart;
 
 						for (size_t i = 0; i < numCurvePoints; ++i) {
+							// the for-loop iterates over all values t of the parameter vector
 							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
 							curvePoints.push_back(computePointOfRationalBSpline(order, t, controlPoints, numControlPoints, knotArray, weightsData));
+
+							// go to next representative t of the parameter vector (= increase its value)
 							t += step;
 						}
 
