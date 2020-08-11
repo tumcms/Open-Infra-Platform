@@ -160,8 +160,8 @@ namespace OpenInfraPlatform
 
 						const std::vector<carve::geom::vector<3>> controlPoints = loadControlPoints(bspline);
 
-						std::vector<std::pair<double, double>> curvature;
-						curvature = computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
+						std::vector<std::pair<double, double>> lengthsWithCurvatures;
+						lengthsWithCurvatures = computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
 					}
 
 					/*! \brief Computes the length and curvature of an B-Spline curve
@@ -197,8 +197,8 @@ namespace OpenInfraPlatform
 						double step;
 						std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
 
-						std::vector<std::pair<double, double>> curvature;
-						curvature.reserve(numCurvePoints);
+						std::vector<std::pair<double, double>> lengthsWithCurvatures;
+						lengthsWithCurvatures.reserve(numCurvePoints);
 
 						// start with first valid knot
 						double t = knotStart;
@@ -215,10 +215,8 @@ namespace OpenInfraPlatform
 							if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
 							curvePoint = computePointOfBSpline(order, t, controlPoints, numControlPoints, knotArray);
-							if (i == 0)
-								length_i = 0;
-							else
-								length_i = curvature[i-1].first + (curvePoint - curvePointPrevious).length();
+
+							length_i = (i == 0 ? 0 : lengthsWithCurvatures[i - 1].first + (curvePoint - curvePointPrevious).length());
 							curvePointPrevious = curvePoint;
 
 							derivativeOne = computePointOfDerivativeOne(order, t, controlPoints, knotArray);
@@ -229,12 +227,12 @@ namespace OpenInfraPlatform
 							curvature_i = (derivativeOne.x*derivativeTwo.y - derivativeTwo.x*derivativeOne.y) 
 								/ (std::pow( std::pow(derivativeOne.x,2) + std::pow(derivativeOne.y,2), 3/2));
 
-							curvature[i] = std::pair<double, double> (length_i, curvature_i);
+							lengthsWithCurvatures[i] = std::pair<double, double> (length_i, curvature_i);
 
 							t += step;
 						}
 
-						return curvature;
+						return lengthsWithCurvatures;
 					}
 
 				private:
