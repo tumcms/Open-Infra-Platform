@@ -496,8 +496,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionStroke_To_Alignment_triggered()
 {
-	QMessageBox::information(this, tr("Convert Stroke to Alignment"), 
-		tr("The Button works! However, there is no implementation of further activities."), QMessageBox::Ok);
+	SplineInterpretation splineInterpretation;
+	//QMessageBox::information(this, tr("Convert Stroke to Alignment"), 
+	//	tr("The Button works! However, there is no implementation of further activities."), QMessageBox::Ok);
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING

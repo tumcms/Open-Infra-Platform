@@ -49,6 +49,7 @@
 //#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcDialog.h"
 //#include "OpenInfraPlatform/UserInterface/CreateAccidentReportDialog.h"
 //#include "OpenInfraPlatform/UserInterface/OSMImportDialog.h"
+#include "../Rendering/Tools/SplineInterpretation.h"
 
 #include "qsimpleupdater.h"
 
