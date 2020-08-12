@@ -4047,6 +4047,12 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		resolveEntityIncludes(schema, attributeEntity, entityAttributes, resolvedClasses);
 	}
 
+	auto self = entityAttributes.find(entity.getName());
+	while (self != entityAttributes.end()) {
+		entityAttributes.erase(self);
+		self = entityAttributes.find(entity.getName());
+	}
+
 	if (!entityAttributes.empty()) {
 		for (const auto entityAttribute : entityAttributes) {
 			writeInclude(out, entityAttribute + ".h");
