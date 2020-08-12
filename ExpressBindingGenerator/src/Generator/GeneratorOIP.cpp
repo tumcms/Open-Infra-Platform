@@ -1016,7 +1016,16 @@ void writeSelectTypeFileMinimal(Schema& schema, Type& selectType, std::ostream& 
 	writeLine(out, "};");
 }
 
+std::map<std::string, std::set<std::string>> cacheTypeAttributes; //cached set for each type (saves computational time)
 void resolveSelectTypeIncludes(const Schema& schema, std::set<std::string>& entityAttributes, const Type& type, std::set<std::string>& resolvedClasses) {
+	// check the cached stuff
+	if (cacheTypeAttributes.find(type.getName()) != cacheTypeAttributes.end())
+	{
+		auto typeAttr = cacheTypeAttributes.at(type.getName());
+		entityAttributes.insert(typeAttr.begin(), typeAttr.end());
+		resolvedClasses.insert(type.getName());
+		return;
+	}
 	auto possibleSelectTypes = type.getTypes();
 	for (auto value : possibleSelectTypes) {
 		if (resolvedClasses.find(value) == resolvedClasses.end()) {
@@ -1032,46 +1041,54 @@ void resolveSelectTypeIncludes(const Schema& schema, std::set<std::string>& enti
 			}
 		}
 	}
+	// remember for this type
+	cacheTypeAttributes.insert(std::pair<std::string, std::set<std::string>>(type.getName(), entityAttributes));
 }
 
+std::map<std::string, std::set<std::string>> cacheEntityAttributes; //cached set for each entity (saves computational time)
 void resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<std::string>& entityAttributes, std::set<std::string>& resolvedClasses) {
+	// check the cached stuff
+	if (cacheEntityAttributes.find(entity.getName()) != cacheEntityAttributes.end())
+	{
+		auto entAttr = cacheEntityAttributes.at(entity.getName());
+		entityAttributes.insert(entAttr.begin(), entAttr.end());
+		resolvedClasses.insert(entity.getName());
+		return;
+	}
+
 	auto attributes = schema.getAllEntityAttributes(entity, true);
 
 	std::set<std::string> newEntityAttributes;
+	std::string attrTypeName = "";
 	for (const auto attr : attributes) {
 		if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
-			if (schema.hasEntity(attr.type->toString()) && entityAttributes.find(attr.type->toString()) == entityAttributes.end()) {
-				newEntityAttributes.insert(attr.type->toString());
-			}
-			if (schema.hasType(attr.type->toString())) {
-				const auto type = schema.getTypeByName(attr.type->toString());
-				if (type.isSelectType()) {
-					resolveSelectTypeIncludes(schema, newEntityAttributes, type, resolvedClasses);
-				}
-			}
+			attrTypeName = attr.type->toString();
 		}
 		else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
 			auto elementType = attr.type;
-			int dim = 0;
-
 			while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-				dim++;
 				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
 			}
+			attrTypeName = elementType->toString();
+		}
 
-			if (schema.hasEntity(elementType->toString()) && entityAttributes.find(elementType->toString()) == entityAttributes.end()) {
-				newEntityAttributes.insert(elementType->toString());
-			}
-			if (schema.hasType(elementType->toString())) {
-				auto type = schema.getTypeByName(elementType->toString());
-				if (type.isSelectType()) {
-					resolveSelectTypeIncludes(schema, newEntityAttributes, type, resolvedClasses);
-				}
+		if (schema.hasEntity(attrTypeName)
+			&& entityAttributes.find(attrTypeName) == entityAttributes.end()
+			&& resolvedClasses.find(attrTypeName) == resolvedClasses.end()) {
+			newEntityAttributes.insert(attrTypeName);
+		}
+		if (schema.hasType(attrTypeName)) {
+			const auto type = schema.getTypeByName(attrTypeName);
+			if (type.isSelectType()) {
+				resolveSelectTypeIncludes(schema, newEntityAttributes, type, resolvedClasses);
 			}
 		}
 	}
 
-	entityAttributes.insert(newEntityAttributes.begin(), newEntityAttributes.end());
+	for (auto attributeEntityName : newEntityAttributes)
+		if (entityAttributes.find(attributeEntityName) == entityAttributes.end())
+			entityAttributes.insert(attributeEntityName);
+
 	resolvedClasses.insert(entity.getName());
 
 	for (auto attributeEntityName : newEntityAttributes) {
@@ -1080,8 +1097,10 @@ void resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<
 			resolveEntityIncludes(schema, attributeEntity, entityAttributes, resolvedClasses);
 		}
 	}
-}
 
+	// remember for this entity
+	cacheEntityAttributes.insert(std::pair<std::string, std::set<std::string>>(entity.getName(), entityAttributes));
+}
 
 OpenInfraPlatform::ExpressBindingGenerator::GeneratorOIP::GeneratorOIP(const std::string &outputDirectory) : outputDirectory_(outputDirectory) {
 }
