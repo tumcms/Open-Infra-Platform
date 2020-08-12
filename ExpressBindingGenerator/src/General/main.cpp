@@ -82,11 +82,6 @@ int main(int argc, char **argv) {
         do {
             yyparse();
         } while (!feof(yyin));
-		std::cout << "done." << std::endl;
-
-        std::ofstream ofs("test.txt", std::ofstream::out);
-
-        std::ostream &out = ofs; // std::cout;
 		       
 		//link inverse attributes
 		cout << "Linking inverse attributes ... ";
@@ -103,7 +98,6 @@ int main(int argc, char **argv) {
 		std::chrono::duration<double> elapsed = finish - start; 
 		std::cout << "Done! Elapsed time: " << elapsed.count() << " s\n";
 
-        ofs.close();
 
     } catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;

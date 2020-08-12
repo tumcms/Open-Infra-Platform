@@ -173,6 +173,7 @@ std::string join(const std::vector<std::string>& params, char sep) {
 	text.pop_back();
 	return text;
 }
+
 std::string createIfElseStatement(const std::string& condition, const std::string& doThen, const std::string& doElse = "")
 {
 	std::string statement = "if(" + condition + ") {" + doThen + "}";
@@ -286,12 +287,12 @@ void writeEndNamespace(std::ostream &out, const OpenInfraPlatform::ExpressBindin
 	writeLine(out, "} // end namespace OpenInfraPlatform");
 }
 
-void writeEndClass(std::ostream &out, OpenInfraPlatform::ExpressBindingGenerator::Type &type)
+void writeEndClass(std::ostream &out, const OpenInfraPlatform::ExpressBindingGenerator::Type &type)
 {
 	writeLine(out, "}; // end class " + type.getName());
 }
 
-void writeEndClass(std::ostream &out, OpenInfraPlatform::ExpressBindingGenerator::Entity &entity)
+void writeEndClass(std::ostream &out, const OpenInfraPlatform::ExpressBindingGenerator::Entity &entity)
 {
 	writeLine(out, "}; // end class " + entity.getName());
 }
@@ -479,19 +480,19 @@ void writeEntityFunction(std::ostream &out, const OpenInfraPlatform::ExpressBind
 
 		std::vector<std::string> statements = std::vector<std::string>();
 		for(auto it : linebreaks) {
-			auto &tokens = split(it, ';', Left);
+			auto tokens = split(it, ';', Left);
 			statements.insert(statements.end(), tokens.begin(), tokens.end());
 		}
 
 		std::vector<std::string> textSplitByOpenBraces = std::vector<std::string>();
 		for(auto statement : statements) {
-			auto &tokens = split(statement, '{', Left);
+			auto tokens = split(statement, '{', Left);
 			textSplitByOpenBraces.insert(textSplitByOpenBraces.end(), tokens.begin(), tokens.end());
 		}
 
 		std::vector<std::string> lines = std::vector<std::string>();
 		for(auto line : textSplitByOpenBraces) {
-			auto &tokens = split(line, '}', Standalone);
+			auto tokens = split(line, '}', Standalone);
 			lines.insert(lines.end(), tokens.begin(), tokens.end());
 		}
 				
@@ -558,7 +559,7 @@ void writeValueTypeFile(const Type& type, std::ostream& out) {
 	return;
 }
 
-void writeContainerTypeFile(Schema& schema, Type& type, std::ostream& out) {
+void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream& out) {
 	/*
 	#define DEFINE_CONTAINERTYPE(name, containertype, min, max, valuetype)\
 	class name : public ExpressBindingGenerator::EXPRESSContainer<containertype<valuetype>,valuetype,min,max>, public ExpressBindingGenerator::EXPRESSType {\
@@ -957,7 +958,7 @@ void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out) {
 	return;
 }
 
-void writeSelectTypeFileREFACTORED(Schema& schema, Type& selectType, std::ostream& out) {
+void writeSelectTypeFileREFACTORED(const Schema& schema, const Type& selectType, std::ostream& out) {
 	//class IfcTimeOrRatioSelect : public OpenInfraPlatform::ExpressBindingGenerator::SelectType<IfcTimeOrRatioSelect, IfcDuration, IfcRatioMeasure> {
 	//	using base = OpenInfraPlatform::ExpressBindingGenerator::SelectType<IfcTimeOrRatioSelect, IfcDuration, IfcRatioMeasure>;
 	//public:
@@ -1015,7 +1016,7 @@ void writeSelectTypeFileMinimal(Schema& schema, Type& selectType, std::ostream& 
 	writeLine(out, "};");
 }
 
-void resolveSelectTypeIncludes(Schema& schema, std::set<std::string>& entityAttributes, const Type& type, std::set<std::string>& resolvedClasses) {
+void resolveSelectTypeIncludes(const Schema& schema, std::set<std::string>& entityAttributes, const Type& type, std::set<std::string>& resolvedClasses) {
 	auto possibleSelectTypes = type.getTypes();
 	for (auto value : possibleSelectTypes) {
 		if (resolvedClasses.find(value) == resolvedClasses.end()) {
@@ -1033,17 +1034,17 @@ void resolveSelectTypeIncludes(Schema& schema, std::set<std::string>& entityAttr
 	}
 }
 
-void resolveEntityIncludes(Schema& schema, const Entity& entity, std::set<std::string>& entityAttributes, std::set<std::string>& resolvedClasses) {
+void resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<std::string>& entityAttributes, std::set<std::string>& resolvedClasses) {
 	auto attributes = schema.getAllEntityAttributes(entity, true);
 
 	std::set<std::string> newEntityAttributes;
-	for (auto attr : attributes) {
+	for (const auto attr : attributes) {
 		if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
 			if (schema.hasEntity(attr.type->toString()) && entityAttributes.find(attr.type->toString()) == entityAttributes.end()) {
 				newEntityAttributes.insert(attr.type->toString());
 			}
 			if (schema.hasType(attr.type->toString())) {
-				auto type = schema.getTypeByName(attr.type->toString());
+				const auto type = schema.getTypeByName(attr.type->toString());
 				if (type.isSelectType()) {
 					resolveSelectTypeIncludes(schema, newEntityAttributes, type, resolvedClasses);
 				}
@@ -1090,7 +1091,7 @@ OpenInfraPlatform::ExpressBindingGenerator::GeneratorOIP::GeneratorOIP(const std
 GeneratorOIP::~GeneratorOIP() {
 }
 
-void GeneratorOIP::generate(std::ostream &out, OpenInfraPlatform::ExpressBindingGenerator::Schema &schema) {
+void GeneratorOIP::generate( const Schema &schema) {
 	rootDirectory_ = outputDirectory_ + "/" + schema.getName();
 
 	std::string schemaDirectory = rootDirectory_ + "/schema";
@@ -1200,14 +1201,14 @@ void GeneratorOIP::generate(std::ostream &out, OpenInfraPlatform::ExpressBinding
 	generateEntityEnumsHeaderFile(schema);
 
 	for (int i = 0; i < schema.getTypeCount(); i++) {
-		auto &type = schema.getTypeByIndex(i);
+		auto type = schema.getTypeByIndex(i);
 
 		generateTypeHeaderFile(schema, type);
 		generateTypeSourceFile(schema, type);
 	}
 
 	for (int i = 0; i < schema.getEntityCount(); i++) {
-		auto &entity = schema.getEntityByIndex(i);
+		auto entity = schema.getEntityByIndex(i);
 
 		generateEntityHeaderFile(schema, entity);
 		generateEntitySourceFile(schema, entity);
@@ -1217,7 +1218,7 @@ void GeneratorOIP::generate(std::ostream &out, OpenInfraPlatform::ExpressBinding
 	generateSchemaHeader(schema);
 }
 
-void GeneratorOIP::generateREFACTORED(std::ostream & out, Schema & schema)
+void GeneratorOIP::generateREFACTORED( const Schema & schema)
 {
 	rootDirectory_ = outputDirectory_ + "/" + schema.getName();
 
@@ -1280,7 +1281,7 @@ void GeneratorOIP::generateREFACTORED(std::ostream & out, Schema & schema)
 	//#pragma omp parallel for
 	int typeCount = schema.getTypeCount();
 	for (int i = 0; i < typeCount; i++) {
-		auto &type = schema.getTypeByIndex(i);
+		const auto type = schema.getTypeByIndex(i);
 		generateTypeHeaderFileREFACTORED(schema, type);
 		generateTypeSourceFileREFACTORED(schema, type);
 		std::cout << std::to_string(i+1) + "/" + std::to_string(typeCount) + ": " + type.getName() << std::endl;
@@ -1290,14 +1291,14 @@ void GeneratorOIP::generateREFACTORED(std::ostream & out, Schema & schema)
 	std::cout << "Generating entities:" << std::endl;
 	int entityCount = schema.getEntityCount();
 	for (int i = 0; i < entityCount; i++) {
-		auto &entity = schema.getEntityByIndex(i);
+		const auto entity = schema.getEntityByIndex(i);
 		generateEntityHeaderFileREFACTORED(schema, entity);
 		generateEntitySourceFileREFACTORED(schema, entity);
 		std::cout << std::to_string(i+1) + "/" + std::to_string(entityCount) + ": " + entity.getName() << std::endl;
 	}
 }
 
-void GeneratorOIP::createEntitiesMapHeaderFile(Schema &schema) {
+void GeneratorOIP::createEntitiesMapHeaderFile(const Schema &schema) {
 	// EntitiesMap.h
 	std::stringstream ssFilename;
 	ssFilename << sourceDirectory_ << "/OpenInfraPlatform/" << schema.getName() << "/" << schema.getName() << "EntitiesMap.h";
@@ -1322,7 +1323,7 @@ void GeneratorOIP::createEntitiesMapHeaderFile(Schema &schema) {
 	    << "static const std::pair<std::string, " << schema.getName() << "EntityEnum> initializers_" << schema.getName() << "_entity[] = {" << std::endl;
 
 	for (int i = 0; i < schema.getEntityCount(); i++) {
-		auto &entity = schema.getEntityByIndex(i);
+		const auto entity = schema.getEntityByIndex(i);
 
 		out << "\t"
 		    << "\t"
@@ -1344,7 +1345,7 @@ void GeneratorOIP::createEntitiesMapHeaderFile(Schema &schema) {
 	out << "}" << std::endl;
 }
 
-void GeneratorOIP::createTypesHeaderFile(Schema &schema) {
+void GeneratorOIP::createTypesHeaderFile(const Schema &schema) {
 	std::stringstream ssFilename;
 
 	ssFilename << sourceDirectory_ << "/OpenInfraPlatform/" << schema.getName() << "/" << schema.getName() << "Types.h";
@@ -1355,13 +1356,13 @@ void GeneratorOIP::createTypesHeaderFile(Schema &schema) {
 	out << "#pragma once" << std::endl;
 
 	for (int i = 0; i < schema.getTypeCount(); i++) {
-		auto &type = schema.getTypeByIndex(i);
+		const auto type = schema.getTypeByIndex(i);
 
 		out << "#include \"OpenInfraPlatform/" + schema.getName() + "/entity/" << type.getName() << ".h\"" << std::endl;
 	}
 }
 
-void GeneratorOIP::createTypesHeaderFileREFACTORED(Schema & schema)
+void GeneratorOIP::createTypesHeaderFileREFACTORED(const Schema & schema)
 {
 	std::stringstream ssFilename;
 
@@ -1371,11 +1372,7 @@ void GeneratorOIP::createTypesHeaderFileREFACTORED(Schema & schema)
 	out << license;
 	out << std::endl;
 	
-	boost::mt19937 ran;
-	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	ran.seed(time(&now)); // one should likely seed in a better way
-	boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
-	auto guid = boost::uuids::to_string(gen());
+	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
 	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), "Types", guid, "h" }, '_');
 
@@ -1394,7 +1391,7 @@ void GeneratorOIP::createTypesHeaderFileREFACTORED(Schema & schema)
 	out.close();
 }
 
-void GeneratorOIP::createEntitiesHeaderFile(Schema &schema) {
+void GeneratorOIP::createEntitiesHeaderFile(const Schema &schema) {
 	std::stringstream ssFilename;
 	ssFilename << sourceDirectory_ << "/OpenInfraPlatform/" << schema.getName() << "/" << schema.getName() << "Entities.h";
 	std::ofstream out(ssFilename.str());
@@ -1412,7 +1409,7 @@ void GeneratorOIP::createEntitiesHeaderFile(Schema &schema) {
 	
 }
 
-void GeneratorOIP::createEntitiesHeaderFileREFACTORED(Schema &schema) {
+void GeneratorOIP::createEntitiesHeaderFileREFACTORED(const Schema &schema) {
 	std::stringstream ssFilename;
 	ssFilename << sourceDirectory_ <<  "/" << schema.getName() << "Entities.h";
 	std::ofstream out(ssFilename.str());
@@ -1420,11 +1417,7 @@ void GeneratorOIP::createEntitiesHeaderFileREFACTORED(Schema &schema) {
 	out << license << std::endl;
 	out << std::endl;
 	
-	boost::mt19937 ran;
-	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	ran.seed(time(&now)); // one should likely seed in a better way
-	boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
-	auto guid = boost::uuids::to_string(gen());
+	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
 	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), "Entities", guid, "h" }, '_');
 
@@ -1434,7 +1427,7 @@ void GeneratorOIP::createEntitiesHeaderFileREFACTORED(Schema &schema) {
 	linebreak(out);
 
 	for (int i = 0; i < schema.getEntityCount(); i++) {
-		auto &entity = schema.getEntityByIndex(i);
+		auto entity = schema.getEntityByIndex(i);
 
 		out << "#include \"entity/" << entity.getName() << ".h\"" << std::endl;
 	}
@@ -1443,7 +1436,7 @@ void GeneratorOIP::createEntitiesHeaderFileREFACTORED(Schema &schema) {
 	out.close();
 }
 
-void GeneratorOIP::generateTypeHeaderFile(Schema &schema, Type &type)
+void GeneratorOIP::generateTypeHeaderFile(const Schema &schema, const Type &type)
 {
 	std::stringstream ssHeaderFilename;
 	ssHeaderFilename << entityPath_ << "/" << type.getName() << ".h";
@@ -1729,7 +1722,7 @@ void GeneratorOIP::generateTypeHeaderFile(Schema &schema, Type &type)
 	}
 }
 
-void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type)
+void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const Type & type) const
 {
 	std::stringstream ssHeaderFilename;
 	ssHeaderFilename << typePath_ << "/" << type.getName() << ".h";
@@ -1740,11 +1733,7 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 
 	writeLicenseAndNotice(out);
 
-	boost::mt19937 ran;
-	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	ran.seed(time(&now)); // one should likely seed in a better way
-	boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
-	auto guid = boost::uuids::to_string(gen());
+	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
 	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), type.getName(), guid, "h" }, '_');
 	
@@ -1855,7 +1844,7 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(Schema & schema, Type & type
 	out.close();
 }
 
-void GeneratorOIP::generateTypeSourceFile(Schema &schema, Type &type) {
+void GeneratorOIP::generateTypeSourceFile(const Schema &schema, const Type &type) {
 	std::string name = type.getName();
 
 	std::stringstream ssFilename;
@@ -2224,7 +2213,7 @@ void GeneratorOIP::generateTypeSourceFile(Schema &schema, Type &type) {
 	writeEndNamespace(out, schema);
 }
 
-void GeneratorOIP::generateTypeSourceFileREFACTORED(Schema & schema, Type & type)
+void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const Type & type) const
 {
 	std::stringstream ssSourceFilename;
 	ssSourceFilename << typePath_ << "/" << type.getName() << ".cpp";
@@ -2354,7 +2343,7 @@ bool isSimpleType(std::string name) {
 	return false;
 }
 
-void OpenInfraPlatform::ExpressBindingGenerator::GeneratorOIP::generateTypeSourceFileGetStepParameter(const Type &type, std::ofstream &out, Schema &schema) {
+void OpenInfraPlatform::ExpressBindingGenerator::GeneratorOIP::generateTypeSourceFileGetStepParameter(const Type &type, std::ofstream &out, const Schema &schema) {
 	if (type.isSelectType()) {
 		return;
 	}
@@ -2503,11 +2492,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 
 	writeLicenseAndNotice(file);
 
-	boost::mt19937 ran;
-	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	ran.seed(time(&now)); // one should likely seed in a better way
-	boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
-	auto guid = boost::uuids::to_string(gen());
+	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
 	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), schema.getName() + "Reader", guid, "h" }, '_');
 
@@ -2691,11 +2676,7 @@ void GeneratorOIP::generateEMTFiles(const Schema & schema)
 	std::ofstream file(sourceDirectory_ + "/EMTBasic" + schema.getName().append("EntityTypes.h"));
 
 	writeLicenseAndNotice(file);
-	boost::mt19937 ran;
-	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	ran.seed(time(&now)); // one should likely seed in a better way
-	boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
-	auto guid = boost::uuids::to_string(gen());
+	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
 	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), "EMTBasic" + schema.getName() + "EntityTypes", guid, "h" }, '_');
 
@@ -2729,10 +2710,7 @@ void GeneratorOIP::generateEMTFiles(const Schema & schema)
 
 	file.open(sourceDirectory_ + "/EMT" + schema.getName().append("EntityTypes.h"));
 
-	now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	ran.seed(time(&now)); // one should likely seed in a better way
-	gen = boost::uuids::basic_random_generator<boost::mt19937>(&ran);
-	guid = boost::uuids::to_string(gen());
+	guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
 	define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), "EMT" + schema.getName() + "EntityTypes", guid, "h" }, '_');
 	writeLicenseAndNotice(file);
@@ -2777,7 +2755,7 @@ void GeneratorOIP::generateEMTFiles(const Schema & schema)
 	file.close();
 }
 
-std::string GeneratorOIP::convertSimpleTypeToCPPType(Schema &schema, std::string simpleType) const {
+std::string GeneratorOIP::convertSimpleTypeToCPPType(const Schema &schema, std::string simpleType) const {
 	std::map<std::string, std::string> simpleTypeMapping;
 	simpleTypeMapping.insert(std::make_pair("INTEGER", "int"));
 	simpleTypeMapping.insert(std::make_pair("REAL", "double"));
@@ -3118,7 +3096,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	*/
 }
 
-void GeneratorOIP::createEntityBrokerCPPFile(Schema &schema) {
+void GeneratorOIP::createEntityBrokerCPPFile(const Schema &schema) {
 	std::stringstream ssFilename;
 	ssFilename << sourceDirectory_ << "/OpenInfraPlatform/" << schema.getName() << "/" << schema.getName() << "EntityBroker.cpp";
 	std::ofstream out(ssFilename.str());
@@ -3161,7 +3139,7 @@ void GeneratorOIP::createEntityBrokerCPPFile(Schema &schema) {
 	    << "{" << std::endl;
 
 	for (int i = 0; i < schema.getEntityCount(); i++) {
-		auto &entity = schema.getEntityByIndex(i);
+		const auto entity = schema.getEntityByIndex(i);
 
 		out << "\t"
 		    << "\t"
@@ -3192,7 +3170,7 @@ void GeneratorOIP::createEntityBrokerCPPFile(Schema &schema) {
 	out << "}" << std::endl;
 }
 
-void GeneratorOIP::generateEntityHeaderFile(OpenInfraPlatform::ExpressBindingGenerator::Schema &schema, Entity &entity) {
+void GeneratorOIP::generateEntityHeaderFile(const Schema &schema, const Entity &entity) {
 	std::stringstream ssHeaderFilename;
 	ssHeaderFilename << entityPath_ << "/" << entity.getName() << ".h";
 	std::cout << ssHeaderFilename.str() << std::endl;
@@ -3358,10 +3336,10 @@ void GeneratorOIP::generateEntityHeaderFile(OpenInfraPlatform::ExpressBindingGen
 				auto iterator = p->elementType;
 
 				while (iterator->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-					auto p = std::static_pointer_cast<EntityAttributeGeneralizedType>(iterator);
+					auto p1 = std::static_pointer_cast<EntityAttributeGeneralizedType>(iterator);
 					out << "std::vector<";
 
-					iterator = p->elementType;
+					iterator = p1->elementType;
 				}
 
 				if (iterator->getType() == eEntityAttributeParameterType::TypeNamed) {
@@ -3371,10 +3349,10 @@ void GeneratorOIP::generateEntityHeaderFile(OpenInfraPlatform::ExpressBindingGen
 				iterator = p->elementType;
 
 				while (iterator->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-					auto p = std::static_pointer_cast<EntityAttributeGeneralizedType>(iterator);
+					auto p1 = std::static_pointer_cast<EntityAttributeGeneralizedType>(iterator);
 					out << ">";
 
-					iterator = p->elementType;
+					iterator = p1->elementType;
 				}
 
 				out << "> "
@@ -3437,22 +3415,16 @@ void GeneratorOIP::generateEntityHeaderFile(OpenInfraPlatform::ExpressBindingGen
 }
 
 
-void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & entity)
+void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, const Entity & entity) const
 {
 	std::stringstream ssHeaderFilename;
 	ssHeaderFilename << entityPath_ << "/" << entity.getName() << ".h";
 	//std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssHeaderFilename.str());
 
-	indentation = 0;
-
 	writeLicenseAndNotice(out);
 
-	boost::mt19937 ran;
-	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	ran.seed(time(&now)); // one should likely seed in a better way
-	boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
-	auto guid = boost::uuids::to_string(gen());
+	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
 	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), entity.getName(), guid, "h" }, '_');
 
@@ -3491,10 +3463,8 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 		}
 		else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
 			auto elementType = attr.type;
-			int dim = 0;
 
 			while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-				dim++;
 				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
 			}
 
@@ -3631,7 +3601,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(Schema & schema, Entity & 
 	out.close();
 }
 
-void GeneratorOIP::generateEntityEnumsHeaderFile(Schema &schema) {
+void GeneratorOIP::generateEntityEnumsHeaderFile(const Schema &schema) {
 	std::stringstream ssHeaderFilename;
 	ssHeaderFilename << sourceDirectory_ << "/OpenInfraPlatform/" << schema.getName() << "/" << schema.getName() << "EntityEnums.h";
 	std::cout << ssHeaderFilename.str() << std::endl;
@@ -3639,11 +3609,7 @@ void GeneratorOIP::generateEntityEnumsHeaderFile(Schema &schema) {
 
 	writeLicenseAndNotice(out);
 
-	boost::mt19937 ran;
-	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	ran.seed(time(&now)); // one should likely seed in a better way
-	boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
-	auto guid = boost::uuids::to_string(gen());
+	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
 	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), "Enums", guid, "h" }, '_');
 
@@ -3665,16 +3631,12 @@ void GeneratorOIP::generateEntityEnumsHeaderFile(Schema &schema) {
 	writeLine(out, "#endif");
 }
 
-void GeneratorOIP::generateSchemaHeader(Schema & schema)
+void GeneratorOIP::generateSchemaHeader(const Schema & schema)
 {
 	std::ofstream file(sourceDirectory_ + "/"+ schema.getName().append(".h"));
 
 	writeLicenseAndNotice(file);
-	boost::mt19937 ran;
-	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	ran.seed(time(&now)); // one should likely seed in a better way
-	boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
-	auto guid = boost::uuids::to_string(gen());
+	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
 	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), schema.getName(), guid, "h" }, '_');
 
@@ -3693,16 +3655,12 @@ void GeneratorOIP::generateSchemaHeader(Schema & schema)
 	file.close();	
 }
 
-void GeneratorOIP::generateNamespaceHeader(Schema & schema)
+void GeneratorOIP::generateNamespaceHeader(const Schema & schema)
 {
 	std::ofstream file(sourceDirectory_ + "/" + schema.getName().append("Namespace.h"));
 
 	writeLicenseAndNotice(file);
-	boost::mt19937 ran;
-	auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	ran.seed(time(&now)); // one should likely seed in a better way
-	boost::uuids::basic_random_generator<boost::mt19937> gen(&ran);
-	auto guid = boost::uuids::to_string(gen());
+	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
 	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), "Namespace", guid, "h" }, '_');
 
@@ -3735,7 +3693,7 @@ void GeneratorOIP::generateNamespaceHeader(Schema & schema)
 	file.close();
 }
 
-void GeneratorOIP::generateEntitySourceFile(Schema &schema, const Entity &entity) {
+void GeneratorOIP::generateEntitySourceFile(const Schema &schema, const Entity &entity) {
 	std::stringstream ssHeaderFilename;
 	ssHeaderFilename << entityPath_ << "/" << entity.getName() << ".cpp";
 	std::cout << ssHeaderFilename.str() << std::endl;
@@ -4019,14 +3977,12 @@ void GeneratorOIP::generateEntitySourceFile(Schema &schema, const Entity &entity
 	writeEndNamespace(out, schema);
 }
 
-void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Entity & entity)
+void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, const Entity & entity) const
 {
 	std::stringstream ssSourceFilename;
 	ssSourceFilename << entityPath_ << "/" << entity.getName() << ".cpp";
 	//std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssSourceFilename.str());
-
-	indentation = 0;
 
 	writeLicenseAndNotice(out);	
 	writeInclude(out, entity.getName() + ".h");
@@ -4036,7 +3992,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 
 	std::set<std::string> typeAttributes, entityAttributes;
 
-	for (auto attr : attributes) {
+	for (const auto attr : attributes) {
 		if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
 			if (schema.hasEntity(attr.type->toString())) {
 				entityAttributes.insert(attr.type->toString());
@@ -4047,10 +4003,8 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		}
 		else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
 			auto elementType = attr.type;
-			int dim = 0;
 
 			while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-				dim++;
 				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
 			}
 
@@ -4093,13 +4047,13 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(Schema & schema, const Ent
 		}
 	}
 
-	for (auto attributeEntityName : entityAttributes) {
+	for (const auto attributeEntityName : entityAttributes) {
 		auto attributeEntity = schema.getEntityByName(attributeEntityName);
 		resolveEntityIncludes(schema, attributeEntity, entityAttributes, resolvedClasses);
 	}
 
 	if (!entityAttributes.empty()) {
-		for (auto entityAttribute : entityAttributes) {
+		for (const auto entityAttribute : entityAttributes) {
 			writeInclude(out, entityAttribute + ".h");
 		}
 		linebreak(out);

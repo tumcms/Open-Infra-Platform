@@ -15,7 +15,11 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "IfcImporter.h"
+#pragma once
+#ifndef IFCIMPORTERIMPL_H
+#define IFCIMPORTERIMPL_H
+
+#include <IfcGeometryConverter/IfcImporter.h>
 #include "BlueFramework/Core/Diagnostics/log.h"
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC2X3
@@ -161,3 +165,5 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 		throw; // throw onwards
 	}
 }
+
+#endif // IFCIMPORTERIMPL_H

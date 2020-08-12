@@ -40,6 +40,11 @@ class Entity {
   public:
     Entity();
     virtual ~Entity() {}
+    
+    Entity( const Entity& other ) = default;
+    Entity( Entity&& other ) = default;
+
+    Entity& operator=( const Entity& other ) = default;
 
     std::string getName() const;
 
