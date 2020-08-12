@@ -18,11 +18,10 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <reader/IFC4x1Reader.h>
+#include <reader/IFC4X1Reader.h>
 #include <namespace.h>
 
 #include <IfcGeometryModelRenderer.h>
-#include <VisualTest.h>
 
 #include <buw.Engine.h>
 #include <buw.ImageProcessing.h>
@@ -34,6 +33,42 @@
 
 using namespace testing;
 
+class VisualTest : public Test
+{
+protected:
+
+	buw::ReferenceCounted<buw::IRenderSystem> renderSystem_ = nullptr;
+	buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = nullptr;
+
+	VisualTest()
+	{
+		buw::renderSystemDescription scd;
+		scd.width = 640;
+		scd.height = 480;
+		scd.windowId = static_cast<void*>(this);
+		scd.forceWarpDevice = false;
+		scd.enableMSAA = true;
+		scd.renderAPI = BlueFramework::Rasterizer::eRenderAPI::Direct3D11;
+
+		renderSystem_ = BlueFramework::Rasterizer::createRenderSystem(scd);
+	}
+
+	virtual ~VisualTest()
+	{
+		renderSystem_.reset();
+	}
+
+	virtual void SetUp() override
+	{
+		renderer = buw::makeReferenceCounted<IfcGeometryModelRenderer>(renderSystem_);
+
+	}
+
+	virtual void TearDown() override
+	{
+		renderer.reset();
+	}
+};
 
 class TessellatedItemTest : public VisualTest {
     protected:
