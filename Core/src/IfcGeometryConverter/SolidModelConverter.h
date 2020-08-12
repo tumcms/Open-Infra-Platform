@@ -604,13 +604,13 @@ namespace OpenInfraPlatform
 						
 							//close the first positions of the body
 							body_data->addFace(0, ppoints - 1, ppoints);
-							
+
 							//close the body
 							int closingBodyVertices = num_vertices / ppoints;
 							for (int ii = 1; ii < closingBodyVertices - 1; ++ii)
 							{
-								body_data->addFace(ii*ppoints, ii*ppoints - 1, (ii+1)*ppoints);
-								body_data->addFace((ii + 1)*ppoints, ii*ppoints - 1, (ii + 2)*ppoints - 1);
+								body_data->addFace(ii*ppoints, ii*ppoints - 1, (ii+1)*ppoints - 1);
+								body_data->addFace((ii + 1)*ppoints, ii*ppoints, (ii + 1)*ppoints - 1);
 							}
 					
 							// close front cap
