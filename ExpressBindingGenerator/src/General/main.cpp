@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 
 		std::cout << "Generating files:" << std::endl;
         GeneratorOIP cppgen(outputDirectoryName);
-		cppgen.generateREFACTORED(out, oip::Schema::getInstance());
+		cppgen.generateREFACTORED(oip::Schema::getInstance());
 		
 		// Record end time
 		auto finish = std::chrono::high_resolution_clock::now();

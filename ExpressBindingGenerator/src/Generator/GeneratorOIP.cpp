@@ -4032,11 +4032,6 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		}
 	}
 
-	auto self = entityAttributes.find(entity.getName());
-	if (self != entityAttributes.end()) {
-		entityAttributes.erase(self);
-	}
-
 	// Initialize set of resolved classes.
 	std::set<std::string> resolvedClasses = {};
 
