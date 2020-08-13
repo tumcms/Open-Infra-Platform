@@ -38,69 +38,27 @@ protected:
     buw::ReferenceCounted<buw::IRenderSystem> renderSystem_ = nullptr;
     buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = nullptr;
 
-    VisualTest()
-    {
-        buw::renderSystemDescription scd;
-        scd.width = 640;
-        scd.height = 480;
-        scd.windowId = static_cast<void*>(this);
-        scd.forceWarpDevice = false;
-        scd.enableMSAA = true;
-        scd.renderAPI = BlueFramework::Rasterizer::eRenderAPI::Direct3D11;
+    VisualTest();
 
-        renderSystem_ = BlueFramework::Rasterizer::createRenderSystem(scd);
-    }
+    virtual ~VisualTest();
 
-    virtual ~VisualTest()
-    {
-        renderSystem_.reset();
-    }
+    virtual void SetUp() override;
 
-    virtual void SetUp() override
-    {
-        renderer = buw::makeReferenceCounted<IfcGeometryModelRenderer>(renderSystem_);
-        
-    }
-
-    virtual void TearDown() override
-    {
-        renderer.reset();
-    }
+    virtual void TearDown() override;
 
 public:
-	virtual buw::Image4b CaptureImage()
-	{
-		return renderer->captureImage();
-	}
+	virtual buw::Image4b CaptureImage();
 
 	virtual std::string TestName() const = 0; // provide the test name as specified in the solution and the folder structure
 	virtual std::string Schema() const = 0; // provide the schema as specified in the solution and the folder structure
 
-	boost::filesystem::path executablePath() const
-	{
-		return boost::dll::program_location().parent_path();
-	}
+	boost::filesystem::path executablePath() const;
 
-	virtual boost::filesystem::path filePath(const std::string& relPath) const
-	{
-		return executablePath()
-			.concat("\\UnitTests\\Schemas\\")
-			.concat(Schema())
-			.concat("\\")
-			.concat(TestName())
-			.concat("\\")
-			.concat(relPath);
-	}
+	virtual boost::filesystem::path filePath(const std::string& relPath) const;
 
-	boost::filesystem::path dataPath(const std::string& relPath) const
-	{
-		return filePath("Data\\" + relPath);
-	}
+	boost::filesystem::path dataPath(const std::string& relPath) const;
 
-	boost::filesystem::path testPath(const std::string& relPath) const
-	{
-		return filePath("Test\\" + relPath);
-	}
+	boost::filesystem::path testPath(const std::string& relPath) const;
 
 
 };
