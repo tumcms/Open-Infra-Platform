@@ -160,7 +160,7 @@ namespace OpenInfraPlatform
 					std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
 
 					std::vector<std::pair<double, double>> lengthsWithCurvatures;
-					lengthsWithCurvatures.reserve(numCurvePoints);
+					lengthsWithCurvatures.resize(numCurvePoints);
 
 					// t: representative of the parameter vector, start with first valid knot
 					double t = knotStart;
@@ -282,7 +282,7 @@ namespace OpenInfraPlatform
 					}
 
 					std::vector<double> basisFuncs;
-					basisFuncs.reserve(numControlPoints);
+					basisFuncs.resize(numControlPoints);
 					const uint32_t numBasis = numControlPoints;
 					for (size_t j = 0; j < numBasis; ++j) {
 						basisFuncs[j] = tempBasisFuncs[j];
@@ -438,7 +438,7 @@ namespace OpenInfraPlatform
 					}
 
 					std::vector<double> basisFuncs;
-					basisFuncs.reserve(numControlPoints);
+					basisFuncs.resize(numControlPoints);
 					const size_t numBasis = numControlPoints;
 					for (size_t j = 0; j < numBasis; ++j) {
 						basisFuncs[j] = basisFuncsDerivativeOne[j];
@@ -577,7 +577,7 @@ namespace OpenInfraPlatform
 					}
 
 					std::vector<double> basisFuncs;
-					basisFuncs.reserve(numControlPoints);
+					basisFuncs.resize(numControlPoints);
 					const size_t numBasis = numControlPoints;
 					for (size_t j = 0; j < numBasis; ++j) {
 						basisFuncs[j] = basisFuncsDerivativeTwo[j];
