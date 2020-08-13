@@ -494,6 +494,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
 	QMessageBox::about(this, tr("About TUM Open Infra Platform 2018"), head + desc);
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionStroke_To_Alignment_triggered()
+{
+	SplineInterpretation splineInterpretation;
+	splineInterpretation.convertSketchToAlignment();
+	//QMessageBox::information(this, tr("Convert Stroke to Alignment"), 
+	//	tr("The Button works! However, there is no implementation of further activities."), QMessageBox::Ok);
+}
+
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportPointCloud_triggered()
 {
