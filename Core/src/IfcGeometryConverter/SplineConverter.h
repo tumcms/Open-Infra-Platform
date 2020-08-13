@@ -1044,6 +1044,16 @@ namespace OpenInfraPlatform
 
 			}; // end class SplineConverterT
 
+			/*! \brief Provides some functions for spline calculations.
+			 *
+			 * Here are functions which are used from the classes \c SplineConverterT and \c SplineInterpretation [and maybe more in future].
+			 * These functions are independent from \c GeometrySettings, \c UnitConverter, etc., which aren't included in \c SplineInterpretation.
+			 */
+			class SplineUtilities
+			{
+
+			};
+
 			//template<>
 			//inline void SplineConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::convertIfcBSplineSurface(
 			//	const std::shared_ptr<emt::Ifc4EntityTypes::IfcBoundedSurface>& splineSurfaceWithKnots,
