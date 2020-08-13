@@ -54,6 +54,11 @@ namespace OpenInfraPlatform
 			 * \c x_i=i-order if \c order+1<=i<=numberOfControlPoints \n
 			 * \c x_i=numberOfControlPoints-order+1 if \c numberOfControlPoints+1<=i<=numberOfControlPoints+order \n
 			 * (vector indices according to mathematical one-based definition)
+			 *
+			 * \param [in]	nPoints		Number of control points
+			 * \param [in]	order		Order of the B-Spline or rather the basis functions ( =degree+1 )
+			 *
+			 * \return		The open uniform knots array.
 			 */
 			std::vector<double> obtainKnotArrayOpenUniform(const size_t nPoints, const int order) const throw(...);
 
