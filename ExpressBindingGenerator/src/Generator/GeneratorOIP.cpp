@@ -545,8 +545,8 @@ void writeValueTypeFile(const Type& type, std::ostream& out) {
 	
 	linebreak(out);
 	writeLine(out, name + "& operator=(const " + name + "& other) = default;");
-	writeLine(out, "virtual " + name + "& operator=(const Optional<" + name + "> &other);");
-	//writeLine(out, "virtual " + name + "& operator=(const Optional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
+	writeLine(out, "virtual " + name + "& operator=(const EXPRESSOptional<" + name + "> &other);");
+	//writeLine(out, "virtual " + name + "& operator=(const EXPRESSOptional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
 	linebreak(out);
 	writeLine(out, "virtual " + name + "* operator->() override;");
 	//writeLine(out, "virtual " + name + "* operator->() override { return this; }");
@@ -571,7 +571,7 @@ void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream
 		using base::operator containertype<valuetype>&;\
 		name* operator->() { return this; }\
 		const name* const operator->() const { return this; }\
-		virtual name& operator=(const Optional<name> &other) { operator=(other.get_value_or(name())); return *this; };\
+		virtual name& operator=(const EXPRESSOptional<name> &other) { operator=(other.get_value_or(name())); return *this; };\
 		virtual const std::string classname() const override { return #name; }\
 		virtual const std::string getStepParameter() const override {return base::getStepParameter(); }\
 	};
@@ -608,8 +608,8 @@ void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream
 	linebreak(out);
 	writeLine(out, name + "& operator=(" + name + "& other);");
 	//writeLine(out, name + "& operator=(const " + name + "& other) = default;");
-	//writeLine(out, name + "& operator=(const Optional<" + name + "> &other);");
-	//writeLine(out, name + "& operator=(const Optional<" + name + "> &other) { operator=(other.get_value_or(" + name + "())); return *this; };");
+	//writeLine(out, name + "& operator=(const EXPRESSOptional<" + name + "> &other);");
+	//writeLine(out, name + "& operator=(const EXPRESSOptional<" + name + "> &other) { operator=(other.get_value_or(" + name + "())); return *this; };");
 	linebreak(out);
 	writeLine(out, "virtual const std::string classname() const override;");
 	//writeLine(out, "virtual const std::string classname() const override { return \"" + name + "\"; }");
@@ -677,7 +677,7 @@ void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostr
 			using base::base;\
 			using base::operator=;\
 			using base::operator->;\
-			virtual name& operator=(const Optional<name> &other) { this->m_value = other.get_value_or(name()); return *this; };\
+			virtual name& operator=(const EXPRESSOptional<name> &other) { this->m_value = other.get_value_or(name()); return *this; };\
 			virtual const std::string classname() const override { return #name; }\
 			const std::string name::getStepParameter() const { return "." + to_string(OpenInfraPlatform::ExpressBindingGenerator::ValueType<name##Values>::m_value) + "."; };\
 			static name##Values name::readStepData(const std::string &value) {\
@@ -704,7 +704,7 @@ void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostr
 	writeLine(out, "using base::operator->;");
 	linebreak(out);
 	
-	writeLine(out, "virtual " + name + "& operator=(const Optional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
+	writeLine(out, "virtual " + name + "& operator=(const EXPRESSOptional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
 	writeLine(out, "virtual const std::string classname() const override { return \"" + name + "\"; }");
 	writeLine(out, "const std::string getStepParameter() const { return to_string(" + basetype + "::m_value); };");
 	writeLine(out, "static " + enumName + " readStepData(const std::string &value) {");
@@ -764,7 +764,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 	writeLine(out, "using base::operator->;");
 	linebreak(out);
 	writeLine(out, name + "& operator=(const " + name + "& other) = default;");
-	//writeLine(out, "virtual " + name + "& operator=(const Optional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
+	//writeLine(out, "virtual " + name + "& operator=(const EXPRESSOptional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
 	linebreak(out);
 	writeLine(out, "virtual const std::string classname() const override;");
 	//writeLine(out, "virtual const std::string classname() const override { return \"" + name + "\"; }");
@@ -2264,7 +2264,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 	std::string name = type.getName();
 
 	if (type.isSimpleType() || type.isDerivedType()) {
-		writeLine(out, name + "& " + name + "::operator=(const Optional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
+		writeLine(out, name + "& " + name + "::operator=(const EXPRESSOptional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
 		linebreak(out);
 		writeLine(out, name + "* " + name + "::operator->() { return this; }");
 		writeLine(out, "const " + name + "* const " + name + "::operator->() const { return this; };");
@@ -2288,7 +2288,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 		writeLine(out, "const " + name + "* const " + name + "::operator->() const { return this; };");
 		linebreak(out);
 		writeLine(out, name + "& " + name + "::operator=(" + name + "& other) { this->base::swap(other); return *this; };");
-		//writeLine(out, name + "& " + name + "::operator=(const Optional<" + name + "> &other) { this->operator=(other.get_value_or(" + name + "())); return *this; };");
+		//writeLine(out, name + "& " + name + "::operator=(const EXPRESSOptional<" + name + "> &other) { this->operator=(other.get_value_or(" + name + "())); return *this; };");
 		linebreak(out);
 		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; };");
 		writeLine(out, "const std::string " + name + "::getStepParameter() const { return this->base::getStepParameter(); };");
