@@ -15,9 +15,6 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-add_subdirectory(Comments)
-
-
 include(CreateUnitTests)
 
 # get all subdirectories (that is, unit tests)
