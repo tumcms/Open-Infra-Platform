@@ -48,6 +48,8 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	// Compute curvature
 	Core::IfcGeometryConverter::SplineUtilities splineUtilities;
 	std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
+
+	debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
 }
 
 // PRIVATE FUNCTIONS
@@ -66,4 +68,18 @@ std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obta
 		knotArray[i] = nPoints - order + 1;
 
 	return knotArray;
+}
+
+void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_printCurvatureInConsolWindow(
+	std::vector<std::pair<double, double>> lengthsWithCurvatures) const throw(...)
+{
+	using std::cout;
+	using std::endl;
+
+	cout << endl;
+	cout << "Length with curvature of the B-Spline:" << endl << "[";
+	for (size_t i = 0; i < lengthsWithCurvatures.size() - 1; i++)
+		cout << lengthsWithCurvatures[i].first << ", " << lengthsWithCurvatures[i].second << ";" << endl;
+
+	cout << lengthsWithCurvatures.back().first << ", " << lengthsWithCurvatures.back().second << "];";
 }

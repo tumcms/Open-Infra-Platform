@@ -57,6 +57,14 @@ namespace OpenInfraPlatform
 			 */
 			std::vector<double> obtainKnotArrayOpenUniform(const size_t nPoints, const int order) const throw(...);
 
+			/*! \brief Displays the vector of length with curvature in the console window.
+			 *
+			 * The syntax in the consol matches the syntax of MATLAB. The information can be pasted into MATLAB as nx2-matrix.
+			 *
+			 * param[in] lengthsWithCurvatures	The vector of length with curvature which is the return of \c SplineUtilities::computeCurvatureOfBSplineCurveWithKnots
+			 */
+			void debugFunction_printCurvatureInConsolWindow(std::vector<std::pair<double, double>>) const throw(...);
+
 		}; // end of class SplineInterpretation
 	}
 }
