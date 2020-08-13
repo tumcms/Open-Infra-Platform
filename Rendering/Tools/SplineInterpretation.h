@@ -42,7 +42,7 @@ namespace OpenInfraPlatform
 			 * During execution, the user decides whether the input data will be sketched on screen or 
 			 * will be loaded from a file. The function interprets the data and convert it to an alignment.
 			 */
-			void convertSketchToAlignment();
+			void convertSketchToAlignment() const throw(...);
 
 		private:
 			// VARIABLES
@@ -56,7 +56,7 @@ namespace OpenInfraPlatform
 			 * \c x_i=numberOfControlPoints-order+1 if \c numberOfControlPoints+1<=i<=numberOfControlPoints+order \n
 			 * (vector indices according to mathematical one-based definition)
 			 */
-			std::vector<double> obtainKnotArrayOpenUniform(const size_t nPoints, const int order);
+			std::vector<double> obtainKnotArrayOpenUniform(const size_t nPoints, const int order) const throw(...);
 
 		}; // end of class SplineInterpretation
 	}

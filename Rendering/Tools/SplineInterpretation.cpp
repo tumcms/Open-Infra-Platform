@@ -23,7 +23,7 @@ OpenInfraPlatform::UserInterface::SplineInterpretation::SplineInterpretation()
 {}
 
 // PUBLIC FUNCTIONS
-void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlignment()
+void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlignment() const throw(...)
 {
 	// obtain control points from sketch or from file
 	// (from file is from past sketch or from [external] test data)
@@ -45,7 +45,7 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 }
 
 // PRIVATE FUNCTIONS
-std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obtainKnotArrayOpenUniform(const size_t nPoints, const int order)
+std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obtainKnotArrayOpenUniform(const size_t nPoints, const int order) const throw(...)
 {
 	std::vector<double> knotArray;
 	// .resize sets all vector values to 0
