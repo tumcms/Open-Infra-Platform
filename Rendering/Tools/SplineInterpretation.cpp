@@ -18,6 +18,7 @@
 #include "SplineInterpretation.h"
 
 #include "IfcGeometryConverter/CarveHeaders.h"
+#include "IfcGeometryConverter/SplineUtilities.h"
 
 // CONSTRUCTOR
 OpenInfraPlatform::UserInterface::SplineInterpretation::SplineInterpretation()
@@ -43,6 +44,10 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	controlPoints.push_back(carve::geom::VECTOR(10., 4., 0.));
 	const int order = 4;
 	const std::vector<double> knotArray = obtainKnotArrayOpenUniform(controlPoints.size(), order);
+
+	// Compute curvature
+	Core::IfcGeometryConverter::SplineUtilities splineUtilities;
+	std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
 }
 
 // PRIVATE FUNCTIONS
