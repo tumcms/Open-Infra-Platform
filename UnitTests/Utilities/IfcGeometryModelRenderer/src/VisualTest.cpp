@@ -31,9 +31,6 @@ VisualTest::VisualTest()
     scd.renderAPI = BlueFramework::Rasterizer::eRenderAPI::Direct3D11;
 
     renderSystem_ = BlueFramework::Rasterizer::createRenderSystem(scd);
-
-	// make a Test directory for test-specific data
-	boost::filesystem::create_directory(filePath("").concat("Test"));
 }
 
 VisualTest::~VisualTest()
@@ -44,6 +41,9 @@ VisualTest::~VisualTest()
 void VisualTest::SetUp()
 {
     renderer = buw::makeReferenceCounted<IfcGeometryModelRenderer>(renderSystem_);
+
+	// make a Test directory for test-specific data
+	boost::filesystem::create_directory(filePath("Test"));
 }
 
 void VisualTest::TearDown()

@@ -56,9 +56,6 @@ class TessellatedItem4x1Test : public VisualTest {
 
     const boost::filesystem::path filename = dataPath("tessellated-item.ifc");
 
-    const boost::filesystem::path baseImageFilename_ = dataPath("tessellated-item.png");
-
-
     std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
     buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
     buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
@@ -92,14 +89,14 @@ TEST_F(TessellatedItem4x1Test, ImageIsSaved)
 TEST_F(TessellatedItem4x1Test, TopView)
 {
     // Arrange
-    const auto expected = buw::loadImage4b(dataPath("tessellated-item.png").string());
+    const auto expected = buw::loadImage4b(dataPath("tessellated-item_top.png").string());
 
     // Act
     renderer->setViewDirection(buw::eViewDirection::Top);
     buw::Image4b image = CaptureImage();
 
     // uncomment the following line to also save the screen shot
-    buw::storeImage(filePath("tessellated-item_top.png").string(), image);
+    //buw::storeImage(testPath("tessellated-item_top.png").string(), image);
 
     // Assert
     EXPECT_EQ(image, expected);
@@ -108,7 +105,7 @@ TEST_F(TessellatedItem4x1Test, TopView)
 TEST_F(TessellatedItem4x1Test, GivenNewImage_AfterHome_AreEqual)
 {
     // Arrange
-    const auto expected = buw::loadImage4b(baseImageFilename_.string());
+    const auto expected = buw::loadImage4b(dataPath("tessellated-item.png").string());
 
     // Act
     const buw::Image4b image = CaptureImage();
