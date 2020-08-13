@@ -86,7 +86,7 @@ namespace OpenInfraPlatform
 							const std::vector<double> knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
 							const std::vector<double> weightsData = loadWeightsData(splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>());
 
-							std::vector<carve::geom::vector<3>> curvePoints = computeIfcRationalBSplineCurveWithKnots(order, knotArray, controlPoints, numControlPoints, weightsData);
+							std::vector<carve::geom::vector<3>> curvePoints = computeRationalBSplineCurveWithKnots(order, knotArray, controlPoints, numControlPoints, weightsData);
 
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
 							// return loops;
@@ -99,7 +99,7 @@ namespace OpenInfraPlatform
 
 							const std::vector<double> knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
 
-							std::vector<carve::geom::vector<3>> curvePoints = computeIfcBSplineCurveWithKnots(order, knotArray, controlPoints, numControlPoints);
+							std::vector<carve::geom::vector<3>> curvePoints = computeBSplineCurveWithKnots(order, knotArray, controlPoints, numControlPoints);
 
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
 							// return loops;
@@ -290,7 +290,7 @@ namespace OpenInfraPlatform
 					 * \return		The array of curve points, which can be rendered in a viewport after correction by \c GeomUtils::appendPointsToCurve.
 					 */
 					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
-					std::vector<carve::geom::vector<3>> computeIfcBSplineCurveWithKnots(
+					std::vector<carve::geom::vector<3>> computeBSplineCurveWithKnots(
 						const int& order,
 						const std::vector<double>& knotArray,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
@@ -339,7 +339,7 @@ namespace OpenInfraPlatform
 					 * \return		The array of curve points, which can be rendered in a viewport after correction by \c GeomUtils::appendPointsToCurve.
 					 */
 					// B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
-					std::vector<carve::geom::vector<3>> computeIfcRationalBSplineCurveWithKnots(
+					std::vector<carve::geom::vector<3>> computeRationalBSplineCurveWithKnots(
 						const int& order,
 						const std::vector<double>& knotArray,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
