@@ -35,7 +35,7 @@
 using namespace testing;
 
 
-class BeamStandardCaseTest : public VisualTest {
+class BeamRevolvedSolidTest : public VisualTest {
     protected:
 
     // Test standard values
@@ -60,9 +60,9 @@ class BeamStandardCaseTest : public VisualTest {
         VisualTest::TearDown();
     }
 
-    const boost::filesystem::path filename = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\beam-standard-case\\Data\\beam-standard-case.ifc");
+    const boost::filesystem::path filename = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\E8\\beam-revolved-solid\\Data\\E8\\beam-revolved-solid.ifc");
 
-    const boost::filesystem::path baseImageFilename_ = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4x1\\beam-standard-case\\Data\\beam-standard-case.png");
+    const boost::filesystem::path baseImageFilename_ = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4x1\\E8\\beam-revolved-solid\\Data\\E8\\beam-revolved-solid.png");
 
 
     std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
@@ -70,87 +70,87 @@ class BeamStandardCaseTest : public VisualTest {
     buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 };
 
-TEST_F(BeamStandardCaseTest, AllEntitiesAreRead) {
+TEST_F(BeamRevolvedSolidTest, AllEntitiesAreRead) {
     EXPECT_THAT(express_model->entities.size(), Eq(29));
 }
 
-TEST_F(BeamStandardCaseTest, ImageIsSaved)
+TEST_F(BeamRevolvedSolidTest, ImageIsSaved)
 {
     // Arrange
     buw::Image4b image = renderer->captureImage();
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\beam-standard-case.png").string(), image);
+    buw::storeImage(boost::dll::program_location().parent_path().concat("\\E8\\beam-revolved-solid.png").string(), image);
 
     // Assert
     EXPECT_NE(image,_background);
 }
 
-TEST_F(BeamStandardCaseTest, TopView)
+TEST_F(BeamRevolvedSolidTest, TopView)
 {
     // Arrange
     renderer->setViewDirection(buw::eViewDirection::Top);
     buw::Image4b image = renderer->captureImage();
 
-    const auto expected = buw::loadImage4b(boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\beam-standard-case\\Data\\beam-standard-case.png").string());
+    const auto expected = buw::loadImage4b(boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\E8\\beam-revolved-solid\\Data\\E8\\beam-revolved-solid.png").string());
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\beam-standard-case_top.png").string(), image);
+    buw::storeImage(boost::dll::program_location().parent_path().concat("\\E8\\beam-revolved-solid_top.png").string(), image);
 
     // Assert
     EXPECT_NE(image, _background);
     EXPECT_EQ(image, expected);
 }
 
-TEST_F(BeamStandardCaseTest, BottomView)
+TEST_F(BeamRevolvedSolidTest, BottomView)
 {
     // Arrange
     renderer->setViewDirection(buw::eViewDirection::Bottom);
     buw::Image4b image = renderer->captureImage();
 
-    const auto expected = buw::loadImage4b(boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\beam-standard-case\\Data\\beam-standard-case_bottom.png").string());
+    const auto expected = buw::loadImage4b(boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\E8\\beam-revolved-solid\\Data\\E8\\beam-revolved-solid_bottom.png").string());
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\beam-standard-case_bottom.png").string(), image);
+    buw::storeImage(boost::dll::program_location().parent_path().concat("\\E8\\beam-revolved-solid_bottom.png").string(), image);
 
     // Assert
     EXPECT_NE(image, _background);
     EXPECT_EQ(image, expected);
 }
 
-TEST_F(BeamStandardCaseTest, LeftView)
+TEST_F(BeamRevolvedSolidTest, LeftView)
 {
     // Arrange
     renderer->setViewDirection(buw::eViewDirection::Left);
     buw::Image4b image = renderer->captureImage();
 
-    const auto expected = buw::loadImage4b(boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\beam-standard-case\\Data\\beam-standard-case_left.png").string());
+    const auto expected = buw::loadImage4b(boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\E8\\beam-revolved-solid\\Data\\E8\\beam-revolved-solid_left.png").string());
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\beam-standard-case_left.png").string(), image);
+    buw::storeImage(boost::dll::program_location().parent_path().concat("\\E8\\beam-revolved-solid_left.png").string(), image);
 
     // Assert
     EXPECT_NE(image, _background);
     EXPECT_EQ(image, expected);
 }
 
-TEST_F(BeamStandardCaseTest, RightView)
+TEST_F(BeamRevolvedSolidTest, RightView)
 {
     // Arrange
     renderer->setViewDirection(buw::eViewDirection::Right);
     buw::Image4b image = renderer->captureImage();
 
-    const auto expected = buw::loadImage4b(boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\beam-standard-case\\Data\\beam-standard-case_right.png").string());
+    const auto expected = buw::loadImage4b(boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\E8\\beam-revolved-solid\\Data\\E8\\beam-revolved-solid_right.png").string());
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\beam-standard-case_right.png").string(), image);
+    buw::storeImage(boost::dll::program_location().parent_path().concat("\\E8\\beam-revolved-solid_right.png").string(), image);
 
     // Assert
     EXPECT_NE(image, _background);
     EXPECT_EQ(image, expected);
 }
 
-TEST_F(BeamStandardCaseTest, GivenNewImage_AfterHome_AreEqual)
+TEST_F(BeamRevolvedSolidTest, GivenNewImage_AfterHome_AreEqual)
 {
     // Arrange
     const auto expected = buw::loadImage4b(baseImageFilename_.string());
