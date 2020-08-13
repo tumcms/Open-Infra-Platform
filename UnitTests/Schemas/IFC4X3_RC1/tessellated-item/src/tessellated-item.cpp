@@ -15,61 +15,16 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
 #include <reader/IFC4X3_RC1Reader.h>
 #include <namespace.h>
 
-#include <IfcGeometryModelRenderer.h>
+#include <VisualTest.h>
 
-#include <buw.Engine.h>
-#include <buw.ImageProcessing.h>
-
-#include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
-
-#include <boost/dll/runtime_symbol_info.hpp>
+#include <IfcGeometryConverter/IfcImporter.h>
+#include <IfcGeometryConverter/IfcImporterImpl.h>
 
 using namespace testing;
-
-
-class VisualTest : public Test
-{
-protected:
-
-    buw::ReferenceCounted<buw::IRenderSystem> renderSystem_ = nullptr;
-    buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = nullptr;
-
-    VisualTest()
-    {
-        buw::renderSystemDescription scd;
-        scd.width = 640;
-        scd.height = 480;
-        scd.windowId = static_cast<void*>(this);
-        scd.forceWarpDevice = false;
-        scd.enableMSAA = true;
-        scd.renderAPI = BlueFramework::Rasterizer::eRenderAPI::Direct3D11;
-
-        renderSystem_ = BlueFramework::Rasterizer::createRenderSystem(scd);
-    }
-
-    virtual ~VisualTest()
-    {
-        renderSystem_.reset();
-    }
-
-    virtual void SetUp() override
-    {
-        renderer = buw::makeReferenceCounted<IfcGeometryModelRenderer>(renderSystem_);
-        
-    }
-
-    virtual void TearDown() override
-    {
-        renderer.reset();
-    }
-};
 
 class TessellatedItemTest : public VisualTest {
     protected:
@@ -84,9 +39,9 @@ class TessellatedItemTest : public VisualTest {
 
         importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC1EntityTypes>>();
         importer->collectGeometryData(express_model);
-	oip::ConverterBuwT<emt::IFC4X3_RC1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
+		oip::ConverterBuwT<emt::IFC4X3_RC1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
 
-        _background = renderer->captureImage();
+        _background = CaptureImage();
         renderer->setModel(model);
 
     }
@@ -96,9 +51,12 @@ class TessellatedItemTest : public VisualTest {
         VisualTest::TearDown();
     }
 
-    const boost::filesystem::path filename = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X3_RC1\\tessellated-item\\Data\\tessellated-item.ifc");
+	virtual std::string TestName() const { return "tessellated-item"; }
+	virtual std::string Schema() const { return "IFC4X3_RC1"; }
 
-    const boost::filesystem::path baseImageFilename_ = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X3_RC1\\tessellated-item\\Data\\tessellated-item.png");
+    const boost::filesystem::path filename = filePath("tessellated-item.ifc");
+
+    const boost::filesystem::path baseImageFilename_ = dataPath("tessellated-item.png");
 
 
     std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
@@ -113,10 +71,10 @@ TEST_F(TessellatedItemTest, AllEntitiesAreRead) {
 TEST_F(TessellatedItemTest, ImageIsSaved)
 {
     // Arrange
-    buw::Image4b image = renderer->captureImage();
+    buw::Image4b image = CaptureImage();
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\tessellated-item.png").string(), image);
+    buw::storeImage(testPath("tessellated-item.png").string(), image);
 
     // Assert
     EXPECT_NE(image,_background);
@@ -125,14 +83,17 @@ TEST_F(TessellatedItemTest, ImageIsSaved)
 TEST_F(TessellatedItemTest, TopView)
 {
     // Arrange
-    renderer->setViewDirection(buw::eViewDirection::Top);
-    buw::Image4b image = renderer->captureImage();
+	const auto expected = buw::loadImage4b(dataPath("tessellated-item_top.png").string());
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\tessellated-item_top.png").string(), image);
+	renderer->setViewDirection(buw::eViewDirection::Top);
+    buw::Image4b image = CaptureImage();
+
+	// uncomment the following line to also save the screen shot
+    //buw::storeImage(testPath("\\tessellated-item_top.png").string(), image);
 
     // Assert
-    EXPECT_NE(image, _background);
+    EXPECT_EQ(image, expected);
 }
 
 TEST_F(TessellatedItemTest, GivenNewImage_AfterHome_AreEqual)
@@ -141,7 +102,7 @@ TEST_F(TessellatedItemTest, GivenNewImage_AfterHome_AreEqual)
     const auto expected = buw::loadImage4b(baseImageFilename_.string());
 
     // Act
-    const buw::Image4b image = renderer->captureImage();
+    const buw::Image4b image = CaptureImage();
 
     // Assert
     EXPECT_EQ(image, expected);
