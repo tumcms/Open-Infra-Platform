@@ -68,16 +68,25 @@ TEST_F(TessellatedItem4x1Test, AllEntitiesAreRead) {
     EXPECT_THAT(express_model->entities.size(), Eq(29));
 }
 
-TEST_F(TessellatedItem4x1Test, ImageIsSaved)
+TEST_F(TessellatedItem4x1Test, ImageIsCaptured)
 {
-    // Arrange
+    // Arrange & Act
     buw::Image4b image = CaptureImage();
-
-    // Act
-    buw::storeImage(testPath("tessellated-item.png").string(), image);
 
     // Assert
     EXPECT_NE(image,_background);
+}
+
+TEST_F(TessellatedItem4x1Test, ImageIsSaved)
+{
+	// Arrange & Act
+	buw::Image4b image = CaptureImage();
+
+	// Act
+	buw::storeImage(testPath("tessellated-item.png").string(), image);
+
+	// Assert
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("tessellated-item.png").string()));
 }
 
 TEST_F(TessellatedItem4x1Test, TopView)
@@ -90,7 +99,7 @@ TEST_F(TessellatedItem4x1Test, TopView)
     buw::Image4b image = CaptureImage();
 
     // uncomment the following line to also save the screen shot
-    buw::storeImage(testPath("tessellated-item_top.png").string(), image);
+    buw::storeImage(filePath("tessellated-item_top.png").string(), image);
 
     // Assert
     EXPECT_EQ(image, expected);
