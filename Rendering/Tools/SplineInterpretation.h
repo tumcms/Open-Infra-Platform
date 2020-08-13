@@ -18,7 +18,6 @@
 #pragma once
 
 #include <vector>
-#include "IfcGeometryConverter/CarveHeaders.h"
 
 namespace OpenInfraPlatform
 {

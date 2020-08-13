@@ -17,6 +17,7 @@
 
 #include "SplineInterpretation.h"
 
+#include "IfcGeometryConverter/CarveHeaders.h"
 
 // CONSTRUCTOR
 OpenInfraPlatform::UserInterface::SplineInterpretation::SplineInterpretation()
