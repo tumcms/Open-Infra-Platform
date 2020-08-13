@@ -54,7 +54,7 @@ class TessellatedItemTest : public VisualTest {
 	virtual std::string TestName() const { return "tessellated-item"; }
 	virtual std::string Schema() const { return "IFC4X3_RC1"; }
 
-    const boost::filesystem::path filename = filePath("tessellated-item.ifc");
+    const boost::filesystem::path filename = dataPath("tessellated-item.ifc");
 
     const boost::filesystem::path baseImageFilename_ = dataPath("tessellated-item.png");
 
