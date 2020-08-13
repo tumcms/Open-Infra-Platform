@@ -497,6 +497,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionStroke_To_Alignment_triggered()
 {
 	SplineInterpretation splineInterpretation;
+	splineInterpretation.convertSketchToAlignment();
 	//QMessageBox::information(this, tr("Convert Stroke to Alignment"), 
 	//	tr("The Button works! However, there is no implementation of further activities."), QMessageBox::Ok);
 }
