@@ -18,6 +18,7 @@
 #pragma once
 
 #include <vector>
+#include "IfcGeometryConverter/CarveHeaders.h"
 
 namespace OpenInfraPlatform
 {
@@ -74,7 +75,16 @@ namespace OpenInfraPlatform
 			 *
 			 * param[in] lengthsWithCurvatures	The vector of length with curvature which is the return of \c SplineUtilities::computeCurvatureOfBSplineCurveWithKnots
 			 */
-			void debugFunction_printCurvatureInConsolWindow(std::vector<std::pair<double, double>>) const throw(...);
+			void debugFunction_printCurvatureInConsolWindow(const std::vector<std::pair<double, double>>&) const throw(...);
+
+			/*! \brief Displays the coordinates of a \c std::vector<carve::geom::vector<3>> in the console window.
+			 *
+			 * In example, this function can be used to print the coordinates of a B-Spline.
+			 * The syntax in the consol matches the syntax of MATLAB. The information can be pasted into MATLAB as nx2-matrix.
+			 *
+			 * param[in] lengthsWithCurvatures	The vector of length with curvature which is the return of \c SplineUtilities::computeCurvatureOfBSplineCurveWithKnots
+			 */
+			void debugFunction_printVectorOfPointsInConsolWindow(const std::vector<carve::geom::vector<3>>&) const throw(...);
 
 		}; // end of class SplineInterpretation
 	}

@@ -17,7 +17,6 @@
 
 #include "SplineInterpretation.h"
 
-#include "IfcGeometryConverter/CarveHeaders.h"
 #include "IfcGeometryConverter/SplineUtilities.h"
 
 // CONSTRUCTOR
@@ -51,7 +50,11 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	Core::IfcGeometryConverter::SplineUtilities splineUtilities;
 	std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
 
-	debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
+	// Test B-Spline
+	std::vector<carve::geom::vector<3>> bspline = splineUtilities.computeBSplineCurveWithKnots(order, knotArray, controlPoints, 10*knotArray.size(), accuracy);
+
+	//debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
+	debugFunction_printVectorOfPointsInConsolWindow(bspline);
 }
 
 // PRIVATE FUNCTIONS
@@ -73,7 +76,7 @@ std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obta
 }
 
 void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_printCurvatureInConsolWindow(
-	std::vector<std::pair<double, double>> lengthsWithCurvatures) const throw(...)
+	const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const throw(...)
 {
 	using std::cout;
 	using std::endl;
@@ -84,4 +87,18 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_print
 		cout << lengthsWithCurvatures[i].first << ", " << lengthsWithCurvatures[i].second << ";" << endl;
 
 	cout << lengthsWithCurvatures.back().first << ", " << lengthsWithCurvatures.back().second << "];";
+}
+
+void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_printVectorOfPointsInConsolWindow(
+	const std::vector<carve::geom::vector<3>>& points) const throw(...)
+{
+	using std::cout;
+	using std::endl;
+
+	cout << endl;
+	cout << "Coordinates of the vector:" << endl << "[";
+	for (size_t i = 0; i < points.size() - 1; i++)
+		cout << points[i].x << ", " << points[i].y << ", " << points[i].z << ";" << endl;
+
+	cout << points.back().x << ", " << points.back().y << ", " << points.back().z << "];";
 }
