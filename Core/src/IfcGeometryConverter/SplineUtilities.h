@@ -627,7 +627,7 @@ namespace OpenInfraPlatform
 					const std::vector<double>& basisFuncsDerivativeOne,
 					std::vector<double>& basisFuncsDerivativeTwo) const throw(...)
 				{
-					if (k == 2)
+					if (k == 1)
 					{
 						for (size_t i = 0; i < basisFuncsDerivativeTwo.size() - k; ++i)
 							basisFuncsDerivativeTwo[i] = 0;
