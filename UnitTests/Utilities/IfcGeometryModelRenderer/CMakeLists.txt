@@ -34,6 +34,11 @@ target_include_directories(IfcGeometryModelRenderer
 target_link_libraries(IfcGeometryModelRenderer
     PRIVATE
         OpenInfraPlatform.Rendering
+        BlueFramework.Engine
+        gmock
+        gtest
+        gtest_main
+        Boost::filesystem
 )
 
 set_target_properties(IfcGeometryModelRenderer PROPERTIES FOLDER "OpenInfraPlatform/UnitTests/Utilities")
