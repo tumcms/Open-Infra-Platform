@@ -170,6 +170,12 @@ namespace OpenInfraPlatform
 					carve::geom::vector<3> derivativeOne;
 					carve::geom::vector<3> derivativeTwo;
 
+					// Debug: Output of first derivative in console
+					//std::cout << std::endl << "Values of basis functions first derivative:" << std::endl << "[";
+
+					// Debug: Output of second derivative in console
+					//std::cout << std::endl << "Values of basis functions second derivative:" << std::endl << "[";
+
 					for (size_t i = 0; i < numCurvePoints; ++i) {
 						// the for-loop iterates over all values t of the parameter vector
 						if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
@@ -193,6 +199,9 @@ namespace OpenInfraPlatform
 						// go to next representative t of the parameter vector (= increase its value)
 						t += step;
 					}
+
+					// Debug: Output in console
+					//std::cout << "]";
 
 					return lengthsWithCurvatures;
 				}
@@ -398,7 +407,13 @@ namespace OpenInfraPlatform
 					{
 						// 3b) apply formula for normal B-spline curves
 						point += basisFuncs[j] * controlPoints[j];
+
+						// Debug: Output in console
+						//std::cout << " " << basisFuncs[j];
 					}
+
+					// Debug: Output in console
+					//std::cout << ";" << std::endl;
 
 					return point;
 				}
@@ -533,7 +548,13 @@ namespace OpenInfraPlatform
 					{
 						// 3b) apply formula for normal B-spline curves
 						point += basisFuncs[j] * controlPoints[j];
+
+						// Debug: Output in console
+						//std::cout << " " << basisFuncs[j];
 					}
+
+					// Debug: Output in console
+					//std::cout << ";" << std::endl;
 
 					return point;
 				}
