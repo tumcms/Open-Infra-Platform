@@ -95,8 +95,6 @@ namespace OpenInfraPlatform
 						// it represents a B-Spline
 						else if (splineCurve.isOfType<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>())
 						{
-							junkfunctionToCallForCompiler(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>());
-
 							const std::vector<double> knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
 
 							std::vector<carve::geom::vector<3>> curvePoints = computeBSplineCurveWithKnots(order, knotArray, controlPoints, numControlPoints);
@@ -143,26 +141,6 @@ namespace OpenInfraPlatform
 					{
 						// not implemented, code in commented out part at the end of the file
 						throw oip::UnhandledException(splineSurface);
-					}
-
-					/*! \brief This function calls other functions which aren't part of the current program flow.
-					 *
-					 * At the moment, \c computeCurvatureOfIfcBSplineCurveWithKnots is called from there.
-					 * \note This function will be removed if the called functions are part of the usual program flow.
-					 *
-					 * param[in] bspline A \c computeCurvatureOfIfcBSplineCurveWithKnots entity
-					 */
-					void junkfunctionToCallForCompiler(const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline) const throw(...)
-					{
-						const int order = bspline->Degree + 1;
-						const int numControlPoints = bspline->ControlPointsList.size();
-						const int numKnotsArray = order + numControlPoints;
-						const std::vector<double> knotArray = loadKnotArray(bspline, numKnotsArray);
-
-						const std::vector<carve::geom::vector<3>> controlPoints = loadControlPoints(bspline);
-
-						std::vector<std::pair<double, double>> lengthsWithCurvatures;
-						lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
 					}
 
 				private:
