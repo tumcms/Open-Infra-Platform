@@ -92,7 +92,7 @@ namespace OpenInfraPlatform
 							std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
 
 							std::vector<carve::geom::vector<3>> curvePoints = 
-								splineUtilities.computeRationalBSplineCurveWithKnots(order, knotArray, controlPoints, numControlPoints, weightsData, numCurvePoints, accuracy);
+								splineUtilities.computeRationalBSplineCurveWithKnots(order, knotArray, controlPoints, weightsData, numCurvePoints, accuracy);
 
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
 							// return loops;
@@ -109,7 +109,7 @@ namespace OpenInfraPlatform
 							std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
 
 							std::vector<carve::geom::vector<3>> curvePoints = 
-								splineUtilities.computeBSplineCurveWithKnots(order, knotArray, controlPoints, numControlPoints, numCurvePoints, accuracy);
+								splineUtilities.computeBSplineCurveWithKnots(order, knotArray, controlPoints, numCurvePoints, accuracy);
 
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
 							// return loops;

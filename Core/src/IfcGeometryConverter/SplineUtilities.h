@@ -67,7 +67,6 @@ namespace OpenInfraPlatform
 					const int& order,
 					const std::vector<double>& knotArray,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
-					const int& numControlPoints,
 					const uint32_t& numCurvePoints,
 					const double& accuracy) const throw(...)
 				{
@@ -87,7 +86,7 @@ namespace OpenInfraPlatform
 						// the for-loop iterates over all values t of the parameter vector
 						if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
-						curvePoints.push_back(computePointOfBSpline(order, t, controlPoints, numControlPoints, knotArray));
+						curvePoints.push_back(computePointOfBSpline(order, t, controlPoints, knotArray));
 
 						// go to next representative t of the parameter vector (= increase its value)
 						t += step;
@@ -115,7 +114,6 @@ namespace OpenInfraPlatform
 					const int& order,
 					const std::vector<double>& knotArray,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
-					const int& numControlPoints,
 					const std::vector<double>& weightsData,
 					const uint32_t& numCurvePoints,
 					const double& accuracy) const throw(...)
@@ -136,7 +134,7 @@ namespace OpenInfraPlatform
 						// the for-loop iterates over all values t of the parameter vector
 						if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
-						curvePoints.push_back(computePointOfRationalBSpline(order, t, controlPoints, numControlPoints, knotArray, weightsData));
+						curvePoints.push_back(computePointOfRationalBSpline(order, t, controlPoints, knotArray, weightsData));
 
 						// go to next representative t of the parameter vector (= increase its value)
 						t += step;
@@ -152,7 +150,6 @@ namespace OpenInfraPlatform
 				 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
 				 * \param[in]	t					The parameter value t of the curve c(t).
 				 * \param[in]	controlPoints		The vector of the B-Spline control points.
-				 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
 				 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
 				 *
 				 * \return		The B-Spline point at the position t.
@@ -161,9 +158,10 @@ namespace OpenInfraPlatform
 					const int& order,
 					const double& t,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
-					const int& numControlPoints,
 					const std::vector<double>& knotArray) const throw(...)
 				{
+					const size_t numControlPoints = controlPoints.size();
+
 					// 1) Evaluate basis functions at curve point t
 					std::vector<double> basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
 
@@ -186,7 +184,6 @@ namespace OpenInfraPlatform
 				 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
 				 * \param[in]	t					The parameter value t of the curve c(t).
 				 * \param[in]	controlPoints		The vector of the B-Spline control points.
-				 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
 				 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
 				 * \param[in]	weightsData			The vector with the wight values per knot, the function \c loadWeightsData gives this vector.
 				 *
@@ -196,10 +193,11 @@ namespace OpenInfraPlatform
 					const int& order,
 					const double& t,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
-					const int& numControlPoints,
 					const std::vector<double>& knotArray,
 					const std::vector<double>& weightsData) const throw(...)
 				{
+					const size_t numControlPoints = controlPoints.size();
+
 					// 1) Evaluate basis functions at curve point t
 					std::vector<double> basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
 
@@ -276,7 +274,7 @@ namespace OpenInfraPlatform
 						// the for-loop iterates over all values t of the parameter vector
 						if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
 
-						curvePoint = computePointOfBSpline(order, t, controlPoints, numControlPoints, knotArray);
+						curvePoint = computePointOfBSpline(order, t, controlPoints, knotArray);
 
 						derivativeOne = computePointOfDerivativeOne(order, t, controlPoints, knotArray);
 						derivativeTwo = computePointOfDerivativeTwo(order, t, controlPoints, knotArray);
