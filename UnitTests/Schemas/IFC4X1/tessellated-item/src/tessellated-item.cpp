@@ -15,62 +15,18 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
 #include <reader/IFC4X1Reader.h>
 #include <namespace.h>
 
-#include <IfcGeometryModelRenderer.h>
+#include <VisualTest.h>
 
-#include <buw.Engine.h>
-#include <buw.ImageProcessing.h>
-
-#include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
-
-#include <boost/dll/runtime_symbol_info.hpp>
+#include <IfcGeometryConverter/IfcImporter.h>
+#include <IfcGeometryConverter/IfcImporterImpl.h>
 
 using namespace testing;
 
-class VisualTest : public Test
-{
-protected:
-
-	buw::ReferenceCounted<buw::IRenderSystem> renderSystem_ = nullptr;
-	buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = nullptr;
-
-	VisualTest()
-	{
-		buw::renderSystemDescription scd;
-		scd.width = 640;
-		scd.height = 480;
-		scd.windowId = static_cast<void*>(this);
-		scd.forceWarpDevice = false;
-		scd.enableMSAA = true;
-		scd.renderAPI = BlueFramework::Rasterizer::eRenderAPI::Direct3D11;
-
-		renderSystem_ = BlueFramework::Rasterizer::createRenderSystem(scd);
-	}
-
-	virtual ~VisualTest()
-	{
-		renderSystem_.reset();
-	}
-
-	virtual void SetUp() override
-	{
-		renderer = buw::makeReferenceCounted<IfcGeometryModelRenderer>(renderSystem_);
-
-	}
-
-	virtual void TearDown() override
-	{
-		renderer.reset();
-	}
-};
-
-class TessellatedItemTest : public VisualTest {
+class TessellatedItem4x1Test : public VisualTest {
     protected:
 
     // Test standard values
@@ -83,9 +39,9 @@ class TessellatedItemTest : public VisualTest {
 
         importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
         importer->collectGeometryData(express_model);
-	    oip::ConverterBuwT<emt::IFC4X1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
+        oip::ConverterBuwT<emt::IFC4X1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
 
-        _background = renderer->captureImage();
+        _background = CaptureImage();
         renderer->setModel(model);
 
     }
@@ -95,55 +51,64 @@ class TessellatedItemTest : public VisualTest {
         VisualTest::TearDown();
     }
 
-    const boost::filesystem::path filename = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\tessellated-item\\Data\\tessellated-item.ifc");
+    virtual std::string TestName() const { return "tessellated-item"; }
+    virtual std::string Schema() const { return "IFC4X1"; }
 
-    const boost::filesystem::path baseImageFilename_ = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\tessellated-item\\Data\\tessellated-item.png");
-
+    const boost::filesystem::path filename = dataPath("tessellated-item.ifc");
 
     std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
     buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
     buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 };
 
-TEST_F(TessellatedItemTest, AllEntitiesAreRead) {
+TEST_F(TessellatedItem4x1Test, AllEntitiesAreRead) {
     EXPECT_THAT(express_model->entities.size(), Eq(29));
 }
 
-TEST_F(TessellatedItemTest, ImageIsSaved)
+TEST_F(TessellatedItem4x1Test, ImageIsCaptured)
 {
-    // Arrange
-    buw::Image4b image = renderer->captureImage();
-
-    // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\tessellated-item.png").string(), image);
+    // Arrange & Act
+    buw::Image4b image = CaptureImage();
 
     // Assert
     EXPECT_NE(image,_background);
 }
 
-TEST_F(TessellatedItemTest, TopView)
+TEST_F(TessellatedItem4x1Test, ImageIsSaved)
+{
+	// Arrange & Act
+	buw::Image4b image = CaptureImage();
+
+	// Act
+	buw::storeImage(testPath("tessellated-item.png").string(), image);
+
+	// Assert
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("tessellated-item.png").string()));
+}
+
+TEST_F(TessellatedItem4x1Test, TopView)
 {
     // Arrange
-    renderer->setViewDirection(buw::eViewDirection::Top);
-    buw::Image4b image = renderer->captureImage();
-
-    const auto expected = buw::loadImage4b(boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\tessellated-item\\Data\\tessellated-item.png").string());
+    const auto expected = buw::loadImage4b(dataPath("tessellated-item_top.png").string());
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\tessellated-item_top.png").string(), image);
+    renderer->setViewDirection(buw::eViewDirection::Top);
+    buw::Image4b image = CaptureImage();
+
+    // uncomment the following line to also save the screen shot
+    //buw::storeImage(testPath("tessellated-item_top.png").string(), image);
 
     // Assert
-    EXPECT_NE(image, _background);
     EXPECT_EQ(image, expected);
 }
 
-TEST_F(TessellatedItemTest, GivenNewImage_AfterHome_AreEqual)
+TEST_F(TessellatedItem4x1Test, GivenNewImage_AfterHome_AreEqual)
 {
     // Arrange
-    const auto expected = buw::loadImage4b(baseImageFilename_.string());
+    const auto expected = buw::loadImage4b(dataPath("tessellated-item.png").string());
 
     // Act
-    const buw::Image4b image = renderer->captureImage();
+    const buw::Image4b image = CaptureImage();
 
     // Assert
     EXPECT_EQ(image, expected);
