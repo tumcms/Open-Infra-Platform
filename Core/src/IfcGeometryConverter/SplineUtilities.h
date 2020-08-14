@@ -49,6 +49,102 @@ namespace OpenInfraPlatform
 
 				virtual ~SplineUtilities() {}
 
+				/*! \brief Computes the curve points of the B-Spline.
+				 *
+				 * All information has to be loaded from an \c IfcBSplineCurveWithKnots entity before calling this function.
+				 *
+				 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+				 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
+				 * \param[in]	controlPoints		The vector of the B-Spline control points.
+				 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+				 * \param[in]	numCurvePoints		The number of curve points where the curve c(t) has to be evaluated.
+				 * \param[in]	accuracy			Accuracy which is technically needed in the calculation.
+				 *
+				 * \return		The array of curve points, which can be rendered in a viewport after correction by \c GeomUtils::appendPointsToCurve.
+				 */
+				 // B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
+				std::vector<carve::geom::vector<3>> computeBSplineCurveWithKnots(
+					const int& order,
+					const std::vector<double>& knotArray,
+					const std::vector<carve::geom::vector<3>>& controlPoints,
+					const int& numControlPoints,
+					const uint32_t& numCurvePoints,
+					const double& accuracy) const throw(...)
+				{
+					// The following parameters corresponds to the parameter t of a curve c(t)
+					double knotStart;
+					double knotEnd;
+					double step;
+					std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
+
+					std::vector<carve::geom::vector<3>> curvePoints;
+					curvePoints.reserve(numCurvePoints);
+
+					// t: representative of the parameter vector, start with first valid knot
+					double t = knotStart;
+
+					for (size_t i = 0; i < numCurvePoints; ++i) {
+						// the for-loop iterates over all values t of the parameter vector
+						if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
+
+						curvePoints.push_back(computePointOfBSpline(order, t, controlPoints, numControlPoints, knotArray));
+
+						// go to next representative t of the parameter vector (= increase its value)
+						t += step;
+					}
+
+					return curvePoints;
+				}
+
+				/*! \brief Computes the curve points of the rational B-Spline.
+				 *
+				 * All information has to be loaded from an \c IfcRationalBSplineCurveWithKnots entity before calling this function.
+				 *
+				 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
+				 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
+				 * \param[in]	controlPoints		The vector of the B-Spline control points.
+				 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
+				 * \param[in]	weightsData			The vector with the wight values per knot, the function \c loadWeightsData gives this vector.
+				 * \param[in]	numCurvePoints		The number of curve points where the curve c(t) has to be evaluated.
+				 * \param[in]	accuracy			Accuracy which is technically needed in the calculation.
+				 *
+				 * \return		The array of curve points, which can be rendered in a viewport after correction by \c GeomUtils::appendPointsToCurve.
+				 */
+				 // B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
+				std::vector<carve::geom::vector<3>> computeRationalBSplineCurveWithKnots(
+					const int& order,
+					const std::vector<double>& knotArray,
+					const std::vector<carve::geom::vector<3>>& controlPoints,
+					const int& numControlPoints,
+					const std::vector<double>& weightsData,
+					const uint32_t& numCurvePoints,
+					const double& accuracy) const throw(...)
+				{
+					// The following parameters corresponds to the parameter t of a curve c(t)
+					double knotStart;
+					double knotEnd;
+					double step;
+					std::tie(knotStart, knotEnd, step) = obtainKnotRange(order, knotArray, numCurvePoints);
+
+					std::vector<carve::geom::vector<3>> curvePoints;
+					curvePoints.reserve(numCurvePoints);
+
+					// t: representative of the parameter vector, start with first valid knot
+					double t = knotStart;
+
+					for (size_t i = 0; i < numCurvePoints; ++i) {
+						// the for-loop iterates over all values t of the parameter vector
+						if (i == numCurvePoints - 1) { t = knotEnd - accuracy; }
+
+						curvePoints.push_back(computePointOfRationalBSpline(order, t, controlPoints, numControlPoints, knotArray, weightsData));
+
+						// go to next representative t of the parameter vector (= increase its value)
+						t += step;
+					}
+
+					return curvePoints;
+				}
+
 				/*! \brief Computes the B-Spline point at the location t.
 				 *
 				 * This function is for B-Splines from an IfcBSplineCurveWithKnots-entity.
