@@ -45,6 +45,12 @@ namespace OpenInfraPlatform
 
 		private:
 			// VARIABLES
+			/*! \brief The value of \c accuracy is needed to call the function \c computeBSplineCurveWithKnots.
+			 * 
+			 * The constructor of \c splineInterpretation assigns the value as \c carve::EPSILON.
+			 * At the moment, this assignment is used by \c GeometrySettings::getPrecision().
+			 */
+			double accuracy;
 
 			// FUNCTIONS
 			/*! \brief Generates the open uniform knot array of a B-Spline.

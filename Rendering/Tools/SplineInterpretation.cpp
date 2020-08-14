@@ -22,7 +22,9 @@
 
 // CONSTRUCTOR
 OpenInfraPlatform::UserInterface::SplineInterpretation::SplineInterpretation()
-{}
+{
+	accuracy = carve::EPSILON;
+}
 
 // PUBLIC FUNCTIONS
 void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlignment() const throw(...)
