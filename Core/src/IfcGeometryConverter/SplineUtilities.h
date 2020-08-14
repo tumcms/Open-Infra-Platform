@@ -192,7 +192,7 @@ namespace OpenInfraPlatform
 							// curvature_i of curve c(t) in xy-plane
 							// according to definition 3.500 in Bronstein et al., Taschenbuch der Mathematik, 10. Auflage, 2016
 							(derivativeOne.x*derivativeTwo.y - derivativeTwo.x*derivativeOne.y)
-							/ (std::pow(std::pow(derivativeOne.x, 2) + std::pow(derivativeOne.y, 2), 3 / 2)));
+							/ (std::pow(std::pow(derivativeOne.x, 2) + std::pow(derivativeOne.y, 2), 3.0 / 2.0)));
 
 						curvePointPrevious = curvePoint;
 
