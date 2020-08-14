@@ -98,6 +98,7 @@ private:
     std::string sourceDirectory_;
     std::string guidPath_;
     std::string entityPath_;
+	std::string selectPath_;
 	std::string typePath_;
     std::string readerPath_;
     std::string modelPath_;

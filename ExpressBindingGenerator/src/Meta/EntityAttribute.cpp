@@ -54,13 +54,13 @@ const std::string EntityAttribute::toString(const Schema & schema) const {
 				//typeName = prefix + typeName;
 			}
 			if (isOptional())
-				return "Optional<" + typeName + ">";
+				return "EXPRESSOptional<" + typeName + ">";
 			else
 				return typeName;
 		}
 		else if (schema.hasEntity(typeName)) {
 			if (isOptional())
-				return "Optional<EXPRESSReference<" + typeName + ">> ";
+				return "EXPRESSOptional<EXPRESSReference<" + typeName + ">> ";
 			else
 				return "EXPRESSReference<" + typeName + ">";
 		}
@@ -87,7 +87,7 @@ const std::string EntityAttribute::toString(const Schema & schema) const {
 		}
 
 		if (isOptional())
-			return "Optional<" + attributeType + "> ";
+			return "EXPRESSOptional<" + attributeType + "> ";
 		else
 			return attributeType;
 	}

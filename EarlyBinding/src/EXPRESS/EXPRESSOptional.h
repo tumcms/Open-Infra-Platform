@@ -113,7 +113,7 @@ template <typename T, typename V> const bool operator==(const EXPRESSOptional<T>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 
-template <typename T> using Optional = OpenInfraPlatform::EarlyBinding::EXPRESSOptional<T>;
+template <typename T> using EXPRESSOptional = OpenInfraPlatform::EarlyBinding::EXPRESSOptional<T>;
 
 
 #endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSOptional_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_h
