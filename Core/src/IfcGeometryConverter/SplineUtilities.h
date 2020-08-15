@@ -223,10 +223,11 @@ namespace OpenInfraPlatform
 				/*! \brief Computes the length and curvature of an B-Spline curve
 				 *
 				 * This function calculates the curvature of a B-Spline; rational B-Splines can't be handled from this function.
-				 * As well, the corresponding curve length is calculated.
+				 * As well, the corresponding curve length in xy-plane is calculated.
 				 * The \c length is necessary to display or analyse the \c curvature in dependency to the true curve length.
 				 * The parameter \c t along a B-Spline curve doesn't represent the true length along the curve because the
-				 * calculated curve points aren't evenly spaced.\n
+				 * calculated curve points aren't evenly spaced. 
+				 * The \c length is only needed in the xy-plane because the height in \c z doesn't matter to the intended analyse of the horizontal alignment.\n
 				 * The result comes back as a vector of \c std::pair in the order \c length, \c curvature.
 				 * Access the members by \c .first to get the length and \c .second to get the curvature.
 				 *
@@ -282,7 +283,7 @@ namespace OpenInfraPlatform
 						// create lengthsWithCurvatures[i] = {length_i, curvature_i}
 						lengthsWithCurvatures[i] = std::pair<double, double>(
 							// length_i:
-							(i == 0 ? 0 : lengthsWithCurvatures[i - 1].first + (curvePoint - curvePointPrevious).length()),
+							(i == 0 ? 0 : lengthsWithCurvatures[i - 1].first + lengthInXyPlane(curvePoint - curvePointPrevious)),
 							// curvature_i of curve c(t) in xy-plane
 							// according to definition 3.500 in Bronstein et al., Taschenbuch der Mathematik, 10. Auflage, 2016
 							(derivativeOne.x*derivativeTwo.y - derivativeTwo.x*derivativeOne.y)
@@ -330,6 +331,17 @@ namespace OpenInfraPlatform
 				}
 
 			private:
+				/*! \brief Caluclates the length in xy-plane, the height in z doesn't matter.
+				 *
+				 * \param[in]	vector	The vector from which the length in xy has to be calculated.
+				 *
+				 * \return		Length in xy-plane from \c vector.
+				 */
+				double lengthInXyPlane(carve::geom::vector<3> vector) const throw(...)
+				{
+					return std::sqrt(vector.x*vector.x + vector.y*vector.y);
+				}
+
 				/*! \brief Loads general properties, which are used in the calculation.
 				 *
 				 * \param[in]	numKnotsArray	The total number of knots, which define the basis functions ( = order + total number of control points )
