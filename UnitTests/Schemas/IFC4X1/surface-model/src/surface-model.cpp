@@ -51,10 +51,10 @@ class SurfaceModelTest : public VisualTest {
         VisualTest::TearDown();
     }
 
-    const boost::filesystem::path filename = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\surface-model\\Data\\surface-model.ifc");
+	virtual std::string TestName() const { return "surface-model"; }
+	virtual std::string Schema() const { return "IFC4X1"; }
 
-    const boost::filesystem::path baseImageFilename_ = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\surface-model\\Data\\surface-model.png");
-
+	const boost::filesystem::path filename = dataPath("surface-model.ifc");
 
     std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
     buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
@@ -84,16 +84,25 @@ TEST_F(SurfaceModelTest, AllEntitiesAreRead) {
 		
 }*/
 
+TEST_F(SurfaceModelTest, ImageIsCaptured)
+{
+	// Arrange & Act
+	buw::Image4b image = CaptureImage();
+
+	// Assert
+	EXPECT_NE(image, _background);
+}
+
 TEST_F(SurfaceModelTest, ImageIsSaved)
 {
     // Arrange
-    buw::Image4b image = renderer->captureImage();
+    buw::Image4b image = CaptureImage();
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\surface-model.png").string(), image);
+    buw::storeImage(testPath("\\surface-model.png").string(), image);
 
     // Assert
-    EXPECT_NE(image,_background);
+    EXPECT_NO_THROW(buw::loadImage4b(testPath("\\surface-model.png").string()));
 }
 
 TEST_F(SurfaceModelTest, TopView)
