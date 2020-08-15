@@ -15,60 +15,16 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
-#include <reader/IFC4x1Reader.h>
+#include <reader/IFC4X1Reader.h>
 #include <namespace.h>
 
-#include <IfcGeometryModelRenderer.h>
+#include <VisualTest.h>
 
-#include <buw.Engine.h>
-#include <buw.ImageProcessing.h>
-
-#include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
-
-#include <boost/dll/runtime_symbol_info.hpp>
+#include <IfcGeometryConverter/IfcImporter.h>
+#include <IfcGeometryConverter/IfcImporterImpl.h>
 
 using namespace testing;
-
-class VisualTest : public Test
-{
-protected:
-
-	buw::ReferenceCounted<buw::IRenderSystem> renderSystem_ = nullptr;
-	buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = nullptr;
-
-	VisualTest()
-	{
-		buw::renderSystemDescription scd;
-		scd.width = 640;
-		scd.height = 480;
-		scd.windowId = static_cast<void*>(this);
-		scd.forceWarpDevice = false;
-		scd.enableMSAA = true;
-		scd.renderAPI = BlueFramework::Rasterizer::eRenderAPI::Direct3D11;
-
-		renderSystem_ = BlueFramework::Rasterizer::createRenderSystem(scd);
-	}
-
-	virtual ~VisualTest()
-	{
-		renderSystem_.reset();
-	}
-
-	virtual void SetUp() override
-	{
-		renderer = buw::makeReferenceCounted<IfcGeometryModelRenderer>(renderSystem_);
-
-	}
-
-	virtual void TearDown() override
-	{
-		renderer.reset();
-	}
-};
 
 class SurfaceModelTest : public VisualTest {
     protected:
