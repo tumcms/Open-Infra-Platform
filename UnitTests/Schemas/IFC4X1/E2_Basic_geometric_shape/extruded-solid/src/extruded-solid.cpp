@@ -15,60 +15,16 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
-#include <reader/IFC4x1Reader.h>
+#include <reader/IFC4X1Reader.h>
 #include <namespace.h>
 
-#include <IfcGeometryModelRenderer.h>
+#include <VisualTest.h>
 
-#include <buw.Engine.h>
-#include <buw.ImageProcessing.h>
-
-#include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
-
-#include <boost/dll/runtime_symbol_info.hpp>
+#include <IfcGeometryConverter/IfcImporter.h>
+#include <IfcGeometryConverter/IfcImporterImpl.h>
 
 using namespace testing;
-
-class VisualTest : public Test
-{
-protected:
-
-	buw::ReferenceCounted<buw::IRenderSystem> renderSystem_ = nullptr;
-	buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = nullptr;
-
-	VisualTest()
-	{
-		buw::renderSystemDescription scd;
-		scd.width = 640;
-		scd.height = 480;
-		scd.windowId = static_cast<void*>(this);
-		scd.forceWarpDevice = false;
-		scd.enableMSAA = true;
-		scd.renderAPI = BlueFramework::Rasterizer::eRenderAPI::Direct3D11;
-
-		renderSystem_ = BlueFramework::Rasterizer::createRenderSystem(scd);
-	}
-
-	virtual ~VisualTest()
-	{
-		renderSystem_.reset();
-	}
-
-	virtual void SetUp() override
-	{
-		renderer = buw::makeReferenceCounted<IfcGeometryModelRenderer>(renderSystem_);
-
-	}
-
-	virtual void TearDown() override
-	{
-		renderer.reset();
-	}
-};
 
 class ExtrudedSolidTest : public VisualTest {
     protected:
@@ -95,10 +51,10 @@ class ExtrudedSolidTest : public VisualTest {
         VisualTest::TearDown();
     }
 
-    const boost::filesystem::path filename = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\extruded-solid\\Data\\extruded-solid.ifc");
+	virtual std::string TestName() const { return "extruded-solid"; }
+	virtual std::string Schema() const { return "IFC4X1"; }
 
-    const boost::filesystem::path baseImageFilename_ = boost::dll::program_location().parent_path().concat("\\UnitTests\\Schemas\\IFC4X1\\extruded-solid\\Data\\extruded-solid.png");
-
+	const boost::filesystem::path filename = dataPath("extruded-solid.ifc");
 
     std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
     buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
@@ -107,7 +63,7 @@ class ExtrudedSolidTest : public VisualTest {
 	void compareImageWithView(const std::string filename) {
 
 	// Arrange
-	const auto expected = buw::loadImage4b(boost::dll::program_location().parent_path().concat(filename).string());
+	const auto expected = buw::loadImage4b(testPath(filename).string());
 
 	// Act
 	const buw::Image4b image = renderer->captureImage();
@@ -134,10 +90,10 @@ TEST_F(ExtrudedSolidTest, ImageIsSaved)
     buw::Image4b image = renderer->captureImage();
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\extruded-solid.png").string(), image);
+    buw::storeImage(testPath("extruded-solid.png").string(), image);
 
     // Assert
-    EXPECT_NE(image,_background);
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("extruded-solid.png").string()));
 }
 
 TEST_F(ExtrudedSolidTest, TopView)
@@ -147,7 +103,7 @@ TEST_F(ExtrudedSolidTest, TopView)
     buw::Image4b image = renderer->captureImage();
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\extruded-solid_top.png").string(), image);
+    buw::storeImage(testPath("extruded-solid_top.png").string(), image);
 
     // Assert
     EXPECT_NE(image, _background);
@@ -160,7 +116,7 @@ TEST_F(ExtrudedSolidTest, FrontView)
 	buw::Image4b image = renderer->captureImage();
 
 	 // Act
-	buw::storeImage(boost::dll::program_location().parent_path().concat("\\extruded-solid_front.png").string(), image);
+	buw::storeImage(testPath("extruded-solid_front.png").string(), image);
 
 	// Assert
 	EXPECT_NE(image, _background);
@@ -173,7 +129,7 @@ TEST_F(ExtrudedSolidTest, BottomView)
 	buw::Image4b image = renderer->captureImage();
 
 	// Act
-	buw::storeImage(boost::dll::program_location().parent_path().concat("\\extruded-solid_bottom.png").string(), image);
+	buw::storeImage(testPath("extruded-solid_bottom.png").string(), image);
 
 	// Assert
 	EXPECT_NE(image, _background);
@@ -181,24 +137,24 @@ TEST_F(ExtrudedSolidTest, BottomView)
 
 TEST_F(ExtrudedSolidTest, GivenNewImage_AfterHome_AreEqual)
 {
-	compareImageWithView("\\extruded-solid.png");
+	compareImageWithView("extruded-solid.png");
 }
 
 TEST_F(ExtrudedSolidTest, GivenNewImage_AfterHome_AreEqual_Top)
 {
 	renderer->setViewDirection(buw::eViewDirection::Top);
-	compareImageWithView("\\extruded-solid_top.png");
+	compareImageWithView("extruded-solid_top.png");
 }
 
 TEST_F(ExtrudedSolidTest, GivenNewImage_AfterHome_AreEqual_Front)
 {
 	renderer->setViewDirection(buw::eViewDirection::Front);
-	compareImageWithView("\\extruded-solid_front.png");
+	compareImageWithView("extruded-solid_front.png");
 }
 
 TEST_F(ExtrudedSolidTest, GivenNewImage_AfterHome_AreEqual_Bottom)
 {
 	renderer->setViewDirection(buw::eViewDirection::Bottom);
-	compareImageWithView("\\extruded-solid_bottom.png");
+	compareImageWithView("extruded-solid_bottom.png");
 }
 
