@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(brep-model IFC4X1)
+CreateIfcFileUnitTestForSchema(wall-standard-case IFC4X1)
