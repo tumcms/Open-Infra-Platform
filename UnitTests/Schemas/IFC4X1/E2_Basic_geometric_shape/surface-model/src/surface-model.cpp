@@ -63,7 +63,7 @@ class SurfaceModelTest : public VisualTest {
 	void compareImageWithView(const std::string filename) {
 
 	// Arrange
-	const auto expected = buw::loadImage4b(boost::dll::program_location().parent_path().concat(filename).string());
+	const auto expected = buw::loadImage4b(testPath(filename).string());
 
 	// Act
 	const buw::Image4b image = renderer->captureImage();
@@ -99,10 +99,10 @@ TEST_F(SurfaceModelTest, ImageIsSaved)
     buw::Image4b image = CaptureImage();
 
     // Act
-    buw::storeImage(testPath("\\surface-model.png").string(), image);
+    buw::storeImage(testPath("surface-model.png").string(), image);
 
     // Assert
-    EXPECT_NO_THROW(buw::loadImage4b(testPath("\\surface-model.png").string()));
+    EXPECT_NO_THROW(buw::loadImage4b(testPath("surface-model.png").string()));
 }
 
 TEST_F(SurfaceModelTest, TopView)
@@ -112,7 +112,7 @@ TEST_F(SurfaceModelTest, TopView)
     buw::Image4b image = renderer->captureImage();
 
     // Act
-    buw::storeImage(boost::dll::program_location().parent_path().concat("\\surface-model_top.png").string(), image);
+	buw::storeImage(testPath("surface-model_top.png").string(), image);
 
     // Assert
     EXPECT_NE(image, _background);
@@ -125,7 +125,7 @@ TEST_F(SurfaceModelTest, FrontView)
 	buw::Image4b image = renderer->captureImage();
 
 	 // Act
-	buw::storeImage(boost::dll::program_location().parent_path().concat("\\surface-model_front.png").string(), image);
+	buw::storeImage(testPath("surface-model_front.png").string(), image);
 
 	// Assert
 	EXPECT_NE(image, _background);
@@ -138,7 +138,7 @@ TEST_F(SurfaceModelTest, BottomView)
 	buw::Image4b image = renderer->captureImage();
 
 	// Act
-	buw::storeImage(boost::dll::program_location().parent_path().concat("\\surface-model_bottom.png").string(), image);
+	buw::storeImage(testPath("surface-model_bottom.png").string(), image);
 
 	// Assert
 	EXPECT_NE(image, _background);
@@ -146,24 +146,24 @@ TEST_F(SurfaceModelTest, BottomView)
 
 TEST_F(SurfaceModelTest, GivenNewImage_AfterHome_AreEqual)
 {
-	compareImageWithView("\\surface-model.png");
+	compareImageWithView("surface-model.png");
 }
 
 TEST_F(SurfaceModelTest, GivenNewImage_AfterHome_AreEqual_Top)
 {
 	renderer->setViewDirection(buw::eViewDirection::Top);
-	compareImageWithView("\\surface-model_top.png");
+	compareImageWithView("surface-model_top.png");
 }
 
 TEST_F(SurfaceModelTest, GivenNewImage_AfterHome_AreEqual_Front)
 {
 	renderer->setViewDirection(buw::eViewDirection::Front);
-	compareImageWithView("\\surface-model_front.png");
+	compareImageWithView("surface-model_front.png");
 }
 
 TEST_F(SurfaceModelTest, GivenNewImage_AfterHome_AreEqual_Bottom)
 {
 	renderer->setViewDirection(buw::eViewDirection::Bottom);
-	compareImageWithView("\\surface-model_bottom.png");
+	compareImageWithView("surface-model_bottom.png");
 }
 
