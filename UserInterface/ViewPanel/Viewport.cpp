@@ -113,11 +113,11 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     cbd0.data = nullptr;
     worldBuffer_ = renderSystem_->createConstantBuffer(cbd0);
 
-	oip::ViewportBuffer buffer = { width(), height() };
+    oip::ViewportBuffer buffer = { width(), height() };
 
-	buw::constantBufferDescription cbd1;
-	cbd1.sizeInBytes = sizeof(oip::ViewportBuffer);
-	cbd1.data = &buffer;
+    buw::constantBufferDescription cbd1;
+    cbd1.sizeInBytes = sizeof(oip::ViewportBuffer);
+    cbd1.data = &buffer;
     viewportBuffer_ = renderSystem_->createConstantBuffer(cbd1);
 
     buw::constantBufferDescription cbd2;
@@ -246,11 +246,10 @@ void Viewport::createDepthStencil() {
     dsvTD.height = height();
     dsvTD.format = buw::eTextureFormat::D24_UnsignedNormalizedInt_S8_UnsignedInt;
     dsvTD.data = nullptr;
-    dsvTD.isCpuReadable = false;
+    dsvTD.isCpuReadable = true;
     dsvTD.useMSAA = true;
     depthStencilMSAA_ = renderSystem_->createTexture2D(dsvTD, buw::eTextureBindType::DSV);
 
-    dsvTD.isCpuReadable = true;
     dsvTD.useMSAA = false;
     depthStencil_ = renderSystem_->createTexture2D(dsvTD, buw::eTextureBindType::DSV);
 }
