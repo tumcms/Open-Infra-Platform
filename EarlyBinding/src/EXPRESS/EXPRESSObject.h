@@ -27,7 +27,7 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-class EXPRESSObject {
+class OIP_DLLEXPORT EXPRESSObject {
 public:
 	virtual const std::string classname() const = 0;
 	virtual const std::string getStepParameter() const = 0;

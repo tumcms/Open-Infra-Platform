@@ -32,7 +32,7 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-class EXPRESSModel {
+class OIP_DLLEXPORT EXPRESSModel {
 public:
 	EXPRESSModel(const std::string &schema) : schema(schema) { };
 

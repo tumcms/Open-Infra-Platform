@@ -28,7 +28,7 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-template <typename T> class EXPRESSAttribute {
+template <typename T> class OIP_DLLEXPORT EXPRESSAttribute {
 public:
 	EXPRESSAttribute() = default;
 
