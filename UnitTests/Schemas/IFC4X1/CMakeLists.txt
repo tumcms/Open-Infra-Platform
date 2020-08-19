@@ -15,14 +15,4 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(CreateUnitTests)
 
-# get all subdirectories (that is, unit tests)
-SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_LIST_DIR})
-
-# add to the solution
-FOREACH(subdir ${SUBDIRS})
-  ADD_SUBDIRECTORY(${subdir})
-ENDFOREACH()
-
-   
