@@ -1784,9 +1784,9 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 		if (schema.hasType(type.getContainerType())) {
 			writeInclude(out, type.getContainerType() + ".h");
 		}
-		else if (schema.hasEntity(type.getContainerType())) {
-			writeInclude(out, "../entity/" + type.getContainerType() + ".h");
-		}
+		//else if (schema.hasEntity(type.getContainerType())) {
+		//	writeInclude(out, "../entity/" + type.getContainerType() + ".h");
+		//}
 
 	}
 	else if (type.isSelectType()) {
@@ -1795,11 +1795,13 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 	}
 
 	writeInclude(out, "../" + schema.getName() + "Namespace.h");
-	
+	linebreak(out);
+
 
 	if (type.isDerivedType()) {
 		writeInclude(out, type.getUnderlyingTypeName() + ".h");
-	}	
+		linebreak(out);
+	}
 
 	std::set<std::string> types, entities;
 
@@ -1829,9 +1831,11 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 		//}
 	}
 	
+	linebreak(out);
 
 	writeBeginNamespace(out, schema);
-	
+	linebreak(out);
+
 	if (type.isSelectType()) {
 		//if (!types.empty()) {
 		//	for (auto val : types) {
@@ -1855,6 +1859,9 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 		writeEnumTypeFileRefactored(type.getName(), type.getTypes(), out);
 	}
 	else if (type.isContainerType()) {
+		if (schema.hasEntity(type.getContainerType())) {
+			writeLine(out, "class " + type.getContainerType() + ";");
+		}
 		writeContainerTypeFile(schema, type, out);
 	}
 	else if (type.isSelectType()) {	
@@ -2259,13 +2266,25 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 
 	std::set<std::string> types, entities;
 
-	if (type.isSelectType()) {
-		for (auto select : type.getTypes()) {
-			if (schema.hasEntity(select)) {
-				entities.insert(select);
+	if (type.isSelectType() || type.isContainerType()) {
+		if( type.isSelectType())
+		{
+			for (auto select : type.getTypes()) {
+				if (schema.hasEntity(select)) {
+					entities.insert(select);
+				}
+				if (schema.hasType(select)) {
+					types.insert(select);
+				}
 			}
-			if (schema.hasType(select)) {
-				types.insert(select);
+		}
+		else if( type.isContainerType())
+		{
+			if (schema.hasEntity(type.getContainerType())) {
+				entities.insert(type.getContainerType());
+			}
+			if (schema.hasType(type.getContainerType())) {
+				types.insert(type.getContainerType());
 			}
 		}
 		std::set<std::string> resolvedClasses = { type.getName() };
