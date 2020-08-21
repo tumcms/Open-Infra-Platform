@@ -46,8 +46,11 @@
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
 
-template <typename ValueType, size_t MinCardinality, size_t MaxCardinality> 
-class OIP_DLLEXPORT EXPRESSContainer : public std::vector<ValueType> {
+template <typename ValueType, size_t MinCardinality, size_t MaxCardinality>
+class
+OIP_EARLYBINDING_EXPORT
+EXPRESSContainer : public std::vector<ValueType> 
+{
 	using base = std::vector<ValueType>;
 public:
 	typedef base UnderlyingType;

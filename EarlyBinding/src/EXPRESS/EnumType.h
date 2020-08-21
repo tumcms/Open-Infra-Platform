@@ -31,7 +31,11 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-template <typename Enum, int Count> class EnumType : public ValueType<Enum> {
+template <typename Enum, int Count>
+class
+OIP_EARLYBINDING_EXPORT
+EnumType : public ValueType<Enum> 
+{
 	using base = ValueType<Enum>;
 public:
 	typedef Enum ENUM;

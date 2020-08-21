@@ -3067,6 +3067,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "" << std::endl;
 
 	//file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + " OpenInfraPlatform.EXPRESS)" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
 
 	file << "" << std::endl;
 

@@ -33,7 +33,10 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
 class EXPRESSModel;
 
-class EXPRESSEntity : public EXPRESSObject {
+class
+OIP_EARLYBINDING_EXPORT
+EXPRESSEntity : public EXPRESSObject 
+{
 public:
 	const size_t getId() const {
 		return m_id;

@@ -34,7 +34,11 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-template <typename T> class EXPRESSOptional : public boost::optional<T> {
+template <typename T>
+class
+OIP_EARLYBINDING_EXPORT
+EXPRESSOptional : public boost::optional<T> 
+{
 	using base = boost::optional<T>;
 	typedef typename T::UnderlyingType ForwardType;
 public:
@@ -106,10 +110,26 @@ public:
 	typedef T type;
 };
 
-template <typename T> const bool operator==(const EXPRESSOptional<T>& lhs, const EXPRESSOptional<T>& rhs) { return !lhs || !rhs ? false : (T)lhs == (T)rhs; }
-template <typename T> const bool operator==(const EXPRESSOptional<T>& lhs, const T& rhs) { return !lhs ? false : (T)lhs == (T)rhs; }
-template <typename T> const bool operator==(const T& lhs, const EXPRESSOptional<T>& rhs) { return !rhs ? false : lhs == (T)rhs; }
-template <typename T, typename V> const bool operator==(const EXPRESSOptional<T>& lhs, const V& rhs) { return !lhs ? false : (T)lhs == rhs; }
+
+template <typename T>
+OIP_EARLYBINDING_EXPORT 
+const bool operator==(const EXPRESSOptional<T>& lhs, const EXPRESSOptional<T>& rhs) 
+{ return !lhs || !rhs ? false : (T)lhs == (T)rhs; }
+
+template <typename T>
+OIP_EARLYBINDING_EXPORT 
+const bool operator==(const EXPRESSOptional<T>& lhs, const T& rhs) 
+{ return !lhs ? false : (T)lhs == (T)rhs; }
+
+template <typename T>
+OIP_EARLYBINDING_EXPORT
+const bool operator==(const T& lhs, const EXPRESSOptional<T>& rhs) 
+{ return !rhs ? false : lhs == (T)rhs; }
+
+template <typename T, typename V>
+OIP_EARLYBINDING_EXPORT
+const bool operator==(const EXPRESSOptional<T>& lhs, const V& rhs) 
+{ return !lhs ? false : (T)lhs == rhs; }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 

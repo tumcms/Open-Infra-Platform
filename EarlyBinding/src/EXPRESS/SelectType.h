@@ -49,7 +49,11 @@ public:
 	}
 };
 
-template <typename ...Args> class SelectType : public ValueType<boost::variant<Args...>> {
+template <typename ...Args>
+class
+OIP_EARLYBINDING_EXPORT
+SelectType : public ValueType<boost::variant<Args...>> 
+{
 	using base = ValueType<boost::variant<Args...>>;
 
 	template<std::size_t I = 0, typename Function>

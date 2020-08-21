@@ -28,7 +28,11 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-template <typename T> class OIP_DLLEXPORT EXPRESSAttribute {
+template <typename T> 
+class 
+OIP_EARLYBINDING_EXPORT 
+EXPRESSAttribute 
+{
 public:
 	EXPRESSAttribute() = default;
 
@@ -48,7 +52,11 @@ private:
 	T attr;
 };
 
-template <typename T> class EXPRESSAttribute<EXPRESSOptional<T>> {
+template <typename T>
+class
+OIP_EARLYBINDING_EXPORT
+EXPRESSAttribute<EXPRESSOptional<T>> 
+{
 public:
 	EXPRESSAttribute() = default;
 
@@ -72,7 +80,11 @@ private:
 	EXPRESSOptional<T> attr;
 };
 
-template <typename T> class EXPRESSAttribute<ValueType<T>> {
+template <typename T>
+class
+OIP_EARLYBINDING_EXPORT
+EXPRESSAttribute<ValueType<T>> 
+{
 public:
 	EXPRESSAttribute() = default;
 
