@@ -197,29 +197,6 @@ EMBED_INTO_OIP_NAMESPACE(SET)
 EMBED_INTO_OIP_NAMESPACE(BAG)
 EMBED_INTO_OIP_NAMESPACE(ARRAY)
 
-#define DEFINE_CONTAINERTYPE(name, containertype, min, max, valuetype)\
-	class name : public EarlyBinding::EXPRESSContainer<containertype<valuetype>,valuetype,min,max>, public EarlyBinding::EXPRESSType {\
-	using base = EarlyBinding::EXPRESSContainer<containertype<valuetype>,valuetype,min,max>;\
-	public:\
-		typedef name type;\
-		using base::base;\
-		using base::operator=;\
-		using base::operator containertype<valuetype>&;\
-		name* operator->() { return this; }\
-		const name* const operator->() const { return this; }\
-		virtual name& operator=(const Optional<name> &other) { operator=(other.get_value_or(name())); return *this; };\
-		virtual const std::string classname() const override { return #name; }\
-		virtual const std::string getStepParameter() const override {return base::getStepParameter(); }\
-	};
-
-
-#define EXPAND(...) __VA_ARGS__
-
-#define LISTTYPE std::vector
-#define SETTYPE std::vector
-#define BAGTYPE std::vector
-#define ARRAYTYPE std::vector
-
 #define LIST_MAXSIZE ULLONG_MAX
 #define ARRAY_MAXSIZE ULLONG_MAX
 #define SET_MAXSIZE ULLONG_MAX

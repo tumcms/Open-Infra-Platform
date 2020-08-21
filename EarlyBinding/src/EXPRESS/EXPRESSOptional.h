@@ -134,6 +134,7 @@ const bool operator==(const EXPRESSOptional<T>& lhs, const V& rhs)
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 
 template <typename T> using EXPRESSOptional = OpenInfraPlatform::EarlyBinding::EXPRESSOptional<T>;
+EMBED_INTO_OIP_NAMESPACE(EXPRESSOptional);
 
 
 #endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSOptional_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_h
