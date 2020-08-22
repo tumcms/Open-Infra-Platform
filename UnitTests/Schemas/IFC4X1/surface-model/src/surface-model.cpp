@@ -105,23 +105,6 @@ TEST_F(SurfaceModelTest, ImageIsSaved)
     EXPECT_NO_THROW(buw::loadImage4b(testPath("surface-model.png").string()));
 }
 
-TEST_F(SurfaceModelTest, TopView)
-{
-    // Arrange
-	const auto expected = buw::loadImage4b(dataPath("surface-model_top.png").string());
-    
-
-    // Act
-	renderer->setViewDirection(buw::eViewDirection::Top);
-    buw::Image4b image = CaptureImage();
-
-	// uncomment the following line to also save the screen shot
-	//buw::storeImage(testPath("surface-model_top.png").string(), image);
-
-    // Assert
-    EXPECT_EQ(image, expected);
-}
-
 TEST_F(SurfaceModelTest, FrontView)
 {
 	// Arrange
@@ -137,6 +120,153 @@ TEST_F(SurfaceModelTest, FrontView)
 	// Assert
 	EXPECT_EQ(image, expected);
 }
+/*
+TEST_F(SurfaceModelTest, FrontBottomView)
+{
+	// Arrange
+	const auto expected = buw::loadImage4b(dataPath("surface-model_front_bottom.png").string());
+
+	// Act
+	renderer->setViewDirection(buw::eViewDirection::FrontBottom);
+	buw::Image4b image = CaptureImage();
+
+	// uncomment the following line to also save the screen shot
+	//buw::storeImage(testPath("surface-model_front_bottom.png").string(), image);
+
+	// Assert
+	EXPECT_EQ(image, expected);
+}
+
+TEST_F(SurfaceModelTest, FrontLeftView)
+{
+	// Arrange
+	const auto expected = buw::loadImage4b(dataPath("surface-model_front_left.png").string());
+
+	// Act
+	renderer->setViewDirection(buw::eViewDirection::FrontLeft);
+	buw::Image4b image = CaptureImage();
+
+	// uncomment the following line to also save the screen shot
+	//buw::storeImage(testPath("surface-model_front_left.png").string(), image);
+
+	// Assert
+	EXPECT_EQ(image, expected);
+}
+
+TEST_F(SurfaceModelTest, FrontLeftBottomView)
+{
+	// Arrange
+	const auto expected = buw::loadImage4b(dataPath("surface-model_front_left_bottom.png").string());
+
+	// Act
+	renderer->setViewDirection(buw::eViewDirection::FrontLeftBottom);
+	buw::Image4b image = CaptureImage();
+
+	// uncomment the following line to also save the screen shot
+	//buw::storeImage(testPath("surface-model_front_left_bottom.png").string(), image);
+
+	// Assert
+	EXPECT_EQ(image, expected);
+}
+
+TEST_F(SurfaceModelTest, FrontRightView)
+{
+	// Arrange
+	const auto expected = buw::loadImage4b(dataPath("surface-model_front_right.png").string());
+
+	// Act
+	renderer->setViewDirection(buw::eViewDirection::FrontRight);
+	buw::Image4b image = CaptureImage();
+
+	// uncomment the following line to also save the screen shot
+	//buw::storeImage(testPath("surface-model_front_right.png").string(), image);
+
+	// Assert
+	EXPECT_EQ(image, expected);
+}
+
+TEST_F(SurfaceModelTest, FrontRightBottomView)
+{
+	// Arrange
+	const auto expected = buw::loadImage4b(dataPath("surface-model_front_right_bottom.png").string());
+
+	// Act
+	renderer->setViewDirection(buw::eViewDirection::FrontRightBottom);
+	buw::Image4b image = CaptureImage();
+
+	// uncomment the following line to also save the screen shot
+	//buw::storeImage(testPath("surface-model_front_right_bottom.png").string(), image);
+
+	// Assert
+	EXPECT_EQ(image, expected);
+}
+
+TEST_F(SurfaceModelTest, LeftView)
+{
+	// Arrange
+	const auto expected = buw::loadImage4b(dataPath("surface-model_left.png").string());
+
+	// Act
+	renderer->setViewDirection(buw::eViewDirection::Left);
+	buw::Image4b image = CaptureImage();
+
+	// uncomment the following line to also save the screen shot
+	//buw::storeImage(testPath("surface-model_left.png").string(), image);
+
+	// Assert
+	EXPECT_EQ(image, expected);
+}
+
+TEST_F(SurfaceModelTest, LeftBottomView)
+{
+	// Arrange
+	const auto expected = buw::loadImage4b(dataPath("surface-model_left_bottom.png").string());
+
+	// Act
+	renderer->setViewDirection(buw::eViewDirection::LeftBottom);
+	buw::Image4b image = CaptureImage();
+
+	// uncomment the following line to also save the screen shot
+	//buw::storeImage(testPath("surface-model_left_bottom.png").string(), image);
+
+	// Assert
+	EXPECT_EQ(image, expected);
+}
+
+TEST_F(SurfaceModelTest, RightView)
+{
+	// Arrange
+	const auto expected = buw::loadImage4b(dataPath("surface-model_right.png").string());
+
+	// Act
+	renderer->setViewDirection(buw::eViewDirection::Right);
+	buw::Image4b image = CaptureImage();
+
+	// uncomment the following line to also save the screen shot
+	//buw::storeImage(testPath("surface-model_right.png").string(), image);
+
+	// Assert
+	EXPECT_EQ(image, expected);
+}*/
+
+TEST_F(SurfaceModelTest, TopView)
+{
+    // Arrange
+	const auto expected = buw::loadImage4b(dataPath("surface-model_top.png").string());
+    
+
+    // Act
+	renderer->setViewDirection(buw::eViewDirection::Top);
+    buw::Image4b image = CaptureImage();
+
+	// uncomment the following line to also save the screen shot
+	buw::storeImage(testPath("surface-model_top.png").string(), image);
+
+    // Assert
+    EXPECT_EQ(image, expected);
+}
+
+
 
 TEST_F(SurfaceModelTest, BottomView)
 {
@@ -154,26 +284,65 @@ TEST_F(SurfaceModelTest, BottomView)
 	EXPECT_EQ(image, expected);
 }
 
+
+
+
 TEST_F(SurfaceModelTest, GivenNewImage_AfterHome_AreEqual)
 {
-	compareImageWithView("surface-model.png");
+	// Arrange
+	const auto expected = buw::loadImage4b(testPath("surface-model.png").string());
+
+	// Act
+	const buw::Image4b image = CaptureImage();
+
+	// Assert
+	EXPECT_EQ(image, expected);
+
+	// Annihilate
 }
 
-TEST_F(SurfaceModelTest, GivenNewImage_AfterHome_AreEqual_Top)
+TEST_F(SurfaceModelTest, GivenNewImage_AfterTop_AreEqual)
 {
+	// Arrange
+	const auto expected = buw::loadImage4b(testPath("surface-model_top.png").string());
+
+	// Act
 	renderer->setViewDirection(buw::eViewDirection::Top);
-	compareImageWithView("surface-model_top.png");
+	const buw::Image4b image = CaptureImage();
+
+	// Assert
+	EXPECT_EQ(image, expected);
+
+	// Annihilate
 }
 
-TEST_F(SurfaceModelTest, GivenNewImage_AfterHome_AreEqual_Front)
+TEST_F(SurfaceModelTest, GivenNewImage_AfterFront_AreEqual)
 {
+	// Arrange
+	const auto expected = buw::loadImage4b(testPath("surface-model_front.png").string());
+
+	// Act
 	renderer->setViewDirection(buw::eViewDirection::Front);
-	compareImageWithView("surface-model_front.png");
+	const buw::Image4b image = CaptureImage();
+
+	// Assert
+	EXPECT_EQ(image, expected);
+
+	// Annihilate
 }
 
-TEST_F(SurfaceModelTest, GivenNewImage_AfterHome_AreEqual_Bottom)
+TEST_F(SurfaceModelTest, GivenNewImage_AfterBottom_AreEqual)
 {
+	// Arrange
+	const auto expected = buw::loadImage4b(testPath("surface-model_bottom.png").string());
+
+	// Act
 	renderer->setViewDirection(buw::eViewDirection::Bottom);
-	compareImageWithView("surface-model_bottom.png");
+	const buw::Image4b image = CaptureImage();
+
+	// Assert
+	EXPECT_EQ(image, expected);
+
+	// Annihilate
 }
 
