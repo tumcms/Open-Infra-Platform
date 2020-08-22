@@ -112,22 +112,22 @@ public:
 
 
 template <typename T>
-OIP_EARLYBINDING_EXPORT 
+//OIP_EARLYBINDING_EXPORT 
 const bool operator==(const EXPRESSOptional<T>& lhs, const EXPRESSOptional<T>& rhs) 
 { return !lhs || !rhs ? false : (T)lhs == (T)rhs; }
 
 template <typename T>
-OIP_EARLYBINDING_EXPORT 
+//OIP_EARLYBINDING_EXPORT 
 const bool operator==(const EXPRESSOptional<T>& lhs, const T& rhs) 
 { return !lhs ? false : (T)lhs == (T)rhs; }
 
 template <typename T>
-OIP_EARLYBINDING_EXPORT
+//OIP_EARLYBINDING_EXPORT
 const bool operator==(const T& lhs, const EXPRESSOptional<T>& rhs) 
 { return !rhs ? false : lhs == (T)rhs; }
 
 template <typename T, typename V>
-OIP_EARLYBINDING_EXPORT
+//OIP_EARLYBINDING_EXPORT
 const bool operator==(const EXPRESSOptional<T>& lhs, const V& rhs) 
 { return !lhs ? false : (T)lhs == rhs; }
 
