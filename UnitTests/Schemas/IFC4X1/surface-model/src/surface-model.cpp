@@ -217,101 +217,96 @@ TEST_F(SurfaceModelTest, VertexViews)
 	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
 }
 
-
-TEST_F(SurfaceModelTest, TopView)
-{
-    // Arrange
-	const auto expected = buw::loadImage4b(dataPath("surface-model_top.png").string());
-    
-
-    // Act
-	renderer->setViewDirection(buw::eViewDirection::Top);
-    buw::Image4b image = CaptureImage();
-
-	// uncomment the following line to also save the screen shot
-	buw::storeImage(dataPath("surface-model_top.png").string(), image);
-
-    // Assert
-    EXPECT_EQ(image, expected);
-}
-
-
-
-TEST_F(SurfaceModelTest, BottomView)
+TEST_F(SurfaceModelTest, GivenNewImage_AreEqual_With_PlaneSurfaceViews)
 {
 	// Arrange
-	const auto expected = buw::loadImage4b(dataPath("surface-model_bottom.png").string());
+	const auto expected_front = buw::loadImage4b(dataPath("surface-model_front.png").string());
+	const auto expected_top = buw::loadImage4b(dataPath("surface-model_top.png").string());
+	const auto expected_bottom = buw::loadImage4b(dataPath("surface-model_bottom.png").string());
+	const auto expected_left = buw::loadImage4b(dataPath("surface-model_left.png").string());
+	const auto expected_right = buw::loadImage4b(dataPath("surface-model_right.png").string());
+	const auto expected_back = buw::loadImage4b(dataPath("surface-model_back.png").string());
 
-	// Act
-	renderer->setViewDirection(buw::eViewDirection::Bottom);
-	buw::Image4b image = CaptureImage();
-
-	// uncomment the following line to also save the screen shot
-	buw::storeImage(dataPath("surface-model_bottom.png").string(), image);
-
-	// Assert
-	EXPECT_EQ(image, expected);
-}
-
-
-
-
-TEST_F(SurfaceModelTest, GivenNewImage_AfterHome_AreEqual)
-{
-	// Arrange
-	const auto expected = buw::loadImage4b(dataPath("surface-model.png").string());
-
-	// Act
-	const buw::Image4b image = CaptureImage();
-
-	// Assert
-	EXPECT_EQ(image, expected);
-
-	// Annihilate
-}
-
-TEST_F(SurfaceModelTest, GivenNewImage_AfterTop_AreEqual)
-{
-	// Arrange
-	const auto expected = buw::loadImage4b(testPath("surface-model_top.png").string());
-
-	// Act
-	renderer->setViewDirection(buw::eViewDirection::Top);
-	const buw::Image4b image = CaptureImage();
-
-	// Assert
-	EXPECT_EQ(image, expected);
-
-	// Annihilate
-}
-
-TEST_F(SurfaceModelTest, GivenNewImage_AfterFront_AreEqual)
-{
-	// Arrange
-	const auto expected = buw::loadImage4b(testPath("surface-model_front.png").string());
-
-	// Act
+	// Act (Front)
 	renderer->setViewDirection(buw::eViewDirection::Front);
-	const buw::Image4b image = CaptureImage();
+	buw::Image4b image_front = CaptureImage();
+	// Act (Top)
+	renderer->setViewDirection(buw::eViewDirection::Top);
+	buw::Image4b image_top = CaptureImage();
+	// Act (Bottom)
+	renderer->setViewDirection(buw::eViewDirection::Bottom);
+	buw::Image4b image_bottom = CaptureImage();
+	// Act (Left)
+	renderer->setViewDirection(buw::eViewDirection::Left);
+	buw::Image4b image_left = CaptureImage();
+	// Act (Right)
+	renderer->setViewDirection(buw::eViewDirection::Right);
+	buw::Image4b image_right = CaptureImage();
+	// Act (Back)
+	renderer->setViewDirection(buw::eViewDirection::Back);
+	buw::Image4b image_back = CaptureImage();
 
 	// Assert
-	EXPECT_EQ(image, expected);
+	EXPECT_EQ(image_front, expected_front);
+	EXPECT_EQ(image_top, expected_top);
+	EXPECT_EQ(image_bottom, expected_bottom);
+	EXPECT_EQ(image_left, expected_left);
+	EXPECT_EQ(image_right, expected_right);
+	EXPECT_EQ(image_back, expected_back);
 
 	// Annihilate
+
 }
 
-TEST_F(SurfaceModelTest, GivenNewImage_AfterBottom_AreEqual)
+TEST_F(SurfaceModelTest, GivenNewImage_AreEqual_With_VertexViews)
 {
 	// Arrange
-	const auto expected = buw::loadImage4b(testPath("surface-model_bottom.png").string());
+	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("surface-model_front_left_bottom.png").string());
+	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("surface-model_front_right_bottom.png").string());
+	const auto expected_top_left_front = buw::loadImage4b(dataPath("surface-model_top_left_front.png").string());
+	const auto expected_top_front_right = buw::loadImage4b(dataPath("surface-model_top_front_right.png").string());
+	const auto expected_top_left_back = buw::loadImage4b(dataPath("surface-model_top_left_back.png").string());
+	const auto expected_top_right_back = buw::loadImage4b(dataPath("surface-model_top_right_back.png").string());
+	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("surface-model_back_left_bottom.png").string());
+	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("surface-model_right_bottom_back.png").string());
 
-	// Act
-	renderer->setViewDirection(buw::eViewDirection::Bottom);
-	const buw::Image4b image = CaptureImage();
+	// Act (FrontLeftBottom)
+	renderer->setViewDirection(buw::eViewDirection::FrontLeftBottom);
+	buw::Image4b image_front_left_bottom = CaptureImage();
+	// Act (FrontRightBottom)
+	renderer->setViewDirection(buw::eViewDirection::FrontRightBottom);
+	buw::Image4b image_front_right_bottom = CaptureImage();
+	// Act (TopLeftFront)
+	renderer->setViewDirection(buw::eViewDirection::TopLeftFront);
+	buw::Image4b image_top_left_front = CaptureImage();
+	// Act (TopFrontRight)
+	renderer->setViewDirection(buw::eViewDirection::TopFrontRight);
+	buw::Image4b image_top_front_right = CaptureImage();
+	// Act (TopLeftBack)
+	renderer->setViewDirection(buw::eViewDirection::TopLeftBack);
+	buw::Image4b image_top_left_back = CaptureImage();
+	// Act (TopRightBack)
+	renderer->setViewDirection(buw::eViewDirection::TopRightBack);
+	buw::Image4b image_top_right_back = CaptureImage();
+	// Act (BackLeftBottom)
+	renderer->setViewDirection(buw::eViewDirection::BackLeftBottom);
+	buw::Image4b image_back_left_bottom = CaptureImage();
+	// Act (RightBottomBack)
+	renderer->setViewDirection(buw::eViewDirection::RightBottomBack);
+	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// Assert
-	EXPECT_EQ(image, expected);
+	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
+	EXPECT_EQ(image_front_right_bottom, expected_front_right_bottom);
+	EXPECT_EQ(image_top_left_front, expected_top_left_front);
+	EXPECT_EQ(image_top_front_right, expected_top_front_right);
+	EXPECT_EQ(image_top_left_back, expected_top_left_back);
+	EXPECT_EQ(image_top_right_back, expected_top_right_back);
+	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
+	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
 
 	// Annihilate
+
 }
+
 
