@@ -60,19 +60,6 @@ class ExtrudedSolidTest : public VisualTest {
     buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
     buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 	
-	void compareImageWithView(const std::string filename) {
-
-	// Arrange
-	const auto expected = buw::loadImage4b(testPath(filename).string());
-
-	// Act
-	const buw::Image4b image = renderer->captureImage();
-
-	// Assert
-	EXPECT_EQ(image, expected);
-
-	// Annihilate
-	}
 };
 
 TEST_F(ExtrudedSolidTest, AllEntitiesAreRead) {
@@ -96,65 +83,27 @@ TEST_F(ExtrudedSolidTest, ImageIsSaved)
 	EXPECT_NO_THROW(buw::loadImage4b(testPath("extruded-solid.png").string()));
 }
 
-TEST_F(ExtrudedSolidTest, TopView)
 {
-    // Arrange
-    renderer->setViewDirection(buw::eViewDirection::Top);
-    buw::Image4b image = renderer->captureImage();
 
-    // Act
-    buw::storeImage(testPath("extruded-solid_top.png").string(), image);
 
-    // Assert
-    EXPECT_NE(image, _background);
 }
 
-TEST_F(ExtrudedSolidTest, FrontView)
 {
 	// Arrange
-	renderer->setViewDirection(buw::eViewDirection::Front);
-	buw::Image4b image = renderer->captureImage();
 
-	 // Act
-	buw::storeImage(testPath("extruded-solid_front.png").string(), image);
 
 	// Assert
-	EXPECT_NE(image, _background);
 }
 
-TEST_F(ExtrudedSolidTest, BottomView)
 {
 	// Arrange
 	renderer->setViewDirection(buw::eViewDirection::Bottom);
-	buw::Image4b image = renderer->captureImage();
-
-	// Act
-	buw::storeImage(testPath("extruded-solid_bottom.png").string(), image);
 
 	// Assert
-	EXPECT_NE(image, _background);
+
+
 }
 
-TEST_F(ExtrudedSolidTest, GivenNewImage_AfterHome_AreEqual)
 {
-	compareImageWithView("extruded-solid.png");
-}
 
-TEST_F(ExtrudedSolidTest, GivenNewImage_AfterHome_AreEqual_Top)
-{
-	renderer->setViewDirection(buw::eViewDirection::Top);
-	compareImageWithView("extruded-solid_top.png");
-}
-
-TEST_F(ExtrudedSolidTest, GivenNewImage_AfterHome_AreEqual_Front)
-{
-	renderer->setViewDirection(buw::eViewDirection::Front);
-	compareImageWithView("extruded-solid_front.png");
-}
-
-TEST_F(ExtrudedSolidTest, GivenNewImage_AfterHome_AreEqual_Bottom)
-{
-	renderer->setViewDirection(buw::eViewDirection::Bottom);
-	compareImageWithView("extruded-solid_bottom.png");
-}
 
