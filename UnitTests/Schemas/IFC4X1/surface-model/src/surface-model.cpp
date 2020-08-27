@@ -27,55 +27,54 @@
 using namespace testing;
 
 class SurfaceModelTest : public VisualTest {
-    protected:
+	protected:
 
-    // Test standard values
-    buw::Image4b _background = buw::Image4b(0, 0);
+	// Test standard values
+	buw::Image4b _background = buw::Image4b(0, 0);
 
-    virtual void SetUp() override {
-        VisualTest::SetUp();
+	virtual void SetUp() override {
+		VisualTest::SetUp();
 
-        express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
+		express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
 
-        importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
-        importer->collectGeometryData(express_model);
-	    oip::ConverterBuwT<emt::IFC4X1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
+		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
+		importer->collectGeometryData(express_model);
+		oip::ConverterBuwT<emt::IFC4X1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
 
-        _background = renderer->captureImage();
-        renderer->setModel(model);
+		_background = renderer->captureImage();
+		renderer->setModel(model);
+	}
 
-    }
-
-    virtual void TearDown() override {
-        express_model.reset();
-        VisualTest::TearDown();
-    }
+	virtual void TearDown() override {
+		express_model.reset();
+		VisualTest::TearDown();
+	}
 
 	virtual std::string TestName() const { return "surface-model"; }
 	virtual std::string Schema() const { return "IFC4X1"; }
 
 	const boost::filesystem::path filename = dataPath("surface-model.ifc");
 
-    std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
-    buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-    buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
+	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
+	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 	
 };
 
 TEST_F(SurfaceModelTest, AllEntitiesAreRead) {
-    EXPECT_THAT(express_model->entities.size(), Eq(55));
+	EXPECT_THAT(express_model->entities.size(), Eq(55));
 }
 
 TEST_F(SurfaceModelTest, ImageIsSaved)
 {
-    // Arrange
-    buw::Image4b image = CaptureImage();
+	// Arrange
+	buw::Image4b image = CaptureImage();
 
-    // Act
-    buw::storeImage(testPath("surface-model.png").string(), image);
+	// Act
+	buw::storeImage(testPath("surface-model.png").string(), image);
 
-    // Assert
-    EXPECT_NO_THROW(buw::loadImage4b(testPath("surface-model.png").string()));
+	// Assert
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("surface-model.png").string()));
 }
 
 TEST_F(SurfaceModelTest, PlaneSurfaceViews)
