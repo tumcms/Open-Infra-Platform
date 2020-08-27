@@ -66,11 +66,6 @@ TEST_F(ExtrudedSolidTest, AllEntitiesAreRead) {
     EXPECT_THAT(express_model->entities.size(), Eq(30));
 }
 
-/*TEST_F(ExtrudedSolidTest, AllEntitiesAreRead) {
-	EXPECT_THAT(xpress_model->entities, Eq('Liebich'));
-		
-}*/
-
 TEST_F(ExtrudedSolidTest, ImageIsSaved)
 {
     // Arrange
@@ -81,20 +76,6 @@ TEST_F(ExtrudedSolidTest, ImageIsSaved)
 
     // Assert
 	EXPECT_NO_THROW(buw::loadImage4b(testPath("extruded-solid.png").string()));
-}
-
-TEST_F(ExtrudedSolidTest, GivenNewImage_AfterHome_AreEqual)
-{
-	// Arrange
-	const auto expected = buw::loadImage4b(dataPath("extruded-solid.png").string());
-
-	// Act
-	const buw::Image4b image = CaptureImage();
-
-	// Assert
-	EXPECT_EQ(image, expected);
-
-	// Annihilate
 }
 
 TEST_F(ExtrudedSolidTest, PlaneSurfaceViews)
@@ -127,14 +108,14 @@ TEST_F(ExtrudedSolidTest, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-
+	/*
 	buw::storeImage(testPath("extruded-solid_front.png").string(), image_front);
 	buw::storeImage(testPath("extruded-solid_top.png").string(), image_top);
 	buw::storeImage(testPath("extruded-solid_bottom.png").string(), image_bottom);
 	buw::storeImage(testPath("extruded-solid_left.png").string(), image_left);
 	buw::storeImage(testPath("extruded-solid_right.png").string(), image_right);
 	buw::storeImage(testPath("extruded-solid_back.png").string(), image_back);
-
+	*/
 
 	// Assert
 	EXPECT_EQ(image_front, expected_front);
@@ -183,7 +164,7 @@ TEST_F(ExtrudedSolidTest, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-
+	/*
 	buw::storeImage(testPath("extruded-solid_front_left_bottom.png").string(), image_front_left_bottom);
 	buw::storeImage(testPath("extruded-solid_front_right_bottom.png").string(), image_front_right_bottom);
 	buw::storeImage(testPath("extruded-solid_top_left_front.png").string(), image_top_left_front);
@@ -192,7 +173,7 @@ TEST_F(ExtrudedSolidTest, VertexViews)
 	buw::storeImage(testPath("extruded-solid_top_right_back.png").string(), image_top_right_back);
 	buw::storeImage(testPath("extruded-solid_back_left_bottom.png").string(), image_back_left_bottom);
 	buw::storeImage(testPath("extruded-solid_right_bottom_back.png").string(), image_right_bottom_back);
-
+	*/
 
 	// Assert
 	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
