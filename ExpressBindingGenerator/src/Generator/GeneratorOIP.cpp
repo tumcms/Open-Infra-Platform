@@ -1253,6 +1253,7 @@ void GeneratorOIP::generateREFACTORED( const Schema & schema)
 	std::string expressDirectory = earlyBindingDirectory + "EXPRESS/";
 	sourceDirectory_ = rootDirectory_ + "/src";
 	entityPath_ = sourceDirectory_ + "/entity";
+	selectPath_ = sourceDirectory_ + "/select";
 	typePath_ = sourceDirectory_ + "/type";
 	readerPath_ = sourceDirectory_ + "/reader";
 	
@@ -1275,6 +1276,10 @@ void GeneratorOIP::generateREFACTORED( const Schema & schema)
 
 	if (!fs::exists(entityPath_)) {
 		fs::create_directory(entityPath_);
+	}
+
+	if (!fs::exists(selectPath_)) {
+		fs::create_directory(selectPath_);
 	}
 
 	if (!fs::exists(typePath_)) {
@@ -1410,7 +1415,10 @@ void GeneratorOIP::createTypesHeaderFileREFACTORED(const Schema & schema)
 	for (size_t i = 0; i < schema.getTypeCount(); i++) {
 		auto type = schema.getTypeByIndex(i);
 
-		out << "#include \"type/" << type.getName() << ".h\"" << std::endl;
+		if( type.isSelectType() )
+			out << "#include \"select/" << type.getName() << ".h\"" << std::endl;
+		else
+			out << "#include \"type/" << type.getName() << ".h\"" << std::endl;
 	}
 
 	writeLine(out, "#endif // end define " + define);
@@ -1751,7 +1759,7 @@ void GeneratorOIP::generateTypeHeaderFile(const Schema &schema, const Type &type
 void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const Type & type) const
 {
 	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << typePath_ << "/" << type.getName() << ".h";
+	ssHeaderFilename << (type.isSelectType() ? selectPath_ : typePath_) << "/" << type.getName() << ".h";
 	//std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssHeaderFilename.str());
 
@@ -1782,7 +1790,10 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 		//writeInclude(out, "../EarlyBinding/src/EXPRESS/EXPRESSOptional.h");
 
 		if (schema.hasType(type.getContainerType())) {
-			writeInclude(out, type.getContainerType() + ".h");
+			if( schema.isSelectType(type.getContainerType()) )
+				writeInclude(out, "../select/" + type.getContainerType() + ".h");
+			else
+				writeInclude(out, "../type/" + type.getContainerType() + ".h");
 		}
 		//else if (schema.hasEntity(type.getContainerType())) {
 		//	writeInclude(out, "../entity/" + type.getContainerType() + ".h");
@@ -1818,7 +1829,10 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 		// Disabled for minimal working example
 		if (!types.empty()) {
 			for (auto val : types) {
-				writeInclude(out, val + ".h");
+				if(schema.isSelectType(val))
+					writeInclude(out, "../select/" + val + ".h");
+				else
+					writeInclude(out, "../type/" + val + ".h");
 			}
 			linebreak(out);
 		}
@@ -2249,7 +2263,7 @@ void GeneratorOIP::generateTypeSourceFile(const Schema &schema, const Type &type
 void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const Type & type) const
 {
 	std::stringstream ssSourceFilename;
-	ssSourceFilename << typePath_ << "/" << type.getName() << ".cpp";
+	ssSourceFilename << (type.isSelectType() ? selectPath_ : typePath_) << "/" << type.getName() << ".cpp";
 	//std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssSourceFilename.str());
 
@@ -2291,7 +2305,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 		
 		if (!types.empty()) {
 			for (auto val : types) {
-				if (schema.getTypeByName(val).isSelectType()) {
+				if (schema.isSelectType(val)) {
 					resolveSelectTypeIncludes(schema, schema.getTypeByName(val), entities, resolvedClasses);
 				}
 			}			
@@ -2314,7 +2328,10 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 
 		if (!types.empty()) {
 			for (auto val : types) {
-				writeInclude(out, val + ".h");
+				if (schema.isSelectType(val))
+					writeInclude(out, "../select/" + val + ".h");
+				else
+					writeInclude(out, "../type/" + val + ".h");
 			}
 			linebreak(out);
 		}
@@ -3031,6 +3048,9 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 		<< "_entity_Source         "
 		"src/entity/*.*)" << std::endl;
 	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_select_Source         "
+		"src/select/*.*)" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
 		<< "_type_Source         "
 		"src/type/*.*)" << std::endl;
 	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
@@ -3041,6 +3061,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_Source} PROPERTY GENERATED ON)" << std::endl;
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_entity_Source} PROPERTY GENERATED ON)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_select_Source} PROPERTY GENERATED ON)" << std::endl;
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_type_Source} PROPERTY GENERATED ON)" << std::endl;
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_reader_Source} PROPERTY GENERATED ON)" << std::endl;
 
@@ -3060,9 +3081,13 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 		"${OpenInfraPlatform_"
 		<< schema.getName() << "_entity_Source})" << std::endl;
 	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-		<< "\\\\type          FILES "
+		<< "\\\\select          FILES "
 		"${OpenInfraPlatform_"
-		<< schema.getName() << "_type_Source})" << std::endl;
+		<< schema.getName() << "_select_Source})" << std::endl;
+	//file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+	//	<< "\\\\type          FILES "
+	//	"${OpenInfraPlatform_"
+	//	<< schema.getName() << "_type_Source})" << std::endl;
 	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
 		<< "\\\\reader        FILES "
 		"${OpenInfraPlatform_"
@@ -3078,16 +3103,18 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "\t"
 		<< "${OpenInfraPlatform_" << schema.getName() << "_entity_Source}" << std::endl;
 	file << "\t"
-		<< "${OpenInfraPlatform_" << schema.getName() << "_type_Source}" << std::endl;	
+		<< "${OpenInfraPlatform_" << schema.getName() << "_select_Source}" << std::endl;
+	//file << "\t"
+	//	<< "${OpenInfraPlatform_" << schema.getName() << "_type_Source}" << std::endl;
 	file << "\t"
 		<< "${OpenInfraPlatform_" << schema.getName() << "_reader_Source}" << std::endl;
 	file << ")" << std::endl;
 
 	file << "" << std::endl;
 
-	//file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + " OpenInfraPlatform.EXPRESS)" << std::endl;
-	file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
-
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + " OpenInfraPlatform." + schema.getName() + ".Types)" << std::endl;
+  file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
+	
 	file << "" << std::endl;
 
 	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + " INTERFACE src)" << std::endl;
@@ -3100,9 +3127,46 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "\t" << "FILES_MATCHING PATTERN \"*.h\"" << std::endl;
 	file << ")" << std::endl;
 
+	file << "" << std::endl;
+	file << "" << std::endl;
+
+	file << "project(OpenInfraPlatform." << schema.getName() << ".Types CXX)" << std::endl;
+	file << "" << std::endl;
+	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;
+	file << "" << std::endl;
+	file << "include_directories(" << std::endl;
+	file << "  src" << std::endl;
+	file << "  ${CMAKE_SOURCE_DIR}/EarlyBinding/src" << std::endl;
+	file << "  ${visit_struct_INCLUDE_DIR}" << std::endl;
+	file << "  ${Boost_INCLUDE_DIR}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "\\\\type          FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_type_Source})" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Types STATIC" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_" << schema.getName() << "_type_Source}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Types INTERFACE src)" << std::endl;
+  file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
+	
+	file << "" << std::endl;
+
 	file.close();
 
-	
 	/*
 	file.open(outputDirectory_ + "/" + name);
 
@@ -3549,7 +3613,10 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 	
 	if (!typeAttributes.empty()) {
 		for (auto type : typeAttributes) {
-			writeInclude(out, "../type/" + type + ".h");
+			if(schema.isSelectType(type))
+				writeInclude(out, "../select/" + type + ".h");
+			else
+				writeInclude(out, "../type/" + type + ".h");
 		}
 		linebreak(out);
 	}
