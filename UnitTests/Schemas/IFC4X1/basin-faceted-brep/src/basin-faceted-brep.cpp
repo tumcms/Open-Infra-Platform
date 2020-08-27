@@ -43,7 +43,6 @@ protected:
 
 		_background = renderer->captureImage();
 		renderer->setModel(model);
-
 	}
 
 	virtual void TearDown() override {
@@ -59,11 +58,10 @@ protected:
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
 	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
-
 };
 
 TEST_F(BasinFacetedBrep, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(30));
+	EXPECT_THAT(express_model->entities.size(), Eq(691));
 }
 
 TEST_F(BasinFacetedBrep, ImageIsSaved)
@@ -72,21 +70,21 @@ TEST_F(BasinFacetedBrep, ImageIsSaved)
 	buw::Image4b image = renderer->captureImage();
 
 	// Act
-	buw::storeImage(testPath("extruded-solid.png").string(), image);
+	buw::storeImage(testPath("basin-faceted-brep.png").string(), image);
 
 	// Assert
-	EXPECT_NO_THROW(buw::loadImage4b(testPath("extruded-solid.png").string()));
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("basin-faceted-brep.png").string()));
 }
 
 TEST_F(BasinFacetedBrep, PlaneSurfaceViews)
 {
 	// Arrange
-	const auto expected_front = buw::loadImage4b(dataPath("extruded-solid_front.png").string());
-	const auto expected_top = buw::loadImage4b(dataPath("extruded-solid_top.png").string());
-	const auto expected_bottom = buw::loadImage4b(dataPath("extruded-solid_bottom.png").string());
-	const auto expected_left = buw::loadImage4b(dataPath("extruded-solid_left.png").string());
-	const auto expected_right = buw::loadImage4b(dataPath("extruded-solid_right.png").string());
-	const auto expected_back = buw::loadImage4b(dataPath("extruded-solid_back.png").string());
+	const auto expected_front = buw::loadImage4b(dataPath("basin-faceted-brep_front.png").string());
+	const auto expected_top = buw::loadImage4b(dataPath("basin-faceted-brep_top.png").string());
+	const auto expected_bottom = buw::loadImage4b(dataPath("basin-faceted-brep_bottom.png").string());
+	const auto expected_left = buw::loadImage4b(dataPath("basin-faceted-brep_left.png").string());
+	const auto expected_right = buw::loadImage4b(dataPath("basin-faceted-brep_right.png").string());
+	const auto expected_back = buw::loadImage4b(dataPath("basin-faceted-brep_back.png").string());
 
 	// Act (Front)
 	renderer->setViewDirection(buw::eViewDirection::Front);
@@ -109,12 +107,12 @@ TEST_F(BasinFacetedBrep, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("extruded-solid_front.png").string(), image_front);
-	buw::storeImage(testPath("extruded-solid_top.png").string(), image_top);
-	buw::storeImage(testPath("extruded-solid_bottom.png").string(), image_bottom);
-	buw::storeImage(testPath("extruded-solid_left.png").string(), image_left);
-	buw::storeImage(testPath("extruded-solid_right.png").string(), image_right);
-	buw::storeImage(testPath("extruded-solid_back.png").string(), image_back);
+	buw::storeImage(testPath("basin-faceted-brep_front.png").string(), image_front);
+	buw::storeImage(testPath("basin-faceted-brep_top.png").string(), image_top);
+	buw::storeImage(testPath("basin-faceted-brep_bottom.png").string(), image_bottom);
+	buw::storeImage(testPath("basin-faceted-brep_left.png").string(), image_left);
+	buw::storeImage(testPath("basin-faceted-brep_right.png").string(), image_right);
+	buw::storeImage(testPath("basin-faceted-brep_back.png").string(), image_back);
 	*/
 
 	// Assert
@@ -129,14 +127,14 @@ TEST_F(BasinFacetedBrep, PlaneSurfaceViews)
 TEST_F(BasinFacetedBrep, VertexViews)
 {
 	// Arrange
-	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("extruded-solid_front_left_bottom.png").string());
-	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("extruded-solid_front_right_bottom.png").string());
-	const auto expected_top_left_front = buw::loadImage4b(dataPath("extruded-solid_top_left_front.png").string());
-	const auto expected_top_front_right = buw::loadImage4b(dataPath("extruded-solid_top_front_right.png").string());
-	const auto expected_top_left_back = buw::loadImage4b(dataPath("extruded-solid_top_left_back.png").string());
-	const auto expected_top_right_back = buw::loadImage4b(dataPath("extruded-solid_top_right_back.png").string());
-	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("extruded-solid_back_left_bottom.png").string());
-	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("extruded-solid_right_bottom_back.png").string());
+	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("basin-faceted-brep_front_left_bottom.png").string());
+	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("basin-faceted-brep_front_right_bottom.png").string());
+	const auto expected_top_left_front = buw::loadImage4b(dataPath("basin-faceted-brep_top_left_front.png").string());
+	const auto expected_top_front_right = buw::loadImage4b(dataPath("basin-faceted-brep_top_front_right.png").string());
+	const auto expected_top_left_back = buw::loadImage4b(dataPath("basin-faceted-brep_top_left_back.png").string());
+	const auto expected_top_right_back = buw::loadImage4b(dataPath("basin-faceted-brep_top_right_back.png").string());
+	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("basin-faceted-brep_back_left_bottom.png").string());
+	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("basin-faceted-brep_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
 	renderer->setViewDirection(buw::eViewDirection::FrontLeftBottom);
@@ -165,14 +163,14 @@ TEST_F(BasinFacetedBrep, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("extruded-solid_front_left_bottom.png").string(), image_front_left_bottom);
-	buw::storeImage(testPath("extruded-solid_front_right_bottom.png").string(), image_front_right_bottom);
-	buw::storeImage(testPath("extruded-solid_top_left_front.png").string(), image_top_left_front);
-	buw::storeImage(testPath("extruded-solid_top_front_right.png").string(), image_top_front_right);
-	buw::storeImage(testPath("extruded-solid_top_left_back.png").string(), image_top_left_back);
-	buw::storeImage(testPath("extruded-solid_top_right_back.png").string(), image_top_right_back);
-	buw::storeImage(testPath("extruded-solid_back_left_bottom.png").string(), image_back_left_bottom);
-	buw::storeImage(testPath("extruded-solid_right_bottom_back.png").string(), image_right_bottom_back);
+	buw::storeImage(testPath("basin-faceted-brep_front_left_bottom.png").string(), image_front_left_bottom);
+	buw::storeImage(testPath("basin-faceted-brep_front_right_bottom.png").string(), image_front_right_bottom);
+	buw::storeImage(testPath("basin-faceted-brep_top_left_front.png").string(), image_top_left_front);
+	buw::storeImage(testPath("basin-faceted-brep_top_front_right.png").string(), image_top_front_right);
+	buw::storeImage(testPath("basin-faceted-brep_top_left_back.png").string(), image_top_left_back);
+	buw::storeImage(testPath("basin-faceted-brep_top_right_back.png").string(), image_top_right_back);
+	buw::storeImage(testPath("basin-faceted-brep_back_left_bottom.png").string(), image_back_left_bottom);
+	buw::storeImage(testPath("basin-faceted-brep_right_bottom_back.png").string(), image_right_bottom_back);
 	*/
 
 	// Assert
