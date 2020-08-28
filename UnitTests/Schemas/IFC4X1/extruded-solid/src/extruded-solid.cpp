@@ -64,7 +64,12 @@ class ExtrudedSolidTest : public VisualTest {
 TEST_F(ExtrudedSolidTest, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(30));
 }
-
+//TODO:
+/*
+TEST_F(ExtrudedSolidTest, IFCHaveAnEssentialEntity) {
+	
+}
+*/
 TEST_F(ExtrudedSolidTest, ImageIsSaved)
 {
 	// Arrange

@@ -64,7 +64,12 @@ class SurfaceModelTest : public VisualTest {
 TEST_F(SurfaceModelTest, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(55));
 }
+// TODO:
+/*
+TEST_F(SurfaceModelTest, IFCHaveAnEssentialEntity) {
 
+}
+*/
 TEST_F(SurfaceModelTest, ImageIsSaved)
 {
 	// Arrange
