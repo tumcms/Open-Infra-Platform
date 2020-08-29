@@ -26,28 +26,16 @@ namespace OpenInfraPlatform {
 
 			// IFC 4x1 specifics
 		#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+			template <>
             EXPRESSReference<emt::IFC4X1EntityTypes::IfcBoundedCurve> PlacementConverterT<emt::IFC4X1EntityTypes>::getCurveOfPlacement(
                 const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linearPlacement
-			) const
-            {
-				// check input
-				if (linearPlacement.expired())
-					throw oip::ReferenceExpiredException(linearPlacement);
-				// check if correct type
-				if (!linearPlacement->PlacementRelTo.isOfType<emt::IFC4X1EntityTypes::IfcBoundedCurve>())
-					throw oip::InconsistentModellingException(linearPlacement, "Only a IfcBoundedCurve can be used as a reference curve.");
-				// return the curve
-                return linearPlacement->PlacementRelTo.as<emt::IFC4X1EntityTypes::IfcBoundedCurve>();
-            };
+			) const;
 			
-            double PlacementConverterT<emt::IFC4X1EntityTypes>::convertRelativePlacement(
+			template <>
+			double PlacementConverterT<emt::IFC4X1EntityTypes>::convertRelativePlacement(
 				const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linear_placement,
 				std::vector<EXPRESSReference<emt::IFC4X1EntityTypes::IfcObjectPlacement>>& alreadyApplied
-			) const
-            {
-				// no relative placement in IFC4x1
-                return 0.;
-            }
+			) const;
 		#endif
 
             /*! \brief Gets the \c IfcCurve attribute from \c IfcLinearPlacement.

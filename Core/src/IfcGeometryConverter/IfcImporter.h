@@ -289,8 +289,9 @@ namespace OpenInfraPlatform
 			};
 		}
 	}
+}
+
+EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(IfcImporterT)
 
 #endif
-
-}
 
