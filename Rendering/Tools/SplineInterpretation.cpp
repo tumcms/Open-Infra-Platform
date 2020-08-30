@@ -17,6 +17,11 @@
 
 #include "SplineInterpretation.h"
 
+#include <fstream>
+#include <sstream>
+#include <QFileDialog>
+#include <QMessageBox>
+
 #include "IfcGeometryConverter/SplineUtilities.h"
 
 // CONSTRUCTOR
@@ -32,17 +37,24 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	// std::vector<carve::geom::vector<3>> controlPoints = ...
 
 	// TEMPORARY constant test data
-	std::vector<carve::geom::vector<3>> controlPoints;
-	controlPoints.push_back(carve::geom::VECTOR(0., 2., 0.));
-	controlPoints.push_back(carve::geom::VECTOR(1., 5., 0.));
-	controlPoints.push_back(carve::geom::VECTOR(3., 4., 0.));
-	controlPoints.push_back(carve::geom::VECTOR(3., 1., 0.));
-	controlPoints.push_back(carve::geom::VECTOR(5., 0., 0.));
-	controlPoints.push_back(carve::geom::VECTOR(7., 1., 0.));
-	controlPoints.push_back(carve::geom::VECTOR(8., 4., 0.));
-	controlPoints.push_back(carve::geom::VECTOR(10., 4., 0.));
+	std::vector<carve::geom::vector<3>> controlPointsToSave;
+	controlPointsToSave.push_back(carve::geom::VECTOR(0., 2., 0));
+	controlPointsToSave.push_back(carve::geom::VECTOR(1., 5., 0.));
+	controlPointsToSave.push_back(carve::geom::VECTOR(3., 4., 0.));
+	controlPointsToSave.push_back(carve::geom::VECTOR(3., 1., 0.));
+	controlPointsToSave.push_back(carve::geom::VECTOR(5., 0., 0.));
+	controlPointsToSave.push_back(carve::geom::VECTOR(7., 1., 0.));
+	controlPointsToSave.push_back(carve::geom::VECTOR(8., 4., 0.));
+	controlPointsToSave.push_back(carve::geom::VECTOR(10., 4., 0.));
+
+	// TEMPORARY call of saveControlPointsIntoFile and loadControlPointsFromFile
+	saveControlPointsIntoFile(controlPointsToSave);
+	const std::vector<carve::geom::vector<3>> controlPoints = loadControlPointsFromFile();
+	// ToDo: exception handling if controlPoints is an empty vector, the functions has to be cancelled
+
+	// Prepair properties
 	const int order = 4;
-	const std::vector<double> knotArray = obtainKnotArrayOpenUniform(controlPoints.size(), order);
+	const std::vector<double> knotArray = obtainKnotArrayOpenUniform(controlPointsToSave.size(), order);
 
 	// Compute curvature
 	Core::IfcGeometryConverter::SplineUtilities splineUtilities;
@@ -56,6 +68,117 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 }
 
 // PRIVATE FUNCTIONS
+void OpenInfraPlatform::UserInterface::SplineInterpretation::saveControlPointsIntoFile(const std::vector<carve::geom::vector<3>>& points) const throw(...)
+{
+	// get number of files, which are in the default folder of sketches
+	const QString path = "testdata/StrokeToAlignment/";
+	QDir dir(path);
+	dir.setFilter(QDir::Files | QDir::NoDotAndDotDot);
+	const int numberOfFiles = dir.count();
+
+	// set file name (with path) of the new file:
+	//   the part
+	//   std::setw(3) << std::setfill('0') << (numberOfFiles + 1)
+	//   converts the number of files into a string with 3 digits, this must be done in a std::stringstream
+	std::stringstream ssFilename;
+	ssFilename << path.toStdString() << std::setw(3) << std::setfill('0') << (numberOfFiles + 1) << ".sketch";
+
+	// initialise the file stream to write
+	std::ofstream file(ssFilename.str());
+	
+	// check whether file generation was successfull
+	if (file.is_open())
+	{
+		// write first two lines
+		file << points.size() << " = Number of vertices; the following lines can be pasted into MATLAB:\n" 
+			 << "[\n";
+
+		// for each point add line with coordinates
+		for (size_t i = 0; i < points.size(); i++)
+		{
+			file << points[i].x << " " << points[i].y << " " << points[i].z;
+
+			// set end of line, depends on the last element of 'points'
+			if (i == points.size() - 1)
+				// last line (all points are stored)
+				file << " ];";
+			else
+				// add new line
+				file << " ;\n";
+		}
+
+		file.close();
+	}
+	else
+	{
+		QMessageBox::information(nullptr, "Convert Stroke to Alignment", 
+			"The save process failed. Maybe the directory [build folde]/testdata/StrokeToAlignment/ doesn't exist or is protected.\n"
+			"If you are a developer, build the project 'Copy/CopyOpenInfraPlatformUIResources' in Visual Studio", QMessageBox::Ok);
+	}
+}
+
+std::vector<carve::geom::vector<3>> OpenInfraPlatform::UserInterface::SplineInterpretation::loadControlPointsFromFile() const throw(...)
+{
+	// from a file open dialog, get file name (including path) which should be opened
+	const std::string fileName = QFileDialog::getOpenFileName(nullptr, // parent Widget
+		"Open Set Of Sketch Points", // caption / titel
+		"testdata/StrokeToAlignment/", // directory
+		"Sketch Points (*.sketch)" // filter of file type
+		).toStdString(); // convert QString (from getOpenFileName) to std::string
+
+	// initialize a reading file stream with the file name
+	std::ifstream file(fileName);
+
+	// declare target vector
+	std::vector<carve::geom::vector<3>> points;
+
+	// check whether file opening was successfull;
+	//   if it was NOT, nothing happens and an emptiy std::vector is the return value
+	if (file.is_open())
+	{
+		// ToDo: exception handling if parsing fails (e.g. because invalid information inside the file)
+
+		// get first line into a stringstream
+		std::string lineString;
+		std::getline(file, lineString);
+		std::stringstream line(lineString);
+
+		// number of Points is first element in first line
+		size_t numPoints;
+		line >> numPoints;
+		// prepare memory in target vector
+		points.reserve(numPoints);
+
+		// skip second line
+		std::getline(file, lineString);
+
+		// declare temporary  variables
+		std::string dStr;
+		double x, y, z;
+		// read all lines with points
+		while (getline(file, lineString))
+		{
+			std::stringstream line(lineString);
+
+			// obtain x, y and z from line
+			line >> dStr;
+			x = std::stof(dStr, nullptr);
+
+			line >> dStr;
+			y = std::stof(dStr, nullptr);
+
+			line >> dStr;
+			z = std::stof(dStr, nullptr);
+
+			points.push_back(carve::geom::VECTOR(x, y, z));
+		}
+
+		file.close();
+	}
+
+	return points;
+}
+
 std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obtainKnotArrayOpenUniform(const size_t nPoints, const int order) const throw(...)
 {
 	std::vector<double> knotArray;

@@ -54,6 +54,28 @@ namespace OpenInfraPlatform
 			double accuracy = carve::EPSILON;
 
 			// FUNCTIONS
+			/*! \brief Saves the control points or points from sketch input into a file.
+			 *
+			 * The file will be stored in the directory \c [build folder]/testdata/StrokeToAlignment/. 
+			 * The file name will be obtained automatically; it's a consecutive number in dependence on the number of existing files. 
+			 * After saving, the file name can be changed manually (e.g. with the usual explorer) in the directory.\n
+			 * With every text editor, the file can be opened like a \c .txt file. 
+			 * The saved information from line 2 to the end has the syntax, which can be pasted as a matrix into a MATLAB.
+			 *
+			 * \param [in]	controlPoints	The control points or points from sketch input, which are in a \c std::vector<carve::geom::vector<3>>.
+			 */
+			void saveControlPointsIntoFile(const std::vector<carve::geom::vector<3>>& points) const throw(...);
+
+			/*! \brief Loads the control points or points from a previous sketch input from a file.
+			 *
+			 * By default, the save file should be in the directory \c [build folder]/testdata/StrokeToAlignment/.
+			 * However, the user can select another directory as well. The selected file must have the type \c .sketch,
+			 * and the syntax which is provided by the function \c saveControlPointsIntoFile.
+			 *
+			 * \return	A vector of the control points.
+			 */
+			std::vector<carve::geom::vector<3>> loadControlPointsFromFile() const throw(...);
+
 			/*! \brief Generates the open uniform knot array of a B-Spline.
 			 *
 			 * The elements \c x_i of an open uniform knot array is defined by: \n
