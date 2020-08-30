@@ -58,10 +58,10 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 
 	// Compute curvature
 	Core::IfcGeometryConverter::SplineUtilities splineUtilities;
-	std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
+	const std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
 
 	// Test B-Spline
-	std::vector<carve::geom::vector<3>> bspline = splineUtilities.computeBSplineCurveWithKnots(order, knotArray, controlPoints, 10*knotArray.size(), accuracy);
+	const std::vector<carve::geom::vector<3>> bspline = splineUtilities.computeBSplineCurveWithKnots(order, knotArray, controlPoints, 10*knotArray.size(), accuracy);
 
 	//debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
 	debugFunction_printVectorOfPointsInConsolWindow(bspline);
