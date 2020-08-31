@@ -165,9 +165,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 			showError(ex.what(), "IFC version not known to OIP.");
 			return;
 		}
-		tempIfcGeometryModel_ = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
-
-
+		
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC2X3) {
 #ifdef OIP_MODULE_EARLYBINDING_IFC2X3
 			ParseExpressAndGeometryModel<emt::IFC2X3EntityTypes, OpenInfraPlatform::IFC2X3::IFC2X3Reader>(filename);
