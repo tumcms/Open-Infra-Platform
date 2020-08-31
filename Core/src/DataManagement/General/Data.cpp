@@ -228,7 +228,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::showError(QString errorMessa
 void OpenInfraPlatform::Core::DataManagement::Data::IFCVersionNotCompiled( std::string schema )
 {
 	QString errorTitle = "IFC version not compiled";
-	QString errorMessage = "Please compile the OIP with support for " + QString(schema[0]);
+	QString errorMessage = "Please compile the OIP with support for " + QString(schema.c_str());
 	showError(errorMessage, errorTitle);
 }
 
