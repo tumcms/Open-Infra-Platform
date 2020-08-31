@@ -188,7 +188,7 @@ namespace OpenInfraPlatform
 				void importJob(const std::string& filename);
 
 				void showError(QString errorMessage, QString errorTitle);
-				void IFCVersionNotCompiled(std::string schema);
+				void IFCVersionNotCompiled(const std::string& schema);
 
 				template <typename IfcEntityTypesT, typename IfcReader>
 				void ParseExpressAndGeometryModel(const std::string &filename) {

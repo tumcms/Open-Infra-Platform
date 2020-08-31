@@ -155,9 +155,10 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 	{
 		using OpenInfraPlatform::Core::IfcGeometryConverter::IfcPeekStepReader;
 		IfcPeekStepReader::IfcSchema ifcSchema;
+		std::string strSchema;
 		try
 		{
-			ifcSchema = IfcPeekStepReader::parseIfcHeader(filename);
+			std::tie(strSchema,ifcSchema) = IfcPeekStepReader::parseIfcHeader(filename);
 		}
 		catch (oip::IfcPeekReaderException ex)
 		{
@@ -199,9 +200,12 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 			ParseExpressAndGeometryModel<emt::IFC4X3_RC1EntityTypes, OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader>(filename);
 			return;
 #else // OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-			IFCVersionNotCompiled("IFC4X13_RC1");
+			IFCVersionNotCompiled("IFC4X3_RC1");
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 		}
+
+		IFCVersionNotCompiled(strSchema);
+		return;
 	}	
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
@@ -225,7 +229,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::showError(QString errorMessa
 		QMessageBox(QMessageBox::Icon::Critical, errorTitle, errorMessage, QMessageBox::StandardButton::Ok, nullptr).exec();
 }
 
-void OpenInfraPlatform::Core::DataManagement::Data::IFCVersionNotCompiled( std::string schema )
+void OpenInfraPlatform::Core::DataManagement::Data::IFCVersionNotCompiled( const std::string& schema )
 {
 	QString errorTitle = "IFC version not compiled";
 	QString errorMessage = "Please compile the OIP with support for " + QString(schema.c_str());
