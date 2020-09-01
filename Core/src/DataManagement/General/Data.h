@@ -188,12 +188,13 @@ namespace OpenInfraPlatform
 				void importJob(const std::string& filename);
 
 				void showError(QString errorMessage, QString errorTitle);
-				void IFCVersionNotCompiled(std::string schema);
+				void IFCVersionNotCompiled(const std::string& schema);
 
 				template <typename IfcEntityTypesT, typename IfcReader>
 				void ParseExpressAndGeometryModel(const std::string &filename) {
 					expressModel_ = IfcReader::FromFile(filename);
 					auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>();
+					tempIfcGeometryModel_ = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
 					if (importer.collectGeometryData(expressModel_)) {
 						auto converter = IfcGeometryConverter::ConverterBuwT<IfcEntityTypesT>();
 						if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
