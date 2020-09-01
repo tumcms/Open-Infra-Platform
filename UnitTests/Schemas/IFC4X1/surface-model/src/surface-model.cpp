@@ -66,27 +66,10 @@ class SurfaceModelTest : public VisualTest {
 TEST_F(SurfaceModelTest, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(55));
 }
-// TODO:
 
 TEST_F(SurfaceModelTest, IFCHasAnEssentialEntity) {
-	bool EntityExists = false;
-	std::ifstream file(filename.string(), std::ifstream::in);
-	std::string lineInFile = "";
-	std::vector<std::string> lines;
-	while (!getline(file, lineInFile).eof()) lines.push_back(lineInFile);
-
-	// begin for read file
-	for (long i = 0; i < lines.size(); i++) {
-		auto line = lines[i];
-		if (line[0] == '#') {
-			const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);
-			if (entityType == " IFCFACEBASEDSURFACEMODEL") {
-				EntityExists = true;
-			}
-		}
-
-	}
-	EXPECT_EQ(EntityExists, true);
+	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname()== "IFCFACEBASEDSURFACEMODEL"; });
+	EXPECT_NE(result, express_model->entities.end());
 }
 
 TEST_F(SurfaceModelTest, ImageIsSaved)

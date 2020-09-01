@@ -64,12 +64,12 @@ class ExtrudedSolidTest : public VisualTest {
 TEST_F(ExtrudedSolidTest, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(30));
 }
-//TODO:
-/*
-TEST_F(ExtrudedSolidTest, IFCHaveAnEssentialEntity) {
-	
+
+TEST_F(ExtrudedSolidTest, IFCHasAnEssentialEntity) {
+	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname()== "IFCEXTRUDEDAREASOLID"; });
+	EXPECT_NE(result, express_model->entities.end());
 }
-*/
+
 TEST_F(ExtrudedSolidTest, ImageIsSaved)
 {
 	// Arrange
