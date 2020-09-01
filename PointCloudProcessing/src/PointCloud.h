@@ -31,6 +31,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <FileIOFilter.h>
 #include <tuple>
 
+#include <IModel.h>
+
 class CCLib::GenericProgressCallback;
 
 namespace OpenInfraPlatform {
@@ -38,7 +40,7 @@ namespace OpenInfraPlatform {
 
 		class PointCloudSection;
 
-		class BLUEINFRASTRUCTURE_API PointCloud : public ccPointCloud {
+		class BLUEINFRASTRUCTURE_API PointCloud : public ccPointCloud, public oip::IModel {
 		public:
 			static const QStringList GetSupportedExtensions();
 
@@ -165,6 +167,18 @@ namespace OpenInfraPlatform {
 					return Eigen::Matrix<double, 3, N>();
 				}
 			}			
+		
+			// ---------------------------------------------------------------------------------------------------------------------------------------------------
+			// Interface IModel implementation
+			// ---------------------------------------------------------------------------------------------------------------------------------------------------
+
+			virtual oip::BBox getExtent() override;
+
+			virtual std::string getEPSGcode() const override;
+			virtual void transformAllPoints(const std::string& newEPSGcode, std::function<std::tuple<double, double, double> const(double, double, double)>& transf) override;
+
+			// ---------------------------------------------------------------------------------------------------------------------------------------------------
+
 		private:
 			void computeMainAxis();
 

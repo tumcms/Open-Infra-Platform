@@ -3332,3 +3332,28 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeMainAxis() {
 	mainAxis_ = CCVector3(getEigenvectors<1>().cast<float>().normalized().data());
 	BLUE_LOG(trace) << "Finished computing main axis.";
 }
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// Interface IModel implementation
+oip::BBox OpenInfraPlatform::PointCloudProcessing::PointCloud::getExtent()
+{
+	CCVector3 minPos, maxPos;
+	getBoundingBox(minPos, maxPos);
+	oip::BBox bb;
+	bb.update(minPos.x, minPos.y, minPos.z);
+	bb.update(maxPos.x, maxPos.y, maxPos.z);
+	return bb;
+}
+
+std::string OpenInfraPlatform::PointCloudProcessing::PointCloud::getEPSGcode() const
+{
+	return "";
+}
+
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::transformAllPoints(
+	const std::string& newEPSGcode,
+	std::function<std::tuple<double, double, double> const(double, double, double)>& transf
+)
+{
+	throw std::exception("Not implemented: PointCloud::transformAllPoints");
+}
