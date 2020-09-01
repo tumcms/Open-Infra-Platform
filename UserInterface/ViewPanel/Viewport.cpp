@@ -780,7 +780,7 @@ void Viewport::onChange() {
 void Viewport::onChange(ChangeFlag changeFlag) 
 {
 	// the extents
-	oip::BoundingBox bb;
+	oip::BBox bb;
 
     auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
  //   auto dem = data.getDigitalElevationModel();

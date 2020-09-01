@@ -29,6 +29,7 @@
 #include <BlueFramework/Rasterizer/vertex.h>
 #include "CarveHeaders.h"
 #include "GeometryInputData.h"
+#include <BBox.h>
 
 #include "namespace.h"
 
@@ -43,69 +44,6 @@ namespace OpenInfraPlatform
 	namespace Core 
 	{
 		namespace IfcGeometryConverter {
-			/*!
-			\brief Internal implementation of a bounding box.
-
-			This is a wrapper around the carve's aabb (axis-aligned bounding box).
-			*/
-			struct BoundingBox : public carve::geom::aabb<3> {
-				using base = carve::geom::aabb<3>;
-			public:
-				//! constructor
-				BoundingBox() { reset(); }
-				/*!
-				 * \brief updates the bounding box extent
-				 *
-				 * \param[in] x the x-coordinate of the point
-				 * \param[in] y the y-coordinate of the point
-				 * \param[in] z the z-coordinate of the point
-				 */
-				void update(const float x, const float y, const float z)
-				{
-					if (isEmpty())
-					{
-						base::fit( carve::geom::VECTOR(x, y, z));
-						isFirst = false;
-					}
-					else
-						update( base( carve::geom::VECTOR( x, y, z ), base::mid() ) );
-				}
-				/*!
-				 * \brief updates the bounding box extent
-				 *
-				 * \param[in] other the other bounding box to update self with
-				 */
-				void update(const base& other)
-				{
-					if (other.isEmpty())
-						return;
-
-					if (isEmpty())
-					{
-						base::operator=( other );
-						isFirst = false;
-					}
-					else
-						base::unionAABB( other );
-				}
-				//! resets the bounding box to zero
-				void reset() { base::empty(); isFirst = true; }
-				//! is the bounding box empty?
-				bool isEmpty() { return isFirst && base::isEmpty(); }
-				//! returns the min-max extents
-				std::string toString() const {
-					return "min: (" + std::to_string(min().x()) + ", " + std::to_string(min().y()) + ", " + std::to_string(min().z())
-					   + ") max: (" + std::to_string(max().x()) + ", " + std::to_string(max().y()) + ", " + std::to_string(max().z()) + ")";
-				}
-				//! returns the center point of the bounding box
-				buw::Vector3d center() const { return buw::Vector3d( base::mid().x, base::mid().y, base::mid().z); }
-				//! returns the smallest point of the bounding box
-				buw::Vector3d min() const { return buw::Vector3d( base::min().x, base::min().y, base::min().z ); }
-				//! returns the maximal point of the bounding box
-				buw::Vector3d max() const { return buw::Vector3d( base::max().x, base::max().y, base::max().z ); }
-				//! carve::geom::aabb doesn't have a "not set" value, but rather everything is 0,0,0 per default. This variable helps overcome this.
-				bool isFirst = true;
-			};
 
 			struct IndexedMeshDescription {
 				std::vector<uint32_t>		indices;
@@ -122,7 +60,7 @@ namespace OpenInfraPlatform
 			};
 
 			struct IfcGeometryModel {
-				BoundingBox			   bb_;
+				oip::BBox              bb_;
 				IndexedMeshDescription meshDescription_;
 				PolylineDescription    polylineDescription_;
 				bool isEmpty() { return (meshDescription_.isEmpty() && polylineDescription_.isEmpty()); };
@@ -468,7 +406,7 @@ namespace OpenInfraPlatform
 						//#ifdef _DEBUG
 						//				std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Starting thread " << threadID << " to create triangles and polylines" << std::endl;
 						//#endif
-						BoundingBox bb;
+						oip::BBox bb;
 						IndexedMeshDescription threadMeshDesc;
 						PolylineDescription threadLineDesc;
 
@@ -633,7 +571,6 @@ namespace OpenInfraPlatform
 	}
 }
 
-EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(BoundingBox)
 EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(IfcGeometryModel)
 EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(ConverterBuwT)
 

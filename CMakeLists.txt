@@ -272,6 +272,7 @@ include_directories(
 	ExpressBindingGenerator
 	UserInterface
 	Core
+	Base
 )
 
 link_directories(
@@ -337,6 +338,7 @@ if(MODULES_POINT_CLOUD_PROCESSING)
 endif()
 
 
+add_subdirectory(Base)
 add_subdirectory(Core)
 add_subdirectory(Rendering)
 add_subdirectory(UnitTests)
@@ -493,6 +495,7 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT O
 #https://cmake.org/cmake/help/latest/command/target_link_libraries.html
 target_link_libraries( OpenInfraPlatform.UI
 	PUBLIC
+		OpenInfraPlatform.Base
 		OpenInfraPlatform.Core
 		OpenInfraPlatform.Rendering
 		Qt5::WinMain  # New target available via find_package ( Qt5Core )
@@ -671,6 +674,7 @@ set_target_properties(OklabiCopyBinaries								PROPERTIES FOLDER "OpenInfraPlat
 set_target_properties(QSimpleUpdaterCopyBinaries						PROPERTIES FOLDER "OpenInfraPlatform/Copy")
 
 set_target_properties(OpenInfraPlatform.UI								PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.Base							PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.Core							PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.Rendering						PROPERTIES FOLDER "OpenInfraPlatform")
 
