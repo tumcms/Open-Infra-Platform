@@ -21,6 +21,7 @@
 
 #include "..\EarlyBinding\src\EXPRESS\EXPRESSModel.h"
 #include "..\Core\src\IfcGeometryConverter\ConverterBuw.h"
+#include "..\Core\src\IfcGeometryConverter\IfcGeometryModel.h"
 
 #include <BlueFramework/Application/DataManagement/DocumentManager.h>
 #include <BlueFramework/ImageProcessing/color.h>

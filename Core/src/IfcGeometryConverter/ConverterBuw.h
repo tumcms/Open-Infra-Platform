@@ -29,13 +29,13 @@
 #include <BlueFramework/Rasterizer/vertex.h>
 #include "CarveHeaders.h"
 #include "GeometryInputData.h"
+#include "IfcGeometryModel.h"
 #include <BBox.h>
 
 #include "namespace.h"
 
 /***********************************************************************************************/
 
-typedef buw::VertexPosition3Color3Normal3 VertexLayout;
 typedef std::unordered_map<std::string, uint32_t> VertexMapTriangles;
 typedef std::unordered_map<std::string, uint32_t> VertexMapLines;
 
@@ -43,31 +43,10 @@ namespace OpenInfraPlatform
 {
 	namespace Core 
 	{
-		namespace IfcGeometryConverter {
-
-			struct IndexedMeshDescription {
-				std::vector<uint32_t>		indices;
-				std::vector<VertexLayout>	vertices;
-				bool isEmpty() { return (indices.size() == 0 && vertices.size() == 0); };
-				void reset() { indices.clear(); vertices.clear(); }
-			};
-
-			struct PolylineDescription {
-				std::vector<uint32_t>		indices;
-				std::vector<buw::Vector3f>	vertices;
-				bool isEmpty() { return (indices.size() == 0 && vertices.size() == 0); };
-				void reset() { indices.clear(); vertices.clear(); }
-			};
-
-			struct IfcGeometryModel {
-				oip::BBox              bb_;
-				IndexedMeshDescription meshDescription_;
-				PolylineDescription    polylineDescription_;
-				bool isEmpty() { return (meshDescription_.isEmpty() && polylineDescription_.isEmpty()); };
-				void reset() { bb_.reset(); meshDescription_.reset(); polylineDescription_.reset(); }
-			};
-
-
+		namespace IfcGeometryConverter 
+		{
+			
+			
 			class ConverterBuwUtil {
 			public:
 				ConverterBuwUtil() {}
@@ -571,7 +550,6 @@ namespace OpenInfraPlatform
 	}
 }
 
-EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(IfcGeometryModel)
 EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(ConverterBuwT)
 
 #endif
