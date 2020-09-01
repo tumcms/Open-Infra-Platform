@@ -23,14 +23,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "namespace.h"
 #include "PointCloud.h"
 
-#include "ViewPanel/Effects/BoxEffect.h"
+#include "Effects\BoxEffect.h"
 
 #include <buw.Rasterizer.h>
 #include <buw.Engine.h>
 #include <map>
 #include <tuple>
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 class PointCloudEffect : public buw::Effect {
 public:
@@ -124,6 +124,8 @@ private:
 
 };
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
+
+EMBED_RENDERING_INTO_OIP_NAMESPACE(PointCloudEffect)
 
 #endif //end define OpenInfraPlatform_UserInterface_PointCloudEffect_C9932E98_6B4E_4E36_8B8D_5AA32D41AC0F_h

@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "PointCloud.h"
 #include "PointCloudSection.h"
 
-#include "ViewPanel/RenderResources.h"
+#include "Resources/RenderResources.h"
 #include <BlueFramework/Rasterizer/vertex.h>
 #include <BlueFramework/Engine/Mesh/geometryGeneration.h>
 #include <ccColorTypes.h>
@@ -29,7 +29,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <tuple>
 
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 typedef buw::VertexPosition3Color4 VertexTypePointCloud;
 
@@ -456,4 +456,4 @@ void PointCloudEffect::updateSettingsBuffer()
 }
 
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END
