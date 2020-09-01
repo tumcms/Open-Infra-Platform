@@ -194,7 +194,7 @@ namespace OpenInfraPlatform
 				void ParseExpressAndGeometryModel(const std::string &filename) {
 					expressModel_ = IfcReader::FromFile(filename);
 					auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>();
-					auto tempIfcGeometryModel_ = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
+					tempIfcGeometryModel_ = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
 					if (importer.collectGeometryData(expressModel_)) {
 						auto converter = IfcGeometryConverter::ConverterBuwT<IfcEntityTypesT>();
 						if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
