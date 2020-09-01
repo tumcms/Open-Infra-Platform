@@ -155,18 +155,17 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 	{
 		using OpenInfraPlatform::Core::IfcGeometryConverter::IfcPeekStepReader;
 		IfcPeekStepReader::IfcSchema ifcSchema;
+		std::string strSchema;
 		try
 		{
-			ifcSchema = IfcPeekStepReader::parseIfcHeader(filename);
+			std::tie(strSchema,ifcSchema) = IfcPeekStepReader::parseIfcHeader(filename);
 		}
 		catch (oip::IfcPeekReaderException ex)
 		{
 			showError(ex.what(), "IFC version not known to OIP.");
 			return;
 		}
-		tempIfcGeometryModel_ = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
-
-
+		
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC2X3) {
 #ifdef OIP_MODULE_EARLYBINDING_IFC2X3
 			ParseExpressAndGeometryModel<emt::IFC2X3EntityTypes, OpenInfraPlatform::IFC2X3::IFC2X3Reader>(filename);
@@ -199,9 +198,12 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 			ParseExpressAndGeometryModel<emt::IFC4X3_RC1EntityTypes, OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader>(filename);
 			return;
 #else // OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-			IFCVersionNotCompiled("IFC4X13_RC1");
+			IFCVersionNotCompiled("IFC4X3_RC1");
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 		}
+
+		IFCVersionNotCompiled(strSchema);
+		return;
 	}	
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
@@ -225,10 +227,10 @@ void OpenInfraPlatform::Core::DataManagement::Data::showError(QString errorMessa
 		QMessageBox(QMessageBox::Icon::Critical, errorTitle, errorMessage, QMessageBox::StandardButton::Ok, nullptr).exec();
 }
 
-void OpenInfraPlatform::Core::DataManagement::Data::IFCVersionNotCompiled( std::string schema )
+void OpenInfraPlatform::Core::DataManagement::Data::IFCVersionNotCompiled( const std::string& schema )
 {
 	QString errorTitle = "IFC version not compiled";
-	QString errorMessage = "Please compile the OIP with support for " + QString(schema[0]);
+	QString errorMessage = "Please compile the OIP with support for " + QString(schema.c_str());
 	showError(errorMessage, errorTitle);
 }
 
