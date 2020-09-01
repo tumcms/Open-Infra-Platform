@@ -35,8 +35,6 @@ public:
 
     // consumed by the rendering procedures in viewport
     virtual oip::BBox     getExtent() = 0;
-    virtual buw::Vector3d getExtentmin() = 0;
-    virtual buw::Vector3d getExtentmax() = 0;
 
 	#pragma endregion Interface bounding box
 
@@ -45,10 +43,11 @@ public:
     // needed for correct correlation between multiple models
     // also to determine if a transformation would be needed
 	// the function should return empty string if unknown
-    virtual std::string getEPSGcode() = 0;
+    virtual std::string getEPSGcode() const = 0;
 
-
-    virtual void getPoints() = 0;
+	// change the georeferencing coordinate reference system to the newEPSGcode
+	// function takes three coordinate values and returns three transformed coordinates
+    virtual void transformAllPoints(const std::string& newEPSGcode, std::function<std::tuple<double,double,double> const(double,double,double)>& transf) = 0;
 
 	#pragma endregion Interface georeferencing
 
