@@ -31,7 +31,7 @@
 //#include "../UserInterface/ViewPanel/Effects/BillboardEffect.h"
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-#include "ViewPanel/Effects/PointCloudProcessing/PointCloudEffect.h"
+#include "Effects/PointCloudProcessing/PointCloudEffect.h"
 #endif
 
 
@@ -113,11 +113,11 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     cbd0.data = nullptr;
     worldBuffer_ = renderSystem_->createConstantBuffer(cbd0);
 
-	oip::ViewportBuffer buffer = { width(), height() };
+    oip::ViewportBuffer buffer = { width(), height() };
 
-	buw::constantBufferDescription cbd1;
-	cbd1.sizeInBytes = sizeof(oip::ViewportBuffer);
-	cbd1.data = &buffer;
+    buw::constantBufferDescription cbd1;
+    cbd1.sizeInBytes = sizeof(oip::ViewportBuffer);
+    cbd1.data = &buffer;
     viewportBuffer_ = renderSystem_->createConstantBuffer(cbd1);
 
     buw::constantBufferDescription cbd2;
@@ -163,11 +163,11 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	BLUE_LOG(trace) << "Creating effects (9)";
-	pointCloudEffect_ = buw::makeReferenceCounted<PointCloudEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+	pointCloudEffect_ = buw::makeReferenceCounted<oip::PointCloudEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
 	pointCloudEffect_->init();
 
 	BLUE_LOG(trace) << "Creating effects (10)";
-	sectionsBoundingBoxEffect_ = buw::makeReferenceCounted<BoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+	sectionsBoundingBoxEffect_ = buw::makeReferenceCounted<oip::BoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
 	sectionsBoundingBoxEffect_->init();
 
 	pointCloudEffect_->sectionsBoundingBoxEffect_ = sectionsBoundingBoxEffect_;
@@ -246,11 +246,10 @@ void Viewport::createDepthStencil() {
     dsvTD.height = height();
     dsvTD.format = buw::eTextureFormat::D24_UnsignedNormalizedInt_S8_UnsignedInt;
     dsvTD.data = nullptr;
-    dsvTD.isCpuReadable = false;
+    dsvTD.isCpuReadable = true;
     dsvTD.useMSAA = true;
     depthStencilMSAA_ = renderSystem_->createTexture2D(dsvTD, buw::eTextureBindType::DSV);
 
-    dsvTD.isCpuReadable = true;
     dsvTD.useMSAA = false;
     depthStencil_ = renderSystem_->createTexture2D(dsvTD, buw::eTextureBindType::DSV);
 }
