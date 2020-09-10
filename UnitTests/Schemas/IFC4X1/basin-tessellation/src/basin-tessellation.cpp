@@ -26,7 +26,7 @@
 
 using namespace testing;
 
-class BasinFacetedBrep : public VisualTest {
+class BasinTessellation : public VisualTest {
 protected:
 
 	// Test standard values
@@ -50,41 +50,46 @@ protected:
 		VisualTest::TearDown();
 	}
 
-	virtual std::string TestName() const { return "basin-faceted-brep"; }
+	virtual std::string TestName() const { return "basin-tessellation"; }
 	virtual std::string Schema() const { return "IFC4X1"; }
 
-	const boost::filesystem::path filename = dataPath("basin-faceted-brep.ifc");
+	const boost::filesystem::path filename = dataPath("basin-tessellation.ifc");
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
 	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 };
 
-TEST_F(BasinFacetedBrep, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(691));
+TEST_F(BasinTessellation, AllEntitiesAreRead) {
+	EXPECT_THAT(express_model->entities.size(), Eq(34));
 }
 
-TEST_F(BasinFacetedBrep, ImageIsSaved)
+TEST_F(BasinTessellation, IFCHasAnEssentialEntity) {
+	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
+	EXPECT_NE(result, express_model->entities.end());
+}
+
+TEST_F(BasinTessellation, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = renderer->captureImage();
 
 	// Act
-	buw::storeImage(testPath("basin-faceted-brep.png").string(), image);
+	buw::storeImage(testPath("basin-tessellation.png").string(), image);
 
 	// Assert
-	EXPECT_NO_THROW(buw::loadImage4b(testPath("basin-faceted-brep.png").string()));
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("basin-tessellation.png").string()));
 }
 
-TEST_F(BasinFacetedBrep, PlaneSurfaceViews)
+TEST_F(BasinTessellation, PlaneSurfaceViews)
 {
 	// Arrange
-	const auto expected_front = buw::loadImage4b(dataPath("basin-faceted-brep_front.png").string());
-	const auto expected_top = buw::loadImage4b(dataPath("basin-faceted-brep_top.png").string());
-	const auto expected_bottom = buw::loadImage4b(dataPath("basin-faceted-brep_bottom.png").string());
-	const auto expected_left = buw::loadImage4b(dataPath("basin-faceted-brep_left.png").string());
-	const auto expected_right = buw::loadImage4b(dataPath("basin-faceted-brep_right.png").string());
-	const auto expected_back = buw::loadImage4b(dataPath("basin-faceted-brep_back.png").string());
+	const auto expected_front = buw::loadImage4b(dataPath("basin-tessellation_front.png").string());
+	const auto expected_top = buw::loadImage4b(dataPath("basin-tessellation_top.png").string());
+	const auto expected_bottom = buw::loadImage4b(dataPath("basin-tessellation_bottom.png").string());
+	const auto expected_left = buw::loadImage4b(dataPath("basin-tessellation_left.png").string());
+	const auto expected_right = buw::loadImage4b(dataPath("basin-tessellation_right.png").string());
+	const auto expected_back = buw::loadImage4b(dataPath("basin-tessellation_back.png").string());
 
 	// Act (Front)
 	renderer->setViewDirection(buw::eViewDirection::Front);
@@ -107,12 +112,12 @@ TEST_F(BasinFacetedBrep, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("basin-faceted-brep_front.png").string(), image_front);
-	buw::storeImage(testPath("basin-faceted-brep_top.png").string(), image_top);
-	buw::storeImage(testPath("basin-faceted-brep_bottom.png").string(), image_bottom);
-	buw::storeImage(testPath("basin-faceted-brep_left.png").string(), image_left);
-	buw::storeImage(testPath("basin-faceted-brep_right.png").string(), image_right);
-	buw::storeImage(testPath("basin-faceted-brep_back.png").string(), image_back);
+	buw::storeImage(testPath("basin-tessellation_front.png").string(), image_front);
+	buw::storeImage(testPath("basin-tessellation_top.png").string(), image_top);
+	buw::storeImage(testPath("basin-tessellation_bottom.png").string(), image_bottom);
+	buw::storeImage(testPath("basin-tessellation_left.png").string(), image_left);
+	buw::storeImage(testPath("basin-tessellation_right.png").string(), image_right);
+	buw::storeImage(testPath("basin-tessellation_back.png").string(), image_back);
 	*/
 
 	// Assert
@@ -124,17 +129,17 @@ TEST_F(BasinFacetedBrep, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(BasinFacetedBrep, VertexViews)
+TEST_F(BasinTessellation, VertexViews)
 {
 	// Arrange
-	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("basin-faceted-brep_front_left_bottom.png").string());
-	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("basin-faceted-brep_front_right_bottom.png").string());
-	const auto expected_top_left_front = buw::loadImage4b(dataPath("basin-faceted-brep_top_left_front.png").string());
-	const auto expected_top_front_right = buw::loadImage4b(dataPath("basin-faceted-brep_top_front_right.png").string());
-	const auto expected_top_left_back = buw::loadImage4b(dataPath("basin-faceted-brep_top_left_back.png").string());
-	const auto expected_top_right_back = buw::loadImage4b(dataPath("basin-faceted-brep_top_right_back.png").string());
-	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("basin-faceted-brep_back_left_bottom.png").string());
-	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("basin-faceted-brep_right_bottom_back.png").string());
+	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("basin-tessellation_front_left_bottom.png").string());
+	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("basin-tessellation_front_right_bottom.png").string());
+	const auto expected_top_left_front = buw::loadImage4b(dataPath("basin-tessellation_top_left_front.png").string());
+	const auto expected_top_front_right = buw::loadImage4b(dataPath("basin-tessellation_top_front_right.png").string());
+	const auto expected_top_left_back = buw::loadImage4b(dataPath("basin-tessellation_top_left_back.png").string());
+	const auto expected_top_right_back = buw::loadImage4b(dataPath("basin-tessellation_top_right_back.png").string());
+	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("basin-tessellation_back_left_bottom.png").string());
+	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("basin-tessellation_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
 	renderer->setViewDirection(buw::eViewDirection::FrontLeftBottom);
@@ -163,14 +168,14 @@ TEST_F(BasinFacetedBrep, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("basin-faceted-brep_front_left_bottom.png").string(), image_front_left_bottom);
-	buw::storeImage(testPath("basin-faceted-brep_front_right_bottom.png").string(), image_front_right_bottom);
-	buw::storeImage(testPath("basin-faceted-brep_top_left_front.png").string(), image_top_left_front);
-	buw::storeImage(testPath("basin-faceted-brep_top_front_right.png").string(), image_top_front_right);
-	buw::storeImage(testPath("basin-faceted-brep_top_left_back.png").string(), image_top_left_back);
-	buw::storeImage(testPath("basin-faceted-brep_top_right_back.png").string(), image_top_right_back);
-	buw::storeImage(testPath("basin-faceted-brep_back_left_bottom.png").string(), image_back_left_bottom);
-	buw::storeImage(testPath("basin-faceted-brep_right_bottom_back.png").string(), image_right_bottom_back);
+	buw::storeImage(testPath("basin-tessellation_front_left_bottom.png").string(), image_front_left_bottom);
+	buw::storeImage(testPath("basin-tessellation_front_right_bottom.png").string(), image_front_right_bottom);
+	buw::storeImage(testPath("basin-tessellation_top_left_front.png").string(), image_top_left_front);
+	buw::storeImage(testPath("basin-tessellation_top_front_right.png").string(), image_top_front_right);
+	buw::storeImage(testPath("basin-tessellation_top_left_back.png").string(), image_top_left_back);
+	buw::storeImage(testPath("basin-tessellation_top_right_back.png").string(), image_top_right_back);
+	buw::storeImage(testPath("basin-tessellation_back_left_bottom.png").string(), image_back_left_bottom);
+	buw::storeImage(testPath("basin-tessellation_right_bottom_back.png").string(), image_right_bottom_back);
 	*/
 
 	// Assert
