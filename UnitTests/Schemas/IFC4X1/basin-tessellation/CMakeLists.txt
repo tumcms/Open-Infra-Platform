@@ -17,5 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileVisualUnitTestForSchema(basin-tessellation
- IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(basin-tessellation IFC4X1)
