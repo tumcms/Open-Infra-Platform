@@ -27,51 +27,51 @@
 using namespace testing;
 
 class TessellatedItem4x1Test : public VisualTest {
-    protected:
+	protected:
 
-    // Test standard values
-    buw::Image4b _background = buw::Image4b(0, 0);
+	// Test standard values
+	buw::Image4b _background = buw::Image4b(0, 0);
 
-    virtual void SetUp() override {
-        VisualTest::SetUp();
+	virtual void SetUp() override {
+		VisualTest::SetUp();
 
-        express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
+		express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
 
-        importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
-        importer->collectGeometryData(express_model);
-        oip::ConverterBuwT<emt::IFC4X1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
+		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
+		importer->collectGeometryData(express_model);
+		oip::ConverterBuwT<emt::IFC4X1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
 
-        _background = CaptureImage();
-        renderer->setModel(model);
+		_background = CaptureImage();
+		renderer->setModel(model);
 
-    }
+	}
 
-    virtual void TearDown() override {
-        express_model.reset();
-        VisualTest::TearDown();
-    }
+	virtual void TearDown() override {
+		express_model.reset();
+		VisualTest::TearDown();
+	}
 
-    virtual std::string TestName() const { return "tessellated-item"; }
-    virtual std::string Schema() const { return "IFC4X1"; }
+	virtual std::string TestName() const { return "tessellated-item"; }
+	virtual std::string Schema() const { return "IFC4X1"; }
 
-    const boost::filesystem::path filename = dataPath("tessellated-item.ifc");
+	const boost::filesystem::path filename = dataPath("tessellated-item.ifc");
 
-    std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
-    buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-    buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
+	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
+	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 };
 
 TEST_F(TessellatedItem4x1Test, AllEntitiesAreRead) {
-    EXPECT_THAT(express_model->entities.size(), Eq(29));
+	EXPECT_THAT(express_model->entities.size(), Eq(29));
 }
 
 TEST_F(TessellatedItem4x1Test, ImageIsCaptured)
 {
-    // Arrange & Act
-    buw::Image4b image = CaptureImage();
+	// Arrange & Act
+	buw::Image4b image = CaptureImage();
 
-    // Assert
-    EXPECT_NE(image,_background);
+	// Assert
+	EXPECT_NE(image,_background);
 }
 
 TEST_F(TessellatedItem4x1Test, ImageIsSaved)
@@ -88,30 +88,30 @@ TEST_F(TessellatedItem4x1Test, ImageIsSaved)
 
 TEST_F(TessellatedItem4x1Test, TopView)
 {
-    // Arrange
-    const auto expected = buw::loadImage4b(dataPath("tessellated-item_top.png").string());
+	// Arrange
+	const auto expected = buw::loadImage4b(dataPath("tessellated-item_top.png").string());
 
-    // Act
-    renderer->setViewDirection(buw::eViewDirection::Top);
-    buw::Image4b image = CaptureImage();
+	// Act
+	renderer->setViewDirection(buw::eViewDirection::Top);
+	buw::Image4b image = CaptureImage();
 
-    // uncomment the following line to also save the screen shot
-    //buw::storeImage(testPath("tessellated-item_top.png").string(), image);
+	// uncomment the following line to also save the screen shot
+	//buw::storeImage(testPath("tessellated-item_top.png").string(), image);
 
-    // Assert
-    EXPECT_EQ(image, expected);
+	// Assert
+	EXPECT_EQ(image, expected);
 }
 
 TEST_F(TessellatedItem4x1Test, GivenNewImage_AfterHome_AreEqual)
 {
-    // Arrange
-    const auto expected = buw::loadImage4b(dataPath("tessellated-item.png").string());
+	// Arrange
+	const auto expected = buw::loadImage4b(dataPath("tessellated-item.png").string());
 
-    // Act
-    const buw::Image4b image = CaptureImage();
+	// Act
+	const buw::Image4b image = CaptureImage();
 
-    // Assert
-    EXPECT_EQ(image, expected);
+	// Assert
+	EXPECT_EQ(image, expected);
 
-    // Annihilate
+	// Annihilate
 }
