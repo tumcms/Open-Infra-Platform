@@ -64,6 +64,11 @@ TEST_F(BasinFacetedBrep, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(691));
 }
 
+TEST_F(BasinFacetedBrep, IFCHasAnEssentialEntity) {
+	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCFACETEDBREP"; });
+	EXPECT_NE(result, express_model->entities.end());
+}
+
 TEST_F(BasinFacetedBrep, ImageIsSaved)
 {
 	// Arrange
