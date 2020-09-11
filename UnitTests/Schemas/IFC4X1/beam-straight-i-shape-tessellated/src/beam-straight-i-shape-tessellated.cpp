@@ -61,11 +61,11 @@ protected:
 };
 
 TEST_F(BeamStraightIShapeTessellated, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(691));
+	EXPECT_THAT(express_model->entities.size(), Eq(20));
 }
 
 TEST_F(BeamStraightIShapeTessellated, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCFACETEDBREP"; });
+	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAM"; });
 	EXPECT_NE(result, express_model->entities.end());
 }
 
