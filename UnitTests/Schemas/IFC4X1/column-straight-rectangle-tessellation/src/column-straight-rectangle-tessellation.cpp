@@ -65,9 +65,10 @@ TEST_F(ColumnStraightRectangleTessellation, AllEntitiesAreRead) {
 }
 
 TEST_F(ColumnStraightRectangleTessellation, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCRELCONTAINEDINSPATIALSTRUCTURE"; });
+	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
 	EXPECT_NE(result, express_model->entities.end());
 }
+
 
 TEST_F(ColumnStraightRectangleTessellation, ImageIsSaved)
 {

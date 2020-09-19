@@ -64,9 +64,16 @@ TEST_F(MappedShapeWithTransformation, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(40));
 }
 
-TEST_F(MappedShapeWithTransformation, IFCHasAnEssentialEntity) {
+TEST_F(MappedShapeWithTransformation, IFCHasEssentialEntities) {
 	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCMAPPEDITEM"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCRECTANGLEPROFILEDEF"; });
+	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCARTESIANTRANSFORMATIONOPERATOR3DNONUNIFORM"; });
+	
 	EXPECT_NE(result, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
+	EXPECT_NE(result4, express_model->entities.end());
 }
 
 TEST_F(MappedShapeWithTransformation, ImageIsSaved)

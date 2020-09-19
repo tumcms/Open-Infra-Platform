@@ -65,7 +65,7 @@ TEST_F(SlabTessellatedUniqueVertices, AllEntitiesAreRead) {
 }
 
 TEST_F(SlabTessellatedUniqueVertices, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCSLAB"; });
+	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
 	EXPECT_NE(result, express_model->entities.end());
 }
 

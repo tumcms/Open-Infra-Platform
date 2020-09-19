@@ -64,9 +64,12 @@ TEST_F(BeamCurvedIShapeTessellated, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(27));
 }
 
-TEST_F(BeamCurvedIShapeTessellated, IFCHasAnEssentialEntity) {
+TEST_F(BeamCurvedIShapeTessellated, IFCHasEssentialEntities) {
 	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAM"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
+	
 	EXPECT_NE(result, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
 }
 
 TEST_F(BeamCurvedIShapeTessellated, ImageIsSaved)
