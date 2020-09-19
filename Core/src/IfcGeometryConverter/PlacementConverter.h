@@ -757,6 +757,54 @@ namespace OpenInfraPlatform {
 					return object_placement_matrix;
                 }
 
+				carve::geom::vector<3> convertIfcVirtualGridIntersection(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcVirtualGridIntersection>& OffsetDistances
+				) const throw(...)
+				{
+					// ***********************************************************
+					// ENTITY IfcDistanceExpression
+					//  SUBTYPE OF (IfcGeometricRepresentationItem);
+					//   DistanceAlong : IfcLengthMeasure;
+					//   OffsetLateral : OPTIONAL IfcLengthMeasure;
+					//   OffsetVertical : OPTIONAL IfcLengthMeasure;
+					//   OffsetLongitudinal : OPTIONAL IfcLengthMeasure;
+					//   AlongHorizontal : OPTIONAL IfcBoolean;
+					// END_ENTITY;
+					// ***********************************************************
+					// check input
+					if (distExpr.expired())
+						throw oip::ReferenceExpiredException(distExpr);
+
+					return carve::geom::VECTOR(
+						distExpr->OffsetLongitudinal.value_or(0.0),
+						distExpr->OffsetLateral.value_or(0.0),
+						distExpr->OffsetVertical.value_or(0.0)
+					) * UnitConvert()->getLengthInMeterFactor();
+				}
+				//
+				carve::math::Matrix convertIfcGridPlacement(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcGridPlacement> grid_placement,
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+				) const throw(...)
+				{
+					if (grid_placement.expired())
+						throw oip::ReferenceExpiredException(grid_placement);
+
+					carve::geom::vector<3> location = grid_placement->PlacementLocation; //?
+
+					if (!grid_placement->PlacementRefDirection){
+						(PlacementLocation.IntersectingAxes[1])
+					}
+					else if (grid_placement->PlacementRefDirection == IfcDirection) {
+
+					}
+					else if (grid_placement->PlacementRefDirection == IfcVirtualGridIntersection) {
+
+					}
+
+					return object_placement_matrix;
+				}
+
                 /*! \brief Converts \c IfcObjectPlacement to a transformation matrix.
 				 * 
                  * \param[in]	objectPlacement		\c IfcObjectPlacement entity to be interpreted.
@@ -811,6 +859,7 @@ namespace OpenInfraPlatform {
 					else if (objectPlacement.isOfType<typename IfcEntityTypesT::IfcGridPlacement>()) {
 						//TODO Not implemented
 						throw oip::UnhandledException(objectPlacement);
+						//object_placement_matrix = convertIfcGridPlacement(objectPlacement.as<typename IfcEntityTypesT::IfcGridPlacement>(), alreadyApplied);
 					} // end if IfcGridPlacement
 
 					// (3/3) IfcLinearPlacement SUBTYPE OF IfcObjectPlacement
