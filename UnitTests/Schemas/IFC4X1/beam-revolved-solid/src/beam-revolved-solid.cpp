@@ -124,7 +124,7 @@ TEST_F(BeamRevolvedSolidTest, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(BasinFacetedBrep, VertexViews)
+TEST_F(BeamRevolvedSolidTest, VertexViews)
 {
 	// Arrange
 	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("beam-revolved-solid_front_left_bottom.png").string());
