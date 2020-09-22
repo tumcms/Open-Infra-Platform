@@ -61,7 +61,7 @@ protected:
 };
 
 TEST_F(BeamStandardCaseTest, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(27));
+	EXPECT_THAT(express_model->entities.size(), Eq(349));
 }
 
 TEST_F(BeamStandardCaseTest, ImageIsSaved)
