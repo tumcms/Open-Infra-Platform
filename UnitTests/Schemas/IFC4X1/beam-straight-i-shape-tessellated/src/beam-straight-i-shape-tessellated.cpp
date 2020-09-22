@@ -26,7 +26,7 @@
 
 using namespace testing;
 
-class TessellatedItem4x1Test : public VisualTest {
+class BeamStraightIShapeTessellated : public VisualTest {
 protected:
 
 	// Test standard values
@@ -50,46 +50,49 @@ protected:
 		VisualTest::TearDown();
 	}
 
-	virtual std::string TestName() const { return "tessellated-item"; }
+	virtual std::string TestName() const { return "beam-straight-i-shape-tessellated"; }
 	virtual std::string Schema() const { return "IFC4X1"; }
 
-	const boost::filesystem::path filename = dataPath("tessellated-item.ifc");
+	const boost::filesystem::path filename = dataPath("beam-straight-i-shape-tessellated.ifc");
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
 	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 };
 
-TEST_F(TessellatedItem4x1Test, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(29));
+TEST_F(BeamStraightIShapeTessellated, AllEntitiesAreRead) {
+	EXPECT_THAT(express_model->entities.size(), Eq(20));
 }
 
-TEST_F(TessellatedItem4x1Test, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
+TEST_F(BeamStraightIShapeTessellated, IFCHasEssentialEntities) {
+	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAM"; });
+	auto resul2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
+	
 	EXPECT_NE(result, express_model->entities.end());
+	EXPECT_NE(resul2, express_model->entities.end());
 }
-
-TEST_F(TessellatedItem4x1Test, ImageIsSaved)
+	
+TEST_F(BeamStraightIShapeTessellated, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = renderer->captureImage();
 
 	// Act
-	buw::storeImage(testPath("tessellated-item.png").string(), image);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated.png").string(), image);
 
 	// Assert
-	EXPECT_NO_THROW(buw::loadImage4b(testPath("tessellated-item.png").string()));
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("beam-straight-i-shape-tessellated.png").string()));
 }
 
-TEST_F(TessellatedItem4x1Test, PlaneSurfaceViews)
+TEST_F(BeamStraightIShapeTessellated, PlaneSurfaceViews)
 {
 	// Arrange
-	const auto expected_front = buw::loadImage4b(dataPath("tessellated-item_front.png").string());
-	const auto expected_top = buw::loadImage4b(dataPath("tessellated-item_top.png").string());
-	const auto expected_bottom = buw::loadImage4b(dataPath("tessellated-item_bottom.png").string());
-	const auto expected_left = buw::loadImage4b(dataPath("tessellated-item_left.png").string());
-	const auto expected_right = buw::loadImage4b(dataPath("tessellated-item_right.png").string());
-	const auto expected_back = buw::loadImage4b(dataPath("tessellated-item_back.png").string());
+	const auto expected_front = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_front.png").string());
+	const auto expected_top = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_top.png").string());
+	const auto expected_bottom = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_bottom.png").string());
+	const auto expected_left = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_left.png").string());
+	const auto expected_right = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_right.png").string());
+	const auto expected_back = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_back.png").string());
 
 	// Act (Front)
 	renderer->setViewDirection(buw::eViewDirection::Front);
@@ -112,12 +115,12 @@ TEST_F(TessellatedItem4x1Test, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("tessellated-item_front.png").string(), image_front);
-	buw::storeImage(testPath("tessellated-item_top.png").string(), image_top);
-	buw::storeImage(testPath("tessellated-item_bottom.png").string(), image_bottom);
-	buw::storeImage(testPath("tessellated-item_left.png").string(), image_left);
-	buw::storeImage(testPath("tessellated-item_right.png").string(), image_right);
-	buw::storeImage(testPath("tessellated-item_back.png").string(), image_back);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_front.png").string(), image_front);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_top.png").string(), image_top);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_bottom.png").string(), image_bottom);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_left.png").string(), image_left);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_right.png").string(), image_right);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_back.png").string(), image_back);
 	*/
 
 	// Assert
@@ -129,17 +132,17 @@ TEST_F(TessellatedItem4x1Test, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(TessellatedItem4x1Test, VertexViews)
+TEST_F(BeamStraightIShapeTessellated, VertexViews)
 {
 	// Arrange
-	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("tessellated-item_front_left_bottom.png").string());
-	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("tessellated-item_front_right_bottom.png").string());
-	const auto expected_top_left_front = buw::loadImage4b(dataPath("tessellated-item_top_left_front.png").string());
-	const auto expected_top_front_right = buw::loadImage4b(dataPath("tessellated-item_top_front_right.png").string());
-	const auto expected_top_left_back = buw::loadImage4b(dataPath("tessellated-item_top_left_back.png").string());
-	const auto expected_top_right_back = buw::loadImage4b(dataPath("tessellated-item_top_right_back.png").string());
-	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("tessellated-item_back_left_bottom.png").string());
-	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("tessellated-item_right_bottom_back.png").string());
+	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_front_left_bottom.png").string());
+	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_front_right_bottom.png").string());
+	const auto expected_top_left_front = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_top_left_front.png").string());
+	const auto expected_top_front_right = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_top_front_right.png").string());
+	const auto expected_top_left_back = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_top_left_back.png").string());
+	const auto expected_top_right_back = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_top_right_back.png").string());
+	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_back_left_bottom.png").string());
+	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("beam-straight-i-shape-tessellated_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
 	renderer->setViewDirection(buw::eViewDirection::FrontLeftBottom);
@@ -168,14 +171,14 @@ TEST_F(TessellatedItem4x1Test, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("tessellated-item_front_left_bottom.png").string(), image_front_left_bottom);
-	buw::storeImage(testPath("tessellated-item_front_right_bottom.png").string(), image_front_right_bottom);
-	buw::storeImage(testPath("tessellated-item_top_left_front.png").string(), image_top_left_front);
-	buw::storeImage(testPath("tessellated-item_top_front_right.png").string(), image_top_front_right);
-	buw::storeImage(testPath("tessellated-item_top_left_back.png").string(), image_top_left_back);
-	buw::storeImage(testPath("tessellated-item_top_right_back.png").string(), image_top_right_back);
-	buw::storeImage(testPath("tessellated-item_back_left_bottom.png").string(), image_back_left_bottom);
-	buw::storeImage(testPath("tessellated-item_right_bottom_back.png").string(), image_right_bottom_back);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_front_left_bottom.png").string(), image_front_left_bottom);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_front_right_bottom.png").string(), image_front_right_bottom);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_top_left_front.png").string(), image_top_left_front);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_top_front_right.png").string(), image_top_front_right);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_top_left_back.png").string(), image_top_left_back);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_top_right_back.png").string(), image_top_right_back);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_back_left_bottom.png").string(), image_back_left_bottom);
+	buw::storeImage(testPath("beam-straight-i-shape-tessellated_right_bottom_back.png").string(), image_right_bottom_back);
 	*/
 
 	// Assert
