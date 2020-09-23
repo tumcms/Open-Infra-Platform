@@ -27,7 +27,7 @@
 #include "CarveHeaders.h"
 
 #include "ConverterBase.h"
-
+#include "CurveConverter.h"
 #include <BlueFramework/Core/Diagnostics/log.h>
 
 #include <EXPRESS/EXPRESSReference.h>
@@ -758,23 +758,50 @@ namespace OpenInfraPlatform {
                 }
 
 				carve::geom::vector<3> convertIfcVirtualGridIntersection(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcVirtualGridIntersection>& OffsetDistances
+					const EXPRESSReference<typename IfcEntityTypesT::IfcVirtualGridIntersection> &intersection
 				) const throw(...)
 				{
-					// ***********************************************************
-					// ENTITY IfcDistanceExpression
-					//  SUBTYPE OF (IfcGeometricRepresentationItem);
-					//   DistanceAlong : IfcLengthMeasure;
-					//   OffsetLateral : OPTIONAL IfcLengthMeasure;
-					//   OffsetVertical : OPTIONAL IfcLengthMeasure;
-					//   OffsetLongitudinal : OPTIONAL IfcLengthMeasure;
-					//   AlongHorizontal : OPTIONAL IfcBoolean;
-					// END_ENTITY;
-					// ***********************************************************
-					// check input
-					if (distExpr.expired())
-						throw oip::ReferenceExpiredException(distExpr);
+					if (intersection.expired())
+						throw oip::ReferenceExpiredException(intersection);
 
+					switch (intersection->OffsetDistances.size())
+					{
+					case 3:
+						double Xdistance = intersection->OffsetDistances[0];
+						double Ydistance = intersection->OffsetDistances[1];
+						double Zdistance = intersection->OffsetDistances[2];
+						break;
+					case 2:
+						double Xdistance = intersection->OffsetDistances[0];
+						double Ydistance = intersection->OffsetDistances[1];
+						break;
+					default:
+						throw oip::InconsistentGeometryException(intersection, "Number of coordinates is inconsistent.");
+					}
+
+					std::vector<carve::geom::vector<2>> Xaxis;
+					std::vector<carve::geom::vector<2>> Yaxis;
+					std::vector<carve::geom::vector<2>> Xsegment_start_points;
+					std::vector<carve::geom::vector<2>> Ysegment_start_points;
+
+
+					CurveConverterT<IfcEntityTypesT> grid_conv(GeomSettings(), UnitConvert(), this);
+
+					grid_conv.convertIfcCurve2D(intersection->IntersectingAxes[0], Xaxis, Xsegment_start_points);
+					grid_conv.convertIfcCurve2D(intersection->IntersectingAxes[1], Yaxis, Ysegment_start_points);
+					
+					for (int i = 0; i <= Xaxis.size(); i++) {
+						X_Axis_Position = XAxis[i];
+						for (int j = 0; j <= Yaxis.size(); j++) {
+							Y_Axis_Position = YAxis[i];
+							if X_Axis_Position[1]
+						}
+					}
+						
+					
+					
+					
+					
 					return carve::geom::VECTOR(
 						distExpr->OffsetLongitudinal.value_or(0.0),
 						distExpr->OffsetLateral.value_or(0.0),
@@ -790,18 +817,16 @@ namespace OpenInfraPlatform {
 					if (grid_placement.expired())
 						throw oip::ReferenceExpiredException(grid_placement);
 
-					carve::geom::vector<3> location = grid_placement->PlacementLocation; //?
+					carve::geom::vector<3> location = convertIfcVirtualGridIntersection(grid_placement->PlacementLocation); //
 
-					if (!grid_placement->PlacementRefDirection){
-						(PlacementLocation.IntersectingAxes[1])
+					switch (grid_placement.which()) {
+					case 0:
+						return convertIfcDirection(grid_placement.get<0>());
+					case 1:
+						return convertIfcVirtualGridIntersection(grid_placement.get<1>());
+					default:
+						//location +  intersectiing axes[1]
 					}
-					else if (grid_placement->PlacementRefDirection == IfcDirection) {
-
-					}
-					else if (grid_placement->PlacementRefDirection == IfcVirtualGridIntersection) {
-
-					}
-
 					return object_placement_matrix;
 				}
 
@@ -858,8 +883,8 @@ namespace OpenInfraPlatform {
 					// (2/3) IfcGridPlacement SUBTYPE OF IfcObjectPlacement
 					else if (objectPlacement.isOfType<typename IfcEntityTypesT::IfcGridPlacement>()) {
 						//TODO Not implemented
-						throw oip::UnhandledException(objectPlacement);
-						//object_placement_matrix = convertIfcGridPlacement(objectPlacement.as<typename IfcEntityTypesT::IfcGridPlacement>(), alreadyApplied);
+						//throw oip::UnhandledException(objectPlacement);
+						object_placement_matrix = convertIfcGridPlacement(objectPlacement.as<typename IfcEntityTypesT::IfcGridPlacement>(), alreadyApplied);
 					} // end if IfcGridPlacement
 
 					// (3/3) IfcLinearPlacement SUBTYPE OF IfcObjectPlacement
