@@ -778,24 +778,48 @@ namespace OpenInfraPlatform {
 					grid_conv.convertIfcCurve2D(intersection->IntersectingAxes[1], Yaxis, Ysegment_start_points);
 					
 					std::vector<carve::geom::vector<2>> intersection_point;
+					carve::geom::vector<2> X_Axis_Position;
+					carve::geom::vector<2> X_Axis_2Position;
 
-					for (int i = 0; i < Xaxis.size(); i++) {
+					for (int i = 0; i < Xaxis.size()-1; i++) {
 						X_Axis_Position = XAxis[i];
 						X_Axis_2Position = XAxis[i+1];
-						for (int j = 0; j <= Yaxis.size(); j++) {
+						for (int j = 0; j < Yaxis.size()-1; j++) {
 							Y_Axis_Position = YAxis[i];
 							Y_Axis_2Position = YAxis[i+1];
-							if (GeomUtils::LineSegmentToLineIntersection(X_Axis_2Position, X_Axis_Position, Y_Axis_2Position, Y_Axis_Position, intersection_point)) {
-								goto stop;
+							if (GeomUtils::LineSegmentToLineSegmentIntersection(X_Axis_2Position, X_Axis_Position, Y_Axis_2Position, Y_Axis_Position, intersection_point)) {
+								i = Xaxis.size();
+								j = Yaxis.size();
 							}
 						}
 					}
-						
-					stop:
 					
+					//orthogonal complement of the IntersectingAxes[1]
+					//	<x,y> = 0
+					//	x1y1 + x2y2 = 0
+					//	y2 = -x1y1/x2
+					carve::geom::vector<2> IntersectingAxes = X_Axis_2Position - X_Axis_Position;
+					carve::geom::vector<2> Orthogonal_complement;
+					if (IntersectingAxes[0] != 0.0 && IntersectingAxes[1] != 0.0) {
+						Orthogonal_complement[0] = 1.0;
+						Orthogonal_complement[1] = -IntersectingAxes[0] * Orthogonal_complement[0] / IntersectingAxes[1];
+					}
+					else if (IntersectingAxes[0] = 0.0) {
+						Orthogonal_complement[0] = 1.0;
+						Orthogonal_complement[1] = 0.0;
+					}
+					else {
+						Orthogonal_complement[0] = 0.0;
+						Orthogonal_complement[1] = 1.0;
+					}
+
+					//cross product of IntersectingAxes[1] and the orthogonal complement of the IntersectingAxes[1] 
+					double cross_product = (IntersectingAxes[0] * Orthogonal_complement[1]) - (IntersectingAxes[1] * Orthogonal_complement[0])
+
 					carve::geom::vector<3> location = {0.0,0.0,0.0};
 					location[0] = intersection_point[0];
 					location[1] = intersection_point[1];
+					location[2] = cross_product;
 
 					switch (intersection->OffsetDistances.size())
 					{
@@ -814,7 +838,7 @@ namespace OpenInfraPlatform {
 						location[1] = location[1] + intersection->OffsetDistances[0];
 						break;
 					default:
-						throw oip::InconsistentGeometryException(intersection, "Number of coordinates is inconsistent.");
+						throw oip::InconsistentGeometryException(intersection->OffsetDistances, "Number of coordinates is inconsistent.");
 					}
 					
 					return location;
