@@ -26,6 +26,7 @@
 #include <memory>
 #include "CarveHeaders.h"
 
+#include "GeomUtils.h"
 #include "ConverterBase.h"
 #include "CurveConverter.h"
 #include <BlueFramework/Core/Diagnostics/log.h>
@@ -764,20 +765,6 @@ namespace OpenInfraPlatform {
 					if (intersection.expired())
 						throw oip::ReferenceExpiredException(intersection);
 
-					switch (intersection->OffsetDistances.size())
-					{
-					case 3:
-						double Xdistance = intersection->OffsetDistances[0];
-						double Ydistance = intersection->OffsetDistances[1];
-						double Zdistance = intersection->OffsetDistances[2];
-						break;
-					case 2:
-						double Xdistance = intersection->OffsetDistances[0];
-						double Ydistance = intersection->OffsetDistances[1];
-						break;
-					default:
-						throw oip::InconsistentGeometryException(intersection, "Number of coordinates is inconsistent.");
-					}
 
 					std::vector<carve::geom::vector<2>> Xaxis;
 					std::vector<carve::geom::vector<2>> Yaxis;
@@ -790,24 +777,50 @@ namespace OpenInfraPlatform {
 					grid_conv.convertIfcCurve2D(intersection->IntersectingAxes[0], Xaxis, Xsegment_start_points);
 					grid_conv.convertIfcCurve2D(intersection->IntersectingAxes[1], Yaxis, Ysegment_start_points);
 					
-					for (int i = 0; i <= Xaxis.size(); i++) {
+					std::vector<carve::geom::vector<2>> intersection_point;
+
+					for (int i = 0; i < Xaxis.size(); i++) {
 						X_Axis_Position = XAxis[i];
+						X_Axis_2Position = XAxis[i+1];
 						for (int j = 0; j <= Yaxis.size(); j++) {
 							Y_Axis_Position = YAxis[i];
-							if X_Axis_Position[1]
+							Y_Axis_2Position = YAxis[i+1];
+							if (GeomUtils::LineSegmentToLineIntersection(X_Axis_2Position, X_Axis_Position, Y_Axis_2Position, Y_Axis_Position, intersection_point)) {
+								goto stop;
+							}
 						}
 					}
 						
+					stop:
 					
+					carve::geom::vector<3> location = {0.0,0.0,0.0};
+					location[0] = intersection_point[0];
+					location[1] = intersection_point[1];
+
+					switch (intersection->OffsetDistances.size())
+					{
+					case 3:
+						double Xdistance = intersection->OffsetDistances[0];
+						double Ydistance = intersection->OffsetDistances[1];
+						double Zdistance = intersection->OffsetDistances[2];
+						location[0] = location[0] + intersection->OffsetDistances[1];
+						location[1] = location[1] + intersection->OffsetDistances[0];
+						location[2] = location[2] + intersection->OffsetDistances[2];
+						break;
+					case 2:
+						double Xdistance = intersection->OffsetDistances[0];
+						double Ydistance = intersection->OffsetDistances[1];
+						ocation[0] = location[0] + intersection->OffsetDistances[1];
+						location[1] = location[1] + intersection->OffsetDistances[0];
+						break;
+					default:
+						throw oip::InconsistentGeometryException(intersection, "Number of coordinates is inconsistent.");
+					}
 					
-					
-					
-					return carve::geom::VECTOR(
-						distExpr->OffsetLongitudinal.value_or(0.0),
-						distExpr->OffsetLateral.value_or(0.0),
-						distExpr->OffsetVertical.value_or(0.0)
-					) * UnitConvert()->getLengthInMeterFactor();
+					return location;
 				}
+
+
 				//
 				carve::math::Matrix convertIfcGridPlacement(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcGridPlacement> grid_placement,
@@ -829,6 +842,8 @@ namespace OpenInfraPlatform {
 					}
 					return object_placement_matrix;
 				}
+
+
 
                 /*! \brief Converts \c IfcObjectPlacement to a transformation matrix.
 				 * 
