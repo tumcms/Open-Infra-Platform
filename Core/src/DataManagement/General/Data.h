@@ -201,6 +201,7 @@ namespace OpenInfraPlatform
 						if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
 							if (!tempIfcGeometryModel_->isEmpty()) {
 								ifcGeometryModel_ = tempIfcGeometryModel_;
+								ifcGeometryModel_.setFilename(filename);
 							}
 						}
 					}
