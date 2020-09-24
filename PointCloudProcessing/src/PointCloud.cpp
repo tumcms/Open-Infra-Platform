@@ -3335,6 +3335,11 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeMainAxis() {
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 // Interface IModel implementation
+bool OpenInfraPlatform::PointCloudProcessing::PointCloud::isEmpty() const
+{
+	return size() == 0;
+}
+
 oip::BBox OpenInfraPlatform::PointCloudProcessing::PointCloud::getExtent()
 {
 	CCVector3 minPos, maxPos;

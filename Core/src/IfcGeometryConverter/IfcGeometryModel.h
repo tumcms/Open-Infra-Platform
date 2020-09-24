@@ -41,14 +41,14 @@ namespace OpenInfraPlatform
 			struct IndexedMeshDescription {
 				std::vector<uint32_t>		indices;
 				std::vector<VertexLayout>	vertices;
-				bool isEmpty() { return (indices.size() == 0 && vertices.size() == 0); };
+				bool isEmpty() const { return (indices.size() == 0 && vertices.size() == 0); };
 				void reset() { indices.clear(); vertices.clear(); }
 			};
 
 			struct PolylineDescription {
 				std::vector<uint32_t>		indices;
 				std::vector<buw::Vector3f>	vertices;
-				bool isEmpty() { return (indices.size() == 0 && vertices.size() == 0); };
+				bool isEmpty() const { return (indices.size() == 0 && vertices.size() == 0); };
 				void reset() { indices.clear(); vertices.clear(); }
 			};
 
@@ -58,12 +58,13 @@ namespace OpenInfraPlatform
 				oip::BBox              bb_;
 				IndexedMeshDescription meshDescription_;
 				PolylineDescription    polylineDescription_;
-				bool isEmpty();
 				void reset();
 
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------
 				// Interface IModel implementation
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------
+
+				virtual bool isEmpty() const override;
 
 				virtual oip::BBox getExtent() override;
 

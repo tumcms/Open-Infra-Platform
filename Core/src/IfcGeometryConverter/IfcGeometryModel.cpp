@@ -19,11 +19,6 @@
 #include "IfcGeometryModel.h"
 #include "Exception\UnhandledException.h"
 
-bool OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::isEmpty() 
-{ 
-	return (meshDescription_.isEmpty() && polylineDescription_.isEmpty()); 
-}
-
 void OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::reset() 
 { 
 	bb_.reset(); 
@@ -34,6 +29,11 @@ void OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::reset()
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 // Interface IModel implementation
+bool OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::isEmpty() const
+{
+	return (meshDescription_.isEmpty() && polylineDescription_.isEmpty());
+}
+
 oip::BBox OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getExtent()
 {
 	return bb_;

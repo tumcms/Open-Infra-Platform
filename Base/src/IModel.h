@@ -31,6 +31,13 @@ public:
 
     virtual ~IModel() {}
 
+	#pragma region Interface valid
+
+	// is the model filled with data?
+	virtual bool isEmpty() const = 0;
+
+	#pragma endregion
+
 	#pragma region Interface bounding box
 
     // consumed by the rendering procedures in viewport
