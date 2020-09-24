@@ -61,7 +61,7 @@ protected:
 };
 
 TEST_F(BeamRevolvedSolidTest, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(27));
+	EXPECT_THAT(express_model->entities.size(), Eq(56));
 }
 
 TEST_F(BeamRevolvedSolidTest, ImageIsSaved)
