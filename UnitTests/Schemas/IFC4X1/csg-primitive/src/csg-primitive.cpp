@@ -27,7 +27,7 @@
 using namespace testing;
 
 
-class CsgPrimitiveTest : public VisualTest {
+class CsgPrimitive : public VisualTest {
 protected:
 
 	// Test standard values
@@ -60,11 +60,11 @@ protected:
 	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 };
 
-TEST_F(CsgPrimitiveTest, AllEntitiesAreRead) {
+TEST_F(CsgPrimitive, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(27));
 }
 
-TEST_F(CsgPrimitiveTest, ImageIsSaved)
+TEST_F(CsgPrimitive, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = renderer->captureImage();
@@ -76,7 +76,7 @@ TEST_F(CsgPrimitiveTest, ImageIsSaved)
 	EXPECT_NO_THROW(buw::loadImage4b(testPath("csg-primitivee.png").string()));
 }
 
-TEST_F(CsgPrimitiveTest, PlaneSurfaceViews)
+TEST_F(CsgPrimitive, PlaneSurfaceViews)
 {
 	// Arrange
 	const auto expected_front = buw::loadImage4b(dataPath("csg-primitivee_front.png").string());
@@ -124,7 +124,7 @@ TEST_F(CsgPrimitiveTest, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(CsgPrimitiveTest, VertexViews)
+TEST_F(CsgPrimitive, VertexViews)
 {
 	// Arrange
 	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("csg-primitivee_front_left_bottom.png").string());

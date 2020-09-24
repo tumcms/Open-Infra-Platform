@@ -27,7 +27,7 @@
 using namespace testing;
 
 
-class SlabStandardCaseTest : public VisualTest {
+class SlabStandardCase : public VisualTest {
 protected:
 
 	// Test standard values
@@ -60,11 +60,11 @@ protected:
 	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 };
 
-TEST_F(SlabStandardCaseTest, AllEntitiesAreRead) {
+TEST_F(SlabStandardCase, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(27));
 }
 
-TEST_F(SlabStandardCaseTest, ImageIsSaved)
+TEST_F(SlabStandardCase, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = renderer->captureImage();
@@ -76,7 +76,7 @@ TEST_F(SlabStandardCaseTest, ImageIsSaved)
 	EXPECT_NO_THROW(buw::loadImage4b(testPath("slab-standard-case.png").string()));
 }
 
-TEST_F(SlabStandardCaseTest, PlaneSurfaceViews)
+TEST_F(SlabStandardCase, PlaneSurfaceViews)
 {
 	// Arrange
 	const auto expected_front = buw::loadImage4b(dataPath("slab-standard-case_front.png").string());
@@ -124,7 +124,7 @@ TEST_F(SlabStandardCaseTest, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(SlabStandardCaseTest, VertexViews)
+TEST_F(SlabStandardCase, VertexViews)
 {
 	// Arrange
 	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("slab-standard-case_front_left_bottom.png").string());

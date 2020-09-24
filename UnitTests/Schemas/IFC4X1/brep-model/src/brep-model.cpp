@@ -27,7 +27,7 @@
 using namespace testing;
 
 
-class BrepModelTest : public VisualTest {
+class BrepModel : public VisualTest {
 protected:
 
 	// Test standard values
@@ -60,11 +60,11 @@ protected:
 	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 };
 
-TEST_F(BrepModelTest, AllEntitiesAreRead) {
+TEST_F(BrepModel, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(51));
 }
 
-TEST_F(BrepModelTest, ImageIsSaved)
+TEST_F(BrepModel, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = renderer->captureImage();
@@ -76,7 +76,7 @@ TEST_F(BrepModelTest, ImageIsSaved)
 	EXPECT_NO_THROW(buw::loadImage4b(testPath("brep-model.png").string()));
 }
 
-TEST_F(BrepModelTest, PlaneSurfaceViews)
+TEST_F(BrepModel, PlaneSurfaceViews)
 {
 	// Arrange
 	const auto expected_front = buw::loadImage4b(dataPath("brep-model_front.png").string());
@@ -124,7 +124,7 @@ TEST_F(BrepModelTest, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(BrepModelTest, VertexViews)
+TEST_F(BrepModel, VertexViews)
 {
 	// Arrange
 	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("brep-model_front_left_bottom.png").string());
