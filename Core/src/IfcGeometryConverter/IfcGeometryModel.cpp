@@ -41,7 +41,7 @@ oip::BBox OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getEx
 
 std::string OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getEPSGcode() const
 {
-	return "";
+	throw oip::UnhandledException("IfcGeometryModel::getEPSGcode()");
 }
 
 void OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::transformAllPoints(
@@ -49,5 +49,5 @@ void OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::transformA
 	std::function<std::tuple<double, double, double> const(double, double, double)>& transf
 )
 {
-	throw oip::UnhandledException("transformAllPoints()");
+	throw oip::UnhandledException("IfcGeometryModel::transformAllPoints()");
 }

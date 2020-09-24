@@ -3352,7 +3352,7 @@ oip::BBox OpenInfraPlatform::PointCloudProcessing::PointCloud::getExtent()
 
 std::string OpenInfraPlatform::PointCloudProcessing::PointCloud::getEPSGcode() const
 {
-	return "";
+	throw std::exception("Not implemented: PointCloud::getEPSGcode()");
 }
 
 void OpenInfraPlatform::PointCloudProcessing::PointCloud::transformAllPoints(
@@ -3360,5 +3360,5 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::transformAllPoints(
 	std::function<std::tuple<double, double, double> const(double, double, double)>& transf
 )
 {
-	throw std::exception("Not implemented: PointCloud::transformAllPoints");
+	throw std::exception("Not implemented: PointCloud::transformAllPoints()");
 }
