@@ -58,6 +58,13 @@ public:
 
 	#pragma endregion Interface georeferencing
 
+	#pragma region Interface data source
+
+	// where does the data come from?
+	// e.g. filename, URL, etc.
+	virtual std::string getSource() const = 0;
+
+	#pragma endregion Interface data source
 
 };
 

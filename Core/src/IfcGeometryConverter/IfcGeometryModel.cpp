@@ -34,6 +34,11 @@ bool OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::isEmpty() 
 	return (meshDescription_.isEmpty() && polylineDescription_.isEmpty());
 }
 
+std::string OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getSource() const
+{
+	return filename_;
+}
+
 oip::BBox OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getExtent()
 {
 	return bb_;

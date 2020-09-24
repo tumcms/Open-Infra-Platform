@@ -173,6 +173,7 @@ namespace OpenInfraPlatform {
 			// ---------------------------------------------------------------------------------------------------------------------------------------------------
 			
 			virtual bool isEmpty() const override;
+			virtual std::string getSource() const override;
 
 			virtual oip::BBox getExtent() override;
 

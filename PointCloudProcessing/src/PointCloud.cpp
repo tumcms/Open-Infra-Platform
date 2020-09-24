@@ -3340,6 +3340,11 @@ bool OpenInfraPlatform::PointCloudProcessing::PointCloud::isEmpty() const
 	return size() == 0;
 }
 
+std::string OpenInfraPlatform::PointCloudProcessing::PointCloud::getSource() const
+{
+	return getName().toStdString();
+}
+
 oip::BBox OpenInfraPlatform::PointCloudProcessing::PointCloud::getExtent()
 {
 	CCVector3 minPos, maxPos;

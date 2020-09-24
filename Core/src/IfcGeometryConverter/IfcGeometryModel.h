@@ -56,6 +56,7 @@ namespace OpenInfraPlatform
 			public:
 
 				oip::BBox              bb_;
+				std::string			   filename_;
 				IndexedMeshDescription meshDescription_;
 				PolylineDescription    polylineDescription_;
 				void reset();
@@ -65,6 +66,7 @@ namespace OpenInfraPlatform
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 				virtual bool isEmpty() const override;
+				virtual std::string getSource() const override;
 
 				virtual oip::BBox getExtent() override;
 
@@ -72,6 +74,10 @@ namespace OpenInfraPlatform
 				virtual void transformAllPoints(const std::string& newEPSGcode, std::function<std::tuple<double, double, double> const(double, double, double)>& transf) override;
 
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------
+
+				void setFilename(const str::string& filename) {
+					filename_ = filename;
+				}
 
 			};
 
