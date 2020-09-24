@@ -27,7 +27,7 @@
 using namespace testing;
 
 
-class BeamRevolvedSolidTest : public VisualTest {
+class BeamRevolvedSolid : public VisualTest {
 protected:
 
 	// Test standard values
@@ -60,11 +60,11 @@ protected:
 	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 };
 
-TEST_F(BeamRevolvedSolidTest, AllEntitiesAreRead) {
+TEST_F(BeamRevolvedSolid, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(56));
 }
 
-TEST_F(BeamRevolvedSolidTest, ImageIsSaved)
+TEST_F(BeamRevolvedSolid, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = renderer->captureImage();
@@ -76,7 +76,7 @@ TEST_F(BeamRevolvedSolidTest, ImageIsSaved)
 	EXPECT_NO_THROW(buw::loadImage4b(testPath("beam-revolved-solid.png").string()));
 }
 
-TEST_F(BeamRevolvedSolidTest, PlaneSurfaceViews)
+TEST_F(BeamRevolvedSolid, PlaneSurfaceViews)
 {
 	// Arrange
 	const auto expected_front = buw::loadImage4b(dataPath("beam-revolved-solid_front.png").string());
@@ -124,7 +124,7 @@ TEST_F(BeamRevolvedSolidTest, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(BeamRevolvedSolidTest, VertexViews)
+TEST_F(BeamRevolvedSolid, VertexViews)
 {
 	// Arrange
 	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("beam-revolved-solid_front_left_bottom.png").string());

@@ -27,7 +27,7 @@
 using namespace testing;
 
 
-class BeamExtrudedSolidTest : public VisualTest {
+class BeamExtrudedSolid : public VisualTest {
     protected:
 
     // Test standard values
@@ -60,11 +60,11 @@ class BeamExtrudedSolidTest : public VisualTest {
     buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 };
 
-TEST_F(BeamExtrudedSolidTest, AllEntitiesAreRead) {
+TEST_F(BeamExtrudedSolid, AllEntitiesAreRead) {
     EXPECT_THAT(express_model->entities.size(), Eq(27));
 }
 
-TEST_F(BeamExtrudedSolidTest, ImageIsSaved)
+TEST_F(BeamExtrudedSolid, ImageIsSaved)
 {
     // Arrange
     buw::Image4b image = renderer->captureImage();
@@ -76,7 +76,7 @@ TEST_F(BeamExtrudedSolidTest, ImageIsSaved)
     EXPECT_NO_THROW(buw::loadImage4b(testPath("beam-extruded-solid.png").string()));
 }
 
-TEST_F(BeamExtrudedSolidTest, PlaneSurfaceViews)
+TEST_F(BeamExtrudedSolid, PlaneSurfaceViews)
 {
     // Arrange
     const auto expected_front = buw::loadImage4b(dataPath("beam-extruded-solid_front.png").string());
@@ -124,7 +124,7 @@ TEST_F(BeamExtrudedSolidTest, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(BeamExtrudedSolidTest, VertexViews)
+TEST_F(BeamExtrudedSolid, VertexViews)
 {
 	// Arrange
 	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("beam-extruded-solid_front_left_bottom.png").string());
