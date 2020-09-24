@@ -1,5 +1,5 @@
 #/*
-#    Copyright (c) 2018 Technical University of Munich
+#    Copyright (c) 2020 Technical University of Munich
 #    Chair of Computational Modeling and Simulation.
 #
 #    TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -23,14 +23,11 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 14)
 
 file(GLOB Base_Source 								src/*.*)
-#file(GLOB Base_Exception_Source						src/Exception/*.*)
 
 source_group(Base								FILES $Base_Source})
-#source_group(Base\\Exception					FILES ${Base_Exception_Source})
 
 add_library(OpenInfraPlatform.Base STATIC
 	${Base_Source}
-	#${Base_Exception_Source}
 )
 
 target_include_directories(OpenInfraPlatform.Base
@@ -41,15 +38,7 @@ target_include_directories(OpenInfraPlatform.Base
 
 # Thirdparty libraries the project depends upon.
 target_link_libraries(OpenInfraPlatform.Base PRIVATE
-#    Qt5::Core
-#    Qt5::OpenGL
-#    Qt5::Xml
-#    Qt5::XmlPatterns
     BlueFramework.Core
     BlueFramework.Rasterizer
-#    BlueFramework.Application
     carve
-#    eigen
 )
-
-#set_target_properties(OpenInfraPlatform.Base 	PROPERTIES FOLDER "OpenInfraPlatform")
