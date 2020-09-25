@@ -28,6 +28,7 @@
 #include <BlueFramework/Core/Math/vector.h>
 #include <boost/signals2.hpp>
 #include <map>
+#include <list>
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 #include <PointCloudProcessing.h>
@@ -241,6 +242,18 @@ namespace OpenInfraPlatform
 				buw::ReferenceCounted<buw::PointCloud> pointCloud_ = nullptr;
 
 #endif
+			private:
+				// a collection of models that are loaded
+				std::list<buw::ReferenceCounted<oip::IModel>> models_;
+			public:
+				// add a model to the collection
+				void addModel(buw::ReferenceCounted<oip::IModel> model);
+				// remove a model from the collection
+				void removeModel(buw::ReferenceCounted<oip::IModel> model);
+				// remove all models
+				void removeAllModels();
+				// get the union of extents of all models
+				oip::BBox getExtents();
 
 			}; // end class Data
 		} // end namespace DataManagement

@@ -105,7 +105,8 @@ void OpenInfraPlatform::Core::DataManagement::Data::open( const std::string & fi
 void OpenInfraPlatform::Core::DataManagement::Data::clear(const bool notifyObservers) {   
 	ifcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
 
-	//pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
+	// remove everything
+	removeAllModels();
 
 	if (notifyObservers) {
 		// The notification state is not used here, because a clear is not executed by an action.
@@ -451,3 +452,38 @@ void OpenInfraPlatform::Core::DataManagement::Data::exportPointCloud(const std::
 
 
 #endif
+
+// Model handling
+void OpenInfraPlatform::Core::DataManagement::Data::addModel(buw::ReferenceCounted<oip::IModel> model)
+{
+	if( std::find(models_.begin(), models_.end(), model) == models_.end() )
+		models_.push_back(model);
+}
+
+void OpenInfraPlatform::Core::DataManagement::Data::removeModel(buw::ReferenceCounted<oip::IModel> model)
+{
+	auto found = std::find(models_.begin(), models_.end(), model);
+	if (found != models_.end())
+		models_.remove(model);
+}
+
+void OpenInfraPlatform::Core::DataManagement::Data::removeAllModels()
+{
+	models_.clear();
+}
+
+oip::BBox OpenInfraPlatform::Core::DataManagement::Data::getExtents()
+{
+	oip::BBox bb;
+
+	for (auto& model : models_)
+		if( !model->isEmpty() )
+			bb.update(model->getExtent());
+
+	// if bounding box is still on default, overwrite with -1 to 1
+	if (bb.isEmpty())
+	{
+		bb.fit(carve::geom::VECTOR(-1., -1., -1.), carve::geom::VECTOR(1., 1., 1.));
+	}
+	return bb;
+}
