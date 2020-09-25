@@ -766,75 +766,57 @@ namespace OpenInfraPlatform {
 						throw oip::ReferenceExpiredException(intersection);
 
 
-					std::vector<carve::geom::vector<2>> Xaxis;
-					std::vector<carve::geom::vector<2>> Yaxis;
-					std::vector<carve::geom::vector<2>> Xsegment_start_points;
-					std::vector<carve::geom::vector<2>> Ysegment_start_points;
+					std::vector<carve::geom::vector<2>> xAxis;
+					std::vector<carve::geom::vector<2>> yAxis;
+					std::vector<carve::geom::vector<2>> xSegmentStartPoints;
+					std::vector<carve::geom::vector<2>> ySegmentStartPoints;
 
 
-					CurveConverterT<IfcEntityTypesT> grid_conv(GeomSettings(), UnitConvert(), this);
+					CurveConverterT<IfcEntityTypesT> gridConv(GeomSettings(), UnitConvert(), this);
 
-					grid_conv.convertIfcCurve2D(intersection->IntersectingAxes[0], Xaxis, Xsegment_start_points);
-					grid_conv.convertIfcCurve2D(intersection->IntersectingAxes[1], Yaxis, Ysegment_start_points);
+					gridConv.convertIfcCurve2D(intersection->IntersectingAxes[0], xAxis, xSegmentStartPoints);
+					gridConv.convertIfcCurve2D(intersection->IntersectingAxes[1], yAxis, ySegmentStartPoints);
 					
-					std::vector<carve::geom::vector<2>> intersection_point;
-					carve::geom::vector<2> X_Axis_Position;
-					carve::geom::vector<2> X_Axis_2Position;
+					carve::geom::vector<2> intersectionPoint;
+					carve::geom::vector<2> xAxisPosition;
+					carve::geom::vector<2> xAxisPosition2;
+					carve::geom::vector<2> yAxisPosition;
+					carve::geom::vector<2> yAxisPosition2;
 
-					for (int i = 0; i < Xaxis.size()-1; i++) {
-						X_Axis_Position = XAxis[i];
-						X_Axis_2Position = XAxis[i+1];
-						for (int j = 0; j < Yaxis.size()-1; j++) {
-							Y_Axis_Position = YAxis[i];
-							Y_Axis_2Position = YAxis[i+1];
-							if (GeomUtils::LineSegmentToLineSegmentIntersection(X_Axis_2Position, X_Axis_Position, Y_Axis_2Position, Y_Axis_Position, intersection_point)) {
-								i = Xaxis.size();
-								j = Yaxis.size();
+					for (int i = 0; i < xAxis.size()-1; i++) {
+						xAxisPosition = xAxis[i];
+						xAxisPosition2 = xAxis[i+1];
+						for (int j = 0; j < yAxis.size()-1; j++) {
+							yAxisPosition = yAxis[i];
+							yAxisPosition2 = yAxis[i+1];
+							if (GeomUtils::LineSegmentToLineSegmentIntersection(xAxisPosition2, xAxisPosition, yAxisPosition2, yAxisPosition, intersectionPoint)) {
+								i = xAxis.size();
+								j = yAxis.size();
 							}
 						}
 					}
 					
-					//orthogonal complement of the IntersectingAxes[1]
-					//	<x,y> = 0
-					//	x1y1 + x2y2 = 0
-					//	y2 = -x1y1/x2
-					carve::geom::vector<2> IntersectingAxes = X_Axis_2Position - X_Axis_Position;
-					carve::geom::vector<2> Orthogonal_complement;
-					if (IntersectingAxes[0] != 0.0 && IntersectingAxes[1] != 0.0) {
-						Orthogonal_complement[0] = 1.0;
-						Orthogonal_complement[1] = -IntersectingAxes[0] * Orthogonal_complement[0] / IntersectingAxes[1];
-					}
-					else if (IntersectingAxes[0] = 0.0) {
-						Orthogonal_complement[0] = 1.0;
-						Orthogonal_complement[1] = 0.0;
-					}
-					else {
-						Orthogonal_complement[0] = 0.0;
-						Orthogonal_complement[1] = 1.0;
-					}
+					carve::geom::vector<2> intersectingAxes1 = xAxisPosition2 - xAxisPosition;
+					carve::geom::vector<2> intersectingAxes2 = yAxisPosition2 - yAxisPosition;
+
+					carve::geom::vector<2> orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1[1], intersectingAxes1[0]);
 
 					//cross product of IntersectingAxes[1] and the orthogonal complement of the IntersectingAxes[1] 
-					double cross_product = (IntersectingAxes[0] * Orthogonal_complement[1]) - (IntersectingAxes[1] * Orthogonal_complement[0])
+					double cross_product = (intersectingAxes1[0] * orthogonalComplement[1]) - (intersectingAxes1[1] * orthogonalComplement[0]);
 
 					carve::geom::vector<3> location = {0.0,0.0,0.0};
-					location[0] = intersection_point[0];
-					location[1] = intersection_point[1];
-					location[2] = cross_product;
-
+					location[0] = intersectionPoint[0];
+					location[1] = intersectionPoint[1];
+					
 					switch (intersection->OffsetDistances.size())
 					{
 					case 3:
-						double Xdistance = intersection->OffsetDistances[0];
-						double Ydistance = intersection->OffsetDistances[1];
-						double Zdistance = intersection->OffsetDistances[2];
-						location[0] = location[0] + intersection->OffsetDistances[1];
+						location[0] = location[0] + intersection->OffsetDistances[1] ;
 						location[1] = location[1] + intersection->OffsetDistances[0];
-						location[2] = location[2] + intersection->OffsetDistances[2];
+						location[2] = cross_product + intersection->OffsetDistances[2];
 						break;
 					case 2:
-						double Xdistance = intersection->OffsetDistances[0];
-						double Ydistance = intersection->OffsetDistances[1];
-						ocation[0] = location[0] + intersection->OffsetDistances[1];
+						location[0] = location[0] + intersection->OffsetDistances[1];
 						location[1] = location[1] + intersection->OffsetDistances[0];
 						break;
 					default:

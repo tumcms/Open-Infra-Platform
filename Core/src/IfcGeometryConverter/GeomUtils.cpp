@@ -635,15 +635,16 @@ bool GeomUtils::isPointOnLineSegment( double& target_lambda,
 
 /**********************************************************************************************/
 
-bool LineToLineIntersectionHelper(carve::geom::vector<2>& v1, 
-								  carve::geom::vector<2>& v2, 
-								  carve::geom::vector<2>& v3, 
-								  carve::geom::vector<2>& v4, double & r, double & s)
+bool LineToLineIntersectionHelper(const carve::geom::vector<2>& v1, 
+								  const carve::geom::vector<2>& v2, 
+								  const carve::geom::vector<2>& v3, 
+								  const carve::geom::vector<2>& v4, double & r, double & s)
 {
 	// check if lines are parallel
 	const carve::geom::vector<2> vertex1to2 = v2 - v1;
 	const carve::geom::vector<2> vertex3to4 = v4 - v3;
-	if( vertex1to2.y / vertex1to2.x != vertex3to4.y / vertex3to4.x )
+	if (!(vertex1to2.x == 0. && vertex3to4.x == 0.) // if both x=0., then lines are parallel
+		&& (vertex1to2.x == 0. || vertex3to4.x == 0. || (vertex1to2.y / vertex1to2.x != vertex3to4.y / vertex3to4.x))) // common case
 	{
 		const double d = vertex1to2.x*vertex3to4.y - vertex1to2.y*vertex3to4.x;
 		if( d != 0 )
@@ -660,18 +661,18 @@ bool LineToLineIntersectionHelper(carve::geom::vector<2>& v1,
 
 /**********************************************************************************************/
 
-bool GeomUtils::LineSegmentToLineIntersection(carve::geom::vector<2>& v1,
-											  carve::geom::vector<2>& v2, 
-											  carve::geom::vector<2>& v3,
-											  carve::geom::vector<2>& v4,
-										std::vector<carve::geom::vector<2> >& result )
+bool GeomUtils::LineSegmentToLineIntersection(const carve::geom::vector<2>& v1,
+											  const carve::geom::vector<2>& v2, 
+											  const carve::geom::vector<2>& v3,
+											  const carve::geom::vector<2>& v4,
+										carve::geom::vector<2> & result )
 {
 	double r, s;
 	if( LineToLineIntersectionHelper(v1, v2, v3, v4, r, s) )
 	{
 		if (r >= 0 && r <= 1)
 		{
-			result.push_back(v1 + (v2 - v1) * r);
+			result = (v1 + (v2 - v1) * r);
 			return true;
 		}
 	}
@@ -680,11 +681,11 @@ bool GeomUtils::LineSegmentToLineIntersection(carve::geom::vector<2>& v1,
 
 /**********************************************************************************************/
 
-bool GeomUtils::LineSegmentToLineSegmentIntersection(carve::geom::vector<2>& v1,
-													 carve::geom::vector<2>& v2,
-													 carve::geom::vector<2>& v3, 
-													 carve::geom::vector<2>& v4, 
-										std::vector<carve::geom::vector<2> >& result )
+bool GeomUtils::LineSegmentToLineSegmentIntersection(const carve::geom::vector<2>& v1,
+													 const carve::geom::vector<2>& v2,
+													 const carve::geom::vector<2>& v3, 
+													 const carve::geom::vector<2>& v4, 
+			carve::geom::vector<2> & result )
 {
 	double r, s;
 	if( LineToLineIntersectionHelper(v1, v2, v3, v4, r, s) )
@@ -693,7 +694,7 @@ bool GeomUtils::LineSegmentToLineSegmentIntersection(carve::geom::vector<2>& v1,
 		{
 			if (s >= 0 && s <= 1)
 			{
-				result.push_back(v1 + (v2 - v1) * r);
+				result  = (v1 + (v2 - v1) * r);
 				return true;
 			}
 		}
