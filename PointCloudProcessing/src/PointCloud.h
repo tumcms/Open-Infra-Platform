@@ -217,4 +217,8 @@ namespace buw {
 	using OpenInfraPlatform::PointCloudProcessing::PointCloud;
 }
 
+namespace oip {
+	using OpenInfraPlatform::PointCloudProcessing::PointCloud;
+}
+
 #endif
