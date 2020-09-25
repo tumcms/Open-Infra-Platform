@@ -320,7 +320,7 @@ const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationName()
 
 const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationVersionString()
 {
-	return "2018";
+	return "2020";
 }
 
 const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationOpenFileFilter()
@@ -366,16 +366,6 @@ void OpenInfraPlatform::Core::DataManagement::Data::enableSkybox( const bool ena
 bool OpenInfraPlatform::Core::DataManagement::Data::isSkyboxEnabled() const
 {
 	return bDrawSkybox_;
-}
-
-
-buw::Vector3d OpenInfraPlatform::Core::DataManagement::Data::getOffset() const
-{
-	buw::Vector3d minPos;
-	buw::Vector3d maxPos;
-	buw::Vector3d offsetViewArea = minPos + 0.5 * (maxPos - minPos);
-
-	return offsetViewArea;
 }
 
 
@@ -435,11 +425,6 @@ void OpenInfraPlatform::Core::DataManagement::Data::showViewCube(const bool enab
 bool OpenInfraPlatform::Core::DataManagement::Data::isViewCubeEnabled()
 {
 	return bShowViewCube_;
-}
-
-buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> OpenInfraPlatform::Core::DataManagement::Data::getIfcGeometryModel() const
-{ 
-	return ifcGeometryModel_;
 }
 
 void OpenInfraPlatform::Core::DataManagement::Data::setShowFrameTimes(const bool enable)
