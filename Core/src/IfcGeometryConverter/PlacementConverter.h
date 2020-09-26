@@ -799,21 +799,43 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<2> intersectingAxes1 = xAxisPosition2 - xAxisPosition;
 					carve::geom::vector<2> intersectingAxes2 = yAxisPosition2 - yAxisPosition;
 
-					carve::geom::vector<2> orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1[1], intersectingAxes1[0]);
-
-					//cross product of IntersectingAxes[1] and the orthogonal complement of the IntersectingAxes[1] 
-					double cross_product = (intersectingAxes1[0] * orthogonalComplement[1]) - (intersectingAxes1[1] * orthogonalComplement[0]);
-
-					carve::geom::vector<3> location = {0.0,0.0,0.0};
+					carve::geom::vector<3> location = carve::geom::VECTOR(0.0,0.0,0.0);
 					location[0] = intersectionPoint[0];
 					location[1] = intersectionPoint[1];
 					
 					switch (intersection->OffsetDistances.size())
 					{
 					case 3:
-						location[0] = location[0] + intersection->OffsetDistances[1] ;
+						carve::geom::vector<3> intersecting3DAxes1 = carve::geom::VECTOR(intersectingAxes1[0], intersectingAxes1[1], 0.0 );
+						carve::geom::vector<3> orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1[1], intersectingAxes1[0], 0.0);
+						
+						//cross product of IntersectingAxes[1] and the orthogonal complement of the IntersectingAxes[1] 
+						carve::geom::vector<3> crossProduct = carve::geom::VECTOR(intersecting3DAxes1[1] * orthogonalComplement[2]) - (intersecting3DAxes1[2] * orthogonalComplement[1],
+							intersecting3DAxes1[2] * orthogonalComplement[0] - intersecting3DAxes1[0] * orthogonalComplement[2],
+							intersecting3DAxes1[0] * orthogonalComplement[1] - intersecting3DAxes1[1] * orthogonalComplement[0]);
+
+						location = location + crossProduct;
+
+						//	|
+						//	|      *     *
+						//	|     *--__ *  --__  = OffsetDistances [0]
+						//	|    *____ *  ____  dx =  OffsetDistances[0] / sin(arctan(intersectingAxes1[0] / intersectingAxes1[1])) 
+						//	|   *     *
+						//	|  *     *     -> [1  0 0 
+						//	| *     *          0  1 0     =   transformation2              
+						//	|*     *           dx 0 1]
+						//	|_____*______________________________
+						//	 
+						// [intersectingAxes2[0], intersectingAxes2[1], 1.0] * transformation2 
+
+						carve::math::Matrix3 transformation1 = [1, 0, 0,
+							0, 1, 0,
+							intersection->OffsetDistances[1]/ sin(atan(intersectingAxes1[0] / intersectingAxes1[1])), 0, 1];
+						 
+						carve::geom::vector<3> newIntersectingAxes1 = carve::geom::VECTOR(intersectingAxes1[0], intersectingAxes1[1], 1.0) * transformation1;
+						location[0] = location[0] + newIntersectingAxes1[2];
 						location[1] = location[1] + intersection->OffsetDistances[0];
-						location[2] = cross_product + intersection->OffsetDistances[2];
+						location[2] = location[2] + intersection->OffsetDistances[2];
 						break;
 					case 2:
 						location[0] = location[0] + intersection->OffsetDistances[1];
