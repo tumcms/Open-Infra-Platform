@@ -27,7 +27,7 @@
 using namespace testing;
 
 
-class AirTerminalCase : public VisualTest {
+class AirTerminalElement : public VisualTest {
 protected:
 
 	// Test standard values
@@ -52,7 +52,7 @@ protected:
 		VisualTest::TearDown();
 	}
 
-	virtual std::string TestName() const { return "air-terminal-case"; }
+	virtual std::string TestName() const { return "air-terminal-element"; }
 	virtual std::string Schema() const { return "IFC4x1"; }
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
@@ -60,31 +60,31 @@ protected:
 	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
 };
 
-TEST_F(AirTerminalCase, AllEntitiesAreRead) {
+TEST_F(AirTerminalElement, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(159));
 }
 
-TEST_F(AirTerminalCase, ImageIsSaved)
+TEST_F(AirTerminalElement, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = renderer->captureImage();
 
 	// Act
-	buw::storeImage(testPath("air-terminal-case.png").string(), image);
+	buw::storeImage(testPath("air-terminal-element.png").string(), image);
 
 	// Assert
-	EXPECT_NO_THROW(buw::loadImage4b(testPath("air-terminal-case.png").string()));
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("air-terminal-element.png").string()));
 }
 
-TEST_F(AirTerminalCase, PlaneSurfaceViews)
+TEST_F(AirTerminalElement, PlaneSurfaceViews)
 {
 	// Arrange
-	const auto expected_front = buw::loadImage4b(dataPath("air-terminal-case_front.png").string());
-	const auto expected_top = buw::loadImage4b(dataPath("air-terminal-case_top.png").string());
-	const auto expected_bottom = buw::loadImage4b(dataPath("air-terminal-case_bottom.png").string());
-	const auto expected_left = buw::loadImage4b(dataPath("air-terminal-case_left.png").string());
-	const auto expected_right = buw::loadImage4b(dataPath("air-terminal-case_right.png").string());
-	const auto expected_back = buw::loadImage4b(dataPath("air-terminal-case_back.png").string());
+	const auto expected_front = buw::loadImage4b(dataPath("air-terminal-element_front.png").string());
+	const auto expected_top = buw::loadImage4b(dataPath("air-terminal-element_top.png").string());
+	const auto expected_bottom = buw::loadImage4b(dataPath("air-terminal-element_bottom.png").string());
+	const auto expected_left = buw::loadImage4b(dataPath("air-terminal-element_left.png").string());
+	const auto expected_right = buw::loadImage4b(dataPath("air-terminal-element_right.png").string());
+	const auto expected_back = buw::loadImage4b(dataPath("air-terminal-element_back.png").string());
 
 	// Act (Front)
 	renderer->setViewDirection(buw::eViewDirection::Front);
@@ -107,12 +107,12 @@ TEST_F(AirTerminalCase, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("air-terminal-case_front.png").string(), image_front);
-	buw::storeImage(testPath("air-terminal-case_top.png").string(), image_top);
-	buw::storeImage(testPath("air-terminal-case_bottom.png").string(), image_bottom);
-	buw::storeImage(testPath("air-terminal-case_left.png").string(), image_left);
-	buw::storeImage(testPath("air-terminal-case_right.png").string(), image_right);
-	buw::storeImage(testPath("air-terminal-case_back.png").string(), image_back);
+	buw::storeImage(testPath("air-terminal-element_front.png").string(), image_front);
+	buw::storeImage(testPath("air-terminal-element_top.png").string(), image_top);
+	buw::storeImage(testPath("air-terminal-element_bottom.png").string(), image_bottom);
+	buw::storeImage(testPath("air-terminal-element_left.png").string(), image_left);
+	buw::storeImage(testPath("air-terminal-element_right.png").string(), image_right);
+	buw::storeImage(testPath("air-terminal-element_back.png").string(), image_back);
 	*/
 
 	// Assert
@@ -124,17 +124,17 @@ TEST_F(AirTerminalCase, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(AirTerminalCase, VertexViews)
+TEST_F(AirTerminalElement, VertexViews)
 {
 	// Arrange
-	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("air-terminal-case_front_left_bottom.png").string());
-	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("air-terminal-case_front_right_bottom.png").string());
-	const auto expected_top_left_front = buw::loadImage4b(dataPath("air-terminal-case_top_left_front.png").string());
-	const auto expected_top_front_right = buw::loadImage4b(dataPath("air-terminal-case_top_front_right.png").string());
-	const auto expected_top_left_back = buw::loadImage4b(dataPath("air-terminal-case_top_left_back.png").string());
-	const auto expected_top_right_back = buw::loadImage4b(dataPath("air-terminal-case_top_right_back.png").string());
-	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("air-terminal-case_back_left_bottom.png").string());
-	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("air-terminal-case_right_bottom_back.png").string());
+	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("air-terminal-element_front_left_bottom.png").string());
+	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("air-terminal-element_front_right_bottom.png").string());
+	const auto expected_top_left_front = buw::loadImage4b(dataPath("air-terminal-element_top_left_front.png").string());
+	const auto expected_top_front_right = buw::loadImage4b(dataPath("air-terminal-element_top_front_right.png").string());
+	const auto expected_top_left_back = buw::loadImage4b(dataPath("air-terminal-element_top_left_back.png").string());
+	const auto expected_top_right_back = buw::loadImage4b(dataPath("air-terminal-element_top_right_back.png").string());
+	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("air-terminal-element_back_left_bottom.png").string());
+	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("air-terminal-element_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
 	renderer->setViewDirection(buw::eViewDirection::FrontLeftBottom);
@@ -163,14 +163,14 @@ TEST_F(AirTerminalCase, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("air-terminal-case_front_left_bottom.png").string(), image_front_left_bottom);
-	buw::storeImage(testPath("air-terminal-case_front_right_bottom.png").string(), image_front_right_bottom);
-	buw::storeImage(testPath("air-terminal-case_top_left_front.png").string(), image_top_left_front);
-	buw::storeImage(testPath("air-terminal-case_top_front_right.png").string(), image_top_front_right);
-	buw::storeImage(testPath("air-terminal-case_top_left_back.png").string(), image_top_left_back);
-	buw::storeImage(testPath("air-terminal-case_top_right_back.png").string(), image_top_right_back);
-	buw::storeImage(testPath("air-terminal-case_back_left_bottom.png").string(), image_back_left_bottom);
-	buw::storeImage(testPath("air-terminal-case_right_bottom_back.png").string(), image_right_bottom_back);
+	buw::storeImage(testPath("air-terminal-element_front_left_bottom.png").string(), image_front_left_bottom);
+	buw::storeImage(testPath("air-terminal-element_front_right_bottom.png").string(), image_front_right_bottom);
+	buw::storeImage(testPath("air-terminal-element_top_left_front.png").string(), image_top_left_front);
+	buw::storeImage(testPath("air-terminal-element_top_front_right.png").string(), image_top_front_right);
+	buw::storeImage(testPath("air-terminal-element_top_left_back.png").string(), image_top_left_back);
+	buw::storeImage(testPath("air-terminal-element_top_right_back.png").string(), image_top_right_back);
+	buw::storeImage(testPath("air-terminal-element_back_left_bottom.png").string(), image_back_left_bottom);
+	buw::storeImage(testPath("air-terminal-element_right_bottom_back.png").string(), image_right_bottom_back);
 	*/
 
 	// Assert
