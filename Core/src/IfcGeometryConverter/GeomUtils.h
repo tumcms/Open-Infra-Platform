@@ -72,17 +72,17 @@ namespace OpenInfraPlatform
 				static carve::geom::vector<3> computePolygon2DNormal(
 					const std::vector<carve::geom::vector<2> >& polygon);
 
-				static bool LineSegmentToLineIntersection(const carve::geom::vector<2>& v1,
-					const carve::geom::vector<2>& v2,
-					const carve::geom::vector<2>& v3,
-					const carve::geom::vector<2>& v4,
-					carve::geom::vector<2> & result);
+				static bool LineSegmentToLineIntersection(const carve::geom::vector<2>& initialPointSeg1,
+					const carve::geom::vector<2>& terminalPointSeg1,
+					const carve::geom::vector<2>& initialPointSeg2,
+					const carve::geom::vector<2>& terminalPointSeg2,
+					carve::geom::vector<2> & intersectionPoint);
 
-				static bool LineSegmentToLineSegmentIntersection(const carve::geom::vector<2>& v1,
-					const carve::geom::vector<2>& v2,
-					const carve::geom::vector<2>& v3,
-					const carve::geom::vector<2>& v4,
-					carve::geom::vector<2> & result);
+				static bool LineSegmentToLineSegmentIntersection(const carve::geom::vector<2>& initialPointSeg1,
+					const carve::geom::vector<2>& terminalPointSeg1,
+					const carve::geom::vector<2>& initialPointSeg2,
+					const carve::geom::vector<2>& terminalPointSeg2,
+					carve::geom::vector<2> & intersectionPoint);
 
 				static void appendPointsToCurve(
 					const std::vector<carve::geom::vector<3> >& points_vec,
