@@ -81,8 +81,7 @@ tempIfcGeometryModel_(nullptr)
 {
 	clear(false);
 
-	latestChangeFlag_ = (ChangeFlag) (ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences);
-	/*latestChangeFlag_ = (ChangeFlag)(ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel)*/;
+	latestChangeFlag_ = ChangeFlag::All;
 
 	AsyncJob::getInstance().jobFinished.connect(boost::bind(&OpenInfraPlatform::Core::DataManagement::Data::jobFinished, this, _1, _2));
 }
@@ -112,7 +111,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::clear(const bool notifyObser
 		// The notification state is not used here, because a clear is not executed by an action.
 		//m_pNotifiactionState->Change();
 
-		pushChange(ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel);
+		pushChange(ChangeFlag::All);
 
 		Clear();
 	}

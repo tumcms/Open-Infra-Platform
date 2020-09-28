@@ -777,7 +777,7 @@ void Viewport::onChange() {
     onChange(data.getLatesChangeFlag());
 }
 
-void Viewport::onChange(ChangeFlag changeFlag) 
+void Viewport::onChange( const ChangeFlag changeFlag ) 
 {
 	// the extents
 	oip::BBox bb;

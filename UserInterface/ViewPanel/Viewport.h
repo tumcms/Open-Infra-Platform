@@ -88,7 +88,7 @@ namespace OpenInfraPlatform {
 			}
 
 			void onChange();
-			void onChange(ChangeFlag changeFlag);
+			void onChange(const ChangeFlag changeFlag);
 			void onClear();
 
 			void reloadShader();

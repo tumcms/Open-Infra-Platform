@@ -46,16 +46,10 @@ namespace OpenInfraPlatform
 
 			enum class ChangeFlag : unsigned int {
 				None = 0,
-				AlignmentModel = 1 << 0,
-				DigitalElevationModel = 1 << 1,
-				IfcGeometry = 1 << 2,
-				PointCloud = 1 << 3,
-				Preferences = 1 << 4,
-				TrafficModel = 1 << 5,
-				SelectedAlignmentIndex = 1 << 6,
-				GirderModel = 1 << 7,
-				SlabFieldModel = 1 << 8,
-				ProxyModel = 1 << 9
+				IfcGeometry = 1 << 0,
+				PointCloud = 1 << 1,
+				Preferences = 1 << 2,
+				All = IfcGeometry | PointCloud | Preferences
 			};
 
 			inline ChangeFlag operator|(ChangeFlag a, ChangeFlag b)
