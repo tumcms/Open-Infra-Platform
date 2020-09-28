@@ -86,9 +86,6 @@ namespace OpenInfraPlatform
 				void pushChange(ChangeFlag flag);
 				ChangeFlag getLatesChangeFlag();
 
-				//Retrieve the name of the last imported files
-				QString recentFileName;
-
 				// Retrieve the name of the application
 				virtual const char* getApplicationName();
 
@@ -120,19 +117,14 @@ namespace OpenInfraPlatform
 				void import(const std::string & filename);
 
 				//---------------------------------------------------------------------------//
-				// IFCx Model
-				//---------------------------------------------------------------------------//
-
-				buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> getIfcGeometryModel() const;
 
 				//---------------------------------------------------------------------------//
 				// Point Cloud
 				//---------------------------------------------------------------------------//
 
+				// this could probably be made better/easier (pjanck, 2020.09.25.)
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 				std::shared_ptr<buw::PointCloud> getPointCloud();
-
-				void exportPointCloud(const std::string& filename) const;
 #endif
 
 				//---------------------------------------------------------------------------//
@@ -153,8 +145,6 @@ namespace OpenInfraPlatform
 
 				void enableSkybox(const bool enable);
 				bool isSkyboxEnabled() const;
-
-				buw::Vector3d getOffset() const;
 
 				void showViewCube(const bool enable);
 
@@ -188,15 +178,16 @@ namespace OpenInfraPlatform
 
 				template <typename IfcEntityTypesT, typename IfcReader>
 				void ParseExpressAndGeometryModel(const std::string &filename) {
-					expressModel_ = IfcReader::FromFile(filename);
+					auto expressModel_ = IfcReader::FromFile(filename);
 					auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>();
-					tempIfcGeometryModel_ = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
 					if (importer.collectGeometryData(expressModel_)) {
+						auto ifcGeometryModel = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
 						auto converter = IfcGeometryConverter::ConverterBuwT<IfcEntityTypesT>();
-						if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
-							if (!tempIfcGeometryModel_->isEmpty()) {
-								ifcGeometryModel_ = tempIfcGeometryModel_;
-								ifcGeometryModel_.setFilename(filename);
+						if (converter.createGeometryModel(ifcGeometryModel, importer.getShapeDatas())) {
+							if (!ifcGeometryModel->isEmpty()) {
+								ifcGeometryModel->setFilename(filename);
+								addModel(ifcGeometryModel);
+								latestChangeFlag_ = ChangeFlag::IfcGeometry;
 							}
 						}
 					}
@@ -214,15 +205,7 @@ namespace OpenInfraPlatform
 				bool			bDrawSkybox_ = false;
 				bool			bShowViewCube_ = true;
 				bool			bShowFrameTime_ = false;
-
-				/// Removed in Revision 483
-				buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>	ifcGeometryModel_ = nullptr;
-				buw::ReferenceCounted<oip::EXPRESSModel>						expressModel_ = nullptr;
 				
-				// temporary data for asynchronous operations
-				bool merge_;
-				buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>	tempIfcGeometryModel_;
-
 				int																currentJobID_;
 
 				// Add Georeference
@@ -231,17 +214,16 @@ namespace OpenInfraPlatform
 				double m_OrthogonalHeight = 0.0;
 				QString m_Name = "EPSG:31467";
 
-#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-
-				buw::ReferenceCounted<buw::PointCloud> pointCloud_ = nullptr;
-
-#endif
 			private:
 				// a collection of models that are loaded
-				std::list<buw::ReferenceCounted<oip::IModel>> models_;
+				std::list<std::shared_ptr<oip::IModel>> models_;
 			public:
 				// add a model to the collection
 				void addModel(buw::ReferenceCounted<oip::IModel> model);
+				// get the last model
+				std::shared_ptr<oip::IModel> getLastModel();
+				// are there models loaded?
+				bool hasModels();
 				// remove a model from the collection
 				void removeModel(buw::ReferenceCounted<oip::IModel> model);
 				// remove all models

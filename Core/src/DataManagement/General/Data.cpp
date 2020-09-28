@@ -75,19 +75,20 @@ enableGradientClear_(true),
 bDrawGrid_(false),
 bDrawSkybox_(false),
 bShowViewCube_(true),
-bShowReferenceCoordinateSystem(true),
 currentJobID_(-1),
-tempIfcGeometryModel_(nullptr)
+bShowReferenceCoordinateSystem(true)
 {
 	clear(false);
 
 	latestChangeFlag_ = ChangeFlag::All;
 
 	AsyncJob::getInstance().jobFinished.connect(boost::bind(&OpenInfraPlatform::Core::DataManagement::Data::jobFinished, this, _1, _2));
+
 }
 
 OpenInfraPlatform::Core::DataManagement::Data::~Data()
 {
+	clear();
 }
 
 
@@ -95,14 +96,12 @@ void OpenInfraPlatform::Core::DataManagement::Data::open( const std::string & fi
 {
 	if (boost::filesystem::exists(filename))
 	{
-		import(filename);		
-		recentFileName = QString::fromUtf8(filename.c_str());
+		import(filename);
 	}
 }
 
 
-void OpenInfraPlatform::Core::DataManagement::Data::clear(const bool notifyObservers) {   
-	ifcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
+void OpenInfraPlatform::Core::DataManagement::Data::clear(const bool notifyObservers) {
 
 	// remove everything
 	removeAllModels();
@@ -138,9 +137,6 @@ void OpenInfraPlatform::Core::DataManagement::Data::import(const std::string & f
 {
 	BLUE_ASSERT(boost::filesystem::exists(filename))("File does not exist");
 	if(boost::filesystem::exists(filename)) {
-		clear(false);
-		merge_ = false;
-
 		currentJobID_ = AsyncJob::getInstance().startJob(&Data::importJob, this, filename);
 	}
 }
@@ -209,7 +205,9 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
 	if (buw::PointCloud::GetSupportedExtensions().contains(extension)) {
-		pointCloud_ = buw::PointCloud::FromFile(filename.data(), true);
+		auto pointCloud = buw::PointCloud::FromFile(filename.data(), true);
+		addModel(pointCloud);
+		latestChangeFlag_ = ChangeFlag::PointCloud;
 		return;
 	}
 	else {
@@ -250,29 +248,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::jobFinished(int jobID, bool 
 		return;
 	}
 
-	ChangeFlag flag = (ChangeFlag)0;
-	if (tempIfcGeometryModel_)
-	{
-		flag = flag | ChangeFlag::IfcGeometry;
-
-		if (merge_)
-		{
-			throw new buw::NotImplementedYetException("merge ifcGeometry is not supported yet");
-		}
-		else
-		{
-			ifcGeometryModel_ = tempIfcGeometryModel_;
-		}
-
-		tempIfcGeometryModel_ = nullptr;
-	}
-
-#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-	if (pointCloud_) {
-		flag = flag | ChangeFlag::PointCloud;
-	}
-#endif
-	pushChange(flag);
+	pushChange(getLatesChangeFlag());
 }
 
 
@@ -440,16 +416,14 @@ bool OpenInfraPlatform::Core::DataManagement::Data::showFrameTimes() const
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-
-std::shared_ptr<buw::PointCloud> OpenInfraPlatform::Core::DataManagement::Data::getPointCloud() {
-	return pointCloud_;
+// always returns the last loaded point cloud - needs to be done better (pjanck, 2020-09-28)
+std::shared_ptr<oip::PointCloud> OpenInfraPlatform::Core::DataManagement::Data::getPointCloud()
+{
+	for (auto model = models_.rbegin(); model != models_.rend(); model++)
+		if (std::dynamic_pointer_cast<oip::PointCloud>(*model))
+			return std::dynamic_pointer_cast<oip::PointCloud>(*model);
+	return nullptr;
 }
-
-void OpenInfraPlatform::Core::DataManagement::Data::exportPointCloud(const std::string& filename) const {
-	//TODO
-}
-
-
 #endif
 
 // Model handling
@@ -457,6 +431,18 @@ void OpenInfraPlatform::Core::DataManagement::Data::addModel(buw::ReferenceCount
 {
 	if( std::find(models_.begin(), models_.end(), model) == models_.end() )
 		models_.push_back(model);
+}
+
+bool OpenInfraPlatform::Core::DataManagement::Data::hasModels()
+{
+	return !models_.empty();
+}
+
+std::shared_ptr<oip::IModel> OpenInfraPlatform::Core::DataManagement::Data::getLastModel()
+{
+	if (hasModels())
+		return *models_.rbegin();
+	return nullptr;
 }
 
 void OpenInfraPlatform::Core::DataManagement::Data::removeModel(buw::ReferenceCounted<oip::IModel> model)

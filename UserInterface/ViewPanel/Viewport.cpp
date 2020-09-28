@@ -779,115 +779,58 @@ void Viewport::onChange() {
 
 void Viewport::onChange( const ChangeFlag changeFlag ) 
 {
+	// Change in settings?
+	if (changeFlag & ChangeFlag::Preferences) {
+		//TODO
+	}
+
 	// the extents
-	oip::BBox bb;
-
-    auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
- //   auto dem = data.getDigitalElevationModel();
- //   auto alignment = data.getAlignmentModel();
- //   auto trafficSignModel = data.getTrafficSignModel();
- //   auto girderModel = data.getGirderModel();
- //   auto slabFieldModel = data.getSlabFieldModel();
-	//auto proxyModel = data.getProxyModel();
-   /* if (dem && dem->getSurfaceCount() > 0)
-        dem->getSurfacesExtend(min, max);
-    else if (alignment && alignment->getAlignmentCount() > 0) {
-        auto bb = alignment->getExtends();
-        min = bb.getMinimum();
-        max = bb.getMaximum();
-	}*/
-
-	// get the extents of the IFC model
-    auto ifcGeometryModel = data.getIfcGeometryModel();
-	if (ifcGeometryModel && !ifcGeometryModel->isEmpty())
-	{
-		bb.update(ifcGeometryModel->bb_);
-		BLUE_LOG(trace) << "boundingbox:" << bb.toString();
-	}
-
-
-	// get the extents of the point cloud
-#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-	auto pointCloud = data.getPointCloud();
-	if(pointCloud && pointCloud->size() > 0) {
-		CCVector3 minPos, maxPos;
-		pointCloud->getBoundingBox(minPos, maxPos);
-		bb.update(minPos.x, minPos.y, minPos.z);
-		bb.update(maxPos.x, maxPos.y, maxPos.z);
-		BLUE_LOG(trace) << "boundingbox:" << bb.toString();
-	}
-#endif
-
-	// if bounding box is still on default, overwrite
-	if( bb.isEmpty() )
-	{
-		bb.fit( carve::geom::VECTOR( -1., -1., -1. ), carve::geom::VECTOR(  1.,  1.,  1. ));
-	}
-
-	
-
-    buw::Vector3d offset = -bb.center();
+	oip::BBox bb = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getExtents();	
+	buw::Vector3d offset = -bb.center();
     minExtend_ = (bb.min() + offset).cast<float>();
     maxExtend_ = (bb.max() + offset).cast<float>();
 	buw::Vector3f extend = maxExtend_ - minExtend_;
-	
-
     boundingBoxEffect_->setBounds(bb.min(), bb.max());
 
- //   if(changeFlag & ChangeFlag::DigitalElevationModel && dem) {
- //       demEffect_->setDEM(dem, offset);
- //       activeEffects_.push_back(demEffect_);
- //   }
+	// if no models there: just ignore everything
+	if (!OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().hasModels())
+		return;
 
- //   if(changeFlag & ChangeFlag::AlignmentModel && alignment) {
- //       alignmentEffect_->setAlignment(alignment, offset);
- //       activeEffects_.push_back(alignmentEffect_);
- //   }
-
-    if(changeFlag & ChangeFlag::IfcGeometry && ifcGeometryModel) {
-        ifcGeometryEffect_->setIfcGeometryModel(ifcGeometryModel, offset);
-        activeEffects_.push_back(ifcGeometryEffect_);
+	// change in IFC geometry?
+    if( changeFlag & ChangeFlag::IfcGeometry ) {
+		auto ifcGeometryModel = std::dynamic_pointer_cast<oip::IfcGeometryModel>(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getLastModel());
+		if( ifcGeometryModel )
+		{
+			buw::ReferenceCounted<oip::IfcGeometryEffect> ifcGeometryEffect 
+				= buw::makeReferenceCounted<oip::IfcGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+			ifcGeometryEffect->init();
+			ifcGeometryEffect->setIfcGeometryModel(ifcGeometryModel, offset);
+			activeEffects_.push_back(ifcGeometryEffect);
+		}
     }
 
- //   if(changeFlag & ChangeFlag::TrafficModel && trafficSignModel) {
- //       trafficSignEffect_->setData(alignment, offset, trafficSignModel);
- //       activeEffects_.push_back(trafficSignEffect_);
- //   }
-
- //   if(changeFlag & ChangeFlag::GirderModel && girderModel) {
- //       girderEffect_->setData(girderModel, offset);
- //       activeEffects_.push_back(girderEffect_);
- //   }
-
- //   if(changeFlag & ChangeFlag::SlabFieldModel && slabFieldModel) {
- //       slabFieldEffect_->setData(slabFieldModel, offset);
- //       activeEffects_.push_back(slabFieldEffect_);
- //   }
-
- //   if(changeFlag & ChangeFlag::SelectedAlignmentIndex && alignment) {
- //       selectedAlignmentIndex_ = data.getSelectedAlignment();
- //       alignmentEffect_->setCurrentSelectedAlignment(selectedAlignmentIndex_);
- //   }
-
+	// change in Point cloud
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-	if(changeFlag & ChangeFlag::PointCloud && pointCloud && pointCloud->size() > 0) {
-		pointCloudEffect_->setPointCloud(pointCloud, offset);
-		activeEffects_.push_back(pointCloudEffect_);
-		activeEffects_.push_back(sectionsBoundingBoxEffect_);
+	if(changeFlag & ChangeFlag::PointCloud ) {
+		auto pointCloud = std::dynamic_pointer_cast<oip::PointCloud>(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getLastModel());
+		if( pointCloud )
+		{
+			auto pointCloudEffect_ 
+				= buw::makeReferenceCounted<oip::PointCloudEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+			pointCloudEffect_->init();
+
+			auto sectionsBoundingBoxEffect_ 
+				= buw::makeReferenceCounted<oip::BoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+			sectionsBoundingBoxEffect_->init();
+
+			pointCloudEffect_->sectionsBoundingBoxEffect_ = sectionsBoundingBoxEffect_;
+			pointCloudEffect_->setPointCloud(pointCloud, offset);
+
+			activeEffects_.push_back(pointCloudEffect_);
+			activeEffects_.push_back(sectionsBoundingBoxEffect_);
+		}
 	}
 #endif
-
-	//if (/*changeFlag & ChangeFlag::ProxyModel && */proxyModel && proxyModel->getAccidentReportCount()) {
-	//	billboardEffect_->setProxyModel(proxyModel, offset);
-	//	billboardEffect_->setPointSize(621.0f);
-	//	billboardEffect_->drawPointsWithUniformColor(false);
-	//	billboardEffect_->drawPointsWithUniformSize(true);
-	//	activeEffects_.push_back(billboardEffect_);
-	//}
-
-    if(changeFlag & ChangeFlag::Preferences) {
-        //TODO
-    }
 }
 
 void Viewport::onClear() {

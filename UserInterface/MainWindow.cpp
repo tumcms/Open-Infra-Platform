@@ -354,9 +354,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::dropEvent(QDropEvent* ev) {
 			std::string DropName = filePathList[0].toStdString();
 
 			if (boost::filesystem::exists(DropName)) {
-				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().clear();
-				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import(DropName);
-				addToRecentFilesList(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().recentFileName);
+				auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
+				data.import(DropName);
+				addToRecentFilesList(QString::fromStdString(DropName));
 				updateRecentFileActions();
 
 				boost::filesystem::path p(DropName.c_str());
@@ -497,21 +497,22 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportPointCloud_triggered()
 {
-	if(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud().get() != nullptr) {
-		QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin;;*.las"));
-		if(!filename.isNull()) {
-			OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
-		}
-	}
-	else {
+	//if(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud().get() != nullptr) {
+	//	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin;;*.las"));
+	//	if(!filename.isNull()) {
+	//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
+	//	}
+	//}
+	//else {
 		QMessageBox dialog;
 		dialog.setStandardButtons(QMessageBox::StandardButton::Ok);
 		dialog.setIcon(QMessageBox::Icon::Warning);
-		dialog.setText("No Point Cloud to export available.");
+		//dialog.setText("No Point Cloud to export available.");
+		dialog.setText("Point Cloud export currently not available.");
 		dialog.setWindowTitle(tr("Disclaimer"));
 		dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
 		dialog.exec();
-	}
+	//}
 }
 #endif
 
@@ -633,7 +634,7 @@ QString OpenInfraPlatform::UserInterface::MainWindow::strippedName(const QString
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionOpen_triggered() {
 	try {
 		handle_actionOpen_triggered();
-		addToRecentFilesList(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().recentFileName);
+		addToRecentFilesList(QString::fromStdString(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getLastModel()->getSource()));
 		updateRecentFileActions();
 	} catch (const buw::Exception& exception) {
 		QMessageBox::warning(this, QApplication::applicationName(), tr("Cannot open the selected file."));

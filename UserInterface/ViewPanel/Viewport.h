@@ -156,8 +156,6 @@ namespace OpenInfraPlatform {
 			void createDepthStencil();
 			void resizeDepthStencil();
 
-			void createIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel);
-
 		private Q_SLOTS:
 			void tick();
 
