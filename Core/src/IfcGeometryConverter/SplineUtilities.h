@@ -234,19 +234,20 @@ namespace OpenInfraPlatform
 				 * \param[in]	order			Order of the B-Spline or rather the basis functions ( =degree+1 )
 				 * \param[in]	controlPoints	The vector of the B-Spline control points.
 				 * \param[in]	knotArray		The array / vector of knots.
+				 * \param[in]	numCurvePoints	The number of curve points where the curvature will be calculated.
 				 *
 				 * \return		Vector of pairs with curve length and curvature.
 				 */
 				std::vector<std::pair<double, double>> computeCurvatureOfBSplineCurveWithKnots(
 					const int& order,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
-					const std::vector<double>& knotArray) const throw(...)
+					const std::vector<double>& knotArray,
+					const uint32_t& numCurvePoints) const throw(...)
 				{
 					const size_t numControlPoints = controlPoints.size();
-					uint32_t numCurvePoints;
+					
 					// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
-					double accuracy;
-					std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
+					const double accuracy = obtainProperties();
 
 					// The following parameters corresponds to the parameter t of a curve c(t)
 					double knotStart;
@@ -352,16 +353,13 @@ namespace OpenInfraPlatform
 				 * \note	The number of curve points \c numCurvePoints, where the curve c(t) has to be evaluated,
 				 *			is temporary preset with a default value proportional to the number of knots.
 				 */
-				std::tuple<const uint32_t, const double> obtainProperties(const int& numKnotsArray) const throw(...)
+				const double obtainProperties() const throw(...)
 				{
-					// ! TEMPORARY default number of curve points
-					const uint32_t numCurvePoints = numKnotsArray * 10;
-
 					// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
 					const double accuracy = 0.0000001;
 					//double accuracy = GeomSettings()->getPrecision();
 
-					return { numCurvePoints, accuracy };
+					return { accuracy };
 				}
 
 				/*! \brief Computes the B-Spline basis functions for given curve value t.
