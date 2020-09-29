@@ -84,6 +84,12 @@ namespace OpenInfraPlatform
 					const carve::geom::vector<2>& terminalPointSeg2,
 					carve::geom::vector<2> & intersectionPoint);
 
+				static bool GeomUtils::LineToLineIntersection(const carve::geom::vector<2>& initialPointSeg1,
+					const carve::geom::vector<2>& terminalPointSeg1,
+					const carve::geom::vector<2>& initialPointSeg2,
+					const carve::geom::vector<2>& terminalPointSeg2,
+					carve::geom::vector<2> & intersectionPoint);
+
 				static void appendPointsToCurve(
 					const std::vector<carve::geom::vector<3> >& points_vec,
 					std::vector<carve::geom::vector<3> >& target_vec);
