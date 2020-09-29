@@ -23,6 +23,7 @@
 #include <QMessageBox>
 
 #include <QPushButton>
+#include <math.h>
 
 #include "IfcGeometryConverter/SplineUtilities.h"
 
@@ -38,19 +39,25 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	const std::vector<carve::geom::vector<3>> controlPoints = obtainControlPoints();
 	// ToDo: exception handling if controlPoints is an empty vector, the functions has to be cancelled
 
-	// Prepair properties
-	const int order = 4;
-	const std::vector<double> knotArray = obtainKnotArrayOpenUniform(controlPoints.size(), order);
+	// Prepair properties for first approximation
+	int nCurvePoints = controlPoints.size();
+	const int nControlPoints = controlPoints.size();
+	const int order = ceil(static_cast<double>(nControlPoints) / 2.0);
+	const std::vector<double> knotArray = obtainKnotArrayOpenUniform(nControlPoints, order);
 
-	// Compute curvature
+	// Get instance of SplineUtilities
 	Core::IfcGeometryConverter::SplineUtilities splineUtilities;
-	const std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray);
+	// Calculate first approximation with B-Splinecurve
+	const std::vector<carve::geom::vector<3>> bsplinePoints = splineUtilities.computeBSplineCurveWithKnots(order, knotArray, controlPoints, nCurvePoints, accuracy);
 
-	// Test B-Spline
-	const std::vector<carve::geom::vector<3>> bspline = splineUtilities.computeBSplineCurveWithKnots(order, knotArray, controlPoints, 10*knotArray.size(), accuracy);
+	// Set properties for second approximation and compute curvature
+	// (nControlPoints, order, and knoteArray are const, because nCurvePoints in first approximation were equal nControlPoints)
+	nCurvePoints = 10 * controlPoints.size();
+	const std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray, nCurvePoints);
 
-	//debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
-	debugFunction_printVectorOfPointsInConsolWindow(bspline);
+
+	debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
+	//debugFunction_printVectorOfPointsInConsolWindow(bsplinePoints);
 }
 
 // PRIVATE FUNCTIONS
