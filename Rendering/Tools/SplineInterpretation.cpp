@@ -22,6 +22,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+#include <QPushButton>
+
 #include "IfcGeometryConverter/SplineUtilities.h"
 
 // CONSTRUCTOR
@@ -33,28 +35,12 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 {
 	// obtain control points from sketch or from file
 	// (from file is from past sketch or from [external] test data)
-	// ToDo:
-	// std::vector<carve::geom::vector<3>> controlPoints = ...
-
-	// TEMPORARY constant test data
-	std::vector<carve::geom::vector<3>> controlPointsToSave;
-	controlPointsToSave.push_back(carve::geom::VECTOR(0., 2., 0));
-	controlPointsToSave.push_back(carve::geom::VECTOR(1., 5., 0.));
-	controlPointsToSave.push_back(carve::geom::VECTOR(3., 4., 0.));
-	controlPointsToSave.push_back(carve::geom::VECTOR(3., 1., 0.));
-	controlPointsToSave.push_back(carve::geom::VECTOR(5., 0., 0.));
-	controlPointsToSave.push_back(carve::geom::VECTOR(7., 1., 0.));
-	controlPointsToSave.push_back(carve::geom::VECTOR(8., 4., 0.));
-	controlPointsToSave.push_back(carve::geom::VECTOR(10., 4., 0.));
-
-	// TEMPORARY call of saveControlPointsIntoFile and loadControlPointsFromFile
-	saveControlPointsIntoFile(controlPointsToSave);
-	const std::vector<carve::geom::vector<3>> controlPoints = loadControlPointsFromFile();
+	const std::vector<carve::geom::vector<3>> controlPoints = obtainControlPoints();
 	// ToDo: exception handling if controlPoints is an empty vector, the functions has to be cancelled
 
 	// Prepair properties
 	const int order = 4;
-	const std::vector<double> knotArray = obtainKnotArrayOpenUniform(controlPointsToSave.size(), order);
+	const std::vector<double> knotArray = obtainKnotArrayOpenUniform(controlPoints.size(), order);
 
 	// Compute curvature
 	Core::IfcGeometryConverter::SplineUtilities splineUtilities;
@@ -68,6 +54,41 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 }
 
 // PRIVATE FUNCTIONS
+std::vector<carve::geom::vector<3>> OpenInfraPlatform::UserInterface::SplineInterpretation::obtainControlPoints() const throw(...)
+{
+	// initialice MessageBox
+	QMessageBox msgBox;
+	msgBox.setText("Do you want to get control points from sketch or load from file?");
+	msgBox.setInformativeText("(Note: Sketch isn't implemented.\nThere is a rerouting to load from file)");
+
+	// set buttons of MessageBox
+	QAbstractButton* pButtonSketch = msgBox.addButton("Sketch", QMessageBox::YesRole);
+	msgBox.addButton("Load", QMessageBox::NoRole);
+
+	// disable close button of MessageBox
+	msgBox.setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
+
+	// execute MessageBox; choice will be saved in msgBox
+	msgBox.exec();
+
+	// declare target variable
+	std::vector<carve::geom::vector<3>> controlPoints;
+	if (msgBox.clickedButton() == pButtonSketch) 
+	{
+		//ToDo: Implement sketch input
+		//controlPoints = ...
+
+		// Save the Input in file
+		//saveControlPointsIntoFile(controlPoints);
+	}
+	//else // button 'load' has been pressed
+	{
+		controlPoints = loadControlPointsFromFile();
+	}
+	
+	return controlPoints;
+}
+
 void OpenInfraPlatform::UserInterface::SplineInterpretation::saveControlPointsIntoFile(const std::vector<carve::geom::vector<3>>& points) const throw(...)
 {
 	// get number of files, which are in the default folder of sketches

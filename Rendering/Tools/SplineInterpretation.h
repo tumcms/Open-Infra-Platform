@@ -54,6 +54,12 @@ namespace OpenInfraPlatform
 			double accuracy = carve::EPSILON;
 
 			// FUNCTIONS
+			/*! \brief Provides the choise between sketch points or load points.
+			 * 
+			 * \return A vector of the control points.
+			 */
+			std::vector<carve::geom::vector<3>> obtainControlPoints() const throw(...);
+
 			/*! \brief Saves the control points or points from sketch input into a file.
 			 *
 			 * The file will be stored in the directory \c [build folder]/testdata/StrokeToAlignment/. 
