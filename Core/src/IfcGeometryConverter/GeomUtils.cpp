@@ -722,6 +722,21 @@ bool GeomUtils::LineSegmentToLineSegmentIntersection(const carve::geom::vector<2
 	return false;
 }
 
+bool GeomUtils::LineToLineIntersection(const carve::geom::vector<2>& initialPointSeg1,
+										const carve::geom::vector<2>& terminalPointSeg1,
+										const carve::geom::vector<2>& initialPointSeg2,
+										const carve::geom::vector<2>& terminalPointSeg2,
+	carve::geom::vector<2> & intersectionPoint)
+{
+	double distToIntesection1, distToIntesection2;
+	if (LineToLineIntersectionHelper(initialPointSeg1, terminalPointSeg1, initialPointSeg2, terminalPointSeg2, distToIntesection1, distToIntesection2))
+	{
+		intersectionPoint = (initialPointSeg1 + (terminalPointSeg1 - initialPointSeg1) * distToIntesection1);
+		return true;
+	}
+}
+
+
 /**********************************************************************************************/
 
 void GeomUtils::appendPointsToCurve( const std::vector<carve::geom::vector<2> >& points_vec, 
