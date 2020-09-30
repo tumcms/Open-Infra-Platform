@@ -754,10 +754,10 @@ namespace OpenInfraPlatform {
 						BLUE_LOG(warning) << ex.what();
 					}
                     
-					// return
+					// return 
 					return object_placement_matrix;
                 }
-
+			
 				std::tuple<carve::geom::vector<3>, carve::geom::vector<2>> convertIfcVirtualGridIntersection(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcVirtualGridIntersection> &intersection
 				) const throw(...)
@@ -827,7 +827,7 @@ namespace OpenInfraPlatform {
 						throw oip::InconsistentGeometryException(intersection->OffsetDistances, "Number of coordinates is inconsistent.");
 					}
 					
-					return std::tuple(location, intersectingAxes1);
+					return { location, intersectingAxes1 };
 				}
 
 				carve::geom::vector<2> calculateIntersectionPointWithOffsets(
