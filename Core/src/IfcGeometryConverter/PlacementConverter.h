@@ -880,6 +880,25 @@ namespace OpenInfraPlatform {
 					throw oip::InconsistentGeometryException("Lines should intersect");
 				}
 
+				carve::geom::vector<3> convertIfcGridPlacementDirectionSelect(const typename IfcEntityTypesT::IfcGridPlacementDirectionSelect& directionSelect,
+					carve::geom::vector<3> location,
+					carve::geom::vector<2> intersectingAxes1) const throw(...)
+				{
+					carve::geom::vector<3> xAxisDirection;
+					carve::geom::vector<3> location2;
+					carve::geom::vector<2> intersectingAxes2;
+					switch (directionSelect.which()) {
+					case 0:
+						location2 = convertIfcDirection(directionSelect.get<0>());
+						xAxisDirection = location2 - location;
+					case 1:
+						std::tie(location2, intersectingAxes2) = convertIfcVirtualGridIntersection(directionSelect.get<1>());
+						xAxisDirection = location2 - location;
+					default:
+						xAxisDirection = carve::geom::VECTOR(intersectingAxes1.x, intersectingAxes1.y, 0.0);
+					}
+					return xAxisDirection;
+				}
 				//
 				carve::math::Matrix convertIfcGridPlacement(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcGridPlacement> grid_placement,
@@ -891,22 +910,10 @@ namespace OpenInfraPlatform {
 
 					carve::geom::vector<3> location;
 					carve::geom::vector<2> intersectingAxes1;
-					std::tie(location, intersectingAxes1)  = convertIfcVirtualGridIntersection(grid_placement->PlacementLocation); 
-					carve::geom::vector<3> xAxisDirection;
 
-					switch (grid_placement.which()) {
-					case 0:
-						carve::geom::vector<3> location2 = convertIfcDirection(grid_placement.get<0>());
-						xAxisDirection = location2 - location;
-					case 1:
-						carve::geom::vector<3> location2;
-						carve::geom::vector<2> intersectingAxes2;
-						std::tie(location2, intersectingAxes2) = convertIfcVirtualGridIntersection(grid_placement.get<1>());
-						xAxisDirection = location2 - location;
-					default:
-						xAxisDirection = carve::geom::VECTOR(intersectingAxes1.x, intersectingAxes1.y, 0.0);
-						//location +  intersectiing axes[1]
-					}
+					std::tie(location, intersectingAxes1) = convertIfcVirtualGridIntersection(grid_placement->PlacementLocation); 
+					carve::geom::vector<3> xAxisDirection = convertIfcGridPlacementDirectionSelect(grid_placement->PlacementRefDirection, location, intersectingAxes1);
+					
 					carve::geom::vector<3> yAxisDirection = carve::geom::VECTOR(-xAxisDirection.y, xAxisDirection.x, 0.0);
 					// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcgridplacement.htm :
 					//  The plane defined by the x and y axis shall be co-planar to the xy plane of the local placement of the IfcGrid. ?
