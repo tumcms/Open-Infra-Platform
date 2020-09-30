@@ -758,7 +758,7 @@ namespace OpenInfraPlatform {
 					return object_placement_matrix;
                 }
 
-				carve::geom::vector<3> convertIfcVirtualGridIntersection(
+				std::tuple<carve::geom::vector<3>, carve::geom::vector<2>> convertIfcVirtualGridIntersection(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcVirtualGridIntersection> &intersection
 				) const throw(...)
 				{
@@ -830,7 +830,7 @@ namespace OpenInfraPlatform {
 						throw oip::InconsistentGeometryException(intersection->OffsetDistances, "Number of coordinates is inconsistent.");
 					}
 					
-					return location;
+					return std::tuple(location, intersectingAxes1);
 				}
 
 				carve::geom::vector<2> calculateIntersectionPointWithOffsets(
@@ -883,10 +883,6 @@ namespace OpenInfraPlatform {
 					throw oip::InconsistentGeometryException("Lines should intersect");
 				}
 
-
-
-
-
 				//
 				carve::math::Matrix convertIfcGridPlacement(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcGridPlacement> grid_placement,
@@ -896,7 +892,10 @@ namespace OpenInfraPlatform {
 					if (grid_placement.expired())
 						throw oip::ReferenceExpiredException(grid_placement);
 
-					carve::geom::vector<3> location = convertIfcVirtualGridIntersection(grid_placement->PlacementLocation); //
+					carve::geom::vector<3> location;
+					carve::geom::vector<2> intersectingAxes1;
+					std::tie(location, intersectingAxes1)  = convertIfcVirtualGridIntersection(grid_placement->PlacementLocation); 
+					carve::geom::vector<3> xAxisDirection;
 
 					switch (grid_placement.which()) {
 					case 0:
@@ -904,8 +903,26 @@ namespace OpenInfraPlatform {
 					case 1:
 						return convertIfcVirtualGridIntersection(grid_placement.get<1>());
 					default:
+						xAxisDirection = carve::geom::VECTOR(intersectingAxes1[0], intersectingAxes1[1], 0.0);
 						//location +  intersectiing axes[1]
 					}
+					carve::geom::vector<3> yAxisDirection = carve::geom::VECTOR(-xAxisDirection[1], xAxisDirection[0], 0.0);
+					// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcgridplacement.htm :
+					//  The plane defined by the x and y axis shall be co-planar to the xy plane of the local placement of the IfcGrid. ?
+
+					 carve::geom::vector<3> zAxisDirection = carve::geom::VECTOR(xAxisDirection[1] * yAxisDirection[2]) - (xAxisDirection[2] * yAxisDirection[1],
+						 xAxisDirection[2] * yAxisDirection[0] - xAxisDirection[0] * yAxisDirection[2],
+						 xAxisDirection[0] * yAxisDirection[1] - xAxisDirection[1] * yAxisDirection[0]);
+
+					// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcgridplacement.htm :
+					// the z-axis of the IfcGridPlacement shall be co-linear to the z-axis of the local placement of the IfcGrid. ?
+
+					carve::math::Matrix object_placement_matrix = carve::math::Matrix(
+						 curve_x.x, curve_y.x, curve_z.x, 0.0,
+						 curve_x.y, curve_y.y, curve_z.y, 0.0,
+						 curve_x.z, curve_y.z, curve_z.z, 0.0,
+						 0.0, 0.0, 0.0, 1.0);
+
 					return object_placement_matrix;
 				}
 
