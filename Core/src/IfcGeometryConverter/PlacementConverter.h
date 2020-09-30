@@ -804,27 +804,24 @@ namespace OpenInfraPlatform {
 					switch (intersection->OffsetDistances.size())
 					{
 					case 3:
-						carve::geom::vector<3> intersecting3DAxes1 = carve::geom::VECTOR(intersectingAxes1[0], intersectingAxes1[1], 0.0 );
-						carve::geom::vector<3> orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1[1], intersectingAxes1[0], 0.0);
+						carve::geom::vector<3> intersecting3DAxes1 = carve::geom::VECTOR(intersectingAxes1.x, intersectingAxes1.y, 0.0 );
+						carve::geom::vector<3> orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1.y, intersectingAxes1.x, 0.0);
 						
 						//cross product of IntersectingAxes[1] and the orthogonal complement of the IntersectingAxes[1] 
-						carve::geom::vector<3> crossProduct = carve::geom::VECTOR(intersecting3DAxes1[1] * orthogonalComplement[2]) - (intersecting3DAxes1[2] * orthogonalComplement[1],
-							intersecting3DAxes1[2] * orthogonalComplement[0] - intersecting3DAxes1[0] * orthogonalComplement[2],
-							intersecting3DAxes1[0] * orthogonalComplement[1] - intersecting3DAxes1[1] * orthogonalComplement[0]);
-
+						carve::geom::vector<3> crossProduct = carve::geom::cross(intersecting3DAxes1, orthogonalComplement);
 						location = location + crossProduct;
 						
 						carve::geom::vector<2> newIntersectionPoint = calculateIntersectionPointWithOffsets(intersection, xAxisPosition, xAxisPosition2, yAxisPosition, yAxisPosition2);
 						
-						location[0] = location[0] + newIntersectionPoint[0];
-						location[1] = location[1] + newIntersectionPoint[1];
-						location[2] = location[2] + intersection->OffsetDistances[2];
+						location.x = location.x + newIntersectionPoint.x;
+						location.y = location.y + newIntersectionPoint.y;
+						location.z = location.z + intersection->OffsetDistances[2];
 						break;
 					case 2:
 						carve::geom::vector<2> newIntersectionPoint = calculateIntersectionPointWithOffsets(intersection, xAxisPosition, xAxisPosition2, yAxisPosition, yAxisPosition2);
 						
-						location[0] = location[0] + newIntersectionPoint[0];
-						location[1] = location[1] + newIntersectionPoint[1];
+						location.x = location.x + newIntersectionPoint.x;
+						location.y = location.y + newIntersectionPoint.y;
 						break;
 					default:
 						throw oip::InconsistentGeometryException(intersection->OffsetDistances, "Number of coordinates is inconsistent.");
@@ -861,19 +858,19 @@ namespace OpenInfraPlatform {
 						0, 1, 0,
 						0, intersection->OffsetDistances[0] / cos(atan(intersectingAxes1[0] / intersectingAxes1[1])), 1];
 
-					carve::geom::vector<3> newXAxisPositionTransformation1 = carve::geom::VECTOR(xAxisPosition[0], xAxisPosition[1], 1.0) * transformation1;
-					carve::geom::vector<2> newXAxisPosition1 = carve::geom::VECTOR(newXAxisPositionTransformation1[0], newXAxisPositionTransformation1[1]);
-					carve::geom::vector<3> newXAxisPositionTransformation2 = carve::geom::VECTOR(xAxisPosition2[0], xAxisPosition2[1], 1.0) * transformation1;
-					carve::geom::vector<2> newXAxisPosition2 = carve::geom::VECTOR(newXAxisPositionTransformation2[0], newXAxisPositionTransformation2[1]);
+					carve::geom::vector<3> newXAxisPositionTransformation1 = carve::geom::VECTOR(xAxisPosition.x, xAxisPosition.y, 1.0) * transformation1;
+					carve::geom::vector<2> newXAxisPosition1 = carve::geom::VECTOR(newXAxisPositionTransformation1.x, newXAxisPositionTransformation1.y);
+					carve::geom::vector<3> newXAxisPositionTransformation2 = carve::geom::VECTOR(xAxisPosition2.x, xAxisPosition2.y, 1.0) * transformation1;
+					carve::geom::vector<2> newXAxisPosition2 = carve::geom::VECTOR(newXAxisPositionTransformation2.x, newXAxisPositionTransformation2.y);
 
 					carve::math::Matrix3 transformation2 = [1, 0, 0,
 						0, 1, 0,
 						intersection->OffsetDistances[1] / sin(atan(intersectingAxes2[0] / intersectingAxes2[1])), 0, 1];
 
-					carve::geom::vector<3> newYAxisPositionTransformation1 = carve::geom::VECTOR(yAxisPosition[0], yAxisPosition[1], 1.0) * transformation2;
-					carve::geom::vector<2> newYAxisPosition1 = carve::geom::VECTOR(newYAxisPositionTransformation1[0], newYAxisPositionTransformation1[1]);
-					carve::geom::vector<3> newYAxisPositionTransformation2 = carve::geom::VECTOR(yAxisPosition2[0], yAxisPosition2[1], 1.0) * transformation2;
-					carve::geom::vector<2> newYAxisPosition2 = carve::geom::VECTOR(newYAxisPositionTransformation2[0], newYAxisPositionTransformation2[1]);
+					carve::geom::vector<3> newYAxisPositionTransformation1 = carve::geom::VECTOR(yAxisPosition.x, yAxisPosition.y, 1.0) * transformation2;
+					carve::geom::vector<2> newYAxisPosition1 = carve::geom::VECTOR(newYAxisPositionTransformation1.x, newYAxisPositionTransformation1.y);
+					carve::geom::vector<3> newYAxisPositionTransformation2 = carve::geom::VECTOR(yAxisPosition2.x, yAxisPosition2.y, 1.0) * transformation2;
+					carve::geom::vector<2> newYAxisPosition2 = carve::geom::VECTOR(newYAxisPositionTransformation2.x, newYAxisPositionTransformation2.y);
 
 					carve::geom::vector<2> newIntersectionPoint;
 					if (GeomUtils::LineToLineIntersection(newXAxisPosition1, newXAxisPosition2, newYAxisPosition1, newYAxisPosition2, newIntersectionPoint))
@@ -899,28 +896,29 @@ namespace OpenInfraPlatform {
 
 					switch (grid_placement.which()) {
 					case 0:
-						return convertIfcDirection(grid_placement.get<0>());
+						carve::geom::vector<3> location2 = convertIfcDirection(grid_placement.get<0>());
+						xAxisDirection = location2 - location;
 					case 1:
-						return convertIfcVirtualGridIntersection(grid_placement.get<1>());
+						carve::geom::vector<3> location2;
+						carve::geom::vector<2> intersectingAxes2;
+						std::tie(location2, intersectingAxes2) = convertIfcVirtualGridIntersection(grid_placement.get<1>());
+						xAxisDirection = location2 - location;
 					default:
-						xAxisDirection = carve::geom::VECTOR(intersectingAxes1[0], intersectingAxes1[1], 0.0);
+						xAxisDirection = carve::geom::VECTOR(intersectingAxes1.x, intersectingAxes1.y, 0.0);
 						//location +  intersectiing axes[1]
 					}
-					carve::geom::vector<3> yAxisDirection = carve::geom::VECTOR(-xAxisDirection[1], xAxisDirection[0], 0.0);
+					carve::geom::vector<3> yAxisDirection = carve::geom::VECTOR(-xAxisDirection.y, xAxisDirection.x, 0.0);
 					// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcgridplacement.htm :
 					//  The plane defined by the x and y axis shall be co-planar to the xy plane of the local placement of the IfcGrid. ?
 
-					 carve::geom::vector<3> zAxisDirection = carve::geom::VECTOR(xAxisDirection[1] * yAxisDirection[2]) - (xAxisDirection[2] * yAxisDirection[1],
-						 xAxisDirection[2] * yAxisDirection[0] - xAxisDirection[0] * yAxisDirection[2],
-						 xAxisDirection[0] * yAxisDirection[1] - xAxisDirection[1] * yAxisDirection[0]);
-
+					 carve::geom::vector<3> zAxisDirection = carve::geom::cross(xAxisDirection, yAxisDirection);
 					// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcgridplacement.htm :
 					// the z-axis of the IfcGridPlacement shall be co-linear to the z-axis of the local placement of the IfcGrid. ?
 
 					carve::math::Matrix object_placement_matrix = carve::math::Matrix(
-						 curve_x.x, curve_y.x, curve_z.x, 0.0,
-						 curve_x.y, curve_y.y, curve_z.y, 0.0,
-						 curve_x.z, curve_y.z, curve_z.z, 0.0,
+						xAxisDirection.x, yAxisDirection.x, zAxisDirection.x, 0.0,
+						xAxisDirection.y, yAxisDirection.y, zAxisDirection.y, 0.0,
+						xAxisDirection.z, yAxisDirection.z, zAxisDirection.z, 0.0,
 						 0.0, 0.0, 0.0, 1.0);
 
 					return object_placement_matrix;
