@@ -53,8 +53,10 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	// Set properties for second approximation and compute curvature
 	// (nControlPoints, order, and knoteArray are const, because nCurvePoints in first approximation were equal nControlPoints)
 	nCurvePoints = 10 * controlPoints.size();
-	const std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray, nCurvePoints);
+	std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray, nCurvePoints);
 
+	// smooth curvature
+	lengthsWithCurvatures = movingAverageVariableWindow(lengthsWithCurvatures);
 
 	debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
 	//debugFunction_printVectorOfPointsInConsolWindow(bsplinePoints);
@@ -222,6 +224,90 @@ std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obta
 		knotArray[i] = nPoints - order + 1;
 
 	return knotArray;
+}
+
+std::vector<std::pair<double, double>> OpenInfraPlatform::UserInterface::SplineInterpretation::movingAverageVariableWindow(std::vector<std::pair<double, double>> xy) const throw(...)
+{
+	// window size
+	const size_t range = variogrammGetRange(xy);
+	// window size per side
+	const int K = ceil(range / 2.0);
+	// number of elements in xy
+	const size_t n = xy.size();
+
+	// initialice temporary vector of smoothed values 
+	std::vector<double> value(n, 0.0);
+
+	// initialice start & end index of the moving window
+	int jStart;
+	int jEnd;
+
+	// go over each pair element
+	for (size_t i = 0; i < n; i++)
+	{
+		// set current window indices
+		jStart = i - K;
+		jEnd = i + K;
+		// resize window near the vector begin
+		if (jStart < 0){
+			jStart = 0;
+			jEnd = i + (i - jStart);
+		}
+		// resize window near the vector end
+		if (jEnd >= n){
+			jEnd = n - 1;
+			jStart = i - (n - i);
+		}
+
+		// add all values in the window
+		for (int j = jStart; j <= jEnd; j++)
+			value[i] += xy[i].second;
+		// make average by divide with size of window
+		value[i] /= (jEnd - jStart + 1);
+	}
+
+	// save temporary values in target variable
+	for (size_t i = 0; i < n; i++)
+		xy[i].second = value[i];
+
+	return xy;
+}
+
+size_t OpenInfraPlatform::UserInterface::SplineInterpretation::variogrammGetRange(std::vector<std::pair<double, double>> xy) const throw(...)
+{
+	// initialice vector of semivariogramm variable gamma(h)
+	std::vector<double> gamma(xy.size() - 1, 0.0);
+
+	// for each step size h
+	for (size_t h = 1; h < xy.size(); h++)
+	{
+		// number of step-pairs to current step
+		size_t N = xy.size() - h;
+		// sum up all step-pairs
+		for (size_t i = 0; i < N; i++)
+			gamma[h - 1] += pow(xy[i].second - xy[i + h].second, 2);
+		// divide by pre-factor
+		gamma[h - 1] /= (2 * N);
+	}
+
+	// initialice range with nonsense value
+	size_t range = -1;
+
+	for (size_t h = 0; h < gamma.size() - 1; h++)
+	{
+		if (gamma[h] >= gamma[h + 1])
+		{
+			// if maximum turning point found, set range and break loop
+			range = h + 1;
+			break;
+		}
+	}
+
+	// if no range was set, it's (temporarlly) the max. step size
+	if (range == -1)
+		range = gamma.size();
+
+	return range;
 }
 
 void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_printCurvatureInConsolWindow(

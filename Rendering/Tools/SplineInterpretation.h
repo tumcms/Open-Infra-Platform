@@ -97,6 +97,29 @@ namespace OpenInfraPlatform
 			 */
 			std::vector<double> obtainKnotArrayOpenUniform(const size_t nPoints, const int order) const throw(...);
 
+			/*! \brief Applies the moving average with variable window on the y-data of \c xy.
+			 *
+			 * The window size is calculated with a semivariogramm. At the begin and end of the data vector, 
+			 * the window size is reduced but symmetrical around the current position. The x-values will not change.
+			 *
+			 * \param[in]	xy	A vector of pairs; the first pair value denotes x, second pair value denotes y. In example, the pair denotes {curveLength, curvature}.
+			 *
+			 * \return			The pair from the input, but the y-values are smoothed by the moving average.
+			 */
+			std::vector<std::pair<double, double>> movingAverageVariableWindow(std::vector<std::pair<double, double>> xy) const throw(...);
+
+			/* \brief Calculates the range of a variogramm.
+			 *
+			 * Calculates the semevariogramm variable with the y-values of the \c xy pairs.
+			 * However, the x-values aren't used in the calculation.
+			 * In this implementation, the range is obtaind as the position of the first maximum turning point.
+			 *
+			 * param[in]	xy	A vector of pairs; the first pair value denotes x, second pair value denotes y. In example, the pair denotes {curveLength, curvature}.
+			 *
+			 * return	Range of a semivariogramm regarding the number of values.
+			 */
+			size_t variogrammGetRange(std::vector<std::pair<double, double>> xy) const throw(...);
+
 			/*! \brief Displays the vector of length with curvature in the console window.
 			 *
 			 * The syntax in the consol matches the syntax of MATLAB. The information can be pasted into MATLAB as nx2-matrix.
