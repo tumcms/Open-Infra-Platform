@@ -58,6 +58,12 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	// smooth curvature
 	lengthsWithCurvatures = movingAverageVariableWindow(lengthsWithCurvatures);
 
+	// calculate change of curvature as derivative
+	std::vector<double> curvatureChange = numericDerivative(lengthsWithCurvatures);
+	// smooth change of curvature
+	curvatureChange = movingAverageVariableWindow(curvatureChange);
+
+
 	debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
 	//debugFunction_printVectorOfPointsInConsolWindow(bsplinePoints);
 }
@@ -324,6 +330,19 @@ size_t OpenInfraPlatform::UserInterface::SplineInterpretation::variogrammGetRang
 		range = gamma.size();
 
 	return range;
+}
+
+std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::numericDerivative(std::vector<std::pair<double, double>>& xy) const throw(...)
+{
+	// initialice target vector
+	std::vector<double> dy;
+	dy.resize(xy.size() - 1);
+
+	// apply numeric derivative for each space in xy
+	for (size_t i = 0; i < dy.size(); i++)
+		dy[i] = (xy[i + 1].second - xy[i].second) / (xy[i + 1].first - xy[i].first);
+
+	return dy;
 }
 
 void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_printCurvatureInConsolWindow(

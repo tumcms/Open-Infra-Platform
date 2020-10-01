@@ -132,6 +132,14 @@ namespace OpenInfraPlatform
 			 */
 			size_t variogrammGetRange(std::vector<double>& data) const throw(...);
 
+			/* \brief Calculates the numeric derivative of a vector of x-y-pairs.
+			 *
+			 * param[in]	xy	A vector of pairs; the first pair value denotes x, second pair value denotes y. In example, the pair denotes {curveLength, curvature}.
+			 *
+			 * return	A vector of the y-values of the derivative. The vector will be one shorter as the original vector of pairs.
+			 */
+			std::vector<double> numericDerivative(std::vector<std::pair<double, double>>& xy) const throw(...);
+
 			/*! \brief Displays the vector of length with curvature in the console window.
 			 *
 			 * The syntax in the consol matches the syntax of MATLAB. The information can be pasted into MATLAB as nx2-matrix.
