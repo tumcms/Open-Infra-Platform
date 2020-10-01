@@ -691,7 +691,7 @@ namespace OpenInfraPlatform
 					// in mathematical definition, k goes from 1 to order
 					for (int k = 1; k < order; k++)
 					{
-						obtainBasisFunctionDerivativeTwoNextOrder(k, t, knotArray, basisFuncsBSpline, basisFuncsDerivativeOne, basisFuncsDerivativeTwo);
+						obtainBasisFunctionDerivativeTwoNextOrder(k, t, knotArray, basisFuncsDerivativeOne, basisFuncsDerivativeTwo);
 						// basisFuncsDerivativeTwo is the return value by reference
 
 						obtainBasisFunctionDerivativeOneNextOrder(k, t, knotArray, basisFuncsBSpline, basisFuncsDerivativeOne);
@@ -727,7 +727,6 @@ namespace OpenInfraPlatform
 					const int& k,
 					const double& t,
 					const std::vector<double>& knotVector,
-					const std::vector<double>& basisFuncsBSpline,
 					const std::vector<double>& basisFuncsDerivativeOne,
 					std::vector<double>& basisFuncsDerivativeTwo) const throw(...)
 				{
