@@ -226,14 +226,34 @@ std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obta
 	return knotArray;
 }
 
-std::vector<std::pair<double, double>> OpenInfraPlatform::UserInterface::SplineInterpretation::movingAverageVariableWindow(std::vector<std::pair<double, double>> xy) const throw(...)
+std::vector<std::pair<double, double>> OpenInfraPlatform::UserInterface::SplineInterpretation::movingAverageVariableWindow(std::vector<std::pair<double, double>>& xy) const throw(...)
+{
+	// numer of elements
+	const size_t n = xy.size();
+
+	// obtain second value of xy
+	std::vector<double> data(n, 0.0);
+	for (size_t i = 0; i < n; i++)
+		data[i] = xy[i].second;
+
+	// call main function of moving average
+	data = movingAverageVariableWindow(data);
+
+	// save temporary values in target variable
+	for (size_t i = 0; i < n; i++)
+		xy[i].second = data[i];
+
+	return xy;
+}
+
+std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::movingAverageVariableWindow(std::vector<double>& data) const throw(...)
 {
 	// window size
-	const size_t range = variogrammGetRange(xy);
+	const size_t range = variogrammGetRange(data);
 	// window size per side
 	const int K = ceil(range / 2.0);
-	// number of elements in xy
-	const size_t n = xy.size();
+	// number of elements in data
+	const size_t n = data.size();
 
 	// initialice temporary vector of smoothed values 
 	std::vector<double> value(n, 0.0);
@@ -261,31 +281,27 @@ std::vector<std::pair<double, double>> OpenInfraPlatform::UserInterface::SplineI
 
 		// add all values in the window
 		for (int j = jStart; j <= jEnd; j++)
-			value[i] += xy[i].second;
+			value[i] += data[i];
 		// make average by divide with size of window
 		value[i] /= (jEnd - jStart + 1);
 	}
 
-	// save temporary values in target variable
-	for (size_t i = 0; i < n; i++)
-		xy[i].second = value[i];
-
-	return xy;
+	return data;
 }
 
-size_t OpenInfraPlatform::UserInterface::SplineInterpretation::variogrammGetRange(std::vector<std::pair<double, double>> xy) const throw(...)
+size_t OpenInfraPlatform::UserInterface::SplineInterpretation::variogrammGetRange(std::vector<double>& data) const throw(...)
 {
 	// initialice vector of semivariogramm variable gamma(h)
-	std::vector<double> gamma(xy.size() - 1, 0.0);
+	std::vector<double> gamma(data.size() - 1, 0.0);
 
 	// for each step size h
-	for (size_t h = 1; h < xy.size(); h++)
+	for (size_t h = 1; h < data.size(); h++)
 	{
 		// number of step-pairs to current step
-		size_t N = xy.size() - h;
+		size_t N = data.size() - h;
 		// sum up all step-pairs
 		for (size_t i = 0; i < N; i++)
-			gamma[h - 1] += pow(xy[i].second - xy[i + h].second, 2);
+			gamma[h - 1] += pow(data[i] - data[i + h], 2);
 		// divide by pre-factor
 		gamma[h - 1] /= (2 * N);
 	}

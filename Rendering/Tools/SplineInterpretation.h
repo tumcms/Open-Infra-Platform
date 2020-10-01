@@ -100,25 +100,37 @@ namespace OpenInfraPlatform
 			/*! \brief Applies the moving average with variable window on the y-data of \c xy.
 			 *
 			 * The window size is calculated with a semivariogramm. At the begin and end of the data vector, 
-			 * the window size is reduced but symmetrical around the current position. The x-values will not change.
+			 * the window size is reduced but symmetrical around the current position. The x-values will not change.\n
+			 * This function only obtains the y-values of \c xy and call the function \c movingAverageVariableWindow with a \c std::vector<double>
 			 *
 			 * \param[in]	xy	A vector of pairs; the first pair value denotes x, second pair value denotes y. In example, the pair denotes {curveLength, curvature}.
 			 *
 			 * \return			The pair from the input, but the y-values are smoothed by the moving average.
 			 */
-			std::vector<std::pair<double, double>> movingAverageVariableWindow(std::vector<std::pair<double, double>> xy) const throw(...);
+			std::vector<std::pair<double, double>> movingAverageVariableWindow(std::vector<std::pair<double, double>>& xy) const throw(...);
+
+			/*! \brief Applies the moving average with variable window on the vector \c data.
+			 *
+			 * The window size is calculated with a semivariogramm. At the begin and end of the data vector, 
+			 * the window size is reduced but symmetrical around the current position.
+			 *
+			 * \param[in]	data	A vector of \c double.
+			 *
+			 * \return				A vector of \c double, but the values are smoothed by the moving average.
+			 */
+			std::vector<double> movingAverageVariableWindow(std::vector<double>& data) const throw(...);
 
 			/* \brief Calculates the range of a variogramm.
 			 *
-			 * Calculates the semevariogramm variable with the y-values of the \c xy pairs.
-			 * However, the x-values aren't used in the calculation.
+			 * Calculates the semevariogramm variable with the values in \c data. 
+			 * The lags are defined by the vector elements; a corresponding vector of x-values should be about equally spaced.
 			 * In this implementation, the range is obtaind as the position of the first maximum turning point.
 			 *
-			 * param[in]	xy	A vector of pairs; the first pair value denotes x, second pair value denotes y. In example, the pair denotes {curveLength, curvature}.
+			 * param[in]	data	A vector of \c double.
 			 *
 			 * return	Range of a semivariogramm regarding the number of values.
 			 */
-			size_t variogrammGetRange(std::vector<std::pair<double, double>> xy) const throw(...);
+			size_t variogrammGetRange(std::vector<double>& data) const throw(...);
 
 			/*! \brief Displays the vector of length with curvature in the console window.
 			 *
