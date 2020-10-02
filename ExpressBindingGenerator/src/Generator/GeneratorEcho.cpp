@@ -79,7 +79,7 @@ void GeneratorEcho::generateEntities(Schema& schema, std::ostream& out) {
 
 void GeneratorEcho::generateTypes(Schema& schema, std::ostream& out) {
 	for (int i = 0; i < schema.getTypeCount(); i++) {
-		auto& type = schema.getTypeByIndex(i);
+		auto type = schema.getTypeByIndex(i);
 
 		out << "TYPE " << type.getName();
 		out << " = ";

@@ -59,6 +59,7 @@ class EntityAttributeSimpleType : public IEntityAttributeType {
 		std::string underlyingType;
         switch (type) {
         case OpenInfraPlatform::ExpressBindingGenerator::eType::Unknown:
+			throw std::runtime_error("Unknown type");
             break;
         case OpenInfraPlatform::ExpressBindingGenerator::eType::Real:
 			underlyingType = "REAL";
@@ -91,15 +92,16 @@ class EntityAttributeSimpleType : public IEntityAttributeType {
 			underlyingType = "SET";
 			break;
 		case OpenInfraPlatform::ExpressBindingGenerator::eType::Enumeration:
+			throw std::runtime_error("Unknown type");
             break;
         case OpenInfraPlatform::ExpressBindingGenerator::eType::Select:
+			throw std::runtime_error("Unknown type");
             break;
         default:
+			throw std::runtime_error("Unknown type");
             break;
         }
 		return underlyingType;
-
-        throw std::runtime_error("Unknown type");
     }
 
     virtual eEntityAttributeParameterType getType() const {

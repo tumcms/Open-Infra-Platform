@@ -36,6 +36,8 @@ endif()
 
 file(GLOB OpenInfraPlatform_UnitTests_Source *.cpp)
 
+add_subdirectory(Generator)
 add_subdirectory(Schemas)
+add_subdirectory(Utilities)
 
 
