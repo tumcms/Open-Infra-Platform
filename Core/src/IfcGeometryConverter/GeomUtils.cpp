@@ -643,19 +643,19 @@ bool GeomUtils::isPointOnLineSegment( double& target_lambda,
 * \param[out] distToIntesection2	Distance from initialPointSeg2 to the segment intresection, which is calculated as section of the second segment. 
 */
 bool LineToLineIntersectionHelper(const carve::geom::vector<2>& initialPointSeg1,
-								  const carve::geom::vector<2>& terminalPointSeg1,
-								  const carve::geom::vector<2>& initialPointSeg2,
-								  const carve::geom::vector<2>& terminalPointSeg2, 
-	double & distToIntesection1, double & distToIntesection2)
+									const carve::geom::vector<2>& terminalPointSeg1,
+									const carve::geom::vector<2>& initialPointSeg2,
+									const carve::geom::vector<2>& terminalPointSeg2, 
+									double & distToIntesection1, double & distToIntesection2)
 {
 	// check if lines are parallel
 	const carve::geom::vector<2> intersectingSegment1 = terminalPointSeg1 - initialPointSeg1;
 	const carve::geom::vector<2> intersectingSegment2 = terminalPointSeg2 - initialPointSeg2;
-	if (!(intersectingSegment1.x == 0. && intersectingSegment2.x == 0.) // if both x=0., then lines are parallel
-		&& (intersectingSegment1.x == 0. || intersectingSegment2.x == 0. || (intersectingSegment1.y / intersectingSegment1.x != intersectingSegment2.y / intersectingSegment2.x))) // common case
+	if (!(intersectingSegment1.x == 0.0 && intersectingSegment2.x == 0.0) // if both x=0., then lines are parallel
+		&& (intersectingSegment1.x == 0.0 || intersectingSegment2.x == 0.0 || (intersectingSegment1.y / intersectingSegment1.x != intersectingSegment2.y / intersectingSegment2.x))) // common case
 	{
 		const double d = intersectingSegment1.x*intersectingSegment2.y - intersectingSegment1.y*intersectingSegment2.x;
-		if( d != 0 )
+		if( d != 0.0 )
 		{
 			const carve::geom::vector<2> segBetweenInitialPoints = initialPointSeg1 - initialPointSeg2;
 			distToIntesection1 = (segBetweenInitialPoints.y*intersectingSegment2.x - segBetweenInitialPoints.x*intersectingSegment2.y) / d;
@@ -679,12 +679,12 @@ bool GeomUtils::LineSegmentToLineIntersection(const carve::geom::vector<2>& init
 												const carve::geom::vector<2>& terminalPointSeg1, 
 												const carve::geom::vector<2>& initialPointSeg2,
 												const carve::geom::vector<2>& terminalPointSeg2,
-	carve::geom::vector<2> & intersectionPoint)
+												carve::geom::vector<2> & intersectionPoint)
 {
 	double distToIntesection1, distToIntesection2;
 	if( LineToLineIntersectionHelper(initialPointSeg1, terminalPointSeg1, initialPointSeg2, terminalPointSeg2, distToIntesection1, distToIntesection2) )
 	{
-		if (distToIntesection1 >= 0 && distToIntesection1 <= 1)
+		if (distToIntesection1 >= 0.0 && distToIntesection1 <= 1.0)
 		{
 			intersectionPoint = (initialPointSeg1 + (terminalPointSeg1 - initialPointSeg1) * distToIntesection1);
 			return true;
@@ -705,14 +705,14 @@ bool GeomUtils::LineSegmentToLineSegmentIntersection(const carve::geom::vector<2
 														const carve::geom::vector<2>& terminalPointSeg1,
 														const carve::geom::vector<2>& initialPointSeg2,
 														const carve::geom::vector<2>& terminalPointSeg2,
-	carve::geom::vector<2> & intersectionPoint)
+														carve::geom::vector<2> & intersectionPoint)
 {
 	double distToIntesection1, distToIntesection2;
 	if( LineToLineIntersectionHelper(initialPointSeg1, terminalPointSeg1, initialPointSeg2, terminalPointSeg2, distToIntesection1, distToIntesection2) )
 	{
-		if (distToIntesection1 >= 0 && distToIntesection1 <= 1)
+		if (distToIntesection1 >= 0.0 && distToIntesection1 <= 1.0)
 		{
-			if (distToIntesection2 >= 0 && distToIntesection2 <= 1)
+			if (distToIntesection2 >= 0.0 && distToIntesection2 <= 1.0)
 			{
 				intersectionPoint = (initialPointSeg1 + (terminalPointSeg1 - initialPointSeg1) * distToIntesection1);
 				return true;
