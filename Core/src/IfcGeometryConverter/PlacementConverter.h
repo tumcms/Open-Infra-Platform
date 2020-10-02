@@ -758,28 +758,40 @@ namespace OpenInfraPlatform {
 					return object_placement_matrix;
                 }
 				
-				std::vector<carve::geom::vector<2>> convertifcGridAxis(const EXPRESSReference<typename IfcEntityTypesT::IfcGridAxis>& gridAxis) const throw(...){
-					
-					std::vector<carve::geom::vector<2>> Axis;
-					std::vector<carve::geom::vector<2>> SegmentStartPoints;
+				std::tuple<std::vector<carve::geom::vector<2>>,bool> convertIfcGridAxis(const EXPRESSReference<typename IfcEntityTypesT::IfcGridAxis>& gridAxis) const throw(...) {
+
+					std::vector<carve::geom::vector<2>> axis;
+					std::vector<carve::geom::vector<2>> segmentStartPoints;
+					bool sameSense;
+					if (gridAxis->SameSense) {
+						sameSense = true;
+					}
+					else {
+					sameSense = false;
+					}
 
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>>placementConverter = std::make_shared<PlacementConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert());
 
 					CurveConverterT<IfcEntityTypesT> gridConv(GeomSettings(), UnitConvert(), placementConverter);
-					gridConv.convertIfcCurve2D(gridAxis->AxisCurve, Axis, SegmentStartPoints);
-					return Axis;
+					gridConv.convertIfcCurve2D(gridAxis->AxisCurve, axis, segmentStartPoints);
+					
+					return { axis, sameSense };
 				}
 
-				std::tuple<carve::geom::vector<3>, carve::geom::vector<2>> convertIfcVirtualGridIntersection(
+				std::tuple<carve::geom::vector<3>, carve::geom::vector<3>> convertIfcVirtualGridIntersection(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcVirtualGridIntersection> &intersection
 				) const throw(...)
 				{
 					if (intersection.expired())
 						throw oip::ReferenceExpiredException(intersection);
 
-					std::vector<carve::geom::vector<2>> xAxis = convertifcGridAxis(intersection->IntersectingAxes[0]);
-					std::vector<carve::geom::vector<2>> yAxis = convertifcGridAxis(intersection->IntersectingAxes[1]);
-					
+					std::vector<carve::geom::vector<2>> xAxis;
+					std::vector<carve::geom::vector<2>> yAxis;
+					bool sameSense1;
+					bool sameSense2;
+
+					std::tie(xAxis, sameSense1) = convertIfcGridAxis(intersection->IntersectingAxes[0]);
+					std::tie(yAxis, sameSense2) = convertIfcGridAxis(intersection->IntersectingAxes[1]);
 					carve::geom::vector<2> intersectionPoint;
 					carve::geom::vector<2> xAxisPosition;
 					carve::geom::vector<2> xAxisPosition2;
@@ -799,11 +811,12 @@ namespace OpenInfraPlatform {
 						}
 					}
 					
-					carve::geom::vector<2> intersectingAxes1 = xAxisPosition2 - xAxisPosition;
-					carve::geom::vector<2> intersectingAxes2 = yAxisPosition2 - yAxisPosition;
+					carve::geom::vector<3> intersectingAxes1 = carve::geom::VECTOR(xAxisPosition2[0] - xAxisPosition[0], xAxisPosition2[1] - xAxisPosition[1], 0.0);
+					intersectingAxes1.normalize();
+					carve::geom::vector<3> intersectingAxes2 = carve::geom::VECTOR(yAxisPosition2[0] - yAxisPosition[0], yAxisPosition2[1] - yAxisPosition[1], 0.0);
+					intersectingAxes2.normalize();
 
 					carve::geom::vector<3> location = carve::geom::VECTOR(0.0,0.0,0.0);
-					carve::geom::vector<2> newIntersectionPoint = calculateIntersectionPointWithOffsets(intersection, xAxisPosition, xAxisPosition2, yAxisPosition, yAxisPosition2);
 					carve::geom::vector<3> crossProduct;
 					carve::geom::vector<3> intersecting3DAxes1;
 					carve::geom::vector<3> orthogonalComplement;
@@ -812,19 +825,30 @@ namespace OpenInfraPlatform {
 					case 3:
 						intersecting3DAxes1 = carve::geom::VECTOR(intersectingAxes1.x, intersectingAxes1.y, 0.0 );
 						orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1.y, intersectingAxes1.x, 0.0);
+						/*
+						if (!sameSense1) {
+							std::reverse(orthogonalComplement);
+						}*/
+						if(!sameSense1) {
+							orthogonalComplement = carve::geom::VECTOR(intersectingAxes1.y, -intersectingAxes1.x, 0.0);
+						}	
 						
+						//TODO: convertIfcGridAxis..  if Same Sense std::reverse
+						// OR: 
+						//	if(intersection->IntersectingAxes[0]->SameSense){
+						//		orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1.y, intersectingAxes1.x, 0.0);
+						//	}	
+						//	else
+						//		orthogonalComplement = carve::geom::VECTOR(intersectingAxes1.y, -intersectingAxes1.x, 0.0);
+						//	}
+						//
 						//cross product of IntersectingAxes[1] and the orthogonal complement of the IntersectingAxes[1] 
 						crossProduct = carve::geom::cross(intersecting3DAxes1, orthogonalComplement);
-						location = location + crossProduct;
-						
-						location.x = location.x + newIntersectionPoint.x;
-						location.y = location.y + newIntersectionPoint.y;
-						location.z = location.z + intersection->OffsetDistances[2];
-						break;
+						crossProduct.normalize();
+						location = location + crossProduct * intersection->OffsetDistances[2];
 					case 2:
-						
-						location.x = location.x + newIntersectionPoint.x;
-						location.y = location.y + newIntersectionPoint.y;
+						location = location + intersectingAxes1 * intersection->OffsetDistances[0];
+						location = location + intersectingAxes2 * intersection->OffsetDistances[1];
 						break;
 					default:
 						throw oip::InconsistentGeometryException( "Number of coordinates is inconsistent.");
@@ -833,61 +857,13 @@ namespace OpenInfraPlatform {
 					return { location, intersectingAxes1 };
 				}
 
-				carve::geom::vector<2> calculateIntersectionPointWithOffsets(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcVirtualGridIntersection> &intersection, 
-					const carve::geom::vector<2>& xAxisPosition,
-					const carve::geom::vector<2>& xAxisPosition2,
-					const carve::geom::vector<2>& yAxisPosition, 
-					const carve::geom::vector<2>& yAxisPosition2) const throw(...)
-				{
-					carve::geom::vector<2> intersectingAxes1 = xAxisPosition2 - xAxisPosition;
-					carve::geom::vector<2> intersectingAxes2 = yAxisPosition2 - yAxisPosition;
-
-					//	|
-					//	|      *     *
-					//	|     *--__ *  --__  = OffsetDistances [1]
-					//	|    *____ *  ____  dx =  OffsetDistances[1] / sin(arctan(intersectingAxes2[0] / intersectingAxes2[1])) 
-					//	|   *     *
-					//	|  *     *     -> [1  0 0 
-					//	| *     *          0  1 0     =   transformation2             
-					//	|*     *           dx 0 1]
-					//	|_____*______________________________
-					//	 
-					// 
-
-					carve::math::Matrix3 transformation1 = carve::math::Matrix3(1, 0, 0,
-						0, 1, 0,
-						0, intersection->OffsetDistances[0] / cos(atan(intersectingAxes1[0] / intersectingAxes1[1])), 1);
-
-					carve::geom::vector<3> newXAxisPositionTransformation1 = transformation1 * carve::geom::VECTOR(xAxisPosition.x, xAxisPosition.y, 1.0);
-					carve::geom::vector<2> newXAxisPosition1 = carve::geom::VECTOR(newXAxisPositionTransformation1.x, newXAxisPositionTransformation1.y);
-					carve::geom::vector<3> newXAxisPositionTransformation2 = transformation1 * carve::geom::VECTOR(xAxisPosition2.x, xAxisPosition2.y, 1.0);
-					carve::geom::vector<2> newXAxisPosition2 = carve::geom::VECTOR(newXAxisPositionTransformation2.x, newXAxisPositionTransformation2.y);
-
-					carve::math::Matrix3 transformation2 = carve::math::Matrix3(1, 0, 0,
-						0, 1, 0,
-						intersection->OffsetDistances[1] / sin(atan(intersectingAxes2[0] / intersectingAxes2[1])), 0, 1);
-
-					carve::geom::vector<3> newYAxisPositionTransformation1 = transformation2 * carve::geom::VECTOR(yAxisPosition.x, yAxisPosition.y, 1.0);
-					carve::geom::vector<2> newYAxisPosition1 = carve::geom::VECTOR(newYAxisPositionTransformation1.x, newYAxisPositionTransformation1.y);
-					carve::geom::vector<3> newYAxisPositionTransformation2 = transformation2 * carve::geom::VECTOR(yAxisPosition2.x, yAxisPosition2.y, 1.0);
-					carve::geom::vector<2> newYAxisPosition2 = carve::geom::VECTOR(newYAxisPositionTransformation2.x, newYAxisPositionTransformation2.y);
-
-					carve::geom::vector<2> newIntersectionPoint;
-					if (GeomUtils::LineToLineIntersection(newXAxisPosition1, newXAxisPosition2, newYAxisPosition1, newYAxisPosition2, newIntersectionPoint))
-					{
-						return newIntersectionPoint;
-					}
-					throw oip::InconsistentGeometryException("Lines should intersect");
-				}
-
 				carve::geom::vector<3> convertIfcGridPlacementDirectionSelect(const typename IfcEntityTypesT::IfcGridPlacementDirectionSelect& directionSelect,
 					carve::geom::vector<3> location,
-					carve::geom::vector<2> intersectingAxes1) const throw(...)
+					carve::geom::vector<3> intersectingAxes1) const throw(...)
 				{
 					carve::geom::vector<3> xAxisDirection;
 					carve::geom::vector<3> location2;
-					carve::geom::vector<2> intersectingAxes2;
+					carve::geom::vector<3> intersectingAxes2;
 					switch (directionSelect.which()) {
 					case 0:
 						location2 = convertIfcDirection(directionSelect.get<0>());
@@ -910,7 +886,7 @@ namespace OpenInfraPlatform {
 						throw oip::ReferenceExpiredException(grid_placement);
 
 					carve::geom::vector<3> location;
-					carve::geom::vector<2> intersectingAxes1;
+					carve::geom::vector<3> intersectingAxes1;
 
 					std::tie(location, intersectingAxes1) = convertIfcVirtualGridIntersection(grid_placement->PlacementLocation); 
 					carve::geom::vector<3> xAxisDirection = convertIfcGridPlacementDirectionSelect(grid_placement->PlacementRefDirection, location, intersectingAxes1);
