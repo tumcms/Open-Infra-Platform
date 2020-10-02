@@ -274,7 +274,7 @@ namespace OpenInfraPlatform
 							}
 
 							//Give directrix to Curve converter: for each station 1 Point and 1 Direction
-							// the stations at which a point of the tesselation has to be calcuated - to be converted and fill the targetVec
+							// the stations at which a point of the tessellation has to be calcuated - to be converted and fill the targetVec
 							std::vector<double> stations = curveConverter->getStationsForTessellationOfIfcAlignmentCurve(directrix.as<typename IfcEntityTypesT::IfcAlignmentCurve>());
 
 							carve::geom::vector<3> targetPoint3D;
@@ -379,9 +379,9 @@ namespace OpenInfraPlatform
 							int  ppoints = 0;
 
 							//Declare a new vector which will include all points for the Tesselation
-							std::vector<carve::geom::vector<3>> points_for_tesselation;
-							std::vector<carve::geom::vector<3>> direction_for_tesselation;
-							std::vector<std::vector<std::vector<carve::geom::vector<3>>>> paths_for_tesselation;
+							std::vector<carve::geom::vector<3>> points_for_tessellation;
+							std::vector<carve::geom::vector<3>> direction_for_tessellation;
+							std::vector<std::vector<std::vector<carve::geom::vector<3>>>> paths_for_tessellation;
 							int i = 0;
 						    int j = 0;
 
@@ -404,8 +404,8 @@ namespace OpenInfraPlatform
 								}
 							}
 							//The first point for tesselation is where the Profile Starts
-							points_for_tesselation.push_back(CrossSectionPoints[0]);
-							direction_for_tesselation.push_back(directionsOfCurve[0]);
+							points_for_tessellation.push_back(CrossSectionPoints[0]);
+							direction_for_tessellation.push_back(directionsOfCurve[0]);
 
 							//Convert profile information from 2D to 3D
 							std::vector<std::vector<carve::geom::vector<2> > >& compositeProfile = paths[0];
@@ -424,10 +424,10 @@ namespace OpenInfraPlatform
 								}
 								TFcompositeprofile.push_back(Tloop);
 							}
-							//The first profile for tesselation
-							paths_for_tesselation.push_back(TFcompositeprofile);
+							//The first profile for tessellation
+							paths_for_tessellation.push_back(TFcompositeprofile);
 
-							//now that CrossSectionPoints[0] is reached iterate and fill points_for_tesselation
+							//now that CrossSectionPoints[0] is reached iterate and fill points_for_tessellation
 			                while (j < CrossSectionPoints.size()) 
 							{
 
@@ -435,8 +435,8 @@ namespace OpenInfraPlatform
 					     		if (BasisCurvePoints[i] == CrossSectionPoints[j])
 								{
 									//1. save the information of pointsOnCurve in the new vector
-									points_for_tesselation.push_back(CrossSectionPoints[j]);
-									direction_for_tesselation.push_back(directionsOfCurve[j]); //3D coord carve matrix ausrechnen zum multiplizieren
+									points_for_tessellation.push_back(CrossSectionPoints[j]);
+									direction_for_tessellation.push_back(directionsOfCurve[j]); //3D coord carve matrix ausrechnen zum multiplizieren
 
 									//2. Save CrossSections
 									std::vector<std::vector<carve::geom::vector<2> > >& compositeProfile = paths[j];
@@ -455,7 +455,7 @@ namespace OpenInfraPlatform
 										Tcompositeprofile.push_back(Tloop);
 									}
 									
-									paths_for_tesselation.push_back(Tcompositeprofile);
+									paths_for_tessellation.push_back(Tcompositeprofile);
 									
 									//4. go to the next element in both lists
 									++i;
@@ -470,16 +470,16 @@ namespace OpenInfraPlatform
 									double distBasisCurvePoints;
 									
 									//calculate the distance from the point in basis_curve_points to the last element in the joint list
-									int last = points_for_tesselation.size() - 1;
+									int last = points_for_tessellation.size() - 1;
 
-									distCrossSectionPositions = distance(points_for_tesselation[last], CrossSectionPoints[j]);
-									distBasisCurvePoints = distance(points_for_tesselation[last], BasisCurvePoints[i]);
+									distCrossSectionPositions = distance(points_for_tessellation[last], CrossSectionPoints[j]);
+									distBasisCurvePoints = distance(points_for_tessellation[last], BasisCurvePoints[i]);
 
 									if (distCrossSectionPositions < distBasisCurvePoints)
 									{
 										//1. Save the point and direction in new vector
-										points_for_tesselation.push_back(CrossSectionPoints[j]);
-										direction_for_tesselation.push_back(directionsOfCurve[j]);
+										points_for_tessellation.push_back(CrossSectionPoints[j]);
+										direction_for_tessellation.push_back(directionsOfCurve[j]);
 
 										//2. Save CrossSections
 										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfile = paths[j];
@@ -498,7 +498,7 @@ namespace OpenInfraPlatform
 											Tcompositeprofile.push_back(Tloop);
 										}
 										
-										paths_for_tesselation.push_back(Tcompositeprofile);
+										paths_for_tessellation.push_back(Tcompositeprofile);
 
 
 										//3. increment based on its position on the directrix
@@ -508,12 +508,12 @@ namespace OpenInfraPlatform
 									else if (distCrossSectionPositions > distBasisCurvePoints)
 									{
 										//Save the point in the curve in the new vector
-										points_for_tesselation.push_back(BasisCurvePoints[i]);
-										direction_for_tesselation.push_back(BasisPointDirection[i]);
+										points_for_tessellation.push_back(BasisCurvePoints[i]);
+										direction_for_tessellation.push_back(BasisPointDirection[i]);
 
 										//calculate the direction of the point (Interpolate with the pointOnCurve before and after that point)
-										int directionSize = direction_for_tesselation.size()-1;
-										int lastPoint = points_for_tesselation.size() -1;
+										int directionSize = direction_for_tessellation.size()-1;
+										int lastPoint = points_for_tessellation.size() -1;
 
 										double totalDistance = distance(CrossSectionPoints[j - 1], CrossSectionPoints[j]);
 										double factorBefore = (distance(CrossSectionPoints[j - 1], BasisCurvePoints[i]))/totalDistance;
@@ -560,7 +560,7 @@ namespace OpenInfraPlatform
 											Tcompositeprofile.push_back(Tloop);
 										}
 										
-										paths_for_tesselation.push_back(Tcompositeprofile);
+										paths_for_tessellation.push_back(Tcompositeprofile);
 										
 										//increment based on its position on the directrix
 										++i;
@@ -569,11 +569,11 @@ namespace OpenInfraPlatform
 							}
 
                             // Add Vertex, each point is a vertex. for each paths_for_tesselation
-							//paths_for_tesselation.size() == points_for_tesselation.size()
+							//paths_for_tesselation.size() == points_for_tessellation.size()
 							
-							for (i = 0; i < paths_for_tesselation.size(); ++i)
+							for (i = 0; i < paths_for_tessellation.size(); ++i)
 							{
-								std::vector<std::vector<carve::geom::vector<3> > >& compositeProfile = paths_for_tesselation[i];
+								std::vector<std::vector<carve::geom::vector<3> > >& compositeProfile = paths_for_tessellation[i];
 								for (int w = 0; w < compositeProfile.size(); ++w)
 								{
 									std::vector<carve::geom::vector<3> >& loop = compositeProfile[w];
@@ -591,7 +591,7 @@ namespace OpenInfraPlatform
 							//1. Add Faces between Cross Sections to create a body along the Directrix
 						    //size of Tloop has to be the same for every Profile
 						    size_t num_vertices = body_data->getVertexCount();
-							int PFTS = paths_for_tesselation.size() -1;
+							int PFTS = paths_for_tessellation.size() -1;
 							for (int i = 0; i < PFTS ; ++i)
 							{
 								for (int j = 0; j < ppoints - 1; ++j)
