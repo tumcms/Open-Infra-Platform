@@ -307,12 +307,12 @@ std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::movi
 
 		// add all values in the window
 		for (int j = jStart; j <= jEnd; j++)
-			value[i] += data[i];
+			value[i] += data[j];
 		// make average by divide with size of window
 		value[i] /= (jEnd - jStart + 1);
 	}
 
-	return data;
+	return value;
 }
 
 size_t OpenInfraPlatform::UserInterface::SplineInterpretation::variogrammGetRange(std::vector<double>& data) const throw(...)
