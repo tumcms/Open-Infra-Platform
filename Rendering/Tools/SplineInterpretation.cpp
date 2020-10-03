@@ -334,8 +334,9 @@ size_t OpenInfraPlatform::UserInterface::SplineInterpretation::variogrammGetRang
 
 	// initialice range with nonsense value
 	size_t range = -1;
+	size_t rangeMax = std::min((size_t)100, gamma.size() - 1);
 
-	for (size_t h = 0; h < gamma.size() - 1; h++)
+	for (size_t h = 0; h < rangeMax; h++)
 	{
 		if (gamma[h] >= gamma[h + 1])
 		{
@@ -347,7 +348,7 @@ size_t OpenInfraPlatform::UserInterface::SplineInterpretation::variogrammGetRang
 
 	// if no range was set, it's (temporarlly) the max. step size
 	if (range == -1)
-		range = gamma.size();
+		range = rangeMax;
 
 	return range;
 }
