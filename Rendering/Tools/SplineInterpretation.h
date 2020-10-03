@@ -157,6 +157,15 @@ namespace OpenInfraPlatform
 			 */
 			void debugFunction_printVectorOfPointsInConsolWindow(const std::vector<carve::geom::vector<3>>&) const throw(...);
 
+			/*! \brief Displays a \c std::vector<double> in the console window.
+			 *
+			 * In example, this function can be used to print the \c curvatureChange.
+			 * The syntax in the consol matches the syntax of MATLAB. The information can be pasted into MATLAB as nx1-matrix.
+			 *
+			 * param[in] curvatureChange	The vector of \c double which should be displayed.
+			 */
+			void debugFunction_printCurvatureChangeInConsolWindow(const std::vector<double> curvatureChange) const throw(...);
+
 		}; // end of class SplineInterpretation
 	}
 }

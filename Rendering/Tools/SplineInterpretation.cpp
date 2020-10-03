@@ -39,6 +39,10 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	const std::vector<carve::geom::vector<3>> controlPoints = obtainControlPoints();
 	// ToDo: exception handling if controlPoints is an empty vector, the functions has to be cancelled
 
+	// DEBUG
+	std::cout << "Control points:" << std::endl;
+	debugFunction_printVectorOfPointsInConsolWindow(controlPoints);
+
 	// Prepair properties for first approximation
 	int nCurvePoints = controlPoints.size();
 	const int nControlPoints = controlPoints.size();
@@ -55,17 +59,33 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	nCurvePoints = 10 * controlPoints.size();
 	std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray, nCurvePoints);
 
+	// DEBUG
+	std::cout << "Curvature before smoothing:" << std::endl;
+	debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
+
 	// smooth curvature
 	lengthsWithCurvatures = movingAverageVariableWindow(lengthsWithCurvatures);
 
+	// DEBUG
+	std::cout << "Curvature after smoothing:" << std::endl;
+	debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
+
 	// calculate change of curvature as derivative
 	std::vector<double> curvatureChange = numericDerivative(lengthsWithCurvatures);
+
+	// DEBUG
+	std::cout << "Change of curvature before smoothing" << std::endl;
+	debugFunction_printCurvatureChangeInConsolWindow(curvatureChange);
+
 	// smooth change of curvature
 	curvatureChange = movingAverageVariableWindow(curvatureChange);
 
+	// DEBUG
+	std::cout << "Change of curvature after smoothing" << std::endl;
+	debugFunction_printCurvatureChangeInConsolWindow(curvatureChange);
 
-	debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
-	//debugFunction_printVectorOfPointsInConsolWindow(bsplinePoints);
+	
+	
 }
 
 // PRIVATE FUNCTIONS
@@ -371,4 +391,17 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_print
 		cout << points[i].x << ", " << points[i].y << ", " << points[i].z << ";" << endl;
 
 	cout << points.back().x << ", " << points.back().y << ", " << points.back().z << "];";
+}
+
+void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_printCurvatureChangeInConsolWindow(
+	const std::vector<double> curvatureChange) const throw(...)
+{
+	using std::cout;
+	using std::endl;
+
+	cout << endl << "[";
+	for (size_t i = 0; i < curvatureChange.size() - 1; i++)
+		cout << curvatureChange[i] << ";" << endl;
+
+	cout << curvatureChange.back() << "];";
 }
