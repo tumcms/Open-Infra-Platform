@@ -18,6 +18,7 @@
 #pragma once
 
 #include <vector>
+#include "SplineInterpretationElement.h"
 #include "IfcGeometryConverter/CarveHeaders.h"
 
 namespace OpenInfraPlatform
@@ -139,6 +140,19 @@ namespace OpenInfraPlatform
 			 * return	A vector of the y-values of the derivative. The vector will be one shorter as the original vector of pairs.
 			 */
 			std::vector<double> numericDerivative(std::vector<std::pair<double, double>>& xy) const throw(...);
+
+			std::vector<SplineInterpretationElement> identifyElementEndpoints(
+				std::vector<std::pair<double, double>> lengthsWithCurvatures, std::vector<double> curvatureChange) const throw(...);
+
+			std::tuple<std::vector<int>, double> indicateCurvatureChange(std::vector<double> curvatureChange) const throw(...);
+
+			std::vector<SplineInterpretationElement> obtainElementsFromIndicator(std::vector<int> indicator, std::vector<std::pair<double, double>> curveLength) const throw(...);
+
+			std::vector<SplineInterpretationElement> correctShortElements(std::vector<SplineInterpretationElement> elements, std::vector<double> curvatureChange, const double curvatureZero) const throw(...);
+
+			int averageOfCurvatureChange(std::vector<double> curvatureChange, double curvatureZero) const throw(...);
+
+			std::vector<SplineInterpretationElement> mergeShortElements(std::vector<SplineInterpretationElement> elements) const throw(...);
 
 			/*! \brief Displays the vector of length with curvature in the console window.
 			 *

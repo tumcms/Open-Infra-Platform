@@ -16,6 +16,7 @@
 */
 
 #include "SplineInterpretation.h"
+using OpenInfraPlatform::UserInterface::SplineInterpretationElement;
 
 #include <fstream>
 #include <sstream>
@@ -24,6 +25,8 @@
 
 #include <QPushButton>
 #include <math.h>
+
+#include <algorithm>
 
 #include "IfcGeometryConverter/SplineUtilities.h"
 
@@ -84,7 +87,8 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	std::cout << "Change of curvature after smoothing" << std::endl;
 	debugFunction_printCurvatureChangeInConsolWindow(curvatureChange);
 
-	
+	// Get vector with element endpoints
+	std::vector<SplineInterpretationElement> elements = identifyElementEndpoints(lengthsWithCurvatures, curvatureChange);
 	
 }
 
@@ -364,6 +368,185 @@ std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::nume
 		dy[i] = (xy[i + 1].second - xy[i].second) / (xy[i + 1].first - xy[i].first);
 
 	return dy;
+}
+
+std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::SplineInterpretation::identifyElementEndpoints(
+	std::vector<std::pair<double, double>> lengthsWithCurvatures, 
+	std::vector<double> curvatureChange) const throw(...)
+{
+	// indicate the change of curvature
+	//   curvatureZero: threshold
+	//   indicator: 0 for abs(curvatureChange) <= curvatureZero
+	//              1 for abs(curvatureChange) >  curvatureZero
+	std::vector<int> indicator;
+	double curvatureZero;
+	std::tie(indicator, curvatureZero) = indicateCurvatureChange(curvatureChange);
+
+	// 'elements' holds information about element start-/end-point, length, and corresponding id in 'lengthWithCurvature'
+	std::vector<SplineInterpretationElement> elements =
+		obtainElementsFromIndicator(indicator, lengthsWithCurvatures);
+
+	// indicator of short elements will be modified to obtain long elements
+	elements = correctShortElements(elements, curvatureChange, curvatureZero);
+
+	// consecutive elements with identical indicator will be merged
+	elements = mergeShortElements(elements);
+
+	return elements;
+}
+
+std::tuple<std::vector<int>, double> OpenInfraPlatform::UserInterface::SplineInterpretation::indicateCurvatureChange(
+	std::vector<double> curvatureChange) const throw(...)
+{
+	// threshold of curvatureChange
+	const double curvatureZero = std::max(
+		0.25 * std::abs(*std::min_element(curvatureChange.begin(), curvatureChange.end())), 
+		0.25 * std::abs(*std::max_element(curvatureChange.begin(), curvatureChange.end())));
+
+	// check values of curvatureChange against threshold
+	std::vector<int> indicator(curvatureChange.size(), 0);
+	for (size_t i = 0; i < curvatureChange.size(); i++)
+		if (std::abs(curvatureChange[i]) <= curvatureZero)
+			indicator[i] = 0;
+		else
+			indicator[i] = 1;
+
+	return { indicator, curvatureZero };
+}
+
+std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::SplineInterpretation::obtainElementsFromIndicator(
+	std::vector<int> indicator,
+	std::vector<std::pair<double, double>> lengthsWithCurvatures) const throw(...)
+{
+	// predetermine variables with first point
+	// vector-id of each element start
+	size_t idStart = 0;
+	// type holds information of indicator at each element start
+	int type = indicator[idStart];
+	
+	// initialize variables
+	// vector-id of each element end
+	size_t idEnd;
+	// result vector
+	std::vector<SplineInterpretationElement> elements;
+
+	for (size_t i = 1; i < indicator.size(); i++)
+		// if the type is changing
+		if (indicator[i] != type)
+		{
+			idEnd = i;
+			// add element to result vector
+			elements.push_back(SplineInterpretationElement(
+				lengthsWithCurvatures[idEnd].first - lengthsWithCurvatures[idStart].first, // length of element
+				type, // type (=value of indicator) of element
+				std::make_pair(idStart, idEnd))); // ids of element regarding the vector 'lengthWithCurvature'
+
+			// set start conditions of next element
+			idStart = i;
+			type = indicator[idStart];
+		}
+
+	// close last element
+	idEnd = lengthsWithCurvatures.size() - 1;
+	elements.push_back(SplineInterpretationElement(
+		lengthsWithCurvatures[idEnd].first - lengthsWithCurvatures[idStart].first,
+		type,
+		std::make_pair(idStart, idEnd)));
+
+	return elements;
+}
+
+std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::SplineInterpretation::correctShortElements(
+	std::vector<SplineInterpretationElement> elements, 
+	std::vector<double> curvatureChange, 
+	const double curvatureZero) const throw(...)
+{
+	// minimum length of an element
+	const double minLength = 50;
+
+	// id..Element regarding vector of elements
+	size_t idFirstElement;
+	size_t idLastElement;
+	// id..Point regarding vector lengthWithCurvature
+	size_t idFirstPoint;
+	size_t idLastPoint;
+	// indicator according to the average of curve points
+	int newIndicator;
+
+	const size_t n = elements.size();
+	for (size_t i = 0; i < n; i++)
+		// if element is to short ...
+		if (elements[i].getLength() < minLength)
+		{
+			// save number of first short element
+			idFirstElement = i;
+			for (size_t j = i; j < n; j++)
+				// if element is long enough OR if end of elements vector
+				if (elements[j].getLength() >= minLength || j == n - 1)
+				{
+					if (j == n - 1)
+						// end of vector: use current index as last short element
+						idLastElement = j;
+					else
+						// index points to a long element: use previous as last short element
+						idLastElement = j-1;
+
+					if (idFirstElement == idLastElement)
+						// only one singl element is short: invert indicator
+						if (elements[idFirstElement].getIndicator() == 0)
+							elements[idFirstElement].setindicator(1);
+						else
+							elements[idFirstElement].setindicator(0);
+					else // multiple elements are short
+					{
+						// indices regarding vector lengthWithCurvature
+						idFirstPoint = elements[idFirstElement].getIndicesStart();
+						idLastPoint = elements[idLastElement].getIndicesEnd();
+						// calculate average of the curvature change between the points of lengthWithCurvature
+						newIndicator = averageOfCurvatureChange(
+							std::vector<double>(curvatureChange.begin() + idFirstPoint, curvatureChange.begin() + idLastPoint), 
+							curvatureZero);
+						// apply new indicator to all short elements
+						for (size_t k = idFirstElement; k <= idLastElement; k++)
+							elements[k].setindicator(newIndicator);
+					}
+					// i jumps over the short elements
+					i = j;
+					break;
+				}
+		}
+	return elements;
+}
+
+int OpenInfraPlatform::UserInterface::SplineInterpretation::averageOfCurvatureChange(std::vector<double> curvatureChange, double curvatureZero) const throw(...)
+{
+	// sum up all values (begin to end) of curvatureChange, divide by the number of values 
+	double average = std::accumulate(curvatureChange.begin(), curvatureChange.end(), 0.0) / curvatureChange.size();
+
+	// obtain indicator
+	if (std::abs(average) <= curvatureZero)
+		return 0;
+	else
+		return 1;
+}
+
+std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::SplineInterpretation::mergeShortElements(
+	std::vector<SplineInterpretationElement> elements) const throw(...)
+{
+	// run over elements vector from end to begin (because the vector becomes shorter)
+	for (size_t i = elements.size() - 1; i > 0; i--)
+		// if consecutive elements have the same indicator ...
+		if (elements[i-1].getIndicator() == elements[i].getIndicator())
+		{	
+			// move needed information from elements[i] to [i-1] (to the previous one)
+			elements[i - 1].setLength(elements[i - 1].getLength() + elements[i].getLength());
+			elements[i - 1].setIndicesEnd(elements[i].getIndicesEnd());
+
+			// delete elements[i]
+			elements.erase(elements.begin() + i);
+		}
+
+	return elements;
 }
 
 void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_printCurvatureInConsolWindow(
