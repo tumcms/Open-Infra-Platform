@@ -403,9 +403,7 @@ std::tuple<std::vector<int>, double> OpenInfraPlatform::UserInterface::SplineInt
 	std::vector<double> curvatureChange) const throw(...)
 {
 	// threshold of curvatureChange
-	const double curvatureZero = std::max(
-		0.25 * std::abs(*std::min_element(curvatureChange.begin(), curvatureChange.end())), 
-		0.25 * std::abs(*std::max_element(curvatureChange.begin(), curvatureChange.end())));
+	const double curvatureZero = obtainThreshold(curvatureChange);
 
 	// check values of curvatureChange against threshold
 	std::vector<int> indicator(curvatureChange.size(), 0);
@@ -416,6 +414,13 @@ std::tuple<std::vector<int>, double> OpenInfraPlatform::UserInterface::SplineInt
 			indicator[i] = 1;
 
 	return { indicator, curvatureZero };
+}
+
+double OpenInfraPlatform::UserInterface::SplineInterpretation::obtainThreshold(std::vector<double> data) const throw(...) {
+	// allows +- 25 % around 0
+	return std::max(
+		0.25 * std::abs(*std::min_element(data.begin(), data.end())),
+		0.25 * std::abs(*std::max_element(data.begin(), data.end())));
 }
 
 std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::SplineInterpretation::obtainElementsFromIndicator(

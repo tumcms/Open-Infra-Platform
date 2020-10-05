@@ -146,6 +146,8 @@ namespace OpenInfraPlatform
 
 			std::tuple<std::vector<int>, double> indicateCurvatureChange(std::vector<double> curvatureChange) const throw(...);
 
+			double obtainThreshold(std::vector<double> data) const throw(...);
+
 			std::vector<SplineInterpretationElement> obtainElementsFromIndicator(std::vector<int> indicator, std::vector<std::pair<double, double>> curveLength) const throw(...);
 
 			std::vector<SplineInterpretationElement> correctShortElements(std::vector<SplineInterpretationElement> elements, std::vector<double> curvatureChange, const double curvatureZero) const throw(...);
