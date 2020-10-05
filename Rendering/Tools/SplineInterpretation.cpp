@@ -62,6 +62,10 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	nCurvePoints = 10 * controlPoints.size();
 	std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray, nCurvePoints);
 
+	// correction of first and last curvature value
+	lengthsWithCurvatures[0].second = lengthsWithCurvatures[1].second;
+	lengthsWithCurvatures[nCurvePoints - 1].second = lengthsWithCurvatures[nCurvePoints - 2].second;
+
 	// DEBUG
 	std::cout << "Curvature before smoothing:" << std::endl;
 	debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
