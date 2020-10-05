@@ -758,24 +758,21 @@ namespace OpenInfraPlatform {
 					return object_placement_matrix;
                 }
 				
-				std::tuple<std::vector<carve::geom::vector<2>>,bool> convertIfcGridAxis(const EXPRESSReference<typename IfcEntityTypesT::IfcGridAxis>& gridAxis) const throw(...) {
+				std::vector<carve::geom::vector<2>> convertIfcGridAxis(const EXPRESSReference<typename IfcEntityTypesT::IfcGridAxis>& gridAxis) const throw(...) {
 
 					std::vector<carve::geom::vector<2>> axis;
 					std::vector<carve::geom::vector<2>> segmentStartPoints;
-					bool sameSense;
-					if (gridAxis->SameSense) {
-						sameSense = true;
-					}
-					else {
-					sameSense = false;
-					}
+	
+					if (!gridAxis->SameSense)
+						// turn around the axis
+						std::reverse(std::begin(axis), std::end(axis));
 
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>>placementConverter = std::make_shared<PlacementConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert());
 
 					CurveConverterT<IfcEntityTypesT> gridConv(GeomSettings(), UnitConvert(), placementConverter);
 					gridConv.convertIfcCurve2D(gridAxis->AxisCurve, axis, segmentStartPoints);
 					
-					return { axis, sameSense };
+					return axis;
 				}
 
 				std::tuple<carve::geom::vector<3>, carve::geom::vector<3>> convertIfcVirtualGridIntersection(
@@ -785,13 +782,9 @@ namespace OpenInfraPlatform {
 					if (intersection.expired())
 						throw oip::ReferenceExpiredException(intersection);
 
-					std::vector<carve::geom::vector<2>> xAxis;
-					std::vector<carve::geom::vector<2>> yAxis;
-					bool sameSense1;
-					bool sameSense2;
+					std::vector<carve::geom::vector<2>> xAxis = convertIfcGridAxis(intersection->IntersectingAxes[0]);
+					std::vector<carve::geom::vector<2>> yAxis = convertIfcGridAxis(intersection->IntersectingAxes[1]);
 
-					std::tie(xAxis, sameSense1) = convertIfcGridAxis(intersection->IntersectingAxes[0]);
-					std::tie(yAxis, sameSense2) = convertIfcGridAxis(intersection->IntersectingAxes[1]);
 					carve::geom::vector<2> intersectionPoint;
 					carve::geom::vector<2> xAxisPosition;
 					carve::geom::vector<2> xAxisPosition2;
@@ -825,23 +818,7 @@ namespace OpenInfraPlatform {
 					case 3:
 						intersecting3DAxes1 = carve::geom::VECTOR(intersectingAxes1.x, intersectingAxes1.y, 0.0 );
 						orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1.y, intersectingAxes1.x, 0.0);
-						/*
-						if (!sameSense1) {
-							std::reverse(orthogonalComplement);
-						}*/
-						if(!sameSense1) {
-							orthogonalComplement = carve::geom::VECTOR(intersectingAxes1.y, -intersectingAxes1.x, 0.0);
-						}	
 						
-						//TODO: convertIfcGridAxis..  if Same Sense std::reverse
-						// OR: 
-						//	if(intersection->IntersectingAxes[0]->SameSense){
-						//		orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1.y, intersectingAxes1.x, 0.0);
-						//	}	
-						//	else
-						//		orthogonalComplement = carve::geom::VECTOR(intersectingAxes1.y, -intersectingAxes1.x, 0.0);
-						//	}
-						//
 						//cross product of IntersectingAxes[1] and the orthogonal complement of the IntersectingAxes[1] 
 						crossProduct = carve::geom::cross(intersecting3DAxes1, orthogonalComplement);
 						crossProduct.normalize();
