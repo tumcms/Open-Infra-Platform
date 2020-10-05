@@ -150,7 +150,7 @@ namespace OpenInfraPlatform
 
 			std::vector<SplineInterpretationElement> correctShortElements(std::vector<SplineInterpretationElement> elements, std::vector<double> curvatureChange, const double curvatureZero) const throw(...);
 
-			int averageOfCurvatureChange(std::vector<double> curvatureChange, double curvatureZero) const throw(...);
+			int indicateDataByAverage(std::vector<double> data, double threshold) const throw(...);
 
 			std::vector<SplineInterpretationElement> mergeShortElements(std::vector<SplineInterpretationElement> elements) const throw(...);
 
