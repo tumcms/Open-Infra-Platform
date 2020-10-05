@@ -46,25 +46,25 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	std::cout << "Control points:" << std::endl;
 	debugFunction_printVectorOfPointsInConsolWindow(controlPoints);
 
-	// Prepair properties for first approximation
-	int nCurvePoints = controlPoints.size();
+	// Prepair properties for approximation
 	const int nControlPoints = controlPoints.size();
+	const int nCurvePoints = 10 * nControlPoints;
 	const int order = ceil(static_cast<double>(nControlPoints) / 2.0);
 	const std::vector<double> knotArray = obtainKnotArrayOpenUniform(nControlPoints, order);
 
 	// Get instance of SplineUtilities
 	Core::IfcGeometryConverter::SplineUtilities splineUtilities;
-	// Calculate first approximation with B-Splinecurve
+	// Calculate approximation with B-Splinecurve and its curvature
 	const std::vector<carve::geom::vector<3>> bsplinePoints = splineUtilities.computeBSplineCurveWithKnots(order, knotArray, controlPoints, nCurvePoints, accuracy);
-
-	// Set properties for second approximation and compute curvature
-	// (nControlPoints, order, and knoteArray are const, because nCurvePoints in first approximation were equal nControlPoints)
-	nCurvePoints = 10 * controlPoints.size();
 	std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray, nCurvePoints);
 
 	// correction of first and last curvature value
 	lengthsWithCurvatures[0].second = lengthsWithCurvatures[1].second;
 	lengthsWithCurvatures[nCurvePoints - 1].second = lengthsWithCurvatures[nCurvePoints - 2].second;
+
+	// DEBUG
+	std::cout << "B-Spline-Curvepoints of approximation" << std::endl;
+	debugFunction_printVectorOfPointsInConsolWindow(bsplinePoints);
 
 	// DEBUG
 	std::cout << "Curvature before smoothing:" << std::endl;
