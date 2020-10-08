@@ -512,9 +512,9 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::Splin
 						idFirstPoint = elements[idFirstElement].getIndicesStart();
 						idLastPoint = elements[idLastElement].getIndicesEnd();
 						// calculate average of the curvature change between the points of lengthWithCurvature
-						newIndicator = indicateDataByAverage(
+						newIndicator = std::abs(indicateDataByAverage(
 							std::vector<double>(curvatureChange.begin() + idFirstPoint, curvatureChange.begin() + idLastPoint), 
-							curvatureZero);
+							curvatureZero));
 						// apply new indicator to all short elements
 						for (size_t k = idFirstElement; k <= idLastElement; k++)
 							elements[k].setindicator(newIndicator);
@@ -533,10 +533,12 @@ int OpenInfraPlatform::UserInterface::SplineInterpretation::indicateDataByAverag
 	double average = std::accumulate(data.begin(), data.end(), 0.0) / data.size();
 
 	// obtain indicator
-	if (std::abs(average) <= threshold)
-		return 0;
-	else
+	if (average < -threshold)
+		return -1;
+	else if (average > threshold)
 		return 1;
+	else
+		return 0;
 }
 
 std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::SplineInterpretation::mergeShortElements(
