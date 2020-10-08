@@ -18,6 +18,8 @@
 #pragma once
 
 #include <utility>
+#include <string>
+#include "IfcGeometryConverter/CarveHeaders.h"
 
 namespace OpenInfraPlatform
 {
@@ -27,30 +29,62 @@ namespace OpenInfraPlatform
 		{
 		private:
 			// VARIABLES
-			double length;
-			int indicator;
-			std::pair<size_t, size_t> indices;
+			// preset during element search
+			double lengthBSpline_;
+			int indicator_;
+			std::pair<size_t, size_t> indices_;
+
+			// final element parameters
+			std::string type_;
+			carve::geom::vector<3> startpoint_;
+			double direction_;
+			double length_;
+
+			double radius_;
+			int isCCW_; // = is counter clockwise
+			carve::geom::vector<3> center_;
 
 		public:
 			// CONSTRUCTOR
 			SplineInterpretationElement();
 
-			SplineInterpretationElement(double _length, int _indicator, std::pair<size_t, size_t> _indices);
+			SplineInterpretationElement(double lengthBSpline, int indicator, std::pair<size_t, size_t> indices);
 
 
 			// FUNCTIONS WITH ACCESS TO VARIABLES
-			void setLength(double newLength) throw(...);
-			double getLength() const throw(...);
+			void setLengthBSpline(double lengthBSpline);
+			double getLengthBSpline() const;
 
-			void setindicator(int newIndicator) throw(...);
-			int getIndicator() const throw(...);
+			void setindicator(int indicator);
+			int getIndicator() const;
 
-			void setIndices(size_t startIndice, size_t endIndice) throw(...);
-			void setIndicesStart(size_t startIndice) throw(...);
-			void setIndicesEnd(size_t endIndice) throw(...);
-			std::pair<size_t, size_t> getIndices() const throw(...);
-			size_t getIndicesStart() const throw(...);
-			size_t getIndicesEnd() const throw(...);
+			void setIndices(size_t startIndice, size_t endIndice);
+			void setIndicesStart(size_t startIndice);
+			void setIndicesEnd(size_t endIndice);
+			std::pair<size_t, size_t> getIndices() const;
+			size_t getIndicesStart() const;
+			size_t getIndicesEnd() const;
+
+			void setType(std::string type);
+			std::string getType() const;
+			
+			void setStartpoint(carve::geom::vector<3> startpoint);
+			carve::geom::vector<3> getStartpoint() const;
+
+			void setDirection(double direction);
+			double getDirection() const;
+
+			void setLength(double length);
+			double getLength() const;
+
+			void setRadius(double radius);
+			double getRadius() const;
+
+			void setIsCCW(int isCCW);
+			int getIsCCW() const;
+
+			void setCenter(carve::geom::vector<3> center);
+			carve::geom::vector<3> getCenter() const;
 
 
 			// FUNCTIONS

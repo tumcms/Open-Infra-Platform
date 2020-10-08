@@ -485,13 +485,13 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::Splin
 	const size_t n = elements.size();
 	for (size_t i = 0; i < n; i++)
 		// if element is to short ...
-		if (elements[i].getLength() < minLength)
+		if (elements[i].getLengthBSpline() < minLength)
 		{
 			// save number of first short element
 			idFirstElement = i;
 			for (size_t j = i; j < n; j++)
 				// if element is long enough OR if end of elements vector
-				if (elements[j].getLength() >= minLength || j == n - 1)
+				if (elements[j].getLengthBSpline() >= minLength || j == n - 1)
 				{
 					if (j == n - 1)
 						// end of vector: use current index as last short element
@@ -550,7 +550,7 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::Splin
 		if (elements[i-1].getIndicator() == elements[i].getIndicator())
 		{	
 			// move needed information from elements[i] to [i-1] (to the previous one)
-			elements[i - 1].setLength(elements[i - 1].getLength() + elements[i].getLength());
+			elements[i - 1].setLengthBSpline(elements[i - 1].getLengthBSpline() + elements[i].getLengthBSpline());
 			elements[i - 1].setIndicesEnd(elements[i].getIndicesEnd());
 
 			// delete elements[i]
