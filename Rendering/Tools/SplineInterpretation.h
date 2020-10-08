@@ -121,6 +121,8 @@ namespace OpenInfraPlatform
 			 */
 			std::vector<double> movingAverageVariableWindow(std::vector<double>& data) const throw(...);
 
+			std::vector<double> obtainCurvatureFrom_lengthWithCurvatures(const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const throw(...);
+
 			/* \brief Calculates the range of a variogramm.
 			 *
 			 * Calculates the semevariogramm variable with the values in \c data. 
@@ -146,15 +148,41 @@ namespace OpenInfraPlatform
 
 			std::tuple<std::vector<int>, double> indicateCurvatureChange(std::vector<double> curvatureChange) const throw(...);
 
+			double obtainThreshold(const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const throw(...);
+
 			double obtainThreshold(std::vector<double> data) const throw(...);
 
 			std::vector<SplineInterpretationElement> obtainElementsFromIndicator(std::vector<int> indicator, std::vector<std::pair<double, double>> curveLength) const throw(...);
 
 			std::vector<SplineInterpretationElement> correctShortElements(std::vector<SplineInterpretationElement> elements, std::vector<double> curvatureChange, const double curvatureZero) const throw(...);
 
+			//int indicateDataByAverage(std::vector<std::pair<double, double>> lengthsWithCurvatures, double threshold) const throw(...);
+
 			int indicateDataByAverage(std::vector<double> data, double threshold) const throw(...);
 
 			std::vector<SplineInterpretationElement> mergeShortElements(std::vector<SplineInterpretationElement> elements) const throw(...);
+
+			std::vector<SplineInterpretationElement> identifyElementTypes(
+				const std::vector<carve::geom::vector<3>>& bsplinePoints, 
+				const std::vector<std::pair<double, double>>& lengthsWithCurvatures, 
+				std::vector<SplineInterpretationElement>& elements) const throw(...);
+
+			SplineInterpretationElement obtainStraigth(
+				const carve::geom::vector<3>& startPoint, const carve::geom::vector<3>& endPoint, SplineInterpretationElement& element) const throw(...);
+
+			SplineInterpretationElement obtainArc(
+				const carve::geom::vector<3>& startPoint, 
+				const carve::geom::vector<3>& midPoint,
+				const carve::geom::vector<3>& endPoint, 
+				const int curvatureIndicator,
+				SplineInterpretationElement& element) const throw(...);
+
+			double angleOfVectors2D(const carve::geom::vector<3>& a, const carve::geom::vector<3>& b) const throw(...);
+
+			double tangentDirection(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const throw(...);
+
+			carve::geom::vector<3> tangentVector(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const throw(...);
+
 
 			/*! \brief Displays the vector of length with curvature in the console window.
 			 *

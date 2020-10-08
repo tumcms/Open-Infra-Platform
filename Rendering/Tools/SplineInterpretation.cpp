@@ -94,6 +94,8 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	// Get vector with element endpoints
 	std::vector<SplineInterpretationElement> elements = identifyElementEndpoints(lengthsWithCurvatures, curvatureChange);
 	
+	// Set information in element vector
+	elements = identifyElementTypes(bsplinePoints, lengthsWithCurvatures, elements);
 }
 
 // PRIVATE FUNCTIONS
@@ -262,19 +264,13 @@ std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obta
 
 std::vector<std::pair<double, double>> OpenInfraPlatform::UserInterface::SplineInterpretation::movingAverageVariableWindow(std::vector<std::pair<double, double>>& xy) const throw(...)
 {
-	// numer of elements
-	const size_t n = xy.size();
-
-	// obtain second value of xy
-	std::vector<double> data(n, 0.0);
-	for (size_t i = 0; i < n; i++)
-		data[i] = xy[i].second;
+	std::vector<double> data = obtainCurvatureFrom_lengthWithCurvatures(xy);
 
 	// call main function of moving average
 	data = movingAverageVariableWindow(data);
 
 	// save temporary values in target variable
-	for (size_t i = 0; i < n; i++)
+	for (size_t i = 0; i < xy.size(); i++)
 		xy[i].second = data[i];
 
 	return xy;
@@ -321,6 +317,20 @@ std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::movi
 	}
 
 	return value;
+}
+
+std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obtainCurvatureFrom_lengthWithCurvatures(
+	const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const throw(...)
+{
+	// numer of elements
+	const size_t n = lengthsWithCurvatures.size();
+
+	// obtain second value of xy
+	std::vector<double> curvature(n, 0.0);
+	for (size_t i = 0; i < n; i++)
+		curvature[i] = lengthsWithCurvatures[i].second;
+
+	return curvature;
 }
 
 size_t OpenInfraPlatform::UserInterface::SplineInterpretation::variogrammGetRange(std::vector<double>& data) const throw(...)
@@ -414,6 +424,12 @@ std::tuple<std::vector<int>, double> OpenInfraPlatform::UserInterface::SplineInt
 			indicator[i] = 1;
 
 	return { indicator, curvatureZero };
+}
+
+double OpenInfraPlatform::UserInterface::SplineInterpretation::obtainThreshold(
+	const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const throw(...)
+{
+	return obtainThreshold(obtainCurvatureFrom_lengthWithCurvatures(lengthsWithCurvatures));
 }
 
 double OpenInfraPlatform::UserInterface::SplineInterpretation::obtainThreshold(std::vector<double> data) const throw(...) {
@@ -527,6 +543,12 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::Splin
 	return elements;
 }
 
+//int OpenInfraPlatform::UserInterface::SplineInterpretation::indicateDataByAverage(
+//	std::vector<std::pair<double, double>> lengthsWithCurvatures, double threshold) const throw(...)
+//{
+//	return indicateDataByAverage(obtainCurvatureFrom_lengthWithCurvatures(lengthsWithCurvatures), threshold);
+//}
+
 int OpenInfraPlatform::UserInterface::SplineInterpretation::indicateDataByAverage(std::vector<double> data, double threshold) const throw(...)
 {
 	// sum up all values (begin to end) of curvatureChange, divide by the number of values 
@@ -558,6 +580,148 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::Splin
 		}
 
 	return elements;
+}
+
+std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::SplineInterpretation::identifyElementTypes(
+	const std::vector<carve::geom::vector<3>>& bsplinePoints,
+	const std::vector<std::pair<double, double>>& lengthsWithCurvatures,
+	std::vector<SplineInterpretationElement>& elements) const throw(...)
+{
+	// parameters over complete curve
+	const double curvatureThreshold = obtainThreshold(lengthsWithCurvatures);
+	const std::vector<double> curvature = obtainCurvatureFrom_lengthWithCurvatures(lengthsWithCurvatures);
+
+	// parameters for each element
+	int idStart;
+	int idEnd;
+	int curvatureIndicator;
+
+	for (size_t i = 0; i < elements.size(); i++)
+		// if change of curvature is about 0 ...
+		if (elements[i].getIndicator() == 0)
+		{
+			// IDs of element
+			idStart = elements[i].getIndicesStart();
+			idEnd = elements[i].getIndicesEnd();
+
+			// curvature about 0, negative or positive
+			curvatureIndicator = indicateDataByAverage(
+				std::vector<double>(curvature.begin() + idStart, curvature.begin() + idEnd),
+				curvatureThreshold);
+
+			if (curvatureIndicator == 0)
+			{
+				// place a straight element
+				elements[i] = obtainStraigth(bsplinePoints[idStart], bsplinePoints[idEnd], elements[i]);
+			}
+			else
+			{
+				// get id of the middle
+				int idMid = ceil((idStart + idEnd) / 2);
+
+				// place a arc element
+				elements[i] = obtainArc(bsplinePoints[idStart], bsplinePoints[idMid], bsplinePoints[idEnd], curvatureIndicator, elements[i]);
+			}
+		}
+
+	return elements;
+}
+
+SplineInterpretationElement OpenInfraPlatform::UserInterface::SplineInterpretation::obtainStraigth(
+	const carve::geom::vector<3>& startPoint,
+	const carve::geom::vector<3>& endPoint,
+	SplineInterpretationElement& element) const throw(...)
+{
+	element.setType("straigth");
+	element.setStartpoint(startPoint);
+
+	double dx = endPoint.x - startPoint.x;
+	double dy = endPoint.y - startPoint.y;
+	element.setDirection(copysign(
+		angleOfVectors2D(carve::geom::VECTOR(1.0, 0.0, 0.0), carve::geom::VECTOR(dx, dy, 0.0)), // value (magnitude)
+		dy)); // sign
+	element.setLength(sqrt(pow(dx, 2) + pow(dy, 2)));
+
+	return element;
+}
+
+SplineInterpretationElement OpenInfraPlatform::UserInterface::SplineInterpretation::obtainArc(
+	const carve::geom::vector<3>& startPoint,
+	const carve::geom::vector<3>& midPoint,
+	const carve::geom::vector<3>& endPoint,
+	const int curvatureIndicator,
+	SplineInterpretationElement& element) const throw(...)
+{
+	element.setType("arc");
+	element.setStartpoint(startPoint);
+
+	// directional vectors between the arc points (startPoint, midPoint, endPoint)
+	carve::geom::vector<2> AB = carve::geom::VECTOR(midPoint.x - startPoint.x, midPoint.y - startPoint.y);
+	carve::geom::vector<2> BC = carve::geom::VECTOR(endPoint.x - midPoint.x, endPoint.y - midPoint.y);
+
+	// coordinates of the mid points between the arc points
+	const carve::geom::vector<2> P1 = carve::geom::VECTOR(startPoint.x, startPoint.y) + 0.5 * AB;
+	const carve::geom::vector<2> P2 = carve::geom::VECTOR(midPoint.x, midPoint.y) + 0.5 * BC;
+
+	// normalized directional vectors of linear equation
+	AB = (carve::geom::VECTOR(AB.y, -AB.x)).normalize();
+	BC = (carve::geom::VECTOR(BC.y, -BC.x)).normalize();
+
+	// parameter of linear equations
+	const double n = (P2.x - P1.x) / (AB.x - BC.x);
+
+	element.setCenter(carve::geom::VECTOR(P1.x + n * AB.x, P1.y + n * AB.y, 0.0));
+	element.setRadius(sqrt(pow(startPoint.x-element.getCenter().x,2) + pow(startPoint.y - element.getCenter().y, 2)));
+
+	if (curvatureIndicator == 1)
+		element.setIsCCW(1); // left curve / turn
+	else
+		element.setIsCCW(0); // right curve / turn
+
+	// tangential direction at element start
+	element.setDirection(tangentDirection(element.getCenter(), element.getStartpoint(), element.getIsCCW()));
+	
+	// angle in degree of the arc in two steps, this makes angles 180° to 359.9° possible as well
+	double arcAngle = abs(
+		angleOfVectors2D(startPoint - element.getCenter(), midPoint - element.getCenter())
+		+ angleOfVectors2D(midPoint - element.getCenter(), endPoint - element.getCenter()));
+	// convert angle to radian, calculate curve length of arc
+	element.setLength(element.getRadius() * arcAngle * M_PI / 180);
+
+	return element;
+}
+
+double OpenInfraPlatform::UserInterface::SplineInterpretation::angleOfVectors2D(
+	const carve::geom::vector<3>& a, 
+	const carve::geom::vector<3>& b) const throw(...)
+{
+	// angle in degree
+	return acos((a.x*b.x + a.y*b.y)
+		/ (sqrt(pow(a.x, 2) + pow(a.y, 2))*sqrt(pow(b.x, 2) + pow(b.y, 2)))) * 180 / M_PI;
+}
+
+double OpenInfraPlatform::UserInterface::SplineInterpretation::tangentDirection(
+	const carve::geom::vector<3>& centerPoint, 
+	const carve::geom::vector<3>& tangentPoint, 
+	const int isCCW) const throw(...)
+{
+	return angleOfVectors2D(
+		carve::geom::VECTOR(1.0, 0.0, 0.0),
+		tangentVector(centerPoint, tangentPoint, isCCW));
+}
+
+carve::geom::vector<3>  OpenInfraPlatform::UserInterface::SplineInterpretation::tangentVector(
+	const carve::geom::vector<3>& centerPoint, 
+	const carve::geom::vector<3>& tangentPoint, 
+	const int isCCW) const throw(...)
+{
+	// vector from center to tangent point
+	const carve::geom::vector<3> radialVector = tangentPoint - centerPoint;
+
+	if (isCCW == 1)
+		return carve::geom::VECTOR(-radialVector.y, radialVector.x, 0.0);
+	else
+		return carve::geom::VECTOR(radialVector.y, -radialVector.x, 0.0);
 }
 
 void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_printCurvatureInConsolWindow(
