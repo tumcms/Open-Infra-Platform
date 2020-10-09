@@ -192,6 +192,8 @@ namespace OpenInfraPlatform
 
 			carve::geom::vector<3> tangentVectorFromDirection(double direction) const throw(...);
 
+			void printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const;
+
 
 			/*! \brief Displays the vector of length with curvature in the console window.
 			 *

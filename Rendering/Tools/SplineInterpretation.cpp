@@ -20,6 +20,7 @@ using OpenInfraPlatform::UserInterface::SplineInterpretationElement;
 
 #include <fstream>
 #include <sstream>
+#include <stdio.h>
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -96,6 +97,8 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	
 	// Set information in element vector
 	elements = identifyElementTypes(bsplinePoints, lengthsWithCurvatures, elements);
+
+	printElementsInConsoleWindow(elements);
 }
 
 // PRIVATE FUNCTIONS
@@ -847,6 +850,44 @@ carve::geom::vector<3> OpenInfraPlatform::UserInterface::SplineInterpretation::t
 	double direction) const throw(...)
 {
 	return carve::geom::VECTOR(cos(direction*M_PI / 180), sin(direction*M_PI / 180), 0.0);
+}
+
+void OpenInfraPlatform::UserInterface::SplineInterpretation::printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const
+{
+	using std::cout;
+	using std::endl;
+
+	cout << endl;
+
+	for (size_t i = 0; i < elements.size(); i++)
+	{
+		SplineInterpretationElement element = elements[i];
+
+		std::string elementType = element.getType();
+
+		cout << endl;
+		printf("Element %i: %s\n", i + 1, elementType.c_str());
+
+		if (elementType == "straight" || elementType == "arc" || elementType == "clothoid")
+		{
+			printf("   Start Point: x = %.3f; y = %.3f\n", element.getStartpoint().x, element.getStartpoint().y);
+			printf("   Direction = %.3f      Length = %.3f\n", element.getDirection(), element.getLength());
+		}
+
+		if (elementType == "arc")
+		{
+			printf("   Radius = %.3f      isCCW = %i\n", element.getRadius(), element.getIsCCW());
+			printf("   Center: x = %.3f; y = %.3f\n", element.getCenter().x, element.getCenter().y);
+		}
+
+		if (elementType == "clothoid")
+		{
+			printf("   Clothoid Parameter A = %.3f\n", element.getClothoidparameterA());
+			printf("   Radius Start = %.3f      Radius End = %.3f\n", element.getRadiusClothoidStart(), element.getRadiusClothoidEnd());
+			printf("   isCCW = %i\n", element.getIsCCW());
+		}
+	}
+
 }
 
 void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_printCurvatureInConsolWindow(
