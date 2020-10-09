@@ -30,6 +30,7 @@
 //double length_;
 //
 //double radius_;
+//double angle_;
 //int isCCW_; // = is counter clockwise
 //carve::geom::vector<3> center_;
 //
@@ -119,6 +120,13 @@ void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setRadius(do
 
 double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getRadius() const {
 	return radius_; }
+
+
+void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setAngle(double angle) {
+	angle_ = angle; }
+
+double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getAngle() const {
+	return angle_; }
 
 
 void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setIsCCW(int isCCW) {

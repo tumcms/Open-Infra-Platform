@@ -745,11 +745,11 @@ SplineInterpretationElement OpenInfraPlatform::UserInterface::SplineInterpretati
 	element.setDirection(tangentDirection(element.getCenter(), element.getStartpoint(), element.getIsCCW()));
 	
 	// angle in degree of the arc in two steps, this makes angles 180° to 359.9° possible as well
-	double arcAngle = abs(
+	element.setAngle(abs(
 		angleOfVectors2D(startPoint - element.getCenter(), midPoint - element.getCenter())
-		+ angleOfVectors2D(midPoint - element.getCenter(), endPoint - element.getCenter()));
+		+ angleOfVectors2D(midPoint - element.getCenter(), endPoint - element.getCenter())));
 	// convert angle to radian, calculate curve length of arc
-	element.setLength(element.getRadius() * arcAngle * M_PI / 180);
+	element.setLength(element.getRadius() * element.getAngle() * M_PI / 180);
 
 	return element;
 }
@@ -878,6 +878,7 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::printElementsInCons
 		{
 			printf("   Radius = %.3f      isCCW = %i\n", element.getRadius(), element.getIsCCW());
 			printf("   Center: x = %.3f; y = %.3f\n", element.getCenter().x, element.getCenter().y);
+			printf("   Angle = %.3f\n", element.getAngle());
 		}
 
 		if (elementType == "clothoid")

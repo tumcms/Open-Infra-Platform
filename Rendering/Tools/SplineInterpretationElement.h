@@ -41,6 +41,7 @@ namespace OpenInfraPlatform
 			double length_;
 
 			double radius_;
+			double angle_;
 			int isCCW_; // = is counter clockwise
 			carve::geom::vector<3> center_;
 
@@ -83,6 +84,9 @@ namespace OpenInfraPlatform
 
 			void setRadius(double radius);
 			double getRadius() const;
+
+			void setAngle(double angle);
+			double getAngle() const;
 
 			void setIsCCW(int isCCW);
 			int getIsCCW() const;
