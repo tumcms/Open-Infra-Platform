@@ -44,8 +44,8 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	// ToDo: exception handling if controlPoints is an empty vector, the functions has to be cancelled
 
 	// DEBUG
-	std::cout << "Control points:" << std::endl;
-	debugFunction_printVectorOfPointsInConsolWindow(controlPoints);
+	//std::cout << "Control points:" << std::endl;
+	//debugFunction_printVectorOfPointsInConsolWindow(controlPoints);
 
 	// Prepair properties for approximation
 	const int nControlPoints = controlPoints.size();
@@ -64,33 +64,33 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	lengthsWithCurvatures[nCurvePoints - 1].second = lengthsWithCurvatures[nCurvePoints - 2].second;
 
 	// DEBUG
-	std::cout << "B-Spline-Curvepoints of approximation" << std::endl;
-	debugFunction_printVectorOfPointsInConsolWindow(bsplinePoints);
+	//std::cout << "B-Spline-Curvepoints of approximation" << std::endl;
+	//debugFunction_printVectorOfPointsInConsolWindow(bsplinePoints);
 
 	// DEBUG
-	std::cout << "Curvature before smoothing:" << std::endl;
-	debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
+	//std::cout << "Curvature before smoothing:" << std::endl;
+	//debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
 
 	// smooth curvature
 	lengthsWithCurvatures = movingAverageVariableWindow(lengthsWithCurvatures);
 
 	// DEBUG
-	std::cout << "Curvature after smoothing:" << std::endl;
-	debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
+	//std::cout << "Curvature after smoothing:" << std::endl;
+	//debugFunction_printCurvatureInConsolWindow(lengthsWithCurvatures);
 
 	// calculate change of curvature as derivative
 	std::vector<double> curvatureChange = numericDerivative(lengthsWithCurvatures);
 
 	// DEBUG
-	std::cout << "Change of curvature before smoothing" << std::endl;
-	debugFunction_printCurvatureChangeInConsolWindow(curvatureChange);
+	//std::cout << "Change of curvature before smoothing" << std::endl;
+	//debugFunction_printCurvatureChangeInConsolWindow(curvatureChange);
 
 	// smooth change of curvature
 	curvatureChange = movingAverageVariableWindow(curvatureChange);
 
 	// DEBUG
-	std::cout << "Change of curvature after smoothing" << std::endl;
-	debugFunction_printCurvatureChangeInConsolWindow(curvatureChange);
+	//std::cout << "Change of curvature after smoothing" << std::endl;
+	//debugFunction_printCurvatureChangeInConsolWindow(curvatureChange);
 
 	// Get vector with element endpoints
 	std::vector<SplineInterpretationElement> elements = identifyElementEndpoints(lengthsWithCurvatures, curvatureChange);
