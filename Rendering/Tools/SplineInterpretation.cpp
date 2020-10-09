@@ -719,21 +719,21 @@ SplineInterpretationElement OpenInfraPlatform::UserInterface::SplineInterpretati
 	element.setStartpoint(startPoint);
 
 	// directional vectors between the arc points (startPoint, midPoint, endPoint)
-	carve::geom::vector<2> AB = carve::geom::VECTOR(midPoint.x - startPoint.x, midPoint.y - startPoint.y);
-	carve::geom::vector<2> BC = carve::geom::VECTOR(endPoint.x - midPoint.x, endPoint.y - midPoint.y);
+	const carve::geom::vector<2> AB = carve::geom::VECTOR(midPoint.x - startPoint.x, midPoint.y - startPoint.y);
+	const carve::geom::vector<2> BC = carve::geom::VECTOR(endPoint.x - midPoint.x, endPoint.y - midPoint.y);
 
 	// coordinates of the mid points between the arc points
 	const carve::geom::vector<2> P1 = carve::geom::VECTOR(startPoint.x, startPoint.y) + 0.5 * AB;
 	const carve::geom::vector<2> P2 = carve::geom::VECTOR(midPoint.x, midPoint.y) + 0.5 * BC;
 
-	// normalized directional vectors of linear equation
-	AB = (carve::geom::VECTOR(AB.y, -AB.x)).normalize();
-	BC = (carve::geom::VECTOR(BC.y, -BC.x)).normalize();
+	// directional vectors of linear equation
+	const carve::geom::vector<2> v = carve::geom::VECTOR(AB.y, -AB.x);
+	const carve::geom::vector<2> w = carve::geom::VECTOR(BC.y, -BC.x);
 
 	// parameter of linear equations
-	const double n = (P2.x - P1.x) / (AB.x - BC.x);
+	const double n2 = (v.x*(P2.y - P1.y) - v.y*(P2.x - P1.x)) / (w.x*v.y - w.y*v.x);
 
-	element.setCenter(carve::geom::VECTOR(P1.x + n * AB.x, P1.y + n * AB.y, 0.0));
+	element.setCenter(carve::geom::VECTOR(P2.x + n2 * w.x, P2.y + n2 * w.y, 0.0));
 	element.setRadius(sqrt(pow(startPoint.x-element.getCenter().x,2) + pow(startPoint.y - element.getCenter().y, 2)));
 
 	if (curvatureIndicator == 1)
