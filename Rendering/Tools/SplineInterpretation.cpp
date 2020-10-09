@@ -612,7 +612,7 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::Splin
 			if (curvatureIndicator == 0)
 			{
 				// place a straight element
-				elements[i] = obtainStraigth(bsplinePoints[idStart], bsplinePoints[idEnd], elements[i]);
+				elements[i] = obtainStraight(bsplinePoints[idStart], bsplinePoints[idEnd], elements[i]);
 			}
 			else
 			{
@@ -627,12 +627,12 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::Splin
 	return elements;
 }
 
-SplineInterpretationElement OpenInfraPlatform::UserInterface::SplineInterpretation::obtainStraigth(
+SplineInterpretationElement OpenInfraPlatform::UserInterface::SplineInterpretation::obtainStraight(
 	const carve::geom::vector<3>& startPoint,
 	const carve::geom::vector<3>& endPoint,
 	SplineInterpretationElement& element) const throw(...)
 {
-	element.setType("straigth");
+	element.setType("straight");
 	element.setStartpoint(startPoint);
 
 	double dx = endPoint.x - startPoint.x;

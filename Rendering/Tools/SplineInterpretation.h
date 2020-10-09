@@ -167,7 +167,7 @@ namespace OpenInfraPlatform
 				const std::vector<std::pair<double, double>>& lengthsWithCurvatures, 
 				std::vector<SplineInterpretationElement>& elements) const throw(...);
 
-			SplineInterpretationElement obtainStraigth(
+			SplineInterpretationElement obtainStraight(
 				const carve::geom::vector<3>& startPoint, const carve::geom::vector<3>& endPoint, SplineInterpretationElement& element) const throw(...);
 
 			SplineInterpretationElement obtainArc(
