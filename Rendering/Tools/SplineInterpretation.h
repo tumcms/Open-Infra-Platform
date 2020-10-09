@@ -177,11 +177,20 @@ namespace OpenInfraPlatform
 				const int curvatureIndicator,
 				SplineInterpretationElement& element) const throw(...);
 
+			SplineInterpretationElement obtainClothoid(
+				const SplineInterpretationElement previousElement,
+				const SplineInterpretationElement nextElement,
+				const carve::geom::vector<3>& startPoint,
+				const carve::geom::vector<3>& endPoint,
+				SplineInterpretationElement& element) const throw(...);
+
 			double angleOfVectors2D(const carve::geom::vector<3>& a, const carve::geom::vector<3>& b) const throw(...);
 
 			double tangentDirection(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const throw(...);
 
 			carve::geom::vector<3> tangentVector(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const throw(...);
+
+			carve::geom::vector<3> tangentVectorFromDirection(double direction) const throw(...);
 
 
 			/*! \brief Displays the vector of length with curvature in the console window.

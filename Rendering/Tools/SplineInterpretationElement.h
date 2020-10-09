@@ -44,6 +44,10 @@ namespace OpenInfraPlatform
 			int isCCW_; // = is counter clockwise
 			carve::geom::vector<3> center_;
 
+			double radiusClothoidStart_;
+			double radiusClothoidEnd_;
+			double clothoidparameterA_;
+
 		public:
 			// CONSTRUCTOR
 			SplineInterpretationElement();
@@ -86,7 +90,14 @@ namespace OpenInfraPlatform
 			void setCenter(carve::geom::vector<3> center);
 			carve::geom::vector<3> getCenter() const;
 
+			void setRadiusClothoidStart(double radiusClothoidStart);
+			double getRadiusClothoidStart() const;
 
+			void setRadiusClothoidEnd(double radiusClothoidEnd);
+			double getRadiusClothoidEnd() const;
+
+			void setClothoidparameterA(double clothoidparameter);
+			double getClothoidparameterA() const;
 			// FUNCTIONS
 		private:
 			// FUNCTIONS

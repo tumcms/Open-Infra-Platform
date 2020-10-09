@@ -596,7 +596,10 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::Splin
 	int idEnd;
 	int curvatureIndicator;
 
-	for (size_t i = 0; i < elements.size(); i++)
+	// number of elements
+	const size_t n = elements.size();
+	// loop over all elements
+	for (size_t i = 0; i < n; i++)
 		// if change of curvature is about 0 ...
 		if (elements[i].getIndicator() == 0)
 		{
@@ -623,6 +626,63 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::Splin
 				elements[i] = obtainArc(bsplinePoints[idStart], bsplinePoints[idMid], bsplinePoints[idEnd], curvatureIndicator, elements[i]);
 			}
 		}
+
+	// loop over all elements
+	for (size_t i = 0; i < n; i++)
+		// if change of curvature is not about 0 ...
+		if (elements[i].getIndicator() == 1)
+			// exclude special cases which aren't implemented
+			if (i == 0 && elements[1].getType() == "straight" ||
+				i == n - 1 && elements[i - 1].getType() == "straight")
+				elements[i].setType("clothoid with radius at sketch start / end not implemented");
+			else if (elements[i - 1].getType() == "arc" && elements[i + 1].getType() == "arc")
+				elements[i].setType("clothoid of type reversible clothoid not implemented");
+			else if (elements[i - 1].getType() == "straight" && elements[i + 1].getType() == "straight")
+				elements[i].setType("clothoid of type straight-radius-straight (without arc) not implemented");
+			else
+			// calculate parameters of clothoid
+			{
+				// IDs of element
+				idStart = elements[i].getIndicesStart();
+				idEnd = elements[i].getIndicesEnd();
+
+				// previous element
+				SplineInterpretationElement previousElement;
+				if (i == 0)
+				{
+					// virtual straight element at sketch start
+					previousElement.setType("straight");
+					// directional vector of straight
+					carve::geom::vector<3> vector = bsplinePoints[idStart + 1] - bsplinePoints[idStart];
+					// direction at sketch start
+					previousElement.setDirection(copysign(
+						angleOfVectors2D(carve::geom::VECTOR(1.0, 0.0, 0.0), vector), // value (magnitude)
+						vector.y)); // sign
+				}
+				else
+					previousElement = elements[i - 1];
+
+				// next element
+				SplineInterpretationElement nextElement;
+				if (i == n - 1)
+				{
+					// virtual straight element at sketch end
+					nextElement.setType("straight");
+					// directional vector of straight
+					carve::geom::vector<3> vector = bsplinePoints[idEnd] - bsplinePoints[idEnd - 1];
+					// directon at sketch start
+					nextElement.setDirection(copysign(
+						angleOfVectors2D(carve::geom::VECTOR(1.0, 0.0, 0.0), vector), // value (magnitude)
+						vector.y)); // sign
+				}
+				else
+					nextElement = elements[i + 1];
+
+				elements[i] = obtainClothoid(
+					previousElement, nextElement, 
+					bsplinePoints[idStart], bsplinePoints[idEnd],
+					elements[i]);
+			}
 
 	return elements;
 }
@@ -691,6 +751,65 @@ SplineInterpretationElement OpenInfraPlatform::UserInterface::SplineInterpretati
 	return element;
 }
 
+SplineInterpretationElement OpenInfraPlatform::UserInterface::SplineInterpretation::obtainClothoid(
+	const SplineInterpretationElement previousElement,
+	const SplineInterpretationElement nextElement,
+	const carve::geom::vector<3>& startPoint,
+	const carve::geom::vector<3>& endPoint,
+	SplineInterpretationElement& element) const throw(...) 
+{
+	element.setType("clothoid");
+	element.setStartpoint(startPoint);
+
+	// radius of clothoid (for calculation)
+	double radius;
+
+	// tangential vector at element start
+	carve::geom::vector<3> tangentStart;
+	if (previousElement.getType() == "straight")
+	{
+		tangentStart = tangentVectorFromDirection(previousElement.getDirection());
+		element.setDirection(previousElement.getDirection());
+		element.setRadiusClothoidStart(NAN);
+	}
+	else // it's "arc"
+	{
+		tangentStart = tangentVector(previousElement.getCenter(), startPoint, previousElement.getIsCCW());
+		element.setDirection(copysign(
+			angleOfVectors2D(carve::geom::VECTOR(1.0, 0.0, 0.0), tangentStart), // value (magnitude)
+			tangentStart.y)); // sign
+		element.setRadiusClothoidStart(previousElement.getRadius());
+		radius = previousElement.getRadius();
+		element.setIsCCW(previousElement.getIsCCW());
+	}
+
+	// tangential vector at element end
+	carve::geom::vector<3> tangentEnd;
+	if (nextElement.getType() == "straight")
+	{
+		tangentEnd = tangentVectorFromDirection(nextElement.getDirection());
+		element.setRadiusClothoidEnd(NAN);
+	}
+	else // it's "arc"
+	{
+		tangentEnd = tangentVectorFromDirection(nextElement.getDirection());
+		element.setRadiusClothoidEnd(nextElement.getRadius());
+		radius = nextElement.getRadius();
+		element.setIsCCW(nextElement.getIsCCW());
+	}
+
+	// change of direction, angle in degree
+	const double tau = angleOfVectors2D(tangentStart, tangentEnd);
+
+	// element curve length
+	element.setLength(2 * radius*(tau*M_PI / 180));
+
+	// clothoid parameter A
+	element.setClothoidparameterA(sqrt(radius * element.getLength()));
+
+	return element;
+}
+
 double OpenInfraPlatform::UserInterface::SplineInterpretation::angleOfVectors2D(
 	const carve::geom::vector<3>& a, 
 	const carve::geom::vector<3>& b) const throw(...)
@@ -722,6 +841,12 @@ carve::geom::vector<3>  OpenInfraPlatform::UserInterface::SplineInterpretation::
 		return carve::geom::VECTOR(-radialVector.y, radialVector.x, 0.0);
 	else
 		return carve::geom::VECTOR(radialVector.y, -radialVector.x, 0.0);
+}
+
+carve::geom::vector<3> OpenInfraPlatform::UserInterface::SplineInterpretation::tangentVectorFromDirection(
+	double direction) const throw(...)
+{
+	return carve::geom::VECTOR(cos(direction*M_PI / 180), sin(direction*M_PI / 180), 0.0);
 }
 
 void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_printCurvatureInConsolWindow(

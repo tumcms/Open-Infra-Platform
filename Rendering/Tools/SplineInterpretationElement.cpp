@@ -32,6 +32,10 @@
 //double radius_;
 //int isCCW_; // = is counter clockwise
 //carve::geom::vector<3> center_;
+//
+//double radiusClothoidStart_;
+//double radiusClothoidEnd_;
+//double clothoidparameterA_;
 
 // CONSTRUCTOR
 OpenInfraPlatform::UserInterface::SplineInterpretationElement::SplineInterpretationElement() {}
@@ -129,6 +133,27 @@ void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setCenter(ca
 
 carve::geom::vector<3> OpenInfraPlatform::UserInterface::SplineInterpretationElement::getCenter() const {
 	return center_; }
+
+
+void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setRadiusClothoidStart(double radiusClothoidStart) {
+	radiusClothoidStart_ = radiusClothoidStart; }
+
+double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getRadiusClothoidStart() const {
+	return radiusClothoidStart_; }
+
+
+void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setRadiusClothoidEnd(double radiusClothoidEnd) {
+	radiusClothoidEnd_ = radiusClothoidEnd; }
+
+double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getRadiusClothoidEnd() const {
+	return radiusClothoidEnd_; }
+
+
+void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setClothoidparameterA(double clothoidparameter) {
+	clothoidparameterA_ = clothoidparameter; }
+
+double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getClothoidparameterA() const {
+	return clothoidparameterA_; }
 
 
 // PUBLIC FUNCTIONS
