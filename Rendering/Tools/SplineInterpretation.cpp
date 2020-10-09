@@ -683,7 +683,7 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::Splin
 
 				elements[i] = obtainClothoid(
 					previousElement, nextElement, 
-					bsplinePoints[idStart], bsplinePoints[idEnd],
+					bsplinePoints[idStart],
 					elements[i]);
 			}
 
@@ -758,7 +758,6 @@ SplineInterpretationElement OpenInfraPlatform::UserInterface::SplineInterpretati
 	const SplineInterpretationElement previousElement,
 	const SplineInterpretationElement nextElement,
 	const carve::geom::vector<3>& startPoint,
-	const carve::geom::vector<3>& endPoint,
 	SplineInterpretationElement& element) const throw(...) 
 {
 	element.setType("clothoid");

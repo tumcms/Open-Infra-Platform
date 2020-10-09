@@ -181,7 +181,6 @@ namespace OpenInfraPlatform
 				const SplineInterpretationElement previousElement,
 				const SplineInterpretationElement nextElement,
 				const carve::geom::vector<3>& startPoint,
-				const carve::geom::vector<3>& endPoint,
 				SplineInterpretationElement& element) const throw(...);
 
 			double angleOfVectors2D(const carve::geom::vector<3>& a, const carve::geom::vector<3>& b) const throw(...);
