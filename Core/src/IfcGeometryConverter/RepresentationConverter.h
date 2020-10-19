@@ -484,6 +484,7 @@ namespace OpenInfraPlatform {
 							std::shared_ptr<carve::input::PolylineSetData> polyline =
 								std::make_shared<carve::input::PolylineSetData>();
 							carve::geom::vector<3> point = placementConverter->convertIfcPoint(it_set_elements.get<1>());
+							polyline->beginPolyline();
 							polyline->addVertex(pos * point);
 							polyline->addPolylineIndex(0);
 							polyline->addVertex(pos * point);
