@@ -25,6 +25,7 @@
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
 #include <IfcGeometryConverter/IfcImporterImpl.h>
+#include <IfcGeometryConverter/SolidModelConverter.h>
 
 using namespace testing;
 
@@ -37,7 +38,7 @@ class SSHRectangleTest : public VisualTest {
 	virtual void SetUp() override {
 		VisualTest::SetUp();
 
-		express_model = OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader::FromFile(filename.string()); // TODO: change to 4x3
+		express_model = OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader::FromFile(filename.string()); 
 
 		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC1EntityTypes>>();
 		importer->collectGeometryData(express_model);
@@ -68,7 +69,7 @@ TEST_F(SSHRectangleTest, AllEntitiesAreRead) {
 }
 
 TEST_F(SSHRectangleTest, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname()== "IFCFACEBASEDSURFACEMODEL"; });
+	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname()== "IFCSECTIONEDSOLIDHORIZONTAL"; });
 	EXPECT_NE(result, express_model->entities.end());
 }
 
