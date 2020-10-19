@@ -52,7 +52,7 @@ public:
             isFirst = false;
         }
         else
-            update( base( carve::geom::VECTOR( x, y, z ), base::mid() ) );
+            base::fit(carve::geom::VECTOR(x, y, z), base::min(), base::max());
     }
     /*!
      * \brief updates the bounding box extent
@@ -62,7 +62,7 @@ public:
     void update(const base& other)
     {
         if (other.isEmpty())
-            return;
+            update(other.pos.x, other.pos.y, other.pos.z);
 
         if (isEmpty())
         {

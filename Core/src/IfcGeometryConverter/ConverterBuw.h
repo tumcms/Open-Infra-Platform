@@ -421,6 +421,10 @@ namespace OpenInfraPlatform
 						for (const auto& vertex : threadLineDesc.vertices)
 							bb.update(vertex[0], vertex[1], vertex[2]);
 
+						// if the bounding box is empty -> no geometry for this product
+						if (bb.isEmpty())
+							return;
+
 						// lock the multithread access to the lists
 						ConverterBuwUtil::s_geometryMutex.lock();
 
