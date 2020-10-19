@@ -28,11 +28,11 @@
 
 #include "GeomUtils.h"
 #include "ConverterBase.h"
-//#include "CurveConverter.h"
+
 #include <BlueFramework/Core/Diagnostics/log.h>
 
 #include <EXPRESS/EXPRESSReference.h>
-
+#include <EXPRESS/EXPRESSOptional.h>
 
 /**********************************************************************************************/
 
@@ -763,15 +763,16 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<2>> axis;
 					std::vector<carve::geom::vector<2>> segmentStartPoints;
 	
+					
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter = std::make_shared<PlacementConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert());
+
+					CurveConverterT<IfcEntityTypesT> gridConv(GeomSettings(), UnitConvert(), placementConverter);
+					gridConv.convertIfcCurve2D(gridAxis->AxisCurve, axis, segmentStartPoints);
+
 					if (!gridAxis->SameSense)
 						// turn around the axis
 						std::reverse(std::begin(axis), std::end(axis));
 
-					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>>placementConverter = std::make_shared<PlacementConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert());
-
-					CurveConverterT<IfcEntityTypesT> gridConv(GeomSettings(), UnitConvert(), placementConverter);
-					gridConv.convertIfcCurve2D(gridAxis->AxisCurve, axis, segmentStartPoints);
-					
 					return axis;
 				}
 
@@ -809,24 +810,26 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<3> intersectingAxes2 = carve::geom::VECTOR(yAxisPosition2[0] - yAxisPosition[0], yAxisPosition2[1] - yAxisPosition[1], 0.0);
 					intersectingAxes2.normalize();
 
-					carve::geom::vector<3> location = carve::geom::VECTOR(0.0,0.0,0.0);
-					carve::geom::vector<3> crossProduct;
-					carve::geom::vector<3> intersecting3DAxes1;
-					carve::geom::vector<3> orthogonalComplement;
+					carve::geom::vector<3> location = carve::geom::VECTOR(intersectionPoint.x, intersectionPoint.y, 0.0);
 					switch (intersection->OffsetDistances.size())
 					{
-					case 3:
-						intersecting3DAxes1 = carve::geom::VECTOR(intersectingAxes1.x, intersectingAxes1.y, 0.0 );
-						orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1.y, intersectingAxes1.x, 0.0);
-						
+					case 3: {
+
+						carve::geom::vector<3> orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1.y, intersectingAxes1.x, 0.0);
+
 						//cross product of IntersectingAxes[1] and the orthogonal complement of the IntersectingAxes[1] 
-						crossProduct = carve::geom::cross(intersecting3DAxes1, orthogonalComplement);
+						carve::geom::vector<3> crossProduct = carve::geom::cross(intersectingAxes1, orthogonalComplement);
 						crossProduct.normalize();
 						location = location + crossProduct * intersection->OffsetDistances[2];
-					case 2:
-						location = location + intersectingAxes1 * intersection->OffsetDistances[0];
-						location = location + intersectingAxes2 * intersection->OffsetDistances[1];
+					}
+					case 2: {
+						carve::geom::vector<3> orthogonalComplement1 = carve::geom::VECTOR(-intersectingAxes1.y, intersectingAxes1.x, 0.0);
+						carve::geom::vector<3> orthogonalComplement2 = carve::geom::VECTOR(-intersectingAxes2.y, intersectingAxes2.x, 0.0);
+	
+						location = location + orthogonalComplement1 * intersection->OffsetDistances[0];
+						location = location + orthogonalComplement2 * intersection->OffsetDistances[1];
 						break;
+					}
 					default:
 						throw oip::InconsistentGeometryException( "Number of coordinates is inconsistent.");
 					}
@@ -834,28 +837,29 @@ namespace OpenInfraPlatform {
 					return { location, intersectingAxes1 };
 				}
 
-				carve::geom::vector<3> convertIfcGridPlacementDirectionSelect(const typename IfcEntityTypesT::IfcGridPlacementDirectionSelect& directionSelect,
-					carve::geom::vector<3> location,
-					carve::geom::vector<3> intersectingAxes1) const throw(...)
-				{
-					carve::geom::vector<3> xAxisDirection;
-					carve::geom::vector<3> location2;
-					carve::geom::vector<3> intersectingAxes2;
-					switch (directionSelect.which()) {
+				carve::geom::vector<3> convertIfcGridPlacementDirectionSelect(const EXPRESSOptional<typename IfcEntityTypesT::IfcGridPlacementDirectionSelect>& directionSelect,
+					const carve::geom::vector<3>& location,
+					const carve::geom::vector<3>& intersectingAxes1) const throw(...)
+				{	
+					if (!directionSelect)
+						return intersectingAxes1.normalized();
+
+					switch (directionSelect.get().which()) {
 					case 0:
-						location2 = convertIfcDirection(directionSelect.get<0>());
-						xAxisDirection = location2 - location;
-					case 1:
-						std::tie(location2, intersectingAxes2) = convertIfcVirtualGridIntersection(directionSelect.get<1>());
-						xAxisDirection = location2 - location;
+						return convertIfcDirection(directionSelect.get().get<0>());
+					case 1: {
+						carve::geom::vector<3> location2;
+						carve::geom::vector<3> intersectingAxes2;
+						std::tie(location2, intersectingAxes2) = convertIfcVirtualGridIntersection(directionSelect.get().get<1>());
+						return (location2 - location).normalized();
+					}	
 					default:
-						xAxisDirection = carve::geom::VECTOR(intersectingAxes1.x, intersectingAxes1.y, 0.0);
+						throw  oip::UnhandledException("Unable to determine grid placement direction.");
 					}
-					return xAxisDirection;
 				}
 				//
 				carve::math::Matrix convertIfcGridPlacement(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcGridPlacement> grid_placement,
+					const EXPRESSReference<typename IfcEntityTypesT::IfcGridPlacement>& grid_placement,
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
 				) const throw(...)
 				{
@@ -877,9 +881,9 @@ namespace OpenInfraPlatform {
 					// the z-axis of the IfcGridPlacement shall be co-linear to the z-axis of the local placement of the IfcGrid. ?
 
 					carve::math::Matrix object_placement_matrix = carve::math::Matrix(
-						xAxisDirection.x, yAxisDirection.x, zAxisDirection.x, 0.0,
-						xAxisDirection.y, yAxisDirection.y, zAxisDirection.y, 0.0,
-						xAxisDirection.z, yAxisDirection.z, zAxisDirection.z, 0.0,
+						xAxisDirection.x, yAxisDirection.x, zAxisDirection.x, location.x,
+						xAxisDirection.y, yAxisDirection.y, zAxisDirection.y, location.y,
+						xAxisDirection.z, yAxisDirection.z, zAxisDirection.z, location.z,
 						 0.0, 0.0, 0.0, 1.0);
 
 					return object_placement_matrix;
