@@ -44,13 +44,13 @@ oip::BBox OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getEx
 	return bb_;
 }
 
-std::string OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getEPSGcode() const
+oip::GeorefMetadata OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getGeorefMetadata() const
 {
-	throw oip::UnhandledException("IfcGeometryModel::getEPSGcode()");
+	throw oip::UnhandledException("IfcGeometryModel::getGeorefMetadata()");
 }
 
 void OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::transformAllPoints(
-	const std::string& newEPSGcode,
+	const oip::GeorefMetadata& newGeorefMetadata,
 	std::function<std::tuple<double, double, double> const(double, double, double)>& transf
 )
 {

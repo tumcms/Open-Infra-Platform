@@ -31,6 +31,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <FileIOFilter.h>
 #include <tuple>
 
+#include <GeorefMetadata.h>
 #include <IModel.h>
 
 class CCLib::GenericProgressCallback;
@@ -177,8 +178,8 @@ namespace OpenInfraPlatform {
 
 			virtual oip::BBox getExtent() override;
 
-			virtual std::string getEPSGcode() const override;
-			virtual void transformAllPoints(const std::string& newEPSGcode, std::function<std::tuple<double, double, double> const(double, double, double)>& transf) override;
+			virtual oip::GeorefMetadata getGeorefMetadata() const override;
+			virtual void transformAllPoints(const oip::GeorefMetadata& newGeorefMetadata, std::function<std::tuple<double, double, double> const(double, double, double)>& transf) override;
 
 			// ---------------------------------------------------------------------------------------------------------------------------------------------------
 

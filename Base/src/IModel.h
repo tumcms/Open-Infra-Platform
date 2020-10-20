@@ -22,6 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "namespace.h"
 #include "BBox.h"
+#include "GeorefMetadata.h"
 #include <string>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_BASE_BEGIN
@@ -50,11 +51,11 @@ public:
     // needed for correct correlation between multiple models
     // also to determine if a transformation would be needed
 	// the function should return empty string if unknown
-    virtual std::string getEPSGcode() const = 0;
+    virtual GeorefMetadata getGeorefMetadata() const = 0;
 
-	// change the georeferencing coordinate reference system to the newEPSGcode
+	// change the georeferencing coordinate reference system to the \c newGeorefMetadata
 	// function takes three coordinate values and returns three transformed coordinates
-    virtual void transformAllPoints(const std::string& newEPSGcode, std::function<std::tuple<double,double,double> const(double,double,double)>& transf) = 0;
+    virtual void transformAllPoints(const GeorefMetadata& newGeorefMetadata, std::function<std::tuple<double,double,double> const(double,double,double)>& transf) = 0;
 
 	#pragma endregion Interface georeferencing
 

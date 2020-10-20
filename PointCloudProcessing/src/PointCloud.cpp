@@ -3355,13 +3355,13 @@ oip::BBox OpenInfraPlatform::PointCloudProcessing::PointCloud::getExtent()
 	return bb;
 }
 
-std::string OpenInfraPlatform::PointCloudProcessing::PointCloud::getEPSGcode() const
+oip::GeorefMetadata OpenInfraPlatform::PointCloudProcessing::PointCloud::getGeorefMetadata() const
 {
-	throw std::exception("Not implemented: PointCloud::getEPSGcode()");
+	throw std::exception("Not implemented: PointCloud::getGeorefMetadata()");
 }
 
 void OpenInfraPlatform::PointCloudProcessing::PointCloud::transformAllPoints(
-	const std::string& newEPSGcode,
+	const oip::GeorefMetadata& newGeorefMetadata,
 	std::function<std::tuple<double, double, double> const(double, double, double)>& transf
 )
 {
