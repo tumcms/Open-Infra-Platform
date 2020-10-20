@@ -44,7 +44,7 @@ public:
      * \param[in] y the y-coordinate of the point
      * \param[in] z the z-coordinate of the point
      */
-    void update(const float x, const float y, const float z)
+    void update(const double x, const double y, const double z)
     {
         if (isEmpty())
         {
@@ -61,14 +61,13 @@ public:
      */
     void update(const base& other)
     {
-        if (other.isEmpty())
-            update(other.pos.x, other.pos.y, other.pos.z);
-
         if (isEmpty())
         {
             base::operator=( other );
             isFirst = false;
         }
+        else if (other.isEmpty())
+            update(other.pos.x, other.pos.y, other.pos.z);
         else
             base::unionAABB( other );
     }
