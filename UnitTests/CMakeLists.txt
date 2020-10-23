@@ -28,11 +28,11 @@ if(NOT dep_gtest_POPULATED)
 	FetchContent_Populate(dep_gtest)
 	add_subdirectory(${dep_gtest_SOURCE_DIR} ${dep_gtest_BINARY_DIR} EXCLUDE_FROM_ALL)
 
-	set_target_properties(gtest PROPERTIES FOLDER "ThirdParty/googletest")
-	set_target_properties(gtest_main PROPERTIES FOLDER "ThirdParty/googletest")
-	set_target_properties(gmock PROPERTIES FOLDER "ThirdParty/googletest")
 endif()
 
+    set_target_properties(gtest PROPERTIES FOLDER "ThirdParty/googletest")
+    set_target_properties(gtest_main PROPERTIES FOLDER "ThirdParty/googletest")
+    set_target_properties(gmock PROPERTIES FOLDER "ThirdParty/googletest")
 
 file(GLOB OpenInfraPlatform_UnitTests_Source *.cpp)
 
