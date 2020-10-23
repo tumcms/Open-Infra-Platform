@@ -112,7 +112,7 @@ TEST_F(ExtrudedSolidTest, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	/* 
 	buw::storeImage(testPath("extruded-solid_front.png").string(), image_front);
 	buw::storeImage(testPath("extruded-solid_top.png").string(), image_top);
 	buw::storeImage(testPath("extruded-solid_bottom.png").string(), image_bottom);

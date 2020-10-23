@@ -1159,15 +1159,28 @@ namespace OpenInfraPlatform {
 
 						auto& coordinatesIndices = faceSet->CoordIndex;
 						auto& pnIndices = faceSet->PnIndex; // optional
-															//auto& normals = faceSet->Normals; // TODO implement normals
+						
+						std::vector<int> flags;
+						if (tessItem.isOfType<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>())
+						{
+							auto tin = tessItem.as<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>();
+							flags.resize(tin->Flags.size());
+							std::transform(tin->Flags.begin(), tin->Flags.end(), flags.begin(), [](auto& it) { return (int)it; });
+						}
 
-															// read coordinates index list and create faces
+						// read coordinates index list and create faces
+						int i = 0;
 						for (auto& indices : coordinatesIndices)
 						{
 							if (indices.size() < 3)
 							{
 								throw oip::InconsistentModellingException(tessItem, "invalid size of coordIndex attribute.");
 							}
+							
+							// skip void triangles
+							if (!flags.empty())
+								if (flags[i++] < 0)
+									continue;
 
 							if (pnIndices)
 								polygon->addFace(pnIndices.get()[indices[0] - 1] - 1,

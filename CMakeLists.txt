@@ -243,6 +243,10 @@ FetchContent_GetProperties(blue_framework)
 if(NOT blue_framework_POPULATED)
 	FetchContent_Populate(blue_framework)
 	add_subdirectory(${blue_framework_SOURCE_DIR} ${blue_framework_BINARY_DIR})
+	set_target_properties(DEPLOY PROPERTIES FOLDER "BlueFramework/Commands")
+	set_target_properties(ExecuteQtDeployTool PROPERTIES FOLDER "BlueFramework/Commands")
+	set_target_properties(UpdateLibsAndDLLs PROPERTIES FOLDER "BlueFramework/Commands")
+	set_target_properties(UpdateLibsAndDLLsForCurrentBuildConfiguration PROPERTIES FOLDER "BlueFramework/Commands")
 endif()
 
 #------------------------------------------------------------------------------
@@ -680,6 +684,9 @@ set_target_properties(OpenInfraPlatform.Rendering						PROPERTIES FOLDER "OpenIn
 
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator			PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
+# clean up the solution a bit
+set_target_properties(glew_s PROPERTIES FOLDER "ThirdParty")
+set_target_properties(tinyxml2 PROPERTIES FOLDER "ThirdParty")
 
 # Currently not included. 
 #set_target_properties(OpenInfraPlatform.CommandLineUtilities		PROPERTIES FOLDER "OpenInfraPlatform")
