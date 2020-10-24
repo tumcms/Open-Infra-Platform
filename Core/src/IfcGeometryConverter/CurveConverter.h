@@ -283,7 +283,11 @@ namespace OpenInfraPlatform {
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeCurve>(bounded_curve.lock());
 					if (composite_curve) {
 
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> > segments;
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment>> segments;
+#else
+						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcSegment>> segments;
+#endif
 						segments.resize(composite_curve->Segments.size());
 
 						std::transform(
@@ -292,20 +296,22 @@ namespace OpenInfraPlatform {
 							segments.begin(),
 							[](auto &it) { return it.lock(); });
 
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> >::iterator it_segments =
-							segments.begin();
+						//TODO IfcSegment
+						throw oip::UnhandledException(composite_curve);
+						//std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> >::iterator it_segments =
+						//	segments.begin();
 
-						for (; it_segments != segments.end(); ++it_segments) {
-							std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> segment = (*it_segments);
-							std::shared_ptr<typename IfcEntityTypesT::IfcCurve> segment_curve = segment->ParentCurve.lock();
+						//for (; it_segments != segments.end(); ++it_segments) {
+						//	std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> segment = (*it_segments);
+						//	std::shared_ptr<typename IfcEntityTypesT::IfcCurve> segment_curve = segment->ParentCurve.lock();
 
-							std::vector<carve::geom::vector<3>> segment_vec;
-							convertIfcCurve(segment_curve, segment_vec, segmentStartPoints);
-							if (!segment_vec.empty()) {
-								GeomUtils::appendPointsToCurve(segment_vec, targetVec);
-							}
-						}
-						return;
+						//	std::vector<carve::geom::vector<3>> segment_vec;
+						//	convertIfcCurve(segment_curve, segment_vec, segmentStartPoints);
+						//	if (!segment_vec.empty()) {
+						//		GeomUtils::appendPointsToCurve(segment_vec, targetVec);
+						//	}
+						//}
+						//return;
 					} // end if IfcCompositeCurve
 
 					// (4/6) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve

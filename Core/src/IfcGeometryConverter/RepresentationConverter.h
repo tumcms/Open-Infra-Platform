@@ -553,7 +553,11 @@ namespace OpenInfraPlatform {
 						num_cross_sections = vec_cross_section_positions.size();
 					}
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment>> segments;
+#else
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcSegment>> segments;
+#endif
 					segments.resize(spine_curve->Segments.size());
 					std::transform(spine_curve->Segments.begin(), spine_curve->Segments.end(), segments.begin(), [](auto &it) { return it.lock(); });
 					int num_segments = segments.size();
