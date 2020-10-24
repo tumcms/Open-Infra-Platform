@@ -51,7 +51,7 @@
 
 #include "IfcGeometryConverter\GeometryInputData.h"
 #include "IfcGeometryConverter\IfcPeekStepReader.h"
-#include "IfcGeometryConverter\IfcImporterImpl.h"
+#include "IfcGeometryConverter\IfcImporterUtilImpl.h"
 #include "Exception\IfcPeekReaderException.h"
 
 #include <QtXml>
