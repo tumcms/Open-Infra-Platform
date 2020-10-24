@@ -598,17 +598,38 @@ namespace OpenInfraPlatform {
 					// defaults
                     carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
                     carve::geom::vector<3> directionOfCurve = carve::geom::VECTOR(1.0, 0.0, 0.0);
-					
+
+					// account for 3D distance or not
+					bool bAlongHorizontal = false;
+					// IFC4x1, IFC4x2 & IFC4x3_RC1 -> AlongHorizontal OPTIONAL
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+					bAlongHorizontal = linear_placement->Distance->AlongHorizontal.value_or(true);
+#endif
+					// IFC4x3_RC2+ -> no attribute -> stays in 3D (if given)
+
 					// account for relative placement
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 					double dDistAlong = 
 						linear_placement->Distance->DistanceAlong * UnitConvert()->getLengthInMeterFactor()
 						+ relativeDistAlong;
+#else
+					double dDistAlong = relativeDistAlong;
+					switch (linear_placement->Distance->DistanceAlong.which())
+					{
+					case 0:
+						throw oip::UnhandledException("Parameter value for DistanceAlong in LinearPlacement not supported.");
+					case 1:
+						dDistAlong += linear_placement->Distance->DistanceAlong.get<1>() * UnitConvert()->getLengthInMeterFactor();
+						break;
+					}
+#endif
+
 					
 					// convert the point
                     convertBoundedCurveDistAlongToPoint3D(
                         getCurveOfPlacement(linear_placement),
                         dDistAlong,
-                        linear_placement->Distance->AlongHorizontal.value_or(true),
+                        bAlongHorizontal,
                         pointOnCurve,
                         directionOfCurve
                     );
@@ -737,7 +758,13 @@ namespace OpenInfraPlatform {
 
                     // 3. calculate the rotations
                     // the direction of the curve's tangent = directionOfCurve
-					carve::math::Matrix localPlacementMatrix = calculateCurveOrientationMatrix(directionOfCurve, linear_placement->Distance->AlongHorizontal.value_or(true));
+					bool bAlongHorizontal = false;
+					// IFC4x1, IFC4x2 & IFC4x3_RC1 -> AlongHorizontal OPTIONAL
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+					bAlongHorizontal = linear_placement->Distance->AlongHorizontal.value_or(true);
+#endif
+					// IFC4x3_RC2+ -> no attribute -> stays in 3D (if given)
+					carve::math::Matrix localPlacementMatrix = calculateCurveOrientationMatrix(directionOfCurve, bAlongHorizontal);
 
                     // 4. calculate the position
                     // the position on the curve = pointOnCurve
