@@ -1167,9 +1167,8 @@ namespace OpenInfraPlatform {
                     double length_factor = UnitConvert()->getLengthInMeterFactor();
                     double plane_angle_factor = UnitConvert()->getAngleInRadianFactor();
 
-					if (!ifcCurve.isOfType<typename IfcEntityTypesT::IfcAlignmentCurve>())
-						throw oip::UnhandledException("Function convertAlignmentCurveDistAlongToPoint3D exclusively handles IfcAlignmentCurve.");
-					else
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+					if ( ifcCurve.isOfType<typename IfcEntityTypesT::IfcAlignmentCurve>() )
 					{
 						auto alignment_curve = ifcCurve.as<typename IfcEntityTypesT::IfcAlignmentCurve>();
 
@@ -1869,7 +1868,13 @@ namespace OpenInfraPlatform {
                         // normalize the direction
                         vkt3DtargetDirection.normalize();
 
-                    }//end if alignment curve
+						return;
+                    }//end if IfcAlignmentCurve
+
+#endif
+
+					throw oip::UnhandledException("Function convertAlignmentCurveDistAlongToPoint3D can't handle " + ifcCurve->getErrorLog());
+
                 }//end convertAlignmentCurveDistAlongToPoint3D
 
             };
