@@ -1167,6 +1167,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcAlignmentCurve>& alignment_curve
 				) const throw(...)
 				{
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 					// IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
 					// the stations at which a point of the tesselation has to be calcuated
 					std::vector<double> stations;
@@ -1404,6 +1405,9 @@ namespace OpenInfraPlatform {
 					stations.push_back(dHorizontalSegStart);
 
 					return stations;
+#else
+					throw oip::UnhandledException("Station for tesselation of any curve");
+#endif
 				}
 
 				// Function 3: Get angle on circle (returns angle if the given point lies on the circle; if not, -1 is returned). 

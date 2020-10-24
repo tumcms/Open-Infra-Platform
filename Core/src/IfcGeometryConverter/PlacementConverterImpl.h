@@ -87,7 +87,24 @@ namespace OpenInfraPlatform {
 					{
 						alreadyApplied.push_back(linear_placement);
 						const auto linearPlacementRelTo = linear_placement->PlacementRelTo.get().as<typename IfcEntityTypesT::IfcLinearPlacement>();
-						double ret = linearPlacementRelTo->Distance->DistanceAlong + convertRelativePlacement(linearPlacementRelTo, alreadyApplied);
+
+						// account for relative placement
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+						double dDistAlong =
+							linear_placement->Distance->DistanceAlong * UnitConvert()->getLengthInMeterFactor();
+#else
+						double dDistAlong = 0.;
+						switch (linear_placement->Distance->DistanceAlong.which())
+						{
+						case 0:
+							throw oip::UnhandledException("Parameter value for DistanceAlong in LinearPlacement not supported.");
+						case 1:
+							dDistAlong = linear_placement->Distance->DistanceAlong.get<1>() * UnitConvert()->getLengthInMeterFactor();
+							break;
+						}
+#endif
+
+						double ret = dDistAlong + convertRelativePlacement(linearPlacementRelTo, alreadyApplied);
 						alreadyApplied.pop_back();
 						return ret;
 					}
