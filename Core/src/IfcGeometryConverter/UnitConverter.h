@@ -229,6 +229,8 @@ namespace OpenInfraPlatform
 						//tweak until #36 gets resolved
 						if (conversionBasedUnit->Name == "'degree'")
 							value = 0.017453293;
+						if (conversionBasedUnit->Name == "'inch'")
+							value = 0.0254;
 
 						return value * unitFactor;
 					}
