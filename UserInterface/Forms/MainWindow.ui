@@ -50,11 +50,26 @@
      </size>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <property name="usesScrollButtons">
      <bool>false</bool>
     </property>
+    <widget class="QWidget" name="tabModels">
+     <attribute name="title">
+      <string>Models</string>
+     </attribute>
+     <widget class="QListWidget" name="listWidgetModels">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>31</y>
+        <width>256</width>
+        <height>351</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
     <widget class="QWidget" name="tabAlignment">
      <attribute name="title">
       <string>Alignment</string>
@@ -237,7 +252,7 @@
          <enum>QTabWidget::North</enum>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>0</number>
         </property>
         <property name="elideMode">
          <enum>Qt::ElideNone</enum>
@@ -709,7 +724,7 @@
            <rect>
             <x>9</x>
             <y>9</y>
-            <width>261</width>
+            <width>263</width>
             <height>331</height>
            </rect>
           </property>

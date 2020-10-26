@@ -104,7 +104,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::open( const std::string & fi
 void OpenInfraPlatform::Core::DataManagement::Data::clear(const bool notifyObservers) {
 
 	// remove everything
-	removeAllModels();
+	//removeAllModels();
 
 	if (notifyObservers) {
 		// The notification state is not used here, because a clear is not executed by an action.

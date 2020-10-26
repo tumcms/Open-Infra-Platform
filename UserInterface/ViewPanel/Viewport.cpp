@@ -784,6 +784,10 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 		//TODO
 	}
 
+	// if no models there: just ignore everything
+	if (!OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().hasModels())
+		return;
+
 	// the extents
 	oip::BBox bb = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getExtents();	
 	buw::Vector3d offset = -bb.center();
@@ -791,10 +795,6 @@ void Viewport::onChange( const ChangeFlag changeFlag )
     maxExtend_ = (bb.max() + offset).cast<float>();
 	buw::Vector3f extend = maxExtend_ - minExtend_;
     boundingBoxEffect_->setBounds(bb.min(), bb.max());
-
-	// if no models there: just ignore everything
-	if (!OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().hasModels())
-		return;
 
 	// change in IFC geometry?
     if( changeFlag & ChangeFlag::IfcGeometry ) {
@@ -834,7 +834,7 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 }
 
 void Viewport::onClear() {
-    activeEffects_.clear();
+    //activeEffects_.clear();
 }
 
 void Viewport::reloadShader() {

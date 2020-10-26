@@ -388,6 +388,9 @@ namespace OpenInfraPlatform
 
 			bool										translateOkstra_;
 
+			// Model handling
+			void updateModelsUI();
+
 		protected:
 			void dropEvent(QDropEvent *ev);
 			void dragEnterEvent(QDragEnterEvent *ev);

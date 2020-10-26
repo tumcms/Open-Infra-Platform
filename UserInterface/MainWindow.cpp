@@ -221,7 +221,11 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 
 #endif
 
-	ui_->tabMap->setVisible(false);
+	// remove the UI elements not needed anymore (20201025)
+	ui_->tabWidgetView->removeTab(ui_->tabWidgetView->indexOf(ui_->tabAlignment));
+	ui_->tabWidgetView->removeTab(ui_->tabWidgetView->indexOf(ui_->tabTerrain));
+	ui_->tabWidgetView->removeTab(ui_->tabWidgetView->indexOf(ui_->tabProxies));
+	ui_->tabWidgetView->removeTab(ui_->tabWidgetView->indexOf(ui_->tabMap));
 
 	Benchmark::getInstance().finishStartup();
 	Benchmark::getInstance().print();
@@ -273,6 +277,9 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	checkForUpdates();
 
 	setAcceptDrops(true);
+
+	// update models UI
+	updateModelsUI();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::checkForUpdates() {
@@ -356,11 +363,6 @@ void OpenInfraPlatform::UserInterface::MainWindow::dropEvent(QDropEvent* ev) {
 			if (boost::filesystem::exists(DropName)) {
 				auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
 				data.import(DropName);
-				addToRecentFilesList(QString::fromStdString(DropName));
-				updateRecentFileActions();
-
-				boost::filesystem::path p(DropName.c_str());
-				updateWindowTitle(p.filename().string());
 			}
 			else {
 				QMessageBox::warning(this, QApplication::applicationName(), tr("Cannot import the dropped file. File does not exist."));
@@ -388,6 +390,38 @@ void OpenInfraPlatform::UserInterface::MainWindow::emitPoints(QDialog* toolDialo
 }
 
 
+void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
+{
+	// clear
+	ui_->listWidgetModels->clear();
+
+	// get data
+	auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
+
+	// update 
+	if (data.hasModels())
+	{
+		// menu recent files
+		addToRecentFilesList(QString::fromStdString(data.getLastModel()->getSource()));
+		updateRecentFileActions();
+
+		// window title update
+		updateWindowTitle(data.getLastModel()->getSource());
+
+		// update the models widget to show the models
+		for (auto& model : data.getModels())
+			ui_->listWidgetModels->addItem(QString::fromStdString(model->getSource()));
+	}
+	else
+	{
+		// no models there
+		// include a message to import models using UI
+		ui_->listWidgetModels->addItem("Import or drop-in files."); //translation missing
+
+		// window title update
+		updateWindowTitle("Import a file");
+	}
+}
 
 //---------------------------------------------------------------------------//
 // Recent files
@@ -634,8 +668,6 @@ QString OpenInfraPlatform::UserInterface::MainWindow::strippedName(const QString
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionOpen_triggered() {
 	try {
 		handle_actionOpen_triggered();
-		addToRecentFilesList(QString::fromStdString(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getLastModel()->getSource()));
-		updateRecentFileActions();
 	} catch (const buw::Exception& exception) {
 		QMessageBox::warning(this, QApplication::applicationName(), tr("Cannot open the selected file."));
 	}
@@ -689,6 +721,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::jobFinishing(int id, bool com
 	progressDialog_->setRange(0, 1);
 	progressDialog_->setValue(1);
 	progressDialog_->repaint();
+
+	updateModelsUI();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::jobFinished(int id, bool comepleted) {
@@ -1544,11 +1578,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::openRecentFileViaAction(QActi
 	fileName = fileName.substr(4, fileName.length());
 
 	if (boost::filesystem::exists(fileName)) {
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import(fileName);
-		addToRecentFilesList(fileName.c_str());
-		updateRecentFileActions();
-		boost::filesystem::path p(fileName.c_str());
-		updateWindowTitle(p.filename().string());
+		auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
+		data.import(fileName);
 	} else {
 		QMessageBox::warning(this, QApplication::applicationName(), tr("Cannot import the selected file. File does not exist."));
 	}

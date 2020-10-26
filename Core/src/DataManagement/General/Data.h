@@ -222,6 +222,10 @@ namespace OpenInfraPlatform
 				void addModel(buw::ReferenceCounted<oip::IModel> model);
 				// get the last model
 				std::shared_ptr<oip::IModel> getLastModel();
+				//! const getter for all models
+				const std::list<std::shared_ptr<oip::IModel>>& getModels() const { return models_; }
+				//! getter for all models
+				std::list<std::shared_ptr<oip::IModel>> getModels() { return models_; }
 				// are there models loaded?
 				bool hasModels();
 				// remove a model from the collection
