@@ -145,7 +145,14 @@ bool ValueType<bool>::readStepData(const std::string &value, const std::shared_p
 	}
 };
 
-std::string ValueType<std::string>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { return (value); };
+std::string ValueType<std::string>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { 
+	if (value.at(0) == '\'') {
+		return value.substr(1, value.length() - 2);
+	}
+	else {
+		return value;
+	}
+};
 
 boost::logic::tribool ValueType<boost::logic::tribool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {
 	std::string lower = boost::algorithm::to_lower_copy(value);
