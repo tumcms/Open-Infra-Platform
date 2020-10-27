@@ -60,31 +60,31 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
     , ui_(new Ui::MainWindow)
     , loaded_(false) {
 	ui_->setupUi(this);
-	variantEditor_ = new QtTreePropertyBrowser();
+	//variantEditor_ = new QtTreePropertyBrowser();
 
-	variantManager_ = new QtVariantPropertyManager();
+	//variantManager_ = new QtVariantPropertyManager();
 
-	propertyHorizontalAlignment_ = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId());
-	propertyVerticalAlignment_ = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId());
+	//propertyHorizontalAlignment_ = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId());
+	//propertyVerticalAlignment_ = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId());
 
-	itemStartStation_ = variantManager_->addProperty(QVariant::Double);
-	itemStartStation_->setValue(0);
-	itemEndStation_ = variantManager_->addProperty(QVariant::Double);
-	itemStartStation_->setValue(0);
-	itemLength_ = variantManager_->addProperty(QVariant::Double);
-	itemLength_->setValue(0);
+	//itemStartStation_ = variantManager_->addProperty(QVariant::Double);
+	//itemStartStation_->setValue(0);
+	//itemEndStation_ = variantManager_->addProperty(QVariant::Double);
+	//itemStartStation_->setValue(0);
+	//itemLength_ = variantManager_->addProperty(QVariant::Double);
+	//itemLength_->setValue(0);
 
-	variantEditor_->setStyleSheet("");
-	variantEditor_->setFactoryForManager(variantManager_, new QtVariantEditorFactory());
-	variantEditor_->addProperty(itemStartStation_);
-	variantEditor_->addProperty(itemEndStation_);
-	variantEditor_->addProperty(itemLength_);
-	variantEditor_->setPropertiesWithoutValueMarked(true);
-	variantEditor_->setRootIsDecorated(false);
-	variantEditor_->addProperty(propertyHorizontalAlignment_);
-	variantEditor_->addProperty(propertyVerticalAlignment_);
+	//variantEditor_->setStyleSheet("");
+	//variantEditor_->setFactoryForManager(variantManager_, new QtVariantEditorFactory());
+	//variantEditor_->addProperty(itemStartStation_);
+	//variantEditor_->addProperty(itemEndStation_);
+	//variantEditor_->addProperty(itemLength_);
+	//variantEditor_->setPropertiesWithoutValueMarked(true);
+	//variantEditor_->setRootIsDecorated(false);
+	//variantEditor_->addProperty(propertyHorizontalAlignment_);
+	//variantEditor_->addProperty(propertyVerticalAlignment_);
 
-	ui_->verticalLayoutAlignment->addWidget(variantEditor_);
+	//ui_->verticalLayoutAlignment->addWidget(variantEditor_);
 
 	view_ = new View();
 	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, view_, Qt::Orientation::Horizontal);
@@ -278,6 +278,16 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 
 	setAcceptDrops(true);
 
+	// build up models UI
+	variantManager_ = std::make_shared<QtVariantPropertyManager>();
+	propertyModels_ = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId());
+
+	variantEditor_ = std::make_shared<QtTreePropertyBrowser>();
+	variantEditor_->setStyleSheet("");
+	variantEditor_->setFactoryForManager(&*variantManager_, new QtVariantEditorFactory());
+	variantEditor_->addProperty(propertyModels_);
+	ui_->verticalLayoutModels->addWidget(&*variantEditor_);
+
 	// update models UI
 	updateModelsUI();
 }
@@ -393,7 +403,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::emitPoints(QDialog* toolDialo
 void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 {
 	// clear
-	ui_->listWidgetModels->clear();
+	while (propertyModels_->subProperties().size() > 0) {
+		propertyModels_->removeSubProperty(propertyModels_->subProperties()[0]);
+	}
 
 	// get data
 	auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
@@ -406,17 +418,77 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 		updateRecentFileActions();
 
 		// window title update
-		updateWindowTitle(data.getLastModel()->getSource());
+		boost::filesystem::path p(data.getLastModel()->getSource());
+		updateWindowTitle(p.filename().string());
+
+		// small helper function
+		auto addVector3D = [=](const buw::Vector3d& vct, const std::string& propName) -> QtProperty* {
+			// grouping
+			QtProperty* itemVct = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), propName.c_str());
+
+			// x
+			auto itemX = variantManager_->addProperty(QVariant::Double, "x");
+			itemX->setValue(vct.x());
+			itemX->setAttribute(QLatin1String("decimals"), 5);
+			itemVct->addSubProperty(itemX);
+
+			// y
+			auto itemY = variantManager_->addProperty(QVariant::Double, "y");
+			itemY->setValue(vct.y());
+			itemY->setAttribute(QLatin1String("decimals"), 5);
+			itemVct->addSubProperty(itemY);
+
+			// z
+			auto itemZ = variantManager_->addProperty(QVariant::Double, "z");
+			itemZ->setValue(vct.z());
+			itemZ->setAttribute(QLatin1String("decimals"), 5);
+			itemVct->addSubProperty(itemZ);
+
+			// return the grouping
+			return itemVct;
+		};
 
 		// update the models widget to show the models
+		propertyModels_->setPropertyName("Models");
 		for (auto& model : data.getModels())
-			ui_->listWidgetModels->addItem(QString::fromStdString(model->getSource()));
+		{
+			//ui_->listWidgetModels->addItem(QString::fromStdString(model->getSource()));
+
+			boost::filesystem::path p(model->getSource());
+
+			// structure
+			// filename
+			//  - source : filepath
+			//  - BBox   : bounding box
+			//    - min, mid, max : QVector3D
+
+			auto itemModel = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), QString::fromStdString(p.filename().string()));
+			propertyModels_->addSubProperty(itemModel);
+
+			auto itemSource = variantManager_->addProperty(QVariant::String, "Filepath");
+			itemSource->setValue(QString::fromStdString(model->getSource()));
+			itemModel->addSubProperty(itemSource);
+
+			auto bbox = model->getExtent();
+			auto itemBBox = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), "Bounding box");
+			itemModel->addSubProperty(itemBBox);
+
+			auto itemMin = addVector3D(bbox.min(), "Min");
+			itemBBox->addSubProperty(itemMin);
+
+			auto itemMid = addVector3D(bbox.center(), "Mid");
+			itemBBox->addSubProperty(itemMid);
+
+			auto itemMax = addVector3D(bbox.max(), "Max");
+			itemBBox->addSubProperty(itemMax);
+
+		}
 	}
 	else
 	{
 		// no models there
 		// include a message to import models using UI
-		ui_->listWidgetModels->addItem("Import or drop-in files."); //translation missing
+		propertyModels_->setPropertyName("Import or drop-in files.");//translation missing
 
 		// window title update
 		updateWindowTitle("Import a file");

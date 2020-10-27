@@ -59,16 +59,22 @@
      <attribute name="title">
       <string>Models</string>
      </attribute>
-     <widget class="QListWidget" name="listWidgetModels">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>31</y>
-        <width>256</width>
-        <height>351</height>
-       </rect>
-      </property>
-     </widget>
+     <layout class="QGridLayout" name="gridLayout_87">
+      <item row="0" column="0">
+        <layout class="QVBoxLayout" name="verticalLayoutModels">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMaximumSize</enum>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_36">
+           <property name="text">
+            <string>Loaded models:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+      </item>
+     </layout>
     </widget>
     <widget class="QWidget" name="tabAlignment">
      <attribute name="title">

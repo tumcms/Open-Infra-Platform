@@ -332,13 +332,14 @@ namespace OpenInfraPlatform
 
 			std::unique_ptr<QSimpleUpdater> updater;
 
-			QtProperty*					propertyHorizontalAlignment_;
-			QtProperty*					propertyVerticalAlignment_;
-			QtVariantPropertyManager*	variantManager_;
-			QtTreePropertyBrowser*		variantEditor_;
-			QtVariantProperty*			itemStartStation_;
-			QtVariantProperty*			itemEndStation_;
-			QtVariantProperty*			itemLength_;
+			//QtProperty*					propertyHorizontalAlignment_;
+			//QtProperty*					propertyVerticalAlignment_;
+			QtProperty*					propertyModels_;
+			std::shared_ptr<QtVariantPropertyManager>	variantManager_;
+			std::shared_ptr<QtTreePropertyBrowser>		variantEditor_;
+			//QtVariantProperty*			itemStartStation_;
+			//QtVariantProperty*			itemEndStation_;
+			//QtVariantProperty*			itemLength_;
 
 			QColorDialog				pcdUniformColorDialog_, pcdFilteredPointsColorDialog_, pcdSegmentedPointsColorDialog_;
 			QButtonGroup				radioButtons2D3D_, radioButtonsOriginalFiltered_;
