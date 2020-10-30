@@ -250,6 +250,22 @@ if(NOT blue_framework_POPULATED)
 endif()
 
 #------------------------------------------------------------------------------
+
+FetchContent_Declare(
+		PROJ
+		GIT_REPOSITORY https://github.com/OSGeo/PROJ.git
+		GIT_TAG 7.1.1
+)
+
+FetchContent_GetProperties(PROJ)
+find_path(SQLITE3_INCLUDE_DIR NAMES sqlite3.h HINTS "C:/thirdparty/sqlite3")
+find_path(SQLITE3_LIBRARY NAMES sqlite3.dll HINTS "C:/thirdparty/sqlite3")
+if (NOT PROJ_POPULATED)
+	FetchContent_Populate(PROJ)
+	add_subdirectory(${proj_SOURCE_DIR} ${proj_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
+#------------------------------------------------------------------------------
 # Set include directories and link directories.
 #------------------------------------------------------------------------------
 
@@ -264,6 +280,7 @@ include_directories(
 	${visit_struct_INCLUDE_DIR}
 	thirdparty/doxygen
 	thirdparty/graphviz_dot
+	thirdparty/sqlite3
 	# external:
 	external/QtXlsxWriter/src/xlsx
 	external/QSimpleUpdater/src
