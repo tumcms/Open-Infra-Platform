@@ -251,6 +251,22 @@ endif()
 
 #------------------------------------------------------------------------------
 
+#FetchContent_Declare(
+		#TIFF
+		#GIT_REPOSITORY https://gitlab.com/libtiff/libtiff.git
+		#GIT_TAG v4.1.0 
+#)
+
+#FetchContent_GetProperties(TIFF)
+#if (NOT TIFF_POPULATED)
+	#FetchContent_Populate(TIFF)
+	#add_subdirectory(${tiff_SOURCE_DIR} ${tiff_BINARY_DIR})
+#endif()
+#set(tiff_INCLUDE_DIR ${tiff_SOURCE_DIR}/libtiff)
+#set(TIFF_LIBRARY_DEBUG ${tiff_BINARY_DIR}/Debug )
+#set(TIFF_LIBRARY_RELEASE ${tiff_BINARY_DIR}/Release)
+#------------------------------------------------------------------------------
+
 FetchContent_Declare(
 		PROJ
 		GIT_REPOSITORY https://github.com/OSGeo/PROJ.git
@@ -258,8 +274,11 @@ FetchContent_Declare(
 )
 
 FetchContent_GetProperties(PROJ)
-find_path(SQLITE3_INCLUDE_DIR NAMES sqlite3.h HINTS "C:/thirdparty/sqlite3")
+find_path(SQLITE3_INCLUDE_DIR NAMES sqlite3.h HINTS "C:/thirdparty/sqlite3/sqlite-amalgamation-3330000")
 find_path(SQLITE3_LIBRARY NAMES sqlite3.dll HINTS "C:/thirdparty/sqlite3")
+find_path(TIFF_INCLUDE_DIR NAMES tiff.h HINTS "C:/thirdparty/tiff-4.1.0/libtiff")
+find_path(TIFF_LIBRARY_DEBUG NAMES tiffio.h HINTS "C:/thirdparty/tiff-4.1.0/libtiff")
+find_path(TIFF_LIBRARY_RELEASE NAMES tiffio.h HINTS "C:/thirdparty/tiff-4.1.0/libtiff")
 if (NOT PROJ_POPULATED)
 	FetchContent_Populate(PROJ)
 	add_subdirectory(${proj_SOURCE_DIR} ${proj_BINARY_DIR} EXCLUDE_FROM_ALL)
@@ -278,6 +297,7 @@ include_directories(
 	${FFTW3_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIRS}	
 	${visit_struct_INCLUDE_DIR}
+	${tiff_INCLUDE_DIRS}
 	thirdparty/doxygen
 	thirdparty/graphviz_dot
 	thirdparty/sqlite3
