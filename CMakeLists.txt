@@ -267,6 +267,17 @@ endif()
 #set(TIFF_LIBRARY_RELEASE ${tiff_BINARY_DIR}/Release)
 #------------------------------------------------------------------------------
 
+#FetchContent_Declare(
+		#CURL
+		#URL https://curl.haxx.se/download/curl-7.73.0.tar.gz
+		#URL_HASH ""
+#)
+#FetchContent_GetProperties(CURL)
+#if (NOT TIFF_POPULATED)
+	#FetchContent_Populate(CURL)
+	#add_subdirectory(${CURL_SOURCE_DIR} ${CURL_BINARY_DIR}EXCLUDE_FROM_ALL)
+#endif()
+
 FetchContent_Declare(
 		PROJ
 		GIT_REPOSITORY https://github.com/OSGeo/PROJ.git
@@ -279,6 +290,10 @@ find_path(SQLITE3_LIBRARY NAMES sqlite3.dll HINTS "C:/thirdparty/sqlite3")
 find_path(TIFF_INCLUDE_DIR NAMES tiff.h HINTS "C:/thirdparty/tiff-4.1.0/libtiff")
 find_path(TIFF_LIBRARY_DEBUG NAMES tiffio.h HINTS "C:/thirdparty/tiff-4.1.0/libtiff")
 find_path(TIFF_LIBRARY_RELEASE NAMES tiffio.h HINTS "C:/thirdparty/tiff-4.1.0/libtiff")
+find_path(CURL_DIR NAMES curl.h HINTS "C:/thirdparty/curl-7.73.0/include/curl")
+find_path(CURL_INCLUDE_DIR NAMES curl.h HINTS "C:/thirdparty/curl-7.73.0/include/curl")
+find_path(CURL_LIBRARY_DEBUG NAMES curl.h HINTS "C:/thirdparty/curl-7.73.0/include/curl")
+find_path(CURL_LIBRARY_RELEASE NAMES curl.h HINTS "C:/thirdparty/curl-7.73.0/include/curl")
 if (NOT PROJ_POPULATED)
 	FetchContent_Populate(PROJ)
 	add_subdirectory(${proj_SOURCE_DIR} ${proj_BINARY_DIR} EXCLUDE_FROM_ALL)
@@ -297,7 +312,6 @@ include_directories(
 	${FFTW3_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIRS}	
 	${visit_struct_INCLUDE_DIR}
-	${tiff_INCLUDE_DIRS}
 	thirdparty/doxygen
 	thirdparty/graphviz_dot
 	thirdparty/sqlite3
@@ -366,6 +380,8 @@ else()
 message("DOXYGEN_GENERATE_DOCUMENTATION box not checked. Thus not generating doxygen documentation for TUM Open Infra Platform project. To generate doxygen documentation, check the box next to DOXYGEN_GENERATE_DOCUMENTATION.")
 endif(DOXYGEN_GENERATE_DOCUMENTATION)
 
+
+
 #----------------------------------------------------------
 # (1/7) Point Cloud Processing ("pcp_module")
 #----------------------------------------------------------
@@ -388,6 +404,8 @@ add_subdirectory(UnitTests)
 #add_subdirectory(IfcTunnelGenerator)
 #add_subdirectory(oip)
 #add_subdirectory(IfcBridgeGenerator)
+
+
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Collect source files
@@ -519,6 +537,7 @@ add_executable(OpenInfraPlatform.UI
 	${OpenInfraPlatform_UserInterface_Resources_Source_SRCS}		
 	#${OpenInfraPlatform_UserInterface_Data_Source}
 )
+
 
 # set up start-up project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT OpenInfraPlatform.UI)
@@ -738,8 +757,6 @@ set_target_properties(tinyxml2 PROPERTIES FOLDER "ThirdParty")
 # Group of entries below. 
 # Select all modules with necessary thirdparty libraries to be built. 
 # Otherwise only core project is built.
-
-
 
 #----------------------------------------------------------
 # (2/7) Digital Elevation Model 

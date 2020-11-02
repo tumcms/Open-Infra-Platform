@@ -15,7 +15,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-#find_package(GTest REQUIRED)
+find_package(GTest REQUIRED)
 
 FetchContent_Declare(
 	dep_gtest
@@ -30,9 +30,9 @@ if(NOT dep_gtest_POPULATED)
 
 endif()
 
-    set_target_properties(gtest PROPERTIES FOLDER "ThirdParty/googletest")
-    set_target_properties(gtest_main PROPERTIES FOLDER "ThirdParty/googletest")
-    set_target_properties(gmock PROPERTIES FOLDER "ThirdParty/googletest")
+   set_target_properties(gtest PROPERTIES FOLDER "ThirdParty/googletest")
+   set_target_properties(gtest_main PROPERTIES FOLDER "ThirdParty/googletest")
+   set_target_properties(gmock PROPERTIES FOLDER "ThirdParty/googletest")
 
 file(GLOB OpenInfraPlatform_UnitTests_Source *.cpp)
 
