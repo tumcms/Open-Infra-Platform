@@ -249,6 +249,9 @@ if(NOT blue_framework_POPULATED)
 	set_target_properties(UpdateLibsAndDLLsForCurrentBuildConfiguration PROPERTIES FOLDER "BlueFramework/Commands")
 endif()
 
+set (CMAKE_PREFIX_PATH "C:/OSGeo4W64/share/cmake/proj4")
+find_package(PROJ4 REQUIRED)
+
 #------------------------------------------------------------------------------
 # Set include directories and link directories.
 #------------------------------------------------------------------------------
@@ -264,6 +267,7 @@ include_directories(
 	${visit_struct_INCLUDE_DIR}
 	thirdparty/doxygen
 	thirdparty/graphviz_dot
+	${PROJ4_INCLUDE_DIR}
 	# external:
 	external/QtXlsxWriter/src/xlsx
 	external/QSimpleUpdater/src
@@ -283,6 +287,7 @@ link_directories(
 	${OKLABI_ROOT_DIR}
 	${FFTW3_LIBRARY_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
+	${PROJ4_LIBRARY_DIRS}
 )
 
 #------------------------------------------------------------------------------
