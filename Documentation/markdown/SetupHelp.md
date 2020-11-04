@@ -55,18 +55,19 @@ These steps need to be completed before you can proceed with compiling OIP.
 	*	Download OSGeo4W64 Installer (find [here](http://download.osgeo.org/osgeo4w/osgeo4w-setup-x86_64.exe)).
 	*	In Installer select *Advanced Install*
 	*	Choose to install from Internet
-	*	Select directory, where PROJ 4 will be installed ('C:\OSGeo4W64' should be default option).
-	*	Select local package directory (e.g. 'C:\local')
-	*	Select https://osgeo4w-oslandia.com/ as a download site.
+	*	Select directory, where PROJ 4 will be installed (`C:\OSGeo4W64` should be default option).
+	*	Select local package directory (e.g. `C:\local`)
+	*	Select `https://osgeo4w-oslandia.com/` as a download site.
 	*	Select components to install:
 		
 		* Open *Commandline_Utilities*
 		* Find *proj* package 
 		* Click on skip until PROJ version 6.* show up.
 		* Select binary (*Bin*) package. 
-		* Proceed to installation.
-
+		
 		![](./fig/PROJ4_Installation_settings.png)
+
+		* Proceed to installation.
 
 ## <a name="Setup"></a> Setup
 
