@@ -584,20 +584,20 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionClearMenu_triggered(
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
 	QString head, desc;
 
-	head = tr("<h2><b>TUM Open Infra Platform 2018</b><br/></h2>");
+	head = tr("<h2><b>TUM Open Infra Platform 2020</b><br/></h2>");
 
-	const QString copyright(tr("Copyright &copy; 2018"));
+	const QString copyright(tr("Copyright &copy; 2020"));
 
 	desc = QString(
 	         "Version %2<br/>%1<br/>Technische Universit&auml;t M&uuml;nchen<br/>"
 	         "Faculty of Civil, Geo and Environmental Engineering<br/>"
 	         "Chair of Computational Modeling and Simulation<br/><br/>"
 	         "Website: <a href=\"http://www.cms.bgu.tum.de/oip\"><font color=\"#48B7E7\">http://www.cms.bgu.tum.de/oip</font></a><br/>"
-	         "Please submit your bug reports or support requests to our repository <a href=\"https://bitbucket.org/tumcms/openinfraplatform\"><font "
-	         "color=\"#48B7E7\">https://bitbucket.org/tumcms/openinfraplatform</font></a><br/><br/>")
+	         "Please submit your bug reports or support requests to our repository <a href=\"https://github.com/tumcms/Open-Infra-Platform\"><font "
+	         "color=\"#48B7E7\">https://github.com/tumcms/Open-Infra-Platform</font></a><br/><br/>")
 	         .arg(copyright, updater->installedVersion());
 
-	QMessageBox::about(this, tr("About TUM Open Infra Platform 2018"), head + desc);
+	QMessageBox::about(this, tr("About TUM Open Infra Platform 2020"), head + desc);
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING

@@ -1,0 +1,123 @@
+ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('ViewDefinition [Ifc4NotAssigned]'),'2;1');
+FILE_NAME(
+/* name */ 'F:\X\5C\X\5CMy Work\X\5C\X\5CbuildingSMART\X\5C\X\5Cprojects\X\5C\X\5Ccommon schema\X\5C\X\5Cdeployment\X\5C\X\5C201020 borehole log.ifc',
+/* time_stamp */ '2020-10-20T20:55:06',
+/* author */ ('JonMirtschin'),
+/* organization */ ('Unknown'),
+/* preprocessor_version */ 'GeometryGymIFC v0.1.2.0 by Geometry Gym Pty Ltd built 2020-10-19T17:15:18',
+/* originating_system */ 'testBoreHole v1.0.0.0',
+/* authorization */ 'None');
+
+FILE_SCHEMA (('IFC4X3_RC1'));
+ENDSEC;
+
+DATA;
+#1= IFCCARTESIANPOINT((0.0,0.0,0.0));
+#2= IFCAXIS2PLACEMENT3D(#1,$,$);
+#3= IFCLOCALPLACEMENT($,#2);
+#4= IFCSITE('2dyfKspc97We8fYFf0urxl',#10,'Coombabah Creek Abutment',$,$,#3,$,$,$,$,$,$,$,$);
+#5= IFCPERSON('JonMirtschin','JonMirtschin',$,$,$,$,$,$);
+#6= IFCORGANIZATION($,'Unknown',$,$,$);
+#7= IFCPERSONANDORGANIZATION(#5,#6,$);
+#8= IFCAPPLICATION(#9,'0.1.2.0','testBoreHole v1.0.0.0','testBoreHole v1.0.0.0');
+#9= IFCORGANIZATION($,'Geometry Gym Pty Ltd',$,$,$);
+#10= IFCOWNERHISTORY(#7,#8,$,.ADDED.,1603187676,$,$,1603187676);
+#11= IFCPROJECT('1U1kKRjUn5VOcIXVFMSwHQ',#10,'FG6280','http://creativecommons.org/licenses/by/3.0/au/ \X2\00A9\X0\ State of Queensland(Department of Transport and Main Roads) 2016',$,'Gold Coast Light Rail(GCLR) Stage 2',$,(#50),#12);
+#12= IFCUNITASSIGNMENT((#13,#14,#15,#18,#20));
+#13= IFCSIUNIT(*,.LENGTHUNIT.,$,.METRE.);
+#14= IFCSIUNIT(*,.AREAUNIT.,$,.SQUARE_METRE.);
+#15= IFCSIUNIT(*,.VOLUMEUNIT.,$,.CUBIC_METRE.);
+#16= IFCSIUNIT(*,.PLANEANGLEUNIT.,$,.RADIAN.);
+#17= IFCMEASUREWITHUNIT(IFCPLANEANGLEMEASURE(0.0174532925199433),#16);
+#18= IFCCONVERSIONBASEDUNIT(#19,.PLANEANGLEUNIT.,'degree',#17);
+#19= IFCDIMENSIONALEXPONENTS(0,0,0,0,0,0,0);
+#20= IFCSIUNIT(*,.TIMEUNIT.,$,.SECOND.);
+#21= IFCRELAGGREGATES('3obeVVLVHFkRZDeX_aerBb',#10,$,$,#11,(#4));
+#22= IFCCARTESIANPOINT((0.0,0.0,0.99));
+#23= IFCAXIS2PLACEMENT3D(#22,$,$);
+#24= IFCLOCALPLACEMENT(#3,#23);
+#25= IFCBOREHOLE('2dJC$_iwPBBgASW89vBOx_',#10,'BH-CC-01','Sample borehole data published at  https://www.tmr.qld.gov.au/-/media/busind/techstdpubs/Geotechnical/Geotech-Borehole-Logging/Geotechnical-Borehole-Logging.pdf?la=en',$,#24,$,$);
+#26= IFCRELCONTAINEDINSPATIALSTRUCTURE('1FTBu2Aqj4o97$cR_UXY8g',#10,'Site','Site Container for Elements',(#25),#4);
+#27= IFCPROPERTYSET('3bZShmW5HBfe9ZCpJqEfSB',#10,'Pset_BoreholeCommon',$,(#29));
+#28= IFCRELDEFINESBYPROPERTIES('0KmmorrarBruZAHSjSjQDd',#10,$,$,(#25),#27);
+#29= IFCPROPERTYSINGLEVALUE('GroundwaterDepth',$,IFCPOSITIVELENGTHMEASURE(-5.0),$);
+#30= IFCPROPERTYSET('1sl9_xONbCSwYQ_EURc4ID',#10,'Pset_GeotechnicalAssemblyCommon',$,(#32));
+#31= IFCRELDEFINESBYPROPERTIES('1p8NrQcffFPQOfe3Fzck3X',#10,$,$,(#25),#30);
+#32= IFCPROPERTYENUMERATEDVALUE('Purpose',$,(IFCLABEL('GEOLOGICAL')),$);
+#33= IFCPROPERTYSINGLEVALUE('Driller',$,IFCIDENTIFIER('North Coast Drilling'),$);
+#34= IFCPROPERTYSINGLEVALUE('LoggedBy',$,IFCIDENTIFIER('D.Colborne/J.Armstrong'),$);
+#35= IFCPROPERTYSINGLEVALUE('ReviewedBy',$,IFCIDENTIFIER('S.Foley'),$);
+#36= IFCPROPERTYSINGLEVALUE('Plunge',$,IFCPLANEANGLEMEASURE(90.0),$);
+#37= IFCPROPERTYSINGLEVALUE('Date Started',$,IFCDATE('2015-09-10'),$);
+#38= IFCPROPERTYSINGLEVALUE('Date Completed',$,IFCDATE('2015-09-11'),$);
+#39= IFCPROPERTYSINGLEVALUE('Reference No',$,IFCIDENTIFIER('H12327'),$);
+#40= IFCPROPERTYSINGLEVALUE('Job No',$,IFCIDENTIFIER('498/04375'),$);
+#41= IFCPROPERTYSET('3i0B50U153n8gy_7YdmiW$',#10,'TMR_Borehole',$,(#33,#34,#35,#36,#37,#38,#39,#40));
+#42= IFCRELDEFINESBYPROPERTIES('0ejVDDpTf6Tei9wnj2ic8t',#10,$,$,(#25),#41);
+#43= IFCCIRCLEPROFILEDEF(.AREA.,'BoreHole',$,0.05);
+#44= IFCMATERIAL('Silty Clay (TopSoil)','Dark grey, moist.',$);
+#45= IFCCARTESIANPOINT((0.0,0.0,-0.1));
+#46= IFCAXIS2PLACEMENT3D(#45,$,$);
+#47= IFCLOCALPLACEMENT(#24,#46);
+#48= IFCEXTRUDEDAREASOLID(#43,$,#49,0.1);
+#49= IFCDIRECTION((0.0,0.0,1.0));
+#50= IFCGEOMETRICREPRESENTATIONCONTEXT($,'Model',3,0.0001,#52,#53);
+#51= IFCCARTESIANPOINT((0.0,0.0,0.0));
+#52= IFCAXIS2PLACEMENT3D(#51,$,$);
+#53= IFCDIRECTION((0.0,1.0));
+#54= IFCGEOMETRICREPRESENTATIONSUBCONTEXT('Body','Model',*,*,*,*,#50,$,.MODEL_VIEW.,$);
+#55= IFCSHAPEREPRESENTATION(#54,'Body','SweptSolid',(#48));
+#56= IFCPRODUCTDEFINITIONSHAPE($,$,(#55));
+#57= IFCSOLIDSTRATUM('0$inuxaBv4bACITJ0FBS_l',#10,$,$,$,#47,#56,$);
+#58= IFCRELNESTS('0cBNQ7V7n6SvXqN1lS78HG',#10,$,$,#25,(#57,#68,#79,#90,#101));
+#59= IFCRELASSOCIATESMATERIAL('37bGjZSdb03R5fN3ukQHqc',#10,$,$,(#57),#44);
+#60= IFCCLASSIFICATION($,$,$,'Soil Descriptions','Description and Classification of Soils for Geotechnical Purposes: Refer to AS1726 - 1993(Appendix A).',$,$);
+#61= IFCMATERIAL('Silty CLAY (Estuarine)','Dark grey, moist, soft.',$);
+#62= IFCCARTESIANPOINT((0.0,0.0,-1.2));
+#63= IFCAXIS2PLACEMENT3D(#62,$,$);
+#64= IFCLOCALPLACEMENT(#24,#63);
+#65= IFCEXTRUDEDAREASOLID(#43,$,#49,1.1);
+#66= IFCSHAPEREPRESENTATION(#54,'Body','SweptSolid',(#65));
+#67= IFCPRODUCTDEFINITIONSHAPE($,$,(#66));
+#68= IFCSOLIDSTRATUM('0x7j5bgS1FmvK0Lv4X3B2i',#10,$,$,$,#64,#67,$);
+#69= IFCRELASSOCIATESMATERIAL('3vCHhIKxDFIvZM$wF2Pco_',#10,$,$,(#68),#61);
+#70= IFCCLASSIFICATIONREFERENCE($,'CI',$,#60,'Inorganic clays of low to medium plasticity, gravelly clays, sandy clays, silty clays, lean clays',$);
+#71= IFCRELASSOCIATESCLASSIFICATION('0z7gMVpHf2tQFQiaUbD4D3',#10,$,$,(#68),#70);
+#72= IFCMATERIAL('Clayey SAND (Estuarine)','Dark grey, wet, very loose.',$);
+#73= IFCCARTESIANPOINT((0.0,0.0,-6.4));
+#74= IFCAXIS2PLACEMENT3D(#73,$,$);
+#75= IFCLOCALPLACEMENT(#24,#74);
+#76= IFCEXTRUDEDAREASOLID(#43,$,#49,5.2);
+#77= IFCSHAPEREPRESENTATION(#54,'Body','SweptSolid',(#76));
+#78= IFCPRODUCTDEFINITIONSHAPE($,$,(#77));
+#79= IFCSOLIDSTRATUM('1Y4OVP7H5BeeAr6Iye8i9y',#10,$,'Fine to medium grained. Shell fragments throughout.',$,#75,#78,$);
+#80= IFCRELASSOCIATESMATERIAL('0o5niY3kfE2gpLtcO9fBSD',#10,$,$,(#79),#72);
+#81= IFCCLASSIFICATIONREFERENCE($,'SC',$,#60,'Clayey sands, sandclay mixtures',$);
+#82= IFCRELASSOCIATESCLASSIFICATION('2vnRYIdg99v9sZuoO5ZY3L',#10,$,$,(#79),#81);
+#83= IFCMATERIAL('METAGREYWACKE (DCf)',$,$);
+#84= IFCCARTESIANPOINT((0.0,0.0,-6.8));
+#85= IFCAXIS2PLACEMENT3D(#84,$,$);
+#86= IFCLOCALPLACEMENT(#24,#85);
+#87= IFCEXTRUDEDAREASOLID(#43,$,#49,0.4);
+#88= IFCSHAPEREPRESENTATION(#54,'Body','SweptSolid',(#87));
+#89= IFCPRODUCTDEFINITIONSHAPE($,$,(#88));
+#90= IFCSOLIDSTRATUM('05KrQUx2P9dxHvKgEX09tD',#10,$,'XW: Recovered as orange brown to grey, moist, very stiff, Silty CLAY.',$,#86,#89,$);
+#91= IFCRELASSOCIATESMATERIAL('21KvluANPE3gN8XlbmAegJ',#10,$,$,(#90,#101),#83);
+#92= IFCCLASSIFICATION($,$,$,'Rock Descriptions','Refer to AS1726-1993 (Appendix A3.3) for the description and classification of rock material composition',$,$);
+#93= IFCCLASSIFICATIONREFERENCE($,'XW',$,#92,'Rock is weathered to such an extent that it has \X\27soil\X\27 properties, i.e. it either disintegrates or can be remoulded in water, but substance fabric and rock structure still recognisable.',$);
+#94= IFCRELASSOCIATESCLASSIFICATION('1lX50xVTD1veEx$2n3dFMH',#10,$,$,(#90),#93);
+#95= IFCCARTESIANPOINT((0.0,0.0,-12.7));
+#96= IFCAXIS2PLACEMENT3D(#95,$,$);
+#97= IFCLOCALPLACEMENT(#24,#96);
+#98= IFCEXTRUDEDAREASOLID(#43,$,#49,5.9);
+#99= IFCSHAPEREPRESENTATION(#54,'Body','SweptSolid',(#98));
+#100= IFCPRODUCTDEFINITIONSHAPE($,$,(#99));
+#101= IFCSOLIDSTRATUM('2VeLzohyr92eMtr4z0AosV',#10,$,'SW: Dark grey, fine to medium grained, indistinctly foliated, high to very high strength.',$,#97,#100,$);
+#102= IFCCLASSIFICATIONREFERENCE($,'SW',$,#92,'Rock is slightly discoloured but shows little or no change of strength from fresh rock.',$);
+#103= IFCRELASSOCIATESCLASSIFICATION('0PSGVWTffCreKj8NzX02HD',#10,$,$,(#101),#102);
+ENDSEC;
+
+END-ISO-10303-21;
+
