@@ -1515,40 +1515,27 @@ namespace OpenInfraPlatform
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Converting IfcBooleanOperand. Which: " << operand.which();
 #endif
-				double length_factor = UnitConvert()->getLengthInMeterFactor();
-				std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel> solid_model;// = nullptr;
-				std::shared_ptr<typename IfcEntityTypesT::IfcHalfSpaceSolid> half_space_solid;// = nullptr;
-				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult> boolean_result;// = nullptr;
-				std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D> csg_primitive3D;// = nullptr;
 
 				switch (operand.which()) {
 				case 0:
-					solid_model = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>>().lock();
-					break;
-				case 1:
-					half_space_solid = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcHalfSpaceSolid>>().lock();
-					break;
-				case 2: 
-					boolean_result = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>>().lock();
-					break;
-				case 3:
-					csg_primitive3D = operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcCsgPrimitive3D>>().lock();
-					break;
-				default:
-					break;
-				}
-
-				if (solid_model)
 				{
-					convertIfcSolidModel(solid_model, pos, itemData);
-					return;
+					return convertIfcBooleanResult(
+						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>>().lock(), 
+						pos, itemData);
 				}
-				
-				if (half_space_solid)
+				case 1:
+				{
+					return convertIfcCsgPrimitive3D(
+						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcCsgPrimitive3D>>().lock(),
+						pos, itemData);
+				}
+				case 2:
 				{
 					//ENTITY IfcHalfSpaceSolid SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
 					std::shared_ptr<typename IfcEntityTypesT::IfcSurface> base_surface = half_space_solid->BaseSurface.lock();
-	
+
+					double length_factor = UnitConvert()->getLengthInMeterFactor();
+
 					// base surface
 					std::shared_ptr<typename IfcEntityTypesT::IfcElementarySurface> elem_base_surface =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcElementarySurface>(base_surface);
@@ -1857,16 +1844,23 @@ namespace OpenInfraPlatform
 #endif
 					return;
 				}
-				
-				if (boolean_result)
+				case 3:
 				{
-					convertIfcBooleanResult(boolean_result, pos, itemData);
+					return convertIfcSolidModel(
+						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>>().lock(), 
+						pos, itemData);
 					return;
 				}
 
-				if (csg_primitive3D)
+				case 4:
 				{
-					convertIfcCsgPrimitive3D(csg_primitive3D, pos, itemData);
+					return faceConverter->convertIfcTessellatedItem(
+						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedFaceSet>>().lock(),
+						pos, itemData);
+					return;
+				}
+				default:
+					throw oip::UnhandledException(operand.classname());
 					return;
 				}
 
