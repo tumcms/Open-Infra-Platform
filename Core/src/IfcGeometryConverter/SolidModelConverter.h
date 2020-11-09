@@ -1254,25 +1254,25 @@ namespace OpenInfraPlatform
 
 					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->XLength)
 					{
-						x_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->XLength)*0.5*length_factor;
+						x_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->XLength)*length_factor;
 					}
 					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->YLength)
 					{
-						y_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->YLength)*0.5*length_factor;
+						y_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->YLength)*length_factor;
 					}
 					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->ZLength)
 					{
-						z_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->ZLength)*0.5*length_factor;
+						z_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->ZLength)*length_factor;
 					}
 
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, y_length, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(-x_length, y_length, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(-x_length, -y_length, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, -y_length, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, y_length, -z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(-x_length, y_length, -z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(-x_length, -y_length, -z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, -y_length, -z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length	, y_length	, z_length	));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0		, y_length	, z_length	));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0		, 0.0		, z_length	));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length	, 0.0		, z_length	));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length	, y_length	, 0.0		));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0		, y_length	, 0.0		));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0		, 0.0		, 0.0		));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length	, 0.0		, 0.0		));
 
 					polyhedron_data->addFace(0, 1, 2);
 					polyhedron_data->addFace(2, 3, 0);
