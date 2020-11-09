@@ -853,7 +853,7 @@ namespace OpenInfraPlatform {
 						}
 
 					}
-					catch (std::exception e) // catch carve error if holes cannot be incorporated
+					catch (const carve::exception& e) // catch carve error if holes cannot be incorporated
 					{
 						throw oip::InconsistentGeometryException(face, "carve::triangulate::incorporateHolesIntoPolygon failed");
 					}
