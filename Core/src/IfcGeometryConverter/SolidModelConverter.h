@@ -1117,16 +1117,16 @@ namespace OpenInfraPlatform
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcBooleanResult #" << boolean_result_id;
 #endif
-				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanClippingResult> boolean_clipping_result =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanClippingResult>(boolResult);
-				if (boolean_clipping_result)
-				{
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing IfcBooleanClippingResult #" << boolean_clipping_result->getId();
-#endif
-					typename IfcEntityTypesT::IfcBooleanOperator ifc_boolean_operator = boolean_clipping_result->Operator;
-					typename IfcEntityTypesT::IfcBooleanOperand ifc_first_operand = boolean_clipping_result->FirstOperand;
-					typename IfcEntityTypesT::IfcBooleanOperand ifc_second_operand = boolean_clipping_result->SecondOperand;
+//				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanClippingResult> boolean_clipping_result =
+//					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanClippingResult>(boolResult);
+//				if (boolean_clipping_result)
+//				{
+//#ifdef _DEBUG
+//					BLUE_LOG(trace) << "Processing IfcBooleanClippingResult #" << boolean_clipping_result->getId();
+//#endif
+					typename IfcEntityTypesT::IfcBooleanOperator ifc_boolean_operator = boolResult->Operator;
+					typename IfcEntityTypesT::IfcBooleanOperand ifc_first_operand = boolResult->FirstOperand;
+					typename IfcEntityTypesT::IfcBooleanOperand ifc_second_operand = boolResult->SecondOperand;
 
 					/// Not needed since not optional nor pointers!
 					//if (!ifc_boolean_operator || !ifc_first_operand || !ifc_second_operand)
@@ -1226,7 +1226,7 @@ namespace OpenInfraPlatform
 
 					// now copy processed first operands to result input data
 					std::copy(first_operand_data->meshsets.begin(), first_operand_data->meshsets.end(), std::back_inserter(itemData->meshsets));
-				}
+				//}
 			}
 
 			void convertIfcCsgPrimitive3D(
