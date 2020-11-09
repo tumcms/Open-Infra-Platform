@@ -1849,19 +1849,15 @@ namespace OpenInfraPlatform
 					return convertIfcSolidModel(
 						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>>().lock(), 
 						pos, itemData);
-					return;
 				}
-
 				case 4:
 				{
 					return faceConverter->convertIfcTessellatedItem(
 						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedFaceSet>>().lock(),
 						pos, itemData);
-					return;
 				}
 				default:
 					throw oip::UnhandledException(operand.classname());
-					return;
 				}
 
 				BLUE_LOG(error) << "Unhandled IFC Representation: " << operand->classname();
