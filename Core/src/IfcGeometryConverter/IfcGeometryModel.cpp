@@ -21,17 +21,30 @@
 
 void OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::reset() 
 { 
-	bb_.reset(); 
-	meshDescription_.reset(); 
-	polylineDescription_.reset(); 
+	for( auto geom : geometries_ ) 
+		geom->reset(); 
 }
 
+void OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::addGeometry(std::shared_ptr<GeometryDescription> geometry)
+{
+	// lock the multithread access to the lists
+	geometryMutex_.lock();
+
+	// add to the list of geometries
+	geometries_.push_back(geometry);
+
+	// free the access to the lists
+	geometryMutex_.unlock();
+}
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 // Interface IModel implementation
 bool OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::isEmpty() const
 {
-	return (meshDescription_.isEmpty() && polylineDescription_.isEmpty());
+	for (auto geom : geometries_)
+		if (!geom->isEmpty())
+			return false;
+	return true;
 }
 
 std::string OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getSource() const
@@ -41,7 +54,10 @@ std::string OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::get
 
 oip::BBox OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getExtent()
 {
-	return bb_;
+	oip::BBox bb;
+	for (auto geom : geometries_)
+		bb.update(geom->bb);
+	return bb;
 }
 
 oip::GeorefMetadata OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getGeorefMetadata() const

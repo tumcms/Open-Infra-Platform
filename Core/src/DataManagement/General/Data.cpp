@@ -66,8 +66,6 @@
 	#pragma comment( lib, OIP_PCD_LIB)
 #endif
 
-std::mutex OpenInfraPlatform::Core::IfcGeometryConverter::ConverterBuwUtil::s_geometryMutex;
-
 OpenInfraPlatform::Core::DataManagement::Data::Data() : 
 BlueFramework::Application::DataManagement::Data(new BlueFramework::Application::DataManagement::NotifiyAfterEachActionOnlyOnce<OpenInfraPlatform::Core::DataManagement::Data>()),
 clearColor_(0.3f, 0.5f, 0.9f),

@@ -52,10 +52,6 @@ namespace OpenInfraPlatform
 				ConverterBuwUtil() {}
 				~ConverterBuwUtil() {}
 
-				// static caches for vertices (for triangle and line geometry)
-				// static VertexMapTriangles vertexMapTriangles_;
-				// static VertexMapLines vertexMapLines_;
-				static std::mutex s_geometryMutex;
 			};
 
 			template <
@@ -293,8 +289,9 @@ namespace OpenInfraPlatform
 						std::vector<buw::Vector3f>& vertices,
 						std::vector<uint32_t>& indices)
 					{
-						// global offset of inserted vertices
-						const uint32_t vertexOffset = vertices.size();
+						// check input
+						if (polylineData->getVertexCount() < 1)
+							return true; // nothing to add
 
 						// temporary polyline vertex index to global index map
 						std::map<uint32_t, uint32_t> indexMap;
@@ -382,72 +379,36 @@ namespace OpenInfraPlatform
 					static void createTrianglesJob(const std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& tasks,
 						int threadID, buw::ReferenceCounted<IfcGeometryModel>& ifcGeometryModel/*IndexedMeshDescription* meshDesc, PolylineDescription* polyDesc*/)
 					{
-						//#ifdef _DEBUG
-						//				std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Starting thread " << threadID << " to create triangles and polylines" << std::endl;
-						//#endif
-						oip::BBox bb;
-						IndexedMeshDescription threadMeshDesc;
-						PolylineDescription threadLineDesc;
-
-						bb.reset();
-						threadMeshDesc.reset();
-						threadLineDesc.reset();
-
 						for(const auto& shapeData : tasks) {
 							const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product = shapeData->ifc_product;
-
-							//#ifdef _DEBUG
 							//					std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Create triangles and polylines for entity " << product->classname() << " #" << product->getId() << std::endl;
-							//#endif
+
+							std::shared_ptr<GeometryDescription> geometry = std::make_shared<GeometryDescription>();
+							geometry->reset();
 
 							for(const auto& itemData : shapeData->vec_item_data) {
 								// data for triangles
 								for(const auto& meshset : itemData->meshsets) {
 									ConverterBuwT<IfcEntityTypesT>::insertMeshSetIntoBuffers(product, meshset.get(),
-										threadMeshDesc.vertices, threadMeshDesc.indices);
+										geometry->meshDescription.vertices, geometry->meshDescription.indices);
 								}
 
 								// data for polylines
 								for(const auto& polyline : itemData->polylines) {
 									ConverterBuwT<IfcEntityTypesT>::insertPolylineIntoBuffers(polyline,
-										threadLineDesc.vertices, threadLineDesc.indices);
+										geometry->polylineDescription.vertices, geometry->polylineDescription.indices);
 								}
 							}
+							
+							// if no geometry for this product
+							if (geometry->isEmpty())
+								continue;
+
+							// update the BBox
+							geometry->UpdateBBox();
+							// add to the model
+							ifcGeometryModel->addGeometry(geometry);
 						}
-
-						// update the bounding box
-						for (const auto& vertex : threadMeshDesc.vertices)
-							bb.update(vertex.position[0], vertex.position[1], vertex.position[2]);
-						for (const auto& vertex : threadLineDesc.vertices)
-							bb.update(vertex[0], vertex[1], vertex[2]);
-
-						// if the bounding box is empty -> no geometry for this product
-						if (bb.isEmpty())
-							return;
-
-						// lock the multithread access to the lists
-						ConverterBuwUtil::s_geometryMutex.lock();
-
-						const uint64_t globalIndexOffsetMesh = ifcGeometryModel->meshDescription_.vertices.size();
-						const uint64_t globalIndexOffsetLines = ifcGeometryModel->polylineDescription_.vertices.size();
-
-						std::for_each(threadMeshDesc.indices.begin(), threadMeshDesc.indices.end(),
-							[&](uint32_t& index) { index += globalIndexOffsetMesh; });
-						std::for_each(threadLineDesc.indices.begin(), threadLineDesc.indices.end(),
-							[&](uint32_t& index) { index += globalIndexOffsetLines; });
-
-						ifcGeometryModel->meshDescription_	  .vertices.insert(ifcGeometryModel->meshDescription_	 .vertices.end(), threadMeshDesc.vertices.begin(), threadMeshDesc.vertices.end());
-						ifcGeometryModel->meshDescription_	  .indices .insert(ifcGeometryModel->meshDescription_	 .indices .end(), threadMeshDesc.indices .begin(), threadMeshDesc.indices .end());
-						ifcGeometryModel->polylineDescription_.vertices.insert(ifcGeometryModel->polylineDescription_.vertices.end(), threadLineDesc.vertices.begin(), threadLineDesc.vertices.end());
-						ifcGeometryModel->polylineDescription_.indices .insert(ifcGeometryModel->polylineDescription_.indices .end(), threadLineDesc.indices .begin(), threadLineDesc.indices .end());
-						ifcGeometryModel->bb_.update(bb);
-
-						// free the access to the lists
-						ConverterBuwUtil::s_geometryMutex.unlock();
-						
-						//#ifdef _DEBUG
-						//				std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Finished thread " << threadID << std::endl;
-						//#endif
 					}
 
 				protected:

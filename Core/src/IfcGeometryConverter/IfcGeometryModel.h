@@ -53,14 +53,33 @@ namespace OpenInfraPlatform
 				void reset() { indices.clear(); vertices.clear(); }
 			};
 
-			class IfcGeometryModel : public oip::IModel {
-			public:
+			struct GeometryDescription {
+				IndexedMeshDescription  meshDescription;
+				PolylineDescription		polylineDescription;
+				oip::BBox				bb;
+				bool isEmpty() const { return meshDescription.isEmpty() && polylineDescription.isEmpty(); }
+				void reset() { meshDescription.reset(); polylineDescription.reset(); bb.reset(); }
+				void UpdateBBox()
+				{
+					for (const auto& vertex : meshDescription.vertices)
+						bb.update(vertex.position[0], vertex.position[1], vertex.position[2]);
+					for (const auto& vertex : polylineDescription.vertices)
+						bb.update(vertex[0], vertex[1], vertex[2]);
+				}
+			};
 
-				oip::BBox              bb_;
-				std::string			   filename_;
-				IndexedMeshDescription meshDescription_;
-				PolylineDescription    polylineDescription_;
+			class IfcGeometryModel : public oip::IModel {
+			private:
+				std::vector<std::shared_ptr<GeometryDescription>>	geometries_;
+				std::mutex											geometryMutex_;
+
+				std::string			                filename_;
+
+			public:
 				void reset();
+
+				void addGeometry(std::shared_ptr<GeometryDescription> geometry);
+				std::vector<std::shared_ptr<GeometryDescription>> const &geometries() const { return geometries_; }
 
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------
 				// Interface IModel implementation
