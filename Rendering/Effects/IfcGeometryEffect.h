@@ -36,7 +36,7 @@ public:
 
     virtual ~IfcGeometryEffect();
 
-    void setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const buw::Vector3d& offset);
+    void setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcModel> ifcGeometryModel, const buw::Vector3d& offset);
 
 private:
     void v_init();
@@ -51,7 +51,7 @@ private:
     buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA_ = nullptr;
     bool valid_ = false;
 
-	buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel_ = nullptr;
+	buw::ReferenceCounted<Core::IfcGeometryConverter::IfcModel> ifcGeometryModel_ = nullptr;
 	buw::Vector3d offset_;
 };
 

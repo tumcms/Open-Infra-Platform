@@ -47,7 +47,7 @@ IfcGeometryEffect::~IfcGeometryEffect() {
     depthStencilMSAA_ = nullptr;
 }
 
-void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const buw::Vector3d & offset)
+void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcModel> ifcGeometryModel, const buw::Vector3d & offset)
 {
 	ifcGeometryModel_ = ifcGeometryModel;
 	offset_ = offset;

@@ -798,7 +798,7 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 
 	// change in IFC geometry?
     if( changeFlag & ChangeFlag::IfcGeometry ) {
-		auto ifcGeometryModel = std::dynamic_pointer_cast<oip::IfcGeometryModel>(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getLastModel());
+		auto ifcGeometryModel = std::dynamic_pointer_cast<oip::IfcModel>(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getLastModel());
 		if( ifcGeometryModel )
 		{
 			buw::ReferenceCounted<oip::IfcGeometryEffect> ifcGeometryEffect 

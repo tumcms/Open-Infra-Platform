@@ -68,7 +68,8 @@ namespace OpenInfraPlatform
 				}
 			};
 
-			class IfcGeometryModel : public oip::IModel {
+			class IfcModel : public oip::IModel 
+			{
 			private:
 				std::vector<std::shared_ptr<GeometryDescription>>	geometries_;
 				std::mutex											geometryMutex_;
@@ -105,6 +106,6 @@ namespace OpenInfraPlatform
 	}
 }
 
-EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(IfcGeometryModel)
+EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(IfcModel)
 
 #endif // IFCGEOMETRYMODEL_H

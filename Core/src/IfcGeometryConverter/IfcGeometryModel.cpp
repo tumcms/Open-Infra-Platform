@@ -19,13 +19,13 @@
 #include "IfcGeometryModel.h"
 #include "Exception\UnhandledException.h"
 
-void OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::reset() 
+void OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::reset() 
 { 
 	for( auto geom : geometries_ ) 
 		geom->reset(); 
 }
 
-void OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::addGeometry(std::shared_ptr<GeometryDescription> geometry)
+void OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::addGeometry(std::shared_ptr<GeometryDescription> geometry)
 {
 	// lock the multithread access to the lists
 	geometryMutex_.lock();
@@ -39,7 +39,7 @@ void OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::addGeometr
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 // Interface IModel implementation
-bool OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::isEmpty() const
+bool OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::isEmpty() const
 {
 	for (auto geom : geometries_)
 		if (!geom->isEmpty())
@@ -47,12 +47,12 @@ bool OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::isEmpty() 
 	return true;
 }
 
-std::string OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getSource() const
+std::string OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::getSource() const
 {
 	return filename_;
 }
 
-oip::BBox OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getExtent()
+oip::BBox OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::getExtent()
 {
 	oip::BBox bb;
 	for (auto geom : geometries_)
@@ -60,12 +60,12 @@ oip::BBox OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getEx
 	return bb;
 }
 
-oip::GeorefMetadata OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::getGeorefMetadata() const
+oip::GeorefMetadata OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::getGeorefMetadata() const
 {
 	throw oip::UnhandledException("IfcGeometryModel::getGeorefMetadata()");
 }
 
-void OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel::transformAllPoints(
+void OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::transformAllPoints(
 	const oip::GeorefMetadata& newGeorefMetadata,
 	std::function<std::tuple<double, double, double> const(double, double, double)>& transf
 )

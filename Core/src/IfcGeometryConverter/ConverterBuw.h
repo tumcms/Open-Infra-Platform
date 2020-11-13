@@ -338,7 +338,7 @@ namespace OpenInfraPlatform
 						return true;
 					}
 
-					static bool createGeometryModel(buw::ReferenceCounted<IfcGeometryModel> ifcGeometryModel,
+					static bool createGeometryModel(buw::ReferenceCounted<IfcModel> ifcGeometryModel,
 						std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& shapeDatas)
 					{
 						std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Create geometry model from meshsets for BlueFramework API" << std::endl;
@@ -377,7 +377,7 @@ namespace OpenInfraPlatform
 
 					// convert mesh and polyline descriptions to triangles/lines for BlueFramework
 					static void createTrianglesJob(const std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& tasks,
-						int threadID, buw::ReferenceCounted<IfcGeometryModel>& ifcGeometryModel/*IndexedMeshDescription* meshDesc, PolylineDescription* polyDesc*/)
+						int threadID, buw::ReferenceCounted<IfcModel>& ifcModel)
 					{
 						for(const auto& shapeData : tasks) {
 							const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product = shapeData->ifc_product;
@@ -407,7 +407,7 @@ namespace OpenInfraPlatform
 							// update the BBox
 							geometry->UpdateBBox();
 							// add to the model
-							ifcGeometryModel->addGeometry(geometry);
+							ifcModel->addGeometry(geometry);
 						}
 					}
 

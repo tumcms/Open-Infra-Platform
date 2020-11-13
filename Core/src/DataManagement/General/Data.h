@@ -181,12 +181,12 @@ namespace OpenInfraPlatform
 					auto expressModel_ = IfcReader::FromFile(filename);
 					auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>();
 					if (importer.collectGeometryData(expressModel_)) {
-						auto ifcGeometryModel = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
+						auto ifcModel = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel>();
 						auto converter = IfcGeometryConverter::ConverterBuwT<IfcEntityTypesT>();
-						if (converter.createGeometryModel(ifcGeometryModel, importer.getShapeDatas())) {
-							if (!ifcGeometryModel->isEmpty()) {
-								ifcGeometryModel->setFilename(filename);
-								addModel(ifcGeometryModel);
+						if (converter.createGeometryModel(ifcModel, importer.getShapeDatas())) {
+							if (!ifcModel->isEmpty()) {
+								ifcModel->setFilename(filename);
+								addModel(ifcModel);
 								latestChangeFlag_ = ChangeFlag::IfcGeometry;
 							}
 						}
