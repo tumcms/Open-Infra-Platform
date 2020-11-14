@@ -139,21 +139,21 @@ namespace OpenInfraPlatform {
 						{
 							// write the error to the console
 							BLUE_LOG(warning) << representation->getErrorLog() + ": We don't support this (yet). Care to contribute?";
-							BLUE_LOG(warning) << ex.what();
+							BLUE_LOG(warning) << std::string(ex.what());
 							continue;
 						}
 						catch (const oip::InconsistentGeometryException& ex)
 						{
 							// write the error to the console
 							BLUE_LOG(warning) << representation->getErrorLog() + ": Nothing is shown - sth wrong with geometry.";
-							BLUE_LOG(warning) << ex.what();
+							BLUE_LOG(warning) << std::string(ex.what());
 							continue;
 						}
 						catch (const oip::InconsistentModellingException& ex)
 						{
 							// write the error to the console
 							BLUE_LOG(warning) << representation->getErrorLog() + ": Nothing is shown - sth wrong with IFC model.";
-							BLUE_LOG(warning) << ex.what();
+							BLUE_LOG(warning) << std::string(ex.what());
 							continue;
 						}
 						catch (...)
