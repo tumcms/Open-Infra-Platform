@@ -553,6 +553,13 @@ namespace OpenInfraPlatform
 							return buw::Vector3f(0.1f, 0.2f, 1.0f);//, 1.0f);
 						}
 
+						#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+						else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeotechnicalElement>(product)
+							||   std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeographicElement>(product)) {
+							return buw::Vector3f(0.3f, 1.0f, 0.0f);//, 0.4f);
+						} 
+						#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+
 						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDoor>(product)) {
 							return buw::Vector3f(0.8f, 0.6f, 0.2f);//, 0.5f);
 						}
