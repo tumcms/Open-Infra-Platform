@@ -156,8 +156,18 @@ namespace OpenInfraPlatform {
 							BLUE_LOG(warning) << std::string(ex.what());
 							continue;
 						}
+						catch (const std::exception& ex)
+						{
+							// write the error to the console
+							BLUE_LOG(warning) << representation->getErrorLog() + ": Nothing is shown - std::exception.";
+							BLUE_LOG(warning) << std::string(ex.what());
+							continue;
+						}
 						catch (...)
 						{
+							// write the error to the console
+							BLUE_LOG(warning) << representation->getErrorLog() + ": Nothing is shown - unknown error.";
+							continue;
 							throw; // throw onwards
 						}
 

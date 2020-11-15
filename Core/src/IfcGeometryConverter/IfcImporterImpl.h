@@ -136,32 +136,27 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 	}
 	catch (const oip::UnhandledException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown.";
-		BLUE_LOG(warning) << std::string(ex.what());
+		BLUE_LOG(warning) << product->getErrorLog() + " -> unhandled error: " + std::string(ex.what());
 	}
 	catch (const oip::InconsistentGeometryException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with geometry.";
-		BLUE_LOG(warning) << std::string(ex.what());
+		BLUE_LOG(warning) << product->getErrorLog() + " -> geometry error: " + std::string(ex.what());
 	}
 	catch (const oip::InconsistentModellingException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with data modelling:";
-		BLUE_LOG(warning) << std::string(ex.what());
+		BLUE_LOG(warning) << product->getErrorLog() + " -> modelling error: " + std::string(ex.what());
 	}
 	catch (const oip::ReferenceExpiredException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with internal references:";
-		BLUE_LOG(warning) << std::string(ex.what());
+		BLUE_LOG(warning) << product->getErrorLog() + " -> reference error: " + std::string(ex.what());
 	}
 	catch (const std::exception& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth is wrong:";
-		BLUE_LOG(warning) << std::string(ex.what());
+		BLUE_LOG(warning) << product->getErrorLog() + " -> general error: " + std::string(ex.what());
 	}
 	catch (...)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - unknown error.";
+		BLUE_LOG(warning) << product->getErrorLog() + " -> unknown error.";
 		throw; // throw onwards
 	}
 }
