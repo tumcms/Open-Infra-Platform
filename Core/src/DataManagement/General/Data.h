@@ -77,11 +77,6 @@ namespace OpenInfraPlatform
 				//! Virtual destructor.
 				virtual ~Data();
 
-				//! Clears the date model
-				void clear(const bool notifyObservers);
-
-				void clear();
-
 				// alternative change methode
 				void pushChange(ChangeFlag flag);
 				ChangeFlag getLatesChangeFlag();

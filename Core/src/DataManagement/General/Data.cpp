@@ -76,8 +76,6 @@ bShowViewCube_(true),
 currentJobID_(-1),
 bShowReferenceCoordinateSystem(true)
 {
-	clear(false);
-
 	latestChangeFlag_ = ChangeFlag::All;
 
 	AsyncJob::getInstance().jobFinished.connect(boost::bind(&OpenInfraPlatform::Core::DataManagement::Data::jobFinished, this, _1, _2));
@@ -86,7 +84,7 @@ bShowReferenceCoordinateSystem(true)
 
 OpenInfraPlatform::Core::DataManagement::Data::~Data()
 {
-	clear();
+	Clear();
 }
 
 
@@ -96,27 +94,6 @@ void OpenInfraPlatform::Core::DataManagement::Data::open( const std::string & fi
 	{
 		import(filename);
 	}
-}
-
-
-void OpenInfraPlatform::Core::DataManagement::Data::clear(const bool notifyObservers) {
-
-	// remove everything
-	//removeAllModels();
-
-	if (notifyObservers) {
-		// The notification state is not used here, because a clear is not executed by an action.
-		//m_pNotifiactionState->Change();
-
-		pushChange(ChangeFlag::All);
-
-		Clear();
-	}
-}
-
-void OpenInfraPlatform::Core::DataManagement::Data::clear()
-{
-	clear(true);
 }
 
 void OpenInfraPlatform::Core::DataManagement::Data::pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag flag)
