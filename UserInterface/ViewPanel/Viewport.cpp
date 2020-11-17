@@ -784,12 +784,14 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 		//TODO
 	}
 
+	auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
+
 	// if no models there: just ignore everything
-	if (!OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().hasModels())
+	if (!data.hasModels())
 		return;
 
 	// the extents
-	oip::BBox bb = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getExtents();	
+	oip::BBox bb = data.getExtents();
 	buw::Vector3d offset = -bb.center();
     minExtend_ = (bb.min() + offset).cast<float>();
     maxExtend_ = (bb.max() + offset).cast<float>();
@@ -798,7 +800,7 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 
 	// change in IFC geometry?
     if( changeFlag & ChangeFlag::IfcGeometry ) {
-		auto ifcGeometryModel = std::dynamic_pointer_cast<oip::IfcModel>(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getLastModel());
+		auto ifcGeometryModel = std::dynamic_pointer_cast<oip::IfcModel>(data.getLastModel());
 		if( ifcGeometryModel )
 		{
 			buw::ReferenceCounted<oip::IfcGeometryEffect> ifcGeometryEffect 
@@ -812,7 +814,7 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 	// change in Point cloud
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	if(changeFlag & ChangeFlag::PointCloud ) {
-		auto pointCloud = std::dynamic_pointer_cast<oip::PointCloud>(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getLastModel());
+		auto pointCloud = std::dynamic_pointer_cast<oip::PointCloud>(data.getLastModel());
 		if( pointCloud )
 		{
 			auto pointCloudEffect_ 
