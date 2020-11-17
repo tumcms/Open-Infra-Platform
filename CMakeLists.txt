@@ -103,13 +103,14 @@ option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to find boost, Eigen and Qt
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
-	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS
+	find_path(OIP_BOOST_ROOT NAMES boost/version.hpp HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
 		"C:\\thirdparty\\boost_1_65_1")
-	find_path(Boost_DIR NAMES boost/version.hpp HINTS
+	find_path(OIP_Boost_DIR NAMES boost/version.hpp HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
 		"C:\\thirdparty\\boost_1_65_1")
-	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64")
+	find_path(OIP_QT_DIR NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64")
+	find_path(OIP_PROJ_DIR NAMES proj-config.cmake HINTS "C:\\OSGeo4W64\\apps\\proj-dev\\share\\cmake\\proj4\\proj")
 endif()
 
 #------------------------------------------------------------------------------
@@ -146,6 +147,8 @@ find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
 
 if(Boost_FOUND)
 	set(Boost_DIR ${Boost_INCLUDE_DIR})
+else()
+	set(Boost_DIR ${OIP_Boost_DIR})
 endif()
 
 FetchContent_Declare(
@@ -206,6 +209,7 @@ set(QT5_COMPONENTS
 	Positioning
 	Location
 )
+set(CMAKE_PREFIX_PATH ${OIP_QT_DIR})
 
 find_package( Qt5 5.12.1 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
 
@@ -253,7 +257,7 @@ endif()
 #set (PROJ_INSTALL_DIR "C:/OSGeo4W64/apps/proj-dev/share/cmake/proj4/proj")
 #set (CMAKE_PREFIX_PATH PROJ_INSTALL_DIR)
 
-set (CMAKE_PREFIX_PATH "C:/OSGeo4W64/apps/proj-dev/share/cmake/proj4/proj")
+set (CMAKE_PREFIX_PATH ${OIP_PROJ_DIR})
 find_package(PROJ REQUIRED)
 
 #------------------------------------------------------------------------------
