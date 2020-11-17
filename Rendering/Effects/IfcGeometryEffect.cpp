@@ -28,7 +28,7 @@ IfcGeometryEffect::IfcGeometryEffect(buw::IRenderSystem * renderSystem,
                                      buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA,
                                      buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer)
     :
-    Effect(renderSystem),
+    EffectBase(renderSystem),
     viewport_(viewport),
     depthStencilMSAA_(depthStencilMSAA),
     worldBuffer_(worldBuffer)
@@ -47,12 +47,17 @@ IfcGeometryEffect::~IfcGeometryEffect() {
     depthStencilMSAA_ = nullptr;
 }
 
-void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcModel> ifcGeometryModel, const buw::Vector3d & offset)
+void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcModel> ifcGeometryModel)
 {
 	ifcGeometryModel_ = ifcGeometryModel;
-	offset_ = offset;
+}
 
-    if(!ifcGeometryModel->isEmpty()) {
+void IfcGeometryEffect::changeOffset( const buw::Vector3d& offsetOld, const buw::Vector3d& offsetNew )
+{
+	if (!ifcGeometryModel_)
+		return;
+
+    if(!ifcGeometryModel_->isEmpty()) {
 
 		// reset
 		if( meshVertexBuffer_ ) meshVertexBuffer_ = nullptr;
@@ -67,7 +72,7 @@ void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeome
 		std::vector< uint32_t > indicesPoly;
 
 		// process the data
-		for( auto &geom : ifcGeometryModel->geometries() )
+		for( auto &geom : ifcGeometryModel_->geometries() )
 		{
 			if(!geom->meshDescription.isEmpty()) {
 
@@ -76,9 +81,9 @@ void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeome
 				for (auto& vertex : geom->meshDescription.vertices)
 				{
 					VertexLayout vtx(vertex);
-					vtx.position[0] += offset.x();
-					vtx.position[1] += offset.y();
-					vtx.position[2] += offset.z();
+					vtx.position[0] += offsetNew.x();
+					vtx.position[1] += offsetNew.y();
+					vtx.position[2] += offsetNew.z();
 					vertices.push_back( vtx );
 				}
 
@@ -96,7 +101,7 @@ void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeome
 				vertices.reserve(geom->polylineDescription.vertices.size());
 				for (auto& vertex : geom->polylineDescription.vertices)
 				{
-					vertices.push_back(vertex + offset.cast<float>());
+					vertices.push_back(vertex + offsetNew.cast<float>());
 				}
 
 				const uint32_t verticesOffset = verticesPoly.size();

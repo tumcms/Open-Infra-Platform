@@ -20,19 +20,18 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef OpenInfraPlatform_UserInterface_PointCloudEffect_C9932E98_6B4E_4E36_8B8D_5AA32D41AC0F_h
 #define OpenInfraPlatform_UserInterface_PointCloudEffect_C9932E98_6B4E_4E36_8B8D_5AA32D41AC0F_h
 
+#include "Resources/EffectBase.h"
 #include "namespace.h"
 #include "PointCloud.h"
 
 #include "Effects\BoxEffect.h"
 
-#include <buw.Rasterizer.h>
-#include <buw.Engine.h>
 #include <map>
 #include <tuple>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
-class PointCloudEffect : public buw::Effect {
+class PointCloudEffect : public EffectBase {
 public:
 
 	/*Struct for possible settings*/
@@ -91,8 +90,8 @@ public:
 
 
 	/*Set the point cloud to be rendered*/
-	void setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::PointCloudProcessing::PointCloud> pointCloud, buw::Vector3d offset);
-	
+	void setPointCloud(buw::ReferenceCounted<OpenInfraPlatform::PointCloudProcessing::PointCloud> pointCloud);
+
 	void setOctree(buw::ReferenceCounted<OpenInfraPlatform::PointCloudProcessing::Octree> octree, buw::Vector3d offset);
 
 	void setSections(std::vector<buw::ReferenceCounted<OpenInfraPlatform::PointCloudProcessing::PointCloudSection>> sections, buw::Vector3d offset);
@@ -104,6 +103,9 @@ private:
 	void v_render();
 
 	void updateSettingsBuffer();
+
+	//! EffectBase interface - change offset to the new value
+	virtual void changeOffset(const buw::Vector3d& offsetOld, const buw::Vector3d& offsetNew) override;
 
 private:
 	buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer_ = nullptr;
@@ -118,7 +120,6 @@ private:
 
 	SettingsBuffer settings_;
 	buw::Vector4f uniformColor_, filteredColor_, segmentedColor_;
-	buw::Vector3d offset_;
 	int octreeLevel_ = 1;
 	bool bShow_ = true, bShowOriginalPointCloud_ = true, bShowSegmentedPoints_ = false, bShowFilteredPoints_ = false, bProjectPoints_ = false, bShowOctree_ = false;
 

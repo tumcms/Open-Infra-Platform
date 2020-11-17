@@ -793,7 +793,7 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 	buw::Vector3d offset = -bb.center();
     minExtend_ = (bb.min() + offset).cast<float>();
     maxExtend_ = (bb.max() + offset).cast<float>();
-	buw::Vector3f extend = maxExtend_ - minExtend_;
+	//buw::Vector3f extend = maxExtend_ - minExtend_;
     boundingBoxEffect_->setBounds(bb.min(), bb.max());
 
 	// change in IFC geometry?
@@ -804,7 +804,7 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 			buw::ReferenceCounted<oip::IfcGeometryEffect> ifcGeometryEffect 
 				= buw::makeReferenceCounted<oip::IfcGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
 			ifcGeometryEffect->init();
-			ifcGeometryEffect->setIfcGeometryModel(ifcGeometryModel, offset);
+			ifcGeometryEffect->setIfcGeometryModel(ifcGeometryModel);
 			activeEffects_.push_back(ifcGeometryEffect);
 		}
     }
@@ -824,13 +824,17 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 			sectionsBoundingBoxEffect_->init();
 
 			pointCloudEffect_->sectionsBoundingBoxEffect_ = sectionsBoundingBoxEffect_;
-			pointCloudEffect_->setPointCloud(pointCloud, offset);
+			pointCloudEffect_->setPointCloud(pointCloud);
 
 			activeEffects_.push_back(pointCloudEffect_);
 			activeEffects_.push_back(sectionsBoundingBoxEffect_);
 		}
 	}
 #endif
+
+	// tell all effects what offset we are currently having
+	for (auto& effect : activeEffects_)
+		effect->setOffset(offset);
 }
 
 void Viewport::onClear() {

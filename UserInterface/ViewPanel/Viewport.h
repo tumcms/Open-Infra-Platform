@@ -203,7 +203,7 @@ namespace OpenInfraPlatform {
 #endif
 
 			//buw::ReferenceCounted<oip::BillboardEffect> billboardEffect_;
-			std::vector<buw::ReferenceCounted<buw::Effect>> activeEffects_;
+			std::vector<buw::ReferenceCounted<oip::EffectBase>> activeEffects_;
 
 			// Clear
 			bool gradientClear_ = true;
