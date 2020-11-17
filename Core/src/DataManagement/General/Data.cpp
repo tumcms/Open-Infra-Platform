@@ -343,51 +343,6 @@ bool OpenInfraPlatform::Core::DataManagement::Data::isSkyboxEnabled() const
 }
 
 
-// Add Georeference
-
-double  OpenInfraPlatform::Core::DataManagement::Data::getEastings()
-{
-	return m_Eastings;
-}
-
-void  OpenInfraPlatform::Core::DataManagement::Data::setEastings(double value)
-{
-	m_Eastings = value;
-}
-
-double  OpenInfraPlatform::Core::DataManagement::Data::getNorthings()
-{
-	return m_Northings;
-}
-
-void  OpenInfraPlatform::Core::DataManagement::Data::setNorthings(double value)
-{
-	m_Northings = value;
-}
-
-
-double  OpenInfraPlatform::Core::DataManagement::Data::getOrthogonalHeight()
-{
-	return m_OrthogonalHeight;
-}
-
-void  OpenInfraPlatform::Core::DataManagement::Data::setOrthogonalHeight(double value)
-{
-	m_OrthogonalHeight = value;
-}
-
-
-QString  OpenInfraPlatform::Core::DataManagement::Data::getEPSGcodeName()
-{
-	return m_Name;
-}
-
-void  OpenInfraPlatform::Core::DataManagement::Data::setEPSGcodeName(QString value)
-{
-	m_Name = value;
-}
-
-
 
 void OpenInfraPlatform::Core::DataManagement::Data::showViewCube(const bool enable)
 {

@@ -155,19 +155,6 @@ namespace OpenInfraPlatform
 				bool showFrameTimes() const;
 
 
-				//---------------------------------------------------------------------------//
-				// Add Georeference
-				//---------------------------------------------------------------------------//
-
-				double	getEastings();
-				void	setEastings(double value);
-				double	getNorthings();
-				void	setNorthings(double value);
-				double	getOrthogonalHeight();
-				void	setOrthogonalHeight(double value);
-				QString getEPSGcodeName();
-				void	setEPSGcodeName(QString value);
-
 			private:
 
 				void jobFinished(int jobID, bool completed);
@@ -207,12 +194,6 @@ namespace OpenInfraPlatform
 				bool			bShowFrameTime_ = false;
 				
 				int																currentJobID_;
-
-				// Add Georeference
-				double m_Eastings = 0.0;
-				double m_Northings = 0.0;
-				double m_OrthogonalHeight = 0.0;
-				QString m_Name = "EPSG:31467";
 
 			private:
 				// a collection of models that are loaded
