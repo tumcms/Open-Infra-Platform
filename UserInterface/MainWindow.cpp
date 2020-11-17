@@ -421,7 +421,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 		boost::filesystem::path p(data.getLastModel()->getSource());
 		updateWindowTitle(p.filename().string());
 
-		// small helper function
+		// small helper functions
 		auto addVector3D = [=](const buw::Vector3d& vct, const std::string& propName) -> QtProperty* {
 			// grouping
 			QtProperty* itemVct = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), propName.c_str());
@@ -447,31 +447,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 			// return the grouping
 			return itemVct;
 		};
-
-		// update the models widget to show the models
-		propertyModels_->setPropertyName("Models");
-		for (auto& model : data.getModels())
-		{
-			//ui_->listWidgetModels->addItem(QString::fromStdString(model->getSource()));
-
-			boost::filesystem::path p(model->getSource());
-
-			// structure
-			// filename
-			//  - source : filepath
-			//  - BBox   : bounding box
-			//    - min, mid, max : QVector3D
-
-			auto itemModel = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), QString::fromStdString(p.filename().string()));
-			propertyModels_->addSubProperty(itemModel);
-
-			auto itemSource = variantManager_->addProperty(QVariant::String, "Filepath");
-			itemSource->setValue(QString::fromStdString(model->getSource()));
-			itemModel->addSubProperty(itemSource);
-
-			auto bbox = model->getExtent();
+		auto addBBox = [=](const oip::BBox& bbox) -> QtProperty* {
+			// grouping
 			auto itemBBox = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), "Bounding box");
-			itemModel->addSubProperty(itemBBox);
 
 			auto itemMin = addVector3D(bbox.min(), "Min");
 			itemBBox->addSubProperty(itemMin);
@@ -482,6 +460,43 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 			auto itemMax = addVector3D(bbox.max(), "Max");
 			itemBBox->addSubProperty(itemMax);
 
+			//return the grouping
+			return itemBBox;
+		};
+
+		// update the models widget to show the models
+		propertyModels_->setPropertyName("Models");
+
+		// add the overall extents of all models
+		auto itemBBox = addBBox(data.getExtents());
+		propertyModels_->addSubProperty(itemBBox);
+
+		// loop through the models
+		for (auto& model : data.getModels())
+		{
+			//ui_->listWidgetModels->addItem(QString::fromStdString(model->getSource()));
+
+			boost::filesystem::path p(model->getSource());
+
+			// structure
+			// 1. filename
+			// 2.  - source : filepath
+			// 3.  - BBox   : bounding box
+			//       - min, mid, max : QVector3D
+
+			// 1. filename
+			auto itemModel = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), QString::fromStdString(p.filename().string()));
+			propertyModels_->addSubProperty(itemModel);
+
+			// 2.  - source : filepath
+			auto itemSource = variantManager_->addProperty(QVariant::String, "Filepath");
+			itemSource->setValue(QString::fromStdString(model->getSource()));
+			itemModel->addSubProperty(itemSource);
+
+			// 3.  - BBox   : bounding box
+			//       - min, mid, max : QVector3D
+			auto itemBBox = addBBox(model->getExtent());
+			itemModel->addSubProperty(itemBBox);
 		}
 	}
 	else
