@@ -278,15 +278,10 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 
 	setAcceptDrops(true);
 
-	// build up models UI
-	variantManager_ = std::make_shared<QtVariantPropertyManager>();
-	propertyModels_ = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId());
-
-	variantEditor_ = std::make_shared<QtTreePropertyBrowser>();
-	variantEditor_->setStyleSheet("");
-	variantEditor_->setFactoryForManager(&*variantManager_, new QtVariantEditorFactory());
-	variantEditor_->addProperty(propertyModels_);
-	ui_->verticalLayoutModels->addWidget(&*variantEditor_);
+	// add tree widget
+	modelsTreeWidget_ = new QTreeWidget();
+	modelsTreeWidget_->setHeaderLabels(QStringList({ QString("Property"), QString("Value") })); //TODO tr()
+	ui_->verticalLayoutModels->addWidget(modelsTreeWidget_);
 
 	// update models UI
 	updateModelsUI();
@@ -402,11 +397,6 @@ void OpenInfraPlatform::UserInterface::MainWindow::emitPoints(QDialog* toolDialo
 
 void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 {
-	// clear
-	while (propertyModels_->subProperties().size() > 0) {
-		propertyModels_->removeSubProperty(propertyModels_->subProperties()[0]);
-	}
-
 	// get data
 	auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
 
@@ -422,88 +412,105 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 		updateWindowTitle(p.filename().string());
 
 		// small helper functions
-		auto addVector3D = [=](const buw::Vector3d& vct, const std::string& propName) -> QtProperty* {
+		auto addVector3D = []( QTreeWidgetItem* parent, const buw::Vector3d& vct, const std::string& propName) -> QTreeWidgetItem* {
 			// grouping
-			QtProperty* itemVct = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), propName.c_str());
+			auto itemVct = new QTreeWidgetItem(parent);
+			itemVct->setText(0, propName.c_str());
 
 			// x
-			auto itemX = variantManager_->addProperty(QVariant::Double, "x");
-			itemX->setValue(vct.x());
-			itemX->setAttribute(QLatin1String("decimals"), 5);
-			itemVct->addSubProperty(itemX);
+			auto itemX = new QTreeWidgetItem(itemVct); 
+			itemX->setText(0, "x"); 
+			itemX->setText(1, QString("%1").arg(vct.x()));
 
 			// y
-			auto itemY = variantManager_->addProperty(QVariant::Double, "y");
-			itemY->setValue(vct.y());
-			itemY->setAttribute(QLatin1String("decimals"), 5);
-			itemVct->addSubProperty(itemY);
+			auto itemY = new QTreeWidgetItem(itemVct);
+			itemY->setText(0, "y"); 
+			itemY->setText(1, QString("%1").arg(vct.y()));
 
 			// z
-			auto itemZ = variantManager_->addProperty(QVariant::Double, "z");
-			itemZ->setValue(vct.z());
-			itemZ->setAttribute(QLatin1String("decimals"), 5);
-			itemVct->addSubProperty(itemZ);
+			auto itemZ = new QTreeWidgetItem(itemVct);
+			itemZ->setText(0, "z");
+			itemZ->setText(1, QString("%1").arg(vct.z()));
+
+			// expanded per default
+			itemVct->setExpanded(true);
 
 			// return the grouping
 			return itemVct;
 		};
-		auto addBBox = [=](const oip::BBox& bbox) -> QtProperty* {
+		auto addBBox = [addVector3D]( QTreeWidgetItem* parent, const oip::BBox& bbox) -> QTreeWidgetItem* {
 			// grouping
-			auto itemBBox = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), "Bounding box");
+			auto itemBBox = new QTreeWidgetItem( parent, nullptr );
+			itemBBox->setText(0, "Bounding box");
 
-			auto itemMin = addVector3D(bbox.min(), "Min");
-			itemBBox->addSubProperty(itemMin);
+			// add properties - 3D vectors
+			auto itemMin = addVector3D(itemBBox, bbox.min(), "Min");
+			auto itemMid = addVector3D(itemBBox, bbox.center(), "Mid");
+			auto itemMax = addVector3D(itemBBox, bbox.max(), "Max");
 
-			auto itemMid = addVector3D(bbox.center(), "Mid");
-			itemBBox->addSubProperty(itemMid);
-
-			auto itemMax = addVector3D(bbox.max(), "Max");
-			itemBBox->addSubProperty(itemMax);
+			// collapsed per default
+			itemBBox->setExpanded(false);
 
 			//return the grouping
 			return itemBBox;
 		};
 
-		// update the models widget to show the models
-		propertyModels_->setPropertyName("Models");
+		// remove the notice added if no models are loaded
+		for (auto el : modelsTreeWidget_->findItems("No models", Qt::MatchFlag::MatchExactly, 0))
+			modelsTreeWidget_->invisibleRootItem()->removeChild(el);
 
-		// add the overall extents of all models
-		auto itemBBox = addBBox(data.getExtents());
-		propertyModels_->addSubProperty(itemBBox);
+		// update the "Complete bounding box"
+		auto title = modelsTreeWidget_->findItems("Complete bounding box", Qt::MatchFlag::MatchExactly, 0);
+		if ( !title.isEmpty() )
+		{
+			// remove the bounding box
+			modelsTreeWidget_->invisibleRootItem()->removeChild(modelsBBoxWidgetItem_);
+			delete modelsBBoxWidgetItem_; modelsBBoxWidgetItem_ = nullptr;
+		}
+		// add the complete bounding box
+		modelsBBoxWidgetItem_ = addBBox(modelsTreeWidget_->invisibleRootItem(), data.getExtents());
+		modelsBBoxWidgetItem_->setText(0, "Complete bounding box");
 
 		// loop through the models
 		for (auto& model : data.getModels())
 		{
-			//ui_->listWidgetModels->addItem(QString::fromStdString(model->getSource()));
-
 			boost::filesystem::path p(model->getSource());
+			auto filename = QString::fromStdString(p.filename().string());
 
-			// structure
-			// 1. filename
-			// 2.  - source : filepath
-			// 3.  - BBox   : bounding box
-			//       - min, mid, max : QVector3D
+			// only add if not yet present
+			if ( modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 0).isEmpty() )
+			{
+				// structure
+				// 1. filename
+				// 2.  - source : filepath
+				// 3.  - BBox   : bounding box
+				//       - min, mid, max : QVector3D
 
-			// 1. filename
-			auto itemModel = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId(), QString::fromStdString(p.filename().string()));
-			propertyModels_->addSubProperty(itemModel);
+				// 1. filename
+				auto itemModel = new QTreeWidgetItem(modelsTreeWidget_); // , modelsTreeWidget_->invisibleRootItem()->child(modelsTreeWidget_->invisibleRootItem()->childCount() - 1));
+				itemModel->setText(0, filename);
 
-			// 2.  - source : filepath
-			auto itemSource = variantManager_->addProperty(QVariant::String, "Filepath");
-			itemSource->setValue(QString::fromStdString(model->getSource()));
-			itemModel->addSubProperty(itemSource);
+				// 2.  - source : filepath
+				auto itemSource = new QTreeWidgetItem(itemModel); 
+				itemSource->setText(0, "Filepath");
+				itemSource->setText(1, QString::fromStdString(p.string()));
 
-			// 3.  - BBox   : bounding box
-			//       - min, mid, max : QVector3D
-			auto itemBBox = addBBox(model->getExtent());
-			itemModel->addSubProperty(itemBBox);
+				// 3.  - BBox   : bounding box
+				//       - min, mid, max : QVector3D
+				addBBox(itemModel, model->getExtent());
+				
+				// expanded per default
+				itemModel->setExpanded(true);
+			}
 		}
 	}
 	else
 	{
-		// no models there
-		// include a message to import models using UI
-		propertyModels_->setPropertyName("Import or drop-in files.");//translation missing
+		// update the tree view
+		modelsTreeWidget_->clear();
+		QTreeWidgetItem *item = new QTreeWidgetItem(modelsTreeWidget_);
+		item->setText(0, "No models");
+		item->setText(1, "Import or drop in files."); //TODO tr()
 
 		// window title update
 		updateWindowTitle("Import a file");
