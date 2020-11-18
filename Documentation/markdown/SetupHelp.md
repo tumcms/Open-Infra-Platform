@@ -68,7 +68,7 @@ These steps need to be completed before you can proceed with compiling OIP.
 		* Click on skip until PROJ version 6.* show up.
 		* Select binary (*Bin*) package. 
 		
-		![](./fig/PROJ4_Installation_settings.png)
+		![](./fig/PROJ_Installation_settings.png)
 
 		* Proceed to installation.
 
