@@ -10,11 +10,10 @@ Guide on how to compile the project TUM OpenInfraPlatform.
     * [Development environment](#devenv)
     * [Download source code](#Source_code)
     * [Third-party libraries](#thirdparty)
-2. [Preparing solution](#Setup) 
-	* [Generating solution](#Prep_solution) 
+2. [Preparing VS solution](#Setup) 
 3. [Building the OpenInfraPlatform in Visual Studio](#Building_OIP) 
 	* [First time](#FirstTime)
-	* [Generating IFC early binding](#generating_EarlyBinding)
+	* [Generating IFC early binding libraries](#generating_EarlyBinding)
 	* [Compiling user interface](#Compiling_interface)
     * [Generating documentation](#Generating_Doc)
 
@@ -25,7 +24,7 @@ These steps need to be completed before you can proceed even to think to compile
 *NOTE:* The OIP only works with the versions listed. 
 No guaranty is given for other versions.
 
-### <a name="thirdparty"></a> Development environment
+### <a name="devenv"></a> Development environment
 
 You will need to install:
 
@@ -39,7 +38,7 @@ You will need to install:
 
 *NOTE:* for detailed instructions consult our [Git Guidelines](./GitProcess.md).
 
-### <a name="devenv"></a> Third-party libraries
+### <a name="thirdparty"></a> Third-party libraries
 
 4. **Qt 5.12.1** - find [here](https://www.qt.io/download-open-source).
 
@@ -73,9 +72,9 @@ You will need to install:
 
 *NOTE:* CMake expects it at `C:\OSGeo4W64`, which should be the default option. If you deviate from this, please set the `OIP_PROJ_DIR` variable correspondingly.
 
-	*	Select local package directory (e.g. `C:\OSGeo4W64\local`)
-	*	Select `https://osgeo4w-oslandia.com/` as a download site.
-	*	Select components to install:
+  * Select local package directory (e.g. `C:\OSGeo4W64\local`).
+  * Select `https://osgeo4w-oslandia.com/` as a download site.
+  * Select components to install:
 		
 		* Open *Commandline_Utilities*
 		* Find *proj-dev* package 
@@ -92,9 +91,7 @@ You will need to install:
         * `GetDot.cmd`
         * `GetDoxygen.cmd`
 
-## <a name="Setup"></a> Generating project
-
-### <a name="Prep_solution"></a> Preparing VS solution 
+## <a name="Setup"></a> Preparing VS solution 
 
 1. Launch CMake.
 2. In the line *Where is the source code:* input the path to your clone's source folder (e.g. `C:\dev\Open-Infra-Platform`).
