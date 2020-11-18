@@ -253,10 +253,6 @@ if(NOT blue_framework_POPULATED)
 	set_target_properties(UpdateLibsAndDLLsForCurrentBuildConfiguration PROPERTIES FOLDER "BlueFramework/Commands")
 endif()
 
-
-#set (PROJ_INSTALL_DIR "C:/OSGeo4W64/apps/proj-dev/share/cmake/proj4/proj")
-#set (CMAKE_PREFIX_PATH PROJ_INSTALL_DIR)
-
 set (CMAKE_PREFIX_PATH ${OIP_PROJ_DIR})
 find_package(PROJ REQUIRED)
 

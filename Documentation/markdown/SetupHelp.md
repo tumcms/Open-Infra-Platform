@@ -57,7 +57,7 @@ These steps need to be completed before you can proceed with compiling OIP.
 	*	Choose to install from Internet
 	*	Select directory, where PROJ will be installed.
 
-	NOTE: CMake expects it at `C:\OSGeo4W64`, which should be the default option. If you deviate from this, please set the `PROJ_INSTALL_DIR` variable correspondingly.
+	NOTE: CMake expects it at `C:\OSGeo4W64`, which should be the default option. If you deviate from this, please set the `OIP_PROJ_DIR` variable correspondingly.
 
 	*	Select local package directory (e.g. `C:\OSGeo4W64\local`)
 	*	Select `https://osgeo4w-oslandia.com/` as a download site.
