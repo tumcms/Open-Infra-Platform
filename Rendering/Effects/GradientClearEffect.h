@@ -19,6 +19,7 @@
 #ifndef OpenInfraPlatform_UserInterface_GradientClearEffect_afbb68df_d61c_4c33_97ea_562ed68cda3c_h
 #define OpenInfraPlatform_UserInterface_GradientClearEffect_afbb68df_d61c_4c33_97ea_562ed68cda3c_h
 
+#include <Resources/EffectBase.h>
 #include <buw.Rasterizer.h>
 #include <chrono>
 
@@ -26,7 +27,7 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
-class GradientClearEffect : public buw::Effect {
+class GradientClearEffect : public EffectBase {
 public:
 	struct ShaderVariables {
 		BlueFramework::Rasterizer::AlignedTo16Byte::Float time;
@@ -44,6 +45,8 @@ private:
 
 	void v_render();
 
+	//! EffectBase interface - no action
+	virtual void changeOffset(const buw::Vector3d& offsetOld, const buw::Vector3d& offsetNew) override {}
 public:
 	void toggleSnow();
 

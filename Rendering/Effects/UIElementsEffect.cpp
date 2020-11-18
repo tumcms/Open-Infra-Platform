@@ -95,7 +95,7 @@ void UIElementsEffect::loadShader() {
 
 UIElementsEffect::UIElementsEffect(buw::IRenderSystem* renderSystem, buw::ReferenceCounted<buw::ITexture2D> depthStencil, 
 	buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer)
-    : Effect(renderSystem), depthStencil_(depthStencil), worldBuffer_(worldBuffer) {
+    : EffectBase(renderSystem), depthStencil_(depthStencil), worldBuffer_(worldBuffer) {
 	viewport_ = nullptr;
 	viewportBuffer_ = nullptr;
 }

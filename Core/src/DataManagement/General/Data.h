@@ -21,12 +21,14 @@
 
 #include "..\EarlyBinding\src\EXPRESS\EXPRESSModel.h"
 #include "..\Core\src\IfcGeometryConverter\ConverterBuw.h"
+#include "..\Core\src\IfcGeometryConverter\IfcGeometryModel.h"
 
 #include <BlueFramework/Application/DataManagement/DocumentManager.h>
 #include <BlueFramework/ImageProcessing/color.h>
 #include <BlueFramework/Core/Math/vector.h>
 #include <boost/signals2.hpp>
 #include <map>
+#include <list>
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 #include <PointCloudProcessing.h>
@@ -44,16 +46,10 @@ namespace OpenInfraPlatform
 
 			enum class ChangeFlag : unsigned int {
 				None = 0,
-				AlignmentModel = 1 << 0,
-				DigitalElevationModel = 1 << 1,
-				IfcGeometry = 1 << 2,
-				PointCloud = 1 << 3,
-				Preferences = 1 << 4,
-				TrafficModel = 1 << 5,
-				SelectedAlignmentIndex = 1 << 6,
-				GirderModel = 1 << 7,
-				SlabFieldModel = 1 << 8,
-				ProxyModel = 1 << 9
+				IfcGeometry = 1 << 0,
+				PointCloud = 1 << 1,
+				Preferences = 1 << 2,
+				All = IfcGeometry | PointCloud | Preferences
 			};
 
 			inline ChangeFlag operator|(ChangeFlag a, ChangeFlag b)
@@ -81,17 +77,9 @@ namespace OpenInfraPlatform
 				//! Virtual destructor.
 				virtual ~Data();
 
-				//! Clears the date model
-				void clear(const bool notifyObservers);
-
-				void clear();
-
 				// alternative change methode
 				void pushChange(ChangeFlag flag);
 				ChangeFlag getLatesChangeFlag();
-
-				//Retrieve the name of the last imported files
-				QString recentFileName;
 
 				// Retrieve the name of the application
 				virtual const char* getApplicationName();
@@ -124,19 +112,14 @@ namespace OpenInfraPlatform
 				void import(const std::string & filename);
 
 				//---------------------------------------------------------------------------//
-				// IFCx Model
-				//---------------------------------------------------------------------------//
-
-				buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> getIfcGeometryModel() const;
 
 				//---------------------------------------------------------------------------//
 				// Point Cloud
 				//---------------------------------------------------------------------------//
 
+				// this could probably be made better/easier (pjanck, 2020.09.25.)
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 				std::shared_ptr<buw::PointCloud> getPointCloud();
-
-				void exportPointCloud(const std::string& filename) const;
 #endif
 
 				//---------------------------------------------------------------------------//
@@ -158,8 +141,6 @@ namespace OpenInfraPlatform
 				void enableSkybox(const bool enable);
 				bool isSkyboxEnabled() const;
 
-				buw::Vector3d getOffset() const;
-
 				void showViewCube(const bool enable);
 
 				bool isViewCubeEnabled();
@@ -168,19 +149,6 @@ namespace OpenInfraPlatform
 
 				bool showFrameTimes() const;
 
-
-				//---------------------------------------------------------------------------//
-				// Add Georeference
-				//---------------------------------------------------------------------------//
-
-				double	getEastings();
-				void	setEastings(double value);
-				double	getNorthings();
-				void	setNorthings(double value);
-				double	getOrthogonalHeight();
-				void	setOrthogonalHeight(double value);
-				QString getEPSGcodeName();
-				void	setEPSGcodeName(QString value);
 
 			private:
 
@@ -192,14 +160,16 @@ namespace OpenInfraPlatform
 
 				template <typename IfcEntityTypesT, typename IfcReader>
 				void ParseExpressAndGeometryModel(const std::string &filename) {
-					expressModel_ = IfcReader::FromFile(filename);
+					auto expressModel_ = IfcReader::FromFile(filename);
 					auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>();
-					tempIfcGeometryModel_ = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
 					if (importer.collectGeometryData(expressModel_)) {
+						auto ifcModel = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel>();
 						auto converter = IfcGeometryConverter::ConverterBuwT<IfcEntityTypesT>();
-						if (converter.createGeometryModel(tempIfcGeometryModel_, importer.getShapeDatas())) {
-							if (!tempIfcGeometryModel_->isEmpty()) {
-								ifcGeometryModel_ = tempIfcGeometryModel_;
+						if (converter.createGeometryModel(ifcModel, importer.getShapeDatas())) {
+							if (!ifcModel->isEmpty()) {
+								ifcModel->setFilename(filename);
+								addModel(ifcModel);
+								latestChangeFlag_ = ChangeFlag::IfcGeometry;
 							}
 						}
 					}
@@ -217,28 +187,29 @@ namespace OpenInfraPlatform
 				bool			bDrawSkybox_ = false;
 				bool			bShowViewCube_ = true;
 				bool			bShowFrameTime_ = false;
-
-				/// Removed in Revision 483
-				buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>	ifcGeometryModel_ = nullptr;
-				buw::ReferenceCounted<oip::EXPRESSModel>						expressModel_ = nullptr;
 				
-				// temporary data for asynchronous operations
-				bool merge_;
-				buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>	tempIfcGeometryModel_;
-
 				int																currentJobID_;
 
-				// Add Georeference
-				double m_Eastings = 0.0;
-				double m_Northings = 0.0;
-				double m_OrthogonalHeight = 0.0;
-				QString m_Name = "EPSG:31467";
-
-#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-
-				buw::ReferenceCounted<buw::PointCloud> pointCloud_ = nullptr;
-
-#endif
+			private:
+				// a collection of models that are loaded
+				std::list<std::shared_ptr<oip::IModel>> models_;
+			public:
+				// add a model to the collection
+				void addModel(buw::ReferenceCounted<oip::IModel> model);
+				// get the last model
+				std::shared_ptr<oip::IModel> getLastModel();
+				//! const getter for all models
+				const std::list<std::shared_ptr<oip::IModel>>& getModels() const { return models_; }
+				//! getter for all models
+				std::list<std::shared_ptr<oip::IModel>> getModels() { return models_; }
+				// are there models loaded?
+				bool hasModels();
+				// remove a model from the collection
+				void removeModel(buw::ReferenceCounted<oip::IModel> model);
+				// remove all models
+				void removeAllModels();
+				// get the union of extents of all models
+				oip::BBox getExtents();
 
 			}; // end class Data
 		} // end namespace DataManagement
