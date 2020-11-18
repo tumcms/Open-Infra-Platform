@@ -766,7 +766,15 @@ namespace OpenInfraPlatform {
 								carve::geom::vector<3> arcEnd = points[arcIndex[2]];
 
 								//TODO implement IfcArcIndex
-								throw oip::UnhandledException(polycurve);
+								// currently faked - only start-mid-end points are added (very badly tessellated)
+								std::vector<carve::geom::vector<3>> loop_intern;
+								for (const auto& i : arcIndex)
+								{
+									loop_intern.push_back(points[i-1]); //EXPRESS count from 1, C++ from 0
+								}
+
+								// skips same points
+								GeomUtils::appendPointsToCurve(loop_intern, loop);
 
 								break;
 							}
@@ -781,7 +789,7 @@ namespace OpenInfraPlatform {
 								std::vector<carve::geom::vector<3>> loop_intern;
 								for ( const auto& i : lineIndex )
 								{
-									loop_intern.push_back(points[i]);
+									loop_intern.push_back(points[i-1]); //EXPRESS count from 1, C++ from 0
 								}
 
 								// skips same points

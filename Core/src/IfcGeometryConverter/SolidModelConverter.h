@@ -371,17 +371,9 @@ namespace OpenInfraPlatform
 					double radius = swept_disk_solid->Radius * length_in_meter;
 					
 
-					double radius_inner = 0.0;
-					typename IfcEntityTypesT::IfcLengthMeasure& sweptInnerRadius = swept_disk_solid->InnerRadius;
-					if (swept_disk_solid->InnerRadius)
-					{
-						radius_inner = sweptInnerRadius * length_in_meter;
-						//radius_inner = swept_disp_solid->InnerRadius->length_in_meter;
-					}
-
-					double inner_radius = swept_disk_solid->InnerRadius;
-					double start_param = swept_disk_solid->StartParam;
-					double end_param = swept_disk_solid->EndParam;
+					double radius_inner = swept_disk_solid->InnerRadius.value_or(0.0);
+					//double start_param = swept_disk_solid->StartParam.value_or(0.0);
+					//double end_param = swept_disk_solid->EndParam.value_or(1.0);
 
 					// TODO: handle inner radius, start param, end param and check for formal propositions!
 
