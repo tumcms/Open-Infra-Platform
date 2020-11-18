@@ -103,9 +103,6 @@ option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to find boost, Eigen and Qt
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
-	find_path(OIP_BOOST_ROOT NAMES boost/version.hpp HINTS
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
-		"C:\\thirdparty\\boost_1_65_1")
 	find_path(OIP_Boost_DIR NAMES boost/version.hpp HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
 		"C:\\thirdparty\\boost_1_65_1")
@@ -143,12 +140,11 @@ endif (WIN32)
 set(Boost_USE_STATIC_LIBS ON)
 
 # As of revision 530, boost 1.65.1 required.
+set(BOOST_ROOT ${OIP_Boost_DIR})
 find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
 
 if(Boost_FOUND)
 	set(Boost_DIR ${Boost_INCLUDE_DIR})
-else()
-	set(Boost_DIR ${OIP_Boost_DIR})
 endif()
 
 FetchContent_Declare(
