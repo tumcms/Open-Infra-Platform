@@ -158,6 +158,9 @@ namespace OpenInfraPlatform
 						// set the default units
 						setUnits(model);
 
+						// get the georeferencingmetadata from the file
+						setGeoref(model);
+
 						// collect all geometries
 						return collectGeometryData(model);
 					}
@@ -192,14 +195,7 @@ namespace OpenInfraPlatform
 							{ return boost::algorithm::to_upper_copy(pair.second->classname())  == "IFCPROJECT"; });
 
 						if(project != model->entities.end()) {
-
-
-							// try and find the georeferencing metadata
-							auto georef = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair)
-								{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateReferenceSystem>(pair.second) != nullptr; });
-							if (georef != model->entities.end() )
-								setGeoref(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateReferenceSystem>(georef->second));
-
+							
 							//std::for_each(model->entities.begin(), model->entities.end(), [this, &model](std::pair<size_t, std::shared_ptr<oip::EXPRESSEntity>> &pair) {
 							//	std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
 							//	if (product) {
@@ -253,14 +249,39 @@ namespace OpenInfraPlatform
 					unitConverter->setIfcUnits(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcUnitAssignment>(units->second));
 				}
 
-					void setGeoref(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem>& crs)
-					{
-						georefMetadata.codeEPSG = crs->Name;
+				/*! \brief Sets the georeferencing metadata from the IFC file.
+				 *
+				 * \param[in] model The IFC content.
+				 */
+				void setGeoref(std::shared_ptr<oip::EXPRESSModel> model) throw(...)
+				{
+					//ENTITY IfcCoordinateOperation
+					//	ABSTRACT SUPERTYPE OF(IfcMapConversion);
+					//  SourceCRS: IfcCoordinateReferenceSystemSelect;
+					//  TargetCRS: IfcCoordinateReferenceSystem;
+					//END_ENTITY;
+					// try and find the georeferencing metadata
+					auto georef = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair)
+						{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateOperation>(pair.second) != nullptr; });
+					if (georef == model->entities.end())
+						return; // no georeferencing specified
 
-						if (crs.isOfType<typename IfcEntityTypesT::IfcProjectedCRS>())
-						{
-						}
-					}
+					//ENTITY IfcMapConversion
+					//	SUBTYPE OF(IfcCoordinateOperation);
+					//  Eastings: IfcLengthMeasure;
+					//  Northings: IfcLengthMeasure;
+					//  OrthogonalHeight: IfcLengthMeasure;
+					//  XAxisAbscissa: OPTIONAL IfcReal;
+					//  XAxisOrdinate: OPTIONAL IfcReal;
+					//  Scale: OPTIONAL IfcReal;
+					//END_ENTITY;
+
+					//const oip::EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem> crs;
+					//georefMetadata.codeEPSG = crs->Name;
+					//if (crs.isOfType<typename IfcEntityTypesT::IfcProjectedCRS>())
+					//{
+					//}
+				}
 
 					
 				std::shared_ptr<GeometrySettings>							geomSettings;
