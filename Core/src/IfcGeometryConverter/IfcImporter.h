@@ -131,6 +131,10 @@ namespace OpenInfraPlatform
 				//! destructor
 				virtual ~IfcImporterT()	{}
 
+				//! getter for shape data
+				std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& getShapeDatas() const { return shapeInputData; }
+				//! getter for georeferencing metadata
+				std::map<int, oip::GeorefMetadata> getGeorefMetadata() const { return georefMetadata; }
 
 
 					bool collectGeometryData(std::shared_ptr<oip::EXPRESSModel> model)
@@ -217,28 +221,16 @@ namespace OpenInfraPlatform
 						}
 					}
 
+					
+				std::shared_ptr<GeometrySettings>							geomSettings;
+				std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
+				std::shared_ptr<UnitConverter<IfcEntityTypesT>>				unitConverter;
 
-					// ***************************************
-					// 3: Getter and Setter
-					// ***************************************
+				//! georefeferencing metadata
+				std::map<int, oip::GeorefMetadata> georefMetadata;
 
-
-					std::shared_ptr<GeometrySettings>& getGeomSettings() { return geomSettings; }
-					std::shared_ptr<UnitConverter<IfcEntityTypesT>>& getUnitConverter() { return unitConverter; }
-					std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& getShapeDatas() { return shapeInputData; }
-					oip::GeorefMetadata getGeorefMetadata() { return georefMetadata; }
-
-				protected:
-
-					std::shared_ptr<GeometrySettings>							geomSettings;
-					std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
-					std::shared_ptr<UnitConverter<IfcEntityTypesT>>				unitConverter;
-
-					// georef metadata
-					oip::GeorefMetadata georefMetadata;
-
-					// shape input data of all products
-					std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;
+				//! shape input data of all products
+				std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;
 			};
 		}
 	}
