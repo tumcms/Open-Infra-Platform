@@ -48,12 +48,6 @@ namespace OpenInfraPlatform
 				IfcImporterUtil() {}
 				~IfcImporterUtil() {}
 
-				template <
-					class IfcEntityTypesT
-				>
-					static void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
-						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
-						const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter);
 
 				// ***************************************
 				// 3: Compute Meshsets from Polyhedrons
@@ -216,7 +210,7 @@ namespace OpenInfraPlatform
 										// create new shape input data for product
 										std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
 										productShape->ifc_product = product;
-										IfcImporterUtil::convertIfcProduct<IfcEntityTypesT>(product, productShape, repConverter);
+										convertIfcProduct<IfcEntityTypesT>(product, productShape);
 										shapeInputData.insert(std::pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>(pair.first, productShape));
 									}
 								}
@@ -283,6 +277,16 @@ namespace OpenInfraPlatform
 					//}
 				}
 
+				/**
+				 * \brief Converts all geometries of an \c IfcProduct to triangles and lines.
+				 * 
+				 * \param[in] product 
+				 * \param[inout] productShape
+				 * 
+				 * \note
+				 */
+				void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape);
 					
 				std::shared_ptr<GeometrySettings>							geomSettings;
 				std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
