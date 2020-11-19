@@ -48,20 +48,16 @@ namespace OpenInfraPlatform
 					m_plane_angle_factor = -1.0; // is set in the first call to the getter
 				}
 
-				/*! \brief Gets the default units from the IfcProject.
+				/*! \brief Sets the default units from an IFC file.
 				
 				Sets all member variables.
 
-				\param[in] project A pointer to the IfcProject entity within the model.
+				\param[in] units A pointer to the \c IfcUnitAssignment entity within the file.
 				*/
-				void setIfcProject(const EXPRESSReference<typename IfcEntityTypesT::IfcProject>& project) 
+				void setIfcUnits(const EXPRESSReference<typename IfcEntityTypesT::IfcUnitAssignment>& units) 
 				{
-					if(!project->UnitsInContext) {
-						throw oip::InconsistentModellingException(project, "project->UnitsInContext is not defined");
-					}
-
 					// remember units in context
-					m_unit_assignment = project->UnitsInContext.get().lock();
+					m_unit_assignment = units.lock();
 
 					m_length_unit_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_LENGTHUNIT ); 
 					m_plane_angle_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_PLANEANGLEUNIT ); 

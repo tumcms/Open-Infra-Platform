@@ -155,6 +155,8 @@ namespace OpenInfraPlatform
 				{
 					try
 					{
+						// set the default units
+						setUnits(model);
 
 						// collect all geometries
 						return collectGeometryData(model);
@@ -191,10 +193,6 @@ namespace OpenInfraPlatform
 
 						if(project != model->entities.end()) {
 
-							// Set the unit conversion factors
-							oip::EXPRESSReference<typename IfcEntityTypesT::IfcProject> ifcproject =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProject>(project->second);
-							setIfcProject(ifcproject);
 
 							// try and find the georeferencing metadata
 							auto georef = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair)
@@ -240,22 +238,20 @@ namespace OpenInfraPlatform
 						return true;
 					}
 
-					/*! \brief Sets the common values from \c IfcProject.
-
-					Sets the units and georeferencing.
-
-					\param[in] project A pointer to the \c IfcProject entity within the IFC model.
-					*/
-					void setIfcProject(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProject>& project)
-					{
-						// tell the unit converter about the project's units
-						unitConverter->setIfcProject(project);
-
-						// get the georeferencing metadata
-						//TODO when inverse are covered
-						//setGeoref(crs);
-					}
-
+				/*! \brief Sets the units from the IFC file.
+				 *
+				 * \param[in] model The IFC content.
+				 */
+				void setUnits(std::shared_ptr<oip::EXPRESSModel> model) throw(...)
+				{
+					// Set the unit conversion factors
+					auto units = std::find_if(model->entities.begin(), model->entities.end(),
+						[](const auto& pair) { return pair.second->classname() == "IFCUNITASSIGNMENT"; });
+					if ( units == model->entities.end() )
+						throw oip::InconsistentModellingException("Default units are not defined.");
+					// tell the unit converter about the project's units
+					unitConverter->setIfcUnits(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcUnitAssignment>(units->second));
+				}
 
 					void setGeoref(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem>& crs)
 					{
