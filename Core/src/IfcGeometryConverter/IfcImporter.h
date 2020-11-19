@@ -118,10 +118,16 @@ namespace OpenInfraPlatform
 				}
 			};
 
+			/*! \brief The IFC importer class.
+			 *
+			 * This class calls other converters correspondingly.
+			 * This should be used as an entry point to the IFC converter functionalities.
+			 *
+			 * \param IfcEntityTypesT The IFC version templates
+			 */
 			template <
 				class IfcEntityTypesT
 			>
-				// IfcImporterT class with readStepFile, collectGeometryData, getter and setter. 
 			class IfcImporterT 
 			{
 			public:
@@ -137,6 +143,15 @@ namespace OpenInfraPlatform
 				std::map<int, oip::GeorefMetadata> getGeorefMetadata() const { return georefMetadata; }
 
 
+					/**
+					 * \brief Interprets the data from the read-in IFC file.
+					 *
+					 * This is the main interpreting function.
+					 * It sets the member variables with the interpreted data to be given to the renderer, UI or whatever.
+					 *
+					 * \param[in] model The IFC content.
+					 * \return true, if successful. false, otherwise.
+					 */
 					bool collectGeometryData(std::shared_ptr<oip::EXPRESSModel> model)
 					{
 						BLUE_LOG(info) << "Importing geometry from express model.";
