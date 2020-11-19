@@ -138,11 +138,41 @@ namespace OpenInfraPlatform
 				virtual ~IfcImporterT()	{}
 
 				//! getter for shape data
-				std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& getShapeDatas() const { return shapeInputData; }
+				std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> getShapeDatas() const { return shapeInputData; }
 				//! getter for georeferencing metadata
 				std::map<int, oip::GeorefMetadata> getGeorefMetadata() const { return georefMetadata; }
 
+				/**
+				 * \brief Interprets the data from the read-in IFC file.
+				 *
+				 * This is the main interpreting function. 
+				 * It sets the member variables with the interpreted data to be given to the renderer, UI or whatever.
+				 *
+				 * \param[in] model The IFC content.
+				 * \return true, if successful. false, otherwise.
+				 */
+				bool collectData(std::shared_ptr<oip::EXPRESSModel> model)
+				{
+					try
+					{
 
+						// collect all geometries
+						return collectGeometryData(model);
+					}
+					catch (const oip::InconsistentModellingException& ex)
+					{
+						BLUE_LOG(warning) << "Inconsistent IFC moddelling: " << ex.what();
+						return false;
+					}
+					catch (...)
+					{
+						BLUE_LOG(warning) << "Something went wrong while collecting data from the IFC file.";
+						return false;
+					}
+					return true;
+				}
+
+			private:
 					/**
 					 * \brief Interprets the data from the read-in IFC file.
 					 *
