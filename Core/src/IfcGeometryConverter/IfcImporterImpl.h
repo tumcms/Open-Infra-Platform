@@ -47,6 +47,16 @@
 template <
 	class IfcEntityTypesT
 >
+OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>::IfcImporterT<IfcEntityTypesT>()
+{
+	geomSettings = std::make_shared<GeometrySettings>();
+	unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
+	repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT>>(geomSettings, unitConverter);
+}
+
+template <
+	class IfcEntityTypesT
+>
 static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct(
 	const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,

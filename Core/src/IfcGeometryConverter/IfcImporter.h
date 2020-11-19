@@ -124,18 +124,13 @@ namespace OpenInfraPlatform
 				// IfcImporterT class with readStepFile, collectGeometryData, getter and setter. 
 			class IfcImporterT 
 			{
-				public:
-					IfcImporterT()
-					{
-						geomSettings = std::make_shared<GeometrySettings>();
-						unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
-						repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT>>(geomSettings, unitConverter);
-					}
+			public:
+				//! constructor
+				IfcImporterT();
 
-					virtual ~IfcImporterT()
-					{
+				//! destructor
+				virtual ~IfcImporterT()	{}
 
-					}
 
 
 					bool collectGeometryData(std::shared_ptr<oip::EXPRESSModel> model)
