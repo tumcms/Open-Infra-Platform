@@ -846,9 +846,24 @@ namespace OpenInfraPlatform
 				{
 					return;
 				}
+
+				// .AREA. vs .CURVE. (is the result closed or open, i.e. full solid vs pipe)
+				bool closed = true;
+				switch (swept_area->ProfileType)
+				{
+				case typename IfcEntityTypesT::IfcProfileTypeEnum::ENUM::ENUM_AREA:
+					closed = true;
+					break;
+				case typename IfcEntityTypesT::IfcProfileTypeEnum::ENUM::ENUM_CURVE:
+					closed = false;
+					break;
+				default:
+					throw oip::InconsistentModellingException(extrudedArea->SweptArea, "Unknown ProfileTypeEnum.");
+				}
+
 				std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
 				std::stringstream err;
-				GeomUtils::extrude(paths, extrusion_vector, poly_data, err);
+				GeomUtils::extrude(paths, extrusion_vector, closed, poly_data, err);
 
 				// apply object coordinate system
 				std::transform(poly_data->points.begin(), poly_data->points.end(), poly_data->points.begin(), [pos](auto vertex) -> decltype(vertex) {return pos * vertex; });
@@ -860,7 +875,10 @@ namespace OpenInfraPlatform
 				//	vertex = pos * vertex;
 				//}
 
-				itemData->closed_polyhedrons.push_back(poly_data);
+				if( closed )
+					itemData->closed_polyhedrons.push_back(poly_data);
+				else
+					itemData->open_polyhedrons.push_back(poly_data);
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processed IfcExtrudedAreaSolid #" << entity_id;
 #endif
@@ -1722,7 +1740,7 @@ namespace OpenInfraPlatform
 					std::vector<std::vector<carve::geom::vector<2> > > paths;
 					paths.push_back(polygonal_boundary);
 					std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
-					GeomUtils::extrude(paths, carve::geom::vector<3>(carve::geom::VECTOR(0, 0, extrusion_depth)), poly_data, err);
+					GeomUtils::extrude(paths, carve::geom::vector<3>(carve::geom::VECTOR(0, 0, extrusion_depth)), true, poly_data, err);
 
 					const int num_poly_boundary_points = polygonal_boundary.size();
 					if (poly_data->points.size() != 2 * num_poly_boundary_points)

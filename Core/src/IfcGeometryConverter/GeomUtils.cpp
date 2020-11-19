@@ -122,6 +122,7 @@ carve::geom::vector<3> GeomUtils::computePolygon2DNormal(
 void GeomUtils::extrude( 
 					const std::vector<std::vector<carve::geom::vector<2> > >& face_loops_input, 
 					const carve::geom::vector<3> extrusion_vector, 
+					const bool closed,
 					std::shared_ptr<carve::input::PolyhedronData>& poly_data, 
 					std::stringstream& err )
 {
@@ -377,6 +378,7 @@ void GeomUtils::extrude(
 	}
 
 	// now the triangulated bottom and top cap
+	if( closed ) // only if it is a closed profile
 	for( size_t i = 0; i != triangulated.size(); ++i )
 	{
 		carve::triangulate::tri_idx triangle = triangulated[i];
