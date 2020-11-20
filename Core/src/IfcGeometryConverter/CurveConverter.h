@@ -809,6 +809,66 @@ namespace OpenInfraPlatform {
 					}
 					return loop;
 				}
+
+				
+				std::vector<carve::geom::vector<3>> convertIfcArcIndex(
+					const typename IfcEntityTypesT::IfcArcIndex &arcSegment, 
+					const std::vector<carve::geom::vector<3>> points) const throw(...)
+				{
+					if (arcSegment.size() != 3)
+						throw oip::InconsistentModellingException("The number of indices for one of IfcArcIndex is not 3!");
+
+					carve::geom::vector<3> arcStart = points[arcSegment[0] - 1];
+					carve::geom::vector<3> arcMid = points[arcSegment[1] - 1];
+					carve::geom::vector<3> arcEnd = points[arcSegment[2] - 1];
+
+					//Converting a 3D to a 2D problem to then find the circle from three points on the plane.
+
+					//Start by finding the normal vector to the plane defined by the three points
+					carve::geom::vector<3>normalVector = carve::geom::cross(arcStart, arcMid) + carve::geom::cross(arcMid, arcEnd) + carve::geom::cross(arcEnd, arcStart);
+					normalVector.normalize();
+
+					carve::geom::vector<3>firstOrthogonalDirection = carve::geom::cross(arcEnd - arcStart, normalVector);
+					firstOrthogonalDirection.normalize();
+					carve::geom::vector<3>secondOrthogonalDirection = carve::geom::cross(normalVector, firstOrthogonalDirection);
+					secondOrthogonalDirection.normalize();
+			
+					//Construct a 3×2 rotation matrix from the three direction vectors as columns.
+					carve::math::Matrix3 R = carve::math::Matrix3(  
+						firstOrthogonalDirection.x, secondOrthogonalDirection.x,0,
+						firstOrthogonalDirection.y, secondOrthogonalDirection.y,0,
+						firstOrthogonalDirection.z, secondOrthogonalDirection.z,0); 
+
+					//Calculate distance of the plane to the origin
+					double distance = (normalVector.x*arcStart.x) + (normalVector.y*arcStart.y) + (normalVector.y*arcStart.y);
+
+					//Convert the problem into a 2D problem
+
+					carve::geom::vector<2>arcStart2D = carve::geom::VECTOR(
+						(R._11*arcStart.x + R._12*arcStart.y + R._13*arcStart.z),
+						(R._21*arcStart.x + R._22*arcStart.y + R._23*arcStart.z));
+
+					carve::geom::vector<2>arcMid2D = carve::geom::VECTOR(
+						(R._11*arcMid.x + R._12*arcMid.y + R._13*arcMid.z),
+						(R._21*arcMid.x + R._22*arcMid.y + R._23*arcMid.z));
+
+					carve::geom::vector<2>arcEnd2D = carve::geom::VECTOR(
+						(R._11*arcEnd.x + R._12*arcEnd.y + R._13*arcEnd.z),
+						(R._21*arcEnd.x + R._22*arcEnd.y + R._23*arcEnd.z))
+					
+
+					//TODO implement IfcArcIndex
+					// currently faked - only start-mid-end points are added (very badly tessellated)
+					std::vector<carve::geom::vector<3>> loop_intern;
+					for (const auto& i : arcSegment)
+					{
+						loop_intern.push_back(points[i - 1]); //EXPRESS count from 1, C++ from 0
+					}
+					return loop_intern;
+				}
+
+
+
 				void convertIfcOffsetCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve>& offset_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
