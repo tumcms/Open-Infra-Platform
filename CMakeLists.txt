@@ -106,7 +106,7 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	find_path(OIP_Boost_DIR NAMES boost/version.hpp HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
 		"C:\\thirdparty\\boost_1_65_1")
-	find_path(OIP_QT_DIR NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64")
+	find_path(OIP_QT_DIR NAMES Qt5 HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64\\lib\\cmake")
 	find_path(OIP_PROJ_DIR NAMES proj-config.cmake HINTS "C:\\OSGeo4W64\\apps\\proj-dev\\share\\cmake\\proj4\\proj")
 endif()
 
@@ -342,6 +342,7 @@ endif(DOXYGEN_GENERATE_DOCUMENTATION)
 Option(MODULES_POINT_CLOUD_PROCESSING OFF)
 
 if(MODULES_POINT_CLOUD_PROCESSING)
+	set(CMAKE_PREFIX_PATH ${OIP_QT_DIR})
 	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
 	add_subdirectory(PointCloudProcessing)
 endif()
