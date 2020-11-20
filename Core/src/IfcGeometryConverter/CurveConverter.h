@@ -854,9 +854,32 @@ namespace OpenInfraPlatform {
 
 					carve::geom::vector<2>arcEnd2D = carve::geom::VECTOR(
 						(R._11*arcEnd.x + R._12*arcEnd.y + R._13*arcEnd.z),
-						(R._21*arcEnd.x + R._22*arcEnd.y + R._23*arcEnd.z))
-					
+						(R._21*arcEnd.x + R._22*arcEnd.y + R._23*arcEnd.z));
 
+					//Calculating arc in 2D 
+
+					double yDeltaA = arcMid2D.y - arcStart2D.y;
+					double xDeltaA = arcMid2D.x - arcStart2D.x;
+					double yDeltaB = arcEnd2D.y - arcMid2D.y;
+					double xDeltaB = arcEnd2D.x - arcMid2D.x;
+
+					if (xDeltaA != 0 && xDeltaB != 0) {
+						double aSlope = yDeltaA / xDeltaA;
+						double bSlope = yDeltaB / xDeltaB;
+						/*
+						if (fabs(aSlope - bSlope) <= 0.000000001) {	// checking whether the given points are colinear.
+							TRACE("The three pts are colinear\n");
+							return -1;
+						}*/
+
+
+						double centerOfCircleX = (aSlope*bSlope*(arcStart2D.y - arcEnd2D.y) + bSlope * (arcStart2D.x + arcMid2D.x)
+							- aSlope * (arcMid2D.x + arcEnd2D.x)) / (2 * (bSlope - aSlope));
+
+						double centerOfCircleY = -1 * (centerOfCircleX - (arcStart2D.x + arcMid2D.x) / 2) / aSlope + (arcStart2D.y + arcMid2D.y) / 2;
+
+						carve::geom::vector<2> centerOfCircle = carve::geom::VECTOR(centerOfCircleX, centerOfCircleY);
+					}
 					//TODO implement IfcArcIndex
 					// currently faked - only start-mid-end points are added (very badly tessellated)
 					std::vector<carve::geom::vector<3>> loop_intern;
