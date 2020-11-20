@@ -249,32 +249,27 @@ namespace OpenInfraPlatform
 				 */
 				void setGeoref(std::shared_ptr<oip::EXPRESSModel> model) throw(...)
 				{
-					//ENTITY IfcCoordinateOperation
-					//	ABSTRACT SUPERTYPE OF(IfcMapConversion);
-					//  SourceCRS: IfcCoordinateReferenceSystemSelect;
-					//  TargetCRS: IfcCoordinateReferenceSystem;
-					//END_ENTITY;
 					// try and find the georeferencing metadata
 					auto georef = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair)
 						{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateOperation>(pair.second) != nullptr; });
 					if (georef == model->entities.end())
 						return; // no georeferencing specified
 
-					//ENTITY IfcMapConversion
-					//	SUBTYPE OF(IfcCoordinateOperation);
-					//  Eastings: IfcLengthMeasure;
-					//  Northings: IfcLengthMeasure;
-					//  OrthogonalHeight: IfcLengthMeasure;
-					//  XAxisAbscissa: OPTIONAL IfcReal;
-					//  XAxisOrdinate: OPTIONAL IfcReal;
-					//  Scale: OPTIONAL IfcReal;
-					//END_ENTITY;
+					// interpret all
+					do
+					{
+						// the interpreted data
+						std::shared_ptr<oip::GeorefMetadata> georefMeta = convertGeoref(
+							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateOperation>(georef->second));
 
-					//const oip::EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem> crs;
-					//georefMetadata.codeEPSG = crs->Name;
-					//if (crs.isOfType<typename IfcEntityTypesT::IfcProjectedCRS>())
-					//{
-					//}
+						// add to the parsed map
+						if( georefMeta )
+							georefMetadata.insert({ georef->first, georefMeta });
+					} 
+					while ((georef = std::find_if(georef, model->entities.end(), [](auto pair)
+						{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateOperation>(pair.second) != nullptr; }
+						)) != model->entities.end());
+
 				}
 
 				/**
@@ -288,6 +283,10 @@ namespace OpenInfraPlatform
 				void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape) const;
 					
+				std::shared_ptr<oip::GeorefMetadata> convertGeoref(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation> coordOper
+				) const throw(...);
+
 				std::shared_ptr<GeometrySettings>							geomSettings;
 				std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>>				unitConverter;

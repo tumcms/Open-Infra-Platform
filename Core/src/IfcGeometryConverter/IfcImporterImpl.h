@@ -171,4 +171,59 @@ void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT
 	}
 }
 
+template <
+	class IfcEntityTypesT
+>
+std::shared_ptr<oip::GeorefMetadata> OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>::convertGeoref(
+	const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation> coordOper
+) const throw(...)
+{
+	EXPRESSReference<typename IfcEntityTypesT::IfcMapConversion> mapConv
+		= coordOper.as<typename IfcEntityTypesT::IfcMapConversion>();
+
+	if (mapConv)
+	{
+		// the interpreted data
+		std::shared_ptr<oip::GeorefMetadata> georefMeta = std::make_shared<oip::GeorefMetadata>();
+
+		//ENTITY IfcCoordinateOperation
+		//	ABSTRACT SUPERTYPE OF(IfcMapConversion);
+		//  SourceCRS: IfcCoordinateReferenceSystemSelect;
+		//  TargetCRS: IfcCoordinateReferenceSystem;
+		//END_ENTITY;
+		//ENTITY IfcMapConversion
+		//	SUBTYPE OF(IfcCoordinateOperation);
+		//  Eastings: IfcLengthMeasure;
+		//  Northings: IfcLengthMeasure;
+		//  OrthogonalHeight: IfcLengthMeasure;
+		//  XAxisAbscissa: OPTIONAL IfcReal;
+		//  XAxisOrdinate: OPTIONAL IfcReal;
+		//  Scale: OPTIONAL IfcReal;
+		//END_ENTITY;
+
+		// get the CoordinateRereferenceSystem
+		switch (coordOper->SourceCRS.which())
+		{
+		case 0:
+
+			break;
+		case 1:
+
+			break;
+		default:
+			throw oip::UnhandledException(coordOper->SourceCRS.getErrorLog());
+		}
+
+		//const oip::EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem> crs;
+		//georefMetadata.codeEPSG = crs->Name;
+		//if (crs.isOfType<typename IfcEntityTypesT::IfcProjectedCRS>())
+		//{
+		//}
+
+		return georefMeta;
+	}
+
+	throw oip::UnhandledException(coordOper);
+}
+
 #endif // IFCIMPORTERIMPL_H
