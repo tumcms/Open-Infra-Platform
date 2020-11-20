@@ -210,7 +210,7 @@ namespace OpenInfraPlatform
 										// create new shape input data for product
 										std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
 										productShape->ifc_product = product;
-										convertIfcProduct<IfcEntityTypesT>(product, productShape);
+										convertIfcProduct(product, productShape);
 										shapeInputData.insert(std::pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>(pair.first, productShape));
 									}
 								}
@@ -286,14 +286,14 @@ namespace OpenInfraPlatform
 				 * \note
 				 */
 				void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
-					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape);
+					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape) const;
 					
 				std::shared_ptr<GeometrySettings>							geomSettings;
 				std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>>				unitConverter;
 
 				//! georefeferencing metadata
-				std::map<int, oip::GeorefMetadata> georefMetadata;
+				std::map<int, std::shared_ptr<oip::GeorefMetadata>> georefMetadata;
 
 				//! shape input data of all products
 				std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;

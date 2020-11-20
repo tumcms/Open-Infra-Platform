@@ -59,7 +59,8 @@ template <
 >
 void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>::convertIfcProduct(
 	const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
-	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape)
+	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape
+) const
 {
 	try
 	{
