@@ -1,4 +1,4 @@
-/* -*-c++-*- IfcPlusPlus - www.ifcplusplus.com  - Copyright (C) 2011 Fabian Gerold
+﻿/* -*-c++-*- IfcPlusPlus - www.ifcplusplus.com  - Copyright (C) 2011 Fabian Gerold
  * This library is open source and may be redistributed and/or modified under
  * the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
  * (at your option) any later version.  The full license is in LICENSE file
@@ -751,55 +751,7 @@ namespace OpenInfraPlatform {
 						std::vector<carve::geom::vector<3>> loop;
 						for ( const auto& seg : polycurve->Segments.get() )
 						{
-							switch (seg.which())
-							{
-							case 0: 
-							{
-								// TYPE IfcArcIndex = LIST [3:3] OF IfcPositiveInteger;
-								auto arcIndex = seg.get<0>();
-
-								if (arcIndex.size() != 3)
-									throw oip::InconsistentModellingException(polycurve, "The number of indices for one of IfcArcIndex is not 3!");
-
-								carve::geom::vector<3> arcStart = points[arcIndex[0]];
-								carve::geom::vector<3> arcMid = points[arcIndex[1]];
-								carve::geom::vector<3> arcEnd = points[arcIndex[2]];
-
-								//TODO implement IfcArcIndex
-								// currently faked - only start-mid-end points are added (very badly tessellated)
-								std::vector<carve::geom::vector<3>> loop_intern;
-								for (const auto& i : arcIndex)
-								{
-									loop_intern.push_back(points[i-1]); //EXPRESS count from 1, C++ from 0
-								}
-
-								// skips same points
-								GeomUtils::appendPointsToCurve(loop_intern, loop);
-
-								break;
-							}
-							case 1: 
-							{
-								// TYPE IfcLineIndex = LIST [2:?] OF IfcPositiveInteger;
-								auto lineIndex = seg.get<1>();
-
-								if (lineIndex.size() < 2)
-									throw oip::InconsistentModellingException(polycurve, "The number of indices for one of IfcLineIndex is less than 2!");
-
-								std::vector<carve::geom::vector<3>> loop_intern;
-								for ( const auto& i : lineIndex )
-								{
-									loop_intern.push_back(points[i-1]); //EXPRESS count from 1, C++ from 0
-								}
-
-								// skips same points
-								GeomUtils::appendPointsToCurve(loop_intern, loop);
-
-								break;
-							}
-							default:
-								throw oip::UnhandledException(polycurve);
-							}
+							loop = convertIfcSegmentIndexSelect(seg, points);
 						}
 
 						// add the calculated points to the return values
@@ -815,6 +767,48 @@ namespace OpenInfraPlatform {
 
 				}
 
+				std::vector<carve::geom::vector<3>> convertIfcSegmentIndexSelect(
+					const typename IfcEntityTypesT::IfcSegmentIndexSelect & segmentIndexSelect,
+					const std::vector<carve::geom::vector<3>>& points)const throw(...)
+				{
+					std::vector<carve::geom::vector<3>> loop;
+
+					switch (segmentIndexSelect.which())
+					{
+					case 0:
+					{
+						// TYPE IfcArcIndex = LIST [3:3] OF IfcPositiveInteger;
+						std::vector<carve::geom::vector<3>> loop_intern = convertIfcArcIndex(segmentIndexSelect.get<0>(), points);
+						
+						// skips same points
+						GeomUtils::appendPointsToCurve(loop_intern, loop);
+
+						break;
+					}
+					case 1:
+					{
+						// TYPE IfcLineIndex = LIST [2:?] OF IfcPositiveInteger;
+						auto lineIndex = segmentIndexSelect.get<1>();
+
+						if (lineIndex.size() < 2)
+							throw oip::InconsistentModellingException("The number of indices for one of IfcLineIndex is less than 2!");
+
+						std::vector<carve::geom::vector<3>> loop_intern;
+						for (const auto& i : lineIndex)
+						{
+							loop_intern.push_back(points[i - 1]); //EXPRESS count from 1, C++ from 0
+						}
+
+						// skips same points
+						GeomUtils::appendPointsToCurve(loop_intern, loop);
+
+						break;
+					}
+					default:
+						throw oip::UnhandledException();
+					}
+					return loop;
+				}
 				void convertIfcOffsetCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve>& offset_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
