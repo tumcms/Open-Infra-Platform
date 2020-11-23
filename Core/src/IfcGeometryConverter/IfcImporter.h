@@ -287,6 +287,11 @@ namespace OpenInfraPlatform
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation> coordOper
 				) const throw(...);
 
+				void convertCRS(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem> crs,
+					std::shared_ptr<oip::GeorefMetadata> georefMeta
+				) const throw(...);
+
 				std::shared_ptr<GeometrySettings>							geomSettings;
 				std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>>				unitConverter;

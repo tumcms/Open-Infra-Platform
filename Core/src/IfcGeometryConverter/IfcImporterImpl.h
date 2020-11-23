@@ -178,19 +178,39 @@ std::shared_ptr<oip::GeorefMetadata> OpenInfraPlatform::Core::IfcGeometryConvert
 	const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation> coordOper
 ) const throw(...)
 {
-	EXPRESSReference<typename IfcEntityTypesT::IfcMapConversion> mapConv
-		= coordOper.as<typename IfcEntityTypesT::IfcMapConversion>();
+	// check input
+	if (coordOper.expired())
+		throw oip::ReferenceExpiredException(coordOper);
 
-	if (mapConv)
-	{
+	//ENTITY IfcCoordinateOperation
+	//	ABSTRACT SUPERTYPE OF(IfcMapConversion);
+	//  SourceCRS: IfcCoordinateReferenceSystemSelect;
+	//  TargetCRS: IfcCoordinateReferenceSystem;
+	//END_ENTITY;
+
 		// the interpreted data
-		std::shared_ptr<oip::GeorefMetadata> georefMeta = std::make_shared<oip::GeorefMetadata>();
+	std::shared_ptr<oip::GeorefMetadata> georefMeta = std::make_shared<oip::GeorefMetadata>();
 
-		//ENTITY IfcCoordinateOperation
-		//	ABSTRACT SUPERTYPE OF(IfcMapConversion);
-		//  SourceCRS: IfcCoordinateReferenceSystemSelect;
-		//  TargetCRS: IfcCoordinateReferenceSystem;
-		//END_ENTITY;
+
+	// get the GeometricContext
+	switch (coordOper->SourceCRS.which())
+	{
+	case 0: // IfcCoordinateReferenceSystem
+	{
+		throw oip::UnhandledException(mapConv->getErrorLog() + ": We don't handle another IfcCoordinateReferenceSystem as SourceCRS.");
+	}
+	case 1: // IfcGeometricRepresentationContext
+	{
+
+		break;
+	}
+	default:
+		throw oip::UnhandledException(coordOper->SourceCRS.getErrorLog());
+	}
+
+	// IfcMapConversion
+	if (coordOper.isOfType<typename IfcEntityTypesT::IfcMapConversion>())
+	{
 		//ENTITY IfcMapConversion
 		//	SUBTYPE OF(IfcCoordinateOperation);
 		//  Eastings: IfcLengthMeasure;
@@ -201,29 +221,15 @@ std::shared_ptr<oip::GeorefMetadata> OpenInfraPlatform::Core::IfcGeometryConvert
 		//  Scale: OPTIONAL IfcReal;
 		//END_ENTITY;
 
-		// get the CoordinateRereferenceSystem
-		switch (coordOper->SourceCRS.which())
-		{
-		case 0:
+		EXPRESSReference<typename IfcEntityTypesT::IfcMapConversion> mapConv
+			= coordOper.as<typename IfcEntityTypesT::IfcMapConversion>();
 
-			break;
-		case 1:
 
-			break;
-		default:
-			throw oip::UnhandledException(coordOper->SourceCRS.getErrorLog());
-		}
-
-		//const oip::EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem> crs;
-		//georefMetadata.codeEPSG = crs->Name;
-		//if (crs.isOfType<typename IfcEntityTypesT::IfcProjectedCRS>())
-		//{
-		//}
-
-		return georefMeta;
 	}
 
-	throw oip::UnhandledException(coordOper);
+	return georefMeta;
+
+
 }
 
 #endif // IFCIMPORTERIMPL_H
