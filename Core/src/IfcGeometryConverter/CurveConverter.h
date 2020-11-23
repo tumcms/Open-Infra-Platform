@@ -751,7 +751,9 @@ namespace OpenInfraPlatform {
 						std::vector<carve::geom::vector<3>> loop;
 						for ( const auto& seg : polycurve->Segments.get() )
 						{
-							loop = convertIfcSegmentIndexSelect(seg, points);
+							std::vector<carve::geom::vector<3>> loop_intern = convertIfcSegmentIndexSelect(seg, points);
+							// skips same points
+							GeomUtils::appendPointsToCurve(loop_intern, loop);
 						}
 
 						// add the calculated points to the return values
@@ -771,19 +773,12 @@ namespace OpenInfraPlatform {
 					const typename IfcEntityTypesT::IfcSegmentIndexSelect & segmentIndexSelect,
 					const std::vector<carve::geom::vector<3>>& points)const throw(...)
 				{
-					std::vector<carve::geom::vector<3>> loop;
-
 					switch (segmentIndexSelect.which())
 					{
 					case 0:
 					{
 						// TYPE IfcArcIndex = LIST [3:3] OF IfcPositiveInteger;
-						std::vector<carve::geom::vector<3>> loop_intern = convertIfcArcIndex(segmentIndexSelect.get<0>(), points);
-						
-						// skips same points
-						GeomUtils::appendPointsToCurve(loop_intern, loop);
-
-						break;
+						return convertIfcArcIndex(segmentIndexSelect.get<0>(), points);
 					}
 					case 1:
 					{
@@ -793,21 +788,17 @@ namespace OpenInfraPlatform {
 						if (lineIndex.size() < 2)
 							throw oip::InconsistentModellingException("The number of indices for one of IfcLineIndex is less than 2!");
 
-						std::vector<carve::geom::vector<3>> loop_intern;
+						std::vector<carve::geom::vector<3>> loop;
 						for (const auto& i : lineIndex)
 						{
-							loop_intern.push_back(points[i - 1]); //EXPRESS count from 1, C++ from 0
+							loop.push_back(points[i - 1]); //EXPRESS count from 1, C++ from 0
 						}
 
-						// skips same points
-						GeomUtils::appendPointsToCurve(loop_intern, loop);
-
-						break;
+						return loop;
 					}
 					default:
 						throw oip::UnhandledException();
 					}
-					return loop;
 				}
 
 				
@@ -823,16 +814,17 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<3> arcEnd = points[arcSegment[2] - 1];
 					
 					//Converting a 3D to a 2D problem to then find the circle from three points on the plane.
+					// see https://math.stackexchange.com/questions/1379217/3-points-in-3d-space-to-find-the-center-of-an-arc-or-circle
 
 					//Start by finding the normal vector to the plane defined by the three points
 					//n=unitvector(A×B+B×C+C×A)
-					carve::geom::vector<3>normalVector = carve::geom::cross(arcStart, arcMid) + carve::geom::cross(arcMid, arcEnd) + carve::geom::cross(arcEnd, arcStart);
+					carve::geom::vector<3> normalVector = carve::geom::cross(arcStart, arcMid) + carve::geom::cross(arcMid, arcEnd) + carve::geom::cross(arcEnd, arcStart);
 					normalVector.normalize();
 					//u=(C−A)×n
-					carve::geom::vector<3>firstOrthogonalDirection = carve::geom::cross(arcEnd - arcStart, normalVector);
+					carve::geom::vector<3> firstOrthogonalDirection = carve::geom::cross(arcEnd - arcStart, normalVector);
 					firstOrthogonalDirection.normalize();
 					//v=n×u
-					carve::geom::vector<3>secondOrthogonalDirection = carve::geom::cross(normalVector, firstOrthogonalDirection);
+					carve::geom::vector<3> secondOrthogonalDirection = carve::geom::cross(normalVector, firstOrthogonalDirection);
 					secondOrthogonalDirection.normalize();
 		
 					//Calculate distance of the plane to the origin
@@ -840,15 +832,15 @@ namespace OpenInfraPlatform {
 
 					//Convert the problem into a 2D problem
 
-					carve::geom::vector<2>arcStart2D = carve::geom::VECTOR(
+					carve::geom::vector<2> arcStart2D = carve::geom::VECTOR(
 						(firstOrthogonalDirection.x * arcStart.x + firstOrthogonalDirection.y * arcStart.y + firstOrthogonalDirection.z * arcStart.z),
 						(secondOrthogonalDirection.x * arcStart.x + secondOrthogonalDirection.y * arcStart.y + secondOrthogonalDirection.z * arcStart.z));
 
-					carve::geom::vector<2>arcMid2D = carve::geom::VECTOR(
+					carve::geom::vector<2> arcMid2D = carve::geom::VECTOR(
 						(firstOrthogonalDirection.x * arcMid.x + firstOrthogonalDirection.y * arcMid.y + firstOrthogonalDirection.z * arcMid.z),
 						(secondOrthogonalDirection.x * arcMid.x + secondOrthogonalDirection.y * arcMid.y + secondOrthogonalDirection.z * arcMid.z));
 
-					carve::geom::vector<2>arcEnd2D = carve::geom::VECTOR(
+					carve::geom::vector<2> arcEnd2D = carve::geom::VECTOR(
 						(firstOrthogonalDirection.x * arcEnd.x + firstOrthogonalDirection.y * arcEnd.y + firstOrthogonalDirection.z * arcEnd.z),
 						(secondOrthogonalDirection.x * arcEnd.x + secondOrthogonalDirection.y * arcEnd.y + secondOrthogonalDirection.z * arcEnd.z));
 
@@ -859,24 +851,41 @@ namespace OpenInfraPlatform {
 					double yDeltaB = arcEnd2D.y - arcMid2D.y;
 					double xDeltaB = arcEnd2D.x - arcMid2D.x;
 
-					if (xDeltaA != 0 && xDeltaB != 0) {
+					if (xDeltaA != 0. && xDeltaB != 0.) {
 						double aSlope = yDeltaA / xDeltaA;
 						double bSlope = yDeltaB / xDeltaB;
 
-
 						double centerOfCircleX = (aSlope*bSlope*(arcStart2D.y - arcEnd2D.y) + bSlope * (arcStart2D.x + arcMid2D.x)
-							- aSlope * (arcMid2D.x + arcEnd2D.x)) / (2 * (bSlope - aSlope));
+							- aSlope * (arcMid2D.x + arcEnd2D.x)) / (2. * (bSlope - aSlope));
 
-						double centerOfCircleY = -1 * (centerOfCircleX - (arcStart2D.x + arcMid2D.x) / 2) / aSlope + (arcStart2D.y + arcMid2D.y) / 2;
+						double centerOfCircleY = -(centerOfCircleX - (arcStart2D.x + arcMid2D.x) * 0.5) / aSlope + (arcStart2D.y + arcMid2D.y) * 0.5;
 
 						carve::geom::vector<2> radiusVector = carve::geom::VECTOR(arcStart2D.x - centerOfCircleX, arcStart2D.y - centerOfCircleY);
 						double radius = radiusVector.length();
 
-						double theta1 = std::atan((arcStart2D.x - centerOfCircleX) / (arcStart2D.y - centerOfCircleY));
-						double theta2 = std::atan((arcEnd2D.x - centerOfCircleX) / (arcEnd2D.y - centerOfCircleY));
+						double theta1 = std::atan2(arcStart2D.y - centerOfCircleY, arcStart2D.x - centerOfCircleX);
+						double theta2 = std::atan2(arcEnd2D.y   - centerOfCircleY, arcEnd2D.x   - centerOfCircleX);
 
-						double numberOfEvaluationPoints = 1000;
-						double deltaTheta = (theta2 - theta1) / (numberOfEvaluationPoints - 1); 
+						double opening_angle = (theta2 - theta1);
+
+						// correct for -2*PI <= angle <= 2*PI
+						if (opening_angle > 0) {
+							GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
+						}
+						else {
+							GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
+						}
+
+						int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(opening_angle));
+
+						std::vector<carve::geom::vector<2> > circle_points;
+						ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
+							circle_points, radius,
+							theta1, opening_angle,
+							centerOfCircleX, centerOfCircleY,
+							num_segments);
+
+
 
 						//std::vector<carve::geom::vector<3>> arcPoints;
 						std::vector<carve::geom::vector<3>> loop_intern;
