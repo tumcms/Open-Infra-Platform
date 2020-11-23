@@ -191,6 +191,9 @@ std::shared_ptr<oip::GeorefMetadata> OpenInfraPlatform::Core::IfcGeometryConvert
 		// the interpreted data
 	std::shared_ptr<oip::GeorefMetadata> georefMeta = std::make_shared<oip::GeorefMetadata>();
 
+	// get the CoordinateRereferenceSystem
+	const oip::EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem> crs = coordOper->TargetCRS;
+	convertCRS(coordOper->TargetCRS);
 
 	// get the GeometricContext
 	switch (coordOper->SourceCRS.which())
@@ -231,5 +234,51 @@ std::shared_ptr<oip::GeorefMetadata> OpenInfraPlatform::Core::IfcGeometryConvert
 
 
 }
+
+
+
+template <
+	class IfcEntityTypesT
+>
+void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>::convertCRS(
+	const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem> crs,
+	std::shared_ptr<oip::GeorefMetadata> georefMeta
+) const throw(...)
+{
+	// check input
+	if (crs.expired())
+		throw oip::ReferenceExpiredException(crs);
+
+	// EPSG code
+	georefMeta->codeEPSG = crs->Name;
+
+	// description (could be WKT)
+	if( crs->Description )
+		georefMeta->data.add("Description", crs->Description);
+
+	if (crs->GeodeticDatum)
+		georefMeta->data.add("Geodetic Datum", crs->GeodeticDatum);
+
+	if (crs->GeodeticDatum)
+		georefMeta->data.add("Vertical Datum", crs->VerticalDatum);
+
+	if (crs.isOfType<typename IfcEntityTypesT::IfcProjectedCRS>())
+	{
+		auto projectedCRS = crs.as<typename IfcEntityTypesT::IfcProjectedCRS>();
+
+		if (projectedCRS->MapProjection)
+			georefMeta->data.add("Map Projection", projectedCRS->MapProjection);
+		if( projectedCRS->MapZone )
+			georefMeta->data.add("Map Zone", projectedCRS->MapZone );
+		if (projectedCRS->MapUnit)
+		{
+			double factor = unitConverter->convertUnit(projectedCRS->MapUnit);
+			std::string factorString;
+			factorString.Format("%d", factor);
+			georefMeta->data.add("Map Unit Factor to meters", factor);
+		}
+	}
+}
+
 
 #endif // IFCIMPORTERIMPL_H
