@@ -821,7 +821,7 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<3> arcStart = points[arcSegment[0] - 1];
 					carve::geom::vector<3> arcMid = points[arcSegment[1] - 1];
 					carve::geom::vector<3> arcEnd = points[arcSegment[2] - 1];
-					/*
+					
 					//Converting a 3D to a 2D problem to then find the circle from three points on the plane.
 
 					//Start by finding the normal vector to the plane defined by the three points
@@ -862,11 +862,6 @@ namespace OpenInfraPlatform {
 					if (xDeltaA != 0 && xDeltaB != 0) {
 						double aSlope = yDeltaA / xDeltaA;
 						double bSlope = yDeltaB / xDeltaB;
-						
-						if (fabs(aSlope - bSlope) <= 0.000000001) {	// checking whether the given points are colinear.
-							TRACE("The three pts are colinear\n");
-							return -1;
-						}
 
 
 						double centerOfCircleX = (aSlope*bSlope*(arcStart2D.y - arcEnd2D.y) + bSlope * (arcStart2D.x + arcMid2D.x)
@@ -918,16 +913,16 @@ namespace OpenInfraPlatform {
 
 						
 					}
-					*/
+					
 					//TODO implement IfcArcIndex
 					// currently faked - only start-mid-end points are added (very badly tessellated)
-					
+					/*
 					std::vector<carve::geom::vector<3>> loop_intern;
 					for (const auto& i : arcSegment)
 					{
 						loop_intern.push_back(points[i - 1]); //EXPRESS count from 1, C++ from 0
 					}
-					return loop_intern;
+					return loop_intern;*/
 				}
 
 
