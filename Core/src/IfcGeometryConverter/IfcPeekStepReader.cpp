@@ -33,8 +33,6 @@ std::map<std::string, IfcPeekStepReader::IfcSchema> schemata = {
 	MapType("ifc2x3", IfcPeekStepReader::IfcSchema::IFC2X3),
 	MapType("ifc4", IfcPeekStepReader::IfcSchema::IFC4),
 	MapType("ifc4x1", IfcPeekStepReader::IfcSchema::IFC4X1),
-	MapType("ifc4x2-bim4road", IfcPeekStepReader::IfcSchema::IFC4X2_BIM4ROAD),
-	MapType("ifc4x2-draft-1", IfcPeekStepReader::IfcSchema::IFC4X2_DRAFT_1),
 	MapType("ifc4x3_rc1", IfcPeekStepReader::IfcSchema::IFC4X3_RC1)
 };
 
@@ -48,7 +46,7 @@ IfcPeekStepReader::~IfcPeekStepReader()
 
 }
 
-IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string& filename)
+MapType IfcPeekStepReader::parseIfcHeader(const std::string& filename)
 {
 	std::ifstream ifcFile(filename);
 
@@ -96,10 +94,10 @@ IfcPeekStepReader::IfcSchema IfcPeekStepReader::parseIfcHeader(const std::string
 							try
 							{
 								if (schemata.count(schema) > 0) {
-									return schemata[schema];
+									return MapType(schema, schemata[schema]);
 								}
 								else
-									throw std::exception();
+									throw std::exception("There are no known IFC schemata to choose from.");
 							}
 							catch(...)
 							{

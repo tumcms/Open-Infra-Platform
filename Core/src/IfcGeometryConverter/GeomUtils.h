@@ -112,6 +112,7 @@ namespace OpenInfraPlatform
 
 				static void extrude(const std::vector<std::vector<carve::geom::vector<2> > >& paths,
 					const carve::geom::vector<3> dir,
+					const bool closed,
 					std::shared_ptr<carve::input::PolyhedronData>& poly_data,
 					std::stringstream& err);
 

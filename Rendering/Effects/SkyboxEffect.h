@@ -21,16 +21,15 @@
 #define OpenInfraPlatform_UserInterface_SkyboxEffect_34f22a43_6c1f_4b9f_99f5_ca188f4c0343_h
 
 
-#include <buw.Engine.h>
 #include <buw.ImageProcessing.h>
-#include <buw.Rasterizer.h>
 #include <map>
 
+#include <Resources/EffectBase.h>
 #include "..\namespace.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
-class SkyboxEffect : public buw::Effect {
+class SkyboxEffect : public EffectBase {
 public:
     SkyboxEffect(buw::IRenderSystem* renderSystem,
                  buw::ReferenceCounted<buw::IViewport> viewport,
@@ -42,6 +41,8 @@ private:
     void v_init();
     void v_render();
 
+	//! EffectBase interface - do nothing
+	virtual void changeOffset(const buw::Vector3d& offsetOld, const buw::Vector3d& offsetNew) override {}
 private:
     buw::ReferenceCounted<buw::ISampler> sampler_;
     buw::ReferenceCounted<buw::ITextureCube> texture_;

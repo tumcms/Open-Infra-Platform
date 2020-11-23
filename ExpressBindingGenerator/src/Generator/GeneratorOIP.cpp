@@ -705,7 +705,7 @@ void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostr
 	linebreak(out);
 	
 	writeLine(out, "virtual " + name + "& operator=(const EXPRESSOptional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
-	writeLine(out, "virtual const std::string classname() const override { return \"" + name + "\"; }");
+	writeLine(out, "virtual const std::string classname() const override { return \"" + toUpper(name) + "\"; }");
 	writeLine(out, "const std::string getStepParameter() const { return to_string(" + basetype + "::m_value); };");
 	writeLine(out, "static " + enumName + " readStepData(const std::string &value) {");
 	writeLine(out, "const std::string name = value.substr(1, value.size() - 2);");
@@ -922,7 +922,7 @@ void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out) {
 	writeLine(out, "};");
 	linebreak(out);
 
-	writeLine(out, "virtual const std::string classname() const override { return \"" + select + "\"; };");
+	writeLine(out, "virtual const std::string classname() const override { return \"" + toUpper(select) + "\"; };");
 	linebreak(out);
 
 	/*
@@ -1010,7 +1010,7 @@ void writeSelectTypeFileMinimal(Schema& schema, Type& selectType, std::ostream& 
 	writeLine(out, select + "& operator=(const " + select + "& other) = default;");
 	linebreak(out);
 	writeLine(out, select + "* operator->(){ return this; }");
-	writeLine(out, "const std::string classname() const { return \"" + select + "\"; }");
+	writeLine(out, "const std::string classname() const { return \"" + toUpper(select) + "\"; }");
 	writeLine(out, "const std::string getStepParameter() const { return \"$\"; }");
 	writeLine(out, "static " + select + " readStepData(const std::string arg, const std::shared_ptr<ExpressBindingGenerator::EXPRESSModel>& model) { return " + select + "(); }");
 	writeLine(out, "};");
@@ -1608,7 +1608,7 @@ void GeneratorOIP::generateTypeHeaderFile(const Schema &schema, const Type &type
 	out << "\t"
 		<< "\t"
 		<< "\t"
-		<< "virtual const char* classname() const { return \"" << type.getName() << "\"; }" << std::endl;
+		<< "virtual const char* classname() const { return \"" << toUpper(type.getName()) << "\"; }" << std::endl;
 
 	// getStepParamter
 	if(type.isSelectType()) {
@@ -2286,10 +2286,10 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 		writeLine(out, name + "* " + name + "::operator->() { return this; }");
 		writeLine(out, "const " + name + "* const " + name + "::operator->() const { return this; };");
 		linebreak(out);
-		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; };");
+		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 	}
 	else if (type.isEnumeration()) {
-		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; };");
+		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 		linebreak(out);
 		writeLine(out, "const std::string to_string(const e" + type.getName() + "& v) {");
 		writeLine(out, "switch(v) {");
@@ -2307,11 +2307,11 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 		writeLine(out, name + "& " + name + "::operator=(" + name + "& other) { this->base::swap(other); return *this; };");
 		//writeLine(out, name + "& " + name + "::operator=(const EXPRESSOptional<" + name + "> &other) { this->operator=(other.get_value_or(" + name + "())); return *this; };");
 		linebreak(out);
-		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; };");
+		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 		writeLine(out, "const std::string " + name + "::getStepParameter() const { return this->base::getStepParameter(); };");
 	}
 	else if (type.isSelectType()) {
-		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; };");
+		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 		writeLine(out, "const std::string " + name + "::getStepParameter() const { return base::getStepParameter(); };");
 	}
 	else {
@@ -3339,7 +3339,7 @@ void GeneratorOIP::generateEntityHeaderFile(const Schema &schema, const Entity &
 	writeLine(out, "virtual void readStepData(std::vector<std::string>& args, const std::map<int, shared_ptr<" + schema.getName() + "Entity> >& map);");
 	writeLine(out, "virtual void setInverseCounterparts(shared_ptr<" + schema.getName() + "Entity> ptr_self);");
 	writeLine(out, "virtual void unlinkSelf();");
-	writeLine(out, "virtual const char* classname() const { return \"" + entity.getName() + "\"; }");
+	writeLine(out, "virtual const char* classname() const { return \"" + toUpper(entity.getName()) + "\"; }");
 	
 	linebreak(out);
 

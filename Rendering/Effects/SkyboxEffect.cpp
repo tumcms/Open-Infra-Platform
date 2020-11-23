@@ -24,7 +24,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 SkyboxEffect::SkyboxEffect(buw::IRenderSystem * renderSystem, buw::ReferenceCounted<buw::IViewport> viewport, buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer)
     :
-    Effect(renderSystem),
+    EffectBase(renderSystem),
     viewport_(viewport),
     worldBuffer_(worldBuffer)
 {
