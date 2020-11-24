@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 
+#include "namespace.h"
 #include "CarveHeaders.h"
 #include "RepresentationConverter.h"
 #include "UnitConverter.h"
@@ -34,12 +35,8 @@
 
 #include "EXPRESS/EXPRESS.h"
 
-namespace OpenInfraPlatform 
-{
-	namespace Core 
-	{
-		namespace IfcGeometryConverter 
-		{
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
+
 			class GeometrySettings;
 
 			// IfcImporterUtil class with loadIfcProductsJob, convertIfcProduct, computeMeshsetsFromPolyhedrons.
@@ -302,9 +299,8 @@ namespace OpenInfraPlatform
 				//! shape input data of all products
 				std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;
 			};
-		}
-	}
-}
+
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_END
 
 EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(IfcImporterT)
 

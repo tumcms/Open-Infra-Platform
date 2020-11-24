@@ -42,12 +42,15 @@
 #include "IFC4X3_RC1Entities.h"
 #endif
 
+#include "namespace.h"
 #include "PlacementConverterImpl.h"
+
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
 template <
 	class IfcEntityTypesT
 >
-OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>::IfcImporterT<IfcEntityTypesT>()
+IfcImporterT<IfcEntityTypesT>::IfcImporterT<IfcEntityTypesT>()
 {
 	geomSettings = std::make_shared<GeometrySettings>();
 	unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
@@ -57,7 +60,7 @@ OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>::If
 template <
 	class IfcEntityTypesT
 >
-void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>::convertIfcProduct(
+void IfcImporterT<IfcEntityTypesT>::convertIfcProduct(
 	const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape
 ) const
@@ -280,5 +283,6 @@ void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT
 	}
 }
 
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_END
 
 #endif // IFCIMPORTERIMPL_H
