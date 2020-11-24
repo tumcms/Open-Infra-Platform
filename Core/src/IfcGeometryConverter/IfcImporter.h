@@ -103,8 +103,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						}
 						// polylines are handled by rendering engine
 					}
-
-					productShape->computeAABB();
 				}
 			};
 

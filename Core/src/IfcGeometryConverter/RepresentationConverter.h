@@ -32,7 +32,7 @@
 
 #include "ConverterBase.h"
 
-#include "PlacementConverter.h"
+#include "GeorefConverter.h"
 #include "CurveConverter.h"
 #include "FaceConverter.h"
 #include "GeomUtils.h"
@@ -66,10 +66,12 @@ namespace OpenInfraPlatform {
 				//! Constructor
 				RepresentationConverterT(
 					std::shared_ptr<GeometrySettings> geomSettings, 
-					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter
+					std::shared_ptr<UnitConverter<IfcEntityTypesT>> unitConverter,
+					std::shared_ptr<GeoreferencingConverterT<IfcEntityTypesT>> georefConv
 				)
 					: 
-					ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter)
+					ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
+					georeferencingConverter_(georefConv)
 				{
 					handle_styled_items = true;
 					handle_layer_assignments = true;
@@ -821,6 +823,8 @@ namespace OpenInfraPlatform {
 				}
 
 			protected:
+
+				std::shared_ptr<GeoreferencingConverterT<IfcEntityTypesT>> georeferencingConverter_;
 
 				// std::shared_ptr<StylesConverter>	stylesConverter;
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;

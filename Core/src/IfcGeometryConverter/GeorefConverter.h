@@ -84,7 +84,7 @@ public:
 private:
 
 	GeorefPair convertGeoref(
-		const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation> coordOper
+		const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation>& coordOper
 	) const throw(...)
 	{
 		// check input
@@ -156,7 +156,7 @@ private:
 	}
 
 	std::shared_ptr<oip::GeorefMetadata> convertCRS(
-		const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem> crs
+		const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem>& crs
 	) const throw(...)	
 	{
 		// check input

@@ -55,7 +55,7 @@ IfcImporterT<IfcEntityTypesT>::IfcImporterT<IfcEntityTypesT>()
 	geomSettings = std::make_shared<GeometrySettings>();
 	unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
 	georefConverter = std::make_shared<GeoreferencingConverterT<IfcEntityTypesT>>(geomSettings, unitConverter);
-	repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT>>(geomSettings, unitConverter);
+	repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT>>(geomSettings, unitConverter, georefConverter);
 }
 
 template <
