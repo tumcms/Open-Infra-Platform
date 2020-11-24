@@ -125,42 +125,46 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 				//! destructor
 				virtual ~IfcImporterT()	{}
 
-				//! getter for shape data
-				std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> getShapeDatas() const { return shapeInputData; }
-
 				/**
 				 * \brief Interprets the data from the read-in IFC file.
 				 *
 				 * This is the main interpreting function. 
-				 * It sets the member variables with the interpreted data to be given to the renderer, UI or whatever.
 				 *
 				 * \param[in] model The IFC content.
-				 * \return true, if successful. false, otherwise.
+				 * \return If successful, a pointer to an \c IfcModel. Otherwise \c nullptr.
 				 */
-				bool collectData(std::shared_ptr<oip::EXPRESSModel> model)
+				std::shared_ptr<IfcModel> collectData(std::shared_ptr<oip::EXPRESSModel> expressModel)
 				{
 					try
 					{
 						// set the default units
-						unitConverter->init(model);
+						unitConverter->init(expressModel);
 
 						// get the georeferencingmetadata from the file
-						georefConverter->init(model);
+						georefConverter->init(expressModel);
 
 						// collect all geometries
-						return collectGeometryData(model);
+						if (!collectGeometryData(expressModel))
+							return nullptr;
+
+						auto ifcModel = std::make_shared<IfcModel>();
+						auto converter = ConverterBuwT<IfcEntityTypesT>();
+						if (!converter.createGeometryModel(ifcModel, shapeInputData))
+							return nullptr;
+
+						return ifcModel;
 					}
 					catch (const oip::InconsistentModellingException& ex)
 					{
 						BLUE_LOG(warning) << "Inconsistent IFC moddelling: " << ex.what();
-						return false;
+						return nullptr;
 					}
 					catch (...)
 					{
 						BLUE_LOG(warning) << "Something went wrong while collecting data from the IFC file.";
-						return false;
+						return nullptr;
 					}
-					return true;
+					return nullptr;
 				}
 
 			private:
@@ -231,12 +235,13 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 				void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape) const;
 					
+				// the converters
 				std::shared_ptr<GeometrySettings>							geomSettings;
 				std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>>				unitConverter;
 				std::shared_ptr<GeoreferencingConverterT<IfcEntityTypesT>>	georefConverter;
 
-				//! shape input data of all products
+				//! interpreted data of all products
 				std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;
 			};
 
