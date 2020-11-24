@@ -144,7 +144,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 					try
 					{
 						// set the default units
-						setUnits(model);
+						unitConverter->init(model);
 
 						// get the georeferencingmetadata from the file
 						georefConverter->init(model);
@@ -221,21 +221,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						BLUE_LOG(info) << "Imported geometry from express model.";
 						return true;
 					}
-
-				/*! \brief Sets the units from the IFC file.
-				 *
-				 * \param[in] model The IFC content.
-				 */
-				void setUnits(std::shared_ptr<oip::EXPRESSModel> model) throw(...)
-				{
-					// Set the unit conversion factors
-					auto units = std::find_if(model->entities.begin(), model->entities.end(),
-						[](const auto& pair) { return pair.second->classname() == "IFCUNITASSIGNMENT"; });
-					if ( units == model->entities.end() )
-						throw oip::InconsistentModellingException("Default units are not defined.");
-					// tell the unit converter about the project's units
-					unitConverter->setIfcUnits(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcUnitAssignment>(units->second));
-				}
 
 				/**
 				 * \brief Converts all geometries of an \c IfcProduct to triangles and lines.

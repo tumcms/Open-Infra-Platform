@@ -48,17 +48,20 @@ namespace OpenInfraPlatform
 					m_plane_angle_factor = -1.0; // is set in the first call to the getter
 				}
 
-				/*! \brief Sets the default units from an IFC file.
-				
-				Sets all member variables.
-
-				\param[in] units A pointer to the \c IfcUnitAssignment entity within the file.
-				*/
-				void setIfcUnits(const EXPRESSReference<typename IfcEntityTypesT::IfcUnitAssignment>& units) 
+				/*! \brief Initialize the units from the IFC file.
+				 *
+				 * \param[in] model The IFC content.
+				 */
+				void init(std::shared_ptr<oip::EXPRESSModel> model) throw(...)
 				{
-					// remember units in context
-					m_unit_assignment = units.lock();
-
+					// Set the unit conversion factors
+					auto units = std::find_if(model->entities.begin(), model->entities.end(),
+						[](const auto& pair) { return pair.second->classname() == "IFCUNITASSIGNMENT"; });
+					if (units == model->entities.end())
+						throw oip::InconsistentModellingException("Default units are not defined.");
+					// tell the unit converter about the project's units
+					m_unit_assignment = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcUnitAssignment>(units->second);
+					// cache two units used extensively in converters
 					m_length_unit_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_LENGTHUNIT ); 
 					m_plane_angle_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_PLANEANGLEUNIT ); 
 				}
