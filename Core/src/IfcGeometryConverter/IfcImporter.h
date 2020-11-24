@@ -30,8 +30,7 @@
 #include "CarveHeaders.h"
 #include "RepresentationConverter.h"
 #include "UnitConverter.h"
-
-#include <GeorefMetadata.h>
+#include "GeorefConverter.h"
 
 #include "EXPRESS/EXPRESS.h"
 
@@ -130,8 +129,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
 				//! getter for shape data
 				std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> getShapeDatas() const { return shapeInputData; }
-				//! getter for georeferencing metadata
-				std::map<int, oip::GeorefMetadata> getGeorefMetadata() const { return georefMetadata; }
 
 				/**
 				 * \brief Interprets the data from the read-in IFC file.
@@ -150,7 +147,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						setUnits(model);
 
 						// get the georeferencingmetadata from the file
-						setGeoref(model);
+						georefConverter->init(model);
 
 						// collect all geometries
 						return collectGeometryData(model);
@@ -240,35 +237,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 					unitConverter->setIfcUnits(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcUnitAssignment>(units->second));
 				}
 
-				/*! \brief Sets the georeferencing metadata from the IFC file.
-				 *
-				 * \param[in] model The IFC content.
-				 */
-				void setGeoref(std::shared_ptr<oip::EXPRESSModel> model) throw(...)
-				{
-					// try and find the georeferencing metadata
-					auto georef = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair)
-						{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateOperation>(pair.second) != nullptr; });
-					if (georef == model->entities.end())
-						return; // no georeferencing specified
-
-					// interpret all
-					do
-					{
-						// the interpreted data
-						std::shared_ptr<oip::GeorefMetadata> georefMeta = convertGeoref(
-							std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateOperation>(georef->second));
-
-						// add to the parsed map
-						if( georefMeta )
-							georefMetadata.insert({ georef->first, georefMeta });
-					} 
-					while ((georef = std::find_if(georef, model->entities.end(), [](auto pair)
-						{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateOperation>(pair.second) != nullptr; }
-						)) != model->entities.end());
-
-				}
-
 				/**
 				 * \brief Converts all geometries of an \c IfcProduct to triangles and lines.
 				 * 
@@ -280,21 +248,10 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 				void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape) const;
 					
-				std::shared_ptr<oip::GeorefMetadata> convertGeoref(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation> coordOper
-				) const throw(...);
-
-				void convertCRS(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem> crs,
-					std::shared_ptr<oip::GeorefMetadata> georefMeta
-				) const throw(...);
-
 				std::shared_ptr<GeometrySettings>							geomSettings;
 				std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>>				unitConverter;
-
-				//! georefeferencing metadata
-				std::map<int, std::shared_ptr<oip::GeorefMetadata>> georefMetadata;
+				std::shared_ptr<GeoreferencingConverterT<IfcEntityTypesT>>	georefConverter;
 
 				//! shape input data of all products
 				std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;

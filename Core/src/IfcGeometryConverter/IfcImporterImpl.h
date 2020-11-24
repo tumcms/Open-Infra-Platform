@@ -54,6 +54,7 @@ IfcImporterT<IfcEntityTypesT>::IfcImporterT<IfcEntityTypesT>()
 {
 	geomSettings = std::make_shared<GeometrySettings>();
 	unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
+	georefConverter = std::make_shared<GeoreferencingConverterT<IfcEntityTypesT>>(geomSettings, unitConverter);
 	repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT>>(geomSettings, unitConverter);
 }
 
@@ -171,115 +172,6 @@ void IfcImporterT<IfcEntityTypesT>::convertIfcProduct(
 	{
 		BLUE_LOG(warning) << product->getErrorLog() + " -> unknown error.";
 		throw; // throw onwards
-	}
-}
-
-template <
-	class IfcEntityTypesT
->
-std::shared_ptr<oip::GeorefMetadata> OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>::convertGeoref(
-	const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation> coordOper
-) const throw(...)
-{
-	// check input
-	if (coordOper.expired())
-		throw oip::ReferenceExpiredException(coordOper);
-
-	//ENTITY IfcCoordinateOperation
-	//	ABSTRACT SUPERTYPE OF(IfcMapConversion);
-	//  SourceCRS: IfcCoordinateReferenceSystemSelect;
-	//  TargetCRS: IfcCoordinateReferenceSystem;
-	//END_ENTITY;
-
-		// the interpreted data
-	std::shared_ptr<oip::GeorefMetadata> georefMeta = std::make_shared<oip::GeorefMetadata>();
-
-	// get the CoordinateRereferenceSystem
-	const oip::EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem> crs = coordOper->TargetCRS;
-	convertCRS(coordOper->TargetCRS);
-
-	// get the GeometricContext
-	switch (coordOper->SourceCRS.which())
-	{
-	case 0: // IfcCoordinateReferenceSystem
-	{
-		throw oip::UnhandledException(mapConv->getErrorLog() + ": We don't handle another IfcCoordinateReferenceSystem as SourceCRS.");
-	}
-	case 1: // IfcGeometricRepresentationContext
-	{
-
-		break;
-	}
-	default:
-		throw oip::UnhandledException(coordOper->SourceCRS.getErrorLog());
-	}
-
-	// IfcMapConversion
-	if (coordOper.isOfType<typename IfcEntityTypesT::IfcMapConversion>())
-	{
-		//ENTITY IfcMapConversion
-		//	SUBTYPE OF(IfcCoordinateOperation);
-		//  Eastings: IfcLengthMeasure;
-		//  Northings: IfcLengthMeasure;
-		//  OrthogonalHeight: IfcLengthMeasure;
-		//  XAxisAbscissa: OPTIONAL IfcReal;
-		//  XAxisOrdinate: OPTIONAL IfcReal;
-		//  Scale: OPTIONAL IfcReal;
-		//END_ENTITY;
-
-		EXPRESSReference<typename IfcEntityTypesT::IfcMapConversion> mapConv
-			= coordOper.as<typename IfcEntityTypesT::IfcMapConversion>();
-
-
-	}
-
-	return georefMeta;
-
-
-}
-
-
-
-template <
-	class IfcEntityTypesT
->
-void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>::convertCRS(
-	const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem> crs,
-	std::shared_ptr<oip::GeorefMetadata> georefMeta
-) const throw(...)
-{
-	// check input
-	if (crs.expired())
-		throw oip::ReferenceExpiredException(crs);
-
-	// EPSG code
-	georefMeta->codeEPSG = crs->Name;
-
-	// description (could be WKT)
-	if( crs->Description )
-		georefMeta->data.add("Description", crs->Description);
-
-	if (crs->GeodeticDatum)
-		georefMeta->data.add("Geodetic Datum", crs->GeodeticDatum);
-
-	if (crs->GeodeticDatum)
-		georefMeta->data.add("Vertical Datum", crs->VerticalDatum);
-
-	if (crs.isOfType<typename IfcEntityTypesT::IfcProjectedCRS>())
-	{
-		auto projectedCRS = crs.as<typename IfcEntityTypesT::IfcProjectedCRS>();
-
-		if (projectedCRS->MapProjection)
-			georefMeta->data.add("Map Projection", projectedCRS->MapProjection);
-		if( projectedCRS->MapZone )
-			georefMeta->data.add("Map Zone", projectedCRS->MapZone );
-		if (projectedCRS->MapUnit)
-		{
-			double factor = unitConverter->convertUnit(projectedCRS->MapUnit);
-			std::string factorString;
-			factorString.Format("%d", factor);
-			georefMeta->data.add("Map Unit Factor to meters", factor);
-		}
 	}
 }
 
