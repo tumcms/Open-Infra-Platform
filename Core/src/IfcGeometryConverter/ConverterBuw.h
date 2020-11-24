@@ -39,20 +39,7 @@
 typedef std::unordered_map<std::string, uint32_t> VertexMapTriangles;
 typedef std::unordered_map<std::string, uint32_t> VertexMapLines;
 
-namespace OpenInfraPlatform
-{
-	namespace Core 
-	{
-		namespace IfcGeometryConverter 
-		{
-			
-			
-			class ConverterBuwUtil {
-			public:
-				ConverterBuwUtil() {}
-				~ConverterBuwUtil() {}
-
-			};
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
 			template <
 				class IfcEntityTypesT
@@ -518,9 +505,8 @@ namespace OpenInfraPlatform
 					};
 
 			};
-		}
-	}
-}
+
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_END
 
 EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(ConverterBuwT)
 
