@@ -783,23 +783,28 @@ namespace OpenInfraPlatform {
 					case 1:
 					{
 						// TYPE IfcLineIndex = LIST [2:?] OF IfcPositiveInteger;
-						auto lineIndex = segmentIndexSelect.get<1>();
-
-						if (lineIndex.size() < 2)
-							throw oip::InconsistentModellingException("The number of indices for one of IfcLineIndex is less than 2!");
-
-						std::vector<carve::geom::vector<3>> loop;
-						for (const auto& i : lineIndex)
-						{
-							loop.push_back(points[i - 1]); //EXPRESS count from 1, C++ from 0
-						}
-
-						return loop;
+						return convertIfcLineIndex(segmentIndexSelect.get<1>(), points);
 					}
 					default:
 						throw oip::UnhandledException();
 					}
 				}
+				
+				std::vector<carve::geom::vector<3>> convertIfcLineIndex(
+					const typename IfcEntityTypesT::IfcLineIndex &arcSegment,
+					const std::vector<carve::geom::vector<3>> points) const throw(...)
+				{
+					if (arcSegment.size() < 2)
+						throw oip::InconsistentModellingException("The number of indices for one of IfcLineIndex is less than 2!");
+
+					std::vector<carve::geom::vector<3>> loop;
+					for (const auto& i : arcSegment)
+					{
+						loop.push_back(points[i - 1]); //EXPRESS count from 1, C++ from 0
+					}
+					return loop;
+				}
+
 
 				
 				std::vector<carve::geom::vector<3>> convertIfcArcIndex(
@@ -831,19 +836,17 @@ namespace OpenInfraPlatform {
 					double distance = (normalVector.x*arcStart.x) + (normalVector.y*arcStart.y) + (normalVector.y*arcStart.y);
 
 					//Convert the problem into a 2D problem
-
-					carve::math::Matrix R = carve::math::Matrix(
+					carve::math::Matrix rotationMatrix = carve::math::Matrix(
 						firstOrthogonalDirection.x, secondOrthogonalDirection.x, 0, 0,
 						firstOrthogonalDirection.y, secondOrthogonalDirection.y, 0, 0,
 						firstOrthogonalDirection.z, secondOrthogonalDirection.z, 1, 0,
 						0, 0, 0, 1);
 
-					carve::geom::vector<2> arcStart2D = covert3Dto2D(R, arcStart); 
-					carve::geom::vector<2> arcMid2D = covert3Dto2D(R, arcMid);
-					carve::geom::vector<2> arcEnd2D = covert3Dto2D(R, arcEnd);
+					carve::geom::vector<2> arcStart2D = covert3Dto2D(rotationMatrix, arcStart);
+					carve::geom::vector<2> arcMid2D = covert3Dto2D(rotationMatrix, arcMid);
+					carve::geom::vector<2> arcEnd2D = covert3Dto2D(rotationMatrix, arcEnd);
 
 					//Calculating arc in 2D 
-
 					double yDeltaA = arcMid2D.y - arcStart2D.y;
 					double xDeltaA = arcMid2D.x - arcStart2D.x;
 					double yDeltaB = arcEnd2D.y - arcMid2D.y;
@@ -882,8 +885,6 @@ namespace OpenInfraPlatform {
 							theta1, opening_angle,
 							centerOfCircleX, centerOfCircleY,
 							num_segments);
-
-						
 
 						//std::vector<carve::geom::vector<3>> arcPoints;
 						std::vector<carve::geom::vector<3>> loop_intern;
