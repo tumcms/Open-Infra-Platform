@@ -832,17 +832,15 @@ namespace OpenInfraPlatform {
 
 					//Convert the problem into a 2D problem
 
-					carve::geom::vector<2> arcStart2D = carve::geom::VECTOR(
-						(firstOrthogonalDirection.x * arcStart.x + firstOrthogonalDirection.y * arcStart.y + firstOrthogonalDirection.z * arcStart.z),
-						(secondOrthogonalDirection.x * arcStart.x + secondOrthogonalDirection.y * arcStart.y + secondOrthogonalDirection.z * arcStart.z));
+					carve::math::Matrix R = carve::math::Matrix(
+						firstOrthogonalDirection.x, secondOrthogonalDirection.x, 0, 0,
+						firstOrthogonalDirection.y, secondOrthogonalDirection.y, 0, 0,
+						firstOrthogonalDirection.z, secondOrthogonalDirection.z, 1, 0,
+						0, 0, 0, 1);
 
-					carve::geom::vector<2> arcMid2D = carve::geom::VECTOR(
-						(firstOrthogonalDirection.x * arcMid.x + firstOrthogonalDirection.y * arcMid.y + firstOrthogonalDirection.z * arcMid.z),
-						(secondOrthogonalDirection.x * arcMid.x + secondOrthogonalDirection.y * arcMid.y + secondOrthogonalDirection.z * arcMid.z));
-
-					carve::geom::vector<2> arcEnd2D = carve::geom::VECTOR(
-						(firstOrthogonalDirection.x * arcEnd.x + firstOrthogonalDirection.y * arcEnd.y + firstOrthogonalDirection.z * arcEnd.z),
-						(secondOrthogonalDirection.x * arcEnd.x + secondOrthogonalDirection.y * arcEnd.y + secondOrthogonalDirection.z * arcEnd.z));
+					carve::geom::vector<2> arcStart2D = covert3Dto2D(R, arcStart); 
+					carve::geom::vector<2> arcMid2D = covert3Dto2D(R, arcMid);
+					carve::geom::vector<2> arcEnd2D = covert3Dto2D(R, arcEnd);
 
 					//Calculating arc in 2D 
 
@@ -885,55 +883,26 @@ namespace OpenInfraPlatform {
 							centerOfCircleX, centerOfCircleY,
 							num_segments);
 
-
+						
 
 						//std::vector<carve::geom::vector<3>> arcPoints;
 						std::vector<carve::geom::vector<3>> loop_intern;
 						loop_intern.push_back(arcStart);
-						for (int i = 1; i < numberOfEvaluationPoints; i++) {
-							double thetaI = theta1 + i * deltaTheta;
-							double arcPointX = centerOfCircleX + radius * std::cos(thetaI);
-							double arcPointY = centerOfCircleY + radius * std::sin(thetaI);
+						for (int i = 1; i < circle_points.size(); i++) {
+							
 							loop_intern.push_back(carve::geom::VECTOR(
-								normalVector.x * distance + firstOrthogonalDirection.x * arcPointX + secondOrthogonalDirection.x * arcPointY,
-								normalVector.y * distance + firstOrthogonalDirection.y * arcPointX + secondOrthogonalDirection.y * arcPointY,
-								normalVector.z * distance + firstOrthogonalDirection.z * arcPointX + secondOrthogonalDirection.z * arcPointY));
+								normalVector.x * distance + firstOrthogonalDirection.x * circle_points[i].x + secondOrthogonalDirection.x * circle_points[i].y,
+								normalVector.y * distance + firstOrthogonalDirection.y * circle_points[i].x + secondOrthogonalDirection.y * circle_points[i].y,
+								normalVector.z * distance + firstOrthogonalDirection.z * circle_points[i].x + secondOrthogonalDirection.z * circle_points[i].y));
 						}
-						
-						
-						
 						return loop_intern;
-						
-						//Lastly construct the 3D point for the circle center Q = nd + R(xy)
-						carve::geom::vector<3> centerOfCircle = carve::geom::VECTOR(
-							normalVector.x * distance + firstOrthogonalDirection.x * centerOfCircleX + secondOrthogonalDirection.x * centerOfCircleY,
-							normalVector.y * distance + firstOrthogonalDirection.y * centerOfCircleX + secondOrthogonalDirection.y * centerOfCircleY,
-							normalVector.z * distance + firstOrthogonalDirection.z * centerOfCircleX + secondOrthogonalDirection.z * centerOfCircleY);
-						//You might also need the sweep angle which you get from the angle between the vectors C−Q and A−Q
-
-						carve::geom::vector<3> centerOfCircleToArcEnd = arcEnd - centerOfCircle;
-						carve::geom::vector<3> centerOfCircleToArcStart = arcStart - centerOfCircle;
-
-						//θ = cos−1((C−Q)⋅(A−Q)∥C−Q∥∥A−Q∥)(10)
-						double tau = std::acos((centerOfCircleToArcEnd.x * centerOfCircleToArcStart.x + centerOfCircleToArcEnd.y *
-							centerOfCircleToArcStart.y + centerOfCircleToArcEnd.z * centerOfCircleToArcStart.z) /
-							(centerOfCircleToArcEnd.length() * centerOfCircleToArcStart.length()));
-						
-
-						
 					}
-					
-					//TODO implement IfcArcIndex
-					// currently faked - only start-mid-end points are added (very badly tessellated)
-					/*
-					std::vector<carve::geom::vector<3>> loop_intern;
-					for (const auto& i : arcSegment)
-					{
-						loop_intern.push_back(points[i - 1]); //EXPRESS count from 1, C++ from 0
-					}
-					return loop_intern;*/
 				}
 
+				carve::geom::vector<2> covert3Dto2D(carve::math::Matrix& conversionMatrix, carve::geom::vector<3>& vector3D) const throw(...){
+					return carve::geom::VECTOR((conversionMatrix._11 * vector3D.x + conversionMatrix._12 * vector3D.y + conversionMatrix._13 * vector3D.z),
+						(conversionMatrix._21 * vector3D.x + conversionMatrix._22 * vector3D.y + conversionMatrix._23 * vector3D.z));
+				}
 
 
 				void convertIfcOffsetCurve(
