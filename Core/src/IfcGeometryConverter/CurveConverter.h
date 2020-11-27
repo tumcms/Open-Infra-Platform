@@ -718,7 +718,15 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-
+				/**********************************************************************************************/
+				/*! \brief Calculates coordinates of the intersection point.
+				* \param[in] polycurve				A pointer to data from IfcIndexedPolyCurve.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				*/
 				void convertIfcIndexedPolyCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcIndexedPolyCurve>& polycurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -748,17 +756,23 @@ namespace OpenInfraPlatform {
 					// are segments there?
 					if (polycurve->Segments)
 					{
-						std::vector<carve::geom::vector<3>> loop;
-						for ( const auto& seg : polycurve->Segments.get() )
+						try
 						{
-							std::vector<carve::geom::vector<3>> loop_intern = convertIfcSegmentIndexSelect(seg, points);
-							// skips same points
-							GeomUtils::appendPointsToCurve(loop_intern, loop);
-						}
+							std::vector<carve::geom::vector<3>> loop;
+							for (const auto& seg : polycurve->Segments.get())
+							{
+								std::vector<carve::geom::vector<3>> loop_intern = convertIfcSegmentIndexSelect(seg, points);
+								// skips same points
+								GeomUtils::appendPointsToCurve(loop_intern, loop);
+							}
 
-						// add the calculated points to the return values
-						GeomUtils::appendPointsToCurve(loop, targetVec);
-						segmentStartPoints.push_back(loop[0]);
+							// add the calculated points to the return values
+							GeomUtils::appendPointsToCurve(loop, targetVec);
+							segmentStartPoints.push_back(loop[0]);
+						}
+						catch (const oip::InconsistentModellingException& ex) {
+							throw oip::InconsistentModellingException(polycurve, ex.message_);
+						}
 					}
 					else
 					{
@@ -769,6 +783,12 @@ namespace OpenInfraPlatform {
 
 				}
 
+				/**********************************************************************************************/
+				/*! \brief Calculates coordinates of the intersection point.
+				* \param[in] segmentIndexSelect		A pointer to data from IfcIndexedPolyCurve.
+				* \param[in] points					Terminal point of the first intersecting line.
+				* return							Flag to indicate whether the direction of the trimmed curve agrees with or is opposed to the direction of the basis curve.
+				*/
 				std::vector<carve::geom::vector<3>> convertIfcSegmentIndexSelect(
 					const typename IfcEntityTypesT::IfcSegmentIndexSelect & segmentIndexSelect,
 					const std::vector<carve::geom::vector<3>>& points)const throw(...)
@@ -790,6 +810,12 @@ namespace OpenInfraPlatform {
 					}
 				}
 				
+				/**********************************************************************************************/
+				/*! \brief Calculates coordinates of the intersection point.
+				* \param[in] arcSegment				A pointer to data from IfcIndexedPolyCurve.
+				* \param[in] points					Terminal point of the first intersecting line.
+				* return							Flag to indicate whether the direction of the trimmed curve agrees with or is opposed to the direction of the basis curve.
+				*/
 				std::vector<carve::geom::vector<3>> convertIfcLineIndex(
 					const typename IfcEntityTypesT::IfcLineIndex &arcSegment,
 					const std::vector<carve::geom::vector<3>> points) const throw(...)
@@ -805,8 +831,12 @@ namespace OpenInfraPlatform {
 					return loop;
 				}
 
-
-				
+				/**********************************************************************************************/
+				/*! \brief Calculates coordinates of the intersection point.
+				* \param[in] arcSegment				A pointer to data from IfcIndexedPolyCurve.
+				* \param[in] points					Terminal point of the first intersecting line.
+				* return							Flag to indicate whether the direction of the trimmed curve agrees with or is opposed to the direction of the basis curve.
+				*/
 				std::vector<carve::geom::vector<3>> convertIfcArcIndex(
 					const typename IfcEntityTypesT::IfcArcIndex &arcSegment, 
 					const std::vector<carve::geom::vector<3>> points) const throw(...)
@@ -900,6 +930,12 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				/**********************************************************************************************/
+				/*! \brief Calculates coordinates of the intersection point.
+				* \param[in] conversionMatrix		A pointer to data from IfcIndexedPolyCurve.
+				* \param[in] vector3D				Vector in 3D
+				* return							converterted vector in 2D. 		
+				*/
 				carve::geom::vector<2> covert3Dto2D(carve::math::Matrix& conversionMatrix, carve::geom::vector<3>& vector3D) const throw(...){
 					return carve::geom::VECTOR((conversionMatrix._11 * vector3D.x + conversionMatrix._12 * vector3D.y + conversionMatrix._13 * vector3D.z),
 						(conversionMatrix._21 * vector3D.x + conversionMatrix._22 * vector3D.y + conversionMatrix._23 * vector3D.z));
