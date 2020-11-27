@@ -771,7 +771,7 @@ namespace OpenInfraPlatform {
 							segmentStartPoints.push_back(loop[0]);
 						}
 						catch (const oip::InconsistentModellingException& ex) {
-							throw oip::InconsistentModellingException(polycurve, ex.message_);
+							throw oip::InconsistentModellingException(polycurve, ex.what());
 						}
 					}
 					else
@@ -817,14 +817,14 @@ namespace OpenInfraPlatform {
 				* return							Flag to indicate whether the direction of the trimmed curve agrees with or is opposed to the direction of the basis curve.
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcLineIndex(
-					const typename IfcEntityTypesT::IfcLineIndex &arcSegment,
-					const std::vector<carve::geom::vector<3>> points) const throw(...)
+					const typename IfcEntityTypesT::IfcLineIndex &lineSegment,
+					const std::vector<carve::geom::vector<3>>& points) const throw(...)
 				{
-					if (arcSegment.size() < 2)
+					if (lineSegment.size() < 2)
 						throw oip::InconsistentModellingException("The number of indices for one of IfcLineIndex is less than 2!");
 
 					std::vector<carve::geom::vector<3>> loop;
-					for (const auto& i : arcSegment)
+					for (const auto& i : lineSegment)
 					{
 						loop.push_back(points[i - 1]); //EXPRESS count from 1, C++ from 0
 					}
@@ -839,7 +839,7 @@ namespace OpenInfraPlatform {
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcArcIndex(
 					const typename IfcEntityTypesT::IfcArcIndex &arcSegment, 
-					const std::vector<carve::geom::vector<3>> points) const throw(...)
+					const std::vector<carve::geom::vector<3>>& points) const throw(...)
 				{
 					if (arcSegment.size() != 3)
 						throw oip::InconsistentModellingException("The number of indices for one of IfcArcIndex is not 3!");
@@ -863,14 +863,14 @@ namespace OpenInfraPlatform {
 					secondOrthogonalDirection.normalize();
 		
 					//Calculate distance of the plane to the origin
-					double distance = (normalVector.x*arcStart.x) + (normalVector.y*arcStart.y) + (normalVector.y*arcStart.y);
+					double distance = (normalVector.x*arcStart.x) + (normalVector.y*arcStart.y) + (normalVector.z*arcStart.z);
 
 					//Convert the problem into a 2D problem
 					carve::math::Matrix rotationMatrix = carve::math::Matrix(
-						firstOrthogonalDirection.x, secondOrthogonalDirection.x, 0, 0,
-						firstOrthogonalDirection.y, secondOrthogonalDirection.y, 0, 0,
-						firstOrthogonalDirection.z, secondOrthogonalDirection.z, 1, 0,
-						0, 0, 0, 1);
+						firstOrthogonalDirection.x, secondOrthogonalDirection.x, 0., 0.,
+						firstOrthogonalDirection.y, secondOrthogonalDirection.y, 0., 0.,
+						firstOrthogonalDirection.z, secondOrthogonalDirection.z, 1, 0.,
+						0., 0., 0., 1.);
 
 					carve::geom::vector<2> arcStart2D = covert3Dto2D(rotationMatrix, arcStart);
 					carve::geom::vector<2> arcMid2D = covert3Dto2D(rotationMatrix, arcMid);
@@ -936,7 +936,7 @@ namespace OpenInfraPlatform {
 				* \param[in] vector3D				Vector in 3D
 				* return							converterted vector in 2D. 		
 				*/
-				carve::geom::vector<2> covert3Dto2D(carve::math::Matrix& conversionMatrix, carve::geom::vector<3>& vector3D) const throw(...){
+				carve::geom::vector<2> covert3Dto2D(const carve::math::Matrix&  conversionMatrix, const carve::geom::vector<3>& vector3D) const throw(...){
 					return carve::geom::VECTOR((conversionMatrix._11 * vector3D.x + conversionMatrix._12 * vector3D.y + conversionMatrix._13 * vector3D.z),
 						(conversionMatrix._21 * vector3D.x + conversionMatrix._22 * vector3D.y + conversionMatrix._23 * vector3D.z));
 				}
