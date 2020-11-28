@@ -785,9 +785,9 @@ namespace OpenInfraPlatform {
 
 				/**********************************************************************************************/
 				/*! \brief Calculates coordinates of the intersection point.
-				* \param[in] segmentIndexSelect		A pointer to data from IfcIndexedPolyCurve.
-				* \param[in] points					Terminal point of the first intersecting line.
-				* return							Flag to indicate whether the direction of the trimmed curve agrees with or is opposed to the direction of the basis curve.
+				* \param[in] segmentIndexSelect		A pointer to data from IfcSegmentIndexSelect.
+				* \param[in] points					The series of points passed from IfcIndexedPolyCurve.
+				* return							The series of points of the curve.
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcSegmentIndexSelect(
 					const typename IfcEntityTypesT::IfcSegmentIndexSelect & segmentIndexSelect,
@@ -812,9 +812,9 @@ namespace OpenInfraPlatform {
 				
 				/**********************************************************************************************/
 				/*! \brief Calculates coordinates of the intersection point.
-				* \param[in] arcSegment				A pointer to data from IfcIndexedPolyCurve.
-				* \param[in] points					Terminal point of the first intersecting line.
-				* return							Flag to indicate whether the direction of the trimmed curve agrees with or is opposed to the direction of the basis curve.
+				* \param[in] lineSegment			A pointer to data from IfcLineIndex.
+				* \param[in] points					The series of points passed from IfcIndexedPolyCurve.
+				* return							The series of points of the curve.
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcLineIndex(
 					const typename IfcEntityTypesT::IfcLineIndex &lineSegment,
@@ -833,9 +833,9 @@ namespace OpenInfraPlatform {
 
 				/**********************************************************************************************/
 				/*! \brief Calculates coordinates of the intersection point.
-				* \param[in] arcSegment				A pointer to data from IfcIndexedPolyCurve.
-				* \param[in] points					Terminal point of the first intersecting line.
-				* return							Flag to indicate whether the direction of the trimmed curve agrees with or is opposed to the direction of the basis curve.
+				* \param[in] arcSegment				A pointer to data from IfcArcIndex.
+				* \param[in] points					The series of points passed from IfcIndexedPolyCurve.
+				* return							The series of points of the curve.
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcArcIndex(
 					const typename IfcEntityTypesT::IfcArcIndex &arcSegment, 
@@ -863,18 +863,18 @@ namespace OpenInfraPlatform {
 					secondOrthogonalDirection.normalize();
 		
 					//Calculate distance of the plane to the origin
-					double distance = (normalVector.x*arcStart.x) + (normalVector.y*arcStart.y) + (normalVector.z*arcStart.z);
+					double distance = (normalVector.x * arcStart.x) + (normalVector.y * arcStart.y) + (normalVector.z * arcStart.z);
 
 					//Convert the problem into a 2D problem
 					carve::math::Matrix rotationMatrix = carve::math::Matrix(
 						firstOrthogonalDirection.x, secondOrthogonalDirection.x, 0., 0.,
 						firstOrthogonalDirection.y, secondOrthogonalDirection.y, 0., 0.,
-						firstOrthogonalDirection.z, secondOrthogonalDirection.z, 1, 0.,
+						firstOrthogonalDirection.z, secondOrthogonalDirection.z, 1., 0.,
 						0., 0., 0., 1.);
 
-					carve::geom::vector<2> arcStart2D = covert3Dto2D(rotationMatrix, arcStart);
-					carve::geom::vector<2> arcMid2D = covert3Dto2D(rotationMatrix, arcMid);
-					carve::geom::vector<2> arcEnd2D = covert3Dto2D(rotationMatrix, arcEnd);
+					carve::geom::vector<2> arcStart2D = convert3Dto2D(rotationMatrix, arcStart);
+					carve::geom::vector<2> arcMid2D = convert3Dto2D(rotationMatrix, arcMid);
+					carve::geom::vector<2> arcEnd2D = convert3Dto2D(rotationMatrix, arcEnd);
 
 					//Calculating arc in 2D 
 					double yDeltaA = arcMid2D.y - arcStart2D.y;
@@ -936,7 +936,7 @@ namespace OpenInfraPlatform {
 				* \param[in] vector3D				Vector in 3D
 				* return							converterted vector in 2D. 		
 				*/
-				carve::geom::vector<2> covert3Dto2D(const carve::math::Matrix&  conversionMatrix, const carve::geom::vector<3>& vector3D) const throw(...){
+				carve::geom::vector<2> convert3Dto2D(const carve::math::Matrix&  conversionMatrix, const carve::geom::vector<3>& vector3D) const throw(...){
 					return carve::geom::VECTOR((conversionMatrix._11 * vector3D.x + conversionMatrix._12 * vector3D.y + conversionMatrix._13 * vector3D.z),
 						(conversionMatrix._21 * vector3D.x + conversionMatrix._22 * vector3D.y + conversionMatrix._23 * vector3D.z));
 				}
