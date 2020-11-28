@@ -95,6 +95,7 @@ target_link_libraries(OpenInfraPlatform.PointCloudProcessing PUBLIC
 		liblas_c
 		BlueFramework.ImageProcessing
 		BlueFramework.Rasterizer
+		OpenInfraPlatform.Base
 )
 
 # Use the Widgets module from Qt 5.

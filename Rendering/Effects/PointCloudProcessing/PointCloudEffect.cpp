@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "PointCloud.h"
 #include "PointCloudSection.h"
 
-#include "ViewPanel/RenderResources.h"
+#include "Resources/RenderResources.h"
 #include <BlueFramework/Rasterizer/vertex.h>
 #include <BlueFramework/Engine/Mesh/geometryGeneration.h>
 #include <ccColorTypes.h>
@@ -29,7 +29,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <tuple>
 
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_BEGIN
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 typedef buw::VertexPosition3Color4 VertexTypePointCloud;
 
@@ -40,7 +40,7 @@ PointCloudEffect::PointCloudEffect(
 	buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA,
 	buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer,
 	buw::ReferenceCounted<buw::IConstantBuffer> viewportBuffer)
-	: buw::Effect(renderSystem), viewport_(viewport), worldBuffer_(worldBuffer), depthStencilMSAA_(depthStencilMSAA), viewportBuffer_(viewportBuffer)
+	: EffectBase(renderSystem), viewport_(viewport), worldBuffer_(worldBuffer), depthStencilMSAA_(depthStencilMSAA), viewportBuffer_(viewportBuffer)
 {
 }
 
@@ -149,7 +149,7 @@ void PointCloudEffect::showOctree(const bool checked)
 void PointCloudEffect::setOctreeLevel(const size_t level)
 {
 	octreeLevel_ = level;
-	setOctree(pointCloud_->getDGMOctree(), offset_);
+	setOctree(pointCloud_->getDGMOctree(), getOffset());
 }
 
 void PointCloudEffect::setUniformColor(const buw::Vector4f & color)
@@ -222,25 +222,30 @@ void PointCloudEffect::updateIndexBuffers(const std::tuple<std::vector<uint32_t>
 		indexBufferSegmented_ = nullptr;
 }
 
-void PointCloudEffect::setPointCloud(buw::ReferenceCounted<buw::PointCloud> pointCloud, buw::Vector3d offset)
+void PointCloudEffect::setPointCloud(buw::ReferenceCounted<buw::PointCloud> pointCloud)
 {
 	pointCloud_ = pointCloud;
-	offset_ = offset;
+}
+
+void PointCloudEffect::changeOffset(const buw::Vector3d& offsetOld, const buw::Vector3d& offsetNew)
+{
+	if (!pointCloud_)
+		return;
 
 	BLUE_LOG(trace) << "Start initializing GPU side buffers.";
 	
 	
 	// Initialize the vector to hold our data and out base color.
-	std::vector<VertexTypePointCloud> vertices = std::vector<VertexTypePointCloud>(pointCloud->size());
+	std::vector<VertexTypePointCloud> vertices = std::vector<VertexTypePointCloud>(pointCloud_->size());
 	auto baseColor = ccColor::Rgbaf(0, 0, 0, 0);
 		
 
 //#pragma omp parallel for shared(pointCloud, vertices)
-	for(long i = 0; i < pointCloud->size(); i++) {
-		auto pos = pointCloud->getPoint(i);
-		const ColorCompType* col = pointCloud->rgbColors() ? pointCloud->getPointColor(i).rgb : ccColor::FromRgbf(baseColor).rgb;
+	for(long i = 0; i < pointCloud_->size(); i++) {
+		auto pos = pointCloud_->getPoint(i);
+		const ColorCompType* col = pointCloud_->rgbColors() ? pointCloud_->getPointColor(i).rgb : ccColor::FromRgbf(baseColor).rgb;
 		// Swap Z and Y coordinate for rendering!
-		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos->x + offset.x(), pos->z + offset.z(), pos->y + offset.y()), buw::Vector4f((float)col[0], (float)col[1], (float)col[2], 255.0f) / 255.0f);
+		vertices[i] = VertexTypePointCloud(buw::Vector3f(pos->x + offsetNew.x(), pos->z + offsetNew.z(), pos->y + offsetNew.y()), buw::Vector4f((float)col[0], (float)col[1], (float)col[2], 255.0f) / 255.0f);
 	}
 	
 	
@@ -252,18 +257,18 @@ void PointCloudEffect::setPointCloud(buw::ReferenceCounted<buw::PointCloud> poin
 	BLUE_LOG(trace) << "Done creating point cloud vertex buffer. Size:" << QString::number(vertices.size()).toStdString();
 
 
-	updateIndexBuffers(pointCloud->getIndices());
+	updateIndexBuffers(pointCloud_->getIndices());
 		
 
-	settings_.mainAxis = buw::Vector4f(pointCloud->getMainAxis().x, pointCloud->getMainAxis().y, pointCloud->getMainAxis().z, 0.0f);
-	settings_.sectionLength = (float) pointCloud->getSectionLength();
+	settings_.mainAxis = buw::Vector4f(pointCloud_->getMainAxis().x, pointCloud_->getMainAxis().y, pointCloud_->getMainAxis().z, 0.0f);
+	settings_.sectionLength = (float) pointCloud_->getSectionLength();
 	
-	auto octree = pointCloud->getDGMOctree();
+	auto octree = pointCloud_->getDGMOctree();
 
 	if(octree)
-		setOctree(octree, offset);
+		setOctree(octree, offsetNew);
 
-	setSections(pointCloud->getSections(), offset);
+	setSections(pointCloud_->getSections(), offsetNew);
 
 	BLUE_LOG(trace) << "Finished initializing GPU side buffers.";
 }
@@ -456,4 +461,4 @@ void PointCloudEffect::updateSettingsBuffer()
 }
 
 
-OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END
+OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END

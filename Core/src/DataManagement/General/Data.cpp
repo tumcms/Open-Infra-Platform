@@ -66,8 +66,6 @@
 	#pragma comment( lib, OIP_PCD_LIB)
 #endif
 
-std::mutex OpenInfraPlatform::Core::IfcGeometryConverter::ConverterBuwUtil::s_geometryMutex;
-
 OpenInfraPlatform::Core::DataManagement::Data::Data() : 
 BlueFramework::Application::DataManagement::Data(new BlueFramework::Application::DataManagement::NotifiyAfterEachActionOnlyOnce<OpenInfraPlatform::Core::DataManagement::Data>()),
 clearColor_(0.3f, 0.5f, 0.9f),
@@ -75,20 +73,18 @@ enableGradientClear_(true),
 bDrawGrid_(false),
 bDrawSkybox_(false),
 bShowViewCube_(true),
-bShowReferenceCoordinateSystem(true),
 currentJobID_(-1),
-tempIfcGeometryModel_(nullptr)
+bShowReferenceCoordinateSystem(true)
 {
-	clear(false);
-
-	latestChangeFlag_ = (ChangeFlag) (ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences);
-	/*latestChangeFlag_ = (ChangeFlag)(ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel)*/;
+	latestChangeFlag_ = ChangeFlag::All;
 
 	AsyncJob::getInstance().jobFinished.connect(boost::bind(&OpenInfraPlatform::Core::DataManagement::Data::jobFinished, this, _1, _2));
+
 }
 
 OpenInfraPlatform::Core::DataManagement::Data::~Data()
 {
+	Clear();
 }
 
 
@@ -96,30 +92,8 @@ void OpenInfraPlatform::Core::DataManagement::Data::open( const std::string & fi
 {
 	if (boost::filesystem::exists(filename))
 	{
-		import(filename);		
-		recentFileName = QString::fromUtf8(filename.c_str());
+		import(filename);
 	}
-}
-
-
-void OpenInfraPlatform::Core::DataManagement::Data::clear(const bool notifyObservers) {   
-	ifcGeometryModel_ = std::make_shared<IfcGeometryConverter::IfcGeometryModel>();
-
-	//pointCloud_ = buw::makeReferenceCounted<buw::PointCloud>();
-
-	if (notifyObservers) {
-		// The notification state is not used here, because a clear is not executed by an action.
-		//m_pNotifiactionState->Change();
-
-		pushChange(ChangeFlag::AlignmentModel | ChangeFlag::DigitalElevationModel | ChangeFlag::IfcGeometry | ChangeFlag::PointCloud | ChangeFlag::Preferences | ChangeFlag::ProxyModel);
-
-		Clear();
-	}
-}
-
-void OpenInfraPlatform::Core::DataManagement::Data::clear()
-{
-	clear(true);
 }
 
 void OpenInfraPlatform::Core::DataManagement::Data::pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag flag)
@@ -138,9 +112,6 @@ void OpenInfraPlatform::Core::DataManagement::Data::import(const std::string & f
 {
 	BLUE_ASSERT(boost::filesystem::exists(filename))("File does not exist");
 	if(boost::filesystem::exists(filename)) {
-		clear(false);
-		merge_ = false;
-
 		currentJobID_ = AsyncJob::getInstance().startJob(&Data::importJob, this, filename);
 	}
 }
@@ -155,18 +126,17 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 	{
 		using OpenInfraPlatform::Core::IfcGeometryConverter::IfcPeekStepReader;
 		IfcPeekStepReader::IfcSchema ifcSchema;
+		std::string strSchema;
 		try
 		{
-			ifcSchema = IfcPeekStepReader::parseIfcHeader(filename);
+			std::tie(strSchema,ifcSchema) = IfcPeekStepReader::parseIfcHeader(filename);
 		}
 		catch (oip::IfcPeekReaderException ex)
 		{
 			showError(ex.what(), "IFC version not known to OIP.");
 			return;
 		}
-		tempIfcGeometryModel_ = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel>();
-
-
+		
 		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC2X3) {
 #ifdef OIP_MODULE_EARLYBINDING_IFC2X3
 			ParseExpressAndGeometryModel<emt::IFC2X3EntityTypes, OpenInfraPlatform::IFC2X3::IFC2X3Reader>(filename);
@@ -199,15 +169,20 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 			ParseExpressAndGeometryModel<emt::IFC4X3_RC1EntityTypes, OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader>(filename);
 			return;
 #else // OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-			IFCVersionNotCompiled("IFC4X13_RC1");
+			IFCVersionNotCompiled("IFC4X3_RC1");
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 		}
+
+		IFCVersionNotCompiled(strSchema);
+		return;
 	}	
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
 	if (buw::PointCloud::GetSupportedExtensions().contains(extension)) {
-		pointCloud_ = buw::PointCloud::FromFile(filename.data(), true);
+		auto pointCloud = buw::PointCloud::FromFile(filename.data(), true);
+		addModel(pointCloud);
+		latestChangeFlag_ = ChangeFlag::PointCloud;
 		return;
 	}
 	else {
@@ -225,10 +200,10 @@ void OpenInfraPlatform::Core::DataManagement::Data::showError(QString errorMessa
 		QMessageBox(QMessageBox::Icon::Critical, errorTitle, errorMessage, QMessageBox::StandardButton::Ok, nullptr).exec();
 }
 
-void OpenInfraPlatform::Core::DataManagement::Data::IFCVersionNotCompiled( std::string schema )
+void OpenInfraPlatform::Core::DataManagement::Data::IFCVersionNotCompiled( const std::string& schema )
 {
 	QString errorTitle = "IFC version not compiled";
-	QString errorMessage = "Please compile the OIP with support for " + QString(schema[0]);
+	QString errorMessage = "Please compile the OIP with support for " + QString(schema.c_str());
 	showError(errorMessage, errorTitle);
 }
 
@@ -248,29 +223,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::jobFinished(int jobID, bool 
 		return;
 	}
 
-	ChangeFlag flag = (ChangeFlag)0;
-	if (tempIfcGeometryModel_)
-	{
-		flag = flag | ChangeFlag::IfcGeometry;
-
-		if (merge_)
-		{
-			throw new buw::NotImplementedYetException("merge ifcGeometry is not supported yet");
-		}
-		else
-		{
-			ifcGeometryModel_ = tempIfcGeometryModel_;
-		}
-
-		tempIfcGeometryModel_ = nullptr;
-	}
-
-#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-	if (pointCloud_) {
-		flag = flag | ChangeFlag::PointCloud;
-	}
-#endif
-	pushChange(flag);
+	pushChange(getLatesChangeFlag());
 }
 
 
@@ -318,7 +271,7 @@ const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationName()
 
 const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationVersionString()
 {
-	return "2018";
+	return "2020";
 }
 
 const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationOpenFileFilter()
@@ -367,61 +320,6 @@ bool OpenInfraPlatform::Core::DataManagement::Data::isSkyboxEnabled() const
 }
 
 
-buw::Vector3d OpenInfraPlatform::Core::DataManagement::Data::getOffset() const
-{
-	buw::Vector3d minPos;
-	buw::Vector3d maxPos;
-	buw::Vector3d offsetViewArea = minPos + 0.5 * (maxPos - minPos);
-
-	return offsetViewArea;
-}
-
-
-// Add Georeference
-
-double  OpenInfraPlatform::Core::DataManagement::Data::getEastings()
-{
-	return m_Eastings;
-}
-
-void  OpenInfraPlatform::Core::DataManagement::Data::setEastings(double value)
-{
-	m_Eastings = value;
-}
-
-double  OpenInfraPlatform::Core::DataManagement::Data::getNorthings()
-{
-	return m_Northings;
-}
-
-void  OpenInfraPlatform::Core::DataManagement::Data::setNorthings(double value)
-{
-	m_Northings = value;
-}
-
-
-double  OpenInfraPlatform::Core::DataManagement::Data::getOrthogonalHeight()
-{
-	return m_OrthogonalHeight;
-}
-
-void  OpenInfraPlatform::Core::DataManagement::Data::setOrthogonalHeight(double value)
-{
-	m_OrthogonalHeight = value;
-}
-
-
-QString  OpenInfraPlatform::Core::DataManagement::Data::getEPSGcodeName()
-{
-	return m_Name;
-}
-
-void  OpenInfraPlatform::Core::DataManagement::Data::setEPSGcodeName(QString value)
-{
-	m_Name = value;
-}
-
-
 
 void OpenInfraPlatform::Core::DataManagement::Data::showViewCube(const bool enable)
 {
@@ -433,11 +331,6 @@ void OpenInfraPlatform::Core::DataManagement::Data::showViewCube(const bool enab
 bool OpenInfraPlatform::Core::DataManagement::Data::isViewCubeEnabled()
 {
 	return bShowViewCube_;
-}
-
-buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> OpenInfraPlatform::Core::DataManagement::Data::getIfcGeometryModel() const
-{ 
-	return ifcGeometryModel_;
 }
 
 void OpenInfraPlatform::Core::DataManagement::Data::setShowFrameTimes(const bool enable)
@@ -453,14 +346,59 @@ bool OpenInfraPlatform::Core::DataManagement::Data::showFrameTimes() const
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-
-std::shared_ptr<buw::PointCloud> OpenInfraPlatform::Core::DataManagement::Data::getPointCloud() {
-	return pointCloud_;
+// always returns the last loaded point cloud - needs to be done better (pjanck, 2020-09-28)
+std::shared_ptr<oip::PointCloud> OpenInfraPlatform::Core::DataManagement::Data::getPointCloud()
+{
+	for (auto model = models_.rbegin(); model != models_.rend(); model++)
+		if (std::dynamic_pointer_cast<oip::PointCloud>(*model))
+			return std::dynamic_pointer_cast<oip::PointCloud>(*model);
+	return nullptr;
 }
-
-void OpenInfraPlatform::Core::DataManagement::Data::exportPointCloud(const std::string& filename) const {
-	//TODO
-}
-
-
 #endif
+
+// Model handling
+void OpenInfraPlatform::Core::DataManagement::Data::addModel(buw::ReferenceCounted<oip::IModel> model)
+{
+	if( std::find(models_.begin(), models_.end(), model) == models_.end() )
+		models_.push_back(model);
+}
+
+bool OpenInfraPlatform::Core::DataManagement::Data::hasModels()
+{
+	return !models_.empty();
+}
+
+std::shared_ptr<oip::IModel> OpenInfraPlatform::Core::DataManagement::Data::getLastModel()
+{
+	if (hasModels())
+		return *models_.rbegin();
+	return nullptr;
+}
+
+void OpenInfraPlatform::Core::DataManagement::Data::removeModel(buw::ReferenceCounted<oip::IModel> model)
+{
+	auto found = std::find(models_.begin(), models_.end(), model);
+	if (found != models_.end())
+		models_.remove(model);
+}
+
+void OpenInfraPlatform::Core::DataManagement::Data::removeAllModels()
+{
+	models_.clear();
+}
+
+oip::BBox OpenInfraPlatform::Core::DataManagement::Data::getExtents()
+{
+	oip::BBox bb;
+
+	for (auto& model : models_)
+		if( !model->isEmpty() )
+			bb.update(model->getExtent());
+
+	// if bounding box is still on default, overwrite with -1 to 1
+	if (bb.isEmpty())
+	{
+		bb.fit(carve::geom::VECTOR(-1., -1., -1.), carve::geom::VECTOR(1., 1., 1.));
+	}
+	return bb;
+}

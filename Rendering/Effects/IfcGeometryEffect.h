@@ -20,14 +20,14 @@
 #ifndef OpenInfraPlatform_UserInterface_IfcGeometryEffect_d170662a_b003_4afa_a25b_a9d772f3013d_h
 #define OpenInfraPlatform_UserInterface_IfcGeometryEffect_d170662a_b003_4afa_a25b_a9d772f3013d_h
 #include "IfcGeometryConverter/ConverterBuw.h"
-#include <buw.Rasterizer.h>
 #include <map>
 
+#include "../Resources/EffectBase.h"
 #include "..\namespace.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
-class IfcGeometryEffect: public buw::Effect {
+class IfcGeometryEffect : public EffectBase {
 public:
     IfcGeometryEffect(buw::IRenderSystem* renderSystem,
         buw::ReferenceCounted<buw::IViewport> viewport,
@@ -36,11 +36,14 @@ public:
 
     virtual ~IfcGeometryEffect();
 
-    void setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const buw::Vector3d& offset);
+    void setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcModel> ifcGeometryModel);
 
 private:
     void v_init();
     void v_render();
+
+	//! EffectBase interface - change offset to the new value
+	virtual void changeOffset(const buw::Vector3d& offsetOld, const buw::Vector3d& offsetNew) override;
 
 private:
     buw::ReferenceCounted<buw::IPipelineState> meshPipelineState_ = nullptr, polylinePipelineState_ = nullptr;
@@ -51,8 +54,8 @@ private:
     buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA_ = nullptr;
     bool valid_ = false;
 
-	buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel_ = nullptr;
-	buw::Vector3d offset_;
+	buw::ReferenceCounted<Core::IfcGeometryConverter::IfcModel> ifcGeometryModel_ = nullptr;
+
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END

@@ -90,7 +90,7 @@ IfcGeometryModelRenderer::~IfcGeometryModelRenderer()
 
 void IfcGeometryModelRenderer::fitViewToModel() const
 {
-    cameraController_->fitToView(model_->bb_.min().cast<float>(), model_->bb_.max().cast<float>());
+	cameraController_->fitToView((model_->bb_.min()-model_->bb_.center()).cast<float>(), (model_->bb_.max()-model_->bb_.center()).cast<float>());
     cameraController_->tick(1.0f);
     camera_->tick(1.0f);
 }
@@ -147,8 +147,10 @@ buw::Image4b IfcGeometryModelRenderer::captureImage()
     return getBackBufferImage();
 }
 
-void IfcGeometryModelRenderer::setViewDirection(const buw::eViewDirection& direction)
+void IfcGeometryModelRenderer::setViewDirection(const buw::eViewDirection& direction, const bool fitViewToModel )
 {   
+	if( fitViewToModel )
+		this->fitViewToModel();
     cameraController_->setViewDirection(buw::CameraController::getViewDirectionVector(direction));
 
     // Operation takes 0.5 seconds

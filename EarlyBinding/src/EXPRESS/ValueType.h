@@ -168,7 +168,14 @@ bool ValueType<bool>::readStepData(const std::string &value, const std::shared_p
 };
 
 OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_EXPORT
-std::string ValueType<std::string>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { return (value); };
+std::string ValueType<std::string>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { 
+	if (value.at(0) == '\'') {
+		return value.substr(1, value.length() - 2);
+	}
+	else {
+		return value;
+	}
+};
 
 OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_EXPORT
 boost::logic::tribool ValueType<boost::logic::tribool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {

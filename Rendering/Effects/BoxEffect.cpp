@@ -29,7 +29,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 
 BoxEffect::BoxEffect(buw::IRenderSystem * renderSystem, buw::ReferenceCounted<buw::IViewport> viewport, buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA, buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer, buw::ReferenceCounted<buw::IConstantBuffer> viewportBuffer)
-	: buw::Effect(renderSystem), viewport_(viewport), worldBuffer_(worldBuffer), depthStencilMSAA_(depthStencilMSAA), viewportBuffer_(viewportBuffer)
+	: EffectBase(renderSystem), viewport_(viewport), worldBuffer_(worldBuffer), depthStencilMSAA_(depthStencilMSAA), viewportBuffer_(viewportBuffer)
 {
 }
 
