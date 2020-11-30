@@ -934,7 +934,7 @@ namespace OpenInfraPlatform {
 				/*! \brief Calculates coordinates of the intersection point.
 				* \param[in] conversionMatrix		A pointer to data from IfcIndexedPolyCurve.
 				* \param[in] vector3D				Vector in 3D
-				* return							converterted vector in 2D. 		
+				* return							Converted vector in 2D. 		
 				*/
 				carve::geom::vector<2> convert3Dto2D(const carve::math::Matrix&  conversionMatrix, const carve::geom::vector<3>& vector3D) const throw(...){
 					return carve::geom::VECTOR((conversionMatrix._11 * vector3D.x + conversionMatrix._12 * vector3D.y + conversionMatrix._13 * vector3D.z),
