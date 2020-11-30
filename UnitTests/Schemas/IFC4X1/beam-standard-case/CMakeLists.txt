@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(beam-standard-case IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(beam-standard-case IFC4X1)

@@ -15,17 +15,16 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <reader/IFC4x1Reader.h>
+#include <reader/IFC4X1Reader.h>
 #include <namespace.h>
 
 #include <VisualTest.h>
 
-#include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
+#include <IfcGeometryConverter/IfcImporterImpl.h>
 
 using namespace testing;
-
 
 class BeamStandardCase : public VisualTest {
 protected:
@@ -44,7 +43,6 @@ protected:
 
 		_background = renderer->captureImage();
 		renderer->setModel(model);
-
 	}
 
 	virtual void TearDown() override {
@@ -53,15 +51,28 @@ protected:
 	}
 
 	virtual std::string TestName() const { return "beam-standard-case"; }
-	virtual std::string Schema() const { return "IFC4x1"; }
+	virtual std::string Schema() const { return "IFC4X1"; }
+
+	const boost::filesystem::path filename = dataPath("beam-standard-case.ifc");
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(BeamStandardCase, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(349));
+	EXPECT_THAT(express_model->entities.size(), Eq(366));
+}
+
+TEST_F(BeamStandardCase, IFCHasAnEssentialEntity) {
+	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
+	EXPECT_NE(result, express_model->entities.end());
+}
+
+TEST_F(BeamStandardCase, CountEssentialEntities) {
+	auto result = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
+
+	EXPECT_EQ(result, 18);
 }
 
 TEST_F(BeamStandardCase, ImageIsSaved)
@@ -183,5 +194,3 @@ TEST_F(BeamStandardCase, VertexViews)
 	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
 	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
 }
-
-

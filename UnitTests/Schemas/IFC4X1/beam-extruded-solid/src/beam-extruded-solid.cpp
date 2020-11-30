@@ -1,90 +1,95 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
-    Chair of Computational Modeling and Simulation.
+	Copyright (c) 2020 Technical University of Munich
+	Chair of Computational Modeling and Simulation.
 
-    TUM Open Infra Platform is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License Version 3
-    as published by the Free Software Foundation.
+	TUM Open Infra Platform is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License Version 3
+	as published by the Free Software Foundation.
 
-    TUM Open Infra Platform is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+	TUM Open Infra Platform is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <reader/IFC4x1Reader.h>
+#include <reader/IFC4X1Reader.h>
 #include <namespace.h>
 
 #include <VisualTest.h>
 
-#include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
+#include <IfcGeometryConverter/IfcImporterImpl.h>
 
 using namespace testing;
 
-
 class BeamExtrudedSolid : public VisualTest {
-    protected:
+protected:
 
-    // Test standard values
-    buw::Image4b _background = buw::Image4b(0, 0);
+	// Test standard values
+	buw::Image4b _background = buw::Image4b(0, 0);
 
-    virtual void SetUp() override {
-        VisualTest::SetUp();
+	virtual void SetUp() override {
+		VisualTest::SetUp();
 
-        express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
+		express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
 
-        importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
-        importer->collectGeometryData(express_model);
-	    oip::ConverterBuwT<emt::IFC4X1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
+		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
+		importer->collectGeometryData(express_model);
+		oip::ConverterBuwT<emt::IFC4X1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
 
-        _background = renderer->captureImage();
-        renderer->setModel(model);
+		_background = renderer->captureImage();
+		renderer->setModel(model);
+	}
 
-    }
+	virtual void TearDown() override {
+		express_model.reset();
+		VisualTest::TearDown();
+	}
 
-    virtual void TearDown() override {
-        express_model.reset();
-        VisualTest::TearDown();
-    }
+	virtual std::string TestName() const { return "beam-extruded-solid"; }
+	virtual std::string Schema() const { return "IFC4X1"; }
 
-    virtual std::string TestName() const { return "beam-extruded-solid"; }
-    virtual std::string Schema() const { return "IFC4x1"; }
+	const boost::filesystem::path filename = dataPath("beam-extruded-solid.ifc");
 
-    std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
-    buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-    buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
+	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(BeamExtrudedSolid, AllEntitiesAreRead) {
-    EXPECT_THAT(express_model->entities.size(), Eq(27));
+	EXPECT_THAT(express_model->entities.size(), Eq(27));
 }
 
+TEST_F(BeamExtrudedSolid, IFCHasAnEssentialEntity) {
+	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
+	EXPECT_NE(result, express_model->entities.end());
+}
+/*
 TEST_F(BeamExtrudedSolid, ImageIsSaved)
 {
-    // Arrange
-    buw::Image4b image = renderer->captureImage();
+	// Arrange
+	buw::Image4b image = renderer->captureImage();
 
-    // Act
-    buw::storeImage(testPath("beam-extruded-solid.png").string(), image);
+	// Act
+	buw::storeImage(testPath("beam-extruded-solid.png").string(), image);
 
-    // Assert
-    EXPECT_NO_THROW(buw::loadImage4b(testPath("beam-extruded-solid.png").string()));
+	// Assert
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("beam-extruded-solid.png").string()));
 }
 
 TEST_F(BeamExtrudedSolid, PlaneSurfaceViews)
 {
-    // Arrange
-    const auto expected_front = buw::loadImage4b(dataPath("beam-extruded-solid_front.png").string());
-    const auto expected_top = buw::loadImage4b(dataPath("beam-extruded-solid_top.png").string());
-    const auto expected_bottom = buw::loadImage4b(dataPath("beam-extruded-solid_bottom.png").string());
-    const auto expected_left = buw::loadImage4b(dataPath("beam-extruded-solid_left.png").string());
-    const auto expected_right = buw::loadImage4b(dataPath("beam-extruded-solid_right.png").string());
-    const auto expected_back = buw::loadImage4b(dataPath("beam-extruded-solid_back.png").string());
+	// Arrange
+	const auto expected_front = buw::loadImage4b(dataPath("beam-extruded-solid_front.png").string());
+	const auto expected_top = buw::loadImage4b(dataPath("beam-extruded-solid_top.png").string());
+	const auto expected_bottom = buw::loadImage4b(dataPath("beam-extruded-solid_bottom.png").string());
+	const auto expected_left = buw::loadImage4b(dataPath("beam-extruded-solid_left.png").string());
+	const auto expected_right = buw::loadImage4b(dataPath("beam-extruded-solid_right.png").string());
+	const auto expected_back = buw::loadImage4b(dataPath("beam-extruded-solid_back.png").string());
 
 	// Act (Front)
 	renderer->setViewDirection(buw::eViewDirection::Front);
@@ -106,14 +111,14 @@ TEST_F(BeamExtrudedSolid, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("beam-extruded-solid_front.png").string(), image_front);
 	buw::storeImage(testPath("beam-extruded-solid_top.png").string(), image_top);
 	buw::storeImage(testPath("beam-extruded-solid_bottom.png").string(), image_bottom);
 	buw::storeImage(testPath("beam-extruded-solid_left.png").string(), image_left);
 	buw::storeImage(testPath("beam-extruded-solid_right.png").string(), image_right);
 	buw::storeImage(testPath("beam-extruded-solid_back.png").string(), image_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front, expected_front);
@@ -162,7 +167,7 @@ TEST_F(BeamExtrudedSolid, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("beam-extruded-solid_front_left_bottom.png").string(), image_front_left_bottom);
 	buw::storeImage(testPath("beam-extruded-solid_front_right_bottom.png").string(), image_front_right_bottom);
 	buw::storeImage(testPath("beam-extruded-solid_top_left_front.png").string(), image_top_left_front);
@@ -171,7 +176,7 @@ TEST_F(BeamExtrudedSolid, VertexViews)
 	buw::storeImage(testPath("beam-extruded-solid_top_right_back.png").string(), image_top_right_back);
 	buw::storeImage(testPath("beam-extruded-solid_back_left_bottom.png").string(), image_back_left_bottom);
 	buw::storeImage(testPath("beam-extruded-solid_right_bottom_back.png").string(), image_right_bottom_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
@@ -183,5 +188,4 @@ TEST_F(BeamExtrudedSolid, VertexViews)
 	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
 	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
 }
-
-
+*/
