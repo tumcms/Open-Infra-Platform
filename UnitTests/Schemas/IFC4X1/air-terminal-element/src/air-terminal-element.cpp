@@ -15,17 +15,16 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <reader/IFC4x1Reader.h>
+#include <reader/IFC4X1Reader.h>
 #include <namespace.h>
 
 #include <VisualTest.h>
 
-#include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
+#include <IfcGeometryConverter/IfcImporterImpl.h>
 
 using namespace testing;
-
 
 class AirTerminalElement : public VisualTest {
 protected:
@@ -44,7 +43,6 @@ protected:
 
 		_background = renderer->captureImage();
 		renderer->setModel(model);
-
 	}
 
 	virtual void TearDown() override {
@@ -53,17 +51,33 @@ protected:
 	}
 
 	virtual std::string TestName() const { return "air-terminal-element"; }
-	virtual std::string Schema() const { return "IFC4x1"; }
+	virtual std::string Schema() const { return "IFC4X1"; }
+
+	const boost::filesystem::path filename = dataPath("air-terminal-element.ifc");
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(AirTerminalElement, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(159));
 }
 
+TEST_F(AirTerminalElement, IFCHasAnEssentialEntity) {
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLIDTAPERED"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCIRCLEHOLLOWPROFILEDEF"; });
+	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCRECTANGLEHOLLOWPROFILEDEF"; });
+	auto result5 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCDERIVEDPROFILEDEF"; });
+
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
+	EXPECT_NE(result4, express_model->entities.end());
+	EXPECT_NE(result5, express_model->entities.end());
+}
+/*
 TEST_F(AirTerminalElement, ImageIsSaved)
 {
 	// Arrange
@@ -106,14 +120,14 @@ TEST_F(AirTerminalElement, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("air-terminal-element_front.png").string(), image_front);
 	buw::storeImage(testPath("air-terminal-element_top.png").string(), image_top);
 	buw::storeImage(testPath("air-terminal-element_bottom.png").string(), image_bottom);
 	buw::storeImage(testPath("air-terminal-element_left.png").string(), image_left);
 	buw::storeImage(testPath("air-terminal-element_right.png").string(), image_right);
 	buw::storeImage(testPath("air-terminal-element_back.png").string(), image_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front, expected_front);
@@ -162,7 +176,7 @@ TEST_F(AirTerminalElement, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("air-terminal-element_front_left_bottom.png").string(), image_front_left_bottom);
 	buw::storeImage(testPath("air-terminal-element_front_right_bottom.png").string(), image_front_right_bottom);
 	buw::storeImage(testPath("air-terminal-element_top_left_front.png").string(), image_top_left_front);
@@ -171,7 +185,7 @@ TEST_F(AirTerminalElement, VertexViews)
 	buw::storeImage(testPath("air-terminal-element_top_right_back.png").string(), image_top_right_back);
 	buw::storeImage(testPath("air-terminal-element_back_left_bottom.png").string(), image_back_left_bottom);
 	buw::storeImage(testPath("air-terminal-element_right_bottom_back.png").string(), image_right_bottom_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
@@ -183,5 +197,4 @@ TEST_F(AirTerminalElement, VertexViews)
 	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
 	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
 }
-
-
+*/

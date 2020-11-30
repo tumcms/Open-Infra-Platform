@@ -15,17 +15,16 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <reader/IFC4x1Reader.h>
+#include <reader/IFC4X1Reader.h>
 #include <namespace.h>
 
 #include <VisualTest.h>
 
-#include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
+#include <IfcGeometryConverter/IfcImporterImpl.h>
 
 using namespace testing;
-
 
 class AirTerminalLibraryObject : public VisualTest {
 protected:
@@ -44,7 +43,6 @@ protected:
 
 		_background = renderer->captureImage();
 		renderer->setModel(model);
-
 	}
 
 	virtual void TearDown() override {
@@ -53,17 +51,27 @@ protected:
 	}
 
 	virtual std::string TestName() const { return "air-terminal-library-object"; }
-	virtual std::string Schema() const { return "IFC4x1"; }
+	virtual std::string Schema() const { return "IFC4X1"; }
+
+	const boost::filesystem::path filename = dataPath("air-terminal-library-object.ifc");
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(AirTerminalLibraryObject, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(160));
 }
 
+TEST_F(AirTerminalLibraryObject, IFCHasAnEssentialEntity) {
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLIDTAPERED"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCRECTANGLEHOLLOWPROFILEDEF"; });
+
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+}
+/*
 TEST_F(AirTerminalLibraryObject, ImageIsSaved)
 {
 	// Arrange
@@ -106,14 +114,14 @@ TEST_F(AirTerminalLibraryObject, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("air-terminal-library-object_front.png").string(), image_front);
 	buw::storeImage(testPath("air-terminal-library-object_top.png").string(), image_top);
 	buw::storeImage(testPath("air-terminal-library-object_bottom.png").string(), image_bottom);
 	buw::storeImage(testPath("air-terminal-library-object_left.png").string(), image_left);
 	buw::storeImage(testPath("air-terminal-library-object_right.png").string(), image_right);
 	buw::storeImage(testPath("air-terminal-library-object_back.png").string(), image_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front, expected_front);
@@ -162,7 +170,7 @@ TEST_F(AirTerminalLibraryObject, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("air-terminal-library-object_front_left_bottom.png").string(), image_front_left_bottom);
 	buw::storeImage(testPath("air-terminal-library-object_front_right_bottom.png").string(), image_front_right_bottom);
 	buw::storeImage(testPath("air-terminal-library-object_top_left_front.png").string(), image_top_left_front);
@@ -171,7 +179,7 @@ TEST_F(AirTerminalLibraryObject, VertexViews)
 	buw::storeImage(testPath("air-terminal-library-object_top_right_back.png").string(), image_top_right_back);
 	buw::storeImage(testPath("air-terminal-library-object_back_left_bottom.png").string(), image_back_left_bottom);
 	buw::storeImage(testPath("air-terminal-library-object_right_bottom_back.png").string(), image_right_bottom_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
@@ -183,5 +191,4 @@ TEST_F(AirTerminalLibraryObject, VertexViews)
 	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
 	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
 }
-
-
+*/
