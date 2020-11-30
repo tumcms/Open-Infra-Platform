@@ -15,17 +15,16 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <reader/IFC4x1Reader.h>
+#include <reader/IFC4X1Reader.h>
 #include <namespace.h>
 
 #include <VisualTest.h>
 
-#include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
+#include <IfcGeometryConverter/IfcImporterImpl.h>
 
 using namespace testing;
-
 
 class SlabStandardCase : public VisualTest {
 protected:
@@ -44,7 +43,6 @@ protected:
 
 		_background = renderer->captureImage();
 		renderer->setModel(model);
-
 	}
 
 	virtual void TearDown() override {
@@ -53,15 +51,26 @@ protected:
 	}
 
 	virtual std::string TestName() const { return "slab-standard-case"; }
-	virtual std::string Schema() const { return "IFC4x1"; }
+	virtual std::string Schema() const { return "IFC4X1"; }
+
+	const boost::filesystem::path filename = dataPath("slab-standard-case.ifc");
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(SlabStandardCase, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(27));
+	EXPECT_THAT(express_model->entities.size(), Eq(38));
+}
+
+TEST_F(SlabStandardCase, IFCHasAnEssentialEntity) {
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCINDEXEDPOLYCURVE"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCARBITRARYCLOSEDPROFILEDEF"; });
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
 }
 
 TEST_F(SlabStandardCase, ImageIsSaved)
@@ -183,5 +192,3 @@ TEST_F(SlabStandardCase, VertexViews)
 	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
 	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
 }
-
-
