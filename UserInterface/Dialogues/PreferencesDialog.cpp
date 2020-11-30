@@ -29,9 +29,8 @@
 
 #include <QTranslator>
 
-OpenInfraPlatform::UserInterface::PreferencesDialog::PreferencesDialog(OpenInfraPlatform::UserInterface::View* view, QWidget* parent /*= nullptr*/) :
-
-	ui_(new PreferencesDialog(view, parent)),
+OpenInfraPlatform::UserInterface::PreferencesDialog::PreferencesDialog(OpenInfraPlatform::UserInterface::View* view, QWidget *parent /*= nullptr*/) :
+	ui_(new Ui::PreferencesDialog),
 	QDialog(parent, Qt::WindowTitleHint|Qt::WindowCloseButtonHint),
 	view_(view),
 	translator_(new QTranslator()),
