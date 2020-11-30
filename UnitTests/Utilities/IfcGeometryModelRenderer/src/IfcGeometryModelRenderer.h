@@ -50,7 +50,7 @@ public:
      * \param model
      * \note This also moves the camera to it's default position.
      */
-    void setModel(const std::shared_ptr<oip::IfcGeometryModel>& model);
+    void setModel(const std::shared_ptr<oip::IfcModel>& model);
 
     /*!
      * \brief Repaints and returns back buffer image.
@@ -107,7 +107,7 @@ private:
     buw::ReferenceCounted<BlueFramework::Rasterizer::ITexture2D> depthStencilMSAA_ = nullptr;
     buw::ReferenceCounted<BlueFramework::Rasterizer::IConstantBuffer> worldBuffer_ = nullptr;
     buw::ReferenceCounted<BlueFramework::Rasterizer::ITexture2D> backBuffer_ = nullptr;
-    buw::ReferenceCounted<oip::IfcGeometryModel> model_ = nullptr;
+    buw::ReferenceCounted<oip::IfcModel> model_ = nullptr;
 };
 
 #endif // IFCGEOMETRYMODELRENDERER_H
