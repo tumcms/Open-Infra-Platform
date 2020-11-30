@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(beam-varying-profiles IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(beam-varying-profiles IFC4X1)

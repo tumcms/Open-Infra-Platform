@@ -71,7 +71,6 @@ TEST_F(BeamStandardCase, IFCHasAnEssentialEntity) {
 
 TEST_F(BeamStandardCase, CountEssentialEntities) {
 	auto result = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
-
 	EXPECT_EQ(result, 18);
 }
 

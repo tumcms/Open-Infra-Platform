@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(beam-varying-extrusion-paths IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(beam-varying-extrusion-paths IFC4X1)

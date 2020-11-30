@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(beam-varying-cardinal-points IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(beam-varying-cardinal-points IFC4X1)
