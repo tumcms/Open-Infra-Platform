@@ -40,8 +40,20 @@ Entity Schema::getEntityByIndex(size_t index) const {
 	return entities_[index];
 }
 
+Entity& Schema::getEntityByIndex(size_t index) {
+	return entities_[index];
+}
+
 Entity Schema::getEntityByName(const std::string& name) const {
 	for (const auto ent : entities_) 
+		if (ent.getName() == name)
+			return ent;
+
+	throw std::runtime_error("Entity does not exist.");
+}
+
+Entity& Schema::getEntityByName(const std::string& name) {
+	for ( auto& ent : entities_)
 		if (ent.getName() == name)
 			return ent;
 
@@ -84,6 +96,9 @@ size_t Schema::getTypeCount() const {
 }
 
 Type Schema::getTypeByIndex(size_t index) const {
+	return types_[index];
+}
+Type& Schema::getTypeByIndex(size_t index) {
 	return types_[index];
 }
 
@@ -182,7 +197,15 @@ bool Schema::isSelectType(const std::string& name) const {
 }
 
 Type Schema::getTypeByName(const std::string& name) const {
-	for (const auto typ : types_)
+	for (const auto& typ : types_)
+		if (typ.getName() == name)
+			return typ;
+
+	throw std::runtime_error("Type does not exist.");
+}
+
+Type& Schema::getTypeByName(const std::string& name) {
+	for ( auto& typ : types_)
 		if (typ.getName() == name)
 			return typ;
 
