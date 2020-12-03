@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
         const char* filename = sourceFiles.getValue().c_str();
         std::string outputDirectoryName = outputDirectory.getValue();
 
-		cout << "Generating .h/.cpp files from " << filename << std::endl;
+		cout << "Generating .h/.cpp files from " << filename << " to " << outputDirectoryName << std::endl;
 		
 		// Record start time
 		auto start = std::chrono::high_resolution_clock::now();
@@ -82,21 +82,21 @@ int main(int argc, char **argv) {
         do {
             yyparse();
         } while (!feof(yyin));
-		       
+		cout << "done." << std::endl;
+
 		//link inverse attributes
 		cout << "Linking inverse attributes ... ";
-
 		oip::Schema::getInstance().linkInverses();
-		std::cout << "done." << std::endl;
+		cout << "done." << std::endl;
 
-		std::cout << "Generating files:" << std::endl;
+		cout << "Generating files:" << std::endl;
         GeneratorOIP cppgen(outputDirectoryName);
 		cppgen.generateREFACTORED(oip::Schema::getInstance());
 		
 		// Record end time
 		auto finish = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> elapsed = finish - start; 
-		std::cout << "Done! Elapsed time: " << elapsed.count() << " s\n";
+		cout << "Done! Elapsed time: " << elapsed.count() << " s\n";
 
 
     } catch (std::exception &ex) {
