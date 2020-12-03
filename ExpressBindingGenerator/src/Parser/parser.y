@@ -583,13 +583,13 @@ type_decl:
 
 		if(type.getType() == oip::eType::Select)
 		{
-			std::vector<std::string> types;
+			std::vector<std::string> ttypes;
 			while(select_named_types.size() > 0)
 			{
-				types.insert(types.begin(), select_named_types.top());
+				ttypes.insert(ttypes.begin(), select_named_types.top());
 				select_named_types.pop();
 			}
-			type.setTypes(types);
+			type.setTypes(ttypes);
 			type.setType(oip::eType::Select);
 		}
 
