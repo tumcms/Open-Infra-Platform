@@ -52,16 +52,42 @@ protected:
 		VisualTest::TearDown();
 	}
 
-	virtual std::string TestName() const { return "horizontal-alignment "; }
+	virtual std::string TestName() const { return "horizontal-alignment"; }
 	virtual std::string Schema() const { return "IFC4x1"; }
+
+	const boost::filesystem::path filename = dataPath("horizontal-alignment.ifc");
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(HorizontalAlignment, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(108));
+}
+
+TEST_F(HorizontalAlignment, IFCHasAnEssentialEntity) {
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENTCURVE"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DHORIZONTAL"; });
+	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DHORIZONTALSEGMENT"; });
+	
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
+	EXPECT_NE(result4, express_model->entities.end());
+}
+
+TEST_F(HorizontalAlignment, CountEssentialEntities) {
+	auto result1 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT"; });
+	auto result2 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENTCURVE"; });
+	auto result3 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DHORIZONTAL"; });
+	auto result4 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DHORIZONTALSEGMENT"; });
+	
+	EXPECT_EQ(result1, 6);
+	EXPECT_EQ(result2, 6);
+	EXPECT_EQ(result3, 6);
+	EXPECT_EQ(result4, 23);
 }
 
 TEST_F(HorizontalAlignment, ImageIsSaved)
@@ -70,21 +96,21 @@ TEST_F(HorizontalAlignment, ImageIsSaved)
 	buw::Image4b image = renderer->captureImage();
 
 	// Act
-	buw::storeImage(testPath("horizontal-alignment .png").string(), image);
+	buw::storeImage(testPath("horizontal-alignment.png").string(), image);
 
 	// Assert
-	EXPECT_NO_THROW(buw::loadImage4b(testPath("horizontal-alignment .png").string()));
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("horizontal-alignment.png").string()));
 }
 
 TEST_F(HorizontalAlignment, PlaneSurfaceViews)
 {
 	// Arrange
-	const auto expected_front = buw::loadImage4b(dataPath("horizontal-alignment _front.png").string());
-	const auto expected_top = buw::loadImage4b(dataPath("horizontal-alignment _top.png").string());
-	const auto expected_bottom = buw::loadImage4b(dataPath("horizontal-alignment _bottom.png").string());
-	const auto expected_left = buw::loadImage4b(dataPath("horizontal-alignment _left.png").string());
-	const auto expected_right = buw::loadImage4b(dataPath("horizontal-alignment _right.png").string());
-	const auto expected_back = buw::loadImage4b(dataPath("horizontal-alignment _back.png").string());
+	const auto expected_front = buw::loadImage4b(dataPath("horizontal-alignment_front.png").string());
+	const auto expected_top = buw::loadImage4b(dataPath("horizontal-alignment_top.png").string());
+	const auto expected_bottom = buw::loadImage4b(dataPath("horizontal-alignment_bottom.png").string());
+	const auto expected_left = buw::loadImage4b(dataPath("horizontal-alignment_left.png").string());
+	const auto expected_right = buw::loadImage4b(dataPath("horizontal-alignment_right.png").string());
+	const auto expected_back = buw::loadImage4b(dataPath("horizontal-alignment_back.png").string());
 
 	// Act (Front)
 	renderer->setViewDirection(buw::eViewDirection::Front);
@@ -107,12 +133,12 @@ TEST_F(HorizontalAlignment, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("horizontal-alignment _front.png").string(), image_front);
-	buw::storeImage(testPath("horizontal-alignment _top.png").string(), image_top);
-	buw::storeImage(testPath("horizontal-alignment _bottom.png").string(), image_bottom);
-	buw::storeImage(testPath("horizontal-alignment _left.png").string(), image_left);
-	buw::storeImage(testPath("horizontal-alignment _right.png").string(), image_right);
-	buw::storeImage(testPath("horizontal-alignment _back.png").string(), image_back);
+	buw::storeImage(testPath("horizontal-alignment_front.png").string(), image_front);
+	buw::storeImage(testPath("horizontal-alignment_top.png").string(), image_top);
+	buw::storeImage(testPath("horizontal-alignment_bottom.png").string(), image_bottom);
+	buw::storeImage(testPath("horizontal-alignment_left.png").string(), image_left);
+	buw::storeImage(testPath("horizontal-alignment_right.png").string(), image_right);
+	buw::storeImage(testPath("horizontal-alignment_back.png").string(), image_back);
 	*/
 
 	// Assert
@@ -127,14 +153,14 @@ TEST_F(HorizontalAlignment, PlaneSurfaceViews)
 TEST_F(HorizontalAlignment, VertexViews)
 {
 	// Arrange
-	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("horizontal-alignment _front_left_bottom.png").string());
-	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("horizontal-alignment _front_right_bottom.png").string());
-	const auto expected_top_left_front = buw::loadImage4b(dataPath("horizontal-alignment _top_left_front.png").string());
-	const auto expected_top_front_right = buw::loadImage4b(dataPath("horizontal-alignment _top_front_right.png").string());
-	const auto expected_top_left_back = buw::loadImage4b(dataPath("horizontal-alignment _top_left_back.png").string());
-	const auto expected_top_right_back = buw::loadImage4b(dataPath("horizontal-alignment _top_right_back.png").string());
-	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("horizontal-alignment _back_left_bottom.png").string());
-	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("horizontal-alignment _right_bottom_back.png").string());
+	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("horizontal-alignment_front_left_bottom.png").string());
+	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("horizontal-alignment_front_right_bottom.png").string());
+	const auto expected_top_left_front = buw::loadImage4b(dataPath("horizontal-alignment_top_left_front.png").string());
+	const auto expected_top_front_right = buw::loadImage4b(dataPath("horizontal-alignment_top_front_right.png").string());
+	const auto expected_top_left_back = buw::loadImage4b(dataPath("horizontal-alignment_top_left_back.png").string());
+	const auto expected_top_right_back = buw::loadImage4b(dataPath("horizontal-alignment_top_right_back.png").string());
+	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("horizontal-alignment_back_left_bottom.png").string());
+	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("horizontal-alignment_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
 	renderer->setViewDirection(buw::eViewDirection::FrontLeftBottom);
@@ -163,14 +189,14 @@ TEST_F(HorizontalAlignment, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("horizontal-alignment _front_left_bottom.png").string(), image_front_left_bottom);
-	buw::storeImage(testPath("horizontal-alignment _front_right_bottom.png").string(), image_front_right_bottom);
-	buw::storeImage(testPath("horizontal-alignment _top_left_front.png").string(), image_top_left_front);
-	buw::storeImage(testPath("horizontal-alignment _top_front_right.png").string(), image_top_front_right);
-	buw::storeImage(testPath("horizontal-alignment _top_left_back.png").string(), image_top_left_back);
-	buw::storeImage(testPath("horizontal-alignment _top_right_back.png").string(), image_top_right_back);
-	buw::storeImage(testPath("horizontal-alignment _back_left_bottom.png").string(), image_back_left_bottom);
-	buw::storeImage(testPath("horizontal-alignment _right_bottom_back.png").string(), image_right_bottom_back);
+	buw::storeImage(testPath("horizontal-alignment_front_left_bottom.png").string(), image_front_left_bottom);
+	buw::storeImage(testPath("horizontal-alignment_front_right_bottom.png").string(), image_front_right_bottom);
+	buw::storeImage(testPath("horizontal-alignment_top_left_front.png").string(), image_top_left_front);
+	buw::storeImage(testPath("horizontal-alignment_top_front_right.png").string(), image_top_front_right);
+	buw::storeImage(testPath("horizontal-alignment_top_left_back.png").string(), image_top_left_back);
+	buw::storeImage(testPath("horizontal-alignment_top_right_back.png").string(), image_top_right_back);
+	buw::storeImage(testPath("horizontal-alignment_back_left_bottom.png").string(), image_back_left_bottom);
+	buw::storeImage(testPath("horizontal-alignment_right_bottom_back.png").string(), image_right_bottom_back);
 	*/
 
 	// Assert

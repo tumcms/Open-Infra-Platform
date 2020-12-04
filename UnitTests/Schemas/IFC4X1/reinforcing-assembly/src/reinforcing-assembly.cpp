@@ -55,13 +55,34 @@ protected:
 	virtual std::string TestName() const { return "reinforcing-assembly"; }
 	virtual std::string Schema() const { return "IFC4x1"; }
 
+	const boost::filesystem::path filename = dataPath("reinforcing-assembly.ifc");
+
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(ReinforcingAssembly, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(433));
+}
+
+TEST_F(ReinforcingAssembly, IFCHasAnEssentialEntity) {
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCSWEPTDISKSOLID"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCMAPPEDITEM"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCRECTANGLEPROFILEDEF"; });
+	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCINDEXEDPOLYCURVE"; });
+	auto result5 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
+	
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
+	EXPECT_NE(result4, express_model->entities.end());
+	EXPECT_NE(result5, express_model->entities.end());
+}
+
+TEST_F(ReinforcingAssembly, CountEssentialEntities) {
+	auto result1 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCMAPPEDITEM"; });
+	EXPECT_EQ(result1, 34);
 }
 
 TEST_F(ReinforcingAssembly, ImageIsSaved)

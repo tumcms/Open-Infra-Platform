@@ -68,10 +68,9 @@ TEST_F(CsgPrimitive, AllEntitiesAreRead) {
 
 TEST_F(CsgPrimitive, IFCHasAnEssentialEntity) {
 	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCSGSOLID"; });
-	
-
 	EXPECT_NE(result1, express_model->entities.end());
 }
+
 TEST_F(CsgPrimitive, ImageIsSaved)
 {
 	// Arrange

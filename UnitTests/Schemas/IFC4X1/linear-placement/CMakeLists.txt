@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(linear-placement IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(linear-placement IFC4X1)

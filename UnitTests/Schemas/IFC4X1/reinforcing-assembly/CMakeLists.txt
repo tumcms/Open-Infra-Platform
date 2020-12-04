@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(reinforcing-assembly IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(reinforcing-assembly IFC4X1)

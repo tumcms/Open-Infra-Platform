@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(reinforcing-stirrup IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(reinforcing-stirrup IFC4X1)
