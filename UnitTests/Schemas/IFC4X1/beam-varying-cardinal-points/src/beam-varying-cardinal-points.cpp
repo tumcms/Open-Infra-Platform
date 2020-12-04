@@ -65,14 +65,20 @@ TEST_F(BeamVaryingCardinalPoints, AllEntitiesAreRead) {
 }
 
 TEST_F(BeamVaryingCardinalPoints, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
-	EXPECT_NE(result, express_model->entities.end());
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
+
+	
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
 }
 
 TEST_F(BeamVaryingCardinalPoints, CountEssentialEntities) {
-	auto result = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
+	auto result1 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
+	auto result2 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
 
-	EXPECT_EQ(result, 4);
+	EXPECT_EQ(result1, 4);
+	EXPECT_EQ(result2, 4);
 }
 
 TEST_F(BeamVaryingCardinalPoints, ImageIsSaved)

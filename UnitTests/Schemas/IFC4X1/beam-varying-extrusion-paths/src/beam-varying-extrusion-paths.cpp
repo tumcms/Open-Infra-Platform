@@ -65,8 +65,15 @@ TEST_F(BeamVaryingExtrusionPaths, AllEntitiesAreRead) {
 }
 
 TEST_F(BeamVaryingExtrusionPaths, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
-	EXPECT_NE(result, express_model->entities.end());
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCISHAPEPROFILEDEF"; });
+	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCREVOLVEDAREASOLID"; });
+	
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
+	EXPECT_NE(result4, express_model->entities.end());
 }
 
 TEST_F(BeamVaryingExtrusionPaths, CountEssentialEntities) {
@@ -77,7 +84,7 @@ TEST_F(BeamVaryingExtrusionPaths, CountEssentialEntities) {
 TEST_F(BeamVaryingExtrusionPaths, ImageIsSaved)
 {
 	// Arrange
-	buw::Image4b image = renderer->captureImage();
+	buw::Image4b auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });image = renderer->captureImage();
 
 	// Act
 	buw::storeImage(testPath("beam-varying-extrusion-paths.png").string(), image);

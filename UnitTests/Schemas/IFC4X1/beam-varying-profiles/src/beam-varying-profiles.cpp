@@ -65,13 +65,23 @@ TEST_F(BeamVaryingProfiles, AllEntitiesAreRead) {
 }
 
 TEST_F(BeamVaryingProfiles, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
-	EXPECT_NE(result, express_model->entities.end());
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCISHAPEPROFILEDEF"; });
+	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCIRCLEPROFILEDEF"; });
+	
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
+	EXPECT_NE(result4, express_model->entities.end());
 }
 
 TEST_F(BeamVaryingProfiles, CountEssentialEntities) {
-	auto result = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
-	EXPECT_EQ(result, 2);
+	auto result1 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCBEAMSTANDARDCASE"; });
+	auto result2 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
+	
+	EXPECT_EQ(result1, 2);
+	EXPECT_EQ(result2, 2);
 }
 /*
 TEST_F(BeamVaryingProfiles, ImageIsSaved)
