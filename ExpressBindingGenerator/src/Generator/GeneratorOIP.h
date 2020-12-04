@@ -99,6 +99,8 @@ private:
     std::string guidPath_;
     std::string entityPath_;
 	std::string selectPath_;
+	std::string entityRootPath_;
+	std::string selectRootPath_;
 	std::string typePath_;
     std::string readerPath_;
     std::string modelPath_;
