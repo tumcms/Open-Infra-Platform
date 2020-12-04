@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(vertical-alignment IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(vertical-alignment IFC4X1)

@@ -55,15 +55,43 @@ protected:
 	virtual std::string TestName() const { return "wall-elemented-case"; }
 	virtual std::string Schema() const { return "IFC4x1"; }
 
+	const boost::filesystem::path filename = dataPath("wall-elemented-case.ifc");
+
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(WallElementedCase, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(468));
 }
 
+TEST_F(WallElementedCase, IFCHasAnEssentialEntity) {
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCGEOMETRICCURVESET"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCRECTANGLEPROFILEDEF"; });
+	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCMATERIALPROFILE"; });
+	auto result5 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCOPENINGELEMENT"; });
+
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
+	EXPECT_NE(result4, express_model->entities.end());
+	EXPECT_NE(result5, express_model->entities.end());
+}
+
+TEST_F(WallElementedCase, CountEssentialEntities) {
+	auto result1 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
+	auto result2 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCRECTANGLEPROFILEDEF"; });
+	auto result3 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCMATERIALPROFILE"; });
+	auto result4 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCOPENINGELEMENT"; });
+
+	EXPECT_EQ(result1, 5);
+	EXPECT_EQ(result2, 11);
+	EXPECT_EQ(result3, 6);
+	EXPECT_EQ(result4, 2);
+}
+/*
 TEST_F(WallElementedCase, ImageIsSaved)
 {
 	// Arrange
@@ -106,14 +134,14 @@ TEST_F(WallElementedCase, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("wall-elemented-case_front.png").string(), image_front);
 	buw::storeImage(testPath("wall-elemented-case_top.png").string(), image_top);
 	buw::storeImage(testPath("wall-elemented-case_bottom.png").string(), image_bottom);
 	buw::storeImage(testPath("wall-elemented-case_left.png").string(), image_left);
 	buw::storeImage(testPath("wall-elemented-case_right.png").string(), image_right);
 	buw::storeImage(testPath("wall-elemented-case_back.png").string(), image_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front, expected_front);
@@ -162,7 +190,7 @@ TEST_F(WallElementedCase, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("wall-elemented-case_front_left_bottom.png").string(), image_front_left_bottom);
 	buw::storeImage(testPath("wall-elemented-case_front_right_bottom.png").string(), image_front_right_bottom);
 	buw::storeImage(testPath("wall-elemented-case_top_left_front.png").string(), image_top_left_front);
@@ -171,7 +199,7 @@ TEST_F(WallElementedCase, VertexViews)
 	buw::storeImage(testPath("wall-elemented-case_top_right_back.png").string(), image_top_right_back);
 	buw::storeImage(testPath("wall-elemented-case_back_left_bottom.png").string(), image_back_left_bottom);
 	buw::storeImage(testPath("wall-elemented-case_right_bottom_back.png").string(), image_right_bottom_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
@@ -182,6 +210,6 @@ TEST_F(WallElementedCase, VertexViews)
 	EXPECT_EQ(image_top_right_back, expected_top_right_back);
 	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
 	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
-}
+}*/
 
 
