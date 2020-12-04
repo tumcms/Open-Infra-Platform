@@ -1172,6 +1172,12 @@ void resolveIncludes(const Schema& schema, const Type& type)
 				}
 			}
 
+			auto self = typeAttributes.find(type.getName());
+			while (self != typeAttributes.end()) {
+				typeAttributes.erase(self);
+				self = typeAttributes.find(type.getName());
+			}
+
 			cacheIncludesTypes.insert(std::pair<std::string, std::set<std::string>>(type.getName(), typeAttributes));
 		}
 
