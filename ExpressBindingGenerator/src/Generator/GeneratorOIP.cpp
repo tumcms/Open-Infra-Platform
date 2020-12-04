@@ -1597,7 +1597,7 @@ void GeneratorOIP::createTypesHeaderFileREFACTORED(const Schema & schema)
 		auto type = schema.getTypeByIndex(i);
 
 		if( type.isSelectType() )
-			if( isIncluding( type.getName(), "IFCROOT") )
+			if( isIncluding( type.getName(), "IFCPRODUCT") )
 				out << "#include \"select_root/" << type.getName() << ".h\"" << std::endl;
 			else
 				out << "#include \"select/" << type.getName() << ".h\"" << std::endl;
@@ -1647,7 +1647,7 @@ void GeneratorOIP::createEntitiesHeaderFileREFACTORED(const Schema &schema) {
 	for (int i = 0; i < schema.getEntityCount(); i++) {
 		auto entity = schema.getEntityByIndex(i);
 
-		if (isIncluding(entity.getName(), "IFCROOT"))
+		if (isIncluding(entity.getName(), "IFCPRODUCT"))
 			out << "#include \"entity_root/" << entity.getName() << ".h\"" << std::endl;
 		else
 			out << "#include \"entity/" << entity.getName() << ".h\"" << std::endl;
@@ -1946,7 +1946,7 @@ void GeneratorOIP::generateTypeHeaderFile(const Schema &schema, const Type &type
 void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const Type & type) const
 {
 	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << (type.isSelectType() ? ( isIncluding(type.getName(), "IFCROOT") ? selectRootPath_ : selectPath_ ) : typePath_) << "/" << type.getName() << ".h";
+	ssHeaderFilename << (type.isSelectType() ? ( isIncluding(type.getName(), "IFCPRODUCT") ? selectRootPath_ : selectPath_ ) : typePath_) << "/" << type.getName() << ".h";
 	//std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssHeaderFilename.str());
 
@@ -1978,7 +1978,7 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 
 		if (schema.hasType(type.getContainerType())) {
 			if( schema.isSelectType(type.getContainerType()) )
-				if( isIncluding( type.getContainerType(), "IFCROOT") )
+				if( isIncluding( type.getContainerType(), "IFCPRODUCT") )
 					writeInclude(out, "../select_root/" + type.getContainerType() + ".h");
 				else
 					writeInclude(out, "../select/" + type.getContainerType() + ".h");
@@ -2020,7 +2020,7 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 		if (!types.empty()) {
 			for (auto val : types) {
 				if(schema.isSelectType(val))
-					if (isIncluding(val, "IFCROOT"))
+					if (isIncluding(val, "IFCPRODUCT"))
 						writeInclude(out, "../select_root/" + val + ".h");
 					else
 						writeInclude(out, "../select/" + val + ".h");
@@ -2456,7 +2456,7 @@ void GeneratorOIP::generateTypeSourceFile(const Schema &schema, const Type &type
 void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const Type & type) const
 {
 	std::stringstream ssSourceFilename;
-	ssSourceFilename << (type.isSelectType() ? (isIncluding(type.getName(), "IFCROOT") ? selectRootPath_ : selectPath_) : typePath_) << "/" << type.getName() << ".cpp";
+	ssSourceFilename << (type.isSelectType() ? (isIncluding(type.getName(), "IFCPRODUCT") ? selectRootPath_ : selectPath_) : typePath_) << "/" << type.getName() << ".cpp";
 	//std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssSourceFilename.str());
 
@@ -2478,7 +2478,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 
 		if (!entities.empty()) {
 			for (const auto& entity : entities) {
-				if(isIncluding(entity, "IFCROOT") )
+				if(isIncluding(entity, "IFCPRODUCT") )
 					writeInclude(out, "../entity_root/" + entity + ".h");
 				else
 					writeInclude(out, "../entity/" + entity + ".h");
@@ -2489,7 +2489,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 		if (!types.empty()) {
 			for (const auto& val : types) {
 				if (schema.isSelectType(val))
-					if (isIncluding(val, "IFCROOT"))
+					if (isIncluding(val, "IFCPRODUCT"))
 						writeInclude(out, "../select_root/" + val + ".h");
 					else
 						writeInclude(out, "../select/" + val + ".h");
@@ -3502,7 +3502,7 @@ void GeneratorOIP::createEntityBrokerCPPFile(const Schema &schema) {
 
 void GeneratorOIP::generateEntityHeaderFile(const Schema &schema, const Entity &entity) {
 	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << (isIncluding(entity.getName(), "IFCROOT") ? entityRootPath_ : entityPath_) << "/" << entity.getName() << ".h";
+	ssHeaderFilename << (isIncluding(entity.getName(), "IFCPRODUCT") ? entityRootPath_ : entityPath_) << "/" << entity.getName() << ".h";
 	std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssHeaderFilename.str());
 
@@ -3748,7 +3748,7 @@ void GeneratorOIP::generateEntityHeaderFile(const Schema &schema, const Entity &
 void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, const Entity & entity) const
 {
 	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << (isIncluding(entity.getName(), "IFCROOT") ? entityRootPath_ : entityPath_) << "/" << entity.getName() << ".h";
+	ssHeaderFilename << (isIncluding(entity.getName(), "IFCPRODUCT") ? entityRootPath_ : entityPath_) << "/" << entity.getName() << ".h";
 	//std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssHeaderFilename.str());
 
@@ -3773,7 +3773,11 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 
 	// Write include for supertype.
 	if (entity.hasSupertype()) {
-		writeInclude(out, entity.getSupertype() + ".h");
+		if( isIncluding(entity.getSupertype(), "IFCPRODUCT"))
+			writeInclude(out, "../entity_root/" + entity.getSupertype() + ".h");
+		else
+			writeInclude(out, "../entity/" + entity.getSupertype() + ".h");
+
 		linebreak(out);
 	}
 
@@ -3814,7 +3818,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 	if (!typeAttributes.empty()) {
 		for (const auto& type : typeAttributes) {
 			if(schema.isSelectType(type))
-				if (isIncluding(type, "IFCROOT"))
+				if (isIncluding(type, "IFCPRODUCT"))
 					writeInclude(out, "../select_root/" + type + ".h");
 				else
 					writeInclude(out, "../select/" + type + ".h");
@@ -4016,7 +4020,7 @@ void GeneratorOIP::generateNamespaceHeader(const Schema & schema)
 
 void GeneratorOIP::generateEntitySourceFile(const Schema &schema, const Entity &entity) {
 	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << (isIncluding(entity.getName(), "IFCROOT") ? entityRootPath_ : entityPath_) << "/" << entity.getName() << ".cpp";
+	ssHeaderFilename << (isIncluding(entity.getName(), "IFCPRODUCT") ? entityRootPath_ : entityPath_) << "/" << entity.getName() << ".cpp";
 	std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssHeaderFilename.str());
 
@@ -4301,7 +4305,7 @@ void GeneratorOIP::generateEntitySourceFile(const Schema &schema, const Entity &
 void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, const Entity & entity) const
 {
 	std::stringstream ssSourceFilename;
-	ssSourceFilename << (isIncluding(entity.getName(), "IFCROOT") ? entityRootPath_ : entityPath_) << "/" << entity.getName() << ".cpp";
+	ssSourceFilename << (isIncluding(entity.getName(), "IFCPRODUCT") ? entityRootPath_ : entityPath_) << "/" << entity.getName() << ".cpp";
 	//std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssSourceFilename.str());
 
@@ -4314,7 +4318,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 
 	if (!entityAttributes.empty()) {
 		for (const auto& entityAttribute : entityAttributes) {
-			if( isIncluding(entityAttribute, "IFCROOT") )
+			if( isIncluding(entityAttribute, "IFCPRODUCT") )
 				writeInclude(out, "../entity_root/" + entityAttribute + ".h");
 			else
 				writeInclude(out, "../entity/" + entityAttribute + ".h");
