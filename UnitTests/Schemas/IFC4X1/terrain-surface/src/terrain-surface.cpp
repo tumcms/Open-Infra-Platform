@@ -55,13 +55,43 @@ protected:
 	virtual std::string TestName() const { return "terrain-surface"; }
 	virtual std::string Schema() const { return "IFC4x1"; }
 
+	const boost::filesystem::path filename = dataPath("terrain-surface.ifc");
+
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(TerrainSurface, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(65));
+}
+
+TEST_F(TerrainSurface, IFCHasAnEssentialEntity) {
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENTCURVE"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DHORIZONTAL"; });
+	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DVERTICAL"; });
+	auto result5 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DHORIZONTALSEGMENT"; });
+	auto result6 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DVERSEGLINE"; });
+	auto result7 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCIRCULARARCSEGMENT2D"; });
+
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
+	EXPECT_NE(result4, express_model->entities.end());
+	EXPECT_NE(result5, express_model->entities.end());
+	EXPECT_NE(result6, express_model->entities.end());
+	EXPECT_NE(result7, express_model->entities.end());
+}
+
+TEST_F(TerrainSurface, CountEssentialEntities) {
+	auto result1 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DHORIZONTALSEGMENT"; });
+	auto result2 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DVERSEGLINE"; });
+	auto result3 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCIRCULARARCSEGMENT2D"; });
+
+	EXPECT_EQ(result1, 9);
+	EXPECT_EQ(result2, 3);
+	EXPECT_EQ(result3, 2);
 }
 
 TEST_F(TerrainSurface, ImageIsSaved)

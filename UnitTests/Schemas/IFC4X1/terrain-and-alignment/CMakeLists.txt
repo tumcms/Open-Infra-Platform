@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(terrain-and-alignment IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(terrain-and-alignment IFC4X1)

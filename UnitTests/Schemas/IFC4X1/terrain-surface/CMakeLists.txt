@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(terrain-surface IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(terrain-surface IFC4X1)
