@@ -116,6 +116,12 @@ void OpenInfraPlatform::Core::DataManagement::Data::import(const std::string & f
 	}
 }
 
+// importJob .off files
+void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string& filename)
+{
+
+}
+
 void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing ").append(filename));
