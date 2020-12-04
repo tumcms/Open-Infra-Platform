@@ -55,13 +55,25 @@ protected:
 	virtual std::string TestName() const { return "column-extruded-solid"; }
 	virtual std::string Schema() const { return "IFC4x1"; }
 
+	const boost::filesystem::path filename = dataPath("column-extruded-solid.ifc");
+
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(ColumnExtrudedSolid, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(41));
+	EXPECT_THAT(express_model->entities.size(), Eq(42));
+}
+
+TEST_F(ColumnExtrudedSolid, IFCHasAnEssentialEntity) {
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCOLUMNSTANDARDCASE"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCOLUMNTYPE"; });
+
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
 }
 
 TEST_F(ColumnExtrudedSolid, ImageIsSaved)

@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(column-extruded-solid IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(column-extruded-solid IFC4X1)

@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(brep-model IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(brep-model IFC4X1)

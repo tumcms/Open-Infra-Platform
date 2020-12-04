@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(bloss-curve IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(bloss-curve IFC4X1)

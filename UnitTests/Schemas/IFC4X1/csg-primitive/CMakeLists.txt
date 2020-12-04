@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(csg-primitive IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(csg-primitive IFC4X1)

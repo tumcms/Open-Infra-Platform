@@ -52,39 +52,47 @@ protected:
 		VisualTest::TearDown();
 	}
 
-	virtual std::string TestName() const { return "csg-primitivee"; }
+	virtual std::string TestName() const { return "csg-primitive"; }
 	virtual std::string Schema() const { return "IFC4x1"; }
+
+	const boost::filesystem::path filename = dataPath("csg-primitive.ifc");
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(CsgPrimitive, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(27));
+	EXPECT_THAT(express_model->entities.size(), Eq(31));
 }
 
+TEST_F(CsgPrimitive, IFCHasAnEssentialEntity) {
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCSGSOLID"; });
+	
+
+	EXPECT_NE(result1, express_model->entities.end());
+}
 TEST_F(CsgPrimitive, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = renderer->captureImage();
 
 	// Act
-	buw::storeImage(testPath("csg-primitivee.png").string(), image);
+	buw::storeImage(testPath("csg-primitive.png").string(), image);
 
 	// Assert
-	EXPECT_NO_THROW(buw::loadImage4b(testPath("csg-primitivee.png").string()));
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("csg-primitive.png").string()));
 }
 
 TEST_F(CsgPrimitive, PlaneSurfaceViews)
 {
 	// Arrange
-	const auto expected_front = buw::loadImage4b(dataPath("csg-primitivee_front.png").string());
-	const auto expected_top = buw::loadImage4b(dataPath("csg-primitivee_top.png").string());
-	const auto expected_bottom = buw::loadImage4b(dataPath("csg-primitivee_bottom.png").string());
-	const auto expected_left = buw::loadImage4b(dataPath("csg-primitivee_left.png").string());
-	const auto expected_right = buw::loadImage4b(dataPath("csg-primitivee_right.png").string());
-	const auto expected_back = buw::loadImage4b(dataPath("csg-primitivee_back.png").string());
+	const auto expected_front = buw::loadImage4b(dataPath("csg-primitive_front.png").string());
+	const auto expected_top = buw::loadImage4b(dataPath("csg-primitive_top.png").string());
+	const auto expected_bottom = buw::loadImage4b(dataPath("csg-primitive_bottom.png").string());
+	const auto expected_left = buw::loadImage4b(dataPath("csg-primitive_left.png").string());
+	const auto expected_right = buw::loadImage4b(dataPath("csg-primitive_right.png").string());
+	const auto expected_back = buw::loadImage4b(dataPath("csg-primitive_back.png").string());
 
 	// Act (Front)
 	renderer->setViewDirection(buw::eViewDirection::Front);
@@ -107,12 +115,12 @@ TEST_F(CsgPrimitive, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("csg-primitivee_front.png").string(), image_front);
-	buw::storeImage(testPath("csg-primitivee_top.png").string(), image_top);
-	buw::storeImage(testPath("csg-primitivee_bottom.png").string(), image_bottom);
-	buw::storeImage(testPath("csg-primitivee_left.png").string(), image_left);
-	buw::storeImage(testPath("csg-primitivee_right.png").string(), image_right);
-	buw::storeImage(testPath("csg-primitivee_back.png").string(), image_back);
+	buw::storeImage(testPath("csg-primitive_front.png").string(), image_front);
+	buw::storeImage(testPath("csg-primitive_top.png").string(), image_top);
+	buw::storeImage(testPath("csg-primitive_bottom.png").string(), image_bottom);
+	buw::storeImage(testPath("csg-primitive_left.png").string(), image_left);
+	buw::storeImage(testPath("csg-primitive_right.png").string(), image_right);
+	buw::storeImage(testPath("csg-primitive_back.png").string(), image_back);
 	*/
 
 	// Assert
@@ -127,14 +135,14 @@ TEST_F(CsgPrimitive, PlaneSurfaceViews)
 TEST_F(CsgPrimitive, VertexViews)
 {
 	// Arrange
-	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("csg-primitivee_front_left_bottom.png").string());
-	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("csg-primitivee_front_right_bottom.png").string());
-	const auto expected_top_left_front = buw::loadImage4b(dataPath("csg-primitivee_top_left_front.png").string());
-	const auto expected_top_front_right = buw::loadImage4b(dataPath("csg-primitivee_top_front_right.png").string());
-	const auto expected_top_left_back = buw::loadImage4b(dataPath("csg-primitivee_top_left_back.png").string());
-	const auto expected_top_right_back = buw::loadImage4b(dataPath("csg-primitivee_top_right_back.png").string());
-	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("csg-primitivee_back_left_bottom.png").string());
-	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("csg-primitivee_right_bottom_back.png").string());
+	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("csg-primitive_front_left_bottom.png").string());
+	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("csg-primitive_front_right_bottom.png").string());
+	const auto expected_top_left_front = buw::loadImage4b(dataPath("csg-primitive_top_left_front.png").string());
+	const auto expected_top_front_right = buw::loadImage4b(dataPath("csg-primitive_top_front_right.png").string());
+	const auto expected_top_left_back = buw::loadImage4b(dataPath("csg-primitive_top_left_back.png").string());
+	const auto expected_top_right_back = buw::loadImage4b(dataPath("csg-primitive_top_right_back.png").string());
+	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("csg-primitive_back_left_bottom.png").string());
+	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("csg-primitive_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
 	renderer->setViewDirection(buw::eViewDirection::FrontLeftBottom);
@@ -163,14 +171,14 @@ TEST_F(CsgPrimitive, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("csg-primitivee_front_left_bottom.png").string(), image_front_left_bottom);
-	buw::storeImage(testPath("csg-primitivee_front_right_bottom.png").string(), image_front_right_bottom);
-	buw::storeImage(testPath("csg-primitivee_top_left_front.png").string(), image_top_left_front);
-	buw::storeImage(testPath("csg-primitivee_top_front_right.png").string(), image_top_front_right);
-	buw::storeImage(testPath("csg-primitivee_top_left_back.png").string(), image_top_left_back);
-	buw::storeImage(testPath("csg-primitivee_top_right_back.png").string(), image_top_right_back);
-	buw::storeImage(testPath("csg-primitivee_back_left_bottom.png").string(), image_back_left_bottom);
-	buw::storeImage(testPath("csg-primitivee_right_bottom_back.png").string(), image_right_bottom_back);
+	buw::storeImage(testPath("csg-primitive_front_left_bottom.png").string(), image_front_left_bottom);
+	buw::storeImage(testPath("csg-primitive_front_right_bottom.png").string(), image_front_right_bottom);
+	buw::storeImage(testPath("csg-primitive_top_left_front.png").string(), image_top_left_front);
+	buw::storeImage(testPath("csg-primitive_top_front_right.png").string(), image_top_front_right);
+	buw::storeImage(testPath("csg-primitive_top_left_back.png").string(), image_top_left_back);
+	buw::storeImage(testPath("csg-primitive_top_right_back.png").string(), image_top_right_back);
+	buw::storeImage(testPath("csg-primitive_back_left_bottom.png").string(), image_back_left_bottom);
+	buw::storeImage(testPath("csg-primitive_right_bottom_back.png").string(), image_right_bottom_back);
 	*/
 
 	// Assert

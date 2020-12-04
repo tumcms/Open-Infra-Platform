@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(construction-scheduling-task IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(construction-scheduling-task IFC4X1)
