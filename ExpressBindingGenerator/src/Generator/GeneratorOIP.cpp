@@ -1027,6 +1027,8 @@ bool isIncluding(const std::string& name, std::string str )
 		return el == str;
 	};
 
+	if (cmp(name)) // name == str
+		return true;
 	if (cacheIncludesTypes.find(name) != cacheIncludesTypes.end())
 		if( std::find_if( cacheIncludesTypes[name].begin(), cacheIncludesTypes[name].end(), cmp) != cacheIncludesTypes[name].end() )
 			return true;
@@ -1261,8 +1263,10 @@ void resolveIncludes(const Schema& schema, const Entity& entity)
 		self = entityAttributes.find(entity.getName());
 	}
 
-	cacheIncludesTypes.insert(std::pair<std::string, std::set<std::string>>(entity.getName(), typeAttributes));
-	cacheIncludesEntities.insert(std::pair<std::string, std::set<std::string>>(entity.getName(), entityAttributes));
+	if( !typeAttributes.empty() )
+		cacheIncludesTypes.insert(std::pair<std::string, std::set<std::string>>(entity.getName(), typeAttributes));
+	if (!entityAttributes.empty())
+		cacheIncludesEntities.insert(std::pair<std::string, std::set<std::string>>(entity.getName(), entityAttributes));
 
 }
 
@@ -3775,9 +3779,37 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 
 
 	auto attributes = entity.getAttributes();
-	
+
 	std::set<std::string> typeAttributes, entityAttributes;
-	getCachedIncludes(entity.getName(), typeAttributes, entityAttributes);
+
+	for (auto attr : attributes) {
+		if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
+			if (schema.hasEntity(attr.type->toString())) {
+				entityAttributes.insert(attr.type->toString());
+			}
+			if (schema.hasType(attr.type->toString())) {
+				typeAttributes.insert(attr.type->toString());
+			}
+		}
+		else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+			auto elementType = attr.type;
+
+			while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
+			}
+
+			if (schema.hasEntity(elementType->toString())) {
+				entityAttributes.insert(elementType->toString());
+			}
+			if (schema.hasType(elementType->toString())) {
+				typeAttributes.insert(elementType->toString());
+			}
+		}
+	}
+	auto self = entityAttributes.find(entity.getName());
+	if (self != entityAttributes.end()) {
+		entityAttributes.erase(self);
+	}
 		
 	if (!typeAttributes.empty()) {
 		for (const auto& type : typeAttributes) {
