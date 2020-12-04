@@ -55,15 +55,42 @@ protected:
 	virtual std::string TestName() const { return "sectioned-solid"; }
 	virtual std::string Schema() const { return "IFC4x1"; }
 
+	const boost::filesystem::path filename = dataPath("sectioned-solid.ifc");
+
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
-
+/*
 TEST_F(SectionedSolid, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(628));
 }
 
+TEST_F(SectionedSolid, IFCHasAnEssentialEntity) {
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCSECTIONEDSOLIDHORIZONTAL"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCARBITRARYCLOSEDPROFILEDEF"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCINDEXEDPOLYCURVE"; });
+	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCPOLYLINE"; });
+	auto result5 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENTCURVE"; });
+
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
+	EXPECT_NE(result4, express_model->entities.end());
+	EXPECT_NE(result5, express_model->entities.end());
+}
+
+TEST_F(SectionedSolid, CountEssentialEntities) {
+	auto result1 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCSECTIONEDSOLIDHORIZONTAL"; });
+	auto result2 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCARBITRARYCLOSEDPROFILEDEF"; });
+	auto result3 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCINDEXEDPOLYCURVE"; });
+	
+	EXPECT_EQ(result1, 16);
+	EXPECT_EQ(result2, 49);
+	EXPECT_EQ(result3, 49);
+}
+*/
+/*
 TEST_F(SectionedSolid, ImageIsSaved)
 {
 	// Arrange
@@ -106,14 +133,14 @@ TEST_F(SectionedSolid, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("sectioned-solid_front.png").string(), image_front);
 	buw::storeImage(testPath("sectioned-solid_top.png").string(), image_top);
 	buw::storeImage(testPath("sectioned-solid_bottom.png").string(), image_bottom);
 	buw::storeImage(testPath("sectioned-solid_left.png").string(), image_left);
 	buw::storeImage(testPath("sectioned-solid_right.png").string(), image_right);
 	buw::storeImage(testPath("sectioned-solid_back.png").string(), image_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front, expected_front);
@@ -162,7 +189,7 @@ TEST_F(SectionedSolid, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("sectioned-solid_front_left_bottom.png").string(), image_front_left_bottom);
 	buw::storeImage(testPath("sectioned-solid_front_right_bottom.png").string(), image_front_right_bottom);
 	buw::storeImage(testPath("sectioned-solid_top_left_front.png").string(), image_top_left_front);
@@ -171,7 +198,7 @@ TEST_F(SectionedSolid, VertexViews)
 	buw::storeImage(testPath("sectioned-solid_top_right_back.png").string(), image_top_right_back);
 	buw::storeImage(testPath("sectioned-solid_back_left_bottom.png").string(), image_back_left_bottom);
 	buw::storeImage(testPath("sectioned-solid_right_bottom_back.png").string(), image_right_bottom_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
@@ -183,5 +210,5 @@ TEST_F(SectionedSolid, VertexViews)
 	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
 	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
 }
-
+*/
 

@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(slab-openings IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(slab-openings IFC4X1)

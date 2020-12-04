@@ -55,14 +55,43 @@ protected:
 	virtual std::string TestName() const { return "structural-curve-member"; }
 	virtual std::string Schema() const { return "IFC4x1"; }
 
+	const boost::filesystem::path filename = dataPath("structural-curve-member.ifc");
+
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(StructuralCurveMember, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(170));
+	EXPECT_THAT(express_model->entities.size(), Eq(188));
 }
+
+TEST_F(StructuralCurveMember, IFCHasAnEssentialEntity) {
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCSTRUCTURALPOINTCONNECTION"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCSTRUCTURALCURVEMEMBER"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCSTRUCTURALANALYSISMODEL"; });
+	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCRELCONNECTSSTRUCTURALACTIVITY"; });
+	auto result5 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCRELCONNECTSSTRUCTURALMEMBER"; });
+
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
+	EXPECT_NE(result4, express_model->entities.end());
+	EXPECT_NE(result5, express_model->entities.end());
+}
+
+TEST_F(StructuralCurveMember, CountEssentialEntities) {
+	auto result1 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCSTRUCTURALPOINTCONNECTION"; });
+	auto result2 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCSTRUCTURALCURVEMEMBER"; });
+	auto result3 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCRELCONNECTSSTRUCTURALACTIVITY"; });
+	auto result4 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCRELCONNECTSSTRUCTURALMEMBER"; });
+
+	EXPECT_EQ(result1, 4);
+	EXPECT_EQ(result2, 3);
+	EXPECT_EQ(result3, 10);
+	EXPECT_EQ(result4, 6);
+}
+
 
 TEST_F(StructuralCurveMember, ImageIsSaved)
 {

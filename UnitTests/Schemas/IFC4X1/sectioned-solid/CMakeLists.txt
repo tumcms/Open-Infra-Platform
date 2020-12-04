@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(sectioned-solid IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(sectioned-solid IFC4X1)

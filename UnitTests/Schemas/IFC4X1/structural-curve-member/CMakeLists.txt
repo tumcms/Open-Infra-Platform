@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(structural-curve-member IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(structural-curve-member IFC4X1)
