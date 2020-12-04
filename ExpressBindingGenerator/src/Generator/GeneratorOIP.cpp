@@ -1016,15 +1016,16 @@ void writeSelectTypeFileMinimal(Schema& schema, Type& selectType, std::ostream& 
 	writeLine(out, "};");
 }
 
-std::map<std::string, std::set<std::string>> cacheIncludes; //cached set for each entity (saves computational time)
+std::map<std::string, std::set<std::string>> cacheIncludesEntities; //cached set for each entity (saves computational time)
+
 void resolveSelectTypeIncludes(const Schema& schema, const Type& type, std::set<std::string>& includes, std::set<std::string>& resolved) {
 	// if already checked -> skip
 	if (resolved.find(type.getName()) != resolved.end())
 		return;
 	// check the cached stuff
-	if (cacheIncludes.find(type.getName()) != cacheIncludes.end())
+	if (cacheIncludesEntities.find(type.getName()) != cacheIncludesEntities.end())
 	{
-		const auto& typeAttr = cacheIncludes.at(type.getName());
+		const auto& typeAttr = cacheIncludesEntities.at(type.getName());
 		for( const auto& attr : typeAttr )
 			if(includes.find(attr) == includes.end() )
 				includes.insert(attr);
@@ -1055,9 +1056,9 @@ void resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<
 	if (resolved.find(entity.getName()) != resolved.end())
 		return;
 	// check the cached stuff
-	if (cacheIncludes.find(entity.getName()) != cacheIncludes.end())
+	if (cacheIncludesEntities.find(entity.getName()) != cacheIncludesEntities.end())
 	{
-		const auto& entAttr = cacheIncludes.at(entity.getName());
+		const auto& entAttr = cacheIncludesEntities.at(entity.getName());
 		for (const auto& attr : entAttr)
 			if (includes.find(attr) == includes.end())
 				includes.insert(attr);
@@ -2321,9 +2322,6 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 				writeInclude(out, "../entity/" + entity + ".h");
 			}
 			linebreak(out);
-		
-			// remember for this type (saves time)
-			cacheIncludes.insert(std::pair<std::string, std::set<std::string>>(type.getName(), allEntitiesToInclude));
 		}
 
 		if (!types.empty()) {
@@ -4176,9 +4174,6 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 			writeInclude(out, entityAttribute + ".h");
 		}
 		linebreak(out);
-
-		// remember for this entity (saves time)
-		cacheIncludes.insert(std::pair<std::string, std::set<std::string>>(entity.getName(), entityAttributes));
 	}
 
 	writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
