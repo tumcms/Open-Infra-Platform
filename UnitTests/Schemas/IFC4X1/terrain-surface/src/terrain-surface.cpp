@@ -74,6 +74,7 @@ TEST_F(TerrainSurface, IFCHasAnEssentialEntity) {
 	auto result5 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DHORIZONTALSEGMENT"; });
 	auto result6 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DVERSEGLINE"; });
 	auto result7 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCIRCULARARCSEGMENT2D"; });
+	auto result8 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; }); 
 
 	EXPECT_NE(result1, express_model->entities.end());
 	EXPECT_NE(result2, express_model->entities.end());
@@ -82,6 +83,7 @@ TEST_F(TerrainSurface, IFCHasAnEssentialEntity) {
 	EXPECT_NE(result5, express_model->entities.end());
 	EXPECT_NE(result6, express_model->entities.end());
 	EXPECT_NE(result7, express_model->entities.end());
+	EXPECT_NE(result8, express_model->entities.end());
 }
 
 TEST_F(TerrainSurface, CountEssentialEntities) {

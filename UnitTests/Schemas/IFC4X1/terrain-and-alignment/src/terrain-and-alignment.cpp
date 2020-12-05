@@ -74,7 +74,8 @@ TEST_F(TerrainAndAlignment, IFCHasAnEssentialEntity) {
 	auto result5 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DHORIZONTALSEGMENT"; });
 	auto result6 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DVERSEGLINE"; });
 	auto result7 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCIRCULARARCSEGMENT2D"; });
-	
+	auto result8 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
+
 	EXPECT_NE(result1, express_model->entities.end());
 	EXPECT_NE(result2, express_model->entities.end());
 	EXPECT_NE(result3, express_model->entities.end());
@@ -82,6 +83,7 @@ TEST_F(TerrainAndAlignment, IFCHasAnEssentialEntity) {
 	EXPECT_NE(result5, express_model->entities.end());
 	EXPECT_NE(result6, express_model->entities.end());
 	EXPECT_NE(result7, express_model->entities.end());
+	EXPECT_NE(result8, express_model->entities.end());
 }
 
 TEST_F(TerrainAndAlignment, CountEssentialEntities) {
@@ -92,6 +94,7 @@ TEST_F(TerrainAndAlignment, CountEssentialEntities) {
 	auto result5 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DHORIZONTALSEGMENT"; });
 	auto result6 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENT2DVERSEGLINE"; });
 	auto result7 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCIRCULARARCSEGMENT2D"; });
+	auto result8 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
 
 	EXPECT_EQ(result1, 5);
 	EXPECT_EQ(result2, 5);
@@ -100,6 +103,7 @@ TEST_F(TerrainAndAlignment, CountEssentialEntities) {
 	EXPECT_EQ(result5, 25);
 	EXPECT_EQ(result6, 37);
 	EXPECT_EQ(result7, 15);
+	EXPECT_EQ(result8, 2);
 }
 /*
 TEST_F(TerrainAndAlignment, ImageIsSaved)
