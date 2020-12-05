@@ -1946,7 +1946,10 @@ void GeneratorOIP::generateTypeHeaderFile(const Schema &schema, const Type &type
 void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const Type & type) const
 {
 	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << (type.isSelectType() ? ( isIncluding(type.getName(), "IFCPRODUCT") ? selectRootPath_ : selectPath_ ) : typePath_) << "/" << type.getName() << ".h";
+	ssHeaderFilename << (type.isSelectType() ? 
+		( isIncluding(type.getName(), "IFCPRODUCT") ? selectRootPath_ : selectPath_ ) : 
+		( isIncluding(type.getName(), "IFCPRODUCT") ? entityRootPath_ : typePath_ )) 
+		<< "/" << type.getName() << ".h";
 	//std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssHeaderFilename.str());
 
@@ -2456,7 +2459,10 @@ void GeneratorOIP::generateTypeSourceFile(const Schema &schema, const Type &type
 void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const Type & type) const
 {
 	std::stringstream ssSourceFilename;
-	ssSourceFilename << (type.isSelectType() ? (isIncluding(type.getName(), "IFCPRODUCT") ? selectRootPath_ : selectPath_) : typePath_) << "/" << type.getName() << ".cpp";
+	ssSourceFilename << (type.isSelectType() ?
+		(isIncluding(type.getName(), "IFCPRODUCT") ? selectRootPath_ : selectPath_) :
+		(isIncluding(type.getName(), "IFCPRODUCT") ? entityRootPath_ : typePath_))
+		<< "/" << type.getName() << ".cpp";
 	//std::cout << ssHeaderFilename.str() << std::endl;
 	std::ofstream out(ssSourceFilename.str());
 
