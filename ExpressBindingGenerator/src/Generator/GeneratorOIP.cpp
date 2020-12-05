@@ -3328,7 +3328,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "" << std::endl;
 
-	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Types STATIC" << std::endl;
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Types SHARED" << std::endl;
 	file << "\t"
 		<< "${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}" << std::endl;
 	file << "\t"
@@ -3369,7 +3369,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "" << std::endl;
 
-	file << "add_library(OpenInfraPlatform." << schema.getName() << ".NotRoot STATIC" << std::endl;
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".NotRoot SHARED" << std::endl;
 	file << "\t"
 		<< "${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}" << std::endl;
 	file << "\t"
