@@ -84,7 +84,7 @@ TEST_F(BeamVaryingExtrusionPaths, CountEssentialEntities) {
 TEST_F(BeamVaryingExtrusionPaths, ImageIsSaved)
 {
 	// Arrange
-	buw::Image4b auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCEXTRUDEDAREASOLID"; });image = renderer->captureImage();
+	buw::Image4b image = renderer->captureImage();
 
 	// Act
 	buw::storeImage(testPath("beam-varying-extrusion-paths.png").string(), image);
