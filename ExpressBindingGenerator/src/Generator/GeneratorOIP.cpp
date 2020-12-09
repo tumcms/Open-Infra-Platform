@@ -531,7 +531,7 @@ void writeValueTypeFile(const Type& type, std::ostream& out) {
 	
 	
 	writeDoxyComment(out, "Type, subtype of  " + basetype);
-	writeLine(out, "class " + name + " : public " + basetype + "{");
+	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + name + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, "typedef " + name + " type;");
@@ -588,7 +588,7 @@ void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream
 	const std::string basetype = "EarlyBinding::" + type.getContainerTypeName() + "<" + min + "," + max + "," + valuetype + ">";
 
 	writeDoxyComment(out, "Container of " + type.getContainerType() + ", with cardinalities [" + min + "," + max + "]");
-	writeLine(out, "class " + name + " : public " + basetype + ", public EarlyBinding::EXPRESSType {");
+	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + name + " : public " + basetype + ", public EarlyBinding::EXPRESSType {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, name + "() = default;");
@@ -693,7 +693,7 @@ void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostr
 	};
 	*/
 
-	writeLine(out, "class " + name + " : public " + basetype + " {");
+	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + name + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, "typedef " + enumName + " Enum;");
@@ -725,7 +725,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 		elem = "ENUM_" + elem;
 	});
 
-	writeLine(out, "enum class " + enumName + " : int {");
+	writeLine(out, "enum class OIP_EARLYBINDING_EXPORT " + enumName + " : int {");
 	for (int i = 0; i < seq.size(); i++) {
 		if (i != seq.size() - 1) {
 			writeLine(out, seq[i] + " = " + std::to_string(i) + ",");
@@ -737,7 +737,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 	}
 	writeLine(out, "};");
 	linebreak(out);
-	writeLine(out, "const std::string to_string(const " + enumName + "& v);");
+	writeLine(out, "OIP_EARLYBINDING_EXPORT const std::string to_string(const " + enumName + "& v);");
 	linebreak(out);
 
 	//writeLine(out, "inline const std::string to_string(const " + enumName + "& v) {");
@@ -752,7 +752,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 
 	const std::string basetype = "EarlyBinding::EnumType<" + enumName + "," + std::to_string(seq.size()) + ">";
 	writeDoxyComment(out, "EnumType of " + std::to_string(seq.size()) + " elements");
-	writeLine(out, "class " + name + " : public " + basetype + " {");
+	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + name + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, name + "() = default;");
@@ -849,7 +849,7 @@ void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out) {
 	std::transform(seq.begin(), seq.end(), seq.begin(), [&schema](std::string elem)->std::string {return schema.hasEntity(elem) ? "EXPRESSReference<" + elem + ">" : elem; });
 
 	const std::string basetype = "boost::make_recursive_variant<" + join(seq, ',') + ">::type";
-	writeLine(out, "class " + select + " : public " + basetype + ", public ExpressBindingGenerator::EXPRESSType {");
+	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + select + " : public " + basetype + ", public ExpressBindingGenerator::EXPRESSType {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, select + "() = default;");
@@ -979,7 +979,7 @@ void writeSelectTypeFileREFACTORED(const Schema& schema, const Type& selectType,
 	const std::string basetype = "EarlyBinding::SelectType<" + join(seq, ',') + ">";
 
 	//writeLine(out, "class " + select + " : public " + basetype +", public ExpressBindingGenerator::EXPRESSType {");
-	writeLine(out, "class " + select + " : public " + basetype + " {");
+	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + select + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, select + "() = default;");
@@ -1003,7 +1003,7 @@ void writeSelectTypeFileMinimal(Schema& schema, Type& selectType, std::ostream& 
 	std::vector<std::string> seq = selectType.getTypes();
 	std::transform(seq.begin(), seq.end(), seq.begin(), [&schema](std::string elem)->std::string {return schema.hasEntity(elem) ? "EXPRESSReference<" + elem + ">" : elem; });
 
-	writeLine(out, "class " + select + " {");
+	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + select + " {");
 	writeLine(out, "public:");
 	writeLine(out, select + "() = default;");
 	writeLine(out, "~" + select + "() { };");
@@ -1707,7 +1707,7 @@ void GeneratorOIP::generateTypeHeaderFile(const Schema &schema, const Type &type
 	writeLine(out, "// TYPE " + type.getName() + " = " + type.getUnderlyingTypeName() + ";");
 
 	indent(out);
-	write(out, "class " + type.getName());
+	write(out, "class OIP_EARLYBINDING_EXPORT " + type.getName());
 
 	if(type.isSimpleType() || type.isArray() || type.isSet() || type.isEnumeration()) {
 		baseClasses.push_back(schema.getName() + "Type");
@@ -1986,7 +1986,10 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 				else
 					writeInclude(out, "../select/" + type.getContainerType() + ".h");
 			else
-				writeInclude(out, "../type/" + type.getContainerType() + ".h");
+				if (isIncluding(type.getContainerType(), "IFCPRODUCT"))
+					writeInclude(out, "../entity_root/" + type.getContainerType() + ".h");
+				else
+					writeInclude(out, "../type/" + type.getContainerType() + ".h");
 		}
 		//else if (schema.hasEntity(type.getContainerType())) {
 		//	writeInclude(out, "../entity/" + type.getContainerType() + ".h");
@@ -2525,7 +2528,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 	else if (type.isEnumeration()) {
 		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 		linebreak(out);
-		writeLine(out, "const std::string to_string(const e" + type.getName() + "& v) {");
+		writeLine(out, "OIP_EARLYBINDING_EXPORT const std::string to_string(const e" + type.getName() + "& v) {");
 		writeLine(out, "switch(v) {");
 		for (auto elem : type.getTypes()) {
 			writeLine(out, "case e" + type.getName() + "::ENUM_" + elem + ": return \"." + elem + ".\";");
@@ -2743,7 +2746,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	// Write begin namespace OpenInfraPlatform::Schema
 	writeBeginNamespace(file, schema);	
 
-	writeLine(file, "class " + schema.getName() + "Reader {"); // begin class
+	writeLine(file, "class OIP_EARLYBINDING_EXPORT " + schema.getName() + "Reader {"); // begin class
 	writeLine(file, "public:");
 	
 	writeLine(file, "static std::shared_ptr<EarlyBinding::EXPRESSModel> FromFile(const std::string &filename);"); 
@@ -3289,7 +3292,12 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "" << std::endl;
 
-	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Main OpenInfraPlatform." + schema.getName() + ".Types OpenInfraPlatform." + schema.getName() + ".NotRoot)" << std::endl;
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Main PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Types" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".NotRoot" << std::endl;
+	file << ")" << std::endl;
   file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
 	
 	file << "" << std::endl;
@@ -3380,7 +3388,10 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "" << std::endl;
 
-	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".NotRoot OpenInfraPlatform." + schema.getName() + ".Types)" << std::endl;
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".NotRoot PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Types" << std::endl;
+	file << ")" << std::endl;
 	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".NotRoot INTERFACE src)" << std::endl;
 	file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
 
@@ -3587,7 +3598,7 @@ void GeneratorOIP::generateEntityHeaderFile(const Schema &schema, const Entity &
 	writeLine(out, "// ENTITY " + entity.getName());
 
 	indent(out, indentation);
-	write(out, "class " + entity.getName());
+	write(out, "class OIP_EARLYBINDING_EXPORT " + entity.getName());
 	
 	if (entity.hasSupertype()) {
 		write(out, " : public " + entity.getSupertype());
@@ -3841,14 +3852,15 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 	
 	if (!entityAttributes.empty()) {
 		for (const auto& entityAttribute : entityAttributes) {
-			writeLine(out,"class " + entityAttribute + ";");
+			if( entityAttribute != supertype) // skip supertype when forward declaring
+				writeLine(out,"class " + entityAttribute + ";");
 		}
 		linebreak(out);
 	}
 
 	writeDoxyComment(out, "Entity" + entity.hasSupertype() ? " subtype of " + supertype : "");
 
-	writeLine(out, "class " + entity.getName() + " : public " + supertype + " {");
+	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + entity.getName() + " : public " + supertype + " {");
 	writeLine(out, "private:");
 	writeLine(out, "using base = " + supertype + ";");
 	writeLine(out, "public:");
