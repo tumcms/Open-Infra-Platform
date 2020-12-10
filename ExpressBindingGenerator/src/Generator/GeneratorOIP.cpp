@@ -32,6 +32,8 @@
 #include <sstream>
 #include <chrono>
 
+#include "General\graph.h"
+
 //#include <boost/optional.hpp>
 //#include <boost/uuid/uuid.hpp>
 #include <boost/uuid/random_generator.hpp>
@@ -1294,6 +1296,61 @@ void GeneratorOIP::preparePaths(const Schema& schema)
 
 void GeneratorOIP::prepareSplits(const Schema& schema)
 {
+	// build up the directed graph of entities/types
+	// ignoring EXPRESS types as possible nodes (no REAL, NUMBER, etc.)
+	std::map<std::string, size_t> mapNameToIndex;
+
+	size_t counter = 0;
+	for (const auto& type : schema.types_)
+		mapNameToIndex.insert(std::pair<std::string, size_t>(type.getName(), counter++));
+
+	size_t entityOffset = counter;
+	for (const auto& entity : schema.entities_)
+		mapNameToIndex.insert(std::pair<std::string, size_t>(entity.getName(), counter++));
+
+	//**************************************************
+	// allocate adjacency matrix
+	Graph adjacencyGraph(mapNameToIndex.size());
+
+	// ease-of-access function
+	std::function<void(std::string, std::string)> connect = [&adjacencyGraph, &mapNameToIndex]
+	(const std::string& from, const std::string& to)
+	{
+		adjacencyGraph.addEdge(mapNameToIndex[from], mapNameToIndex[to]);
+	};
+
+	// determine the edges in the adjacency matrix
+	// 1. supertypes
+	for (const auto& type : schema.types_)
+		if (type.isDerivedType())
+			connect(type.getName(), type.getUnderlyingTypeName());
+	for (const auto& entity : schema.entities_)
+		if (entity.hasSupertype())
+			connect(entity.getName(), entity.getSupertype());
+
+	// 2. selects
+	for (const auto& type : schema.types_)
+		if (type.isSelectType())
+			for (const auto& select : type.getTypes())
+				connect(type.getName(), select); // doesn't matter if it is a type or an entity
+
+	// 3. containers
+	for (const auto& type : schema.types_)
+		if (type.isContainerType())
+			connect(type.getName(), type.getContainerType()); // doesn't matter if it is a type or an entity
+
+	// 4. attributes
+	for (const auto& entity : schema.entities_)
+		for (const auto& attr : entity.getAttributes()) // only own attributes, but inverses as well
+			if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed)
+				connect(entity.getName(), attr.type->toString()); // doesn't matter if it is a type or an entity
+			else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+				auto elementType = attr.type;
+				while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+					elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
+				}
+				connect(entity.getName(), elementType->toString()); // doesn't matter if it is a type or an entity
+			}
 	// determine the path for schemas' entities
 	for (const auto& type : schema.types_)
 		if (type.isSelectType())
