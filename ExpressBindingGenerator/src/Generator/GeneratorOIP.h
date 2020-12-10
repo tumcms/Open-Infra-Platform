@@ -95,6 +95,8 @@ private:
 	void generateNamespaceHeader(const Schema &schema);
 
 private:
+    // main function for preparation
+    void prepareGeneration(const Schema& schema);
     // figuring out includes
     bool isIncluding(const std::string& name, std::string str ) const;
     void getCachedIncludes(const std::string& name, std::set<std::string>& types, std::set<std::string>& entities) const;

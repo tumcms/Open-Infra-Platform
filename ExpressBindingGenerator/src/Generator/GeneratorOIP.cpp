@@ -1404,67 +1404,10 @@ void GeneratorOIP::generate( const Schema &schema) {
 
 void GeneratorOIP::generateREFACTORED( const Schema & schema)
 {
-	rootDirectory_ = outputDirectory_ + "/" + schema.getName();
-
-	std::string schemaDirectory = rootDirectory_ + "/schema";
-	std::string earlyBindingDirectory = outputDirectory_ + "/";
-	std::string expressDirectory = earlyBindingDirectory + "EXPRESS/";
-	sourceDirectory_ = rootDirectory_ + "/src";
-	entityPath_ = sourceDirectory_ + "/entity";
-	selectPath_ = sourceDirectory_ + "/select";
-	entityRootPath_ = sourceDirectory_ + "/entity_root";
-	selectRootPath_ = sourceDirectory_ + "/select_root";
-	typePath_ = sourceDirectory_ + "/type";
-	readerPath_ = sourceDirectory_ + "/reader";
-	
-
-	if (!fs::exists(rootDirectory_)) {
-		fs::create_directory(rootDirectory_);
-	}
-
-	if (!fs::exists(schemaDirectory)) {
-		fs::create_directory(schemaDirectory);
-	}
-
-	if (!fs::exists(sourceDirectory_)) {
-		fs::create_directory(sourceDirectory_);
-	}	
-
-	if (!fs::exists(readerPath_)) {
-		fs::create_directory(readerPath_);
-	}
-
-	if (!fs::exists(entityPath_)) {
-		fs::create_directory(entityPath_);
-	}
-
-	if (!fs::exists(selectPath_)) {
-		fs::create_directory(selectPath_);
-	}
-
-	if (!fs::exists(entityRootPath_)) {
-		fs::create_directory(entityRootPath_);
-	}
-
-	if (!fs::exists(selectRootPath_)) {
-		fs::create_directory(selectRootPath_);
-	}
-
-	if (!fs::exists(typePath_)) {
-		fs::create_directory(typePath_);
-	}
-
-	std::cout << "Figuring out includes ... ";
-	size_t typeCount = schema.getTypeCount();
-	for (size_t i = 0; i < typeCount; i++) {
-		resolveIncludes(schema, schema.getTypeByIndex(i));
-	}
-	size_t entityCount = schema.getEntityCount();
-	for (size_t i = 0; i < entityCount; i++) {
-		resolveIncludes(schema, schema.getEntityByIndex(i));
-	}
+	std::cout << "Preparing for generation ... ";
+	prepareGeneration(schema);
 	std::cout << "done." << std::endl;
-
+	
 	std::cout << "Generating CMakeLists ... ";
 	generateCMakeListsFileREFACTORED(schema);
 	std::cout << "done." << std::endl;
@@ -1489,6 +1432,7 @@ void GeneratorOIP::generateREFACTORED( const Schema & schema)
 
 	std::cout << "Generating types:" << std::endl;
 	//#pragma omp parallel for
+	size_t typeCount = schema.getTypeCount();
 	for (size_t i = 0; i < typeCount; i++) {
 		const auto type = schema.getTypeByIndex(i);
 		generateTypeHeaderFileREFACTORED(schema, type);
@@ -1498,6 +1442,7 @@ void GeneratorOIP::generateREFACTORED( const Schema & schema)
 
 //#pragma omp parallel for
 	std::cout << "Generating entities:" << std::endl;
+	size_t entityCount = schema.getEntityCount();
 	for (size_t i = 0; i < entityCount; i++) {
 		const auto entity = schema.getEntityByIndex(i);
 		generateEntityHeaderFileREFACTORED(schema, entity);
