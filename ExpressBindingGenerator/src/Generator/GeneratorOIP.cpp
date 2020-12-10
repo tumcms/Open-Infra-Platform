@@ -1411,6 +1411,11 @@ void GeneratorOIP::prepareGeneration(const Schema& schema)
 
 void GeneratorOIP::prepareIncludes(const Schema& schema)
 {
+	// prepare the includes
+	for (const auto& type : schema.types_)
+		resolveIncludes(schema, type);
+	for (const auto& entity : schema.entities_)
+		resolveIncludes(schema, entity);
 }
 
 void GeneratorOIP::preparePaths(const Schema& schema)
