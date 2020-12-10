@@ -82,7 +82,6 @@ private:
     void prepareSplits(const Schema& schema);
 
     // figuring out includes
-    bool isIncluding(const std::string& name, std::string str ) const;
     void getCachedIncludes(const std::string& name, std::set<std::string>& types, std::set<std::string>& entities) const;
     void resolveSelectTypeIncludes(const Schema& schema, const Type& type, std::set<std::string>& includes, std::set<std::string>& resolved);
     void resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<std::string>& includes, std::set<std::string>& resolved);
@@ -91,19 +90,18 @@ private:
 
     std::map<std::string, std::set<std::string>> cacheIncludesTypes; //< cached set of includes for each type (saves computational time)
     std::map<std::string, std::set<std::string>> cacheIncludesEntities; //< cached set of includes for each entity (saves computational time)
+
+private:
+    // get the relative path given the entity's name and the folder
+	std::string getFolder(const std::string& name) const;
+
+    // map with (entity/type name) -> (folder name in SRC folder where to save it)
+    std::map<std::string,std::string> mapFolderInSrc_; 
+    // paths
     std::string outputDirectory_;
     std::string rootDirectory_;
-    std::string sourceDirectory_;
-    std::string guidPath_;
-    std::string entityPath_;
-	std::string selectPath_;
-	std::string entityRootPath_;
-	std::string selectRootPath_;
-	std::string typePath_;
-    std::string readerPath_;
-    std::string modelPath_;
-    std::string writerPath_;
-    std::string xmlPath_;
+	std::string sourceDirectory_;
+	std::string readerPath_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END
