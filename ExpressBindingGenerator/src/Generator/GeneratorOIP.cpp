@@ -1402,6 +1402,25 @@ void GeneratorOIP::generate( const Schema &schema) {
 	generateSchemaHeader(schema);
 }
 
+void GeneratorOIP::prepareGeneration(const Schema& schema)
+{
+	preparePaths(schema);
+	prepareIncludes(schema);
+	prepareSplits(schema);
+}
+
+void GeneratorOIP::prepareIncludes(const Schema& schema)
+{
+}
+
+void GeneratorOIP::preparePaths(const Schema& schema)
+{
+}
+
+void GeneratorOIP::prepareSplits(const Schema& schema)
+{
+}
+
 void GeneratorOIP::generateREFACTORED( const Schema & schema)
 {
 	std::cout << "Preparing for generation ... ";
