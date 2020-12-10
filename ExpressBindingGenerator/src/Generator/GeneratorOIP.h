@@ -38,26 +38,18 @@ public:
 
     virtual ~GeneratorOIP();
 
-    void generate(const Schema &schema);
-
 	void generateREFACTORED(const Schema &schema);
 
 private:
     void createEntitiesMapHeaderFile(const Schema &schema);
 
-    void createTypesHeaderFile(const Schema &schema);
-
 	void createTypesHeaderFileREFACTORED(const Schema &schema);
 	
-	void createEntitiesHeaderFile(const Schema &schema);
-
 	void createEntitiesHeaderFileREFACTORED(const Schema &schema);
 
 	void generateEntitySourceFile(const Schema &schema, const Entity &entity);
 
 	void generateEntitySourceFileREFACTORED(const Schema &schema, const Entity &entity) const;
-
-    void generateTypeHeaderFile(const Schema &schema, const Type &type);
 
 	void generateTypeHeaderFileREFACTORED(const Schema &schema, const Type &type) const ;
 
