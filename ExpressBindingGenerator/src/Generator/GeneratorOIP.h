@@ -47,17 +47,11 @@ private:
 	
 	void createEntitiesHeaderFileREFACTORED(const Schema &schema);
 
-	void generateEntitySourceFile(const Schema &schema, const Entity &entity);
-
 	void generateEntitySourceFileREFACTORED(const Schema &schema, const Entity &entity) const;
 
 	void generateTypeHeaderFileREFACTORED(const Schema &schema, const Type &type) const ;
 
-    void generateTypeSourceFile(const Schema &schema, const Type &type);
-    
 	void generateTypeSourceFileREFACTORED(const Schema &schema, const Type &type) const;
-
-    void generateTypeSourceFileGetStepParameter(const Type &type, std::ofstream &out, const Schema &schema);
 
 	void generateReaderFiles(const Schema &schema);
 
@@ -69,18 +63,9 @@ private:
 
     void includeFile(const std::string &filename, std::ofstream &file);
 
-    void generateCMakeListsFile(const Schema &schema);
-
 	void generateCMakeListsFileREFACTORED(const Schema &schema);
 
-
-    void createEntityBrokerCPPFile(const Schema &schema);
-
-    void generateEntityHeaderFile(const Schema &schema, const Entity &entity);
-
 	void generateEntityHeaderFileREFACTORED(const Schema &schema, const Entity &entity)const;
-
-    void generateEntityEnumsHeaderFile(const Schema &schema);
 
 	void generateSchemaHeader(const Schema& schema);
 
