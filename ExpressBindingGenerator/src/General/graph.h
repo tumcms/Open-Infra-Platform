@@ -150,6 +150,21 @@ public:
 
         return results;
     } 
+
+	//! prints self to specified path
+	void print(std::ofstream& out, std::function<std::string(size_t)> label, const char edge = '+', const char noedge = ' ')
+	{
+		for( size_t i = 0; i<V; i++ )
+		{
+			auto lst = adj.at(i);
+			for (size_t j = 0; j < V; j++)
+			{
+				auto el = std::find_if(lst.begin(), lst.end(), [&j](auto e) { return e == j; });
+				out << (el != lst.end() ? edge : noedge);
+			}
+			out << "|" << " " << label(i) << std::endl;
+		}
+	}
 }; 
 
 

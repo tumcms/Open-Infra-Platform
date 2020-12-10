@@ -1351,6 +1351,15 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 				}
 				connect(entity.getName(), elementType->toString()); // doesn't matter if it is a type or an entity
 			}
+
+	std::string name = sourceDirectory_ + "/graph.txt";
+	std::ofstream out(name);
+	adjacencyGraph.print(out, [&mapNameToIndex](size_t i) -> std::string { 
+		auto pair = std::find_if(mapNameToIndex.begin(), mapNameToIndex.end(), [&i](auto el) { return el.second == i; });
+		if (pair != mapNameToIndex.end())
+			return pair->first;
+		return "unknown";
+	});
 	// determine the path for schemas' entities
 	for (const auto& type : schema.types_)
 		if (type.isSelectType())
