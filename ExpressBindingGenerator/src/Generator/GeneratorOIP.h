@@ -38,6 +38,8 @@ public:
 
     virtual ~GeneratorOIP();
 
+	void generate(const Schema& schema) override { generateREFACTORED(schema); }
+
 	void generateREFACTORED(const Schema &schema);
 
 private:
