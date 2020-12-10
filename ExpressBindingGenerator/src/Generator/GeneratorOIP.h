@@ -27,6 +27,8 @@
 #include "Meta/Schema.h"
 #include "General/namespace.h"
 #include <iostream>
+#include <set>
+#include <map>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_BEGIN
 
@@ -93,6 +95,16 @@ private:
 	void generateNamespaceHeader(const Schema &schema);
 
 private:
+    // figuring out includes
+    bool isIncluding(const std::string& name, std::string str ) const;
+    void getCachedIncludes(const std::string& name, std::set<std::string>& types, std::set<std::string>& entities) const;
+    void resolveSelectTypeIncludes(const Schema& schema, const Type& type, std::set<std::string>& includes, std::set<std::string>& resolved);
+    void resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<std::string>& includes, std::set<std::string>& resolved);
+    void resolveIncludes(const Schema& schema, const Type& type);
+    void resolveIncludes(const Schema& schema, const Entity& entity);
+
+    std::map<std::string, std::set<std::string>> cacheIncludesTypes; //< cached set of includes for each type (saves computational time)
+    std::map<std::string, std::set<std::string>> cacheIncludesEntities; //< cached set of includes for each entity (saves computational time)
     std::string outputDirectory_;
     std::string rootDirectory_;
     std::string sourceDirectory_;

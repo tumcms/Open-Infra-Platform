@@ -1016,10 +1016,7 @@ void writeSelectTypeFileMinimal(Schema& schema, Type& selectType, std::ostream& 
 	writeLine(out, "};");
 }
 
-std::map<std::string, std::set<std::string>> cacheIncludesTypes; //cached set for each type (saves computational time)
-std::map<std::string, std::set<std::string>> cacheIncludesEntities; //cached set for each entity (saves computational time)
-
-bool isIncluding(const std::string& name, std::string str )
+bool GeneratorOIP::isIncluding(const std::string& name, std::string str ) const
 {
 	std::transform(str.begin(), str.end(), str.begin(), ::toupper);
 	std::function<bool(std::string)> cmp = [&str](std::string el) -> bool {
@@ -1030,24 +1027,24 @@ bool isIncluding(const std::string& name, std::string str )
 	if (cmp(name)) // name == str
 		return true;
 	if (cacheIncludesTypes.find(name) != cacheIncludesTypes.end())
-		if( std::find_if( cacheIncludesTypes[name].begin(), cacheIncludesTypes[name].end(), cmp) != cacheIncludesTypes[name].end() )
+		if( std::find_if( cacheIncludesTypes.at(name).begin(), cacheIncludesTypes.at(name).end(), cmp) != cacheIncludesTypes.at(name).end() )
 			return true;
 	if (cacheIncludesEntities.find(name) != cacheIncludesEntities.end())
-		if (std::find_if(cacheIncludesEntities[name].begin(), cacheIncludesEntities[name].end(), cmp) != cacheIncludesEntities[name].end())
+		if (std::find_if(cacheIncludesEntities.at(name).begin(), cacheIncludesEntities.at(name).end(), cmp) != cacheIncludesEntities.at(name).end())
 			return true;
 
 	return false;
 }
 
-void getCachedIncludes(const std::string& name, std::set<std::string>& types, std::set<std::string>& entities)
+void GeneratorOIP::getCachedIncludes(const std::string& name, std::set<std::string>& types, std::set<std::string>& entities) const
 {
 	if (cacheIncludesTypes.find(name) != cacheIncludesTypes.end())
-		types = cacheIncludesTypes[name];
+		types = cacheIncludesTypes.at(name);
 	if (cacheIncludesEntities.find(name) != cacheIncludesEntities.end())
-		entities = cacheIncludesEntities[name];
+		entities = cacheIncludesEntities.at(name);
 }
 
-void resolveSelectTypeIncludes(const Schema& schema, const Type& type, std::set<std::string>& includes, std::set<std::string>& resolved) {
+void GeneratorOIP::resolveSelectTypeIncludes(const Schema& schema, const Type& type, std::set<std::string>& includes, std::set<std::string>& resolved) {
 	// if already checked -> skip
 	if (resolved.find(type.getName()) != resolved.end())
 		return;
@@ -1080,7 +1077,7 @@ void resolveSelectTypeIncludes(const Schema& schema, const Type& type, std::set<
 	}
 }
 
-void resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<std::string>& includes, std::set<std::string>& resolved) {
+void GeneratorOIP::resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<std::string>& includes, std::set<std::string>& resolved) {
 	// if already checked -> skip
 	if (resolved.find(entity.getName()) != resolved.end())
 		return;
@@ -1139,7 +1136,7 @@ void resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<
 	}
 }
 
-void resolveIncludes(const Schema& schema, const Type& type)
+void GeneratorOIP::resolveIncludes(const Schema& schema, const Type& type)
 {
 	std::set<std::string> typeAttributes, entityAttributes;
 
@@ -1196,7 +1193,7 @@ void resolveIncludes(const Schema& schema, const Type& type)
 	}
 }
 
-void resolveIncludes(const Schema& schema, const Entity& entity)
+void GeneratorOIP::resolveIncludes(const Schema& schema, const Entity& entity)
 {
 	std::set<std::string> typeAttributes, entityAttributes;
 
@@ -1269,7 +1266,6 @@ void resolveIncludes(const Schema& schema, const Entity& entity)
 		cacheIncludesEntities.insert(std::pair<std::string, std::set<std::string>>(entity.getName(), entityAttributes));
 
 }
-
 
 OpenInfraPlatform::ExpressBindingGenerator::GeneratorOIP::GeneratorOIP(const std::string &outputDirectory) : outputDirectory_(outputDirectory) {
 }
