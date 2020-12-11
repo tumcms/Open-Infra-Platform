@@ -1429,6 +1429,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 		getCachedIncludes(name, types, entities);
 		return !types.empty() || !entities.empty();
 	};
+
 	// does any of the attributes point to a connected?
 	std::function<bool(std::vector<std::string>)> pointsToConnected = [&mapNameToIndex, &connected](std::vector<std::string>& names) -> bool
 	{
@@ -1438,9 +1439,22 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 		return false;
 	};
 
+	// does it have any connected includes?
+	std::function<bool(std::string)> hasConnectedIncludes = [&pointsToConnected, this](const std::string& name) -> bool
+	{
+		std::set<std::string> types, entities;
+		getCachedIncludes(name, types, entities);
+
+		std::vector<std::string> allNames;
+		allNames.reserve(types.size() + entities.size());
+		std::transform(types.begin(), types.end(), allNames.end(), [](const auto& el) {return el; });
+		std::transform(entities.begin(), entities.end(), allNames.end(), [](const auto& el) {return el; });
+		return pointsToConnected(allNames);
+	};
+
 	// determine the path for schemas' entities & types
 	std::function<void(std::string)> determinePath = 
-		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &pointsToConnected, &hasIncludes, &getAttributes, this]
+		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &pointsToConnected, &hasConnectedIncludes, &hasIncludes, &getAttributes, this]
 		(const std::string& name)
 	{
 		// if in the loop with ifcproduct -> mid
@@ -1462,7 +1476,8 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 				{
 					// look up if an entity within the select would be in top
 					if(inheritsFromConnected(schema.getTypeByName(name).getTypes())
-						|| pointsToConnected(schema.getTypeByName(name).getTypes()))
+						|| pointsToConnected(schema.getTypeByName(name).getTypes())
+						|| hasConnectedIncludes(name))
 						mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
 					else
 						mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, hasIncludes(name) ? "bot" : "zero"));
@@ -1474,7 +1489,8 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 			{
 				auto parents = schema.getSuperTypes(schema.getEntityByName(name));
 				if( inheritsFromConnected(parents)
-					|| pointsToConnected(getAttributes(name)))
+					|| pointsToConnected(getAttributes(name))
+					|| hasConnectedIncludes(name))
 					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
 				else
 					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, hasIncludes(name) ? "bot" : "zero"));
