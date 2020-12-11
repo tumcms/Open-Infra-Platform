@@ -5,7 +5,8 @@
 | Name                          | Role                              | Affiliation                       |
 |-------------------------------|-----------------------------------|-----------------------------------|
 | Štefan Jaud                   | Product owner & Project manager   | Technical University of Munich    |
-| Helge Hecht                   | Lead developer & Project manager  | None                              |
+| Helge Hecht                   | Lead developer & Project manager  | Masaryk University                |
+| Jonas Schlenger               | Project manager   				| Technical University of Munich    |
 | Cara Coetzee                  | Developer                         | Technical University of Munich    |
 | Samuils Rulovs                | Developer                         | Technical University of Munich    |
 | Christoph Kaiser              | Developer                         | Technical University of Munich    |
