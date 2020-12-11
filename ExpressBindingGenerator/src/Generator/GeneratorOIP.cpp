@@ -1395,10 +1395,39 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	// see https://www.cs.tufts.edu/comp/150GA/homeworks/hw1/Johnson%2075.PDF
 	// and http://normalisiert.de/code/java/elementaryCycles.zip
 
-	// determine the path for schemas' entities
+	// does one inherit from one that is connected?
+	std::function<bool(std::vector<std::string>)> inheritsFromConnected = 
+		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected]
+		(std::vector<std::string>& names) -> bool
+	{
+		for (const auto& name : names)
+			if (schema.hasEntity(name))
+			{
+				// check the boollean array
+				if( connected.at(mapNameToIndex.at(name)))
+					return true;
+			}
+			else if (schema.hasType(name) && schema.isSelectType(name))
+			{
+				// call recursively
+				if (inheritsFromConnected(schema.getTypeByName(name).getTypes()))
+					return true;
+			}
+		return false;
+	};
+
+	// does it have any includes?
+	std::function<bool(std::string)> hasIncludes = [this](const std::string& name) -> bool
+	{
+		std::set<std::string> types, entities;
+		getCachedIncludes(name, types, entities);
+		return !types.empty() || !entities.empty();
+	};
+
+	// determine the path for schemas' entities & types
 	std::function<void(std::string)> determinePath = 
-		[&mapNameToIndex, &connected, &schema, this]
-		(const std::string name)
+		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &hasIncludes, this]
+		(const std::string& name)
 	{
 		// if in the loop with ifcproduct -> mid
 		if (connected.at(mapNameToIndex.at(name)))
@@ -1412,12 +1441,16 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 			if( schema.hasType(name) )
 				if( !schema.isSelectType(name)) // but not a select type -> type
 				{
-					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "bot"));
+					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, hasIncludes(name) ? "bot" : "zero"));
 					return;
 				}
-				else // otherwise -> top
+				else // otherwise determine the selects
 				{
-					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
+					// look up if an entity within the select would be in top
+					if(inheritsFromConnected(schema.getTypeByName(name).getTypes()))
+						mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
+					else
+						mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, hasIncludes(name) ? "bot" : "zero"));
 					return;
 				}
 
@@ -1425,13 +1458,10 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 			if( schema.hasEntity(name) )
 			{
 				auto parents = schema.getSuperTypes(schema.getEntityByName(name));
-				for( const auto& par : parents )
-					if( connected.at(mapNameToIndex.at(par)))
-					{
-						mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
-						return;
-					}
-				mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "bot"));
+				if( inheritsFromConnected(parents) )
+					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
+				else
+					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, hasIncludes(name) ? "bot" : "zero"));
 				return;
 			}
 			throw std::exception("This should never ever happen");
