@@ -738,7 +738,7 @@ SplineInterpretationElement OpenInfraPlatform::UserInterface::SplineInterpretati
 
 	if (curvatureIndicator == 1)
 		element.setIsCCW(1); // left curve / turn
-	else
+	else // curvatureIndicator == -1
 		element.setIsCCW(0); // right curve / turn
 
 	// tangential direction at element start
