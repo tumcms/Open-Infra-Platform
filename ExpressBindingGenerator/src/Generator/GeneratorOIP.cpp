@@ -1396,6 +1396,52 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	// and http://normalisiert.de/code/java/elementaryCycles.zip
 
 	// determine the path for schemas' entities
+	std::function<void(std::string)> determinePath = 
+		[&mapNameToIndex, &connected, &schema, this]
+		(const std::string name)
+	{
+		// if in the loop with ifcproduct -> mid
+		if (connected.at(mapNameToIndex.at(name)))
+		{
+			mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "mid"));
+			return;
+		}
+		else
+		{
+			// if it is a type -> type
+			if( schema.hasType(name))
+				mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "type"));
+
+			// if it inherits from one within the loop with ifcproduct -> top
+			if( schema.hasEntity(name) )
+			{
+				auto parents = schema.getSuperTypes(schema.getEntityByName(name));
+				for( const auto& par : parents )
+					if( connected.at(mapNameToIndex.at(par)))
+					{
+						mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
+						return;
+					}
+			}
+			// otherwise, it belongs to base
+			mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "bot"));
+		}
+	};
+
+	for (const auto& type : schema.types_)
+		determinePath(type.getName());
+	for (const auto& entity : schema.entities_)
+		determinePath(entity.getName());
+
+	// print
+	name = sourceDirectory_ + "/paths.txt";
+	std::ofstream out3(name);
+	for (const auto& pair : mapFolderInSrc_)
+	{
+		out3 << pair.second << ": " << pair.first << std::endl;
+	}
+
+	/*
 	for (const auto& type : schema.types_)
 		if (type.isSelectType())
 			mapFolderInSrc_.insert(std::pair<std::string, std::string>(type.getName(), "mid"));
@@ -1404,6 +1450,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 
 	for (const auto& entity : schema.entities_)
 		mapFolderInSrc_.insert(std::pair<std::string, std::string>(entity.getName(), "top"));
+	*/
 }
 
 void GeneratorOIP::generateREFACTORED( const Schema & schema)
