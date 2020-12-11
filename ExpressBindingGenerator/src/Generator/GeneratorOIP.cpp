@@ -1348,17 +1348,23 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 			connect(type.getName(), type.getContainerType()); // doesn't matter if it is a type or an entity
 
 	// 4. attributes
-	for (const auto& entity : schema.entities_)
-		for (const auto& attr : entity.getAttributes()) // only own attributes, but inverses as well
+	std::function<std::vector<std::string>(std::string)> getAttributes = [&schema](const std::string& name) -> std::vector<std::string> {
+		std::vector<std::string> attributes;
+		for (const auto& attr : schema.getEntityByName(name).getAttributes()) // only own attributes, but inverses as well
 			if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed)
-				connect(entity.getName(), attr.type->toString()); // doesn't matter if it is a type or an entity
+				attributes.push_back(attr.type->toString()); // doesn't matter if it is a type or an entity
 			else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
 				auto elementType = attr.type;
 				while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
 					elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
 				}
-				connect(entity.getName(), elementType->toString()); // doesn't matter if it is a type or an entity
+				attributes.push_back(elementType->toString()); // doesn't matter if it is a type or an entity
 			}
+		return attributes;
+	};
+	for (const auto& entity : schema.entities_)
+		for (const auto& attr : getAttributes(entity.getName())) // only own attributes, but inverses as well
+			connect(entity.getName(), attr); // doesn't matter if it is a type or an entity
 
 	std::string name = sourceDirectory_ + "/graph.txt";
 	std::ofstream out(name);
@@ -1423,10 +1429,18 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 		getCachedIncludes(name, types, entities);
 		return !types.empty() || !entities.empty();
 	};
+	// does any of the attributes point to a connected?
+	std::function<bool(std::vector<std::string>)> pointsToConnected = [&mapNameToIndex, &connected](std::vector<std::string>& names) -> bool
+	{
+		for (const auto& el : names)
+			if (connected.at(mapNameToIndex.at(el)))
+				return true;
+		return false;
+	};
 
 	// determine the path for schemas' entities & types
 	std::function<void(std::string)> determinePath = 
-		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &hasIncludes, this]
+		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &pointsToConnected, &hasIncludes, &getAttributes, this]
 		(const std::string& name)
 	{
 		// if in the loop with ifcproduct -> mid
@@ -1447,7 +1461,8 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 				else // otherwise determine the selects
 				{
 					// look up if an entity within the select would be in top
-					if(inheritsFromConnected(schema.getTypeByName(name).getTypes()))
+					if(inheritsFromConnected(schema.getTypeByName(name).getTypes())
+						|| pointsToConnected(schema.getTypeByName(name).getTypes()))
 						mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
 					else
 						mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, hasIncludes(name) ? "bot" : "zero"));
@@ -1458,7 +1473,8 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 			if( schema.hasEntity(name) )
 			{
 				auto parents = schema.getSuperTypes(schema.getEntityByName(name));
-				if( inheritsFromConnected(parents) )
+				if( inheritsFromConnected(parents)
+					|| pointsToConnected(getAttributes(name)))
 					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
 				else
 					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, hasIncludes(name) ? "bot" : "zero"));
