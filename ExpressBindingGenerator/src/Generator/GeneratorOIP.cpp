@@ -1288,6 +1288,7 @@ void GeneratorOIP::preparePaths(const Schema& schema)
 
 	rootDirectory_ = prepareFolder(outputDirectory_, schema.getName());
 	sourceDirectory_ = prepareFolder(rootDirectory_, "src");
+	prepareFolder(sourceDirectory_, "type");
 	prepareFolder(sourceDirectory_, "bot");
 	prepareFolder(sourceDirectory_, "mid");
 	prepareFolder(sourceDirectory_, "top");
@@ -1299,14 +1300,21 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	// build up the directed graph of entities/types
 	// ignoring EXPRESS types as possible nodes (no REAL, NUMBER, etc.)
 	std::map<std::string, size_t> mapNameToIndex;
+	std::map<size_t, std::string> mapIndexToName;
 
 	size_t counter = 0;
 	for (const auto& type : schema.types_)
+	{
+		mapIndexToName.insert(std::pair<size_t, std::string>(counter, type.getName()));
 		mapNameToIndex.insert(std::pair<std::string, size_t>(type.getName(), counter++));
+	}
 
 	size_t entityOffset = counter;
 	for (const auto& entity : schema.entities_)
+	{
+		mapIndexToName.insert(std::pair<size_t, std::string>(counter, entity.getName()));
 		mapNameToIndex.insert(std::pair<std::string, size_t>(entity.getName(), counter++));
+	}
 
 	//**************************************************
 	// allocate adjacency matrix
@@ -1354,10 +1362,9 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 
 	std::string name = sourceDirectory_ + "/graph.txt";
 	std::ofstream out(name);
-	adjacencyGraph.print(out, [&mapNameToIndex](size_t i) -> std::string { 
-		auto pair = std::find_if(mapNameToIndex.begin(), mapNameToIndex.end(), [&i](auto el) { return el.second == i; });
-		if (pair != mapNameToIndex.end())
-			return pair->first;
+	adjacencyGraph.print(out, [&mapIndexToName](size_t i) -> std::string { 
+		if (mapIndexToName.find(i) != mapIndexToName.end())
+			return mapIndexToName.at(i);
 		return "unknown";
 	});
 	// determine the path for schemas' entities
@@ -1376,7 +1383,7 @@ void GeneratorOIP::generateREFACTORED( const Schema & schema)
 	std::cout << "Preparing for generation ... ";
 	prepareGeneration(schema);
 	std::cout << "done." << std::endl;
-	
+
 	std::cout << "Generating CMakeLists ... ";
 	generateCMakeListsFileREFACTORED(schema);
 	std::cout << "done." << std::endl;
@@ -2080,7 +2087,10 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
 		<< "_Source              "
-		"src/*.*)" << std::endl;	
+		"src/*.*)" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_type_Source         "
+		"src/type/*.*)" << std::endl;
 	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
 		<< "_top_Source         "
 		"src/top/*.*)" << std::endl;
@@ -2097,6 +2107,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "" << std::endl;
 
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_Source} PROPERTY GENERATED ON)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_type_Source} PROPERTY GENERATED ON)" << std::endl;
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_top_Source} PROPERTY GENERATED ON)" << std::endl;
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_mid_Source} PROPERTY GENERATED ON)" << std::endl;
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_bot_Source} PROPERTY GENERATED ON)" << std::endl;
@@ -2125,6 +2136,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "" << std::endl;
 
 	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Top SHARED" << std::endl;
+	file << "\t${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}" << std::endl;
 	file << "\t"
 		<< "${OpenInfraPlatform_" << schema.getName() << "_Source}" << std::endl;
 	file << "\t"
@@ -2140,6 +2152,8 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 		<< "OpenInfraPlatform." + schema.getName() + ".Mid" << std::endl;
 	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Type" << std::endl;
 	file << ")" << std::endl;
   file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
 	
@@ -2180,6 +2194,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "" << std::endl;
 
 	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Mid SHARED" << std::endl;
+	file << "\t${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}" << std::endl;
 	file << "\t"
 		<< "${OpenInfraPlatform_" << schema.getName() << "_mid_Source}" << std::endl;
 	file << ")" << std::endl;
@@ -2189,6 +2204,8 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Mid PUBLIC" << std::endl;
 	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Type" << std::endl;
 	file << ")" << std::endl;
 
 	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Mid INTERFACE src)" << std::endl;
@@ -2215,15 +2232,21 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
 		<< "\\\\bot        FILES "
 		"${OpenInfraPlatform_"
-		<< schema.getName() << "_entity_Source})" << std::endl;
+		<< schema.getName() << "_bot_Source})" << std::endl;
 
 	file << "" << std::endl;
 
 	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Bot SHARED" << std::endl;
+	file << "\t${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}" << std::endl;
 	file << "\t"
 		<< "${OpenInfraPlatform_" << schema.getName() << "_bot_Source}" << std::endl;
 	file << ")" << std::endl;
 
+	file << "" << std::endl;
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Bot PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Type" << std::endl;
+	file << ")" << std::endl;
 	file << "" << std::endl;
 
 	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Bot INTERFACE src)" << std::endl;
@@ -2231,6 +2254,39 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "" << std::endl;
 
+	file << "" << std::endl;
+
+	file << "project(OpenInfraPlatform." << schema.getName() << ".Type CXX)" << std::endl;
+	file << "" << std::endl;
+	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;
+	file << "" << std::endl;
+	file << "include_directories(" << std::endl;
+	file << "  src" << std::endl;
+	file << "  ${CMAKE_SOURCE_DIR}/EarlyBinding/src" << std::endl;
+	file << "  ${visit_struct_INCLUDE_DIR}" << std::endl;
+	file << "  ${Boost_INCLUDE_DIR}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "\\\\type        FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_type_Source})" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Type SHARED" << std::endl;
+	file << "\t${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_" << schema.getName() << "_type_Source}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Type INTERFACE src)" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
+
+	file << "" << std::endl;
 	file.close();
 }
 
