@@ -43,8 +43,8 @@ private:
   
     /** \brief Recursive DFS based function used by SCC() 
      *
-     * A recursive function that finds and prints strongly connected 
-     * components using DFS traversal 
+     * A recursive function that finds and collects strongly connected 
+     * components using DFS traversal (ignores one node loops)
      *
      * \param[in] u The vertex to be visited next 
      * \param[in] disc Stores discovery times of visited vertices 
@@ -98,16 +98,18 @@ private:
             while (st.top() != u) 
             { 
                 w = st.top(); 
-                newLoop.push_back(w); //cout << w << " "; 
+                newLoop.push_front(w); //cout << w << " "; 
                 stackMember[w] = false; 
                 st.pop(); 
             } 
             w = st.top(); 
-            newLoop.push_back(w); //cout << w << "\n"; 
+            newLoop.push_front(w); //cout << w << "\n"; 
             stackMember[w] = false; 
             st.pop(); 
-            // add to the results list
-            results.push_back(newLoop);
+
+            // add to the results list if length > 1 (ignore single node loops)
+			if( newLoop.size() > 1 )
+				results.push_back(newLoop);
         } 
     }
 
