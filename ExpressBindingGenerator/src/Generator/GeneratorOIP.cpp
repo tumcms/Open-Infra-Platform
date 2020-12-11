@@ -1288,6 +1288,7 @@ void GeneratorOIP::preparePaths(const Schema& schema)
 
 	rootDirectory_ = prepareFolder(outputDirectory_, schema.getName());
 	sourceDirectory_ = prepareFolder(rootDirectory_, "src");
+	prepareFolder(sourceDirectory_, "zero");
 	prepareFolder(sourceDirectory_, "bot");
 	prepareFolder(sourceDirectory_, "mid");
 	prepareFolder(sourceDirectory_, "top");
@@ -2182,6 +2183,9 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 		<< "_bot_Source         "
 		"src/bot/*.*)" << std::endl;
 	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_zero_Source         "
+		"src/zero/*.*)" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
 		<< "_reader_Source         "
 		"src/reader/*.*)" << std::endl;
 
@@ -2191,6 +2195,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_top_Source} PROPERTY GENERATED ON)" << std::endl;
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_mid_Source} PROPERTY GENERATED ON)" << std::endl;
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_bot_Source} PROPERTY GENERATED ON)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_zero_Source} PROPERTY GENERATED ON)" << std::endl;
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_reader_Source} PROPERTY GENERATED ON)" << std::endl;
 
 	file << "" << std::endl;
@@ -2231,6 +2236,8 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 		<< "OpenInfraPlatform." + schema.getName() + ".Mid" << std::endl;
 	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
 	file << ")" << std::endl;
   file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
 	
@@ -2280,6 +2287,8 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Mid PUBLIC" << std::endl;
 	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
 	file << ")" << std::endl;
 
 	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Mid INTERFACE src)" << std::endl;
@@ -2317,11 +2326,50 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "" << std::endl;
 
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Mid PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
+	file << ")" << std::endl;
+
 	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Bot INTERFACE src)" << std::endl;
 	file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
 
 	file << "" << std::endl;
 
+	file << "" << std::endl;
+
+	file << "project(OpenInfraPlatform." << schema.getName() << ".Zero CXX)" << std::endl;
+	file << "" << std::endl;
+	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;
+	file << "" << std::endl;
+	file << "include_directories(" << std::endl;
+	file << "  src" << std::endl;
+	file << "  ${CMAKE_SOURCE_DIR}/EarlyBinding/src" << std::endl;
+	file << "  ${visit_struct_INCLUDE_DIR}" << std::endl;
+	file << "  ${Boost_INCLUDE_DIR}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "\\\\zero        FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_zero_Source})" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Zero SHARED" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_" << schema.getName() << "_zero_Source}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Zero INTERFACE src)" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
+
+	file << "" << std::endl;
 	file.close();
 }
 
