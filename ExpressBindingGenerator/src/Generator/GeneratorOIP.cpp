@@ -1385,7 +1385,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	std::vector<bool> connected(mapNameToIndex.size(), false);
 	connected.at(IfcProductIndex) = true;
 	for (const auto& lst : scc)
-		if (std::find_if(lst.begin(), lst.end(), [&IfcProductIndex](auto el) {return el == IfcProductIndex; }) != lst.end())
+		//if (std::find_if(lst.begin(), lst.end(), [&IfcProductIndex](auto el) {return el == IfcProductIndex; }) != lst.end())
 			for (const auto& el : lst)
 				connected.at(el) = true;
 
@@ -2306,7 +2306,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
 		<< "\\\\bot        FILES "
 		"${OpenInfraPlatform_"
-		<< schema.getName() << "_entity_Source})" << std::endl;
+		<< schema.getName() << "_bot_Source})" << std::endl;
 
 	file << "" << std::endl;
 
