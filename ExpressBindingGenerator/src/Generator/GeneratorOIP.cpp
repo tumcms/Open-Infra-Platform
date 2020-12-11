@@ -1408,9 +1408,18 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 		}
 		else
 		{
-			// if it is a type -> type
-			if( schema.hasType(name))
-				mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "type"));
+			// if it is a type
+			if( schema.hasType(name) )
+				if( !schema.isSelectType(name)) // but not a select type -> type
+				{
+					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "bot"));
+					return;
+				}
+				else // otherwise -> top
+				{
+					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
+					return;
+				}
 
 			// if it inherits from one within the loop with ifcproduct -> top
 			if( schema.hasEntity(name) )
@@ -1423,8 +1432,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 						return;
 					}
 			}
-			// otherwise, it belongs to base
-			mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "bot"));
+			throw std::exception("This should never ever happen");
 		}
 	};
 
