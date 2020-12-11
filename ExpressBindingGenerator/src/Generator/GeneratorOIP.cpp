@@ -1367,6 +1367,34 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 			return mapIndexToName.at(i);
 		return "unknown";
 	});
+
+	//**************************************************
+	// find the strongly connected components
+	auto scc = adjacencyGraph.SCC();
+	// print
+	name = sourceDirectory_ + "/scc.txt";
+	std::ofstream out2(name);
+	for (const auto& lst : scc)
+	{
+		for (const auto& el : lst)
+			out2 << mapIndexToName.at(el) + (el != *lst.rbegin() ? " -> " : "");
+		out2 << std::endl;
+	}			
+
+	// mark those components that are connected with IfcProduct
+	auto IfcProductIndex = mapNameToIndex.at("IfcProduct");
+	std::vector<bool> connected(mapNameToIndex.size(), false);
+	connected.at(IfcProductIndex) = true;
+	for (const auto& lst : scc)
+		if (std::find_if(lst.begin(), lst.end(), [&IfcProductIndex](auto el) {return el == IfcProductIndex; }) != lst.end())
+			for (const auto& el : lst)
+				connected.at(el) = true;
+
+	//**************************************************
+	// find the biggest elementary circuit in the directed graph
+	// see https://www.cs.tufts.edu/comp/150GA/homeworks/hw1/Johnson%2075.PDF
+	// and http://normalisiert.de/code/java/elementaryCycles.zip
+
 	// determine the path for schemas' entities
 	for (const auto& type : schema.types_)
 		if (type.isSelectType())
