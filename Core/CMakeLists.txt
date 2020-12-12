@@ -72,7 +72,7 @@ if(MODULES_POINT_CLOUD_PROCESSING)
 endif()
 
 foreach(format ${IFC_FORMATS})
-	target_link_libraries(OpenInfraPlatform.Core PUBLIC OpenInfraPlatform.${format}.Main)
+	target_link_libraries(OpenInfraPlatform.Core PUBLIC OpenInfraPlatform.${format}.Top)
 endforeach()
 
 #set_target_properties(OpenInfraPlatform.Core 	PROPERTIES FOLDER "OpenInfraPlatform")
