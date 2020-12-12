@@ -1447,8 +1447,10 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 
 		std::vector<std::string> allNames;
 		allNames.reserve(types.size() + entities.size());
-		std::transform(types.begin(), types.end(), allNames.end(), [](const auto& el) {return el; });
-		std::transform(entities.begin(), entities.end(), allNames.end(), [](const auto& el) {return el; });
+		for (const auto& el : types)
+			allNames.push_back(el);
+		for (const auto& el : entities)
+			allNames.push_back(el);
 		return pointsToConnected(allNames);
 	};
 
@@ -1846,7 +1848,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 	else if (type.isEnumeration()) {
 		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 		linebreak(out);
-		writeLine(out, "OIP_EARLYBINDING_EXPORT const std::string to_string(const e" + type.getName() + "& v) {");
+		writeLine(out, "const std::string to_string(const e" + type.getName() + "& v) {");
 		writeLine(out, "switch(v) {");
 		for (auto elem : type.getTypes()) {
 			writeLine(out, "case e" + type.getName() + "::ENUM_" + elem + ": return \"." + elem + ".\";");
@@ -2388,7 +2390,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "" << std::endl;
 
-	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Mid PUBLIC" << std::endl;
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Bot PUBLIC" << std::endl;
 	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
 	file << ")" << std::endl;
