@@ -1388,9 +1388,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	}			
 
 	// mark those components that are connected with IfcProduct
-	auto IfcProductIndex = mapNameToIndex.at("IfcProduct");
 	std::vector<bool> connected(mapNameToIndex.size(), false);
-	connected.at(IfcProductIndex) = true;
 	for (const auto& lst : scc)
 		//if (std::find_if(lst.begin(), lst.end(), [&IfcProductIndex](auto el) {return el == IfcProductIndex; }) != lst.end())
 			for (const auto& el : lst)
