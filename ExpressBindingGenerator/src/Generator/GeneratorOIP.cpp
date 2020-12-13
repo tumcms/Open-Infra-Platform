@@ -29,6 +29,7 @@
 #include <fstream>
 #include <map>
 #include <set>
+#include <queue>
 #include <sstream>
 #include <chrono>
 
@@ -1452,20 +1453,27 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 		return pointsToConnected(allNames);
 	};
 
-	// set folder for entity
+	// set folder for entity (true = a folder was set, false = no change)
 	std::map<std::string, short> folders = { {"zero", 0}, {"bot", 1}, {"mid", 2}, {"top", 3} };
-	std::function<void(std::string,std::string)> setFolder = 
+	std::function<bool(std::string,std::string)> setFolder = 
 		[this, &folders]
-	(const std::string& name, const std::string& folder)
+	(const std::string& name, const std::string& folder) -> bool
 	{
 		if( this->mapFolderInSrc_.find(name) == this->mapFolderInSrc_.end() )
+		{
 			mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, folder));
+			return true;
+		}
 		else
 		{
 			// only overwrite if higher in the hierarchy
 			if (folders.at(this->mapFolderInSrc_.at(name)) > folders.at(folder))
+			{
 				mapFolderInSrc_.at(name) = folder;
+				return true;
+			}
 		}
+		return false; // means no change
 	};
 
 	// determine the path for schemas' entities & types
@@ -1522,12 +1530,30 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 		determinePath(entity.getName());
 
 	// correct that any parent entities are not in a project above in the heirarchy
+	std::queue<std::string> toCheck;
 	for (const auto& entity : schema.entities_)
 	{
 		auto parents = schema.getSuperTypes(entity);
 		auto folder = mapFolderInSrc_.at(entity.getName());
 		for (const auto& el : parents)
-			setFolder(el, folder);
+			if( setFolder(el, folder) )
+				toCheck.push(el);
+		auto attributes = getAttributes(entity.getName());
+		for (const auto& el : attributes)
+			if (setFolder(el, folder))
+				toCheck.push(el);
+	}
+
+	// check those that have changed again
+	while (!toCheck.empty())
+	{
+		auto entity = schema.getEntityByName(toCheck.front());
+		auto parents = schema.getSuperTypes(entity);
+		auto folder = mapFolderInSrc_.at(entity.getName());
+		for (const auto& el : parents)
+			if (setFolder(el, folder))
+				toCheck.push(el);
+		toCheck.pop();
 	}
 
 	// print
