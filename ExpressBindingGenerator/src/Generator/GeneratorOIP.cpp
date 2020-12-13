@@ -1452,15 +1452,31 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 		return pointsToConnected(allNames);
 	};
 
+	// set folder for entity
+	std::map<std::string, short> folders = { {"zero", 0}, {"bot", 1}, {"mid", 2}, {"top", 3} };
+	std::function<void(std::string,std::string)> setFolder = 
+		[this, &folders]
+	(const std::string& name, const std::string& folder)
+	{
+		if( this->mapFolderInSrc_.find(name) == this->mapFolderInSrc_.end() )
+			mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, folder));
+		else
+		{
+			// only overwrite if higher in the hierarchy
+			if (folders.at(this->mapFolderInSrc_.at(name)) > folders.at(folder))
+				mapFolderInSrc_.at(name) = folder;
+		}
+	};
+
 	// determine the path for schemas' entities & types
 	std::function<void(std::string)> determinePath = 
-		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &pointsToConnected, &hasConnectedIncludes, &hasIncludes, &getAttributes, this]
+		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &pointsToConnected, &hasConnectedIncludes, &hasIncludes, &getAttributes, &setFolder]
 		(const std::string& name)
 	{
 		// if in the loop with ifcproduct -> mid
 		if (connected.at(mapNameToIndex.at(name)))
 		{
-			mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "mid"));
+			setFolder(name, "mid");
 			return;
 		}
 		else
@@ -1469,7 +1485,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 			if( schema.hasType(name) )
 				if( !schema.isSelectType(name)) // but not a select type -> type
 				{
-					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, hasIncludes(name) ? "bot" : "zero"));
+					setFolder(name, hasIncludes(name) ? "bot" : "zero");
 					return;
 				}
 				else // otherwise determine the selects
@@ -1478,9 +1494,9 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 					if(inheritsFromConnected(schema.getTypeByName(name).getTypes())
 						|| pointsToConnected(schema.getTypeByName(name).getTypes())
 						|| hasConnectedIncludes(name))
-						mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
+						setFolder(name, "top");
 					else
-						mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, hasIncludes(name) ? "bot" : "zero"));
+						setFolder(name, hasIncludes(name) ? "bot" : "zero");
 					return;
 				}
 
@@ -1491,9 +1507,9 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 				if( inheritsFromConnected(parents)
 					|| pointsToConnected(getAttributes(name))
 					|| hasConnectedIncludes(name))
-					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, "top"));
+					setFolder(name, "top");
 				else
-					mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, hasIncludes(name) ? "bot" : "zero"));
+					setFolder(name, hasIncludes(name) ? "bot" : "zero");
 				return;
 			}
 			throw std::exception("This should never ever happen");
@@ -1504,6 +1520,15 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 		determinePath(type.getName());
 	for (const auto& entity : schema.entities_)
 		determinePath(entity.getName());
+
+	// correct that any parent entities are not in a project above in the heirarchy
+	for (const auto& entity : schema.entities_)
+	{
+		auto parents = schema.getSuperTypes(entity);
+		auto folder = mapFolderInSrc_.at(entity.getName());
+		for (const auto& el : parents)
+			setFolder(el, folder);
+	}
 
 	// print
 	name = sourceDirectory_ + "/paths.txt";
