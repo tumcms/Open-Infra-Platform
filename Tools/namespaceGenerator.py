@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Technical University of Munich
+# Copyright (c) 2021 Technical University of Munich
 # Chair of Computational Modeling and Simulation.
 # 
 # TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@ from optparse import OptionParser
 #print 'Number of arguments:', len(sys.argv), 'arguments.'
 #print 'Argument List:', str(sys.argv)
 
-textHeader = """/*
-    Copyright (c) 2018 Technical University of Munich
+textHeader = u"""/*
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -38,6 +38,8 @@ textHeader = """/*
 
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+    NOTE: This file has been generated with Tools/namespaceGenerator.py .
 */
 """
 
