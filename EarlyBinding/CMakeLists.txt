@@ -17,7 +17,26 @@
 
 project(OpenInfraPlatform.EarlyBinding CXX)
 
-file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source		EarlyBinding/src/EXPRESS/*.*)	
+add_library(OpenInfraPlatform.ExpressLib INTERFACE)
+
+file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source		src/EXPRESS/*.*)	
+file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace	src/*.*)	
+
+target_include_directories(OpenInfraPlatform.ExpressLib INTERFACE 
+	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
+	${OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace}
+)
+add_definitions(-DOIP_EARLYBINDING_API_EXPRESS_ASEXPORT)
+
+#show the lib in UI - no use otherwise (see https://stackoverflow.com/questions/39887352/how-to-create-a-cmake-header-only-library-that-depends-on-external-header-files)
+add_custom_target(OpenInfraPlatform.ExpressLibrary SOURCES 
+	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
+	${OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace}
+)
+source_group(EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})
+source_group(defines FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace})
+set_target_properties(OpenInfraPlatform.ExpressLibrary PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+add_dependencies(OpenInfraPlatform.ExpressLibrary OpenInfraPlatform.ExpressLib)
 
 foreach(format ${IFC_FORMATS})
 	message(STATUS "Format ${format} found.")
