@@ -21,8 +21,6 @@
 #ifndef OpenInfraPlatform_EarlyBinding_SelectType_10255db4_8b09_413b_9c43_ea39f1d63ced_h
 #define OpenInfraPlatform_EarlyBinding_SelectType_10255db4_8b09_413b_9c43_ea39f1d63ced_h
 
-#include "../EarlyBinding/src/namespace.h"
-
 #include "ValueType.h"
 #include "EXPRESSModel.h"
 //#include "EXPRESSEntity.h"
@@ -51,7 +49,7 @@ public:
 
 template <typename ...Args>
 class
-OIP_EARLYBINDING_EXPORT
+OIP_EARLYBINDING_API_EXPRESS
 SelectType : public ValueType<boost::variant<Args...>> 
 {
 	using base = ValueType<boost::variant<Args...>>;

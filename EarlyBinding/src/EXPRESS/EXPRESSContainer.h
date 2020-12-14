@@ -21,8 +21,6 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSContainer_b030829d_7f85_44aa_87a3_e2a92f69bcfe_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSContainer_b030829d_7f85_44aa_87a3_e2a92f69bcfe_h
 
-#include "../EarlyBinding/src/namespace.h"
-
 #include "EXPRESSType.h"
 #include "EXPRESSModel.h"
 
@@ -48,7 +46,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
 template <typename ValueType, size_t MinCardinality, size_t MaxCardinality>
 class
-OIP_EARLYBINDING_EXPORT
+OIP_EARLYBINDING_API_EXPRESS
 EXPRESSContainer : public std::vector<ValueType> 
 {
 	using base = std::vector<ValueType>;

@@ -21,16 +21,14 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSAttribute_eb5c701d_2fe1_4b79_8d0b_d1767b93fe17_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSAttribute_eb5c701d_2fe1_4b79_8d0b_d1767b93fe17_h
 
-#include "../EarlyBinding/src/namespace.h"
-
-#include "../EarlyBinding/src/EXPRESS/EXPRESSOptional.h"
-#include "../EarlyBinding/src/EXPRESS/EXPRESSType.h"
+#include "EXPRESSOptional.h"
+#include "EXPRESSType.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
 template <typename T> 
 class 
-OIP_EARLYBINDING_EXPORT 
+OIP_EARLYBINDING_API_EXPRESS 
 EXPRESSAttribute 
 {
 public:
@@ -54,7 +52,7 @@ private:
 
 template <typename T>
 class
-OIP_EARLYBINDING_EXPORT
+OIP_EARLYBINDING_API_EXPRESS
 EXPRESSAttribute<EXPRESSOptional<T>> 
 {
 public:
@@ -82,7 +80,7 @@ private:
 
 template <typename T>
 class
-OIP_EARLYBINDING_EXPORT
+OIP_EARLYBINDING_API_EXPRESS
 EXPRESSAttribute<ValueType<T>> 
 {
 public:

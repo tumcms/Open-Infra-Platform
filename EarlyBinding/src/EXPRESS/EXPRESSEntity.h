@@ -21,8 +21,6 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSEntity_5fd9c3bc_1d26_4fef_994f_229551a1c3f8_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSEntity_5fd9c3bc_1d26_4fef_994f_229551a1c3f8_h
 
-#include "../EarlyBinding/src/namespace.h"
-
 #include "EXPRESSObject.h"
 
 #include <tuple>
@@ -34,7 +32,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 class EXPRESSModel;
 
 class
-OIP_EARLYBINDING_EXPORT
+OIP_EARLYBINDING_API_EXPRESS
 EXPRESSEntity : public EXPRESSObject 
 {
 public:
