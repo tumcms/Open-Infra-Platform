@@ -48,6 +48,6 @@ class GeneratorEcho : public Generator {
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END
 
-EMBED_INTO_OIP_NAMESPACE(GeneratorEcho)
+EMBED_EXPRESSBINDINGGENERATOR_INTO_OIP_NAMESPACE(GeneratorEcho)
 
 #endif // end define OpenInfraPlatform_ExpressBindingGenerator_GeneratorEcho_79d6d843_84b1_4c37_9051_6bdecceba109_h

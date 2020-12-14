@@ -90,17 +90,22 @@ IfcGeometryModelRenderer::~IfcGeometryModelRenderer()
 
 void IfcGeometryModelRenderer::fitViewToModel() const
 {
-	cameraController_->fitToView((model_->bb_.min()-model_->bb_.center()).cast<float>(), (model_->bb_.max()-model_->bb_.center()).cast<float>());
+	cameraController_->fitToView((model_->getExtent().min() - model_->getExtent().center()).cast<float>(), 
+		(model_->getExtent().max() - model_->getExtent().center()).cast<float>());
+		
     cameraController_->tick(1.0f);
     camera_->tick(1.0f);
 }
 
 void IfcGeometryModelRenderer::setModel(
-    const std::shared_ptr<oip::IfcGeometryModel>& model)
+    const std::shared_ptr<oip::IfcModel>& model)
 {
     model_.reset();
     model_ = model;
-    ifcGeometryEffect_->setIfcGeometryModel(model_, -model_->bb_.center());
+	ifcGeometryEffect_->setIfcGeometryModel(model);
+
+	ifcGeometryEffect_->setOffset(-model->getExtent().center());
+	
     fitViewToModel();
 }
 

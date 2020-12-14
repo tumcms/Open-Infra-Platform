@@ -59,7 +59,7 @@ class SurfaceModelTest : public VisualTest {
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 	
 };
 
