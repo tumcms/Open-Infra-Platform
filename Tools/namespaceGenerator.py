@@ -51,7 +51,7 @@ textHeader = u"""/*
 """
 
 def lineBreak(file):
-    file.write("\n")
+    file.write(u"\n")
 
 def writeLine(file, str):
     file.write(str)
@@ -71,33 +71,34 @@ def main(argv):
     
     with io.open(fileName, 'w', encoding='utf8') as f:
         writeLine(f, textHeader)
-        lineBreak(file)
+        lineBreak(f)
         writeLine(f, u"#pragma once")
         writeLine(f, u"#ifndef OpenInfraPlatform_" + moduleName + "_namespace_" + strUuid + "_h")
         writeLine(f, u"#define OpenInfraPlatform_" + moduleName + "_namespace_" + strUuid + "_h")    
-        lineBreak(file)
-        writeLine(f, u"#if !defined OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_BEGIN")
-        writeLine(f, u"#define OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_BEGIN \\")
+        lineBreak(f)
+        writeLine(f, u"#    if !defined OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_BEGIN")
+        writeLine(f, u"#        define OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_BEGIN \\")
         writeLine(f, u"namespace OpenInfraPlatform { \\")
         writeLine(f, u"namespace " + moduleName + " {")
-        writeLine(f, u"#endif")
-        lineBreak(file)
-        writeLine(f, u"#if !defined OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_END")
-        writeLine(f, u"#define OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_END \\")
+        writeLine(f, u"#    endif")
+        lineBreak(f)
+        writeLine(f, u"#    if !defined OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_END")
+        writeLine(f, u"#        define OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_END \\")
         writeLine(f, u"}\\")
         writeLine(f, u"}")
-        writeLine(f, u"#endif")
-        lineBreak(file)
-        writeLine(f, u"#if !defined EMBED_" + moduleName.upper() + "_INTO_OIP_NAMESPACE")
-        writeLine(f, u"#define EMBED_" + moduleName.upper() + "_INTO_OIP_NAMESPACE(X) \\")
+        writeLine(f, u"#    endif")
+        lineBreak(f)
+        writeLine(f, u"#    if !defined EMBED_" + moduleName.upper() + "_INTO_OIP_NAMESPACE")
+        writeLine(f, u"#        define EMBED_" + moduleName.upper() + "_INTO_OIP_NAMESPACE(X) \\")
         writeLine(f, u"namespace oip { \\")
         writeLine(f, u"using OpenInfraPlatform::" + moduleName + "::X; \\")
         writeLine(f, u"}")
-        writeLine(f, u"#endif")   
-        lineBreak(file)
+        writeLine(f, u"#    endif")   
+        lineBreak(f)
         writeLine(f, u"#endif // end define OpenInfraPlatform_" + moduleName + "_namespace_" + strUuid + "_h")
        
-    print("Wrote the namespace header of " + moduleName + " to " + fileName)
+    print("Wrote the namespace header of " + moduleName + " to ./" + fileName)
+    print("Now move the file to the correct location in repository")
 
 if __name__ == "__main__":
    main(sys.argv[1:])
