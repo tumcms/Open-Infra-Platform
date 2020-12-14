@@ -42,11 +42,13 @@ textHeader = """/*
 """
 
 def main(argv):
-	parser = argparse.ArgumentParser()
-	parser.add_argument("moduleName")
-	args = parser.parse_args()
-		
-	moduleName = args.moduleName
+    parser = argparse.ArgumentParser()
+    parser.add_argument("moduleName")
+    parser.add_argument("fileName")
+    args = parser.parse_args()
+        
+    moduleName = args.moduleName
+    fileName = args.fileName
     
 	strUuid = str(uuid.uuid4())
 	strUuid = strUuid.replace("-","_")
