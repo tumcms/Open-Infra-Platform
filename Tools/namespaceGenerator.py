@@ -97,8 +97,8 @@ def main(argv):
         lineBreak(f)
         writeLine(f, u"#endif // end define OpenInfraPlatform_" + moduleName + "_namespace_" + strUuid + "_h")
        
-    print("Wrote the namespace header of " + moduleName + " to ./" + fileName)
-    print("Now move the file to the correct location in repository")
+    print("Success. Wrote the namespace header of " + moduleName + " to ./" + fileName)
+    print("TODO: Now move the file to the correct location in repository!")
 
 if __name__ == "__main__":
    main(sys.argv[1:])
