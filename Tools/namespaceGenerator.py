@@ -13,6 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+#############################################################################
+# USAGE INSTRUCTION
+# python namespaceGenerator.py "ModuleName" "FileName"
+# the file gets output in the same folder and should then be moved to the correct location in repo
+#############################################################################
+
 import uuid
 import string
 import sys
