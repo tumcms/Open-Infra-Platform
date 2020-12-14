@@ -44,8 +44,12 @@ textHeader = u"""/*
 */
 """
 
+def lineBreak(file):
+    file.write("\n")
+
 def writeLine(file, str):
-    file.write(str + "\n")
+    file.write(str)
+    lineBreak(file)
 
 def main(argv):
     parser = argparse.ArgumentParser()
@@ -61,25 +65,30 @@ def main(argv):
     
     with io.open(fileName, 'w', encoding='utf8') as f:
         writeLine(f, textHeader)
+        lineBreak(file)
         writeLine(f, u"#pragma once")
         writeLine(f, u"#ifndef OpenInfraPlatform_" + moduleName + "_namespace_" + strUuid + "_h")
         writeLine(f, u"#define OpenInfraPlatform_" + moduleName + "_namespace_" + strUuid + "_h")    
+        lineBreak(file)
         writeLine(f, u"#if !defined OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_BEGIN")
         writeLine(f, u"#define OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_BEGIN \\")
         writeLine(f, u"namespace OpenInfraPlatform { \\")
         writeLine(f, u"namespace " + moduleName + " {")
         writeLine(f, u"#endif")
+        lineBreak(file)
         writeLine(f, u"#if !defined OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_END")
         writeLine(f, u"#define OIP_NAMESPACE_OPENINFRAPLATFORM_" + moduleName.upper() + "_END \\")
         writeLine(f, u"}\\")
         writeLine(f, u"}")
         writeLine(f, u"#endif")
+        lineBreak(file)
         writeLine(f, u"#if !defined EMBED_" + moduleName.upper() + "_INTO_OIP_NAMESPACE")
         writeLine(f, u"#define EMBED_" + moduleName.upper() + "_INTO_OIP_NAMESPACE(X) \\")
         writeLine(f, u"namespace oip { \\")
         writeLine(f, u"using OpenInfraPlatform::" + moduleName + "::X; \\")
         writeLine(f, u"}")
         writeLine(f, u"#endif")   
+        lineBreak(file)
         writeLine(f, u"#endif // end define OpenInfraPlatform_" + moduleName + "_namespace_" + strUuid + "_h")
        
     print("Wrote the namespace header of " + moduleName + " to " + fileName)
