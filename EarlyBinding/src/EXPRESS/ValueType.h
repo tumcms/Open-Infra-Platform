@@ -97,31 +97,27 @@ public:
 };
 
 template <typename T> 
-OIP_EARLYBINDING_API_EXPRESS 
 const bool operator==(const ValueType<T>& lhs, const ValueType<T>& rhs) 
 { return (T)lhs == (T)rhs; }
 
 template <typename T>
-OIP_EARLYBINDING_API_EXPRESS
 const bool operator==(const ValueType<T>& lhs, const T rhs) 
 { return (T)lhs == (T)rhs; }
 
 template <typename T>
-OIP_EARLYBINDING_API_EXPRESS
 const bool operator==(const T lhs, const ValueType<T>& rhs) 
 { return lhs == (T)rhs; }
 
 template <typename T, typename V>
-OIP_EARLYBINDING_API_EXPRESS
 const bool operator==(const ValueType<T>& lhs, const V rhs) 
 { return(T)lhs == rhs; }
 
 
-OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_API_EXPRESS const std::string ValueType<double>::getStepParameter() const { return std::to_string(ValueType<double>::m_value); };
-OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_API_EXPRESS const std::string ValueType<int>::getStepParameter() const { return std::to_string(ValueType<int>::m_value); };
-OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_API_EXPRESS const std::string ValueType<bool>::getStepParameter() const { return std::to_string(ValueType<bool>::m_value); };
-OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_API_EXPRESS const std::string ValueType<std::string>::getStepParameter() const { return "'" + ValueType<std::string>::m_value + "'"; };
-OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_API_EXPRESS const std::string ValueType<boost::logic::tribool>::getStepParameter() const {
+OIP_EARLYBINDING_EXTERN const std::string ValueType<double>::getStepParameter() const { return std::to_string(ValueType<double>::m_value); };
+OIP_EARLYBINDING_EXTERN const std::string ValueType<int>::getStepParameter() const { return std::to_string(ValueType<int>::m_value); };
+OIP_EARLYBINDING_EXTERN const std::string ValueType<bool>::getStepParameter() const { return std::to_string(ValueType<bool>::m_value); };
+OIP_EARLYBINDING_EXTERN const std::string ValueType<std::string>::getStepParameter() const { return "'" + ValueType<std::string>::m_value + "'"; };
+OIP_EARLYBINDING_EXTERN const std::string ValueType<boost::logic::tribool>::getStepParameter() const {
 	switch (ValueType<boost::logic::tribool>::m_value.value) {
 	case boost::logic::tribool::true_value: return "TRUE";
 	case boost::logic::tribool::false_value: return "FALSE";
@@ -131,7 +127,7 @@ OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_API_EXPRESS const std::string ValueType
 }
 
 
-OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_API_EXPRESS  
+OIP_EARLYBINDING_EXTERN  
 double ValueType<double>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {
 	if (value == "*") {
 		//TODO : Implement behaviour
@@ -142,7 +138,7 @@ double ValueType<double>::readStepData(const std::string &value, const std::shar
 	}
 };
 
-OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_API_EXPRESS  
+OIP_EARLYBINDING_EXTERN  
 int ValueType<int>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {
 	if (value == "*") {
 		//TODO : Implement behaviour
@@ -153,7 +149,7 @@ int ValueType<int>::readStepData(const std::string &value, const std::shared_ptr
 	}
 };
 
-OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_API_EXPRESS 
+OIP_EARLYBINDING_EXTERN 
 bool ValueType<bool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {
 	if (value == "*") {
 		//TODO : Implement behaviour
@@ -165,7 +161,7 @@ bool ValueType<bool>::readStepData(const std::string &value, const std::shared_p
 	}
 };
 
-OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_API_EXPRESS
+OIP_EARLYBINDING_EXTERN
 std::string ValueType<std::string>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { 
 	if (value.at(0) == '\'') {
 		return value.substr(1, value.length() - 2);
