@@ -171,7 +171,7 @@ std::string ValueType<std::string>::readStepData(const std::string &value, const
 	}
 };
 
-OIP_EARLYBINDING_EXTERN OIP_EARLYBINDING_API_EXPRESS
+OIP_EARLYBINDING_EXTERN
 boost::logic::tribool ValueType<boost::logic::tribool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {
 	std::string lower = boost::algorithm::to_lower_copy(value);
 	if (value == "*") {
