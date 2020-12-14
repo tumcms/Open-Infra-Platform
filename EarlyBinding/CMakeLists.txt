@@ -28,6 +28,11 @@ target_include_directories(OpenInfraPlatform.ExpressLib INTERFACE
 )
 add_definitions(-DOIP_EARLYBINDING_API_EXPRESS_ASEXPORT)
 
+include_directories(
+    ${Boost_INCLUDE_DIR}
+    ${tclap_SOURCE_DIR}/include
+)
+
 #show the lib in UI - no use otherwise (see https://stackoverflow.com/questions/39887352/how-to-create-a-cmake-header-only-library-that-depends-on-external-header-files)
 add_custom_target(OpenInfraPlatform.ExpressLibrary SOURCES 
 	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
