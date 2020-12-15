@@ -45,7 +45,30 @@ std::shared_ptr<OffModel> readFile(const std::string& filename)
 
 	try
 	{
+		std::string line;
+		//search line which specifies the number of vertices, faces and edges
+		bool firstLineWithContent = false;
+		while (!firstLineWithContent)
+		{
+			std::getline(offFile, line);
+			firstLineWithContent = line.find("OFF");
+		}
 
+		//read number of elements
+		getline(offFile, line);
+		std::vector<int>	lineData;
+		std::stringstream	lineStream(line);
+
+		int value;
+		while (lineStream >> value)
+		{
+			lineData.push_back(value);
+		}
+
+		int nrOfVertices, nrOfFaces, nrOfEdges;
+		nrOfVertices = lineData[0];
+		nrOfFaces = lineData[1];
+		nrOfEdges = lineData[2];
 	}
 	catch (const std::exception& e)
 	{
