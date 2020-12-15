@@ -69,6 +69,26 @@ std::shared_ptr<OffModel> readFile(const std::string& filename)
 		nrOfVertices = lineData[0];
 		nrOfFaces = lineData[1];
 		nrOfEdges = lineData[2];
+
+		//create new OffModel
+		OffModel model;
+		model.reset();
+		model.setFilename(filename);
+
+		//read vertices 
+		for (int i = 0; i < nrOfVertices; i++)
+		{
+			getline(offFile, line);
+			buw::Vector3d vector;
+			std::stringstream lineStream(line);
+
+			int vectorValue;
+			while (lineStream >> vectorValue)
+			{
+				vector.addTo(vectorValue);
+			}
+			model.addVertex(vector);
+		}
 	}
 	catch (const std::exception& e)
 	{
