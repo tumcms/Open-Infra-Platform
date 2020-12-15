@@ -24,7 +24,7 @@ void OpenInfraPlatform::Core::OffConverter::OffModel::reset()
 	geometry_.reset();
 }
 
-void OpenInfraPlatform::Core::OffConverter::OffModel::addVertex(buw::VertexPosition3Color3Normal3 vertex)
+void OpenInfraPlatform::Core::OffConverter::OffModel::addVertex(buw::Vector3d vertex)
 {
 	geometry_.vertices.push_back;
 	geometry_.UpdateBBox();

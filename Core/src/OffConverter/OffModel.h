@@ -27,8 +27,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "namespace.h"
 
-typedef buw::VertexPosition3Color3Normal3 VertexLayout;
-
 namespace OpenInfraPlatform
 {
 	namespace Core
@@ -37,14 +35,14 @@ namespace OpenInfraPlatform
 		{
 			struct IndexedMeshDescription {
 				std::vector<uint32_t>							indices;
-				std::vector<VertexLayout>						vertices;
+				std::vector<buw::Vector3d>						vertices;
 				oip::BBox										bb;
 				bool isEmpty() const { return (indices.size() == 0 && vertices.size() == 0); };
 				void reset() { indices.clear(); vertices.clear(); }
 				void UpdateBBox()
 				{
 					for (const auto& vertex : vertices)
-						bb.update(vertex.position[0], vertex.position[1], vertex.position[2]);
+						bb.update(vertex[0], vertex[1], vertex[2]);
 				}
 			};
 
@@ -57,7 +55,7 @@ namespace OpenInfraPlatform
 			public:
 				void reset(); 
 
-				void addVertex(VertexLayout vertex);
+				void addVertex(buw::Vector3d vertex);
 				IndexedMeshDescription const &geometry() const { return geometry_; }
 
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------
