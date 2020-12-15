@@ -73,6 +73,6 @@ std::shared_ptr<OffModel> readFile(const std::string& filename)
 	catch (const std::exception& e)
 	{
 		offFile.close();
-		throw oip::IfcPeekReaderException("Error in Off file");
+		throw std::exception("Error in Off file");
 	}
 }
