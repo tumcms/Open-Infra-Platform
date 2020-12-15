@@ -528,13 +528,13 @@ void writeEntityConstructor(std::ostream &out, const OpenInfraPlatform::ExpressB
 	writeEntityFunction(out, entity, "", entity.getName(), parameters, "", implementation);
 }
 
-void writeValueTypeFile(const Type& type, std::ostream& out) {
+void writeValueTypeFile(const Type& type, std::ostream& out, const std::string& apiDefine) {
 	const std::string name = type.getName();
 	const std::string basetype = type.getUnderlyingTypeName();
 	
 	
 	writeDoxyComment(out, "Type, subtype of  " + basetype);
-	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + name + " : public " + basetype + " {");
+	writeLine(out, "class " + apiDefine + " " + name + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, "typedef " + name + " type;");
@@ -562,7 +562,7 @@ void writeValueTypeFile(const Type& type, std::ostream& out) {
 	return;
 }
 
-void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream& out) {
+void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream& out, const std::string& apiDefine) {
 	/*
 	#define DEFINE_CONTAINERTYPE(name, containertype, min, max, valuetype)\
 	class name : public ExpressBindingGenerator::EXPRESSContainer<containertype<valuetype>,valuetype,min,max>, public ExpressBindingGenerator::EXPRESSType {\
@@ -591,7 +591,7 @@ void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream
 	const std::string basetype = "EarlyBinding::" + type.getContainerTypeName() + "<" + min + "," + max + "," + valuetype + ">";
 
 	writeDoxyComment(out, "Container of " + type.getContainerType() + ", with cardinalities [" + min + "," + max + "]");
-	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + name + " : public " + basetype + ", public EarlyBinding::EXPRESSType {");
+	writeLine(out, "class " + apiDefine + " " + name + " : public " + basetype + ", public EarlyBinding::EXPRESSType {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, name + "() = default;");
@@ -625,7 +625,7 @@ void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream
 	writeLine(out, "};");
 }
 
-void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostream& out) {
+void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostream& out, const std::string& apiDefine) {
 
 	/*
 	#define ENUM_W_STR(name, type, seq)\
@@ -696,7 +696,7 @@ void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostr
 	};
 	*/
 
-	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + name + " : public " + basetype + " {");
+	writeLine(out, "class " + apiDefine + " " + name + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, "typedef " + enumName + " Enum;");
@@ -721,14 +721,14 @@ void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostr
 	return;
 }
 
-void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq, std::ostream& out) {
+void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq, std::ostream& out, const std::string& apiDefine) {
 	const std::string enumName = "e" + name;
 
 	std::for_each(seq.begin(), seq.end(), [](auto& elem) {
 		elem = "ENUM_" + elem;
 	});
 
-	writeLine(out, "enum class OIP_EARLYBINDING_EXPORT " + enumName + " : int {");
+	writeLine(out, "enum class " + apiDefine + " " + enumName + " : int {");
 	for (int i = 0; i < seq.size(); i++) {
 		if (i != seq.size() - 1) {
 			writeLine(out, seq[i] + " = " + std::to_string(i) + ",");
@@ -740,7 +740,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 	}
 	writeLine(out, "};");
 	linebreak(out);
-	writeLine(out, "OIP_EARLYBINDING_EXPORT const std::string to_string(const " + enumName + "& v);");
+	writeLine(out, apiDefine + " const std::string to_string(const " + enumName + "& v);");
 	linebreak(out);
 
 	//writeLine(out, "inline const std::string to_string(const " + enumName + "& v) {");
@@ -755,7 +755,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 
 	const std::string basetype = "EarlyBinding::EnumType<" + enumName + "," + std::to_string(seq.size()) + ">";
 	writeDoxyComment(out, "EnumType of " + std::to_string(seq.size()) + " elements");
-	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + name + " : public " + basetype + " {");
+	writeLine(out, "class " + apiDefine + " " + name + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, name + "() = default;");
@@ -791,7 +791,7 @@ void resolveEntity(Schema& schema, const Entity& entity, std::ostream& out) {
 	}
 }
 
-void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out) {
+void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out, const std::string& apiDefine) {
 	/*
 	#define DEFINE_SELECTTYPE(select, seq)\
 	class select : public boost::make_recursive_variant<BOOST_PP_REMOVE_PARENS(BOOST_PP_SEQ_TO_TUPLE(seq))>::type, public OpenInfraPlatform::ExpressBindingGenerator::EXPRESSType {\
@@ -852,7 +852,7 @@ void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out) {
 	std::transform(seq.begin(), seq.end(), seq.begin(), [&schema](std::string elem)->std::string {return schema.hasEntity(elem) ? "EXPRESSReference<" + elem + ">" : elem; });
 
 	const std::string basetype = "boost::make_recursive_variant<" + join(seq, ',') + ">::type";
-	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + select + " : public " + basetype + ", public ExpressBindingGenerator::EXPRESSType {");
+	writeLine(out, "class " + apiDefine + " " + select + " : public " + basetype + ", public ExpressBindingGenerator::EXPRESSType {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, select + "() = default;");
@@ -961,7 +961,7 @@ void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out) {
 	return;
 }
 
-void writeSelectTypeFileREFACTORED(const Schema& schema, const Type& selectType, std::ostream& out) {
+void writeSelectTypeFileREFACTORED(const Schema& schema, const Type& selectType, std::ostream& out, const std::string& apiDefine) {
 	//class IfcTimeOrRatioSelect : public OpenInfraPlatform::ExpressBindingGenerator::SelectType<IfcTimeOrRatioSelect, IfcDuration, IfcRatioMeasure> {
 	//	using base = OpenInfraPlatform::ExpressBindingGenerator::SelectType<IfcTimeOrRatioSelect, IfcDuration, IfcRatioMeasure>;
 	//public:
@@ -982,7 +982,7 @@ void writeSelectTypeFileREFACTORED(const Schema& schema, const Type& selectType,
 	const std::string basetype = "EarlyBinding::SelectType<" + join(seq, ',') + ">";
 
 	//writeLine(out, "class " + select + " : public " + basetype +", public ExpressBindingGenerator::EXPRESSType {");
-	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + select + " : public " + basetype + " {");
+	writeLine(out, "class " + apiDefine + " " + select + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, select + "() = default;");
@@ -1001,12 +1001,12 @@ void writeSelectTypeFileREFACTORED(const Schema& schema, const Type& selectType,
 	writeLine(out, "};");
 }
 
-void writeSelectTypeFileMinimal(Schema& schema, Type& selectType, std::ostream& out) {
+void writeSelectTypeFileMinimal(Schema& schema, Type& selectType, std::ostream& out, const std::string& apiDefine) {
 	const std::string select = selectType.getName();
 	std::vector<std::string> seq = selectType.getTypes();
 	std::transform(seq.begin(), seq.end(), seq.begin(), [&schema](std::string elem)->std::string {return schema.hasEntity(elem) ? "EXPRESSReference<" + elem + ">" : elem; });
 
-	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + select + " {");
+	writeLine(out, "class " + apiDefine + " " + select + " {");
 	writeLine(out, "public:");
 	writeLine(out, select + "() = default;");
 	writeLine(out, "~" + select + "() { };");
@@ -1634,6 +1634,15 @@ std::string GeneratorOIP::getFolder(const std::string& name) const
 	return outputDirectory_;
 }
 
+std::string GeneratorOIP::getAPIDefine(const std::string& name) const
+{
+	const auto folder = mapFolderInSrc_.find(name);
+	if (folder != mapFolderInSrc_.end())
+		return "OIP_EARLYBINDING_API_" + toUpper(folder->second);
+	return "OIP_EARLYBINDING_API_MAIN";
+}
+
+
 void GeneratorOIP::createEntitiesMapHeaderFile(const Schema &schema) {
 	// EntitiesMap.h
 	std::stringstream ssFilename;
@@ -1818,19 +1827,19 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 	}
 
 	if (type.isSimpleType() || type.isDerivedType()) {
-		writeValueTypeFile(type, out);
+		writeValueTypeFile(type, out, getAPIDefine(type.getName()));
 	}
 	else if (type.isEnumeration()) {
-		writeEnumTypeFileRefactored(type.getName(), type.getTypes(), out);
+		writeEnumTypeFileRefactored(type.getName(), type.getTypes(), out, getAPIDefine(type.getName()));
 	}
 	else if (type.isContainerType()) {
 		if (schema.hasEntity(type.getContainerType())) {
 			writeLine(out, "class " + type.getContainerType() + ";");
 		}
-		writeContainerTypeFile(schema, type, out);
+		writeContainerTypeFile(schema, type, out, getAPIDefine(type.getName()));
 	}
 	else if (type.isSelectType()) {	
-		writeSelectTypeFileREFACTORED(schema, type, out);
+		writeSelectTypeFileREFACTORED(schema, type, out, getAPIDefine(type.getName()));
 	}
 	else {
 		std::cerr << "UNKNOWN TYPE ENCOUNTERED!" << std::endl;
@@ -1927,7 +1936,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 
 	writeEndNamespace(out, schema);
 
-	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::" + schema.getName() + "::" + type.getName() + ">;");
+	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
 
 	out.close();
 }
@@ -1972,7 +1981,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	// Write begin namespace OpenInfraPlatform::Schema
 	writeBeginNamespace(file, schema);	
 
-	writeLine(file, "class OIP_EARLYBINDING_EXPORT " + schema.getName() + "Reader {"); // begin class
+	writeLine(file, "class " + getAPIDefine("reader") + " " + schema.getName() + "Reader {"); // begin class
 	writeLine(file, "public:");
 	
 	writeLine(file, "static std::shared_ptr<EarlyBinding::EXPRESSModel> FromFile(const std::string &filename);"); 
@@ -2259,16 +2268,124 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 {
 	std::string name = "CMakeLists.txt";
 
-	std::stringstream ssFilename;
-	ssFilename << rootDirectory_ << "/" << name;
-	std::ofstream file(ssFilename.str());
+	// main cmake file of the library - gets included by the cmake of the oip solution
+	std::string filename = rootDirectory_ + "/" + name;
+	std::ofstream file(filename);
 
 	file << license_cmake << std::endl;
 	file << std::endl;
 	file << notice_cmake << std::endl;
 	file << std::endl;
 
+	file << "add_subdirectory(src)";
+	file << std::endl;
+
+	file.close();
+
+	// source cmake file of the library pointing to all subdirectories
+	filename = sourceDirectory_ + "/" + name;
+	file.open(filename);
 	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
+
+	file << license_cmake << std::endl;
+	file << std::endl;
+	file << notice_cmake << std::endl;
+	file << std::endl; 
+
+	file << "add_subdirectory(Zero)" << std::endl;
+	file << "add_subdirectory(Bot)" << std::endl;
+	file << "add_subdirectory(Mid)" << std::endl;
+	file << "add_subdirectory(Top)" << std::endl;
+	file << std::endl;
+	file << std::endl;
+
+	file << "project(OpenInfraPlatform." << schema.getName() << " CXX)" << std::endl;
+	file << "" << std::endl;
+	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;
+	file << "" << std::endl;
+	file << "include_directories(" << std::endl;
+	file << "  src" << std::endl;
+	file << "  ${CMAKE_SOURCE_DIR}/EarlyBinding/src" << std::endl;
+	file << "  ${visit_struct_INCLUDE_DIR}" << std::endl;
+	file << "  ${Boost_INCLUDE_DIR}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_Source              "
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_reader_Source         "
+		"reader/*.[hc] reader/*.[hc]pp reader/*.[hc]xx)" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_Source} PROPERTY GENERATED ON)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_reader_Source} PROPERTY GENERATED ON)" << std::endl;
+
+	file << "" << std::endl;
+
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "                FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "\\\\reader        FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_reader_Source})" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "add_library(OpenInfraPlatform." << schema.getName() << " SHARED" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_" << schema.getName() << "_Source}" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_" << schema.getName() << "_reader_Source}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + " PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Top" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Mid" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
+	file << ")" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_API_MAIN_ASEXPORT)" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + " INTERFACE src/reader src)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + " PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "Install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/ DESTINATION include" << std::endl;
+	file << "\t" << "COMPONENT " << schema.getName() << std::endl;
+	file << "\t" << "FILES_MATCHING PATTERN \"*.h\"" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+	file.close();
+
+	// the top library (top)
+	filename = sourceDirectory_ + "/top/" + name;
+	file.open(filename);
+	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
+
+	file << license_cmake << std::endl;
+	file << std::endl;
+	file << notice_cmake << std::endl;
+	file << std::endl;
+	file << "" << std::endl;
 
 	file << "project(OpenInfraPlatform." << schema.getName() << ".Top CXX)" << std::endl;
 	file << "" << std::endl;
@@ -2284,67 +2401,34 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "" << std::endl;
 
 	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-		<< "_Source              "
-		"src/*.*)" << std::endl;	
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
 		<< "_top_Source         "
-		"src/top/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-		<< "_mid_Source         "
-		"src/mid/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-		<< "_bot_Source         "
-		"src/bot/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-		<< "_zero_Source         "
-		"src/zero/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-		<< "_reader_Source         "
-		"src/reader/*.*)" << std::endl;
-
-	file << "" << std::endl;
-
-	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_Source} PROPERTY GENERATED ON)" << std::endl;
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
 	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_top_Source} PROPERTY GENERATED ON)" << std::endl;
-	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_mid_Source} PROPERTY GENERATED ON)" << std::endl;
-	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_bot_Source} PROPERTY GENERATED ON)" << std::endl;
-	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_zero_Source} PROPERTY GENERATED ON)" << std::endl;
-	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_reader_Source} PROPERTY GENERATED ON)" << std::endl;
 
 	file << "" << std::endl;
 
-	file << "file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source ${CMAKE_SOURCE_DIR}/EarlyBinding/src/EXPRESS/*.*)" << std::endl;
+	//file << "file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source ${CMAKE_SOURCE_DIR}/EarlyBinding/src/EXPRESS/*.*)" << std::endl;
 
 	file << "" << std::endl;
 
-	file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-		<< "                FILES "
-		"${OpenInfraPlatform_"
-		<< schema.getName() << "_Source})" << std::endl;	
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
 	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
 		<< "\\\\top        FILES "
 		"${OpenInfraPlatform_"
 		<< schema.getName() << "_top_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-		<< "\\\\reader        FILES "
-		"${OpenInfraPlatform_"
-		<< schema.getName() << "_reader_Source})" << std::endl;
 	
 	file << "" << std::endl;
 
 	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Top SHARED" << std::endl;
 	file << "\t"
-		<< "${OpenInfraPlatform_" << schema.getName() << "_Source}" << std::endl;
-	file << "\t"
 		<< "${OpenInfraPlatform_" << schema.getName() << "_top_Source}" << std::endl;
-	file << "\t"
-		<< "${OpenInfraPlatform_" << schema.getName() << "_reader_Source}" << std::endl;
 	file << ")" << std::endl;
 
 	file << "" << std::endl;
 
 	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Top PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
 	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Mid" << std::endl;
 	file << "\t"
@@ -2352,22 +2436,25 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
 	file << ")" << std::endl;
-  file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
+  file << "add_definitions(-DOIP_EARLYBINDING_API_TOP_ASEXPORT)" << std::endl;
 	
 	file << "" << std::endl;
 
-	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Top INTERFACE src)" << std::endl;
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Top INTERFACE src/top)" << std::endl;
 	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".Top PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
-
+	
 	file << "" << std::endl;
+	file.close();
 
-	file << "Install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/ DESTINATION include" << std::endl;
-	file << "\t" << "COMPONENT " << schema.getName() << std::endl;
-	file << "\t" << "FILES_MATCHING PATTERN \"*.h\"" << std::endl;
-	file << ")" << std::endl;
+	// the middle library (mid)
+	filename = sourceDirectory_ + "/mid/" + name;
+	file.open(filename);
+	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
 
-	file << "" << std::endl;
-	file << "" << std::endl;
+	file << license_cmake << std::endl;
+	file << std::endl;
+	file << notice_cmake << std::endl;
+	file << std::endl;
 
 	file << "project(OpenInfraPlatform." << schema.getName() << ".Mid CXX)" << std::endl;
 	file << "" << std::endl;
@@ -2381,8 +2468,12 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << ")" << std::endl;
 
 	file << "" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_mid_Source         "
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_mid_Source} PROPERTY GENERATED ON)" << std::endl;
 
-	file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
 	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
 		<< "\\\\mid          FILES "
 		"${OpenInfraPlatform_"
@@ -2399,17 +2490,30 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Mid PUBLIC" << std::endl;
 	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
+	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
 	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
 	file << ")" << std::endl;
 
-	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Mid INTERFACE src)" << std::endl;
-  file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Mid INTERFACE src/mid)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".Mid PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_API_MID_ASEXPORT)" << std::endl;
 	
 	file << "" << std::endl;
 
-	file << "" << std::endl;
+	file.close();
+
+	// the bottom library (bot)
+	filename = sourceDirectory_ + "/bot/" + name;
+	file.open(filename);
+	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
+
+	file << license_cmake << std::endl;
+	file << std::endl;
+	file << notice_cmake << std::endl;
+	file << std::endl;
 
 	file << "project(OpenInfraPlatform." << schema.getName() << ".Bot CXX)" << std::endl;
 	file << "" << std::endl;
@@ -2423,8 +2527,12 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << ")" << std::endl;
 
 	file << "" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_bot_Source         "
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_bot_Source} PROPERTY GENERATED ON)" << std::endl;
 
-	file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
 	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
 		<< "\\\\bot        FILES "
 		"${OpenInfraPlatform_"
@@ -2441,15 +2549,30 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Bot PUBLIC" << std::endl;
 	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
+	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
 	file << ")" << std::endl;
 
-	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Bot INTERFACE src)" << std::endl;
-	file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Bot INTERFACE src/bot)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".Bot PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_API_BOT_ASEXPORT)" << std::endl;
 
 	file << "" << std::endl;
 
 	file << "" << std::endl;
+
+	file.close();
+
+	// the base library (zero)
+	filename = sourceDirectory_ + "/zero/" + name;
+	file.open(filename);
+	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
+
+	file << license_cmake << std::endl;
+	file << std::endl;
+	file << notice_cmake << std::endl;
+	file << std::endl;
 
 	file << "project(OpenInfraPlatform." << schema.getName() << ".Zero CXX)" << std::endl;
 	file << "" << std::endl;
@@ -2463,24 +2586,37 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << ")" << std::endl;
 
 	file << "" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_Zero_Source         "
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
 
-	file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_Zero_Source} PROPERTY GENERATED ON)" << std::endl;
+
+	file << "" << std::endl;
+
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
 	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
 		<< "\\\\zero        FILES "
 		"${OpenInfraPlatform_"
-		<< schema.getName() << "_zero_Source})" << std::endl;
+		<< schema.getName() << "_Zero_Source})" << std::endl;
 
 	file << "" << std::endl;
 
 	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Zero SHARED" << std::endl;
 	file << "\t"
-		<< "${OpenInfraPlatform_" << schema.getName() << "_zero_Source}" << std::endl;
+		<< "${OpenInfraPlatform_" << schema.getName() << "_Zero_Source}" << std::endl;
 	file << ")" << std::endl;
 
 	file << "" << std::endl;
 
-	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Zero INTERFACE src)" << std::endl;
-	file << "add_definitions(-DOIP_EARLYBINDING_EXPORT_ASEXPORT)" << std::endl;
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Zero PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
+	file << ")" << std::endl;
+
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Zero INTERFACE src/zero)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".Zero PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_API_ZERO_ASEXPORT)" << std::endl;
 
 	file << "" << std::endl;
 	file.close();
@@ -2488,14 +2624,15 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, const Entity & entity) const
 {
-	std::string path = sourceDirectory_ + "/" + getFolder(entity.getName()) + "/" + entity.getName() + ".h";
+	const std::string name = entity.getName();
+	std::string path = sourceDirectory_ + "/" + getFolder(name) + "/" + name + ".h";
 	std::ofstream out(path);
 
 	writeLicenseAndNotice(out);
 
 	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
-	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), entity.getName(), guid, "h" }, '_');
+	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), name, guid, "h" }, '_');
 
 	writeLine(out, "#pragma once");
 	writeLine(out, "#ifndef " + define);
@@ -2545,7 +2682,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 			}
 		}
 	}
-	auto self = entityAttributes.find(entity.getName());
+	auto self = entityAttributes.find(name);
 	if (self != entityAttributes.end()) {
 		entityAttributes.erase(self);
 	}
@@ -2572,34 +2709,34 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 
 	writeDoxyComment(out, "Entity" + entity.hasSupertype() ? " subtype of " + supertype : "");
 
-	writeLine(out, "class OIP_EARLYBINDING_EXPORT " + entity.getName() + " : public " + supertype + " {");
+	writeLine(out, "class " + getAPIDefine(name) + " " + name + " : public " + supertype + " {");
 	writeLine(out, "private:");
 	writeLine(out, "using base = " + supertype + ";");
 	writeLine(out, "public:");
 	
-	//writeLine(out, "typedef " + entity.getName() + " UnderlyingType;");
+	//writeLine(out, "typedef " + name + " UnderlyingType;");
 	
 	if (!schema.isAbstract(entity)) {
 		// Default constructor.
-		writeLine(out, entity.getName() + "();");
+		writeLine(out, name + "();");
 
 		// Copy constructor.
-		writeLine(out, entity.getName() + "(const " + entity.getName() + "& other);");
+		writeLine(out, name + "(const " + name + "& other);");
 
 		// Move constructor.
-		writeLine(out, entity.getName() + "(" + entity.getName() + "&& other);");
+		writeLine(out, name + "(" + name + "&& other);");
 		linebreak(out);
 
 		// Destructor.
-		writeLine(out, "virtual ~" + entity.getName() + "();");
+		writeLine(out, "virtual ~" + name + "();");
 		linebreak(out);
 
 		// Swap function.
-		writeLine(out, "friend void swap(" + entity.getName() + "& first, " + entity.getName() + "& second);");
+		writeLine(out, "friend void swap(" + name + "& first, " + name + "& second);");
 		linebreak(out);
 
 		// Assignment operator.
-		writeLine(out, "virtual " + entity.getName() + "& operator=(const " + entity.getName() + "& other);");
+		writeLine(out, "virtual " + name + "& operator=(const " + name + "& other);");
 		linebreak(out);
 
 		// Classname function.
@@ -2607,7 +2744,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 		linebreak(out); 
 
 		//Interpret STEP data
-		writeLine(out, "static " + entity.getName() + " readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
+		writeLine(out, "static " + name + " readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
 		linebreak(out);
 
 		//Get STEP data
@@ -2621,7 +2758,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 		writeLine(out, "using base::getStepParameter;");		
 	}
 	else {
-		//writeLine(out, "virtual " + entity.getName() + "& operator=(" + entity.getName() + " other) = 0;");
+		//writeLine(out, "virtual " + name + "& operator=(" + name + " other) = 0;");
 		writeLine(out, "virtual const std::string classname() const = 0;");
 		writeLine(out, "virtual const std::string getStepLine() const = 0;");
 		writeLine(out, "virtual void linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) = 0;");
@@ -2644,7 +2781,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 	{
 		linebreak(out);
 		out << "\n";
-		out << "VISITABLE_STRUCT(OpenInfraPlatform::" << schema.getName() << "::" << entity.getName();
+		out << "VISITABLE_STRUCT(OpenInfraPlatform::" << schema.getName() << "::" << name;
 		for (auto item : attributeNames) {
 			out << "," << item;
 		}
@@ -2721,15 +2858,16 @@ void GeneratorOIP::generateNamespaceHeader(const Schema & schema)
 
 void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, const Entity & entity) const
 {
-	std::string path = sourceDirectory_ + "/" + getFolder(entity.getName()) + "/" + entity.getName() + ".cpp";
+	const std::string name = entity.getName();
+	std::string path = sourceDirectory_ + "/" + getFolder(name) + "/" + name + ".cpp";
 	std::ofstream out(path);
 
 	writeLicenseAndNotice(out);	
-	writeInclude(out, entity.getName() + ".h");
+	writeInclude(out, name + ".h");
 	linebreak(out);
 
 	std::set<std::string> typeAttributes, entityAttributes;
-	getCachedIncludes(entity.getName(), typeAttributes, entityAttributes);
+	getCachedIncludes(name, typeAttributes, entityAttributes);
 
 	if (!entityAttributes.empty()) {
 		for (const auto& entityAttribute : entityAttributes) {
@@ -2745,35 +2883,35 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 	writeBeginNamespace(out, schema);
 	
 
-	auto initClassAsDefault = [&out, &entity, &schema]() {
+	auto initClassAsDefault = [&out, &name, &entity, &schema]() {
 
 		// Default constructor
 		writeDoxyComment(out, "Default constructor");
-		writeLine(out, entity.getName() + "::" + entity.getName() + "() { }");
+		writeLine(out, name + "::" + name + "() { }");
 		linebreak(out);
 
 		// Copy constructor
 		writeDoxyComment(out, "Copy constructor");
-		writeLine(out, entity.getName() + "::" + entity.getName() + "(const " + entity.getName() + "& other) {");
+		writeLine(out, name + "::" + name + "(const " + name + "& other) {");
 		writeLine(out, "operator=(other);");
 		writeLine(out, "}");
 		linebreak(out);
 
 		// Move constructor.
 		writeDoxyComment(out, "Move constructor");
-		writeLine(out, entity.getName() + "::" + entity.getName() + "(" + entity.getName() + "&& other) : " + entity.getName() + "() {");
+		writeLine(out, name + "::" + name + "(" + name + "&& other) : " + name + "() {");
 		writeLine(out, "swap(*this, other);");
 		writeLine(out, "}");
 		linebreak(out);
 
 		// Destructor
 		writeDoxyComment(out, "Destructor.");
-		writeLine(out, entity.getName() + "::~" + entity.getName() + "() {};");
+		writeLine(out, name + "::~" + name + "() {};");
 		linebreak(out);
 
 		// Copy Assignment Operator
 		writeDoxyComment(out, "Assigns the content of \\c other to \\c this.");
-		writeLine(out, entity.getName() + "& " + entity.getName() + "::operator=(const " + entity.getName() + "& other) {");
+		writeLine(out, name + "& " + name + "::operator=(const " + name + "& other) {");
 		writeLine(out, "this->m_id = other.m_id;");
 		auto allAttributes = schema.getAllEntityAttributes(entity, true);
 		for (auto& attr : allAttributes) {
@@ -2784,14 +2922,14 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		linebreak(out);
 
 		// Classname function
-		writeDoxyComment(out, "Returns the class name.", "", nullptr, nullptr, "\"" + toUpper(entity.getName()) + "\"");
-		writeLine(out, "const std::string " + entity.getName() + "::classname() const { return \"" + toUpper(entity.getName()) + "\";} ");
+		writeDoxyComment(out, "Returns the class name.", "", nullptr, nullptr, "\"" + toUpper(name) + "\"");
+		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\";} ");
 		linebreak(out);
 
 		// Interpret STEP data
-		writeDoxyComment(out, "Interprets the STEP serialization.", "", nullptr, nullptr, "An instance of \\c " + entity.getName());
-		writeLine(out, entity.getName() + " " + entity.getName() +"::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
-		writeLine(out, entity.getName() + " entity;");
+		writeDoxyComment(out, "Interprets the STEP serialization.", "", nullptr, nullptr, "An instance of \\c " + name);
+		writeLine(out, name + " " + name +"::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
+		writeLine(out, name + " entity;");
 		writeLine(out, "entity.setId(stoull(args[0]));");
 		auto attributes = schema.getAllEntityAttributes(entity, false);
 		for (int i = 0; i < attributes.size(); i++) {
@@ -2803,8 +2941,8 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		linebreak(out);
 
 		// Get STEP data
-		writeDoxyComment(out, "Returns the STEP serialization.", "", nullptr, nullptr, "#ID=" + entity.getName() + "(<attributes>);");
-		writeLine(out, "const std::string " + entity.getName() + "::getStepLine() const {");
+		writeDoxyComment(out, "Returns the STEP serialization.", "", nullptr, nullptr, "#ID=" + name + "(<attributes>);");
+		writeLine(out, "const std::string " + name + "::getStepLine() const {");
 		writeLine(out, "std::string classname = this->classname();");
 		writeLine(out, "boost::to_upper(classname);");
 		writeLine(out, "std::string stepLine = this->getStepParameter() + \"=\" + classname + \"(\";");
@@ -2818,7 +2956,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 				
 		// Set inverse attributes
 		writeDoxyComment(out, "Sets the inverse attributes.", "", nullptr, nullptr, "");
-		writeLine(out, "void " + entity.getName() + "::linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
+		writeLine(out, "void " + name + "::linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
 		for (auto attr : schema.getAllEntityAttributes(entity, true))
 		{
 			if (attr.hasInverseCounterpart())
@@ -2889,7 +3027,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 
 		// Write swap function implementation
 		writeDoxyComment(out, "Swaps the content between the \\c first and \\c second.");
-		writeLine(out, "void swap(" + entity.getName() + "& first, " + entity.getName() + "& second) {");
+		writeLine(out, "void swap(" + name + "& first, " + name + "& second) {");
 		writeLine(out, "using std::swap;");
 		writeLine(out, "swap(first.m_id, second.m_id);");
 		for (auto attr : schema.getAllEntityAttributes(entity, true)) {
@@ -2901,8 +3039,8 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		
 	writeEndNamespace(out, schema);
 
-	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">;");
-	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">" + ">;");
+	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
+	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">" + ">;");
 	out.close();
 }
 
