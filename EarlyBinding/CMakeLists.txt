@@ -26,7 +26,7 @@ target_include_directories(OpenInfraPlatform.ExpressLib INTERFACE
 	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
 	${OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace}
 )
-add_definitions(-DOIP_EARLYBINDING_API_EXPRESS_ASEXPORT)
+#set_target_properties(OpenInfraPlatform.ExpressLib PROPERTIES COMPILE_DEFINITIONS OIP_EARLYBINDING_API_EXPRESS_ASEXPORT)
 
 include_directories(
     ${Boost_INCLUDE_DIR}
@@ -38,6 +38,12 @@ add_custom_target(OpenInfraPlatform.ExpressLibrary SOURCES
 	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
 	${OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace}
 )
+
+include_directories(
+    ${Boost_INCLUDE_DIR}
+    ${tclap_SOURCE_DIR}/include
+)
+
 source_group(EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})
 source_group(defines FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace})
 set_target_properties(OpenInfraPlatform.ExpressLibrary PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")

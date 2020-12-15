@@ -16,7 +16,7 @@
 */
 
 
-#	if defined(_WIN32) // we are on windows
+#	if defined(_WIN32) || defined(WIN32) // we are on windows
 #       if defined (OIP_EARLYBINDING_API_EXPRESS_ASEXPORT) // only defined with OpenInfraPlatform.Express.Lib project
 #           define OIP_EARLYBINDING_API_EXPRESS __declspec(dllexport)
 #       else // otherwise it is linked into as a DLL (all other projects)
