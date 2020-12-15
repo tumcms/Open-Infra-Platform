@@ -71,9 +71,9 @@ std::shared_ptr<OffModel> readFile(const std::string& filename)
 		nrOfEdges = lineData[2];
 
 		//create new OffModel
-		OffModel model;
-		model.reset();
-		model.setFilename(filename);
+		std::shared_ptr<OffModel> model = std::make_shared<OffModel>();
+		model->reset();
+		model->setFilename(filename);
 
 		//read vertices 
 		for (int i = 0; i < nrOfVertices; i++)
@@ -87,8 +87,9 @@ std::shared_ptr<OffModel> readFile(const std::string& filename)
 			{
 				vector.addTo(vectorValue);
 			}
-			model.addVertex(vector);
+			model->addVertex(vector);
 		}
+		return model;
 	}
 	catch (const std::exception& e)
 	{
