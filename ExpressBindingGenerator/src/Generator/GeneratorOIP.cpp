@@ -1310,7 +1310,6 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 		mapNameToIndex.insert(std::pair<std::string, size_t>(type.getName(), counter++));
 	}
 
-	size_t entityOffset = counter;
 	for (const auto& entity : schema.entities_)
 	{
 		mapIndexToName.insert(std::pair<size_t, std::string>(counter, entity.getName()));
@@ -1403,7 +1402,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	// does one inherit from one that is connected?
 	std::function<bool(std::vector<std::string>)> inheritsFromConnected = 
 		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected]
-		(std::vector<std::string>& names) -> bool
+		(std::vector<std::string> const & names) -> bool
 	{
 		for (const auto& name : names)
 			if (schema.hasEntity(name))
@@ -1430,7 +1429,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	};
 
 	// does any of the attributes point to a connected?
-	std::function<bool(std::vector<std::string>)> pointsToConnected = [&mapNameToIndex, &connected](std::vector<std::string>& names) -> bool
+	std::function<bool(std::vector<std::string>)> pointsToConnected = [&mapNameToIndex, &connected](std::vector<std::string> const & names) -> bool
 	{
 		for (const auto& el : names)
 			if (connected.at(mapNameToIndex.at(el)))
@@ -1454,7 +1453,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	};
 
 	// set folder for entity (true = a folder was set, false = no change)
-	std::map<std::string, short> folders = { {"zero", 0}, {"bot", 1}, {"mid", 2}, {"top", 3} };
+	std::map<std::string, int> folders = { {"zero", 0}, {"bot", 1}, {"mid", 2}, {"top", 3} };
 	std::function<bool(std::string,std::string)> setFolder = 
 		[this, &folders]
 	(const std::string& name, const std::string& folder) -> bool
