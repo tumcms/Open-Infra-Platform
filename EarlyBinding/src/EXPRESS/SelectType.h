@@ -78,29 +78,29 @@ public:
 
 	template <class T> explicit operator T&() & {
 		static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
-		return std::ref(boost::get<T>(base::m_value));
+		return std::ref(boost::get<T>(m_value));
 	}
 	template <class T> explicit operator const T() const {
 		static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
-		return boost::get<T>(base::m_value);
+		return boost::get<T>(m_value);
 	}
 
 	template <size_t Index> auto get() -> std::tuple_element_t<Index, std::tuple<Args...>> {
-		return boost::get<std::tuple_element_t<Index, std::tuple<Args...>>>(base::m_value);
+		return boost::get<std::tuple_element_t<Index, std::tuple<Args...>>>(m_value);
 	}
 
 	template <size_t Index> auto get() const -> std::tuple_element_t<Index, std::tuple<Args...>> {
-		return boost::get<std::tuple_element_t<Index, std::tuple<Args...>>>(base::m_value);
+		return boost::get<std::tuple_element_t<Index, std::tuple<Args...>>>(m_value);
 	}
 
 	template <class T> T get() {
 		static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
-		return boost::get<T>(base::m_value);
+		return boost::get<T>(m_value);
 	}
 
 	template <class T> const T get() const {
 		static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
-		return boost::get<T>(base::m_value);
+		return boost::get<T>(m_value);
 	}
 
 	virtual const std::string getStepParameter() const {
