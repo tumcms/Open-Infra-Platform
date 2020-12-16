@@ -1846,6 +1846,18 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 	}	
 
 	writeEndNamespace(out, schema);
+
+	if (type.isEnumeration())
+	{
+		const std::string enumname = "e" + type.getName();
+
+		linebreak(out);
+		writeLine(out, getAPIDefine(type.getName()) + " OpenInfraPlatform::" + schema.getName() + "::" + enumname);
+		writeLine(out, "OpenInfraPlatform::EarlyBinding::ValueType<OpenInfraPlatform::" + schema.getName() + "::" + enumname + ">");
+		writeLine(out, "::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {}");
+		linebreak(out);
+	}
+
 	writeLine(out, "#endif // end define " + define);
 	out.close();
 }
