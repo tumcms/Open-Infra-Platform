@@ -36,16 +36,9 @@ OIP_EARLYBINDING_API_EXPRESS
 EXPRESSModel 
 {
 public:
-	EXPRESSModel(const std::string &schema) : schema(schema) { };
+	EXPRESSModel(const std::string &schema);
 
-	~EXPRESSModel() {
-		if (!entities.empty()) {
-			std::for_each(entities.begin(), entities.end(), [](auto& elem) {
-				elem.second = nullptr;
-			});
-			entities.clear();
-		}
-	};
+	~EXPRESSModel() ;
 
 	//const bool Save(const std::string &filename) const {
 	//	//TODO Implement

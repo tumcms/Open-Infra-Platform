@@ -36,17 +36,11 @@ OIP_EARLYBINDING_API_EXPRESS
 EXPRESSEntity : public EXPRESSObject 
 {
 public:
-	const size_t getId() const {
-		return m_id;
-	}
+	const size_t getId() const ;
 
-	void setId(size_t id) {
-		m_id = id;
-	}
+	void setId(size_t id) ;
 
-	const std::string getStepParameter() const override {
-		return "#" + std::to_string(m_id);
-	}
+	const std::string getStepParameter() const override ;
 
 	virtual const std::string classname() const = 0;
 

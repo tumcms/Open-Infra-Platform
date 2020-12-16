@@ -42,9 +42,7 @@ public:
 
 	\returns <classname> (<stepParameter>)
 	*/
-	virtual const std::string getErrorLog() const {
-		return classname() + " (" + getStepParameter() + ")";
-	}
+	virtual const std::string getErrorLog() const ;
 };
 
 
