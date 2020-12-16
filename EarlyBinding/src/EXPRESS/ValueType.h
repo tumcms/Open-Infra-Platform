@@ -79,11 +79,6 @@ public:
 	virtual ValueType* operator->() { return this; }
 	virtual const ValueType* const operator->() const { return this; }
 
-	//TODO: Operator==
-
-	friend std::ostream& operator<<(std::ostream &out, const ValueType& obj) { out << obj.m_value; return out; }
-	friend std::istream& operator>>(std::istream &in, ValueType& obj) { in >> obj.m_value; return in; }
-	
 protected:
 	T m_value;
 

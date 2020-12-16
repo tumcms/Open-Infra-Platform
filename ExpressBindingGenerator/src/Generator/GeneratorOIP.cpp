@@ -1935,6 +1935,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 
 	writeEndNamespace(out, schema);
 
+	linebreak(out);
 	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
 
 	out.close();
@@ -3038,8 +3039,11 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		
 	writeEndNamespace(out, schema);
 
+	// instantiate reference + optional
+	linebreak(out);
 	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
 	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">" + ">;");
+
 	out.close();
 }
 
