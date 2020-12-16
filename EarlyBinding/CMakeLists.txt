@@ -17,37 +17,32 @@
 
 project(OpenInfraPlatform.EarlyBinding CXX)
 
-add_library(OpenInfraPlatform.ExpressLib INTERFACE)
+set(CMAKE_DEBUG_POSTFIX "d")
 
 file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source		src/EXPRESS/*.*)	
 file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace	src/*.*)	
 
-target_include_directories(OpenInfraPlatform.ExpressLib INTERFACE 
-	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
-	${OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace}
-)
-#set_target_properties(OpenInfraPlatform.ExpressLib PROPERTIES COMPILE_DEFINITIONS OIP_EARLYBINDING_API_EXPRESS_ASEXPORT)
-
-include_directories(
-    ${Boost_INCLUDE_DIR}
-    ${tclap_SOURCE_DIR}/include
-)
-
-#show the lib in UI - no use otherwise (see https://stackoverflow.com/questions/39887352/how-to-create-a-cmake-header-only-library-that-depends-on-external-header-files)
-add_custom_target(OpenInfraPlatform.ExpressLibrary SOURCES 
-	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
-	${OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace}
-)
-
-include_directories(
-    ${Boost_INCLUDE_DIR}
-    ${tclap_SOURCE_DIR}/include
+add_library(OpenInfraPlatform.ExpressLib SHARED
+    ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
+    ${OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace}
 )
 
 source_group(EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})
 source_group(defines FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace})
-set_target_properties(OpenInfraPlatform.ExpressLibrary PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
-add_dependencies(OpenInfraPlatform.ExpressLibrary OpenInfraPlatform.ExpressLib)
+
+target_include_directories(OpenInfraPlatform.ExpressLib PUBLIC 
+	${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}
+	${OpenInfraPlatform_EarlyBinding_EXPRESS_Namespace}
+)
+set_target_properties(OpenInfraPlatform.ExpressLib PROPERTIES COMPILE_DEFINITIONS OIP_EARLYBINDING_API_EXPRESS_ASEXPORT)
+set_target_properties(OpenInfraPlatform.ExpressLib PROPERTIES FOLDER "OpenInfraPlatform/EarlyBinding")
+
+include_directories(
+    src
+    ${Boost_INCLUDE_DIR}
+    ${tclap_SOURCE_DIR}/include
+)
+
 
 foreach(format ${IFC_FORMATS})
 	message(STATUS "Format ${format} found.")

@@ -32,7 +32,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
 template <typename Enum, int Count>
 class
-OIP_EARLYBINDING_API_EXPRESS
 EnumType : public ValueType<Enum> 
 {
 	using base = ValueType<Enum>;
@@ -46,7 +45,7 @@ public:
 
 	virtual const std::string getStepParameter() const override { return to_string(ValueType<Enum>::m_value); };
 
-	static Enum readStepData(const std::string &arg, const std::shared_ptr<EXPRESSModel>&) {
+	static Enum readStepData(const std::string &arg, const std::shared_ptr<EXPRESSModel>& model) {
 		for (int i = 0; i < Count; i++) {
 			Enum value = static_cast<Enum>(i);
 			if (arg == to_string(value)) {

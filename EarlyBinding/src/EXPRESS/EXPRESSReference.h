@@ -32,7 +32,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
 template <typename T>
 class
-OIP_EARLYBINDING_API_EXPRESS
 EXPRESSReference : public std::weak_ptr<T>, public EXPRESSObject 
 {
 	//static_assert(std::is_base_of<EXPRESSEntity, T>::value, "EXPRESSReference can only be specialized with class derived from EXPRESSEntity");

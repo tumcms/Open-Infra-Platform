@@ -49,7 +49,6 @@ public:
 
 template <typename ...Args>
 class
-OIP_EARLYBINDING_API_EXPRESS
 SelectType : public ValueType<boost::variant<Args...>> 
 {
 	using base = ValueType<boost::variant<Args...>>;

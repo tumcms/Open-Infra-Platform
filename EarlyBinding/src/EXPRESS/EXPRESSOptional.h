@@ -34,7 +34,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
 template <typename T>
 class
-OIP_EARLYBINDING_API_EXPRESS
 EXPRESSOptional : public boost::optional<T> 
 {
 	using base = boost::optional<T>;

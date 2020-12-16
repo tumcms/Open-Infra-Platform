@@ -40,7 +40,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
 template <typename T>
 class
-OIP_EARLYBINDING_API_EXPRESS
 ValueType : public EXPRESSType 
 {
 //	static_assert(std::is_same<T,boost::logic::tribool>::value || std::is_integral<T>::value || std::is_same<T, std::string>::value || std::is_floating_point<T>::value || std::is_enum<T>::value, "EXPRESSType is undefined for template parameter type.");
