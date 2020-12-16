@@ -1854,7 +1854,7 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 		linebreak(out);
 		writeLine(out, getAPIDefine(type.getName()) + " OpenInfraPlatform::" + schema.getName() + "::" + enumname);
 		writeLine(out, "OpenInfraPlatform::EarlyBinding::ValueType<OpenInfraPlatform::" + schema.getName() + "::" + enumname + ">");
-		writeLine(out, "::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {}");
+		writeLine(out, "::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&);");
 		linebreak(out);
 	}
 
@@ -1946,6 +1946,16 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 	}
 
 	writeEndNamespace(out, schema);
+
+	if (type.isEnumeration())
+	{
+		const std::string enumname = "e" + type.getName();
+
+		linebreak(out);
+		writeLine(out, "OpenInfraPlatform::" + schema.getName() + "::" + enumname);
+		writeLine(out, "OpenInfraPlatform::EarlyBinding::ValueType<OpenInfraPlatform::" + schema.getName() + "::" + enumname + ">");
+		writeLine(out, "::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {}");
+	}
 
 	linebreak(out);
 	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
