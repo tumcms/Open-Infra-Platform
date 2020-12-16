@@ -21,7 +21,7 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EnumType_222b174c_10f8_447c_9363_6efd29177d6c_h
 #define OpenInfraPlatform_EarlyBinding_EnumType_222b174c_10f8_447c_9363_6efd29177d6c_h
 
-#include "ValueType.h"
+#include "EXPRESSType.h"
 #include "EXPRESSModel.h"
 
 //#include <boost/preprocessor.hpp>
@@ -32,18 +32,22 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
 template <typename Enum, int Count>
 class
-EnumType : public ValueType<Enum> 
+EnumType : public EXPRESSType
 {
-	using base = ValueType<Enum>;
 public:
+	typedef Enum UnderlyingType;
+	typedef Enum element_type;
 	typedef Enum ENUM;
-	using base::base;
-	using base::operator=;
-	using base::operator->;
+
+	EnumType() = default;
+	EnumType(const EnumType& other) : m_value(other.m_value) {};
+	EnumType(const Enum& value) : m_value(value) {};
+
+	virtual ~EnumType() { };
 	
 	//virtual ~EnumType() = 0;
 
-	virtual const std::string getStepParameter() const override { return to_string(ValueType<Enum>::m_value); };
+	virtual const std::string getStepParameter() const override { return to_string(m_value); };
 
 	static Enum readStepData(const std::string &arg, const std::shared_ptr<EXPRESSModel>& model) {
 		for (int i = 0; i < Count; i++) {
@@ -55,6 +59,27 @@ public:
 		return static_cast<Enum>(0);
 	}
 
+	virtual const std::string classname() const override { return "unknown"; };
+
+	virtual EnumType& operator=(const Enum& other) { m_value = other; return *this; }
+	virtual EnumType& operator=(const EnumType& other) { m_value = other.m_value; return *this; };
+
+	virtual operator Enum&() { return std::ref(m_value); }
+	virtual operator const Enum() const { return m_value; }
+
+	virtual EnumType* operator->() { return this; }
+	virtual const EnumType* const operator->() const { return this; }
+
+protected:
+	Enum m_value;
+
+public:
+
+	friend void swap(EnumType& first, EnumType& second)
+	{
+		using std::swap;
+		swap(first.m_value, second.m_value);
+	}
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END

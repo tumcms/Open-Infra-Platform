@@ -21,9 +21,8 @@
 #ifndef OpenInfraPlatform_EarlyBinding_SelectType_10255db4_8b09_413b_9c43_ea39f1d63ced_h
 #define OpenInfraPlatform_EarlyBinding_SelectType_10255db4_8b09_413b_9c43_ea39f1d63ced_h
 
-#include "ValueType.h"
+#include "EXPRESSType.h"
 #include "EXPRESSModel.h"
-//#include "EXPRESSEntity.h"
 
 #include <type_traits>
 
@@ -49,10 +48,8 @@ public:
 
 template <typename ...Args>
 class
-SelectType : public ValueType<boost::variant<Args...>> 
+SelectType : public EXPRESSType //ValueType<boost::variant<Args...>> 
 {
-	using base = ValueType<boost::variant<Args...>>;
-
 	template<std::size_t I = 0, typename Function>
 	static inline typename std::enable_if<I == sizeof...(Args), void>::type
 		for_each(std::tuple<Args...>, Function) // Unused arguments are given no names.
@@ -68,12 +65,16 @@ SelectType : public ValueType<boost::variant<Args...>>
 
 public:
 	typedef boost::variant<Args...> Select;
+	typedef Select UnderlyingType;
+	typedef Select element_type;
 
-	using base::base;
-	using base::operator=;
-	using base::operator->;
+	SelectType() = default;
+	SelectType(const SelectType& other) : m_value(other.m_value) {};
+	SelectType(const boost::variant<Args...>& value) : m_value(value) {};
 
-	const size_t which() const { return base::m_value.which(); };
+	virtual ~SelectType() { };
+
+	const size_t which() const { return m_value.which(); };
 
 	template <class T> explicit operator T&() & {
 		static_assert(boost::detail::variant::holds_element<Select, T >::value, "Cast to type is not defined.");
@@ -103,7 +104,7 @@ public:
 	}
 
 	virtual const std::string getStepParameter() const {
-		return boost::apply_visitor(visitor_getStepParameter(), base::m_value);
+		return boost::apply_visitor(visitor_getStepParameter(), m_value);
 	}
 
 	static Select readStepData(const std::string value, const std::shared_ptr<EXPRESSModel>& model) {
@@ -144,6 +145,28 @@ public:
 			}
 		}
 		return select;
+	}
+
+	virtual const std::string classname() const override { return "unknown"; };
+
+	virtual SelectType& operator=(const Select& other) { m_value = other; return *this; }
+	virtual SelectType& operator=(const SelectType& other) { m_value = other.m_value; return *this; };
+
+	virtual operator Select&() { return std::ref(m_value); }
+	virtual operator const Select() const { return m_value; }
+
+	virtual SelectType* operator->() { return this; }
+	virtual const SelectType* const operator->() const { return this; }
+
+protected:
+	Select m_value;
+
+public:
+
+	friend void swap(SelectType& first, SelectType& second)
+	{
+		using std::swap;
+		swap(first.m_value, second.m_value);
 	}
 };
 
