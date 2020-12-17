@@ -253,7 +253,7 @@ namespace OpenInfraPlatform {
 
 
 					// (2/6) IfcBSplineCurve SUBTYPE OF IfcBoundedCurve
-					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcBSplineCurve>()) {
+					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcBSplineCurve>()) {
 						EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve> bspline_curve = bounded_curve.as<typename IfcEntityTypesT::IfcBSplineCurve>();
 						
 						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
@@ -264,12 +264,12 @@ namespace OpenInfraPlatform {
 					} // end if IfcBSplineCurve
 
 					// (3/6) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
-					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcCompositeCurve>()) {
+					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcCompositeCurve>()) {
 						return convertIfcCompositeCurve(bounded_curve.as<typename IfcEntityTypesT::IfcCompositeCurve>(), targetVec, segmentStartPoints);
 					} // end if IfcCompositeCurve
 
 					// (4/6) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve
-					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcIndexedPolyCurve>())
+					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcIndexedPolyCurve>())
 					{
 						return convertIfcIndexedPolyCurve(
 							bounded_curve.as<typename IfcEntityTypesT::IfcIndexedPolyCurve>(),
@@ -279,7 +279,7 @@ namespace OpenInfraPlatform {
 					} // end if IfcIndexedPolyCurve
 
 					// (5/6) IfcPolyline SUBTYPE OF IfcBoundedCurve
-					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcPolyline>()) {
+					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcPolyline>()) {
 						if (!bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>()->Points.empty()) {
 							std::vector<carve::geom::vector<3>> loop = convertIfcPolyline(EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>(bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>()));
 
@@ -290,12 +290,14 @@ namespace OpenInfraPlatform {
 					} // end if IfcPolyline
 
 					// (6/6) IfcTrimmedCurve SUBTYPE OF IfcBoundedCurve
-					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcTrimmedCurve>()) {
+					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcTrimmedCurve>()) {
 						return convertIfcTrimmedCurve(bounded_curve.as<typename IfcEntityTypesT::IfcTrimmedCurve>(), targetVec, segmentStartPoints);
 					} // end if IfcTrimmedCurve
-
-					// the rest we do not support
-					throw oip::UnhandledException( bounded_curve );
+					
+					else {
+						// the rest we do not support
+						throw oip::UnhandledException( bounded_curve );
+					}
 				}
 
 				/**********************************************************************************************/
