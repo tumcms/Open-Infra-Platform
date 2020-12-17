@@ -72,9 +72,7 @@ namespace OpenInfraPlatform
 
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-				void setFilename(const std::string& filename) {
-					filename_ = filename;
-				}
+				void setFilename(const std::string& filename);
 			};
 		}
 	}

@@ -26,7 +26,7 @@ void OpenInfraPlatform::Core::OffConverter::OffModel::reset()
 
 void OpenInfraPlatform::Core::OffConverter::OffModel::addVertex(buw::Vector3d vertex)
 {
-	geometry_.vertices.push_back;
+	geometry_.vertices.push_back(vertex);
 	geometry_.UpdateBBox();
 }
 
@@ -64,3 +64,8 @@ void OpenInfraPlatform::Core::OffConverter::OffModel::transformAllPoints(
 	throw oip::UnhandledException("OffGeometryModel::transformAllPoints()");
 }
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
+
+void OpenInfraPlatform::Core::OffConverter::OffModel::setFilename(const std::string& filename)
+{
+	filename_ = filename;
+}
