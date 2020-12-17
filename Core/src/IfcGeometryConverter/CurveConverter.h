@@ -255,33 +255,8 @@ namespace OpenInfraPlatform {
 					} // end if IfcBSplineCurve
 
 					// (3/6) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurve> composite_curve =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCompositeCurve>(bounded_curve.lock());
-					if (composite_curve) {
-
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> > segments;
-						segments.resize(composite_curve->Segments.size());
-
-						std::transform(
-							composite_curve->Segments.begin(),
-							composite_curve->Segments.end(),
-							segments.begin(),
-							[](auto &it) { return it.lock(); });
-
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> >::iterator it_segments =
-							segments.begin();
-
-						for (; it_segments != segments.end(); ++it_segments) {
-							std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> segment = (*it_segments);
-							std::shared_ptr<typename IfcEntityTypesT::IfcCurve> segment_curve = segment->ParentCurve.lock();
-
-							std::vector<carve::geom::vector<3>> segment_vec;
-							convertIfcCurve(segment_curve, segment_vec, segmentStartPoints);
-							if (!segment_vec.empty()) {
-								GeomUtils::appendPointsToCurve(segment_vec, targetVec);
-							}
-						}
-						return;
+					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcCompositeCurve>()) {
+						return convertIfcCompositeCurve(bounded_curve.as<typename IfcEntityTypesT::IfcCompositeCurve>(), targetVec, segmentStartPoints);
 					} // end if IfcCompositeCurve
 
 					// (4/6) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve
@@ -366,6 +341,44 @@ namespace OpenInfraPlatform {
 					// add the first point to segments
 					placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
 					segmentStartPoints.push_back(targetPoint3D);
+					// end
+					return;
+				}
+
+
+				/**********************************************************************************************/
+				/*! \brief Calculates curve segments and appends them to the curve.
+				* \param[in] polycurve				A pointer to data from c\ IfcCompositeCurve.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				*/
+				void convertIfcCompositeCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCompositeCurve>& composite_curve,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints) const throw(...)
+				{
+
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> > segments;
+					segments.resize(composite_curve->Segments.size());
+
+					std::transform(
+						composite_curve->Segments.begin(),
+						composite_curve->Segments.end(),
+						segments.begin(),
+						[](auto &it) { return it.lock(); });
+
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> >::iterator it_segments =
+						segments.begin();
+
+					for (; it_segments != segments.end(); ++it_segments) {
+						std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> segment = (*it_segments);
+						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> segment_curve = segment->ParentCurve.lock();
+
+						std::vector<carve::geom::vector<3>> segment_vec;
+						convertIfcCurve(segment_curve, segment_vec, segmentStartPoints);
+						if (!segment_vec.empty()) {
+							GeomUtils::appendPointsToCurve(segment_vec, targetVec);
+						}
+					}
 					// end
 					return;
 				}
