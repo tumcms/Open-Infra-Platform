@@ -21,20 +21,17 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <fstream>
 #include <iostream>
 
-using OpenInfraPlatform::Core::OffConverter::OffReader;
-using OpenInfraPlatform::Core::OffConverter::OffModel;
-
-OffReader::OffReader::OffReader()
+OpenInfraPlatform::Core::OffConverter::OffReader::OffReader()
 {
 
 }
 
-OffReader::~OffReader()
+OpenInfraPlatform::Core::OffConverter::OffReader::~OffReader()
 {
 
 }
 
-std::shared_ptr<OffModel> readFile(const std::string& filename)
+std::shared_ptr<OpenInfraPlatform::Core::OffConverter::OffModel> OpenInfraPlatform::Core::OffConverter::OffReader::readFile(const std::string& filename)
 {
 	std::ifstream offFile(filename);
 
@@ -78,17 +75,18 @@ std::shared_ptr<OffModel> readFile(const std::string& filename)
 		//read vertices 
 		for (int i = 0; i < nrOfVertices; i++)
 		{
-			getline(offFile, line);
+			std::getline(offFile, line);
 			buw::Vector3d vector;
 			std::stringstream lineStream(line);
 
-			int vectorValue;
-			while (lineStream >> vectorValue)
-			{
-				vector.addTo(vectorValue);
-			}
+			lineStream >> vector[0] >> vector[1] >> vector[2];
 			model->addVertex(vector);
 		}
+
+		//read faces
+		//... still to be added
+
+		offFile.close();
 		return model;
 	}
 	catch (const std::exception& e)
