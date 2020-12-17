@@ -84,6 +84,8 @@ private:
     void prepareSplits(const Schema& schema);
 	// gets the API define
 	std::string getAPIDefine(const std::string& name) const;
+    // gets the API guard
+    std::string getAPIGuard(const std::string& name) const;
 
     // figuring out includes
     void getCachedIncludes(const std::string& name, std::set<std::string>& types, std::set<std::string>& entities) const;

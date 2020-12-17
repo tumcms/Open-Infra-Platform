@@ -1641,6 +1641,14 @@ std::string GeneratorOIP::getAPIDefine(const std::string& name) const
 	return "OIP_EARLYBINDING_API_MAIN";
 }
 
+std::string GeneratorOIP::getAPIGuard(const std::string& name) const
+{
+	const auto folder = mapFolderInSrc_.find(name);
+	if (folder != mapFolderInSrc_.end())
+		return "OIP_EARLYBINDING_API_" + toUpper(folder->second) + "_ASEXPORT";
+	return "OIP_EARLYBINDING_API_MAIN_ASEXPORT";
+}
+
 
 void GeneratorOIP::createEntitiesMapHeaderFile(const Schema &schema) {
 	// EntitiesMap.h
@@ -1848,7 +1856,16 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 	}	
 
 	writeEndNamespace(out, schema);
+
+	//https://stackoverflow.com/questions/47824973/edit-how-to-dll-export-a-template-specialization-in-windows-with-the-source-d
+	linebreak(out);
+	writeLine(out, "#ifndef " + getAPIGuard(name));
+	writeLine(out, "OIP_EARLYBINDING_EXTERN template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
+	writeLine(out, "#endif //" + getAPIGuard(name));
+	linebreak(out);
+	
 	writeLine(out, "#endif // end define " + define);
+
 	out.close();
 }
 
@@ -1937,8 +1954,12 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 
 	writeEndNamespace(out, schema);
 
+	//https://stackoverflow.com/questions/47824973/edit-how-to-dll-export-a-template-specialization-in-windows-with-the-source-d
 	linebreak(out);
+	writeLine(out, "#ifdef " + getAPIGuard(name));
 	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
+	writeLine(out, "#endif //" + getAPIGuard(name));
+	linebreak(out);
 
 	out.close();
 }
@@ -2791,6 +2812,14 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 		linebreak(out);
 	}
 
+	//https://stackoverflow.com/questions/47824973/edit-how-to-dll-export-a-template-specialization-in-windows-with-the-source-d
+	// instantiate reference + optional
+	writeLine(out, "#ifndef " + getAPIGuard(name));
+	writeLine(out, "OIP_EARLYBINDING_EXTERN template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
+	writeLine(out, "OIP_EARLYBINDING_EXTERN template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">" + ">;");
+	writeLine(out, "#endif //" + getAPIGuard(name));
+	linebreak(out);
+
 	writeLine(out, "#endif // end define " + define);
 	out.close();
 }
@@ -3038,13 +3067,16 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		writeLine(out, "};");
 		linebreak(out);		
 	}
-		
-	writeEndNamespace(out, schema);
 
+	writeEndNamespace(out, schema);
+		
+	//https://stackoverflow.com/questions/47824973/edit-how-to-dll-export-a-template-specialization-in-windows-with-the-source-d
 	// instantiate reference + optional
-	linebreak(out);
+	writeLine(out, "#ifdef " + getAPIGuard(name));
 	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
 	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">" + ">;");
+	writeLine(out, "#endif //" + getAPIGuard(name));
+	linebreak(out);
 
 	out.close();
 }

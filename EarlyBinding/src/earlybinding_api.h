@@ -60,6 +60,6 @@
 	#if defined(__cplusplus) // we are compiling with c++ compiler
 		#define OIP_EARLYBINDING_EXTERN extern "C"
 	#else // we are on C //20.08.20: added but not tested
-		#define OIP_EARLYBINDING_EXTERN 
+		#define OIP_EARLYBINDING_EXTERN extern
 	#endif
 #endif
