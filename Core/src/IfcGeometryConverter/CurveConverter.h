@@ -553,6 +553,15 @@ namespace OpenInfraPlatform {
 				}
 
 
+				/**********************************************************************************************/
+				/*! \brief Calculates ponts of the circle curve. 
+				* \param[in] polycurve				A pointer to data from c\ IfcCircle.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				*/
 				void convertIfcCircle(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -571,104 +580,35 @@ namespace OpenInfraPlatform {
 						circle_radius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
 					}
 					else {
-						BLUE_LOG(error) << circle->getErrorLog() << ": No radius!";
-						return;
+						throw oip::InconsistentGeometryException(circle, "No radius!");
 					}
 
 					carve::geom::vector<3> circle_center =
 						conic_position_matrix * carve::geom::VECTOR(0, 0, 0);
 
-					double trim_angle1 = 0.0;
-					double trim_angle2 = M_PI * 2.0;
-
-					// Check for trimming begin
-					if (trim1Vec.size() > 0) {
-						BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming begin.";
-						auto first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 1; });
-						if (first != trim1Vec.end() && *first) {
-							BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming begin as IfcParameterValue.";
-							typename IfcEntityTypesT::IfcParameterValue trim_par1 = (*first)->get<1>();
-							trim_angle1 = trim_par1 * UnitConvert()->getAngleInRadianFactor();
-						}
-						else {
-							first = std::find_if(trim1Vec.begin(), trim1Vec.end(), [](auto select) { return select->which() == 0; });
-							if (first != trim1Vec.end() && (*first) != nullptr) {
-								BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming begin as IfcCartesianPoint.";
-								try {
-									carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
-
-									trim_angle1 = getAngleOnCircle(circle_center,
-										circle_radius,
-										trim_point);
-								}
-								catch (...) {
-									BLUE_LOG(error) << "Processing " << circle->getErrorLog() << ": Exception occured!";
-									return;
-								}
-							}
-							else {
-								BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": No trimming begin.";
-							}
-						}
-					}
-					else {
-						BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": trim1vec is empty!";
-					}
-
-					if (trim2Vec.size() > 0) {
-						// check for trimming end
-						BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming end.";
-						auto first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 1; });
-						if (first != trim2Vec.end()) {
-							BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming end as IfcParameterValue.";
-							typename IfcEntityTypesT::IfcParameterValue trim_par2 = (*first)->get<1>();
-							trim_angle1 = trim_par2 * UnitConvert()->getAngleInRadianFactor();
-						}
-						else {
-							first = std::find_if(trim2Vec.begin(), trim2Vec.end(), [](auto select) { return select->which() == 0; });
-							if (first != trim2Vec.end()) {
-								BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming end as IfcCartesianPoint.";
-
-								try {
-									carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
-
-									trim_angle2 = getAngleOnCircle(circle_center,
-										circle_radius,
-										trim_point);
-								}
-								catch (...) {
-									BLUE_LOG(error) << "Processing " << circle->getErrorLog() << ": Exception occured!";
-									return;
-								}
-							}
-							else {
-								BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": No trimming end.";
-							}
-						}
-					}
-					else {
-						BLUE_LOG(warning) << "Processing " << circle->getErrorLog() << ": trim2vec is empty!";
-					}
-
-					double start_angle = trim_angle1;
+					//Calculate an angle on the circle for trimming begin.
+					double start_angle = calculateTrimmingPointOnCircle(circle, trim1Vec, circle_center, circle_radius);
+					//Calculate an angle on the circle for trimming end.
+					double trim_angle2 = calculateTrimmingPointOnCircle(circle, trim2Vec, circle_center, circle_radius);
+		
 					double opening_angle = 0.0;
 
 					if (senseAgreement) {
-						if (trim_angle1 < trim_angle2) {
-							opening_angle = trim_angle2 - trim_angle1;
+						if (start_angle < trim_angle2) {
+							opening_angle = trim_angle2 - start_angle;
 						}
 						else {
 							// circle passes 0 angle
-							opening_angle = trim_angle2 - trim_angle1 + 2.0*M_PI;
+							opening_angle = trim_angle2 - start_angle + 2.0*M_PI;
 						}
 					}
 					else {
-						if (trim_angle1 > trim_angle2) {
-							opening_angle = trim_angle2 - trim_angle1;
+						if (start_angle > trim_angle2) {
+							opening_angle = trim_angle2 - start_angle;
 						}
 						else {
 							// circle passes 0 angle
-							opening_angle = trim_angle2 - trim_angle1 - 2.0*M_PI;
+							opening_angle = trim_angle2 - start_angle - 2.0*M_PI;
 						}
 					}
 
@@ -711,6 +651,51 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
+				/**********************************************************************************************/
+				/*! \brief Calculates the angle on the circle of the trimming point.
+				* \param[in] circle				A pointer to data from c\ IfcCircle.
+				* \param[in] trimmingVector		The trimming of the curve as saved in IFC model
+				* \param[in] circle_center		Coordinates of the center of the circle.
+				* \param[in] circle_radius		Radius of the circle. 
+				* \return						Angle on the circle of the trimming point.
+				*/
+				double  calculateTrimmingPointOnCircle(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trimmingVector,
+					carve::geom::vector<3> circle_center,
+					double circle_radius) const throw(...)
+				{
+				
+					// Check for trimming point
+					if (trimmingVector.size() > 0) {
+						//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming point.";
+						auto first = std::find_if(trimmingVector.begin(), trimmingVector.end(), [](auto select) { return select->which() == 1; });
+						if (first != trimmingVector.end() && *first) {
+							//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming pomt as IfcParameterValue.";
+							typename IfcEntityTypesT::IfcParameterValue trim_par1 = (*first)->get<1>();
+							return trim_par1 * UnitConvert()->getAngleInRadianFactor();
+						}
+						else {
+							first = std::find_if(trimmingVector.begin(), trimmingVector.end(), [](auto select) { return select->which() == 0; });
+							if (first != trimmingVector.end() && (*first) != nullptr) {
+								//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming point as IfcCartesianPoint.";
+								try {
+									carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
+
+									return getAngleOnCircle(circle_center, circle_radius, trim_point);
+								}
+								catch (const oip::InconsistentModellingException& ex) {
+									throw oip::InconsistentModellingException(circle, ex.what());
+								}
+							}
+							else {
+								oip::InconsistentGeometryException(circle, "No trimming point found.");
+							}
+						}
+					}
+					else {
+						oip::InconsistentGeometryException(circle, "Trimming vector is empty!");
+					}
+				}
 
 
 				void convertIfcEllipse(
