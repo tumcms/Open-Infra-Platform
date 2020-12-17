@@ -236,34 +236,10 @@ namespace OpenInfraPlatform {
 				) const throw(...)
 				{
 					//	ABSTRACT SUPERTYPE of IfcAlignmentCurve, IfcBsplineCurve, IfcCompositeCurve, IfcIndexedPolycurve, IfcPolyline, IfcIfcTrimmedCurve	//
-
 					// (1/6) IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcAlignmentCurve> alignment_curve =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignmentCurve>(bounded_curve.lock());
-					if (alignment_curve)
+					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcAlignmentCurve>())
 					{
-						// the stations at which a point of the tesselation has to be calcuated - to be converted and fill the targetVec
-						std::vector<double> stations = getStationsForTessellationOfIfcAlignmentCurve(alignment_curve);
-
-						carve::geom::vector<3> targetPoint3D;
-						carve::geom::vector<3> targetDirection3D;
-						std::vector<carve::geom::vector<3>> curve_points;
-
-						// attach the curve points
-						for (auto& it_station : stations)
-						{
-							// call the placement converter that handles the geometry and calculates the 3D point along a curve
-							placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, it_station, true, targetPoint3D, targetDirection3D);
-							curve_points.push_back(targetPoint3D);
-						}
-						GeomUtils::appendPointsToCurve(curve_points, targetVec);
-
-						// add the first point to segments
-						placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
-						segmentStartPoints.push_back(targetPoint3D);
-
-						// end
-						return;
+						return convertIfcAlignmentCurve(bounded_curve.as<typename IfcEntityTypesT::IfcAlignmentCurve>(), targetVec, segmentStartPoints);
 					} // end if IfcAlignmentCurve
 
 
@@ -363,6 +339,38 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException( bounded_curve );
 				}
 
+				/**********************************************************************************************/
+				/*! \brief Calculates the 3D point along a curve.
+				* \param[in] polycurve				A pointer to data from c\ IfcAlignmentCurve.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				*/
+				void convertIfcAlignmentCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcAlignmentCurve>& alignment_curve,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints) const throw(...) 
+				{
+					// the stations at which a point of the tesselation has to be calcuated - to be converted and fill the targetVec
+					std::vector<double> stations = getStationsForTessellationOfIfcAlignmentCurve(alignment_curve);
+
+					carve::geom::vector<3> targetPoint3D;
+					carve::geom::vector<3> targetDirection3D;
+					std::vector<carve::geom::vector<3>> curve_points;
+
+					// attach the curve points
+					for (auto& it_station : stations)
+					{
+						// call the placement converter that handles the geometry and calculates the 3D point along a curve
+						placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, it_station, true, targetPoint3D, targetDirection3D);
+						curve_points.push_back(targetPoint3D);
+					}
+					GeomUtils::appendPointsToCurve(curve_points, targetVec);
+
+					// add the first point to segments
+					placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
+					segmentStartPoints.push_back(targetPoint3D);
+					// end
+					return;
+				}
 				void convertIfcConic(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcConic>& conic,
 					std::vector<carve::geom::vector<3>>& targetVec,
