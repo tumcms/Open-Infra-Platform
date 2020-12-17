@@ -226,6 +226,15 @@ namespace OpenInfraPlatform {
 					}
 				} //end convertIfcCurve2D
 
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcBoundedCurve to a curve of finite length. 
+				* \param[in] polycurve				A pointer to data from \c IfcBoundedCurve.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				*/
 				void convertIfcBoundedCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve>& bounded_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -281,32 +290,9 @@ namespace OpenInfraPlatform {
 					} // end if IfcPolyline
 
 					// (6/6) IfcTrimmedCurve SUBTYPE OF IfcBoundedCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcTrimmedCurve> trimmed_curve =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcTrimmedCurve>(bounded_curve.lock());
-					if (trimmed_curve) {
-						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> basis_curve = trimmed_curve->BasisCurve.lock();
-						std::vector<carve::geom::vector<3> > basis_curve_points;
-
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curve_trim1_vec;
-						curve_trim1_vec.resize(trimmed_curve->Trim1.size());
-						std::transform(trimmed_curve->Trim1.begin(),
-							trimmed_curve->Trim1.end(),
-							curve_trim1_vec.begin(), [](auto it) { return std::make_shared<decltype(it)>(it); });
-
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curve_trim2_vec;
-						curve_trim2_vec.resize(trimmed_curve->Trim2.size());
-						std::transform(trimmed_curve->Trim2.begin(),
-							trimmed_curve->Trim2.end(),
-							curve_trim2_vec.begin(), [](auto it) { return std::make_shared<decltype(it)>(it); });
-
-						bool trimmed_sense_agreement = trimmed_curve->SenseAgreement;
-
-						// call recursively with trimmings
-						convertIfcCurve(basis_curve, basis_curve_points, segmentStartPoints,
-							curve_trim1_vec, curve_trim2_vec, trimmed_sense_agreement);
-						GeomUtils::appendPointsToCurve(basis_curve_points, targetVec);
-						return;
-					}
+					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcTrimmedCurve>()) {
+						return convertIfcTrimmedCurve(bounded_curve.as<typename IfcEntityTypesT::IfcTrimmedCurve>(), targetVec, segmentStartPoints);
+					} // end if IfcTrimmedCurve
 
 					// the rest we do not support
 					throw oip::UnhandledException( bounded_curve );
@@ -382,6 +368,44 @@ namespace OpenInfraPlatform {
 					// end
 					return;
 				}
+
+
+				/**********************************************************************************************/
+				/*! \brief Calculates trimming points of the curve. 
+				* \param[in] polycurve				A pointer to data from c\ IfcTrimmedCurve.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				*/
+				void convertIfcTrimmedCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcTrimmedCurve>& trimmed_curve,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints) const throw(...)
+				{
+					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> basis_curve = trimmed_curve->BasisCurve.lock();
+					std::vector<carve::geom::vector<3> > basis_curve_points;
+					
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curve_trim1_vec;
+					curve_trim1_vec.resize(trimmed_curve->Trim1.size());
+					std::transform(trimmed_curve->Trim1.begin(),
+						trimmed_curve->Trim1.end(),
+						curve_trim1_vec.begin(), [](auto it) { return std::make_shared<decltype(it)>(it); });
+
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curve_trim2_vec;
+					curve_trim2_vec.resize(trimmed_curve->Trim2.size());
+					std::transform(trimmed_curve->Trim2.begin(),
+						trimmed_curve->Trim2.end(),
+						curve_trim2_vec.begin(), [](auto it) { return std::make_shared<decltype(it)>(it); });
+
+					bool trimmed_sense_agreement = trimmed_curve->SenseAgreement;
+
+					// call recursively with trimmings
+					convertIfcCurve(basis_curve, basis_curve_points, segmentStartPoints,
+						curve_trim1_vec, curve_trim2_vec, trimmed_sense_agreement);
+					GeomUtils::appendPointsToCurve(basis_curve_points, targetVec);
+					// end
+					return;
+				}
+
+
 				void convertIfcConic(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcConic>& conic,
 					std::vector<carve::geom::vector<3>>& targetVec,
