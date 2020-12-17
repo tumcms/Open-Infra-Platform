@@ -244,9 +244,9 @@ namespace OpenInfraPlatform {
 
 
 					// (2/6) IfcBSplineCurve SUBTYPE OF IfcBoundedCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcBSplineCurve> bspline_curve =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBSplineCurve>(bounded_curve.lock());
-					if (bspline_curve) {
+					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcBSplineCurve>()) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve> bspline_curve = bounded_curve.as<typename IfcEntityTypesT::IfcBSplineCurve>();
+						
 						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
 						// splineConverter.convertIfcBSplineCurve can handle IfcBSplineCurveWithKnots and IfcRationalBsplineWithKnots, 
 						// both are subtypes of IfcBSplineCurve
@@ -292,14 +292,12 @@ namespace OpenInfraPlatform {
 							targetVec, segmentStartPoints,
 							trim1Vec, trim2Vec, senseAgreement
 						);
-					}
+					} // end if IfcIndexedPolyCurve
 
 					// (5/6) IfcPolyline SUBTYPE OF IfcBoundedCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> poly_line =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(bounded_curve.lock());
-					if (poly_line) {
-						if (!poly_line->Points.empty()) {
-							std::vector<carve::geom::vector<3>> loop = convertIfcPolyline(EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>(poly_line));
+					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcPolyline>()) {
+						if (!bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>()->Points.empty()) {
+							std::vector<carve::geom::vector<3>> loop = convertIfcPolyline(EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>(bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>()));
 
 							segmentStartPoints.push_back(loop.at(0));
 							targetVec.insert(targetVec.end(), loop.begin(), loop.end());
