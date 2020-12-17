@@ -44,12 +44,10 @@ public:
 	EnumType(const Enum& value) : m_value(value) {};
 
 	virtual ~EnumType() { };
-	
-	//virtual ~EnumType() = 0;
 
 	virtual const std::string getStepParameter() const override { return to_string(m_value); };
 
-	static Enum readStepData(const std::string &arg, const std::shared_ptr<EXPRESSModel>& model) {
+	static Enum readStepData(const std::string &arg, const std::shared_ptr<EXPRESSModel>& ) {
 		for (int i = 0; i < Count; i++) {
 			Enum value = static_cast<Enum>(i);
 			if (arg == to_string(value)) {

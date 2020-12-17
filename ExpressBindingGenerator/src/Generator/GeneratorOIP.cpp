@@ -1744,7 +1744,9 @@ void GeneratorOIP::createEntitiesHeaderFileREFACTORED(const Schema &schema) {
 
 void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const Type & type) const
 {
-	std::string path = sourceDirectory_ + "/" + getFolder(type.getName()) + "/" + type.getName() + ".h";
+	const std::string name = type.getName();
+
+	std::string path = sourceDirectory_ + "/" + getFolder(name) + "/" + name + ".h";
 	std::ofstream out(path);
 
 	indentation = 0;
@@ -1753,7 +1755,7 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 
 	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
-	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), type.getName(), guid, "h" }, '_');
+	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), name, guid, "h" }, '_');
 	
 	writeLine(out, "#pragma once");
 	writeLine(out, "#ifndef " + define);
@@ -1826,19 +1828,19 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 	}
 
 	if (type.isSimpleType() || type.isDerivedType()) {
-		writeValueTypeFile(type, out, getAPIDefine(type.getName()));
+		writeValueTypeFile(type, out, getAPIDefine(name));
 	}
 	else if (type.isEnumeration()) {
-		writeEnumTypeFileRefactored(type.getName(), type.getTypes(), out, getAPIDefine(type.getName()));
+		writeEnumTypeFileRefactored(name, type.getTypes(), out, getAPIDefine(name));
 	}
 	else if (type.isContainerType()) {
 		if (schema.hasEntity(type.getContainerType())) {
 			writeLine(out, "class " + type.getContainerType() + ";");
 		}
-		writeContainerTypeFile(schema, type, out, getAPIDefine(type.getName()));
+		writeContainerTypeFile(schema, type, out, getAPIDefine(name));
 	}
 	else if (type.isSelectType()) {	
-		writeSelectTypeFileREFACTORED(schema, type, out, getAPIDefine(type.getName()));
+		writeSelectTypeFileREFACTORED(schema, type, out, getAPIDefine(name));
 	}
 	else {
 		std::cerr << "UNKNOWN TYPE ENCOUNTERED!" << std::endl;
@@ -1852,14 +1854,16 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 
 void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const Type & type) const
 {
-	std::string path = sourceDirectory_ + "/" + getFolder(type.getName()) + "/" + type.getName() + ".cpp";
+	const std::string name = type.getName();
+
+	std::string path = sourceDirectory_ + "/" + getFolder(name) + "/" + name + ".cpp";
 	std::ofstream out(path);
 
 	indentation = 0;
 
 	writeLicenseAndNotice(out);
 		
-	writeInclude(out, type.getName() + ".h");
+	writeInclude(out, name + ".h");
 	writeInclude(out, "EXPRESS/EXPRESSOptional.h");
 	if (!type.isSelectType()) {
 		writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
@@ -1869,7 +1873,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 	if (type.isSelectType() || type.isContainerType()) {
 
 		std::set<std::string> types, entities;
-		getCachedIncludes(type.getName(), types, entities);
+		getCachedIncludes(name, types, entities);
 
 		if (!entities.empty()) {
 			for (const auto& entity : entities) {
@@ -1891,8 +1895,6 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 	}
 	   	
 	writeBeginNamespace(out, schema);
-	
-	std::string name = type.getName();
 
 	if (type.isSimpleType() || type.isDerivedType()) {
 		writeLine(out, name + "& " + name + "::operator=(const EXPRESSOptional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
