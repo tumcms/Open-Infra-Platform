@@ -43,4 +43,6 @@ namespace OpenInfraPlatform
 	}
 }
 
-#endif
+EMBED_CORE_OFFCONVERTER_INTO_OIP_NAMESPACE(OffReader)
+
+#endif //OFFREADER_H

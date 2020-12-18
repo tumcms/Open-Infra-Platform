@@ -89,7 +89,12 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		model->addVertices(allVertices);
 
 		//read faces
-		//... still to be added
+		std::vector<uint32_t> indices;
+		for (int i = 0; i < nrOfFaces; i++)
+		{
+			//... to be filled
+		}
+		model->addIndices(indices);
 
 		offFile.close();
 		return model;
@@ -99,6 +104,38 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		offFile.close();
 		throw std::exception("Error in Off file");
 	}
+}
+
+static bool insertTriangleIntoBuffers(const buw::Vector3d& vertexA,
+	const buw::Vector3d& vertexB,
+	const buw::Vector3d& vertexC,
+	std::vector<buw::Vector3d>& vertices,
+	std::vector<uint32_t>& indices)
+{
+	uint32_t indexOffset = vertices.size();
+
+	vertices.push_back(vertexA);
+	vertices.push_back(vertexB);
+	vertices.push_back(vertexC);
+
+	indices.push_back(indexOffset++);
+	indices.push_back(indexOffset++);
+	indices.push_back(indexOffset);
+
+	return true;
+}
+
+static bool insertQuadIntoBuffers(const buw::Vector3d& vertexA,
+	const buw::Vector3d& vertexB,
+	const buw::Vector3d& vertexC,
+	const buw::Vector3d& vertexD,
+	std::vector<buw::Vector3d>& vertices,
+	std::vector<uint32_t>& indices)
+{
+	insertTriangleIntoBuffers(vertexA, vertexB, vertexC, vertices, indices);
+	insertTriangleIntoBuffers(vertexA, vertexC, vertexD, vertices, indices);
+
+	return true;
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END
