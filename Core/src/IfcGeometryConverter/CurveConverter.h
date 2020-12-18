@@ -227,7 +227,7 @@ namespace OpenInfraPlatform {
 				} //end convertIfcCurve2D
 
 				/**********************************************************************************************/
-				/*! \brief Converts an \c IfcBoundedCurve to a curve of finite length. 
+				/*! \brief Converts an \c IfcBoundedCurve to a tesselated curve.
 				* \param[in] polycurve				A pointer to data from \c IfcBoundedCurve.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
@@ -281,7 +281,7 @@ namespace OpenInfraPlatform {
 					// (5/6) IfcPolyline SUBTYPE OF IfcBoundedCurve
 					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcPolyline>()) {
 						if (!bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>()->Points.empty()) {
-							std::vector<carve::geom::vector<3>> loop = convertIfcPolyline(EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>(bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>()));
+							std::vector<carve::geom::vector<3>> loop = convertIfcPolyline(bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>());
 
 							segmentStartPoints.push_back(loop.at(0));
 							targetVec.insert(targetVec.end(), loop.begin(), loop.end());
@@ -306,6 +306,7 @@ namespace OpenInfraPlatform {
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
 				*/
+				// (1/6) IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
 				void convertIfcAlignmentCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcAlignmentCurve>& alignment_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints) const throw(...) 
@@ -333,7 +334,6 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-
 				/**********************************************************************************************/
 				/*! \brief Calculates curve segments and appends them to the curve.
 				* \param[in] polycurve				A pointer to data from c\ IfcCompositeCurve.
@@ -344,8 +344,7 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints) const throw(...)
 				{
-
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> > segments;
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCompositeCurveSegment> > segments;
 					segments.resize(composite_curve->Segments.size());
 
 					std::transform(
@@ -354,14 +353,10 @@ namespace OpenInfraPlatform {
 						segments.begin(),
 						[](auto &it) { return it.lock(); });
 
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> >::iterator it_segments =
-						segments.begin();
-
-					for (; it_segments != segments.end(); ++it_segments) {
-						std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurveSegment> segment = (*it_segments);
-						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> segment_curve = segment->ParentCurve.lock();
-
+					for (int i = 0; i < segments.size(); i++) {
+						EXPRESSReference<typename IfcEntityTypesT::IfcCurve> segment_curve = segments[i]->ParentCurve.lock();
 						std::vector<carve::geom::vector<3>> segment_vec;
+
 						convertIfcCurve(segment_curve, segment_vec, segmentStartPoints);
 						if (!segment_vec.empty()) {
 							GeomUtils::appendPointsToCurve(segment_vec, targetVec);
@@ -370,7 +365,6 @@ namespace OpenInfraPlatform {
 					// end
 					return;
 				}
-
 
 				/**********************************************************************************************/
 				/*! \brief Calculates trimming points of the curve. 
@@ -552,7 +546,6 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-
 				/**********************************************************************************************/
 				/*! \brief Calculates ponts of the circle curve. 
 				* \param[in] polycurve				A pointer to data from c\ IfcCircle.
@@ -661,8 +654,8 @@ namespace OpenInfraPlatform {
 				*/
 				double  calculateTrimmingPointOnCircle(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trimmingVector,
-					carve::geom::vector<3> circle_center,
-					double circle_radius) const throw(...)
+					const carve::geom::vector<3> circle_center,
+					const double circle_radius) const throw(...)
 				{
 				
 					// Check for trimming point
@@ -688,12 +681,12 @@ namespace OpenInfraPlatform {
 								}
 							}
 							else {
-								oip::InconsistentGeometryException(circle, "No trimming point found.");
+								throw oip::InconsistentGeometryException(circle, "No trimming point found.");
 							}
 						}
 					}
 					else {
-						oip::InconsistentGeometryException(circle, "Trimming vector is empty!");
+						throw oip::InconsistentGeometryException(circle, "Trimming vector is empty!");
 					}
 				}
 
