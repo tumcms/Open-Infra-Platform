@@ -331,8 +331,6 @@ namespace OpenInfraPlatform {
 					// add the first point to segments
 					placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
 					segmentStartPoints.push_back(targetPoint3D);
-					// end
-					return;
 				}
 
 				// (3/6) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
@@ -346,26 +344,14 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints) const throw(...)
 				{
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCompositeCurveSegment> > segments;
-					segments.resize(composite_curve->Segments.size());
-
-					std::transform(
-						composite_curve->Segments.begin(),
-						composite_curve->Segments.end(),
-						segments.begin(),
-						[](auto &it) { return it.lock(); });
-
-					for (int i = 0; i < segments.size(); i++) {
-						EXPRESSReference<typename IfcEntityTypesT::IfcCurve> segment_curve = segments[i]->ParentCurve.lock();
+					for (auto &segment: composite_curve->Segments) {
 						std::vector<carve::geom::vector<3>> segment_vec;
 
-						convertIfcCurve(segment_curve, segment_vec, segmentStartPoints);
+						convertIfcCurve(segment->ParentCurve, segment_vec, segmentStartPoints);
 						if (!segment_vec.empty()) {
 							GeomUtils::appendPointsToCurve(segment_vec, targetVec);
 						}
 					}
-					// end
-					return;
 				}
 
 				// (4/6) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve
@@ -431,7 +417,6 @@ namespace OpenInfraPlatform {
 						GeomUtils::appendPointsToCurve(points, targetVec);
 						segmentStartPoints.push_back(points[0]);
 					}
-
 				}
 
 				/**********************************************************************************************/
