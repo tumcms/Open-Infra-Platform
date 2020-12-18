@@ -16,7 +16,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "OffReader.h"
-#include "../Exception/IfcPeekReaderException.h"
+#include "../Exception/OffReaderException.h"
 #include "namespace.h"
 
 #include <fstream>
@@ -40,7 +40,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 
 	if (!offFile.is_open())
 	{
-		throw oip::IfcPeekReaderException("Could not open OFF file <" + filename + "in OffReader.>");
+		throw oip::OffReaderException("Could not open OFF file <" + filename + "in OffReader.>");
 	}
 
 	try
