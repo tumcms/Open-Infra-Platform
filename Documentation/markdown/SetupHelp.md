@@ -86,10 +86,8 @@ You will need to install:
     * Finish the installation.
 
 8. **Doxygen**
-    *   Navigate to folder *external* within OpenInfraPlatform source folder. 
-    *   Execute:
-        * `GetDot.cmd`
-        * `GetDoxygen.cmd`
+	*	Download Doxygen Installer - find [here](http://doxygen.nl/files/doxygen-1.8.20-setup.exe).
+	*	Install Doxygen
 
 ## <a name="Setup"></a> Preparing VS solution 
 
