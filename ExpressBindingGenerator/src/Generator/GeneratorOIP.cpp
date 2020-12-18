@@ -1032,15 +1032,15 @@ void GeneratorOIP::resolveSelectTypeIncludes(const Schema& schema, const Type& t
 	if (resolved.find(type.getName()) != resolved.end())
 		return;
 	// check the cached stuff
-	if (cacheIncludesEntities.find(type.getName()) != cacheIncludesEntities.end())
-	{
-		const auto& typeAttr = cacheIncludesEntities.at(type.getName());
-		for( const auto& attr : typeAttr )
-			if(includes.find(attr) == includes.end() )
-				includes.insert(attr);
-		resolved.insert(type.getName());
-		return;
-	}
+	//if (cacheIncludesEntities.find(type.getName()) != cacheIncludesEntities.end())
+	//{
+	//	const auto& typeAttr = cacheIncludesEntities.at(type.getName());
+	//	for( const auto& attr : typeAttr )
+	//		if(includes.find(attr) == includes.end() )
+	//			includes.insert(attr);
+	//	resolved.insert(type.getName());
+	//	return;
+	//}
 	// add to resolved
 	resolved.insert(type.getName());
 	// otherwise check all types
@@ -1065,15 +1065,15 @@ void GeneratorOIP::resolveEntityIncludes(const Schema& schema, const Entity& ent
 	if (resolved.find(entity.getName()) != resolved.end())
 		return;
 	// check the cached stuff
-	if (cacheIncludesEntities.find(entity.getName()) != cacheIncludesEntities.end())
-	{
-		const auto& entAttr = cacheIncludesEntities.at(entity.getName());
-		for (const auto& attr : entAttr)
-			if (includes.find(attr) == includes.end())
-				includes.insert(attr);
-		resolved.insert(entity.getName());
-		return;
-	}
+	//if (cacheIncludesEntities.find(entity.getName()) != cacheIncludesEntities.end())
+	//{
+	//	const auto& entAttr = cacheIncludesEntities.at(entity.getName());
+	//	for (const auto& attr : entAttr)
+	//		if (includes.find(attr) == includes.end())
+	//			includes.insert(attr);
+	//	resolved.insert(entity.getName());
+	//	return;
+	//}
 
 	resolved.insert(entity.getName());
 
@@ -1392,7 +1392,16 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	for (const auto& lst : scc)
 		//if (std::find_if(lst.begin(), lst.end(), [&IfcProductIndex](auto el) {return el == IfcProductIndex; }) != lst.end())
 			for (const auto& el : lst)
+			{
 				connected.at(el) = true;
+				// if it is a select, all types are connected as well
+				if (schema.hasType(mapIndexToName.at(el)) && schema.isSelectType(mapIndexToName.at(el)))
+					for (const auto& sel : schema.getTypeByName(mapIndexToName.at(el)).getTypes())
+					{
+						if( schema.hasEntity(sel))
+							connected.at(mapNameToIndex.at(sel)) = true;
+					}
+			}
 
 	//**************************************************
 	// find the biggest elementary circuit in the directed graph
@@ -1437,8 +1446,8 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 		return false;
 	};
 
-	// does it have any connected includes?
-	std::function<bool(std::string)> hasConnectedIncludes = [&pointsToConnected, this](const std::string& name) -> bool
+	// get all includes
+	std::function<std::vector<std::string>(std::string)> getIncludes = [this](const std::string& name) -> std::vector<std::string>
 	{
 		std::set<std::string> types, entities;
 		getCachedIncludes(name, types, entities);
@@ -1449,7 +1458,13 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 			allNames.push_back(el);
 		for (const auto& el : entities)
 			allNames.push_back(el);
-		return pointsToConnected(allNames);
+		return allNames;
+	};
+
+	// does it have any connected includes?
+	std::function<bool(std::string)> hasConnectedIncludes = [&getIncludes, &pointsToConnected, this](const std::string& name) -> bool
+	{
+		return pointsToConnected(getIncludes(name));
 	};
 
 	// set folder for entity (true = a folder was set, false = no change)
@@ -1477,13 +1492,19 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 
 	// determine the path for schemas' entities & types
 	std::function<void(std::string)> determinePath = 
-		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &pointsToConnected, &hasConnectedIncludes, &hasIncludes, &getAttributes, &setFolder]
+		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &getIncludes, &pointsToConnected, &hasConnectedIncludes, &hasIncludes, &getAttributes, &setFolder]
 		(const std::string& name)
 	{
 		// if in the loop with ifcproduct -> mid
 		if (connected.at(mapNameToIndex.at(name)))
 		{
 			setFolder(name, "mid");
+			// also set all attributes to be mid
+			if( schema.hasEntity(name))
+				for (const auto& attr : getAttributes(name))
+					setFolder(attr, "mid");
+			for (const auto& incl : getIncludes(name))
+				setFolder(incl, "mid");
 			return;
 		}
 		else
@@ -1546,12 +1567,15 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	// check those that have changed again
 	while (!toCheck.empty())
 	{
-		auto entity = schema.getEntityByName(toCheck.front());
-		auto parents = schema.getSuperTypes(entity);
-		auto folder = mapFolderInSrc_.at(entity.getName());
-		for (const auto& el : parents)
-			if (setFolder(el, folder))
-				toCheck.push(el);
+		if( schema.hasEntity(toCheck.front()))
+		{
+			auto entity = schema.getEntityByName(toCheck.front());
+			auto parents = schema.getSuperTypes(entity);
+			auto folder = mapFolderInSrc_.at(entity.getName());
+			for (const auto& el : parents)
+				if (setFolder(el, folder))
+					toCheck.push(el);
+		}
 		toCheck.pop();
 	}
 
