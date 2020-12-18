@@ -31,6 +31,12 @@ void OpenInfraPlatform::Core::OffConverter::OffModel::addVertices(std::vector<bu
 	geometry_.UpdateBBox();
 }
 
+void OpenInfraPlatform::Core::OffConverter::OffModel::addIndices(std::vector<uint32_t> indices)
+{
+	for (const auto& index : indices)
+		geometry_.indices.push_back(index);
+}
+
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 // Interface IModel implementation
 bool OpenInfraPlatform::Core::OffConverter::OffModel::isEmpty() const
