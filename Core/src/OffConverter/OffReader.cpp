@@ -17,21 +17,24 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "OffReader.h"
 #include "../Exception/IfcPeekReaderException.h"
+#include "namespace.h"
 
 #include <fstream>
 #include <iostream>
 
-OpenInfraPlatform::Core::OffConverter::OffReader::OffReader()
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_BEGIN
+
+OffReader::OffReader()
 {
 
 }
 
-OpenInfraPlatform::Core::OffConverter::OffReader::~OffReader()
+OffReader::~OffReader()
 {
 
 }
 
-std::shared_ptr<OpenInfraPlatform::Core::OffConverter::OffModel> OpenInfraPlatform::Core::OffConverter::OffReader::readFile(const std::string& filename)
+std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 {
 	std::ifstream offFile(filename);
 
@@ -95,3 +98,5 @@ std::shared_ptr<OpenInfraPlatform::Core::OffConverter::OffModel> OpenInfraPlatfo
 		throw std::exception("Error in Off file");
 	}
 }
+
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END
