@@ -76,6 +76,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		model->setFilename(filename);
 
 		//read vertices 
+		std::vector<buw::Vector3d> allVertices;
 		for (int i = 0; i < nrOfVertices; i++)
 		{
 			std::getline(offFile, line);
@@ -83,8 +84,9 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 			std::stringstream lineStream(line);
 
 			lineStream >> vector[0] >> vector[1] >> vector[2];
-			model->addVertex(vector);
+			allVertices.push_back(vector);
 		}
+		model->addVertices(allVertices);
 
 		//read faces
 		//... still to be added

@@ -24,9 +24,10 @@ void OpenInfraPlatform::Core::OffConverter::OffModel::reset()
 	geometry_.reset();
 }
 
-void OpenInfraPlatform::Core::OffConverter::OffModel::addVertex(buw::Vector3d vertex)
+void OpenInfraPlatform::Core::OffConverter::OffModel::addVertices(std::vector<buw::Vector3d> vertices)
 {
-	geometry_.vertices.push_back(vertex);
+	for (const auto& vertex : vertices)
+		geometry_.vertices.push_back(vertex);
 	geometry_.UpdateBBox();
 }
 

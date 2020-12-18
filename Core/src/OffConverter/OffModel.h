@@ -43,6 +43,7 @@ namespace OpenInfraPlatform
 				{
 					for (const auto& vertex : vertices)
 						bb.update(vertex[0], vertex[1], vertex[2]);
+
 				}
 			};
 
@@ -55,7 +56,7 @@ namespace OpenInfraPlatform
 			public:
 				void reset(); 
 
-				void addVertex(buw::Vector3d vertex);
+				void addVertices(std::vector<buw::Vector3d> vertex);
 				IndexedMeshDescription const &geometry() const { return geometry_; }
 
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------
