@@ -179,9 +179,17 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 		return;
 	}	
 
-	else if (filetype == ".off")
-	{
+	else if (filetype == ".off") {
+		if (true) { //add condition
+			//auto offModel;
+			//addModel(offModel);
+			latestChangeFlag_ = ChangeFlag::OffGeometry;
+			return;
+		}
+		else
+		{
 
+		}
 	}
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
