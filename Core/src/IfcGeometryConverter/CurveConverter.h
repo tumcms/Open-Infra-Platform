@@ -235,6 +235,7 @@ namespace OpenInfraPlatform {
 				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
 				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
 				*/
+				// (1/6) IfcBoundedCurve SUBTYPE of IfcCurve
 				void convertIfcBoundedCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve>& bounded_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -300,13 +301,13 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				// (1/6) IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
 				/**********************************************************************************************/
 				/*! \brief Calculates the 3D point along a curve.
 				* \param[in] polycurve				A pointer to data from c\ IfcAlignmentCurve.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
 				*/
-				// (1/6) IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
 				void convertIfcAlignmentCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcAlignmentCurve>& alignment_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints) const throw(...) 
@@ -334,6 +335,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
+				// (3/6) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
 				/**********************************************************************************************/
 				/*! \brief Calculates curve segments and appends them to the curve.
 				* \param[in] polycurve				A pointer to data from c\ IfcCompositeCurve.
@@ -366,6 +368,252 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
+				// (4/6) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve
+				/**********************************************************************************************/
+				/*! \brief Calculates coordinates of the intersection point.
+				* \param[in] polycurve				A pointer to data from IfcIndexedPolyCurve.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				*/
+				void convertIfcIndexedPolyCurve(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcIndexedPolyCurve>& polycurve,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
+				{
+					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4/ADD1/HTML/schema/ifcgeometryresource/lexical/ifcindexedpolycurve.htm
+					//	ENTITY IfcIndexedPolyCurve
+					//		SUBTYPE OF(IfcBoundedCurve);
+					//		Points: IfcCartesianPointList;
+					//		Segments: OPTIONAL LIST[1:? ] OF IfcSegmentIndexSelect;
+					//		SelfIntersect: OPTIONAL IfcBoolean;
+					//	WHERE
+					//		Consecutive : (SIZEOF(Segments) = 0) OR IfcConsecutiveSegments(Segments);
+					//	END_ENTITY;
+
+					// check input
+					if (polycurve.expired())
+						throw oip::ReferenceExpiredException(polycurve);
+
+					// get the points
+					std::vector<carve::geom::vector<3>> points = convertIfcCartesianPointList(polycurve->Points);
+
+					// are segments there?
+					if (polycurve->Segments)
+					{
+						try
+						{
+							std::vector<carve::geom::vector<3>> loop;
+							for (const auto& seg : polycurve->Segments.get())
+							{
+								std::vector<carve::geom::vector<3>> loop_intern = convertIfcSegmentIndexSelect(seg, points);
+								// skips same points
+								GeomUtils::appendPointsToCurve(loop_intern, loop);
+							}
+
+							// add the calculated points to the return values
+							GeomUtils::appendPointsToCurve(loop, targetVec);
+							segmentStartPoints.push_back(loop[0]);
+						}
+						catch (const oip::InconsistentModellingException& ex) {
+							throw oip::InconsistentModellingException(polycurve, ex.what());
+						}
+					}
+					else
+					{
+						// no segments are there -> it's just a polyline ..
+						GeomUtils::appendPointsToCurve(points, targetVec);
+						segmentStartPoints.push_back(points[0]);
+					}
+
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Calculates coordinates of the intersection point.
+				* \param[in] segmentIndexSelect		A pointer to data from IfcSegmentIndexSelect.
+				* \param[in] points					The series of points passed from IfcIndexedPolyCurve.
+				* return							The series of points of the curve.
+				*/
+				std::vector<carve::geom::vector<3>> convertIfcSegmentIndexSelect(
+					const typename IfcEntityTypesT::IfcSegmentIndexSelect & segmentIndexSelect,
+					const std::vector<carve::geom::vector<3>>& points)const throw(...)
+				{
+					switch (segmentIndexSelect.which())
+					{
+					case 0:
+					{
+						// TYPE IfcArcIndex = LIST [3:3] OF IfcPositiveInteger;
+						return convertIfcArcIndex(segmentIndexSelect.get<0>(), points);
+					}
+					case 1:
+					{
+						// TYPE IfcLineIndex = LIST [2:?] OF IfcPositiveInteger;
+						return convertIfcLineIndex(segmentIndexSelect.get<1>(), points);
+					}
+					default:
+						throw oip::UnhandledException();
+					}
+				}
+
+				// (1/2) TYPE IfcArcIndex = LIST [3:3] OF IfcPositiveInteger;
+				/**********************************************************************************************/
+				/*! \brief Calculates coordinates of the intersection point.
+				* \param[in] lineSegment			A pointer to data from IfcLineIndex.
+				* \param[in] points					The series of points passed from IfcIndexedPolyCurve.
+				* return							The series of points of the curve.
+				*/
+				std::vector<carve::geom::vector<3>> convertIfcLineIndex(
+					const typename IfcEntityTypesT::IfcLineIndex &lineSegment,
+					const std::vector<carve::geom::vector<3>>& points) const throw(...)
+				{
+					if (lineSegment.size() < 2)
+						throw oip::InconsistentModellingException("The number of indices for one of IfcLineIndex is less than 2!");
+
+					std::vector<carve::geom::vector<3>> loop;
+					for (const auto& i : lineSegment)
+					{
+						loop.push_back(points[i - 1]); //EXPRESS count from 1, C++ from 0
+					}
+					return loop;
+				}
+				// (2/2) TYPE IfcLineIndex = LIST [2:?] OF IfcPositiveInteger;
+				/**********************************************************************************************/
+				/*! \brief Calculates coordinates of the intersection point.
+				* \param[in] arcSegment				A pointer to data from IfcArcIndex.
+				* \param[in] points					The series of points passed from IfcIndexedPolyCurve.
+				* return							The series of points of the curve.
+				*/
+				std::vector<carve::geom::vector<3>> convertIfcArcIndex(
+					const typename IfcEntityTypesT::IfcArcIndex &arcSegment,
+					const std::vector<carve::geom::vector<3>>& points) const throw(...)
+				{
+					if (arcSegment.size() != 3)
+						throw oip::InconsistentModellingException("The number of indices for one of IfcArcIndex is not 3!");
+
+					carve::geom::vector<3> arcStart = points[arcSegment[0] - 1];
+					carve::geom::vector<3> arcMid = points[arcSegment[1] - 1];
+					carve::geom::vector<3> arcEnd = points[arcSegment[2] - 1];
+
+					//Converting a 3D to a 2D problem to then find the circle from three points on the plane.
+					// see https://math.stackexchange.com/questions/1379217/3-points-in-3d-space-to-find-the-center-of-an-arc-or-circle
+
+					//Start by finding the normal vector to the plane defined by the three points
+					//n=unitvector(A×B+B×C+C×A)
+					carve::geom::vector<3> normalVector = carve::geom::cross(arcStart, arcMid) + carve::geom::cross(arcMid, arcEnd) + carve::geom::cross(arcEnd, arcStart);
+					normalVector.normalize();
+					//u=(C−A)×n
+					carve::geom::vector<3> firstOrthogonalDirection = carve::geom::cross(arcEnd - arcStart, normalVector);
+					firstOrthogonalDirection.normalize();
+					//v=n×u
+					carve::geom::vector<3> secondOrthogonalDirection = carve::geom::cross(normalVector, firstOrthogonalDirection);
+					secondOrthogonalDirection.normalize();
+
+					//Calculate distance of the plane to the origin
+					double distance = (normalVector.x * arcStart.x) + (normalVector.y * arcStart.y) + (normalVector.z * arcStart.z);
+
+					//Convert the problem into a 2D problem
+					carve::math::Matrix rotationMatrix = carve::math::Matrix(
+						firstOrthogonalDirection.x, secondOrthogonalDirection.x, 0., 0.,
+						firstOrthogonalDirection.y, secondOrthogonalDirection.y, 0., 0.,
+						firstOrthogonalDirection.z, secondOrthogonalDirection.z, 1., 0.,
+						0., 0., 0., 1.);
+
+					carve::geom::vector<2> arcStart2D = convert3Dto2D(rotationMatrix, arcStart);
+					carve::geom::vector<2> arcMid2D = convert3Dto2D(rotationMatrix, arcMid);
+					carve::geom::vector<2> arcEnd2D = convert3Dto2D(rotationMatrix, arcEnd);
+
+					//Calculating arc in 2D 
+					double yDeltaA = arcMid2D.y - arcStart2D.y;
+					double xDeltaA = arcMid2D.x - arcStart2D.x;
+					double yDeltaB = arcEnd2D.y - arcMid2D.y;
+					double xDeltaB = arcEnd2D.x - arcMid2D.x;
+
+					if (xDeltaA != 0. && xDeltaB != 0.) {
+						double aSlope = yDeltaA / xDeltaA;
+						double bSlope = yDeltaB / xDeltaB;
+
+						double centerOfCircleX = (aSlope*bSlope*(arcStart2D.y - arcEnd2D.y) + bSlope * (arcStart2D.x + arcMid2D.x)
+							- aSlope * (arcMid2D.x + arcEnd2D.x)) / (2. * (bSlope - aSlope));
+
+						double centerOfCircleY = -(centerOfCircleX - (arcStart2D.x + arcMid2D.x) * 0.5) / aSlope + (arcStart2D.y + arcMid2D.y) * 0.5;
+
+						carve::geom::vector<2> radiusVector = carve::geom::VECTOR(arcStart2D.x - centerOfCircleX, arcStart2D.y - centerOfCircleY);
+						double radius = radiusVector.length();
+
+						double theta1 = std::atan2(arcStart2D.y - centerOfCircleY, arcStart2D.x - centerOfCircleX);
+						double theta2 = std::atan2(arcEnd2D.y - centerOfCircleY, arcEnd2D.x - centerOfCircleX);
+
+						double opening_angle = (theta2 - theta1);
+
+						// correct for -2*PI <= angle <= 2*PI
+						if (opening_angle > 0) {
+							GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
+						}
+						else {
+							GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
+						}
+
+						int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(opening_angle));
+
+						std::vector<carve::geom::vector<2> > circle_points;
+						ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
+							circle_points, radius,
+							theta1, opening_angle,
+							centerOfCircleX, centerOfCircleY,
+							num_segments);
+
+						//std::vector<carve::geom::vector<3>> arcPoints;
+						std::vector<carve::geom::vector<3>> loop_intern;
+						loop_intern.push_back(arcStart);
+						for (int i = 1; i < circle_points.size(); i++) {
+
+							loop_intern.push_back(carve::geom::VECTOR(
+								normalVector.x * distance + firstOrthogonalDirection.x * circle_points[i].x + secondOrthogonalDirection.x * circle_points[i].y,
+								normalVector.y * distance + firstOrthogonalDirection.y * circle_points[i].x + secondOrthogonalDirection.y * circle_points[i].y,
+								normalVector.z * distance + firstOrthogonalDirection.z * circle_points[i].x + secondOrthogonalDirection.z * circle_points[i].y));
+						}
+						return loop_intern;
+					}
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Calculates coordinates of the intersection point.
+				* \param[in] conversionMatrix		A pointer to data from IfcIndexedPolyCurve.
+				* \param[in] vector3D				Vector in 3D
+				* return							Converted vector in 2D.
+				*/
+				carve::geom::vector<2> convert3Dto2D(const carve::math::Matrix&  conversionMatrix, const carve::geom::vector<3>& vector3D) const throw(...) {
+					return carve::geom::VECTOR((conversionMatrix._11 * vector3D.x + conversionMatrix._12 * vector3D.y + conversionMatrix._13 * vector3D.z),
+						(conversionMatrix._21 * vector3D.x + conversionMatrix._22 * vector3D.y + conversionMatrix._23 * vector3D.z));
+				}
+
+				// (5/6) IfcPolyline SUBTYPE OF IfcBoundedCurve
+				/*! \brief Converts \c IfcPolyline to a series of points.
+				 *
+				 * \param[in] ifcpolyline			The \c IfcPolyline to be converted.
+				 *
+				 * \returns							The series of points.
+				 */
+				std::vector<carve::geom::vector<3>> convertIfcPolyline(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& ifcpolyline
+				) const throw(...)
+				{
+					// **************************************************************************************************************************
+					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpolyline.htm
+					// **************************************************************************************************************************
+					if (ifcpolyline.expired())
+						throw oip::ReferenceExpiredException(ifcpolyline);
+
+					return convertIfcCartesianPointVector(ifcpolyline->Points);
+				}
+
+				// (6/6) IfcTrimmedCurve SUBTYPE OF IfcBoundedCurve
 				/**********************************************************************************************/
 				/*! \brief Calculates trimming points of the curve. 
 				* \param[in] polycurve				A pointer to data from c\ IfcTrimmedCurve.
@@ -401,7 +649,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-
+				// (2/6) IfcConic SUPTYPE of IfcCurve
 				void convertIfcConic(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcConic>& conic,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -433,7 +681,203 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(conic);
 				}
 
+				// (1/2) IfcCircle SUBTYPE OF IfcConic
+				/**********************************************************************************************/
+				/*! \brief Calculates ponts of the circle curve.
+				* \param[in] polycurve				A pointer to data from c\ IfcCircle.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				*/
+				void convertIfcCircle(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
+				{
+					// determine position
+					carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(circle->Position);
 
+					// Get radius
+					double circle_radius = 0.0;
+					if (circle->Radius) {
+						circle_radius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
+					}
+					else {
+						throw oip::InconsistentGeometryException(circle, "No radius!");
+					}
+
+					carve::geom::vector<3> circle_center =
+						conic_position_matrix * carve::geom::VECTOR(0, 0, 0);
+
+					//Calculate an angle on the circle for trimming begin.
+					double start_angle = calculateTrimmingPointOnCircle(circle, trim1Vec, circle_center, circle_radius);
+					//Calculate an angle on the circle for trimming end.
+					double trim_angle2 = calculateTrimmingPointOnCircle(circle, trim2Vec, circle_center, circle_radius);
+
+					double opening_angle = 0.0;
+
+					if (senseAgreement) {
+						if (start_angle < trim_angle2) {
+							opening_angle = trim_angle2 - start_angle;
+						}
+						else {
+							// circle passes 0 angle
+							opening_angle = trim_angle2 - start_angle + 2.0*M_PI;
+						}
+					}
+					else {
+						if (start_angle > trim_angle2) {
+							opening_angle = trim_angle2 - start_angle;
+						}
+						else {
+							// circle passes 0 angle
+							opening_angle = trim_angle2 - start_angle - 2.0*M_PI;
+						}
+					}
+
+					// correct for -2*PI <= angle <= 2*PI
+					if (opening_angle > 0) {
+						GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
+					}
+					else {
+						GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
+					}
+
+					int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(circle_radius, abs(opening_angle));
+
+					const double circle_center_x = 0.0;
+					const double circle_center_y = 0.0;
+					std::vector<carve::geom::vector<2> > circle_points;
+					ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
+						circle_points, circle_radius,
+						start_angle, opening_angle,
+						circle_center_x, circle_center_y,
+						num_segments);
+
+					if (circle_points.size() > 0) {
+						// apply position
+						for (unsigned int i = 0; i < circle_points.size(); ++i) {
+							carve::geom::vector<2>&  point = circle_points.at(i);
+							carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
+							point3d = conic_position_matrix * point3d;
+							point.x = point3d.x;
+							point.y = point3d.y;
+						}
+
+						GeomUtils::appendPointsToCurve(circle_points, targetVec);
+						segmentStartPoints.push_back(carve::geom::VECTOR(
+							circle_points.at(0).x,
+							circle_points.at(0).y,
+							0));
+					}
+
+					return;
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Calculates the angle on the circle of the trimming point.
+				* \param[in] circle				A pointer to data from c\ IfcCircle.
+				* \param[in] trimmingVector		The trimming of the curve as saved in IFC model
+				* \param[in] circle_center		Coordinates of the center of the circle.
+				* \param[in] circle_radius		Radius of the circle.
+				* \return						Angle on the circle of the trimming point.
+				*/
+				double  calculateTrimmingPointOnCircle(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trimmingVector,
+					const carve::geom::vector<3> circle_center,
+					const double circle_radius) const throw(...)
+				{
+
+					// Check for trimming point
+					if (trimmingVector.size() > 0) {
+						//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming point.";
+						auto first = std::find_if(trimmingVector.begin(), trimmingVector.end(), [](auto select) { return select->which() == 1; });
+						if (first != trimmingVector.end() && *first) {
+							//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming pomt as IfcParameterValue.";
+							typename IfcEntityTypesT::IfcParameterValue trim_par1 = (*first)->get<1>();
+							return trim_par1 * UnitConvert()->getAngleInRadianFactor();
+						}
+						else {
+							first = std::find_if(trimmingVector.begin(), trimmingVector.end(), [](auto select) { return select->which() == 0; });
+							if (first != trimmingVector.end() && (*first) != nullptr) {
+								//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming point as IfcCartesianPoint.";
+								try {
+									carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
+
+									return getAngleOnCircle(circle_center, circle_radius, trim_point);
+								}
+								catch (const oip::InconsistentModellingException& ex) {
+									throw oip::InconsistentModellingException(circle, ex.what());
+								}
+							}
+							else {
+								throw oip::InconsistentGeometryException(circle, "No trimming point found.");
+							}
+						}
+					}
+					else {
+						throw oip::InconsistentGeometryException(circle, "Trimming vector is empty!");
+					}
+				}
+
+				// (2/2) IfcEllipse SUBTYPE OF IfcConic
+				void convertIfcEllipse(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
+				{
+					// determine position
+					carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
+
+					if (ellipse->SemiAxis1) {
+						if (ellipse->SemiAxis2) {
+
+							double xRadius = ellipse->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
+							double yRadius = ellipse->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
+
+							double radiusMax = std::max(xRadius, yRadius);
+							double radiusMin = std::min(xRadius, yRadius);
+							int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin);
+							double deltaAngle = GeomSettings()->getAngleLength(radiusMin);
+
+							// todo: implement clipping
+							if (!trim1Vec.empty() || !trim2Vec.empty())
+								BLUE_LOG(warning) << ellipse->getErrorLog() << ": Trimming not supported";
+
+							std::vector<carve::geom::vector<3> > ellipse_points;
+							double angle = 0.0;
+							for (int i = 0; i < num_segments; ++i) {
+								ellipse_points.push_back(carve::geom::vector<3>(
+									carve::geom::VECTOR(
+										xRadius * cos(angle),
+										yRadius * sin(angle),
+										0)));
+								angle += deltaAngle;
+							}
+
+							// apply position
+							for (unsigned int i = 0; i < ellipse_points.size(); ++i) {
+								carve::geom::vector<3>& point = ellipse_points.at(i);
+								point = conic_position_matrix * point;
+							}
+							GeomUtils::appendPointsToCurve(ellipse_points, targetVec);
+							segmentStartPoints.push_back(ellipse_points.at(0));
+						}
+					}
+					return;
+				}
+
+				// (3/6) IfcLine SUPTYPE of IfcCurve
 				void convertIfcLine(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLine>& line,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -546,425 +990,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				/**********************************************************************************************/
-				/*! \brief Calculates ponts of the circle curve. 
-				* \param[in] polycurve				A pointer to data from c\ IfcCircle.
-				* \param[out] targetVec				The tessellated line.
-				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
-				*/
-				void convertIfcCircle(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
-					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
-				) const throw(...)
-				{
-					// determine position
-					carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(circle->Position);
-
-					// Get radius
-					double circle_radius = 0.0;
-					if (circle->Radius) {
-						circle_radius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
-					}
-					else {
-						throw oip::InconsistentGeometryException(circle, "No radius!");
-					}
-
-					carve::geom::vector<3> circle_center =
-						conic_position_matrix * carve::geom::VECTOR(0, 0, 0);
-
-					//Calculate an angle on the circle for trimming begin.
-					double start_angle = calculateTrimmingPointOnCircle(circle, trim1Vec, circle_center, circle_radius);
-					//Calculate an angle on the circle for trimming end.
-					double trim_angle2 = calculateTrimmingPointOnCircle(circle, trim2Vec, circle_center, circle_radius);
-		
-					double opening_angle = 0.0;
-
-					if (senseAgreement) {
-						if (start_angle < trim_angle2) {
-							opening_angle = trim_angle2 - start_angle;
-						}
-						else {
-							// circle passes 0 angle
-							opening_angle = trim_angle2 - start_angle + 2.0*M_PI;
-						}
-					}
-					else {
-						if (start_angle > trim_angle2) {
-							opening_angle = trim_angle2 - start_angle;
-						}
-						else {
-							// circle passes 0 angle
-							opening_angle = trim_angle2 - start_angle - 2.0*M_PI;
-						}
-					}
-
-					// correct for -2*PI <= angle <= 2*PI
-					if (opening_angle > 0) {
-						GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
-					}
-					else {
-						GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
-					}
-
-					int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(circle_radius, abs(opening_angle));
-
-					const double circle_center_x = 0.0;
-					const double circle_center_y = 0.0;
-					std::vector<carve::geom::vector<2> > circle_points;
-					ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
-						circle_points, circle_radius,
-						start_angle, opening_angle,
-						circle_center_x, circle_center_y,
-						num_segments);
-
-					if (circle_points.size() > 0) {
-						// apply position
-						for (unsigned int i = 0; i < circle_points.size(); ++i) {
-							carve::geom::vector<2>&  point = circle_points.at(i);
-							carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
-							point3d = conic_position_matrix * point3d;
-							point.x = point3d.x;
-							point.y = point3d.y;
-						}
-
-						GeomUtils::appendPointsToCurve(circle_points, targetVec);
-						segmentStartPoints.push_back(carve::geom::VECTOR(
-							circle_points.at(0).x,
-							circle_points.at(0).y,
-							0));
-					}
-
-					return;
-				}
-
-				/**********************************************************************************************/
-				/*! \brief Calculates the angle on the circle of the trimming point.
-				* \param[in] circle				A pointer to data from c\ IfcCircle.
-				* \param[in] trimmingVector		The trimming of the curve as saved in IFC model
-				* \param[in] circle_center		Coordinates of the center of the circle.
-				* \param[in] circle_radius		Radius of the circle. 
-				* \return						Angle on the circle of the trimming point.
-				*/
-				double  calculateTrimmingPointOnCircle(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trimmingVector,
-					const carve::geom::vector<3> circle_center,
-					const double circle_radius) const throw(...)
-				{
-				
-					// Check for trimming point
-					if (trimmingVector.size() > 0) {
-						//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming point.";
-						auto first = std::find_if(trimmingVector.begin(), trimmingVector.end(), [](auto select) { return select->which() == 1; });
-						if (first != trimmingVector.end() && *first) {
-							//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming pomt as IfcParameterValue.";
-							typename IfcEntityTypesT::IfcParameterValue trim_par1 = (*first)->get<1>();
-							return trim_par1 * UnitConvert()->getAngleInRadianFactor();
-						}
-						else {
-							first = std::find_if(trimmingVector.begin(), trimmingVector.end(), [](auto select) { return select->which() == 0; });
-							if (first != trimmingVector.end() && (*first) != nullptr) {
-								//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming point as IfcCartesianPoint.";
-								try {
-									carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
-
-									return getAngleOnCircle(circle_center, circle_radius, trim_point);
-								}
-								catch (const oip::InconsistentModellingException& ex) {
-									throw oip::InconsistentModellingException(circle, ex.what());
-								}
-							}
-							else {
-								throw oip::InconsistentGeometryException(circle, "No trimming point found.");
-							}
-						}
-					}
-					else {
-						throw oip::InconsistentGeometryException(circle, "Trimming vector is empty!");
-					}
-				}
-
-
-				void convertIfcEllipse(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
-					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
-				) const throw(...)
-				{
-					// determine position
-					carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
-
-					if (ellipse->SemiAxis1) {
-						if (ellipse->SemiAxis2) {
-
-							double xRadius = ellipse->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
-							double yRadius = ellipse->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
-
-							double radiusMax = std::max(xRadius, yRadius);
-							double radiusMin = std::min(xRadius, yRadius);
-							int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin);
-							double deltaAngle = GeomSettings()->getAngleLength(radiusMin);
-
-							// todo: implement clipping
-							if (!trim1Vec.empty() || !trim2Vec.empty())
-								BLUE_LOG(warning) << ellipse->getErrorLog() << ": Trimming not supported";
-
-							std::vector<carve::geom::vector<3> > ellipse_points;
-							double angle = 0.0;
-							for (int i = 0; i < num_segments; ++i) {
-								ellipse_points.push_back(carve::geom::vector<3>(
-									carve::geom::VECTOR(
-										xRadius * cos(angle),
-										yRadius * sin(angle),
-										0)));
-								angle += deltaAngle;
-							}
-
-							// apply position
-							for (unsigned int i = 0; i < ellipse_points.size(); ++i) {
-								carve::geom::vector<3>& point = ellipse_points.at(i);
-								point = conic_position_matrix * point;
-							}
-							GeomUtils::appendPointsToCurve(ellipse_points, targetVec);
-							segmentStartPoints.push_back(ellipse_points.at(0));
-						}
-					}
-					return;
-				}
-
-				/**********************************************************************************************/
-				/*! \brief Calculates coordinates of the intersection point.
-				* \param[in] polycurve				A pointer to data from IfcIndexedPolyCurve.
-				* \param[out] targetVec				The tessellated line.
-				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
-				*/
-				void convertIfcIndexedPolyCurve(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcIndexedPolyCurve>& polycurve,
-					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
-				) const throw(...)
-				{
-					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4/ADD1/HTML/schema/ifcgeometryresource/lexical/ifcindexedpolycurve.htm
-					//	ENTITY IfcIndexedPolyCurve
-					//		SUBTYPE OF(IfcBoundedCurve);
-					//		Points: IfcCartesianPointList;
-					//		Segments: OPTIONAL LIST[1:? ] OF IfcSegmentIndexSelect;
-					//		SelfIntersect: OPTIONAL IfcBoolean;
-					//	WHERE
-					//		Consecutive : (SIZEOF(Segments) = 0) OR IfcConsecutiveSegments(Segments);
-					//	END_ENTITY;
-
-					// check input
-					if (polycurve.expired())
-						throw oip::ReferenceExpiredException(polycurve);
-
-					// get the points
-					std::vector<carve::geom::vector<3>> points = convertIfcCartesianPointList(polycurve->Points);
-
-					// are segments there?
-					if (polycurve->Segments)
-					{
-						try
-						{
-							std::vector<carve::geom::vector<3>> loop;
-							for (const auto& seg : polycurve->Segments.get())
-							{
-								std::vector<carve::geom::vector<3>> loop_intern = convertIfcSegmentIndexSelect(seg, points);
-								// skips same points
-								GeomUtils::appendPointsToCurve(loop_intern, loop);
-							}
-
-							// add the calculated points to the return values
-							GeomUtils::appendPointsToCurve(loop, targetVec);
-							segmentStartPoints.push_back(loop[0]);
-						}
-						catch (const oip::InconsistentModellingException& ex) {
-							throw oip::InconsistentModellingException(polycurve, ex.what());
-						}
-					}
-					else
-					{
-						// no segments are there -> it's just a polyline ..
-						GeomUtils::appendPointsToCurve(points, targetVec);
-						segmentStartPoints.push_back(points[0]);
-					}
-
-				}
-
-				/**********************************************************************************************/
-				/*! \brief Calculates coordinates of the intersection point.
-				* \param[in] segmentIndexSelect		A pointer to data from IfcSegmentIndexSelect.
-				* \param[in] points					The series of points passed from IfcIndexedPolyCurve.
-				* return							The series of points of the curve.
-				*/
-				std::vector<carve::geom::vector<3>> convertIfcSegmentIndexSelect(
-					const typename IfcEntityTypesT::IfcSegmentIndexSelect & segmentIndexSelect,
-					const std::vector<carve::geom::vector<3>>& points)const throw(...)
-				{
-					switch (segmentIndexSelect.which())
-					{
-					case 0:
-					{
-						// TYPE IfcArcIndex = LIST [3:3] OF IfcPositiveInteger;
-						return convertIfcArcIndex(segmentIndexSelect.get<0>(), points);
-					}
-					case 1:
-					{
-						// TYPE IfcLineIndex = LIST [2:?] OF IfcPositiveInteger;
-						return convertIfcLineIndex(segmentIndexSelect.get<1>(), points);
-					}
-					default:
-						throw oip::UnhandledException();
-					}
-				}
-				
-				/**********************************************************************************************/
-				/*! \brief Calculates coordinates of the intersection point.
-				* \param[in] lineSegment			A pointer to data from IfcLineIndex.
-				* \param[in] points					The series of points passed from IfcIndexedPolyCurve.
-				* return							The series of points of the curve.
-				*/
-				std::vector<carve::geom::vector<3>> convertIfcLineIndex(
-					const typename IfcEntityTypesT::IfcLineIndex &lineSegment,
-					const std::vector<carve::geom::vector<3>>& points) const throw(...)
-				{
-					if (lineSegment.size() < 2)
-						throw oip::InconsistentModellingException("The number of indices for one of IfcLineIndex is less than 2!");
-
-					std::vector<carve::geom::vector<3>> loop;
-					for (const auto& i : lineSegment)
-					{
-						loop.push_back(points[i - 1]); //EXPRESS count from 1, C++ from 0
-					}
-					return loop;
-				}
-
-				/**********************************************************************************************/
-				/*! \brief Calculates coordinates of the intersection point.
-				* \param[in] arcSegment				A pointer to data from IfcArcIndex.
-				* \param[in] points					The series of points passed from IfcIndexedPolyCurve.
-				* return							The series of points of the curve.
-				*/
-				std::vector<carve::geom::vector<3>> convertIfcArcIndex(
-					const typename IfcEntityTypesT::IfcArcIndex &arcSegment, 
-					const std::vector<carve::geom::vector<3>>& points) const throw(...)
-				{
-					if (arcSegment.size() != 3)
-						throw oip::InconsistentModellingException("The number of indices for one of IfcArcIndex is not 3!");
-
-					carve::geom::vector<3> arcStart = points[arcSegment[0] - 1];
-					carve::geom::vector<3> arcMid = points[arcSegment[1] - 1];
-					carve::geom::vector<3> arcEnd = points[arcSegment[2] - 1];
-					
-					//Converting a 3D to a 2D problem to then find the circle from three points on the plane.
-					// see https://math.stackexchange.com/questions/1379217/3-points-in-3d-space-to-find-the-center-of-an-arc-or-circle
-
-					//Start by finding the normal vector to the plane defined by the three points
-					//n=unitvector(A×B+B×C+C×A)
-					carve::geom::vector<3> normalVector = carve::geom::cross(arcStart, arcMid) + carve::geom::cross(arcMid, arcEnd) + carve::geom::cross(arcEnd, arcStart);
-					normalVector.normalize();
-					//u=(C−A)×n
-					carve::geom::vector<3> firstOrthogonalDirection = carve::geom::cross(arcEnd - arcStart, normalVector);
-					firstOrthogonalDirection.normalize();
-					//v=n×u
-					carve::geom::vector<3> secondOrthogonalDirection = carve::geom::cross(normalVector, firstOrthogonalDirection);
-					secondOrthogonalDirection.normalize();
-		
-					//Calculate distance of the plane to the origin
-					double distance = (normalVector.x * arcStart.x) + (normalVector.y * arcStart.y) + (normalVector.z * arcStart.z);
-
-					//Convert the problem into a 2D problem
-					carve::math::Matrix rotationMatrix = carve::math::Matrix(
-						firstOrthogonalDirection.x, secondOrthogonalDirection.x, 0., 0.,
-						firstOrthogonalDirection.y, secondOrthogonalDirection.y, 0., 0.,
-						firstOrthogonalDirection.z, secondOrthogonalDirection.z, 1., 0.,
-						0., 0., 0., 1.);
-
-					carve::geom::vector<2> arcStart2D = convert3Dto2D(rotationMatrix, arcStart);
-					carve::geom::vector<2> arcMid2D = convert3Dto2D(rotationMatrix, arcMid);
-					carve::geom::vector<2> arcEnd2D = convert3Dto2D(rotationMatrix, arcEnd);
-
-					//Calculating arc in 2D 
-					double yDeltaA = arcMid2D.y - arcStart2D.y;
-					double xDeltaA = arcMid2D.x - arcStart2D.x;
-					double yDeltaB = arcEnd2D.y - arcMid2D.y;
-					double xDeltaB = arcEnd2D.x - arcMid2D.x;
-
-					if (xDeltaA != 0. && xDeltaB != 0.) {
-						double aSlope = yDeltaA / xDeltaA;
-						double bSlope = yDeltaB / xDeltaB;
-
-						double centerOfCircleX = (aSlope*bSlope*(arcStart2D.y - arcEnd2D.y) + bSlope * (arcStart2D.x + arcMid2D.x)
-							- aSlope * (arcMid2D.x + arcEnd2D.x)) / (2. * (bSlope - aSlope));
-
-						double centerOfCircleY = -(centerOfCircleX - (arcStart2D.x + arcMid2D.x) * 0.5) / aSlope + (arcStart2D.y + arcMid2D.y) * 0.5;
-
-						carve::geom::vector<2> radiusVector = carve::geom::VECTOR(arcStart2D.x - centerOfCircleX, arcStart2D.y - centerOfCircleY);
-						double radius = radiusVector.length();
-
-						double theta1 = std::atan2(arcStart2D.y - centerOfCircleY, arcStart2D.x - centerOfCircleX);
-						double theta2 = std::atan2(arcEnd2D.y   - centerOfCircleY, arcEnd2D.x   - centerOfCircleX);
-
-						double opening_angle = (theta2 - theta1);
-
-						// correct for -2*PI <= angle <= 2*PI
-						if (opening_angle > 0) {
-							GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
-						}
-						else {
-							GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
-						}
-
-						int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(opening_angle));
-
-						std::vector<carve::geom::vector<2> > circle_points;
-						ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
-							circle_points, radius,
-							theta1, opening_angle,
-							centerOfCircleX, centerOfCircleY,
-							num_segments);
-
-						//std::vector<carve::geom::vector<3>> arcPoints;
-						std::vector<carve::geom::vector<3>> loop_intern;
-						loop_intern.push_back(arcStart);
-						for (int i = 1; i < circle_points.size(); i++) {
-							
-							loop_intern.push_back(carve::geom::VECTOR(
-								normalVector.x * distance + firstOrthogonalDirection.x * circle_points[i].x + secondOrthogonalDirection.x * circle_points[i].y,
-								normalVector.y * distance + firstOrthogonalDirection.y * circle_points[i].x + secondOrthogonalDirection.y * circle_points[i].y,
-								normalVector.z * distance + firstOrthogonalDirection.z * circle_points[i].x + secondOrthogonalDirection.z * circle_points[i].y));
-						}
-						return loop_intern;
-					}
-				}
-
-				/**********************************************************************************************/
-				/*! \brief Calculates coordinates of the intersection point.
-				* \param[in] conversionMatrix		A pointer to data from IfcIndexedPolyCurve.
-				* \param[in] vector3D				Vector in 3D
-				* return							Converted vector in 2D. 		
-				*/
-				carve::geom::vector<2> convert3Dto2D(const carve::math::Matrix&  conversionMatrix, const carve::geom::vector<3>& vector3D) const throw(...){
-					return carve::geom::VECTOR((conversionMatrix._11 * vector3D.x + conversionMatrix._12 * vector3D.y + conversionMatrix._13 * vector3D.z),
-						(conversionMatrix._21 * vector3D.x + conversionMatrix._22 * vector3D.y + conversionMatrix._23 * vector3D.z));
-				}
-
-
+				// (4/6) IfcOffsetCurve SUPTYPE of IfcCurve
 				void convertIfcOffsetCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve>& offset_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -1010,6 +1036,7 @@ namespace OpenInfraPlatform {
 					*/
 				}
 
+				// (5/6) IfcPcurve SUPTYPE of IfcCurve
 				void convertIfcPcurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPcurve>& pcurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -1022,6 +1049,7 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(pcurve);
 				}
 
+				// (6/6) IfcSurfaceCurve SUPTYPE of IfcCurve
 				void convertIfcSurfaceCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceCurve>& surface_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -1054,24 +1082,6 @@ namespace OpenInfraPlatform {
 					*/
 				}
 
-				/*! \brief Converts \c IfcPolyline to a series of points.
-				 *
-				 * \param[in] ifcpolyline			The \c IfcPolyline to be converted.
-				 *
-				 * \returns							The series of points.
-				 */
-				std::vector<carve::geom::vector<3>> convertIfcPolyline(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& ifcpolyline
-				) const throw(...)
-				{
-					// **************************************************************************************************************************
-					// https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcgeometryresource/lexical/ifcpolyline.htm
-					// **************************************************************************************************************************
-					if (ifcpolyline.expired())
-						throw oip::ReferenceExpiredException(ifcpolyline);
-
-					return convertIfcCartesianPointVector(ifcpolyline->Points);
-				}
 
 				/*! \brief Converts \c IfcLoop and its subtypes to a series of points.
 				*
