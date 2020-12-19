@@ -149,6 +149,26 @@ template <>
 OIP_EARLYBINDING_API_EXPRESS
 boost::logic::tribool ValueType<boost::logic::tribool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&);
 
+template class
+OIP_EARLYBINDING_API_EXPRESS
+ValueType<double>;
+
+template class
+OIP_EARLYBINDING_API_EXPRESS
+ValueType<int>;
+
+template class
+OIP_EARLYBINDING_API_EXPRESS
+ValueType<std::string>;
+
+template class
+OIP_EARLYBINDING_API_EXPRESS
+ValueType<bool>;
+
+template class
+OIP_EARLYBINDING_API_EXPRESS
+ValueType<boost::logic::tribool>;
+
 using REAL = ValueType<double>;
 using INTEGER = ValueType<int>;
 using STRING = ValueType<std::string>;
