@@ -49,12 +49,12 @@ public:
 	typedef T element_type;
 
 	ValueType() = default;
-	ValueType(const ValueType& other) : m_value(other.m_value) {};
-	ValueType(const T& value) : m_value(value) {};
+	ValueType(const ValueType& other) : m_value(other.m_value) {}
+	ValueType(const T& value) : m_value(value) {}
 
-	virtual ~ValueType() { };
+	virtual ~ValueType() { }
 
-	virtual const std::string getStepParameter() const override { return "unknown"; };
+	virtual const std::string getStepParameter() const override { return "unknown"; }
 
 	static T readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>& model = nullptr) {
 		if (value == "*") {
@@ -66,10 +66,10 @@ public:
 		}
 	};
 
-	virtual const std::string classname() const override { return typeid(T).name(); };
+	virtual const std::string classname() const override { return typeid(T).name(); }
 
 	virtual ValueType& operator=(const T& other) { m_value = other; return *this; }
-	virtual ValueType& operator=(const ValueType& other) { m_value = other.m_value; return *this; };
+	virtual ValueType& operator=(const ValueType& other) { m_value = other.m_value; return *this; }
 	//virtual ValueType& operator=(const Optional<ValueType>& optional) { m_value = optional.get_value_or(T()); return *this; }
 	
 	virtual operator T&() { return std::ref(m_value); }
