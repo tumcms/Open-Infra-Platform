@@ -34,8 +34,9 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-
-class visitor_getStepParameter
+class 
+OIP_EARLYBINDING_API_EXPRESS
+visitor_getStepParameter
 	: public boost::static_visitor<std::string>
 {
 public:
