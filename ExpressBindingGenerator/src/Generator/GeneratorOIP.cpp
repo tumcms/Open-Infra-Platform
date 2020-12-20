@@ -2517,6 +2517,8 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "\t"
 		<< "OpenInfraPlatform.ExpressLib" << std::endl;
 	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".TopNotRooted" << std::endl;
+	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Mid" << std::endl;
 	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
