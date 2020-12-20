@@ -37,10 +37,15 @@
 #		else // otherwise it is linked into as a DLL (all other projects)
 #			define OIP_EARLYBINDING_API_MID __declspec(dllimport)
 #		endif
-#		if defined (OIP_EARLYBINDING_API_TOP_ASEXPORT) // only defined with OpenInfraPlatform.IFC??.Top projects
-#			define OIP_EARLYBINDING_API_TOP __declspec(dllexport)
+#		if defined (OIP_EARLYBINDING_API_TOPROOTED_ASEXPORT) // only defined with OpenInfraPlatform.IFC??.Top projects
+#			define OIP_EARLYBINDING_API_TOPROOTED __declspec(dllexport)
 #		else // otherwise it is linked into as a DLL (all other projects)
-#			define OIP_EARLYBINDING_API_TOP __declspec(dllimport)
+#			define OIP_EARLYBINDING_API_TOPROOTED __declspec(dllimport)
+#		endif
+#		if defined (OIP_EARLYBINDING_API_TOPNOTROOTED_ASEXPORT) // only defined with OpenInfraPlatform.IFC??.Top projects
+#			define OIP_EARLYBINDING_API_TOPNOTROOTED __declspec(dllexport)
+#		else // otherwise it is linked into as a DLL (all other projects)
+#			define OIP_EARLYBINDING_API_TOPNOTROOTED __declspec(dllimport)
 #		endif
 #       if defined (OIP_EARLYBINDING_API_MAIN_ASEXPORT) // only defined with OpenInfraPlatform.Express.Lib project
 #           define OIP_EARLYBINDING_API_MAIN __declspec(dllexport)
@@ -52,7 +57,8 @@
 #		define OIP_EARLYBINDING_API_ZERO
 #		define OIP_EARLYBINDING_API_BOT 
 #		define OIP_EARLYBINDING_API_MID 
-#		define OIP_EARLYBINDING_API_TOP 
+#		define OIP_EARLYBINDING_API_TOPROOTED
+#		define OIP_EARLYBINDING_API_TOPNOTROOTED
 #		define OIP_EARLYBINDING_API_MAIN
 #	endif
 

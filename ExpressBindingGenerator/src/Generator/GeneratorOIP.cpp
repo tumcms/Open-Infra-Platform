@@ -1292,7 +1292,8 @@ void GeneratorOIP::preparePaths(const Schema& schema)
 	prepareFolder(sourceDirectory_, "zero");
 	prepareFolder(sourceDirectory_, "bot");
 	prepareFolder(sourceDirectory_, "mid");
-	prepareFolder(sourceDirectory_, "top");
+	prepareFolder(sourceDirectory_, "toprooted");
+	prepareFolder(sourceDirectory_, "topnotrooted");
 	readerPath_ = prepareFolder(sourceDirectory_, "reader");
 }
 
@@ -1408,6 +1409,26 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	// see https://www.cs.tufts.edu/comp/150GA/homeworks/hw1/Johnson%2075.PDF
 	// and http://normalisiert.de/code/java/elementaryCycles.zip
 
+	// does one inherit from other? (supports only entities)
+	std::function<bool(std::string, std::string)> inheritsFrom =
+		[&schema](const std::string& name, const std::string& from) -> bool
+	{
+		if (toUpper(name) == from) // one does not inherit from itself
+			return false;
+
+		if (schema.hasEntity(from) && schema.hasEntity(name))
+		{
+			auto entity = schema.getEntityByName(name);
+			while (entity.hasSupertype()) {
+				entity = schema.getEntityByName(entity.getSupertype());
+				if (entity.getName() == from)
+					return true;
+			}
+		}
+
+		return false;
+	};
+
 	// does one inherit from one that is connected?
 	std::function<bool(std::vector<std::string>)> inheritsFromConnected = 
 		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected]
@@ -1468,7 +1489,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	};
 
 	// set folder for entity (true = a folder was set, false = no change)
-	std::map<std::string, int> folders = { {"zero", 0}, {"bot", 1}, {"mid", 2}, {"top", 3} };
+	std::map<std::string, int> folders = { {"zero", 0}, {"bot", 1}, {"mid", 2}, {"toprooted", 3}, {"topnotrooted", 3} };
 	std::function<bool(std::string,std::string)> setFolder = 
 		[this, &folders]
 	(const std::string& name, const std::string& folder) -> bool
@@ -1492,7 +1513,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 
 	// determine the path for schemas' entities & types
 	std::function<void(std::string)> determinePath = 
-		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &getIncludes, &pointsToConnected, &hasConnectedIncludes, &hasIncludes, &getAttributes, &setFolder]
+		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &getIncludes, &pointsToConnected, &hasConnectedIncludes, &hasIncludes, &getAttributes, &setFolder, &inheritsFrom]
 		(const std::string& name)
 	{
 		// if in the loop with ifcproduct -> mid
@@ -1518,11 +1539,20 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 				}
 				else // otherwise determine the selects
 				{
+					auto typ = schema.getTypeByName(name);
 					// look up if an entity within the select would be in top
-					if(inheritsFromConnected(schema.getTypeByName(name).getTypes())
-						|| pointsToConnected(schema.getTypeByName(name).getTypes())
+					if(inheritsFromConnected(typ.getTypes())
+						|| pointsToConnected(typ.getTypes())
 						|| hasConnectedIncludes(name))
-						setFolder(name, "top");
+					{
+						for( const auto& el : typ.getTypes() )
+							if (inheritsFrom(el, "IfcRoot"))
+							{
+								setFolder(name, "toprooted");
+								return;
+							}
+						setFolder(name, "topnotrooted");
+					}
 					else
 						setFolder(name, hasIncludes(name) ? "bot" : "zero");
 					return;
@@ -1535,7 +1565,14 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 				if( inheritsFromConnected(parents)
 					|| pointsToConnected(getAttributes(name))
 					|| hasConnectedIncludes(name))
-					setFolder(name, "top");
+				{
+					if (inheritsFrom(name, "IfcRoot"))
+					{
+						setFolder(name, "toprooted");
+						return;
+					}
+					setFolder(name, "topnotrooted");
+				}
 				else
 					setFolder(name, hasIncludes(name) ? "bot" : "zero");
 				return;
@@ -2339,10 +2376,11 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << notice_cmake << std::endl;
 	file << std::endl; 
 
-	file << "add_subdirectory(Zero)" << std::endl;
-	file << "add_subdirectory(Bot)" << std::endl;
-	file << "add_subdirectory(Mid)" << std::endl;
-	file << "add_subdirectory(Top)" << std::endl;
+	file << "add_subdirectory(zero)" << std::endl;
+	file << "add_subdirectory(bot)" << std::endl;
+	file << "add_subdirectory(mid)" << std::endl;
+	file << "add_subdirectory(toprooted)" << std::endl;
+	file << "add_subdirectory(topnotrooted)" << std::endl;
 	file << std::endl;
 	file << std::endl;
 
@@ -2398,7 +2436,9 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "\t"
 		<< "OpenInfraPlatform.ExpressLib" << std::endl;
 	file << "\t"
-		<< "OpenInfraPlatform." + schema.getName() + ".Top" << std::endl;
+		<< "OpenInfraPlatform." + schema.getName() + ".TopRooted" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".TopNotRooted" << std::endl;
 	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Mid" << std::endl;
 	file << "\t"
@@ -2423,8 +2463,8 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "" << std::endl;
 	file.close();
 
-	// the top library (top)
-	filename = sourceDirectory_ + "/top/" + name;
+	// the top library, only rooted elements (toprooted)
+	filename = sourceDirectory_ + "/toprooted/" + name;
 	file.open(filename);
 	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
 
@@ -2434,7 +2474,7 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << std::endl;
 	file << "" << std::endl;
 
-	file << "project(OpenInfraPlatform." << schema.getName() << ".Top CXX)" << std::endl;
+	file << "project(OpenInfraPlatform." << schema.getName() << ".TopRooted CXX)" << std::endl;
 	file << "" << std::endl;
 	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;	
 	file << "" << std::endl;
@@ -2448,9 +2488,9 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "" << std::endl;
 
 	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-		<< "_top_Source         "
+		<< "_toprooted_Source         "
 		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
-	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_top_Source} PROPERTY GENERATED ON)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_toprooted_Source} PROPERTY GENERATED ON)" << std::endl;
 
 	file << "" << std::endl;
 
@@ -2460,20 +2500,20 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
 	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-		<< "\\\\top        FILES "
+		<< "\\\\toprooted        FILES "
 		"${OpenInfraPlatform_"
-		<< schema.getName() << "_top_Source})" << std::endl;
+		<< schema.getName() << "_toprooted_Source})" << std::endl;
 	
 	file << "" << std::endl;
 
-	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Top SHARED" << std::endl;
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".TopRooted SHARED" << std::endl;
 	file << "\t"
-		<< "${OpenInfraPlatform_" << schema.getName() << "_top_Source}" << std::endl;
+		<< "${OpenInfraPlatform_" << schema.getName() << "_toprooted_Source}" << std::endl;
 	file << ")" << std::endl;
 
 	file << "" << std::endl;
 
-	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Top PUBLIC" << std::endl;
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".TopRooted PUBLIC" << std::endl;
 	file << "\t"
 		<< "OpenInfraPlatform.ExpressLib" << std::endl;
 	file << "\t"
@@ -2483,13 +2523,83 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "\t"
 		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
 	file << ")" << std::endl;
-  file << "add_definitions(-DOIP_EARLYBINDING_API_TOP_ASEXPORT)" << std::endl;
+  file << "add_definitions(-DOIP_EARLYBINDING_API_TOPROOTED_ASEXPORT)" << std::endl;
 	
 	file << "" << std::endl;
 
-	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Top INTERFACE src/top)" << std::endl;
-	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".Top PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".TopRooted INTERFACE src/top)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".TopRooted PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
 	
+	file << "" << std::endl;
+	file.close();
+
+	// the top library, all not rooted elements (topnotrooted)
+	filename = sourceDirectory_ + "/topnotrooted/" + name;
+	file.open(filename);
+	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
+
+	file << license_cmake << std::endl;
+	file << std::endl;
+	file << notice_cmake << std::endl;
+	file << std::endl;
+	file << "" << std::endl;
+
+	file << "project(OpenInfraPlatform." << schema.getName() << ".TopNotRooted CXX)" << std::endl;
+	file << "" << std::endl;
+	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;
+	file << "" << std::endl;
+	file << "include_directories(" << std::endl;
+	file << "  src" << std::endl;
+	file << "  ${CMAKE_SOURCE_DIR}/EarlyBinding/src" << std::endl;
+	file << "  ${visit_struct_INCLUDE_DIR}" << std::endl;
+	file << "  ${Boost_INCLUDE_DIR}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_topnotrooted_Source         "
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_topnotrooted_Source} PROPERTY GENERATED ON)" << std::endl;
+
+	file << "" << std::endl;
+
+	//file << "file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source ${CMAKE_SOURCE_DIR}/EarlyBinding/src/EXPRESS/*.*)" << std::endl;
+
+	file << "" << std::endl;
+
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "\\\\topnotrooted        FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_topnotrooted_Source})" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".TopNotRooted SHARED" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_" << schema.getName() << "_topnotrooted_Source}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".TopNotRooted PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Mid" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
+	file << ")" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_API_TOPNOTROOTED_ASEXPORT)" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".TopNotRooted INTERFACE src/top)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".TopNotRooted PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+
 	file << "" << std::endl;
 	file.close();
 
