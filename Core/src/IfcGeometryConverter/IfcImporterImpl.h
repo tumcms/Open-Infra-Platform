@@ -23,23 +23,23 @@
 #include "BlueFramework/Core/Diagnostics/log.h"
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC2X3
-#include "EMTIFC2X3EntityTypes.h"
-#include "IFC2X3Entities.h"
+#include "EarlyBinding\IFC2X3\src\EMTIFC2X3EntityTypes.h"
+#include "EarlyBinding\IFC2X3\src\IFC2X3Entities.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4
-#include "EMTIFC4EntityTypes.h"
-#include "IFC4Entities.h"
+#include "EarlyBinding\IFC4\src\EMTIFC4EntityTypes.h"
+#include "EarlyBinding\IFC4\src\IFC4Entities.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-#include "EMTIFC4X1EntityTypes.h"
-#include "IFC4X1Entities.h"
+#include "EarlyBinding\IFC4X1\src\EMTIFC4X1EntityTypes.h"
+#include "EarlyBinding\IFC4X1\src\IFC4X1Entities.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-#include "EMTIFC4X3_RC1EntityTypes.h"
-#include "IFC4X3_RC1Entities.h"
+#include "EarlyBinding\IFC4X3_RC1\src\EMTIFC4X3_RC1EntityTypes.h"
+#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1Entities.h"
 #endif
 
 #include "PlacementConverterImpl.h"
