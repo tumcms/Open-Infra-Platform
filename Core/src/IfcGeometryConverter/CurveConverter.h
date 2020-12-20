@@ -336,7 +336,7 @@ namespace OpenInfraPlatform {
 				// (3/6) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
 				/**********************************************************************************************/
 				/*! \brief Calculates curve segments and appends them to the curve.
-				* \param[in] polycurve				A pointer to data from c\ IfcCompositeCurve.
+				* \param[in] polycurve				A pointer to data from \c IfcCompositeCurve.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
 				*/
@@ -357,7 +357,7 @@ namespace OpenInfraPlatform {
 				// (4/6) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve
 				/**********************************************************************************************/
 				/*! \brief Calculates coordinates of the intersection point.
-				* \param[in] polycurve				A pointer to data from IfcIndexedPolyCurve.
+				* \param[in] polycurve				A pointer to data from \c IfcIndexedPolyCurve.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
 				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
@@ -647,8 +647,6 @@ namespace OpenInfraPlatform {
 					// ABSTRACT SUPERTYPE of IfcCircle, IfcEllipse
 
 					// (1/2) IfcCircle SUBTYPE OF IfcConic
-					std::shared_ptr<typename IfcEntityTypesT::IfcCircle> circle =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCircle>(conic.lock());
 					if (conic.isOfType<typename IfcEntityTypesT::IfcCircle>()) 
 					{
 						return convertIfcCircle( conic.as<typename IfcEntityTypesT::IfcCircle>(),
@@ -837,7 +835,7 @@ namespace OpenInfraPlatform {
 
 							// todo: implement clipping
 							if (!trim1Vec.empty() || !trim2Vec.empty())
-								BLUE_LOG(warning) << ellipse->getErrorLog() << ": Trimming not supported";
+								throw oip::InconsistentModellingException(ellipse, "Trimming not supported");
 
 							std::vector<carve::geom::vector<3> > ellipse_points;
 							double angle = 0.0;
@@ -877,10 +875,9 @@ namespace OpenInfraPlatform {
 					// Get IfcLine attributes: line point and line direction. 
 					carve::geom::vector<3> line_origin = placementConverter->convertIfcCartesianPoint(line->Pnt);
 
-					std::shared_ptr<typename IfcEntityTypesT::IfcVector> line_vec = line->Dir.lock();
+					EXPRESSReference<typename IfcEntityTypesT::IfcVector> line_vec = line->Dir;
 					if (!line_vec) {
-						BLUE_LOG(error) << line->getErrorLog() << ": No direction specified";
-						return;
+						throw oip::InconsistentGeometryException(line, " No direction specified");
 					}
 					// Get IfcVector attributes: line orientation and magnitude. 
 
@@ -902,7 +899,7 @@ namespace OpenInfraPlatform {
 						}
 						else {
 							line_direction = carve::geom::VECTOR(direction_ratios[0],
-								direction_ratios[1], 0);
+								direction_ratios[1], 0.0);
 						}
 					}
 					line_direction.normalize();
@@ -1083,24 +1080,9 @@ namespace OpenInfraPlatform {
 				) const throw(...)
 				{
 					if (ifcloop.isOfType<typename IfcEntityTypesT::IfcPolyLoop>()) 
-					{						
+					{	
 						convertIfcCartesianPointVectorSkipDuplicates(ifcloop.as<typename IfcEntityTypesT::IfcPolyLoop>()->Polygon, loop);
-
-						// If first and last point have same coordinates, remove last point
-						while (loop.size() > 2) {
-							carve::geom3d::Vector& first = loop.front();
-							carve::geom3d::Vector& last = loop.back();
-
-							if (abs(first.x - last.x) < 0.00000001) {
-								if (abs(first.y - last.y) < 0.00000001) {
-									if (abs(first.z - last.z) < 0.00000001) {
-										loop.pop_back();
-										continue;
-									}
-								}
-							}
-							break;
-						}
+						convertIfcPolyLoop(loop);
 						return;
 					} // end if polyloop
 
@@ -1174,6 +1156,29 @@ namespace OpenInfraPlatform {
 						}
 					} // end if edge loop
 				} // end convertIfcLoop
+
+				void convertIfcPolyLoop(std::vector<carve::geom::vector<3>>& loop) const throw(...)
+				{
+					// If first and last point have same coordinates, remove last point
+					while (loop.size() > 2) {
+						carve::geom3d::Vector& first = loop.front();
+						carve::geom3d::Vector& last = loop.back();
+
+						if (abs(first.x - last.x) < 0.00000001) {
+							if (abs(first.y - last.y) < 0.00000001) {
+								if (abs(first.z - last.z) < 0.00000001) {
+									loop.pop_back();
+									continue;
+								}
+							}
+						}
+						break;
+					}
+				}
+
+
+
+
 
 				/*! \internal TODO refactor*/
 				void convertIfcEdge(
