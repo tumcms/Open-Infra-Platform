@@ -104,7 +104,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 			if (faceType == 3)
 			{
 				lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2];
-				for (int j = 0; j < 4; j++)
+				for (int j = 0; j < 3; j++)
 					indices.push_back(faceVector[j]);
 			}
 			//read quad
