@@ -76,20 +76,18 @@ You will need to install:
   * Select `https://osgeo4w-oslandia.com/` as a download site.
   * Select components to install:
 		
-		* Open *Commandline_Utilities*
-		* Find *proj-dev* package 
-		* Click on *skip* to refresh the line.
-		* Select binary (*Bin*) package (the left column).
+    * Open *Commandline_Utilities*
+    * Find *proj-dev* package 
+    * Click on *skip* to refresh the line.
+    * Select binary (*Bin*) package (the left column).
 		
-		![](./fig/PROJ_Installation_settings.png)
+    ![](./fig/PROJ_Installation_settings.png)
 
-		* Finish the installation.
+    * Finish the installation.
 
 8. **Doxygen**
-    *   Navigate to folder *external* within OpenInfraPlatform source folder. 
-    *   Execute:
-        * `GetDot.cmd`
-        * `GetDoxygen.cmd`
+	*  Download Doxygen Installer - find [here](http://doxygen.nl/files/doxygen-1.8.20-setup.exe).
+	*  Install Doxygen
 
 ## <a name="Setup"></a> Preparing VS solution 
 
