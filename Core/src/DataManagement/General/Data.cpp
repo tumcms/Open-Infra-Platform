@@ -47,6 +47,7 @@
 #include "IfcGeometryConverter\IfcPeekStepReader.h"
 #include "IfcGeometryConverter\IfcImporterImpl.h"
 #include "OffConverter\OffModel.h"
+#include "OffConverter\OffReader.h"
 #include "Exception\IfcPeekReaderException.h"
 
 #include <QtXml>
@@ -180,16 +181,10 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 	}	
 
 	else if (filetype == ".off") {
-		if (true) { //add condition
-			//auto offModel;
-			//addModel(offModel);
-			latestChangeFlag_ = ChangeFlag::OffGeometry;
-			return;
-		}
-		else
-		{
-
-		}
+		auto offModel = OpenInfraPlatform::Core::OffConverter::OffReader::readFile(filename);
+		addModel(offModel);
+		latestChangeFlag_ = ChangeFlag::OffGeometry;
+		return;
 	}
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
