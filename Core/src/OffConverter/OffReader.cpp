@@ -40,7 +40,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 
 	if (!offFile.is_open())
 	{
-		throw oip::OffReaderException("Could not open OFF file <" + filename + "in OffReader.>");
+		throw oip::OffReaderException("Could not open OFF file <" + filename + "> in OffReader.");
 	}
 
 	try
@@ -68,7 +68,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		int nrOfVertices, nrOfFaces, nrOfEdges;
 		nrOfVertices = lineData[0];
 		nrOfFaces = lineData[1];
-		nrOfEdges = lineData[2];
+		nrOfEdges = lineData[2]; //can be ignored
 
 		//create new OffModel
 		std::shared_ptr<OffModel> model = std::make_shared<OffModel>();
@@ -88,11 +88,49 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		}
 		model->addVertices(allVertices);
 
-		//read faces
+		//read faces (special case: after indices of face the color is given in RGB value -> to be considered later on)
 		std::vector<uint32_t> indices;
 		for (int i = 0; i < nrOfFaces; i++)
 		{
-			//... to be filled
+			//which type of face (triangle, quad, ...)
+			std::getline(offFile, line);
+			std::vector<uint32_t> faceVector;
+			std::stringstream lineStream(line);
+
+			int faceType;
+			lineStream >> faceType;
+
+			//read triangle 
+			if (faceType == 4)
+			{
+				lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2] >> faceVector[3];
+				for (int j = 0; j < 4; j++)
+					indices.push_back(faceVector[j]);
+			}
+			//read quad
+			else if (faceType == 5)
+			{
+				lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2] >> faceVector[3] >> faceVector[4];
+
+				//Convert quads into triangles
+				std::vector<uint32_t> faceVectorTriangles;
+				//first triangle
+				faceVectorTriangles.push_back(faceVector[0]);
+				faceVectorTriangles.push_back(faceVector[1]);
+				faceVectorTriangles.push_back(faceVector[2]);
+				//second triangle
+				faceVectorTriangles.push_back(faceVector[2]);
+				faceVectorTriangles.push_back(faceVector[3]);
+				faceVectorTriangles.push_back(faceVector[0]);
+
+				for (int j = 0; j < 6; j++)
+					indices.push_back(faceVectorTriangles[j]);
+			}
+			else
+			{
+				offFile.close();
+				throw std::exception("Files that include faces with more than 4 edges are not supported yet.");
+			}
 		}
 		model->addIndices(indices);
 
