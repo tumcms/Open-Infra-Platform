@@ -101,30 +101,26 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 			lineStream >> faceType;
 
 			//read triangle 
-			if (faceType == 4)
+			if (faceType == 3)
 			{
-				lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2] >> faceVector[3];
+				lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2];
 				for (int j = 0; j < 4; j++)
 					indices.push_back(faceVector[j]);
 			}
 			//read quad
-			else if (faceType == 5)
+			else if (faceType == 4)
 			{
-				lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2] >> faceVector[3] >> faceVector[4];
+				lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2] >> faceVector[3];
 
 				//Convert quads into triangles
-				std::vector<uint32_t> faceVectorTriangles;
 				//first triangle
-				faceVectorTriangles.push_back(faceVector[0]);
-				faceVectorTriangles.push_back(faceVector[1]);
-				faceVectorTriangles.push_back(faceVector[2]);
+				indices.push_back(faceVector[0]);
+				indices.push_back(faceVector[1]);
+				indices.push_back(faceVector[2]);
 				//second triangle
-				faceVectorTriangles.push_back(faceVector[2]);
-				faceVectorTriangles.push_back(faceVector[3]);
-				faceVectorTriangles.push_back(faceVector[0]);
-
-				for (int j = 0; j < 6; j++)
-					indices.push_back(faceVectorTriangles[j]);
+				indices.push_back(faceVector[2]);
+				indices.push_back(faceVector[3]);
+				indices.push_back(faceVector[0]);
 			}
 			else
 			{
@@ -142,38 +138,6 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		offFile.close();
 		throw std::exception("Error in Off file");
 	}
-}
-
-static bool insertTriangleIntoBuffers(const buw::Vector3d& vertexA,
-	const buw::Vector3d& vertexB,
-	const buw::Vector3d& vertexC,
-	std::vector<buw::Vector3d>& vertices,
-	std::vector<uint32_t>& indices)
-{
-	uint32_t indexOffset = vertices.size();
-
-	vertices.push_back(vertexA);
-	vertices.push_back(vertexB);
-	vertices.push_back(vertexC);
-
-	indices.push_back(indexOffset++);
-	indices.push_back(indexOffset++);
-	indices.push_back(indexOffset);
-
-	return true;
-}
-
-static bool insertQuadIntoBuffers(const buw::Vector3d& vertexA,
-	const buw::Vector3d& vertexB,
-	const buw::Vector3d& vertexC,
-	const buw::Vector3d& vertexD,
-	std::vector<buw::Vector3d>& vertices,
-	std::vector<uint32_t>& indices)
-{
-	insertTriangleIntoBuffers(vertexA, vertexB, vertexC, vertices, indices);
-	insertTriangleIntoBuffers(vertexA, vertexC, vertexD, vertices, indices);
-
-	return true;
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END
