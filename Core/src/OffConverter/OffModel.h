@@ -56,8 +56,8 @@ namespace OpenInfraPlatform
 			public:
 				void reset(); 
 
-				void addIndices(std::vector<uint32_t> indices);
-				void addVertices(std::vector<buw::Vector3d> vertex);
+				void addIndices(const std::vector<uint32_t>& indices);
+				void addVertices(const std::vector<buw::Vector3d>& vertex);
 				IndexedMeshDescription const &geometry() const { return geometry_; }
 
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------

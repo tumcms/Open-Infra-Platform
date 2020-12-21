@@ -24,14 +24,14 @@ void OpenInfraPlatform::Core::OffConverter::OffModel::reset()
 	geometry_.reset();
 }
 
-void OpenInfraPlatform::Core::OffConverter::OffModel::addVertices(std::vector<buw::Vector3d> vertices)
+void OpenInfraPlatform::Core::OffConverter::OffModel::addVertices(const std::vector<buw::Vector3d>& vertices)
 {
 	for (const auto& vertex : vertices)
 		geometry_.vertices.push_back(vertex);
 	geometry_.UpdateBBox();
 }
 
-void OpenInfraPlatform::Core::OffConverter::OffModel::addIndices(std::vector<uint32_t> indices)
+void OpenInfraPlatform::Core::OffConverter::OffModel::addIndices(const std::vector<uint32_t>& indices)
 {
 	for (const auto& index : indices)
 		geometry_.indices.push_back(index);
