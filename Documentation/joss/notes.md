@@ -91,7 +91,7 @@ There are a lot of possibilities of expansion and further development.
 Done:
 
 * [repository](https://github.com/tumcms/Open-Infra-Platform) 
-* [licence](../../Licence.txt)
+* [licence](../../License.txt)
 
 > * Make sure that the software complies with the JOSS review criteria. In particular, your software should be full-featured, well-documented, and contain procedures (such as automated tests) for checking correctness.
 
@@ -103,13 +103,13 @@ TODO.
 
 > * (Optional) create a metadata file describing your software and include it in your repository. We provide a script that automates the generation of this metadata.
 
-What? I don't get it (yet).
+What? We don't get it (yet).
 
 ## Review
 
 **Possible revieweres**
 
-Going through the list [here](https://joss.theoj.org/about#editorial_board), possible reviewers would be (name, reasons):
+Going through the list [here](https://joss.theoj.org/about#editorial_board), possible reviewers would be (handle: reasons):
 
 - Patrick Diehl (@diehlpk): C++, asynchronous and task-based programming 
 - Hugo Ledoux (@hugoledoux): GIS, 3D geoinformation, computational geometry 
