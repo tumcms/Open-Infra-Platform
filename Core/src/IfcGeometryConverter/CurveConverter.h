@@ -249,7 +249,9 @@ namespace OpenInfraPlatform {
 					// (1/6) IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
 					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcAlignmentCurve>())
 					{
-						return convertIfcAlignmentCurve(bounded_curve.as<typename IfcEntityTypesT::IfcAlignmentCurve>(), targetVec, segmentStartPoints);
+						return convertIfcAlignmentCurve(bounded_curve.as<typename IfcEntityTypesT::IfcAlignmentCurve>(),
+							targetVec, segmentStartPoints,
+							trim1Vec, trim2Vec, senseAgreement);
 					} // end if IfcAlignmentCurve
 
 
@@ -266,7 +268,9 @@ namespace OpenInfraPlatform {
 
 					// (3/6) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
 					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcCompositeCurve>()) {
-						return convertIfcCompositeCurve(bounded_curve.as<typename IfcEntityTypesT::IfcCompositeCurve>(), targetVec, segmentStartPoints);
+						return convertIfcCompositeCurve(bounded_curve.as<typename IfcEntityTypesT::IfcCompositeCurve>(),
+							targetVec, segmentStartPoints,
+							trim1Vec, trim2Vec, senseAgreement);
 					} // end if IfcCompositeCurve
 
 					// (4/6) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve
@@ -275,13 +279,16 @@ namespace OpenInfraPlatform {
 						return convertIfcIndexedPolyCurve(
 							bounded_curve.as<typename IfcEntityTypesT::IfcIndexedPolyCurve>(),
 							targetVec, segmentStartPoints,
-							trim1Vec, trim2Vec, senseAgreement
-						);
+							trim1Vec, trim2Vec, senseAgreement);
 					} // end if IfcIndexedPolyCurve
 
 					// (5/6) IfcPolyline SUBTYPE OF IfcBoundedCurve
 					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcPolyline>()) {
-						if (!bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>()->Points.empty()) {
+						if (bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>()->Points.empty()) {
+							throw oip::InconsistentModellingException(bounded_curve, "Points are empty!");
+						}
+						else
+						{
 							std::vector<carve::geom::vector<3>> loop = convertIfcPolyline(bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>());
 
 							segmentStartPoints.push_back(loop.at(0));
@@ -310,7 +317,11 @@ namespace OpenInfraPlatform {
 				*/
 				void convertIfcAlignmentCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcAlignmentCurve>& alignment_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints) const throw(...) 
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
 				{
 					// the stations at which a point of the tesselation has to be calcuated - to be converted and fill the targetVec
 					std::vector<double> stations = getStationsForTessellationOfIfcAlignmentCurve(alignment_curve);
@@ -342,7 +353,11 @@ namespace OpenInfraPlatform {
 				*/
 				void convertIfcCompositeCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCompositeCurve>& composite_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints) const throw(...)
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
 				{
 					for (auto &segment: composite_curve->Segments) {
 						std::vector<carve::geom::vector<3>> segment_vec;
