@@ -1177,9 +1177,11 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-
-
-				/*! \internal TODO refactor*/
+				/*! \brief Converts \c IfcEdge and adds it to the plolyline. 
+				* \param[in] ifcEdge				The \c IfcEdge to be converted.
+				* \param[in] objectPlacement		Coordinates of the object.
+				* \param[out] polyline_data			Infromation of the polyline. 
+				*/
 				void convertIfcEdge(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcEdge>& ifcEdge,
 					const carve::math::Matrix& objectPlacement,
@@ -1189,9 +1191,8 @@ namespace OpenInfraPlatform {
 					polyline_data->beginPolyline();
 
 					auto& vertex_start = ifcEdge->EdgeStart;
-					std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_start_point =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_start.lock());
-					if (vertex_start_point) {
+					if (vertex_start.isOfType<typename IfcEntityTypesT::IfcVertexPoint>()) {
+						auto vertex_start_point = vertex_start.as<typename IfcEntityTypesT::IfcVertexPoint>();
 						carve::geom::vector<3> point = placementConverter->convertIfcPoint(vertex_start_point->VertexGeometry);
 
 						polyline_data->addVertex(objectPlacement * point);
@@ -1199,9 +1200,8 @@ namespace OpenInfraPlatform {
 					}
 
 					auto& vertex_end = ifcEdge->EdgeEnd;
-					std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> vertex_end_point =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(vertex_end.lock());
-					if (vertex_end_point) {
+					if (vertex_end.isOfType<typename IfcEntityTypesT::IfcVertexPoint>()) {
+						auto vertex_end_point = vertex_end.as<typename IfcEntityTypesT::IfcVertexPoint>();
 						carve::geom::vector<3> point = placementConverter->convertIfcPoint(vertex_end_point->VertexGeometry);
 
 						polyline_data->addVertex(objectPlacement * point);
