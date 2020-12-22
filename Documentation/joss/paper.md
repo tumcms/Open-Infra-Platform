@@ -1,5 +1,5 @@
 
-Note to OIP developers: observe the [guidelines](https://joss.readthedocs.io/en/latest/submitting.html#what-should-my-paper-contain).
+Note to OIP developers: observe the [guidelines](https://joss.readthedocs.io/en/latest/submitting.html#what-should-my-paper-contain) and our [notes](./notes.md).
 
 Most important instructions:
 
