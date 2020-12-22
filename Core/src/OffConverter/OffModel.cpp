@@ -26,6 +26,7 @@ void OpenInfraPlatform::Core::OffConverter::OffModel::reset()
 
 void OpenInfraPlatform::Core::OffConverter::OffModel::addVertices(const std::vector<buw::Vector3d>& vertices)
 {
+	geometry_.vertices.reserve(vertices.size());
 	for (const auto& vertex : vertices)
 		geometry_.vertices.push_back(vertex);
 	geometry_.UpdateBBox();
@@ -33,6 +34,7 @@ void OpenInfraPlatform::Core::OffConverter::OffModel::addVertices(const std::vec
 
 void OpenInfraPlatform::Core::OffConverter::OffModel::addIndices(const std::vector<uint32_t>& indices)
 {
+	geometry_.indices.reserve(indices.size());
 	for (const auto& index : indices)
 		geometry_.indices.push_back(index);
 }

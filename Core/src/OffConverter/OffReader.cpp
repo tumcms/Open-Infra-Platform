@@ -17,6 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "OffReader.h"
 #include "../Exception/OffReaderException.h"
+#include "../Exception/UnhandledException.h"
 #include "namespace.h"
 
 #include <fstream>
@@ -125,7 +126,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 			else
 			{
 				offFile.close();
-				throw std::exception("Files that include faces with more than 4 edges are not supported yet.");
+				throw oip::UnhandledException("Files that include faces with more than 4 edges are not supported yet.");
 			}
 		}
 		model->addIndices(indices);
