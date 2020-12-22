@@ -1096,26 +1096,29 @@ namespace OpenInfraPlatform {
 				{
 					if (ifcloop.isOfType<typename IfcEntityTypesT::IfcPolyLoop>()) 
 					{	
-						convertIfcCartesianPointVectorSkipDuplicates(ifcloop.as<typename IfcEntityTypesT::IfcPolyLoop>()->Polygon, loop);
-						convertIfcPolyLoop(loop);
+						convertIfcPolyLoop(ifcloop.as<typename IfcEntityTypesT::IfcPolyLoop>(), loop);
 						return;
 					} // end if polyloop
 
-					if (ifcloop.isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
+					else if (ifcloop.isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
 					{
-
 						convertIfcEdgeLoop(ifcloop.as<typename IfcEntityTypesT::IfcEdgeLoop>(), loop);
 						return;
 					} // end if edge loop
 
-					throw oip::UnhandledException(ifcloop);
+					else {
+						throw oip::UnhandledException(ifcloop);
+					}
+					
 				} // end convertIfcLoop
 
 				/*! \brief Converts \c IfcPolyLoop to a series of points.
 				* \param[out] loop					The series of points.
 				*/
-				void convertIfcPolyLoop(std::vector<carve::geom::vector<3>>& loop) const throw(...)
+				void convertIfcPolyLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcPolyLoop>& polyLoop,
+					std::vector<carve::geom::vector<3>>& loop) const throw(...)
 				{
+					convertIfcCartesianPointVectorSkipDuplicates(polyLoop->Polygon, loop);
 					// If first and last point have same coordinates, remove last point
 					while (loop.size() > 2) {
 						carve::geom3d::Vector& first = loop.front();
@@ -1140,11 +1143,6 @@ namespace OpenInfraPlatform {
 				void convertIfcEdgeLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcEdgeLoop>& edgeLoop,
 					std::vector<carve::geom::vector<3>>& loop) const throw(...)
 				{
-					/*
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge>> edgeList;
-					edgeList.resize(edgeLoop->EdgeList.size());*/
-					
-
 					for (auto &orientedEdge : edgeLoop->EdgeList) {
 						// which are described by the type of its edge element object
 						EXPRESSReference<typename IfcEntityTypesT::IfcEdge> edgeElement = orientedEdge->EdgeElement;
