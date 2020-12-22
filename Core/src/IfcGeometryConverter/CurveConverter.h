@@ -1088,75 +1088,17 @@ namespace OpenInfraPlatform {
 
 					if (ifcloop.isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
 					{
-						std::shared_ptr<typename IfcEntityTypesT::IfcEdgeLoop> edgeLoop =
-							ifcloop.as<typename IfcEntityTypesT::IfcEdgeLoop>().lock();
 
-						std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge>> edgeList;
-						edgeList.resize(edgeLoop->EdgeList.size());
-						std::transform(
-							edgeLoop->EdgeList.begin(),
-							edgeLoop->EdgeList.end(),
-							edgeList.begin(),
-							[](auto &it) {return it.lock(); });
-
-						// go through every edge in the edge list
-						for (auto& it_edge = edgeList.begin(); it_edge != edgeList.end(); ++it_edge) {
-							// edge loop consists of many oriented edges
-							std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge> orientedEdge = (*it_edge);
-							// which are described by the type of its edge element object
-							std::shared_ptr<typename IfcEntityTypesT::IfcEdge>& edgeElement = orientedEdge->EdgeElement.lock();
-
-							std::shared_ptr<typename IfcEntityTypesT::IfcEdgeCurve> edgeCurve =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcEdgeCurve>(edgeElement);
-
-							if (edgeCurve) {
-								std::shared_ptr<typename IfcEntityTypesT::IfcCurve>& curveGeom = edgeCurve->EdgeGeometry.lock();
-								std::vector<carve::geom::vector<3>> segmentStartPoints;
-
-								convertIfcCurve(curveGeom, loop, segmentStartPoints);
-
-								continue;
-							}
-
-							std::shared_ptr<typename IfcEntityTypesT::IfcSubedge> subEdge =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSubedge>(edgeElement);
-
-							if (subEdge) {
-								std::cout << "ERROR\t| IfcSubedge not implemented" << std::endl;
-								BLUE_LOG(warning) << "Developer Warning: IfcSubedge not implemented.";
-								continue;
-							}
-
-							std::cout << "ERROR\t| Entity " << orientedEdge->classname() << " not handled" << std::endl;
-							BLUE_LOG(warning) << "Developer Warning: Entity " << orientedEdge->classname() << " not handled.";
-
-							// every edge consists of one start and end vertex
-							std::shared_ptr<typename IfcEntityTypesT::IfcVertex>& edgeStartVertex = edgeElement->EdgeStart.lock();
-							std::shared_ptr<typename IfcEntityTypesT::IfcVertexPoint> edgeStartVertexPoint =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcVertexPoint>(edgeStartVertex);
-
-							if (edgeStartVertexPoint)
-							{
-								if (edgeStartVertexPoint->VertexGeometry)
-								{
-									std::shared_ptr<typename IfcEntityTypesT::IfcPoint>& startPoint =
-										edgeStartVertexPoint->VertexGeometry.lock();
-									std::shared_ptr<typename IfcEntityTypesT::IfcCartesianPoint> ifcPoint =
-										std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCartesianPoint>(startPoint);
-									if (!ifcPoint)
-									{
-										// TODO: could be also  IfcPointOnCurve, IfcPointOnSurface
-										BLUE_LOG(warning) << "Developer Warning: Not yet implemented!";
-										continue;
-									}
-									// TODO: implement
-								}
-							}
-
-						}
+						convertIfcEdgeLoop(ifcloop.as<typename IfcEntityTypesT::IfcEdgeLoop>(), loop);
+						return;
 					} // end if edge loop
+
+					throw oip::UnhandledException(ifcloop);
 				} // end convertIfcLoop
 
+				/*! \brief Converts \c IfcPolyLoop to a series of points.
+				* \param[out] loop					The series of points.
+				*/
 				void convertIfcPolyLoop(std::vector<carve::geom::vector<3>>& loop) const throw(...)
 				{
 					// If first and last point have same coordinates, remove last point
@@ -1176,7 +1118,64 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				/*! \brief Converts \c IfcEdgeLoop to a series of points.
+				* \param[in] edgeLoop				The \c IfcEdgeLoop to be converted.
+				* \param[out] loop					The series of points.
+				*/
+				void convertIfcEdgeLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcEdgeLoop>& edgeLoop,
+					std::vector<carve::geom::vector<3>>& loop) const throw(...)
+				{
+					/*
+					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcOrientedEdge>> edgeList;
+					edgeList.resize(edgeLoop->EdgeList.size());*/
+					
 
+					for (auto &orientedEdge : edgeLoop->EdgeList) {
+						// which are described by the type of its edge element object
+						EXPRESSReference<typename IfcEntityTypesT::IfcEdge> edgeElement = orientedEdge->EdgeElement;
+
+						if (edgeElement.isOfType<typename IfcEntityTypesT::IfcEdgeCurve>()) {
+							auto edgeCurve = edgeElement.as<typename IfcEntityTypesT::IfcEdgeCurve>();
+							EXPRESSReference<typename IfcEntityTypesT::IfcCurve> curveGeom = edgeCurve->EdgeGeometry;
+							std::vector<carve::geom::vector<3>> segmentStartPoints;
+
+							convertIfcCurve(curveGeom, loop, segmentStartPoints);
+							continue;
+						}
+
+						if (edgeElement.isOfType<typename IfcEntityTypesT::IfcSubedge>()) {
+							auto subEdge = edgeElement.as<typename IfcEntityTypesT::IfcSubedge>();
+							// Not yet implemented!
+							throw oip::UnhandledException(edgeLoop);
+						}
+						/*
+						std::cout << "ERROR\t| Entity " << orientedEdge->classname() << " not handled" << std::endl;
+						BLUE_LOG(warning) << "Developer Warning: Entity " << orientedEdge->classname() << " not handled.";*/
+
+						// every edge consists of one start and end vertex
+						EXPRESSReference<typename IfcEntityTypesT::IfcVertex> edgeStartVertex = edgeElement->EdgeStart;
+
+						if (edgeStartVertex.isOfType<typename IfcEntityTypesT::IfcVertexPoint>())
+						{
+							auto edgeStartVertexPoint = edgeStartVertex.as<typename IfcEntityTypesT::IfcVertexPoint>();
+
+							if (edgeStartVertexPoint->VertexGeometry)
+							{
+								EXPRESSReference<typename IfcEntityTypesT::IfcPoint> startPoint = edgeStartVertexPoint->VertexGeometry;
+
+								if (!startPoint.isOfType<typename IfcEntityTypesT::IfcCartesianPoint>())
+								{
+									auto ifcPoint = startPoint.as<typename IfcEntityTypesT::IfcCartesianPoint>();
+									// TODO: could be also  IfcPointOnCurve, IfcPointOnSurface
+									// Not yet implemented!
+									throw oip::UnhandledException(edgeLoop);
+									continue;
+								}
+								// TODO: implement
+							}
+						}
+					}
+				}
 
 
 
