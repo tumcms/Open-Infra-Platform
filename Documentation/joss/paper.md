@@ -39,6 +39,16 @@ bibliography: paper.bib
 
 > TODO: A summary describing the high-level functionality and purpose of the software for a diverse, *non-specialist* audience.
 
+TUM OpenInfraPlatform (OIP) is a Software-as-a-Service providing an open source application for
+ viewing and analysis of different digital models used in the civil engineering field.
+
+OIP supports reading and visualization of:
+
+- Industry Foundation Classes (IFC) models as specified in ISO 16739
+- Point Cloud Data (PCD) models as supported by the Cloud Compare library
+
+Multiple models can be loaded at once and compared between each other.
+
 # Statement of Need
 
 > TODO: A clear Statement of Need that illustrates the research purpose of the software.
