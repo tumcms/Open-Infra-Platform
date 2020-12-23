@@ -57,7 +57,7 @@ class ExtrudedSolidTest : public VisualTest {
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 
 };
 
@@ -112,7 +112,7 @@ TEST_F(ExtrudedSolidTest, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	/* 
 	buw::storeImage(testPath("extruded-solid_front.png").string(), image_front);
 	buw::storeImage(testPath("extruded-solid_top.png").string(), image_top);
 	buw::storeImage(testPath("extruded-solid_bottom.png").string(), image_bottom);

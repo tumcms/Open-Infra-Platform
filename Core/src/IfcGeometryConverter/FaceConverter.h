@@ -853,7 +853,7 @@ namespace OpenInfraPlatform {
 						}
 
 					}
-					catch (std::exception e) // catch carve error if holes cannot be incorporated
+					catch (const carve::exception& e) // catch carve error if holes cannot be incorporated
 					{
 						throw oip::InconsistentGeometryException(face, "carve::triangulate::incorporateHolesIntoPolygon failed");
 					}
@@ -1159,24 +1159,83 @@ namespace OpenInfraPlatform {
 
 						auto& coordinatesIndices = faceSet->CoordIndex;
 						auto& pnIndices = faceSet->PnIndex; // optional
-															//auto& normals = faceSet->Normals; // TODO implement normals
+						
+						std::vector<int> flags;
+						if (tessItem.isOfType<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>())
+						{
+							auto tin = tessItem.as<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>();
+							flags.resize(tin->Flags.size());
+							std::transform(tin->Flags.begin(), tin->Flags.end(), flags.begin(), [](auto& it) { return (int)it; });
+						}
 
-															// read coordinates index list and create faces
+						// read coordinates index list and create faces
+						int i = 0;
 						for (auto& indices : coordinatesIndices)
 						{
 							if (indices.size() < 3)
 							{
 								throw oip::InconsistentModellingException(tessItem, "invalid size of coordIndex attribute.");
 							}
+							
+							// determine vertices' indices
+							size_t i0, i1, i2;
 
 							if (pnIndices)
-								polygon->addFace(pnIndices.get()[indices[0] - 1] - 1,
-									pnIndices.get()[indices[1] - 1] - 1,
-									pnIndices.get()[indices[2] - 1] - 1);
+							{
+								i0 = pnIndices.get()[indices[0] - 1] - 1;
+								i1 = pnIndices.get()[indices[1] - 1] - 1;
+								i2 = pnIndices.get()[indices[2] - 1] - 1;
+							}
 							else
-								polygon->addFace(indices[0] - 1,
-									indices[1] - 1,
-									indices[2] - 1);
+							{
+								i0 = indices[0] - 1;
+								i1 = indices[1] - 1;
+								i2 = indices[2] - 1;
+							}
+
+							// account for flags, if there
+							if (!flags.empty())
+							{
+								// skip void triangles
+								if (flags[i++] < 0)
+									continue;
+								// add break line
+								else
+								{
+									if (flags[i-1] & 1) // first flag set
+									{
+										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+										polylineData->beginPolyline();
+										polylineData->addVertex(polygon->getVertex(i0));
+										polylineData->addPolylineIndex(0);
+										polylineData->addVertex(polygon->getVertex(i1));
+										polylineData->addPolylineIndex(1);
+										itemData->polylines.push_back(polylineData);
+									}
+									if (flags[i-1] & 2) // second flag set
+									{
+										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+										polylineData->beginPolyline();
+										polylineData->addVertex(polygon->getVertex(i1));
+										polylineData->addPolylineIndex(0);
+										polylineData->addVertex(polygon->getVertex(i2));
+										polylineData->addPolylineIndex(1);
+										itemData->polylines.push_back(polylineData);
+									}
+									if (flags[i-1] & 4) // third flag set
+									{
+										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+										polylineData->beginPolyline();
+										polylineData->addVertex(polygon->getVertex(i0));
+										polylineData->addPolylineIndex(0);
+										polylineData->addVertex(polygon->getVertex(i2));
+										polylineData->addPolylineIndex(1);
+										itemData->polylines.push_back(polylineData);
+									}
+								}
+							}
+
+							polygon->addFace(i0, i1, i2);
 						}
 
 						itemData->open_or_closed_polyhedrons.push_back(polygon);

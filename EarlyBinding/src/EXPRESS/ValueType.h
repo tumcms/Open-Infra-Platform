@@ -145,7 +145,14 @@ bool ValueType<bool>::readStepData(const std::string &value, const std::shared_p
 	}
 };
 
-std::string ValueType<std::string>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { return (value); };
+std::string ValueType<std::string>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) { 
+	if (value.at(0) == '\'') {
+		return value.substr(1, value.length() - 2);
+	}
+	else {
+		return value;
+	}
+};
 
 boost::logic::tribool ValueType<boost::logic::tribool>::readStepData(const std::string &value, const std::shared_ptr<EXPRESSModel>&) {
 	std::string lower = boost::algorithm::to_lower_copy(value);
@@ -177,12 +184,12 @@ using NUMBER = ValueType<double>;
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 
-EMBED_INTO_OIP_NAMESPACE(REAL);
-EMBED_INTO_OIP_NAMESPACE(INTEGER);
-EMBED_INTO_OIP_NAMESPACE(STRING);
-EMBED_INTO_OIP_NAMESPACE(BOOLEAN);
-EMBED_INTO_OIP_NAMESPACE(LOGICAL);
-EMBED_INTO_OIP_NAMESPACE(BINARY);
-EMBED_INTO_OIP_NAMESPACE(NUMBER);
+EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(REAL);
+EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(INTEGER);
+EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(STRING);
+EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(BOOLEAN);
+EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(LOGICAL);
+EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(BINARY);
+EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(NUMBER);
 
 #endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSType_102447dd_302a_4c8f_bf0d_7515bbdcfc1c_h

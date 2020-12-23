@@ -50,7 +50,7 @@ public:
      * \param model
      * \note This also moves the camera to it's default position.
      */
-    void setModel(const std::shared_ptr<oip::IfcGeometryModel>& model);
+    void setModel(const std::shared_ptr<oip::IfcModel>& model);
 
     /*!
      * \brief Repaints and returns back buffer image.
@@ -60,14 +60,15 @@ public:
 
     /*!
      * \brief Set the viewing angle.
-     * \param direction
+     * \param direction The direction flag denoting the viewing angle.
+	 * \param fitViewToModel Should the model be fit to the view (true, default), or just the view rotated without changing the scale (false)?
      */
-    void setViewDirection(const buw::eViewDirection &direction);
+    void setViewDirection(const buw::eViewDirection &direction, const bool fitViewToModel = true);
 
 protected:
 
     /*!
-    * \brief Moves the camera such that it focuses on the model.
+    * \brief Moves the camera such that the whole model is to be seen.
     */
     void fitViewToModel() const;
 
@@ -106,7 +107,7 @@ private:
     buw::ReferenceCounted<BlueFramework::Rasterizer::ITexture2D> depthStencilMSAA_ = nullptr;
     buw::ReferenceCounted<BlueFramework::Rasterizer::IConstantBuffer> worldBuffer_ = nullptr;
     buw::ReferenceCounted<BlueFramework::Rasterizer::ITexture2D> backBuffer_ = nullptr;
-    buw::ReferenceCounted<oip::IfcGeometryModel> model_ = nullptr;
+    buw::ReferenceCounted<oip::IfcModel> model_ = nullptr;
 };
 
 #endif // IFCGEOMETRYMODELRENDERER_H

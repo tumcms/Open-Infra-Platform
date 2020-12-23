@@ -34,10 +34,6 @@ source_group(Core\\DataManagement\\General		FILES ${Core_DataManagement_General_
 source_group(Core\\IfcGeometryConverter			FILES ${Core_IfcGeometryConverter_Source})
 source_group(Core\\Exception					FILES ${Core_Exception_Source})
 
-set(PROJECT_INCLUDE_DIRS )
-
-include_directories(${PROJECT_INCLUDE_DIRS})		
-
 add_library(OpenInfraPlatform.Core STATIC
 	${Core_Source}
 	${Core_DataManagement_Source}
@@ -66,6 +62,8 @@ target_link_libraries(OpenInfraPlatform.Core PRIVATE
     carve
     eigen
 )
+
+target_link_libraries(OpenInfraPlatform.Core PUBLIC OpenInfraPlatform.Base)
 
 if(MODULES_POINT_CLOUD_PROCESSING)
 	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
