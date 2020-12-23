@@ -127,50 +127,79 @@ namespace OpenInfraPlatform {
 					const bool senseAgreement
 				) const throw(...)
 				{
-					// (1/6) IfcBoundedCurve SUBTYPE of IfcCurve
+					// (1/9) IfcBlossCurve SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcBlossCurve>())
+					{
+						return convertIfcBlossCurve(ifcCurve.as<typename IfcEntityTypesT::IfcBlossCurve>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+					}
+#endif
+
+					// (2/9) IfcBoundedCurve SUBTYPE of IfcCurve
 					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcBoundedCurve>())
 					{
 						return convertIfcBoundedCurve(ifcCurve.as<typename IfcEntityTypesT::IfcBoundedCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
 					}
+
+					// (3/9) IfcClothoid SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
+					{
+						return convertIfcClothoid(ifcCurve.as<typename IfcEntityTypesT::IfcClothoid>(), 
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+					}
+#endif
 					
-					// (2/6) IfcConic SUPTYPE of IfcCurve
+					// (4/9) IfcConic SUPTYPE of IfcCurve
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcConic>())
 					{
 						return convertIfcConic(ifcCurve.as<typename IfcEntityTypesT::IfcConic>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
 					}
-				
-					// (3/6) IfcLine SUPTYPE of IfcCurve
+
+					// (5/9) IfcLine SUPTYPE of IfcCurve
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
 					{
 						return convertIfcLine(ifcCurve.as<typename IfcEntityTypesT::IfcLine>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
 					}
-					
-					// (4/6) IfcOffsetCurve SUPTYPE of IfcCurve
+
+					// (6/9) IfcOffsetCurve SUPTYPE of IfcCurve
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcOffsetCurve>())
 					{
 						return convertIfcOffsetCurve(ifcCurve.as<typename IfcEntityTypesT::IfcOffsetCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
 					}
-					
-					// (5/6) IfcPcurve SUPTYPE of IfcCurve
+
+					// (7/9) IfcPcurve SUPTYPE of IfcCurve
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcPcurve>())
 					{
 						return convertIfcPcurve(ifcCurve.as<typename IfcEntityTypesT::IfcPcurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
 					}
-					
-					// (6/6) IfcSurfaceCurve SUPTYPE of IfcCurve
+
+					// (8/9) IfcSeriesParameterCurve SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcSeriesParameterCurve>())
+					{
+						return convertIfcSeriesParameterCurve(ifcCurve.as<typename IfcEntityTypesT::IfcSeriesParameterCurve>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+					}
+#endif
+
+					// (9/9) IfcSurfaceCurve SUPTYPE of IfcCurve
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcSurfaceCurve>())
 					{
 						return convertIfcSurfaceCurve(ifcCurve.as<typename IfcEntityTypesT::IfcSurfaceCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
 					}
-
-					// the rest we do not support
-					throw oip::UnhandledException(ifcCurve);
+					else 
+					{
+						// the rest we do not support
+						throw oip::UnhandledException(ifcCurve);
+					}
 				} // end convertIfcCurve (function)
 
 				/*! \brief Calls CurveConverterT::convertIfcCurve and converts the results to 2D.
@@ -226,6 +255,20 @@ namespace OpenInfraPlatform {
 					}
 				} //end convertIfcCurve2D
 
+				// (1/9) IfcBlossCurve SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+				void convertIfcBlossCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcBlossCurve>& blossCurve,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
+				{
+					throw oip::UnhandledException(blossCurve);
+				}
+#endif
+
 				/**********************************************************************************************/
 				/*! \brief Converts an \c IfcBoundedCurve to a tesselated curve.
 				* \param[in] polycurve				A pointer to data from \c IfcBoundedCurve.
@@ -235,7 +278,7 @@ namespace OpenInfraPlatform {
 				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
 				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
 				*/
-				// (1/6) IfcBoundedCurve SUBTYPE of IfcCurve
+				// (2/9) IfcBoundedCurve SUBTYPE of IfcCurve
 				void convertIfcBoundedCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve>& bounded_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -246,17 +289,19 @@ namespace OpenInfraPlatform {
 				) const throw(...)
 				{
 					//	ABSTRACT SUPERTYPE of IfcAlignmentCurve, IfcBsplineCurve, IfcCompositeCurve, IfcIndexedPolycurve, IfcPolyline, IfcIfcTrimmedCurve	//
-					// (1/6) IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined( OIP_MODULE_EARLYBINDING_IFC4X2) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+					// (1/8) IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
 					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcAlignmentCurve>())
 					{
 						return convertIfcAlignmentCurve(bounded_curve.as<typename IfcEntityTypesT::IfcAlignmentCurve>(),
 							targetVec, segmentStartPoints,
 							trim1Vec, trim2Vec, senseAgreement);
 					} // end if IfcAlignmentCurve
+#endif
 
-
-					// (2/6) IfcBSplineCurve SUBTYPE OF IfcBoundedCurve
-					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcBSplineCurve>()) {
+					// (2/8) IfcBSplineCurve SUBTYPE OF IfcBoundedCurve
+					if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcBSplineCurve>()) 
+					{
 						EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve> bspline_curve = bounded_curve.as<typename IfcEntityTypesT::IfcBSplineCurve>();
 						
 						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
@@ -266,14 +311,25 @@ namespace OpenInfraPlatform {
 						return;
 					} // end if IfcBSplineCurve
 
-					// (3/6) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
-					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcCompositeCurve>()) {
+					// (3/8) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
+					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcCompositeCurve>())
+					{
 						return convertIfcCompositeCurve(bounded_curve.as<typename IfcEntityTypesT::IfcCompositeCurve>(),
-							targetVec, segmentStartPoints,
+							targetVec, segmentStartPoints, 
 							trim1Vec, trim2Vec, senseAgreement);
 					} // end if IfcCompositeCurve
 
-					// (4/6) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve
+					// (4/8) IfcGradientCurve SUBTYPE of IfcBoundedCurve (exists starting IFC4x3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcGradientCurve>())
+					{
+						return convertIfcGradientCurve(bounded_curve.as<typename IfcEntityTypesT::IfcGradientCurve>(),
+							targetVec, segmentStartPoints, 
+							trim1Vec, trim2Vec, senseAgreement);
+					} // end if IfcGradientCurve
+#endif 
+
+					// (5/8) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve
 					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcIndexedPolyCurve>())
 					{
 						return convertIfcIndexedPolyCurve(
@@ -282,13 +338,13 @@ namespace OpenInfraPlatform {
 							trim1Vec, trim2Vec, senseAgreement);
 					} // end if IfcIndexedPolyCurve
 
-					// (5/6) IfcPolyline SUBTYPE OF IfcBoundedCurve
-					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcPolyline>()) {
+					// (6/8) IfcPolyline SUBTYPE OF IfcBoundedCurve
+					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcPolyline>()) 
+					{
 						if (bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>()->Points.empty()) {
 							throw oip::InconsistentModellingException(bounded_curve, "Points are empty!");
 						}
-						else
-						{
+						else {
 							std::vector<carve::geom::vector<3>> loop = convertIfcPolyline(bounded_curve.as<typename IfcEntityTypesT::IfcPolyline>());
 
 							segmentStartPoints.push_back(loop.at(0));
@@ -297,18 +353,30 @@ namespace OpenInfraPlatform {
 						return;
 					} // end if IfcPolyline
 
-					// (6/6) IfcTrimmedCurve SUBTYPE OF IfcBoundedCurve
-					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcTrimmedCurve>()) {
+					// (7/8) IfcSegmentedReferenceCurve SUBTYPE OF IfcBoundedCurve (exists starting IFC4x3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>())
+					{
+						return convertIfcGradientCurve(bounded_curve.as<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>(),
+							targetVec, segmentStartPoints,
+							trim1Vec, trim2Vec, senseAgreement);
+					} // end if IfcSegmentedReferenceCurve
+#endif 
+
+					// (8/8) IfcTrimmedCurve SUBTYPE OF IfcBoundedCurve
+					else if (bounded_curve.isOfType<typename IfcEntityTypesT::IfcTrimmedCurve>()) 
+					{
 						return convertIfcTrimmedCurve(bounded_curve.as<typename IfcEntityTypesT::IfcTrimmedCurve>(), targetVec, segmentStartPoints);
 					} // end if IfcTrimmedCurve
 					
-					else {
+					else 
+					{
 						// the rest we do not support
 						throw oip::UnhandledException( bounded_curve );
 					}
 				}
-
-				// (1/6) IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined( OIP_MODULE_EARLYBINDING_IFC4X2) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+				// (1/8) IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
 				/**********************************************************************************************/
 				/*! \brief Calculates the 3D point along a curve.
 				* \param[in] polycurve				A pointer to data from c\ IfcAlignmentCurve.
@@ -343,8 +411,8 @@ namespace OpenInfraPlatform {
 					placementConverter->convertBoundedCurveDistAlongToPoint3D(alignment_curve, stations.at(0), true, targetPoint3D, targetDirection3D);
 					segmentStartPoints.push_back(targetPoint3D);
 				}
-
-				// (3/6) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
+#endif
+				// (3/8) IfcCompositeCurve SUBTYPE OF IfcBoundedCurve
 				/**********************************************************************************************/
 				/*! \brief Calculates curve segments and appends them to the curve.
 				* \param[in] polycurve				A pointer to data from \c IfcCompositeCurve.
@@ -369,7 +437,21 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-				// (4/6) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve
+				// (4/8) IfcGradientCurve SUBTYPE of IfcBoundedCurve (exists starting IFC4x3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+				void convertIfcGradientCurve(EXPRESSReference<typename IfcEntityTypesT::IfcGradientCurve>& gradientCurve,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
+				{
+					throw oip::UnhandledException(gradientCurve);
+				}
+#endif 
+
+				// (5/8) IfcIndexedPolyCurve SUBTYPE OF IfcBoundedCurve
 				/**********************************************************************************************/
 				/*! \brief Calculates coordinates of the intersection point.
 				* \param[in] polycurve				A pointer to data from \c IfcIndexedPolyCurve.
@@ -613,9 +695,23 @@ namespace OpenInfraPlatform {
 					return convertIfcCartesianPointVector(ifcpolyline->Points);
 				}
 
-				// (6/6) IfcTrimmedCurve SUBTYPE OF IfcBoundedCurve
+				// (7/8) IfcSegmentedReferenceCurve SUBTYPE of IfcBoundedCurve(exists starting IFC4x3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+					void convertIfcSegmentedReferenceCurve(EXPRESSReference<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>& segmentedReferenceCurve,
+						std::vector<carve::geom::vector<3>>& targetVec,
+						std::vector<carve::geom::vector<3>>& segmentStartPoints,
+						const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+						const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+						const bool senseAgreement
+					) const throw(...)
+				{
+					throw oip::UnhandledException(segmentedReferenceCurve);
+				}
+#endif 
+
+				// (8/8) IfcTrimmedCurve SUBTYPE OF IfcBoundedCurve
 				/**********************************************************************************************/
-				/*! \brief Calculates trimming points of the curve. 
+				/*! \brief Calculates trimming points of the curve.
 				* \param[in] polycurve				A pointer to data from c\ IfcTrimmedCurve.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
@@ -626,7 +722,7 @@ namespace OpenInfraPlatform {
 				{
 					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> basis_curve = trimmed_curve->BasisCurve.lock();
 					std::vector<carve::geom::vector<3> > basis_curve_points;
-					
+
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curve_trim1_vec;
 					curve_trim1_vec.resize(trimmed_curve->Trim1.size());
 					std::transform(trimmed_curve->Trim1.begin(),
@@ -649,7 +745,21 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (2/6) IfcConic SUPTYPE of IfcCurve
+				// (3/9) IfcClothoid SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+				void convertIfcClothoid(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
+				{
+					throw oip::UnhandledException(clothoid);
+				}
+#endif
+
+				// (4/9) IfcConic SUPTYPE of IfcCurve
 				void convertIfcConic(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcConic>& conic,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -875,7 +985,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (3/6) IfcLine SUPTYPE of IfcCurve
+				// (5/9) IfcLine SUPTYPE of IfcCurve
 				void convertIfcLine(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLine>& line,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -963,7 +1073,7 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (4/6) IfcOffsetCurve SUPTYPE of IfcCurve
+				// (6/9) IfcOffsetCurve SUPTYPE of IfcCurve
 				void convertIfcOffsetCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve>& offset_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -1009,7 +1119,7 @@ namespace OpenInfraPlatform {
 					*/
 				}
 
-				// (5/6) IfcPcurve SUPTYPE of IfcCurve
+				// (7/9) IfcPcurve SUPTYPE of IfcCurve
 				void convertIfcPcurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPcurve>& pcurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -1022,7 +1132,22 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(pcurve);
 				}
 
-				// (6/6) IfcSurfaceCurve SUPTYPE of IfcCurve
+				// (8/9) IfcSeriesParameterCurve SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+				void convertIfcSeriesParameterCurve(const EXPRESSReference<typename IfcEntityTypesT::convertIfcSeriesParameterCurve>& seriesParameterCurve,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
+				) const throw(...)
+				{
+					throw oip::UnhandledException(pcurve);
+				}
+				
+#endif
+
+				// (9/9) IfcSurfaceCurve SUPTYPE of IfcCurve
 				void convertIfcSurfaceCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceCurve>& surface_curve,
 					std::vector<carve::geom::vector<3>>& targetVec,
