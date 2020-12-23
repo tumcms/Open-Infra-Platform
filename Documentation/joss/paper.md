@@ -22,7 +22,7 @@ authors:
     affiliation: 2
   - name: Julian Amann
     affiliation: 3
-  - name: Jonas Schlenger Urs
+  - name: Jonas Schlenger
     affiliation: 1
 affiliations:
  - name: Chair for Computational Modelling and Simulation, Technical University of Munich
