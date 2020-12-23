@@ -891,33 +891,9 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<3> line_origin = placementConverter->convertIfcCartesianPoint(line->Pnt);
 
 					EXPRESSReference<typename IfcEntityTypesT::IfcVector> line_vec = line->Dir;
-					if (!line_vec) {
-						throw oip::InconsistentGeometryException(line, " No direction specified");
-					}
 					// Get IfcVector attributes: line orientation and magnitude. 
-
 					// Orientation type IfcDirection
-					auto ifc_line_direction = line_vec->Orientation;
-
-					// Get IfcDirection attribute: direction ratios. 
-					std::vector<double> direction_ratios(ifc_line_direction->DirectionRatios.size());
-					for (int i = 0; i < direction_ratios.size(); ++i) {
-						direction_ratios[i] = ifc_line_direction->DirectionRatios[i];
-					}
-
-					carve::geom::vector<3> line_direction;
-					if (direction_ratios.size() > 1) {
-						if (direction_ratios.size() > 2) {
-							line_direction = carve::geom::VECTOR(direction_ratios[0],
-								direction_ratios[1],
-								direction_ratios[2]);
-						}
-						else {
-							line_direction = carve::geom::VECTOR(direction_ratios[0],
-								direction_ratios[1], 0.0);
-						}
-					}
-					line_direction.normalize();
+					carve::geom::vector<3> line_direction = placementConverter->convertIfcDirection(line_vec->Orientation);
 
 					// Magnitude type IfcLengthMeasure
 					double line_magnitude = line_vec->Magnitude * UnitConvert()->getLengthInMeterFactor();
