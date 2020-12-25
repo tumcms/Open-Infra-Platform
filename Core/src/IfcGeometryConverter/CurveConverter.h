@@ -1428,7 +1428,41 @@ namespace OpenInfraPlatform {
 					*/
 				}
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+				/*! \brief Converts \c IfcSegment and its subtypes to a series of points.
+				* \param[in] ifcloop				The \c IfcSegment to be converted.
+				* \param[out] loop					The series of points.
+				*/
+				void convertIfcSegment(const EXPRESSReference<typename IfcEntityTypesT::IfcSegment>& segment,
+					std::vector<carve::geom::vector<3>>& loop
+				) const throw(...)
+				{
+					throw oip::UnhandledException(segment);
+					/*
+					if (segment.isOfType<typename IfcEntityTypesT::IfcCurveSegment>())
+					{
+						return convertIfcCurveSegment(segment.as<typename IfcEntityTypesT::IfcCurveSegment>(), loop);
+					}
+					if  (segment.isOfType<typename IfcEntityTypesT::IfcCompositeCurveSegment>())
+					{
+						return IfcCompositeCurveSegment(segment.as<typename IfcEntityTypesT::IfcCompositeCurveSegment>(), loop);
+					}
+					*/
+				}
+#endif
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+				/*! \brief Converts \c IfcSegment and its subtypes to a series of points.
+				* \param[in] ifcloop				The \c IfcSegment to be converted.
+				* \param[out] loop					The series of points.
+				*/
+				void convertIfcCurveSegment(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveSegment>& curveSegment,
+					std::vector<carve::geom::vector<3>>& loop
+				) const throw(...)
+				{
+					throw oip::UnhandledException(curveSegment);
+				}
+#endif
 
 				/*! \brief Converts \c IfcLoop and its subtypes to a series of points.
 				* \param[in] ifcloop				The \c IfcLoop to be converted.
