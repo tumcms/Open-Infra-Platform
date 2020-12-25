@@ -845,7 +845,16 @@ namespace OpenInfraPlatform {
 				}
 #endif
 
-				// (4/9) IfcConic SUPTYPE of IfcCurve
+				// IfcConic SUPTYPE of IfcCurve
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcConic to a tesselated curve.
+				* \param[in] boundedCurve			A pointer to data from \c IfcConic.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				*/
 				void convertIfcConic(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcConic>& conic,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -855,16 +864,24 @@ namespace OpenInfraPlatform {
 					const bool senseAgreement
 				) const throw(...)
 				{
-					// ABSTRACT SUPERTYPE of IfcCircle, IfcEllipse
-
-					// (1/2) IfcCircle SUBTYPE OF IfcConic
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC2/HTML/schema/ifcgeometryresource/lexical/ifcconic.htm
+					//	ENTITY IfcConic
+					//		ABSTRACT SUPERTYPE OF(ONEOF
+					//			(IfcCircle,
+					//			IfcEllipse))
+					//		SUBTYPE OF(IfcCurve);
+					//		Position: IfcAxis2Placement;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+					// IfcCircle SUBTYPE OF IfcConic
 					if (conic.isOfType<typename IfcEntityTypesT::IfcCircle>()) 
 					{
 						return convertIfcCircle( conic.as<typename IfcEntityTypesT::IfcCircle>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
 					} // end if IfcCircle
 
-					// (2/2) IfcEllipse SUBTYPE OF IfcConic
+					// IfcEllipse SUBTYPE OF IfcConic
 					else if (conic.isOfType<typename IfcEntityTypesT::IfcEllipse>())
 					{
 						return convertIfcEllipse(conic.as<typename IfcEntityTypesT::IfcEllipse>(),
@@ -875,15 +892,15 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(conic);
 				}
 
-				// (1/2) IfcCircle SUBTYPE OF IfcConic
+				// IfcCircle SUBTYPE OF IfcConic
 				/**********************************************************************************************/
-				/*! \brief Calculates ponts of the circle curve.
+				/*! \brief Calculates points of the circle curve.
 				* \param[in] polycurve				A pointer to data from c\ IfcCircle.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
 				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
 				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcConic.
 				*/
 				void convertIfcCircle(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
@@ -894,6 +911,13 @@ namespace OpenInfraPlatform {
 					const bool senseAgreement
 				) const throw(...)
 				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC2/HTML/schema/ifcgeometryresource/lexical/ifccircle.htm
+					//	ENTITY IfcCircle
+					//		SUBTYPE OF(IfcConic);
+					//		Radius: IfcPositiveLengthMeasure;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
 					// determine position
 					carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(circle->Position);
 
@@ -910,8 +934,10 @@ namespace OpenInfraPlatform {
 						conic_position_matrix * carve::geom::VECTOR(0, 0, 0);
 
 					//Calculate an angle on the circle for trimming begin.
+					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
 					double start_angle = calculateTrimmingPointOnCircle(circle, trim1Vec, circle_center, circle_radius);
 					//Calculate an angle on the circle for trimming end.
+					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
 					double trim_angle2 = calculateTrimmingPointOnCircle(circle, trim2Vec, circle_center, circle_radius);
 
 					double opening_angle = 0.0;
@@ -1020,7 +1046,16 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-				// (2/2) IfcEllipse SUBTYPE OF IfcConic
+				// IfcEllipse SUBTYPE OF IfcConic
+				/**********************************************************************************************/
+				/*! \brief Calculates points of the ellipse curve.
+				* \param[in] polycurve				A pointer to data from c\ IfcEllipse.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcConic.
+				*/
 				void convertIfcEllipse(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -1030,6 +1065,14 @@ namespace OpenInfraPlatform {
 					const bool senseAgreement
 				) const throw(...)
 				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC2/HTML/schema/ifcgeometryresource/lexical/ifcellipse.htm
+					//	ENTITY IfcEllipse
+					//		SUBTYPE OF(IfcConic);
+					//			SemiAxis1: IfcPositiveLengthMeasure;
+					//			SemiAxis2: IfcPositiveLengthMeasure;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
 					// determine position
 					carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
 
@@ -1046,6 +1089,7 @@ namespace OpenInfraPlatform {
 
 							// todo: implement clipping
 							if (!trim1Vec.empty() || !trim2Vec.empty())
+								// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
 								throw oip::InconsistentModellingException(ellipse, "Trimming not supported");
 
 							std::vector<carve::geom::vector<3> > ellipse_points;
@@ -1071,7 +1115,16 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (5/9) IfcLine SUPTYPE of IfcCurve
+				// IfcLine SUPTYPE of IfcCurve
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcLine to a tesselated curve.
+				* \param[in] boundedCurve			A pointer to data from \c IfcLine.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				*/
 				void convertIfcLine(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLine>& line,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -1081,8 +1134,17 @@ namespace OpenInfraPlatform {
 					const bool senseAgreement
 				) const throw(...)
 				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC2/HTML/schema/ifcgeometryresource/lexical/ifcline.htm
+					//	ENTITY IfcLine
+					//		SUBTYPE OF(IfcCurve);
+					//			Pnt: IfcCartesianPoint;
+					//			Dir: IfcVector;
+					//		WHERE
+					//			SameDim : Dir.Dim = Pnt.Dim;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
 					// Part 1: Get information from IfcLine. 
-
 					// Get IfcLine attributes: line point and line direction. 
 					carve::geom::vector<3> line_origin = placementConverter->convertIfcCartesianPoint(line->Pnt);
 
@@ -1095,7 +1157,7 @@ namespace OpenInfraPlatform {
 					double line_magnitude = line_vec->Magnitude * UnitConvert()->getLengthInMeterFactor();
 
 					// Part 2: Trimming
-
+					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
 					// Check for trimming at beginning of line
 					double start_parameter = 0.0;
 					typename IfcEntityTypesT::IfcParameterValue trim_par1;
@@ -1159,9 +1221,21 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
-				// (6/9) IfcOffsetCurve SUPTYPE of IfcCurve
+				// IfcOffsetCurve SUPTYPE of IfcCurve
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcOffsetCurve to a tesselated curve.
+				* \param[in] boundedCurve			A pointer to data from \c IfcOffsetCurve.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				*
+				* \note The function is not implemented.
+				* \internal TODO.
+				*/
 				void convertIfcOffsetCurve(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve>& offset_curve,
+					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve>& offsetCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
@@ -1169,34 +1243,43 @@ namespace OpenInfraPlatform {
 					const bool senseAgreement
 				) const throw(...)
 				{
-					//	ABSTRACT SUPERTYPE OF IfcOffsetCurve2D, IfcOffsetCurve3D, IfcOffsetCurveByDistances										//
-
-					throw oip::UnhandledException(offset_curve);
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC2/HTML/schema/ifcgeometryresource/lexical/ifcoffsetcurve.htm
+					//	ENTITY IfcOffsetCurve
+					//		ABSTRACT SUPERTYPE OF(ONEOF
+					//			(IfcOffsetCurve2D,
+					//			IfcOffsetCurve3D,
+					//			IfcOffsetCurveByDistances))
+					//		SUBTYPE OF(IfcCurve);
+					//			BasisCurve: IfcCurve;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+					throw oip::UnhandledException(offsetCurve);
 					/*
-					// (1/3) IfcOffsetCurve2D SUBTYPE OF IfcOffsetCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve2D> offset_curve_2d =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve2D>(offset_curve);
-					if (offset_curve_2d) {
+					// IfcOffsetCurve2D SUBTYPE OF IfcOffsetCurve
+					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve2D> offsetCurve2D =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve2D>(offsetCurve);
+					if (offsetCurve2D) {
 #ifdef _DEBUG
 						std::cout << "Warning\t| IfcOffsetCurve2D not implemented" << std::endl;
 #endif
 						return;
 					}
 
-					// (2/3) IfcOffsetCurve3D SUBTYPE OF IfcOffsetCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve3D> offset_curve_3d =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve3D>(offset_curve);
-					if (offset_curve_3d) {
+					// IfcOffsetCurve3D SUBTYPE OF IfcOffsetCurve
+					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve3D> offsetCurve3D =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve3D>(offsetCurve);
+					if (offsetCurve3D) {
 #ifdef _DEBUG
 						std::cout << "Warning\t| IfcOffsetCurve3D not implemented" << std::endl;
 #endif
 						return;
 					}
 
-					// (3/3) IfcOffsetCurveByDistances SUBTYPE OF IfcOffsetCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurveByDistances> offset_curve_dist =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurveByDistances>(offset_curve);
-					if (offset_curve_dist) {
+					// IfcOffsetCurveByDistances SUBTYPE OF IfcOffsetCurve
+					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurveByDistances> offsetCurveDist =
+						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurveByDistances>(offsetCurve);
+					if (offsetCurveDist) {
 #ifdef _DEBUG
 						std::cout << "Warning\t| IfcOffsetCurveByDistances not implemented" << std::endl;
 #endif
@@ -1205,9 +1288,21 @@ namespace OpenInfraPlatform {
 					*/
 				}
 
-				// (7/9) IfcPcurve SUPTYPE of IfcCurve
+				// IfcPcurve SUPTYPE of IfcCurve
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcPcurve to a tesselated curve.
+				* \param[in] boundedCurve			A pointer to data from \c IfcPcurve.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				*
+				* \note The function is not implemented.
+				* \internal TODO.
+				*/
 				void convertIfcPcurve(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcPcurve>& pcurve,
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPcurve>& pCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
@@ -1215,7 +1310,7 @@ namespace OpenInfraPlatform {
 					const bool senseAgreement
 				) const throw(...)
 				{
-					throw oip::UnhandledException(pcurve);
+					throw oip::UnhandledException(pCurve);
 				}
 
 				// (8/9) IfcSeriesParameterCurve SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
@@ -1233,9 +1328,21 @@ namespace OpenInfraPlatform {
 				
 #endif
 
-				// (9/9) IfcSurfaceCurve SUPTYPE of IfcCurve
+				// IfcSurfaceCurve SUPTYPE of IfcCurve
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcSurfaceCurve to a tesselated curve.
+				* \param[in] boundedCurve			A pointer to data from \c IfcSurfaceCurve.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				*
+				* \note The function is not implemented.
+				* \internal TODO.
+				*/
 				void convertIfcSurfaceCurve(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceCurve>& surface_curve,
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceCurve>& surfaceCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
@@ -1245,21 +1352,21 @@ namespace OpenInfraPlatform {
 				{
 					//	ABSTRACT SUPERTYPE OF IfcIntersectionCurve, IfcSeamCurve																//
 
-					throw oip::UnhandledException(surface_curve);
+					throw oip::UnhandledException(surfaceCurve);
 
 					/*
-					// (1/2) IfcIntersectionCurve SUBTYPE OF IfcSurfaceCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcIntersectionCurve> intersection_curve =
+					// IfcIntersectionCurve SUBTYPE OF IfcSurfaceCurve
+					std::shared_ptr<typename IfcEntityTypesT::IfcIntersectionCurve> intersectionCurve =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcIntersectionCurve>(ifcCurve);
-					if (intersection_curve)
+					if (intersectionCurve)
 					{
 						// TO DO: implement
 					}
 
-					// (2/2) IfcSeamCurve SUBTYPE OF IfcSurfaceCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcSeamCurve> seam_curve =
+					// IfcSeamCurve SUBTYPE OF IfcSurfaceCurve
+					std::shared_ptr<typename IfcEntityTypesT::IfcSeamCurve> seamCurve =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSeamCurve>(ifcCurve);
-					if (seam_curve)
+					if (seamCurve)
 					{
 						// TO DO: implement
 					}
