@@ -9,7 +9,7 @@ Most important instructions:
 See [example](http://bit.ly/2x22gxT) and [a more complex example](https://joss.readthedocs.io/en/latest/submitting.html#example-paper-and-bibliography).
 
 ---
-title: 'TUM OpenInfraPlatform: open source package for simultaneous viewing and analysis of Industry Foundation Classes (IFC) data and Point Cloud Data (PCD) files'
+title: 'TUM OpenInfraPlatform: open source package for simultaneous viewing and analysis of Industry Foundation Classes (IFC) and Point Cloud Data (PCD) models'
 tags:
   - industry foundation classes (IFC)
   - point cloud data (PCD)
@@ -49,9 +49,13 @@ OIP supports reading and visualization of:
 
 Multiple models can be loaded at once and compared between each other.
 
+Additionally, OIP incorporates its own EXPRESS parser to automatically generate early-binding code for IFC [Hecht:2019:FBI].
+
 # Statement of Need
 
 > TODO: A clear Statement of Need that illustrates the research purpose of the software.
+
+[see Valero:2020:ISARC, Hecht:2019:FBI].
 
 # Research Projects
 
