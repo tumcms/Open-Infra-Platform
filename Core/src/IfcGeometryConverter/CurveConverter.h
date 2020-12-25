@@ -1440,14 +1440,12 @@ namespace OpenInfraPlatform {
 				{
 					if (ifcloop.isOfType<typename IfcEntityTypesT::IfcPolyLoop>()) 
 					{	
-						convertIfcPolyLoop(ifcloop.as<typename IfcEntityTypesT::IfcPolyLoop>(), loop);
-						return;
+						return convertIfcPolyLoop(ifcloop.as<typename IfcEntityTypesT::IfcPolyLoop>(), loop);
 					} // end if polyloop
 
 					else if (ifcloop.isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
 					{
-						convertIfcEdgeLoop(ifcloop.as<typename IfcEntityTypesT::IfcEdgeLoop>(), loop);
-						return;
+						return convertIfcEdgeLoop(ifcloop.as<typename IfcEntityTypesT::IfcEdgeLoop>(), loop);
 					} // end if edge loop
 
 					else {
@@ -1634,6 +1632,10 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				/*! \brief Converts \c IfcCartesianPointList to a series of points.
+				* \param[in] pointlist			The \c IfcCartesianPointList to be converted.
+				* \return						The series of points.
+				*/
 				std::vector<carve::geom::vector<3> > convertIfcCartesianPointList(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPointList>& pointlist
 				) const throw(...)
@@ -1681,14 +1683,16 @@ namespace OpenInfraPlatform {
 					return loop;
 				}
 
-
-				// \internal Doxycomment missing
+				/*! \brief Gets stations for \c IfcAlignmentCurve at which a point of the tesselation has to be calcuated. 
+				* \param[in] alignmentCurve			The \c IfcAlignmentCurve to be converted.
+				* \retrun							The series of stations at which a point of the tesselation has to be calcuated.
+				*/
 				std::vector<double> getStationsForTessellationOfIfcAlignmentCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcAlignmentCurve>& alignmentCurve
 				) const throw(...)
 				{
 					// IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
-					// the stations at which a point of the tesselation has to be calcuated
+					// Stations at which a point of the tesselation has to be calcuated
 					std::vector<double> stations;
 
 					// **************************************************************************************************************************** //
