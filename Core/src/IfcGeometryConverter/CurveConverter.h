@@ -387,12 +387,10 @@ namespace OpenInfraPlatform {
 							throw oip::InconsistentModellingException(boundedCurve, "Points are empty!");
 						}
 						else {
-							std::vector<carve::geom::vector<3>> loop = convertIfcPolyline(boundedCurve.as<typename IfcEntityTypesT::IfcPolyline>());
-
-							segmentStartPoints.push_back(loop.at(0));
-							targetVec.insert(targetVec.end(), loop.begin(), loop.end());
+							return convertIfcPolyline(boundedCurve.as<typename IfcEntityTypesT::IfcPolyline>(),
+								targetVec, segmentStartPoints,
+								trim1Vec, trim2Vec, senseAgreement);
 						}
-						return;
 					} // end if IfcPolyline
 
 					// IfcSegmentedReferenceCurve SUBTYPE OF IfcBoundedCurve (exists starting IFC4x3_RC2)
@@ -771,8 +769,13 @@ namespace OpenInfraPlatform {
 				 *
 				 * \returns							The series of points.
 				 */
-				std::vector<carve::geom::vector<3>> convertIfcPolyline(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& ifcpolyline
+				void convertIfcPolyline(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& polyline, 
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -784,10 +787,14 @@ namespace OpenInfraPlatform {
 					//		SameDim : SIZEOF(QUERY(Temp < *Points | Temp.Dim <> Points[1].Dim)) = 0;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					if (ifcpolyline.expired())
-						throw oip::ReferenceExpiredException(ifcpolyline);
+					if (polyline.expired())
+						throw oip::ReferenceExpiredException(polyline);
 
-					return convertIfcCartesianPointVector(ifcpolyline->Points);
+					std::vector<carve::geom::vector<3>> loop = convertIfcCartesianPointVector(polyline->Points);
+
+					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
+					segmentStartPoints.push_back(loop.at(0));
+					targetVec.insert(targetVec.end(), loop.begin(), loop.end());
 				}
 
 				// IfcSegmentedReferenceCurve SUBTYPE of IfcBoundedCurve(exists starting IFC4x3_RC2)
