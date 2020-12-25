@@ -1374,15 +1374,10 @@ namespace OpenInfraPlatform {
 				}
 
 
+
 				/*! \brief Converts \c IfcLoop and its subtypes to a series of points.
-				*
 				* \param[in] ifcloop				The \c IfcLoop to be converted.
 				* \param[out] loop					The series of points.
-				*
-				* \note The function disregards topological relationships.
-				* \note The function is not fully implemented.
-				*
-				* \internal TODO.
 				*/
 				void convertIfcLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& ifcloop,
 					std::vector<carve::geom::vector<3>>& loop
@@ -1407,6 +1402,7 @@ namespace OpenInfraPlatform {
 				} // end convertIfcLoop
 
 				/*! \brief Converts \c IfcPolyLoop to a series of points.
+				* \param[in] polyLoop				The \c IfcPolyLoop to be converted.
 				* \param[out] loop					The series of points.
 				*/
 				void convertIfcPolyLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcPolyLoop>& polyLoop,
@@ -1433,6 +1429,11 @@ namespace OpenInfraPlatform {
 				/*! \brief Converts \c IfcEdgeLoop to a series of points.
 				* \param[in] edgeLoop				The \c IfcEdgeLoop to be converted.
 				* \param[out] loop					The series of points.
+				*
+				* \note The function disregards topological relationships.
+				* \note The function is not fully implemented.
+				*
+				* \internal TODO.
 				*/
 				void convertIfcEdgeLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcEdgeLoop>& edgeLoop,
 					std::vector<carve::geom::vector<3>>& loop) const throw(...)
@@ -1628,7 +1629,7 @@ namespace OpenInfraPlatform {
 
 				// \internal Doxycomment missing
 				std::vector<double> getStationsForTessellationOfIfcAlignmentCurve(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcAlignmentCurve>& alignment_curve
+					const EXPRESSReference<typename IfcEntityTypesT::IfcAlignmentCurve>& alignmentCurve
 				) const throw(...)
 				{
 					// IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve
@@ -1637,10 +1638,10 @@ namespace OpenInfraPlatform {
 
 					// **************************************************************************************************************************** //
 					// Step 1: Get segment information from horizontal and vertical alignments.
-					std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal> horizontal = alignment_curve->Horizontal.lock();
+					std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal> horizontal = alignmentCurve->Horizontal.lock();
 
 					if (!horizontal)
-						throw oip::InconsistentModellingException(alignment_curve, "No IfcAlignment2DHorizontal");
+						throw oip::InconsistentModellingException(alignmentCurve, "No IfcAlignment2DHorizontal");
 
 					// StartDistAlong type IfcLengthMeasure [0:1]
 					double horStartDistAlong = horizontal->StartDistAlong.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
@@ -1652,10 +1653,10 @@ namespace OpenInfraPlatform {
 					// is it going to be only a horizontal alignment?
 					bool bOnlyHorizontal = false;
 					//std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVertical>
-					auto vertical = alignment_curve->Vertical;
+					auto vertical = alignmentCurve->Vertical;
 					if (!vertical) {
 						// there is no vertical alignment
-						BLUE_LOG(info) << "No IfcAlignment2DVertical in " << alignment_curve->getErrorLog();
+						BLUE_LOG(info) << "No IfcAlignment2DVertical in " << alignmentCurve->getErrorLog();
 						bOnlyHorizontal = true;
 					}
 					else
