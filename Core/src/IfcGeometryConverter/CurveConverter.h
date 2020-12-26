@@ -406,7 +406,9 @@ namespace OpenInfraPlatform {
 					// IfcTrimmedCurve SUBTYPE OF IfcBoundedCurve
 					else if (boundedCurve.isOfType<typename IfcEntityTypesT::IfcTrimmedCurve>()) 
 					{
-						return convertIfcTrimmedCurve(boundedCurve.as<typename IfcEntityTypesT::IfcTrimmedCurve>(), targetVec, segmentStartPoints);
+						return convertIfcTrimmedCurve(boundedCurve.as<typename IfcEntityTypesT::IfcTrimmedCurve>(), 
+							targetVec, segmentStartPoints,
+							trim1Vec, trim2Vec, senseAgreement);
 					} // end if IfcTrimmedCurve
 					
 					else 
@@ -450,6 +452,10 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<3> targetPoint3D;
 					carve::geom::vector<3> targetDirection3D;
 					std::vector<carve::geom::vector<3>> curve_points;
+
+					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
+					if (!trim1Vec.empty() || !trim2Vec.empty())
+						throw oip::InconsistentModellingException(alignmentCurve, "Trimming not supported");
 
 					// attach the curve points
 					for (auto& it_station : stations)
@@ -501,7 +507,11 @@ namespace OpenInfraPlatform {
 					//	END_ENTITY;
 					// **************************************************************************************************************************
 
-					for (auto &segment: composite_curve->Segments) {
+					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
+					if (!trim1Vec.empty() || !trim2Vec.empty())
+						throw oip::InconsistentModellingException(compositeCurve, "Trimming not supported");
+
+					for (auto &segment: compositeCurve->Segments) {
 						std::vector<carve::geom::vector<3>> segment_vec;
 
 						convertIfcCurve(segment->ParentCurve, segment_vec, segmentStartPoints);
@@ -573,6 +583,10 @@ namespace OpenInfraPlatform {
 
 					// get the points
 					std::vector<carve::geom::vector<3>> points = convertIfcCartesianPointList(polycurve->Points);
+
+					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
+					if (!trim1Vec.empty() || !trim2Vec.empty())
+						throw oip::InconsistentModellingException(polycurve, "Trimming not supported");
 
 					// are segments there?
 					if (polycurve->Segments)
@@ -859,6 +873,9 @@ namespace OpenInfraPlatform {
 					//			NoTrimOfBoundedCurves: NOT('IFC4X1.IFCBOUNDEDCURVE' IN TYPEOF(BasisCurve));
 					//	END_ENTITY;
 					// **************************************************************************************************************************
+					if (!trim1Vec.empty() || !trim2Vec.empty())
+						throw oip::InconsistentModellingException(polyline, "Trimming not supported");
+
 					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> basisCurve = trimmedCurve->BasisCurve.lock();
 					std::vector<carve::geom::vector<3> > basisCurvePoints;
 
