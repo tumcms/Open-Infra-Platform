@@ -643,7 +643,7 @@ bool GeomUtils::isPointOnLineSegment( double& target_lambda,
 * \param[in] terminalPointSeg2		Terminal point of the second intersecting segment.
 * \param[out] distToIntesection1	Distance from initialPointSeg1 to the segment intresection, which is calculated as section of the first segment. 
 * \param[out] distToIntesection2	Distance from initialPointSeg2 to the segment intresection, which is calculated as section of the second segment. 
-* \return							Returns a boolean statement, if lines are intersecting with each other. 
+* \return							Returns true, if lines are intersecting with each other. False otherwise.
 */
 bool LineToLineIntersectionHelper(const carve::geom::vector<2>& initialPointSeg1,
 									const carve::geom::vector<2>& terminalPointSeg1,
@@ -677,7 +677,7 @@ bool LineToLineIntersectionHelper(const carve::geom::vector<2>& initialPointSeg1
 * \param[in] initialPointSeg2		Initial point of the second intersecting segment, which describes the direction of the line.
 * \param[in] terminalPointSeg2		Terminal point of the second intersecting segment, which describes the direction of the line.
 * \param[out] intersectionPoint		Coordinates of the intersection point between first line segment and second line.
-* \return							Returns a boolean statement, if line segment has an interescection with other line. 
+* \return							Returns true, if lines are intersecting with each other. False otherwise.
 */
 bool GeomUtils::LineSegmentToLineIntersection(const carve::geom::vector<2>& initialPointSeg1,
 												const carve::geom::vector<2>& terminalPointSeg1, 
@@ -704,7 +704,7 @@ bool GeomUtils::LineSegmentToLineIntersection(const carve::geom::vector<2>& init
 * \param[in] initialPointSeg2		Initial point of the second intersecting segment, which describes the direction of the line.
 * \param[in] terminalPointSeg2		Terminal point of the second iintersecting segment, which describes the direction of the line.
 * \param[out] intersectionPoint		Coordinates of the intersection point between first line and second line.
-* \return							Returns a boolean statement, if line has an intersection with other line. 
+* \return							Returns true, if lines are intersecting with each other. False otherwise.
 */
 bool GeomUtils::LineSegmentToLineSegmentIntersection(const carve::geom::vector<2>& initialPointSeg1,
 														const carve::geom::vector<2>& terminalPointSeg1,
@@ -733,7 +733,7 @@ bool GeomUtils::LineSegmentToLineSegmentIntersection(const carve::geom::vector<2
 * \param[in] initialPointSeg2		Initial point of the second intersecting line.
 * \param[in] terminalPointSeg2		Terminal point of the second intersecting line.
 * \param[out] intersectionPoint		Coordinates of the intersection point between first line segment and second line segment.
-* \return							Returns a boolean statement, if line segment has an intersection with other line segment.
+* \return							Returns true, if lines are intersecting with each other. False otherwise.
 */
 bool GeomUtils::LineToLineIntersection(const carve::geom::vector<2>& initialPointSeg1,
 										const carve::geom::vector<2>& terminalPointSeg1,
