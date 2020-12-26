@@ -874,7 +874,7 @@ namespace OpenInfraPlatform {
 					//	END_ENTITY;
 					// **************************************************************************************************************************
 					if (!trim1Vec.empty() || !trim2Vec.empty())
-						throw oip::InconsistentModellingException(polyline, "Trimming not supported");
+						throw oip::InconsistentModellingException(trimmedCurve, "Trimming not supported");
 
 					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> basisCurve = trimmedCurve->BasisCurve.lock();
 					std::vector<carve::geom::vector<3> > basisCurvePoints;
