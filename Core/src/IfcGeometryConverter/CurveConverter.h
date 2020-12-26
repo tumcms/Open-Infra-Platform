@@ -1469,34 +1469,38 @@ namespace OpenInfraPlatform {
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
 				/*! \brief Converts \c IfcSegment and its subtypes to a series of points.
-				* \param[in] ifcloop				The \c IfcSegment to be converted.
-				* \param[out] loop					The series of points.
+				* \param[in] segment				The \c IfcSegment to be converted.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
 				*/
 				void convertIfcSegment(const EXPRESSReference<typename IfcEntityTypesT::IfcSegment>& segment,
-					std::vector<carve::geom::vector<3>>& loop
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
 					throw oip::UnhandledException(segment);
 					/*
 					if (segment.isOfType<typename IfcEntityTypesT::IfcCurveSegment>())
 					{
-						return convertIfcCurveSegment(segment.as<typename IfcEntityTypesT::IfcCurveSegment>(), loop);
+						return convertIfcCurveSegment(segment.as<typename IfcEntityTypesT::IfcCurveSegment>(), targetVec, segmentStartPoints);
 					}
 					if  (segment.isOfType<typename IfcEntityTypesT::IfcCompositeCurveSegment>())
 					{
-						return IfcCompositeCurveSegment(segment.as<typename IfcEntityTypesT::IfcCompositeCurveSegment>(), loop);
+						return IfcCompositeCurveSegment(segment.as<typename IfcEntityTypesT::IfcCompositeCurveSegment>(), targetVec, segmentStartPoints);
 					}
 					*/
 				}
 #endif
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
-				/*! \brief Converts \c IfcSegment and its subtypes to a series of points.
-				* \param[in] ifcloop				The \c IfcSegment to be converted.
-				* \param[out] loop					The series of points.
+				/*! \brief Converts \c IfcCurveSegment to a series of points and appends them to the curve.
+				* \param[in] curveSegment			The \c IfcCurveSegment to be converted.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
 				*/
 				void convertIfcCurveSegment(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveSegment>& curveSegment,
-					std::vector<carve::geom::vector<3>>& loop
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
 					throw oip::UnhandledException(curveSegment);
