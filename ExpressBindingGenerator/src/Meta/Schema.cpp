@@ -45,27 +45,26 @@ Entity& Schema::getEntityByIndex(size_t index) {
 }
 
 Entity Schema::getEntityByName(const std::string& name) const {
-	for (const auto ent : entities_) 
-		if (ent.getName() == name)
-			return ent;
+	const auto ent = std::find_if(entities_.begin(), entities_.end(), 
+		[&name](const auto& el) {return el.getName() == name;});
+	if( ent != entities_.end() )
+		return *ent;
 
 	throw std::runtime_error("Entity does not exist.");
 }
 
-Entity& Schema::getEntityByName(const std::string& name) {
-	for ( auto& ent : entities_)
-		if (ent.getName() == name)
-			return ent;
+Entity& Schema::getEntityByName(const std::string& name) {	
+	const auto ent = std::find_if(entities_.begin(), entities_.end(), 
+		[&name](const auto& el) {return el.getName() == name;});
+	if( ent != entities_.end() )
+		return *ent;
 
 	throw std::runtime_error("Entity does not exist.");
 }
 
-bool OpenInfraPlatform::ExpressBindingGenerator::Schema::hasEntity(const std::string& name) const {
-	for (const auto ent : entities_)
-		if (ent.getName() == name)
-			return true;
-
-	return false;
+bool Schema::hasEntity(const std::string& name) const {
+	return std::find_if(entities_.begin(), entities_.end(), 
+		[&name](const auto& el) {return el.getName() == name;}) != std::end(entities_);
 }
 
 std::vector<std::string> Schema::getSuperTypes(const Entity& entity) const {
@@ -197,27 +196,26 @@ bool Schema::isSelectType(const std::string& name) const {
 }
 
 Type Schema::getTypeByName(const std::string& name) const {
-	for (const auto& typ : types_)
-		if (typ.getName() == name)
-			return typ;
+	const auto typ = std::find_if(types_.begin(), types_.end(), 
+		[&name](const auto& el) {return el.getName() == name;});
+	if(typ != types_.end() )
+		return *typ;
 
 	throw std::runtime_error("Type does not exist.");
 }
 
 Type& Schema::getTypeByName(const std::string& name) {
-	for ( auto& typ : types_)
-		if (typ.getName() == name)
-			return typ;
+	const auto typ = std::find_if(types_.begin(), types_.end(),
+		[&name](const auto& el) {return el.getName() == name;});
+	if(typ != types_.end() )
+		return *typ;
 
 	throw std::runtime_error("Type does not exist.");
 }
 
 bool Schema::hasType(const std::string& name) const {
-	for (const auto typ : types_)
-		if (typ.getName() == name)
-			return true;
-
-	return false;
+	return std::find_if(types_.begin(), types_.end(), 
+		[&name](const auto& el) {return el.getName() == name;}) != std::end(types_);
 }
 
 std::vector<std::string> Schema::getAllEntityAttributesNames(const Entity& entity, const bool includingInverse) const {
@@ -251,7 +249,7 @@ std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity
 
 const bool Schema::isAbstract(const Entity & entity) const
 {
-	return getAllEntityAttributes(entity, false).size() == 0;
+	return getAllEntityAttributes(entity, false).empty();
 }
 
 void Schema::linkInverses()

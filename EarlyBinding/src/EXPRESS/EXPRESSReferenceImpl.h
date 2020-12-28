@@ -17,8 +17,8 @@
 */
 
 #pragma once
-#ifndef OpenInfraPlatform_EarlyBinding_EXPRESSOptional_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_i
-#define OpenInfraPlatform_EarlyBinding_EXPRESSOptional_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_i
+#ifndef OpenInfraPlatform_EarlyBinding_EXPRESSReferenceImpl_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_i
+#define OpenInfraPlatform_EarlyBinding_EXPRESSReferenceImpl_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_i
 
 #include "EXPRESSReference.h"
 
@@ -52,4 +52,4 @@ template <typename T> const std::string EXPRESSReference<T>::getErrorLog() const
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 
-#endif OpenInfraPlatform_EarlyBinding_EXPRESSOptional_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_i
+#endif OpenInfraPlatform_EarlyBinding_EXPRESSReferenceImpl_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_i

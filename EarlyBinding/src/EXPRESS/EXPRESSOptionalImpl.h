@@ -17,8 +17,8 @@
 */
 
 #pragma once
-#ifndef OpenInfraPlatform_EarlyBinding_EXPRESSOptional_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_g
-#define OpenInfraPlatform_EarlyBinding_EXPRESSOptional_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_g
+#ifndef OpenInfraPlatform_EarlyBinding_EXPRESSOptionalImpl_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_g
+#define OpenInfraPlatform_EarlyBinding_EXPRESSOptionalImpl_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_g
 
 #include "EXPRESSOptional.h"
 
@@ -63,4 +63,4 @@ template <typename T> EXPRESSOptional<T> EXPRESSOptional<T>::readStepData(const 
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 
-#endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSOptional_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_g
+#endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSOptionalImpl_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_g
