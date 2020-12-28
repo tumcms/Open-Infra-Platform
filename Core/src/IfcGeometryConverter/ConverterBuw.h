@@ -264,12 +264,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
 					{
-						std::shared_ptr<carve::mesh::MeshSet<3>> meshSet(carve::meshFromPolyhedron(polyhedron, -1));
-						bool ret = false;
-						for(const auto& mesh : meshSet->meshes) {
-							ret |= insertMeshIntoBuffers(product, mesh, vertices, indices);
-						}
-						return ret;
+						return insertMeshSetIntoBuffers(product, carve::meshFromPolyhedron(polyhedron, -1), vertices, indices);
 					}
 
 					static bool insertPolylineIntoBuffers(const std::shared_ptr<carve::input::PolylineSetData> polylineData,
