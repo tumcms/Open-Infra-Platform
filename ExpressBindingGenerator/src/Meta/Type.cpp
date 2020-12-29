@@ -225,6 +225,7 @@ std::string Type::getContainerTypeName() const
 		case eType::List: return "LIST";
 		case eType::Array: return "ARRAY";
 		case eType::Set: return "SET";
+		default:	return "BAG";
 		}
 	}
 	else {
