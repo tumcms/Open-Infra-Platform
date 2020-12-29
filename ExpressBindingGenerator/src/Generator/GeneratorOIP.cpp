@@ -25,7 +25,13 @@
 //#include <Windows.h>
 #include <algorithm>
 #include <cassert>
+
+#if _MSVC_LANG < 201700L
 #include <experimental/filesystem>
+#else
+#include <filesystem>
+#endif
+
 #include <fstream>
 #include <map>
 #include <set>
@@ -40,7 +46,12 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_BEGIN
 
+
+#if _MSVC_LANG < 201700L
 namespace fs = std::experimental::filesystem;
+#else
+namespace fs = std::filesystem;
+#endif
 
 
 std::string license =
