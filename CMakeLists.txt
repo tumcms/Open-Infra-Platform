@@ -22,7 +22,7 @@ cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0074 NEW)
 cmake_policy(SET CMP0071 OLD)
 
-project(OpenInfraPlatform)
+project(OpenInfraPlatform CXX)
 
 message(STATUS "Please refer to ./Documentation/markdown/CMakeOptions.md for documentation on all options that can be selected in the configuration.")
 
@@ -34,7 +34,6 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
 set(CMAKE_AUTOMOC ON)
 
 # Changed C++ standard to 14 in revision 534
-set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_DEBUG_POSTFIX "d")
 include(ProjectVersion)
 find_package(Git REQUIRED)
@@ -72,11 +71,17 @@ endif()
 if(MSVC_VERSION EQUAL 1900)
 	set(MSVC_VERSION_STRING "vs2015")
 	set(MSVC_VERSION_YEAR "2015")
+	set(CMAKE_CXX_STANDARD 14)
 elseif(MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS_EQUAL 1919)
 	set(MSVC_VERSION_STRING "vs2017")
 	set(MSVC_VERSION_YEAR "2017")
+	set(CMAKE_CXX_STANDARD 14)
+elseif(MSVC_VERSION GREATER_EQUAL 1920 AND MSVC_VERSION LESS_EQUAL 1929)
+	set(MSVC_VERSION_STRING "vs2019")
+	set(MSVC_VERSION_YEAR "2019")
+	set(CMAKE_CXX_STANDARD 20)
 else()
-	message("Please switch to Visual Studio 14 2015 or Visual Studio 15 2017.")
+	message("Please switch to Visual Studio 14 2015, Visual Studio 15 2017 or Visual Studio 16 2019")
 	return()
 endif()
 
@@ -123,9 +128,10 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE       ${CMAKE_BINARY_DIR}/Release)
 # Add preprocessor directives and compiler flags.
 #------------------------------------------------------------------------------
 
-add_definitions(-D_UNICODE 			# Unicode rules
-				#-DQT_NO_KEYWORDS 	# No qt keywords
-				-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
+add_compile_definitions(
+	_UNICODE 			# Unicode rules
+	_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
+	 EIGEN_MPL2_ONLY # Use only MP2 licenced code of Eigen
 ) # -DNOMINMAX does not work because GDI+ needs these macros
 
 if (WIN32)
@@ -141,7 +147,7 @@ set(Boost_USE_STATIC_LIBS ON)
 
 # As of revision 530, boost 1.65.1 required.
 set(BOOST_ROOT ${OIP_Boost_DIR})
-find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
+find_package(Boost 1.65.1 COMPONENTS system filesystem REQUIRED)
 
 if(Boost_FOUND)
 	set(Boost_DIR ${Boost_INCLUDE_DIR})
@@ -153,11 +159,7 @@ FetchContent_Declare(
 	GIT_TAG 3.3.7
 )
   
-FetchContent_GetProperties(eigen)
-if(NOT eigen_POPULATED)
-	FetchContent_Populate(eigen)
-	add_subdirectory(${eigen_SOURCE_DIR} ${eigen_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
+FetchContent_MakeAvailable(eigen)
 
 
 find_package(Oklabi REQUIRED)
@@ -236,7 +238,7 @@ endif()
 FetchContent_Declare(
 	blue_framework
 	GIT_REPOSITORY https://github.com/tumcms/Blue-Framework.git
-	GIT_TAG a0.0.9
+	GIT_TAG a0.0.10
 )
   
 FetchContent_GetProperties(blue_framework)
