@@ -26,6 +26,9 @@
 #include "EXPRESS/EXPRESSReference.h"
 #include "BlueFramework/Core/Diagnostics/log.h"
 
+#include "Exception/InconsistentModelingException.h"
+#include "Exception/UnhandledException.h"
+
 namespace OpenInfraPlatform 
 {
 	namespace Core 
@@ -63,8 +66,8 @@ namespace OpenInfraPlatform
 					// remember units in context
 					m_unit_assignment = project->UnitsInContext.get().lock();
 
-					m_length_unit_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_LENGTHUNIT ); 
-					m_plane_angle_factor = getFactorFor( typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_PLANEANGLEUNIT ); 
+					m_length_unit_factor = getFactorFor( IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_LENGTHUNIT ); 
+					m_plane_angle_factor = getFactorFor( IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_PLANEANGLEUNIT ); 
 				}
 
 				/*! \brief Gets the factor for specified unit type.
@@ -254,52 +257,52 @@ namespace OpenInfraPlatform
 						{
 							switch (SIUnit->Prefix)
 							{
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_EXA:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_EXA:
 							    dPrefixFactor = 1E18;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PETA:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PETA:
 							    dPrefixFactor = 1E15;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_TERA:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_TERA:
 							    dPrefixFactor = 1E12;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_GIGA:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_GIGA:
 							    dPrefixFactor = 1E9;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MEGA:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MEGA:
 							    dPrefixFactor = 1E6;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_KILO:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_KILO:
 							    dPrefixFactor = 1E3;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_HECTO:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_HECTO:
 							    dPrefixFactor = 1E2;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECA:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECA:
 							    dPrefixFactor = 1E1;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECI:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_DECI:
 							    dPrefixFactor = 1E-1;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_CENTI:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_CENTI:
 							    dPrefixFactor = 1E-2;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MILLI:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MILLI:
 							    dPrefixFactor = 1E-3;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MICRO:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_MICRO:
 							    dPrefixFactor = 1E-6;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_NANO:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_NANO:
 							    dPrefixFactor = 1E-9;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PICO:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_PICO:
 							    dPrefixFactor = 1E-12;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_FEMTO:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_FEMTO:
 							    dPrefixFactor = 1E-15;
 							    break;
-							case typename IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_ATTO:
+							case IfcEntityTypesT::IfcSIPrefix::ENUM::ENUM_ATTO:
 							    dPrefixFactor = 1E-18;
 							    break;
 							default:
@@ -447,7 +450,7 @@ namespace OpenInfraPlatform
 				double getLengthInMeterFactor()
 				{
 					if (m_length_unit_factor < 0.0) // means, it is unset
-						m_length_unit_factor = getFactorFor(typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_LENGTHUNIT);
+						m_length_unit_factor = getFactorFor(IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_LENGTHUNIT);
 					return m_length_unit_factor;
 				}
 
@@ -461,7 +464,7 @@ namespace OpenInfraPlatform
 				double getAngleInRadianFactor()
 				{
 					if (m_plane_angle_factor < 0.0) // means, it is unset
-						m_plane_angle_factor = getFactorFor(typename IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_PLANEANGLEUNIT);
+						m_plane_angle_factor = getFactorFor(IfcEntityTypesT::IfcUnitEnum::ENUM::ENUM_PLANEANGLEUNIT);
 					return m_plane_angle_factor;
 				}
 

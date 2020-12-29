@@ -142,7 +142,7 @@ namespace OpenInfraPlatform {
 					}
 
                     // scale the lengths according to the unit conversion & return
-					return point * UnitConvert()->getLengthInMeterFactor();
+					return point * this->UnitConvert()->getLengthInMeterFactor();
                 }
 
                 /*! \brief Converts \c IfcDirection to a 3D vector.
@@ -231,7 +231,7 @@ namespace OpenInfraPlatform {
 					// ignore magnitude if == 0
 					if (ifcVector->Magnitude != 0.)
 						// scale the lengths according to the unit conversion & return
-						return direction * ifcVector->Magnitude * UnitConvert()->getLengthInMeterFactor();
+						return direction * ifcVector->Magnitude * this->UnitConvert()->getLengthInMeterFactor();
 					else
 						// otherwise return normalized direction
 						return direction;
@@ -564,7 +564,7 @@ namespace OpenInfraPlatform {
                         distExpr->OffsetLongitudinal.value_or(0.0),
                         distExpr->OffsetLateral.value_or(0.0),
                         distExpr->OffsetVertical.value_or(0.0)
-                    ) * UnitConvert()->getLengthInMeterFactor();
+                    ) * this->UnitConvert()->getLengthInMeterFactor();
                 }
 
 				// ************************************************************************************
@@ -601,7 +601,7 @@ namespace OpenInfraPlatform {
 					
 					// account for relative placement
 					double dDistAlong = 
-						linear_placement->Distance->DistanceAlong * UnitConvert()->getLengthInMeterFactor()
+						linear_placement->Distance->DistanceAlong * this->UnitConvert()->getLengthInMeterFactor()
 						+ relativeDistAlong;
 					
 					// convert the point
@@ -1492,7 +1492,7 @@ namespace OpenInfraPlatform {
                             const auto& trans_type = trans_curve_segment_2D->TransitionCurveType;
                             // https://www.researchgate.net/publication/273829731_Investigation_of_a_New_Transition_Curve/link/5a6a60ce458515b2d0532a79/download
                             switch(trans_type) {
-                            case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BIQUADRATICPARABOLA):
+                            case(IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BIQUADRATICPARABOLA):
                             {
                                 fctPosition =
                                     [](const double distAlong, const double horizSegLength, const double radius,
@@ -1517,7 +1517,7 @@ namespace OpenInfraPlatform {
                             } // end case BIQUADRATICPARABOLA
                             break;
 
-                            case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BLOSSCURVE):
+                            case(IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BLOSSCURVE):
                             {
                                 fctPosition =
                                     [](const double distAlong, const double horizSegLength, const double radius,

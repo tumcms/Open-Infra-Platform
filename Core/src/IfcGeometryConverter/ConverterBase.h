@@ -79,11 +79,11 @@ namespace OpenInfraPlatform
 				//! getter for geometry settings
 				std::shared_ptr<GeometrySettings>&				 GeomSettings()		  { return geomSettings_; }
 				//! const-getter for geometry settings
-				std::shared_ptr<GeometrySettings> 				 GeomSettings() const { return geomSettings_; }
+				const std::shared_ptr<GeometrySettings>& 				 GeomSettings() const { return geomSettings_; }
 				//! getter for unit conversion
 				std::shared_ptr<UnitConverter<IfcEntityTypesT>>& UnitConvert()		  { return unitConverter_; }
 				//! const-getter for unit conversion
-				std::shared_ptr<UnitConverter<IfcEntityTypesT>>  UnitConvert()	const { return unitConverter_; }
+				const std::shared_ptr<UnitConverter<IfcEntityTypesT>>&  UnitConvert()	const { return unitConverter_; }
 
 				/**
 				 * \brief Tests if a pointer to \c Is can be casted to a pointer to \c Test.

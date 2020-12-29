@@ -144,7 +144,7 @@ namespace OpenInfraPlatform {
 				std::vector<carve::geom::vector<2>> curve_polygon;
 				std::vector<carve::geom::vector<2>> segment_start_points;
 
-				CurveConverterT<IfcEntityTypesT> c_conv(GeomSettings(), UnitConvert(), placementConverter);
+				CurveConverterT<IfcEntityTypesT> c_conv(this->GeomSettings(), this->UnitConvert(), placementConverter);
 				c_conv.convertIfcCurve2D(outer_curve, curve_polygon, segment_start_points);
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processed IfcArbitraryClosedProfileDef.OuterCurve IfcCurve #" << outer_curve->getId();
@@ -183,10 +183,10 @@ namespace OpenInfraPlatform {
 				const carve::geom::vector<3>& abscissa,
 				const carve::geom::vector<3>& next_abscissa) const{
 
-				if (profileDef.expired())
-					throw oip::ReferenceExpiredException(profileDef);
+				if (profile.expired())
+					throw oip::ReferenceExpiredException(profile);
 
-				const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
+				const double lengthFactor = this->UnitConvert()->getLengthInMeterFactor();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profile->OuterCurve;
 				std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> polyline = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(outer_curve);
@@ -285,7 +285,7 @@ namespace OpenInfraPlatform {
 					throw oip::ReferenceExpiredException(profileDef);
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.lock();
-				CurveConverterT<IfcEntityTypesT> c_converter(GeomSettings(), UnitConvert(), placementConverter);
+				CurveConverterT<IfcEntityTypesT> c_converter(this->GeomSettings(), this->UnitConvert(), placementConverter);
 
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCenterLineProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def = profileDef.as<typename IfcEntityTypesT::IfcCenterLineProfileDef>();
@@ -395,14 +395,14 @@ namespace OpenInfraPlatform {
 				if (profileDef.expired())
 					throw oip::ReferenceExpiredException(profileDef);
 
-				ProfileConverterT<IfcEntityTypesT> temp_profiler(GeomSettings(), UnitConvert(), placementConverter);
+				ProfileConverterT<IfcEntityTypesT> temp_profiler(this->GeomSettings(), this->UnitConvert(), placementConverter);
 				temp_profiler.computeProfile(profileDef->ParentProfile.lock());
 				const std::vector<std::vector<carve::geom::vector<2>>>& parent_paths = temp_profiler.getCoordinates();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D> transf_op_2D = profileDef->Operator.lock();
 
 				carve::math::Matrix transform(carve::math::Matrix::IDENT());
-				placementConverter->convertTransformationOperator(transf_op_2D, transform, UnitConvert()->getLengthInMeterFactor());
+				placementConverter->convertTransformationOperator(transf_op_2D, transform, this->UnitConvert()->getLengthInMeterFactor());
 				for (int i = 0; i < parent_paths.size(); ++i) {
 					const std::vector<carve::geom::vector<2>>& loop_parent = parent_paths[i];
 					std::vector<carve::geom::vector<2>> loop;

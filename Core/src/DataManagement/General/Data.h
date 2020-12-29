@@ -30,6 +30,8 @@
 #include <map>
 #include <list>
 
+#include "IfcGeometryConverter/IfcImporter.h"
+
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 #include <PointCloudProcessing.h>
 #include <PointCloud.h>
@@ -161,9 +163,9 @@ namespace OpenInfraPlatform
 				template <typename IfcEntityTypesT, typename IfcReader>
 				void ParseExpressAndGeometryModel(const std::string &filename) {
 					auto expressModel_ = IfcReader::FromFile(filename);
-					auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>();
+					auto importer = IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>();
 					if (importer.collectGeometryData(expressModel_)) {
-						auto ifcModel = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel>();
+						auto ifcModel = std::make_shared<IfcGeometryConverter::IfcModel>();
 						auto converter = IfcGeometryConverter::ConverterBuwT<IfcEntityTypesT>();
 						if (converter.createGeometryModel(ifcModel, importer.getShapeDatas())) {
 							if (!ifcModel->isEmpty()) {

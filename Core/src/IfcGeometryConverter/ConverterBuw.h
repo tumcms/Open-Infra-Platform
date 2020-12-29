@@ -508,8 +508,8 @@ namespace OpenInfraPlatform
 
 					inline static std::string createVertexKeyTriangle(const VertexLayout& v)
 					{
-						return std::to_string(v.position.x()) + " " + std::to_string(v.position.y()) + " " + std::to_string(v.position.z()) + " "
-							+ std::to_string(v.normal.x()) + " " + std::to_string(v.normal.y()) + " " + std::to_string(v.normal.z());
+						return std::to_string(v.position[0]) + " " + std::to_string(v.position[1]) + " " + std::to_string(v.position[2]) + " "
+							+ std::to_string(v.normal[0]) + " " + std::to_string(v.normal[1]) + " " + std::to_string(v.normal[2]);
 					};
 
 					inline static std::string createVertexKeyLine(const buw::Vector3f& v)
