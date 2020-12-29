@@ -732,24 +732,24 @@ namespace OpenInfraPlatform {
 						double theta1 = std::atan2(arcStart2D.y - centerOfCircleY, arcStart2D.x - centerOfCircleX);
 						double theta2 = std::atan2(arcEnd2D.y - centerOfCircleY, arcEnd2D.x - centerOfCircleX);
 
-						double opening_angle = (theta2 - theta1);
+						double openingAngle = (theta2 - theta1);
 
 						// correct for -2*PI <= angle <= 2*PI
-						if (opening_angle > 0) {
-							GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
+						if (openingAngle > 0) {
+							GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
 						}
 						else {
-							GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
+							GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
 						}
 
-						int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(opening_angle));
+						int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
 
 						std::vector<carve::geom::vector<2> > circle_points;
 						ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
 							circle_points, radius,
-							theta1, opening_angle,
+							theta1, openingAngle,
 							centerOfCircleX, centerOfCircleY,
-							num_segments);
+							numSegments);
 
 						//std::vector<carve::geom::vector<3>> arcPoints;
 						std::vector<carve::geom::vector<3>> loop_intern;
@@ -1001,73 +1001,75 @@ namespace OpenInfraPlatform {
 					//	END_ENTITY;
 					// **************************************************************************************************************************
 					// determine position
-					carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(circle->Position);
+					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
 
 					// Get radius
-					double circle_radius = 0.0;
-					if (circle->Radius) {
-						circle_radius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
-					}
-					else {
-						throw oip::InconsistentGeometryException(circle, "No radius!");
-					}
-
-					carve::geom::vector<3> circle_center =
-						conic_position_matrix * carve::geom::VECTOR(0, 0, 0);
+					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
+					
+					carve::geom::vector<3> circleCenter =
+						conicPositionMatrix * carve::geom::VECTOR(0, 0, 0);
 
 					//Calculate an angle on the circle for trimming begin.
-					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
-					double start_angle = calculateTrimmingPointOnCircle(circle, trim1Vec, circle_center, circle_radius);
+					double startAngle = 0.; 
+					for (const auto& element : trim1Vec)
+					{
+						carve::geom::vector<3> point = getPointOnCurve(circle, *element);
+						startAngle = getAngleOnCircle(circleCenter, circleRadius, point);
+					}
 					//Calculate an angle on the circle for trimming end.
-					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
-					double trim_angle2 = calculateTrimmingPointOnCircle(circle, trim2Vec, circle_center, circle_radius);
-
-					double opening_angle = 0.0;
+					double endAngle = 0.;
+					for (const auto& element : trim2Vec)
+					{
+						carve::geom::vector<3> point = getPointOnCurve(circle, *element);
+						endAngle = getAngleOnCircle(circleCenter, circleRadius, point);
+					}
+					
+					double openingAngle = 0.;
 
 					if (senseAgreement) {
-						if (start_angle < trim_angle2) {
-							opening_angle = trim_angle2 - start_angle;
+						if (startAngle < endAngle) {
+							openingAngle = endAngle - startAngle;
 						}
 						else {
 							// circle passes 0 angle
-							opening_angle = trim_angle2 - start_angle + 2.0*M_PI;
+							openingAngle = endAngle - startAngle + 2.0*M_PI;
 						}
 					}
 					else {
-						if (start_angle > trim_angle2) {
-							opening_angle = trim_angle2 - start_angle;
+						if (startAngle > endAngle) {
+							openingAngle = endAngle - startAngle;
 						}
 						else {
 							// circle passes 0 angle
-							opening_angle = trim_angle2 - start_angle - 2.0*M_PI;
+							openingAngle = endAngle - startAngle - 2.0*M_PI;
 						}
 					}
 
 					// correct for -2*PI <= angle <= 2*PI
-					if (opening_angle > 0) {
-						GeomSettings()->normalizeAngle(opening_angle, 0., M_TWOPI);
+					if (openingAngle > 0) {
+						GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
 					}
 					else {
-						GeomSettings()->normalizeAngle(opening_angle, -M_TWOPI, 0.);
+						GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
 					}
 
-					int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(circle_radius, abs(opening_angle));
+					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(circleRadius, abs(openingAngle));
 
-					const double circle_center_x = 0.0;
-					const double circle_center_y = 0.0;
+					const double circleCenter_x = 0.0;
+					const double circleCenter_y = 0.0;
 					std::vector<carve::geom::vector<2> > circle_points;
 					ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
-						circle_points, circle_radius,
-						start_angle, opening_angle,
-						circle_center_x, circle_center_y,
-						num_segments);
+						circle_points, circleRadius,
+						startAngle, openingAngle,
+						circleCenter_x, circleCenter_y,
+						numSegments);
 
 					if (circle_points.size() > 0) {
 						// apply position
 						for (unsigned int i = 0; i < circle_points.size(); ++i) {
 							carve::geom::vector<2>&  point = circle_points.at(i);
 							carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
-							point3d = conic_position_matrix * point3d;
+							point3d = conicPositionMatrix * point3d;
 							point.x = point3d.x;
 							point.y = point3d.y;
 						}
@@ -1080,52 +1082,6 @@ namespace OpenInfraPlatform {
 					}
 
 					return;
-				}
-
-				/**********************************************************************************************/
-				/*! \brief Calculates the angle on the circle of the trimming point.
-				* \param[in] circle				A pointer to data from c\ IfcCircle.
-				* \param[in] trimmingVector		The trimming of the curve as saved in IFC model
-				* \param[in] circle_center		Coordinates of the center of the circle.
-				* \param[in] circle_radius		Radius of the circle.
-				* \return						Angle on the circle of the trimming point.
-				*/
-				double  calculateTrimmingPointOnCircle(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trimmingVector,
-					const carve::geom::vector<3> circle_center,
-					const double circle_radius) const throw(...)
-				{
-
-					// Check for trimming point
-					if (trimmingVector.size() > 0) {
-						//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Check for trimming point.";
-						auto first = std::find_if(trimmingVector.begin(), trimmingVector.end(), [](auto select) { return select->which() == 1; });
-						if (first != trimmingVector.end() && *first) {
-							//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming pomt as IfcParameterValue.";
-							typename IfcEntityTypesT::IfcParameterValue trim_par1 = (*first)->get<1>();
-							return trim_par1 * UnitConvert()->getAngleInRadianFactor();
-						}
-						else {
-							first = std::find_if(trimmingVector.begin(), trimmingVector.end(), [](auto select) { return select->which() == 0; });
-							if (first != trimmingVector.end() && (*first) != nullptr) {
-								//BLUE_LOG(trace) << "Processing " << circle->getErrorLog() << ": Found trimming point as IfcCartesianPoint.";
-								try {
-									carve::geom::vector<3> trim_point = placementConverter->convertIfcCartesianPoint((*first)->get<0>());
-
-									return getAngleOnCircle(circle_center, circle_radius, trim_point);
-								}
-								catch (const oip::InconsistentModellingException& ex) {
-									throw oip::InconsistentModellingException(circle, ex.what());
-								}
-							}
-							else {
-								throw oip::InconsistentGeometryException(circle, "No trimming point found.");
-							}
-						}
-					}
-					else {
-						throw oip::InconsistentGeometryException(circle, "Trimming vector is empty!");
-					}
 				}
 
 				// IfcEllipse SUBTYPE OF IfcConic
@@ -2040,6 +1996,45 @@ namespace OpenInfraPlatform {
 					return result_angle;
 				}
 
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					const typename IfcEntityTypesT::IfcTrimmingSelect & trimming) const throw(...)
+				{
+					switch (trimming.which())
+					{
+					case 0:
+					{
+						return getPointOnCurve(circle, trimming.get<0>());
+					}
+					case 1:
+					{
+						return getPointOnCurve(circle, trimming.get<1>());
+					}
+					default:
+						throw oip::InconsistentGeometryException(circle, "TrimmingSelect is wrong!");
+					}
+				}
+
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+				{
+					double angle = parameter * UnitConvert()->getAngleInRadianFactor();
+					// determine position
+					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
+
+					// Get radius
+					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
+
+					carve::geom::vector<3> circleCenter =
+						conicPositionMatrix * carve::geom::VECTOR(0, 0, 0);
+					return circleCenter + carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
+				}
+
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint) const throw(...)
+				{
+					
+					return placementConverter->convertIfcCartesianPoint(cartesianPoint);
+				}
 			protected:
 
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
