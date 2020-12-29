@@ -114,6 +114,35 @@ boost::logic::tribool ValueType<boost::logic::tribool>::readStepData(const std::
 	}
 }
 
+#ifdef OIP_EARLYBINDING_API_EXPRESS_ASEXPORT
+template class
+OIP_EARLYBINDING_API_EXPRESS
+ValueType<double>;
+
+template class
+OIP_EARLYBINDING_API_EXPRESS
+ValueType<int>;
+
+template class
+OIP_EARLYBINDING_API_EXPRESS
+ValueType<std::string>;
+
+template class
+OIP_EARLYBINDING_API_EXPRESS
+ValueType<bool>;
+
+template class
+OIP_EARLYBINDING_API_EXPRESS
+ValueType<boost::logic::tribool>;
+
+using REAL = ValueType<double>;
+using INTEGER = ValueType<int>;
+using STRING = ValueType<std::string>;
+using BOOLEAN = ValueType<bool>;
+using LOGICAL = ValueType<boost::logic::tribool>;
+using BINARY = ValueType<int>;
+using NUMBER = ValueType<double>;
+#endif
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 
