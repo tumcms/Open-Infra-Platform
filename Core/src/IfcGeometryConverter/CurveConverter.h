@@ -1112,7 +1112,7 @@ namespace OpenInfraPlatform {
 					//	END_ENTITY;
 					// **************************************************************************************************************************
 					// determine position
-					carve::math::Matrix conic_position_matrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
+					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
 
 					if (ellipse->SemiAxis1) {
 						if (ellipse->SemiAxis2) {
@@ -1122,18 +1122,65 @@ namespace OpenInfraPlatform {
 
 							double radiusMax = std::max(xRadius, yRadius);
 							double radiusMin = std::min(xRadius, yRadius);
-							int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin);
+							int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin);
 							double deltaAngle = GeomSettings()->getAngleLength(radiusMin);
 
-							// todo: implement clipping
-							if (!trim1Vec.empty() || !trim2Vec.empty())
-								// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
-								throw oip::InconsistentModellingException(ellipse, "Trimming not supported");
+							carve::geom::vector<3> ellipse_center =
+								conicPositionMatrix * carve::geom::VECTOR(0, 0, 0);
 
-							std::vector<carve::geom::vector<3> > ellipse_points;
+							// todo: implement clipping
+							if (!trim1Vec.empty() || !trim2Vec.empty()) {
+								//Calculate an angle on the ellipse for trimming begin.
+								double startAngle = 0.;
+								for (const auto& element : trim1Vec)
+								{
+									carve::geom::vector<3> point = getPointOnCurve(ellipse, *element);
+									startAngle = getAngleOnEllipse(ellipse_center, xRadius, yRadius, point);
+								}
+								//Calculate an angle on the ellipse for trimming end.
+								double endAngle = 0.;
+								for (const auto& element : trim2Vec)
+								{
+									carve::geom::vector<3> point = getPointOnCurve(ellipse, *element);
+									endAngle = getAngleOnEllipse(ellipse_center, xRadius, yRadius, point);
+								}
+								// Calculate an opening angle
+								double openingAngle = 0.;
+								if (senseAgreement) {
+									if (startAngle < endAngle) {
+										openingAngle = endAngle - startAngle;
+									}
+									else {
+										// circle passes 0 angle
+										openingAngle = endAngle - startAngle + 2.0*M_PI;
+									}
+								}
+								else {
+									if (startAngle > endAngle) {
+										openingAngle = endAngle - startAngle;
+									}
+									else {
+										// circle passes 0 angle
+										openingAngle = endAngle - startAngle - 2.0*M_PI;
+									}
+								}
+
+								// correct for -2*PI <= angle <= 2*PI
+								if (openingAngle > 0) {
+									GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
+								}
+								else {
+									GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
+								}
+
+								numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin, abs(openingAngle));
+								deltaAngle = GeomSettings()->getAngleLength(radiusMin, abs(openingAngle));
+							}
+
+							std::vector<carve::geom::vector<3> > ellipsePoints;
 							double angle = 0.0;
-							for (int i = 0; i < num_segments; ++i) {
-								ellipse_points.push_back(carve::geom::vector<3>(
+							for (int i = 0; i < numSegments; ++i) {
+								ellipsePoints.push_back(carve::geom::vector<3>(
 									carve::geom::VECTOR(
 										xRadius * cos(angle),
 										yRadius * sin(angle),
@@ -1142,15 +1189,14 @@ namespace OpenInfraPlatform {
 							}
 
 							// apply position
-							for (unsigned int i = 0; i < ellipse_points.size(); ++i) {
-								carve::geom::vector<3>& point = ellipse_points.at(i);
-								point = conic_position_matrix * point;
+							for (unsigned int i = 0; i < ellipsePoints.size(); ++i) {
+								carve::geom::vector<3>& point = ellipsePoints.at(i);
+								point = conicPositionMatrix * point;
 							}
-							GeomUtils::appendPointsToCurve(ellipse_points, targetVec);
-							segmentStartPoints.push_back(ellipse_points.at(0));
+							GeomUtils::appendPointsToCurve(ellipsePoints, targetVec);
+							segmentStartPoints.push_back(ellipsePoints.at(0));
 						}
 					}
-					return;
 				}
 
 				// IfcLine SUPTYPE of IfcCurve
@@ -1996,6 +2042,35 @@ namespace OpenInfraPlatform {
 					return result_angle;
 				}
 
+				double getAngleOnEllipse(const carve::geom::vector<3>& ellipseCenter,
+					double ellipseRadiusX,
+					double ellipseRadiusY,
+					const carve::geom::vector<3>& trimPoint
+				) const throw(...)
+				{
+					double result_angle = -1.0;
+					carve::geom::vector<3> ellipseCenterToTrimPoint = trimPoint - ellipseCenter;
+					double cos_angle = ellipseCenterToTrimPoint.x / ellipseRadiusX;
+
+					if (abs(cos_angle) < 0.0001) {
+						if (ellipseCenterToTrimPoint.y > 0.) {
+							result_angle = M_PI_2;
+						}
+						else if (ellipseCenterToTrimPoint.y < 0.) {
+							result_angle = 3 * M_PI_2;
+						}
+					}
+					else {
+						if (ellipseCenterToTrimPoint.y > 0.) {
+							result_angle = acos(cos_angle);
+						}
+						else if (ellipseCenterToTrimPoint.y < 0) {
+							result_angle = 2.0 * M_PI - acos(cos_angle);
+						}
+					}
+					return result_angle;
+				}
+
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const typename IfcEntityTypesT::IfcTrimmingSelect & trimming) const throw(...)
 				{
@@ -2035,6 +2110,49 @@ namespace OpenInfraPlatform {
 					
 					return placementConverter->convertIfcCartesianPoint(cartesianPoint);
 				}
+
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
+					const typename IfcEntityTypesT::IfcTrimmingSelect & trimming) const throw(...)
+				{
+					switch (trimming.which())
+					{
+					case 0:
+					{
+						return getPointOnCurve(ellipse, trimming.get<0>());
+					}
+					case 1:
+					{
+						return getPointOnCurve(ellipse, trimming.get<1>());
+					}
+					default:
+						throw oip::InconsistentGeometryException(ellipse, "TrimmingSelect is wrong!");
+					}
+				}
+
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+				{
+					double angle = parameter * UnitConvert()->getAngleInRadianFactor();
+					// determine position
+					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
+
+					// Get radius
+					double xRadius = ellipse->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
+					double yRadius = ellipse->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
+
+					carve::geom::vector<3> ellipse_center =
+						conicPositionMatrix * carve::geom::VECTOR(0, 0, 0);
+
+					return ellipse_center + carve::geom::VECTOR(xRadius * cos(angle), yRadius * sin(angle), 0.);
+				}
+
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint) const throw(...)
+				{
+
+					return placementConverter->convertIfcCartesianPoint(cartesianPoint);
+				}
+
 			protected:
 
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
