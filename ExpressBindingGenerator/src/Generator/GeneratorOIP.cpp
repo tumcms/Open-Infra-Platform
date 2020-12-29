@@ -1258,13 +1258,6 @@ OpenInfraPlatform::ExpressBindingGenerator::GeneratorOIP::GeneratorOIP(const std
 GeneratorOIP::~GeneratorOIP() {
 }
 
-void GeneratorOIP::prepareGeneration(const Schema& schema)
-{
-	preparePaths(schema);
-	prepareIncludes(schema);
-	prepareSplits(schema);
-}
-
 void GeneratorOIP::prepareIncludes(const Schema& schema)
 {
 	// prepare the includes
@@ -1638,8 +1631,16 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 
 void GeneratorOIP::generateREFACTORED( const Schema & schema)
 {
-	std::cout << "Preparing for generation ... ";
-	prepareGeneration(schema);
+	std::cout << "Preparing paths ... ";
+	preparePaths(schema);
+	std::cout << "done." << std::endl;
+
+	std::cout << "Preparing includes ... ";
+	prepareIncludes(schema);
+	std::cout << "done." << std::endl;
+
+	std::cout << "Preparing the splits into projects ... ";
+	prepareSplits(schema);
 	std::cout << "done." << std::endl;
 	
 	std::cout << "Generating CMakeLists ... ";
@@ -1656,11 +1657,10 @@ void GeneratorOIP::generateREFACTORED( const Schema & schema)
 	generateReaderFiles(schema);
 	std::cout << "done." << std::endl;
 
+	std::cout << "Generating common headers ... ";
 	// Types.h
 	createTypesHeaderFileREFACTORED(schema);
-
 	// Entities.h
-	std::cout << "Generating common headers ... ";
 	createEntitiesHeaderFileREFACTORED(schema);
 	std::cout << "done." << std::endl;
 

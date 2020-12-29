@@ -74,8 +74,6 @@ private:
 	void generateNamespaceHeader(const Schema &schema);
 
 private:
-    // main function for preparation
-    void prepareGeneration(const Schema& schema);
     // prepares the paths, mkdir the directories needed
     void preparePaths(const Schema& schema);
     // prepares the sets of includes
