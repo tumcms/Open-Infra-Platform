@@ -2022,31 +2022,39 @@ namespace OpenInfraPlatform {
 					const carve::geom::vector<3>& trimPoint
 				) const throw(...)
 				{
-					double result_angle = -1.0;
-					carve::geom::vector<3> center_trim_point = trimPoint - circleCenter;
-					if (abs(center_trim_point.length() - circleRadius) < 0.0001) {
-						carve::geom::vector<3> center_trim_point_direction = center_trim_point;
-						center_trim_point_direction.normalize();
-						double cos_angle = carve::geom::dot(center_trim_point_direction, carve::geom::vector<3>(carve::geom::VECTOR(1.0, 0, 0)));
+					carve::geom::vector<3> centerToTrimPoint = trimPoint - circleCenter;
+					if (abs(centerToTrimPoint.length() - circleRadius) < 0.0001) {
+						centerToTrimPoint.normalize();
+						double cosAngle = carve::geom::dot(centerToTrimPoint, carve::geom::vector<3>(carve::geom::VECTOR(1., 0., 0.)));
 
-						if (abs(cos_angle) < 0.0001) {
-							if (center_trim_point.y > 0) {
-								result_angle = M_PI_2;
+						if (abs(cosAngle) < 0.0001) {
+							if (centerToTrimPoint.y > 0) {
+								return M_PI_2;
 							}
-							else if (center_trim_point.y < 0) {
-								result_angle = M_PI * 1.5;
+							else if (centerToTrimPoint.y < 0) {
+								return M_PI * 1.5;
 							}
 						}
 						else {
-							if (center_trim_point.y > 0) {
-								result_angle = acos(cos_angle);
+							if (centerToTrimPoint.y > 0) {
+								return acos(cosAngle);
 							}
-							else if (center_trim_point.y < 0) {
-								result_angle = 2.0*M_PI - acos(cos_angle);
+							else if (centerToTrimPoint.y < 0) {
+								return 2.0*M_PI - acos(cosAngle);
+							}
+							else {
+								if (centerToTrimPoint.x > 0.) {
+									return 0.;
+								}
+								else {
+									return M_PI;
+								}
 							}
 						}
 					}
-					return result_angle;
+					else {
+						throw oip::InconsistentModellingException("The point is not located on the circle");
+					}
 				}
 
 				/**********************************************************************************************/
@@ -2063,27 +2071,39 @@ namespace OpenInfraPlatform {
 					const carve::geom::vector<3>& trimPoint
 				) const throw(...)
 				{
-					double result_angle = -1.0;
-					carve::geom::vector<3> ellipseCenterToTrimPoint = trimPoint - ellipseCenter;
-					double cos_angle = ellipseCenterToTrimPoint.x / ellipseRadiusX;
+					carve::geom::vector<3> centerToTrimPoint = trimPoint - ellipseCenter;
+					
+					if ((centerToTrimPoint.x / ellipseRadiusX) <= 1. && (centerToTrimPoint.y / ellipseRadiusY) <= 1.) {
+						double cosAngle = centerToTrimPoint.x / ellipseRadiusX;
 
-					if (abs(cos_angle) < 0.0001) {
-						if (ellipseCenterToTrimPoint.y > 0.) {
-							result_angle = M_PI_2;
+						if (abs(cosAngle) < 0.0001) {
+							if (centerToTrimPoint.y > 0.) {
+								return M_PI_2;
+							}
+							else if (centerToTrimPoint.y < 0.) {
+								return 3 * M_PI_2;
+							}
 						}
-						else if (ellipseCenterToTrimPoint.y < 0.) {
-							result_angle = 3 * M_PI_2;
+						else {
+							if (centerToTrimPoint.y > 0.) {
+								return acos(cosAngle);
+							}
+							else if (centerToTrimPoint.y < 0.) {
+								return 2.0 * M_PI - acos(cosAngle);
+							}
+							else {
+								if (centerToTrimPoint.x > 0.) {
+									return 0.;
+								}
+								else {
+									return M_PI;
+								}
+							}
 						}
 					}
 					else {
-						if (ellipseCenterToTrimPoint.y > 0.) {
-							result_angle = acos(cos_angle);
-						}
-						else if (ellipseCenterToTrimPoint.y < 0) {
-							result_angle = 2.0 * M_PI - acos(cos_angle);
-						}
+						throw oip::InconsistentModellingException("The point is located outside the ellipse");
 					}
-					return result_angle;
 				}
 
 				/**********************************************************************************************/
