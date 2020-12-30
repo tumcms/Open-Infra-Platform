@@ -1005,9 +1005,8 @@ namespace OpenInfraPlatform {
 
 					// Get radius
 					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
-					
-					carve::geom::vector<3> circleCenter =
-						conicPositionMatrix * carve::geom::VECTOR(0, 0, 0);
+					// Get center of the circle
+					carve::geom::vector<3> circleCenter = conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.);
 
 					//Calculate an angle on the circle for trimming begin.
 					double startAngle = 0.; 
@@ -2028,18 +2027,18 @@ namespace OpenInfraPlatform {
 						double cosAngle = carve::geom::dot(centerToTrimPoint, carve::geom::vector<3>(carve::geom::VECTOR(1., 0., 0.)));
 
 						if (abs(cosAngle) < 0.0001) {
-							if (centerToTrimPoint.y > 0) {
+							if (centerToTrimPoint.y > 0.) {
 								return M_PI_2;
 							}
-							else if (centerToTrimPoint.y < 0) {
+							else if (centerToTrimPoint.y < 0.) {
 								return M_PI * 1.5;
 							}
 						}
 						else {
-							if (centerToTrimPoint.y > 0) {
+							if (centerToTrimPoint.y > 0.) {
 								return acos(cosAngle);
 							}
-							else if (centerToTrimPoint.y < 0) {
+							else if (centerToTrimPoint.y < 0.) {
 								return 2.0*M_PI - acos(cosAngle);
 							}
 							else {
@@ -2167,7 +2166,7 @@ namespace OpenInfraPlatform {
 					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
 
 					carve::geom::vector<3> circleCenter =
-						conicPositionMatrix * carve::geom::VECTOR(0, 0, 0);
+						conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.);
 					return circleCenter + carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
 				}
 
@@ -2189,7 +2188,7 @@ namespace OpenInfraPlatform {
 					double yRadius = ellipse->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
 
 					carve::geom::vector<3> ellipse_center =
-						conicPositionMatrix * carve::geom::VECTOR(0, 0, 0);
+						conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.);
 
 					return ellipse_center + carve::geom::VECTOR(xRadius * cos(angle), yRadius * sin(angle), 0.);
 				}
