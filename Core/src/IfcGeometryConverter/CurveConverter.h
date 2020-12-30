@@ -1023,34 +1023,7 @@ namespace OpenInfraPlatform {
 						endAngle = getAngleOnCircle(circleCenter, circleRadius, point);
 					}
 					
-					double openingAngle = 0.;
-
-					if (senseAgreement) {
-						if (startAngle < endAngle) {
-							openingAngle = endAngle - startAngle;
-						}
-						else {
-							// circle passes 0 angle
-							openingAngle = endAngle - startAngle + 2.0*M_PI;
-						}
-					}
-					else {
-						if (startAngle > endAngle) {
-							openingAngle = endAngle - startAngle;
-						}
-						else {
-							// circle passes 0 angle
-							openingAngle = endAngle - startAngle - 2.0*M_PI;
-						}
-					}
-
-					// correct for -2*PI <= angle <= 2*PI
-					if (openingAngle > 0) {
-						GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
-					}
-					else {
-						GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
-					}
+					double openingAngle = calculateOpeningAngle(senseAgreement, openingAngle, endAngle);
 
 					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(circleRadius, abs(openingAngle));
 
@@ -1079,7 +1052,6 @@ namespace OpenInfraPlatform {
 							circle_points.at(0).y,
 							0));
 					}
-
 					return;
 				}
 
@@ -1144,34 +1116,8 @@ namespace OpenInfraPlatform {
 									endAngle = getAngleOnEllipse(ellipse_center, xRadius, yRadius, point);
 								}
 								// Calculate an opening angle
-								double openingAngle = 0.;
-								if (senseAgreement) {
-									if (startAngle < endAngle) {
-										openingAngle = endAngle - startAngle;
-									}
-									else {
-										// circle passes 0 angle
-										openingAngle = endAngle - startAngle + 2.0*M_PI;
-									}
-								}
-								else {
-									if (startAngle > endAngle) {
-										openingAngle = endAngle - startAngle;
-									}
-									else {
-										// circle passes 0 angle
-										openingAngle = endAngle - startAngle - 2.0*M_PI;
-									}
-								}
-
-								// correct for -2*PI <= angle <= 2*PI
-								if (openingAngle > 0) {
-									GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
-								}
-								else {
-									GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
-								}
-
+								double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
+								
 								numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin, abs(openingAngle));
 								deltaAngle = GeomSettings()->getAngleLength(radiusMin, abs(openingAngle));
 							}
@@ -2103,6 +2049,38 @@ namespace OpenInfraPlatform {
 					else {
 						throw oip::InconsistentModellingException("The point is located outside the ellipse");
 					}
+				}
+
+				double calculateOpeningAngle(const  bool senseAgreement, const double startAngle, const double endAngle)const throw(...)
+				{
+					double openingAngle = 0.;
+					if (senseAgreement) {
+						if (startAngle < endAngle) {
+							openingAngle = endAngle - startAngle;
+						}
+						else {
+							// circle passes 0 angle
+							openingAngle = endAngle - startAngle + 2.0*M_PI;
+						}
+					}
+					else {
+						if (startAngle > endAngle) {
+							openingAngle = endAngle - startAngle;
+						}
+						else {
+							// circle passes 0 angle
+							openingAngle = endAngle - startAngle - 2.0*M_PI;
+						}
+					}
+
+					// correct for -2*PI <= angle <= 2*PI
+					if (openingAngle > 0) {
+						GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
+					}
+					else {
+						GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
+					}
+					return openingAngle;
 				}
 
 				/**********************************************************************************************/
