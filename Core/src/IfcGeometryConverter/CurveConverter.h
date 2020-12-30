@@ -1013,14 +1013,14 @@ namespace OpenInfraPlatform {
 					double startAngle = 0.; 
 					for (const auto& element : trim1Vec)
 					{
-						carve::geom::vector<3> point = getPointOnCurve(circle, *element);
+						carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, *element);
 						startAngle = getAngleOnCircle(circleCenter, circleRadius, point);
 					}
 					//Calculate an angle on the circle for trimming end.
 					double endAngle = 0.;
 					for (const auto& element : trim2Vec)
 					{
-						carve::geom::vector<3> point = getPointOnCurve(circle, *element);
+						carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, *element);
 						endAngle = getAngleOnCircle(circleCenter, circleRadius, point);
 					}
 					
@@ -1134,14 +1134,14 @@ namespace OpenInfraPlatform {
 								double startAngle = 0.;
 								for (const auto& element : trim1Vec)
 								{
-									carve::geom::vector<3> point = getPointOnCurve(ellipse, *element);
+									carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, *element);
 									startAngle = getAngleOnEllipse(ellipse_center, xRadius, yRadius, point);
 								}
 								//Calculate an angle on the ellipse for trimming end.
 								double endAngle = 0.;
 								for (const auto& element : trim2Vec)
 								{
-									carve::geom::vector<3> point = getPointOnCurve(ellipse, *element);
+									carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, *element);
 									endAngle = getAngleOnEllipse(ellipse_center, xRadius, yRadius, point);
 								}
 								// Calculate an opening angle
@@ -2107,12 +2107,14 @@ namespace OpenInfraPlatform {
 				}
 
 				/**********************************************************************************************/
-				/*! \brief Calculates a trimming point on the Curve.
-				* \param[in] circle					A pointer to data from \c IfcCircle.
+				/*! \brief Calculates a trimming point on the curve.
+				* \param[in] curve					A pointer to data from a curve.
 				* \param[in] trimming				A pointer to data form \c IfcTrimmingSelect.
 				* \return							The location of the trimming point.
 				*/
-				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+				template <typename TCurve>
+				carve::geom::vector<3> getPointOnCurve(
+					const EXPRESSReference<TCurve>& curve,
 					const typename IfcEntityTypesT::IfcTrimmingSelect & trimming) const throw(...)
 				{
 					switch (trimming.which())
@@ -2120,29 +2122,32 @@ namespace OpenInfraPlatform {
 					case 0:
 					{
 						// Calculate a trimming point using \c IfcCartesianPoint. 
-						return getPointOnCurve(circle, trimming.get<0>());
+						return getPointOnCurve<typename TCurve>(curve, trimming.get<0>());
 					}
 					case 1:
 					{
 						// Calculate a trimming point using \c IfcParameterValue.
-						return getPointOnCurve(circle, trimming.get<1>());
+						return getPointOnCurve(curve, trimming.get<1>());
 					}
 					default:
-						throw oip::InconsistentGeometryException(circle, "TrimmingSelect is wrong!");
+						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
 					}
 				}
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint. .
-				* \param[in] circle					A pointer to data from \c IfcCircle.
+				* \param[in] curve					A pointer to data from a curve.
 				* \param[in] cartesianPoint			A pointer to data form \c IfcCartesianPoint.
 				* \return							The location of the trimming point.
 				*/
-				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+				template <typename TCurve>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve>& curve,
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint) const throw(...)
 				{
+					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(curve->Position);
+					carve::geom::vector<3> conicCenter = conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.);
 
-					return placementConverter->convertIfcCartesianPoint(cartesianPoint);
+					return conicCenter + placementConverter->convertIfcCartesianPoint(cartesianPoint);
 				}
 
 				/**********************************************************************************************/
@@ -2164,45 +2169,6 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<3> circleCenter =
 						conicPositionMatrix * carve::geom::VECTOR(0, 0, 0);
 					return circleCenter + carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
-				}
-
-				/**********************************************************************************************/
-				/*! \brief Calculates a trimming point on the Curve.
-				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
-				* \param[in] trimming				A pointer to data form \c IfcTrimmingSelect.
-				* \return							The location of the trimming point.
-				*/
-				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
-					const typename IfcEntityTypesT::IfcTrimmingSelect & trimming) const throw(...)
-				{
-					switch (trimming.which())
-					{
-					case 0:
-					{
-						// Calculate a trimming point using \c IfcCartesianPoint. 
-						return getPointOnCurve(ellipse, trimming.get<0>());
-					}
-					case 1:
-					{
-						// Calculate a trimming point using \c IfcParameterValue.
-						return getPointOnCurve(ellipse, trimming.get<1>());
-					}
-					default:
-						throw oip::InconsistentGeometryException(ellipse, "IfcTrimmingSelect is wrong!");
-					}
-				}
-
-				/**********************************************************************************************/
-				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint. 
-				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
-				* \param[in] cartesianPoint			A pointer to data form \c IfcCartesianPoint.
-				* \return							The location of the trimming point.
-				*/
-				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
-					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint) const throw(...)
-				{
-
-					return placementConverter->convertIfcCartesianPoint(cartesianPoint);
 				}
 
 				/**********************************************************************************************/
