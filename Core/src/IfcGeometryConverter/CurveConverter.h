@@ -1544,6 +1544,21 @@ namespace OpenInfraPlatform {
 						carve::geom3d::Vector& first = loop.front();
 						carve::geom3d::Vector& last = loop.back();
 
+						//bool areEqual = GeometrySettings::areEqual(loop.front(), loop.back());
+						if (GeometrySettings::areEqual(loop.front(), loop.back()))
+						{
+							loop.pop_back();
+							continue;
+						}
+						
+						/*
+						if (GeometrySettings::areEqual(first, last) == true)
+						{
+							loop.pop_back();
+							continue;
+						}*/
+
+						/*
 						if (abs(first.x - last.x) < 0.00000001) {
 							if (abs(first.y - last.y) < 0.00000001) {
 								if (abs(first.z - last.z) < 0.00000001) {
@@ -1551,7 +1566,7 @@ namespace OpenInfraPlatform {
 									continue;
 								}
 							}
-						}
+						}*/
 						break;
 					}
 				}

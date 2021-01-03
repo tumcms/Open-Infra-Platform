@@ -164,6 +164,44 @@ namespace OpenInfraPlatform
 					}
 				}
 
+				bool areEqual(const double first,const double second) const
+				{
+					if (abs(first - second) < getPrecision()) 
+					{
+						return true;
+					}
+					return false;
+				}
+
+				bool areEqual(const carve::geom::vector<2>& first, const  carve::geom::vector<2>& second) const
+				{
+					if (abs(first.x - second.x) < getPrecision() && abs(first.y - second.y) < getPrecision())
+					{
+						return true;
+					}
+					return false;
+				}
+				
+				bool areEqual(const  carve::geom::vector<3>& first, const  carve::geom::vector<3>& second) const
+				{
+					if (abs(first.x - second.x) < getPrecision() && abs(first.y - second.y) < getPrecision() && abs(first.z - second.z) < getPrecision())
+					{
+						return true;
+					}
+					return false;
+				}
+
+				/*
+				bool areEqual(const  carve::geom3d::Vector& first, const  carve::geom3d::Vector& second) const
+				{
+					if (abs(first.x - second.x) < getPrecision() && abs(first.y - second.y) < getPrecision() && abs(first.z - second.z) < getPrecision())
+					{
+						return true;
+					}
+					return false;
+				}*/
+
+
 
 				carve::csg::CSG::CLASSIFY_TYPE getCSGtype() {
 					return classify_type;
