@@ -21,7 +21,7 @@ authors:
   - name: Helge Hecht
     affiliation: 2
   - name: Julian Amann
-    affiliation: 3
+    affiliation: 1
   - name: Jonas Schlenger
     affiliation: 1
 affiliations:
@@ -29,8 +29,6 @@ affiliations:
    index: 1
  - name: ??
    index: 2
- - name: ??
-   index: 3
 date: 24 December 2020
 bibliography: paper.bib
 ---
