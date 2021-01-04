@@ -16,6 +16,8 @@ This short guide shows you how to use Git processes for better structuring a gro
 
 ## <a name="GitSetup"></a> Git Setup
 
+*NOTE:* We provide `git` bash commands in this document. You are welcomed to use any git-UI of your liking as well.
+
 ### <a name="Prerequisites"></a> Prerequisites 
 
 Before you can proceed to work with `Git`, there are several steps, which have to be done up front.
@@ -28,11 +30,12 @@ Before you can proceed to work with `Git`, there are several steps, which have t
 1. Go to OpenInfraPlatform [repository](https://github.com/tumcms/Open-Infra-Platform).
 
 2. Login to your account and *Fork* OpenInfraPlatform to your account. 
-   Now there is https://github.com/<your_username>/Open-Infra-Platform. This is your *origin* repository (default). 
+   Now there is `https://github.com/<your_username>/Open-Infra-Platform`. 
+   This is your *origin* repository (default). 
 
 3. *Clone* your repository to local machine.
 
-	- Open your File Explorer and select the folder, where you want to clone OpenInfraPlatform (e.g. C:\dev). 
+	- Open your File Explorer and select the folder, where you want to clone OpenInfraPlatform (e.g. `C:\dev`). 
       Right mouse click in this folder and select *Git Bash Here*.
 
 	- To start the download write out in the window, which you have opened, in the command line:
@@ -64,7 +67,7 @@ Here you will find description about Git Workflow you need when working with Ope
 
 ### <a name="Updating"></a> Updating your fork from main repository 
 
-Once you have *added a remote*, you can update your local repository with all changes made in the official repository. 
+Once you have [added the official remote](#Remote), you can update your local repository with all changes made in the official repository. 
 
 **NOTE: It is highly recommended to update your local repository every time you start working on it. 
 Otherwise, you will not have access to the most recent changes.** 
@@ -100,7 +103,7 @@ Before creating any changes, create new branch (aka "feature branch").
  
 1. Open OpenInfraPlatform source folder and select *Git Bash Here*. 
 	
-2. Create new brach.
+2. Create new branch.
 
 	Write out in the command line:
    > `git checkout -b [branchname]` 
@@ -154,11 +157,11 @@ TODO.
 After successfully pushing changes to your remote repository, you should propose those changes to the official repository. 
 This can be achieved with a *Pull request*.
 
-1. Open your remote repository on GitHub (`https://github.com/<your_username>/Open-Infra-Platform`).
+1. Open the official repository on GitHub (https://github.com/tumcms/Open-Infra-Platform).
 
 2. Initialize *pull request*:
 
-	- If you pushed recently, GitHub notices, that new branch has been pushed recently, and it will suggest creating a new *pull request*. Select *Compare & pull request*. 
+	- If you pushed recently, GitHub notices that a new branch has been pushed recently, and it will suggest creating a new *pull request*. Select *Compare & pull request*. 
 
 	- Alternatively, you can select *Pull requests*. There you can manually create *New pull request*. 
       This will open a new page, where you can select which branch you want to propose to merge in what another branch. 
@@ -174,7 +177,7 @@ This can be achieved with a *Pull request*.
 		- For *compare* select *[branchname]* (e.g. Fixing_Bugs).
 
 
-3. On the new page you have an option to comment all changes you have made. 
+3. On the new page you have an option to describe the changes you have made. 
    Please be descriptive on what changes you have made:
     - include names/locations/parts of project/of all files you have changed
     - describe main changes you have made
