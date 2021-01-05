@@ -17,7 +17,7 @@ Yes, GPLv3.0 - see [licence](../../Licence.txt).
 
 > * The software should have an obvious research application.
 
-See list of publications made with OIP (TUM Open Infrastructure Platform) [here](./paper.bib).
+See list of publications made with OIP (TUM Open Infra Platform) [here](./paper.bib).
 
 > * You should be a major contributor to the software you are submitting.
 
@@ -46,8 +46,6 @@ I believe we fall under the term *engineering*, offering a *library*.
 > Your software should be a significant contribution to the available open source software that either enables some new research challenges to be addressed or makes addressing research challenges significantly better (e.g., faster, easier, simpler).
 
 Our software enables simultaneous loading of IFC (Industry Foundation Classes) as well as PCD data while being open source - we're not aware of any other open source library supporting the same.
-
-TODO: Not sure if this is still the case: OIP in unique in the way that it supported various alignment data formats used in civil engineering: LandXML, OKSTRA, IFC Alignment 4.0 and up, (InfraGML???) etc. Also the possibility to convert forth and back between those formats makes OIP unique. It also offers connections to Open Linked Data. This makes OIP a driver and enabler for open data exchange in the filled of Building Information Modelling in the context of civil engineering.
 
 > As a rule of thumb, JOSS’ minimum allowable contribution should represent not less than three months of work for an individual. Some factors that may be considered by editors and reviewers when judging effort include:
 > * Age of software (is this a well-established software project) / length of commit history.
