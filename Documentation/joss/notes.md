@@ -17,7 +17,7 @@ Yes, GPLv3.0 - see [licence](../../Licence.txt).
 
 > * The software should have an obvious research application.
 
-See list of publications made with the software [here](./paper.bib).
+See list of publications made with OIP (TUM Open Infra Platform) [here](./paper.bib).
 
 > * You should be a major contributor to the software you are submitting.
 
@@ -45,16 +45,16 @@ I believe we fall under the term *engineering*, offering a *library*.
 
 > Your software should be a significant contribution to the available open source software that either enables some new research challenges to be addressed or makes addressing research challenges significantly better (e.g., faster, easier, simpler).
 
-Our software enables simultaneous loading of IFC as well as PCD data while being open source - we're not aware of any other open source library supporting the same.
+Our software enables simultaneous loading of IFC (Industry Foundation Classes) as well as PCD data while being open source - we're not aware of any other open source library supporting the same.
 
 > As a rule of thumb, JOSS’ minimum allowable contribution should represent not less than three months of work for an individual. Some factors that may be considered by editors and reviewers when judging effort include:
 > * Age of software (is this a well-established software project) / length of commit history.
 
-Project is already > 7 years old.
+Project stated in 2013.
 
 > * Number of commits.
 
-We have > 1800 commits.
+We have > 1900 commits
 
 > * Number of authors.
 
@@ -62,7 +62,52 @@ Please see our [contributor list](../markdown/Contributors.md).
 
 > * Total lines of code (LOC). Submissions under 1000 LOC will usually be flagged, those under 300 LOC will be desk rejected.
 
-I don't know how to get this. Is there a tool that tells that quickly? Otherwise, my guess would be somewhere around 3 000 000 LOC. Look at the [statistics](https://github.com/tumcms/Open-Infra-Platform/graphs/contributors).
+
+1916 text files.
+1776 unique files.                                          
+396 files ignored.
+
+github.com/AlDanial/cloc v 1.82  T=1.56 s (974.6 files/s, 428703.3 lines/s)
+
+|Language              |       files      |    blank    |    comment    |       code
+|----------------------|------------------|-------------|---------------|---------
+|Expect                |          18      |    16693    |          0    |     134733|
+|C++                   |         513      |    34279    |      43628    |     126259|
+|C/C++ Header          |         458      |    20998    |      26319    |      95843|
+|XSD                   |         105      |      113    |       1271    |      53205|
+|C                     |          24      |     2796    |        664    |      17791|
+|Qt                    |          32      |        0    |          0    |      10427|
+|Bourne Shell          |           9      |      943    |       1628    |       9143|
+|Qt Linguist           |           3      |        0    |          0    |       8663|
+|XML                   |           9      |       38    |         14    |       8379|
+|WiX source            |           2      |     3392    |         30    |       7278|
+|m4                    |          17      |     1141    |         71    |       7018|
+|SVG                   |          33      |       30    |         30    |       6275|
+|Python                |          37      |     1997    |       2367    |       6077|
+|MSBuild script        |          18      |        0    |         14    |       3316|
+|CMake                 |          97      |      764    |       1743    |       2280|
+|HLSL                  |          15      |      536    |        279    |       1620|
+|XSLT                  |           4      |      153    |         81    |       1582|
+|yacc                  |           1      |      317    |         20    |       1256|
+|Markdown              |          18      |      445    |          0    |        957|
+|HTML                  |           2      |       94    |        219    |        731|
+|DOS Batch             |          32      |       69    |         63    |        666|
+|Java                  |           1      |      138    |        293    |        634|
+|make                  |          16      |      111    |         47    |        447|
+|C#                    |          10      |       97    |         43    |        411|
+|TeX                   |           2      |       92    |          1    |        402|
+|lex                   |           1      |       31    |         23    |        250|
+|Qt Project            |          32      |       90    |         16    |        234|
+|QML                   |           2      |       10    |          4    |         57|
+|ProGuard              |           8      |       31    |         30    |         57|
+|MATLAB                |           1      |        5    |         13    |         24|
+|JSON                  |           1      |        0    |          0    |         21|
+|INI                   |           2      |        0    |          0    |          9|
+|IDL                   |           1      |        0    |          0    |          1|
+|----------------------|------------------|-------------|---------------|-----------|
+|SUM:                  |        1524      |    85403    |      78911    |     506046|
+|----------------------|------------------|-------------|---------------|-----------|
+
 
 > * Whether the software has already been cited in academic papers.
 
