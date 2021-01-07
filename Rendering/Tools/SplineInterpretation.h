@@ -77,7 +77,8 @@ namespace OpenInfraPlatform
 			 *
 			 * By default, the save file should be in the directory \c [build folder]/testdata/StrokeToAlignment/.
 			 * However, the user can select another directory as well. The selected file must have the type \c .sketch,
-			 * and the syntax which is provided by the function \c saveControlPointsIntoFile.
+			 * and the syntax which is provided by the function \c saveControlPointsIntoFile.\n
+			 * In case of an error, the function will retrun a vector of size 0.
 			 *
 			 * \return	A vector of the control points.
 			 */

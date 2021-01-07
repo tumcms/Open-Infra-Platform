@@ -197,64 +197,70 @@ std::vector<carve::geom::vector<3>> OpenInfraPlatform::UserInterface::SplineInte
 		"Sketch Points (*.sketch)" // filter of file type
 		).toStdString(); // convert QString (from getOpenFileName) to std::string
 
-	// initialize a reading file stream with the file name
-	std::ifstream file(fileName);
-
 	// declare target vector
 	std::vector<carve::geom::vector<3>> points;
 
-	// check whether file opening was successfull;
-	//   if it was NOT, nothing happens and an empty std::vector is the return value
-	if (file.is_open())
-	{
-		// ToDo: exception handling if parsing fails (e.g. because invalid information inside the file)
+	// initialize a reading file stream with the file name
+	std::ifstream file(fileName);
 
-		// get first line into a stringstream
-		std::string lineString;
-		std::getline(file, lineString);
-		std::stringstream line(lineString);
-
-		// number of Points is first element in first line
-		size_t numPoints;
-		line >> numPoints;
-
-		// prepare memory in target vector
-		points.reserve(numPoints);
-
-		// skip second line
-		std::getline(file, lineString);
-
-		// declare temporary variables
-		std::string dStr;
-		double x, y, z;
-
-		// read all lines with points
-		while (getline(file, lineString))
+	try {
+		// check whether file opening was successfull;
+		//   if it was NOT, nothing happens and an empty std::vector is the return value
+		if (file.is_open())
 		{
-			// convert string to stringstream
+			// get first line into a stringstream
+			std::string lineString;
+			std::getline(file, lineString);
 			std::stringstream line(lineString);
 
-			// obtain x, y and z from line
-			// get first number in stringstream 'line', save in 'dStr', convert to double
-			line >> dStr;
-			x = std::stof(dStr, nullptr);
+			// number of Points is first element in first line
+			size_t numPoints;
+			line >> numPoints;
 
-			// get second number in stringstream 'line', save in 'dStr', convert to double
-			line >> dStr;
-			y = std::stof(dStr, nullptr);
+			// prepare memory in target vector
+			points.reserve(numPoints);
 
-			// get third number in stringstream 'line', save in 'dStr', convert to double
-			line >> dStr;
-			z = std::stof(dStr, nullptr);
+			// skip second line
+			std::getline(file, lineString);
 
-			// add coordinates to target vector
-			points.push_back(carve::geom::VECTOR(x, y, z));
+			// declare temporary variables
+			std::string dStr;
+			double x, y, z;
+
+			// read all lines with points
+			while (getline(file, lineString))
+			{
+				// convert string to stringstream
+				std::stringstream line(lineString);
+
+				// obtain x, y and z from line
+				// get first number in stringstream 'line', save in 'dStr', convert to double
+				line >> dStr;
+				x = std::stof(dStr, nullptr);
+
+				// get second number in stringstream 'line', save in 'dStr', convert to double
+				line >> dStr;
+				y = std::stof(dStr, nullptr);
+
+				// get third number in stringstream 'line', save in 'dStr', convert to double
+				line >> dStr;
+				z = std::stof(dStr, nullptr);
+
+				// add coordinates to target vector
+				points.push_back(carve::geom::VECTOR(x, y, z));
+			}
+
+			file.close();
 		}
 
-		file.close();
+		return points;
 	}
-
-	return points;
+	catch (const std::exception& e)
+	{
+		// in case of an error, return an empty vector
+		std::vector<carve::geom::vector<3>> pointsEmpty;
+		return pointsEmpty;
+	}
 }
 
 std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obtainKnotArrayOpenUniform(const size_t nPoints, const int order) const throw(...)
