@@ -21,17 +21,11 @@
 #ifndef SPLINEUTILITIES_H
 #define SPLINEUTILITIES_H
 
-//#include <sstream>
-//#include <memory>
-
-//#include "CarveHeaders.h"
-//#include "GeometryInputData.h"
-//#include "GeomUtils.h"
-
-//#include "ConverterBase.h"
-//#include "PlacementConverter.h"
-//#include "CurveConverter.h"
-
+#include <vector>
+#include <tuple>
+#include <utility>
+#include <cmath>
+#include "CarveHeaders.h"
 
 namespace OpenInfraPlatform
 {
