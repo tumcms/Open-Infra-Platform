@@ -192,7 +192,7 @@ std::vector<carve::geom::vector<3>> OpenInfraPlatform::UserInterface::SplineInte
 {
 	// from a file open dialog, get file name (including path) which should be opened
 	const std::string fileName = QFileDialog::getOpenFileName(nullptr, // parent Widget
-		"Open Set Of Sketch Points", // caption / titel
+		"Open Set of Sketch Points", // caption / titel
 		"testdata/StrokeToAlignment/", // directory
 		"Sketch Points (*.sketch)" // filter of file type
 		).toStdString(); // convert QString (from getOpenFileName) to std::string
@@ -204,7 +204,7 @@ std::vector<carve::geom::vector<3>> OpenInfraPlatform::UserInterface::SplineInte
 	std::vector<carve::geom::vector<3>> points;
 
 	// check whether file opening was successfull;
-	//   if it was NOT, nothing happens and an emptiy std::vector is the return value
+	//   if it was NOT, nothing happens and an empty std::vector is the return value
 	if (file.is_open())
 	{
 		// ToDo: exception handling if parsing fails (e.g. because invalid information inside the file)
@@ -217,30 +217,37 @@ std::vector<carve::geom::vector<3>> OpenInfraPlatform::UserInterface::SplineInte
 		// number of Points is first element in first line
 		size_t numPoints;
 		line >> numPoints;
+
 		// prepare memory in target vector
 		points.reserve(numPoints);
 
 		// skip second line
 		std::getline(file, lineString);
 
-		// declare temporary  variables
+		// declare temporary variables
 		std::string dStr;
 		double x, y, z;
+
 		// read all lines with points
 		while (getline(file, lineString))
 		{
+			// convert string to stringstream
 			std::stringstream line(lineString);
 
 			// obtain x, y and z from line
+			// get first number in stringstream 'line', save in 'dStr', convert to double
 			line >> dStr;
 			x = std::stof(dStr, nullptr);
 
+			// get second number in stringstream 'line', save in 'dStr', convert to double
 			line >> dStr;
 			y = std::stof(dStr, nullptr);
 
+			// get third number in stringstream 'line', save in 'dStr', convert to double
 			line >> dStr;
 			z = std::stof(dStr, nullptr);
 
+			// add coordinates to target vector
 			points.push_back(carve::geom::VECTOR(x, y, z));
 		}
 
