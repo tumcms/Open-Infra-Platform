@@ -913,6 +913,10 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::printElementsInCons
 		}
 	}
 
+	// message box informs the user about successful calculation
+	QMessageBox messageBox;
+	messageBox.setText("Calculation finished. Result is printed in the Console Window.");
+	messageBox.exec();
 }
 
 void OpenInfraPlatform::UserInterface::SplineInterpretation::debugFunction_printCurvatureInConsolWindow(
