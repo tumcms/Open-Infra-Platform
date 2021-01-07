@@ -43,7 +43,17 @@ void OpenInfraPlatform::UserInterface::SplineInterpretation::convertSketchToAlig
 	// obtain control points from sketch or from file
 	// (from file is from past sketch or from [external] test data)
 	const std::vector<carve::geom::vector<3>> controlPoints = obtainControlPoints();
-	// ToDo: exception handling if controlPoints is an empty vector, the functions has to be cancelled
+
+	// in case of an error in obtainControlPoints (sketch or load), the vector has size 0
+	if (controlPoints.size() == 0) {
+		// message box informs the user about an error
+		QMessageBox messageBox;
+		messageBox.setText("An error occured in sketch input or load from file.");
+		messageBox.exec();
+
+		// cancel the function
+		return;
+	}
 
 	// DEBUG
 	//std::cout << "Control points:" << std::endl;

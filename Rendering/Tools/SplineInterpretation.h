@@ -56,6 +56,8 @@ namespace OpenInfraPlatform
 
 			// FUNCTIONS
 			/*! \brief Provides the choise between sketch points or load points.
+			 *
+			 * In case of an error, the function will return a vector of size 0.
 			 * 
 			 * \return A vector of the control points.
 			 */
