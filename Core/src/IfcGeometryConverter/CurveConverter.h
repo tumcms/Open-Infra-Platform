@@ -979,6 +979,7 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const noexcept(false)
 				{
+<<<<<<< HEAD
 					//throw oip::UnhandledException(clothoid);
 					//check input 
 					if (clothoid.expired())
@@ -1068,6 +1069,15 @@ namespace OpenInfraPlatform
 							newClothoidPoints.at(0).y,
 							newClothoidPoints.at(0).z));
 					}
+=======
+					throw oip::UnhandledException(clothoid);
+
+					// Part 1: Get information from IfcClothoid. 
+					// Get IfcClothoid attributes: clothoid position and clothoid constant. 
+					//1.1 Clothoid position
+					carve::geom::vector<3> clothoid_origin = convertIfcAxis2Placement3D(placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());;
+					//1.2 Clothoid Constant use IfcLengthMeasure
+>>>>>>> aeb43baf (Starting implementation for IfcClothoid)
 
 				}
 #endif
