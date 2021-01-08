@@ -124,16 +124,6 @@ namespace OpenInfraPlatform
 			 */
 			std::vector<double> movingAverageVariableWindow(std::vector<double>& data) const throw(...);
 
-			/* \brief In a vector of pairs, this function obtains the second pair value and saves the values into a new vector
-			 *
-			 * For example the curvature in the vector \c lengthsWithCurvatures can be obtained for further use.
-			 *
-			 * \param[in]	lengthsWithCurvatures	A vecotr of \c pair<double,double>.
-			 *
-			 * \return		A vector of \c double wiht the second values of the pair vector.
-			 */
-			std::vector<double> obtainCurvatureFrom_lengthWithCurvatures(const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const throw(...);
-
 			/* \brief Calculates the range of a variogramm.
 			 *
 			 * Calculates the semevariogramm variable with the values in \c data. 
@@ -180,16 +170,6 @@ namespace OpenInfraPlatform
 			 * \return		Vector with indicators of curvature change and the (one) corresponding threshold value.
 			 */
 			std::tuple<std::vector<int>, double> indicateCurvatureChange(std::vector<double> curvatureChange) const throw(...);
-
-			/* \brief Returns the threshold value from the second pair values in a vector of \c pair<double,double>.
-			 *
-			 * The threshold is defined by the function as 25 % of the absolute magnitude.
-			 *
-			 * \param[in]	lengthsWithCurvatures	A vector of \c pair<double,double>.
-			 *
-			 * \return	Threshold value.
-			 */
-			double obtainThreshold(const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const throw(...);
 
 			/* \brief Returns the threshold value from a vector of \c double.
 			 *

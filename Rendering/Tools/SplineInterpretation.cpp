@@ -290,7 +290,13 @@ std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obta
 
 std::vector<std::pair<double, double>> OpenInfraPlatform::UserInterface::SplineInterpretation::movingAverageVariableWindow(std::vector<std::pair<double, double>>& xy) const throw(...)
 {
-	std::vector<double> data = obtainCurvatureFrom_lengthWithCurvatures(xy);
+	// get y-values into data vector
+	std::vector<double> data;
+	data.resize(xy.size());
+	std::transform(
+		xy.begin(), xy.end(),
+		data.begin(),
+		[](const std::pair<double, double>& it) -> double { return it.second; });
 
 	// call main function of moving average
 	data = movingAverageVariableWindow(data);
@@ -343,20 +349,6 @@ std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::movi
 	}
 
 	return value;
-}
-
-std::vector<double> OpenInfraPlatform::UserInterface::SplineInterpretation::obtainCurvatureFrom_lengthWithCurvatures(
-	const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const throw(...)
-{
-	// numer of elements
-	const size_t n = lengthsWithCurvatures.size();
-
-	// obtain second value of xy
-	std::vector<double> curvature(n, 0.0);
-	for (size_t i = 0; i < n; i++)
-		curvature[i] = lengthsWithCurvatures[i].second;
-
-	return curvature;
 }
 
 size_t OpenInfraPlatform::UserInterface::SplineInterpretation::variogrammGetRange(std::vector<double>& data) const throw(...)
@@ -450,12 +442,6 @@ std::tuple<std::vector<int>, double> OpenInfraPlatform::UserInterface::SplineInt
 			indicator[i] = 1;
 
 	return { indicator, curvatureZero };
-}
-
-double OpenInfraPlatform::UserInterface::SplineInterpretation::obtainThreshold(
-	const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const throw(...)
-{
-	return obtainThreshold(obtainCurvatureFrom_lengthWithCurvatures(lengthsWithCurvatures));
 }
 
 double OpenInfraPlatform::UserInterface::SplineInterpretation::obtainThreshold(std::vector<double> data) const throw(...) {
@@ -614,8 +600,15 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::UserInterface::Splin
 	std::vector<SplineInterpretationElement>& elements) const throw(...)
 {
 	// parameters over complete curve
-	const double curvatureThreshold = obtainThreshold(lengthsWithCurvatures);
-	const std::vector<double> curvature = obtainCurvatureFrom_lengthWithCurvatures(lengthsWithCurvatures);
+	//   get curvature values from lengthsWithCurvatures into curvature vector
+	std::vector<double> curvature;
+	curvature.resize(lengthsWithCurvatures.size());
+	std::transform(
+		lengthsWithCurvatures.begin(), lengthsWithCurvatures.end(), 
+		curvature.begin(), 
+		[](const std::pair<double, double>& it) -> double { return it.second; });
+
+	const double curvatureThreshold = obtainThreshold(curvature);
 
 	// parameters for each element
 	int idStart;
