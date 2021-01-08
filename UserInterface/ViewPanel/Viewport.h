@@ -23,7 +23,7 @@
 #include "IfcGeometryConverter/ConverterBuw.h"
 #include "ViewPanel/eView.h"
 
-#include "namespace.h"
+#include <namespace.h>
 
 //#include "OpenInfraPlatform/Infrastructure/Alignment/AlignmentModel.h"
 
@@ -211,7 +211,7 @@ namespace OpenInfraPlatform {
 			buw::Color3f clearColor_;
 
 			int selectedAlignmentIndex_;
-			UINT currentPickId_ = -1;
+			UINT currentPickId_ = -1U;
 			buw::Image4b pickIdImage_;
 		};
 

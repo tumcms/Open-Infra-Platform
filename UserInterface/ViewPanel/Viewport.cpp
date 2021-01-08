@@ -35,8 +35,6 @@
 #endif
 
 
-
-
 #include <buw.Engine.h>
 #include <buw.Rasterizer.h>
 #include <QHBoxLayout>
