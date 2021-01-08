@@ -2143,10 +2143,7 @@ namespace OpenInfraPlatform {
 
 					// Get radius
 					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
-
-					carve::geom::vector<3> circleCenter =
-						conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.);
-					return circleCenter + carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
+					return conicPositionMatrix * carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
 				}
 
 				/**********************************************************************************************/
@@ -2166,10 +2163,7 @@ namespace OpenInfraPlatform {
 					double xRadius = ellipse->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
 					double yRadius = ellipse->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
 
-					carve::geom::vector<3> ellipse_center =
-						conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.);
-
-					return ellipse_center + carve::geom::VECTOR(xRadius * cos(angle), yRadius * sin(angle), 0.);
+					return conicPositionMatrix * carve::geom::VECTOR(xRadius * cos(angle), yRadius * sin(angle), 0.);
 				}
 
 				/**********************************************************************************************/
