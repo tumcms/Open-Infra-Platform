@@ -2064,7 +2064,7 @@ namespace OpenInfraPlatform {
 					case 0:
 					{
 						// Calculate a trimming point using \c IfcCartesianPoint. 
-						return getPointOnCurve(curve, trimming.get<0>());
+						return getPointOnCurve<TCurve>(curve, trimming.get<0>());
 					}
 					case 1:
 					{
@@ -2082,24 +2082,11 @@ namespace OpenInfraPlatform {
 				* \param[in] cartesianPoint			A pointer to data form \c IfcCartesianPoint.
 				* \return							The location of the trimming point.
 				*/
-				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+				template <typename TCurve>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve> & curve,
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint) const throw(...)
 				{
-					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
-					return conicPositionMatrix * placementConverter->convertIfcCartesianPoint(cartesianPoint);
-				}
-
-				/**********************************************************************************************/
-				/*! \brief Calculates a trimming point on the ellipse using \c IfcCartesianPoint.
-				* \param[in] ellipse				A pointer to data from a \c IfcEllipse.
-				* \param[in] cartesianPoint			A pointer to data form \c IfcCartesianPoint.
-				* \return							The location of the trimming point.
-				*/
-				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
-					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint) const throw(...)
-				{
-					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
-					return conicPositionMatrix * placementConverter->convertIfcCartesianPoint(cartesianPoint);
+					return placementConverter->convertIfcCartesianPoint(cartesianPoint);
 				}
 
 				/**********************************************************************************************/
@@ -2108,6 +2095,7 @@ namespace OpenInfraPlatform {
 				* \param[in] cartesianPoint			A pointer to data form \c IfcCartesianPoint.
 				* \return							The location of the trimming point.
 				*/
+				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcLine>& line,
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint)const throw (...)
 				{
@@ -2124,7 +2112,7 @@ namespace OpenInfraPlatform {
 					}
 					else
 					{
-						throw oip::InconsistentModellingException(line, "Point is not on the line");
+						throw oip::InconsistentGeometryException(line, "Point is not on the line");
 					}
 				}
 
@@ -2133,17 +2121,16 @@ namespace OpenInfraPlatform {
 				* \param[in] circle					A pointer to data from \c IfcCircle.
 				* \param[in] parameter				A pointer to data form \c IfcParameterValue.
 				* \return							The location of the trimming point.
+				* \note The position is not applied ...
 				*/
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
 					double angle = parameter * UnitConvert()->getAngleInRadianFactor();
-					// determine position
-					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
-
+					
 					// Get radius
 					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
-					return conicPositionMatrix * carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
+					return carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
 				}
 
 				/**********************************************************************************************/
@@ -2175,11 +2162,8 @@ namespace OpenInfraPlatform {
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcLine>& line,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter)const throw (...)
 				{
-					double start_parameter = parameter * UnitConvert()->getLengthInMeterFactor();
-					EXPRESSReference<typename IfcEntityTypesT::IfcVector> lineVector = line->Dir;
-
 					return placementConverter->convertIfcCartesianPoint(line->Pnt) +
-						placementConverter->convertIfcDirection(lineVector->Orientation) * start_parameter;
+						placementConverter->convertIfcVector(line->Dir) * parameter;
 				}
 
 			protected:
