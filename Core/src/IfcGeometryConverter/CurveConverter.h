@@ -159,7 +159,7 @@ namespace OpenInfraPlatform {
 					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcBoundedCurve>())
 					{
 						return convertIfcBoundedCurve(ifcCurve.as<typename IfcEntityTypesT::IfcBoundedCurve>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints);
 					}
 
 					// IfcClothoid SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
@@ -308,18 +308,12 @@ namespace OpenInfraPlatform {
 				* \param[in] boundedCurve			A pointer to data from \c IfcBoundedCurve.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcBoundedCurve.
 				*/
 				// IfcBoundedCurve SUBTYPE of IfcCurve
 				void convertIfcBoundedCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve>& boundedCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -341,8 +335,7 @@ namespace OpenInfraPlatform {
 					if (boundedCurve.isOfType<typename IfcEntityTypesT::IfcAlignmentCurve>())
 					{
 						return convertIfcAlignmentCurve(boundedCurve.as<typename IfcEntityTypesT::IfcAlignmentCurve>(),
-							targetVec, segmentStartPoints,
-							trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints);
 					} // end if IfcAlignmentCurve
 #endif
 
@@ -362,8 +355,7 @@ namespace OpenInfraPlatform {
 					else if (boundedCurve.isOfType<typename IfcEntityTypesT::IfcCompositeCurve>())
 					{
 						return convertIfcCompositeCurve(boundedCurve.as<typename IfcEntityTypesT::IfcCompositeCurve>(),
-							targetVec, segmentStartPoints, 
-							trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints);
 					} // end if IfcCompositeCurve
 
 					// IfcGradientCurve SUBTYPE of IfcBoundedCurve (exists starting IFC4x3_RC2)
@@ -371,8 +363,7 @@ namespace OpenInfraPlatform {
 					else if (boundedCurve.isOfType<typename IfcEntityTypesT::IfcGradientCurve>())
 					{
 						return convertIfcGradientCurve(boundedCurve.as<typename IfcEntityTypesT::IfcGradientCurve>(),
-							targetVec, segmentStartPoints, 
-							trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints);
 					} // end if IfcGradientCurve
 #endif 
 
@@ -381,8 +372,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcIndexedPolyCurve(
 							boundedCurve.as<typename IfcEntityTypesT::IfcIndexedPolyCurve>(),
-							targetVec, segmentStartPoints,
-							trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints);
 					} // end if IfcIndexedPolyCurve
 
 					// IfcPolyline SUBTYPE OF IfcBoundedCurve
@@ -393,8 +383,7 @@ namespace OpenInfraPlatform {
 						}
 						else {
 							return convertIfcPolyline(boundedCurve.as<typename IfcEntityTypesT::IfcPolyline>(),
-								targetVec, segmentStartPoints,
-								trim1Vec, trim2Vec, senseAgreement);
+								targetVec, segmentStartPoints);
 						}
 					} // end if IfcPolyline
 
@@ -403,8 +392,7 @@ namespace OpenInfraPlatform {
 					else if (boundedCurve.isOfType<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>())
 					{
 						return convertIfcGradientCurve(boundedCurve.as<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>(),
-							targetVec, segmentStartPoints,
-							trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints);
 					} // end if IfcSegmentedReferenceCurve
 #endif 
 
@@ -412,8 +400,7 @@ namespace OpenInfraPlatform {
 					else if (boundedCurve.isOfType<typename IfcEntityTypesT::IfcTrimmedCurve>()) 
 					{
 						return convertIfcTrimmedCurve(boundedCurve.as<typename IfcEntityTypesT::IfcTrimmedCurve>(), 
-							targetVec, segmentStartPoints,
-							trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints);
 					} // end if IfcTrimmedCurve
 					
 					else 
@@ -430,16 +417,10 @@ namespace OpenInfraPlatform {
 				* \param[in] alignmentCurve			A pointer to data from c\ IfcAlignmentCurve.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcAlignmentCurve.
 				*/
 				void convertIfcAlignmentCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcAlignmentCurve>& alignmentCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -457,10 +438,6 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<3> targetPoint3D;
 					carve::geom::vector<3> targetDirection3D;
 					std::vector<carve::geom::vector<3>> curve_points;
-
-					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
-					if (!trim1Vec.empty() || !trim2Vec.empty())
-						throw oip::InconsistentModellingException(alignmentCurve, "Trimming not supported");
 
 					// attach the curve points
 					for (auto& it_station : stations)
@@ -483,16 +460,10 @@ namespace OpenInfraPlatform {
 				* \param[in] compositeCurve			A pointer to data from \c IfcCompositeCurve.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCompositeCurve.
 				*/
 				void convertIfcCompositeCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCompositeCurve>& compositeCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -511,11 +482,6 @@ namespace OpenInfraPlatform {
 					//		SameDim: SIZEOF(QUERY(Temp < *Segments | Temp.Dim <> Segments[1].Dim)) = 0;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-
-					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
-					if (!trim1Vec.empty() || !trim2Vec.empty())
-						throw oip::InconsistentModellingException(compositeCurve, "Trimming not supported");
-
 					for (auto &segment: compositeCurve->Segments) {
 						std::vector<carve::geom::vector<3>> segment_vec;
 
@@ -533,19 +499,13 @@ namespace OpenInfraPlatform {
 				* \param[in] gradientCurve			A pointer to data from \c IfcGradientCurve.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcGradientCurve.
 				*
 				* \note The function is not implemented.
 				* \internal TODO.
 				*/
 				void convertIfcGradientCurve(EXPRESSReference<typename IfcEntityTypesT::IfcGradientCurve>& gradientCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
 					throw oip::UnhandledException(gradientCurve);
@@ -558,17 +518,11 @@ namespace OpenInfraPlatform {
 				* \param[in] polycurve				A pointer to data from \c IfcIndexedPolyCurve.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcIndexedPolyCurve.
 				*/
 				void convertIfcIndexedPolyCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcIndexedPolyCurve>& polycurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -588,10 +542,6 @@ namespace OpenInfraPlatform {
 
 					// get the points
 					std::vector<carve::geom::vector<3>> points = convertIfcCartesianPointList(polycurve->Points);
-
-					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
-					if (!trim1Vec.empty() || !trim2Vec.empty())
-						throw oip::InconsistentModellingException(polycurve, "Trimming not supported");
 
 					// are segments there?
 					if (polycurve->Segments)
@@ -630,7 +580,8 @@ namespace OpenInfraPlatform {
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcSegmentIndexSelect(
 					const typename IfcEntityTypesT::IfcSegmentIndexSelect & segmentIndexSelect,
-					const std::vector<carve::geom::vector<3>>& points)const throw(...)
+					const std::vector<carve::geom::vector<3>>& points
+				)const throw(...)
 				{
 					switch (segmentIndexSelect.which())
 					{
@@ -658,7 +609,8 @@ namespace OpenInfraPlatform {
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcLineIndex(
 					const typename IfcEntityTypesT::IfcLineIndex &lineSegment,
-					const std::vector<carve::geom::vector<3>>& points) const throw(...)
+					const std::vector<carve::geom::vector<3>>& points
+				) const throw(...)
 				{
 					if (lineSegment.size() < 2)
 						throw oip::InconsistentModellingException("The number of indices for one of IfcLineIndex is less than 2!");
@@ -679,7 +631,8 @@ namespace OpenInfraPlatform {
 				*/
 				std::vector<carve::geom::vector<3>> convertIfcArcIndex(
 					const typename IfcEntityTypesT::IfcArcIndex &arcSegment,
-					const std::vector<carve::geom::vector<3>>& points) const throw(...)
+					const std::vector<carve::geom::vector<3>>& points
+				) const throw(...)
 				{
 					if (arcSegment.size() != 3)
 						throw oip::InconsistentModellingException("The number of indices for one of IfcArcIndex is not 3!");
@@ -776,7 +729,10 @@ namespace OpenInfraPlatform {
 				* \param[in] vector3D				Vector in 3D
 				* return							Converted vector in 2D.
 				*/
-				carve::geom::vector<2> convert3Dto2D(const carve::math::Matrix&  conversionMatrix, const carve::geom::vector<3>& vector3D) const throw(...) {
+				carve::geom::vector<2> convert3Dto2D(const carve::math::Matrix&  conversionMatrix,
+					const carve::geom::vector<3>& vector3D
+				) const throw(...) 
+				{
 					return carve::geom::VECTOR((conversionMatrix._11 * vector3D.x + conversionMatrix._12 * vector3D.y + conversionMatrix._13 * vector3D.z),
 						(conversionMatrix._21 * vector3D.x + conversionMatrix._22 * vector3D.y + conversionMatrix._23 * vector3D.z));
 				}
@@ -787,17 +743,11 @@ namespace OpenInfraPlatform {
 				* \param[in] polyline				A pointer to data from c\ IfcPolyline.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcPolyline.
 				*/
 				void convertIfcPolyline(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& polyline, 
 					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -814,10 +764,6 @@ namespace OpenInfraPlatform {
 
 					std::vector<carve::geom::vector<3>> loop = convertIfcCartesianPointVector(polyline->Points);
 
-					// Internal TODO: Implement function GetPointOnCurve, which will be able calculate trimming for each curve
-					if (!trim1Vec.empty() || !trim2Vec.empty())
-						throw oip::InconsistentModellingException(polyline, "Trimming not supported");
-
 					segmentStartPoints.push_back(loop.at(0));
 					targetVec.insert(targetVec.end(), loop.begin(), loop.end());
 				}
@@ -829,16 +775,10 @@ namespace OpenInfraPlatform {
 				* \param[in] segmentedReferenceCurve		A pointer to data from c\ IfcSegmentedReferenceCurve.
 				* \param[out] targetVec						The tessellated line.
 				* \param[out] segmentStartPoints			The starting points of separate segments.
-				* \param[in] trim1Vec						The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec						The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement					Does the resulting geometry have the same sense agreement as the \c IfcSegmentedReferenceCurve.
 				*/
 				void convertIfcSegmentedReferenceCurve(EXPRESSReference<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>& segmentedReferenceCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
 					throw oip::UnhandledException(segmentedReferenceCurve);
@@ -851,16 +791,10 @@ namespace OpenInfraPlatform {
 				* \param[in] trimmedCurve				A pointer to data from c\ IfcTrimmedCurve.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcTrimmedCurve.
 				*/
 				void convertIfcTrimmedCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcTrimmedCurve>& trimmedCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -878,10 +812,11 @@ namespace OpenInfraPlatform {
 					//			NoTrimOfBoundedCurves: NOT('IFC4X1.IFCBOUNDEDCURVE' IN TYPEOF(BasisCurve));
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					if (!trim1Vec.empty() || !trim2Vec.empty())
-						throw oip::InconsistentModellingException(trimmedCurve, "Trimming not supported");
+					EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = trimmedCurve->BasisCurve;
 
-					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> basisCurve = trimmedCurve->BasisCurve.lock();
+					if (basisCurve.isOfType<typename IfcEntityTypesT::IfcBoundedCurve>())
+						throw oip::InconsistentModellingException(trimmedCurve, "Trimmed curve can not have bouded curve as basis curve");
+					
 					std::vector<carve::geom::vector<3> > basisCurvePoints;
 
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curveTrim1Vec;
