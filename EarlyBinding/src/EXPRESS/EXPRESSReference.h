@@ -134,18 +134,28 @@ public:
 
 	friend void swap(EXPRESSReference<T>& first, EXPRESSReference<T>& second)
 	{
-		using std::swap;
+		using boost::swap;
 		first.base::swap(second);
 		swap(first.refId, second.refId);
 		swap(first.model, second.model);
 	}
 
 	template <typename TTarget> EXPRESSReference<TTarget> as() {
-		return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+		if (!isOfType<TTarget>())
+			return EXPRESSReference<TTarget>();
+
+		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model->lock());
+		return target;
+		//return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
 	}
 
 	template <typename TTarget> const EXPRESSReference<TTarget> as() const {
-		return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+		if (!isOfType<TTarget>())
+			return EXPRESSReference<TTarget>();
+
+		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model->lock());
+		return target;
+		//return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
 	}
 
 	template <typename TTarget> bool isOfType() const {
