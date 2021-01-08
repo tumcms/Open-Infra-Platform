@@ -58,7 +58,7 @@ public:
 	// Assignment Operators
 
 	// = default
-	EXPRESSOptional& operator= (const ForwardType& other);
+	EXPRESSOptional& operator= (ForwardType other);
 	//EXPRESSOptional& operator= (const ForwardType& other) { this->base::emplace(other); return *this; }
 
 	EXPRESSOptional& operator= (const EXPRESSOptional& other) = default;

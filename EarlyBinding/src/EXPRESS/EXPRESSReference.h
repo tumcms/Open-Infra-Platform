@@ -41,21 +41,18 @@ public:
 
 	EXPRESSReference() = default;
 
-	EXPRESSReference(const EXPRESSReference& other)
-        :
-        base(other),
-        refId{other.refId},
-        model{other.model}
-	{
-	    
+	EXPRESSReference(const EXPRESSReference<T>& other)	{
+		this->operator=(other);
+	}
+
+	EXPRESSReference(EXPRESSReference<T> &&other) {
+		swap(other);
 	}
 
 	virtual ~EXPRESSReference() { 
 		this->base::reset();
 		this->model.reset();
 	}
-
-	using base::base;
 
 	EXPRESSReference<T>& operator=(const EXPRESSReference<T>& other)
 	{
@@ -127,11 +124,12 @@ public:
 	const std::string classname() const override;
 	
 
-	friend void swap(EXPRESSReference& first, EXPRESSReference& second)
+	friend void swap(EXPRESSReference<T>& first, EXPRESSReference<T>& second)
 	{
+		using std::swap;
 		first.base::swap(second);
-		std::swap(first.refId, second.refId);
-		std::swap(first.model, second.model);
+		swap(first.refId, second.refId);
+		swap(first.model, second.model);
 	}
 
 	template <typename TTarget> EXPRESSReference<TTarget> as() {
