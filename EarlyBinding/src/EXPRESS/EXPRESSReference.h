@@ -144,7 +144,7 @@ public:
 		if (!isOfType<TTarget>())
 			return EXPRESSReference<TTarget>();
 
-		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model->lock());
+		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());
 		return target;
 		//return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
 	}
@@ -153,7 +153,7 @@ public:
 		if (!isOfType<TTarget>())
 			return EXPRESSReference<TTarget>();
 
-		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model->lock());
+		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());
 		return target;
 		//return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
 	}
