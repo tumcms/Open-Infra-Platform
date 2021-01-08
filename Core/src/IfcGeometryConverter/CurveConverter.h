@@ -893,6 +893,13 @@ namespace OpenInfraPlatform
 				) const noexcept(false)
 				{
 					throw oip::UnhandledException(clothoid);
+
+					// Part 1: Get information from IfcClothoid. 
+					// Get IfcClothoid attributes: clothoid position and clothoid constant. 
+					//1.1 Clothoid position
+					carve::geom::vector<3> clothoid_origin = convertIfcAxis2Placement3D(placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());;
+					//1.2 Clothoid Constant use IfcLengthMeasure
+
 				}
 #endif
 
