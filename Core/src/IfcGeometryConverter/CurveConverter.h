@@ -105,7 +105,8 @@ namespace OpenInfraPlatform {
 				{
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> > trim1Vec;
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> > trim2Vec;
-					convertIfcCurve(ifcCurve, loops, segmentStartPoints, trim1Vec, trim2Vec, true);
+					typename IfcEntityTypesT::IfcTrimmingPreference trimmingPreference;
+					convertIfcCurve(ifcCurve, loops, segmentStartPoints, trim1Vec, trim2Vec, true, trimmingPreference);
 				}
 
 				/*! \brief Converts an \c IfcCurve to an array of segments to be rendered on screen.
@@ -124,7 +125,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> >& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect> >& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -149,7 +151,7 @@ namespace OpenInfraPlatform {
 					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcBlossCurve>())
 					{
 						return convertIfcBlossCurve(ifcCurve.as<typename IfcEntityTypesT::IfcBlossCurve>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					}
 #endif
 
@@ -165,7 +167,7 @@ namespace OpenInfraPlatform {
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 					{
 						return convertIfcClothoid(ifcCurve.as<typename IfcEntityTypesT::IfcClothoid>(), 
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					}
 #endif
 					
@@ -173,28 +175,28 @@ namespace OpenInfraPlatform {
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcConic>())
 					{
 						return convertIfcConic(ifcCurve.as<typename IfcEntityTypesT::IfcConic>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					}
 
 					// IfcLine SUPTYPE of IfcCurve
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
 					{
 						return convertIfcLine(ifcCurve.as<typename IfcEntityTypesT::IfcLine>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					}
 
 					// IfcOffsetCurve SUPTYPE of IfcCurve
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcOffsetCurve>())
 					{
 						return convertIfcOffsetCurve(ifcCurve.as<typename IfcEntityTypesT::IfcOffsetCurve>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					}
 
 					// IfcPcurve SUPTYPE of IfcCurve
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcPcurve>())
 					{
 						return convertIfcPcurve(ifcCurve.as<typename IfcEntityTypesT::IfcPcurve>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					}
 
 					// IfcSeriesParameterCurve SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
@@ -202,7 +204,7 @@ namespace OpenInfraPlatform {
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcSeriesParameterCurve>())
 					{
 						return convertIfcSeriesParameterCurve(ifcCurve.as<typename IfcEntityTypesT::IfcSeriesParameterCurve>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					}
 #endif
 
@@ -210,7 +212,7 @@ namespace OpenInfraPlatform {
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcSurfaceCurve>())
 					{
 						return convertIfcSurfaceCurve(ifcCurve.as<typename IfcEntityTypesT::IfcSurfaceCurve>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					}
 					else 
 					{
@@ -234,7 +236,8 @@ namespace OpenInfraPlatform {
 				{
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> trim1Vec;
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> trim2Vec;
-					convertIfcCurve2D(ifcCurve, loops, segmentStartPoints, trim1Vec, trim2Vec, true);
+					typename IfcEntityTypesT::IfcTrimmingPreference trimmingPreference;
+					convertIfcCurve2D(ifcCurve, loops, segmentStartPoints, trim1Vec, trim2Vec, true, trimmingPreference);
 				}
 
 				/*! \brief Calls CurveConverterT::convertIfcCurve and converts the results to 2D.
@@ -253,14 +256,15 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<2>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					std::vector<carve::geom::vector<3>> target_vec_3d;
 					std::vector<carve::geom::vector<3>> segment_start_points_3d;
 
 					convertIfcCurve(ifcCurve, target_vec_3d, segment_start_points_3d,
-						trim1Vec, trim2Vec, senseAgreement);
+						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 
 					for (int i = 0; i < target_vec_3d.size(); ++i) {
 						carve::geom::vector<3>& point_3d = target_vec_3d[i];
@@ -291,7 +295,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					throw oip::UnhandledException(blossCurve);
@@ -892,13 +897,12 @@ namespace OpenInfraPlatform {
 						curveTrim2Vec.begin(), [](auto it) { return std::make_shared<decltype(it)>(it); });
 
 					bool trimmedSenseAgreement = trimmedCurve->SenseAgreement;
+					typename IfcEntityTypesT::IfcTrimmingPreference trimmingPreference = trimmedCurve->MasterRepresentation;
 
 					// call recursively with trimmings
 					convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
-						curveTrim1Vec, curveTrim2Vec, trimmedSenseAgreement);
+						curveTrim1Vec, curveTrim2Vec, trimmedSenseAgreement, trimmingPreference); 
 					GeomUtils::appendPointsToCurve(basisCurvePoints, targetVec);
-					// end
-					return;
 				}
 
 				// IfcClothoid SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
@@ -920,7 +924,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					throw oip::UnhandledException(clothoid);
@@ -943,7 +948,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -960,14 +966,14 @@ namespace OpenInfraPlatform {
 					if (conic.isOfType<typename IfcEntityTypesT::IfcCircle>()) 
 					{
 						return convertIfcCircle( conic.as<typename IfcEntityTypesT::IfcCircle>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcCircle
 
 					// IfcEllipse SUBTYPE OF IfcConic
 					else if (conic.isOfType<typename IfcEntityTypesT::IfcEllipse>())
 					{
 						return convertIfcEllipse(conic.as<typename IfcEntityTypesT::IfcEllipse>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement);
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if ellipse
 
 					// the rest we do not support
@@ -990,7 +996,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -1023,6 +1030,7 @@ namespace OpenInfraPlatform {
 						endAngle = getAngleOnCircle(circleCenter, circleRadius, point);
 					}
 					
+
 					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
 					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(circleRadius, abs(openingAngle));
@@ -1071,7 +1079,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -1160,7 +1169,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -1227,7 +1237,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -1294,7 +1305,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					throw oip::UnhandledException(pCurve);
@@ -1319,7 +1331,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					throw oip::UnhandledException(pcurve);
@@ -1346,7 +1359,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
 					//	ABSTRACT SUPERTYPE OF IfcIntersectionCurve, IfcSeamCurve																//
