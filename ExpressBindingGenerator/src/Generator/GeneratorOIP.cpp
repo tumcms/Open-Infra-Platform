@@ -3152,7 +3152,8 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 					for( auto inverse : attr.getInverses() )
 					{
 						writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + inverse.first + ">() ) {");
-						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + inverse.first + ">()->" + inverse.second + ".push_back(EXPRESSReference<" + entity.getName() + ">::constructInstance(this->getId(), model));");
+						writeLine(out, "EXPRESSReference<" + name + "> inv = EXPRESSReference<" + name + ">::constructInstance(this->getId(), model);");
+						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + inverse.first + ">()->" + inverse.second + ".push_back(inv);");
 						writeLine(out, "}");
 					}
 				}
@@ -3170,7 +3171,8 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 						{
 							writeLine(out, "case " + std::to_string(k) + ":");
 							writeLine(out, "{\t// " + t.getType(k));
-							writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + inverse->second + ".push_back(EXPRESSReference<" + entity.getName() + ">::constructInstance(this->getId(), model));");
+							writeLine(out, "EXPRESSReference<" + name + "> inv = EXPRESSReference<" + name + ">::constructInstance(this->getId(), model);");
+							writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + inverse->second + ".push_back(inv);");
 							writeLine(out, "break;");
 							writeLine(out, "}");
 						}
