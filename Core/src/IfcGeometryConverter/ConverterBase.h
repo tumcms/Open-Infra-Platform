@@ -74,16 +74,28 @@ namespace OpenInfraPlatform
 					unitConverter_(unitConverter)
 				{}
 				//! default destructor
-				~ConverterBaseT() {}
+				virtual ~ConverterBaseT()
+				{
+					geomSettings_.reset();
+					unitConverter_.reset();
+				}
 
+				// See https://stackoverflow.com/questions/856542/elegant-solution-to-duplicate-const-and-non-const-getters
+				// 
 				//! getter for geometry settings
-				std::shared_ptr<GeometrySettings>&				 GeomSettings()		  { return geomSettings_; }
+				const std::shared_ptr<GeometrySettings>& GeomSettings() const { return geomSettings_; }
 				//! const-getter for geometry settings
-				const std::shared_ptr<GeometrySettings>& 				 GeomSettings() const { return geomSettings_; }
+				std::shared_ptr<GeometrySettings>& GeomSettings()
+				{
+					return const_cast<std::shared_ptr<GeometrySettings>&>(const_cast<const ConverterBaseT*>(this)->GeomSettings());
+				}
 				//! getter for unit conversion
-				std::shared_ptr<UnitConverter<IfcEntityTypesT>>& UnitConvert()		  { return unitConverter_; }
+				const std::shared_ptr<UnitConverter<IfcEntityTypesT>>& UnitConvert() const { return unitConverter_; }
 				//! const-getter for unit conversion
-				const std::shared_ptr<UnitConverter<IfcEntityTypesT>>&  UnitConvert()	const { return unitConverter_; }
+				std::shared_ptr<UnitConverter<IfcEntityTypesT>>& UnitConvert()
+				{
+					return const_cast<std::shared_ptr<UnitConverter<IfcEntityTypesT>>&>(const_cast<const ConverterBaseT*>(this)->UnitConvert());
+				}
 
 				/**
 				 * \brief Tests if a pointer to \c Is can be casted to a pointer to \c Test.

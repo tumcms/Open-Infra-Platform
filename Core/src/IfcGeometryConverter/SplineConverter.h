@@ -29,9 +29,8 @@
 #include "GeomUtils.h"
 
 #include "ConverterBase.h"
-#include "PlacementConverter.h"
 #include "CurveConverter.h"
-
+#include "PlacementConverter.h"
 
 namespace OpenInfraPlatform
 {
@@ -54,9 +53,13 @@ namespace OpenInfraPlatform
 						:
 						ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
 						placementConverter(pc)
-					{}
+					{
+					}
 
-					virtual ~SplineConverterT() {}
+					virtual ~SplineConverterT()
+					{
+						placementConverter.reset();
+					}
 
 					/*! \brief Converts \c IfcBSplineCurve subtypes to an array of curve points, which can be rendered in a viewport.
 					 *
@@ -69,15 +72,15 @@ namespace OpenInfraPlatform
 					 */
 					void convertIfcBSplineCurve(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve,
-						std::vector<carve::geom::vector<3>>& loops) const throw(...)
+						std::vector<carve::geom::vector<3>>& loops) const noexcept(false)
 					{
 						const int degree = splineCurve->Degree;
 						const int order = degree + 1;
 						const int numControlPoints = splineCurve->ControlPointsList.size();
 						const int numKnotsArray = order + numControlPoints;
 
-						CurveConverterT<IfcEntityTypesT> curveConverter(GeomSettings(), UnitConvert(), placementConverter);
-						const std::vector<carve::geom::vector<3>> controlPoints = curveConverter.convertIfcCartesianPointVector(splineCurve->ControlPointsList);
+						auto curveConverter = std::make_shared<CurveConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert(), placementConverter);
+						const std::vector<carve::geom::vector<3>> controlPoints = curveConverter->convertIfcCartesianPointVector(splineCurve->ControlPointsList);
 
 						// IfcRationalBSplineCurveWithKnots is a subtype of IfcBSplineCurveWithKnots which is a subtype of IfcBSplineCurve, 
 						// it represents a rational B-Spline / a NURBS.
@@ -137,7 +140,7 @@ namespace OpenInfraPlatform
 					void convertIfcBSplineSurface(
 						const std::shared_ptr<typename IfcEntityTypesT::IfcBoundedSurface>& splineSurface,
 						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
-						std::shared_ptr<carve::input::PolylineSetData>& polylineData) const throw(...)
+						std::shared_ptr<carve::input::PolylineSetData>& polylineData) const noexcept(false)
 					{
 						// not implemented, code in commented out part at the end of the file
 						throw oip::UnhandledException(splineSurface);
@@ -154,7 +157,7 @@ namespace OpenInfraPlatform
 					 */
 					std::vector<double> loadKnotArray(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline,
-						const int& numKnotsArray) const throw(...)
+						const int& numKnotsArray) const noexcept(false)
 					{
 						// check whether data in ifc matches the definition in documentation
 						if (bspline->KnotMultiplicities.size() != bspline->Knots.size())
@@ -207,7 +210,7 @@ namespace OpenInfraPlatform
 					 * \return		The vector of weights per knot.
 					 */
 					std::vector<double> loadWeightsData(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve) const throw(...)
+						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve) const noexcept(false)
 					{
 						std::vector<double> weightsData;
 
@@ -235,7 +238,7 @@ namespace OpenInfraPlatform
 					std::tuple<double, double, double> obtainKnotRange(
 						const uint8_t& order, 
 						const std::vector<double>& knotArray,
-						const uint32_t& numCurvePoints) const throw(...)
+						const uint32_t& numCurvePoints) const noexcept(false)
 					{
 						// curve is defined for [t_p;t_m-p], m := number of knots - 1
 						const uint32_t firstIndex = order - 1;
@@ -261,14 +264,14 @@ namespace OpenInfraPlatform
 					 * \note	The number of curve points \c numCurvePoints, where the curve c(t) has to be evaluated,
 					 *			is temporary preset with a default value proportional to the number of knots.
 					 */
-					std::tuple<const uint32_t, const double> obtainProperties(const int& numKnotsArray) const throw(...)
+					std::tuple<const uint32_t, const double> obtainProperties(const int& numKnotsArray) const noexcept(false)
 					{
 						// ! TEMPORARY default number of curve points
 						const uint32_t numCurvePoints = numKnotsArray * 10;
 
 						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
 						//const double accuracy = 0.0000001;
-						double accuracy = GeomSettings()->getPrecision();
+						double accuracy = this->GeomSettings()->getPrecision();
 
 						return { numCurvePoints, accuracy };
 					}
@@ -289,7 +292,7 @@ namespace OpenInfraPlatform
 						const int& order,
 						const std::vector<double>& knotArray,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
-						const int& numControlPoints) const throw(...)
+						const int& numControlPoints) const noexcept(false)
 					{
 						uint32_t numCurvePoints;
 						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
@@ -349,7 +352,7 @@ namespace OpenInfraPlatform
 						const std::vector<double>& knotArray,
 						const std::vector<carve::geom::vector<3>>& controlPoints,
 						const int& numControlPoints,
-						const std::vector<double>& weightsData) const throw(...)
+						const std::vector<double>& weightsData) const noexcept(false)
 					{
 						uint32_t numCurvePoints;
 						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
@@ -414,7 +417,7 @@ namespace OpenInfraPlatform
 						const double t, // t: arbitrary value on B-Spline curve
 						const uint32_t numControlPoints, // n + 1 control points
 						const std::vector<double>& knotVector // t_i: knot points
-					) const throw(...)
+					) const noexcept(false)
 					{
 						const int degree = order - 1;
 						const uint16_t numBasisFuncs = degree + numControlPoints;
@@ -482,7 +485,7 @@ namespace OpenInfraPlatform
 						const std::vector<std::vector<double>>& weights,
 						const std::vector<double>& knotVectorU,
 						const std::vector<double>& knotVectorV,
-						std::vector<carve::geom::vector<3>>& curvePoints) const throw(...)
+						std::vector<carve::geom::vector<3>>& curvePoints) const noexcept(false)
 					{
 						// curve is defined for [t_p;t_m-p], m := number of knots - 1
 						const uint32_t firstIndexU = orderU - 1;
