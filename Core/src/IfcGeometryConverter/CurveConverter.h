@@ -1023,7 +1023,7 @@ namespace OpenInfraPlatform {
 						endAngle = getAngleOnCircle(circleCenter, circleRadius, point);
 					}
 					
-					double openingAngle = calculateOpeningAngle(senseAgreement, openingAngle, endAngle);
+					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
 					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(circleRadius, abs(openingAngle));
 
@@ -1956,7 +1956,7 @@ namespace OpenInfraPlatform {
 						}
 					}
 					else {
-						throw oip::InconsistentModellingException("The point is not located on the circle");
+						throw oip::InconsistentGeometryException("The point is not located on the circle");
 					}
 				}
 
@@ -2005,7 +2005,7 @@ namespace OpenInfraPlatform {
 						}
 					}
 					else {
-						throw oip::InconsistentModellingException("The point is located outside the ellipse");
+						throw oip::InconsistentGeometryException("The point is located outside the ellipse");
 					}
 				}
 
@@ -2086,9 +2086,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint) const throw(...)
 				{
 					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
-					carve::geom::vector<3> conicCenter = conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.);
-
-					return conicCenter + placementConverter->convertIfcCartesianPoint(cartesianPoint);
+					return conicPositionMatrix * placementConverter->convertIfcCartesianPoint(cartesianPoint);
 				}
 
 				/**********************************************************************************************/
@@ -2101,9 +2099,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint) const throw(...)
 				{
 					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
-					carve::geom::vector<3> conicCenter = conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.);
-
-					return conicCenter + placementConverter->convertIfcCartesianPoint(cartesianPoint);
+					return conicPositionMatrix * placementConverter->convertIfcCartesianPoint(cartesianPoint);
 				}
 
 				/**********************************************************************************************/
