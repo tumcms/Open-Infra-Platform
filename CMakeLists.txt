@@ -130,6 +130,7 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE       ${CMAKE_BINARY_DIR}/Release)
 
 add_compile_definitions(
 	_UNICODE 			# Unicode rules
+	UNICODE
 	_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
 	 EIGEN_MPL2_ONLY # Use only MP2 licenced code of Eigen
 ) # -DNOMINMAX does not work because GDI+ needs these macros
@@ -314,7 +315,7 @@ endforeach()
 #------------------------------------------------------------------------------
 # DOXYGEN. 
 #------------------------------------------------------------------------------
-Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM Open Infra Platform." ON)
+Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM Open Infra Platform." OFF)
 
 if(DOXYGEN_GENERATE_DOCUMENTATION)
 
