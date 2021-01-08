@@ -1542,7 +1542,7 @@ namespace OpenInfraPlatform {
 					// If first and last point have same coordinates, remove last point
 					while (loop.size() > 2) {
 						
-						if (GeometrySettings().areEqual(loop.front(), loop.back()))
+						if (GeomSettings()->areEqual(loop.front(), loop.back()))
 						{
 							loop.pop_back();
 							continue;
