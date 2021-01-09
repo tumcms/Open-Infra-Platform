@@ -1103,23 +1103,22 @@ namespace OpenInfraPlatform {
 					// Part 1: Get information from IfcLine. 
 					// Get IfcLine attributes: line point and line direction. 
 					carve::geom::vector<3> lineOrigin = placementConverter->convertIfcCartesianPoint(line->Pnt);
-
 					EXPRESSReference<typename IfcEntityTypesT::IfcVector> lineVector = line->Dir;
-					// Get IfcVector attributes: line orientation and magnitude. 
-					// Orientation type IfcDirection
-					carve::geom::vector<3> line_direction = placementConverter->convertIfcDirection(lineVector->Orientation);
 
-					// Magnitude type IfcLengthMeasure
-					double line_magnitude = lineVector->Magnitude * UnitConvert()->getLengthInMeterFactor();
+					carve::geom::vector<3> lineEnd = lineOrigin + 
+						placementConverter->convertIfcDirection(lineVector->Orientation) * 
+						lineVector->Magnitude * UnitConvert()->getLengthInMeterFactor();
 
 					// Part 2: Trimming
 					// Calculate trimming at beginning of line.
-					lineOrigin = getPointOnCurve<typename IfcEntityTypesT::IfcLine>(line, trim1Vec, trimmingPreference);
+					if (!trim1Vec.empty()) 
+						lineOrigin = getPointOnCurve<typename IfcEntityTypesT::IfcLine>(line, trim1Vec, trimmingPreference);
 					// Calculate trimming at end of line.
-					carve::geom::vector<3> lineEnd = getPointOnCurve<typename IfcEntityTypesT::IfcLine>(line, trim2Vec, trimmingPreference);
+					if (!trim2Vec.empty())
+						lineEnd = getPointOnCurve<typename IfcEntityTypesT::IfcLine>(line, trim2Vec, trimmingPreference);
 					
 					// Part 3: Add line points
-					std::vector<carve::geom::vector<3> > pointVector;
+					std::vector<carve::geom::vector<3>> pointVector;
 					pointVector.push_back(lineOrigin);
 					pointVector.push_back(lineEnd);
 
