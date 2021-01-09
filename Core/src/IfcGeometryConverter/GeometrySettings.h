@@ -128,19 +128,11 @@ namespace OpenInfraPlatform
 				
 				
 				*/
-				static double getPrecision()
+				double getPrecision() const
 				{
 					return carve::EPSILON; //TODO remove constant and replace with content from IFC (i.e. introduce member, getter / setter)
 				}
-				/* ADDED static value to function, so it can be called whith other functions inside the class (e.c areEqual)
-				but it calls other problem which a type "const" in there.=>remove const
-
-				 double getPrecision() const
-				{
-					return carve::EPSILON; //TODO remove constant and replace with content from IFC (i.e. introduce member, getter / setter)
-				}
-				 */
-
+				
 				/*! returns the tessellation precision of the model
 
 				*/
@@ -172,40 +164,37 @@ namespace OpenInfraPlatform
 						dAngle += M_TWOPI;
 					}
 				}
-				/*!Verify two points of series whith precision
-				*\param[in]    first      The first point of serie
-				*\param[in]    second     The second point of serie
-				*\param[in]    precision  Defaul parameter equal getPrecision()
+				/*!Compare two doubles for equality to the specified precision
+				*\param[in]    first      The first value
+				*\param[in]    second     The second value
+				*\param[in]    precision  Precision of model
 				
-				*\return true if different is smaler then the precision [bool]
-				*\note function areEqual has 2 overloads
+				*\return true, if the absolute difference is smaller than the precision. False otherwise
 				*/
-				bool areEqual(const double first,const double second,const double precision = getPrecision()) const
+				bool areEqual(const double first,const double second,const double precision) const
 				{
-					
-					if (abs(first - second) < precision) 
-					{
-						return true;
-					}
-					return false;
+					return abs(first - second) < precision;
 				}
-				
-				bool areEqual(const carve::geom::vector<2>& first, const  carve::geom::vector<2>& second, const double precision = getPrecision()) const
-				{
-					if (areEqual(first.x,second.x, precision) && areEqual(first.y, second.y, precision))
-					{
-						return true;
-					}
-					return false;
-				}
+				/*!Compare two 2D vectors for equality to the specified precision
+				*\param[in]    first      The first 2D-point of vector
+				*\param[in]    second     The second 2D-point of vector
 
-				bool areEqual(const  carve::geom::vector<3>& first, const  carve::geom::vector<3>& second, const double precision = getPrecision()) const
+				*\return true, if the absolute difference is smaller then the precision; otherwise false
+				*/
+				bool areEqual(const carve::geom::vector<2>& first, const  carve::geom::vector<2>& second) const
 				{
-					if (areEqual(first.x, second.x, precision) && areEqual(first.y, second.y, precision) && areEqual(first.y, second.z, precision))
-					{
-						return true;
-					}
-					return false;
+					return areEqual(first.x, second.x, getPrecision()) && areEqual(first.y, second.y, getPrecision());
+				}
+				/*!Compare two 3D vectors for equality to the specified precision
+				*\param[in]    first      The first 3D-point of vector
+				*\param[in]    second     The second 3D-point of vector
+
+				*\return true, if the absolute difference is smaller then the precision; otherwise false
+				*/
+				bool areEqual(const  carve::geom::vector<3>& first, const  carve::geom::vector<3>& second) const
+				{
+					return areEqual(first.x, second.x, getPrecision()) && areEqual(first.y, second.y, getPrecision()) && areEqual(first.y, second.z, getPrecision());
+				}
 						   
 				carve::csg::CSG::CLASSIFY_TYPE getCSGtype() {
 					return classify_type;
