@@ -84,7 +84,7 @@ void Entity::addInverseCounterpart(const std::string& attrName, const std::strin
 	{
 		if (it->getName() == attrName)
 		{
-			it->addInverseCounterpart(inverseEntity, inverseAttr);
+			it->addInverseCounterpart(inverseEntity, inverseAttr, getName());
 			return;
 		}
 	}

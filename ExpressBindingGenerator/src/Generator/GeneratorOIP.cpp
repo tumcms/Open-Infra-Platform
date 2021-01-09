@@ -418,11 +418,11 @@ void writeDoxyComment(std::ostream &out,
 			isFirst = false;
 		for (auto& it : *params)
 		{
-			if( !std::get<1>(it).empty() )
+			if( !std::template get<1>(it).empty() )
 				writeDoxyLine(out, "\\param"
-					+ (std::get<0>(it).empty() ? "" : "[" + std::get<0>(it) + "] ")
-					+ std::get<1>(it) + " "
-					+ std::get<2>(it));
+					+ (std::template get<0>(it).empty() ? "" : "[" + std::template get<0>(it) + "] ")
+					+ std::template get<1>(it) + " "
+					+ std::template get<2>(it));
 		}
 	}
 	// notes
@@ -1208,14 +1208,14 @@ void GeneratorOIP::resolveIncludes(const Schema& schema, const Entity& entity)
 		if (attr.isInverse() || attr.hasInverseCounterpart()) {
 			for (const auto& inverse : attr.getInverses())
 			{
-				if (schema.hasEntity(inverse.first)) {
-					if (entityAttributes.find(inverse.first) == entityAttributes.end()) {
-						entityAttributes.insert(inverse.first);
+				if (schema.hasEntity(std::template get<0>(inverse))) {
+					if (entityAttributes.find(std::template get<0>(inverse)) == entityAttributes.end()) {
+						entityAttributes.insert(std::template get<0>(inverse));
 					}
 				}
-				if (schema.hasType(inverse.first)) {
-					if (typeAttributes.find(inverse.first) == typeAttributes.end()) {
-						typeAttributes.insert(inverse.first);
+				if (schema.hasType(std::template get<0>(inverse))) {
+					if (typeAttributes.find(std::template get<0>(inverse)) == typeAttributes.end()) {
+						typeAttributes.insert(std::template get<0>(inverse));
 					}
 				}
 			}
@@ -3149,11 +3149,11 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 
 				// treat differently for reference-to-entity and selecttype attributes
 				if (schema.hasEntity(elementType->toString())) {
-					for( auto inverse : attr.getInverses() )
+					for( const auto& inverse : attr.getInverses() )
 					{
-						writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + inverse.first + ">() ) {");
-						writeLine(out, "EXPRESSReference<" + name + "> inv = EXPRESSReference<" + name + ">::constructInstance(this->getId(), model);");
-						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + inverse.first + ">()->" + inverse.second + ".push_back(inv);");
+						writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + std::template get<0>(inverse) + ">() ) {");
+						writeLine(out, "EXPRESSReference<" + std::template get<2>(inverse) + "> inv = EXPRESSReference<" + std::template get<2>(inverse) + ">::constructInstance(this->getId(), model);");
+						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + std::template get<0>(inverse) + ">()->" + std::template get<1>(inverse) + ".push_back(inv);");
 						writeLine(out, "}");
 					}
 				}
@@ -3165,14 +3165,14 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 						auto inverses = attr.getInverses();
 
 						// only write if there is also an inverse for this select type
-						auto inverse = std::find_if(inverses.begin(), inverses.end(), [&t, &k](const auto &el) { return el.first == t.getType(k); });
+						auto inverse = std::find_if(inverses.begin(), inverses.end(), [&t, &k](const auto &el) { return std::template get<0>(el) == t.getType(k); });
 
 						if ( inverse != inverses.end())
 						{
 							writeLine(out, "case " + std::to_string(k) + ":");
 							writeLine(out, "{\t// " + t.getType(k));
-							writeLine(out, "EXPRESSReference<" + name + "> inv = EXPRESSReference<" + name + ">::constructInstance(this->getId(), model);");
-							writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + inverse->second + ".push_back(inv);");
+							writeLine(out, "EXPRESSReference<" + std::template get<2>(*inverse) + "> inv = EXPRESSReference<" + std::template get<2>(*inverse) + ">::constructInstance(this->getId(), model);");
+							writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + std::template get<1>(*inverse) + ".push_back(inv);");
 							writeLine(out, "break;");
 							writeLine(out, "}");
 						}
