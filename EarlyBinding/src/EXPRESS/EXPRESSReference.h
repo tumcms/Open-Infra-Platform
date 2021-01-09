@@ -49,6 +49,12 @@ public:
 		swap(other);
 	}
 
+	EXPRESSReference(const std::shared_ptr<EXPRESSEntity>& to, const std::shared_ptr<EXPRESSModel>& model) {
+		if( std::dynamic_pointer_cast<T>(to) != nullptr ) {
+			this->operator=(constructInstance(to->getId(), model));
+		}
+	}
+
 	virtual ~EXPRESSReference() { 
 		this->base::reset();
 		this->model.reset();
