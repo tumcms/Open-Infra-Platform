@@ -947,16 +947,14 @@ namespace OpenInfraPlatform {
 
 					// Get radius
 					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
-					// Get center of the circle
-					carve::geom::vector<3> circleCenter = conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.);
-
-					//Calculate an angle on the circle for trimming begin.
-					carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim1Vec, trimmingPreference);
-					double startAngle = getAngleOnCircle(circleCenter, circleRadius, point);
 					
-					//Calculate an angle on the circle for trimming end.
+					//Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming begin.
+					carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim1Vec, trimmingPreference);
+					double startAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
+					
+					//Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming end.
 					point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim2Vec, trimmingPreference);
-					double endAngle = getAngleOnCircle(circleCenter, circleRadius, point);
+					double endAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
 					
 					// Calculate an opening angle.
 					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
@@ -1033,18 +1031,15 @@ namespace OpenInfraPlatform {
 							int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin);
 							double deltaAngle = GeomSettings()->getAngleLength(radiusMin);
 
-							carve::geom::vector<3> ellipse_center =
-								conicPositionMatrix * carve::geom::VECTOR(0, 0, 0);
-
 							// todo: implement clipping
 							if (!trim1Vec.empty() || !trim2Vec.empty()) {
-								//Calculate an angle on the circle for trimming begin.
+								//Calculate an angle on the ellipse (with ellipse center in (0., 0., 0.)) for trimming begin.
 								carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, trim1Vec, trimmingPreference);
-								double startAngle = getAngleOnEllipse(ellipse_center, xRadius, yRadius, point);
+								double startAngle = getAngleOnEllipse(carve::geom::VECTOR(0, 0, 0), xRadius, yRadius, point);
 
-								//Calculate an angle on the circle for trimming end.
+								//Calculate an angle on the ellipse (with ellipse center in (0., 0., 0.)) for trimming end.
 								point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, trim2Vec, trimmingPreference);
-								double endAngle = getAngleOnEllipse(ellipse_center, xRadius, yRadius, point);
+								double endAngle = getAngleOnEllipse(carve::geom::VECTOR(0, 0, 0), xRadius, yRadius, point);
 
 								// Calculate an opening angle.
 								double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
@@ -2051,7 +2046,8 @@ namespace OpenInfraPlatform {
 				* \tparam curve						A pointer to data from one of curves.
 				* \param[in] cartesianPoint			A pointer to data from \c IfcCartesianPoint.
 				* \return							The location of the trimming point.
-				*/
+				* \note								The position is not applied.All calculations are made based on center in(0., 0., 0.).
+				*/ 
 				template <typename TCurve>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve> & curve,
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint) const throw(...)
@@ -2091,7 +2087,7 @@ namespace OpenInfraPlatform {
 				* \param[in] circle					A pointer to data from \c IfcCircle.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
-				* \note The position is not applied ...
+				* \note								The position is not applied. All calculations are made based on center in ( 0., 0., 0.).
 				*/
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
@@ -2108,6 +2104,7 @@ namespace OpenInfraPlatform {
 				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
+				* \note								The position is not applied. All calculations are made based on center in ( 0., 0., 0.).
 				*/
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
