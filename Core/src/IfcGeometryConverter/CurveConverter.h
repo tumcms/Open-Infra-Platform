@@ -951,21 +951,14 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<3> circleCenter = conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.);
 
 					//Calculate an angle on the circle for trimming begin.
-					double startAngle = 0.; 
-					for (const auto& element : trim1Vec)
-					{
-						carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, *element);
-						startAngle = getAngleOnCircle(circleCenter, circleRadius, point);
-					}
-					//Calculate an angle on the circle for trimming end.
-					double endAngle = 0.;
-					for (const auto& element : trim2Vec)
-					{
-						carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, *element);
-						endAngle = getAngleOnCircle(circleCenter, circleRadius, point);
-					}
+					carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim1Vec, trimmingPreference);
+					double startAngle = getAngleOnCircle(circleCenter, circleRadius, point);
 					
-
+					//Calculate an angle on the circle for trimming end.
+					point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim2Vec, trimmingPreference);
+					double endAngle = getAngleOnCircle(circleCenter, circleRadius, point);
+					
+					// Calculate an opening angle.
 					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
 					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(circleRadius, abs(openingAngle));
@@ -1045,23 +1038,17 @@ namespace OpenInfraPlatform {
 
 							// todo: implement clipping
 							if (!trim1Vec.empty() || !trim2Vec.empty()) {
-								//Calculate an angle on the ellipse for trimming begin.
-								double startAngle = 0.;
-								for (const auto& element : trim1Vec)
-								{
-									carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, *element);
-									startAngle = getAngleOnEllipse(ellipse_center, xRadius, yRadius, point);
-								}
-								//Calculate an angle on the ellipse for trimming end.
-								double endAngle = 0.;
-								for (const auto& element : trim2Vec)
-								{
-									carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, *element);
-									endAngle = getAngleOnEllipse(ellipse_center, xRadius, yRadius, point);
-								}
-								// Calculate an opening angle
+								//Calculate an angle on the circle for trimming begin.
+								carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, trim1Vec, trimmingPreference);
+								double startAngle = getAngleOnEllipse(ellipse_center, xRadius, yRadius, point);
+
+								//Calculate an angle on the circle for trimming end.
+								point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, trim2Vec, trimmingPreference);
+								double endAngle = getAngleOnEllipse(ellipse_center, xRadius, yRadius, point);
+
+								// Calculate an opening angle.
 								double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
-								
+
 								numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin, abs(openingAngle));
 								deltaAngle = GeomSettings()->getAngleLength(radiusMin, abs(openingAngle));
 							}
@@ -1131,18 +1118,11 @@ namespace OpenInfraPlatform {
 					double line_magnitude = lineVector->Magnitude * UnitConvert()->getLengthInMeterFactor();
 
 					// Part 2: Trimming
-					// Check for trimming at beginning of line
-					for (const auto& element : trim1Vec)
-					{
-						lineOrigin = getPointOnCurve<typename IfcEntityTypesT::IfcLine>(line, *element);
-					}
-					// Check for trimming at end of line
-					carve::geom::vector<3> lineEnd;
-					for (const auto& element : trim2Vec)
-					{
-						lineEnd = getPointOnCurve<typename IfcEntityTypesT::IfcLine>(line, *element);
-					}
-
+					// Calculate trimming at beginning of line.
+					lineOrigin = getPointOnCurve<typename IfcEntityTypesT::IfcLine>(line, trim1Vec, trimmingPreference);
+					// Calculate trimming at end of line.
+					carve::geom::vector<3> lineEnd = getPointOnCurve<typename IfcEntityTypesT::IfcLine>(line, trim2Vec, trimmingPreference);
+					
 					// Part 3: Add line points
 					std::vector<carve::geom::vector<3> > pointVector;
 					pointVector.push_back(lineOrigin);
@@ -1150,7 +1130,6 @@ namespace OpenInfraPlatform {
 
 					GeomUtils::appendPointsToCurve(pointVector, targetVec);
 					segmentStartPoints.push_back(lineOrigin);
-					return;
 				}
 
 				// IfcOffsetCurve SUPTYPE of IfcCurve
@@ -1999,8 +1978,50 @@ namespace OpenInfraPlatform {
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
-				* \param[in] curve					A pointer to data from a curve.
-				* \param[in] trimming				A pointer to data form \c IfcTrimmingSelect.
+				* \tparam curve						A pointer to data from one of curves.
+				* \param[in] trimmingVec			A vector of pointers to data form \c IfcTrimmingSelect.
+				* \param[in] trimmingPreference		Specifies the preferred way of trimming.
+				* \return							The location of the trimming point.
+				*/
+				template <typename TCurve>
+				carve::geom::vector<3> getPointOnCurve(
+					const EXPRESSReference<TCurve>& curve, 
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trimmingVec, 
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
+				) const throw(...)
+				{
+					std::vector<carve::geom::vector<3>> points;
+
+					for (int i = 0; i < trimmingVec.size(); i++) {
+						points[i] = getPointOnCurve<TCurve>(curve, *trimmingVec[i]);
+					}
+					if (trimmingVec.size() == 1) {
+						return points[0];
+					}
+					else if (trimmingVec.size() == 2)
+					{
+						switch (trimmingPreference)
+						{
+						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN:
+							return points[0]; 
+						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_PARAMETER:
+							return points[1];
+						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_UNSPECIFIED:
+							return points[0];
+						default:
+							throw oip::InconsistentModellingException("There is no more Enumeration for IfcTrimmingPreference");
+						}
+					}
+					else 
+					{
+						throw oip::InconsistentModellingException("Trimming point can be specified only with one or two parameters");
+					}
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Calculates a trimming point on the curve.
+				* \tparam curve						A pointer to data from one of curves.
+				* \param[in] trimming				A pointer to data from \c IfcTrimmingSelect.
 				* \return							The location of the trimming point.
 				*/
 				template <typename TCurve>
@@ -2026,9 +2047,9 @@ namespace OpenInfraPlatform {
 				}
 
 				/**********************************************************************************************/
-				/*! \brief Calculates a trimming point on the circle using \c IfcCartesianPoint.
-				* \param[in] circle					A pointer to data from a \c IfcCircle.
-				* \param[in] cartesianPoint			A pointer to data form \c IfcCartesianPoint.
+				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint.
+				* \tparam curve						A pointer to data from one of curves.
+				* \param[in] cartesianPoint			A pointer to data from \c IfcCartesianPoint.
 				* \return							The location of the trimming point.
 				*/
 				template <typename TCurve>
@@ -2041,7 +2062,7 @@ namespace OpenInfraPlatform {
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the line using \c IfcCartesianPoint.
 				* \param[in] line					A pointer to data from a c\ IfcLine.
-				* \param[in] cartesianPoint			A pointer to data form \c IfcCartesianPoint.
+				* \param[in] cartesianPoint			A pointer to data from \c IfcCartesianPoint.
 				* \return							The location of the trimming point.
 				*/
 				template <>
@@ -2068,7 +2089,7 @@ namespace OpenInfraPlatform {
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the circle using \c IfcParameterValue.
 				* \param[in] circle					A pointer to data from \c IfcCircle.
-				* \param[in] parameter				A pointer to data form \c IfcParameterValue.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				* \note The position is not applied ...
 				*/
@@ -2085,7 +2106,7 @@ namespace OpenInfraPlatform {
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the ellipse using \c IfcParameterValue.
 				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
-				* \param[in] parameter				A pointer to data form \c IfcParameterValue.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				*/
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
@@ -2105,7 +2126,7 @@ namespace OpenInfraPlatform {
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the line using \c IfcParameterValue.
 				* \param[in] line					A pointer to data from \c IfcLine.
-				* \param[in] parameter				A pointer to data form \c IfcParameterValue.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				*/
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcLine>& line,
