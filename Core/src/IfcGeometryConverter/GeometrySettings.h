@@ -179,7 +179,7 @@ namespace OpenInfraPlatform
 				*\param[in]    first      The first 2D-point of vector
 				*\param[in]    second     The second 2D-point of vector
 
-				*\return true, if the absolute difference is smaller then the precision; otherwise false
+				*\return true, if the absolute difference is smaller than the precision. False otherwise
 				*/
 				bool areEqual(const carve::geom::vector<2>& first, const  carve::geom::vector<2>& second) const
 				{
@@ -189,7 +189,7 @@ namespace OpenInfraPlatform
 				*\param[in]    first      The first 3D-point of vector
 				*\param[in]    second     The second 3D-point of vector
 
-				*\return true, if the absolute difference is smaller then the precision; otherwise false
+				*\return true, if the absolute difference is smaller than the precision. False otherwise
 				*/
 				bool areEqual(const  carve::geom::vector<3>& first, const  carve::geom::vector<3>& second) const
 				{
