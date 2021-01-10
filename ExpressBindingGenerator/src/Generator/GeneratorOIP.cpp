@@ -3061,7 +3061,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 
 		// Copy constructor
 		writeDoxyComment(out, "Copy constructor");
-		writeLine(out, name + "::" + name + "(const " + name + "& other) {");
+		writeLine(out, name + "::" + name + "(const " + name + "& other) : " + name + "() {");
 		writeLine(out, "operator=(other);");
 		writeLine(out, "}");
 		linebreak(out);
@@ -3075,7 +3075,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 
 		// Destructor
 		writeDoxyComment(out, "Destructor.");
-		writeLine(out, name + "::~" + name + "() {};");
+		writeLine(out, name + "::~" + name + "() {}");
 		linebreak(out);
 
 		// Copy Assignment Operator
@@ -3204,7 +3204,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		for (auto attr : schema.getAllEntityAttributes(entity, true)) {
 			writeLine(out, "swap(first." + attr.getName() + ", second." + attr.getName() + ");");
 		}
-		writeLine(out, "};");
+		writeLine(out, "}");
 		linebreak(out);		
 	}
 
