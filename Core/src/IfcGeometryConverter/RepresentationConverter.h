@@ -308,7 +308,7 @@ namespace OpenInfraPlatform {
 					// (3/*) IfcSolidModel SUBTYPE OF IfcGeometricRepresentationItem
 					if(geomItem.isOfType<typename IfcEntityTypesT::IfcSolidModel>()) {
 						solidConverter->convertIfcSolidModel(
-							geomItem.as<typename IfcEntityTypesT::IfcSolidModel>().lock(), 
+							geomItem.as<typename IfcEntityTypesT::IfcSolidModel>(), 
 							pos, itemData);
 						return;
 					}
@@ -493,17 +493,17 @@ namespace OpenInfraPlatform {
 						switch (it_set_elements.which()) {
 						case 0: 
 						{
-							curveConverter->convertIfcCurve(it_set_elements.get<0>().lock(), pos, itemData);
+							curveConverter->convertIfcCurve(it_set_elements.template get<0>(), pos, itemData);
 						}
 							break;
 						case 1:
 						{
-							addPointCross(it_set_elements.get<1>(), pos, itemData);
+							addPointCross(it_set_elements.template get<1>(), pos, itemData);
 						}
 							break;
 						case 2:
 						{
-							faceConverter->convertIfcSurface(it_set_elements.get<2>(), pos, itemData);
+							faceConverter->convertIfcSurface(it_set_elements.template get<2>(), pos, itemData);
 						}
 							break;
 						default: 
@@ -566,7 +566,8 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<ItemData>& itemData
 				) const throw(...)
 				{
-					const std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurve> spine_curve = spine->SpineCurve.lock();
+					/*
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCompositeCurve> spine_curve = spine->SpineCurve;
 					if(!spine_curve) {
 						return;
 					}
@@ -597,6 +598,7 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>> segment_start_points;
 
 					curveConverter->convertIfcCurve(spine_curve, curve_polygon, segment_start_points);
+					*/
 #ifdef _DEBUG
 					std::cout << "Warning\t| IfcSectionedSpine not implemented." << std::endl;
 #endif
