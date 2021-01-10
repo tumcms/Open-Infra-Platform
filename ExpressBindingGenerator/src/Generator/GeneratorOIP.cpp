@@ -619,7 +619,7 @@ void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream
 	writeLine(out, "virtual const std::string getStepParameter() const override;");
 	//writeLine(out, "virtual const std::string getStepParameter() const override { return this->base::getStepParameter(); }");
 	linebreak(out);
-	writeLine(out, "static " + name + " readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
+	writeLine(out, "static " + name + " readStepData(const std::string& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
 	linebreak(out);
 	writeLine(out, "};");
 }
@@ -2004,10 +2004,10 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 		writeLine(out, "const std::string " + name + "::getStepParameter() const { return this->base::getStepParameter(); };");
 		linebreak(out);
-		writeLine(out, name + " " + name + "::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model)");
+		writeLine(out, name + " " + name + "::readStepData(const std::string& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model)");
 		writeLine(out, "{");
 		writeLine(out, name + " val;");
-		writeLine(out, "val.base::readStepData(value, model);");
+		writeLine(out, "val.base::readStepData(args, model);");
 		writeLine(out, "return val;");
 		writeLine(out, "}");
 	}
