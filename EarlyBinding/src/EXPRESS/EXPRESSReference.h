@@ -46,7 +46,7 @@ public:
 	}
 
 	EXPRESSReference(EXPRESSReference<T> &&other) {
-		swap(other);
+		this->swap(other);
 	}
 
 	EXPRESSReference(const std::shared_ptr<EXPRESSEntity>& to, const std::shared_ptr<EXPRESSModel>& model) {
@@ -136,11 +136,19 @@ public:
 	}
 
 	const std::string classname() const override;
-	
+
+	void swap(EXPRESSReference<T>& second)
+	{
+		using std::swap;
+		this->base::swap(second);
+		swap(this->refId, second.refId);
+		swap(this->model, second.model);
+	}
+
 
 	friend void swap(EXPRESSReference<T>& first, EXPRESSReference<T>& second)
 	{
-		using boost::swap;
+		using std::swap;
 		first.base::swap(second);
 		swap(first.refId, second.refId);
 		swap(first.model, second.model);
