@@ -33,6 +33,7 @@
 #include <set>
 #include <unordered_set>
 #include <array>
+#include <mutex>
 
 #include <initializer_list>
 #include <type_traits>
@@ -228,6 +229,16 @@ public:
 	{		
 		first.base::swap(second);
 	}
+
+	// concurrent adding
+	void parallel_push_back(const ValueType& element)
+	{
+		std::lock_guard<std::mutex> lockGuard(mtx);
+		push_back(element);
+	}
+
+	// mutex to lock when concurrently adding
+	std::mutex mtx;
 };
 
 template <size_t MinCardinality, size_t MaxCardinality, typename T> using LIST = EXPRESSContainer<T, MinCardinality, MaxCardinality>;

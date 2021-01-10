@@ -2198,8 +2198,8 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
 			writeLine(file, "if(entityType == \"" + toUpper(entity.getName()) + "\") {");
-            //writeLine(file, "*(model->entities.find(id)->second) = " + entity.getName() + "::readStepData(parseArgs(line), model);");
-			writeLine(file, "(std::dynamic_pointer_cast<" + entity.getName() + ">(model->entities.find(id)->second))->operator=(" + entity.getName() + "::readStepData(parseArgs(line), model));");
+            //writeLine(file, "*(model->entities[id]) = " + entity.getName() + "::readStepData(parseArgs(line), model);");
+			writeLine(file, "(std::dynamic_pointer_cast<" + entity.getName() + ">(model->entities[id]))->operator=(" + entity.getName() + "::readStepData(parseArgs(line), model));");
 			writeLine(file, "continue;");
 			writeLine(file, "}");
 		}
@@ -3155,7 +3155,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 					{
 						writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + std::template get<0>(inverse) + ">() ) {");
 						writeLine(out, "EXPRESSReference<" + std::template get<2>(inverse) + "> inv = EXPRESSReference<" + std::template get<2>(inverse) + ">::constructInstance(this->getId(), model);");
-						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + std::template get<0>(inverse) + ">()->" + std::template get<1>(inverse) + ".push_back(inv);");
+						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + std::template get<0>(inverse) + ">()->" + std::template get<1>(inverse) + ".parallel_push_back(inv);");
 						writeLine(out, "}");
 					}
 				}
@@ -3174,7 +3174,7 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 							writeLine(out, "case " + std::to_string(k) + ":");
 							writeLine(out, "{\t// " + t.getType(k));
 							writeLine(out, "EXPRESSReference<" + std::template get<2>(*inverse) + "> inv = EXPRESSReference<" + std::template get<2>(*inverse) + ">::constructInstance(this->getId(), model);");
-							writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + std::template get<1>(*inverse) + ".push_back(inv);");
+							writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".template get<" + std::to_string(k) + ">()->" + std::template get<1>(*inverse) + ".parallel_push_back(inv);");
 							writeLine(out, "break;");
 							writeLine(out, "}");
 						}
