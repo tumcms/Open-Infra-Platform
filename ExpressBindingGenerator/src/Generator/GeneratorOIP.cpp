@@ -2006,7 +2006,7 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 		linebreak(out);
 		writeLine(out, name + " " + name + "::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model)");
 		writeLine(out, "{");
-		writeLine(out, name + "val;");
+		writeLine(out, name + " val;");
 		writeLine(out, "val.base::readStepData(value, model);");
 		writeLine(out, "return val;");
 		writeLine(out, "}");
