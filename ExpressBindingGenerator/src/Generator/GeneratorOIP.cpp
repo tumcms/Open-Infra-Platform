@@ -1671,8 +1671,9 @@ void GeneratorOIP::generateREFACTORED( const Schema & schema)
 		const auto type = schema.getTypeByIndex(i);
 		generateTypeHeaderFileREFACTORED(schema, type);
 		generateTypeSourceFileREFACTORED(schema, type);
-		std::cout << std::to_string(i+1) + "/" + std::to_string(typeCount) + ": " + type.getName() << std::endl;
+		//std::cout << std::to_string(i+1) + "/" + std::to_string(typeCount) + ": " + type.getName() << std::endl;
 	}
+	std::cout << "done with " << std::to_string(typeCount) << " types." << std::endl;
 
 //#pragma omp parallel for
 	std::cout << "Generating entities:" << std::endl;
@@ -1681,8 +1682,9 @@ void GeneratorOIP::generateREFACTORED( const Schema & schema)
 		const auto entity = schema.getEntityByIndex(i);
 		generateEntityHeaderFileREFACTORED(schema, entity);
 		generateEntitySourceFileREFACTORED(schema, entity);
-		std::cout << std::to_string(i+1) + "/" + std::to_string(entityCount) + ": " + entity.getName() << std::endl;
+		//std::cout << std::to_string(i+1) + "/" + std::to_string(entityCount) + ": " + entity.getName() << std::endl;
 	}
+	std::cout << "done with " << std::to_string(entityCount) << " entities." << std::endl;
 }
 
 std::string GeneratorOIP::getFolder(const std::string& name) const
