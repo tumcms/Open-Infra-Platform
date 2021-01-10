@@ -55,7 +55,12 @@ public:
 	typedef ValueType element_type;
 
 	using base::base;
-	using base::operator=;
+
+	EXPRESSContainer& operator=(const EXPRESSContainer& other)
+	{
+		this->base::operator=(other);
+		return *this;
+	}
 
 	EXPRESSContainer* operator->() { return this; }
 	const EXPRESSContainer* const operator->() const { return this; }
@@ -234,7 +239,7 @@ public:
 	void parallel_push_back(const ValueType& element)
 	{
 		std::lock_guard<std::mutex> lockGuard(mtx);
-		push_back(element);
+		this->base::push_back(element);
 	}
 
 	// mutex to lock when concurrently adding

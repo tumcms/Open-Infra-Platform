@@ -595,13 +595,13 @@ void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, name + "() = default;");
-	writeLine(out, name + "(const "+ name + "& other) = default;");
+	writeLine(out, name + "(const "+ name + "& other) { this->operator=(other); }");
 	//writeLine(out, name + "(const base& other) : base(other) { };");
 
 	writeLine(out, "~" + name + "() { };");
 	linebreak(out);
 	writeLine(out, "using base::base;");
-	writeLine(out, "using base::operator=;");
+	//writeLine(out, "using base::operator=;");
 	//writeLine(out, "using base::operator " + containertype + "<" + valuetype + ">&;");
 	linebreak(out);	
 	writeLine(out,  name + "* operator->();");
@@ -609,7 +609,7 @@ void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream
 	writeLine(out, "const " + name + "* const operator->() const;");
 	//writeLine(out, "const " + name + "* const operator->() const { return this; }");
 	linebreak(out);
-	writeLine(out, name + "& operator=(" + name + "& other);");
+	writeLine(out, name + "& operator=(const " + name + "& other);");
 	//writeLine(out, name + "& operator=(const " + name + "& other) = default;");
 	//writeLine(out, name + "& operator=(const EXPRESSOptional<" + name + "> &other);");
 	//writeLine(out, name + "& operator=(const EXPRESSOptional<" + name + "> &other) { operator=(other.get_value_or(" + name + "())); return *this; };");
@@ -619,9 +619,8 @@ void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream
 	writeLine(out, "virtual const std::string getStepParameter() const override;");
 	//writeLine(out, "virtual const std::string getStepParameter() const override { return this->base::getStepParameter(); }");
 	linebreak(out);
-	//writeLine(out, "static " + name + " readStepData(const std::string& args, const std::shared_ptr<ExpressBindingGenerator::EXPRESSModel>& model) {");
-	//writeLine(out, "return base::readStepData(args, model);");
-	//writeLine(out, "}");
+	writeLine(out, "static " + name + " readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
+	linebreak(out);
 	writeLine(out, "};");
 }
 
@@ -1664,7 +1663,7 @@ void GeneratorOIP::generateREFACTORED( const Schema & schema)
 	createEntitiesHeaderFileREFACTORED(schema);
 	std::cout << "done." << std::endl;
 
-	std::cout << "Generating types:" << std::endl;
+	std::cout << "Generating types ... ";
 	//#pragma omp parallel for
 	size_t typeCount = schema.getTypeCount();
 	for (size_t i = 0; i < typeCount; i++) {
@@ -1676,7 +1675,7 @@ void GeneratorOIP::generateREFACTORED( const Schema & schema)
 	std::cout << "done with " << std::to_string(typeCount) << " types." << std::endl;
 
 //#pragma omp parallel for
-	std::cout << "Generating entities:" << std::endl;
+	std::cout << "Generating entities ... ";
 	size_t entityCount = schema.getEntityCount();
 	for (size_t i = 0; i < entityCount; i++) {
 		const auto entity = schema.getEntityByIndex(i);
@@ -1945,9 +1944,6 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 		
 	writeInclude(out, name + ".h");
 	writeInclude(out, "EXPRESS/EXPRESSOptional.h");
-	if (!type.isSelectType()) {
-		writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
-	}
 	linebreak(out);
 
 	if (type.isSelectType() || type.isContainerType()) {
@@ -1969,11 +1965,13 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 			linebreak(out);
 		}
 
-		writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
 		writeInclude(out, "EXPRESS/EXPRESSReferenceImpl.h");
 		linebreak(out);
 	}
-	   	
+
+	writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
+	linebreak(out);
+
 	writeBeginNamespace(out, schema);
 
 	if (type.isSimpleType() || type.isDerivedType()) {
@@ -2000,11 +1998,18 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 		writeLine(out, name + "* " + name + "::operator->() { return this; };");
 		writeLine(out, "const " + name + "* const " + name + "::operator->() const { return this; };");
 		linebreak(out);
-		writeLine(out, name + "& " + name + "::operator=(" + name + "& other) { this->base::swap(other); return *this; };");
+		writeLine(out, name + "& " + name + "::operator=(const " + name + "& other) { this->base::operator=(other); return *this; };");
 		//writeLine(out, name + "& " + name + "::operator=(const EXPRESSOptional<" + name + "> &other) { this->operator=(other.get_value_or(" + name + "())); return *this; };");
 		linebreak(out);
 		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 		writeLine(out, "const std::string " + name + "::getStepParameter() const { return this->base::getStepParameter(); };");
+		linebreak(out);
+		writeLine(out, name + " " + name + "::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model)");
+		writeLine(out, "{");
+		writeLine(out, name + "val;");
+		writeLine(out, "val.base::readStepData(value, model);");
+		writeLine(out, "return val;");
+		writeLine(out, "}");
 	}
 	else if (type.isSelectType()) {
 		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
