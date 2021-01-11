@@ -1338,7 +1338,7 @@ inverse_attr:
         att.name = attrName;
         att.optional = false;
         att.inverse = true;
-        att.addInverseCounterpart(relatingEntityName, relatingAttrName);
+        att.addInverseCounterpart(relatingEntityName, relatingAttrName, entityName);
         att.type = attrType;
 
         auto innerType = std::static_pointer_cast<EntityAttributeGeneralizedType>(att.type);
