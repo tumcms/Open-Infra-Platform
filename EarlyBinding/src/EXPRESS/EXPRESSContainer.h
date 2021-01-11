@@ -54,9 +54,16 @@ public:
 	typedef base UnderlyingType;
 	typedef ValueType element_type;
 
-	using base::base;
+	EXPRESSContainer() : base(), mtx() {}
+	EXPRESSContainer(const EXPRESSContainer& other) : base(), mtx() { this->operator=(other); }
+	EXPRESSContainer(EXPRESSContainer&& other) : base(), mtx() { using std::swap; swap(*this, other); }
 
 	EXPRESSContainer& operator=(const EXPRESSContainer& other)
+	{
+		this->base::operator=(other);
+		return *this;
+	}
+	EXPRESSContainer& operator=(const std::vector<ValueType>& other)
 	{
 		this->base::operator=(other);
 		return *this;
