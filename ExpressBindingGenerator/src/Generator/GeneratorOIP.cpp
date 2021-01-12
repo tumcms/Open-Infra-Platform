@@ -2174,7 +2174,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "if(line[0] == '#') {");
 	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=') - 1));");
 	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
-	writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
+	//writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
@@ -2190,7 +2190,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 
 	linebreak(file);
 	writeLine(file, "// initialize cross-references");
-	writeLine(file, "#pragma omp parallel for");
+	writeLine(file, "#pragma omp parallel for shared(model, lines)");
 	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
 	writeLine(file, "auto line = lines[i];");
 	writeLine(file, "if(line == \"\") continue;");
@@ -2198,7 +2198,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "if(line[0] == '#') {");
 	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=') - 1));");
 	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
-	writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
+	//writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
@@ -2214,7 +2214,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	linebreak(file);
 	writeLine(file, "// Initialize inverse parameters");
 	writeLine(file, "size_t numEntities = model->entities.size();");
-	writeLine(file, "#pragma omp parallel for");
+	writeLine(file, "#pragma omp parallel for shared(model, numEntities)");
 	writeLine(file, "for(long i = 0; i < numEntities; i++) {"); // begin for each entity
 	writeLine(file, "auto it = model->entities.begin();");
 	writeLine(file, "std::advance(it, i);");
