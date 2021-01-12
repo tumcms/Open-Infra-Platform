@@ -1045,7 +1045,7 @@ namespace OpenInfraPlatform {
 								double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
 								numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin, abs(openingAngle));
-								deltaAngle = GeomSettings()->getAngleLength(radiusMin, abs(openingAngle));
+								deltaAngle = openingAngle/ numSegments;
 							}
 
 							std::vector<carve::geom::vector<3> > ellipsePoints;
@@ -1972,7 +1972,7 @@ namespace OpenInfraPlatform {
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
-				* \tparam curve						A pointer to data from one of curves.
+				* \tparam TCurve						A pointer to data from one of curves.
 				* \param[in] trimmingVec			A vector of pointers to data form \c IfcTrimmingSelect.
 				* \param[in] trimmingPreference		Specifies the preferred way of trimming.
 				* \return							The location of the trimming point.
@@ -2014,7 +2014,7 @@ namespace OpenInfraPlatform {
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
-				* \tparam curve						A pointer to data from one of curves.
+				* \tparam TCurve						A pointer to data from one of curves.
 				* \param[in] trimming				A pointer to data from \c IfcTrimmingSelect.
 				* \return							The location of the trimming point.
 				*/
@@ -2042,7 +2042,7 @@ namespace OpenInfraPlatform {
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint.
-				* \tparam curve						A pointer to data from one of curves.
+				* \tparam TCurve						A pointer to data from one of curves.
 				* \param[in] cartesianPoint			A pointer to data from \c IfcCartesianPoint.
 				* \return							The location of the trimming point.
 				* \note								The position is not applied.All calculations are made based on center in(0., 0., 0.).
