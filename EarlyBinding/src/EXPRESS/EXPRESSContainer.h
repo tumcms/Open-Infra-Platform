@@ -55,22 +55,22 @@ public:
 	typedef ValueType element_type;
 
 	EXPRESSContainer() : base(), mtx() {}
-	EXPRESSContainer(const EXPRESSContainer& other) : base(), mtx() { this->operator=(other); }
-	EXPRESSContainer(EXPRESSContainer&& other) : base(), mtx() { using std::swap; swap(*this, other); }
+	EXPRESSContainer(const EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>& other) : base(), mtx() { this->operator=(other); }
+	EXPRESSContainer(EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>&& other) : base(), mtx() { this->swap(other); }
 
-	EXPRESSContainer& operator=(const EXPRESSContainer& other)
+	EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>& operator=(const EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>& other)
 	{
 		this->base::operator=(other);
 		return *this;
 	}
-	EXPRESSContainer& operator=(const std::vector<ValueType>& other)
+	EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>& operator=(const std::vector<ValueType>& other)
 	{
 		this->base::operator=(other);
 		return *this;
 	}
 
-	EXPRESSContainer* operator->() { return this; }
-	const EXPRESSContainer* const operator->() const { return this; }
+	EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>* operator->() { return this; }
+	const EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>* const operator->() const { return this; }
 
 	//virtual const std::string getStepParameter() const;
 	virtual const std::string getStepParameter() const {
@@ -237,16 +237,23 @@ public:
 		return result;
 	}
 
-	friend void swap(EXPRESSContainer& first, EXPRESSContainer& second)
+	friend void swap(EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>& first, EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>& second)
 	{		
-		first.base::swap(second);
+		using std::swap;
+		first.base.swap(second);
+	}
+
+	void swap(EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>& second)
+	{
+		using std::swap;
+		this->base::swap(second);
 	}
 
 	// concurrent adding
 	void parallel_push_back(const ValueType& element)
 	{
 		std::lock_guard<std::mutex> lockGuard(mtx);
-		this->base::push_back(element);
+		this->push_back(element);
 	}
 
 	// mutex to lock when concurrently adding
