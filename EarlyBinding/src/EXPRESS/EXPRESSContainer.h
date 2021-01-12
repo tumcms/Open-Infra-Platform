@@ -240,7 +240,7 @@ public:
 	friend void swap(EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>& first, EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>& second)
 	{		
 		using std::swap;
-		first.base.swap(second);
+		first.base::swap(second);
 	}
 
 	void swap(EXPRESSContainer<ValueType, MinCardinality, MaxCardinality>& second)
