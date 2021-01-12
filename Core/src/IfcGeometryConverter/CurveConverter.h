@@ -1987,7 +1987,8 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>> points;
 
 					for (int i = 0; i < trimmingVec.size(); i++) {
-						points[i] = getPointOnCurve<TCurve>(curve, *trimmingVec[i]);
+						carve::geom::vector<3> point = getPointOnCurve<TCurve>(curve, *trimmingVec[i]);
+						points.push_back(point);
 					}
 					if (trimmingVec.size() == 1) {
 						return points[0];
