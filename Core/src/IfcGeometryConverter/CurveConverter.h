@@ -745,7 +745,7 @@ namespace OpenInfraPlatform {
 				* \param[out] segmentStartPoints	The starting points of separate segments.
 				*/
 				void convertIfcPolyline(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& polyline, 
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPolyline>& polyline,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
@@ -765,7 +765,7 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>> loop = convertIfcCartesianPointVector(polyline->Points);
 
 					segmentStartPoints.push_back(loop.at(0));
-					targetVec.insert(targetVec.end(), loop.begin(), loop.end());
+					GeomUtils::appendPointsToCurve(loop, targetVec);
 				}
 
 				// IfcSegmentedReferenceCurve SUBTYPE of IfcBoundedCurve(exists starting IFC4x3_RC2)
@@ -942,17 +942,17 @@ namespace OpenInfraPlatform {
 					//		Radius: IfcPositiveLengthMeasure;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					// determine position
+					// Determine position
 					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
 
 					// Get radius
 					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
 					
-					//Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming begin.
+					// Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming begin.
 					carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim1Vec, trimmingPreference);
 					double startAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
 					
-					//Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming end.
+					// Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming end.
 					point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim2Vec, trimmingPreference);
 					double endAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
 					
@@ -1017,57 +1017,55 @@ namespace OpenInfraPlatform {
 					//			SemiAxis2: IfcPositiveLengthMeasure;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					// determine position
+					// Determine position.
 					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
 
-					if (ellipse->SemiAxis1) {
-						if (ellipse->SemiAxis2) {
+					// Get both radiuses.
+					double xRadius = ellipse->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
+					double yRadius = ellipse->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
 
-							double xRadius = ellipse->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
-							double yRadius = ellipse->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
+					double radiusMax = std::max(xRadius, yRadius);
+					double radiusMin = std::min(xRadius, yRadius);
 
-							double radiusMax = std::max(xRadius, yRadius);
-							double radiusMin = std::min(xRadius, yRadius);
-							int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin);
-							double deltaAngle = GeomSettings()->getAngleLength(radiusMin);
+					// Calculate a number of segments.
+					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
+					double deltaAngle = 2.0 * M_PI / numSegments;
 
-							// todo: implement clipping
-							if (!trim1Vec.empty() || !trim2Vec.empty()) {
-								//Calculate an angle on the ellipse (with ellipse center in (0., 0., 0.)) for trimming begin.
-								carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, trim1Vec, trimmingPreference);
-								double startAngle = getAngleOnEllipse(carve::geom::VECTOR(0, 0, 0), xRadius, yRadius, point);
+					if (!trim1Vec.empty() || !trim2Vec.empty()) {
+						//Calculate an angle on the ellipse (with ellipse center in (0., 0., 0.)) for trimming begin.
+						carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, trim1Vec, trimmingPreference);
+						double startAngle = getAngleOnEllipse(carve::geom::VECTOR(0, 0, 0), xRadius, yRadius, point);
 
-								//Calculate an angle on the ellipse (with ellipse center in (0., 0., 0.)) for trimming end.
-								point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, trim2Vec, trimmingPreference);
-								double endAngle = getAngleOnEllipse(carve::geom::VECTOR(0, 0, 0), xRadius, yRadius, point);
+						//Calculate an angle on the ellipse (with ellipse center in (0., 0., 0.)) for trimming end.
+						point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, trim2Vec, trimmingPreference);
+						double endAngle = getAngleOnEllipse(carve::geom::VECTOR(0, 0, 0), xRadius, yRadius, point);
 
-								// Calculate an opening angle.
-								double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
+						// Calculate an opening angle.
+						double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
-								numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMin, abs(openingAngle));
-								deltaAngle = openingAngle/ numSegments;
-							}
-
-							std::vector<carve::geom::vector<3> > ellipsePoints;
-							double angle = 0.0;
-							for (int i = 0; i < numSegments; ++i) {
-								ellipsePoints.push_back(carve::geom::vector<3>(
-									carve::geom::VECTOR(
-										xRadius * cos(angle),
-										yRadius * sin(angle),
-										0)));
-								angle += deltaAngle;
-							}
-
-							// apply position
-							for (unsigned int i = 0; i < ellipsePoints.size(); ++i) {
-								carve::geom::vector<3>& point = ellipsePoints.at(i);
-								point = conicPositionMatrix * point;
-							}
-							GeomUtils::appendPointsToCurve(ellipsePoints, targetVec);
-							segmentStartPoints.push_back(ellipsePoints.at(0));
-						}
+						// Calculate a number of segments.
+						numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax, abs(openingAngle));
+						deltaAngle = openingAngle/ numSegments;
 					}
+
+					std::vector<carve::geom::vector<3> > ellipsePoints;
+					double angle = 0.0;
+					for (int i = 0; i < numSegments; ++i) {
+						ellipsePoints.push_back(carve::geom::vector<3>(
+							carve::geom::VECTOR(
+								xRadius * cos(angle),
+								yRadius * sin(angle),
+								0)));
+						angle += deltaAngle;
+					}
+
+					// apply position
+					for (unsigned int i = 0; i < ellipsePoints.size(); ++i) {
+						carve::geom::vector<3>& point = ellipsePoints.at(i);
+						point = conicPositionMatrix * point;
+					}
+					GeomUtils::appendPointsToCurve(ellipsePoints, targetVec);
+					segmentStartPoints.push_back(ellipsePoints.at(0));
 				}
 
 				// IfcLine SUPTYPE of IfcCurve
@@ -1490,6 +1488,7 @@ namespace OpenInfraPlatform {
 					// convert each point individually and add to the return vector
 					for ( auto& it : points )
 						loop.push_back(placementConverter->convertIfcCartesianPoint(it));
+						
 					// return the loop
 					return loop;
 				} // end convertIfcCartesianPointVector
@@ -1972,7 +1971,8 @@ namespace OpenInfraPlatform {
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
-				* \tparam TCurve						A pointer to data from one of curves.
+				* \tparam TCurve					A type of the curve. 
+				* \param[in] curve					A pointer to data from one the curve.
 				* \param[in] trimmingVec			A vector of pointers to data form \c IfcTrimmingSelect.
 				* \param[in] trimmingPreference		Specifies the preferred way of trimming.
 				* \return							The location of the trimming point.
@@ -2015,7 +2015,8 @@ namespace OpenInfraPlatform {
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
-				* \tparam TCurve						A pointer to data from one of curves.
+				* \tparam TCurve					A type of the curve. 
+				* \param[in] curve					A pointer to data from one the curve.
 				* \param[in] trimming				A pointer to data from \c IfcTrimmingSelect.
 				* \return							The location of the trimming point.
 				*/
@@ -2043,7 +2044,8 @@ namespace OpenInfraPlatform {
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint.
-				* \tparam TCurve						A pointer to data from one of curves.
+				* \tparam TCurve					A type of the curve. 
+				* \param[in] curve					A pointer to data from one the curve.
 				* \param[in] cartesianPoint			A pointer to data from \c IfcCartesianPoint.
 				* \return							The location of the trimming point.
 				* \note								The position is not applied.All calculations are made based on center in(0., 0., 0.).
