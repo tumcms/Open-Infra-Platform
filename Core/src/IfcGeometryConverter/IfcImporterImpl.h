@@ -99,11 +99,11 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::conv
 			for (EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& rep : representation->Representations) {
 				// convert each shape of the represenation
 #ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcRepresentation #" << rep->getId();
+				BLUE_LOG(trace) << "Processing IfcRepresentation " << rep->getErrorLog();
 #endif
 				repConverter->convertIfcRepresentation(rep, matProduct, productShape);
 #ifdef _DEBUG
-				BLUE_LOG(trace) << "Processed IfcRepresentation #" << rep->getId();
+				BLUE_LOG(trace) << "Processed IfcRepresentation " << rep->getErrorLog();
 #endif
 			}
 
