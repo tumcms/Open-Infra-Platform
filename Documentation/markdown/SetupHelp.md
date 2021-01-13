@@ -76,20 +76,22 @@ You will need to install:
   * Select `https://osgeo4w-oslandia.com/` as a download site.
   * Select components to install:
 		
-		* Open *Commandline_Utilities*
-		* Find *proj-dev* package 
-		* Click on *skip* to refresh the line.
-		* Select binary (*Bin*) package (the left column).
+    * Open *Commandline_Utilities*
+    * Find *proj-dev* package 
+    * Click on *skip* to refresh the line.
+    * Select binary (*Bin*) package (the left column).
 		
-		![](./fig/PROJ_Installation_settings.png)
+    ![](./fig/PROJ_Installation_settings.png)
 
-		* Finish the installation.
+    * Finish the installation.
 
 8. **Doxygen**
-    *   Navigate to folder *external* within OpenInfraPlatform source folder. 
-    *   Execute:
-        * `GetDot.cmd`
-        * `GetDoxygen.cmd`
+	*  Download & install Doxygen - find [here](http://doxygen.nl/files/doxygen-1.8.20-setup.exe).
+       * Default search path is `C:/thirdparty/doxygen`
+       * If deviating, please set the `DOXYGEN_EXECUTABLE` variable correspondingly
+	*  Download & install DOT - find [here](https://graphviz.gitlab.io/_pages/Download/windows/graphviz-2.38.zip)
+       * Default search path is `C:/thirdparty/graphviz_dot`
+       * If deviating, please set the `DOXYGEN_DOT_EXECUTABLE` variable correspondingly
 
 ## <a name="Setup"></a> Preparing VS solution 
 
@@ -168,7 +170,9 @@ If you want to change the schema to another, you need to select the correspondin
 
 Build the project **OpenInfraPlatform.GenerateDocumentation** within *Commands* folder in the solution.
 
-*NOTE:* Read more about Doxygen in our [guidelines](./DoxygenHelp.md).
+*NOTE:* This step may take quite some time.
+
+Read more about Doxygen in our [guidelines](./DoxygenHelp.md).
 
 Please consult our [CMake options documentation](./CMakeOptions.md) for different options available for customizing the doxygeneration.
 
