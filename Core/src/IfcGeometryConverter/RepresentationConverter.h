@@ -493,7 +493,7 @@ namespace OpenInfraPlatform {
 						switch (it_set_elements.which()) {
 						case 0: 
 						{
-							curveConverter->convertIfcCurve(it_set_elements.get<0>().lock(), pos, itemData);
+							curveConverter->convertIfcCurve(it_set_elements.get<0>(), pos, itemData);
 						}
 							break;
 						case 1:
