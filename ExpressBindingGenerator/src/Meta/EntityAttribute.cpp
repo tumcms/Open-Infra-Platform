@@ -50,13 +50,13 @@ bool EntityAttribute::hasInverseCounterpart() const {
 	return !isInverse() && !inverses.empty();
 }
 
-std::vector<std::pair<std::string, std::string>> EntityAttribute::getInverses() const {
+std::vector<std::tuple<std::string, std::string, std::string>> EntityAttribute::getInverses() const {
 	return inverses;
 }
 
-void EntityAttribute::addInverseCounterpart(const std::string& entity, const std::string& attr) {
-	if( std::find_if(inverses.begin(), inverses.end(), [&](auto &el) { return el.first == entity; }) == inverses.end() )
-		inverses.push_back(std::pair<std::string, std::string>(entity, attr));
+void EntityAttribute::addInverseCounterpart(const std::string& entity, const std::string& attr, const std::string& mainEntity) {
+	if( std::find_if(inverses.begin(), inverses.end(), [&](auto &el) { return std::template get<0>(el) == entity; }) == inverses.end() )
+		inverses.push_back(std::tuple<std::string, std::string, std::string>(entity, attr, mainEntity));
 }
 
 const std::string EntityAttribute::toString(const Schema & schema) const {

@@ -31,6 +31,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <tuple>
 
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_BEGIN
@@ -159,13 +160,13 @@ class EntityAttribute {
     bool isOptional() const;
     bool isInverse() const;
 	bool hasInverseCounterpart() const;
-	std::vector<std::pair<std::string, std::string>> getInverses() const;
-	void addInverseCounterpart(const std::string&, const std::string&);
+	std::vector<std::tuple<std::string, std::string, std::string>> getInverses() const;
+	void addInverseCounterpart(const std::string&, const std::string&, const std::string&);
 
     std::string name;
     bool optional;
     bool inverse;
-	std::vector<std::pair<std::string, std::string>> inverses; // entity - attribute
+	std::vector<std::tuple<std::string, std::string, std::string>> inverses; // entity - attribute - main entity
 
     ReferenceCounted<IEntityAttributeType> type;
 

@@ -418,11 +418,11 @@ void writeDoxyComment(std::ostream &out,
 			isFirst = false;
 		for (auto& it : *params)
 		{
-			if( !std::get<1>(it).empty() )
+			if( !std::template get<1>(it).empty() )
 				writeDoxyLine(out, "\\param"
-					+ (std::get<0>(it).empty() ? "" : "[" + std::get<0>(it) + "] ")
-					+ std::get<1>(it) + " "
-					+ std::get<2>(it));
+					+ (std::template get<0>(it).empty() ? "" : "[" + std::template get<0>(it) + "] ")
+					+ std::template get<1>(it) + " "
+					+ std::template get<2>(it));
 		}
 	}
 	// notes
@@ -1208,14 +1208,14 @@ void GeneratorOIP::resolveIncludes(const Schema& schema, const Entity& entity)
 		if (attr.isInverse() || attr.hasInverseCounterpart()) {
 			for (const auto& inverse : attr.getInverses())
 			{
-				if (schema.hasEntity(inverse.first)) {
-					if (entityAttributes.find(inverse.first) == entityAttributes.end()) {
-						entityAttributes.insert(inverse.first);
+				if (schema.hasEntity(std::template get<0>(inverse))) {
+					if (entityAttributes.find(std::template get<0>(inverse)) == entityAttributes.end()) {
+						entityAttributes.insert(std::template get<0>(inverse));
 					}
 				}
-				if (schema.hasType(inverse.first)) {
-					if (typeAttributes.find(inverse.first) == typeAttributes.end()) {
-						typeAttributes.insert(inverse.first);
+				if (schema.hasType(std::template get<0>(inverse))) {
+					if (typeAttributes.find(std::template get<0>(inverse)) == typeAttributes.end()) {
+						typeAttributes.insert(std::template get<0>(inverse));
 					}
 				}
 			}
@@ -1664,25 +1664,27 @@ void GeneratorOIP::generateREFACTORED( const Schema & schema)
 	createEntitiesHeaderFileREFACTORED(schema);
 	std::cout << "done." << std::endl;
 
-	std::cout << "Generating types:" << std::endl;
+	std::cout << "Generating types:";
 	//#pragma omp parallel for
 	size_t typeCount = schema.getTypeCount();
 	for (size_t i = 0; i < typeCount; i++) {
 		const auto type = schema.getTypeByIndex(i);
 		generateTypeHeaderFileREFACTORED(schema, type);
 		generateTypeSourceFileREFACTORED(schema, type);
-		std::cout << std::to_string(i+1) + "/" + std::to_string(typeCount) + ": " + type.getName() << std::endl;
+		//std::cout << std::to_string(i+1) + "/" + std::to_string(typeCount) + ": " + type.getName() << std::endl;
 	}
+	std::cout << "done with " << std::to_string(typeCount) << " types." << std::endl;
 
 //#pragma omp parallel for
-	std::cout << "Generating entities:" << std::endl;
+	std::cout << "Generating entities:";
 	size_t entityCount = schema.getEntityCount();
 	for (size_t i = 0; i < entityCount; i++) {
 		const auto entity = schema.getEntityByIndex(i);
 		generateEntityHeaderFileREFACTORED(schema, entity);
 		generateEntitySourceFileREFACTORED(schema, entity);
-		std::cout << std::to_string(i+1) + "/" + std::to_string(entityCount) + ": " + entity.getName() << std::endl;
+		//std::cout << std::to_string(i+1) + "/" + std::to_string(entityCount) + ": " + entity.getName() << std::endl;
 	}
+	std::cout << "done with " << std::to_string(entityCount) << " entities." << std::endl;
 }
 
 std::string GeneratorOIP::getFolder(const std::string& name) const
@@ -2167,7 +2169,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "if(line[0] == '#') {");
 	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=') - 1));");
 	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
-	writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
+	//writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
@@ -2183,7 +2185,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 
 	linebreak(file);
 	writeLine(file, "// initialize cross-references");
-	writeLine(file, "#pragma omp parallel for");
+	writeLine(file, "#pragma omp parallel for shared(model, lines)");
 	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
 	writeLine(file, "auto line = lines[i];");
 	writeLine(file, "if(line == \"\") continue;");
@@ -2191,7 +2193,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "if(line[0] == '#') {");
 	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=') - 1));");
 	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
-	writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
+	//writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
@@ -2207,7 +2209,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	linebreak(file);
 	writeLine(file, "// Initialize inverse parameters");
 	writeLine(file, "size_t numEntities = model->entities.size();");
-	writeLine(file, "#pragma omp parallel for");
+	//writeLine(file, "#pragma omp parallel for shared(model, numEntities)");
 	writeLine(file, "for(long i = 0; i < numEntities; i++) {"); // begin for each entity
 	writeLine(file, "auto it = model->entities.begin();");
 	writeLine(file, "std::advance(it, i);");
@@ -3149,10 +3151,11 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 
 				// treat differently for reference-to-entity and selecttype attributes
 				if (schema.hasEntity(elementType->toString())) {
-					for( auto inverse : attr.getInverses() )
+					for( const auto& inverse : attr.getInverses() )
 					{
-						writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + inverse.first + ">() ) {");
-						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + inverse.first + ">()->" + inverse.second + ".push_back(EXPRESSReference<" + entity.getName() + ">::constructInstance(this->getId(), model));");
+						writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + std::template get<0>(inverse) + ">() ) {");
+						writeLine(out, "EXPRESSReference<" + std::template get<2>(inverse) + "> inv = EXPRESSReference<" + std::template get<2>(inverse) + ">::constructInstance(this->getId(), model);");
+						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + std::template get<0>(inverse) + ">()->" + std::template get<1>(inverse) + ".push_back(inv);");
 						writeLine(out, "}");
 					}
 				}
@@ -3164,13 +3167,14 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 						auto inverses = attr.getInverses();
 
 						// only write if there is also an inverse for this select type
-						auto inverse = std::find_if(inverses.begin(), inverses.end(), [&t, &k](const auto &el) { return el.first == t.getType(k); });
+						auto inverse = std::find_if(inverses.begin(), inverses.end(), [&t, &k](const auto &el) { return std::template get<0>(el) == t.getType(k); });
 
 						if ( inverse != inverses.end())
 						{
 							writeLine(out, "case " + std::to_string(k) + ":");
 							writeLine(out, "{\t// " + t.getType(k));
-							writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + inverse->second + ".push_back(EXPRESSReference<" + entity.getName() + ">::constructInstance(this->getId(), model));");
+							writeLine(out, "EXPRESSReference<" + std::template get<2>(*inverse) + "> inv = EXPRESSReference<" + std::template get<2>(*inverse) + ">::constructInstance(this->getId(), model);");
+							writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + std::template get<1>(*inverse) + ".push_back(inv);");
 							writeLine(out, "break;");
 							writeLine(out, "}");
 						}
