@@ -167,7 +167,7 @@ namespace OpenInfraPlatform
                 throw oip::UnhandledException(manifoldSolidBrep);
             }
 
-			void convertIfcSolidModel(const std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
+			void convertIfcSolidModel(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
                                                   const carve::math::Matrix& pos,
                                                   std::shared_ptr<ItemData> itemData)
 			    {
@@ -176,7 +176,7 @@ namespace OpenInfraPlatform
 				// *****************************************************************************************************************************************//
 				//
 
-                            auto solid_model_ref = oip::EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>(solidModel);
+                            auto solid_model_ref = solidModel;
 
 				if (solid_model_ref.isOfType<typename IfcEntityTypesT::IfcCsgSolid>())
 				{
@@ -198,19 +198,16 @@ namespace OpenInfraPlatform
 				//	IfcSectionedSolid SUBTYPE of IfcSolidModel																							  //
 				//	ABSTRACT SUPERTYPE of IfcSectionedSolidHorizontal																					  //
 				// *****************************************************************************************************************************************//
-
-				std::shared_ptr<typename IfcEntityTypesT::IfcSectionedSolid> sectioned_solid =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSectionedSolid>(solidModel);
-
-				if (sectioned_solid)
+				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcSectionedSolid>())
 				{
+					throw oip::UnhandledException(solidModel);
 					//Get directrix and cross sections (attributes 1-2).
 					//std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
 					//	sectioned_solid->Directrix.lock();	// TO DO: next level
 					//TODO: Handle cross sections
 					//TODO: next level
 					//TODO: implement, check for formal propositions. 
-
+					/*
 #ifdef _DEBUG
 					BLUE_LOG(trace) << "Processing IfcSectionedSolid #" << sectioned_solid->getId();
 #endif
@@ -232,6 +229,7 @@ namespace OpenInfraPlatform
 						// TO DO: implement, check for formal propositions. 
 
 					} //endif sectioned_solid_horizontal
+					*/
 				} //endif sectioned_solid
 
 				// *****************************************************************************************************************************************//
@@ -239,42 +237,33 @@ namespace OpenInfraPlatform
 				//	ABSTRACT SUPERTYPE of IfcExtrudedAreaSolid, IfcFixedReferenceSweptAreaSolid, IfcRevolvedAreaSolid, IfcSurfaceCurveSweptAreaSolid		//
 				// *****************************************************************************************************************************************//
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcSweptAreaSolid> swept_area_solid =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptAreaSolid>(solidModel);
 
-				if (swept_area_solid)
+				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcSweptAreaSolid>())
 				{
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing IfcSweptAreaSolid #" << swept_area_solid->getId();
-#endif
+					oip::EXPRESSReference<typename IfcEntityTypesT::IfcSweptAreaSolid> swept_area_solid =
+						solidModel.template as<typename IfcEntityTypesT::IfcSweptAreaSolid>();
 					// Get swept area and position (attributes 1-2). 
-					std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& swept_area = swept_area_solid->SweptArea.lock();
+					oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> swept_area = swept_area_solid->SweptArea;
 
 					carve::math::Matrix swept_area_pos(pos);	// check if local coordinate system is specified for extrusion
 					if (swept_area_solid->Position)
 					{
 						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> swept_area_position = swept_area_solid->Position;
 						
-						swept_area_pos = pos * placementConverter->convertIfcAxis2Placement3D(swept_area_position.lock());
+						swept_area_pos = pos * placementConverter->convertIfcAxis2Placement3D(swept_area_position);
 					}
 
 					// (1/4) IfcExtrudedAreaSolid SUBTYPE of IfcSweptAreaSolid
-					std::shared_ptr<typename IfcEntityTypesT::IfcExtrudedAreaSolid> extruded_area =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcExtrudedAreaSolid>(swept_area_solid);
-					if (extruded_area)
+					if (swept_area_solid.template isOfType<typename IfcEntityTypesT::IfcExtrudedAreaSolid>())
 					{
-						// Get extruded direction and depth (attributes 3-4). 
-						std::shared_ptr<typename IfcEntityTypesT::IfcDirection> extrude_direction =
-							extruded_area->ExtrudedDirection.lock();
-
-						double depth = extruded_area->Depth;
-
-
+						oip::EXPRESSReference<typename IfcEntityTypesT::IfcExtrudedAreaSolid> extruded_area =
+							swept_area_solid.template as<typename IfcEntityTypesT::IfcExtrudedAreaSolid>();
 						convertIfcExtrudedAreaSolid(extruded_area, swept_area_pos, itemData);
 						return;
 						// TO DO: implement
 					}
 
+					/*
 					// (2/4) IfcFixedReferenceSweptAreaSolid SUBTYPE of IfcSweptAreaSolid
 					std::shared_ptr<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixed_ref_swept_area_solid =
 						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>(swept_area_solid);
@@ -349,7 +338,7 @@ namespace OpenInfraPlatform
 #endif
 						return;
 					}
-
+					*/
 					BLUE_LOG(error) << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname();
 					return;
 				}	//endif swept_area_solid
@@ -359,7 +348,7 @@ namespace OpenInfraPlatform
 				//	IfcSweptDiskSolid SUBTYPE of IfcSolidModel																								//
 				//	ABSTRACT SUPERTYPE of IfcSweptDiskSolidPolygonal																						//
 				// *****************************************************************************************************************************************//
-
+				/*
 				std::shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolid> swept_disk_solid =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolid>(solidModel);
 				if (swept_disk_solid)
@@ -621,6 +610,7 @@ namespace OpenInfraPlatform
 
 					return;
 				} // endif swept_disp_solid
+				*/
 
 				//std::shared_ptr<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal> ssh =
 				//	std::dynamic_pointer_cast<emt::Ifc4x1EntityTypes::IfcSectionedSolidHorizontal>(solidModel);
@@ -795,7 +785,7 @@ namespace OpenInfraPlatform
 			//}
 
 			void convertIfcExtrudedAreaSolid(
-				const std::shared_ptr<typename IfcEntityTypesT::IfcExtrudedAreaSolid>& extrudedArea,
+				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcExtrudedAreaSolid>& extrudedArea,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData)
 			{
@@ -833,7 +823,7 @@ namespace OpenInfraPlatform
 				}
 
 				// swept area
-				std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef> swept_area = extrudedArea->SweptArea.lock();
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> swept_area = extrudedArea->SweptArea;
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcExtrudedAreaSolid.SweptArea IfcProfileDef #" << swept_area->getId();
 #endif
@@ -1250,7 +1240,7 @@ namespace OpenInfraPlatform
 				// ENTITY IfcCsgPrimitive3D  ABSTRACT SUPERTYPE OF(ONEOF(IfcBlock, IfcRectangularPyramid, IfcRightCircularCone, IfcRightCircularCylinder, IfcSphere)
 				
                                 carve::math::Matrix primitive_placement_matrix = csgPrimitive->Position ?
-                                    pos * placementConverter->convertIfcAxis2Placement3D(csgPrimitive->Position.lock()) :
+                                    pos * placementConverter->convertIfcAxis2Placement3D(csgPrimitive->Position) :
                                     pos;
 
 
@@ -1548,13 +1538,14 @@ namespace OpenInfraPlatform
 				case 3:
 				{
 					return convertIfcSolidModel(
-						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>>().lock(), 
+						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>>(), 
 						pos, itemData);
 				}
 				case 4:
 				{
 					return faceConverter->convertIfcTessellatedItem(
-						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedFaceSet>>().lock(),
+						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedFaceSet>>()
+							.as<typename IfcEntityTypesT::IfcTessellatedItem>(),
 						pos, itemData);
 				}
 				default:
@@ -1569,6 +1560,7 @@ namespace OpenInfraPlatform
 				const std::shared_ptr<ItemData>& otherOperand
 			) const throw(...)
 			{					
+				/*
 				//ENTITY IfcHalfSpaceSolid SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
 				std::shared_ptr<typename IfcEntityTypesT::IfcSurface> base_surface = half_space_solid->BaseSurface.lock();
 
@@ -1582,13 +1574,13 @@ namespace OpenInfraPlatform
 					BLUE_LOG(warning) << "The base surface shall be an unbounded surface (subtype of IfcElementarySurface)";
 					return;
 				}
-				std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D>& base_surface_pos = elem_base_surface->Position.lock();
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& base_surface_pos = elem_base_surface->Position;
 				carve::geom::plane<3> base_surface_plane;
 				carve::geom::vector<3> base_surface_position;
 				carve::math::Matrix base_position_matrix(carve::math::Matrix::IDENT());
 				if (base_surface_pos)
 				{
-					placementConverter->getPlane(base_surface_pos, base_surface_plane, base_surface_position, length_factor);
+					placementConverter->getPlane(base_surface_pos.lock(), base_surface_plane, base_surface_position, length_factor);
 					base_position_matrix = placementConverter->convertIfcAxis2Placement3D(base_surface_pos);
 				}
 
@@ -1880,6 +1872,7 @@ namespace OpenInfraPlatform
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processed IfcHalfSpaceSolid #" << half_space_solid->getId();
 #endif
+				*/
 			}
 
 			void simplifyMesh(std::shared_ptr<carve::mesh::MeshSet<3>>& meshset)
@@ -2143,7 +2136,7 @@ namespace OpenInfraPlatform
 				}*/
 			}
 
-			void convertIfcSpecificSolidModel(const std::shared_ptr<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
+			void convertIfcSpecificSolidModel(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData)
 			{
