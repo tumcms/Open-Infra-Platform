@@ -69,7 +69,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		int nrOfVertices, nrOfFaces, nrOfEdges;
 		nrOfVertices = lineData[0];
 		nrOfFaces = lineData[1];
-		nrOfEdges = lineData[2]; //can be ignored
+		nrOfEdges = lineData[2];
 
 		//create new OffModel
 		std::shared_ptr<OffModel> model = std::make_shared<OffModel>();
@@ -77,17 +77,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		model->setFilename(filename);
 
 		//read vertices 
-		std::vector<buw::Vector3d> allVertices;
-		for (int i = 0; i < nrOfVertices; i++)
-		{
-			std::getline(offFile, line);
-			buw::Vector3d vector;
-			std::stringstream lineStream(line);
-
-			lineStream >> vector[0] >> vector[1] >> vector[2];
-			allVertices.push_back(vector);
-		}
-		model->addVertices(allVertices);
+		readVertices(nrOfVertices, model, offFile);
 
 		//read faces (special case: after indices of face the color is given in RGB value -> to be considered later on)
 		std::vector<uint32_t> indices;
@@ -129,7 +119,27 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 	}
 }
 
-static void readTriangleFace(std::stringstream& lineStream, std::vector<uint32_t>& indices)
+static void readVertices(const int nrOfVertices, 
+	std::shared_ptr<OffModel>& model, 
+	std::ifstream& offFile)
+{
+	std::string line;
+
+	std::vector<buw::Vector3d> allVertices;
+	for (int i = 0; i < nrOfVertices; i++)
+	{
+		std::getline(offFile, line);
+		buw::Vector3d vector;
+		std::stringstream lineStream(line);
+
+		lineStream >> vector[0] >> vector[1] >> vector[2];
+		allVertices.push_back(vector);
+	}
+	model->addVertices(allVertices);
+}
+
+static void readTriangleFace(std::stringstream& lineStream, 
+	std::vector<uint32_t>& indices)
 {
 	std::vector<uint32_t> faceVector;
 	int faceType;
@@ -141,7 +151,8 @@ static void readTriangleFace(std::stringstream& lineStream, std::vector<uint32_t
 	}
 }
 
-static void readQuadFace(std::stringstream& lineStream, std::vector<uint32_t>& indices)
+static void readQuadFace(std::stringstream& lineStream, 
+	std::vector<uint32_t>& indices)
 {
 	std::vector<uint32_t> faceVector;
 	int faceType;
