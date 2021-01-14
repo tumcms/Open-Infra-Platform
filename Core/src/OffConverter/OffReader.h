@@ -25,23 +25,25 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "namespace.h"
 #include "OffModel.h"
 
-namespace OpenInfraPlatform
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_BEGIN
+class OffReader
 {
-	namespace Core
-	{
-		namespace OffConverter
-		{
-			class OffReader
-			{
-			public:
-				explicit OffReader();
-				virtual ~OffReader();
+public:
+	explicit OffReader();
+	virtual ~OffReader();
 
-				static std::shared_ptr<OffModel> readFile(const std::string& filename);
-			};
-		}
-	}
-}
+	static std::shared_ptr<OffModel> readFile(const std::string& filename);
+
+	static void readTriangleFace(std::stringstream& lineStream,
+		std::vector<uint32_t>& indices);
+	static void readQuadFace(std::stringstream& lineStream,
+		std::vector<uint32_t>& indices);
+	static void readVertices(const int nrOfVertices,
+		std::shared_ptr<OffModel>& model,
+		std::ifstream& offFile);
+
+};
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END
 
 EMBED_CORE_OFFCONVERTER_INTO_OIP_NAMESPACE(OffReader)
 
