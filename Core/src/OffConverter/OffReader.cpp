@@ -104,24 +104,12 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 			//read triangle 
 			if (faceType == 3)
 			{
-				lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2];
-				for (int j = 0; j < 3; j++)
-					indices.push_back(faceVector[j]);
+				readTriangleFace(lineStream, indices);
 			}
 			//read quad
 			else if (faceType == 4)
 			{
-				lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2] >> faceVector[3];
-
-				//Convert quads into triangles
-				//first triangle
-				indices.push_back(faceVector[0]);
-				indices.push_back(faceVector[1]);
-				indices.push_back(faceVector[2]);
-				//second triangle
-				indices.push_back(faceVector[2]);
-				indices.push_back(faceVector[3]);
-				indices.push_back(faceVector[0]);
+				readQuadFace(lineStream, indices);
 			}
 			else
 			{
@@ -139,6 +127,37 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		offFile.close();
 		throw std::exception("Error in Off file");
 	}
+}
+
+static void readTriangleFace(std::stringstream& lineStream, std::vector<uint32_t>& indices)
+{
+	std::vector<uint32_t> faceVector;
+	int faceType;
+
+	lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2];
+	for (int j = 0; j < 3; j++)
+	{
+		indices.push_back(faceVector[j]);
+	}
+}
+
+static void readQuadFace(std::stringstream& lineStream, std::vector<uint32_t>& indices)
+{
+	std::vector<uint32_t> faceVector;
+	int faceType;
+
+	//read values from lineStream 
+	lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2] >> faceVector[3];
+
+	//Convert quads into triangles
+	//first triangle
+	indices.push_back(faceVector[0]);
+	indices.push_back(faceVector[1]);
+	indices.push_back(faceVector[2]);
+	//second triangle
+	indices.push_back(faceVector[2]);
+	indices.push_back(faceVector[3]);
+	indices.push_back(faceVector[0]);
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END
