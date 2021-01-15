@@ -583,13 +583,13 @@ type_decl:
 
 		if(type.getType() == oip::eType::Select)
 		{
-			std::vector<std::string> types;
+			std::vector<std::string> ttypes;
 			while(select_named_types.size() > 0)
 			{
-				types.insert(types.begin(), select_named_types.top());
+				ttypes.insert(ttypes.begin(), select_named_types.top());
 				select_named_types.pop();
 			}
-			type.setTypes(types);
+			type.setTypes(ttypes);
 			type.setType(oip::eType::Select);
 		}
 
@@ -1311,7 +1311,44 @@ inverse_clause2:
   | inverse_attr inverse_clause2;
 
 inverse_attr:
-	attribute_decl TOKEN_COLON inverse_attr1 entity_ref TOKEN_FOR attribute_ref inverse_attr4 TOKEN_SEMICOLON;
+	attribute_decl TOKEN_COLON inverse_attr1 entity_ref TOKEN_FOR attribute_ref inverse_attr4 TOKEN_SEMICOLON
+    {
+        std::string relatingAttrName = attribute_ids.top();
+        attribute_ids.pop();
+        std::string attrName = attribute_ids.top();
+        attribute_ids.pop();
+
+        std::string relatingEntityName = ids.top();
+        ids.pop();
+        std::string entityName = currentEntity.getName();
+
+        //std::cout << entityName << "." << attrName
+        //          << " --> [" << bound1 << "," << bound2 << "] "
+        //          << relatingEntityName << "." << relatingAttrName
+        //          << std::endl;
+
+        auto attrType =  makeReferenceCounted<EntityAttributeGeneralizedType>();
+                        
+        if(entityAttributeContainerTypes.size() >= 1) {
+            attrType->containerType = entityAttributeContainerTypes.top();
+            clear(entityAttributeContainerTypes);   
+        }
+
+        EntityAttribute att;
+        att.name = attrName;
+        att.optional = false;
+        att.inverse = true;
+        att.addInverseCounterpart(relatingEntityName, relatingAttrName, entityName);
+        att.type = attrType;
+
+        auto innerType = std::static_pointer_cast<EntityAttributeGeneralizedType>(att.type);
+        auto a = makeReferenceCounted<EntityAttributeTypeNamedType>();
+        a->name = relatingEntityName;
+        innerType->elementType = a;
+
+        currentEntity.addAttribute(att);
+    }
+    ;
 
 inverse_attr1:
 	%empty
@@ -1319,7 +1356,13 @@ inverse_attr1:
 
 inverse_attr2:
 	TOKEN_SET
-  | TOKEN_BAG;
+    {
+        entityAttributeContainerTypes.push(eEntityAttributeContainerType::Set);
+    }
+  | TOKEN_BAG
+    {
+        entityAttributeContainerTypes.push(eEntityAttributeContainerType::Bag);
+    };
 
 inverse_attr3:
 	%empty
@@ -1338,6 +1381,7 @@ explicit_attr:
 		EntityAttribute att;
 		att.name = attribute_ids.top();
 		att.optional = true;
+        att.inverse = false;
 		att.type = attribute_types.top();
 		attribute_types.pop();
 
@@ -1370,6 +1414,7 @@ explicit_attr:
 		EntityAttribute att;
 		att.name = attribute_ids.top();
 		att.optional = false;
+        att.inverse = false;
 		att.type = attribute_types.top();
 		attribute_types.pop();
 
@@ -1519,6 +1564,8 @@ qualified_attribute:
 		//std::cout << "qualified_attribute: " << ids.top() << "." << attribute_ids.top() << std::endl;
 
 		currentEntity.addQualifiedAttribute(ids.top(), attribute_ids.top());
+        ids.pop();
+        attribute_ids.pop();
 		//currentEntity.addSelfDerivedAttribute(ids.top(), attribute_ids.top());
 	};
 
@@ -1557,9 +1604,6 @@ type_id:
 abstract_supertype_declaration:
 	TOKEN_ABSTRACT TOKEN_SUPERTYPE subtype_constraint
   | TOKEN_ABSTRACT TOKEN_SUPERTYPE;
-
-subtype_constraint:
-	TOKEN_OF TOKEN_BRACKET_OPEN supertype_expression TOKEN_BRACKET_CLOSE;
 
 supertype_expression:
 	supertype_factor;

@@ -82,6 +82,8 @@ class Entity {
 
 	const std::vector<EntityAttribute> getAttributes() const;
 
+	void addInverseCounterpart(const std::string& attrName, const std::string& inverseEntity, const std::string& inverseAttr);
+
 	//---------------------------------------------------------------
 	// Qualified Attributes
 	//---------------------------------------------------------------

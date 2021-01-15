@@ -461,13 +461,17 @@ namespace OpenInfraPlatform {
 					for (auto& it_station : stations)
 					{
 						// call the placement converter that handles the geometry and calculates the 3D point along a curve
-						placementConverter->convertBoundedCurveDistAlongToPoint3D(alignmentCurve, it_station, true, targetPoint3D, targetDirection3D);
+						placementConverter->convertBoundedCurveDistAlongToPoint3D(
+							alignmentCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>(), 
+							it_station, true, targetPoint3D, targetDirection3D);
 						curve_points.push_back(targetPoint3D);
 					}
 					GeomUtils::appendPointsToCurve(curve_points, targetVec);
 
 					// add the first point to segments
-					placementConverter->convertBoundedCurveDistAlongToPoint3D(alignmentCurve, stations.at(0), true, targetPoint3D, targetDirection3D);
+					placementConverter->convertBoundedCurveDistAlongToPoint3D(
+						alignmentCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>(),
+						stations.at(0), true, targetPoint3D, targetDirection3D);
 					segmentStartPoints.push_back(targetPoint3D);
 				}
 #endif
@@ -876,7 +880,7 @@ namespace OpenInfraPlatform {
 					if (!trim1Vec.empty() || !trim2Vec.empty())
 						throw oip::InconsistentModellingException(trimmedCurve, "Trimming not supported");
 
-					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> basisCurve = trimmedCurve->BasisCurve.lock();
+					oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = trimmedCurve->BasisCurve;
 					std::vector<carve::geom::vector<3> > basisCurvePoints;
 
 					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>> curveTrim1Vec;

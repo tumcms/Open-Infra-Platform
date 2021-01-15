@@ -229,15 +229,14 @@ namespace OpenInfraPlatform
 						if(project != model->entities.end()) {
 
 							// Set the unit conversion factors
-							oip::EXPRESSReference<typename IfcEntityTypesT::IfcProject> ifcproject =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProject>(project->second);
+							oip::EXPRESSReference<typename IfcEntityTypesT::IfcProject> ifcproject(project->second, model);
 							setIfcProject(ifcproject);
 
 							// try and find the georeferencing metadata
 							auto georef = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair)
 								{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateReferenceSystem>(pair.second) != nullptr; });
 							if (georef != model->entities.end() )
-								setGeoref(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateReferenceSystem>(georef->second));
+								setGeoref(oip::EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem>(georef->second, model));
 
 							//std::for_each(model->entities.begin(), model->entities.end(), [this, &model](std::pair<size_t, std::shared_ptr<oip::EXPRESSEntity>> &pair) {
 							//	std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
