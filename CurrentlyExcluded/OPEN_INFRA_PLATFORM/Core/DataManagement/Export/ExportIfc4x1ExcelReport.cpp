@@ -32,7 +32,6 @@
 #include "IfcGeometryConverter/UnitConverter.h"
 #include "IfcGeometryConverter/IfcPeekStepReader.h"
 
-#include "EXPRESS\EXPRESSAttribute.h"
 #include "EXPRESS\EXPRESSEntity.h"
 #include "EXPRESS\EXPRESSType.h"
 #include "EXPRESS\EnumType.h"

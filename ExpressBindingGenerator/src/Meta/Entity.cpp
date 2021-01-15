@@ -78,4 +78,19 @@ bool Entity::hasSupertype() const {
 	return !parentEntity_.empty();
 }
 
+void Entity::addInverseCounterpart(const std::string& attrName, const std::string& inverseEntity, const std::string& inverseAttr)
+{
+	for (auto it = attributes_.begin(); it != attributes_.end(); it++)
+	{
+		if (it->getName() == attrName)
+		{
+			it->addInverseCounterpart(inverseEntity, inverseAttr, getName());
+			return;
+		}
+	}
+	std::string err = "ERROR: Could not locate inverse attribute " + getName() + "." + attrName + " to link with " + inverseEntity + "." + inverseAttr;
+	throw std::runtime_error(err.c_str());
+}
+
+
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END
