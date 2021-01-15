@@ -16,15 +16,19 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
+#ifndef OpenInfraPlatform_EarlyBinding_EXPRESSOptionalImpl_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_g
+#define OpenInfraPlatform_EarlyBinding_EXPRESSOptionalImpl_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_g
+
 #include "EXPRESSOptional.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator= (const ForwardType& other) {
-	T obj;
-	obj = other;
-	boost::optional<T>::operator=(obj); /*this->base::emplace(other);*/ return *this;
-}
+//template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator= (const ForwardType& other) {
+//	T obj;
+//	obj = other;
+//	boost::optional<T>::operator=(obj); /*this->base::emplace(other);*/ return *this;
+//}
 
 template <typename T> EXPRESSOptional<T>& EXPRESSOptional<T>::operator=(const T& other) { boost::optional<T>::operator=(other); return *this; };
 
@@ -58,3 +62,5 @@ template <typename T> EXPRESSOptional<T> EXPRESSOptional<T>::readStepData(const 
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
+
+#endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSOptionalImpl_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_g

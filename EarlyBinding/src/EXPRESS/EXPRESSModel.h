@@ -21,8 +21,6 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSModel_795d0e6a_aa9f_4804_a9ff_67beadbd82c2_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSModel_795d0e6a_aa9f_4804_a9ff_67beadbd82c2_h
 
-#include "../EarlyBinding/src/namespace.h"
-
 #include "EXPRESSEntity.h"
 
 #include <string>
@@ -32,18 +30,16 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-class EXPRESSModel {
-public:
-	EXPRESSModel(const std::string &schema) : schema(schema) { };
 
-	~EXPRESSModel() {
-		if (!entities.empty()) {
-			std::for_each(entities.begin(), entities.end(), [](auto& elem) {
-				elem.second = nullptr;
-			});
-			entities.clear();
-		}
-	};
+OIP_EARLYBINDING_EXTERN
+class
+OIP_EARLYBINDING_API_EXPRESS
+EXPRESSModel 
+{
+public:
+	EXPRESSModel(const std::string &schema);
+
+	~EXPRESSModel() ;
 
 	//const bool Save(const std::string &filename) const {
 	//	//TODO Implement

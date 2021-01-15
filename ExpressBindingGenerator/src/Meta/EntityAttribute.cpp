@@ -28,12 +28,10 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_BEGIN
 
 EntityAttribute::EntityAttribute(const std::string& name) {
 	this->name = name;
-	this->cardinality = eCardinality::Undefined;
 }
 
 EntityAttribute::EntityAttribute() {
 	this->name = "";
-	this->cardinality = eCardinality::Undefined;
 }
 
 std::string EntityAttribute::getName() const {
@@ -44,9 +42,26 @@ bool EntityAttribute::isOptional() const {
 	return optional;
 }
 
+bool EntityAttribute::isInverse() const {
+	return inverse;
+}
+
+bool EntityAttribute::hasInverseCounterpart() const {
+	return !isInverse() && !inverses.empty();
+}
+
+std::vector<std::tuple<std::string, std::string, std::string>> EntityAttribute::getInverses() const {
+	return inverses;
+}
+
+void EntityAttribute::addInverseCounterpart(const std::string& entity, const std::string& attr, const std::string& mainEntity) {
+	if( std::find_if(inverses.begin(), inverses.end(), [&](auto &el) { return std::template get<0>(el) == entity; }) == inverses.end() )
+		inverses.push_back(std::tuple<std::string, std::string, std::string>(entity, attr, mainEntity));
+}
+
 const std::string EntityAttribute::toString(const Schema & schema) const {
 	std::string typeName = type->toString();
-	std::string prefix = "ExpressBindingGenerator::";
+	//std::string prefix = "ExpressBindingGenerator::";
 
 	if (type->getType() == eEntityAttributeParameterType::TypeNamed || type->getType() == eEntityAttributeParameterType::Simple) {
 		if (schema.hasType(typeName)) {

@@ -21,8 +21,6 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSContainer_b030829d_7f85_44aa_87a3_e2a92f69bcfe_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSContainer_b030829d_7f85_44aa_87a3_e2a92f69bcfe_h
 
-#include "../EarlyBinding/src/namespace.h"
-
 #include "EXPRESSType.h"
 #include "EXPRESSModel.h"
 
@@ -46,7 +44,10 @@
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
 
-template <typename ValueType, size_t MinCardinality, size_t MaxCardinality> class EXPRESSContainer : public std::vector<ValueType> {
+template <typename ValueType, size_t MinCardinality, size_t MaxCardinality>
+class
+EXPRESSContainer : public std::vector<ValueType> 
+{
 	using base = std::vector<ValueType>;
 public:
 	typedef base UnderlyingType;
@@ -241,29 +242,6 @@ EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(LIST)
 EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(SET)
 EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(BAG)
 EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(ARRAY)
-
-#define DEFINE_CONTAINERTYPE(name, containertype, min, max, valuetype)\
-	class name : public EarlyBinding::EXPRESSContainer<containertype<valuetype>,valuetype,min,max>, public EarlyBinding::EXPRESSType {\
-	using base = EarlyBinding::EXPRESSContainer<containertype<valuetype>,valuetype,min,max>;\
-	public:\
-		typedef name type;\
-		using base::base;\
-		using base::operator=;\
-		using base::operator containertype<valuetype>&;\
-		name* operator->() { return this; }\
-		const name* const operator->() const { return this; }\
-		virtual name& operator=(const Optional<name> &other) { operator=(other.get_value_or(name())); return *this; };\
-		virtual const std::string classname() const override { return #name; }\
-		virtual const std::string getStepParameter() const override {return base::getStepParameter(); }\
-	};
-
-
-#define EXPAND(...) __VA_ARGS__
-
-#define LISTTYPE std::vector
-#define SETTYPE std::vector
-#define BAGTYPE std::vector
-#define ARRAYTYPE std::vector
 
 #define LIST_MAXSIZE ULLONG_MAX
 #define ARRAY_MAXSIZE ULLONG_MAX

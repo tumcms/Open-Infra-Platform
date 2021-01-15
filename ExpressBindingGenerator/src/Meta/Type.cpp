@@ -92,6 +92,8 @@ std::string Type::getUnderlyingTypeName() const {
 			ss << types_[i];
 		}
 
+		ss << ")";
+
 		return ss.str();
 	}
 
@@ -114,13 +116,13 @@ void Type::setUnderlyingTypeName(const std::string& value) {
 }
 
 std::string Type::getContainerType() const {
-	std::string prefix = "ExpressBindingGenerator::";
-	std::set<std::string> prefixedTypes = { "INTEGER","REAL","NUMBER","BOOLEAN","BINARY","LOGICAL","LIST","ARRAY","SET","BAG","STRING" };
-	if (prefixedTypes.count(containerType_) > 0)
+	//std::string prefix = "ExpressBindingGenerator::";
+	//std::set<std::string> prefixedTypes = { "INTEGER","REAL","NUMBER","BOOLEAN","BINARY","LOGICAL","LIST","ARRAY","SET","BAG","STRING" };
+	//if (prefixedTypes.find(containerType_) != prefixedTypes.end())
 		return containerType_;
 		//return prefix + containerType_;
-	else
-		return containerType_;
+	//else
+	//	return containerType_;
 }
 
 void Type::setContainerType(const std::string& value) {
@@ -223,6 +225,7 @@ std::string Type::getContainerTypeName() const
 		case eType::List: return "LIST";
 		case eType::Array: return "ARRAY";
 		case eType::Set: return "SET";
+		default:	return "BAG";
 		}
 	}
 	else {
