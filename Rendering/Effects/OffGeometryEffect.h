@@ -55,7 +55,6 @@ private:
 	buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA_ = nullptr;
 	buw::ReferenceCounted<buw::IPipelineState> pipelineState_ = nullptr;
 	buw::ReferenceCounted<buw::IViewport> viewport_ = nullptr;
-	bool valid_ = false;
 
 	buw::ReferenceCounted<Core::OffConverter::OffModel> offModel_ = nullptr;
 };

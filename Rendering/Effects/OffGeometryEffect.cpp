@@ -28,8 +28,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 
-OffGeometryEffect::OffGeometryEffect(buw::IRenderSystem * renderSystem, buw::ReferenceCounted<buw::IViewport> viewport, buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA, buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer)
-	: EffectBase(renderSystem), viewport_(viewport), worldBuffer_(worldBuffer), depthStencilMSAA_(depthStencilMSAA)
+OffGeometryEffect::OffGeometryEffect(buw::IRenderSystem * renderSystem, 
+									 buw::ReferenceCounted<buw::IViewport> viewport, 
+									 buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA, 
+									 buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer)
+	: 
+	EffectBase(renderSystem), 
+	viewport_(viewport), 
+	worldBuffer_(worldBuffer), 
+	depthStencilMSAA_(depthStencilMSAA)
 {
 }
 
@@ -50,14 +57,11 @@ void OffGeometryEffect::setOffModel(buw::ReferenceCounted<Core::OffConverter::Of
 
 void OffGeometryEffect::changeOffset(const buw::Vector3d& offsetOld, const buw::Vector3d& offsetNew)
 {
-	if (!offModel_)
-		return;
+	if (!offModel_->isEmpty()) {
 
-	if(!offModel_->isEmpty()) {
-		
 		//reset 
-		if(vertexBuffer_) vertexBuffer_ = nullptr;
-		if(indexBuffer_) indexBuffer_ = nullptr;
+		if (vertexBuffer_) vertexBuffer_.reset();
+		if (indexBuffer_) indexBuffer_.reset();
 
 		//tmp containers
 		std::vector<buw::Vector3d> verticesMesh;
@@ -68,21 +72,10 @@ void OffGeometryEffect::changeOffset(const buw::Vector3d& offsetOld, const buw::
 		{
 			std::vector<buw::Vector3d> vertices;
 			vertices.reserve(offModel_->geometry().vertices.size());
-			for (auto& vertex : offModel_->geometry().vertices)
-			{
-				buw::Vector3d vtx(vertex);
-				vtx[0] += offsetNew.x();
-				vtx[1] += offsetNew.y();
-				vtx[2] += offsetNew.z();
-				vertices.push_back(vtx);
-			}
-
-			const uint32_t verticesOffset = verticesMesh.size();
-			verticesMesh.insert(verticesMesh.end(), vertices.begin(), vertices.end());
-
-			const uint32_t indicesOffset = indicesMesh.size();
-			indicesMesh.insert(indicesMesh.end(), offModel_->geometry().indices.begin(), offModel_->geometry().indices.end());
-			std::for_each(indicesMesh.begin() + indicesOffset, indicesMesh.end(), [&verticesOffset](uint32_t& index) {index += verticesOffset; });
+			std::transform(offModel_->geometry().vertices.begin(),
+				offModel_->geometry().vertices.end(),
+				vertices.begin(),
+				[offsetNew](buw::Vector3d a) {a.x() += offsetNew.x(); a.y() += offsetNew.y(); a.z() += offsetNew.z(); return a; });
 		}
 
 		//upload data 
@@ -104,12 +97,11 @@ void OffGeometryEffect::changeOffset(const buw::Vector3d& offsetOld, const buw::
 			ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
 			indexBuffer_ = renderSystem()->createIndexBuffer(ibd);
 		}
-
-		valid_ = true;
 	}
 	else {
-		valid_ = false;
+		throw std::exception("The given OFFModel is empty!");
 	}
+
 }
 
 void OffGeometryEffect::v_init()
@@ -137,7 +129,7 @@ void OffGeometryEffect::v_render()
 {
 	buw::ReferenceCounted<buw::ITexture2D> renderTarget = renderSystem()->getBackBufferTarget();
 
-	if (pipelineState_ && vertexBuffer_ && indexBuffer_ && valid_)
+	if (pipelineState_ && vertexBuffer_ && indexBuffer_)
 	{
 		setPipelineState(pipelineState_);
 		setRenderTarget(renderTarget, depthStencilMSAA_);
