@@ -184,7 +184,7 @@ namespace OpenInfraPlatform
 				*/
 				bool areEqual(const double first, const double second) const
 				{
-					return abs(first - second) < getPrecision();
+					return areEqual(first, second, getPrecision());
 				}
 
 				/*!Compare two 2D vectors for equality to the default precision
@@ -195,7 +195,7 @@ namespace OpenInfraPlatform
 				*/
 				bool areEqual(const carve::geom::vector<2>& first, const  carve::geom::vector<2>& second) const
 				{
-					return areEqual(first.x, second.x) && areEqual(first.y, second.y);
+					return areEqual(first, second, getPrecision());
 				}
 
 				/*!Compare two 3D vectors for equality to the default precision
@@ -206,7 +206,7 @@ namespace OpenInfraPlatform
 				*/
 				bool areEqual(const  carve::geom::vector<3>& first, const  carve::geom::vector<3>& second) const
 				{
-					return areEqual(first.x, second.x) && areEqual(first.y, second.y) && areEqual(first.y, second.z);
+					return areEqual(first, second, getPrecision());
 				}
 
 				/*!Compare two 2D vectors for equality to the custom precision
