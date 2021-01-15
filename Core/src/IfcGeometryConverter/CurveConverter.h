@@ -1031,10 +1031,11 @@ namespace OpenInfraPlatform {
 					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
 					double deltaAngle = 2.0 * M_PI / numSegments;
 
+					double startAngle = 0.;
 					if (!trim1Vec.empty() || !trim2Vec.empty()) {
 						//Calculate an angle on the ellipse (with ellipse center in (0., 0., 0.)) for trimming begin.
 						carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, trim1Vec, trimmingPreference);
-						double startAngle = getAngleOnEllipse(carve::geom::VECTOR(0, 0, 0), xRadius, yRadius, point);
+						startAngle = getAngleOnEllipse(carve::geom::VECTOR(0, 0, 0), xRadius, yRadius, point);
 
 						//Calculate an angle on the ellipse (with ellipse center in (0., 0., 0.)) for trimming end.
 						point = getPointOnCurve<typename IfcEntityTypesT::IfcEllipse>(ellipse, trim2Vec, trimmingPreference);
@@ -1049,7 +1050,7 @@ namespace OpenInfraPlatform {
 					}
 
 					std::vector<carve::geom::vector<3> > ellipsePoints;
-					double angle = 0.0;
+					double angle = startAngle;
 					for (int i = 0; i < numSegments; ++i) {
 						ellipsePoints.push_back(carve::geom::vector<3>(
 							carve::geom::VECTOR(
@@ -1972,7 +1973,7 @@ namespace OpenInfraPlatform {
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
 				* \tparam TCurve					A type of the curve. 
-				* \param[in] curve					A pointer to data from one the curve.
+				* \param[in] curve					A pointer to data from the curve.
 				* \param[in] trimmingVec			A vector of pointers to data form \c IfcTrimmingSelect.
 				* \param[in] trimmingPreference		Specifies the preferred way of trimming.
 				* \return							The location of the trimming point.
@@ -2016,7 +2017,7 @@ namespace OpenInfraPlatform {
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
 				* \tparam TCurve					A type of the curve. 
-				* \param[in] curve					A pointer to data from one the curve.
+				* \param[in] curve					A pointer to data from the curve.
 				* \param[in] trimming				A pointer to data from \c IfcTrimmingSelect.
 				* \return							The location of the trimming point.
 				*/
@@ -2045,7 +2046,7 @@ namespace OpenInfraPlatform {
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint.
 				* \tparam TCurve					A type of the curve. 
-				* \param[in] curve					A pointer to data from one the curve.
+				* \param[in] curve					A pointer to data from the curve.
 				* \param[in] cartesianPoint			A pointer to data from \c IfcCartesianPoint.
 				* \return							The location of the trimming point.
 				* \note								The position is not applied.All calculations are made based on center in(0., 0., 0.).
