@@ -16,8 +16,8 @@
 */
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
-#include "EMTIFC4X3_RC2EntityTypes.h"
-#include "IFC4X3_RC2Entities.h"
+#include "EarlyBinding\IFC4X3_RC2\src\EMTIFC4X3_RC2EntityTypes.h"
+#include "EarlyBinding\IFC4X3_RC2\src\IFC4X3_RC2Entities.h"
 #endif
 
 #include <tuple>
