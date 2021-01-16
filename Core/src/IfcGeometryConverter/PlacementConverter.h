@@ -1347,7 +1347,7 @@ namespace OpenInfraPlatform {
                         //     as well as the horizontal direction from horizontal segment
 
                         // get the starting point of segment
-                        const auto& curveSegStartPoint = horCurveGeometryRelevantToPoint->StartPoint.lock();
+                        const auto& curveSegStartPoint = horCurveGeometryRelevantToPoint->StartPoint;
                         if(!curveSegStartPoint) {
                             BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog()
                                 << ": No curve segment start point.";

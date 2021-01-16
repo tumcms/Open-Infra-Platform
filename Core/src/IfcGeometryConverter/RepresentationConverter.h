@@ -139,25 +139,35 @@ namespace OpenInfraPlatform {
 						{
 							// write the error to the console
 							BLUE_LOG(warning) << representation->getErrorLog() + ": We don't support this (yet). Care to contribute?";
-							BLUE_LOG(warning) << ex.what();
+							BLUE_LOG(warning) << std::string(ex.what());
 							continue;
 						}
 						catch (const oip::InconsistentGeometryException& ex)
 						{
 							// write the error to the console
 							BLUE_LOG(warning) << representation->getErrorLog() + ": Nothing is shown - sth wrong with geometry.";
-							BLUE_LOG(warning) << ex.what();
+							BLUE_LOG(warning) << std::string(ex.what());
 							continue;
 						}
 						catch (const oip::InconsistentModellingException& ex)
 						{
 							// write the error to the console
 							BLUE_LOG(warning) << representation->getErrorLog() + ": Nothing is shown - sth wrong with IFC model.";
-							BLUE_LOG(warning) << ex.what();
+							BLUE_LOG(warning) << std::string(ex.what());
+							continue;
+						}
+						catch (const std::exception& ex)
+						{
+							// write the error to the console
+							BLUE_LOG(warning) << representation->getErrorLog() + ": Nothing is shown - std::exception.";
+							BLUE_LOG(warning) << std::string(ex.what());
 							continue;
 						}
 						catch (...)
 						{
+							// write the error to the console
+							BLUE_LOG(warning) << representation->getErrorLog() + ": Nothing is shown - unknown error.";
+							continue;
 							throw; // throw onwards
 						}
 
@@ -275,7 +285,7 @@ namespace OpenInfraPlatform {
 					//   -IfcAxisLateralInclination-, *IfcBooleanResult*, IfcBoundingBox, IfcCartesianPointList, IfcCartesianTransformationOperator, 
 					//   IfcCompositeCurveSegment, *IfcCsgPrimitive3D*, *IfcCurve*, IfcDirection, IfcDistanceExpression, *IfcFaceBasedSurfaceModel*, 
 					//   IfcFillAreaStyleHatching, IfcFillAreaStyleTiles, *IfcGeometricSet*, IfcHalfSpaceSolid, IfcLightSource, IfcLinearAxisWithInclination, 
-					//   IfcOrientationExpression, IfcPlacement, IfcPlanarExtent, IfcPoint, IfcSectionedSpine, *IfcShellBasedSurfaceModel*, *IfcSolidModel*, 
+					//   IfcOrientationExpression, IfcPlacement, IfcPlanarExtent, *IfcPoint*, IfcSectionedSpine, *IfcShellBasedSurfaceModel*, *IfcSolidModel*, 
 					//   *IfcSurface*, *IfcTessellatedItem*, IfcTextLiteral, *IfcVector*))
 					// *********************************************************************************************************************************************************************//
 
@@ -298,7 +308,7 @@ namespace OpenInfraPlatform {
 					// (3/*) IfcSolidModel SUBTYPE OF IfcGeometricRepresentationItem
 					if(geomItem.isOfType<typename IfcEntityTypesT::IfcSolidModel>()) {
 						solidConverter->convertIfcSolidModel(
-							geomItem.as<typename IfcEntityTypesT::IfcSolidModel>().lock(), 
+							geomItem.as<typename IfcEntityTypesT::IfcSolidModel>(), 
 							pos, itemData);
 						return;
 					}
@@ -365,6 +375,13 @@ namespace OpenInfraPlatform {
 						polylineData->addPolylineIndex(1);
 
 						itemData->polylines.push_back(polylineData);
+						return;
+					}
+
+					// (11/*) IfcPoint SUBTYPE OF IfcGeometricRepresentationItem
+					if (geomItem.isOfType<typename IfcEntityTypesT::IfcPoint>())
+					{
+						addPointCross(geomItem.as<typename IfcEntityTypesT::IfcPoint>(), pos, itemData);
 						return;
 					}
 
@@ -476,25 +493,17 @@ namespace OpenInfraPlatform {
 						switch (it_set_elements.which()) {
 						case 0: 
 						{
-							curveConverter->convertIfcCurve(it_set_elements.get<0>().lock(), pos, itemData);
+							curveConverter->convertIfcCurve(it_set_elements.template get<0>(), pos, itemData);
 						}
 							break;
 						case 1:
 						{
-							std::shared_ptr<carve::input::PolylineSetData> polyline =
-								std::make_shared<carve::input::PolylineSetData>();
-							carve::geom::vector<3> point = placementConverter->convertIfcPoint(it_set_elements.get<1>());
-							polyline->beginPolyline();
-							polyline->addVertex(pos * point);
-							polyline->addPolylineIndex(0);
-							polyline->addVertex(pos * point);
-							polyline->addPolylineIndex(1);
-							itemData->polylines.push_back(polyline);
+							addPointCross(it_set_elements.template get<1>(), pos, itemData);
 						}
 							break;
 						case 2:
 						{
-							faceConverter->convertIfcSurface(it_set_elements.get<2>(), pos, itemData);
+							faceConverter->convertIfcSurface(it_set_elements.template get<2>(), pos, itemData);
 						}
 							break;
 						default: 
@@ -517,6 +526,29 @@ namespace OpenInfraPlatform {
 					return;
 				}
 
+
+				void addPointCross(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPoint>& ifcpoint,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData
+				) const throw(...)
+				{
+					carve::geom::vector<3> point = placementConverter->convertIfcPoint(ifcpoint);
+					// draw a 3D cross at the point
+					std::vector<std::pair<int, int>> pairs({ { 1,1 },{ 1,-1 },{ -1,-1 },{ -1,1 } });
+					for (auto el : pairs)
+					{
+						std::shared_ptr<carve::input::PolylineSetData> polyline =
+							std::make_shared<carve::input::PolylineSetData>();
+						polyline->beginPolyline();
+						polyline->addVertex(pos * (point + carve::geom::VECTOR(0.1*el.first, 0.1*el.second, 0.1)));
+						polyline->addPolylineIndex(0);
+						polyline->addVertex(pos * (point + carve::geom::VECTOR(-0.1*el.first, -0.1*el.second, -0.1)));
+						polyline->addPolylineIndex(1);
+						itemData->polylines.push_back(polyline);
+					}
+				}
+
 				// ****************************************************************************************************************************************	//
 				//	Functions																																//
 				//	convertVersionSpecificIfcGeometricRepresentationItem, convertIfcSectionedSpine, convertStyledItem, convertOpenings, subtractOpenings	//
@@ -534,7 +566,8 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<ItemData>& itemData
 				) const throw(...)
 				{
-					const std::shared_ptr<typename IfcEntityTypesT::IfcCompositeCurve> spine_curve = spine->SpineCurve.lock();
+					/*
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCompositeCurve> spine_curve = spine->SpineCurve;
 					if(!spine_curve) {
 						return;
 					}
@@ -569,6 +602,7 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>> segment_start_points;
 
 					curveConverter->convertIfcCurve(spine_curve, curve_polygon, segment_start_points);
+					*/
 #ifdef _DEBUG
 					std::cout << "Warning\t| IfcSectionedSpine not implemented." << std::endl;
 #endif

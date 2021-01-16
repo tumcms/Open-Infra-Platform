@@ -29,8 +29,11 @@
 #include <fstream>
 #include <map>
 #include <set>
+#include <queue>
 #include <sstream>
 #include <chrono>
+
+#include "General\graph.h"
 
 //#include <boost/optional.hpp>
 //#include <boost/uuid/uuid.hpp>
@@ -415,11 +418,11 @@ void writeDoxyComment(std::ostream &out,
 			isFirst = false;
 		for (auto& it : *params)
 		{
-			if( !std::get<1>(it).empty() )
+			if( !std::template get<1>(it).empty() )
 				writeDoxyLine(out, "\\param"
-					+ (std::get<0>(it).empty() ? "" : "[" + std::get<0>(it) + "] ")
-					+ std::get<1>(it) + " "
-					+ std::get<2>(it));
+					+ (std::template get<0>(it).empty() ? "" : "[" + std::template get<0>(it) + "] ")
+					+ std::template get<1>(it) + " "
+					+ std::template get<2>(it));
 		}
 	}
 	// notes
@@ -525,13 +528,13 @@ void writeEntityConstructor(std::ostream &out, const OpenInfraPlatform::ExpressB
 	writeEntityFunction(out, entity, "", entity.getName(), parameters, "", implementation);
 }
 
-void writeValueTypeFile(const Type& type, std::ostream& out) {
+void writeValueTypeFile(const Type& type, std::ostream& out, const std::string& apiDefine) {
 	const std::string name = type.getName();
 	const std::string basetype = type.getUnderlyingTypeName();
 	
 	
 	writeDoxyComment(out, "Type, subtype of  " + basetype);
-	writeLine(out, "class " + name + " : public " + basetype + "{");
+	writeLine(out, "class " + apiDefine + " " + name + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, "typedef " + name + " type;");
@@ -559,7 +562,7 @@ void writeValueTypeFile(const Type& type, std::ostream& out) {
 	return;
 }
 
-void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream& out) {
+void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream& out, const std::string& apiDefine) {
 	/*
 	#define DEFINE_CONTAINERTYPE(name, containertype, min, max, valuetype)\
 	class name : public ExpressBindingGenerator::EXPRESSContainer<containertype<valuetype>,valuetype,min,max>, public ExpressBindingGenerator::EXPRESSType {\
@@ -588,7 +591,7 @@ void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream
 	const std::string basetype = "EarlyBinding::" + type.getContainerTypeName() + "<" + min + "," + max + "," + valuetype + ">";
 
 	writeDoxyComment(out, "Container of " + type.getContainerType() + ", with cardinalities [" + min + "," + max + "]");
-	writeLine(out, "class " + name + " : public " + basetype + ", public EarlyBinding::EXPRESSType {");
+	writeLine(out, "class " + apiDefine + " " + name + " : public " + basetype + ", public EarlyBinding::EXPRESSType {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, name + "() = default;");
@@ -622,7 +625,7 @@ void writeContainerTypeFile(const Schema& schema, const Type& type, std::ostream
 	writeLine(out, "};");
 }
 
-void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostream& out) {
+void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostream& out, const std::string& apiDefine) {
 
 	/*
 	#define ENUM_W_STR(name, type, seq)\
@@ -693,7 +696,7 @@ void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostr
 	};
 	*/
 
-	writeLine(out, "class " + name + " : public " + basetype + " {");
+	writeLine(out, "class " + apiDefine + " " + name + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, "typedef " + enumName + " Enum;");
@@ -705,7 +708,7 @@ void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostr
 	linebreak(out);
 	
 	writeLine(out, "virtual " + name + "& operator=(const EXPRESSOptional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
-	writeLine(out, "virtual const std::string classname() const override { return \"" + name + "\"; }");
+	writeLine(out, "virtual const std::string classname() const override { return \"" + toUpper(name) + "\"; }");
 	writeLine(out, "const std::string getStepParameter() const { return to_string(" + basetype + "::m_value); };");
 	writeLine(out, "static " + enumName + " readStepData(const std::string &value) {");
 	writeLine(out, "const std::string name = value.substr(1, value.size() - 2);");
@@ -718,14 +721,14 @@ void writeEnumTypeFile(std::string name, std::vector<std::string> seq, std::ostr
 	return;
 }
 
-void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq, std::ostream& out) {
+void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq, std::ostream& out, const std::string& apiDefine) {
 	const std::string enumName = "e" + name;
 
 	std::for_each(seq.begin(), seq.end(), [](auto& elem) {
 		elem = "ENUM_" + elem;
 	});
 
-	writeLine(out, "enum class " + enumName + " : int {");
+	writeLine(out, "enum class " + apiDefine + " " + enumName + " : int {");
 	for (int i = 0; i < seq.size(); i++) {
 		if (i != seq.size() - 1) {
 			writeLine(out, seq[i] + " = " + std::to_string(i) + ",");
@@ -737,7 +740,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 	}
 	writeLine(out, "};");
 	linebreak(out);
-	writeLine(out, "const std::string to_string(const " + enumName + "& v);");
+	writeLine(out, apiDefine + " const std::string to_string(const " + enumName + "& v);");
 	linebreak(out);
 
 	//writeLine(out, "inline const std::string to_string(const " + enumName + "& v) {");
@@ -752,7 +755,7 @@ void writeEnumTypeFileRefactored(std::string name, std::vector<std::string> seq,
 
 	const std::string basetype = "EarlyBinding::EnumType<" + enumName + "," + std::to_string(seq.size()) + ">";
 	writeDoxyComment(out, "EnumType of " + std::to_string(seq.size()) + " elements");
-	writeLine(out, "class " + name + " : public " + basetype + " {");
+	writeLine(out, "class " + apiDefine + " " + name + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, name + "() = default;");
@@ -788,7 +791,7 @@ void resolveEntity(Schema& schema, const Entity& entity, std::ostream& out) {
 	}
 }
 
-void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out) {
+void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out, const std::string& apiDefine) {
 	/*
 	#define DEFINE_SELECTTYPE(select, seq)\
 	class select : public boost::make_recursive_variant<BOOST_PP_REMOVE_PARENS(BOOST_PP_SEQ_TO_TUPLE(seq))>::type, public OpenInfraPlatform::ExpressBindingGenerator::EXPRESSType {\
@@ -849,7 +852,7 @@ void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out) {
 	std::transform(seq.begin(), seq.end(), seq.begin(), [&schema](std::string elem)->std::string {return schema.hasEntity(elem) ? "EXPRESSReference<" + elem + ">" : elem; });
 
 	const std::string basetype = "boost::make_recursive_variant<" + join(seq, ',') + ">::type";
-	writeLine(out, "class " + select + " : public " + basetype + ", public ExpressBindingGenerator::EXPRESSType {");
+	writeLine(out, "class " + apiDefine + " " + select + " : public " + basetype + ", public ExpressBindingGenerator::EXPRESSType {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, select + "() = default;");
@@ -922,7 +925,7 @@ void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out) {
 	writeLine(out, "};");
 	linebreak(out);
 
-	writeLine(out, "virtual const std::string classname() const override { return \"" + select + "\"; };");
+	writeLine(out, "virtual const std::string classname() const override { return \"" + toUpper(select) + "\"; };");
 	linebreak(out);
 
 	/*
@@ -958,7 +961,7 @@ void writeSelectTypeFile(Schema & schema, Type& selectType, std::ostream& out) {
 	return;
 }
 
-void writeSelectTypeFileREFACTORED(const Schema& schema, const Type& selectType, std::ostream& out) {
+void writeSelectTypeFileREFACTORED(const Schema& schema, const Type& selectType, std::ostream& out, const std::string& apiDefine) {
 	//class IfcTimeOrRatioSelect : public OpenInfraPlatform::ExpressBindingGenerator::SelectType<IfcTimeOrRatioSelect, IfcDuration, IfcRatioMeasure> {
 	//	using base = OpenInfraPlatform::ExpressBindingGenerator::SelectType<IfcTimeOrRatioSelect, IfcDuration, IfcRatioMeasure>;
 	//public:
@@ -979,7 +982,7 @@ void writeSelectTypeFileREFACTORED(const Schema& schema, const Type& selectType,
 	const std::string basetype = "EarlyBinding::SelectType<" + join(seq, ',') + ">";
 
 	//writeLine(out, "class " + select + " : public " + basetype +", public ExpressBindingGenerator::EXPRESSType {");
-	writeLine(out, "class " + select + " : public " + basetype + " {");
+	writeLine(out, "class " + apiDefine + " " + select + " : public " + basetype + " {");
 	writeLine(out, "using base = " + basetype + ";");
 	writeLine(out, "public:");
 	writeLine(out, select + "() = default;");
@@ -998,90 +1001,254 @@ void writeSelectTypeFileREFACTORED(const Schema& schema, const Type& selectType,
 	writeLine(out, "};");
 }
 
-void writeSelectTypeFileMinimal(Schema& schema, Type& selectType, std::ostream& out) {
+void writeSelectTypeFileMinimal(Schema& schema, Type& selectType, std::ostream& out, const std::string& apiDefine) {
 	const std::string select = selectType.getName();
 	std::vector<std::string> seq = selectType.getTypes();
 	std::transform(seq.begin(), seq.end(), seq.begin(), [&schema](std::string elem)->std::string {return schema.hasEntity(elem) ? "EXPRESSReference<" + elem + ">" : elem; });
 
-	writeLine(out, "class " + select + " {");
+	writeLine(out, "class " + apiDefine + " " + select + " {");
 	writeLine(out, "public:");
 	writeLine(out, select + "() = default;");
 	writeLine(out, "~" + select + "() { };");
 	writeLine(out, select + "& operator=(const " + select + "& other) = default;");
 	linebreak(out);
 	writeLine(out, select + "* operator->(){ return this; }");
-	writeLine(out, "const std::string classname() const { return \"" + select + "\"; }");
+	writeLine(out, "const std::string classname() const { return \"" + toUpper(select) + "\"; }");
 	writeLine(out, "const std::string getStepParameter() const { return \"$\"; }");
 	writeLine(out, "static " + select + " readStepData(const std::string arg, const std::shared_ptr<ExpressBindingGenerator::EXPRESSModel>& model) { return " + select + "(); }");
 	writeLine(out, "};");
 }
 
-void resolveSelectTypeIncludes(const Schema& schema, std::set<std::string>& entityAttributes, const Type& type, std::set<std::string>& resolvedClasses) {
-	auto possibleSelectTypes = type.getTypes();
-	for (auto value : possibleSelectTypes) {
-		if (resolvedClasses.find(value) == resolvedClasses.end()) {
+void GeneratorOIP::getCachedIncludes(const std::string& name, std::set<std::string>& types, std::set<std::string>& entities) const
+{
+	if (cacheIncludesTypes.find(name) != cacheIncludesTypes.end())
+		types = cacheIncludesTypes.at(name);
+	if (cacheIncludesEntities.find(name) != cacheIncludesEntities.end())
+		entities = cacheIncludesEntities.at(name);
+}
+
+void GeneratorOIP::resolveSelectTypeIncludes(const Schema& schema, const Type& type, std::set<std::string>& includes, std::set<std::string>& resolved) {
+	// if already checked -> skip
+	if (resolved.find(type.getName()) != resolved.end())
+		return;
+	// check the cached stuff
+	//if (cacheIncludesEntities.find(type.getName()) != cacheIncludesEntities.end())
+	//{
+	//	const auto& typeAttr = cacheIncludesEntities.at(type.getName());
+	//	for( const auto& attr : typeAttr )
+	//		if(includes.find(attr) == includes.end() )
+	//			includes.insert(attr);
+	//	resolved.insert(type.getName());
+	//	return;
+	//}
+	// add to resolved
+	resolved.insert(type.getName());
+	// otherwise check all types
+	const auto& possibleSelectTypes = type.getTypes();
+	for (const auto& value : possibleSelectTypes) {
+		if (includes.find(value) == includes.end()) {
 			if (schema.hasEntity(value)) {
-				entityAttributes.insert(value);
+				includes.insert(value);
 			}
 			else {
-				if (schema.hasType(value) && schema.getTypeByName(value).isSelectType()) {
+				if (schema.hasType(value) && schema.isSelectType(value)) {
 					Type nextType = schema.getTypeByName(value);
-					resolvedClasses.insert(type.getName());
-					resolveSelectTypeIncludes(schema, entityAttributes, nextType, resolvedClasses);
+					resolveSelectTypeIncludes(schema, nextType, includes, resolved);
 				}
 			}
 		}
 	}
 }
 
-void resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<std::string>& entityAttributes, std::set<std::string>& resolvedClasses) {
-	auto attributes = schema.getAllEntityAttributes(entity);
+void GeneratorOIP::resolveEntityIncludes(const Schema& schema, const Entity& entity, std::set<std::string>& includes, std::set<std::string>& resolved) {
+	// if already checked -> skip
+	if (resolved.find(entity.getName()) != resolved.end())
+		return;
+	// check the cached stuff
+	//if (cacheIncludesEntities.find(entity.getName()) != cacheIncludesEntities.end())
+	//{
+	//	const auto& entAttr = cacheIncludesEntities.at(entity.getName());
+	//	for (const auto& attr : entAttr)
+	//		if (includes.find(attr) == includes.end())
+	//			includes.insert(attr);
+	//	resolved.insert(entity.getName());
+	//	return;
+	//}
+
+	resolved.insert(entity.getName());
+
+	const auto attributes = schema.getAllEntityAttributes(entity, true);
 
 	std::set<std::string> newEntityAttributes;
-	for (const auto attr : attributes) {
+	std::string attrTypeName = "";
+	for (const auto& attr : attributes) {
 		if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
-			if (schema.hasEntity(attr.type->toString()) && entityAttributes.find(attr.type->toString()) == entityAttributes.end()) {
-				newEntityAttributes.insert(attr.type->toString());
+			attrTypeName = attr.type->toString();
+		}
+		else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+			auto elementType = attr.type;
+			while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
+			}
+			attrTypeName = elementType->toString();
+		}
+
+		if (   includes.find(attrTypeName) != includes.end()
+			&& resolved.find(attrTypeName) != resolved.end())
+			continue;
+		if (schema.hasEntity(attrTypeName)) {
+			newEntityAttributes.insert(attrTypeName);
+		}
+		if (schema.hasType(attrTypeName)) {
+			const auto type = schema.getTypeByName(attrTypeName);
+			if (type.isSelectType()) {
+				resolveSelectTypeIncludes(schema, type, newEntityAttributes, resolved);
+			}
+		}
+	}
+
+	for (const auto& attributeEntityName : newEntityAttributes)
+		if (includes.find(attributeEntityName) == includes.end())
+			includes.insert(attributeEntityName);
+
+	for (const auto& attributeEntityName : newEntityAttributes) {
+		if (resolved.find(attributeEntityName) == resolved.end()) {
+			auto attributeEntity = schema.getEntityByName(attributeEntityName);
+			resolveEntityIncludes(schema, attributeEntity, includes, resolved);
+		}
+	}
+}
+
+void GeneratorOIP::resolveIncludes(const Schema& schema, const Type& type)
+{
+	std::set<std::string> typeAttributes, entityAttributes;
+
+	if (type.isSelectType() || type.isContainerType()) {
+		if (type.isSelectType())
+		{
+			for (auto select : type.getTypes()) {
+				if (schema.hasEntity(select)) {
+					entityAttributes.insert(select);
+				}
+				if (schema.hasType(select)) {
+					typeAttributes.insert(select);
+				}
+			}
+		}
+		else if (type.isContainerType())
+		{
+			if (schema.hasEntity(type.getContainerType())) {
+				entityAttributes.insert(type.getContainerType());
+			}
+			if (schema.hasType(type.getContainerType())) {
+				typeAttributes.insert(type.getContainerType());
+			}
+		}
+
+		std::set<std::string> resolvedClasses = { type.getName() };
+
+		if (!typeAttributes.empty()) {
+			for (const auto& val : typeAttributes) {
+				if (schema.isSelectType(val)) {
+					resolveSelectTypeIncludes(schema, schema.getTypeByName(val), entityAttributes, resolvedClasses);
+				}
+			}
+
+			auto self = typeAttributes.find(type.getName());
+			while (self != typeAttributes.end()) {
+				typeAttributes.erase(self);
+				self = typeAttributes.find(type.getName());
+			}
+
+			cacheIncludesTypes.insert(std::pair<std::string, std::set<std::string>>(type.getName(), typeAttributes));
+		}
+
+		if (!entityAttributes.empty()) {
+			std::set<std::string> allEntitiesToInclude;
+			for (const auto& entity : entityAttributes) {
+				allEntitiesToInclude.insert(entity);
+				resolveEntityIncludes(schema, schema.getEntityByName(entity), allEntitiesToInclude, resolvedClasses);
+			}
+
+			// remember for this type (saves time)
+			cacheIncludesEntities.insert(std::pair<std::string, std::set<std::string>>(type.getName(), allEntitiesToInclude));
+		}
+	}
+}
+
+void GeneratorOIP::resolveIncludes(const Schema& schema, const Entity& entity)
+{
+	std::set<std::string> typeAttributes, entityAttributes;
+
+	auto attributes = schema.getAllEntityAttributes(entity, true);
+
+	for (const auto& attr : attributes) {
+		if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
+			if (schema.hasEntity(attr.type->toString())) {
+				entityAttributes.insert(attr.type->toString());
 			}
 			if (schema.hasType(attr.type->toString())) {
-				const auto type = schema.getTypeByName(attr.type->toString());
-				if (type.isSelectType()) {
-					resolveSelectTypeIncludes(schema, newEntityAttributes, type, resolvedClasses);
-				}
+				typeAttributes.insert(attr.type->toString());
 			}
 		}
 		else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
 			auto elementType = attr.type;
-			int dim = 0;
 
 			while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-				dim++;
 				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
 			}
 
-			if (schema.hasEntity(elementType->toString()) && entityAttributes.find(elementType->toString()) == entityAttributes.end()) {
-				newEntityAttributes.insert(elementType->toString());
+			if (schema.hasEntity(elementType->toString())) {
+				entityAttributes.insert(elementType->toString());
 			}
 			if (schema.hasType(elementType->toString())) {
-				auto type = schema.getTypeByName(elementType->toString());
-				if (type.isSelectType()) {
-					resolveSelectTypeIncludes(schema, newEntityAttributes, type, resolvedClasses);
+				typeAttributes.insert(elementType->toString());
+			}
+		}
+		if (attr.isInverse() || attr.hasInverseCounterpart()) {
+			for (const auto& inverse : attr.getInverses())
+			{
+				if (schema.hasEntity(std::template get<0>(inverse))) {
+					if (entityAttributes.find(std::template get<0>(inverse)) == entityAttributes.end()) {
+						entityAttributes.insert(std::template get<0>(inverse));
+					}
+				}
+				if (schema.hasType(std::template get<0>(inverse))) {
+					if (typeAttributes.find(std::template get<0>(inverse)) == typeAttributes.end()) {
+						typeAttributes.insert(std::template get<0>(inverse));
+					}
 				}
 			}
 		}
 	}
 
-	entityAttributes.insert(newEntityAttributes.begin(), newEntityAttributes.end());
-	resolvedClasses.insert(entity.getName());
+	// Initialize set of resolved classes.
+	std::set<std::string> resolvedClasses = {};
 
-	for (auto attributeEntityName : newEntityAttributes) {
-		if (resolvedClasses.find(attributeEntityName) == resolvedClasses.end()) {
-			auto attributeEntity = schema.getEntityByName(attributeEntityName);
-			resolveEntityIncludes(schema, attributeEntity, entityAttributes, resolvedClasses);
+	for (const auto& typeName : typeAttributes) {
+		auto type = schema.getTypeByName(typeName);
+		if (type.isSelectType()) {
+			resolveSelectTypeIncludes(schema, type, entityAttributes, resolvedClasses);
 		}
 	}
-}
 
+	for (const auto attributeEntityName : entityAttributes) {
+		auto attributeEntity = schema.getEntityByName(attributeEntityName);
+		resolveEntityIncludes(schema, attributeEntity, entityAttributes, resolvedClasses);
+	}
+
+	auto self = entityAttributes.find(entity.getName());
+	while (self != entityAttributes.end()) {
+		entityAttributes.erase(self);
+		self = entityAttributes.find(entity.getName());
+	}
+
+	if( !typeAttributes.empty() )
+		cacheIncludesTypes.insert(std::pair<std::string, std::set<std::string>>(entity.getName(), typeAttributes));
+	if (!entityAttributes.empty())
+		cacheIncludesEntities.insert(std::pair<std::string, std::set<std::string>>(entity.getName(), entityAttributes));
+
+}
 
 OpenInfraPlatform::ExpressBindingGenerator::GeneratorOIP::GeneratorOIP(const std::string &outputDirectory) : outputDirectory_(outputDirectory) {
 }
@@ -1091,202 +1258,460 @@ OpenInfraPlatform::ExpressBindingGenerator::GeneratorOIP::GeneratorOIP(const std
 GeneratorOIP::~GeneratorOIP() {
 }
 
-void GeneratorOIP::generate( const Schema &schema) {
-	rootDirectory_ = outputDirectory_ + "/" + schema.getName();
+void GeneratorOIP::prepareIncludes(const Schema& schema)
+{
+	// prepare the includes
+	for (const auto& type : schema.types_)
+		resolveIncludes(schema, type);
+	for (const auto& entity : schema.entities_)
+		resolveIncludes(schema, entity);
+}
 
-	std::string schemaDirectory = rootDirectory_ + "/schema";
-	sourceDirectory_ = rootDirectory_ + "/src";
-	entityPath_ = sourceDirectory_ + "/OpenInfraPlatform/" + schema.getName() + "/entity";
-	typePath_ = sourceDirectory_ + "/OpenInfraPlatform/" + schema.getName() + "/type";
-	guidPath_ = sourceDirectory_ + "/OpenInfraPlatform/" + schema.getName() + "/guid";
-	readerPath_ = sourceDirectory_ + "/OpenInfraPlatform/" + schema.getName() + "/reader";
-	modelPath_ = sourceDirectory_ + "/OpenInfraPlatform/" + schema.getName() + "/model";
-	writerPath_ = sourceDirectory_ + "/OpenInfraPlatform/" + schema.getName() + "/writer";
-	xmlPath_ = sourceDirectory_ + "/OpenInfraPlatform/" + schema.getName() + "/xml";
+void GeneratorOIP::preparePaths(const Schema& schema)
+{
+	// lambda for easier notation
+	std::function<std::string(std::string, std::string)> prepareFolder = []
+	(const std::string& basepath, const std::string& newfolder) -> std::string
+	{
+		std::string fullpath = basepath + "/" + newfolder;
+		if (!fs::exists(fullpath)) {
+			fs::create_directory(fullpath);
+		}
+		return fullpath;
+	};
 
-	if (!fs::exists(rootDirectory_)) {
-		fs::create_directory(rootDirectory_);
+	rootDirectory_ = prepareFolder(outputDirectory_, schema.getName());
+	sourceDirectory_ = prepareFolder(rootDirectory_, "src");
+	prepareFolder(sourceDirectory_, "zero");
+	prepareFolder(sourceDirectory_, "bot");
+	prepareFolder(sourceDirectory_, "mid");
+	prepareFolder(sourceDirectory_, "toprooted");
+	prepareFolder(sourceDirectory_, "topnotrooted");
+	readerPath_ = prepareFolder(sourceDirectory_, "reader");
+}
+
+void GeneratorOIP::prepareSplits(const Schema& schema)
+{
+	// build up the directed graph of entities/types
+	// ignoring EXPRESS types as possible nodes (no REAL, NUMBER, etc.)
+	std::map<std::string, size_t> mapNameToIndex;
+	std::map<size_t, std::string> mapIndexToName;
+
+	size_t counter = 0;
+	for (const auto& type : schema.types_)
+	{
+		mapIndexToName.insert(std::pair<size_t, std::string>(counter, type.getName()));
+		mapNameToIndex.insert(std::pair<std::string, size_t>(type.getName(), counter++));
 	}
 
-	if (!fs::exists(schemaDirectory)) {
-		fs::create_directory(schemaDirectory);
+	for (const auto& entity : schema.entities_)
+	{
+		mapIndexToName.insert(std::pair<size_t, std::string>(counter, entity.getName()));
+		mapNameToIndex.insert(std::pair<std::string, size_t>(entity.getName(), counter++));
 	}
 
-	if (!fs::exists(sourceDirectory_)) {
-		fs::create_directory(sourceDirectory_);
+	//**************************************************
+	// allocate adjacency matrix
+	Graph adjacencyGraph(mapNameToIndex.size());
+
+	// ease-of-access function
+	std::function<void(std::string, std::string)> connect = [&adjacencyGraph, &mapNameToIndex]
+	(const std::string& from, const std::string& to)
+	{
+		adjacencyGraph.addEdge(mapNameToIndex[from], mapNameToIndex[to]);
+	};
+
+	// determine the edges in the adjacency matrix
+	// 1. supertypes
+	for (const auto& type : schema.types_)
+		if (type.isDerivedType())
+			connect(type.getName(), type.getUnderlyingTypeName());
+	for (const auto& entity : schema.entities_)
+		if (entity.hasSupertype())
+			connect(entity.getName(), entity.getSupertype());
+
+	// 2. selects
+	for (const auto& type : schema.types_)
+		if (type.isSelectType())
+			for (const auto& select : type.getTypes())
+				connect(type.getName(), select); // doesn't matter if it is a type or an entity
+
+	// 3. containers
+	for (const auto& type : schema.types_)
+		if (type.isContainerType())
+			connect(type.getName(), type.getContainerType()); // doesn't matter if it is a type or an entity
+
+	// 4. attributes
+	std::function<std::vector<std::string>(std::string)> getAttributes = [&schema](const std::string& name) -> std::vector<std::string> {
+		std::vector<std::string> attributes;
+		for (const auto& attr : schema.getEntityByName(name).getAttributes()) // only own attributes, but inverses as well
+			if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed)
+				attributes.push_back(attr.type->toString()); // doesn't matter if it is a type or an entity
+			else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+				auto elementType = attr.type;
+				while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+					elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
+				}
+				attributes.push_back(elementType->toString()); // doesn't matter if it is a type or an entity
+			}
+		return attributes;
+	};
+	for (const auto& entity : schema.entities_)
+		for (const auto& attr : getAttributes(entity.getName())) // only own attributes, but inverses as well
+			connect(entity.getName(), attr); // doesn't matter if it is a type or an entity
+
+	std::string name = sourceDirectory_ + "/graph.txt";
+	std::ofstream out(name);
+	adjacencyGraph.print(out, [&mapIndexToName](size_t i) -> std::string { 
+		if (mapIndexToName.find(i) != mapIndexToName.end())
+			return mapIndexToName.at(i);
+		return "unknown";
+	});
+
+	//**************************************************
+	// find the strongly connected components
+	auto scc = adjacencyGraph.SCC();
+	// print
+	name = sourceDirectory_ + "/scc.txt";
+	std::ofstream out2(name);
+	for (const auto& lst : scc)
+	{
+		for (const auto& el : lst)
+			out2 << mapIndexToName.at(el) + (el != *lst.rbegin() ? " -> " : "");
+		out2 << std::endl;
+	}			
+
+	// mark those components that are connected with IfcProduct
+	std::vector<bool> connected(mapNameToIndex.size(), false);
+	for (const auto& lst : scc)
+		//if (std::find_if(lst.begin(), lst.end(), [&IfcProductIndex](auto el) {return el == IfcProductIndex; }) != lst.end())
+			for (const auto& el : lst)
+			{
+				connected.at(el) = true;
+				// if it is a select, all types are connected as well
+				if (schema.hasType(mapIndexToName.at(el)) && schema.isSelectType(mapIndexToName.at(el)))
+					for (const auto& sel : schema.getTypeByName(mapIndexToName.at(el)).getTypes())
+					{
+						if( schema.hasEntity(sel))
+							connected.at(mapNameToIndex.at(sel)) = true;
+					}
+			}
+
+	//**************************************************
+	// find the biggest elementary circuit in the directed graph
+	// see https://www.cs.tufts.edu/comp/150GA/homeworks/hw1/Johnson%2075.PDF
+	// and http://normalisiert.de/code/java/elementaryCycles.zip
+
+	// does one inherit from other? (supports only entities)
+	std::function<bool(std::string, std::string)> inheritsFrom =
+		[&schema](const std::string& name, const std::string& from) -> bool
+	{
+		if (toUpper(name) == from) // one does not inherit from itself
+			return false;
+
+		if (schema.hasEntity(from) && schema.hasEntity(name))
+		{
+			auto entity = schema.getEntityByName(name);
+			while (entity.hasSupertype()) {
+				entity = schema.getEntityByName(entity.getSupertype());
+				if (entity.getName() == from)
+					return true;
+			}
+		}
+
+		return false;
+	};
+
+	// does one inherit from one that is connected?
+	std::function<bool(std::vector<std::string>)> inheritsFromConnected = 
+		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected]
+		(std::vector<std::string> const & names) -> bool
+	{
+		for (const auto& name : names)
+			if (schema.hasEntity(name))
+			{
+				// check the boollean array
+				if( connected.at(mapNameToIndex.at(name)))
+					return true;
+			}
+			else if (schema.hasType(name) && schema.isSelectType(name))
+			{
+				// call recursively
+				if (inheritsFromConnected(schema.getTypeByName(name).getTypes()))
+					return true;
+			}
+		return false;
+	};
+
+	// does it have any includes?
+	std::function<bool(std::string)> hasIncludes = [this](const std::string& name) -> bool
+	{
+		std::set<std::string> types, entities;
+		getCachedIncludes(name, types, entities);
+		return !types.empty() || !entities.empty();
+	};
+
+	// does any of the attributes point to a connected?
+	std::function<bool(std::vector<std::string>)> pointsToConnected = [&mapNameToIndex, &connected](std::vector<std::string> const & names) -> bool
+	{
+		for (const auto& el : names)
+			if (connected.at(mapNameToIndex.at(el)))
+				return true;
+		return false;
+	};
+
+	// get all includes
+	std::function<std::vector<std::string>(std::string)> getIncludes = [this](const std::string& name) -> std::vector<std::string>
+	{
+		std::set<std::string> types, entities;
+		getCachedIncludes(name, types, entities);
+
+		std::vector<std::string> allNames;
+		allNames.reserve(types.size() + entities.size());
+		for (const auto& el : types)
+			allNames.push_back(el);
+		for (const auto& el : entities)
+			allNames.push_back(el);
+		return allNames;
+	};
+
+	// does it have any connected includes?
+	std::function<bool(std::string)> hasConnectedIncludes = [&getIncludes, &pointsToConnected, this](const std::string& name) -> bool
+	{
+		return pointsToConnected(getIncludes(name));
+	};
+
+	// set folder for entity (true = a folder was set, false = no change)
+	std::map<std::string, int> folders = { {"zero", 0}, {"bot", 1}, {"mid", 2}, {"toprooted", 3}, {"topnotrooted", 3} };
+	std::function<bool(std::string,std::string)> setFolder = 
+		[this, &folders]
+	(const std::string& name, const std::string& folder) -> bool
+	{
+		if( this->mapFolderInSrc_.find(name) == this->mapFolderInSrc_.end() )
+		{
+			mapFolderInSrc_.insert(std::pair<std::string, std::string>(name, folder));
+			return true;
+		}
+		else
+		{
+			// only overwrite if higher in the hierarchy
+			if (folders.at(this->mapFolderInSrc_.at(name)) > folders.at(folder))
+			{
+				mapFolderInSrc_.at(name) = folder;
+				return true;
+			}
+		}
+		return false; // means no change
+	};
+
+	// determine the path for schemas' entities & types
+	std::function<void(std::string)> determinePath = 
+		[&mapNameToIndex, &connected, &schema, &inheritsFromConnected, &getIncludes, &pointsToConnected, &hasConnectedIncludes, &hasIncludes, &getAttributes, &setFolder, &inheritsFrom]
+		(const std::string& name)
+	{
+		// if in the loop with ifcproduct -> mid
+		if (connected.at(mapNameToIndex.at(name)))
+		{
+			setFolder(name, "mid");
+			// also set all attributes to be mid
+			if( schema.hasEntity(name))
+				for (const auto& attr : getAttributes(name))
+					setFolder(attr, "mid");
+			for (const auto& incl : getIncludes(name))
+				setFolder(incl, "mid");
+			return;
+		}
+		else
+		{
+			// if it is a type
+			if( schema.hasType(name) )
+				if( !schema.isSelectType(name)) // but not a select type -> type
+				{
+					setFolder(name, hasIncludes(name) ? "bot" : "zero");
+					return;
+				}
+				else // otherwise determine the selects
+				{
+					auto typ = schema.getTypeByName(name);
+					// look up if an entity within the select would be in top
+					if(inheritsFromConnected(typ.getTypes())
+						|| pointsToConnected(typ.getTypes())
+						|| hasConnectedIncludes(name))
+					{
+						for( const auto& el : typ.getTypes() )
+							if (inheritsFrom(el, "IfcRoot"))
+							{
+								setFolder(name, "toprooted");
+								return;
+							}
+						setFolder(name, "topnotrooted");
+					}
+					else
+						setFolder(name, hasIncludes(name) ? "bot" : "zero");
+					return;
+				}
+
+			// if it inherits from one within the loop with ifcproduct -> top
+			if( schema.hasEntity(name) )
+			{
+				auto parents = schema.getSuperTypes(schema.getEntityByName(name));
+				if( inheritsFromConnected(parents)
+					|| pointsToConnected(getAttributes(name))
+					|| hasConnectedIncludes(name))
+				{
+					if (inheritsFrom(name, "IfcRoot"))
+					{
+						setFolder(name, "toprooted");
+						return;
+					}
+					setFolder(name, "topnotrooted");
+				}
+				else
+					setFolder(name, hasIncludes(name) ? "bot" : "zero");
+				return;
+			}
+			throw std::exception("This should never ever happen");
+		}
+	};
+
+	for (const auto& type : schema.types_)
+		determinePath(type.getName());
+	for (const auto& entity : schema.entities_)
+		determinePath(entity.getName());
+
+	// correct that any parent entities are not in a project above in the heirarchy
+	std::queue<std::string> toCheck;
+	for (const auto& entity : schema.entities_)
+	{
+		auto parents = schema.getSuperTypes(entity);
+		auto folder = mapFolderInSrc_.at(entity.getName());
+		for (const auto& el : parents)
+			if( setFolder(el, folder) )
+				toCheck.push(el);
+		auto attributes = getAttributes(entity.getName());
+		for (const auto& el : attributes)
+			if (setFolder(el, folder))
+				toCheck.push(el);
 	}
 
-	if (!fs::exists(sourceDirectory_ + "/OpenInfraPlatform")) {
-		fs::create_directory(sourceDirectory_ + "/OpenInfraPlatform");
+	// check those that have changed again
+	while (!toCheck.empty())
+	{
+		if( schema.hasEntity(toCheck.front()))
+		{
+			auto entity = schema.getEntityByName(toCheck.front());
+			auto parents = schema.getSuperTypes(entity);
+			auto folder = mapFolderInSrc_.at(entity.getName());
+			for (const auto& el : parents)
+				if (setFolder(el, folder))
+					toCheck.push(el);
+		}
+		toCheck.pop();
 	}
 
-	if (!fs::exists(sourceDirectory_ + "/OpenInfraPlatform/" + schema.getName())) {
-		fs::create_directory(sourceDirectory_ + "/OpenInfraPlatform/" + schema.getName());
+	// print
+	name = sourceDirectory_ + "/paths.txt";
+	std::ofstream out3(name);
+	for (const auto& pair : mapFolderInSrc_)
+	{
+		out3 << pair.second << ": " << pair.first << std::endl;
 	}
 
-	if (!fs::exists(guidPath_)) {
-		fs::create_directory(guidPath_);
-	}
+	/*
+	for (const auto& type : schema.types_)
+		if (type.isSelectType())
+			mapFolderInSrc_.insert(std::pair<std::string, std::string>(type.getName(), "mid"));
+		else
+			mapFolderInSrc_.insert(std::pair<std::string, std::string>(type.getName(), "bot"));
 
-	if (!fs::exists(entityPath_)) {
-		fs::create_directory(entityPath_);
-	}
-
-	if (!fs::exists(readerPath_)) {
-		fs::create_directory(readerPath_);
-	}
-
-	if (!fs::exists(modelPath_)) {
-		fs::create_directory(modelPath_);
-	}
-
-	if (!fs::exists(writerPath_)) {
-		fs::create_directory(writerPath_);
-	}
-
-	if (!fs::exists(xmlPath_)) {
-		fs::create_directory(xmlPath_);
-	}
-
-	// guid
-	copyTemplate("Template/guid/CreateGuid_64.h", guidPath_ + "/CreateGuid_64.h", schema);
-	copyTemplate("Template/guid/CreateGuid_64.cpp", guidPath_ + "/CreateGuid_64.cpp", schema);
-	// model
-	copyTemplate("Template/model/Exception.cpp", modelPath_ + "/Exception.cpp", schema);
-	copyTemplate("Template/model/Exception.h", modelPath_ + "/Exception.h", schema);
-	copyTemplate("Template/model/Model.cpp", modelPath_ + "/Model.cpp", schema);
-	copyTemplate("Template/model/Model.h", modelPath_ + "/Model.h", schema);
-	copyTemplate("Template/model/Object.cpp", modelPath_ + "/Object.cpp", schema);
-	copyTemplate("Template/model/Object.h", modelPath_ + "/Object.h", schema);
-	copyTemplate("Template/model/shared_ptr.h", modelPath_ + "/shared_ptr.h", schema);
-	copyTemplate("Template/model/StatusObservable.cpp", modelPath_ + "/StatusObservable.cpp", schema);
-	copyTemplate("Template/model/StatusObservable.h", modelPath_ + "/StatusObservable.h", schema);
-	copyTemplate("Template/model/UnitConverter.cpp", modelPath_ + "/UnitConverter.cpp", schema);
-	copyTemplate("Template/model/UnitConverter.h", modelPath_ + "/UnitConverter.h", schema);
-	copyTemplate("Template/model/UnknownEntityException.h", modelPath_ + "/UnknownEntityException.h", schema);
-	copyTemplate("Template/model/Util.h", modelPath_ + "/Util.h", schema);
-	// reader
-	copyTemplate("Template/reader/IfcStepReader.cpp", readerPath_ + "/IfcStepReader.cpp", schema);
-	copyTemplate("Template/reader/IfcStepReader.h", readerPath_ + "/IfcStepReader.h", schema);
-	copyTemplate("Template/reader/IfcXmlReader.cpp", readerPath_ + "/IfcXmlReader.cpp", schema);
-	copyTemplate("Template/reader/IfcXmlReader.h", readerPath_ + "/IfcXmlReader.h", schema);
-	copyTemplate("Template/reader/Reader.cpp", readerPath_ + "/Reader.cpp", schema);
-	copyTemplate("Template/reader/Reader.h", readerPath_ + "/Reader.h", schema);
-	copyTemplate("Template/reader/ReaderUtil.cpp", readerPath_ + "/ReaderUtil.cpp", schema);
-	copyTemplate("Template/reader/ReaderUtil.h", readerPath_ + "/ReaderUtil.h", schema);
-	// writer
-	copyTemplate("Template/writer/IfcStepWriter.cpp", writerPath_ + "/IfcStepWriter.cpp", schema);
-	copyTemplate("Template/writer/IfcStepWriter.h", writerPath_ + "/IfcStepWriter.h", schema);
-	copyTemplate("Template/writer/IfcWriter.h", writerPath_ + "/IfcWriter.h", schema);
-	copyTemplate("Template/writer/IfcXmlWriter.cpp", writerPath_ + "/IfcXmlWriter.cpp", schema);
-	copyTemplate("Template/writer/IfcXmlWriter.h", writerPath_ + "/IfcXmlWriter.h", schema);
-	copyTemplate("Template/writer/WriterUtil.cpp", writerPath_ + "/WriterUtil.cpp", schema);
-	copyTemplate("Template/writer/WriterUtil.h", writerPath_ + "/WriterUtil.h", schema);
-	// xml
-	copyTemplate("Template/xml/XmlTools.cpp", xmlPath_ + "/XmlTools.cpp", schema);
-	copyTemplate("Template/xml/XmlTools.h", xmlPath_ + "/XmlTools.h", schema);
-
-	generateCMakeListsFile(schema);
-
-	// Types.h
-	createTypesHeaderFile(schema);
-
-	// Entities.h
-	createEntitiesHeaderFile(schema);
-	createEntitiesMapHeaderFile(schema);
-
-	// EntityBroker.cpp
-	createEntityBrokerCPPFile(schema);
-
-	generateEntityEnumsHeaderFile(schema);
-
-	for (int i = 0; i < schema.getTypeCount(); i++) {
-		auto type = schema.getTypeByIndex(i);
-
-		generateTypeHeaderFile(schema, type);
-		generateTypeSourceFile(schema, type);
-	}
-
-	for (int i = 0; i < schema.getEntityCount(); i++) {
-		auto entity = schema.getEntityByIndex(i);
-
-		generateEntityHeaderFile(schema, entity);
-		generateEntitySourceFile(schema, entity);
-	}
-
-	//Added 16.01.2019
-	generateSchemaHeader(schema);
+	for (const auto& entity : schema.entities_)
+		mapFolderInSrc_.insert(std::pair<std::string, std::string>(entity.getName(), "top"));
+	*/
 }
 
 void GeneratorOIP::generateREFACTORED( const Schema & schema)
 {
-	rootDirectory_ = outputDirectory_ + "/" + schema.getName();
+	std::cout << "Preparing paths ... ";
+	preparePaths(schema);
+	std::cout << "done." << std::endl;
 
-	std::string schemaDirectory = rootDirectory_ + "/schema";
-	std::string earlyBindingDirectory = outputDirectory_ + "/";
-	std::string expressDirectory = earlyBindingDirectory + "EXPRESS/";
-	sourceDirectory_ = rootDirectory_ + "/src";
-	entityPath_ = sourceDirectory_ + "/entity";
-	selectPath_ = sourceDirectory_ + "/select";
-	typePath_ = sourceDirectory_ + "/type";
-	readerPath_ = sourceDirectory_ + "/reader";
+	std::cout << "Preparing includes ... ";
+	prepareIncludes(schema);
+	std::cout << "done." << std::endl;
+
+	std::cout << "Preparing the splits into projects ... ";
+	prepareSplits(schema);
+	std::cout << "done." << std::endl;
 	
-
-	if (!fs::exists(rootDirectory_)) {
-		fs::create_directory(rootDirectory_);
-	}
-
-	if (!fs::exists(schemaDirectory)) {
-		fs::create_directory(schemaDirectory);
-	}
-
-	if (!fs::exists(sourceDirectory_)) {
-		fs::create_directory(sourceDirectory_);
-	}	
-
-	if (!fs::exists(readerPath_)) {
-		fs::create_directory(readerPath_);
-	}
-
-	if (!fs::exists(entityPath_)) {
-		fs::create_directory(entityPath_);
-	}
-
-	if (!fs::exists(selectPath_)) {
-		fs::create_directory(selectPath_);
-	}
-
-	if (!fs::exists(typePath_)) {
-		fs::create_directory(typePath_);
-	}
-
+	std::cout << "Generating CMakeLists ... ";
 	generateCMakeListsFileREFACTORED(schema);
+	std::cout << "done." << std::endl;
 
+	std::cout << "Generating headers ... ";
 	generateSchemaHeader(schema);
-	generateReaderFiles(schema);
 	generateEMTFiles(schema);
 	generateNamespaceHeader(schema);
+	std::cout << "done." << std::endl;
 
+	std::cout << "Generating readers ... ";
+	generateReaderFiles(schema);
+	std::cout << "done." << std::endl;
+
+	std::cout << "Generating common headers ... ";
 	// Types.h
 	createTypesHeaderFileREFACTORED(schema);
-
 	// Entities.h
 	createEntitiesHeaderFileREFACTORED(schema);
+	std::cout << "done." << std::endl;
 
-//#pragma omp parallel for
-	for (int i = 0; i < schema.getTypeCount(); i++) {
+	std::cout << "Generating types:";
+	//#pragma omp parallel for
+	size_t typeCount = schema.getTypeCount();
+	for (size_t i = 0; i < typeCount; i++) {
 		const auto type = schema.getTypeByIndex(i);
 		generateTypeHeaderFileREFACTORED(schema, type);
 		generateTypeSourceFileREFACTORED(schema, type);
+		//std::cout << std::to_string(i+1) + "/" + std::to_string(typeCount) + ": " + type.getName() << std::endl;
 	}
+	std::cout << "done with " << std::to_string(typeCount) << " types." << std::endl;
 
 //#pragma omp parallel for
-	for (int i = 0; i < schema.getEntityCount(); i++) {
+	std::cout << "Generating entities:";
+	size_t entityCount = schema.getEntityCount();
+	for (size_t i = 0; i < entityCount; i++) {
 		const auto entity = schema.getEntityByIndex(i);
 		generateEntityHeaderFileREFACTORED(schema, entity);
 		generateEntitySourceFileREFACTORED(schema, entity);
+		//std::cout << std::to_string(i+1) + "/" + std::to_string(entityCount) + ": " + entity.getName() << std::endl;
 	}
+	std::cout << "done with " << std::to_string(entityCount) << " entities." << std::endl;
 }
+
+std::string GeneratorOIP::getFolder(const std::string& name) const
+{
+	if (mapFolderInSrc_.find(name) != mapFolderInSrc_.end())
+	{
+		return mapFolderInSrc_.at(name);
+	}
+	return outputDirectory_;
+}
+
+std::string GeneratorOIP::getAPIDefine(const std::string& name) const
+{
+	const auto folder = mapFolderInSrc_.find(name);
+	if (folder != mapFolderInSrc_.end())
+		return "OIP_EARLYBINDING_API_" + toUpper(folder->second);
+	return "OIP_EARLYBINDING_API_MAIN";
+}
+
+std::string GeneratorOIP::getAPIGuard(const std::string& name) const
+{
+	const auto folder = mapFolderInSrc_.find(name);
+	if (folder != mapFolderInSrc_.end())
+		return "OIP_EARLYBINDING_API_" + toUpper(folder->second) + "_ASEXPORT";
+	return "OIP_EARLYBINDING_API_MAIN_ASEXPORT";
+}
+
 
 void GeneratorOIP::createEntitiesMapHeaderFile(const Schema &schema) {
 	// EntitiesMap.h
@@ -1335,29 +1760,11 @@ void GeneratorOIP::createEntitiesMapHeaderFile(const Schema &schema) {
 	out << "}" << std::endl;
 }
 
-void GeneratorOIP::createTypesHeaderFile(const Schema &schema) {
-	std::stringstream ssFilename;
-
-	ssFilename << sourceDirectory_ << "/OpenInfraPlatform/" << schema.getName() << "/" << schema.getName() << "Types.h";
-	std::ofstream out(ssFilename.str());
-
-	out << license;
-	out << std::endl;
-	out << "#pragma once" << std::endl;
-
-	for (int i = 0; i < schema.getTypeCount(); i++) {
-		const auto type = schema.getTypeByIndex(i);
-
-		out << "#include \"OpenInfraPlatform/" + schema.getName() + "/entity/" << type.getName() << ".h\"" << std::endl;
-	}
-}
-
 void GeneratorOIP::createTypesHeaderFileREFACTORED(const Schema & schema)
 {
-	std::stringstream ssFilename;
-
-	ssFilename << sourceDirectory_ <<  "/" << schema.getName() << "Types.h";
-	std::ofstream out(ssFilename.str());
+	std::string folder = sourceDirectory_ + "/";
+	std::string filename = schema.getName() + "Types.h";
+	std::ofstream out(folder + filename);
 
 	out << license;
 	out << std::endl;
@@ -1371,41 +1778,19 @@ void GeneratorOIP::createTypesHeaderFileREFACTORED(const Schema & schema)
 	writeLine(out, "#define " + define);
 	linebreak(out);
 
-	for (size_t i = 0; i < schema.getTypeCount(); i++) {
-		auto type = schema.getTypeByIndex(i);
-
-		if( type.isSelectType() )
-			out << "#include \"select/" << type.getName() << ".h\"" << std::endl;
-		else
-			out << "#include \"type/" << type.getName() << ".h\"" << std::endl;
+	for ( const auto& type : schema.types_ ) {
+		writeInclude(out, getFolder(type.getName()) + "/" + type.getName() + ".h");
 	}
 
+	linebreak(out);
 	writeLine(out, "#endif // end define " + define);
 	out.close();
 }
 
-void GeneratorOIP::createEntitiesHeaderFile(const Schema &schema) {
-	std::stringstream ssFilename;
-	ssFilename << sourceDirectory_ << "/OpenInfraPlatform/" << schema.getName() << "/" << schema.getName() << "Entities.h";
-	std::ofstream out(ssFilename.str());
-
-	out << license << std::endl;
-	out << std::endl;
-	out << "#pragma once" << std::endl;
-
-	for (size_t i = 0; i < schema.getEntityCount(); i++) {
-		auto entity = schema.getEntityByIndex(i);
-
-		out << "#include \"OpenInfraPlatform/" + schema.getName() + "/entity/" << entity.getName() << ".h\"" << std::endl;
-	}
-
-	
-}
-
 void GeneratorOIP::createEntitiesHeaderFileREFACTORED(const Schema &schema) {
-	std::stringstream ssFilename;
-	ssFilename << sourceDirectory_ <<  "/" << schema.getName() << "Entities.h";
-	std::ofstream out(ssFilename.str());
+	std::string folder = sourceDirectory_ + "/";
+	std::string filename = schema.getName() + "Entities.h";
+	std::ofstream out(folder + filename);
 
 	out << license << std::endl;
 	out << std::endl;
@@ -1419,308 +1804,21 @@ void GeneratorOIP::createEntitiesHeaderFileREFACTORED(const Schema &schema) {
 	writeLine(out, "#define " + define);
 	linebreak(out);
 
-	for (int i = 0; i < schema.getEntityCount(); i++) {
-		auto entity = schema.getEntityByIndex(i);
-
-		out << "#include \"entity/" << entity.getName() << ".h\"" << std::endl;
+	for (const auto& entity : schema.entities_) {
+		writeInclude(out, getFolder(entity.getName()) + "/" + entity.getName() + ".h");
 	}
 
+	linebreak(out);
 	writeLine(out, "#endif // end define " + define);
 	out.close();
 }
 
-void GeneratorOIP::generateTypeHeaderFile(const Schema &schema, const Type &type)
-{
-	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << entityPath_ << "/" << type.getName() << ".h";
-	std::cout << ssHeaderFilename.str() << std::endl;
-	std::ofstream out(ssHeaderFilename.str());
-
-	indentation = 0;
-
-	writeLicenseAndNotice(out);
-
-	out << "#pragma once" << std::endl;
-	out << std::endl;
-
-	// Includes
-	for(auto name : { "vector", "map", "memory", "sstream", "string", "visit_struct/visit_struct.hpp" })
-		writeInclude(out, name, true);
-
-	writeInclude(out, "OpenInfraPlatform/" + schema.getName() + "/model/Object.h");	
-
-	if(!type.isSimpleType() && !type.isEnumeration() && !type.isList() && !type.isArray() && !type.isSet() && !type.isSelectType()) {
-		writeInclude(out, "OpenInfraPlatform/" + schema.getName() + "/entity/" + type.getUnderlyingTypeName() + ".h");
-	}
-		
-
-	// collect the class from which this object should derive from
-	std::vector<std::string> baseClasses;
-
-	if(true) {
-		// very stupid and slow select types lookup...
-		for(int i = 0; i < schema.getTypeCount(); ++i) {
-			Type t = schema.getTypeByIndex(i);
-
-			if(t.isSelectType()) {
-				for(int k = 0; k < t.getTypeCount(); ++k) {
-					if(t.getType(k) == type.getName()) {
-						writeInclude(out, t.getName() + ".h");
-						baseClasses.push_back(t.getName());
-					}
-				}
-			}
-		}
-	}
-
-	linebreak(out);
-	writeBeginNamespace(out, schema);
-
-	writeLine(out, "// TYPE " + type.getName() + " = " + type.getUnderlyingTypeName() + ";");
-
-	indent(out);
-	write(out, "class " + type.getName());
-
-	if(type.isSimpleType() || type.isArray() || type.isSet() || type.isEnumeration()) {
-		baseClasses.push_back(schema.getName() + "Type");
-	}
-
-	if(type.isEnumeration()) {
-		baseClasses.push_back(schema.getName() + "AbstractEnum");
-	}
-
-	if(type.isSelectType()) {
-		bool usedInAnotherSelect = false;
-
-		// very stupid and slow select types lookup...
-		for(int i = 0; i < schema.getTypeCount(); ++i) {
-			Type t = schema.getTypeByIndex(i);
-
-			if(t.isSelectType()) {
-				for(int k = 0; k < t.getTypeCount(); ++k) {
-					if(t.getType(k) == type.getName()) {
-						usedInAnotherSelect = true;
-					}
-				}
-			}
-		}
-
-		if(!usedInAnotherSelect) {
-			baseClasses.push_back(schema.getName() + "AbstractSelect");
-		}
-	}
-
-	if(!type.isSimpleType() && !type.isEnumeration() && !type.isList() && !type.isArray() && !type.isSet() && !type.isSelectType()) {
-		baseClasses.push_back(type.getUnderlyingTypeName());
-	}
-
-	// inherit form base classes
-	for(int j = 0; j < baseClasses.size(); j++) {
-		if(j == 0) {
-			write(out, " : ");
-		}
-
-		write(out, "public " + baseClasses[j]);
-
-		if(baseClasses.size() > j + 1) {
-			write(out, ", ");
-		}
-	}
-
-	linebreak(out);
-
-	writeLine(out, "{");
-
-	indent(out, indentation - 1);
-	write(out, "public:");
-	linebreak(out);	
-
-	if(type.isEnumeration()) {
-		out << "\t"
-			<< "\t"
-			<< "\t"
-			<< "enum " << type.getName() << "Enum" << std::endl;
-		out << "\t"
-			<< "\t"
-			<< "\t"
-			<< "{" << std::endl;
-
-		for(int i = 0; i < type.getTypeCount(); ++i) {
-			out << "\t"
-				<< "\t"
-				<< "\t"
-				<< "\t ENUM_" << type.getTypes()[i]; // add _ENUM to avoid collisions with C++
-													 // identifiers, e.g. "NULL"
-
-			if(i != type.getTypeCount() - 1) {
-				out << "," << std::endl;
-			}
-		}
-		out << std::endl;
-		out << "\t"
-			<< "\t"
-			<< "\t"
-			<< "};" << std::endl;
-		out << std::endl;
-	}
-
-	// ctor
-
-	out << "\t"
-		<< "\t"
-		<< "\t" << type.getName() << "();" << std::endl;
-
-	// ctor2
-
-	if(type.isEnumeration()) {
-		out << "\t"
-			<< "\t"
-			<< "\t" << type.getName() << "(" << type.getName() << "Enum"
-			<< " value);" << std::endl;
-	}
-	else if(type.isSimpleType()) {
-		out << "\t"
-			<< "\t"
-			<< "\t" << type.getName() << "(" << convertSimpleTypeToCPPType(schema, type.getUnderlyingTypeName()) << " value);" << std::endl;
-	}
-	else if(type.getType() == eType::Unknown) {
-		if(schema.isIntegerType(type.getName())) {
-			out << "\t"
-				<< "\t"
-				<< "\t" << type.getName() << "(" << convertSimpleTypeToCPPType(schema, type.getUnderlyingTypeName()) << " value);" << std::endl;
-		}
-	}
-	else if(type.isList()) {
-		std::cout << "skip it" << std::endl;
-		// skip it!
-	}
-	else {
-		std::cout << "mu" << std::endl;
-	}
-
-	// dtor
-	out << "\t"
-		<< "\t"
-		<< "\t"
-		<< "virtual ~" << type.getName() << "();" << std::endl;
-
-	// classname
-	out << "\t"
-		<< "\t"
-		<< "\t"
-		<< "virtual const char* classname() const { return \"" << type.getName() << "\"; }" << std::endl;
-
-	// getStepParamter
-	if(type.isSelectType()) {
-		out << "\t"
-			<< "\t"
-			<< "\t"
-			<< "virtual void getStepParameter(std::stringstream& stream, bool "
-			"is_select_type = false) const = 0; // abstract class"
-			<< std::endl;
-	}
-	else {
-		out << "\t"
-			<< "\t"
-			<< "\t"
-			<< "virtual void getStepParameter(std::stringstream& stream, bool "
-			"is_select_type = false) const;"
-			<< std::endl;
-	}
-
-	// readStepData
-	if(type.isSelectType()) {
-		out << "\t"
-			<< "\t"
-			<< "\t"
-			<< "static std::shared_ptr<" << type.getName() << "> readStepData(const std::string& arg, const std::map<int,shared_ptr<" << schema.getName() << "Entity> >& map);"
-			<< std::endl;
-	}
-	else {
-		out << "\t"
-			<< "\t"
-			<< "\t"
-			<< "static std::shared_ptr<" << type.getName() << "> readStepData(const std::string& arg);" << std::endl;
-	}
-
-	// attributes
-	if(type.isSimpleType()) {
-		out << "\t"
-			<< "\t"
-			<< "\t" << convertSimpleTypeToCPPType(schema, type.getUnderlyingTypeName()) << " m_value;" << std::endl;
-	}
-
-	if(type.isList() || type.isArray()) {
-		std::string typeName = convertSimpleTypeToCPPType(schema, type.getContainerType());
-
-		if(typeName.empty())
-			typeName = convertSimpleTypeToCPPType(schema, type.getUnderlyingTypeName());
-
-		if(typeName.empty())
-			typeName = type.getName();
-
-		out << "\t"
-			<< "\t"
-			<< "\t"
-			<< "std::vector<" << typeName << "> m_vec;" << std::endl;
-	}
-
-	
-
-	if(type.isEnumeration()) {
-		out << "\t"
-			<< "\t"
-			<< "\t" << type.getName() << "Enum"
-			<< " m_enum;" << std::endl;
-	}
-
-	// operators
-
-	if(type.isSimpleType()) {
-		out << "\t"
-			<< "\t"
-			<< "\t" << "operator " << convertSimpleTypeToCPPType(schema, type.getUnderlyingTypeName()) << "() { return m_value; }" << std::endl;
-	}
-
-	if(type.isList()) {
-		// No operators for lists.
-	}
-
-	if(type.isArray()) {
-		out << "\t"
-			<< "\t"
-			<< "\t" << convertSimpleTypeToCPPType(schema, type.getContainerType()) << " operator[](size_t idx) { return m_vec[idx]; }" << std::endl;
-	}
-
-	if(type.isEnumeration()) {
-		// No operators for enums.
-	}
-
-	writeEndClass(out, type);
-	writeEndNamespace(out, schema);
-
-	if(type.isSimpleType() || type.isList() || type.isArray() || type.isEnumeration()) {
-		out << "\n";
-		out << "VISITABLE_STRUCT(OpenInfraPlatform::" << schema.getName() << "::" << type.getName() << ",";
-
-		if(type.isSimpleType()) {
-			out << " m_value);" << std::endl;
-		}
-		else if(type.isList() || type.isArray()) {
-			out << " m_vec);" << std::endl;
-		}
-		else if(type.isEnumeration()) {
-			out << " m_enum);" << std::endl;
-		}
-	}
-}
-
 void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const Type & type) const
 {
-	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << (type.isSelectType() ? selectPath_ : typePath_) << "/" << type.getName() << ".h";
-	//std::cout << ssHeaderFilename.str() << std::endl;
-	std::ofstream out(ssHeaderFilename.str());
+	const std::string name = type.getName();
+
+	std::string path = sourceDirectory_ + "/" + getFolder(name) + "/" + name + ".h";
+	std::ofstream out(path);
 
 	indentation = 0;
 
@@ -1728,7 +1826,7 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 
 	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
-	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), type.getName(), guid, "h" }, '_');
+	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), name, guid, "h" }, '_');
 	
 	writeLine(out, "#pragma once");
 	writeLine(out, "#ifndef " + define);
@@ -1749,15 +1847,8 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 		//writeInclude(out, "../EarlyBinding/src/EXPRESS/EXPRESSOptional.h");
 
 		if (schema.hasType(type.getContainerType())) {
-			if( schema.isSelectType(type.getContainerType()) )
-				writeInclude(out, "../select/" + type.getContainerType() + ".h");
-			else
-				writeInclude(out, "../type/" + type.getContainerType() + ".h");
+			writeInclude(out, "../" + getFolder(type.getContainerType()) + "/" + type.getContainerType() + ".h");
 		}
-		else if (schema.hasEntity(type.getContainerType())) {
-			writeInclude(out, "../entity/" + type.getContainerType() + ".h");
-		}
-
 	}
 	else if (type.isSelectType()) {
 		writeInclude(out, "EXPRESS/EXPRESSReference.h");
@@ -1765,11 +1856,13 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 	}
 
 	writeInclude(out, "../" + schema.getName() + "Namespace.h");
-	
+	linebreak(out);
+
 
 	if (type.isDerivedType()) {
-		writeInclude(out, type.getUnderlyingTypeName() + ".h");
-	}	
+		writeInclude(out, "../" + getFolder(type.getUnderlyingTypeName()) + "/" + type.getUnderlyingTypeName() + ".h");
+		linebreak(out);
+	}
 
 	std::set<std::string> types, entities;
 
@@ -1783,36 +1876,20 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 			}
 		}
 
-		// Disabled for minimal working example
 		if (!types.empty()) {
-			for (auto val : types) {
-				if(schema.isSelectType(val))
-					writeInclude(out, "../select/" + val + ".h");
-				else
-					writeInclude(out, "../type/" + val + ".h");
+			for (const auto& val : types) {
+				writeInclude(out, "../" + getFolder(val) + "/" + val + ".h");
 			}
 			linebreak(out);
 		}
-
-		//if (!entities.empty()) {
-		//	for (auto entity : entities) {
-		//		writeInclude(out, "../entity/" + entity + ".h");
-		//	}
-		//	linebreak(out);
-		//}
 	}
 	
+	linebreak(out);
 
 	writeBeginNamespace(out, schema);
-	
+	linebreak(out);
+
 	if (type.isSelectType()) {
-		//if (!types.empty()) {
-		//	for (auto val : types) {
-		//		writeLine(out,"class " + val + ";");
-		//	}
-		//	linebreak(out);
-		//}
-	
 		if (!entities.empty()) {
 			for (auto entity : entities) {
 				writeLine(out, "class " + entity + ";");
@@ -1822,16 +1899,19 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 	}
 
 	if (type.isSimpleType() || type.isDerivedType()) {
-		writeValueTypeFile(type, out);
+		writeValueTypeFile(type, out, getAPIDefine(name));
 	}
 	else if (type.isEnumeration()) {
-		writeEnumTypeFileRefactored(type.getName(), type.getTypes(), out);
+		writeEnumTypeFileRefactored(name, type.getTypes(), out, getAPIDefine(name));
 	}
 	else if (type.isContainerType()) {
-		writeContainerTypeFile(schema, type, out);
+		if (schema.hasEntity(type.getContainerType())) {
+			writeLine(out, "class " + type.getContainerType() + ";");
+		}
+		writeContainerTypeFile(schema, type, out, getAPIDefine(name));
 	}
 	else if (type.isSelectType()) {	
-		writeSelectTypeFileREFACTORED(schema, type, out);
+		writeSelectTypeFileREFACTORED(schema, type, out, getAPIDefine(name));
 	}
 	else {
 		std::cerr << "UNKNOWN TYPE ENCOUNTERED!" << std::endl;
@@ -1839,434 +1919,52 @@ void GeneratorOIP::generateTypeHeaderFileREFACTORED(const Schema & schema, const
 	}	
 
 	writeEndNamespace(out, schema);
+
+	//https://stackoverflow.com/questions/47824973/edit-how-to-dll-export-a-template-specialization-in-windows-with-the-source-d
+	linebreak(out);
+	writeLine(out, "#ifndef " + getAPIGuard(name));
+	writeLine(out, "OIP_EARLYBINDING_EXTERN template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
+	writeLine(out, "#endif //" + getAPIGuard(name));
+	linebreak(out);
+	
 	writeLine(out, "#endif // end define " + define);
+
 	out.close();
-}
-
-void GeneratorOIP::generateTypeSourceFile(const Schema &schema, const Type &type) {
-	std::string name = type.getName();
-
-	std::stringstream ssFilename;
-	ssFilename << entityPath_ << "/" << name << ".cpp";
-	std::ofstream out(ssFilename.str());
-
-	indentation = 0;
-	writeLicenseAndNotice(out);
-
-	writeInclude(out, type.getName() + ".h");
-
-	writeInclude(out, "OpenInfraPlatform/" + schema.getName() + "/reader/ReaderUtil.h");
-	writeInclude(out, "OpenInfraPlatform/" + schema.getName() + "/writer/WriterUtil.h");
-
-	writeBeginNamespace(out, schema);
-
-	// ctor
-	out << "\t"
-	    << "\t" << type.getName() << "::" << type.getName() << "() {}" << std::endl;
-
-	// ctor2
-	if (type.isEnumeration()) {
-		out << "\t"
-		    << "\t" << type.getName() << "::" << type.getName() << "(" << type.getName() << "::" << type.getName() << "Enum"
-		    << " value) { m_enum = value; }" << std::endl;
-	} else if (type.isList()) {
-		// skip it
-	} else if (type.isSimpleType()) {
-		out << "\t"
-		    << "\t" << type.getName() << "::" << type.getName() << "(" << convertSimpleTypeToCPPType(schema, type.getUnderlyingTypeName()) << " value) { m_value = value; }"
-		    << std::endl;
-	} else if (type.getType() == eType::Unknown) {
-		if (schema.isIntegerType(type.getName())) {
-			out << "\t"
-			    << "\t" << type.getName() << "::" << type.getName() << "(" << convertSimpleTypeToCPPType(schema, type.getUnderlyingTypeName()) << " value) { m_value = value; }"
-			    << std::endl;
-		}
-	} else {
-	}
-
-	// dtor
-	out << "\t"
-	    << "\t" << type.getName() << "::~" << type.getName() << "() {}" << std::endl;
-
-	// getStepParameter
-	generateTypeSourceFileGetStepParameter(type, out, schema);
-
-	// readStepData
-	if (type.isSelectType()) {
-		out << "\t"
-		    << "\t"
-		    << "std::shared_ptr<" << type.getName() << "> " << type.getName() << "::readStepData(const std::string& arg, const std::map<int,shared_ptr<" << schema.getName()
-		    << "Entity> >& map)" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "{" << std::endl;
-
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "// Read SELECT TYPE" << std::endl;
-
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "if( arg.size() == 0 ) { return std::shared_ptr<" << type.getName() << ">(); }" << std::endl;
-
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "if( arg[0] == '#' )" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "{" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "int id=atoi( arg.substr(1,arg.length()-1).c_str() );" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "std::map<int,shared_ptr<" << schema.getName() << "Entity> >::const_iterator it_entity = map.find( id );" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "if( it_entity != map.end() )" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "{" << std::endl;
-		out << "\t\t\t\t\t"
-		    << "shared_ptr<" << type.getName() << "> type_object = dynamic_pointer_cast<" << type.getName() << ">(it_entity->second);" << std::endl;
-		out << "\t\t\t\t\t"
-		    << "return type_object;" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "}" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "else" << std::endl;
-		out << "\t\t\t\t"
-		    << "{" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "std::stringstream strs;" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "strs << \"Object width id \" << id << \" not found\";" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "throw " << schema.getName() << "Exception( strs.str() );" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "}" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "}" << std::endl;
-		out << "\t\t"
-		    << "\t"
-		    << "else if( arg.compare(\"$\")==0 )" << std::endl;
-		out << "\t\t"
-		    << "\t"
-		    << "{" << std::endl;
-		out << "\t\t"
-		    << "\t\t"
-		    << "return shared_ptr<" << type.getName() << ">();" << std::endl;
-		out << "\t\t"
-		    << "\t"
-		    << "}" << std::endl;
-		out << "\t\t"
-		    << "\t"
-		    << "else if( arg.compare(\"*\")==0 )" << std::endl;
-		out << "\t\t"
-		    << "\t"
-		    << "{" << std::endl;
-		out << "\t\t"
-		    << "\t\t"
-		    << "return shared_ptr<" << type.getName() << ">();" << std::endl;
-		out << "\t\t"
-		    << "\t"
-		    << "}" << std::endl;
-		out << "\t\t"
-		    << "\t"
-		    << "else" << std::endl;
-		out << "\t\t"
-		    << "\t"
-		    << "{" << std::endl;
-		out << "\t\t"
-		    << "\t\t"
-		    << "// inline arguments" << std::endl;
-
-		out << "\t\t"
-		    << "\t\t"
-		    << "std::string keyword;" << std::endl;
-		out << "\t\t"
-		    << "\t\t"
-		    << "std::string inline_arg;" << std::endl;
-		out << "\t\t"
-		    << "\t\t"
-		    << "tokenizeInlineArgument( arg, keyword, inline_arg );" << std::endl;
-		out << "\t\t"
-		    << "\t\t"
-		    << "std::stringstream strs;" << std::endl;
-		out << "\t\t"
-		    << "\t\t"
-		    << "strs << \"unhandled inline argument: \" << arg << \" in function " << schema.getName() << "::" << type.getName() << "::readStepData\" << std::endl;" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "throw " << schema.getName() << "Exception( strs.str() );" << std::endl;
-
-		out << "\t\t"
-		    << "\t"
-		    << "}" << std::endl;
-
-		out << "\t"
-		    << "\t\t"
-		    << "return shared_ptr<" << type.getName() << ">();" << std::endl;
-
-		out << "\t"
-		    << "\t"
-		    << "}" << std::endl;
-	} else if (type.isEnumeration()) {
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "std::shared_ptr<" << type.getName() << "> " << type.getName() << "::readStepData(const std::string& arg)" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "{" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "if( arg.compare( \"$\" ) == 0 ) { return std::shared_ptr<" << type.getName() << ">(); }" << std::endl;
-
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "std::shared_ptr<" << type.getName() << "> type_object(new " << type.getName() << "() );" << std::endl;
-
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "if ( _stricmp( arg.c_str(), \"." << type.getTypes()[0] << ".\") == 0)" << std::endl;
-
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "{" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "type_object->m_enum = " << type.getName() << "::" << type.getName() << "Enum::ENUM_" << type.getTypes()[0] << ";" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "}" << std::endl;
-
-		for (int i = 1; i < type.getTypes().size(); i++) {
-			out << "\t"
-			    << "\t"
-			    << "\t"
-			    << "\t"
-			    << "else if ( _stricmp( arg.c_str(), \"." << type.getTypes()[i] << ".\") == 0)" << std::endl;
-			out << "\t"
-			    << "\t"
-			    << "\t"
-			    << "\t"
-			    << "{" << std::endl;
-			out << "\t"
-			    << "\t"
-			    << "\t"
-			    << "\t"
-			    << "\t"
-			    << "type_object->m_enum = " << type.getName() << "::" << type.getName() << "Enum::ENUM_" << type.getTypes()[i] << ";" << std::endl;
-			out << "\t"
-			    << "\t"
-			    << "\t"
-			    << "\t"
-			    << "}" << std::endl;
-		}
-
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "return type_object;" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "}" << std::endl;
-	} else {
-		out << "\t"
-		    << "\t"
-		    << "std::shared_ptr<" << type.getName() << "> " << type.getName() << "::readStepData(const std::string& arg)" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "{" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "if( arg.compare( \"$\" ) == 0 ) { return std::shared_ptr<" << type.getName() << ">(); }" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "else if( arg.compare( \"*\" ) == 0 ) { return std::shared_ptr<" << type.getName() << ">(); }" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "std::shared_ptr<" << type.getName() << "> type_object(new " << type.getName() << "() );" << std::endl;
-
-		if (type.isList()) {
-			if (type.getContainerType() == "IfcPositiveInteger") {
-				out << "\t"
-				    << "\t"
-				    << "\t"
-				    << "    readIntList(  arg, type_object->m_vec );" << std::endl;
-			}
-		} else if (type.isSimpleType()) {
-			if (type.getType() == eType::Real) {
-				out << "\t"
-				    << "\t"
-				    << "\t"
-				    << "\t"
-				    << "type_object->m_value = atof(arg.c_str());" << std::endl;
-			} else if (type.getType() == eType::Boolean) {
-				out << "\t\t\t\t"
-				    << "if (_stricmp(arg.c_str(), \".F.\") == 0)" << std::endl;
-				out << "\t\t\t\t"
-				    << "{" << std::endl;
-				out << "\t\t\t\t"
-				    << "	type_object->m_value = false;" << std::endl;
-				out << "\t\t\t\t"
-				    << "}" << std::endl;
-				out << "\t\t\t\t"
-				    << "else if (_stricmp(arg.c_str(), \".T.\") == 0)" << std::endl;
-				out << "\t\t\t\t"
-				    << "{" << std::endl;
-				out << "\t\t\t\t"
-				    << "	type_object->m_value = true;" << std::endl;
-				out << "\t\t\t\t"
-				    << "}" << std::endl;
-			} else if (type.getType() == eType::Binary) {
-				// ignore it...
-			} else if (type.getType() == eType::Integer || type.getType() == eType::Number) {
-				out << "\t\t\t"
-				    << "type_object->m_value = atoi(arg.c_str());" << std::endl;
-			} else if (type.getType() == eType::String) {
-				out << "\t\t\t"
-				    << "type_object->m_value = arg;" << std::endl;
-			}
-
-		} else if (type.isArray()) {
-			out << "\t"
-			    << "\t"
-			    << "\t"
-			    << "\t"
-			    << "readDoubleList( arg, type_object->m_vec );" << std::endl;
-		} else {
-			if (schema.isRealType(type.getName())) {
-				out << "\t"
-				    << "\t"
-				    << "\t"
-				    << "type_object->m_value = atof(arg.c_str());" << std::endl;
-			}
-		}
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "return type_object;" << std::endl;
-		out << "\t"
-		    << "\t"
-		    << "}" << std::endl;
-	}
-
-	writeEndNamespace(out, schema);
 }
 
 void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const Type & type) const
 {
-	std::stringstream ssSourceFilename;
-	ssSourceFilename << (type.isSelectType() ? selectPath_ : typePath_) << "/" << type.getName() << ".cpp";
-	//std::cout << ssHeaderFilename.str() << std::endl;
-	std::ofstream out(ssSourceFilename.str());
+	const std::string name = type.getName();
+
+	std::string path = sourceDirectory_ + "/" + getFolder(name) + "/" + name + ".cpp";
+	std::ofstream out(path);
 
 	indentation = 0;
 
 	writeLicenseAndNotice(out);
 		
-	writeInclude(out, type.getName() + ".h");
+	writeInclude(out, name + ".h");
 	writeInclude(out, "EXPRESS/EXPRESSOptional.h");
 	if (!type.isSelectType()) {
 		writeInclude(out, "EXPRESS/EXPRESSOptionalImpl.h");
 	}
 	linebreak(out);
 
-	std::set<std::string> types, entities;
+	if (type.isSelectType() || type.isContainerType()) {
 
-	if (type.isSelectType()) {
-		for (auto select : type.getTypes()) {
-			if (schema.hasEntity(select)) {
-				entities.insert(select);
-			}
-			if (schema.hasType(select)) {
-				types.insert(select);
-			}
-		}
-		std::set<std::string> resolvedClasses = { type.getName() };
-		
-		if (!types.empty()) {
-			for (auto val : types) {
-				if (schema.isSelectType(val)) {
-					resolveSelectTypeIncludes(schema, entities, schema.getTypeByName(val), resolvedClasses);
-				}
-			}			
-		}
+		std::set<std::string> types, entities;
+		getCachedIncludes(name, types, entities);
 
 		if (!entities.empty()) {
-			for (auto entity : entities) {
-				resolveEntityIncludes(schema, schema.getEntityByName(entity), entities, resolvedClasses);
-			}
-			for (auto entity : entities) {
-				writeInclude(out, "../entity/" + entity + ".h");
+			for (const auto& entity : entities) {
+				writeInclude(out, "../" + getFolder(entity) + "/" + entity + ".h");
 			}
 			linebreak(out);
 		}
-
+		
 		if (!types.empty()) {
-			for (auto val : types) {
-				if (schema.isSelectType(val))
-					writeInclude(out, "../select/" + val + ".h");
-				else
-					writeInclude(out, "../type/" + val + ".h");
+			for (const auto& val : types) {
+				writeInclude(out, "../" + getFolder(val) + "/" + val + ".h");
 			}
 			linebreak(out);
 		}
@@ -2277,8 +1975,6 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 	}
 	   	
 	writeBeginNamespace(out, schema);
-	
-	std::string name = type.getName();
 
 	if (type.isSimpleType() || type.isDerivedType()) {
 		writeLine(out, name + "& " + name + "::operator=(const EXPRESSOptional<" + name + "> &other) { this->m_value = other.get_value_or(" + name + "()); return *this; };");
@@ -2286,10 +1982,10 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 		writeLine(out, name + "* " + name + "::operator->() { return this; }");
 		writeLine(out, "const " + name + "* const " + name + "::operator->() const { return this; };");
 		linebreak(out);
-		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; };");
+		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 	}
 	else if (type.isEnumeration()) {
-		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; };");
+		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 		linebreak(out);
 		writeLine(out, "const std::string to_string(const e" + type.getName() + "& v) {");
 		writeLine(out, "switch(v) {");
@@ -2307,11 +2003,11 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 		writeLine(out, name + "& " + name + "::operator=(" + name + "& other) { this->base::swap(other); return *this; };");
 		//writeLine(out, name + "& " + name + "::operator=(const EXPRESSOptional<" + name + "> &other) { this->operator=(other.get_value_or(" + name + "())); return *this; };");
 		linebreak(out);
-		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; };");
+		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 		writeLine(out, "const std::string " + name + "::getStepParameter() const { return this->base::getStepParameter(); };");
 	}
 	else if (type.isSelectType()) {
-		writeLine(out, "const std::string " + name + "::classname() const { return \"" + name + "\"; };");
+		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\"; };");
 		writeLine(out, "const std::string " + name + "::getStepParameter() const { return base::getStepParameter(); };");
 	}
 	else {
@@ -2321,7 +2017,12 @@ void GeneratorOIP::generateTypeSourceFileREFACTORED(const Schema & schema, const
 
 	writeEndNamespace(out, schema);
 
-	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::" + schema.getName() + "::" + type.getName() + ">;");
+	//https://stackoverflow.com/questions/47824973/edit-how-to-dll-export-a-template-specialization-in-windows-with-the-source-d
+	linebreak(out);
+	writeLine(out, "#ifdef " + getAPIGuard(name));
+	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
+	writeLine(out, "#endif //" + getAPIGuard(name));
+	linebreak(out);
 
 	out.close();
 }
@@ -2345,149 +2046,6 @@ bool isSimpleType(std::string name) {
 	return false;
 }
 
-void OpenInfraPlatform::ExpressBindingGenerator::GeneratorOIP::generateTypeSourceFileGetStepParameter(const Type &type, std::ofstream &out, const Schema &schema) {
-	if (type.isSelectType()) {
-		return;
-	}
-
-	out << "\t\t"
-	    << "void " << type.getName()
-	    << "::getStepParameter(std::stringstream&"
-	       " stream, bool is_select_type) const"
-	    << std::endl;
-
-	if (type.isEnumeration()) {
-		out << "\t\t\t"
-		    << "{" << std::endl;
-
-		out << "\t\t\t\t"
-		    << "if ( m_enum == " << type.getName() << "Enum::ENUM_" << type.getTypes()[0] << ")" << std::endl;
-
-		out << "\t\t\t\t"
-		    << "{" << std::endl;
-		out << "\t\t\t\t\t"
-		    << "stream << \"." << type.getTypes()[0] << ".\";" << std::endl;
-		out << "\t\t\t"
-		    << "\t"
-		    << "}" << std::endl;
-
-		for (int i = 1; i < type.getTypes().size(); i++) {
-			out << "\t\t\t\t"
-			    << "else if ( m_enum == " << type.getName() << "Enum::ENUM_" << type.getTypes()[i] << ")" << std::endl;
-			out << "\t\t\t\t"
-			    << "{" << std::endl;
-			out << "\t\t\t\t\t"
-			    << "stream << \"." << type.getTypes()[i] << ".\";" << std::endl;
-			out << "\t\t\t\t"
-			    << "}" << std::endl;
-		}
-
-		out << "\t\t\t\t"
-		    << "if (is_select_type) { stream << \")\"; }" << std::endl;
-		out << "\t\t\t"
-		    << "}" << std::endl;
-
-		return;
-	}
-
-	out << "\t\t"
-	    << "{" << std::endl;
-	out << "\t\t\t"
-	    << "if (is_select_type) { stream << \"" << toUpper(type.getName()) << "(\"; }" << std::endl;
-
-	if (type.isList()) {
-		if (type.getContainerType() == "IfcPositiveInteger") {
-			out << "\t"
-			    << "\t"
-			    << "\t"
-			    << "writeIntList( stream, m_vec );" << std::endl;
-		}
-	}
-
-	if (!type.isSimpleType() && !type.isList() && !type.isEnumeration() && !type.isArray() && !type.isSet() && !type.isSelectType()) {
-		Type currentType = schema.getTypeByName(type.getUnderlyingTypeName());
-
-		while (!currentType.isSimpleType()) {
-			currentType = schema.getTypeByName(currentType.getUnderlyingTypeName());
-		}
-
-		if (currentType.getUnderlyingTypeName() == "STRING") {
-			out << "\t"
-			    << "\t"
-			    << "stream << \"'\" << encodeStepString( m_value ) << "
-			       "\"'\";"
-			    << std::endl;
-		}
-	}
-
-	if (type.getType() == eType::Unknown) {
-		// must be derived form some simple type
-		std::string underlyingType = type.getUnderlyingTypeName();
-
-		while (!isSimpleType(underlyingType)) {
-			const Type &ut = schema.getTypeByName(underlyingType);
-			underlyingType = ut.getUnderlyingTypeName();
-		}
-
-		if (underlyingType == "REAL") {
-			out << "\t\t\t"
-			    << "stream << m_value;" << std::endl;
-		} else if (underlyingType == "STRING") {
-			out << "\t\t\t"
-			    << "stream << \"'\" << encodeStepString( m_value ) << \"'\";" << std::endl;
-		} else if (underlyingType == "INTEGER") {
-			out << "\t\t\t"
-			    << "stream << m_value;" << std::endl;
-		} else {
-			std::cout << "mu" << std::endl;
-		}
-	}
-
-	if (type.isSimpleType()) {
-		if (type.getType() == eType::Integer) {
-			out << "\t"
-			    << "\t"
-			    << "\t"
-			    << "  stream << m_value;" << std::endl;
-		} else if (type.getType() == eType::Boolean) {
-			out << "\t\t\t"
-			    << "if (m_value == false)" << std::endl;
-			out << "\t\t\t"
-			    << "{" << std::endl;
-			out << "\t\t\t"
-			    << "	stream << \".F.\";" << std::endl;
-			out << "\t\t\t"
-			    << "}" << std::endl;
-			out << "\t\t\t"
-			    << "else if (m_value == true)" << std::endl;
-			out << "\t\t\t"
-			    << "{" << std::endl;
-			out << "\t\t\t"
-			    << "	stream << \".T.\";" << std::endl;
-			out << "\t\t\t"
-			    << "}" << std::endl;
-		} else if (type.getType() == eType::String) {
-			out << "\t\t\t"
-			    << "stream << \"'\" << encodeStepString( m_value ) << \"'\";" << std::endl;
-		} else if (type.getType() == eType::Real) {
-			out << "\t\t\t"
-			    << "stream << m_value;" << std::endl;
-		} 
-	}
-
-	if (type.isArray()) {
-		if (type.getContainerType() == "REAL") {
-			out << "\t\t\t  "
-			    << "writeDoubleList( stream, m_vec );" << std::endl;
-		}
-	}
-
-	out << "\t\t\t"
-	    << "if (is_select_type) { stream << \")\"; }" << std::endl;
-	out << "\t\t"
-	    << "}" << std::endl;
-}
-
 void GeneratorOIP::generateReaderFiles(const Schema & schema)
 {
 	std::ofstream file(readerPath_  + "/" + schema.getName().append("Reader.h"));
@@ -2509,7 +2067,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	// Write begin namespace OpenInfraPlatform::Schema
 	writeBeginNamespace(file, schema);	
 
-	writeLine(file, "class " + schema.getName() + "Reader {"); // begin class
+	writeLine(file, "class " + getAPIDefine("reader") + " " + schema.getName() + "Reader {"); // begin class
 	writeLine(file, "public:");
 	
 	writeLine(file, "static std::shared_ptr<EarlyBinding::EXPRESSModel> FromFile(const std::string &filename);"); 
@@ -2611,7 +2169,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "if(line[0] == '#') {");
 	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=') - 1));");
 	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
-	writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
+	//writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
@@ -2627,7 +2185,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 
 	linebreak(file);
 	writeLine(file, "// initialize cross-references");
-	writeLine(file, "#pragma omp parallel for");
+	writeLine(file, "#pragma omp parallel for shared(model, lines)");
 	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
 	writeLine(file, "auto line = lines[i];");
 	writeLine(file, "if(line == \"\") continue;");
@@ -2635,7 +2193,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "if(line[0] == '#') {");
 	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=') - 1));");
 	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
-	writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
+	//writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
@@ -2648,6 +2206,15 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	}
 	writeLine(file, "}"); //end if line[0] == '#'
 	writeLine(file, "}"); //end for read file
+	linebreak(file);
+	writeLine(file, "// Initialize inverse parameters");
+	writeLine(file, "size_t numEntities = model->entities.size();");
+	//writeLine(file, "#pragma omp parallel for shared(model, numEntities)");
+	writeLine(file, "for(long i = 0; i < numEntities; i++) {"); // begin for each entity
+	writeLine(file, "auto it = model->entities.begin();");
+	writeLine(file, "std::advance(it, i);");
+	writeLine(file, "it->second->linkInverse(model);");
+	writeLine(file, "}"); // end for each entity
 	linebreak(file);
 	writeLine(file, "return model;");
 	writeLine(file, "}"); //end try 
@@ -2785,178 +2352,133 @@ void GeneratorOIP::includeFile(const std::string &filename, std::ofstream &file)
 	}
 }
 
-void GeneratorOIP::generateCMakeListsFile(const Schema &schema) {
+void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
+{
 	std::string name = "CMakeLists.txt";
 
-	std::stringstream ssFilename;
-	ssFilename << rootDirectory_ << "/" << name;
-	std::ofstream file(ssFilename.str());
+	// main cmake file of the library - gets included by the cmake of the oip solution
+	std::string filename = rootDirectory_ + "/" + name;
+	std::ofstream file(filename);
 
 	file << license_cmake << std::endl;
 	file << std::endl;
 	file << notice_cmake << std::endl;
 	file << std::endl;
 
+	file << "add_subdirectory(src)";
+	file << std::endl;
+
+	file.close();
+
+	// source cmake file of the library pointing to all subdirectories
+	filename = sourceDirectory_ + "/" + name;
+	file.open(filename);
 	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
 
-	file << "project(OpenInfraPlatform." << schema.getName() << ")" << std::endl;
+	file << license_cmake << std::endl;
+	file << std::endl;
+	file << notice_cmake << std::endl;
+	file << std::endl; 
+
+	file << "add_subdirectory(zero)" << std::endl;
+	file << "add_subdirectory(bot)" << std::endl;
+	file << "add_subdirectory(mid)" << std::endl;
+	file << "add_subdirectory(toprooted)" << std::endl;
+	file << "add_subdirectory(topnotrooted)" << std::endl;
+	file << std::endl;
+	file << std::endl;
+
+	file << "project(OpenInfraPlatform." << schema.getName() << " CXX)" << std::endl;
 	file << "" << std::endl;
 	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;
-
-	file << "set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG 	../Debug)" << std::endl;
-	file << "set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE 	../Release)" << std::endl;
-	file << "set(CMAKE_PDB_OUTPUT_DIRECTORY_DEBUG 	    ../Debug)" << std::endl;
-	file << "set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE 	    ../Release)" << std::endl;
-
-	// file << "find_package(Boost 1.61.0 REQUIRED)" << std::endl;
-
-	// file << "# Compiler settings" << std::endl;
-	// file << "if (WIN32)" << std::endl;
-	// file << "# Standard: / DWIN32 / D_WINDOWS / W3 / Zm1000 / EHsc / GR"
-	//     << std::endl;
-	// file << "	set(CMAKE_CXX_FLAGS \"/DWIN32 /D_WINDOWS /W4 /Zi /EHsc /GR /MP "
-	//        "/openmp /bigobj\")"
-	//     << std::endl;
-	// file << "	endif(WIN32)" << std::endl;
-	file << "" << std::endl;
-	file << "add_definitions(-D_VARIADIC_MAX=128)" << std::endl;
-	file << "set(CMAKE_CXX_STANDARD 14)" << std::endl;
 	file << "" << std::endl;
 	file << "include_directories(" << std::endl;
-	file << "  src/OpenInfraPlatform/" << schema.getName() << std::endl;
 	file << "  src" << std::endl;
+	file << "  ${CMAKE_SOURCE_DIR}/EarlyBinding/src" << std::endl;
+	file << "  ${visit_struct_INCLUDE_DIR}" << std::endl;
 	file << "  ${Boost_INCLUDE_DIR}" << std::endl;
 	file << ")" << std::endl;
-	file << "" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-	     << "_Source              "
-	        "src/OpenInfraPlatform/"
-	     << schema.getName() << "/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-	     << "_guid_Source         "
-	        "src/OpenInfraPlatform/"
-	     << schema.getName() << "/guid/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-	     << "_entity_Source         "
-	        "src/OpenInfraPlatform/"
-	     << schema.getName() << "/entity/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-	     << "_include_Source "
-	        "src/OpenInfraPlatform/"
-	     << schema.getName() << "/entity/include/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-	     << "_model_Source        "
-	        "src/OpenInfraPlatform/"
-	     << schema.getName() << "/model/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-	     << "_reader_Source       "
-	        "src/OpenInfraPlatform/"
-	     << schema.getName() << "/reader/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-	     << "_writer_Source       "
-	        "src/OpenInfraPlatform/"
-	     << schema.getName() << "/writer/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-	     << "_xml_Source          "
-	        "src/OpenInfraPlatform/"
-	     << schema.getName() << "/xml/*.*)" << std::endl;
-	file << "" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-	     << "                FILES "
-	        "${OpenInfraPlatform_"
-	     << schema.getName() << "_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-	     << "\\\\guid            FILES "
-	        "${OpenInfraPlatform_"
-	     << schema.getName() << "_guid_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-	     << "\\\\entity          FILES "
-	        "${OpenInfraPlatform_"
-	     << schema.getName() << "_entity_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-	     << "\\\\entity\\\\include FILES "
-	        "${OpenInfraPlatform_"
-	     << schema.getName() << "_include_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-	     << "\\\\model           FILES "
-	        "${OpenInfraPlatform_"
-	     << schema.getName() << "_model_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-	     << "\\\\reader          FILES "
-	        "${OpenInfraPlatform_"
-	     << schema.getName() << "_reader_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-	     << "\\\\writer          FILES "
-	        "${OpenInfraPlatform_"
-	     << schema.getName() << "_writer_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-	     << "\\\\xml             FILES "
-	        "${OpenInfraPlatform_"
-	     << schema.getName() << "_xml_Source})" << std::endl;
-	file << "" << std::endl;
-	file << "add_library(OpenInfraPlatform." << schema.getName() << " STATIC" << std::endl;
-	file << "\t"
-	     << "${OpenInfraPlatform_" << schema.getName() << "_Source}" << std::endl;
-	file << "\t"
-	     << "${OpenInfraPlatform_" << schema.getName() << "_guid_Source}" << std::endl;
-	file << "\t"
-	     << "${OpenInfraPlatform_" << schema.getName() << "_entity_Source}" << std::endl;
-	file << "\t"
-	     << "${OpenInfraPlatform_" << schema.getName() << "_include_Source}" << std::endl;
-	file << "\t"
-	     << "${OpenInfraPlatform_" << schema.getName() << "_model_Source}" << std::endl;
-	file << "\t"
-	     << "${OpenInfraPlatform_" << schema.getName() << "_reader_Source}" << std::endl;
-	file << "\t"
-	     << "${OpenInfraPlatform_" << schema.getName() << "_writer_Source}" << std::endl;
-	file << "\t"
-	     << "${OpenInfraPlatform_" << schema.getName() << "_xml_Source}" << std::endl;
-	file << ")" << std::endl;
-	file << "" << std::endl;
-	file << "if (WIN32)" << std::endl;
-	file << "\t"
-	     << "target_link_libraries(OpenInfraPlatform." << schema.getName() << std::endl;
-	file << "\t"
-	     << "Rpcrt4.lib)" << std::endl;
-	file << "endif (WIN32)" << std::endl;
-	
-	//Provide install instructions
-	file << std::endl;
-	file << "Install(DIRECTORY ${PROJECT_SOURCE_DIR}/build/${MSVC_VERSION_STRING}/Debug DESTINATION lib/${MSVC_VERSION_STRING}/x64" << std::endl;
-	file << "\t" << "COMPONENT " << schema.getName() << std::endl;
-	file << "\t" << "FILES_MATCHING PATTERN \"*.lib\" PATTERN \"*.pdb\"" << std::endl;
-	file << ")" << std::endl;
-	file << std::endl;
 
-	file << std::endl;
-	file << "Install(DIRECTORY ${PROJECT_SOURCE_DIR}/build/${MSVC_VERSION_STRING}/Release DESTINATION lib/${MSVC_VERSION_STRING}/x64" << std::endl;
-	file << "\t" << "COMPONENT " << schema.getName() << std::endl;
-	file << "\t" << "FILES_MATCHING PATTERN \"*.lib\"" << std::endl;
+	file << "" << std::endl;
+
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_Source              "
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_reader_Source         "
+		"reader/*.[hc] reader/*.[hc]pp reader/*.[hc]xx)" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_Source} PROPERTY GENERATED ON)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_reader_Source} PROPERTY GENERATED ON)" << std::endl;
+
+	file << "" << std::endl;
+
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "                FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "\\\\reader        FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_reader_Source})" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "add_library(OpenInfraPlatform." << schema.getName() << " SHARED" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_" << schema.getName() << "_Source}" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_" << schema.getName() << "_reader_Source}" << std::endl;
 	file << ")" << std::endl;
-	file << std::endl;
+
+	file << "" << std::endl;
+
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + " PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".TopRooted" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".TopNotRooted" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Mid" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
+	file << ")" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_API_MAIN_ASEXPORT)" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + " INTERFACE src/reader src)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + " PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+
+	file << "" << std::endl;
 
 	file << "Install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/ DESTINATION include" << std::endl;
 	file << "\t" << "COMPONENT " << schema.getName() << std::endl;
 	file << "\t" << "FILES_MATCHING PATTERN \"*.h\"" << std::endl;
 	file << ")" << std::endl;
-}
 
-void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
-{
-	std::string name = "CMakeLists.txt";
+	file << "" << std::endl;
+	file.close();
 
-	std::stringstream ssFilename;
-	ssFilename << rootDirectory_ << "/" << name;
-	std::ofstream file(ssFilename.str());
+	// the top library, only rooted elements (toprooted)
+	filename = sourceDirectory_ + "/toprooted/" + name;
+	file.open(filename);
+	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
 
 	file << license_cmake << std::endl;
 	file << std::endl;
 	file << notice_cmake << std::endl;
 	file << std::endl;
+	file << "" << std::endl;
 
-	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
-
-	file << "project(OpenInfraPlatform." << schema.getName() << " CXX)" << std::endl;
+	file << "project(OpenInfraPlatform." << schema.getName() << ".TopRooted CXX)" << std::endl;
 	file << "" << std::endl;
 	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;	
 	file << "" << std::endl;
@@ -2970,94 +2492,65 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 	file << "" << std::endl;
 
 	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-		<< "_Source              "
-		"src/*.*)" << std::endl;	
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-		<< "_entity_Source         "
-		"src/entity/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-		<< "_select_Source         "
-		"src/select/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-		<< "_type_Source         "
-		"src/type/*.*)" << std::endl;
-	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
-		<< "_reader_Source         "
-		"src/reader/*.*)" << std::endl;
+		<< "_toprooted_Source         "
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_toprooted_Source} PROPERTY GENERATED ON)" << std::endl;
 
 	file << "" << std::endl;
 
-	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_Source} PROPERTY GENERATED ON)" << std::endl;
-	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_entity_Source} PROPERTY GENERATED ON)" << std::endl;
-	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_select_Source} PROPERTY GENERATED ON)" << std::endl;
-	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_type_Source} PROPERTY GENERATED ON)" << std::endl;
-	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_reader_Source} PROPERTY GENERATED ON)" << std::endl;
+	//file << "file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source ${CMAKE_SOURCE_DIR}/EarlyBinding/src/EXPRESS/*.*)" << std::endl;
 
 	file << "" << std::endl;
 
-	file << "file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source ${CMAKE_SOURCE_DIR}/EarlyBinding/src/EXPRESS/*.*)" << std::endl;
-
-	file << "" << std::endl;
-
-	file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
 	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-		<< "                FILES "
+		<< "\\\\toprooted        FILES "
 		"${OpenInfraPlatform_"
-		<< schema.getName() << "_Source})" << std::endl;	
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-		<< "\\\\entity          FILES "
-		"${OpenInfraPlatform_"
-		<< schema.getName() << "_entity_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-		<< "\\\\select          FILES "
-		"${OpenInfraPlatform_"
-		<< schema.getName() << "_select_Source})" << std::endl;
-	//file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-	//	<< "\\\\type          FILES "
-	//	"${OpenInfraPlatform_"
-	//	<< schema.getName() << "_type_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-		<< "\\\\reader          FILES "
-		"${OpenInfraPlatform_"
-		<< schema.getName() << "_reader_Source})" << std::endl;
+		<< schema.getName() << "_toprooted_Source})" << std::endl;
 	
 	file << "" << std::endl;
 
-	file << "add_library(OpenInfraPlatform." << schema.getName() << " STATIC" << std::endl;
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".TopRooted SHARED" << std::endl;
 	file << "\t"
-		<< "${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}" << std::endl;
-	file << "\t"
-		<< "${OpenInfraPlatform_" << schema.getName() << "_Source}" << std::endl;
-	file << "\t"
-		<< "${OpenInfraPlatform_" << schema.getName() << "_entity_Source}" << std::endl;
-	file << "\t"
-		<< "${OpenInfraPlatform_" << schema.getName() << "_select_Source}" << std::endl;
-	//file << "\t"
-	//	<< "${OpenInfraPlatform_" << schema.getName() << "_type_Source}" << std::endl;
-	file << "\t"
-		<< "${OpenInfraPlatform_" << schema.getName() << "_reader_Source}" << std::endl;
+		<< "${OpenInfraPlatform_" << schema.getName() << "_toprooted_Source}" << std::endl;
 	file << ")" << std::endl;
 
 	file << "" << std::endl;
 
-	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + " OpenInfraPlatform." + schema.getName() + ".Types)" << std::endl;
-
-	file << "" << std::endl;
-
-	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + " INTERFACE src)" << std::endl;
-	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + " PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
-
-	file << "" << std::endl;
-
-	file << "Install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/ DESTINATION include" << std::endl;
-	file << "\t" << "COMPONENT " << schema.getName() << std::endl;
-	file << "\t" << "FILES_MATCHING PATTERN \"*.h\"" << std::endl;
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".TopRooted PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".TopNotRooted" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Mid" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
 	file << ")" << std::endl;
-
+  file << "add_definitions(-DOIP_EARLYBINDING_API_TOPROOTED_ASEXPORT)" << std::endl;
+	
 	file << "" << std::endl;
+
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".TopRooted INTERFACE src/top)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".TopRooted PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+	
+	file << "" << std::endl;
+	file.close();
+
+	// the top library, all not rooted elements (topnotrooted)
+	filename = sourceDirectory_ + "/topnotrooted/" + name;
+	file.open(filename);
+	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
+
+	file << license_cmake << std::endl;
+	file << std::endl;
+	file << notice_cmake << std::endl;
+	file << std::endl;
 	file << "" << std::endl;
 
-	file << "project(OpenInfraPlatform." << schema.getName() << ".Types CXX)" << std::endl;
+	file << "project(OpenInfraPlatform." << schema.getName() << ".TopNotRooted CXX)" << std::endl;
 	file << "" << std::endl;
 	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;
 	file << "" << std::endl;
@@ -3070,404 +2563,239 @@ void GeneratorOIP::generateCMakeListsFileREFACTORED(const Schema & schema)
 
 	file << "" << std::endl;
 
-	file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
-	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
-		<< "\\\\type          FILES "
-		"${OpenInfraPlatform_"
-		<< schema.getName() << "_type_Source})" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_topnotrooted_Source         "
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_topnotrooted_Source} PROPERTY GENERATED ON)" << std::endl;
 
 	file << "" << std::endl;
 
-	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Types STATIC" << std::endl;
+	//file << "file(GLOB OpenInfraPlatform_EarlyBinding_EXPRESS_Source ${CMAKE_SOURCE_DIR}/EarlyBinding/src/EXPRESS/*.*)" << std::endl;
+
+	file << "" << std::endl;
+
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "\\\\topnotrooted        FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_topnotrooted_Source})" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".TopNotRooted SHARED" << std::endl;
 	file << "\t"
-		<< "${OpenInfraPlatform_EarlyBinding_EXPRESS_Source}" << std::endl;
-	file << "\t"
-		<< "${OpenInfraPlatform_" << schema.getName() << "_type_Source}" << std::endl;
+		<< "${OpenInfraPlatform_" << schema.getName() << "_topnotrooted_Source}" << std::endl;
 	file << ")" << std::endl;
 
 	file << "" << std::endl;
 
-	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Types INTERFACE src)" << std::endl;
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".TopNotRooted PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Mid" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
+	file << ")" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_API_TOPNOTROOTED_ASEXPORT)" << std::endl;
 
 	file << "" << std::endl;
 
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".TopNotRooted INTERFACE src/top)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".TopNotRooted PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+
+	file << "" << std::endl;
 	file.close();
 
-	/*
-	file.open(outputDirectory_ + "/" + name);
+	// the middle library (mid)
+	filename = sourceDirectory_ + "/mid/" + name;
+	file.open(filename);
+	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
 
 	file << license_cmake << std::endl;
 	file << std::endl;
 	file << notice_cmake << std::endl;
 	file << std::endl;
 
-	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
-
-	file << "project(OpenInfraPlatform.EarlyBinding CXX)" << std::endl;
+	file << "project(OpenInfraPlatform." << schema.getName() << ".Mid CXX)" << std::endl;
+	file << "" << std::endl;
+	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;
 	file << "" << std::endl;
 	file << "include_directories(" << std::endl;
-	//file << "  EXPRESS" << std::endl;
-	file << "  ${CMAKE_SOURCE_DIR}/ExpressBindingGenerator/src/OpenInfraPlatform/ExpressBindingGenerator/EXPRESS" << std::endl;
-	file << "  ${Boost_INCLUDE_DIR}" << std::endl;
+	file << "  src" << std::endl;
+	file << "  ${CMAKE_SOURCE_DIR}/EarlyBinding/src" << std::endl;
 	file << "  ${visit_struct_INCLUDE_DIR}" << std::endl;
-	file << ")" << std::endl;
-
-	file << "add_subdirectory(" << schema.getName() << ")" << std::endl;
-
-	file << "" << std::endl;
-
-	file << "get_target_property(" << schema.getName() << "_INCLUDE_DIRS OpenInfraPlatform." << schema.getName() << " INTERFACE_INCLUDE_DIRECTORIES)" << std::endl;
-	file << "add_library(OpenInfraPlatform.EarlyBinding INTERFACE)" << std::endl;
-	//file << "target_link_libraries(OpenInfraPlatform.EarlyBinding OpenInfraPlatform." << schema.getName() << ")" << std::endl;
-
-	file << "target_include_directories(OpenInfraPlatform.EarlyBinding" << std::endl;;
-	//file << "\t INTERFACE EXPRESS" << std::endl;;
-	file << "\t INTERFACE ${visit_struct_INCLUDE_DIR}" << std::endl;;
-	file << "\t INTERFACE ${Boost_INCLUDE_DIR}" << std::endl;;
-	file << "\t INTERFACE ${" << schema.getName() << "_INCLUDE_DIRS}" << std::endl;;
+	file << "  ${Boost_INCLUDE_DIR}" << std::endl;
 	file << ")" << std::endl;
 
 	file << "" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_mid_Source         "
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_mid_Source} PROPERTY GENERATED ON)" << std::endl;
 
-	file << "Install(DIRECTORY ${PROJECT_SOURCE_DIR} DESTINATION include" << std::endl;
-	file << "\t" << "COMPONENT EarlyBinding" << std::endl;
-	file << "\t" << "FILES_MATCHING PATTERN \"*.h\"" << std::endl;
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "\\\\mid          FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_mid_Source})" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Mid SHARED" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_" << schema.getName() << "_mid_Source}" << std::endl;
 	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Mid PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Bot" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
+	file << ")" << std::endl;
+
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Mid INTERFACE src/mid)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".Mid PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_API_MID_ASEXPORT)" << std::endl;
+	
+	file << "" << std::endl;
+
 	file.close();
-	*/
+
+	// the bottom library (bot)
+	filename = sourceDirectory_ + "/bot/" + name;
+	file.open(filename);
+	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
+
+	file << license_cmake << std::endl;
+	file << std::endl;
+	file << notice_cmake << std::endl;
+	file << std::endl;
+
+	file << "project(OpenInfraPlatform." << schema.getName() << ".Bot CXX)" << std::endl;
+	file << "" << std::endl;
+	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;
+	file << "" << std::endl;
+	file << "include_directories(" << std::endl;
+	file << "  src" << std::endl;
+	file << "  ${CMAKE_SOURCE_DIR}/EarlyBinding/src" << std::endl;
+	file << "  ${visit_struct_INCLUDE_DIR}" << std::endl;
+	file << "  ${Boost_INCLUDE_DIR}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_bot_Source         "
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_bot_Source} PROPERTY GENERATED ON)" << std::endl;
+
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "\\\\bot        FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_bot_Source})" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Bot SHARED" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_" << schema.getName() << "_bot_Source}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Bot PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform." + schema.getName() + ".Zero" << std::endl;
+	file << ")" << std::endl;
+
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Bot INTERFACE src/bot)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".Bot PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_API_BOT_ASEXPORT)" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "" << std::endl;
+
+	file.close();
+
+	// the base library (zero)
+	filename = sourceDirectory_ + "/zero/" + name;
+	file.open(filename);
+	// file << "cmake_minimum_required(VERSION 3.5)" << std::endl;
+
+	file << license_cmake << std::endl;
+	file << std::endl;
+	file << notice_cmake << std::endl;
+	file << std::endl;
+
+	file << "project(OpenInfraPlatform." << schema.getName() << ".Zero CXX)" << std::endl;
+	file << "" << std::endl;
+	file << "set(CMAKE_DEBUG_POSTFIX \"d\")" << std::endl << std::endl;
+	file << "" << std::endl;
+	file << "include_directories(" << std::endl;
+	file << "  src" << std::endl;
+	file << "  ${CMAKE_SOURCE_DIR}/EarlyBinding/src" << std::endl;
+	file << "  ${visit_struct_INCLUDE_DIR}" << std::endl;
+	file << "  ${Boost_INCLUDE_DIR}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+	file << "file(GLOB OpenInfraPlatform_" << schema.getName()
+		<< "_Zero_Source         "
+		"*.[hc] *.[hc]pp *.[hc]xx)" << std::endl;
+
+	file << "set_property(SOURCE ${OpenInfraPlatform_" << schema.getName() << "_Zero_Source} PROPERTY GENERATED ON)" << std::endl;
+
+	file << "" << std::endl;
+
+	//file << "source_group(OpenInfraPlatform\\\\EXPRESS FILES ${OpenInfraPlatform_EarlyBinding_EXPRESS_Source})" << std::endl;
+	file << "source_group(OpenInfraPlatform\\\\" << schema.getName()
+		<< "\\\\zero        FILES "
+		"${OpenInfraPlatform_"
+		<< schema.getName() << "_Zero_Source})" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "add_library(OpenInfraPlatform." << schema.getName() << ".Zero SHARED" << std::endl;
+	file << "\t"
+		<< "${OpenInfraPlatform_" << schema.getName() << "_Zero_Source}" << std::endl;
+	file << ")" << std::endl;
+
+	file << "" << std::endl;
+
+	file << "target_link_libraries(OpenInfraPlatform." + schema.getName() + ".Zero PUBLIC" << std::endl;
+	file << "\t"
+		<< "OpenInfraPlatform.ExpressLib" << std::endl;
+	file << ")" << std::endl;
+
+	file << "target_include_directories(OpenInfraPlatform." + schema.getName() + ".Zero INTERFACE src/zero)" << std::endl;
+	file << "set_target_properties(OpenInfraPlatform." + schema.getName() + ".Zero PROPERTIES LINKER_LANGUAGE CXX)" << std::endl;
+	file << "add_definitions(-DOIP_EARLYBINDING_API_ZERO_ASEXPORT)" << std::endl;
+
+	file << "" << std::endl;
+	file.close();
 }
-
-void GeneratorOIP::createEntityBrokerCPPFile(const Schema &schema) {
-	std::stringstream ssFilename;
-	ssFilename << sourceDirectory_ << "/OpenInfraPlatform/" << schema.getName() << "/" << schema.getName() << "EntityBroker.cpp";
-	std::ofstream out(ssFilename.str());
-
-	out << license << std::endl;
-	out << std::endl;
-
-	out << "#include <vector>" << std::endl;
-	out << "#include <map>" << std::endl;
-	out << "#include <string>" << std::endl;
-	out << "#include \"" << schema.getName() << "Entities.h\"" << std::endl;
-	out << "#include \"OpenInfraPlatform/" << schema.getName() << "/" << schema.getName() << "EntityEnums.h\" " << std::endl;
-	out << "#include \"OpenInfraPlatform/" << schema.getName() << "/model/Exception.h\" " << std::endl;
-	out << "#include \"OpenInfraPlatform/" << schema.getName() << "/model/Object.h\" " << std::endl;
-
-	out << std::endl;
-
-	out << "namespace OpenInfraPlatform" << std::endl;
-	out << "{" << std::endl;
-	out << "	namespace " << schema.getName() << std::endl;
-	out << "\t"
-	    << "{" << std::endl;
-
-	out << "\t"
-	    << "\t" << schema.getName() << "Entity* create" << schema.getName() << "Entity( const " << schema.getName()
-	    << "EntityEnum entity_enum "
-	       ")"
-	    << std::endl;
-
-	out << "\t"
-	    << "\t"
-	    << "{" << std::endl;
-	out << "\t"
-	    << "\t"
-	    << "\t"
-	    << "switch( entity_enum )" << std::endl;
-	out << "\t"
-	    << "\t"
-	    << "\t"
-	    << "{" << std::endl;
-
-	for (int i = 0; i < schema.getEntityCount(); i++) {
-		const auto entity = schema.getEntityByIndex(i);
-
-		out << "\t"
-		    << "\t"
-		    << "\t"
-		    << "\t"
-		    << "case " << toUpper(entity.getName()) << ": return new " << entity.getName() << "();" << std::endl;
-	}
-
-	out << "\t"
-	    << "\t"
-	    << "\t"
-	    << "\t"
-	    << "default: throw " << schema.getName() << "Exception(\"given " << schema.getName() << "EntityEnum not valid\"); " << std::endl;
-	out << "\t"
-	    << "\t"
-	    << "\t"
-	    << "}" << std::endl;
-	out << "\t"
-	    << "\t"
-	    << "\t"
-	    << "return 0;" << std::endl;
-
-	out << "\t"
-	    << "\t"
-	    << "}" << std::endl;
-	out << "\t"
-	    << "}" << std::endl;
-	out << "}" << std::endl;
-}
-
-void GeneratorOIP::generateEntityHeaderFile(const Schema &schema, const Entity &entity) {
-	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << entityPath_ << "/" << entity.getName() << ".h";
-	std::cout << ssHeaderFilename.str() << std::endl;
-	std::ofstream out(ssHeaderFilename.str());
-
-	indentation = 0;
-
-	writeLicenseAndNotice(out);
-
-	writeLine(out, "#pragma once");
-	linebreak(out);
-
-	// Includes
-	for(auto name : { "vector", "map", "memory", "sstream", "string", "visit_struct/visit_struct.hpp" })
-		writeInclude(out, name, true);
-
-	writeInclude(out, "OpenInfraPlatform/" + schema.getName() + "/model/Object.h");
-
-	// very stupid and slow select types lookup...
-	for (int i = 0; i < schema.getTypeCount(); ++i) {
-		Type t = schema.getTypeByIndex(i);
-
-		if (t.isSelectType()) {
-			for (int k = 0; k < t.getTypeCount(); ++k) {
-				if (t.getType(k) == entity.getName()) {
-					writeInclude(out, t.getName() + ".h");
-				}
-			}
-		}
-	}
-
-	if (entity.hasSupertype()) {
-		writeInclude(out, entity.getSupertype() + ".h");
-	}
-
-	std::set<std::string> includeTypes = std::set<std::string>();
-	std::set<std::string> forwardDeclarations = std::set<std::string>();
-
-	for(int i = 0; i < entity.getAttributeCount(); i++) {
-		auto type = entity.getAttribute(i).type;
-
-		// Get type from container until we end up with a TypeNamed or Simple.
-		while(type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-			type = std::dynamic_pointer_cast<EntityAttributeGeneralizedType>(type)->elementType;
-		}
-				
-		if(type->getType() == eEntityAttributeParameterType::TypeNamed) {
-			auto name = type->toString();
-
-			// Check if the attribute is a TYPE
-			if(schema.hasType(name)) {
-				name = schema.getTypeByName(name).getName();
-
-				// If the TYPE is REAL or INTEGER type, we add it as include since we need to have knowledge of it. Otherwíse forward declare it.
-				if(schema.isIntegerType(name) || schema.isRealType(name) || schema.getTypeByName(name).isEnumeration())
-					includeTypes.insert(name);
-				else
-					forwardDeclarations.insert(name);
-			}
-			// If it is a ENTITY, we add the class to forward declarations.
-			else if(schema.hasEntity(name)) {				
-				forwardDeclarations.insert(schema.getEntityByName(name).getName());				
-			}
-		}
-	}
-
-	// Write the includes for Types which are used as members.
-	for(auto incl : includeTypes)
-		writeInclude(out, incl + ".h");
-
-	linebreak(out);
-	writeBeginNamespace(out, schema);
-	
-	// Write forward declarations.
-	for(auto decl : forwardDeclarations)
-		writeLine(out, "class " + decl + ";");
-
-	writeLine(out, "// ENTITY " + entity.getName());
-
-	indent(out, indentation);
-	write(out, "class " + entity.getName());
-	
-	if (entity.hasSupertype()) {
-		write(out, " : public " + entity.getSupertype());
-	} else {
-		write(out, " : public " + schema.getName() + "Entity");
-	}
-
-	// very stupid and slow select types lookup...
-	for (int i = 0; i < schema.getTypeCount(); ++i) {
-		Type t = schema.getTypeByIndex(i);
-
-		if (t.isSelectType()) {
-			for (int k = 0; k < t.getTypeCount(); ++k) {
-				if (t.getType(k) == entity.getName()) {
-					write(out, ", public " + t.getName());
-				}
-			}
-		}
-	}
-
-	linebreak(out);
-	linebreak(out);
-
-	writeLine(out, "{");
-
-	indent(out, indentation - 1);
-	write(out, "public:");
-	linebreak(out);
-	
-
-	// ctors
-	writeLine(out, entity.getName() + "();");
-	writeLine(out, entity.getName() + "(int id);");
-
-	// dtor
-	writeLine(out, "~" + entity.getName() + "();");
-	
-	linebreak(out);
-
-	writeLine(out, "// method setEntity takes over all attributes from another instance of the class");	
-	writeLine(out, "virtual void setEntity(std::shared_ptr<" + schema.getName() + "Entity> other);");
-	writeLine(out, "virtual void getStepLine(std::stringstream& stream) const;");
-	writeLine(out, "virtual void getStepParameter(std::stringstream& stream, bool is_select_type = false) const;");
-	writeLine(out, "virtual void readStepData(std::vector<std::string>& args, const std::map<int, shared_ptr<" + schema.getName() + "Entity> >& map);");
-	writeLine(out, "virtual void setInverseCounterparts(shared_ptr<" + schema.getName() + "Entity> ptr_self);");
-	writeLine(out, "virtual void unlinkSelf();");
-	writeLine(out, "virtual const char* classname() const { return \"" + entity.getName() + "\"; }");
-	
-	linebreak(out);
-
-	// current class
-	writeLine(out, "// " + entity.getName() + " -----------------------");	
-	writeLine(out, "// attributes:");
-
-	for (int i = 0; i < entity.getAttributeCount(); i++) {
-		const EntityAttribute &att = entity.getAttribute(i);
-
-		if (att.getParameterType() == eEntityAttributeParameterType::TypeNamed) {
-			if(schema.hasType(att.type->toString())) {
-				std::string name = schema.getTypeByName(att.type->toString()).getName();
-
-				if(schema.isRealType(name) || schema.isIntegerType(name)) {
-					writeLine(out, name + " m_" + att.getName() + ";");					
-				}
-				else {
-					writeLine(out, "std::shared_ptr<" + att.type->toString() + "> m_" + att.getName() + ";");
-				}				
-			}
-			else {
-				writeLine(out, "std::shared_ptr<" + att.type->toString() + "> m_" + att.getName() + ";");
-			}
-
-		} else if (att.getParameterType() == eEntityAttributeParameterType::eGeneralizedType) {
-			auto p = std::static_pointer_cast<EntityAttributeGeneralizedType>(att.type);
-
-			if (p->containerType == eEntityAttributeContainerType::List) {
-				out << "\t"
-				    << "\t"
-				    << "\t"
-				    << "std::vector<";
-
-				auto iterator = p->elementType;
-
-				while (iterator->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-					auto p1 = std::static_pointer_cast<EntityAttributeGeneralizedType>(iterator);
-					out << "std::vector<";
-
-					iterator = p1->elementType;
-				}
-
-				if (iterator->getType() == eEntityAttributeParameterType::TypeNamed) {
-					out << "std::shared_ptr<" << iterator->toString() << ">";
-				}
-
-				iterator = p->elementType;
-
-				while (iterator->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-					auto p1 = std::static_pointer_cast<EntityAttributeGeneralizedType>(iterator);
-					out << ">";
-
-					iterator = p1->elementType;
-				}
-
-				out << "> "
-				    << " m_" << att.getName() << ";" << std::endl;
-			} else if (p->containerType == eEntityAttributeContainerType::Set) {
-				out << "\t"
-				    << "\t"
-				    << "\t"
-				    << "std::vector<";
-
-				if (p->elementType->getType() == eEntityAttributeParameterType::TypeNamed) {
-					out << "std::shared_ptr<" << p->elementType->toString() << ">";
-				}
-
-				out << "> "
-				    << " m_" << att.getName() << ";" << std::endl;
-			} else if (p->containerType == eEntityAttributeContainerType::Array) {
-				out << "\t"
-				    << "\t"
-				    << "\t"
-				    << "std::vector<";
-
-				if (p->elementType->getType() == eEntityAttributeParameterType::TypeNamed) {
-					out << "std::shared_ptr<" << p->elementType->toString() << ">";
-				}
-
-				out << "> "
-				    << " m_" << att.getName() << ";" << std::endl;
-			} else {
-				std::cout << "\t"
-				          << "\t"
-				          << "\t" << att.type->toString() << " m_" << att.getName() << ";" << std::endl;
-				out << "\t"
-				    << "\t"
-				    << "\t" << att.type->toString() << " m_" << att.getName() << ";" << std::endl;
-			}
-
-		} else {
-			out << "\t"
-			    << "\t"
-			    << "\t" << convertSimpleTypeToCPPType(schema, att.type->toString()) << " m_" << att.getName() << ";" << std::endl;
-		}
-	}
-
-	writeEndClass(out, entity);
-	writeEndNamespace(out, schema);
-	
-	//Make structure visitable
-	auto attributes = schema.getAllEntityAttributesNames(entity);
-	if(!attributes.empty())
-	{
-		out << "\n";
-		out << "VISITABLE_STRUCT(OpenInfraPlatform::" << schema.getName() << "::" << entity.getName();
-		for(auto item : attributes) {
-			out << ", m_" << item;
-		}
-		out << ");" << std::endl;
-	}
-	
-}
-
 
 void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, const Entity & entity) const
 {
-	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << entityPath_ << "/" << entity.getName() << ".h";
-	//std::cout << ssHeaderFilename.str() << std::endl;
-	std::ofstream out(ssHeaderFilename.str());
+	const std::string name = entity.getName();
+	std::string path = sourceDirectory_ + "/" + getFolder(name) + "/" + name + ".h";
+	std::ofstream out(path);
 
 	writeLicenseAndNotice(out);
 
 	auto guid = getRandomGUID();
 	std::replace(guid.begin(), guid.end(), '-', '_');
-	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), entity.getName(), guid, "h" }, '_');
+	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), name, guid, "h" }, '_');
 
 	writeLine(out, "#pragma once");
 	writeLine(out, "#ifndef " + define);
@@ -3484,7 +2812,7 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 
 	// Write include for supertype.
 	if (entity.hasSupertype()) {
-		writeInclude(out, entity.getSupertype() + ".h");
+		writeInclude(out, "../" + getFolder(entity.getSupertype()) + "/" + entity.getSupertype() + ".h");
 		linebreak(out);
 	}
 
@@ -3516,33 +2844,15 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 				typeAttributes.insert(elementType->toString());
 			}
 		}
-	}	
-
-	//for (auto typeName : typeAttributes) {
-	//	auto type = schema.getTypeByName(typeName);		
-	//	if (type.isSelectType()) {
-	//		resolveIncludes(schema, entity, entityAttributes, type);
-	//	}
-	//}
-
-	auto self = entityAttributes.find(entity.getName());
+	}
+	auto self = entityAttributes.find(name);
 	if (self != entityAttributes.end()) {
 		entityAttributes.erase(self);
 	}
-
-	//if (!entityAttributes.empty()) {
-	//	for (auto entityAttribute : entityAttributes) {
-	//		writeInclude(out, entityAttribute + ".h");
-	//	}
-	//	linebreak(out);
-	//}
-	
+		
 	if (!typeAttributes.empty()) {
-		for (auto type : typeAttributes) {
-			if(schema.isSelectType(type))
-				writeInclude(out, "../select/" + type + ".h");
-			else
-				writeInclude(out, "../type/" + type + ".h");
+		for (const auto& type : typeAttributes) {
+			writeInclude(out, "../" + getFolder(type) + "/" + type + ".h");
 		}
 		linebreak(out);
 	}
@@ -3553,42 +2863,43 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 	writeBeginNamespace(out, schema);
 	
 	if (!entityAttributes.empty()) {
-		for (auto entityAttribute : entityAttributes) {
-			writeLine(out,"class " + entityAttribute + ";");
+		for (const auto& entityAttribute : entityAttributes) {
+			if( entityAttribute != supertype) // skip supertype when forward declaring
+				writeLine(out,"class " + entityAttribute + ";");
 		}
 		linebreak(out);
 	}
 
 	writeDoxyComment(out, "Entity" + entity.hasSupertype() ? " subtype of " + supertype : "");
 
-	writeLine(out, "class " + entity.getName() + " : public " + supertype + " {");
+	writeLine(out, "class " + getAPIDefine(name) + " " + name + " : public " + supertype + " {");
 	writeLine(out, "private:");
 	writeLine(out, "using base = " + supertype + ";");
 	writeLine(out, "public:");
 	
-	//writeLine(out, "typedef " + entity.getName() + " UnderlyingType;");
+	//writeLine(out, "typedef " + name + " UnderlyingType;");
 	
-	auto initClassAsDefault = [&out, &entity, &schema]() {
+	if (!schema.isAbstract(entity)) {
 		// Default constructor.
-		writeLine(out, entity.getName() + "();");
+		writeLine(out, name + "();");
 
 		// Copy constructor.
-		writeLine(out, entity.getName() + "(const " + entity.getName() + "& other);");
+		writeLine(out, name + "(const " + name + "& other);");
 
 		// Move constructor.
-		writeLine(out, entity.getName() + "(" + entity.getName() + "&& other);");
+		writeLine(out, name + "(" + name + "&& other);");
 		linebreak(out);
 
 		// Destructor.
-		writeLine(out, "virtual ~" + entity.getName() + "();");
+		writeLine(out, "virtual ~" + name + "();");
 		linebreak(out);
 
 		// Swap function.
-		writeLine(out, "friend void swap(" + entity.getName() + "& first, " + entity.getName() + "& second);");
+		writeLine(out, "friend void swap(" + name + "& first, " + name + "& second);");
 		linebreak(out);
 
 		// Assignment operator.
-		writeLine(out, "virtual " + entity.getName() + "& operator=(const " + entity.getName() + "& other);");
+		writeLine(out, "virtual " + name + "& operator=(const " + name + "& other);");
 		linebreak(out);
 
 		// Classname function.
@@ -3596,23 +2907,24 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 		linebreak(out); 
 
 		//Interpret STEP data
-		writeLine(out, "static " + entity.getName() + " readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
+		writeLine(out, "static " + name + " readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model);");
 		linebreak(out);
 
 		//Get STEP data
 		writeLine(out, "virtual const std::string getStepLine() const override;");
 		linebreak(out);
 
-		writeLine(out, "using base::getStepParameter;");		
-	};
+		// Initialize INVERSE parameters
+		writeLine(out, "virtual void linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) override;");
+		linebreak(out);
 
-	if (!schema.isAbstract(entity)) {
-		initClassAsDefault();
+		writeLine(out, "using base::getStepParameter;");		
 	}
 	else {
-		//writeLine(out, "virtual " + entity.getName() + "& operator=(" + entity.getName() + " other) = 0;");
+		//writeLine(out, "virtual " + name + "& operator=(" + name + " other) = 0;");
 		writeLine(out, "virtual const std::string classname() const = 0;");
 		writeLine(out, "virtual const std::string getStepLine() const = 0;");
+		writeLine(out, "virtual void linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) = 0;");
 	}
 
 	//GetAttributes
@@ -3627,12 +2939,12 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 	writeEndNamespace(out, schema);
 
 	//Make structure visitable
-	auto attributeNames = schema.getAllEntityAttributesNames(entity);
+	auto attributeNames = schema.getAllEntityAttributesNames(entity, true);
 	if (!attributeNames.empty())
 	{
 		linebreak(out);
 		out << "\n";
-		out << "VISITABLE_STRUCT(OpenInfraPlatform::" << schema.getName() << "::" << entity.getName();
+		out << "VISITABLE_STRUCT(OpenInfraPlatform::" << schema.getName() << "::" << name;
 		for (auto item : attributeNames) {
 			out << "," << item;
 		}
@@ -3640,38 +2952,16 @@ void GeneratorOIP::generateEntityHeaderFileREFACTORED(const Schema & schema, con
 		linebreak(out);
 	}
 
-	writeLine(out, "#endif // end define " + define);
-	out.close();
-}
-
-void GeneratorOIP::generateEntityEnumsHeaderFile(const Schema &schema) {
-	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << sourceDirectory_ << "/OpenInfraPlatform/" << schema.getName() << "/" << schema.getName() << "EntityEnums.h";
-	std::cout << ssHeaderFilename.str() << std::endl;
-	std::ofstream out(ssHeaderFilename.str());
-
-	writeLicenseAndNotice(out);
-
-	auto guid = getRandomGUID();
-	std::replace(guid.begin(), guid.end(), '-', '_');
-	std::string define = join(std::vector<std::string>{ "OpenInfraPlatform", schema.getName(), "Enums", guid, "h" }, '_');
-
-	writeLine(out, "#pragma once");
-	writeLine(out, "#ifndef " + define);
-	writeLine(out, "#define " + define);
+	//https://stackoverflow.com/questions/47824973/edit-how-to-dll-export-a-template-specialization-in-windows-with-the-source-d
+	// instantiate reference + optional
+	writeLine(out, "#ifndef " + getAPIGuard(name));
+	writeLine(out, "OIP_EARLYBINDING_EXTERN template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
+	writeLine(out, "OIP_EARLYBINDING_EXTERN template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">" + ">;");
+	writeLine(out, "#endif //" + getAPIGuard(name));
 	linebreak(out);
 
-	writeBeginNamespace(out, schema);
-
-	writeLine(out, "enum Enums : size_t {");
-	for (size_t i = 0; i < schema.getEntityCount(); i++) {
-		//TODO
-	}
-
-
-	
-	writeEndNamespace(out, schema);
-	writeLine(out, "#endif");
+	writeLine(out, "#endif // end define " + define);
+	out.close();
 }
 
 void GeneratorOIP::generateSchemaHeader(const Schema & schema)
@@ -3688,11 +2978,12 @@ void GeneratorOIP::generateSchemaHeader(const Schema & schema)
 	writeLine(file, "#define " + define);
 	linebreak(file);
 
+	writeInclude(file, schema.getName() + "Namespace.h");
 	writeInclude(file, schema.getName() + "Entities.h");
 	writeInclude(file, schema.getName() + "Types.h");
 	writeInclude(file, "reader/" + schema.getName() + "Reader.h");
-	writeInclude(file, schema.getName() + "Namespace.h");
 
+	linebreak(file);
 	writeLine(file, "#endif // end define " + define);
 
 	file.close();	
@@ -3736,353 +3027,22 @@ void GeneratorOIP::generateNamespaceHeader(const Schema & schema)
 	file.close();
 }
 
-void GeneratorOIP::generateEntitySourceFile(const Schema &schema, const Entity &entity) {
-	std::stringstream ssHeaderFilename;
-	ssHeaderFilename << entityPath_ << "/" << entity.getName() << ".cpp";
-	std::cout << ssHeaderFilename.str() << std::endl;
-	std::ofstream out(ssHeaderFilename.str());
-
-	auto superTypes = schema.getSuperTypes(entity);
-	auto attributes = schema.getAllEntityAttributesNames(entity);
-
-	indentation = 0;
-	writeLicenseAndNotice(out);
-	linebreak(out);
-
-	// Includes
-	for(auto header : { "sstream", "limits" })
-		writeInclude(out, header, true);
-	linebreak(out);
-
-	for(auto header : { "model/Exception.h", "reader/ReaderUtil.h", "writer/WriterUtil.h" })
-		writeInclude(out, "OpenInfraPlatform/" + schema.getName() + "/" + header);
-	linebreak(out);
-
-	writeInclude(out, "OpenInfraPlatform/" + schema.getName() + "/" + schema.getName() + "EntityEnums.h");
-	writeInclude(out, entity.getName() + ".h");
-
-	// Include all types forward declared in header.
-	std::set<std::string> includes = std::set<std::string>();
-
-	for(auto att : schema.getAllEntityAttributes(entity)) {
-		auto type = att.type;
-
-		// Get type from container until we end up with a TypeNamed or Simple.
-		while(type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-			type = std::dynamic_pointer_cast<EntityAttributeGeneralizedType>(type)->elementType;
-		}
-
-		if(type->getType() == eEntityAttributeParameterType::TypeNamed) {
-			auto name = type->toString();
-
-			//// Check if the attribute is a TYPE
-			if(schema.hasType(name)) {
-				name = schema.getTypeByName(name).getName();
-				// If the TYPE is REAL or INTEGER type, we add it as include since we need to have knowledge of it. Otherwíse forward declare it.
-				if(!schema.isIntegerType(name) && !schema.isRealType(name))
-					includes.insert(name);
-			}
-			// If it is a ENTITY, we add the class to forward declarations.
-			else if(schema.hasEntity(name)) {
-				includes.insert(schema.getEntityByName(name).getName());
-			}
-		}
-	}
-
-	// Write the includes for Types which are used as members.
-	for(auto incl : includes)
-		writeInclude(out, incl + ".h");
-
-	linebreak(out);
-
-	writeBeginNamespace(out, schema);
-	writeLine(out, "// ENTITY " + entity.getName());
-
-	// ctor impl
-	writeEntityConstructor(out, entity, "", "m_entity_enum = " + toUpper(entity.getName()) + ";");
-	linebreak(out);
-	
-	writeEntityConstructor(out, entity, "int id", "m_id = id; m_entity_enum = " + toUpper(entity.getName()) + ";");
-	linebreak(out);
-
-	// dtor impl
-	writeEntityDestructor(out, entity);
-	linebreak(out);
-
-	// setEntity	
-	writeLine(out, "// method setEntity takes over all attributes from another instance of the class");
-
-	std::string statements = "std::shared_ptr<" + entity.getName() + "> other = std::dynamic_pointer_cast<" + entity.getName() + ">(other_entity);" + "if(!other) { return; }";		
-	for(auto att : attributes) {
-		statements += "m_" + att + " = other->m_" + att + ";";
-	}
-
-	writeEntityFunction(out, entity, "void", "setEntity", "std::shared_ptr<" + schema.getName() + "Entity> other_entity", "", statements);
-	linebreak(out);
-	statements.clear();
-	
-	// getStepLine	
-	statements += "stream << \"#\" << m_id << \"=" + toUpper(entity.getName()) + "\" << \"(\";";
-	
-	auto attributeVector = schema.getAllEntityAttributes(entity);
-	for (int i = 0; i < attributeVector.size(); i++) {
-		const EntityAttribute &att = attributeVector[i];
-
-		if (att.getParameterType() == eEntityAttributeParameterType::eGeneralizedType) {
-			auto p = std::static_pointer_cast<EntityAttributeGeneralizedType>(att.type);
-
-			std::cout << entity.getName() << "." << att.getName() << std::endl;
-
-			if (p->containerType == eEntityAttributeContainerType::List || p->containerType == eEntityAttributeContainerType::Set
-			    || p->containerType == eEntityAttributeContainerType::Array) {
-				if (p->elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-					// 2D for example List of List
-					auto q = std::static_pointer_cast<EntityAttributeGeneralizedType>(p->elementType);
-
-					if (schema.hasType(q->elementType->toString())) {
-						if (schema.isIntegerType(q->elementType->toString())) {							
-							statements += "writeTypeOfIntList2D( stream, m_" + attributeVector[i].getName() + " );";
-						} else {							
-							statements += "writeTypeOfRealList2D( stream, m_" + attributeVector[i].getName() + " );";
-						}
-
-					} else {
-						statements += "writeEntityList2D( stream, m_" + attributeVector[i].getName() + " );";
-					}
-				} else {
-					if (schema.hasType(p->elementType->toString())) {
-						// is type a Real Type?
-						if (schema.isRealType(p->elementType->toString())) {
-							statements += "writeTypeOfRealList( stream, m_" + attributeVector[i].getName() + " );";
-						} else {							
-							statements += "writeTypeList( stream, m_" + attributeVector[i].getName() + " );";
-						}
-					} else {					
-						statements += "writeEntityList( stream, m_" + attributeVector[i].getName() + " );";
-					}
-				}
-			} 
-		}
-		else if (att.getParameterType() == eEntityAttributeParameterType::Simple) {			
-			statements += "if( m_" + attributeVector[i].getName() + " == m_" + attributeVector[i].getName() + " ) { stream << m_" + attributeVector[i].getName() + "; }" + "else { stream << \"$\"; }";
-		}
-		else if (att.getParameterType() == eEntityAttributeParameterType::TypeNamed) {
-			if(schema.hasType(att.type->toString())) {
-				if(schema.isIntegerType(att.type->toString()) || schema.isRealType(att.type->toString())) {
-					if (schema.isSelectType(att.type->toString())) {
-						statements += "m_" + attributeVector[i].getName() + ".getStepParameter(stream, true);";
-					}
-					else {
-						statements += "m_" + attributeVector[i].getName() + ".getStepParameter(stream);";
-					}
-				}
-				else {
-					if (schema.isSelectType(att.type->toString())) {
-						statements += "m_" + attributeVector[i].getName() + " ? m_" + attributeVector[i].getName() + "->getStepParameter(stream, true) : stream << \"$\";";
-					}
-					else {
-						statements += "m_" + attributeVector[i].getName() + " ? m_" + attributeVector[i].getName() + "->getStepParameter(stream) : stream << \"$\";";
-					}
-				}
-			}
-			else {
-				std::string condition = "m_" + attributeVector[i].getName();
-
-				std::string doThen = schema.hasEntity(att.type->toString()) ?
-					"stream << \"#\" << m_" + attributeVector[i].getName() + "->getId();" :
-					"m_" + attributeVector[i].getName() + "->getStepParameter( stream );";
-
-				std::string doElse = entity.hasQualifiedAttribute(attributeVector[i].getName()) ?
-					"stream << \"*\";" :
-					"stream << \"$\";";
-
-				statements += createIfElseStatement(condition, doThen, doElse);
-			}			
-		} else {
-			if (entity.hasQualifiedAttribute(attributeVector[i].getName())) {
-				statements += createIfElseStatement("m_" + attributeVector[i].getName(), "m_" + attributeVector[i].getName() + "->getStepParameter(stream);", "stream << \"*\";");
-			} else {				
-				statements += "if( m_" + attributeVector[i].getName() + ") { m_" + attributeVector[i].getName() + "->getStepParameter( stream ); } else { stream << \"$\"; }";
-			}
-		}
-
-		if (i != attributeVector.size() - 1) {			
-			statements += "stream << \",\";";
-		}
-	}
-	
-	statements += "stream << \");\";";	
-	writeEntityFunction(out, entity, "void", "getStepLine", "std::stringstream& stream", "const", statements);
-	linebreak(out);
-	statements.clear();
-
-	// getStepParameter	
-	writeEntityFunction(out, entity, "void", "getStepParameter", "std::stringstream &stream, bool", "const", "stream << \"#\" << m_id;");
-	linebreak(out);
-
-	// readStepData
-	statements += "const int num_args = (int)args.size();";
-	
-	std::string vectorSize = std::to_string(attributeVector.size());
-	std::string condition = "num_args < " + vectorSize;
-	std::string doThen = "std::stringstream strserr;";
-	doThen += "strserr << \"Wrong parameter count for entity " + entity.getName() + ", expecting " + vectorSize + ", having \" << num_args << \". Object id: \" << getId() << std::endl;";
-	doThen += "throw " + schema.getName() + "Exception( strserr.str().c_str() );";
-	statements += createIfElseStatement(condition, doThen);
-	
-	statements += "#ifdef _DEBUG\n";
-	doThen = "std::cout << \"Wrong parameter count for entity " + entity.getName() + ", expecting " + vectorSize + ", having \" << num_args << \". Object id: \" << getId() << std::endl;";
-	statements += createIfElseStatement(condition, doThen);
-	statements += "#endif\n";
-
-	for (int i = 0; i < attributeVector.size(); i++) {
-		const EntityAttribute &att = attributeVector[i];
-		std::string i_str = std::to_string(i);
-
-		if (att.getParameterType() == eEntityAttributeParameterType::TypeNamed) {
-			if (schema.hasType(att.type->toString())) {
-				if (schema.isIntegerType(att.type->toString()) || schema.isRealType(att.type->toString()))
-					statements += "m_" + att.getName() + " = " + att.type->toString() + "::readStepData(args[" + i_str + "]) ? *" + att.type->toString() + "::readStepData(args[" + i_str + "]) : " + att.type->toString() + "();";
-				else {
-					statements += "m_" + att.getName() + " = " + att.type->toString() + "::readStepData";
-
-					if (schema.isSelectType(att.type->toString())) {
-						statements += "(args[" + i_str + "], map );";
-
-					}
-					else {
-						statements += "(args[" + i_str + "]);";
-					}
-				}
-			} else {
-				statements += "readEntityReference(args[" + i_str + "], m_" + att.getName() + ", map);";
-			}
-		} else if (att.getParameterType() == eEntityAttributeParameterType::eGeneralizedType) {
-			auto p = std::static_pointer_cast<EntityAttributeGeneralizedType>(att.type);
-	
-			if (p->containerType == eEntityAttributeContainerType::List 
-				|| p->containerType == eEntityAttributeContainerType::Set
-			    || p->containerType == eEntityAttributeContainerType::Array) {
-				if (schema.hasType(p->elementType->toString())) {
-					// is type a Real Type?
-					if (schema.isRealType(p->elementType->toString())) {						
-						statements += "readTypeOfRealList(args[" + i_str + "], m_" + att.getName() + ");";
-					} else {
-						if (schema.isSelectType(p->elementType->toString())) {							
-							statements += "readSelectList(args[" + i_str + "], m_" + att.getName() + ", map);";
-						} else {							
-							statements += "readTypeList(args[" + i_str + "], m_" + att.getName() + ");";
-						}
-					}
-				} else {
-					auto isGeneralizedType = (p->elementType->getType() == eEntityAttributeParameterType::eGeneralizedType);
-					if (isGeneralizedType) {
-						auto q = std::static_pointer_cast<EntityAttributeGeneralizedType>(p->elementType);
-
-						auto isEntity = schema.hasEntity(q->elementType->toString());
-						auto isType = schema.hasType(q->elementType->toString());
-						auto isIntegerType = isType && schema.isIntegerType(schema.getTypeByName(q->elementType->toString()).getName());
-						auto isRealType = isType && schema.getTypeByName(q->elementType->toString()).getUnderlyingTypeName() == "REAL";
-						
-						if(isIntegerType)
-							statements += "readTypeOfIntList2D(args[" + i_str + "], m_" + att.getName() + ");";
-						else if(isRealType)
-							statements += "readTypeOfRealList2D(args[" + i_str + "], m_" + att.getName() + ");";
-						else if(isEntity)
-							statements += "readEntityReferenceList2D(args[" + i_str + "], m_" + att.getName() + " , map);";
-					}
-					else {						
-						statements += "readEntityReferenceList(args[" + i_str + "], m_" + att.getName() + " , map);";
-					}
-				}
-			}
-		}
-	}
-	
-	
-	writeEntityFunction(out, entity, "void", "readStepData", "std::vector<std::string>& args, const std::map<int,shared_ptr<" + schema.getName() + "Entity> >& map", "", statements);
-	linebreak(out);
-	statements.clear();
-
-	// setInverseCounterparts	
-	std::string impl = "";
-	if(entity.hasSupertype())
-		impl = entity.getSupertype() + "::setInverseCounterparts(ptr_self_entity);";
-	writeEntityFunction(out, entity, "void", "setInverseCounterparts", "shared_ptr<" + schema.getName() + "Entity> ptr_self_entity", "", impl);
-	linebreak(out);
-
-	// unlinkSelf
-	impl = "";
-	if(entity.hasSupertype())
-		impl = entity.getSupertype() + "::unlinkSelf();";
-	writeEntityFunction(out, entity, "void", "unlinkSelf", "", "", impl);
-
-	writeEndNamespace(out, schema);
-}
-
 void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, const Entity & entity) const
 {
-	std::stringstream ssSourceFilename;
-	ssSourceFilename << entityPath_ << "/" << entity.getName() << ".cpp";
-	//std::cout << ssHeaderFilename.str() << std::endl;
-	std::ofstream out(ssSourceFilename.str());
+	const std::string name = entity.getName();
+	std::string path = sourceDirectory_ + "/" + getFolder(name) + "/" + name + ".cpp";
+	std::ofstream out(path);
 
 	writeLicenseAndNotice(out);	
-	writeInclude(out, entity.getName() + ".h");
+	writeInclude(out, name + ".h");
 	linebreak(out);
 
-	auto attributes = schema.getAllEntityAttributes(entity);
-
 	std::set<std::string> typeAttributes, entityAttributes;
-
-	for (const auto attr : attributes) {
-		if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed) {
-			if (schema.hasEntity(attr.type->toString())) {
-				entityAttributes.insert(attr.type->toString());
-			}
-			if (schema.hasType(attr.type->toString())) {
-				typeAttributes.insert(attr.type->toString());
-			}
-		}
-		else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-			auto elementType = attr.type;
-
-			while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
-				elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
-			}
-
-			if (schema.hasEntity(elementType->toString())) {
-				entityAttributes.insert(elementType->toString());
-			}
-			if (schema.hasType(elementType->toString())) {
-				typeAttributes.insert(elementType->toString());
-			}
-		}
-	}
-
-	auto self = entityAttributes.find(entity.getName());
-	if (self != entityAttributes.end()) {
-		entityAttributes.erase(self);
-	}
-
-	// Initialize set of resolved classes.
-	std::set<std::string> resolvedClasses = {};
-
-	for (auto typeName : typeAttributes) {
-		auto type = schema.getTypeByName(typeName);
-		if (type.isSelectType()) {
-			resolveSelectTypeIncludes(schema, entityAttributes, type, resolvedClasses);
-		}
-	}
-
-	for (const auto attributeEntityName : entityAttributes) {
-		auto attributeEntity = schema.getEntityByName(attributeEntityName);
-		resolveEntityIncludes(schema, attributeEntity, entityAttributes, resolvedClasses);
-	}
+	getCachedIncludes(name, typeAttributes, entityAttributes);
 
 	if (!entityAttributes.empty()) {
-		for (const auto entityAttribute : entityAttributes) {
-			writeInclude(out, entityAttribute + ".h");
+		for (const auto& entityAttribute : entityAttributes) {
+			writeInclude(out, "../" + getFolder(entityAttribute) + "/" + entityAttribute + ".h");
 		}
 		linebreak(out);
 	}
@@ -4094,39 +3054,38 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 	writeBeginNamespace(out, schema);
 	
 
-	auto initClassAsDefault = [&out, &entity, &schema]() {
+	auto initClassAsDefault = [&out, &name, &entity, &schema]() {
 
 		// Default constructor
 		writeDoxyComment(out, "Default constructor");
-		writeLine(out, entity.getName() + "::" + entity.getName() + "() { }");
+		writeLine(out, name + "::" + name + "() { }");
 		linebreak(out);
 
 		// Copy constructor
 		writeDoxyComment(out, "Copy constructor");
-		writeLine(out, entity.getName() + "::" + entity.getName() + "(const " + entity.getName() + "& other) {");
+		writeLine(out, name + "::" + name + "(const " + name + "& other) {");
 		writeLine(out, "operator=(other);");
 		writeLine(out, "}");
 		linebreak(out);
 
 		// Move constructor.
 		writeDoxyComment(out, "Move constructor");
-		writeLine(out, entity.getName() + "::" + entity.getName() + "(" + entity.getName() + "&& other) : " + entity.getName() + "() {");
+		writeLine(out, name + "::" + name + "(" + name + "&& other) : " + name + "() {");
 		writeLine(out, "swap(*this, other);");
 		writeLine(out, "}");
 		linebreak(out);
 
 		// Destructor
 		writeDoxyComment(out, "Destructor.");
-		writeLine(out, entity.getName() + "::~" + entity.getName() + "() {};");
+		writeLine(out, name + "::~" + name + "() {};");
 		linebreak(out);
-
-		auto attributes = schema.getAllEntityAttributes(entity);
 
 		// Copy Assignment Operator
 		writeDoxyComment(out, "Assigns the content of \\c other to \\c this.");
-		writeLine(out, entity.getName() + "& " + entity.getName() + "::operator=(const " + entity.getName() + "& other) {");
+		writeLine(out, name + "& " + name + "::operator=(const " + name + "& other) {");
 		writeLine(out, "this->m_id = other.m_id;");
-		for (auto& attr : attributes) {
+		auto allAttributes = schema.getAllEntityAttributes(entity, true);
+		for (auto& attr : allAttributes) {
 			writeLine(out, "this->" + attr.getName() + " = other." + attr.getName() + ";");
 		}
 		writeLine(out, "return *this;");
@@ -4134,15 +3093,16 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		linebreak(out);
 
 		// Classname function
-		writeDoxyComment(out, "Returns the class name.", "", nullptr, nullptr, "\"" + toUpper(entity.getName()) + "\"");
-		writeLine(out, "const std::string " + entity.getName() + "::classname() const { return \"" + toUpper(entity.getName()) + "\";} ");
+		writeDoxyComment(out, "Returns the class name.", "", nullptr, nullptr, "\"" + toUpper(name) + "\"");
+		writeLine(out, "const std::string " + name + "::classname() const { return \"" + toUpper(name) + "\";} ");
 		linebreak(out);
 
 		// Interpret STEP data
-		writeDoxyComment(out, "Interprets the STEP serialization.", "", nullptr, nullptr, "An instance of \\c " + entity.getName());
-		writeLine(out, entity.getName() + " " + entity.getName() +"::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
-		writeLine(out, entity.getName() + " entity;");
+		writeDoxyComment(out, "Interprets the STEP serialization.", "", nullptr, nullptr, "An instance of \\c " + name);
+		writeLine(out, name + " " + name +"::readStepData(const std::vector<std::string>& args, const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
+		writeLine(out, name + " entity;");
 		writeLine(out, "entity.setId(stoull(args[0]));");
+		auto attributes = schema.getAllEntityAttributes(entity, false);
 		for (int i = 0; i < attributes.size(); i++) {
 			auto attr = attributes[i];
 			writeLine(out, "entity." + attr.getName() + " = decltype(" + attr.getName() + ")::readStepData(args[" + std::to_string(i + 1) + "], model);");
@@ -4152,8 +3112,8 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		linebreak(out);
 
 		// Get STEP data
-		writeDoxyComment(out, "Returns the STEP serialization.", "", nullptr, nullptr, "#ID=" + entity.getName() + "(<attributes>);");
-		writeLine(out, "const std::string " + entity.getName() + "::getStepLine() const {");
+		writeDoxyComment(out, "Returns the STEP serialization.", "", nullptr, nullptr, "#ID=" + name + "(<attributes>);");
+		writeLine(out, "const std::string " + name + "::getStepLine() const {");
 		writeLine(out, "std::string classname = this->classname();");
 		writeLine(out, "boost::to_upper(classname);");
 		writeLine(out, "std::string stepLine = this->getStepParameter() + \"=\" + classname + \"(\";");
@@ -4163,6 +3123,75 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \");\";");
 		writeLine(out, "return stepLine;");
 		writeLine(out, "}");
+		linebreak(out);
+				
+		// Set inverse attributes
+		writeDoxyComment(out, "Sets the inverse attributes.", "", nullptr, nullptr, "");
+		writeLine(out, "void " + name + "::linkInverse(const std::shared_ptr<EarlyBinding::EXPRESSModel>& model) {");
+		for (auto attr : schema.getAllEntityAttributes(entity, true))
+		{
+			if (attr.hasInverseCounterpart())
+			{
+				int dim = 0;
+				auto elementType = attr.type;
+				std::string get = "";
+				if (attr.isOptional())
+				{
+					writeLine(out, "if( this->" + attr.getName() + " ) {");
+					get = ".get()";
+				}
+				writeLine(out, "auto " + attr.getName() + "_0 = " + attr.getName() + get + ";");
+
+				// if the attribute is a container, we need to get to the inner most entity
+				while (elementType->getType() == eEntityAttributeParameterType::eGeneralizedType) {
+					dim++;
+					writeLine(out, "for( auto " + attr.getName() + "_" + std::to_string(dim) + " : " + attr.getName() + "_" + std::to_string(dim - 1) + " ) {");
+					elementType = std::static_pointer_cast<EntityAttributeGeneralizedType>(elementType)->elementType;
+				}
+
+				// treat differently for reference-to-entity and selecttype attributes
+				if (schema.hasEntity(elementType->toString())) {
+					for( const auto& inverse : attr.getInverses() )
+					{
+						writeLine(out, "if( " + attr.getName() + "_" + std::to_string(dim) + ".isOfType<" + std::template get<0>(inverse) + ">() ) {");
+						writeLine(out, "EXPRESSReference<" + std::template get<2>(inverse) + "> inv = EXPRESSReference<" + std::template get<2>(inverse) + ">::constructInstance(this->getId(), model);");
+						writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".as<" + std::template get<0>(inverse) + ">()->" + std::template get<1>(inverse) + ".push_back(inv);");
+						writeLine(out, "}");
+					}
+				}
+				else if (schema.hasType(elementType->toString()) && schema.getTypeByName(elementType->toString()).isSelectType()) {
+					Type t = schema.getTypeByName(elementType->toString());
+
+					writeLine(out, "switch( " + attr.getName() + "_" + std::to_string(dim) + ".which() ) {");
+					for (int k = 0; k < t.getTypeCount(); ++k) {
+						auto inverses = attr.getInverses();
+
+						// only write if there is also an inverse for this select type
+						auto inverse = std::find_if(inverses.begin(), inverses.end(), [&t, &k](const auto &el) { return std::template get<0>(el) == t.getType(k); });
+
+						if ( inverse != inverses.end())
+						{
+							writeLine(out, "case " + std::to_string(k) + ":");
+							writeLine(out, "{\t// " + t.getType(k));
+							writeLine(out, "EXPRESSReference<" + std::template get<2>(*inverse) + "> inv = EXPRESSReference<" + std::template get<2>(*inverse) + ">::constructInstance(this->getId(), model);");
+							writeLine(out, attr.getName() + "_" + std::to_string(dim) + ".get<" + std::to_string(k) + ">()->" + std::template get<1>(*inverse) + ".push_back(inv);");
+							writeLine(out, "break;");
+							writeLine(out, "}");
+						}
+					}
+					writeLine(out, "}"); // end switch
+				}
+
+				// close the for loops from above
+				while (dim --> 0) // while dim goes to zero
+					writeLine(out, "}");
+				// close the if( this->" + attr.getName() + " )
+				if (attr.isOptional())
+					writeLine(out, "}");
+			}
+		}
+		writeLine(out, "}");
+		linebreak(out);
 	};
 
 	if (!schema.isAbstract(entity)) {
@@ -4171,20 +3200,26 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 
 		// Write swap function implementation
 		writeDoxyComment(out, "Swaps the content between the \\c first and \\c second.");
-		writeLine(out, "void swap(" + entity.getName() + "& first, " + entity.getName() + "& second) {");
+		writeLine(out, "void swap(" + name + "& first, " + name + "& second) {");
 		writeLine(out, "using std::swap;");
 		writeLine(out, "swap(first.m_id, second.m_id);");
-		for (auto attr : schema.getAllEntityAttributes(entity)) {
+		for (auto attr : schema.getAllEntityAttributes(entity, true)) {
 			writeLine(out, "swap(first." + attr.getName() + ", second." + attr.getName() + ");");
 		}
 		writeLine(out, "};");
 		linebreak(out);		
 	}
-		
-	writeEndNamespace(out, schema);
 
-	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">;");
-	writeLine(out, "template class OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + entity.getName() + ">" + ">;");
+	writeEndNamespace(out, schema);
+		
+	//https://stackoverflow.com/questions/47824973/edit-how-to-dll-export-a-template-specialization-in-windows-with-the-source-d
+	// instantiate reference + optional
+	writeLine(out, "#ifdef " + getAPIGuard(name));
+	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">;");
+	writeLine(out, "template class " + getAPIDefine(name) + " OpenInfraPlatform::EarlyBinding::EXPRESSOptional<OpenInfraPlatform::EarlyBinding::EXPRESSReference<OpenInfraPlatform::" + schema.getName() + "::" + name + ">" + ">;");
+	writeLine(out, "#endif //" + getAPIGuard(name));
+	linebreak(out);
+
 	out.close();
 }
 

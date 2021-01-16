@@ -31,6 +31,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <FileIOFilter.h>
 #include <tuple>
 
+#include <GeorefMetadata.h>
+#include <IModel.h>
+
 class CCLib::GenericProgressCallback;
 
 namespace OpenInfraPlatform {
@@ -38,7 +41,7 @@ namespace OpenInfraPlatform {
 
 		class PointCloudSection;
 
-		class BLUEINFRASTRUCTURE_API PointCloud : public ccPointCloud {
+		class BLUEINFRASTRUCTURE_API PointCloud : public ccPointCloud, public oip::IModel {
 		public:
 			static const QStringList GetSupportedExtensions();
 
@@ -165,6 +168,21 @@ namespace OpenInfraPlatform {
 					return Eigen::Matrix<double, 3, N>();
 				}
 			}			
+		
+			// ---------------------------------------------------------------------------------------------------------------------------------------------------
+			// Interface IModel implementation
+			// ---------------------------------------------------------------------------------------------------------------------------------------------------
+			
+			virtual bool isEmpty() const override;
+			virtual std::string getSource() const override;
+
+			virtual oip::BBox getExtent() override;
+
+			virtual oip::GeorefMetadata getGeorefMetadata() const override;
+			virtual void transformAllPoints(const oip::GeorefMetadata& newGeorefMetadata, std::function<std::tuple<double, double, double> const(double, double, double)>& transf) override;
+
+			// ---------------------------------------------------------------------------------------------------------------------------------------------------
+
 		private:
 			void computeMainAxis();
 
@@ -197,6 +215,10 @@ namespace OpenInfraPlatform {
 }
 
 namespace buw {
+	using OpenInfraPlatform::PointCloudProcessing::PointCloud;
+}
+
+namespace oip {
 	using OpenInfraPlatform::PointCloudProcessing::PointCloud;
 }
 

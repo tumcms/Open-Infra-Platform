@@ -23,37 +23,37 @@
 #include "BlueFramework/Core/Diagnostics/log.h"
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC2X3
-#include "EMTIFC2X3EntityTypes.h"
-#include "IFC2X3Entities.h"
+#include "EarlyBinding\IFC2X3\src\EMTIFC2X3EntityTypes.h"
+#include "EarlyBinding\IFC2X3\src\IFC2X3Entities.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4
-#include "EMTIFC4EntityTypes.h"
-#include "IFC4Entities.h"
+#include "EarlyBinding\IFC4\src\EMTIFC4EntityTypes.h"
+#include "EarlyBinding\IFC4\src\IFC4Entities.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-#include "EMTIFC4X1EntityTypes.h"
-#include "IFC4X1Entities.h"
+#include "EarlyBinding\IFC4X1\src\EMTIFC4X1EntityTypes.h"
+#include "EarlyBinding\IFC4X1\src\IFC4X1Entities.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-#include "EMTIFC4X3_RC1EntityTypes.h"
-#include "IFC4X3_RC1Entities.h"
+#include "EarlyBinding\IFC4X3_RC1\src\EMTIFC4X3_RC1EntityTypes.h"
+#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1Entities.h"
 #endif
+
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
 #include "EMTIFC4X3_RC2EntityTypes.h"
 #include "IFC4X3_RC2Entities.h"
 #endif
 
-#include "RepresentationConverter.h"
 #include "PlacementConverterImpl.h"
 
 template <
 	class IfcEntityTypesT
 >
-void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT<typename IfcEntityTypesT>::convertIfcProduct(
+static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct(
 	const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
 	const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter)
@@ -105,15 +105,15 @@ void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT<typename If
 			for (EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& rep : representation->Representations) {
 				// convert each shape of the represenation
 #ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcRepresentation #" << rep->getId();
+				BLUE_LOG(trace) << "Processing IfcRepresentation " << rep->getErrorLog();
 #endif
 				repConverter->convertIfcRepresentation(rep, matProduct, productShape);
 #ifdef _DEBUG
-				BLUE_LOG(trace) << "Processed IfcRepresentation #" << rep->getId();
+				BLUE_LOG(trace) << "Processed IfcRepresentation " << rep->getErrorLog();
 #endif
 			}
 
-			IfcImporterUtilT<IfcEntityTypesT>::computeMeshsetsFromPolyhedrons(product, productShape, strerr, repConverter);
+			IfcImporterUtilT<IfcEntityTypesT>::computeMeshsetsFromPolyhedrons<IfcEntityTypesT>(product, productShape, strerr, repConverter);
 #ifdef _DEBUG
 			BLUE_LOG(trace) << "Processed IfcProductRepresentation #" << representation->getId();
 #endif
@@ -124,7 +124,7 @@ void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT<typename If
 			std::shared_ptr<ItemData> itemData(new ItemData());
 			productShape->vec_item_data.push_back(itemData);
 			repConverter->convertIfcGeometricRepresentationItem(
-				getIfcLinearPositioningElementAxis(linposel),
+				getIfcLinearPositioningElementAxis(linposel), 
 				carve::math::Matrix::IDENT(), itemData);
 		}
 
@@ -142,32 +142,27 @@ void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT<typename If
 	}
 	catch (const oip::UnhandledException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown.";
-		BLUE_LOG(warning) << ex.what();
+		BLUE_LOG(warning) << product->getErrorLog() + " -> unhandled error: " + std::string(ex.what());
 	}
 	catch (const oip::InconsistentGeometryException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with geometry.";
-		BLUE_LOG(warning) << ex.what();
+		BLUE_LOG(warning) << product->getErrorLog() + " -> geometry error: " + std::string(ex.what());
 	}
 	catch (const oip::InconsistentModellingException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with data modelling:";
-		BLUE_LOG(warning) << ex.what();
+		BLUE_LOG(warning) << product->getErrorLog() + " -> modelling error: " + std::string(ex.what());
 	}
 	catch (const oip::ReferenceExpiredException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with internal references:";
-		BLUE_LOG(warning) << ex.what();
+		BLUE_LOG(warning) << product->getErrorLog() + " -> reference error: " + std::string(ex.what());
 	}
 	catch (const std::exception& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth is wrong:";
-		BLUE_LOG(warning) << ex.what();
+		BLUE_LOG(warning) << product->getErrorLog() + " -> general error: " + std::string(ex.what());
 	}
 	catch (...)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - unknown error.";
+		BLUE_LOG(warning) << product->getErrorLog() + " -> unknown error.";
 		throw; // throw onwards
 	}
 }

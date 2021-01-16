@@ -332,14 +332,6 @@ namespace OpenInfraPlatform
 
 			std::unique_ptr<QSimpleUpdater> updater;
 
-			QtProperty*					propertyHorizontalAlignment_;
-			QtProperty*					propertyVerticalAlignment_;
-			QtVariantPropertyManager*	variantManager_;
-			QtTreePropertyBrowser*		variantEditor_;
-			QtVariantProperty*			itemStartStation_;
-			QtVariantProperty*			itemEndStation_;
-			QtVariantProperty*			itemLength_;
-
 			QColorDialog				pcdUniformColorDialog_, pcdFilteredPointsColorDialog_, pcdSegmentedPointsColorDialog_;
 			QButtonGroup				radioButtons2D3D_, radioButtonsOriginalFiltered_;
 			buw::ReferenceCounted<OpenInfraPlatform::Core::DataManagement::ProgressCallback> callback_ = nullptr;
@@ -387,6 +379,14 @@ namespace OpenInfraPlatform
 			PrecisionTest								precisionTest_;
 
 			bool										translateOkstra_;
+
+			// Model handling
+			void updateModelsUI();
+
+			// tree view of models
+			QTreeWidget* modelsTreeWidget_;
+			QTreeWidgetItem* modelsBBoxWidgetItem_;
+
 
 		protected:
 			void dropEvent(QDropEvent *ev);

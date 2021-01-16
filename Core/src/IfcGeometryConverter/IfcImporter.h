@@ -32,6 +32,8 @@
 #include "UnitConverter.h"
 #include "IfcImporterUtil.h"
 
+#include <GeorefMetadata.h>
+
 #include "EXPRESS/EXPRESS.h"
 
 namespace OpenInfraPlatform 
@@ -66,14 +68,20 @@ namespace OpenInfraPlatform
 					{
 						BLUE_LOG(info) << "Importing geometry from express model.";
 
-						auto project = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair) { return boost::algorithm::to_upper_copy(pair.second->classname())  == "IFCPROJECT"; });
+						auto project = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair) 
+							{ return boost::algorithm::to_upper_copy(pair.second->classname())  == "IFCPROJECT"; });
 
 						if(project != model->entities.end()) {
 
 							// Set the unit conversion factors
-							std::shared_ptr<typename IfcEntityTypesT::IfcProject> ifcproject =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProject>(project->second);
-							unitConverter->setIfcProject(ifcproject);
+							oip::EXPRESSReference<typename IfcEntityTypesT::IfcProject> ifcproject(project->second, model);
+							setIfcProject(ifcproject);
+
+							// try and find the georeferencing metadata
+							auto georef = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair)
+								{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateReferenceSystem>(pair.second) != nullptr; });
+							if (georef != model->entities.end() )
+								setGeoref(oip::EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem>(georef->second, model));
 
 							//std::for_each(model->entities.begin(), model->entities.end(), [this, &model](std::pair<size_t, std::shared_ptr<oip::EXPRESSEntity>> &pair) {
 							//	std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
@@ -113,6 +121,33 @@ namespace OpenInfraPlatform
 						return true;
 					}
 
+					/*! \brief Sets the common values from \c IfcProject.
+
+					Sets the units and georeferencing.
+
+					\param[in] project A pointer to the \c IfcProject entity within the IFC model.
+					*/
+					void setIfcProject(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProject>& project)
+					{
+						// tell the unit converter about the project's units
+						unitConverter->setIfcProject(project);
+
+						// get the georeferencing metadata
+						//TODO when inverse are covered
+						//setGeoref(crs);
+					}
+
+
+					void setGeoref(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateReferenceSystem>& crs)
+					{
+						georefMetadata.codeEPSG = crs->Name;
+
+						if (crs.isOfType<typename IfcEntityTypesT::IfcProjectedCRS>())
+						{
+						}
+					}
+
+
 					// ***************************************
 					// 3: Getter and Setter
 					// ***************************************
@@ -121,6 +156,7 @@ namespace OpenInfraPlatform
 					std::shared_ptr<GeometrySettings>& getGeomSettings() { return geomSettings; }
 					std::shared_ptr<UnitConverter<IfcEntityTypesT>>& getUnitConverter() { return unitConverter; }
 					std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& getShapeDatas() { return shapeInputData; }
+					oip::GeorefMetadata getGeorefMetadata() { return georefMetadata; }
 
 				protected:
 
@@ -128,6 +164,8 @@ namespace OpenInfraPlatform
 					std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
 					std::shared_ptr<UnitConverter<IfcEntityTypesT>>				unitConverter;
 
+					// georef metadata
+					oip::GeorefMetadata georefMetadata;
 
 					// shape input data of all products
 					std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;
