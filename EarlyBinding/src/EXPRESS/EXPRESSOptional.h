@@ -21,8 +21,6 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSOptional_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSOptional_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_h
 
-#include "../EarlyBinding/src/namespace.h"
-
 #include "EXPRESSModel.h"
 
 #include <utility>
@@ -34,7 +32,10 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-template <typename T> class EXPRESSOptional : public boost::optional<T> {
+template <typename T>
+class
+EXPRESSOptional : public boost::optional<T> 
+{
 	using base = boost::optional<T>;
 	typedef typename T::UnderlyingType ForwardType;
 public:
@@ -57,7 +58,7 @@ public:
 	// Assignment Operators
 
 	// = default
-	EXPRESSOptional& operator= (const ForwardType& other);
+	//EXPRESSOptional& operator= (const ForwardType& other);
 	//EXPRESSOptional& operator= (const ForwardType& other) { this->base::emplace(other); return *this; }
 
 	EXPRESSOptional& operator= (const EXPRESSOptional& other) = default;
@@ -106,14 +107,27 @@ public:
 	typedef T type;
 };
 
-template <typename T> const bool operator==(const EXPRESSOptional<T>& lhs, const EXPRESSOptional<T>& rhs) { return !lhs || !rhs ? false : (T)lhs == (T)rhs; }
-template <typename T> const bool operator==(const EXPRESSOptional<T>& lhs, const T& rhs) { return !lhs ? false : (T)lhs == (T)rhs; }
-template <typename T> const bool operator==(const T& lhs, const EXPRESSOptional<T>& rhs) { return !rhs ? false : lhs == (T)rhs; }
-template <typename T, typename V> const bool operator==(const EXPRESSOptional<T>& lhs, const V& rhs) { return !lhs ? false : (T)lhs == rhs; }
+
+template <typename T>
+const bool operator==(const EXPRESSOptional<T>& lhs, const EXPRESSOptional<T>& rhs) 
+{ return !lhs || !rhs ? false : (T)lhs == (T)rhs; }
+
+template <typename T>
+const bool operator==(const EXPRESSOptional<T>& lhs, const T& rhs) 
+{ return !lhs ? false : (T)lhs == (T)rhs; }
+
+template <typename T>
+const bool operator==(const T& lhs, const EXPRESSOptional<T>& rhs) 
+{ return !rhs ? false : lhs == (T)rhs; }
+
+template <typename T, typename V>
+const bool operator==(const EXPRESSOptional<T>& lhs, const V& rhs) 
+{ return !lhs ? false : (T)lhs == rhs; }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 
 template <typename T> using EXPRESSOptional = OpenInfraPlatform::EarlyBinding::EXPRESSOptional<T>;
+EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(EXPRESSOptional);
 
 
 #endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSOptional_76c70f6e_bab2_48da_b2bc_9434b6adf3dc_h

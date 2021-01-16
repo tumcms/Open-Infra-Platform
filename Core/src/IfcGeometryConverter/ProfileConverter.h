@@ -140,7 +140,7 @@ namespace OpenInfraPlatform {
 				if (profileDef.expired())
 					throw oip::ReferenceExpiredException(profileDef);
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profileDef->OuterCurve.lock();
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> outer_curve = profileDef->OuterCurve;
 				std::vector<carve::geom::vector<2>> curve_polygon;
 				std::vector<carve::geom::vector<2>> segment_start_points;
 
@@ -159,11 +159,10 @@ namespace OpenInfraPlatform {
 					BLUE_LOG(trace) << "Processing IfcArbitraryProfileDefWithVoids #" << profile_with_voids->getId();
 #endif
 					for (auto it : profile_with_voids->InnerCurves) {
-						std::shared_ptr<typename IfcEntityTypesT::IfcCurve> inner_ifc_curve = it.lock();
 						std::vector<carve::geom::vector<2>> inner_curve_polygon;
 						std::vector<carve::geom::vector<2>> segment_start_points;
 
-						c_conv.convertIfcCurve2D(inner_ifc_curve, inner_curve_polygon, segment_start_points);
+						c_conv.convertIfcCurve2D(it, inner_curve_polygon, segment_start_points);
 						deleteLastPointIfEqualToFirst(inner_curve_polygon);
 						addAvoidingDuplicates(inner_curve_polygon, paths);
 					}
@@ -181,19 +180,20 @@ namespace OpenInfraPlatform {
 				const carve::math::Matrix& placement,
 				std::shared_ptr<ItemData> itemData,
 				const carve::geom::vector<3>& abscissa,
-				const carve::geom::vector<3>& next_abscissa) const{
+				const carve::geom::vector<3>& next_abscissa) const noexcept(false)
+			{
 
 				if (profileDef.expired())
 					throw oip::ReferenceExpiredException(profileDef);
 
 				const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> outer_curve = profile->OuterCurve;
-				std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> polyline = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(outer_curve);
+				auto outer_curve = profile->OuterCurve;
 
-				if (polyline) {
-					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> next_outer_curve = next_profile->OuterCurve;
-					std::shared_ptr<typename IfcEntityTypesT::IfcPolyline> next_polyline = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPolyline>(next_outer_curve);
+				if (outer_curve.template isOfType<typename IfcEntityTypesT::IfcPolyline>()) {
+					auto polyline = outer_curve.template as<typename IfcEntityTypesT::IfcPolyline>();
+					auto next_outer_curve = next_profile->OuterCurve;
+					auto next_polyline = next_outer_curve.template as<typename IfcEntityTypesT::IfcPolyline>();
 
 					// describe 2D-polyline geometry
 					std::shared_ptr<carve::input::PolylineSetData> polylineData(new carve::input::PolylineSetData());
@@ -284,7 +284,7 @@ namespace OpenInfraPlatform {
 				if (profileDef.expired())
 					throw oip::ReferenceExpiredException(profileDef);
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.lock();
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.template as<typename IfcEntityTypesT::IfcCurve>();
 				CurveConverterT<IfcEntityTypesT> c_converter(GeomSettings(), UnitConvert(), placementConverter);
 
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCenterLineProfileDef>()) {
@@ -396,7 +396,7 @@ namespace OpenInfraPlatform {
 					throw oip::ReferenceExpiredException(profileDef);
 
 				ProfileConverterT<IfcEntityTypesT> temp_profiler(GeomSettings(), UnitConvert(), placementConverter);
-				temp_profiler.computeProfile(profileDef->ParentProfile.lock());
+				temp_profiler.computeProfile(profileDef->ParentProfile);
 				const std::vector<std::vector<carve::geom::vector<2>>>& parent_paths = temp_profiler.getCoordinates();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D> transf_op_2D = profileDef->Operator.lock();
@@ -1555,7 +1555,7 @@ namespace OpenInfraPlatform {
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const throw(...){
 
 				if (profileDef->Position) {
-					carve::math::Matrix transform = placementConverter->convertIfcPlacement(profileDef->Position.get());
+					carve::math::Matrix transform = placementConverter->convertIfcAxis2Placement2D(profileDef->Position.get());
 
 					for (std::vector<carve::geom::vector<2>>& path_loop : temp_paths) {
 						for (carve::geom::vector<2> & pt : path_loop) {

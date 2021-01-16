@@ -54,12 +54,15 @@ END_TYPE;
 
 ENTITY IfcAlignment2DHorizontal
  SUBTYPE OF (IfcGeometricRepresentationItem);
+    StartPoint : IfcCartesianPoint;
  INVERSE
     ToAlignmentCurve : SET [1:?] OF IfcAlignmentCurve FOR Horizontal;
 END_ENTITY;
 
 ENTITY IfcAlignment2DVertical
  SUBTYPE OF (IfcGeometricRepresentationItem);
+    DistAlong : IfcLengthMeasure;
+    Elevation : IfcLengthMeasure;
  INVERSE
     ToAlignmentCurve : SET [1:1] OF IfcAlignmentCurve FOR Vertical;
 END_ENTITY;

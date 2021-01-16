@@ -20,27 +20,27 @@
 #include <BlueFramework/Application/DataManagement/Notification/NotifiyAfterEachActionOnlyOnce.h>
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC2X3
-	#include "reader/IFC2X3Reader.h"
-	#include "EMTIFC2X3EntityTypes.h"
-	#include "IFC2X3.h"
+	#include "EarlyBinding\IFC2X3\src\reader/IFC2X3Reader.h"
+	#include "EarlyBinding\IFC2X3\src\EMTIFC2X3EntityTypes.h"
+	#include "EarlyBinding\IFC2X3\src\IFC2X3.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4
-	#include "reader/IFC4Reader.h"
-	#include "EMTIFC4EntityTypes.h"
-	#include "IFC4.h"
+	#include "EarlyBinding\IFC4\src\reader/IFC4Reader.h"
+	#include "EarlyBinding\IFC4\src\EMTIFC4EntityTypes.h"
+	#include "EarlyBinding\IFC4\src\IFC4.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-	#include "reader/IFC4X1Reader.h"
-	#include "EMTIFC4X1EntityTypes.h"
-	#include "IFC4X1.h"
+	#include "EarlyBinding\IFC4X1\src\reader/IFC4X1Reader.h"
+	#include "EarlyBinding\IFC4X1\src\EMTIFC4X1EntityTypes.h"
+	#include "EarlyBinding\IFC4X1\src\IFC4X1.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-	#include "reader/IFC4X3_RC1Reader.h"
-	#include "EMTIFC4X3_RC1EntityTypes.h"
-	#include "IFC4X3_RC1.h"
+	#include "EarlyBinding\IFC4X3_RC1\src\reader/IFC4X3_RC1Reader.h"
+	#include "EarlyBinding\IFC4X3_RC1\src\EMTIFC4X3_RC1EntityTypes.h"
+	#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1.h"
 #endif
 
 #include "IfcGeometryConverter\GeometryInputData.h"

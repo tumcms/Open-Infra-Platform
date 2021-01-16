@@ -21,13 +21,19 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSObject_e357e824_9a04_46e0_8c91_43c528a6856f_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSObject_e357e824_9a04_46e0_8c91_43c528a6856f_h
 
-#include "../EarlyBinding/src/namespace.h"
+#include "../namespace.h"
+#include "../earlybinding_api.h"
 
 #include <string>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-class EXPRESSObject {
+
+OIP_EARLYBINDING_EXTERN
+class
+OIP_EARLYBINDING_API_EXPRESS
+EXPRESSObject 
+{
 public:
 	virtual const std::string classname() const = 0;
 	virtual const std::string getStepParameter() const = 0;
@@ -37,9 +43,7 @@ public:
 
 	\returns <classname> (<stepParameter>)
 	*/
-	virtual const std::string getErrorLog() const {
-		return classname() + " (" + getStepParameter() + ")";
-	}
+	virtual const std::string getErrorLog() const ;
 };
 
 
