@@ -1371,17 +1371,13 @@ namespace OpenInfraPlatform {
 					convertIfcCartesianPointVectorSkipDuplicates(polyLoop->Polygon, loop);
 					// If first and last point have same coordinates, remove last point
 					while (loop.size() > 2) {
-						carve::geom3d::Vector& first = loop.front();
-						carve::geom3d::Vector& last = loop.back();
-
-						if (abs(first.x - last.x) < 0.00000001) {
-							if (abs(first.y - last.y) < 0.00000001) {
-								if (abs(first.z - last.z) < 0.00000001) {
-									loop.pop_back();
-									continue;
-								}
-							}
+						
+						if (GeomSettings()->areEqual(loop.front(), loop.back()))
+						{
+							loop.pop_back();
+							continue;
 						}
+						
 						break;
 					}
 				}

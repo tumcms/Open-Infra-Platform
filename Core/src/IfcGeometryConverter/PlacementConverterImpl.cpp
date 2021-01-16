@@ -16,8 +16,8 @@
 */
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-#include "EMTIFC4X1EntityTypes.h"
-#include "IFC4X1Entities.h"
+#include "EarlyBinding\IFC4X1\src\IFC4X1Entities.h"
+#include "EarlyBinding\IFC4X1\src\EMTIFC4X1EntityTypes.h"
 #endif
 
 #include "PlacementConverter.h"
