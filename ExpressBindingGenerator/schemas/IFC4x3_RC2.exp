@@ -4029,13 +4029,6 @@ ENTITY IfcAlignmentCantSegment
 	PredefinedType : IfcAlignmentCantSegmentTypeEnum;
 END_ENTITY;
 
-ENTITY IfcAlignmentCurve
- SUBTYPE OF (IfcBoundedCurve);
-	Horizontal : IfcAlignmentHorizontal;
-	Vertical : OPTIONAL IfcAlignmentVertical;
-	Tag : OPTIONAL IfcLabel;
-END_ENTITY;
-
 ENTITY IfcAlignmentHorizontal
  SUBTYPE OF (IfcLinearElement);
 	StartDistAlong : OPTIONAL IfcLengthMeasure;
@@ -4537,8 +4530,7 @@ END_ENTITY;
 
 ENTITY IfcBoundedCurve
  ABSTRACT SUPERTYPE OF (ONEOF
-    (IfcAlignmentCurve
-    ,IfcBSplineCurve
+    (IfcBSplineCurve
     ,IfcCompositeCurve
     ,IfcCurveSegment2D
     ,IfcGradientCurve
