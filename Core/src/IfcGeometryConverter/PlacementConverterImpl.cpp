@@ -15,28 +15,9 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef OIP_MODULE_EARLYBINDING_IFC2X3
-#include "EarlyBinding\IFC2X3\src\reader/IFC2X3Reader.h"
-#include "EarlyBinding\IFC2X3\src\EMTIFC2X3EntityTypes.h"
-#include "EarlyBinding\IFC2X3\src\IFC2X3.h"
-#endif
-
-#ifdef OIP_MODULE_EARLYBINDING_IFC4
-#include "EarlyBinding\IFC4\src\reader/IFC4Reader.h"
-#include "EarlyBinding\IFC4\src\EMTIFC4EntityTypes.h"
-#include "EarlyBinding\IFC4\src\IFC4.h"
-#endif
-
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-#include "EarlyBinding\IFC4X1\src\reader/IFC4X1Reader.h"
+#include "EarlyBinding\IFC4X1\src\IFC4X1Entities.h"
 #include "EarlyBinding\IFC4X1\src\EMTIFC4X1EntityTypes.h"
-#include "EarlyBinding\IFC4X1\src\IFC4X1.h"
-#endif
-
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-#include "EarlyBinding\IFC4X3_RC1\src\reader/IFC4X3_RC1Reader.h"
-#include "EarlyBinding\IFC4X3_RC1\src\EMTIFC4X3_RC1EntityTypes.h"
-#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1.h"
 #endif
 
 #include "PlacementConverter.h"
