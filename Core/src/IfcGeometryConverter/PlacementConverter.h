@@ -92,6 +92,13 @@ namespace OpenInfraPlatform {
 					if (point.isOfType<typename IfcEntityTypesT::IfcCartesianPoint>())
 						return convertIfcCartesianPoint(point.as<typename IfcEntityTypesT::IfcCartesianPoint>());
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+					// IfcPointByDistanceExpression
+					if (point.template isOfType<typename IfcEntityTypesT::IfcPointByDistanceExpression>())
+						return convertIfcDistanceExpression(point.as << typename IfcEntityTypesT::IfcPointByDistanceExpression > ());
+						//TODO this is really, really bad programming - this needs to be done more nicely!!
+#endif
+
 					// IfcPointOnCurve & IfcPointOnSurface are not supported
 					throw oip::UnhandledException(point);
 				}
@@ -381,7 +388,7 @@ namespace OpenInfraPlatform {
                     carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
 
                     // interpret Location
-					translate = convertIfcCartesianPoint(axis2placement3d->Location);
+					translate = convertIfcPoint(axis2placement3d->Location);
 
                     // interpret RefDirection [OPTIONAL]
                     if(axis2placement3d->RefDirection) {
@@ -543,7 +550,11 @@ namespace OpenInfraPlatform {
                  * @return The offsets as 3D vector.
                  */
                 carve::geom::vector<3> convertIfcDistanceExpressionOffsets(
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 					const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>& distExpr
+#else
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPointByDistanceExpression> & distExpr
+#endif
 				) const throw(...)
                 {
                     // ***********************************************************
@@ -644,7 +655,11 @@ namespace OpenInfraPlatform {
                  * @returns transformation (rotation+placement) matrix.
                  */
                 carve::math::Matrix convertIfcOrientationExpression(
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOrientationExpression>& orientExpr,
+#else
+					const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2PlacementLinear>& orientExpr, //TODO this is really bad / only a hot fix (2021-01-17)
+#endif
 					const carve::geom::vector<3> translate = carve::geom::VECTOR(0.,0.,0.)
 				) const throw(...)
                 {
@@ -665,10 +680,27 @@ namespace OpenInfraPlatform {
                     // END_ENTITY;
                     if(orientExpr) {
                         // convert the attributes
-                        local_y = convertIfcDirection(orientExpr->LateralAxisDirection);
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+						local_y = convertIfcDirection(orientExpr->LateralAxisDirection);
                         local_z = convertIfcDirection(orientExpr->VerticalAxisDirection);
-                        local_x = carve::geom::cross(local_y, local_z);
+						local_x = carve::geom::cross(local_y, local_z);
+#else
+						if (orientExpr->Axis)
+							local_z = convertIfcDirection(orientExpr->Axis);
+						if (orientExpr->RefDirection)
+							local_x = convertIfcDirection(orientExpr->RefDirection);
+
+						// ref_direction can be just in the x-z-plane, not perpendicular to y and z.
+						//  --> so re-compute local x					
+						local_y = carve::geom::cross(local_z, local_x);
+						local_x = carve::geom::cross(local_y, local_z);
+#endif
                     }
+
+					// normalize the direction vectors
+					local_x.normalize();
+					local_y.normalize();
+					local_z.normalize();
 
                     // produce a rotation matrix
                     return carve::math::Matrix(
@@ -747,7 +779,11 @@ namespace OpenInfraPlatform {
 						throw oip::ReferenceExpiredException(linear_placement);
 
                     // 1. get offset from curve
-                    carve::geom::vector<3> offsetFromCurve = convertIfcDistanceExpressionOffsets(linear_placement->Distance);
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+					carve::geom::vector<3> offsetFromCurve = convertIfcDistanceExpressionOffsets(linear_placement->Distance);
+#else
+					carve::geom::vector<3> offsetFromCurve = convertIfcPoint(linear_placement->RelativePlacement->Location);
+#endif
                         
                     // 2. calculate the position on and the direction of the base curve
 					// also applay the relative dist along
