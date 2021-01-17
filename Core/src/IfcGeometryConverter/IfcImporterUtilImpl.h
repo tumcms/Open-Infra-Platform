@@ -44,8 +44,8 @@
 
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
-#include "EMTIFC4X3_RC2EntityTypes.h"
-#include "IFC4X3_RC2Entities.h"
+#include "EarlyBinding\IFC4X3_RC2\src\EMTIFC4X3_RC2EntityTypes.h"
+#include "EarlyBinding\IFC4X3_RC2\src\IFC4X3_RC2Entities.h"
 #endif
 
 #include "PlacementConverterImpl.h"
@@ -53,7 +53,7 @@
 template <
 	class IfcEntityTypesT
 >
-static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct(
+static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT::convertIfcProduct(
 	const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
 	const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter)
