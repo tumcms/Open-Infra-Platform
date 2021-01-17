@@ -1897,8 +1897,8 @@ namespace OpenInfraPlatform {
 				* \return								An angle of the point on the ellipse.
 				*/
 				double getAngleOnEllipse(const carve::geom::vector<3>& ellipseCenter,
-					double ellipseRadiusX,
-					double ellipseRadiusY,
+					const double ellipseRadiusX,
+					const double ellipseRadiusY,
 					const carve::geom::vector<3>& trimPoint
 				) const throw(...)
 				{
@@ -1912,15 +1912,15 @@ namespace OpenInfraPlatform {
 								return M_PI_2;
 							}
 							else if (centerToTrimPoint.y < 0.) {
-								return 3 * M_PI_2;
+								return 3. * M_PI_2;
 							}
 						}
 						else {
 							if (centerToTrimPoint.y > 0.) {
-								return acos(cosAngle);
+								return std::acos(cosAngle);
 							}
 							else if (centerToTrimPoint.y < 0.) {
-								return 2.0 * M_PI - acos(cosAngle);
+								return 2.0 * M_PI - std::acos(cosAngle);
 							}
 							else {
 								if (centerToTrimPoint.x > 0.) {
