@@ -113,7 +113,7 @@ void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT<typename If
 #endif
 			}
 
-			IfcImporterUtilT<IfcEntityTypesT>::computeMeshsetsFromPolyhedrons<IfcEntityTypesT>(product, productShape, strerr, repConverter);
+			IfcImporterUtilT<IfcEntityTypesT>::computeMeshsetsFromPolyhedrons(product, productShape, strerr, repConverter);
 #ifdef _DEBUG
 			BLUE_LOG(trace) << "Processed IfcProductRepresentation #" << representation->getId();
 #endif

@@ -95,8 +95,8 @@ namespace OpenInfraPlatform {
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
 					// IfcPointByDistanceExpression
 					if (point.template isOfType<typename IfcEntityTypesT::IfcPointByDistanceExpression>())
-						return convertIfcDistanceExpression(point.as << typename IfcEntityTypesT::IfcPointByDistanceExpression > ());
-						//TODO this is really, really bad programming - this needs to be done more nicely!!
+						return convertIfcDistanceExpressionOffsets(point.template as<typename IfcEntityTypesT::IfcPointByDistanceExpression> ());
+						//TODO this is really, really bad programming - this needs to be done more nicely!! - and it's not even entirely correct ...					
 #endif
 
 					// IfcPointOnCurve & IfcPointOnSurface are not supported
@@ -322,7 +322,7 @@ namespace OpenInfraPlatform {
                     carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0)); // defaults to (1.0,0.0) according to the specification
 
                     // interpret Location 
-					translate = convertIfcCartesianPoint( axis2placement2d->Location );
+					translate = convertIfcPoint( axis2placement2d->Location );
 
                     // interpret RefDirection [OPTIONAL]
                     if(axis2placement2d->RefDirection) {
@@ -806,8 +806,12 @@ namespace OpenInfraPlatform {
                     // the position on the curve = pointOnCurve
                     // the offsets = offsetFromCurve
                     carve::geom::vector<3> translate = pointOnCurve + localPlacementMatrix * offsetFromCurve;
-                    carve::math::Matrix object_placement_matrix = convertIfcOrientationExpression(linear_placement->Orientation, translate);
-                    
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+					carve::math::Matrix object_placement_matrix = convertIfcOrientationExpression(linear_placement->Orientation, translate);
+#else
+					carve::math::Matrix object_placement_matrix = convertIfcOrientationExpression(linear_placement->RelativePlacement, translate);
+#endif
+
 					// 5. check against the provided 3D coordinate
 					try {
 						checkLinearPlacementAgainstAbsolutePlacement(object_placement_matrix, linear_placement);

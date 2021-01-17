@@ -391,7 +391,7 @@ namespace OpenInfraPlatform {
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
 					else if (boundedCurve.isOfType<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>())
 					{
-						return convertIfcGradientCurve(boundedCurve.as<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>(),
+						return convertIfcSegmentedReferenceCurve(boundedCurve.as<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>(),
 							targetVec, segmentStartPoints);
 					} // end if IfcSegmentedReferenceCurve
 #endif 
@@ -489,7 +489,11 @@ namespace OpenInfraPlatform {
 					for (auto &segment: compositeCurve->Segments) {
 						std::vector<carve::geom::vector<3>> segment_vec;
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 						convertIfcCurve(segment->ParentCurve, segment_vec, segmentStartPoints);
+#else
+						convertIfcSegment(segment, segment_vec, segmentStartPoints);
+#endif
 						if (!segment_vec.empty()) {
 							GeomUtils::appendPointsToCurve(segment_vec, targetVec);
 						}
@@ -507,7 +511,7 @@ namespace OpenInfraPlatform {
 				* \note The function is not implemented.
 				* \internal TODO.
 				*/
-				void convertIfcGradientCurve(EXPRESSReference<typename IfcEntityTypesT::IfcGradientCurve>& gradientCurve,
+				void convertIfcGradientCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcGradientCurve>& gradientCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
@@ -780,7 +784,7 @@ namespace OpenInfraPlatform {
 				* \param[out] targetVec						The tessellated line.
 				* \param[out] segmentStartPoints			The starting points of separate segments.
 				*/
-				void convertIfcSegmentedReferenceCurve(EXPRESSReference<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>& segmentedReferenceCurve,
+				void convertIfcSegmentedReferenceCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>& segmentedReferenceCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
@@ -1246,7 +1250,7 @@ namespace OpenInfraPlatform {
 					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
-					throw oip::UnhandledException(pcurve);
+					throw oip::UnhandledException(seriesParameterCurve);
 				}
 				
 #endif
@@ -1587,6 +1591,7 @@ namespace OpenInfraPlatform {
 					return loop;
 				}
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 				/*! \brief Gets stations for \c IfcAlignmentCurve at which a point of the tesselation has to be calcuated. 
 				* \param[in] alignmentCurve			The \c IfcAlignmentCurve to be converted.
 				* \retrun							The series of stations at which a point of the tesselation has to be calcuated.
@@ -1833,6 +1838,7 @@ namespace OpenInfraPlatform {
 
 					return stations;
 				}
+#endif
 
 				// Function 3: Get angle on circle (returns angle if the given point lies on the circle; if not, -1 is returned). 
 				/**********************************************************************************************/

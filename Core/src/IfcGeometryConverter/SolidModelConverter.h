@@ -309,8 +309,8 @@ namespace OpenInfraPlatform
 						// Get directrix, start parameter, end paramter and reference surface (attributes 3-6).
 						oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrix =
 							surface_curve_swept_area_solid->Directrix;	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
-						double start_param = surface_curve_swept_area_solid->StartParam;	// TO DO: optional
-						double end_param = surface_curve_swept_area_solid->EndParam;		// TO DO: optional
+						//double start_param = surface_curve_swept_area_solid->StartParam;	// TO DO: optional
+						//double end_param = surface_curve_swept_area_solid->EndParam;		// TO DO: optional
 						oip::EXPRESSReference<typename IfcEntityTypesT::IfcSurface> ref_surface =
 							surface_curve_swept_area_solid->ReferenceSurface;	// TO DO: next level
 
@@ -899,7 +899,7 @@ namespace OpenInfraPlatform
 
 					if (axis_placement->Location)
 					{
-						axis_location = placementConverter->convertIfcCartesianPoint(axis_placement->Location );
+						axis_location = placementConverter->convertIfcPoint(axis_placement->Location );
 					}
 
 					if (axis_placement->Axis)
