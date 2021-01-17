@@ -23,25 +23,25 @@
 #include <tuple>
 #include "IfcImporterUtilImpl.h"
 
-//IFC4x3_RC2 specifics
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+//IFC4x3_RC1 specifics
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 template <>
-oip::EXPRESSReference<emt::IFC4X3_RC2EntityTypes::IfcGeometricRepresentationItem>
-OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT<emt::IFC4X3_RC2EntityTypes>::getIfcLinearPositioningElementAxis(
-	const oip::EXPRESSReference<emt::IFC4X3_RC2EntityTypes::IfcLinearPositioningElement>& linposel
+oip::EXPRESSReference<emt::IFC4X3_RC1EntityTypes::IfcGeometricRepresentationItem>
+OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT<emt::IFC4X3_RC1EntityTypes>::getIfcLinearPositioningElementAxis(
+	const oip::EXPRESSReference<emt::IFC4X3_RC1EntityTypes::IfcLinearPositioningElement>& linposel
 )
 {
 	// check input
 	if (linposel.expired())
 		throw oip::ReferenceExpiredException(linposel);
 
-	// in IFC4x3_RC2 -> Axis is a Select
+	// in IFC4x3_RC1 -> Axis is a Select
 	switch (linposel->Axis.which())
 	{
 	case 0: //IfcCurve
-		return linposel->Axis.get<0>().as<emt::IFC4X3_RC2EntityTypes::IfcGeometricRepresentationItem>();
+		return linposel->Axis.get<0>().as<emt::IFC4X3_RC1EntityTypes::IfcGeometricRepresentationItem>();
 	case 1: //IfcLinearAxisWithInclination
-		return linposel->Axis.get<1>()->Directrix.as<emt::IFC4X3_RC2EntityTypes::IfcGeometricRepresentationItem>();
+		return linposel->Axis.get<1>()->Directrix.as<emt::IFC4X3_RC1EntityTypes::IfcGeometricRepresentationItem>();
 	default:
 		throw oip::UnhandledException(linposel);
 	}

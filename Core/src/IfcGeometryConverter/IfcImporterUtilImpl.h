@@ -53,7 +53,7 @@
 template <
 	class IfcEntityTypesT
 >
-static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT::convertIfcProduct(
+void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT<typename IfcEntityTypesT>::convertIfcProduct(
 	const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
 	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
 	const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter)
@@ -167,12 +167,12 @@ static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT::con
 	}
 }
 
-//IFC4x3_RC2 specifics
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+//IFC4x3_RC1 specifics
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 template <>
-oip::EXPRESSReference<emt::IFC4X3_RC2EntityTypes::IfcGeometricRepresentationItem>
-OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT<emt::IFC4X3_RC2EntityTypes>::getIfcLinearPositioningElementAxis(
-	const oip::EXPRESSReference<emt::IFC4X3_RC2EntityTypes::IfcLinearPositioningElement>& linposel
+oip::EXPRESSReference<emt::IFC4X3_RC1EntityTypes::IfcGeometricRepresentationItem>
+OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtilT<emt::IFC4X3_RC1EntityTypes>::getIfcLinearPositioningElementAxis(
+	const oip::EXPRESSReference<emt::IFC4X3_RC1EntityTypes::IfcLinearPositioningElement>& linposel
 );
 #endif
 
