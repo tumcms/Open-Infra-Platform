@@ -230,7 +230,7 @@ namespace OpenInfraPlatform
 				*/
 				bool areEqual(const  carve::geom::vector<3>& first, const  carve::geom::vector<3>& second, const double precision) const
 				{
-					return areEqual(first.x, second.x, precision) && areEqual(first.y, second.y, precision) && areEqual(first.y, second.z, precision);
+					return areEqual(first.x, second.x, precision) && areEqual(first.y, second.y, precision) && areEqual(first.z, second.z, precision);
 				}
 						   
 				carve::csg::CSG::CLASSIFY_TYPE getCSGtype() {
