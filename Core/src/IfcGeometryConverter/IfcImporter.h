@@ -118,16 +118,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
 						if(project != model->entities.end()) {
 							
-							//std::for_each(model->entities.begin(), model->entities.end(), [this, &model](std::pair<size_t, std::shared_ptr<oip::EXPRESSEntity>> &pair) {
-							//	std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
-							//	if (product) {
-							//		// create new shape input data for product
-							//		std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
-							//		productShape->ifc_product = product;
-							//		IfcImporterUtil::convertIfcProduct<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, unitConverter, repConverter);
-							//		shapeInputData.insert(std::make_pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>(pair.first, productShape));
-							//	}
-							//});
 							try {
 								for (auto& pair : model->entities) {
 									std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
@@ -136,9 +126,8 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 										BLUE_LOG(trace) << "Converting IfcProduct #" << product->getId();
 #endif
 										// create new shape input data for product
-										std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
+										std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = convertIfcProduct(product);
 										productShape->ifc_product = product;
-										convertIfcProduct(product, productShape);
 										shapeInputData.insert(std::pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>(pair.first, productShape));
 									}
 								}
@@ -159,13 +148,11 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 				/**
 				 * \brief Converts all geometries of an \c IfcProduct to triangles and lines.
 				 * 
-				 * \param[in] product 
-				 * \param[inout] productShape
-				 * 
-				 * \note
+				 * \param[in] product The product to be interpreted.
+				 * \return A pointer to shape data.
 				 */
-				void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
-					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape) const;
+				std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> convertIfcProduct(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product) const;
 				
 				/**
 				 * \brief Computes meshes given \c ShapeInputDataT-s.
