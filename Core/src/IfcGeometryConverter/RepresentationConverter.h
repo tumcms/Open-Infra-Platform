@@ -632,7 +632,7 @@ namespace OpenInfraPlatform {
 				 * The function is not refactored.
 				 */
 				// Function 4: Convert openings.
-				void convertOpenings(const std::shared_ptr<typename IfcEntityTypesT::IfcElement>& ifcElement,
+				void convertOpenings(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcElement>& ifcElement,
 					std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& vecOpeningData)
 				{
 					//	std::vector<std::weak_ptr<typename IfcEntityTypesT::IfcRelVoidsElement>> vec_rel_voids(
@@ -703,7 +703,7 @@ namespace OpenInfraPlatform {
 				 * The function is not refactored.
 				 */
 				// Function 5: Subtract openings.
-				void subtractOpenings(const std::shared_ptr<typename IfcEntityTypesT::IfcElement>& ifcElement,
+				void subtractOpenings(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcElement>& ifcElement,
 					std::shared_ptr<ItemData>& itemData,
 					std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& vecOpeningData)
 				{

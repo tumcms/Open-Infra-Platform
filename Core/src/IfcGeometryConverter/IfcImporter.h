@@ -128,8 +128,8 @@ private:
 						#endif
 						// create new shape input data for product
 						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = convertIfcProduct(product);
-						productShape->ifc_product = product;
-						shapeInputData.insert(std::pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>(pair.first, productShape));
+						productShape->ifc_product = oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>::constructInstance(product->getId(), model);
+						shapeInputData.push_back( productShape );
 					}
 				}
 			}
@@ -170,7 +170,7 @@ private:
 	std::shared_ptr<GeoreferencingConverterT<IfcEntityTypesT>>	georefConverter;
 
 	//! interpreted data of all products
-	std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;
+	std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_END

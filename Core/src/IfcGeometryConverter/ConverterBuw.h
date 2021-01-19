@@ -33,6 +33,7 @@
 #include <BBox.h>
 
 #include "namespace.h"
+#include "EXPRESS/EXPRESS.h"
 
 /***********************************************************************************************/
 
@@ -53,7 +54,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
 					virtual ~ConverterBuwT() {}
 
-					static bool insertFaceIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					static bool insertFaceIntoBuffers(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::mesh::Face<3>* face,
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
@@ -87,7 +88,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						buw::Vector3f normal(face->plane.N.x, face->plane.N.y, face->plane.N.z);
 
 						// omit spaces
-						if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSpace>(product)) {
+						if(product.template isOfType<typename IfcEntityTypesT::IfcSpace>()) {
 							return false;//color.w() <= FullyOpaqueAlphaThreshold;
 						}
 
@@ -147,7 +148,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						return true;
 					}
 
-					static bool insertMeshIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					static bool insertMeshIntoBuffers(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::mesh::Mesh<3>* mesh,
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
@@ -166,7 +167,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						return ret;
 					}
 
-					static bool insertMeshSetIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					static bool insertMeshSetIntoBuffers(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::mesh::MeshSet<3>* meshSet,
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
@@ -183,7 +184,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						return ret;
 					}
 
-					static bool insertOpenMeshIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					static bool insertOpenMeshIntoBuffers(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::input::PolyhedronData* polyData,
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
@@ -259,7 +260,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						return true; // color.w() <= FullyOpaqueAlphaThreshold;
 					}
 
-					static bool insertPolyhedronIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					static bool insertPolyhedronIntoBuffers(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::poly::Polyhedron* polyhedron,
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
@@ -321,7 +322,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 					}
 
 					static bool createGeometryModel(buw::ReferenceCounted<IfcModel> ifcGeometryModel,
-						std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& shapeDatas)
+						std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& shapeDatas)
 					{
 						std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Create geometry model from meshsets for BlueFramework API" << std::endl;
 						//! NOTE (mk): Could be optimized if we omit cache building and just add triangles (with redundant vertices)
@@ -336,7 +337,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						std::vector<std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>> tasks(maxNumThreads);
 						uint32_t counter = 0;
 						for(auto it = shapeDatas.begin(); it != shapeDatas.end(); ++it) {
-							std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> shapeData = it->second;
+							std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> shapeData = *it;
 							tasks[counter % maxNumThreads].push_back(shapeData);
 							counter++;
 						}
@@ -362,7 +363,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						int threadID, buw::ReferenceCounted<IfcModel>& ifcModel)
 					{
 						for(const auto& shapeData : tasks) {
-							const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product = shapeData->ifc_product;
+							const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product = shapeData->ifc_product;
 							//					std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Create triangles and polylines for entity " << product->classname() << " #" << product->getId() << std::endl;
 
 							std::shared_ptr<GeometryDescription> geometry = std::make_shared<GeometryDescription>();
@@ -396,75 +397,75 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 				protected:
 
 					static buw::Vector3f determineColorFromBaseTypes(
-						const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product)
+						const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product)
 					{
-						if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcWindow>(product)) {
+						if(product.template isOfType<typename IfcEntityTypesT::IfcWindow>()) {
 							return buw::Vector3f(0.1f, 0.6f, 1.0f);//, 0.4f);
 						}
 
 						// Balken
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBeam>(product)
-							|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcColumn>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcBeam>()
+							|| product.template isOfType<typename IfcEntityTypesT::IfcColumn>()) {
 							return buw::Vector3f(0.4f, 0.4f, 0.4f);//, 1.0f);
 						}
 
 						// ignore spaces!
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSpace>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcSpace>()) {
 							return buw::Vector3f(0.1f, 0.2f, 1.0f);//, 1.0f);
 						}
 
 						#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
-						else if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeotechnicalElement>(product)
-							||   std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeographicElement>(product)) {
+						else if (product.template isOfType<typename IfcEntityTypesT::IfcGeotechnicalElement>()
+							||   product.template isOfType<typename IfcEntityTypesT::IfcGeographicElement>()) {
 							return buw::Vector3f(0.3f, 1.0f, 0.0f);//, 0.4f);
 						} 
 						#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDoor>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcDoor>()) {
 							return buw::Vector3f(0.8f, 0.6f, 0.2f);//, 0.5f);
 						}
 
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRoof>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcRoof>()) {
 							return buw::Vector3f(0.6f, 0.15f, 0.15f);//, 1.0f);
 						}
 
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcStair>(product)
-							|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcStairFlight>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcStair>()
+							|| product.template isOfType<typename IfcEntityTypesT::IfcStairFlight>()) {
 							return buw::Vector3f(0.8f, 0.4f, 0.4f);//, 1.0f);
 						}
 
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRamp>(product)
-							|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRampFlight>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcRamp>()
+							|| product.template isOfType<typename IfcEntityTypesT::IfcRampFlight>()) {
 							return buw::Vector3f(0.6f, 0.6f, 0.4f);//, 1.0f);
 						}
 
-						// Gel�nder
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRailing>(product)) {
+						// Gelaender
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcRailing>()) {
 							return buw::Vector3f(0.7f, 0.7f, 0.2f);//, 1.0f);
 						}
 
-						// Gel�nder
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPile>(product)) {
+						// Pile
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcPile>()) {
 							return buw::Vector3f(0.15f, 0.7f, 0.0f);//, 1.0f);
 						}
 
-						// M�bel
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFurnishingElement>(product)) {
+						// Moebel
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcFurnishingElement>()) {
 							return buw::Vector3f(0.8f, 0.6f, 0.2f);//, 1.0f);
 						}
 						// Land
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSite>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcSite>()) {
 							return buw::Vector3f(0.1f, 0.5f, 0.1f);//, 1.0f);
 						}
 						// Wasser/Gas Elemente
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFlowTerminal>(product)
-							|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDistributionFlowElement>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcFlowTerminal>()
+							|| product.template isOfType<typename IfcEntityTypesT::IfcDistributionFlowElement>()) {
 							return buw::Vector3f(0.4f, 0.4f, 0.6f);//, 1.0f);
 						}
-						// Platte als Dach oder Gel�nder?
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSlab>(product)) {
-							const std::shared_ptr<typename IfcEntityTypesT::IfcSlab>& slab =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSlab>(product);
+						// Platte als Dach oder Gelaender?
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcSlab>()) {
+							const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSlab>& slab =
+								product.template as<typename IfcEntityTypesT::IfcSlab>();
 
 							if(slab->PredefinedType) {
 								// Dach

@@ -154,12 +154,9 @@ void IfcImporterT<IfcEntityTypesT>::computeMeshsetsFromPolyhedrons(
 	std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> openingDatas;
 
 	// check if the product is an ifcElement, if so, it may contain opening data
-	std::shared_ptr<typename IfcEntityTypesT::IfcElement> element =
-		std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcElement>(productShape->ifc_product);
-
-	if (element) {
+	if (productShape->ifc_product.template isOfType<typename IfcEntityTypesT::IfcElement>()) {
 		// then collect opening data
-		repConverter->convertOpenings(element, openingDatas);
+		repConverter->convertOpenings(productShape->ifc_product.template as<typename IfcEntityTypesT::IfcElement>(), openingDatas);
 	}
 
 	// go through all shapes and convert them to meshsets
@@ -168,8 +165,10 @@ void IfcImporterT<IfcEntityTypesT>::computeMeshsetsFromPolyhedrons(
 		itemData->createMeshSetsFromClosedPolyhedrons();
 
 		// if product is IfcElement, then subtract openings like windows, doors, etc.
-		if (element) {
-			repConverter->subtractOpenings(element, itemData, openingDatas);
+		if (!openingDatas.empty()) {
+			repConverter->subtractOpenings(
+				productShape->ifc_product.template as<typename IfcEntityTypesT::IfcElement>(), 
+				itemData, openingDatas);
 		}
 
 		// convert all open polyhedrons to meshsets
