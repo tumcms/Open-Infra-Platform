@@ -21,13 +21,15 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSType_13ae9fe1_2b22_4812_b3bc_747f6d941fab_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSType_13ae9fe1_2b22_4812_b3bc_747f6d941fab_h
 
-//#include "../EarlyBinding/src/namespace.h"
-
 #include "EXPRESSObject.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
-class EXPRESSType : public EXPRESSObject {
+OIP_EARLYBINDING_EXTERN
+class
+OIP_EARLYBINDING_API_EXPRESS
+EXPRESSType : public EXPRESSObject 
+{
 public:
 	virtual const std::string classname() const = 0;
 	virtual const std::string getStepParameter() const = 0;

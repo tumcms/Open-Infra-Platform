@@ -119,7 +119,7 @@ flex_target(Scanner ${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/tokens.l  ${CMAKE_CUR
 add_flex_bison_dependency(Scanner Parser)
 
 include_directories(
-	../ExpressBindingGenerator/src
+	src
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -139,6 +139,7 @@ source_group(ExpressBindingGenerator\\General						FILES ${ExpressBindingGenerat
 source_group(ExpressBindingGenerator\\Generator						FILES ${ExpressBindingGenerator_Generator_Source})
 source_group(ExpressBindingGenerator\\Meta    						FILES ${ExpressBindingGenerator_Meta_Source})	
 source_group(ExpressBindingGenerator\\Parser						FILES ${ExpressBindingGenerator_Parser_Source})	
+source_group(ExpressBindingGenerator\\Parser\\Generated				FILES ${FLEX_Scanner_OUTPUTS} ${BISON_Parser_OUTPUTS})	
 
 add_executable(OpenInfraPlatform.ExpressBindingGenerator
 	${ExpressBindingGenerator_Source}

@@ -68,7 +68,7 @@ TEST_F(BeamRevolvedSolid, IFCHasAnEssentialEntity) {
 	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCREVOLVEDAREASOLID"; });
 	EXPECT_NE(result, express_model->entities.end());
 }
-/*
+
 TEST_F(BeamRevolvedSolid, ImageIsSaved)
 {
 	// Arrange
@@ -111,14 +111,14 @@ TEST_F(BeamRevolvedSolid, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	
+	/*
 	buw::storeImage(testPath("beam-revolved-solid_front.png").string(), image_front);
 	buw::storeImage(testPath("beam-revolved-solid_top.png").string(), image_top);
 	buw::storeImage(testPath("beam-revolved-solid_bottom.png").string(), image_bottom);
 	buw::storeImage(testPath("beam-revolved-solid_left.png").string(), image_left);
 	buw::storeImage(testPath("beam-revolved-solid_right.png").string(), image_right);
 	buw::storeImage(testPath("beam-revolved-solid_back.png").string(), image_back);
-	
+	*/
 
 	// Assert
 	EXPECT_EQ(image_front, expected_front);
@@ -167,7 +167,7 @@ TEST_F(BeamRevolvedSolid, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	
+	/*
 	buw::storeImage(testPath("beam-revolved-solid_front_left_bottom.png").string(), image_front_left_bottom);
 	buw::storeImage(testPath("beam-revolved-solid_front_right_bottom.png").string(), image_front_right_bottom);
 	buw::storeImage(testPath("beam-revolved-solid_top_left_front.png").string(), image_top_left_front);
@@ -176,7 +176,7 @@ TEST_F(BeamRevolvedSolid, VertexViews)
 	buw::storeImage(testPath("beam-revolved-solid_top_right_back.png").string(), image_top_right_back);
 	buw::storeImage(testPath("beam-revolved-solid_back_left_bottom.png").string(), image_back_left_bottom);
 	buw::storeImage(testPath("beam-revolved-solid_right_bottom_back.png").string(), image_right_bottom_back);
-	
+	*/
 
 	// Assert
 	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
@@ -187,4 +187,4 @@ TEST_F(BeamRevolvedSolid, VertexViews)
 	EXPECT_EQ(image_top_right_back, expected_top_right_back);
 	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
 	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
-}*/
+}
