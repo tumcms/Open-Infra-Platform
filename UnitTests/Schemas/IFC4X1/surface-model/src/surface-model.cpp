@@ -40,7 +40,7 @@ class SurfaceModelTest : public VisualTest {
 		express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
 
 		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
-		model = importer->collectGeometryData(express_model);
+		model = importer->collectData(express_model);
 
 		_background = renderer->captureImage();
 		renderer->setModel(model);
