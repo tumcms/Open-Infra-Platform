@@ -58,13 +58,13 @@ public:
 	virtual ~IfcImporterT()	{}
 
 	/**
-		* \brief Interprets the data from the read-in IFC file.
-		*
-		* This is the main interpreting function. 
-		*
-		* \param[in] model The IFC content.
-		* \return If successful, a pointer to an \c IfcModel. Otherwise \c nullptr.
-		*/
+	 * \brief Interprets the data from the read-in IFC file.
+	 *
+	 * This is the main interpreting function. 
+	 *
+	 * \param[in] model The IFC content.
+	 * \return A pointer to an \c IfcModel. Could be empty, though!
+	 */
 	std::shared_ptr<IfcModel> collectData(std::shared_ptr<oip::EXPRESSModel> expressModel)
 	{
 		auto ifcModel = std::make_shared<IfcModel>();
@@ -101,14 +101,14 @@ public:
 
 private:
 	/**
-		* \brief Interprets the data from the read-in IFC file.
-		*
-		* This is the main interpreting function.
-		* It sets the member variables with the interpreted data to be given to the renderer, UI or whatever.
-		*
-		* \param[in] model The IFC content.
-		* \return true, if successful. false, otherwise.
-		*/
+	 * \brief Interprets the data from the read-in IFC file.
+	 *
+	 * This is the main interpreting function.
+	 * It sets the member variables with the interpreted data to be given to the renderer, UI or whatever.
+	 *
+	 * \param[in] model The IFC content.
+	 * \return true, if successful. false, otherwise.
+	 */
 	bool collectGeometryData(std::shared_ptr<oip::EXPRESSModel> model)
 	{
 		BLUE_LOG(info) << "Importing geometry from express model.";
@@ -147,19 +147,19 @@ private:
 	}
 
 	/**
-		* \brief Converts all geometries of an \c IfcProduct to triangles and lines.
-		* 
-		* \param[in] product The product to be interpreted.
-		* \return A pointer to shape data.
-		*/
+	 * \brief Converts all geometries of an \c IfcProduct to triangles and lines.
+	 * 
+	 * \param[in] product The product to be interpreted.
+	 * \return A pointer to shape data.
+	 */
 	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> convertIfcProduct(
 		const EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product) const;
 				
 	/**
-		* \brief Computes meshes given \c ShapeInputDataT-s.
-		*
-		* \param[in] productShape The shape datas to be parsed.
-		*/
+	 * \brief Computes meshes given \c ShapeInputDataT-s.
+	 *
+	 * \param[in] productShape The shape datas to be parsed.
+	 */
 	void computeMeshsetsFromPolyhedrons(
 		std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape) const;
 					
