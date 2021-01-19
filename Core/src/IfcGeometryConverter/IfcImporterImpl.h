@@ -137,6 +137,9 @@ std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> IfcImporterT<IfcEntityTypesT>:
 		BLUE_LOG(warning) << product->getErrorLog() + " -> unknown error.";
 		throw; // throw onwards
 	}
+
+	// return the shape data
+	return productShape;
 }
 
 
