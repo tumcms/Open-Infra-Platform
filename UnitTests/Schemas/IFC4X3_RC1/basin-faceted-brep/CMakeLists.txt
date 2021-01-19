@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(basin-faceted-brep IFC4X3_RC1)
+CreateIfcFileVisualUnitTestForSchema(basin-faceted-brep IFC4X3_RC1)
