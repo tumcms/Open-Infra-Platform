@@ -79,9 +79,6 @@ std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> IfcImporterT<IfcEntityTypesT>:
 				placementAlreadyApplied);
 		}
 
-		// error string
-		std::stringstream strerr;
-
 		// go through all representations of the product
 		if (product->Representation) {
 			auto representation = product->Representation.get();
@@ -114,18 +111,6 @@ std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> IfcImporterT<IfcEntityTypesT>:
 					Axis.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(),
 				productPlacement, itemData);
 		}
-
-#ifdef _DEBUG
-		if (strerr.tellp() <= 0) return;
-
-		std::stringstream ss;
-		ss << "log/" << "-" << product->classname()
-			<< "#" << product->getId() << ".txt";
-
-		std::ofstream debugLog(ss.str());
-		debugLog << strerr.str();
-		debugLog.close();
-#endif
 	}
 	catch (const oip::UnhandledException& ex)
 	{
