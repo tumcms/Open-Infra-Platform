@@ -67,6 +67,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 				 */
 				std::shared_ptr<IfcModel> collectData(std::shared_ptr<oip::EXPRESSModel> expressModel)
 				{
+					auto ifcModel = std::make_shared<IfcModel>();
 					try
 					{
 						// set the default units
@@ -77,26 +78,25 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
 						// collect all geometries
 						if (!collectGeometryData(expressModel))
-							return nullptr;
+							return ifcModel;
 
-						auto ifcModel = std::make_shared<IfcModel>();
 						auto converter = ConverterBuwT<IfcEntityTypesT>();
 						if (!converter.createGeometryModel(ifcModel, shapeInputData))
-							return nullptr;
+							return ifcModel;
 
 						return ifcModel;
 					}
 					catch (const oip::InconsistentModellingException& ex)
 					{
 						BLUE_LOG(warning) << "Inconsistent IFC moddelling: " << ex.what();
-						return nullptr;
+						return ifcModel;
 					}
 					catch (...)
 					{
 						BLUE_LOG(warning) << "Something went wrong while collecting data from the IFC file.";
-						return nullptr;
+						return ifcModel;
 					}
-					return nullptr;
+					return ifcModel;
 				}
 
 			private:
