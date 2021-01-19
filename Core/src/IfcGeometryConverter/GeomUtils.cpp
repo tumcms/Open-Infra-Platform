@@ -1142,7 +1142,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 
 	if( err.tellp() > 0 )
 	{
-		throw oip::InconsistentModellingException("GeomUtils::checkMeshSet(): MeshSet of resulting mesh has problems");
+		throw oip::InconsistentModellingException("GeomUtils::checkMeshSet(): MeshSet of resulting mesh has problems: " + err.str());
 	}
 	return true;
 }
