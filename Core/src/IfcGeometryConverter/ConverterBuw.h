@@ -59,6 +59,12 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
 					{
+						// omit spaces & opening elements
+						if (product.template isOfType<typename IfcEntityTypesT::IfcSpace>()
+						 || product.template isOfType<typename IfcEntityTypesT::IfcFeatureElementSubtraction>()) {
+							return false;//color.w() <= FullyOpaqueAlphaThreshold;
+						}
+
 						const int32_t numVertices = face->nVertices();
 
 						if(numVertices > 4) {
@@ -86,11 +92,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						}
 
 						buw::Vector3f normal(face->plane.N.x, face->plane.N.y, face->plane.N.z);
-
-						// omit spaces
-						if(product.template isOfType<typename IfcEntityTypesT::IfcSpace>()) {
-							return false;//color.w() <= FullyOpaqueAlphaThreshold;
-						}
 
 						if(numVertices == 3) {
 							VertexLayout v0, v1, v2;
