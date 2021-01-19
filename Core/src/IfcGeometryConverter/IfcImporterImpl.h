@@ -121,7 +121,7 @@ void IfcImporterT<IfcEntityTypesT>::convertIfcProduct(
 #endif
 			}
 
-			IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT>(product, productShape, strerr, repConverter);
+			computeMeshsetsFromPolyhedrons(productShape);
 #ifdef _DEBUG
 			BLUE_LOG(trace) << "Processed IfcProductRepresentation #" << representation->getId();
 #endif
@@ -172,6 +172,63 @@ void IfcImporterT<IfcEntityTypesT>::convertIfcProduct(
 	{
 		BLUE_LOG(warning) << product->getErrorLog() + " -> unknown error.";
 		throw; // throw onwards
+	}
+}
+
+
+template <
+	class IfcEntityTypesT
+>
+void IfcImporterT<IfcEntityTypesT>::computeMeshsetsFromPolyhedrons(
+	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape
+) const
+{
+	// now examine the opening data of the product representation
+	std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> openingDatas;
+
+	// check if the product is an ifcElement, if so, it may contain opening data
+	std::shared_ptr<typename IfcEntityTypesT::IfcElement> element =
+		std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcElement>(productShape->ifc_product);
+
+	if (element) {
+		// then collect opening data
+		repConverter->convertOpenings(element, openingDatas);
+	}
+
+	// go through all shapes and convert them to meshsets
+	for (auto& itemData : productShape->vec_item_data) {
+		// convert closed polyhedrons to meshsets
+		itemData->createMeshSetsFromClosedPolyhedrons();
+
+		// if product is IfcElement, then subtract openings like windows, doors, etc.
+		if (element) {
+			repConverter->subtractOpenings(element, itemData, openingDatas);
+		}
+
+		// convert all open polyhedrons to meshsets
+		for (auto& openPoly : itemData->open_polyhedrons) {
+
+			if (openPoly->getVertexCount() < 3) { continue; }
+
+			std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(openPoly->createMesh(carve::input::opts()));
+			itemData->meshsets.push_back(openMeshset);
+		}
+
+		// convert all open or closed polyhedrons to meshsets
+		for (auto& openClosedPoly : itemData->open_or_closed_polyhedrons) {
+
+			if (openClosedPoly->getVertexCount() < 3) { continue; }
+
+			std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(
+				openClosedPoly->createMesh(carve::input::opts()));
+			itemData->meshsets.push_back(openMeshset);
+		}
+
+		// simplify geometry of all meshsets
+		for (auto& meshset : itemData->meshsets) {
+			repConverter->getSolidConverter()->simplifyMesh(meshset);
+		}
+		// polylines are handled by rendering engine
 	}
 }
 

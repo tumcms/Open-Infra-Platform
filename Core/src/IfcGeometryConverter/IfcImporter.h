@@ -38,74 +38,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
 			class GeometrySettings;
 
-			// IfcImporterUtil class with loadIfcProductsJob, convertIfcProduct, computeMeshsetsFromPolyhedrons.
-			class IfcImporterUtil {
-			public:
-				IfcImporterUtil() {}
-				~IfcImporterUtil() {}
-
-
-				// ***************************************
-				// 3: Compute Meshsets from Polyhedrons
-				// ***************************************
-				template <
-					class IfcEntityTypesT
-				>
-					static void computeMeshsetsFromPolyhedrons(const std::shared_ptr<oip::EXPRESSEntity>& entity,
-						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
-						std::stringstream& strerr,
-						const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter)
-				{
-					// now examine the opening data of the product representation
-					std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> openingDatas;
-
-					// check if the product is an ifcElement, if so, it may contain opening data
-					std::shared_ptr<typename IfcEntityTypesT::IfcElement> element =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcElement>(entity);
-
-					if(element) {
-						// then collect opening data
-						repConverter->convertOpenings(element, openingDatas);
-					}
-
-					// go through all shapes and convert them to meshsets
-					for(auto& itemData : productShape->vec_item_data) {
-						// convert closed polyhedrons to meshsets
-						itemData->createMeshSetsFromClosedPolyhedrons();
-
-						// if product is IfcElement, then subtract openings like windows, doors, etc.
-						if(element) {
-							repConverter->subtractOpenings(element, itemData, openingDatas);
-						}
-
-						// convert all open polyhedrons to meshsets
-						for(auto& openPoly : itemData->open_polyhedrons) {
-
-							if(openPoly->getVertexCount() < 3) { continue; }
-
-							std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(openPoly->createMesh(carve::input::opts()));
-							itemData->meshsets.push_back(openMeshset);
-						}
-
-						// convert all open or closed polyhedrons to meshsets
-						for(auto& openClosedPoly : itemData->open_or_closed_polyhedrons) {
-
-							if(openClosedPoly->getVertexCount() < 3) { continue; }
-
-							std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(
-								openClosedPoly->createMesh(carve::input::opts()));
-							itemData->meshsets.push_back(openMeshset);
-						}
-
-						// simplify geometry of all meshsets
-						for(auto& meshset : itemData->meshsets) {
-							repConverter->getSolidConverter()->simplifyMesh(meshset);
-						}
-						// polylines are handled by rendering engine
-					}
-				}
-			};
-
 			/*! \brief The IFC importer class.
 			 *
 			 * This class calls other converters correspondingly.
@@ -233,6 +165,14 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 				 * \note
 				 */
 				void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape) const;
+				
+				/**
+				 * \brief Computes meshes given \c ShapeInputDataT-s.
+				 *
+				 * \param[in] productShape The shape datas to be parsed.
+				 */
+				void computeMeshsetsFromPolyhedrons(
 					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape) const;
 					
 				// the converters
