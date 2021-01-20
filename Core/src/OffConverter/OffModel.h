@@ -34,15 +34,15 @@ namespace OpenInfraPlatform
 		namespace OffConverter
 		{
 			struct IndexedMeshDescription {
-				std::vector<uint32_t>							indices;
-				std::vector<buw::Vector3d>						vertices;
-				oip::BBox										bb;
+				std::vector<uint32_t>												indices;
+				std::vector<buw::VertexPosition3Color3Normal3>						vertices;
+				oip::BBox															bb;
 				bool isEmpty() const { return (indices.size() == 0 && vertices.size() == 0); };
 				void reset() { indices.clear(); vertices.clear(); }
 				void UpdateBBox()
 				{
 					for (const auto& vertex : vertices)
-						bb.update(vertex[0], vertex[1], vertex[2]);
+						bb.update(vertex.position[0], vertex.position[1], vertex.position[2]);
 
 				}
 			};
@@ -57,7 +57,7 @@ namespace OpenInfraPlatform
 				void reset(); 
 
 				void addIndices(const std::vector<uint32_t>& indices);
-				void addVertices(const std::vector<buw::Vector3d>& vertex);
+				void addVertices(const std::vector<buw::VertexPosition3Color3Normal3>& vertex);
 				IndexedMeshDescription const &geometry() const { return geometry_; }
 
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------

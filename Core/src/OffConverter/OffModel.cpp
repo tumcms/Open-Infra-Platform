@@ -24,7 +24,7 @@ void OpenInfraPlatform::Core::OffConverter::OffModel::reset()
 	geometry_.reset();
 }
 
-void OpenInfraPlatform::Core::OffConverter::OffModel::addVertices(const std::vector<buw::Vector3d>& vertices)
+void OpenInfraPlatform::Core::OffConverter::OffModel::addVertices(const std::vector<buw::VertexPosition3Color3Normal3>& vertices)
 {
 	geometry_.vertices.reserve(vertices.size());
 	for (const auto& vertex : vertices)

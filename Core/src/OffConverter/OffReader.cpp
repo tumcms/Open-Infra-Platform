@@ -125,14 +125,17 @@ static void readVertices(const int nrOfVertices,
 {
 	std::string line;
 
-	std::vector<buw::Vector3d> allVertices;
+	std::vector<buw::VertexPosition3Color3Normal3> allVertices;
 	for (int i = 0; i < nrOfVertices; i++)
 	{
 		std::getline(offFile, line);
-		buw::Vector3d vector;
+		buw::Vector3f position;
+		buw::Vector3f color;
+		buw::Vector3f normal;
 		std::stringstream lineStream(line);
 
-		lineStream >> vector[0] >> vector[1] >> vector[2];
+		lineStream >> position[0] >> position[1] >> position[2];
+		buw::VertexPosition3Color3Normal3 vector = buw::VertexPosition3Color3Normal3(position, color, normal);
 		allVertices.push_back(vector);
 	}
 	model->addVertices(allVertices);

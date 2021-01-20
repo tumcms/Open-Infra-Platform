@@ -75,7 +75,7 @@ void OffGeometryEffect::changeOffset(const buw::Vector3d& offsetOld, const buw::
 			std::transform(offModel_->geometry().vertices.begin(),
 				offModel_->geometry().vertices.end(),
 				vertices.begin(),
-				[offsetNew](buw::Vector3d a) {a.x() += offsetNew.x(); a.y() += offsetNew.y(); a.z() += offsetNew.z(); return a; });
+				[offsetNew](buw::Vector3d a) {return a + offsetNew; });
 		}
 
 		//upload data 
