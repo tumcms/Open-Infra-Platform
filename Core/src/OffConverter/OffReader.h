@@ -38,10 +38,11 @@ public:
 		std::vector<uint32_t>& indices);
 	static void readQuadFace(std::stringstream& lineStream,
 		std::vector<uint32_t>& indices);
-	static void readVertices(const int nrOfVertices,
-		std::shared_ptr<OffModel>& model,
+	static std::vector<buw::Vector3f> readVertices(const int nrOfVertices,
 		std::ifstream& offFile);
-
+	static buw::Vector3f calcNormal(const buw::Vector3f& vertex1,
+		const buw::Vector3f& vertex2,
+		const buw::Vector3f& vertex3);
 };
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END
 

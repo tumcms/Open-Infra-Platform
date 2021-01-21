@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "../Exception/OffReaderException.h"
 #include "../Exception/UnhandledException.h"
 #include "namespace.h"
+#include "../IfcGeometryConverter/CarveHeaders.h"
 
 #include <fstream>
 #include <iostream>
@@ -77,7 +78,9 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		model->setFilename(filename);
 
 		//read vertices 
-		readVertices(nrOfVertices, model, offFile);
+		std::vector<buw::Vector3f> verticesPosition;
+		verticesPosition = readVertices(nrOfVertices, offFile);
+		std::vector<buw::VertexPosition3Color3Normal3> allVertices;
 
 		//read faces (special case: after indices of face the color is given in RGB value -> to be considered later on)
 		std::vector<uint32_t> indices;
@@ -95,11 +98,42 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 			if (faceType == 3)
 			{
 				readTriangleFace(lineStream, indices);
+				//read normal and color
+				int size = indices.size();
+				buw::Vector3f vector1 = verticesPosition.at(indices.at(size - 3));
+				buw::Vector3f vector2 = verticesPosition.at(indices.at(size - 2));
+				buw::Vector3f vector3 = verticesPosition.at(indices.at(size - 1));
+				buw::Vector3f color(1.0f, 0.0f, 0.0f); //to be changed later on 
+				buw::Vector3f normal = calcNormal(vector1, vector2, vector3);
+
+				//create vertices with position, color and normal and add to list of all vertices
+				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color, normal));
+				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color, normal));
+				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color, normal));
 			}
 			//read quad
 			else if (faceType == 4)
 			{
 				readQuadFace(lineStream, indices);
+				//read normal
+				int size = indices.size();
+				buw::Vector3f vector1 = verticesPosition.at(indices.at(size - 4));
+				buw::Vector3f vector2 = verticesPosition.at(indices.at(size - 3));
+				buw::Vector3f vector3 = verticesPosition.at(indices.at(size - 2));
+				buw::Vector3f vector4 = verticesPosition.at(indices.at(size - 1));
+				buw::Vector3f color1(1.0f, 0.0f, 0.0f); //to be changed later on 
+				buw::Vector3f normal1 = calcNormal(vector1, vector2, vector3);
+				buw::Vector3f color2(1.0f, 0.0f, 0.0f); //to be changed later on 
+				buw::Vector3f normal2 = calcNormal(vector3, vector4, vector1);
+
+				//create vertices with position, color and normal and add to list of all vertices
+				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color1, normal1));
+				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color1, normal1));
+				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color1, normal1));
+
+				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color2, normal2));
+				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color2, normal2));
+				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color2, normal2));
 			}
 			else
 			{
@@ -107,6 +141,12 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 				throw oip::UnhandledException("Files that include faces with more than 4 edges are not supported yet.");
 			}
 		}
+		model->addVertices(allVertices);
+
+		int nrOfAllVertices = allVertices.size();
+		for (int i = 0; i < nrOfAllVertices; i++) //proably no need; give vertices without indexBuffer to shader
+			indices.at(i) = i;
+
 		model->addIndices(indices);
 
 		offFile.close();
@@ -119,26 +159,22 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 	}
 }
 
-static void readVertices(const int nrOfVertices, 
-	std::shared_ptr<OffModel>& model, 
+static std::vector<buw::Vector3f> readVertices(const int nrOfVertices, 
 	std::ifstream& offFile)
 {
 	std::string line;
 
-	std::vector<buw::VertexPosition3Color3Normal3> allVertices;
+	std::vector<buw::Vector3f> allVertices;
 	for (int i = 0; i < nrOfVertices; i++)
 	{
 		std::getline(offFile, line);
 		buw::Vector3f position;
-		buw::Vector3f color;
-		buw::Vector3f normal;
 		std::stringstream lineStream(line);
 
 		lineStream >> position[0] >> position[1] >> position[2];
-		buw::VertexPosition3Color3Normal3 vector = buw::VertexPosition3Color3Normal3(position, color, normal);
-		allVertices.push_back(vector);
+		allVertices.push_back(position);
 	}
-	model->addVertices(allVertices);
+	return allVertices;
 }
 
 static void readTriangleFace(std::stringstream& lineStream, 
@@ -173,5 +209,29 @@ static void readQuadFace(std::stringstream& lineStream,
 	indices.push_back(faceVector[3]);
 	indices.push_back(faceVector[0]);
 }
+
+static buw::Vector3f calcNormal(const buw::Vector3f& vertex1,
+	const buw::Vector3f& vertex2,
+	const buw::Vector3f& vertex3)
+{
+	carve::geom::vector<3> vector1;
+	vector1.x = vertex1.x();
+	vector1.y = vertex1.y();
+	vector1.z = vertex1.z();
+	carve::geom::vector<3> vector2;
+	vector2.x = vertex2.x();
+	vector2.y = vertex2.y();
+	vector2.z = vertex2.z();
+	carve::geom::vector<3> vector3;
+	vector3.x = vertex3.x();
+	vector3.y = vertex3.y();
+	vector3.z = vertex3.z();
+
+	carve::geom::vector<3> normal = carve::geom::cross(vector1 - vector2, vector2 - vector3);
+	normal.normalize();
+
+	return buw::Vector3f(normal.x, normal.y, normal.z);
+}
+
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END
