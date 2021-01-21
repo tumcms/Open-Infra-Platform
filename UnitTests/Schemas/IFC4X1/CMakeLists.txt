@@ -22,5 +22,5 @@ SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_LIST_DIR})
 
 # add to the solution
 FOREACH(subdir ${SUBDIRS})
-  ADD_SUBDIRECTORY(${subdir})
+	ADD_SUBDIRECTORY(${subdir})
 ENDFOREACH()

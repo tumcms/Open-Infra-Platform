@@ -13,18 +13,19 @@ A clear and concise description of what the bug is.
 **To Reproduce**
 Steps to reproduce the behavior:
 1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+1. Load file '...'
+1. Click on '...'
+1. Scroll down to '...'
+1. See error
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Screen shot**
+If applicable, add screen shots to help explain your problem.
 
 **CMake configuration**
- If applicable, list any special configurations you have made in CMake.
+If applicable, list any special configurations you have selected in CMake.
 - EARLYBINDING_WITH_IFC4x1: selected
 
 **Additional context**

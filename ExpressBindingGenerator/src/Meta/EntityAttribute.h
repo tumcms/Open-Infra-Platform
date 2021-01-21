@@ -31,13 +31,12 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <tuple>
 
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_BEGIN
 
 class Schema;
-
-enum class eCardinality { Undefined, Single, Vector, Vector2D, Vector3D };
 
 enum class eEntityAttributeParameterType { Simple, TypeNamed, eGeneralizedType };
 
@@ -159,10 +158,15 @@ class EntityAttribute {
 
     std::string getName() const;
     bool isOptional() const;
+    bool isInverse() const;
+	bool hasInverseCounterpart() const;
+	std::vector<std::tuple<std::string, std::string, std::string>> getInverses() const;
+	void addInverseCounterpart(const std::string&, const std::string&, const std::string&);
 
     std::string name;
-    eCardinality cardinality;
     bool optional;
+    bool inverse;
+	std::vector<std::tuple<std::string, std::string, std::string>> inverses; // entity - attribute - main entity
 
     ReferenceCounted<IEntityAttributeType> type;
 
@@ -175,9 +179,9 @@ class EntityAttribute {
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END
 
-EMBED_INTO_OIP_NAMESPACE(eEntityAttributeParameterType)
-EMBED_INTO_OIP_NAMESPACE(eEntityAttributeContainerType)
-EMBED_INTO_OIP_NAMESPACE(EntityAttributeGeneralizedType)
-EMBED_INTO_OIP_NAMESPACE(EntityAttribute)
+EMBED_EXPRESSBINDINGGENERATOR_INTO_OIP_NAMESPACE(eEntityAttributeParameterType)
+EMBED_EXPRESSBINDINGGENERATOR_INTO_OIP_NAMESPACE(eEntityAttributeContainerType)
+EMBED_EXPRESSBINDINGGENERATOR_INTO_OIP_NAMESPACE(EntityAttributeGeneralizedType)
+EMBED_EXPRESSBINDINGGENERATOR_INTO_OIP_NAMESPACE(EntityAttribute)
 
 #endif // end define OpenInfraPlatform_ExpressBindingGenerator_Attribute_24a8f899_6b19_457c_ba3a_cd3c13626752_h

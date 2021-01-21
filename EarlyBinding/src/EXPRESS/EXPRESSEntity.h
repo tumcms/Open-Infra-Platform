@@ -21,8 +21,6 @@
 #ifndef OpenInfraPlatform_EarlyBinding_EXPRESSEntity_5fd9c3bc_1d26_4fef_994f_229551a1c3f8_h
 #define OpenInfraPlatform_EarlyBinding_EXPRESSEntity_5fd9c3bc_1d26_4fef_994f_229551a1c3f8_h
 
-#include "../EarlyBinding/src/namespace.h"
-
 #include "EXPRESSObject.h"
 
 #include <tuple>
@@ -31,24 +29,25 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
+class EXPRESSModel;
 
-class EXPRESSEntity : public EXPRESSObject {
+OIP_EARLYBINDING_EXTERN
+class
+OIP_EARLYBINDING_API_EXPRESS
+EXPRESSEntity : public EXPRESSObject 
+{
 public:
-	const size_t getId() const {
-		return m_id;
-	}
+	const size_t getId() const ;
 
-	void setId(size_t id) {
-		m_id = id;
-	}
+	void setId(size_t id) ;
 
-	const std::string getStepParameter() const override {
-		return "#" + std::to_string(m_id);
-	}
+	const std::string getStepParameter() const override ;
 
 	virtual const std::string classname() const = 0;
 
 	virtual const std::string getStepLine() const = 0;
+
+	virtual void linkInverse(const std::shared_ptr<EXPRESSModel>& model) = 0;
 
 protected:
 	size_t m_id;
@@ -56,6 +55,6 @@ protected:
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_END
 
-EMBED_INTO_OIP_NAMESPACE(EXPRESSEntity);
+EMBED_EARLYBINDING_INTO_OIP_NAMESPACE(EXPRESSEntity);
 
 #endif // end define OpenInfraPlatform_EarlyBinding_EXPRESSEntity_5fd9c3bc_1d26_4fef_994f_229551a1c3f8_h

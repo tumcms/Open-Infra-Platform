@@ -85,7 +85,7 @@ namespace OpenInfraPlatform {
 					// check for which type (PlacementRelTo is IfcObjectPlacement)
 					if (linear_placement->PlacementRelTo.get().isOfType<typename IfcEntityTypesT::IfcLinearPlacement>())
 					{
-						alreadyApplied.push_back(linear_placement);
+						alreadyApplied.push_back(linear_placement.as<typename IfcEntityTypesT::IfcObjectPlacement>());
 						const auto linearPlacementRelTo = linear_placement->PlacementRelTo.get().as<typename IfcEntityTypesT::IfcLinearPlacement>();
 						double ret = linearPlacementRelTo->Distance->DistanceAlong + convertRelativePlacement(linearPlacementRelTo, alreadyApplied);
 						alreadyApplied.pop_back();

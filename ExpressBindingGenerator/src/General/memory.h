@@ -38,6 +38,6 @@ ReferenceCounted<T> makeReferenceCounted(Args&&... args) {
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END
 
-EMBED_INTO_OIP_NAMESPACE(ReferenceCounted)
+EMBED_EXPRESSBINDINGGENERATOR_INTO_OIP_NAMESPACE(ReferenceCounted)
 
 #endif // end define OpenInfraPlatform_ExpressBindingGenerator_memory_9d568a15_99c8_4646_8ceb_4cfa042569f1_h
