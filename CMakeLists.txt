@@ -146,9 +146,9 @@ endif (WIN32)
 
 set(Boost_USE_STATIC_LIBS ON)
 
-# As of revision 530, boost 1.65.1 required.
+# As of 2021-01-22, boost 1.75.0 required.
 set(BOOST_ROOT ${OIP_Boost_DIR})
-find_package(Boost 1.65.1 COMPONENTS system filesystem REQUIRED)
+find_package(Boost 1.75.0 COMPONENTS system filesystem REQUIRED)
 
 if(Boost_FOUND)
 	set(Boost_DIR ${Boost_INCLUDE_DIR})
