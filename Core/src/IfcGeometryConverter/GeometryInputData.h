@@ -39,91 +39,52 @@
 #include <memory>
 
 #include "CarveHeaders.h"
+#include "namespace.h"
+#include "EXPRESS/EXPRESS.h"
 
 /**********************************************************************************************/
-namespace OpenInfraPlatform {
-	namespace Core {
-		namespace IfcGeometryConverter {
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
-			//\brief Class to hold input data of one IFC geometric representation item.
-			class ItemData {
-			public:
-				std::vector<std::shared_ptr<carve::input::PolyhedronData>>	closed_polyhedrons;
-				std::vector<std::shared_ptr<carve::input::PolyhedronData>>	open_polyhedrons;
-				std::vector<std::shared_ptr<carve::input::PolyhedronData>>	open_or_closed_polyhedrons;
-				std::vector<std::shared_ptr<carve::input::PolylineSetData>> polylines;
-				std::vector<std::shared_ptr<carve::mesh::MeshSet<3>>>		meshsets;
-				void createMeshSetsFromClosedPolyhedrons();
 
-				void append(const std::shared_ptr<ItemData>& other)
-				{
-					std::copy(other->closed_polyhedrons.begin(),         other->closed_polyhedrons.end(),         std::back_inserter(this->closed_polyhedrons));
-					std::copy(other->open_polyhedrons.begin(),           other->open_polyhedrons.end(),           std::back_inserter(this->open_polyhedrons));
-					std::copy(other->open_or_closed_polyhedrons.begin(), other->open_or_closed_polyhedrons.end(), std::back_inserter(this->open_or_closed_polyhedrons));
-					std::copy(other->polylines.begin(),                  other->polylines.end(),                  std::back_inserter(this->polylines));
-					std::copy(other->meshsets.begin(),                   other->meshsets.end(),                   std::back_inserter(this->meshsets));
-				}
-			};
+//! \brief Class to hold input data of one IFC geometric representation item.
+class ItemData {
+public:
+	std::vector<std::shared_ptr<carve::input::PolyhedronData>>	closed_polyhedrons;
+	std::vector<std::shared_ptr<carve::input::PolyhedronData>>	open_polyhedrons;
+	std::vector<std::shared_ptr<carve::input::PolyhedronData>>	open_or_closed_polyhedrons;
+	std::vector<std::shared_ptr<carve::input::PolylineSetData>> polylines;
+	std::vector<std::shared_ptr<carve::mesh::MeshSet<3>>>		meshsets;
+	void createMeshSetsFromClosedPolyhedrons();
 
-			/**************************************************************************************/
-
-			//struct PlacementData {
-			//	std::set<int> placement_already_applied;
-			//	carve::math::Matrix pos;
-			//};
-
-			/**************************************************************************************/
-
-			template<
-				class IfcEntityTypesT
-			>
-				class ShapeInputDataT {
-				public:
-					ShapeInputDataT()
-						: added_to_storey(false)
-					{
-					}
-
-					~ShapeInputDataT()
-					{
-					}
-
-					// compute AABB from meshsets
-					void computeAABB()
-					{
-						bool firstIteration = true;
-
-						for(const auto& itemData : vec_item_data) {
-							for(const auto& meshset : itemData->meshsets) {
-								if(meshset->meshes.empty()) {
-									continue;
-								}
-
-								carve::mesh::MeshSet<3>::aabb_t& aabb = meshset->getAABB();
-
-								if(firstIteration) {
-									aabb = aabb;
-									firstIteration = false;
-								}
-								else {
-									aabb.unionAABB(aabb);
-								}
-							}
-						}
-					}
-
-					std::shared_ptr<typename IfcEntityTypesT::IfcProduct>				ifc_product;
-					std::shared_ptr<typename IfcEntityTypesT::IfcRepresentation>		representation;
-					std::shared_ptr<typename IfcEntityTypesT::IfcObjectPlacement>		object_placement;
-					std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProduct>>	vec_openings;
-
-					std::vector<std::shared_ptr<ItemData>>	vec_item_data;
-					bool									added_to_storey;
-
-					carve::mesh::MeshSet<3>::aabb_t			aabb;
-			};
-		}
+	void append(const std::shared_ptr<ItemData>& other)
+	{
+		std::copy(other->closed_polyhedrons.begin(),         other->closed_polyhedrons.end(),         std::back_inserter(this->closed_polyhedrons));
+		std::copy(other->open_polyhedrons.begin(),           other->open_polyhedrons.end(),           std::back_inserter(this->open_polyhedrons));
+		std::copy(other->open_or_closed_polyhedrons.begin(), other->open_or_closed_polyhedrons.end(), std::back_inserter(this->open_or_closed_polyhedrons));
+		std::copy(other->polylines.begin(),                  other->polylines.end(),                  std::back_inserter(this->polylines));
+		std::copy(other->meshsets.begin(),                   other->meshsets.end(),                   std::back_inserter(this->meshsets));
 	}
-}
+};
+
+template<
+	class IfcEntityTypesT
+>
+class ShapeInputDataT {
+public:
+	ShapeInputDataT()
+	{
+	}
+
+	~ShapeInputDataT()
+	{
+	}
+
+	oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>			ifc_product;
+	oip::EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>	representation;
+	std::vector<std::shared_ptr<ItemData>>								vec_item_data;
+};
+
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_END
+
 
 #endif

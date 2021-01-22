@@ -54,11 +54,13 @@ public:
         message_ = message;
     }
 
+	void buildFull();
     const char* what() const override;
 
 private:
     std::shared_ptr<oip::EXPRESSObject> item_;
-    std::string message_;
+	std::string message_;
+	std::string fullMessage_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_EXCEPTION_END

@@ -19,12 +19,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 //! Constructor
 OpenInfraPlatform::Core::Exception::InconsistentModellingException::InconsistentModellingException() noexcept
+	: item_(nullptr), message_(""), fullMessage_("")
 {
+	buildFull();
 }
 
 //! Copy Constructor
 OpenInfraPlatform::Core::Exception::InconsistentModellingException::InconsistentModellingException(
-    const InconsistentModellingException& other) noexcept : item_(other.item_), message_(other.message_)
+    const InconsistentModellingException& other) noexcept : item_(other.item_), message_(other.message_), fullMessage_(other.fullMessage_)
 {
 }
 
@@ -35,9 +37,9 @@ OpenInfraPlatform::Core::Exception::InconsistentModellingException::Inconsistent
 */
 OpenInfraPlatform::Core::Exception::InconsistentModellingException::InconsistentModellingException(
     const std::shared_ptr<oip::EXPRESSObject>& item, const std::string& message) noexcept
+	: item_(item), message_(message), fullMessage_("")
 {
-    item_ = item;
-    message_ = message;
+	buildFull();
 }
 
 /*!
@@ -46,9 +48,9 @@ OpenInfraPlatform::Core::Exception::InconsistentModellingException::Inconsistent
 */
 OpenInfraPlatform::Core::Exception::InconsistentModellingException::InconsistentModellingException(
 	const std::string& message) noexcept
+	: item_(nullptr), message_(message), fullMessage_("")
 {
-	item_ = nullptr;
-	message_ = message;
+	buildFull();
 }
 
 //! Destructor
@@ -58,15 +60,23 @@ OpenInfraPlatform::Core::Exception::InconsistentModellingException::~Inconsisten
 
 
 /*!
-\brief Returns what is not supported.
-\returns A message with the entity name and the \c message.
+\brief Builds the full error message.
 */
-const char* OpenInfraPlatform::Core::Exception::InconsistentModellingException::what() const
+void OpenInfraPlatform::Core::Exception::InconsistentModellingException::buildFull()
 {
 	std::string s = "";
 	if( item_ )
 		s += "Modelling inconsistent at " + item_->getErrorLog() + (message_.empty() ? "." : ": ");
 	if (!message_.empty())
 		s += message_;
-    return s.c_str();
+	fullMessage_ = s;
+}
+
+/*!
+\brief Returns what is not supported.
+\returns A message with the entity name and the \c message.
+*/
+const char* OpenInfraPlatform::Core::Exception::InconsistentModellingException::what() const
+{
+	return fullMessage_.c_str();
 }

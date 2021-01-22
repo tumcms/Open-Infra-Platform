@@ -38,8 +38,7 @@ class ExtrudedSolidTest : public VisualTest {
 		express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
 
 		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
-		importer->collectGeometryData(express_model);
-		oip::ConverterBuwT<emt::IFC4X1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
+		model = importer->collectData(express_model);
 		
 		_background = renderer->captureImage();
 		renderer->setModel(model);
