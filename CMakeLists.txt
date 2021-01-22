@@ -109,9 +109,9 @@ option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to find boost, Eigen and Qt
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
 	find_path(OIP_Boost_DIR NAMES boost/version.hpp HINTS
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
-		"C:\\thirdparty\\boost_1_65_1")
-	find_path(OIP_QT_DIR NAMES Qt5 HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64\\lib\\cmake")
+		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_75_0"
+		"C:\\thirdparty\\boost_1_75_0")
+	find_path(OIP_QT_DIR NAMES Qt5 HINTS "C:\\Qt2\\5.14.2\\msvc${MSVC_VERSION_YEAR}_64\\lib\\cmake")
 	find_path(OIP_PROJ_DIR NAMES proj-config.cmake HINTS "C:\\OSGeo4W64\\apps\\proj-dev\\share\\cmake\\proj4\\proj")
 endif()
 
@@ -210,7 +210,7 @@ set(QT5_COMPONENTS
 )
 set(CMAKE_PREFIX_PATH ${OIP_QT_DIR})
 
-find_package( Qt5 5.12.1 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
+find_package( Qt5 5.14.2 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
 
 # Get deploy target to automatically deploy Qt5 dlls in the binary directory
 if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)

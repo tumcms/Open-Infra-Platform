@@ -2,7 +2,7 @@
 
 Guide on how to compile the project TUM OpenInfraPlatform.
 
-*NOTE:* This document is only a snapshot of the current state (November 2020) and may become obsolete in the future.
+*NOTE:* This document is only a snapshot of the current state (January 2021) and may become obsolete in the future.
 
 ## Content 
 
@@ -40,7 +40,7 @@ You will need to install:
 
 ### <a name="thirdparty"></a> Third-party libraries
 
-4. **Qt 5.12.1** - find [here](https://www.qt.io/download-open-source).
+4. **Qt 5.14.2** - find [here](https://www.qt.io/download-open-source).
 
 	*	Download Qt Online Installer 
 	*	While your computer is downloading Qt installer, create Qt account. 
@@ -49,18 +49,18 @@ You will need to install:
 
 		* Check the *Archive* box
 		* Click *Filter*
-		* Open section **Qt 5.12.1**
-		* **Mandatory:** Select *binaries x64 msvc2017*
+		* Open section **Qt 5.14.2**
+		* **Mandatory:** Select *binaries x64 msvc2017* or *msvc2019*
 		* **Mandatory:** Select *mingw*
 		
 		![](./fig/Qt_Installation_settings.png)
 
 *NOTE:* There are components, which Qt Online Installer selects as default options. You can uncheck these components for saving computer memory.
 
-5. **Boost 1_65_1** - find [here](https://sourceforge.net/projects/boost/files/boost-binaries/1.65.1/boost_1_65_1-msvc-14.1-64.exe/download).
+5. **Boost 1_75_0** - [vs2017](https://sourceforge.net/projects/boost/files/boost-binaries/1.75.0/boost_1_75_0-msvc-14.1-64.exe/download) or [vs2019](https://sourceforge.net/projects/boost/files/boost-binaries/1.75.0/boost_1_75_0-msvc-14.2-64.exe/download)
 
-	* Create a folder `C:\thirdparty` and install **Boost 1_65_1** to `C:\thirdparty\vs2017\x64\boost_1_65_1`.
-	* Add this path to the environment variables. (Create new environment variable called `Boost_INCLUDE_DIR`. This variable should point to the binary folder, where **Boost 1_65_1** is staged (e.g. `C:\thirdparty\vs2017\x64\boost_1_65_1`).
+	* Create a folder `C:\thirdparty` and install **Boost 1_75_0** to `C:\thirdparty\vs2017\x64\boost_1_75_0` or `C:\thirdparty\vs2019\x64\boost_1_75_0`.
+	* Add this path to the environment variables. (Create new environment variable called `Boost_INCLUDE_DIR`. This variable should point to the binary folder, where **Boost 1_75_0** is staged (e.g. `C:\thirdparty\vs2017\x64\boost_1_75_0` or `C:\thirdparty\vs2019\x64\boost_1_75_0`).
 
 6. **Anaconda 2** (version with Python 2.7) - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe). 
 7. **PROJ**
@@ -104,7 +104,7 @@ You will need to install:
 4. Check the *Grouped* and *Advanced* boxes (top right in CMake GUI).
 5. Click *Configure*. 
 6. Select the Generator:
-	* Select *Visual Studio 15 2017 Win64*.
+	* Select *Visual Studio 15 2017 Win64* or *Visual Studio 16 2019 Win64*.
 	* Select *x64*
 	* Write *host=x64* as optional toolset.
 
