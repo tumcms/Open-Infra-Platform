@@ -782,7 +782,7 @@ namespace OpenInfraPlatform {
 					//	END_ENTITY;
 
 					std::vector<carve::geom::vector<2>> axisVector;
-					std::vector<carve::geom::vector<2>> axisVectorOnGrid;
+					carve::math::Matrix gridPositionMatrix;
 					std::vector<carve::geom::vector<2>> segmentStartPoints;
 					
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter = std::make_shared<PlacementConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert());
@@ -795,46 +795,57 @@ namespace OpenInfraPlatform {
 						std::reverse(std::begin(axisVector), std::end(axisVector));
 
 					if (!gridAxis->PartOfU.empty() && gridAxis->PartOfV.empty() && gridAxis->PartOfW.empty()) {
-						return axisVector;
+						for (const auto& grid : gridAxis->PartOfU)
+						{
+							gridPositionMatrix = getGridPosition(grid, alreadyApplied);
+						}
+						return applyGridPositionToAxis(gridPositionMatrix, axisVector);
 					}
 					else if (gridAxis->PartOfU.empty() && !gridAxis->PartOfV.empty() && gridAxis->PartOfW.empty()) {
-						return axisVector;
+						for (const auto& grid : gridAxis->PartOfV)
+						{
+							gridPositionMatrix = getGridPosition(grid, alreadyApplied);
+						}
+						return applyGridPositionToAxis(gridPositionMatrix, axisVector);
 					}
 					else if (gridAxis->PartOfU.empty() && gridAxis->PartOfV.empty() && !gridAxis->PartOfW.empty()) {
 						for (const auto& grid : gridAxis->PartOfW)
 						{
-							std::vector<carve::geom::vector<2>> axisVectorOnGrid = applyGridPositionToAxis(grid, axisVector, alreadyApplied);
+							gridPositionMatrix = getGridPosition(grid, alreadyApplied);
 						}
-						return axisVectorOnGrid;
+						return applyGridPositionToAxis(gridPositionMatrix, axisVector);
 					}
 					else  {
 						oip::InconsistentModellingException(gridAxis, "IfcGridAxis can only refer to a single instance of IfcGrid.");
 					}
 				}
 
-				std::vector<carve::geom::vector<2>> applyGridPositionToAxis(const EXPRESSReference< typename IfcEntityTypesT::IfcGrid> grid,
-					const std::vector<carve::geom::vector<2>> axisVector,
+				carve::math::Matrix getGridPosition(const EXPRESSReference< typename IfcEntityTypesT::IfcGrid> grid, 
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+				)const throw(...)
+				{
+					if (grid->ObjectPlacement) {
+						return convertIfcObjectPlacement(grid->ObjectPlacement, alreadyApplied);
+					}
+					else {
+						throw oip::InconsistentModellingException(grid, "Impossible to define a position of the grid");
+					}
+				}
+				
+				std::vector<carve::geom::vector<2>> applyGridPositionToAxis(const carve::math::Matrix gridPositionMatrix,
+					const std::vector<carve::geom::vector<2>> axisVector
 				)const throw(...) 
 				{
 					std::vector<carve::geom::vector<2>> axisVectorOnGrid;
 					
-					if (grid->ObjectPlacement) {
-						
-						carve::math::Matrix gridPositionMatrix = convertIfcObjectPlacement(grid->ObjectPlacement, alreadyApplied);
-
-						for (int i = 0; i < axisVector.size(); i++) {
-							carve::geom::vector<2> axis = axisVector.at(i);
-							carve::geom::vector<3> axis3D = carve::geom::VECTOR(axis.x, axis.y, 0.);
-							axis3D = gridPositionMatrix * axis3D;
-							axisVectorOnGrid.push_back(carve::geom::VECTOR(axis3D.x, axis3D.y));
-						}
-						
-						return axisVectorOnGrid;
+					for (int i = 0; i < axisVector.size(); i++) {
+						carve::geom::vector<2> axis = axisVector.at(i);
+						carve::geom::vector<3> axis3D = carve::geom::VECTOR(axis.x, axis.y, 0.);
+						axis3D = gridPositionMatrix * axis3D;
+						axisVectorOnGrid.push_back(carve::geom::VECTOR(axis3D.x, axis3D.y));
 					}
-					else {
-						return axisVector;
-					}
+						
+					return axisVectorOnGrid;
 				}
 
 				/**********************************************************************************************/
