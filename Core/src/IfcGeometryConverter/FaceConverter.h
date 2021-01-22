@@ -1239,8 +1239,50 @@ namespace OpenInfraPlatform {
 						}
 
 						itemData->open_or_closed_polyhedrons.push_back(polygon);
+						return;
 					}
 
+					if (tessItem.template isOfType<typename IfcEntityTypesT::IfcPolygonalFaceSet>())
+					{
+						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+						auto faceSet = tessItem.template as<typename IfcEntityTypesT::IfcPolygonalFaceSet>();
+
+						double length_factor = UnitConvert()->getLengthInMeterFactor();
+
+						// obtain vertices from coordinates list and add them to the new polygon
+						for (const auto& point : faceSet->Coordinates->CoordList)
+						{
+							carve::geom::vector<3> vertex =
+								carve::geom::VECTOR(point[0],
+									point[1],
+									point[2]) * length_factor;
+
+							// apply transformation
+							vertex = pos * vertex;
+
+							polygon->addVertex(vertex);
+						}
+
+						auto& faces = faceSet->Faces;
+						auto& pnIndices = faceSet->PnIndex; // optional
+
+						for( auto& face : faces )
+						{
+							// determine vertices' indices
+							std::vector<size_t> indices(face->CoordIndex.size());
+							std::transform(std::begin(face->CoordIndex), std::end(face->CoordIndex), std::begin(indices),
+								[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
+							polygon->addFace(std::begin(indices), std::end(indices));
+
+							if (face.template isOfType<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>())
+								BLUE_LOG(warning) << "Ignoring voids at " << face->getErrorLog();
+						}
+
+						itemData->open_or_closed_polyhedrons.push_back(polygon);
+						return;
+					}
+
+					throw oip::UnhandledException(tessItem);
 				}
 
 				protected:

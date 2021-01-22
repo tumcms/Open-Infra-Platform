@@ -40,20 +40,31 @@ Entity Schema::getEntityByIndex(size_t index) const {
 	return entities_[index];
 }
 
+Entity& Schema::getEntityByIndex(size_t index) {
+	return entities_[index];
+}
+
 Entity Schema::getEntityByName(const std::string& name) const {
-	for (const auto ent : entities_) 
-		if (ent.getName() == name)
-			return ent;
+	const auto ent = std::find_if(entities_.begin(), entities_.end(), 
+		[&name](const auto& el) {return el.getName() == name;});
+	if( ent != entities_.end() )
+		return *ent;
 
 	throw std::runtime_error("Entity does not exist.");
 }
 
-bool OpenInfraPlatform::ExpressBindingGenerator::Schema::hasEntity(const std::string& name) const {
-	for (const auto ent : entities_)
-		if (ent.getName() == name)
-			return true;
+Entity& Schema::getEntityByName(const std::string& name) {	
+	const auto ent = std::find_if(entities_.begin(), entities_.end(), 
+		[&name](const auto& el) {return el.getName() == name;});
+	if( ent != entities_.end() )
+		return *ent;
 
-	return false;
+	throw std::runtime_error("Entity does not exist.");
+}
+
+bool Schema::hasEntity(const std::string& name) const {
+	return std::find_if(entities_.begin(), entities_.end(), 
+		[&name](const auto& el) {return el.getName() == name;}) != std::end(entities_);
 }
 
 std::vector<std::string> Schema::getSuperTypes(const Entity& entity) const {
@@ -84,6 +95,9 @@ size_t Schema::getTypeCount() const {
 }
 
 Type Schema::getTypeByIndex(size_t index) const {
+	return types_[index];
+}
+Type& Schema::getTypeByIndex(size_t index) {
 	return types_[index];
 }
 
@@ -182,29 +196,36 @@ bool Schema::isSelectType(const std::string& name) const {
 }
 
 Type Schema::getTypeByName(const std::string& name) const {
-	for (const auto typ : types_)
-		if (typ.getName() == name)
-			return typ;
+	const auto typ = std::find_if(types_.begin(), types_.end(), 
+		[&name](const auto& el) {return el.getName() == name;});
+	if(typ != types_.end() )
+		return *typ;
+
+	throw std::runtime_error("Type does not exist.");
+}
+
+Type& Schema::getTypeByName(const std::string& name) {
+	const auto typ = std::find_if(types_.begin(), types_.end(),
+		[&name](const auto& el) {return el.getName() == name;});
+	if(typ != types_.end() )
+		return *typ;
 
 	throw std::runtime_error("Type does not exist.");
 }
 
 bool Schema::hasType(const std::string& name) const {
-	for (const auto typ : types_)
-		if (typ.getName() == name)
-			return true;
-
-	return false;
+	return std::find_if(types_.begin(), types_.end(), 
+		[&name](const auto& el) {return el.getName() == name;}) != std::end(types_);
 }
 
-std::vector<std::string> Schema::getAllEntityAttributesNames(const Entity& entity) const {
-	std::vector<EntityAttribute> attributes = getAllEntityAttributes(entity);
+std::vector<std::string> Schema::getAllEntityAttributesNames(const Entity& entity, const bool includingInverse) const {
+	std::vector<EntityAttribute> attributes = getAllEntityAttributes(entity, includingInverse);
 	std::vector<std::string> result(attributes.size());
 	std::transform(attributes.begin(), attributes.end(), result.begin(), [](const auto it) { return it.getName(); });
 	return result;
 }
 
-std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity) const {
+std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity, const bool includingInverse) const {
 	std::vector<EntityAttribute> result;
 
 	auto superTypes = getSuperTypes(entity);
@@ -212,13 +233,15 @@ std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity
 	for (const auto superType : superTypes) {
 		Entity x = getEntityByName(superType);
 
-		for (const auto attr : x.getAttributes()) {
-			result.push_back(attr);
+		for (int ai = 0; ai < x.getAttributeCount(); ++ai) {
+			if( includingInverse || !x.getAttribute(ai).isInverse() )
+				result.push_back(x.getAttribute(ai));
 		}
 	}
 
-	for (const auto attr : entity.getAttributes()) {
-		result.push_back(attr);
+	for (int ai = 0; ai < entity.getAttributeCount(); ai++) {
+		if (includingInverse || !entity.getAttribute(ai).isInverse())
+			result.push_back(entity.getAttribute(ai));
 	}
 
 	return result;
@@ -226,7 +249,32 @@ std::vector<EntityAttribute> Schema::getAllEntityAttributes(const Entity& entity
 
 const bool Schema::isAbstract(const Entity & entity) const
 {
-	return getAllEntityAttributes(entity).size() == 0;
+	return getAllEntityAttributes(entity, false).empty();
+}
+
+void Schema::linkInverses()
+{
+	for (auto ent : entities_)
+	{
+		for (auto attr : ent.getAttributes())
+		{
+			if (attr.isInverse())
+			{
+				if (attr.getInverses().empty())
+					throw std::runtime_error("Inverse attribute was empty!");
+
+				const std::string entity = std::template get<0>(attr.getInverses().front());
+				for( auto it = entities_.begin(); it != entities_.end(); it++ )
+				{
+					if( it->getName() == entity )
+				//	auto superTypes = getSuperTypes(*it);
+				//	auto found = std::find(superTypes.begin(), superTypes.end(), inverseEntity);
+				//	if( found != superTypes.end() )
+						it->addInverseCounterpart(std::template get<1>(attr.getInverses().front()), ent.getName(), attr.getName());
+				}
+			}
+		}
+	}
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END

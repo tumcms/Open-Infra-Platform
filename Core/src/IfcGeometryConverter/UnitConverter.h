@@ -102,7 +102,7 @@ namespace OpenInfraPlatform
 						case 2:
 						{
 							// IfcNamedUnit
-							const auto& namedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcNamedUnit>>().lock();
+							const auto& namedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcNamedUnit>>();
 
 							if (namedUnit->UnitType == unit_type)
 							{
@@ -141,7 +141,7 @@ namespace OpenInfraPlatform
 						case 0:
 						{
 							// IfcDerivedUnit
-							auto& derivedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcDerivedUnit>>().lock();
+							auto& derivedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcDerivedUnit>>();
 							
 							if (derivedUnit->UnitType == unit_type)
 							{

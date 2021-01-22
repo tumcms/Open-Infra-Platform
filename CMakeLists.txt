@@ -315,27 +315,27 @@ endforeach()
 #------------------------------------------------------------------------------
 # DOXYGEN. 
 #------------------------------------------------------------------------------
-Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM Open Infra Platform." OFF)
+Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM OpenInfraPlatform." OFF)
 
 if(DOXYGEN_GENERATE_DOCUMENTATION)
 
-find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
-"C:/thirdparty/doxygen"
-)
+	find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
+		"C:/thirdparty/doxygen"
+	)
 
-find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
-"C:/thirdparty/graphviz_dot/release/bin"
-)
+	find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
+		"C:/thirdparty/graphviz_dot/release/bin"
+	)
 
-find_package(Doxygen
-	REQUIRED dot
-)
+	find_package(Doxygen
+		REQUIRED dot
+	)
 
-include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
-set_target_properties(OpenInfraPlatform.GenerateDocumentation 			PROPERTIES FOLDER "OpenInfraPlatform/Commands")
+	include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
+	set_target_properties(OpenInfraPlatform.GenerateDocumentation 			PROPERTIES FOLDER "OpenInfraPlatform/Commands")
 
-else()
-message("DOXYGEN_GENERATE_DOCUMENTATION box not checked. Thus not generating doxygen documentation for TUM Open Infra Platform project. To generate doxygen documentation, check the box next to DOXYGEN_GENERATE_DOCUMENTATION.")
+else(DOXYGEN_GENERATE_DOCUMENTATION)
+	message("DOXYGEN_GENERATE_DOCUMENTATION box not checked. Thus not generating doxygen documentation for TUM OpenInfraPlatform project. To generate doxygen documentation, check the DOXYGEN_GENERATE_DOCUMENTATION.")
 endif(DOXYGEN_GENERATE_DOCUMENTATION)
 
 #----------------------------------------------------------
