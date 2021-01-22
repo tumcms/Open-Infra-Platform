@@ -251,7 +251,7 @@ namespace OpenInfraPlatform
 							//Get directrix and cross sections (attributes 1-2).
 							const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix =
 								sectioned_solid_horizontal->Directrix;
-							std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
+							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
 							vec_cross_sections.resize(sectioned_solid_horizontal->CrossSections.size());
 							std::transform(sectioned_solid_horizontal->CrossSections.begin(),
 								sectioned_solid_horizontal->CrossSections.end(),
@@ -310,18 +310,18 @@ namespace OpenInfraPlatform
 
 							for (int i = 0; i < vec_cross_sections.size(); ++i)
 							{
-							   std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
-							   const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profile_converter->getCoordinates();
+								std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
+								const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profile_converter->getCoordinates();
 
-							   // Save profile coords in paths
-							   std::vector<std::vector<carve::geom::vector<2> > > profile_coords_2d;
-							   for (int p = 0; p < profile_coords.size(); ++p)
-							   {
-								  const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[p];
+								// Save profile coords in paths
+								std::vector<std::vector<carve::geom::vector<2> > > profile_coords_2d;
+								for (int p = 0; p < profile_coords.size(); ++p)
+								{
+									const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[p];
 								
-								  profile_coords_2d.push_back(profile_loop);
-							   }
-							   paths.push_back(profile_coords_2d);
+									profile_coords_2d.push_back(profile_loop);
+								}
+								paths.push_back(profile_coords_2d);
 
 							}
 
@@ -644,10 +644,10 @@ namespace OpenInfraPlatform
 				throw oip::UnhandledException(sectioned_solid);
 			}
 			
-			void convertIfcSolidModel(const std::EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
+			void convertIfcSolidModel(const EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
                                                   const carve::math::Matrix& pos,
                                                   std::shared_ptr<ItemData> itemData)
-			    {
+			{
 				// *****************************************************************************************************************************************//
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
 				// *****************************************************************************************************************************************//
