@@ -1850,16 +1850,20 @@ namespace OpenInfraPlatform {
 				) const throw(...)
 				{
 					carve::geom::vector<3> centerToTrimPoint = trimPoint - circleCenter;
-					if (abs(centerToTrimPoint.length() - circleRadius) < 0.0001) {
+
+					if (GeomSettings()->areEqual(abs(centerToTrimPoint.length()), circleRadius)){
 						centerToTrimPoint.normalize();
 						double cosAngle = carve::geom::dot(centerToTrimPoint, carve::geom::vector<3>(carve::geom::VECTOR(1., 0., 0.)));
 
-						if (abs(cosAngle) < 0.0001) {
+						if (GeomSettings()->areEqual(abs(cosAngle), 0.)) {
 							if (centerToTrimPoint.y > 0.) {
 								return M_PI_2;
 							}
 							else if (centerToTrimPoint.y < 0.) {
 								return M_PI * 1.5;
+							}
+							else {
+								throw oip::InconsistentGeometryException("Cosinus and sinus cannot be 0 simultaneously!");
 							}
 						}
 						else {
