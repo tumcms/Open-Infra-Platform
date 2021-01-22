@@ -678,8 +678,7 @@ namespace OpenInfraPlatform {
 					double xDeltaA = arcMid2D.x - arcStart2D.x;
 					double yDeltaB = arcEnd2D.y - arcMid2D.y;
 					double xDeltaB = arcEnd2D.x - arcMid2D.x;
-
-					if (xDeltaA != 0. && xDeltaB != 0.) {
+					if (!GeomSettings()->areEqual(xDeltaA, 0.) && !GeomSettings()->areEqual(xDeltaB, 0.)){
 						double aSlope = yDeltaA / xDeltaA;
 						double bSlope = yDeltaB / xDeltaB;
 
@@ -724,6 +723,9 @@ namespace OpenInfraPlatform {
 								normalVector.z * distance + firstOrthogonalDirection.z * circle_points[i].x + secondOrthogonalDirection.z * circle_points[i].y));
 						}
 						return loop_intern;
+					}
+					else {
+						throw oip::InconsistentGeometryException("The distance between points cannot be 0");
 					}
 				}
 
