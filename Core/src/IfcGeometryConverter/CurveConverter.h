@@ -1907,12 +1907,15 @@ namespace OpenInfraPlatform {
 					if ((centerToTrimPoint.x / ellipseRadiusX) <= 1. && (centerToTrimPoint.y / ellipseRadiusY) <= 1.) {
 						double cosAngle = centerToTrimPoint.x / ellipseRadiusX;
 
-						if (abs(cosAngle) < 0.0001) {
+						if (GeomSettings()->areEqual(abs(cosAngle), 0.)) {
 							if (centerToTrimPoint.y > 0.) {
 								return M_PI_2;
 							}
 							else if (centerToTrimPoint.y < 0.) {
 								return 3 * M_PI_2;
+							}
+							else {
+								throw oip::InconsistentGeometryException("Cosinus and sinus cannot be 0 simultaneously!");
 							}
 						}
 						else {
