@@ -114,6 +114,8 @@ You will need to install:
 
 *NOTE:* A few (red) warnings in the lower window of CMake can be ignored as long as it states *Configuring done* at the end.
 
+*NOTE:* To remove all `eigen` unit tests from the solution, the `BUILD_TESTING` needs to be checked off in CMake.
+
 8. After configuration process has successfully finished, click *Generate*.
 9. After generation process is done click *Open Project*. It will open the OpenInfraPlatform solution in Visual Studio.
 
