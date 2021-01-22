@@ -4,6 +4,8 @@ Guide on how to compile the project TUM OpenInfraPlatform.
 
 *NOTE:* This document is only a snapshot of the current state (January 2021) and may become obsolete in the future.
 
+*NOTE:* For some common mistakes / errors - see [FAQ](./FAQ.md).
+
 ## Content 
 
 1. [Prerequisites](#Prerequisites)
