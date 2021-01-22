@@ -761,7 +761,7 @@ namespace OpenInfraPlatform {
 				/**********************************************************************************************/
 				/*! \brief Convert \c IfcGridAxis
 				* \param[in] IfcGridAxis			The \c IfcGridAxis to be converted
-				* \return							the tessellated axis' curve (an ordered array of points, i.e. a polyline)
+				* \return							The tessellated axis' curve (an ordered array of points, i.e. a polyline)
 				*/
 				std::vector<carve::geom::vector<2>> convertIfcGridAxis(const EXPRESSReference<typename IfcEntityTypesT::IfcGridAxis>& gridAxis
 				) const throw(...)
@@ -810,6 +810,11 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				/**********************************************************************************************/
+				/*! \brief Calculates a position of the grid. 
+				* \param[in] grid					A pointer to data from \c IfcGrid.
+				* \return							A grid position matrix.
+				*/
 				carve::math::Matrix getGridPosition(const EXPRESSReference< typename IfcEntityTypesT::IfcGrid>& grid
 				)const throw(...)
 				{
@@ -822,6 +827,12 @@ namespace OpenInfraPlatform {
 					}
 				}
 				
+				/**********************************************************************************************/
+				/*! \brief Applies position of the grid to the tessellated axis' curve.
+				* \param[in] gridPositionMatrix			A grid position matrix.
+				* \param[in] axisVector					The tessellated axis' curve without applied position of the grid.
+				* \return								The tessellated axis' curve with applied position of the grid.
+				*/
 				std::vector<carve::geom::vector<2>> applyGridPositionToAxis(const carve::math::Matrix& gridPositionMatrix,
 					const std::vector<carve::geom::vector<2>>& axisVector
 				)const throw(...) 
@@ -841,7 +852,7 @@ namespace OpenInfraPlatform {
 				/**********************************************************************************************/
 				/*! \brief Convert \c IfcVirtualGridIntersection to a transformation matrix
 				* \param[in] intersection			The \c IfcVirtualGridIntersection to be converted
-				* \return 					A tuple: 1: Location of the grid, 2: tangent of the first intersecting axis	
+				* \return 							A tuple: 1: Location of the grid, 2: tangent of the first intersecting axis	
 				*/
 				std::tuple<carve::geom::vector<3>, carve::geom::vector<3>> convertIfcVirtualGridIntersection(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcVirtualGridIntersection>& intersection
