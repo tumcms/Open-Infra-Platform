@@ -15,7 +15,7 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <reader/IFC4X1Reader.h>
+#include <EarlyBinding/IFC4X1/src/reader/IFC4X1Reader.h>
 #include <namespace.h>
 
 #include <VisualTest.h>
@@ -93,7 +93,7 @@ TEST_F(GridPlacement, CountEssentialEntities) {
 	EXPECT_EQ(result5, 25);
 }
 
-/*
+
 TEST_F(GridPlacement, ImageIsSaved)
 {
 	// Arrange
@@ -136,14 +136,14 @@ TEST_F(GridPlacement, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	
+	/*
 	buw::storeImage(testPath("grid-placement_front.png").string(), image_front);
 	buw::storeImage(testPath("grid-placement_top.png").string(), image_top);
 	buw::storeImage(testPath("grid-placement_bottom.png").string(), image_bottom);
 	buw::storeImage(testPath("grid-placement_left.png").string(), image_left);
 	buw::storeImage(testPath("grid-placement_right.png").string(), image_right);
 	buw::storeImage(testPath("grid-placement_back.png").string(), image_back);
-	
+	*/
 
 	// Assert
 	EXPECT_EQ(image_front, expected_front);
@@ -192,7 +192,7 @@ TEST_F(GridPlacement, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	
+	/*
 	buw::storeImage(testPath("grid-placement_front_left_bottom.png").string(), image_front_left_bottom);
 	buw::storeImage(testPath("grid-placement_front_right_bottom.png").string(), image_front_right_bottom);
 	buw::storeImage(testPath("grid-placement_top_left_front.png").string(), image_top_left_front);
@@ -201,7 +201,7 @@ TEST_F(GridPlacement, VertexViews)
 	buw::storeImage(testPath("grid-placement_top_right_back.png").string(), image_top_right_back);
 	buw::storeImage(testPath("grid-placement_back_left_bottom.png").string(), image_back_left_bottom);
 	buw::storeImage(testPath("grid-placement_right_bottom_back.png").string(), image_right_bottom_back);
-	
+	*/
 
 	// Assert
 	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
@@ -212,4 +212,4 @@ TEST_F(GridPlacement, VertexViews)
 	EXPECT_EQ(image_top_right_back, expected_top_right_back);
 	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
 	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
-}*/
+}
