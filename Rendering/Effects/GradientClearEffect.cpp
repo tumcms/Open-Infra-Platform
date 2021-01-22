@@ -20,7 +20,7 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
-GradientClearEffect::GradientClearEffect(buw::IRenderSystem* renderSystem, buw::ReferenceCounted<buw::IViewport> viewport) : Effect(renderSystem), viewport_(viewport) {
+GradientClearEffect::GradientClearEffect(buw::IRenderSystem* renderSystem, buw::ReferenceCounted<buw::IViewport> viewport) : EffectBase(renderSystem), viewport_(viewport) {
 
 }
 

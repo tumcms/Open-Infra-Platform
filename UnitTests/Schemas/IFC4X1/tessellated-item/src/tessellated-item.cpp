@@ -15,18 +15,19 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <reader/IFC4X1Reader.h>
+#include <reader/IFC4x1Reader.h>
 #include <namespace.h>
 
 #include <VisualTest.h>
 
+#include <IfcGeometryConverter/IfcImporterImpl.h>
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
-#include <IfcGeometryConverter/IfcImporterImpl.h>
 
 using namespace testing;
 
-class TessellatedItem4x1Test : public VisualTest {
+
+class TesselatedItem : public VisualTest {
 protected:
 
 	// Test standard values
@@ -43,6 +44,7 @@ protected:
 
 		_background = renderer->captureImage();
 		renderer->setModel(model);
+
 	}
 
 	virtual void TearDown() override {
@@ -51,25 +53,18 @@ protected:
 	}
 
 	virtual std::string TestName() const { return "tessellated-item"; }
-	virtual std::string Schema() const { return "IFC4X1"; }
-
-	const boost::filesystem::path filename = dataPath("tessellated-item.ifc");
+	virtual std::string Schema() const { return "IFC4x1"; }
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
-TEST_F(TessellatedItem4x1Test, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(29));
+TEST_F(TesselatedItem, AllEntitiesAreRead) {
+	EXPECT_THAT(express_model->entities.size(), Eq(349));
 }
 
-TEST_F(TessellatedItem4x1Test, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
-	EXPECT_NE(result, express_model->entities.end());
-}
-
-TEST_F(TessellatedItem4x1Test, ImageIsSaved)
+TEST_F(TesselatedItem, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = renderer->captureImage();
@@ -81,7 +76,7 @@ TEST_F(TessellatedItem4x1Test, ImageIsSaved)
 	EXPECT_NO_THROW(buw::loadImage4b(testPath("tessellated-item.png").string()));
 }
 
-TEST_F(TessellatedItem4x1Test, PlaneSurfaceViews)
+TEST_F(TesselatedItem, PlaneSurfaceViews)
 {
 	// Arrange
 	const auto expected_front = buw::loadImage4b(dataPath("tessellated-item_front.png").string());
@@ -129,7 +124,7 @@ TEST_F(TessellatedItem4x1Test, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(TessellatedItem4x1Test, VertexViews)
+TEST_F(TesselatedItem, VertexViews)
 {
 	// Arrange
 	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("tessellated-item_front_left_bottom.png").string());
@@ -188,3 +183,5 @@ TEST_F(TessellatedItem4x1Test, VertexViews)
 	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
 	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
 }
+
+

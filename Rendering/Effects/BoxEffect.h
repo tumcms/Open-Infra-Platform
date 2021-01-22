@@ -20,8 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef OpenInfraPlatform_UserInterface_BoxEffect_F594ABC3_4E77_4E7B_BB89_2A31CD33156A_h
 #define OpenInfraPlatform_UserInterface_BoxEffect_F594ABC3_4E77_4E7B_BB89_2A31CD33156A_h
 
-#include <buw.Rasterizer.h>
-#include <buw.Engine.h>
+#include <Resources/EffectBase.h>
 #include <map>
 #include <tuple>
 
@@ -29,7 +28,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
-class BoxEffect : public buw::Effect {
+class BoxEffect : public EffectBase {
 public:	
 
 	/*Construct by providing the renderSystem, viewport, depthStencil and worldBuffer for camera etc.*/
@@ -54,6 +53,8 @@ private:
 	void v_init();
 	void v_render();
 
+	//! EffectBase interface - no action
+	virtual void changeOffset(const buw::Vector3d& offsetOld, const buw::Vector3d& offsetNew) override {}
 private:
 	buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer_ = nullptr;
 	buw::ReferenceCounted<buw::IConstantBuffer> viewportBuffer_ = nullptr;

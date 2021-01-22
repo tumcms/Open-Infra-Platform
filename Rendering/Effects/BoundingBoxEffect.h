@@ -19,13 +19,13 @@
 #ifndef BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h
 #define BlueFramework_UserInterface_BoundingBoxEffect_27ea70f0_b624_40ff_8b3e_20fcf02dfdf9_h
 
+#include <Resources/EffectBase.h>
 #include <Resources/RenderResources.h>
-#include <buw.Rasterizer.h>
 #include "..\namespace.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
-class BoundingBoxEffect : public buw::Effect {
+class BoundingBoxEffect : public EffectBase {
 public:
 	BoundingBoxEffect(
 		buw::IRenderSystem* renderSystem,
@@ -48,6 +48,9 @@ private:
 	void v_render();
 
 	void loadMap();
+
+	//! EffectBase interface - no action
+	virtual void changeOffset(const buw::Vector3d& offsetOld, const buw::Vector3d& offsetNew) override {}
 
 private:
 	buw::ReferenceCounted<buw::IPipelineState> pipelineState_;

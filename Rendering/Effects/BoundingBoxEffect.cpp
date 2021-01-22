@@ -485,7 +485,7 @@ bool BoundingBoxEffect::mapEnabled() const
 
 BoundingBoxEffect::BoundingBoxEffect(buw::IRenderSystem* renderSystem, buw::ReferenceCounted<buw::IViewport> viewport,
     buw::ReferenceCounted<buw::ITexture2D> depthStencil, buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer)
-    : Effect(renderSystem), 
+    : EffectBase(renderSystem), 
     viewport_(viewport), 
     depthStencil_(depthStencil), 
     worldBuffer_(worldBuffer),

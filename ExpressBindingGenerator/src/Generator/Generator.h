@@ -52,6 +52,6 @@ class Generator {
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END
 
-EMBED_INTO_OIP_NAMESPACE(Generator)
+EMBED_EXPRESSBINDINGGENERATOR_INTO_OIP_NAMESPACE(Generator)
 
 #endif // end define OpenInfraPlatform_ExpressBindingGenerator_Generator_9e4cf4b5_a3ce_40a9_a7f6_9849bd896016_h

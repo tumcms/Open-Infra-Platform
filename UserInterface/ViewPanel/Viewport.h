@@ -88,7 +88,7 @@ namespace OpenInfraPlatform {
 			}
 
 			void onChange();
-			void onChange(ChangeFlag changeFlag);
+			void onChange(const ChangeFlag changeFlag);
 			void onClear();
 
 			void reloadShader();
@@ -156,8 +156,6 @@ namespace OpenInfraPlatform {
 			void createDepthStencil();
 			void resizeDepthStencil();
 
-			void createIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel);
-
 		private Q_SLOTS:
 			void tick();
 
@@ -205,7 +203,7 @@ namespace OpenInfraPlatform {
 #endif
 
 			//buw::ReferenceCounted<oip::BillboardEffect> billboardEffect_;
-			std::vector<buw::ReferenceCounted<buw::Effect>> activeEffects_;
+			std::vector<buw::ReferenceCounted<oip::EffectBase>> activeEffects_;
 
 			// Clear
 			bool gradientClear_ = true;

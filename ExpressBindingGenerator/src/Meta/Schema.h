@@ -44,17 +44,22 @@ class Schema {
 
     void addEntity(const Entity &entity);
 
-    Entity getEntityByIndex(size_t index) const;
+	Entity getEntityByIndex(size_t index) const;
+	Entity& getEntityByIndex(size_t index);
 
-    Entity getEntityByName(const std::string &name) const;
+	Entity getEntityByName(const std::string &name) const;
+	Entity& getEntityByName(const std::string &name);
 	
 	bool hasEntity(const std::string &name) const;
 
-    std::vector<std::string> getAllEntityAttributesNames(const Entity &entity) const;
+    std::vector<std::string> getAllEntityAttributesNames(const Entity &entity, const bool includingInverse) const;
 
-    std::vector<EntityAttribute> getAllEntityAttributes(const Entity &entity) const;
+    std::vector<EntityAttribute> getAllEntityAttributes(const Entity &entity, const bool includingInverse) const;
 
 	const bool isAbstract(const Entity &entity) const;
+
+	// link the inverses (can only happen AFTER the whole schema is parsed)
+	void linkInverses();
 
     //---------------------------------------------------------------
     // Types
@@ -64,10 +69,15 @@ class Schema {
 
 	size_t getTypeCount() const;
 
-    Type getTypeByIndex(size_t index) const;
+	Type getTypeByIndex(size_t index) const;
+	Type& getTypeByIndex(size_t index);
 
-    Type getTypeByName(const std::string &typeName) const;
+	Type getTypeByName(const std::string &typeName) const;
+	Type& getTypeByName(const std::string &typeName);
 	Type getUnderlyingType(const std::string &name) const {
+		return getTypeByName(getTypeByName(name).getUnderlyingTypeName());
+	}
+	Type& getUnderlyingType(const std::string &name) {
 		return getTypeByName(getTypeByName(name).getUnderlyingTypeName());
 	}
 
@@ -97,6 +107,6 @@ class Schema {
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END
 
-EMBED_INTO_OIP_NAMESPACE(Schema)
+EMBED_EXPRESSBINDINGGENERATOR_INTO_OIP_NAMESPACE(Schema)
 
 #endif // end define OpenInfraPlatform_ExpressBindingGenerator_Schema_344294e5_aaf8_4f53_b817_db5ca43e2d80_h

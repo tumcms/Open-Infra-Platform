@@ -50,11 +50,32 @@
      </size>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <property name="usesScrollButtons">
      <bool>false</bool>
     </property>
+    <widget class="QWidget" name="tabModels">
+     <attribute name="title">
+      <string>Models</string>
+     </attribute>
+     <layout class="QGridLayout" name="gridLayout_87">
+      <item row="0" column="0">
+        <layout class="QVBoxLayout" name="verticalLayoutModels">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMaximumSize</enum>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_36">
+           <property name="text">
+            <string>Loaded models:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+      </item>
+     </layout>
+    </widget>
     <widget class="QWidget" name="tabAlignment">
      <attribute name="title">
       <string>Alignment</string>
@@ -237,7 +258,7 @@
          <enum>QTabWidget::North</enum>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>0</number>
         </property>
         <property name="elideMode">
          <enum>Qt::ElideNone</enum>
@@ -709,7 +730,7 @@
            <rect>
             <x>9</x>
             <y>9</y>
-            <width>261</width>
+            <width>263</width>
             <height>331</height>
            </rect>
           </property>

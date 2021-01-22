@@ -8,9 +8,9 @@ assignees: ''
 ---
 
 **File which is being refactored**
-Please provide the filename here!
+Please provide the file name/path here.
 
 **Functions**
-List all functions in the file which have to be refactored with possible code snippets!
+List all functions in the file which have to be refactored with possible code snippets.
 
 - [ ] Listed all functions in the issue
