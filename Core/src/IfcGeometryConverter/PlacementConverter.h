@@ -763,7 +763,9 @@ namespace OpenInfraPlatform {
 				* \param[in] IfcGridAxis			The \c IfcGridAxis to be converted
 				* \return							the tessellated axis' curve (an ordered array of points, i.e. a polyline)
 				*/
-				std::vector<carve::geom::vector<2>> convertIfcGridAxis(const EXPRESSReference<typename IfcEntityTypesT::IfcGridAxis>& gridAxis) const throw(...)
+				std::vector<carve::geom::vector<2>> convertIfcGridAxis(const EXPRESSReference<typename IfcEntityTypesT::IfcGridAxis>& gridAxis, 
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+				) const throw(...)
 				{
 					//	ENTITY IfcGridAxis;
 					//		AxisTag: OPTIONAL IfcLabel;
@@ -779,20 +781,60 @@ namespace OpenInfraPlatform {
 					//			WR2: (SIZEOF(PartOfU) = 1) XOR(SIZEOF(PartOfV) = 1) XOR(SIZEOF(PartOfW) = 1);
 					//	END_ENTITY;
 
-					std::vector<carve::geom::vector<2>> axis;
+					std::vector<carve::geom::vector<2>> axisVector;
+					std::vector<carve::geom::vector<2>> axisVectorOnGrid;
 					std::vector<carve::geom::vector<2>> segmentStartPoints;
-	
 					
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter = std::make_shared<PlacementConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert());
 
 					CurveConverterT<IfcEntityTypesT> gridConv(GeomSettings(), UnitConvert(), placementConverter);
-					gridConv.convertIfcCurve2D(gridAxis->AxisCurve, axis, segmentStartPoints);
+					gridConv.convertIfcCurve2D(gridAxis->AxisCurve, axisVector, segmentStartPoints);
 
 					if (!gridAxis->SameSense)
 						// turn around the axis
-						std::reverse(std::begin(axis), std::end(axis));
+						std::reverse(std::begin(axisVector), std::end(axisVector));
 
-					return axis;
+					if (!gridAxis->PartOfU.empty() && gridAxis->PartOfV.empty() && gridAxis->PartOfW.empty()) {
+						return axisVector;
+					}
+					else if (gridAxis->PartOfU.empty() && !gridAxis->PartOfV.empty() && gridAxis->PartOfW.empty()) {
+						return axisVector;
+					}
+					else if (gridAxis->PartOfU.empty() && gridAxis->PartOfV.empty() && !gridAxis->PartOfW.empty()) {
+						for (const auto& grid : gridAxis->PartOfW)
+						{
+							std::vector<carve::geom::vector<2>> axisVectorOnGrid = applyGridPositionToAxis(grid, axisVector, alreadyApplied);
+						}
+						return axisVectorOnGrid;
+					}
+					else  {
+						oip::InconsistentModellingException(gridAxis, "IfcGridAxis can only refer to a single instance of IfcGrid.");
+					}
+				}
+
+				std::vector<carve::geom::vector<2>> applyGridPositionToAxis(const EXPRESSReference< typename IfcEntityTypesT::IfcGrid> grid,
+					const std::vector<carve::geom::vector<2>> axisVector,
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+				)const throw(...) 
+				{
+					std::vector<carve::geom::vector<2>> axisVectorOnGrid;
+					
+					if (grid->ObjectPlacement) {
+						
+						carve::math::Matrix gridPositionMatrix = convertIfcObjectPlacement(grid->ObjectPlacement, alreadyApplied);
+
+						for (int i = 0; i < axisVector.size(); i++) {
+							carve::geom::vector<2> axis = axisVector.at(i);
+							carve::geom::vector<3> axis3D = carve::geom::VECTOR(axis.x, axis.y, 0.);
+							axis3D = gridPositionMatrix * axis3D;
+							axisVectorOnGrid.push_back(carve::geom::VECTOR(axis3D.x, axis3D.y));
+						}
+						
+						return axisVectorOnGrid;
+					}
+					else {
+						return axisVector;
+					}
 				}
 
 				/**********************************************************************************************/
@@ -801,7 +843,8 @@ namespace OpenInfraPlatform {
 				* \return 					A tuple: 1: Location of the grid, 2: tangent of the first intersecting axis	
 				*/
 				std::tuple<carve::geom::vector<3>, carve::geom::vector<3>> convertIfcVirtualGridIntersection(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcVirtualGridIntersection> &intersection
+					const EXPRESSReference<typename IfcEntityTypesT::IfcVirtualGridIntersection> &intersection,
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
 				) const throw(...)
 				{
 					// **************************************************************************************************************************
@@ -814,8 +857,8 @@ namespace OpenInfraPlatform {
 					if (intersection.expired())
 						throw oip::ReferenceExpiredException(intersection);
 
-					std::vector<carve::geom::vector<2>> xAxis = convertIfcGridAxis(intersection->IntersectingAxes[0]);
-					std::vector<carve::geom::vector<2>> yAxis = convertIfcGridAxis(intersection->IntersectingAxes[1]);
+					std::vector<carve::geom::vector<2>> xAxis = convertIfcGridAxis(intersection->IntersectingAxes[0], alreadyApplied);
+					std::vector<carve::geom::vector<2>> yAxis = convertIfcGridAxis(intersection->IntersectingAxes[1], alreadyApplied);
 
 					carve::geom::vector<2> intersectionPoint;
 					carve::geom::vector<2> xAxisPosition;
@@ -877,7 +920,9 @@ namespace OpenInfraPlatform {
 				*/
 				carve::geom::vector<3> convertIfcGridPlacementDirectionSelect(const EXPRESSOptional<typename IfcEntityTypesT::IfcGridPlacementDirectionSelect>& directionSelect,
 					const carve::geom::vector<3>& location,
-					const carve::geom::vector<3>& intersectingAxes1) const throw(...)
+					const carve::geom::vector<3>& intersectingAxes1,
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+				) const throw(...)
 				{	
 					// **************************************************************************************************************************
 					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcgridplacementdirectionselect.htm
@@ -895,7 +940,7 @@ namespace OpenInfraPlatform {
 					case 1: {
 						carve::geom::vector<3> location2;
 						carve::geom::vector<3> intersectingAxes2;
-						std::tie(location2, intersectingAxes2) = convertIfcVirtualGridIntersection(directionSelect.get().get<1>());
+						std::tie(location2, intersectingAxes2) = convertIfcVirtualGridIntersection(directionSelect.get().get<1>(), alreadyApplied);
 						return (location2 - location).normalized();
 					}	
 					default:
@@ -929,8 +974,8 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<3> location;
 					carve::geom::vector<3> intersectingAxes1;
 
-					std::tie(location, intersectingAxes1) = convertIfcVirtualGridIntersection(gridPlacement->PlacementLocation); 
-					carve::geom::vector<3> xAxisDirection = convertIfcGridPlacementDirectionSelect(gridPlacement->PlacementRefDirection, location, intersectingAxes1);
+					std::tie(location, intersectingAxes1) = convertIfcVirtualGridIntersection(gridPlacement->PlacementLocation, alreadyApplied);
+					carve::geom::vector<3> xAxisDirection = convertIfcGridPlacementDirectionSelect(gridPlacement->PlacementRefDirection, location, intersectingAxes1, alreadyApplied);
 					
 					carve::geom::vector<3> yAxisDirection = carve::geom::VECTOR(-xAxisDirection.y, xAxisDirection.x, 0.0);
 					// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcgridplacement.htm :
