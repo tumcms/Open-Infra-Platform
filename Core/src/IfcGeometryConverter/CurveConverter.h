@@ -678,7 +678,8 @@ namespace OpenInfraPlatform {
 					double xDeltaA = arcMid2D.x - arcStart2D.x;
 					double yDeltaB = arcEnd2D.y - arcMid2D.y;
 					double xDeltaB = arcEnd2D.x - arcMid2D.x;
-					if (!GeomSettings()->areEqual(xDeltaA, 0.) && !GeomSettings()->areEqual(xDeltaB, 0.)){
+
+					if (xDeltaA != 0. && xDeltaB != 0.) {
 						double aSlope = yDeltaA / xDeltaA;
 						double bSlope = yDeltaB / xDeltaB;
 
@@ -697,13 +698,13 @@ namespace OpenInfraPlatform {
 
 						// correct for -2*PI <= angle <= 2*PI
 						if (openingAngle > 0) {
-							GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
+							this->GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
 						}
 						else {
-							GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
+							this->GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
 						}
 
-						int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
+						int numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
 
 						std::vector<carve::geom::vector<2> > circle_points;
 						ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
@@ -725,7 +726,7 @@ namespace OpenInfraPlatform {
 						return loop_intern;
 					}
 					else {
-						throw oip::InconsistentGeometryException("The distance between points cannot be 0");
+						throw oip::InconsistentGeometryException("The distance between points cannot be 0.");
 					}
 				}
 
@@ -965,7 +966,7 @@ namespace OpenInfraPlatform {
 					// Calculate an opening angle.
 					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
-					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(circleRadius, abs(openingAngle));
+					int numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(circleRadius, abs(openingAngle));
 
 					const double circleCenter_x = 0.0;
 					const double circleCenter_y = 0.0;
@@ -1034,7 +1035,7 @@ namespace OpenInfraPlatform {
 					double radiusMin = std::min(xRadius, yRadius);
 
 					// Calculate a number of segments.
-					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
+					int numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
 					double deltaAngle = 2.0 * M_PI / numSegments;
 
 					double startAngle = 0.;
@@ -1051,7 +1052,7 @@ namespace OpenInfraPlatform {
 						double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
 						// Calculate a number of segments.
-						numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax, abs(openingAngle));
+						numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax, abs(openingAngle));
 						deltaAngle = openingAngle/ numSegments;
 					}
 
@@ -1374,7 +1375,7 @@ namespace OpenInfraPlatform {
 					// If first and last point have same coordinates, remove last point
 					while (loop.size() > 2) {
 						
-						if (GeomSettings()->areEqual(loop.front(), loop.back()))
+						if (this->GeomSettings()->areEqual(loop.front(), loop.back()))
 						{
 							loop.pop_back();
 							continue;
@@ -1707,7 +1708,7 @@ namespace OpenInfraPlatform {
 						}
 
 						dHorizontalRadius *= UnitConvert()->getLengthInMeterFactor();
-						nFragments = GeomSettings()->getNumberOfSegmentsForTessellation(dHorizontalRadius);
+						nFragments = this->GeomSettings()->getNumberOfSegmentsForTessellation(dHorizontalRadius);
 						dFragmentLength = dHorizontalSegLength / (double)(nFragments);
 						// Step 2 finished: We have the necessary information from the horizontal element
 
@@ -1791,7 +1792,7 @@ namespace OpenInfraPlatform {
 							dVerticalRadius *= UnitConvert()->getLengthInMeterFactor();
 
 							// determine tesselation density
-							int nVerFragments = GeomSettings()->getNumberOfSegmentsForTessellation(dVerticalRadius);
+							int nVerFragments = this->GeomSettings()->getNumberOfSegmentsForTessellation(dVerticalRadius);
 							double dVerFragmentsLength = dVerticalSegLength / (double)(nVerFragments);
 
 							// Select greater accuracy / more fragments / smaller fragments.
@@ -1851,11 +1852,11 @@ namespace OpenInfraPlatform {
 				{
 					carve::geom::vector<3> centerToTrimPoint = trimPoint - circleCenter;
 
-					if (GeomSettings()->areEqual(abs(centerToTrimPoint.length()), circleRadius)){
+					if (this->GeomSettings()->areEqual(centerToTrimPoint.length(), circleRadius)){
 						centerToTrimPoint.normalize();
 						double cosAngle = carve::geom::dot(centerToTrimPoint, carve::geom::vector<3>(carve::geom::VECTOR(1., 0., 0.)));
 
-						if (GeomSettings()->areEqual(abs(cosAngle), 0.)) {
+						if (this->GeomSettings()->areEqual(abs(cosAngle), 0.)) {
 							if (centerToTrimPoint.y > 0.) {
 								return M_PI_2;
 							}
@@ -1863,7 +1864,7 @@ namespace OpenInfraPlatform {
 								return M_PI * 1.5;
 							}
 							else {
-								throw oip::InconsistentGeometryException("Cosinus and sinus cannot be 0 simultaneously!");
+								throw oip::InconsistentGeometryException("Cosine and sine cannot be 0 simultaneously!");
 							}
 						}
 						else {
@@ -1907,15 +1908,15 @@ namespace OpenInfraPlatform {
 					if ((centerToTrimPoint.x / ellipseRadiusX) <= 1. && (centerToTrimPoint.y / ellipseRadiusY) <= 1.) {
 						double cosAngle = centerToTrimPoint.x / ellipseRadiusX;
 
-						if (GeomSettings()->areEqual(abs(cosAngle), 0.)) {
+						if (this->GeomSettings()->areEqual(abs(cosAngle), 0.)) {
 							if (centerToTrimPoint.y > 0.) {
 								return M_PI_2;
 							}
 							else if (centerToTrimPoint.y < 0.) {
-								return 3 * M_PI_2;
+								return M_PI * 1.5;
 							}
 							else {
-								throw oip::InconsistentGeometryException("Cosinus and sinus cannot be 0 simultaneously!");
+								throw oip::InconsistentGeometryException("Cosine and sine cannot be 0 simultaneously!");
 							}
 						}
 						else {
@@ -1971,10 +1972,10 @@ namespace OpenInfraPlatform {
 
 					// correct for -2*PI <= angle <= 2*PI
 					if (openingAngle > 0) {
-						GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
+						this->GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
 					}
 					else {
-						GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
+						this->GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
 					}
 					return openingAngle;
 				}
