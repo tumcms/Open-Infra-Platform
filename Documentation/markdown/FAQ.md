@@ -10,15 +10,15 @@ Compile *OpenInfraPlatform.Commands.UpdateCoostMPL* in the solution.
 
 > warning C4127: conditional expression is constant
 
-Please ignore it.
+You can safely ignore it, if it comes from an IFC library.
 
 > warning C4251: class '...' needs to have dll-interface to be used by clients of class '...'
 
-Please ignore it.
+You can safely ignore it, if it comes from an IFC library.
 
 > warning C4506: no definition for inline function
 
-Please ignore it.
+You can safely ignore it, if it comes from an IFC library.
 
 ### UI
 
