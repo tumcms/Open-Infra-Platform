@@ -736,6 +736,9 @@ namespace OpenInfraPlatform
 						}
 						return loop_intern;
 					}
+					else {
+						throw oip::InconsistentGeometryException("The distance between points cannot be 0.");
+					}
 				}
 
 				/**********************************************************************************************/
@@ -1047,7 +1050,7 @@ namespace OpenInfraPlatform
 					double radiusMin = std::min(xRadius, yRadius);
 
 					// Calculate a number of segments.
-					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
+					int numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
 					double deltaAngle = 2.0 * M_PI / numSegments;
 
 					double startAngle = 0.;
@@ -1064,7 +1067,7 @@ namespace OpenInfraPlatform
 						double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
 						// Calculate a number of segments.
-						numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax, abs(openingAngle));
+						numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax, abs(openingAngle));
 						deltaAngle = openingAngle/ numSegments;
 					}
 
@@ -1844,8 +1847,7 @@ namespace OpenInfraPlatform
 							dVerticalRadius *= this->UnitConvert()->getLengthInMeterFactor();
 
 							// determine tesselation density
-							int nVerFragments = this->GeomSettings()->getNumberOfSegmentsForTessellation(
-								dVerticalRadius);
+							int nVerFragments = this->GeomSettings()->getNumberOfSegmentsForTessellation(dVerticalRadius);
 							double dVerFragmentsLength = dVerticalSegLength / static_cast<double>(nVerFragments);
 
 							// Select greater accuracy / more fragments / smaller fragments.
@@ -1904,16 +1906,20 @@ namespace OpenInfraPlatform
 				) const noexcept(false)
 				{
 					carve::geom::vector<3> centerToTrimPoint = trimPoint - circleCenter;
-					if (abs(centerToTrimPoint.length() - circleRadius) < 0.0001) {
+
+					if (this->GeomSettings()->areEqual(centerToTrimPoint.length(), circleRadius)){
 						centerToTrimPoint.normalize();
 						double cosAngle = carve::geom::dot(centerToTrimPoint, carve::geom::vector<3>(carve::geom::VECTOR(1., 0., 0.)));
 
-						if (abs(cosAngle) < 0.0001) {
+						if (this->GeomSettings()->areEqual(abs(cosAngle), 0.)) {
 							if (centerToTrimPoint.y > 0.) {
 								return M_PI_2;
 							}
 							else if (centerToTrimPoint.y < 0.) {
 								return M_PI * 1.5;
+							}
+							else {
+								throw oip::InconsistentGeometryException("Cosine and sine cannot be 0 simultaneously!");
 							}
 						}
 						else {
@@ -1957,12 +1963,15 @@ namespace OpenInfraPlatform
 					if ((centerToTrimPoint.x / ellipseRadiusX) <= 1. && (centerToTrimPoint.y / ellipseRadiusY) <= 1.) {
 						double cosAngle = centerToTrimPoint.x / ellipseRadiusX;
 
-						if (abs(cosAngle) < 0.0001) {
+						if (this->GeomSettings()->areEqual(abs(cosAngle), 0.)) {
 							if (centerToTrimPoint.y > 0.) {
 								return M_PI_2;
 							}
 							else if (centerToTrimPoint.y < 0.) {
-								return 3 * M_PI_2;
+								return M_PI * 1.5;
+							}
+							else {
+								throw oip::InconsistentGeometryException("Cosine and sine cannot be 0 simultaneously!");
 							}
 						}
 						else {

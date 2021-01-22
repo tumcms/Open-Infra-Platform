@@ -162,18 +162,13 @@ namespace OpenInfraPlatform
 
 				template <typename IfcEntityTypesT, typename IfcReader>
 				void ParseExpressAndGeometryModel(const std::string &filename) {
-					auto expressModel_ = IfcReader::FromFile(filename);
-					auto importer = IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>();
-					if (importer.collectGeometryData(expressModel_)) {
-						auto ifcModel = std::make_shared<IfcGeometryConverter::IfcModel>();
-						auto converter = IfcGeometryConverter::ConverterBuwT<IfcEntityTypesT>();
-						if (converter.createGeometryModel(ifcModel, importer.getShapeDatas())) {
-							if (!ifcModel->isEmpty()) {
-								ifcModel->setFilename(filename);
-								addModel(ifcModel);
-								latestChangeFlag_ = ChangeFlag::IfcGeometry;
-							}
-						}
+					auto expressModel = IfcReader::FromFile(filename);
+					auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>();
+					auto ifcModel = importer.collectData(expressModel);
+					if (ifcModel && !ifcModel->isEmpty()) {
+						ifcModel->setFilename(filename);
+						addModel(ifcModel);
+						latestChangeFlag_ = ChangeFlag::IfcGeometry;
 					}
 				}
 
