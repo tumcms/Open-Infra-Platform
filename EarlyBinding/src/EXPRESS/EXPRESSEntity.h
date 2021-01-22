@@ -25,6 +25,7 @@
 
 #include <tuple>
 #include <utility>
+#include <memory>
 
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
