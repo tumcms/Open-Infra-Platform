@@ -32,7 +32,7 @@ add_definitions(-DBLUEINFRASTRUCTURE_EXPORT)
 FetchContent_Declare(
 	dep_liblas
 	GIT_REPOSITORY https://github.com/libLAS/libLAS.git
-	GIT_TAG 1.6.0
+	GIT_TAG 6ada875661c46842433a13f28637f8d3d2c393bc
 )
 
 FetchContent_GetProperties(dep_liblas)
