@@ -159,6 +159,10 @@ FetchContent_Declare(
 	GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
 	GIT_TAG 3.3.9
 )
+
+# overwrite inclusion of Eigen tests in the solution
+set(BUILD_TESTING FALSE CACHE INTERNAL "Build the testing tree." FORCE)
+mark_as_advanced(FORCE BUILD_TESTING)
   
 FetchContent_MakeAvailable(eigen)
 
