@@ -162,9 +162,6 @@ FetchContent_Declare(
   
 FetchContent_MakeAvailable(eigen)
 
-
-find_package(Oklabi REQUIRED)
-
 FetchContent_Declare(
 	visit_struct
 	GIT_REPOSITORY https://github.com/cbeck88/visit_struct.git
@@ -288,7 +285,6 @@ include_directories(
 
 link_directories(
 	${Boost_LIBRARY_DIRS}
-	${OKLABI_ROOT_DIR}
 	${FFTW3_LIBRARY_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
 	${PROJ4_LIBRARY_DIRS}
@@ -561,9 +557,6 @@ endif()
 # BlueFramework Copy Binaries
 #BLUEFRAMEWORK_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
-# Oklabi Copy Binaries
-OKLABI_COPY_BINARIES(${CMAKE_BINARY_DIR})
-
 # zlic Copy Binaries
 #ZLIB_COPY_BINARIES(${CMAKE_BINARY_DIR})
 
@@ -684,7 +677,6 @@ add_thirdparty(test_carve_polyhedrons_2	"carve")
 #-------------------------------------------------------------------------------------
 
 set_target_properties(CopyOpenInfraPlatformUIResources 					PROPERTIES FOLDER "OpenInfraPlatform/Copy")
-set_target_properties(OklabiCopyBinaries								PROPERTIES FOLDER "OpenInfraPlatform/Copy")
 set_target_properties(QSimpleUpdaterCopyBinaries						PROPERTIES FOLDER "OpenInfraPlatform/Copy")
 
 set_target_properties(OpenInfraPlatform.UI								PROPERTIES FOLDER "OpenInfraPlatform")
@@ -842,11 +834,11 @@ installData(${CMAKE_BINARY_DIR}/$<CONFIG>/fbliste)
 installData(${CMAKE_BINARY_DIR}/UserInterface/Style)
 #installData(${PROJECT_SOURCE_DIR}/other/testdata)
 		
-install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll ${CMAKE_BINARY_DIR}/Debug/tinyxml2.dll
+install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll ${CMAKE_BINARY_DIR}/Debug/tinyxml2.dll
 	DESTINATION bin
 	COMPONENT oip_thirdparty)
 	
-#install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${OKLABI_DLLS} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll ${CMAKE_BINARY_DIR}/Release/tinyxml2.dll
+#install(FILES ${WINDOWS_RUNTIME_DLLS} ${BLUEFRAMEWORK_RELEASE_BINARIES} ${QT5_DLLS_RELEASE} ${LIBLAS_RELEASE_BINARIES} ${GTEST_RELEASE_BINARIES} ${ZLIB_RELEASE_BINARIES} ${CC_RELEASE_BINARIES} ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/libeay32.dll ${PROJECT_SOURCE_DIR}/external/QSimpleUpdater/ssleay32.dll ${CMAKE_BINARY_DIR}/Release/tinyxml2.dll
 #	DESTINATION bin
 #	COMPONENT oip_thirdparty)
 
