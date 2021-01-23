@@ -52,7 +52,7 @@ endif()
 FetchContent_Declare(
 	cc
 	GIT_REPOSITORY https://github.com/CloudCompare/CloudCompare.git
-	GIT_TAG v2.11.3
+	GIT_TAG v2.10.3
 )
 
 FetchContent_GetProperties(cc)
