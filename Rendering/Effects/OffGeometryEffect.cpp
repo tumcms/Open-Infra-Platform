@@ -70,12 +70,12 @@ void OffGeometryEffect::changeOffset(const buw::Vector3d& offsetOld, const buw::
 		//process the data
 		if (!offModel_->geometry().isEmpty())
 		{
-			std::vector<buw::Vector3d> vertices;
+			std::vector<buw::VertexPosition3Color3Normal3> vertices;
 			vertices.reserve(offModel_->geometry().vertices.size());
 			std::transform(offModel_->geometry().vertices.begin(),
 				offModel_->geometry().vertices.end(),
 				vertices.begin(),
-				[offsetNew](buw::Vector3d a) {return a + offsetNew; });
+				[offsetNew](buw::VertexPosition3Color3Normal3 a) { a.position[0] += offsetNew.x(); a.position[1] += offsetNew.y(); a.position[2] += offsetNew.z(); return a; });
 		}
 
 		//upload data 

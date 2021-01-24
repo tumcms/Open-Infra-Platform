@@ -53,7 +53,8 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		while (!firstLineWithContent)
 		{
 			std::getline(offFile, line);
-			firstLineWithContent = line.find("OFF");
+			if (line == "OFF")
+				firstLineWithContent = true;
 		}
 
 		//read number of elements
@@ -117,10 +118,10 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 				readQuadFace(lineStream, indices);
 				//read normal
 				int size = indices.size();
-				buw::Vector3f vector1 = verticesPosition.at(indices.at(size - 4));
-				buw::Vector3f vector2 = verticesPosition.at(indices.at(size - 3));
-				buw::Vector3f vector3 = verticesPosition.at(indices.at(size - 2));
-				buw::Vector3f vector4 = verticesPosition.at(indices.at(size - 1));
+				buw::Vector3f vector1 = verticesPosition.at(indices.at(size - 6));
+				buw::Vector3f vector2 = verticesPosition.at(indices.at(size - 5));
+				buw::Vector3f vector3 = verticesPosition.at(indices.at(size - 4));
+				buw::Vector3f vector4 = verticesPosition.at(indices.at(size - 2));
 				buw::Vector3f color1(1.0f, 0.0f, 0.0f); //to be changed later on 
 				buw::Vector3f normal1 = calcNormal(vector1, vector2, vector3);
 				buw::Vector3f color2(1.0f, 0.0f, 0.0f); //to be changed later on 
@@ -131,8 +132,8 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color1, normal1));
 				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color1, normal1));
 
-				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color2, normal2));
 				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color2, normal2));
+				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector4, color2, normal2));
 				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color2, normal2));
 			}
 			else
@@ -159,7 +160,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 	}
 }
 
-static std::vector<buw::Vector3f> readVertices(const int nrOfVertices, 
+std::vector<buw::Vector3f> OffReader::readVertices(const int nrOfVertices, 
 	std::ifstream& offFile)
 {
 	std::string line;
@@ -177,27 +178,25 @@ static std::vector<buw::Vector3f> readVertices(const int nrOfVertices,
 	return allVertices;
 }
 
-static void readTriangleFace(std::stringstream& lineStream, 
+void OffReader::readTriangleFace(std::stringstream& lineStream, 
 	std::vector<uint32_t>& indices)
 {
 	std::vector<uint32_t> faceVector;
-	int faceType;
 
-	lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2];
+	lineStream >> faceVector[0] >> faceVector[1] >> faceVector[2];
 	for (int j = 0; j < 3; j++)
 	{
 		indices.push_back(faceVector[j]);
 	}
 }
 
-static void readQuadFace(std::stringstream& lineStream, 
+void OffReader::readQuadFace(std::stringstream& lineStream, 
 	std::vector<uint32_t>& indices)
 {
-	std::vector<uint32_t> faceVector;
-	int faceType;
+	std::vector<uint32_t> faceVector(4);
 
 	//read values from lineStream 
-	lineStream >> faceType >> faceVector[0] >> faceVector[1] >> faceVector[2] >> faceVector[3];
+	lineStream >> faceVector[0] >> faceVector[1] >> faceVector[2] >> faceVector[3];
 
 	//Convert quads into triangles
 	//first triangle
@@ -210,7 +209,7 @@ static void readQuadFace(std::stringstream& lineStream,
 	indices.push_back(faceVector[0]);
 }
 
-static buw::Vector3f calcNormal(const buw::Vector3f& vertex1,
+buw::Vector3f OffReader::calcNormal(const buw::Vector3f& vertex1,
 	const buw::Vector3f& vertex2,
 	const buw::Vector3f& vertex3)
 {
