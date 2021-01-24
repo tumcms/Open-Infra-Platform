@@ -176,7 +176,7 @@ private:
 		if (crs->GeodeticDatum)
 			georefMeta->addDataEntry( "Geodetic Datum", crs->GeodeticDatum.get() );
 
-		if (crs->GeodeticDatum)
+		if (crs->VerticalDatum)
 			georefMeta->addDataEntry( "Vertical Datum", crs->VerticalDatum.get());
 
 		if (crs.isOfType<typename IfcEntityTypesT::IfcProjectedCRS>())
