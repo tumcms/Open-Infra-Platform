@@ -691,12 +691,13 @@ set_target_properties(OpenInfraPlatform.Rendering						PROPERTIES FOLDER "OpenIn
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator			PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
 # clean up the solution a bit
-set_target_properties(glew_s PROPERTIES FOLDER "ThirdParty")
-set_target_properties(tinyxml2 PROPERTIES FOLDER "ThirdParty")
+set_target_properties(glew_s PROPERTIES FOLDER "ThirdParty/glew")
+set_target_properties(tinyxml2 PROPERTIES FOLDER "ThirdParty/tinyxml")
 set_target_properties(StackWalker PROPERTIES FOLDER "ThirdParty/StackWalker")
 set_target_properties(StackWalker_test PROPERTIES FOLDER "ThirdParty/StackWalker")
 set_target_properties(tinyformat_test PROPERTIES FOLDER "ThirdParty/TinyFormat")
 set_target_properties(testall PROPERTIES FOLDER "ThirdParty/TinyFormat")
+set_target_properties(uninstall PROPERTIES FOLDER "ThirdParty/eigen")
 
 # Currently not included. 
 #set_target_properties(OpenInfraPlatform.CommandLineUtilities		PROPERTIES FOLDER "OpenInfraPlatform")
