@@ -45,8 +45,8 @@ if(NOT dep_liblas_POPULATED)
 	FetchContent_Populate(dep_liblas)
 	add_subdirectory(${dep_liblas_SOURCE_DIR} ${dep_liblas_BINARY_DIR} EXCLUDE_FROM_ALL)
 
-	set_target_properties(liblas PROPERTIES FOLDER "ThirdParty/libLAS")
-	set_target_properties(liblas_c PROPERTIES FOLDER "ThirdParty/libLAS")
+	set_target_properties(las PROPERTIES FOLDER "ThirdParty/libLAS")
+	set_target_properties(las_c PROPERTIES FOLDER "ThirdParty/libLAS")
 endif()
 
 FetchContent_Declare(
@@ -91,8 +91,8 @@ add_library(OpenInfraPlatform.PointCloudProcessing SHARED ${PointCloudProcessing
 target_include_directories(OpenInfraPlatform.PointCloudProcessing PUBLIC ${DEPENDENT_INCLUDE_DIRS})
 
 target_link_libraries(OpenInfraPlatform.PointCloudProcessing PUBLIC
-		liblas
-		liblas_c
+		las
+		las_c
 		BlueFramework.ImageProcessing
 		BlueFramework.Rasterizer
 		OpenInfraPlatform.Base
