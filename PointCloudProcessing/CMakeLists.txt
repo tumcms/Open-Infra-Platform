@@ -30,6 +30,20 @@ add_definitions(-DBLUEINFRASTRUCTURE_EXPORT)
 
 # Find thirdparty libraries.
 FetchContent_Declare(
+	dep_libgeo
+	GIT_REPOSITORY https://github.com/OSGeo/libgeotiff.git
+	GIT_TAG 1.6.0
+)
+  
+FetchContent_GetProperties(dep_libgeo)
+if(NOT dep_libgeo_POPULATED)
+	FetchContent_Populate(dep_libgeo)
+	add_subdirectory(${dep_libgeo_SOURCE_DIR}/libgeotiff ${dep_libgeo_BINARY_DIR} EXCLUDE_FROM_ALL)
+
+	set_target_properties(geotiff_library PROPERTIES FOLDER "ThirdParty")
+endif()
+
+FetchContent_Declare(
 	dep_liblas
 	GIT_REPOSITORY https://github.com/libLAS/libLAS.git
 	GIT_TAG 6ada875661c46842433a13f28637f8d3d2c393bc
@@ -75,6 +89,7 @@ source_group(PointCloudProcessing										FILES ${PointCloudProcessing_Source})
 # Create a target for the library
 set(DEPENDENT_INCLUDE_DIRS
 	src
+	${dep_libgeo_SOURCE_DIR}/include
 	${dep_liblas_SOURCE_DIR}/include
 	${CMAKE_CURRENT_BINARY_DIR} 	
 	${blue_framework_SOURCE_DIR}/include
@@ -93,6 +108,7 @@ target_include_directories(OpenInfraPlatform.PointCloudProcessing PUBLIC ${DEPEN
 target_link_libraries(OpenInfraPlatform.PointCloudProcessing PUBLIC
 		las
 		las_c
+		geotiff_library
 		BlueFramework.ImageProcessing
 		BlueFramework.Rasterizer
 		OpenInfraPlatform.Base
