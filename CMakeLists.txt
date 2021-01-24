@@ -695,8 +695,8 @@ set_target_properties(glew_s PROPERTIES FOLDER "ThirdParty")
 set_target_properties(tinyxml2 PROPERTIES FOLDER "ThirdParty")
 set_target_properties(StackWalker PROPERTIES FOLDER "ThirdParty/StackWalker")
 set_target_properties(StackWalker_test PROPERTIES FOLDER "ThirdParty/StackWalker")
-set_target_properties(tinyformat_test PROPERTIES FOLDER "ThirdParty/TinyFomrat")
-set_target_properties(testall PROPERTIES FOLDER "ThirdParty/TinyFomrat")
+set_target_properties(tinyformat_test PROPERTIES FOLDER "ThirdParty/TinyFormat")
+set_target_properties(testall PROPERTIES FOLDER "ThirdParty/TinyFormat")
 
 # Currently not included. 
 #set_target_properties(OpenInfraPlatform.CommandLineUtilities		PROPERTIES FOLDER "OpenInfraPlatform")
