@@ -52,6 +52,7 @@ public:
     {
         item_ = item.lock();
         message_ = message;
+		buildFull();
     }
 
 	void buildFull();
