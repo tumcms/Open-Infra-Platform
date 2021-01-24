@@ -120,15 +120,15 @@ private:
 							
 			try {
 				for (auto& pair : model->entities) {
-					std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = 
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
+					oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct> product =
+						oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>::constructInstance(pair.first, model);
 					if (product) {
 						#ifdef _DEBUG
 						BLUE_LOG(trace) << "Converting " << product->getErrorLog();
 						#endif
 						// create new shape input data for product
 						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = convertIfcProduct(product);
-						productShape->ifc_product = oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>::constructInstance(product->getId(), model);
+						productShape->ifc_product = product;
 						shapeInputData.push_back( productShape );
 					}
 				}
