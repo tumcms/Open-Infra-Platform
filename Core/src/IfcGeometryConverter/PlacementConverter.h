@@ -1402,14 +1402,12 @@ namespace OpenInfraPlatform {
                         std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal>& horizontal = alignment_curve->Horizontal.lock();
 
                         if(!horizontal) {
-                            BLUE_LOG(error) << alignment_curve->getErrorLog() << ": No IfcAlignment2DHorizontal!";
-                            return;
+                            throw oip::InconsistentModellingException( alignment_curve, "No IfcAlignment2DHorizontal!");
                         }
 
                         // Segments type IfcAlignment2DHorizontalSegment L[1:?]
                         if(horizontal->Segments.empty()) {
-                            BLUE_LOG(error) << horizontal->getErrorLog() << ": Segments are emtpy!";
-                            return;
+							throw oip::InconsistentModellingException(horizontal, "Segments are emtpy!");
                         }
                         // the vector of horizontal segments - used in analysis
                         std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment>> horSegments;
@@ -1481,14 +1479,12 @@ namespace OpenInfraPlatform {
                             // Get the segment's length
                             double horizSegLength = horCurveGeometryRelevantToPoint->SegmentLength * length_factor;
                             if(horizSegLength <= 0.) {
-                                BLUE_LOG(trace) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Segment length is negative/ZERO?!";
-                                return;
+								throw oip::InconsistentModellingException(horCurveGeometryRelevantToPoint, "Segment length is negative/ZERO?!");
                             }
 
                             // if begin of this segment is after the station -> sth went wrong
                             if(horizSegStartDistAlong > dDistAlongOfPoint) {
-                                BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Inconsistency! Segment begins after the specified station.";
-                                return;
+                                throw oip::InconsistentModellingException(horCurveGeometryRelevantToPoint, "Inconsistency! Segment begins after the specified station.");
                             }
 
                             //*********************************************************************
@@ -1537,7 +1533,7 @@ namespace OpenInfraPlatform {
                                 // Get the start distance along: StartDistAlong
                                 verSegDistAlong = it_segment->StartDistAlong * length_factor;
                                 if(verSegDistAlong < 0.) {
-                                    BLUE_LOG(error) << it_segment->getErrorLog() << ": Start distance along is inconsistent.";
+                                    BLUE_LOG(trace) << it_segment->getErrorLog() << ": Start distance along is negative.";
                                     //return;
                                 }
 
@@ -1577,17 +1573,13 @@ namespace OpenInfraPlatform {
                         // get the starting point of segment
                         const auto& curveSegStartPoint = horCurveGeometryRelevantToPoint->StartPoint;
                         if(!curveSegStartPoint) {
-                            BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog()
-                                << ": No curve segment start point.";
-                            return;
+							throw oip::InconsistentModellingException(horCurveGeometryRelevantToPoint, "No curve segment start point.");
                         }
 
                         // get the length of the segment
                         double horizSegLength = horCurveGeometryRelevantToPoint->SegmentLength * length_factor;
                         if(horizSegLength <= 0.) {
-                            BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog()
-                                << ": Curve segment length inconsistent.";
-                            return;
+							throw oip::InconsistentModellingException(horCurveGeometryRelevantToPoint, " Curve segment length negative.");
                         }
                         // Distance from start of segment to point along alignment.
                         double distanceToStart = dDistAlongOfPoint - horizSegStartDistAlong;
@@ -1652,8 +1644,7 @@ namespace OpenInfraPlatform {
                         else if(circular_arc_segment_2D) {
                             // Radius type IfcPositiveLengthMeasure [1:1]
                             if(circular_arc_segment_2D->Radius <= 0.) {
-                                BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Radius inconsistent.";
-                                return;
+								throw oip::InconsistentModellingException(horCurveGeometryRelevantToPoint, "negative radius.");
                             }
                             //double radius = circular_arc_segment_2D->Radius * length_factor;
                             fctRadii = [&](double& bStartRadius, double& bEndRadius) -> void
@@ -1904,8 +1895,11 @@ namespace OpenInfraPlatform {
                         double dRadStart, dRadEnd;
                         fctRadii(dRadStart, dRadEnd);
                         if(dRadStart != 0. && dRadEnd != 0. && dRadStart != dRadEnd) {
-                            BLUE_LOG(warning) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Different radii with != 0. not supported.";
-                            return;
+                            BLUE_LOG(warning) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Different radii with != 0. not supported. Setting the bigger one to INF.";
+							if (dRadStart > dRadEnd)
+								dRadStart = 0.;
+							else
+								dRadEnd = 0.;
                         }
                         // is it a curve with decreasing curvature? (doesn't matter with straights and circular arcs)
                         bool curveOut = (dRadStart != 0. && dRadStart != dRadEnd);
@@ -2046,8 +2040,7 @@ namespace OpenInfraPlatform {
                                 // https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifcalignment2dversegcirculararc.htm
                                 // Radius type IfcPositiveLengthMeasure [1:1] 
                                 if(v_seg_circ_arc_2D->Radius <= 0.) {
-                                    BLUE_LOG(error) << verticalSegmentRelevantToPoint->getErrorLog() << ": No radius.";
-                                    return;
+									throw oip::InconsistentModellingException(verticalSegmentRelevantToPoint, "No radius.");
                                 }
                                 double radius = v_seg_circ_arc_2D->Radius * length_factor;
 
@@ -2070,8 +2063,7 @@ namespace OpenInfraPlatform {
                                 // https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifcalignment2dversegparabolicarc.htm
                                 // ParabolaConstant type IfcPositiveLengthMeasure [1:1]
                                 if(v_seg_par_arc_2D->ParabolaConstant <= 0.) {
-                                    BLUE_LOG(error) << verticalSegmentRelevantToPoint->getErrorLog() << ": No parabola constant.";
-                                    return;
+									throw oip::InconsistentModellingException(verticalSegmentRelevantToPoint, "No parabola constant.");
                                 }
                                 double arc_const = v_seg_par_arc_2D->ParabolaConstant * length_factor;
 
