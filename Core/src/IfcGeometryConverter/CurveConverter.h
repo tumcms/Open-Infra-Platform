@@ -443,18 +443,18 @@ namespace OpenInfraPlatform {
 					for (auto& it_station : stations)
 					{
 						// call the placement converter that handles the geometry and calculates the 3D point along a curve
-						placementConverter->convertBoundedCurveDistAlongToPoint3D(
+						if( placementConverter->convertBoundedCurveDistAlongToPoint3D(
 							alignmentCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>(), 
-							it_station, true, targetPoint3D, targetDirection3D);
-						curve_points.push_back(targetPoint3D);
+							it_station, true, targetPoint3D, targetDirection3D)	)
+							curve_points.push_back(targetPoint3D);
 					}
 					GeomUtils::appendPointsToCurve(curve_points, targetVec);
 
 					// add the first point to segments
-					placementConverter->convertBoundedCurveDistAlongToPoint3D(
+					if(	placementConverter->convertBoundedCurveDistAlongToPoint3D(
 						alignmentCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>(),
-						stations.at(0), true, targetPoint3D, targetDirection3D);
-					segmentStartPoints.push_back(targetPoint3D);
+						stations.at(0), true, targetPoint3D, targetDirection3D)	)
+						segmentStartPoints.push_back(targetPoint3D);
 				}
 #endif
 
@@ -1746,7 +1746,7 @@ namespace OpenInfraPlatform {
 								//      5:                  +-------+
 								//      6:                       +-+
 								//      7:                        +-------+
-								//      8:                               +---------+    <------- should never ever happen
+								//      8:                               +---------+    <------- should never ever happen (except if we're considering the first vertical element that strats way beyond the end of the first horizontal segment)
 
 								// option 1 & 2 - bLoop stays on true
 								// - these elements should have been considered with previous horizontal element
@@ -1757,7 +1757,17 @@ namespace OpenInfraPlatform {
 
 								// option 8
 								if (dVerticalSegStart > dHorizontalSegEnd)
-									throw oip::InconsistentModellingException(*itVerticalSegment, "Invalid sequence of vertical elements.");
+								{
+									if (itVerticalSegment == vertical->Segments.begin())
+									{
+										goto vertical_starts_late; // skip height calculations for this horizontal segment
+									}
+									else
+									{
+										throw oip::InconsistentModellingException(
+											*itVerticalSegment, "Invalid sequence of vertical elements.");
+									}
+								}
 
 								// take the next element
 								if (bLoop)
@@ -1804,6 +1814,7 @@ namespace OpenInfraPlatform {
 							dOverlapEnd = std::min(dOverlapEnd, dVerticalSegEnd);
 						}
 
+						vertical_starts_late:
 						double newStationDistAlong = dOverlapStart;
 
 						// Add stations according to length of fragments until the end of the overlapping area.
