@@ -443,18 +443,18 @@ namespace OpenInfraPlatform
 					for (auto& it_station : stations)
 					{
 						// call the placement converter that handles the geometry and calculates the 3D point along a curve
-						placementConverter->convertBoundedCurveDistAlongToPoint3D(
+						if( placementConverter->convertBoundedCurveDistAlongToPoint3D(
 							alignmentCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>(), 
-							it_station, true, targetPoint3D, targetDirection3D);
-						curve_points.push_back(targetPoint3D);
+							it_station, true, targetPoint3D, targetDirection3D)	)
+							curve_points.push_back(targetPoint3D);
 					}
 					GeomUtils::appendPointsToCurve(curve_points, targetVec);
 
 					// add the first point to segments
-					placementConverter->convertBoundedCurveDistAlongToPoint3D(
+					if(	placementConverter->convertBoundedCurveDistAlongToPoint3D(
 						alignmentCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>(),
-						stations.at(0), true, targetPoint3D, targetDirection3D);
-					segmentStartPoints.push_back(targetPoint3D);
+						stations.at(0), true, targetPoint3D, targetDirection3D)	)
+						segmentStartPoints.push_back(targetPoint3D);
 				}
 #endif
 
@@ -1791,7 +1791,7 @@ namespace OpenInfraPlatform
 								//      5:                  +-------+
 								//      6:                       +-+
 								//      7:                        +-------+
-								//      8:                               +---------+    <------- should never ever happen
+								//      8:                               +---------+    <------- should never ever happen (except if we're considering the first vertical element that strats way beyond the end of the first horizontal segment)
 
 								// option 1 & 2 - bLoop stays on true
 								// - these elements should have been considered with previous horizontal element
@@ -1802,8 +1802,17 @@ namespace OpenInfraPlatform
 
 								// option 8
 								if (dVerticalSegStart > dHorizontalSegEnd)
-									throw oip::InconsistentModellingException(
-										*itVerticalSegment, "Invalid sequence of vertical elements.");
+								{
+									if (itVerticalSegment == vertical->Segments.begin())
+									{
+										goto vertical_starts_late; // skip height calculations for this horizontal segment
+									}
+									else
+									{
+										throw oip::InconsistentModellingException(
+											*itVerticalSegment, "Invalid sequence of vertical elements.");
+									}
+								}
 
 								// take the next element
 								if (bLoop)
@@ -1811,17 +1820,12 @@ namespace OpenInfraPlatform
 							} // while( bLoop )
 
 							// Segment types: IfcAlignment2DVerSegCircularArc, IfcAlignment2DVerSegLine, IfcAlignment2DVerSegParabolicArc.
-							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc> v_seg_circ_arc_2D
-								=
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc>(
-									itVerticalSegment->lock());
+							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc> v_seg_circ_arc_2D =
+								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegCircularArc>(itVerticalSegment->lock());
 							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegLine> v_seg_line_2D =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegLine>(
-									itVerticalSegment->lock());
-							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc> v_seg_par_arc_2D
-								=
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc>(
-									itVerticalSegment->lock());
+								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegLine>(itVerticalSegment->lock());
+							std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc> v_seg_par_arc_2D =
+								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment2DVerSegParabolicArc>(itVerticalSegment->lock());
 
 							// Set number of fragments (number of stations to be added within segment) according to segment type.
 							// depending on the segment radius.
@@ -1859,6 +1863,7 @@ namespace OpenInfraPlatform
 							dOverlapEnd = std::min(dOverlapEnd, dVerticalSegEnd);
 						}
 
+						vertical_starts_late:
 						double newStationDistAlong = dOverlapStart;
 
 						// Add stations according to length of fragments until the end of the overlapping area.

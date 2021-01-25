@@ -211,38 +211,7 @@ namespace OpenInfraPlatform
 					local_x.z, local_y.z, local_z.z, translate.z,
 					0, 0, 0, 1);
 			}
-
-			std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(
-				const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix,
-				const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>& cross_section_positions,
-				const double relativeDistAlong = 0.
-				) const throw(...)
-			{
-						// check input
-						if (directrix.expired())
-							throw oip::ReferenceExpiredException(directrix);
-						if (cross_section_positions.expired())
-							throw oip::ReferenceExpiredException(cross_section_positions);
-							
-							// defaults
-							carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
-							carve::geom::vector<3> directionOfCurve = carve::geom::VECTOR(1.0, 0.0, 0.0);
-
-							// account for relative placement
-							double dDistAlong = cross_section_positions->DistanceAlong * UnitConvert()->getLengthInMeterFactor()
-								+ relativeDistAlong;
-
-							// convert the point  
-							placementConverter->convertBoundedCurveDistAlongToPoint3D(
-								directrix.as<typename IfcEntityTypesT::IfcBoundedCurve>(),
-								dDistAlong,
-								cross_section_positions->AlongHorizontal.value_or(true),
-								pointOnCurve,
-								directionOfCurve
-							);
-							return { pointOnCurve, directionOfCurve };
-			}
-
+			
 						void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal) throw(...)
 						{
 							if (sectioned_solid_horizontal.expired())
@@ -251,21 +220,14 @@ namespace OpenInfraPlatform
 							//Get directrix and cross sections (attributes 1-2).
 							const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix =
 								sectioned_solid_horizontal->Directrix;
-							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections;
-							vec_cross_sections.resize(sectioned_solid_horizontal->CrossSections.size());
-							std::transform(sectioned_solid_horizontal->CrossSections.begin(),
-								sectioned_solid_horizontal->CrossSections.end(),
-								vec_cross_sections.begin(), [](auto& it) {return it.lock(); });
-
+							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections =
+								sectioned_solid_horizontal->CrossSections;
 
 							// Get cross section positions and fixed axis vertical (attributes 3-4).
 							const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>>& cross_section_positions =
 								sectioned_solid_horizontal->CrossSectionPositions;
 
 							bool fixed_axis_vertical = sectioned_solid_horizontal->FixedAxisVertical;
-
-							BLUE_LOG(warning) << "Geometry conversion for IfcSectionedSolidHorizontal not implemented.";
-							// TO DO: implement, check for formal propositions. 
 
 						    //check dimensions and correct attributes sizes
 							if (vec_cross_sections.size() != cross_section_positions.size())
@@ -275,7 +237,8 @@ namespace OpenInfraPlatform
 
 							//Give directrix to Curve converter: for each station 1 Point and 1 Direction
 							// the stations at which a point of the tessellation has to be calcuated - to be converted and fill the targetVec
-							std::vector<double> stations = curveConverter->getStationsForTessellationOfIfcAlignmentCurve(directrix.as<typename IfcEntityTypesT::IfcAlignmentCurve>());
+							std::vector<double> stations = curveConverter->getStationsForTessellationOfIfcAlignmentCurve(
+								directrix.typename as<typename IfcEntityTypesT::IfcAlignmentCurve>());
 
 							carve::geom::vector<3> targetPoint3D;
 							carve::geom::vector<3> targetDirection3D;
@@ -348,7 +311,10 @@ namespace OpenInfraPlatform
 								//also applay the relative dist along	
 								carve::geom::vector<3> pointOnCurve;
 								carve::geom::vector<3> directionOfCurve;
-								std::tie(pointOnCurve, directionOfCurve) = calculatePositionOnAndDirectionOfBaseCurve(directrix, cross_section_positions[pos]);
+								std::tie(pointOnCurve, directionOfCurve) = 
+									placementConverter->calculatePositionOnAndDirectionOfBaseCurve(
+										directrix.template as<typename IfcEntityTypesT::IfcBoundedCurve>(),
+										cross_section_positions[pos], 0.);
 								CrossSectionPoints.push_back(pointOnCurve);
 								directionsOfCurve.push_back(directionOfCurve);
 
