@@ -1518,6 +1518,7 @@ namespace OpenInfraPlatform {
                             double verSegDistAlong = 0.;
 
                             // Iterate over vertical segments
+							bool bFirst = true;
                             for(auto& it_segment : verSegments) {
 
                                 // ENTITY IfcAlignment2DVerticalSegment
@@ -1549,8 +1550,9 @@ namespace OpenInfraPlatform {
 
                                 // if begin of this segment is after the station -> sth went wrong
                                 if(verSegDistAlong > dDistAlongOfPoint) {
-                                    BLUE_LOG(error) << it_segment->getErrorLog() << ": Inconsistency! Segment begins after the specified station.";
-                                    return;
+									if (bFirst)
+										break; // skip height calculations for this horizontal segment - vertical starts after the start of horizontal
+									throw oip::InconsistentModellingException(it_segment, "Segment begins after the specified station.");
                                 }
 
                                 //*********************************************************************
@@ -1563,6 +1565,8 @@ namespace OpenInfraPlatform {
                                     // break the for loop, since we have found the element!
                                     break;
                                 } // end if (verSegDistAlong + verSegLength > dDistAlongOfPoint)
+
+								bFirst = false;
                             }// end vertical stations iteration
                         } // end if (!verSegments.empty())
 
