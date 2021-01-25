@@ -587,33 +587,56 @@ namespace OpenInfraPlatform {
 				 * @param[in] relativeDistAlong Account for a relative placement in linear placement.
                  * @return The first vector are the coordinates of the point, the second vector of the direction.
                  */
-                std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(
+				std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement,
 					const double relativeDistAlong = 0.
-				) const throw(...)
-                {
+				) const noexcept(false)
+				{
 					// check input
 					if (linear_placement.expired())
 						throw oip::ReferenceExpiredException(linear_placement);
 
+					return calculatePositionOnAndDirectionOfBaseCurve(
+						getCurveOfPlacement(linear_placement),
+						linear_placement->Distance,
+						relativeDistAlong);
+				}
+
+				/**
+				 * @brief Compute the position along given curve
+				 *  and returns the respective point and the direction at that point
+				 *
+				 * @param[in] curve The curve along which the calculation should happen.
+				 * @param[in] distExpr The distance along the \c curve at which the point and direction should be calculated.
+				 * @param[in] relativeDistAlong Account for a relative placement in linear placement.
+				 * @return The first vector are the coordinates of the point, the second vector of the direction.
+				 */
+				std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve>& curve,
+					const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>& distExpr,
+					const double relativeDistAlong = 0.
+				) const noexcept(false)
+				{
 					// defaults
                     carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
                     carve::geom::vector<3> directionOfCurve = carve::geom::VECTOR(1.0, 0.0, 0.0);
 					
 					// account for relative placement
-					double dDistAlong = 
-						linear_placement->Distance->DistanceAlong * UnitConvert()->getLengthInMeterFactor()
+					double distAlong = 
+						distExpr->DistanceAlong * this->UnitConvert()->getLengthInMeterFactor() 
 						+ relativeDistAlong;
-					
+
 					// convert the point
-                    convertBoundedCurveDistAlongToPoint3D(
-                        getCurveOfPlacement(linear_placement),
-                        dDistAlong,
-                        linear_placement->Distance->AlongHorizontal.value_or(true),
-                        pointOnCurve,
-                        directionOfCurve
-                    );
-                    return { pointOnCurve, directionOfCurve };
+					if (convertBoundedCurveDistAlongToPoint3D(
+						curve,
+						distAlong,
+						distExpr->AlongHorizontal.value_or(true),
+						pointOnCurve,
+						directionOfCurve
+					))
+						return { pointOnCurve, directionOfCurve };
+					else
+						throw oip::InconsistentGeometryException(curve, "Could not determine position on curve at: " + std::to_string(distAlong));
                 }
 
                 /**
@@ -1366,12 +1389,13 @@ namespace OpenInfraPlatform {
                  * \param[in]	bDistMeasuredAlongHorizontal	Is the distance measured only along the x-y projection of the curve?
                  * \param[out]	vkt3DtargetPoint				The calculated 3D point.
                  * \param[out]	vkt3DtargetDirection			The calculated 3D direction vector of the tangent to the curve at that point.
-
+				 *
                  * \note \c dDistAlongOfPoint need to account for unit conversion outside of function.
                  * \note Function currently only supports \c IfcAlignmentCurve.
                  * \note Function presets the returns to (0.,0.,0.) and (1.,0.,0.).
+				 * \return true, if calculation was successful. false otherwise.
                  */
-                void convertBoundedCurveDistAlongToPoint3D(
+                bool convertBoundedCurveDistAlongToPoint3D(
                     const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve>& ifcCurve,
                     const double dDistAlongOfPoint,
                     const bool bDistMeasuredAlongHorizontal,
@@ -2087,7 +2111,8 @@ namespace OpenInfraPlatform {
 
                         // normalize the direction
                         vkt3DtargetDirection.normalize();
-
+						// everything OK
+						return true;
                     }//end if alignment curve
                 }//end convertAlignmentCurveDistAlongToPoint3D
 

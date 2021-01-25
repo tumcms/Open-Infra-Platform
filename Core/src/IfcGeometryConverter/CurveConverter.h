@@ -443,18 +443,18 @@ namespace OpenInfraPlatform {
 					for (auto& it_station : stations)
 					{
 						// call the placement converter that handles the geometry and calculates the 3D point along a curve
-						placementConverter->convertBoundedCurveDistAlongToPoint3D(
+						if( placementConverter->convertBoundedCurveDistAlongToPoint3D(
 							alignmentCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>(), 
-							it_station, true, targetPoint3D, targetDirection3D);
-						curve_points.push_back(targetPoint3D);
+							it_station, true, targetPoint3D, targetDirection3D)	)
+							curve_points.push_back(targetPoint3D);
 					}
 					GeomUtils::appendPointsToCurve(curve_points, targetVec);
 
 					// add the first point to segments
-					placementConverter->convertBoundedCurveDistAlongToPoint3D(
+					if(	placementConverter->convertBoundedCurveDistAlongToPoint3D(
 						alignmentCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>(),
-						stations.at(0), true, targetPoint3D, targetDirection3D);
-					segmentStartPoints.push_back(targetPoint3D);
+						stations.at(0), true, targetPoint3D, targetDirection3D)	)
+						segmentStartPoints.push_back(targetPoint3D);
 				}
 #endif
 
