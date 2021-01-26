@@ -64,18 +64,21 @@ void OffGeometryEffect::changeOffset(const buw::Vector3d& offsetOld, const buw::
 		if (indexBuffer_) indexBuffer_.reset();
 
 		//tmp containers
-		std::vector<buw::Vector3d> verticesMesh;
+		std::vector<buw::VertexPosition3Color3Normal3> verticesMesh;
 		std::vector<uint32_t> indicesMesh;
 
 		//process the data
 		if (!offModel_->geometry().isEmpty())
 		{
-			std::vector<buw::VertexPosition3Color3Normal3> vertices;
-			vertices.reserve(offModel_->geometry().vertices.size());
+			int size = offModel_->geometry().vertices.size();
+			std::vector<buw::VertexPosition3Color3Normal3> vertices(size);
 			std::transform(offModel_->geometry().vertices.begin(),
 				offModel_->geometry().vertices.end(),
 				vertices.begin(),
 				[offsetNew](buw::VertexPosition3Color3Normal3 a) { a.position[0] += offsetNew.x(); a.position[1] += offsetNew.y(); a.position[2] += offsetNew.z(); return a; });
+
+			verticesMesh.insert(verticesMesh.end(), vertices.begin(), vertices.end());
+			indicesMesh.insert(indicesMesh.end(), offModel_->geometry().indices.begin(), offModel_->geometry().indices.end());
 		}
 
 		//upload data 
@@ -87,7 +90,7 @@ void OffGeometryEffect::changeOffset(const buw::Vector3d& offsetOld, const buw::
 
 			vbd.data = verticesMesh.data();
 			vbd.vertexCount = verticesMesh.size();
-			vbd.vertexLayout = buw::VertexPosition3::getVertexLayout();
+			vbd.vertexLayout = buw::VertexPosition3Color3Normal3::getVertexLayout();
 			vertexBuffer_ = renderSystem()->createVertexBuffer(vbd);
 
 			BLUE_LOG(trace) << "Done creating OFF geometry vertex buffer. Size:" << QString::number(verticesMesh.size()).toStdString();
@@ -111,7 +114,7 @@ void OffGeometryEffect::v_init()
 		buw::pipelineStateDescription psd;
 		psd.effectFilename = buw::Singleton<RenderResources>::instance().getResourceRootDir() + "/Shader/OffGeometryEffect.be";
 		psd.pipelineStateName = "main";
-		psd.vertexLayout = buw::VertexPosition3::getVertexLayout();
+		psd.vertexLayout = buw::VertexPosition3Color3Normal3::getVertexLayout();
 		psd.primitiveTopology = buw::ePrimitiveTopology::TriangleList;
 		psd.renderTargetFormats = { buw::eTextureFormat::R8G8B8A8_UnsignedNormalizedInt_SRGB };
 		psd.useDepth = true;

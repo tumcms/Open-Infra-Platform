@@ -104,7 +104,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 				buw::Vector3f vector1 = verticesPosition.at(indices.at(size - 3));
 				buw::Vector3f vector2 = verticesPosition.at(indices.at(size - 2));
 				buw::Vector3f vector3 = verticesPosition.at(indices.at(size - 1));
-				buw::Vector3f color(1.0f, 0.0f, 0.0f); //to be changed later on 
+				buw::Vector3f color(0.0f, 0.0f, 1.0f); //to be changed later on 
 				buw::Vector3f normal = calcNormal(vector1, vector2, vector3);
 
 				//create vertices with position, color and normal and add to list of all vertices
@@ -122,9 +122,9 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 				buw::Vector3f vector2 = verticesPosition.at(indices.at(size - 5));
 				buw::Vector3f vector3 = verticesPosition.at(indices.at(size - 4));
 				buw::Vector3f vector4 = verticesPosition.at(indices.at(size - 2));
-				buw::Vector3f color1(1.0f, 0.0f, 0.0f); //to be changed later on 
+				buw::Vector3f color1(0.0f, 0.0f, 1.0f); //to be changed later on 
 				buw::Vector3f normal1 = calcNormal(vector1, vector2, vector3);
-				buw::Vector3f color2(1.0f, 0.0f, 0.0f); //to be changed later on 
+				buw::Vector3f color2(0.0f, 0.0f, 1.0f); //to be changed later on 
 				buw::Vector3f normal2 = calcNormal(vector3, vector4, vector1);
 
 				//create vertices with position, color and normal and add to list of all vertices
@@ -145,7 +145,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		model->addVertices(allVertices);
 
 		int nrOfAllVertices = allVertices.size();
-		for (int i = 0; i < nrOfAllVertices; i++) //proably no need; give vertices without indexBuffer to shader
+		for (int i = 0; i < nrOfAllVertices; i++)
 			indices.at(i) = i;
 
 		model->addIndices(indices);
@@ -181,7 +181,7 @@ std::vector<buw::Vector3f> OffReader::readVertices(const int nrOfVertices,
 void OffReader::readTriangleFace(std::stringstream& lineStream, 
 	std::vector<uint32_t>& indices)
 {
-	std::vector<uint32_t> faceVector;
+	std::vector<uint32_t> faceVector(3);
 
 	lineStream >> faceVector[0] >> faceVector[1] >> faceVector[2];
 	for (int j = 0; j < 3; j++)
