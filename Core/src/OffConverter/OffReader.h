@@ -16,8 +16,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#ifndef OFFREADER_H
-#define OFFREADER_H
+#ifndef OpenInfraPlatform_Core_OffConverter_51f00dc0_473e_4406_a0c2_2847806ff341_h
+#define OpenInfraPlatform_Core_OffConverter_51f00dc0_473e_4406_a0c2_2847806ff341_h
 
 #include <thread>
 #include <string>
@@ -52,4 +52,4 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END
 
 EMBED_CORE_OFFCONVERTER_INTO_OIP_NAMESPACE(OffReader)
 
-#endif //OFFREADER_H
+#endif //end define OpenInfraPlatform_Core_OffConverter_51f00dc0_473e_4406_a0c2_2847806ff341_h
