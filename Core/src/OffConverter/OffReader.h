@@ -35,9 +35,13 @@ public:
 	static std::shared_ptr<OffModel> readFile(const std::string& filename);
 
 	static void readTriangleFace(std::stringstream& lineStream,
-		std::vector<uint32_t>& indices);
+		std::vector<uint32_t>& indices,
+		std::vector<buw::VertexPosition3Color3Normal3>& vertices,
+		std::vector<buw::Vector3f>& offVertices);
 	static void readQuadFace(std::stringstream& lineStream,
-		std::vector<uint32_t>& indices);
+		std::vector<uint32_t>& indices,
+		std::vector<buw::VertexPosition3Color3Normal3>& vertices,
+		std::vector<buw::Vector3f>& offVertices);
 	static std::vector<buw::Vector3f> readVertices(const int nrOfVertices,
 		std::ifstream& offFile);
 	static buw::Vector3f calcNormal(const buw::Vector3f& vertex1,

@@ -79,9 +79,9 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		model->setFilename(filename);
 
 		//read vertices 
-		std::vector<buw::Vector3f> verticesPosition;
-		verticesPosition = readVertices(nrOfVertices, offFile);
-		std::vector<buw::VertexPosition3Color3Normal3> allVertices;
+		std::vector<buw::Vector3f> offVertices;
+		offVertices= readVertices(nrOfVertices, offFile);
+		std::vector<buw::VertexPosition3Color3Normal3> buwVertices;
 
 		//read faces (special case: after indices of face the color is given in RGB value -> to be considered later on)
 		std::vector<uint32_t> indices;
@@ -98,43 +98,12 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 			//read triangle 
 			if (faceType == 3)
 			{
-				readTriangleFace(lineStream, indices);
-				//read normal and color
-				int size = indices.size();
-				buw::Vector3f vector1 = verticesPosition.at(indices.at(size - 3));
-				buw::Vector3f vector2 = verticesPosition.at(indices.at(size - 2));
-				buw::Vector3f vector3 = verticesPosition.at(indices.at(size - 1));
-				buw::Vector3f color(0.0f, 0.0f, 1.0f); //to be changed later on 
-				buw::Vector3f normal = calcNormal(vector1, vector2, vector3);
-
-				//create vertices with position, color and normal and add to list of all vertices
-				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color, normal));
-				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color, normal));
-				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color, normal));
+				readTriangleFace(lineStream, indices, buwVertices, offVertices);
 			}
 			//read quad
 			else if (faceType == 4)
 			{
-				readQuadFace(lineStream, indices);
-				//read normal
-				int size = indices.size();
-				buw::Vector3f vector1 = verticesPosition.at(indices.at(size - 6));
-				buw::Vector3f vector2 = verticesPosition.at(indices.at(size - 5));
-				buw::Vector3f vector3 = verticesPosition.at(indices.at(size - 4));
-				buw::Vector3f vector4 = verticesPosition.at(indices.at(size - 2));
-				buw::Vector3f color1(0.0f, 0.0f, 1.0f); //to be changed later on 
-				buw::Vector3f normal1 = calcNormal(vector1, vector2, vector3);
-				buw::Vector3f color2(0.0f, 0.0f, 1.0f); //to be changed later on 
-				buw::Vector3f normal2 = calcNormal(vector3, vector4, vector1);
-
-				//create vertices with position, color and normal and add to list of all vertices
-				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color1, normal1));
-				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color1, normal1));
-				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color1, normal1));
-
-				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color2, normal2));
-				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector4, color2, normal2));
-				allVertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color2, normal2));
+				readQuadFace(lineStream, indices, buwVertices, offVertices);
 			}
 			else
 			{
@@ -142,9 +111,9 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 				throw oip::UnhandledException("Files that include faces with more than 4 edges are not supported yet.");
 			}
 		}
-		model->addVertices(allVertices);
+		model->addVertices(buwVertices);
 
-		int nrOfAllVertices = allVertices.size();
+		int nrOfAllVertices = buwVertices.size();
 		for (int i = 0; i < nrOfAllVertices; i++)
 			indices.at(i) = i;
 
@@ -179,8 +148,11 @@ std::vector<buw::Vector3f> OffReader::readVertices(const int nrOfVertices,
 }
 
 void OffReader::readTriangleFace(std::stringstream& lineStream, 
-	std::vector<uint32_t>& indices)
+	std::vector<uint32_t>& indices,
+	std::vector<buw::VertexPosition3Color3Normal3>& vertices,
+	std::vector<buw::Vector3f>& offVertices)
 {
+	//read indices
 	std::vector<uint32_t> faceVector(3);
 
 	lineStream >> faceVector[0] >> faceVector[1] >> faceVector[2];
@@ -188,10 +160,28 @@ void OffReader::readTriangleFace(std::stringstream& lineStream,
 	{
 		indices.push_back(faceVector[j]);
 	}
+
+	//selete used vertices 
+	buw::Vector3f vector1 = offVertices.at(faceVector[0]);
+	buw::Vector3f vector2 = offVertices.at(faceVector[1]);
+	buw::Vector3f vector3 = offVertices.at(faceVector[2]);
+
+	//calculate normal
+	buw::Vector3f normal = calcNormal(vector1, vector2, vector3);
+
+	//read color
+	buw::Vector3f color(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
+
+	//create vertices with position, color and normal and add to list of all vertices
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color, normal));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color, normal));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color, normal));
 }
 
 void OffReader::readQuadFace(std::stringstream& lineStream, 
-	std::vector<uint32_t>& indices)
+	std::vector<uint32_t>& indices,
+	std::vector<buw::VertexPosition3Color3Normal3>& vertices,
+	std::vector<buw::Vector3f>& offVertices)
 {
 	std::vector<uint32_t> faceVector(4);
 
@@ -207,6 +197,32 @@ void OffReader::readQuadFace(std::stringstream& lineStream,
 	indices.push_back(faceVector[2]);
 	indices.push_back(faceVector[3]);
 	indices.push_back(faceVector[0]);
+
+	//select used vertices 
+	int size = indices.size();
+	buw::Vector3f vector1 = offVertices.at(faceVector[0]);
+	buw::Vector3f vector2 = offVertices.at(faceVector[1]);
+	buw::Vector3f vector3 = offVertices.at(faceVector[2]);
+	buw::Vector3f vector4 = offVertices.at(faceVector[3]);
+
+	//calculate normal
+	buw::Vector3f normal1 = calcNormal(vector1, vector2, vector3);
+	buw::Vector3f normal2 = calcNormal(vector3, vector4, vector1);
+
+	//read color
+	buw::Vector3f color1(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
+	buw::Vector3f color2(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
+
+	//create vertices with position, color and normal and add to list of all vertices
+	//first triangle
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color1, normal1));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color1, normal1));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color1, normal1));
+
+	//second triangle
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color2, normal2));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector4, color2, normal2));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color2, normal2));
 }
 
 buw::Vector3f OffReader::calcNormal(const buw::Vector3f& vertex1,
