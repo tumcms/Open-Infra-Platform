@@ -46,6 +46,7 @@
 #include <Effects/BoxEffect.h>
 #include <Effects/IfcGeometryEffect.h>
 #include <Effects/GradientClearEffect.h>
+#include <Effects/OffGeometryEffect.h>
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 #include <Effects\PointCloudProcessing\PointCloudEffect.h>
@@ -196,6 +197,7 @@ namespace OpenInfraPlatform {
 			buw::ReferenceCounted<oip::UIElementsEffect> uiElements_;
 			buw::ReferenceCounted<oip::BoundingBoxEffect> boundingBoxEffect_;
 			buw::ReferenceCounted<oip::SkyboxEffect> skyboxEffect_;
+			buw::ReferenceCounted<oip::OffGeometryEffect> offGeometryEffect_;
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 			buw::ReferenceCounted<oip::PointCloudEffect> pointCloudEffect_ = nullptr;

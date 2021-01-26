@@ -185,6 +185,10 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     skyboxEffect_ = buw::makeReferenceCounted<oip::SkyboxEffect>(renderSystem_.get(), viewport_, worldBuffer_);
     skyboxEffect_->init();
 
+	BLUE_LOG(trace) << "Creating OffGeometry effects";
+	offGeometryEffect_ = buw::makeReferenceCounted<oip::OffGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+	offGeometryEffect_->init();
+
     timer_ = new QTimer();
     timer_->setInterval(16);
     timer_->setSingleShot(false);
@@ -225,6 +229,7 @@ Viewport::~Viewport() {
 
     skyboxEffect_ = nullptr;
     ifcGeometryEffect_ = nullptr;
+	offGeometryEffect_ = nullptr;
 
     viewCube_ = nullptr;
 
@@ -810,6 +815,19 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 			activeEffects_.push_back(ifcGeometryEffect);
 		}
     }
+
+	// change in OFF geometry?
+	if (changeFlag & ChangeFlag::OffGeometry) {
+		auto offGeometryModel = std::dynamic_pointer_cast<oip::OffModel>(data.getLastModel());
+		if (offGeometryModel)
+		{
+			buw::ReferenceCounted<oip::OffGeometryEffect> offGeometryEffect
+				= buw::makeReferenceCounted<oip::OffGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+			offGeometryEffect->init();
+			offGeometryEffect->setOffModel(offGeometryModel);
+			activeEffects_.push_back(offGeometryEffect);
+		}
+	}
 
 	// change in Point cloud
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
