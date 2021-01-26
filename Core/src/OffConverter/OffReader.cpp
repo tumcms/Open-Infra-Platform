@@ -49,13 +49,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 	{
 		std::string line;
 		//search line which specifies the number of vertices, faces and edges
-		bool firstLineWithContent = false;
-		while (!firstLineWithContent)
-		{
-			std::getline(offFile, line);
-			if (line == "OFF")
-				firstLineWithContent = true;
-		}
+		while (std::getline(offFile, line) && line != "OFF");
 
 		//read number of elements
 		getline(offFile, line);
@@ -79,8 +73,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		model->setFilename(filename);
 
 		//read vertices 
-		std::vector<buw::Vector3f> offVertices;
-		offVertices= readVertices(nrOfVertices, offFile);
+		std::vector<buw::Vector3f> offVertices = readVertices(nrOfVertices, offFile);
 		std::vector<buw::VertexPosition3Color3Normal3> buwVertices;
 
 		//read faces (special case: after indices of face the color is given in RGB value -> to be considered later on)
@@ -113,7 +106,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		}
 		model->addVertices(buwVertices);
 
-		int nrOfAllVertices = buwVertices.size();
+		size_t nrOfAllVertices = buwVertices.size();
 		for (int i = 0; i < nrOfAllVertices; i++)
 			indices.at(i) = i;
 
