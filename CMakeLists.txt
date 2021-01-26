@@ -342,9 +342,9 @@ endif(DOXYGEN_GENERATE_DOCUMENTATION)
 # (1/7) Point Cloud Processing ("pcp_module")
 #----------------------------------------------------------
 
-Option(MODULES_POINT_CLOUD_PROCESSING OFF)
+Option(OIP_WITH_POINT_CLOUD_PROCESSING OFF)
 
-if(MODULES_POINT_CLOUD_PROCESSING)
+if(OIP_WITH_POINT_CLOUD_PROCESSING)
 	set(CMAKE_PREFIX_PATH ${OIP_QT_DIR})
 	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
 	add_subdirectory(PointCloudProcessing)
@@ -540,7 +540,7 @@ target_link_libraries( OpenInfraPlatform.UI
 
 set(QT_WINDEPLOY_FLAGS -xml -concurrent)
 
-if(MODULES_POINT_CLOUD_PROCESSING)
+if(OIP_WITH_POINT_CLOUD_PROCESSING)
 	list(APPEND QT_WINDEPLOY_FLAGS -opengl)
 endif()
 
@@ -709,69 +709,6 @@ set_target_properties(uninstall PROPERTIES FOLDER "ThirdParty/eigen")
 # Switched to static gtest on 28.11.2018 / Revision 388+
 #set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 
-#----------------------------------------------------------
-# MODULES
-#----------------------------------------------------------
-
-# Group of entries below. 
-# Select all modules with necessary thirdparty libraries to be built. 
-# Otherwise only core project is built.
-
-
-
-#----------------------------------------------------------
-# (2/7) Digital Elevation Model 
-#----------------------------------------------------------
-Option(MODULES_DIGITAL_ELEVATION_MODEL ON)
-
-if(MODULES_DIGITAL_ELEVATION_MODEL)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (3/7) Girder 
-#----------------------------------------------------------
-Option(MODULES_GIRDER ON)
-
-if(MODULES_GIRDER)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (4/7) Proxy Model 
-#----------------------------------------------------------
-Option(MODULES_PROXY_MODEL ON)
-
-if(MODULES_PROXY_MODEL)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (5/7) Railway 
-#----------------------------------------------------------
-Option(MODULES_RAILWAY ON)
-
-if(MODULES_RAILWAY)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (6/7) Slabfield 
-#----------------------------------------------------------
-Option(MODULES_SLABFIELD ON)
-
-if(MODULES_SLABFIELD)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (7/7) Tesselation 
-#----------------------------------------------------------
-Option(MODULES_TESSELATION ON)
-
-if(MODULES_TESSELATION)
-
-ENDIF()
 
 #-------------------------------------------------------------------------------------
 # Deployment & Installation.

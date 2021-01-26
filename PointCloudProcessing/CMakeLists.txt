@@ -19,7 +19,7 @@
 # POINT CLOUD PROCESSING MODULE.
 #-------------------------------------------------
 
-if(MODULES_POINT_CLOUD_PROCESSING)
+if(OIP_WITH_POINT_CLOUD_PROCESSING)
 
 project(OpenInfraPlatform.PointCloudProcessing)
 
