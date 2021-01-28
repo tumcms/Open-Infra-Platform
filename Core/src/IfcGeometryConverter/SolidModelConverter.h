@@ -960,62 +960,23 @@ namespace OpenInfraPlatform
 					swept_area_pos = pos * placementConverter->convertIfcAxis2Placement3D(swept_area_position);
 				}
 
-				/*
+				
 				// IfcFixedReferenceSweptAreaSolid SUBTYPE of IfcSweptAreaSolid
-				std::shared_ptr<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixed_ref_sweptAreaSolid =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>(sweptAreaSolid);
-				if (fixed_ref_sweptAreaSolid) {
-					// Get directrix, start parameter, end parameter and fixed reference (attributes 3-6).
-					//std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
-					//	fixed_ref_sweptAreaSolid->Directrix.lock();	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve.
-					double start_param = fixed_ref_sweptAreaSolid->StartParam;	// TO DO: optional
-					double end_param = fixed_ref_sweptAreaSolid->EndParam;		// TO DO: optional
-					//std::shared_ptr<typename IfcEntityTypesT::IfcDirection> fixed_ref =
-					//	fixed_ref_sweptAreaSolid->FixedReference.lock();
-
-					// TO DO: implement//
-
+				if (sweptAreaSolid.template isOfType<IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>()) 
+				{
+					convertIfcFixedReferenceSweptAreaSolid(
+						sweptAreaSolid.template as<IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>(),
+						swept_area_pos, itemData);
 					return;
 				}
-				*/
+				
 
 				// IfcSurfaceCurveSweptAreaSolid SUBTYPE of IfcSweptAreaSolid
 				if (sweptAreaSolid.template isOfType<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid>())
 				{
-					oip::EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid> surface_curve_sweptAreaSolid =
-						sweptAreaSolid.template as<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid>();
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processing IfcSurfaceCurveSweptAreaSolid #" << surface_curve_sweptAreaSolid->getId();
-#endif
-					// Get directrix, start parameter, end paramter and reference surface (attributes 3-6).
-					oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrix =
-						surface_curve_sweptAreaSolid->Directrix;	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
-					double start_param = surface_curve_sweptAreaSolid->StartParam;	// TO DO: optional
-					double end_param = surface_curve_sweptAreaSolid->EndParam;		// TO DO: optional
-					oip::EXPRESSReference<typename IfcEntityTypesT::IfcSurface> ref_surface =
-						surface_curve_sweptAreaSolid->ReferenceSurface;	// TO DO: next level
-
-// TO DO: implement / check current implementation //
-#ifdef _DEBUG
-					std::cout << "Warning\t| IfcSurfaceCurveSweptAreaSolid not implemented" << std::endl;
-#endif
-
-					std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(swept_area);
-					const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
-					std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
-
-					oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix_curve = surface_curve_sweptAreaSolid->Directrix;
-
-					std::vector<carve::geom::vector<3> > segment_start_points;
-					std::vector<carve::geom::vector<3> > basis_curve_points;
-					curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);
-
-					std::shared_ptr<carve::input::PolylineSetData> polyline_data =
-						faceConverter->convertIfcSurface(surface_curve_sweptAreaSolid->ReferenceSurface, swept_area_pos);
-
-#ifdef _DEBUG
-					BLUE_LOG(trace) << "Processed IfcSurfaceCurveSweptAreaSolid #" << surface_curve_sweptAreaSolid->getId();
-#endif
+					convertIfcSurfaceCurveSweptAreaSolid(
+						sweptAreaSolid.template as<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid>(),
+						swept_area_pos, itemData, swept_area);
 					return;
 				}
 
@@ -1037,21 +998,72 @@ namespace OpenInfraPlatform
 				// IfcRevolvedAreaSolid SUBTYPE of IfcSweptAreaSolid
 				if (sweptAreaSolid.template isOfType<typename IfcEntityTypesT::IfcRevolvedAreaSolid>())
 				{
-					oip::EXPRESSReference<typename IfcEntityTypesT::IfcRevolvedAreaSolid> revolved_area_solid =
-						sweptAreaSolid.template as<typename IfcEntityTypesT::IfcRevolvedAreaSolid>();
-					// Get axis and angle (attributes 3-4). 
-					std::shared_ptr<typename IfcEntityTypesT::IfcAxis1Placement> axis =
-						revolved_area_solid->Axis.lock();
-					double angle = revolved_area_solid->Angle;
-
 					convertIfcRevolvedAreaSolid(sweptAreaSolid.template as<typename IfcEntityTypesT::IfcRevolvedAreaSolid>(), 
 						swept_area_pos, itemData);
 					return;
 					// TO DO: implement//
-
 				}
 
 				throw oip::UnhandledException(sweptAreaSolid);
+			}
+
+			void convertIfcFixedReferenceSweptAreaSolid(EXPRESSReference<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixedRefSweptAreaSolid,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) throw(...)
+			{
+				throw oip::UnhandledException(fixedRefSweptAreaSolid);
+				/*
+				// Get directrix, start parameter, end parameter and fixed reference (attributes 3-6).
+					//std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
+					//	fixed_ref_sweptAreaSolid->Directrix.lock();	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve.
+				double start_param = fixed_ref_sweptAreaSolid->StartParam;	// TO DO: optional
+				double end_param = fixed_ref_sweptAreaSolid->EndParam;		// TO DO: optional
+				//std::shared_ptr<typename IfcEntityTypesT::IfcDirection> fixed_ref =
+				//	fixed_ref_sweptAreaSolid->FixedReference.lock();
+
+				// TO DO: implement//*/
+			}
+
+			void convertIfcSurfaceCurveSweptAreaSolid(EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid> surface_curve_sweptAreaSolid,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData,
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> swept_area
+			) throw(...)
+			{
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcSurfaceCurveSweptAreaSolid #" << surface_curve_sweptAreaSolid->getId();
+#endif
+				// Get directrix, start parameter, end paramter and reference surface (attributes 3-6).
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrix =
+					surface_curve_sweptAreaSolid->Directrix;	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
+				double start_param = surface_curve_sweptAreaSolid->StartParam;	// TO DO: optional
+				double end_param = surface_curve_sweptAreaSolid->EndParam;		// TO DO: optional
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcSurface> ref_surface =
+					surface_curve_sweptAreaSolid->ReferenceSurface;	// TO DO: next level
+
+// TO DO: implement / check current implementation //
+#ifdef _DEBUG
+				std::cout << "Warning\t| IfcSurfaceCurveSweptAreaSolid not implemented" << std::endl;
+#endif
+
+				std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(swept_area);
+				const std::vector<std::vector<carve::geom::vector<2>>>& paths = profile_converter->getCoordinates();
+				std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
+
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix_curve = surface_curve_sweptAreaSolid->Directrix;
+
+				std::vector<carve::geom::vector<3> > segment_start_points;
+				std::vector<carve::geom::vector<3> > basis_curve_points;
+				curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);
+
+				std::shared_ptr<carve::input::PolylineSetData> polyline_data =
+					faceConverter->convertIfcSurface(surface_curve_sweptAreaSolid->ReferenceSurface, pos);
+
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processed IfcSurfaceCurveSweptAreaSolid #" << surface_curve_sweptAreaSolid->getId();
+#endif
+				return;
 			}
 
 			void convertIfcExtrudedAreaSolid(
@@ -1152,6 +1164,11 @@ namespace OpenInfraPlatform
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcRevolvedAreaSolid #" << revolvedArea->getId();
 #endif
+				// Get axis and angle (attributes 3-4). 
+				std::shared_ptr<typename IfcEntityTypesT::IfcAxis1Placement> axis =
+					revolvedArea->Axis.lock();
+				
+
 				if (!revolvedArea->SweptArea)
 				{
 					return;
