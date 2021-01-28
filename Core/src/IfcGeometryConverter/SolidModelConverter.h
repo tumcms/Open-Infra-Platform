@@ -92,527 +92,9 @@ namespace OpenInfraPlatform
 
 			*/
 
-                        void convertIfcCsgSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid) throw(...)
-                        {
-                            if(csg_solid.expired())
-                                throw oip::ReferenceExpiredException(csg_solid);
-
-                            switch(csg_solid->TreeRootExpression.which()) {
-                            case 0:
-                                convertIfcBooleanResult(csg_solid->TreeRootExpression.get<0>().lock(), pos, itemData);
-                                break;
-                            case 1:
-                                convertIfcCsgPrimitive3D(csg_solid->TreeRootExpression.get<1>().lock(), pos, itemData);
-                                break;
-                            default:
-                                throw oip::InconsistentModellingException("IfcCsgSolid->TreeRootExpression has no value set.");
-                                break;
-                            }
-                        }
-
-            void convertIfcClosedShell(
-				const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell, 
-				const carve::math::Matrix& pos, 
-				std::shared_ptr<ItemData>& itemData
-			) const throw(...)
-            {
-				if (outerShell.expired())
-					throw oip::ReferenceExpiredException(outerShell);
-
-                std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
-
-                faceConverter->convertIfcFaceList(outerShell->CfsFaces, pos, inputDataOuterShell);
-
-                std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
-                            inputDataOuterShell->open_or_closed_polyhedrons.end(),
-                            std::back_inserter(itemData->closed_polyhedrons));
-            }
-
-			/*! \brief Converts \c IfcManifoldSolidBrep to meshes.
-			 *
-			 * \param[in] manifoldSolidBrep The \c IfcManifoldSolidBrep to be converted.
-			 * \param[in] pos The relative location of the origin of the representation's coordinate system within the geometric context.
-			 * \param[out] itemData A pointer to be filled with the relevant data.
-			 */
-            void convertIfcManifoldSolidBrep(
-				const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep,
-				const carve::math::Matrix& pos,  
-				std::shared_ptr<ItemData> itemData
-			) const throw(...)
-            {
-				// check input
-                if(manifoldSolidBrep.expired())
-                    throw oip::ReferenceExpiredException(manifoldSolidBrep);
-
-                // (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
-                if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>())
-                    throw oip::UnhandledException(manifoldSolidBrep);
-
-                // (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
-                if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
-					// (1/2) IfcFacetedBrepWithVoids SUBTYPE of IfcFacetedBrep
-					if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrepWithVoids>())
-						throw oip::UnhandledException(manifoldSolidBrep);
-					// (2/2) IfcFacetedBrep
-					else
-					{
-						// Get outer (attribute 1).
-						convertIfcClosedShell(manifoldSolidBrep->Outer, pos, itemData);
-						// Done
-						return; 
-					}
-                }
-				
-				// the rest is not supported
-                throw oip::UnhandledException(manifoldSolidBrep);
-            }
-
-			carve::math::Matrix multiplyMatrixWithFactor(const carve::math::Matrix &A, const double &factor)
-			{
-				return carve::math::Matrix(A._11 * factor, A._12 * factor ,A._13 * factor, A._14 * factor,
-					                       A._21 * factor, A._22 * factor, A._23 * factor, A._24 * factor,
-					                       A._31 * factor, A._32 * factor, A._33 * factor, A._34 * factor,
-					                       A._41 * factor, A._42 * factor, A._43 * factor, A._44 * factor);
-			}
-
-			carve::math::Matrix addTwoMatrices(const carve::math::Matrix &A, const carve::math::Matrix &B)
-			{
-				return carve::math::Matrix(A._11 + B._11, A._12 + B._12, A._13 + B._13, A._14 + B._14,
-					                       A._21 + B._21, A._22 + B._22, A._23 + B._23, A._24 + B._24,
-					                       A._31 + B._31, A._32 + B._32, A._33 + B._33, A._34 + B._34,
-					                       A._41 + B._41, A._42 + B._42, A._43 + B._43, A._43 + B._44);
-			}
-
-			//TO DO: it has to work for ssh
-			carve::math::Matrix convertCurveOrientation(
-				const carve::geom::vector<3> directionOfCurve,
-				const bool fixed_axis_vertical,
-				const carve::geom::vector<3> translate = carve::geom::VECTOR(0., 0., 0.)
-			) const throw(...)
-			{
-						
-				carve::geom::vector<3> local_z(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, fixed_axis_vertical ? 0.0 : directionOfCurve.z));
-
-				// get the perpendicular to the left of the curve in the z-y plane (curve's coordinate system)
-				carve::geom::vector<3> local_y(carve::geom::VECTOR(-local_z.y, local_z.x, 0.0)); // always lies in the z-y plane(Curve (and x-y 2D-Profile)
-
-				// get the vertical as cross product
-				carve::geom::vector<3> local_x = carve::geom::cross(local_z, local_y);
-
-				// normalize the direction vectors
-				local_x.normalize();
-				local_y.normalize();
-				local_z.normalize();
-
-				// produce a rotation matrix
-				return carve::math::Matrix(
-					local_x.x, local_y.x, local_z.x, translate.x,
-					local_x.y, local_y.y, local_z.y, translate.y,
-					local_x.z, local_y.z, local_z.z, translate.z,
-					0, 0, 0, 1);
-			}
-			
-						void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal) throw(...)
-						{
-							if (sectioned_solid_horizontal.expired())
-								throw oip::ReferenceExpiredException(sectioned_solid_horizontal);
-
-							//Get directrix and cross sections (attributes 1-2).
-							const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix =
-								sectioned_solid_horizontal->Directrix;
-							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections =
-								sectioned_solid_horizontal->CrossSections;
-
-							// Get cross section positions and fixed axis vertical (attributes 3-4).
-							const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>>& cross_section_positions =
-								sectioned_solid_horizontal->CrossSectionPositions;
-
-							bool fixed_axis_vertical = sectioned_solid_horizontal->FixedAxisVertical;
-
-						    //check dimensions and correct attributes sizes
-							if (vec_cross_sections.size() != cross_section_positions.size())
-							{
-								throw oip::InconsistentModellingException(sectioned_solid_horizontal, "CrossSections and CrossSectionsPositions are not equal in size.");
-							}
-
-							//Give directrix to Curve converter: for each station 1 Point and 1 Direction
-							// the stations at which a point of the tessellation has to be calcuated - to be converted and fill the targetVec
-							std::vector<double> stations = curveConverter->getStationsForTessellationOfIfcAlignmentCurve(
-								directrix.typename as<typename IfcEntityTypesT::IfcAlignmentCurve>());
-
-							carve::geom::vector<3> targetPoint3D;
-							carve::geom::vector<3> targetDirection3D;
-							std::vector<carve::geom::vector<3>> BasisCurvePoints;
-							std::vector<carve::geom::vector<3>> BasisPointDirection;
-
-							// attach the curve points
-							for (auto& it_station : stations)
-							{
-								// call the placement converter that handles the geometry and calculates the 3D point along a curve
-								placementConverter->convertBoundedCurveDistAlongToPoint3D(directrix.as<typename IfcEntityTypesT::IfcBoundedCurve>(), it_station, true, targetPoint3D, targetDirection3D);
-								BasisCurvePoints.push_back(targetPoint3D);
-								BasisPointDirection.push_back(targetDirection3D);
-							}
-
-
-							std::shared_ptr<carve::input::PolyhedronData> body_data = std::make_shared<carve::input::PolyhedronData>();
-							itemData->closed_polyhedrons.push_back(body_data);
-							//std::vector<carve::geom::vector<3> > inner_shape_points;  //TO DO: find out if i need inner_shape_points for the CrossSections
-
-							int num_curve_points = BasisCurvePoints.size();
-							carve::math::Matrix matrix_sweep;
-
-							// Less than two points is a point
-							if (num_curve_points < 2)
-							{
-								throw oip::InconsistentModellingException(sectioned_solid_horizontal, " num curve points < 2");
-							}
-
-							////define Vector to fill with the coordinates of the CrossSections
-							std::vector<std::vector<std::vector<carve::geom::vector<2> > > > paths;
-
-							for (int i = 0; i < vec_cross_sections.size(); ++i)
-							{
-								std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
-								const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profile_converter->getCoordinates();
-
-								// Save profile coords in paths
-								std::vector<std::vector<carve::geom::vector<2> > > profile_coords_2d;
-								for (int p = 0; p < profile_coords.size(); ++p)
-								{
-									const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[p];
-								
-									profile_coords_2d.push_back(profile_loop);
-								}
-								paths.push_back(profile_coords_2d);
-
-							}
-
-							if (paths.size() == 0)
-							{
-								throw oip::InconsistentModellingException(sectioned_solid_horizontal, "Profile converter could not find coordinates");
-							}
-
-							//declare Variables to fill with the information of the Cross Section Positions
-							std::vector<carve::geom::vector<3>> offsetFromCurve;
-							std::vector<carve::math::Matrix> localPlacementMatrix;
-							std::vector<carve::geom::vector<3>> CrossSectionPoints;
-							std::vector<carve::geom::vector<3>> directionsOfCurve;
-							std::vector<carve::math::Matrix> object_placement_matrix;
-							
-							for (int pos = 0; pos < cross_section_positions.size(); ++pos)
-							{
-								
-								//1. get offset from curve   
-								carve::geom::vector<3> offset = placementConverter->convertIfcDistanceExpressionOffsets(cross_section_positions[pos]);
-								offsetFromCurve.push_back(offset);
-
-								//2. calculate the position on and the direction of the base curve
-								//also applay the relative dist along	
-								carve::geom::vector<3> pointOnCurve;
-								carve::geom::vector<3> directionOfCurve;
-								std::tie(pointOnCurve, directionOfCurve) = 
-									placementConverter->calculatePositionOnAndDirectionOfBaseCurve(
-										directrix.template as<typename IfcEntityTypesT::IfcBoundedCurve>(),
-										cross_section_positions[pos], 0.);
-								CrossSectionPoints.push_back(pointOnCurve);
-								directionsOfCurve.push_back(directionOfCurve);
-
-								//TO DO:
-								//3. get information from FixedAxisVertical 
-								if (fixed_axis_vertical == true)
-								{
-									directionsOfCurve[pos].z = 0;
-									directionsOfCurve[pos].normalize();
-								}
-							
-								
-								//4. calculate the rotations
-								//the direction of the curve's tangent = directionOfCurve
-								//now that localPLacement Matrix is a Vector ----> 1 Matrix for each CrossSectionPosition saved in the Vector localPlacementMatrix
-								carve::math::Matrix localm = placementConverter->calculateCurveOrientationMatrix(directionsOfCurve[pos], fixed_axis_vertical);
-								localPlacementMatrix.push_back(localm);
-
-								// 4. calculate the position
-					            // the position on the curve = pointOnCurve
-					            // the offsets = offsetFromCurve
-								carve::geom::vector<3> translate = CrossSectionPoints[pos] + localPlacementMatrix[pos] * offsetFromCurve[pos];
-								carve::math::Matrix object_placement_matrix_pos = convertCurveOrientation(directionsOfCurve[pos], fixed_axis_vertical, translate);
-								object_placement_matrix.push_back(object_placement_matrix_pos);
-							}
-							
-							//Declare Variable for the addFace
-							int  ppoints = 0;
-
-							//Declare a new vector which will include all points for the Tesselation
-							std::vector<carve::geom::vector<3>> points_for_tessellation;
-							std::vector<carve::geom::vector<3>> direction_for_tessellation;
-							std::vector<std::vector<std::vector<carve::geom::vector<3>>>> paths_for_tessellation;
-							int i = 0;
-						    int j = 0;
-
-							if (BasisCurvePoints[0] == CrossSectionPoints[0])
-							{
-								++i;
-								++j;
-							}
-							else
-							{//iterate BasisCurvePoints[] until it gets to CrossSectionPoints[0]
-							//if dist_1 is bigger than dist_2 they are before CrossSectionPoints[0], else they are after that point
-								double dist_1 = distance(BasisCurvePoints[0], CrossSectionPoints[0]);
-								double dist_2 = distance(BasisCurvePoints[1], CrossSectionPoints[0]);
-
-								while (dist_1 > dist_2)
-								{
-									dist_1 = distance(BasisCurvePoints[i], CrossSectionPoints[0]);
-									dist_2 = distance(BasisCurvePoints[i + 1], CrossSectionPoints[0]);
-									++i;
-								}
-							}
-							//The first point for tesselation is where the Profile Starts
-							points_for_tessellation.push_back(CrossSectionPoints[0]);
-							direction_for_tessellation.push_back(directionsOfCurve[0]);
-
-							//Convert profile information from 2D to 3D
-							std::vector<std::vector<carve::geom::vector<2> > >& compositeProfile = paths[0];
-							std::vector<std::vector<carve::geom::vector<3> > > TFcompositeprofile;
-							for (int w = 0; w < compositeProfile.size(); ++w)
-							{
-								std::vector<carve::geom::vector<2> >& loop = compositeProfile[w];
-								ppoints = loop.size();
-								std::vector<carve::geom::vector<3>> Tloop;
-								for (int k = 0; k < loop.size(); ++k)
-								{
-									carve::geom::vector<2>& point = loop[k];
-
-									carve::geom::vector<3> Tpoint = object_placement_matrix[0] * (carve::geom::VECTOR(point.x, point.y, 0)); 
-									Tloop.push_back(Tpoint);
-								}
-								TFcompositeprofile.push_back(Tloop);
-							}
-							//The first profile for tessellation
-							paths_for_tessellation.push_back(TFcompositeprofile);
-
-							//now that CrossSectionPoints[0] is reached iterate and fill points_for_tessellation
-			                while (j < CrossSectionPoints.size()) 
-							{
-
-			      				//if basis_curve_points[i]==pointsOnCurve[j] ->save the information of pointsOnCurve
-					     		if (BasisCurvePoints[i] == CrossSectionPoints[j])
-								{
-									//1. save the information of pointsOnCurve in the new vector
-									points_for_tessellation.push_back(CrossSectionPoints[j]);
-									direction_for_tessellation.push_back(directionsOfCurve[j]); //3D coord carve matrix ausrechnen zum multiplizieren
-
-									//2. Save CrossSections
-									std::vector<std::vector<carve::geom::vector<2> > >& compositeProfile = paths[j];
-									std::vector<std::vector<carve::geom::vector<3> > > Tcompositeprofile;
-									for (int w = 0; w < compositeProfile.size(); ++w)
-									{
-										std::vector<carve::geom::vector<2> >& loop = compositeProfile[w];
-										std::vector<carve::geom::vector<3>> Tloop;
-										for (int k = 0; k < loop.size(); ++k)
-										{
-											carve::geom::vector<2>& point = loop[k];
-
-											carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
-											Tloop.push_back(Tpoint);
-										}
-										Tcompositeprofile.push_back(Tloop);
-									}
-									
-									paths_for_tessellation.push_back(Tcompositeprofile);
-									
-									//4. go to the next element in both lists
-									++i;
-									++j;
-								}
-
-								//if basis_curve_points[i]!=pointsOnCurve[j] alternate depending on distance
-								else if (BasisCurvePoints[i] != CrossSectionPoints[j])
-								{
-									// get the distance of the points 
-									double distCrossSectionPositions;
-									double distBasisCurvePoints;
-									
-									//calculate the distance from the point in basis_curve_points to the last element in the joint list
-									int last = points_for_tessellation.size() - 1;
-
-									distCrossSectionPositions = distance(points_for_tessellation[last], CrossSectionPoints[j]);
-									distBasisCurvePoints = distance(points_for_tessellation[last], BasisCurvePoints[i]);
-
-									if (distCrossSectionPositions < distBasisCurvePoints)
-									{
-										//1. Save the point and direction in new vector
-										points_for_tessellation.push_back(CrossSectionPoints[j]);
-										direction_for_tessellation.push_back(directionsOfCurve[j]);
-
-										//2. Save CrossSections
-										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfile = paths[j];
-										std::vector<std::vector<carve::geom::vector<3> > > Tcompositeprofile;
-										for (int w = 0; w < compositeProfile.size(); ++w)
-										{
-											std::vector<carve::geom::vector<2> >& loop = compositeProfile[w];
-											std::vector<carve::geom::vector<3>> Tloop;
-											for (int k = 0; k < loop.size(); ++k)
-											{
-												carve::geom::vector<2>& point = loop[k];
-			
-												carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
-												Tloop.push_back(Tpoint);
-											}
-											Tcompositeprofile.push_back(Tloop);
-										}
-										
-										paths_for_tessellation.push_back(Tcompositeprofile);
-
-
-										//3. increment based on its position on the directrix
-										++j;
-								    }
-									
-									else if (distCrossSectionPositions > distBasisCurvePoints)
-									{
-										//Save the point in the curve in the new vector
-										points_for_tessellation.push_back(BasisCurvePoints[i]);
-										direction_for_tessellation.push_back(BasisPointDirection[i]);
-
-										//calculate the direction of the point (Interpolate with the pointOnCurve before and after that point)
-										int directionSize = direction_for_tessellation.size()-1;
-										int lastPoint = points_for_tessellation.size() -1;
-
-										double totalDistance = distance(CrossSectionPoints[j - 1], CrossSectionPoints[j]);
-										double factorBefore = (distance(CrossSectionPoints[j - 1], BasisCurvePoints[i]))/totalDistance;
-										double factorAfter = (distance(BasisCurvePoints[i], CrossSectionPoints[j]))/totalDistance;
-
-										//1. interpolate OffsetsFromCurve
-										carve::geom::vector<3> IoffsetFromCurve = offsetFromCurve[j - 1] * factorAfter + offsetFromCurve[j] * factorBefore;
-
-										//Calculate Matrices
-										//2. local_placement
-										carve::math::Matrix localm = placementConverter->calculateCurveOrientationMatrix(BasisPointDirection[i], fixed_axis_vertical);
-
-										// 3. calculate the position
-										// the position on the curve = pointOnCurve
-										// the offsets = offsetFromCurve
-										carve::geom::vector<3> translate = BasisCurvePoints[i] + localm * IoffsetFromCurve;
-										carve::math::Matrix object_placement_matrix_pos = convertCurveOrientation(BasisPointDirection[i], fixed_axis_vertical, translate);
-									
-
-										//interpolate profile
-										// Informal proposition: for the Interpolation to work the Profiles of the CrossSection before and afer need to have the same amount of points and loops.
-									
-										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileBefore = paths[j - 1];
-										std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileAfter = paths[j];
-
-										std::vector<std::vector<carve::geom::vector<3> > > Tcompositeprofile;
-										for (int w = 0; w < compositeProfileBefore.size(); ++w)
-										{
-											std::vector<carve::geom::vector<2> >& loopBefore = compositeProfileBefore[w];
-											std::vector<carve::geom::vector<2> >& loopAfter = compositeProfileAfter[w];
-
-											std::vector<carve::geom::vector<3>> Tloop;
-											for (int k = 0; k < loopBefore.size(); ++k)
-											{
-												carve::geom::vector<2>& pointBefore = loopBefore[k];
-												carve::geom::vector<2>& pointAfter = loopAfter[k];
-												
-												carve::geom::vector<2> deltapoint = carve::geom::VECTOR(pointAfter.x - pointBefore.x, pointAfter.y - pointBefore.y);
-												carve::geom::vector<2> Tpoint2D = carve::geom::VECTOR(deltapoint.x * factorBefore + pointBefore.x, deltapoint.y * factorBefore + pointBefore.y);
-												
-												carve::geom::vector<3> Tpoint = object_placement_matrix_pos *(carve::geom::VECTOR(Tpoint2D.x, Tpoint2D.y, 0));
-												Tloop.push_back(Tpoint);
-											}
-											Tcompositeprofile.push_back(Tloop);
-										}
-										
-										paths_for_tessellation.push_back(Tcompositeprofile);
-										
-										//increment based on its position on the directrix
-										++i;
-									}
-								}
-							}
-
-                            // Add Vertex, each point is a vertex. for each paths_for_tesselation
-							//paths_for_tesselation.size() == points_for_tessellation.size()
-							
-							for (i = 0; i < paths_for_tessellation.size(); ++i)
-							{
-								std::vector<std::vector<carve::geom::vector<3> > >& compositeProfile = paths_for_tessellation[i];
-								for (int w = 0; w < compositeProfile.size(); ++w)
-								{
-									std::vector<carve::geom::vector<3> >& loop = compositeProfile[w];
-									for (int k = 0; k < loop.size(); ++k)
-									{
-										carve::geom::vector<3>& point = loop[k];
-										body_data->addVertex(pos*point);
-									}
-								}
-							}
-
-					        // Add Faces Step1: calculate the Profile along the directrix and add each face of the outer profile
-							// Step2: close the Profile front and back
-
-							//1. Add Faces between Cross Sections to create a body along the Directrix
-						    //size of Tloop has to be the same for every Profile
-						    size_t num_vertices = body_data->getVertexCount();
-							int PFTS = paths_for_tessellation.size() -1;
-							for (int i = 0; i < PFTS ; ++i)
-							{
-								for (int j = 0; j < ppoints - 1; ++j)
-								{
-									body_data->addFace(i*ppoints + j, i*ppoints + j + 1, (i + 1)*ppoints + j);
-									body_data->addFace(i*ppoints + j + 1, (i + 1)*ppoints + j, (i + 1)*ppoints + j + 1);
-							    }
-							}
-						
-						
-							//close the first positions of the body
-							body_data->addFace(0, ppoints - 1, ppoints);
-
-							//close the body
-							int closingBodyVertices = num_vertices / ppoints;
-							for (int ii = 1; ii < closingBodyVertices - 1; ++ii)
-							{
-								body_data->addFace(ii*ppoints, ii*ppoints - 1, (ii+1)*ppoints - 1);
-								body_data->addFace((ii + 1)*ppoints, ii*ppoints, (ii + 1)*ppoints - 1);
-							}
-					
-							// close front cap
-							for (int jj = 0; jj < ppoints - 2; ++jj)
-							{
-							   body_data->addFace(0, jj + 1, jj + 2);
-							}
-
-							// close back cap
-							int BackCapVertex = num_vertices - ppoints;
-							for (int jj = BackCapVertex; jj < num_vertices ; ++jj)
-							{
-								int last = num_vertices - 1;
-								body_data->addFace(last, jj - 1, jj - 2);
-							}
-	
-			            }//endif sectioned_solid_horizontal
-
-			void convertIfcSectionedSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolid>& sectioned_solid) throw(...)
-			{
-				if (sectioned_solid.expired())
-					throw oip::ReferenceExpiredException(sectioned_solid);
-
-				// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
-				if (sectioned_solid.template isOfType<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>())
-				{
-					convertIfcSectionedSolidHorizontal(pos, itemData, sectioned_solid.template as<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>());
-					return;
-				}
-
-				throw oip::UnhandledException(sectioned_solid);
-			}
-			
 			void convertIfcSolidModel(const EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
-                                                  const carve::math::Matrix& pos,
-                                                  std::shared_ptr<ItemData> itemData)
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData)
 			{
 				// *****************************************************************************************************************************************//
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
@@ -621,8 +103,8 @@ namespace OpenInfraPlatform
 
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcCsgSolid>())
 				{
-                                    convertIfcCsgSolid(pos, itemData, solidModel.template as<typename IfcEntityTypesT::IfcCsgSolid>());
-				    return;
+					convertIfcCsgSolid(pos, itemData, solidModel.template as<typename IfcEntityTypesT::IfcCsgSolid>());
+					return;
 				} //endif csg_solid
 
 				// *****************************************************************************************************************************************//
@@ -632,9 +114,9 @@ namespace OpenInfraPlatform
 
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcManifoldSolidBrep>())
 				{
-                    convertIfcManifoldSolidBrep(solidModel.template as<typename IfcEntityTypesT::IfcManifoldSolidBrep>(), pos, itemData);
-                     return;
-                } //endif manifoldSolidBrep
+					convertIfcManifoldSolidBrep(solidModel.template as<typename IfcEntityTypesT::IfcManifoldSolidBrep>(), pos, itemData);
+					return;
+				} //endif manifoldSolidBrep
 
 				// *****************************************************************************************************************************************//
 				//	IfcSectionedSolid SUBTYPE of IfcSolidModel																							  //
@@ -645,7 +127,7 @@ namespace OpenInfraPlatform
 				{
 					convertIfcSectionedSolid(pos, itemData, solidModel.template as<typename IfcEntityTypesT::IfcSectionedSolid>());
 					return;
-				
+
 				} //endif sectioned_solid
 
 				// *****************************************************************************************************************************************//
@@ -665,7 +147,7 @@ namespace OpenInfraPlatform
 					if (swept_area_solid->Position)
 					{
 						EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> swept_area_position = swept_area_solid->Position;
-						
+
 						swept_area_pos = pos * placementConverter->convertIfcAxis2Placement3D(swept_area_position);
 					}
 
@@ -686,7 +168,7 @@ namespace OpenInfraPlatform
 					if (fixed_ref_swept_area_solid) {
 						// Get directrix, start parameter, end parameter and fixed reference (attributes 3-6).
 						//std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
-						//	fixed_ref_swept_area_solid->Directrix.lock();	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
+						//	fixed_ref_swept_area_solid->Directrix.lock();	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve.
 						double start_param = fixed_ref_swept_area_solid->StartParam;	// TO DO: optional
 						double end_param = fixed_ref_swept_area_solid->EndParam;		// TO DO: optional
 						//std::shared_ptr<typename IfcEntityTypesT::IfcDirection> fixed_ref =
@@ -753,7 +235,7 @@ namespace OpenInfraPlatform
 #endif
 						return;
 					}
-					
+
 					BLUE_LOG(error) << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname();
 					return;
 				}	//endif swept_area_solid
@@ -770,10 +252,10 @@ namespace OpenInfraPlatform
 						solidModel.template as<typename IfcEntityTypesT::IfcSweptDiskSolid>();
 					// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
 					oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix_curve = swept_disk_solid->Directrix;
-					
+
 					double length_in_meter = UnitConvert()->getLengthInMeterFactor();
 					double radius = swept_disk_solid->Radius * length_in_meter;
-					
+
 
 					double radius_inner = swept_disk_solid->InnerRadius.value_or(0.0);
 					//double start_param = swept_disk_solid->StartParam.value_or(0.0);
@@ -807,9 +289,9 @@ namespace OpenInfraPlatform
 					std::vector<carve::geom::vector<3> > circle_points;
 					std::vector<carve::geom::vector<3> > circle_points_inner;
 					int i; double angle;
-					for ( i = 0, angle = 0.; 
-						  i < nvc; 
-						  ++i,	 angle += delta_angle)
+					for (i = 0, angle = 0.;
+						i < nvc;
+						++i, angle += delta_angle)
 					{
 						// cross section (circle) is defined in YZ plane
 						double x = sin(angle);
@@ -1032,6 +514,531 @@ namespace OpenInfraPlatform
 
 			}
 
+            void convertIfcCsgSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid) throw(...)
+            {
+                if(csg_solid.expired())
+                    throw oip::ReferenceExpiredException(csg_solid);
+
+                switch(csg_solid->TreeRootExpression.which()) {
+                case 0:
+                    convertIfcBooleanResult(csg_solid->TreeRootExpression.get<0>().lock(), pos, itemData);
+                    break;
+                case 1:
+                    convertIfcCsgPrimitive3D(csg_solid->TreeRootExpression.get<1>().lock(), pos, itemData);
+                    break;
+                default:
+                    throw oip::InconsistentModellingException("IfcCsgSolid->TreeRootExpression has no value set.");
+                    break;
+                }
+            }
+
+			/*! \brief Converts \c IfcManifoldSolidBrep to meshes.
+			 *
+			 * \param[in] manifoldSolidBrep The \c IfcManifoldSolidBrep to be converted.
+			 * \param[in] pos The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData A pointer to be filled with the relevant data.
+			 */
+			void convertIfcManifoldSolidBrep(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const throw(...)
+			{
+				// check input
+				if (manifoldSolidBrep.expired())
+					throw oip::ReferenceExpiredException(manifoldSolidBrep);
+
+				// (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
+				if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>())
+					throw oip::UnhandledException(manifoldSolidBrep);
+
+				// (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
+				if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
+					// (1/2) IfcFacetedBrepWithVoids SUBTYPE of IfcFacetedBrep
+					if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrepWithVoids>())
+						throw oip::UnhandledException(manifoldSolidBrep);
+					// (2/2) IfcFacetedBrep
+					else
+					{
+						// Get outer (attribute 1).
+						convertIfcClosedShell(manifoldSolidBrep->Outer, pos, itemData);
+						// Done
+						return;
+					}
+				}
+
+				// the rest is not supported
+				throw oip::UnhandledException(manifoldSolidBrep);
+			}
+
+            void convertIfcClosedShell(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell, 
+				const carve::math::Matrix& pos, 
+				std::shared_ptr<ItemData>& itemData
+			) const throw(...)
+            {
+				if (outerShell.expired())
+					throw oip::ReferenceExpiredException(outerShell);
+
+                std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
+
+                faceConverter->convertIfcFaceList(outerShell->CfsFaces, pos, inputDataOuterShell);
+
+                std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
+                            inputDataOuterShell->open_or_closed_polyhedrons.end(),
+                            std::back_inserter(itemData->closed_polyhedrons));
+            }
+
+			void convertIfcSectionedSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolid>& sectioned_solid) throw(...)
+			{
+				if (sectioned_solid.expired())
+					throw oip::ReferenceExpiredException(sectioned_solid);
+
+				// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
+				if (sectioned_solid.template isOfType<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>())
+				{
+					convertIfcSectionedSolidHorizontal(pos, itemData, sectioned_solid.template as<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>());
+					return;
+				}
+
+				throw oip::UnhandledException(sectioned_solid);
+			}
+			
+			void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, 
+				std::shared_ptr<ItemData> itemData, 
+				const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal
+			) throw(...)
+			{
+				if (sectioned_solid_horizontal.expired())
+					throw oip::ReferenceExpiredException(sectioned_solid_horizontal);
+
+				//Get directrix and cross sections (attributes 1-2).
+				const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix =
+					sectioned_solid_horizontal->Directrix;
+				std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections =
+					sectioned_solid_horizontal->CrossSections;
+
+				// Get cross section positions and fixed axis vertical (attributes 3-4).
+				const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>>& cross_section_positions =
+					sectioned_solid_horizontal->CrossSectionPositions;
+
+				bool fixed_axis_vertical = sectioned_solid_horizontal->FixedAxisVertical;
+
+				//check dimensions and correct attributes sizes
+				if (vec_cross_sections.size() != cross_section_positions.size())
+				{
+					throw oip::InconsistentModellingException(sectioned_solid_horizontal, "CrossSections and CrossSectionsPositions are not equal in size.");
+				}
+
+				//Give directrix to Curve converter: for each station 1 Point and 1 Direction
+				// the stations at which a point of the tessellation has to be calcuated - to be converted and fill the targetVec
+				std::vector<double> stations = curveConverter->getStationsForTessellationOfIfcAlignmentCurve(
+					directrix.typename as<typename IfcEntityTypesT::IfcAlignmentCurve>());
+
+				carve::geom::vector<3> targetPoint3D;
+				carve::geom::vector<3> targetDirection3D;
+				std::vector<carve::geom::vector<3>> BasisCurvePoints;
+				std::vector<carve::geom::vector<3>> BasisPointDirection;
+
+				// attach the curve points
+				for (auto& it_station : stations)
+				{
+					// call the placement converter that handles the geometry and calculates the 3D point along a curve
+					placementConverter->convertBoundedCurveDistAlongToPoint3D(
+						directrix.as<typename IfcEntityTypesT::IfcBoundedCurve>(), 
+						it_station, true, targetPoint3D, targetDirection3D);
+
+					BasisCurvePoints.push_back(targetPoint3D);
+					BasisPointDirection.push_back(targetDirection3D);
+				}
+
+
+				std::shared_ptr<carve::input::PolyhedronData> body_data = std::make_shared<carve::input::PolyhedronData>();
+				itemData->closed_polyhedrons.push_back(body_data);
+				//std::vector<carve::geom::vector<3> > inner_shape_points;  //TO DO: find out if i need inner_shape_points for the CrossSections
+
+				int num_curve_points = BasisCurvePoints.size();
+				carve::math::Matrix matrix_sweep;
+
+				// Less than two points is a point
+				if (num_curve_points < 2)
+				{
+					throw oip::InconsistentModellingException(sectioned_solid_horizontal, " num curve points < 2");
+				}
+
+				////define Vector to fill with the coordinates of the CrossSections
+				std::vector<std::vector<std::vector<carve::geom::vector<2> > > > paths;
+
+				for (int i = 0; i < vec_cross_sections.size(); ++i)
+				{
+					std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(vec_cross_sections[i]);
+					const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profile_converter->getCoordinates();
+
+					// Save profile coords in paths
+					std::vector<std::vector<carve::geom::vector<2> > > profile_coords_2d;
+					for (int p = 0; p < profile_coords.size(); ++p)
+					{
+						const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[p];
+								
+						profile_coords_2d.push_back(profile_loop);
+					}
+					paths.push_back(profile_coords_2d);
+
+				}
+
+				if (paths.size() == 0)
+				{
+					throw oip::InconsistentModellingException(sectioned_solid_horizontal, "Profile converter could not find coordinates");
+				}
+
+				//declare Variables to fill with the information of the Cross Section Positions
+				std::vector<carve::geom::vector<3>> offsetFromCurve;
+				std::vector<carve::math::Matrix> localPlacementMatrix;
+				std::vector<carve::geom::vector<3>> CrossSectionPoints;
+				std::vector<carve::geom::vector<3>> directionsOfCurve;
+				std::vector<carve::math::Matrix> object_placement_matrix;
+							
+				for (int pos = 0; pos < cross_section_positions.size(); ++pos)
+				{
+								
+					//1. get offset from curve   
+					carve::geom::vector<3> offset = placementConverter->convertIfcDistanceExpressionOffsets(cross_section_positions[pos]);
+					offsetFromCurve.push_back(offset);
+
+					//2. calculate the position on and the direction of the base curve
+					//also apply the relative dist along	
+					carve::geom::vector<3> pointOnCurve;
+					carve::geom::vector<3> directionOfCurve;
+
+					std::tie(pointOnCurve, directionOfCurve) = 
+						placementConverter->calculatePositionOnAndDirectionOfBaseCurve(
+							directrix.template as<typename IfcEntityTypesT::IfcBoundedCurve>(),
+							cross_section_positions[pos], 0.);
+
+					CrossSectionPoints.push_back(pointOnCurve);
+					directionsOfCurve.push_back(directionOfCurve);
+
+					//TO DO:
+					//3. get information from FixedAxisVertical 
+					if (fixed_axis_vertical == true)
+					{
+						directionsOfCurve[pos].z = 0;
+						directionsOfCurve[pos].normalize();
+					}
+							
+								
+					//4. calculate the rotations
+					//the direction of the curve's tangent = directionOfCurve
+					//now that localPLacement Matrix is a Vector ----> 1 Matrix for each CrossSectionPosition saved in the Vector localPlacementMatrix
+					carve::math::Matrix localm = placementConverter->calculateCurveOrientationMatrix(directionsOfCurve[pos], fixed_axis_vertical);
+					localPlacementMatrix.push_back(localm);
+
+					// 4. calculate the position
+					// the position on the curve = pointOnCurve
+					// the offsets = offsetFromCurve
+					carve::geom::vector<3> translate = CrossSectionPoints[pos] + localPlacementMatrix[pos] * offsetFromCurve[pos];
+					carve::math::Matrix object_placement_matrix_pos = convertCurveOrientation(directionsOfCurve[pos], fixed_axis_vertical, translate);
+					object_placement_matrix.push_back(object_placement_matrix_pos);
+				}
+							
+				//Declare Variable for the addFace
+				int  ppoints = 0;
+
+				//Declare a new vector which will include all points for the Tesselation
+				std::vector<carve::geom::vector<3>> points_for_tessellation;
+				std::vector<carve::geom::vector<3>> direction_for_tessellation;
+				std::vector<std::vector<std::vector<carve::geom::vector<3>>>> paths_for_tessellation;
+				int i = 0;
+				int j = 0;
+
+				if (BasisCurvePoints[0] == CrossSectionPoints[0])
+				{
+					++i;
+					++j;
+				}
+				else
+				{//iterate BasisCurvePoints[] until it gets to CrossSectionPoints[0]
+				//if dist_1 is bigger than dist_2 they are before CrossSectionPoints[0], else they are after that point
+					double dist_1 = distance(BasisCurvePoints[0], CrossSectionPoints[0]);
+					double dist_2 = distance(BasisCurvePoints[1], CrossSectionPoints[0]);
+
+					while (dist_1 > dist_2)
+					{
+						dist_1 = distance(BasisCurvePoints[i], CrossSectionPoints[0]);
+						dist_2 = distance(BasisCurvePoints[i + 1], CrossSectionPoints[0]);
+						++i;
+					}
+				}
+				//The first point for tesselation is where the Profile Starts
+				points_for_tessellation.push_back(CrossSectionPoints[0]);
+				direction_for_tessellation.push_back(directionsOfCurve[0]);
+
+				//Convert profile information from 2D to 3D
+				std::vector<std::vector<carve::geom::vector<2> > >& compositeProfile = paths[0];
+				std::vector<std::vector<carve::geom::vector<3> > > TFcompositeprofile;
+				for (int w = 0; w < compositeProfile.size(); ++w)
+				{
+					std::vector<carve::geom::vector<2> >& loop = compositeProfile[w];
+					ppoints = loop.size();
+					std::vector<carve::geom::vector<3>> Tloop;
+					for (int k = 0; k < loop.size(); ++k)
+					{
+						carve::geom::vector<2>& point = loop[k];
+
+						carve::geom::vector<3> Tpoint = object_placement_matrix[0] * (carve::geom::VECTOR(point.x, point.y, 0)); 
+						Tloop.push_back(Tpoint);
+					}
+					TFcompositeprofile.push_back(Tloop);
+				}
+				//The first profile for tessellation
+				paths_for_tessellation.push_back(TFcompositeprofile);
+
+				//now that CrossSectionPoints[0] is reached iterate and fill points_for_tessellation
+			    while (j < CrossSectionPoints.size()) 
+				{
+
+			      	//if basis_curve_points[i]==pointsOnCurve[j] ->save the information of pointsOnCurve
+					if (BasisCurvePoints[i] == CrossSectionPoints[j])
+					{
+						//1. save the information of pointsOnCurve in the new vector
+						points_for_tessellation.push_back(CrossSectionPoints[j]);
+						direction_for_tessellation.push_back(directionsOfCurve[j]); //3D coord carve matrix ausrechnen zum multiplizieren
+
+						//2. Save CrossSections
+						std::vector<std::vector<carve::geom::vector<2> > >& compositeProfile = paths[j];
+						std::vector<std::vector<carve::geom::vector<3> > > Tcompositeprofile;
+						for (int w = 0; w < compositeProfile.size(); ++w)
+						{
+							std::vector<carve::geom::vector<2> >& loop = compositeProfile[w];
+							std::vector<carve::geom::vector<3>> Tloop;
+							for (int k = 0; k < loop.size(); ++k)
+							{
+								carve::geom::vector<2>& point = loop[k];
+
+								carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
+								Tloop.push_back(Tpoint);
+							}
+							Tcompositeprofile.push_back(Tloop);
+						}
+									
+						paths_for_tessellation.push_back(Tcompositeprofile);
+									
+						//4. go to the next element in both lists
+						++i;
+						++j;
+					}
+
+					//if basis_curve_points[i]!=pointsOnCurve[j] alternate depending on distance
+					else if (BasisCurvePoints[i] != CrossSectionPoints[j])
+					{
+						// get the distance of the points 
+						double distCrossSectionPositions;
+						double distBasisCurvePoints;
+									
+						//calculate the distance from the point in basis_curve_points to the last element in the joint list
+						int last = points_for_tessellation.size() - 1;
+
+						distCrossSectionPositions = distance(points_for_tessellation[last], CrossSectionPoints[j]);
+						distBasisCurvePoints = distance(points_for_tessellation[last], BasisCurvePoints[i]);
+
+						if (distCrossSectionPositions < distBasisCurvePoints)
+						{
+							//1. Save the point and direction in new vector
+							points_for_tessellation.push_back(CrossSectionPoints[j]);
+							direction_for_tessellation.push_back(directionsOfCurve[j]);
+
+							//2. Save CrossSections
+							std::vector<std::vector<carve::geom::vector<2> > >& compositeProfile = paths[j];
+							std::vector<std::vector<carve::geom::vector<3> > > Tcompositeprofile;
+							for (int w = 0; w < compositeProfile.size(); ++w)
+							{
+								std::vector<carve::geom::vector<2> >& loop = compositeProfile[w];
+								std::vector<carve::geom::vector<3>> Tloop;
+								for (int k = 0; k < loop.size(); ++k)
+								{
+									carve::geom::vector<2>& point = loop[k];
+			
+									carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
+									Tloop.push_back(Tpoint);
+								}
+								Tcompositeprofile.push_back(Tloop);
+							}
+										
+							paths_for_tessellation.push_back(Tcompositeprofile);
+
+
+							//3. increment based on its position on the directrix
+							++j;
+						}
+									
+						else if (distCrossSectionPositions > distBasisCurvePoints)
+						{
+							//Save the point in the curve in the new vector
+							points_for_tessellation.push_back(BasisCurvePoints[i]);
+							direction_for_tessellation.push_back(BasisPointDirection[i]);
+
+							//calculate the direction of the point (Interpolate with the pointOnCurve before and after that point)
+							int directionSize = direction_for_tessellation.size()-1;
+							int lastPoint = points_for_tessellation.size() -1;
+
+							double totalDistance = distance(CrossSectionPoints[j - 1], CrossSectionPoints[j]);
+							double factorBefore = (distance(CrossSectionPoints[j - 1], BasisCurvePoints[i]))/totalDistance;
+							double factorAfter = (distance(BasisCurvePoints[i], CrossSectionPoints[j]))/totalDistance;
+
+							//1. interpolate OffsetsFromCurve
+							carve::geom::vector<3> IoffsetFromCurve = offsetFromCurve[j - 1] * factorAfter + offsetFromCurve[j] * factorBefore;
+
+							//Calculate Matrices
+							//2. local_placement
+							carve::math::Matrix localm = placementConverter->calculateCurveOrientationMatrix(BasisPointDirection[i], fixed_axis_vertical);
+
+							// 3. calculate the position
+							// the position on the curve = pointOnCurve
+							// the offsets = offsetFromCurve
+							carve::geom::vector<3> translate = BasisCurvePoints[i] + localm * IoffsetFromCurve;
+							carve::math::Matrix object_placement_matrix_pos = convertCurveOrientation(BasisPointDirection[i], fixed_axis_vertical, translate);
+									
+
+							//interpolate profile
+							// Informal proposition: for the Interpolation to work the Profiles of the CrossSection before and afer need to have the same amount of points and loops.
+									
+							std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileBefore = paths[j - 1];
+							std::vector<std::vector<carve::geom::vector<2> > >& compositeProfileAfter = paths[j];
+
+							std::vector<std::vector<carve::geom::vector<3> > > Tcompositeprofile;
+							for (int w = 0; w < compositeProfileBefore.size(); ++w)
+							{
+								std::vector<carve::geom::vector<2> >& loopBefore = compositeProfileBefore[w];
+								std::vector<carve::geom::vector<2> >& loopAfter = compositeProfileAfter[w];
+
+								std::vector<carve::geom::vector<3>> Tloop;
+								for (int k = 0; k < loopBefore.size(); ++k)
+								{
+									carve::geom::vector<2>& pointBefore = loopBefore[k];
+									carve::geom::vector<2>& pointAfter = loopAfter[k];
+												
+									carve::geom::vector<2> deltapoint = carve::geom::VECTOR(pointAfter.x - pointBefore.x, pointAfter.y - pointBefore.y);
+									carve::geom::vector<2> Tpoint2D = carve::geom::VECTOR(deltapoint.x * factorBefore + pointBefore.x, deltapoint.y * factorBefore + pointBefore.y);
+												
+									carve::geom::vector<3> Tpoint = object_placement_matrix_pos *(carve::geom::VECTOR(Tpoint2D.x, Tpoint2D.y, 0));
+									Tloop.push_back(Tpoint);
+								}
+								Tcompositeprofile.push_back(Tloop);
+							}
+										
+							paths_for_tessellation.push_back(Tcompositeprofile);
+										
+							//increment based on its position on the directrix
+							++i;
+						}
+					}
+				}
+
+                // Add Vertex, each point is a vertex. for each paths_for_tesselation
+				//paths_for_tesselation.size() == points_for_tessellation.size()
+							
+				for (i = 0; i < paths_for_tessellation.size(); ++i)
+				{
+					std::vector<std::vector<carve::geom::vector<3> > >& compositeProfile = paths_for_tessellation[i];
+					for (int w = 0; w < compositeProfile.size(); ++w)
+					{
+						std::vector<carve::geom::vector<3> >& loop = compositeProfile[w];
+						for (int k = 0; k < loop.size(); ++k)
+						{
+							carve::geom::vector<3>& point = loop[k];
+							body_data->addVertex(pos*point);
+						}
+					}
+				}
+
+				// Add Faces Step1: calculate the Profile along the directrix and add each face of the outer profile
+				// Step2: close the Profile front and back
+
+				//1. Add Faces between Cross Sections to create a body along the Directrix
+				//size of Tloop has to be the same for every Profile
+				size_t num_vertices = body_data->getVertexCount();
+				int PFTS = paths_for_tessellation.size() -1;
+				for (int i = 0; i < PFTS ; ++i)
+				{
+					for (int j = 0; j < ppoints - 1; ++j)
+					{
+						body_data->addFace(i*ppoints + j, i*ppoints + j + 1, (i + 1)*ppoints + j);
+						body_data->addFace(i*ppoints + j + 1, (i + 1)*ppoints + j, (i + 1)*ppoints + j + 1);
+					}
+				}
+						
+						
+				//close the first positions of the body
+				body_data->addFace(0, ppoints - 1, ppoints);
+
+				//close the body
+				int closingBodyVertices = num_vertices / ppoints;
+				for (int ii = 1; ii < closingBodyVertices - 1; ++ii)
+				{
+					body_data->addFace(ii*ppoints, ii*ppoints - 1, (ii+1)*ppoints - 1);
+					body_data->addFace((ii + 1)*ppoints, ii*ppoints, (ii + 1)*ppoints - 1);
+				}
+					
+				// close front cap
+				for (int jj = 0; jj < ppoints - 2; ++jj)
+				{
+					body_data->addFace(0, jj + 1, jj + 2);
+				}
+
+				// close back cap
+				int BackCapVertex = num_vertices - ppoints;
+				for (int jj = BackCapVertex; jj < num_vertices ; ++jj)
+				{
+					int last = num_vertices - 1;
+					body_data->addFace(last, jj - 1, jj - 2);
+				}
+	
+			}//endif sectioned_solid_horizontal
+
+			carve::math::Matrix multiplyMatrixWithFactor(const carve::math::Matrix &A, const double &factor)
+			{
+				return carve::math::Matrix(A._11 * factor, A._12 * factor, A._13 * factor, A._14 * factor,
+					A._21 * factor, A._22 * factor, A._23 * factor, A._24 * factor,
+					A._31 * factor, A._32 * factor, A._33 * factor, A._34 * factor,
+					A._41 * factor, A._42 * factor, A._43 * factor, A._44 * factor);
+			}
+
+			carve::math::Matrix addTwoMatrices(const carve::math::Matrix &A, const carve::math::Matrix &B)
+			{
+				return carve::math::Matrix(A._11 + B._11, A._12 + B._12, A._13 + B._13, A._14 + B._14,
+					A._21 + B._21, A._22 + B._22, A._23 + B._23, A._24 + B._24,
+					A._31 + B._31, A._32 + B._32, A._33 + B._33, A._34 + B._34,
+					A._41 + B._41, A._42 + B._42, A._43 + B._43, A._43 + B._44);
+			}
+
+			//TO DO: it has to work for ssh
+			carve::math::Matrix convertCurveOrientation(
+				const carve::geom::vector<3> directionOfCurve,
+				const bool fixed_axis_vertical,
+				const carve::geom::vector<3> translate = carve::geom::VECTOR(0., 0., 0.)
+			) const throw(...)
+			{
+
+				carve::geom::vector<3> local_z(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, fixed_axis_vertical ? 0.0 : directionOfCurve.z));
+
+				// get the perpendicular to the left of the curve in the z-y plane (curve's coordinate system)
+				carve::geom::vector<3> local_y(carve::geom::VECTOR(-local_z.y, local_z.x, 0.0)); // always lies in the z-y plane(Curve (and x-y 2D-Profile)
+
+				// get the vertical as cross product
+				carve::geom::vector<3> local_x = carve::geom::cross(local_z, local_y);
+
+				// normalize the direction vectors
+				local_x.normalize();
+				local_y.normalize();
+				local_z.normalize();
+
+				// produce a rotation matrix
+				return carve::math::Matrix(
+					local_x.x, local_y.x, local_z.x, translate.x,
+					local_x.y, local_y.y, local_z.y, translate.y,
+					local_x.z, local_y.z, local_z.z, translate.z,
+					0, 0, 0, 1);
+			}
 
 			void convertIfcExtrudedAreaSolid(
 				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcExtrudedAreaSolid>& extrudedArea,
