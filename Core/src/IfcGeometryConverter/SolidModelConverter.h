@@ -103,7 +103,8 @@ namespace OpenInfraPlatform
 			*/
 			void convertIfcSolidModel(const EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData)
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
 			{
 				// **************************************************************************************************************************
 				//	ENTITY IfcSolidModel
@@ -119,9 +120,7 @@ namespace OpenInfraPlatform
 				//	END_ENTITY;
 				// **************************************************************************************************************************
 
-				// *****************************************************************************************************************************************//
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
-				// *****************************************************************************************************************************************//
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcCsgSolid>())
 				{
 					convertIfcCsgSolid( solidModel.template as<typename IfcEntityTypesT::IfcCsgSolid>(), 
@@ -129,10 +128,8 @@ namespace OpenInfraPlatform
 					return;
 				} //End of IfcCsgSolid.
 
-				// *****************************************************************************************************************************************//
 				//	IfcManifoldSolidBrep SUBTYPE of IfcSolidModel																							//
 				//	ABSTRACT SUPERTYPE of IfcAdvancedBrep, IfcFacetedBrep																					//
-				// *****************************************************************************************************************************************//
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcManifoldSolidBrep>())
 				{
 					convertIfcManifoldSolidBrep(solidModel.template as<typename IfcEntityTypesT::IfcManifoldSolidBrep>(), 
@@ -140,10 +137,8 @@ namespace OpenInfraPlatform
 					return;
 				} // End of IfcManifoldSolidBrep.
 
-				// *****************************************************************************************************************************************//
 				//	IfcSectionedSolid SUBTYPE of IfcSolidModel																							  //
 				//	ABSTRACT SUPERTYPE of IfcSectionedSolidHorizontal																					  //
-				// *****************************************************************************************************************************************//
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcSectionedSolid>())
 				{
 					convertIfcSectionedSolid(solidModel.template as<typename IfcEntityTypesT::IfcSectionedSolid>(), 
@@ -151,10 +146,8 @@ namespace OpenInfraPlatform
 					return;
 				} // End of IfcSectionedSolid.
 
-				// *****************************************************************************************************************************************//
 				//	IfcSweptAreaSolid SUBTYPE of IfcSolidModel																								//
 				//	ABSTRACT SUPERTYPE of IfcExtrudedAreaSolid, IfcFixedReferenceSweptAreaSolid, IfcRevolvedAreaSolid, IfcSurfaceCurveSweptAreaSolid		//
-				// *****************************************************************************************************************************************//
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcSweptAreaSolid>())
 				{
 					convertIfcSweptAreaSolid(solidModel.template as<typename IfcEntityTypesT::IfcSweptAreaSolid>(),
@@ -162,10 +155,8 @@ namespace OpenInfraPlatform
 					return;
 				} // End of IfcSweptAreaSolid.
 
-				// *****************************************************************************************************************************************//
 				//	IfcSweptDiskSolid SUBTYPE of IfcSolidModel																								//
 				//	ABSTRACT SUPERTYPE of IfcSweptDiskSolidPolygonal																						//
-				// *****************************************************************************************************************************************//
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcSweptDiskSolid>())
 				{
 					convertIfcSweptDiskSolid(solidModel.template as<typename IfcEntityTypesT::IfcSweptDiskSolid>(), 
@@ -177,26 +168,434 @@ namespace OpenInfraPlatform
 				throw oip::UnhandledException(solidModel);
 			}
 
-            void convertIfcCsgSolid(const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid, 
+			/**********************************************************************************************/
+			/*! \brief Converts \c IfcCsgSolid to a complete representation of the nominal shape.
+			*
+			* \param[in] csgSolid				A pointer to data from \c IfcCsgSolid.
+			* \param[in] pos					The location of the model.
+			* \param[out] itemData				A pointer to description of the model.
+			*
+			* \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifccsgsolid.htm
+			*/
+            void convertIfcCsgSolid(const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csgSolid, 
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
-			) throw(...)
+			) const noexcept(false)
             {
-                if(csg_solid.expired())
-                    throw oip::ReferenceExpiredException(csg_solid);
+				// **************************************************************************************************************************
+				//	ENTITY IfcCsgSolid
+				//		SUBTYPE OF(IfcSolidModel);
+				//		TreeRootExpression: IfcCsgSelect;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
 
-                switch(csg_solid->TreeRootExpression.which()) {
+                if(csgSolid.expired())
+                    throw oip::ReferenceExpiredException(csgSolid);
+
+                switch(csgSolid->TreeRootExpression.which()) {
                 case 0:
-                    convertIfcBooleanResult(csg_solid->TreeRootExpression.get<0>().lock(), pos, itemData);
+                    convertIfcBooleanResult(csgSolid->TreeRootExpression.get<0>().lock(), pos, itemData);
                     break;
                 case 1:
-                    convertIfcCsgPrimitive3D(csg_solid->TreeRootExpression.get<1>().lock(), pos, itemData);
+                    convertIfcCsgPrimitive3D(csgSolid->TreeRootExpression.get<1>().lock(), pos, itemData);
                     break;
                 default:
                     throw oip::InconsistentModellingException("IfcCsgSolid->TreeRootExpression has no value set.");
-                    break;
                 }
             }
+
+			void convertIfcBooleanResult(const std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult>& boolResult,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				const int boolean_result_id = boolResult->getId();
+
+#ifdef _DEBUG
+				BLUE_LOG(trace) << "Processing IfcBooleanResult #" << boolean_result_id;
+#endif
+				//				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanClippingResult> boolean_clipping_result =
+				//					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanClippingResult>(boolResult);
+				//				if (boolean_clipping_result)
+				//				{
+				//#ifdef _DEBUG
+				//					BLUE_LOG(trace) << "Processing IfcBooleanClippingResult #" << boolean_clipping_result->getId();
+				//#endif
+				typename IfcEntityTypesT::IfcBooleanOperator ifc_boolean_operator = boolResult->Operator;
+				typename IfcEntityTypesT::IfcBooleanOperand ifc_first_operand = boolResult->FirstOperand;
+				typename IfcEntityTypesT::IfcBooleanOperand ifc_second_operand = boolResult->SecondOperand;
+
+				/// Not needed since not optional nor pointers!
+				//if (!ifc_boolean_operator || !ifc_first_operand || !ifc_second_operand)
+				//{
+				//	std::cout << ": invalid IfcBooleanOperator or IfcBooleanOperand" << std::endl;
+				//	return;
+				//}
+
+				carve::csg::CSG::OP csg_operation = carve::csg::CSG::A_MINUS_B;
+				if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_UNION)
+				{
+					csg_operation = carve::csg::CSG::UNION;
+				}
+				else if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_INTERSECTION)
+				{
+					csg_operation = carve::csg::CSG::INTERSECTION;
+				}
+				else if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_DIFFERENCE)
+				{
+					csg_operation = carve::csg::CSG::A_MINUS_B;
+				}
+				else
+				{
+					BLUE_LOG(error) << " invalid IfcBooleanOperator in IfcBooleanResult #" << boolResult->getId();
+				}
+
+				// convert the first operand
+				std::shared_ptr<ItemData> first_operand_data(new ItemData());
+				std::shared_ptr<ItemData> empty_operand;
+				convertIfcBooleanOperand(ifc_first_operand, pos, first_operand_data, empty_operand);
+				first_operand_data->createMeshSetsFromClosedPolyhedrons();
+
+				// convert the second operand
+				std::shared_ptr<ItemData> second_operand_data(new ItemData());
+				convertIfcBooleanOperand(ifc_second_operand, pos, second_operand_data, first_operand_data);
+				second_operand_data->createMeshSetsFromClosedPolyhedrons();
+
+				// for every first operand polyhedrons, apply all second operand polyhedrons
+				std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >::iterator it_first_operands;
+				for (it_first_operands = first_operand_data->meshsets.begin(); it_first_operands != first_operand_data->meshsets.end(); ++it_first_operands)
+				{
+					std::shared_ptr<carve::mesh::MeshSet<3> >& first_operand_meshset = (*it_first_operands);
+
+					std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >::iterator it_second_operands;
+					for (it_second_operands = second_operand_data->meshsets.begin(); it_second_operands != second_operand_data->meshsets.end(); ++it_second_operands)
+					{
+						std::shared_ptr<carve::mesh::MeshSet<3> >& second_operand_meshset = (*it_second_operands);
+
+						int id1 = 0;
+						switch (ifc_first_operand.which()) {
+						case 0:
+							id1 = ifc_first_operand.get<0>().lock()->getId();
+							break;
+						case 1:
+							id1 = ifc_first_operand.get<1>().lock()->getId();
+							break;
+						case 2:
+							id1 = ifc_first_operand.get<2>().lock()->getId();
+							break;
+						case 3:
+							id1 = ifc_first_operand.get<3>().lock()->getId();
+							break;
+						default:
+							break;
+						}
+
+						int id2 = 0;
+						switch (ifc_second_operand.which()) {
+						case 0:
+							id2 = ifc_second_operand.get<0>().lock()->getId();
+							break;
+						case 1:
+							id2 = ifc_second_operand.get<1>().lock()->getId();
+							break;
+						case 2:
+							id2 = ifc_second_operand.get<2>().lock()->getId();
+							break;
+						case 3:
+							id2 = ifc_second_operand.get<3>().lock()->getId();
+							break;
+						default:
+							break;
+						}
+
+
+						std::shared_ptr<carve::mesh::MeshSet<3> > result;
+						bool csg_op_ok = computeCSG(first_operand_meshset.get(),
+							second_operand_meshset.get(),
+							csg_operation, id1, id2, result);
+
+						if (csg_op_ok)
+						{
+							first_operand_meshset = result;
+						}
+					}
+				}
+
+				// now copy processed first operands to result input data
+				std::copy(first_operand_data->meshsets.begin(), first_operand_data->meshsets.end(), std::back_inserter(itemData->meshsets));
+				//}
+			}
+
+			void convertIfcCsgPrimitive3D(
+				const std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D>& csgPrimitive,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
+				double length_factor = UnitConvert()->getLengthInMeterFactor();
+
+				// ENTITY IfcCsgPrimitive3D  ABSTRACT SUPERTYPE OF(ONEOF(IfcBlock, IfcRectangularPyramid, IfcRightCircularCone, IfcRightCircularCylinder, IfcSphere)
+
+				carve::math::Matrix primitive_placement_matrix = csgPrimitive->Position ?
+					pos * placementConverter->convertIfcAxis2Placement3D(csgPrimitive->Position) :
+					pos;
+
+
+				std::shared_ptr<typename IfcEntityTypesT::IfcBlock> block =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBlock>(csgPrimitive);
+				if (block)
+				{
+					double x_length = length_factor;
+					double y_length = length_factor;
+					double z_length = length_factor;
+
+					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->XLength)
+					{
+						x_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->XLength)*length_factor;
+					}
+					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->YLength)
+					{
+						y_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->YLength)*length_factor;
+					}
+					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->ZLength)
+					{
+						z_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->ZLength)*length_factor;
+					}
+
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, y_length, z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0, y_length, z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0, 0.0, z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, 0.0, z_length));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, y_length, 0.0));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0, y_length, 0.0));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0, 0.0, 0.0));
+					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, 0.0, 0.0));
+
+					polyhedron_data->addFace(0, 1, 2);
+					polyhedron_data->addFace(2, 3, 0);
+
+					polyhedron_data->addFace(7, 6, 5);
+					polyhedron_data->addFace(5, 4, 7);
+
+					polyhedron_data->addFace(0, 4, 5);
+					polyhedron_data->addFace(5, 1, 0);
+
+					polyhedron_data->addFace(1, 5, 6);
+					polyhedron_data->addFace(6, 2, 1);
+
+					polyhedron_data->addFace(2, 6, 7);
+					polyhedron_data->addFace(7, 3, 2);
+
+					polyhedron_data->addFace(3, 7, 4);
+					polyhedron_data->addFace(4, 0, 3);
+
+					itemData->closed_polyhedrons.push_back(polyhedron_data);
+					return;
+				}
+
+				std::shared_ptr<typename IfcEntityTypesT::IfcRectangularPyramid> rectangular_pyramid =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangularPyramid>(csgPrimitive);
+				if (rectangular_pyramid)
+				{
+					double x_length = length_factor;
+					double y_length = length_factor;
+					double height = length_factor;
+
+					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->XLength)
+					{
+						x_length = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->XLength)*0.5*length_factor;
+					}
+					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->YLength)
+					{
+						y_length = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->YLength)*0.5*length_factor;
+					}
+					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->Height)
+					{
+						height = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->Height)*0.5*length_factor;
+					}
+
+					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0, 0, height));
+					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(x_length, -y_length, 0.0));
+					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(-x_length, -y_length, 0.0));
+					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(-x_length, y_length, 0.0));
+					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(x_length, y_length, 0.0));
+
+					polyhedron_data->addFace(1, 2, 3);
+					polyhedron_data->addFace(3, 4, 1);
+					polyhedron_data->addFace(0, 2, 1);
+					polyhedron_data->addFace(0, 1, 4);
+					polyhedron_data->addFace(0, 4, 3);
+					polyhedron_data->addFace(0, 3, 2);
+
+					itemData->closed_polyhedrons.push_back(polyhedron_data);
+					return;
+				}
+
+				std::shared_ptr<typename IfcEntityTypesT::IfcRightCircularCone> right_circular_cone =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRightCircularCone>(csgPrimitive);
+				if (right_circular_cone)
+				{
+					if (!right_circular_cone->Height)
+					{
+						std::cout << "IfcRightCircularCone: height not given" << std::endl;
+						return;
+					}
+					if (!right_circular_cone->BottomRadius)
+					{
+						std::cout << "IfcRightCircularCone: radius not given" << std::endl;
+						return;
+					}
+
+					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cone->Height)*length_factor;
+					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cone->BottomRadius)*length_factor;
+
+					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
+					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
+
+					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTessellation(radius);
+					double d_angle = GeomSettings()->getAngleLength(radius);
+					for (double angle = 0.; angle < 2 * M_PI; angle += d_angle)
+					{
+						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
+					}
+
+					// outer shape
+					for (int i = 0; i < numVerticesInCircle - 1; ++i)
+					{
+						polyhedron_data->addFace(0, i + 3, i + 2);
+					}
+					polyhedron_data->addFace(0, 2, numVerticesInCircle + 1);
+
+					// bottom circle
+					for (int i = 0; i < numVerticesInCircle - 1; ++i)
+					{
+						polyhedron_data->addFace(1, i + 2, i + 3);
+					}
+					polyhedron_data->addFace(1, numVerticesInCircle + 1, 2);
+
+					itemData->closed_polyhedrons.push_back(polyhedron_data);
+					return;
+				}
+
+				std::shared_ptr<typename IfcEntityTypesT::IfcRightCircularCylinder> right_circular_cylinder =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRightCircularCylinder>(csgPrimitive);
+				if (right_circular_cylinder)
+				{
+					if (!right_circular_cylinder->Height)
+					{
+						std::cout << "IfcRightCircularCylinder: height not given" << std::endl;
+						return;
+					}
+
+					if (!right_circular_cylinder->Radius)
+					{
+						std::cout << "IfcRightCircularCylinder: radius not given" << std::endl;
+						return;
+					}
+
+					//carve::mesh::MeshSet<3> * cylinder_mesh = makeCylinder( slices, rad, height, primitive_placement_matrix);
+					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Height)*length_factor;
+					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Radius)*length_factor;
+
+					int slices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
+					double rad = 0;
+
+					double d_angle = GeomSettings()->getAngleLength(radius);
+					for (double angle = 0.; angle < 2 * M_PI; angle += d_angle)
+					{
+						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, height));
+						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
+					}
+
+					for (int i = 0; i < slices - 1; ++i)
+					{
+						polyhedron_data->addFace(0, i * 2 + 2, i * 2 + 4);		// top cap:		0-2-4	0-4-6		0-6-8
+						polyhedron_data->addFace(1, i * 2 + 3, i * 2 + 5);		// bottom cap:	1-3-5	1-5-7		1-7-9
+						polyhedron_data->addFace(i, i + 1, i + 3, i + 2);		// side
+					}
+					polyhedron_data->addFace(2 * slices - 2, 2 * slices - 1, 1, 0);		// side
+
+					itemData->closed_polyhedrons.push_back(polyhedron_data);
+					return;
+				}
+
+				std::shared_ptr<typename IfcEntityTypesT::IfcSphere> sphere =
+					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSphere>(csgPrimitive);
+				if (sphere)
+				{
+					if (!sphere->Radius)
+					{
+						std::cout << "IfcSphere: radius not given" << std::endl;
+						return;
+					}
+
+					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(sphere->Radius);
+
+					// seen from the top, each ring is:
+					//        \   |   /
+					//         2- 1 -nvc
+					//        / \ | / \
+					//    ---3--- 0 ---7---
+					//       \  / | \ /
+					//         4- 5 -6
+					//        /   |   \
+
+					std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
+					polyhedron_data->addVertex(pos*carve::geom::VECTOR(0.0, 0.0, radius)); // top
+
+					const int nvc = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
+					const double d_horizontal_angle = GeomSettings()->getAngleLength(radius);
+					const int num_vertical_edges = ceil(0.5 * nvc);
+					double d_vertical_angle = M_PI / double(num_vertical_edges - 1);	// TODO: adapt to model size and complexity
+					double vertical_angle = d_vertical_angle;
+
+					for (int vertical = 1; vertical < num_vertical_edges - 1; ++vertical)
+					{
+						// for each vertical angle, add one horizontal circle
+						double vertical_level = cos(vertical_angle)*radius;
+						double radius_at_level = sin(vertical_angle)*radius;
+						double horizontal_angle = 0;
+						for (int i = 0; i < nvc; ++i)
+						{
+							polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(horizontal_angle)*radius_at_level, cos(horizontal_angle)*radius_at_level, vertical_level));
+							horizontal_angle += d_horizontal_angle;
+						}
+						vertical_angle += d_vertical_angle;
+					}
+					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, -radius)); // bottom
+
+					// uppper triangle fan
+					for (int i = 0; i < nvc - 1; ++i)
+					{
+						polyhedron_data->addFace(0, i + 2, i + 1);
+					}
+					polyhedron_data->addFace(0, 1, nvc);
+
+					for (int vertical = 1; vertical < num_vertical_edges - 2; ++vertical)
+					{
+						int offset_inner = nvc * (vertical - 1) + 1;
+						int offset_outer = nvc * vertical + 1;
+						for (int i = 0; i < nvc - 1; ++i)
+						{
+							polyhedron_data->addFace(offset_inner + i, offset_inner + 1 + i, offset_outer + 1 + i, offset_outer + i);
+						}
+						polyhedron_data->addFace(offset_inner + nvc - 1, offset_inner, offset_outer, offset_outer + nvc - 1);
+
+					}
+
+					// lower triangle fan
+					int last_index = (num_vertical_edges - 2)*nvc + 1;
+					for (int i = 0; i < nvc - 1; ++i)
+					{
+						polyhedron_data->addFace(last_index, last_index - (i + 2), last_index - (i + 1));
+					}
+					polyhedron_data->addFace(last_index, last_index - 1, last_index - nvc);
+					itemData->closed_polyhedrons.push_back(polyhedron_data);
+					return;
+				}
+				throw oip::UnhandledException(csgPrimitive);
+			}
 
 			/*! \brief Converts \c IfcManifoldSolidBrep to meshes.
 			 *
@@ -208,7 +607,7 @@ namespace OpenInfraPlatform
 				const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
-			) const throw(...)
+			) const noexcept(false)
 			{
 				// check input
 				if (manifoldSolidBrep.expired())
@@ -241,7 +640,7 @@ namespace OpenInfraPlatform
 				const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell, 
 				const carve::math::Matrix& pos, 
 				std::shared_ptr<ItemData>& itemData
-			) const throw(...)
+			) const noexcept(false)
             {
 				if (outerShell.expired())
 					throw oip::ReferenceExpiredException(outerShell);
@@ -259,7 +658,7 @@ namespace OpenInfraPlatform
 				const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolid>& sectioned_solid,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
-			) throw(...)
+			) const noexcept(false)
 			{
 				if (sectioned_solid.expired())
 					throw oip::ReferenceExpiredException(sectioned_solid);
@@ -279,7 +678,7 @@ namespace OpenInfraPlatform
 				const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
-			) throw(...)
+			) const noexcept(false)
 			{
 				if (sectioned_solid_horizontal.expired())
 					throw oip::ReferenceExpiredException(sectioned_solid_horizontal);
@@ -715,7 +1114,7 @@ namespace OpenInfraPlatform
 			void convertIfcSweptAreaSolid(EXPRESSReference<typename IfcEntityTypesT::IfcSweptAreaSolid> sweptAreaSolid, 
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
-			) throw(...)
+			) const noexcept(false)
 			{
 				// Get swept area and position (attributes 1-2). 
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> swept_area = sweptAreaSolid->SweptArea;
@@ -778,7 +1177,7 @@ namespace OpenInfraPlatform
 			void convertIfcFixedReferenceSweptAreaSolid(EXPRESSReference<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixedRefSweptAreaSolid,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
-			) throw(...)
+			) const noexcept(false)
 			{
 				throw oip::UnhandledException(fixedRefSweptAreaSolid);
 				/*
@@ -797,7 +1196,7 @@ namespace OpenInfraPlatform
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> swept_area
-			) throw(...)
+			) const noexcept(false)
 			{
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcSurfaceCurveSweptAreaSolid #" << surface_curve_sweptAreaSolid->getId();
@@ -837,7 +1236,8 @@ namespace OpenInfraPlatform
 			void convertIfcExtrudedAreaSolid(
 				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcExtrudedAreaSolid>& extrudedArea,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData)
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
 			{
 				const int entity_id = extrudedArea->getId();
 #ifdef _DEBUG
@@ -927,7 +1327,8 @@ namespace OpenInfraPlatform
 			void convertIfcRevolvedAreaSolid(
 				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcRevolvedAreaSolid>& revolvedArea,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData)
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
 			{
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcRevolvedAreaSolid #" << revolvedArea->getId();
@@ -1167,7 +1568,7 @@ namespace OpenInfraPlatform
 				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSweptDiskSolid>& swept_disk_solid,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
-			) throw(...)
+			) const noexcept(false)
 			{
 				// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrix_curve = swept_disk_solid->Directrix;
@@ -1426,401 +1827,12 @@ namespace OpenInfraPlatform
 			}
 
 
-			void convertIfcBooleanResult(const std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult>& boolResult,
-				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData)
-			{
-				const int boolean_result_id = boolResult->getId();
-
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcBooleanResult #" << boolean_result_id;
-#endif
-//				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanClippingResult> boolean_clipping_result =
-//					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanClippingResult>(boolResult);
-//				if (boolean_clipping_result)
-//				{
-//#ifdef _DEBUG
-//					BLUE_LOG(trace) << "Processing IfcBooleanClippingResult #" << boolean_clipping_result->getId();
-//#endif
-					typename IfcEntityTypesT::IfcBooleanOperator ifc_boolean_operator = boolResult->Operator;
-					typename IfcEntityTypesT::IfcBooleanOperand ifc_first_operand = boolResult->FirstOperand;
-					typename IfcEntityTypesT::IfcBooleanOperand ifc_second_operand = boolResult->SecondOperand;
-
-					/// Not needed since not optional nor pointers!
-					//if (!ifc_boolean_operator || !ifc_first_operand || !ifc_second_operand)
-					//{
-					//	std::cout << ": invalid IfcBooleanOperator or IfcBooleanOperand" << std::endl;
-					//	return;
-					//}
-
-					carve::csg::CSG::OP csg_operation = carve::csg::CSG::A_MINUS_B;
-					if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_UNION)
-					{
-						csg_operation = carve::csg::CSG::UNION;
-					}
-					else if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_INTERSECTION)
-					{
-						csg_operation = carve::csg::CSG::INTERSECTION;
-					}
-					else if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_DIFFERENCE)
-					{
-						csg_operation = carve::csg::CSG::A_MINUS_B;
-					}
-					else
-					{
-						BLUE_LOG(error) << " invalid IfcBooleanOperator in IfcBooleanResult #" << boolResult->getId();
-					}
-
-					// convert the first operand
-					std::shared_ptr<ItemData> first_operand_data(new ItemData());
-					std::shared_ptr<ItemData> empty_operand;
-					convertIfcBooleanOperand(ifc_first_operand, pos, first_operand_data, empty_operand);
-					first_operand_data->createMeshSetsFromClosedPolyhedrons();
-
-					// convert the second operand
-					std::shared_ptr<ItemData> second_operand_data(new ItemData());
-					convertIfcBooleanOperand(ifc_second_operand, pos, second_operand_data, first_operand_data);
-					second_operand_data->createMeshSetsFromClosedPolyhedrons();
-
-					// for every first operand polyhedrons, apply all second operand polyhedrons
-					std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >::iterator it_first_operands;
-					for (it_first_operands = first_operand_data->meshsets.begin(); it_first_operands != first_operand_data->meshsets.end(); ++it_first_operands)
-					{
-						std::shared_ptr<carve::mesh::MeshSet<3> >& first_operand_meshset = (*it_first_operands);
-
-						std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >::iterator it_second_operands;
-						for (it_second_operands = second_operand_data->meshsets.begin(); it_second_operands != second_operand_data->meshsets.end(); ++it_second_operands)
-						{
-							std::shared_ptr<carve::mesh::MeshSet<3> >& second_operand_meshset = (*it_second_operands);
-
-							int id1 = 0;
-							switch(ifc_first_operand.which()) {
-							case 0:
-								id1 = ifc_first_operand.get<0>().lock()->getId();
-								break;
-							case 1:
-								id1 = ifc_first_operand.get<1>().lock()->getId();
-								break;
-							case 2:
-								id1 = ifc_first_operand.get<2>().lock()->getId();
-								break;
-							case 3:
-								id1 = ifc_first_operand.get<3>().lock()->getId();
-								break;
-							default:
-								break;
-							}
-
-							int id2 = 0;
-							switch(ifc_second_operand.which()) {
-							case 0:
-								id2 = ifc_second_operand.get<0>().lock()->getId();
-								break;
-							case 1:
-								id2 = ifc_second_operand.get<1>().lock()->getId();
-								break;
-							case 2:
-								id2 = ifc_second_operand.get<2>().lock()->getId();
-								break;
-							case 3:
-								id2 = ifc_second_operand.get<3>().lock()->getId();
-								break;
-							default:
-								break;
-							}
-							
-							
-							std::shared_ptr<carve::mesh::MeshSet<3> > result;
-							bool csg_op_ok = computeCSG(first_operand_meshset.get(),
-								second_operand_meshset.get(),
-								csg_operation, id1, id2, result);
-
-							if (csg_op_ok)
-							{
-								first_operand_meshset = result;
-							}
-						}
-					}
-
-					// now copy processed first operands to result input data
-					std::copy(first_operand_data->meshsets.begin(), first_operand_data->meshsets.end(), std::back_inserter(itemData->meshsets));
-				//}
-			}
-
-			void convertIfcCsgPrimitive3D(
-				const std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D>& csgPrimitive,
-				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData)
-			{
-				std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
-				double length_factor = UnitConvert()->getLengthInMeterFactor();
-
-				// ENTITY IfcCsgPrimitive3D  ABSTRACT SUPERTYPE OF(ONEOF(IfcBlock, IfcRectangularPyramid, IfcRightCircularCone, IfcRightCircularCylinder, IfcSphere)
-				
-                                carve::math::Matrix primitive_placement_matrix = csgPrimitive->Position ?
-                                    pos * placementConverter->convertIfcAxis2Placement3D(csgPrimitive->Position) :
-                                    pos;
-
-
-				std::shared_ptr<typename IfcEntityTypesT::IfcBlock> block =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBlock>(csgPrimitive);
-				if (block)
-				{
-					double x_length = length_factor;
-					double y_length = length_factor;
-					double z_length = length_factor;
-
-					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->XLength)
-					{
-						x_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->XLength)*length_factor;
-					}
-					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->YLength)
-					{
-						y_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->YLength)*length_factor;
-					}
-					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->ZLength)
-					{
-						z_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->ZLength)*length_factor;
-					}
-
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length	, y_length	, z_length	));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0		, y_length	, z_length	));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0		, 0.0		, z_length	));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length	, 0.0		, z_length	));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length	, y_length	, 0.0		));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0		, y_length	, 0.0		));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0		, 0.0		, 0.0		));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length	, 0.0		, 0.0		));
-
-					polyhedron_data->addFace(0, 1, 2);
-					polyhedron_data->addFace(2, 3, 0);
-
-					polyhedron_data->addFace(7, 6, 5);
-					polyhedron_data->addFace(5, 4, 7);
-
-					polyhedron_data->addFace(0, 4, 5);
-					polyhedron_data->addFace(5, 1, 0);
-
-					polyhedron_data->addFace(1, 5, 6);
-					polyhedron_data->addFace(6, 2, 1);
-
-					polyhedron_data->addFace(2, 6, 7);
-					polyhedron_data->addFace(7, 3, 2);
-
-					polyhedron_data->addFace(3, 7, 4);
-					polyhedron_data->addFace(4, 0, 3);
-
-					itemData->closed_polyhedrons.push_back(polyhedron_data);
-					return;
-				}
-
-				std::shared_ptr<typename IfcEntityTypesT::IfcRectangularPyramid> rectangular_pyramid =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangularPyramid>(csgPrimitive);
-				if (rectangular_pyramid)
-				{
-					double x_length = length_factor;
-					double y_length = length_factor;
-					double height = length_factor;
-
-					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->XLength)
-					{
-						x_length = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->XLength)*0.5*length_factor;
-					}
-					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->YLength)
-					{
-						y_length = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->YLength)*0.5*length_factor;
-					}
-					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->Height)
-					{
-						height = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->Height)*0.5*length_factor;
-					}
-
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0, 0, height));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(x_length, -y_length, 0.0));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(-x_length, -y_length, 0.0));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(-x_length, y_length, 0.0));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(x_length, y_length, 0.0));
-
-					polyhedron_data->addFace(1, 2, 3);
-					polyhedron_data->addFace(3, 4, 1);
-					polyhedron_data->addFace(0, 2, 1);
-					polyhedron_data->addFace(0, 1, 4);
-					polyhedron_data->addFace(0, 4, 3);
-					polyhedron_data->addFace(0, 3, 2);
-
-					itemData->closed_polyhedrons.push_back(polyhedron_data);
-					return;
-				}
-
-				std::shared_ptr<typename IfcEntityTypesT::IfcRightCircularCone> right_circular_cone =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRightCircularCone>(csgPrimitive);
-				if (right_circular_cone)
-				{
-					if (!right_circular_cone->Height)
-					{
-						std::cout << "IfcRightCircularCone: height not given" << std::endl;
-						return;
-					}
-					if (!right_circular_cone->BottomRadius)
-					{
-						std::cout << "IfcRightCircularCone: radius not given" << std::endl;
-						return;
-					}
-
-					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cone->Height)*length_factor;
-					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cone->BottomRadius)*length_factor;
-
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
-
-					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTessellation(radius);
-					double d_angle = GeomSettings()->getAngleLength(radius);
-					for (double angle = 0.; angle < 2*M_PI; angle += d_angle)
-					{
-						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
-					}
-
-					// outer shape
-					for (int i = 0; i < numVerticesInCircle - 1; ++i)
-					{
-						polyhedron_data->addFace(0, i + 3, i + 2);
-					}
-					polyhedron_data->addFace(0, 2, numVerticesInCircle + 1);
-
-					// bottom circle
-					for (int i = 0; i < numVerticesInCircle - 1; ++i)
-					{
-						polyhedron_data->addFace(1, i + 2, i + 3);
-					}
-					polyhedron_data->addFace(1, numVerticesInCircle + 1, 2);
-
-					itemData->closed_polyhedrons.push_back(polyhedron_data);
-					return;
-				}
-
-				std::shared_ptr<typename IfcEntityTypesT::IfcRightCircularCylinder> right_circular_cylinder =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRightCircularCylinder>(csgPrimitive);
-				if (right_circular_cylinder)
-				{
-					if (!right_circular_cylinder->Height)
-					{
-						std::cout << "IfcRightCircularCylinder: height not given" << std::endl;
-						return;
-					}
-
-					if (!right_circular_cylinder->Radius)
-					{
-						std::cout << "IfcRightCircularCylinder: radius not given" << std::endl;
-						return;
-					}
-
-					//carve::mesh::MeshSet<3> * cylinder_mesh = makeCylinder( slices, rad, height, primitive_placement_matrix);
-					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Height)*length_factor;
-					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Radius)*length_factor;
-
-					int slices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
-					double rad = 0;
-
-					double d_angle = GeomSettings()->getAngleLength(radius);
-					for (double angle = 0.; angle < 2 * M_PI; angle += d_angle)
-					{
-						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, height));
-						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
-					}
-
-					for (int i = 0; i < slices - 1; ++i)
-					{
-						polyhedron_data->addFace(0, i * 2 + 2, i * 2 + 4);		// top cap:		0-2-4	0-4-6		0-6-8
-						polyhedron_data->addFace(1, i * 2 + 3, i * 2 + 5);		// bottom cap:	1-3-5	1-5-7		1-7-9
-						polyhedron_data->addFace(i, i + 1, i + 3, i + 2);		// side
-					}
-					polyhedron_data->addFace(2 * slices - 2, 2 * slices - 1, 1, 0);		// side
-
-					itemData->closed_polyhedrons.push_back(polyhedron_data);
-					return;
-				}
-
-				std::shared_ptr<typename IfcEntityTypesT::IfcSphere> sphere =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSphere>(csgPrimitive);
-				if (sphere)
-				{
-					if (!sphere->Radius)
-					{
-						std::cout << "IfcSphere: radius not given" << std::endl;
-						return;
-					}
-
-					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(sphere->Radius);
-
-					// seen from the top, each ring is:
-					//        \   |   /
-					//         2- 1 -nvc
-					//        / \ | / \
-					//    ---3--- 0 ---7---
-					//       \  / | \ /
-					//         4- 5 -6
-					//        /   |   \
-
-					std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
-					polyhedron_data->addVertex(pos*carve::geom::VECTOR(0.0, 0.0, radius)); // top
-
-					const int nvc = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
-					const double d_horizontal_angle = GeomSettings()->getAngleLength(radius);
-					const int num_vertical_edges = ceil(0.5 * nvc);
-					double d_vertical_angle = M_PI / double(num_vertical_edges - 1);	// TODO: adapt to model size and complexity
-					double vertical_angle = d_vertical_angle;
-
-					for (int vertical = 1; vertical < num_vertical_edges - 1; ++vertical)
-					{
-						// for each vertical angle, add one horizontal circle
-						double vertical_level = cos(vertical_angle)*radius;
-						double radius_at_level = sin(vertical_angle)*radius;
-						double horizontal_angle = 0;
-						for (int i = 0; i < nvc; ++i)
-						{
-							polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(horizontal_angle)*radius_at_level, cos(horizontal_angle)*radius_at_level, vertical_level));
-							horizontal_angle += d_horizontal_angle;
-						}
-						vertical_angle += d_vertical_angle;
-					}
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, -radius)); // bottom
-
-					// uppper triangle fan
-					for (int i = 0; i < nvc - 1; ++i)
-					{
-						polyhedron_data->addFace(0, i + 2, i + 1);
-					}
-					polyhedron_data->addFace(0, 1, nvc);
-
-					for (int vertical = 1; vertical < num_vertical_edges - 2; ++vertical)
-					{
-						int offset_inner = nvc * (vertical - 1) + 1;
-						int offset_outer = nvc * vertical + 1;
-						for (int i = 0; i < nvc - 1; ++i)
-						{
-							polyhedron_data->addFace(offset_inner + i, offset_inner + 1 + i, offset_outer + 1 + i, offset_outer + i);
-						}
-						polyhedron_data->addFace(offset_inner + nvc - 1, offset_inner, offset_outer, offset_outer + nvc - 1);
-
-					}
-
-					// lower triangle fan
-					int last_index = (num_vertical_edges - 2)*nvc + 1;
-					for (int i = 0; i < nvc - 1; ++i)
-					{
-						polyhedron_data->addFace(last_index, last_index - (i + 2), last_index - (i + 1));
-					}
-					polyhedron_data->addFace(last_index, last_index - 1, last_index - nvc);
-					itemData->closed_polyhedrons.push_back(polyhedron_data);
-					return;
-				}
-				throw oip::UnhandledException(csgPrimitive);
-			}
 
 			void convertIfcBooleanOperand(typename IfcEntityTypesT::IfcBooleanOperand& operand,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
-				const std::shared_ptr<ItemData>& otherOperand)
+				const std::shared_ptr<ItemData>& otherOperand
+			) const noexcept(false)
 			{
 				// OPERAND is SELECT of
 				/*
@@ -1876,7 +1888,7 @@ namespace OpenInfraPlatform
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
 				const std::shared_ptr<ItemData>& otherOperand
-			) const throw(...)
+			) const noexcept(false)
 			{					
 				/*
 				//ENTITY IfcHalfSpaceSolid SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
@@ -2207,7 +2219,7 @@ namespace OpenInfraPlatform
 				carve::mesh::MeshSet<3>* op2,
 				const carve::csg::CSG::OP operation,
 				const int entity1, const int entity2,
-				std::shared_ptr<carve::mesh::MeshSet<3>>& result)
+				std::shared_ptr<carve::mesh::MeshSet<3>>& result) const noexcept(false)
 			{
 				bool isCSGComputationOk = false;
 				std::stringstream err;
