@@ -101,7 +101,8 @@ namespace OpenInfraPlatform
 			*
 			* \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcsolidmodel.htm
 			*/
-			void convertIfcSolidModel(const EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
+			void convertIfcSolidModel(
+				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
@@ -177,7 +178,8 @@ namespace OpenInfraPlatform
 			*
 			* \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifccsgsolid.htm
 			*/
-            void convertIfcCsgSolid(const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csgSolid, 
+            void convertIfcCsgSolid(
+				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csgSolid, 
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
@@ -204,105 +206,119 @@ namespace OpenInfraPlatform
                 }
             }
 
-			void convertIfcBooleanResult(const std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult>& boolResult,
+			void convertIfcBooleanResult(
+				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>& boolResult,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
 			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcBooleanResult
+				//		SUPERTYPE OF(IfcBooleanClippingResult)
+				//		SUBTYPE OF(IfcGeometricRepresentationItem);
+				//			Operator: IfcBooleanOperator;
+				//			FirstOperand: IfcBooleanOperand;
+				//			SecondOperand: IfcBooleanOperand;
+				//		DERIVE
+				//			Dim : IfcDimensionCount: = FirstOperand.Dim;
+				//		WHERE
+				//			SameDim : FirstOperand.Dim = SecondOperand.Dim;
+				//			FirstOperandClosed: 
+				//				NOT('IFCGEOMETRICMODELRESOURCE.IfcTessellatedFaceSet' IN TYPEOF(FirstOperand))
+				//					OR(EXISTS(FirstOperand.Closed) AND FirstOperand.Closed);
+				//			SecondOperandClosed: 
+				//				NOT('IFCGEOMETRICMODELRESOURCE.IfcTessellatedFaceSet' IN TYPEOF(SecondOperand)) 
+				//					OR(EXISTS(SecondOperand.Closed) AND SecondOperand.Closed);
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
 				const int boolean_result_id = boolResult->getId();
-
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcBooleanResult #" << boolean_result_id;
-#endif
-				//				std::shared_ptr<typename IfcEntityTypesT::IfcBooleanClippingResult> boolean_clipping_result =
-				//					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBooleanClippingResult>(boolResult);
-				//				if (boolean_clipping_result)
-				//				{
-				//#ifdef _DEBUG
-				//					BLUE_LOG(trace) << "Processing IfcBooleanClippingResult #" << boolean_clipping_result->getId();
-				//#endif
-				typename IfcEntityTypesT::IfcBooleanOperator ifc_boolean_operator = boolResult->Operator;
-				typename IfcEntityTypesT::IfcBooleanOperand ifc_first_operand = boolResult->FirstOperand;
-				typename IfcEntityTypesT::IfcBooleanOperand ifc_second_operand = boolResult->SecondOperand;
-
-				/// Not needed since not optional nor pointers!
-				//if (!ifc_boolean_operator || !ifc_first_operand || !ifc_second_operand)
-				//{
-				//	std::cout << ": invalid IfcBooleanOperator or IfcBooleanOperand" << std::endl;
-				//	return;
-				//}
-
-				carve::csg::CSG::OP csg_operation = carve::csg::CSG::A_MINUS_B;
-				if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_UNION)
+	
+				if (boolResult.template isOfType<typename IfcEntityTypesT::IfcBooleanClippingResult>())
 				{
-					csg_operation = carve::csg::CSG::UNION;
+					auto booleanClippingResult = boolResult.template as<typename IfcEntityTypesT::IfcBooleanClippingResult>();
+					convertIfcBooleanClippingResult(boolResult.template as<typename IfcEntityTypesT::IfcBooleanClippingResult>(),
+						pos, itemData);
+					return;
 				}
-				else if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_INTERSECTION)
+
+				typename IfcEntityTypesT::IfcBooleanOperator ifcBooleanOperator = boolResult->Operator;
+				typename IfcEntityTypesT::IfcBooleanOperand ifcFirstOperand = boolResult->FirstOperand;
+				typename IfcEntityTypesT::IfcBooleanOperand ifcSecondOperand = boolResult->SecondOperand;
+
+				carve::csg::CSG::OP csgOperation = carve::csg::CSG::A_MINUS_B;
+				if (ifcBooleanOperator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_UNION)
 				{
-					csg_operation = carve::csg::CSG::INTERSECTION;
+					csgOperation = carve::csg::CSG::UNION;
 				}
-				else if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_DIFFERENCE)
+				else if (ifcBooleanOperator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_INTERSECTION)
 				{
-					csg_operation = carve::csg::CSG::A_MINUS_B;
+					csgOperation = carve::csg::CSG::INTERSECTION;
+				}
+				else if (ifcBooleanOperator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_DIFFERENCE)
+				{
+					csgOperation = carve::csg::CSG::A_MINUS_B;
 				}
 				else
 				{
-					BLUE_LOG(error) << " invalid IfcBooleanOperator in IfcBooleanResult #" << boolResult->getId();
+					throw oip::InconsistentModellingException("There is no other CSG operation posible!");
 				}
 
 				// convert the first operand
-				std::shared_ptr<ItemData> first_operand_data(new ItemData());
-				std::shared_ptr<ItemData> empty_operand;
-				convertIfcBooleanOperand(ifc_first_operand, pos, first_operand_data, empty_operand);
-				first_operand_data->createMeshSetsFromClosedPolyhedrons();
+				std::shared_ptr<ItemData> firstOperandData(new ItemData());
+				std::shared_ptr<ItemData> emptyOperand;
+				convertIfcBooleanOperand(ifcFirstOperand, pos, firstOperandData, emptyOperand);
+				firstOperandData->createMeshSetsFromClosedPolyhedrons();
 
 				// convert the second operand
-				std::shared_ptr<ItemData> second_operand_data(new ItemData());
-				convertIfcBooleanOperand(ifc_second_operand, pos, second_operand_data, first_operand_data);
-				second_operand_data->createMeshSetsFromClosedPolyhedrons();
+				std::shared_ptr<ItemData> secondOperandData(new ItemData());
+				convertIfcBooleanOperand(ifcSecondOperand, pos, secondOperandData, firstOperandData);
+				secondOperandData->createMeshSetsFromClosedPolyhedrons();
 
 				// for every first operand polyhedrons, apply all second operand polyhedrons
-				std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >::iterator it_first_operands;
-				for (it_first_operands = first_operand_data->meshsets.begin(); it_first_operands != first_operand_data->meshsets.end(); ++it_first_operands)
+				std::vector<std::shared_ptr<carve::mesh::MeshSet<3>>>::iterator it_first_operands;
+				for (it_first_operands = firstOperandData->meshsets.begin(); 
+					it_first_operands != firstOperandData->meshsets.end(); ++it_first_operands)
 				{
 					std::shared_ptr<carve::mesh::MeshSet<3> >& first_operand_meshset = (*it_first_operands);
 
 					std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >::iterator it_second_operands;
-					for (it_second_operands = second_operand_data->meshsets.begin(); it_second_operands != second_operand_data->meshsets.end(); ++it_second_operands)
+					for (it_second_operands = secondOperandData->meshsets.begin(); 
+						it_second_operands != secondOperandData->meshsets.end(); ++it_second_operands)
 					{
 						std::shared_ptr<carve::mesh::MeshSet<3> >& second_operand_meshset = (*it_second_operands);
 
 						int id1 = 0;
-						switch (ifc_first_operand.which()) {
+						switch (ifcFirstOperand.which()) {
 						case 0:
-							id1 = ifc_first_operand.get<0>().lock()->getId();
+							id1 = ifcFirstOperand.get<0>().lock()->getId();
 							break;
 						case 1:
-							id1 = ifc_first_operand.get<1>().lock()->getId();
+							id1 = ifcFirstOperand.get<1>().lock()->getId();
 							break;
 						case 2:
-							id1 = ifc_first_operand.get<2>().lock()->getId();
+							id1 = ifcFirstOperand.get<2>().lock()->getId();
 							break;
 						case 3:
-							id1 = ifc_first_operand.get<3>().lock()->getId();
+							id1 = ifcFirstOperand.get<3>().lock()->getId();
 							break;
 						default:
 							break;
 						}
 
 						int id2 = 0;
-						switch (ifc_second_operand.which()) {
+						switch (ifcSecondOperand.which()) {
 						case 0:
-							id2 = ifc_second_operand.get<0>().lock()->getId();
+							id2 = ifcSecondOperand.get<0>().lock()->getId();
 							break;
 						case 1:
-							id2 = ifc_second_operand.get<1>().lock()->getId();
+							id2 = ifcSecondOperand.get<1>().lock()->getId();
 							break;
 						case 2:
-							id2 = ifc_second_operand.get<2>().lock()->getId();
+							id2 = ifcSecondOperand.get<2>().lock()->getId();
 							break;
 						case 3:
-							id2 = ifc_second_operand.get<3>().lock()->getId();
+							id2 = ifcSecondOperand.get<3>().lock()->getId();
 							break;
 						default:
 							break;
@@ -312,7 +328,7 @@ namespace OpenInfraPlatform
 						std::shared_ptr<carve::mesh::MeshSet<3> > result;
 						bool csg_op_ok = computeCSG(first_operand_meshset.get(),
 							second_operand_meshset.get(),
-							csg_operation, id1, id2, result);
+							csgOperation, id1, id2, result);
 
 						if (csg_op_ok)
 						{
@@ -322,8 +338,17 @@ namespace OpenInfraPlatform
 				}
 
 				// now copy processed first operands to result input data
-				std::copy(first_operand_data->meshsets.begin(), first_operand_data->meshsets.end(), std::back_inserter(itemData->meshsets));
-				//}
+				std::copy(firstOperandData->meshsets.begin(), firstOperandData->meshsets.end(), std::back_inserter(itemData->meshsets));
+				
+			}
+
+			void convertIfcBooleanClippingResult(
+				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcBooleanClippingResult>& boolClippingResult,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				throw oip::UnhandledException(boolClippingResult);
 			}
 
 			void convertIfcCsgPrimitive3D(
