@@ -92,333 +92,95 @@ namespace OpenInfraPlatform
 
 			*/
 
+			/**********************************************************************************************/
+			/*! \brief Converts \c IfcSolidModel to a complete representation of the nominal shape.
+			*
+			* \param[in] solidModel				A pointer to data from \c IfcSolidModel.
+			* \param[in] pos					The location of the model.
+			* \param[out] itemData				A pointer to description of the model.
+			*
+			* \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcsolidmodel.htm
+			*/
 			void convertIfcSolidModel(const EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData)
 			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcSolidModel
+				//		ABSTRACT SUPERTYPE OF(ONEOF(
+				//			IfcCsgSolid, 
+				//			IfcManifoldSolidBrep, 
+				//			IfcSectionedSolid, 
+				//			IfcSweptAreaSolid, 
+				//			IfcSweptDiskSolid))
+				//		SUBTYPE OF(IfcGeometricRepresentationItem);
+				//		DERIVE
+				//		Dim : IfcDimensionCount: = 3;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
 				// *****************************************************************************************************************************************//
 				//	IfcCsgSolid SUBTYPE of IfcSolidModel																									//																			//
 				// *****************************************************************************************************************************************//
-				//
-
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcCsgSolid>())
 				{
-					convertIfcCsgSolid(pos, itemData, solidModel.template as<typename IfcEntityTypesT::IfcCsgSolid>());
+					convertIfcCsgSolid( solidModel.template as<typename IfcEntityTypesT::IfcCsgSolid>(), 
+						pos, itemData);
 					return;
-				} //endif csg_solid
+				} //End of IfcCsgSolid.
 
 				// *****************************************************************************************************************************************//
 				//	IfcManifoldSolidBrep SUBTYPE of IfcSolidModel																							//
 				//	ABSTRACT SUPERTYPE of IfcAdvancedBrep, IfcFacetedBrep																					//
 				// *****************************************************************************************************************************************//
-
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcManifoldSolidBrep>())
 				{
-					convertIfcManifoldSolidBrep(solidModel.template as<typename IfcEntityTypesT::IfcManifoldSolidBrep>(), pos, itemData);
+					convertIfcManifoldSolidBrep(solidModel.template as<typename IfcEntityTypesT::IfcManifoldSolidBrep>(), 
+						pos, itemData);
 					return;
-				} //endif manifoldSolidBrep
+				} // End of IfcManifoldSolidBrep.
 
 				// *****************************************************************************************************************************************//
 				//	IfcSectionedSolid SUBTYPE of IfcSolidModel																							  //
 				//	ABSTRACT SUPERTYPE of IfcSectionedSolidHorizontal																					  //
 				// *****************************************************************************************************************************************//
-
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcSectionedSolid>())
 				{
-					convertIfcSectionedSolid(pos, itemData, solidModel.template as<typename IfcEntityTypesT::IfcSectionedSolid>());
+					convertIfcSectionedSolid(solidModel.template as<typename IfcEntityTypesT::IfcSectionedSolid>(), 
+						pos, itemData);
 					return;
-
-				} //endif sectioned_solid
+				} // End of IfcSectionedSolid.
 
 				// *****************************************************************************************************************************************//
 				//	IfcSweptAreaSolid SUBTYPE of IfcSolidModel																								//
 				//	ABSTRACT SUPERTYPE of IfcExtrudedAreaSolid, IfcFixedReferenceSweptAreaSolid, IfcRevolvedAreaSolid, IfcSurfaceCurveSweptAreaSolid		//
 				// *****************************************************************************************************************************************//
-
-
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcSweptAreaSolid>())
 				{
-					convertIfcSweptAreaSolid(solidModel.template as<typename IfcEntityTypesT::IfcSweptAreaSolid>(), pos, itemData);
+					convertIfcSweptAreaSolid(solidModel.template as<typename IfcEntityTypesT::IfcSweptAreaSolid>(),
+						pos, itemData);
 					return;
-				}	//endif sweptAreaSolid
-
+				} // End of IfcSweptAreaSolid.
 
 				// *****************************************************************************************************************************************//
 				//	IfcSweptDiskSolid SUBTYPE of IfcSolidModel																								//
 				//	ABSTRACT SUPERTYPE of IfcSweptDiskSolidPolygonal																						//
 				// *****************************************************************************************************************************************//
-
 				if (solidModel.template isOfType<typename IfcEntityTypesT::IfcSweptDiskSolid>())
 				{
-					oip::EXPRESSReference<typename IfcEntityTypesT::IfcSweptDiskSolid> swept_disk_solid =
-						solidModel.template as<typename IfcEntityTypesT::IfcSweptDiskSolid>();
-					// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
-					oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix_curve = swept_disk_solid->Directrix;
-
-					double length_in_meter = UnitConvert()->getLengthInMeterFactor();
-					double radius = swept_disk_solid->Radius * length_in_meter;
-
-
-					double radius_inner = swept_disk_solid->InnerRadius.value_or(0.0);
-					//double start_param = swept_disk_solid->StartParam.value_or(0.0);
-					//double end_param = swept_disk_solid->EndParam.value_or(1.0);
-
-					// TODO: handle inner radius, start param, end param and check for formal propositions!
-
-					// (1/1) IfcSweptDiskSolidPolygonal SUBTYPE of IfcSweptDiskSolid
-					//std::shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal> swept_disk_solid_polygonal =
-					//	std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>(swept_disk_solid);
-					//if (swept_disk_solid_polygonal)
-					//{
-						// Get fillet radius (attribute 6). 
-						//double fillet_radius = swept_disk_solid_polygonal->FilletRadius;
-						// TODO: implement and check for formal propositions.
-
-					//} //endif swept_disk_solid_polygonal
-
-					// TO DO: understand what happens here
-					std::vector<carve::geom::vector<3> > segment_start_points;
-					std::vector<carve::geom::vector<3> > basis_curve_points;
-					curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);
-
-					std::shared_ptr<carve::input::PolyhedronData> pipe_data(new carve::input::PolyhedronData());
-					itemData->closed_polyhedrons.push_back(pipe_data);
-					std::vector<carve::geom::vector<3> > inner_shape_points;
-
-					const int nvc = GeomSettings()->getNumberOfVerticesForTessellation(radius);
-					double delta_angle = GeomSettings()->getAngleLength(radius);
-
-					std::vector<carve::geom::vector<3> > circle_points;
-					std::vector<carve::geom::vector<3> > circle_points_inner;
-					int i; double angle;
-					for (i = 0, angle = 0.;
-						i < nvc;
-						++i, angle += delta_angle)
-					{
-						// cross section (circle) is defined in YZ plane
-						double x = sin(angle);
-						double y = cos(angle);
-						circle_points.push_back(carve::geom::VECTOR(0.0, x*radius, y*radius));
-						circle_points_inner.push_back(carve::geom::VECTOR(0.0, x*radius_inner, y*radius_inner));
-					}
-
-					int num_base_points = basis_curve_points.size();
-					carve::math::Matrix matrix_sweep;
-
-					carve::geom::vector<3> local_z(carve::geom::VECTOR(0, 0, 1));
-
-					if (num_base_points < 2)
-					{
-						std::cout << "IfcSweptDiskSolid: num curve points < 2" << std::endl;
-						return;
-					}
-
-					bool bend_found = false;
-					if (num_base_points > 3)
-					{
-						// compute local z vector by dot product of the first bend of the reference line
-						carve::geom::vector<3> vertex_back2 = basis_curve_points.at(0);
-						carve::geom::vector<3> vertex_back1 = basis_curve_points.at(1);
-						for (int i = 2; i < num_base_points; ++i)
-						{
-							carve::geom::vector<3> vertex_current = basis_curve_points.at(i);
-							carve::geom::vector<3> section1 = vertex_back1 - vertex_back2;
-							carve::geom::vector<3> section2 = vertex_current - vertex_back1;
-							section1.normalize();
-							section2.normalize();
-
-							double dot_product = dot(section1, section2);
-							double dot_product_abs = abs(dot_product);
-
-							// if dot == 1 or -1, then points are colinear
-							if (dot_product_abs < (1.0 - 0.0001) || dot_product_abs >(1.0 + 0.0001))
-							{
-								// bend found, compute cross product
-								carve::geom::vector<3> lateral_vec = cross(section1, section2);
-								local_z = cross(lateral_vec, section1);
-								local_z.normalize();
-								bend_found = true;
-								break;
-							}
-						}
-					}
-
-					if (!bend_found)
-					{
-						// sweeping curve is linear. assume any local z vector
-						local_z = carve::geom::VECTOR(0, 0, 1);
-						double dot_normal_local_z = dot((basis_curve_points.at(1) - basis_curve_points.at(0)), local_z);
-						if (abs(dot_normal_local_z) < 0.0001)
-						{
-							local_z = carve::geom::VECTOR(0, 1, 0);
-							local_z.normalize();
-						}
-					}
-
-					for (int ii = 0; ii < num_base_points; ++ii)
-					{
-						carve::geom::vector<3> vertex_current = basis_curve_points.at(ii);
-						carve::geom::vector<3> vertex_next;
-						carve::geom::vector<3> vertex_before;
-						if (ii == 0)
-						{
-							// first point
-							vertex_next = basis_curve_points.at(ii + 1);
-							carve::geom::vector<3> delta_element = vertex_next - vertex_current;
-							vertex_before = vertex_current - (delta_element);
-						}
-						else if (ii == num_base_points - 1)
-						{
-							// last point
-							vertex_before = basis_curve_points.at(ii - 1);
-							carve::geom::vector<3> delta_element = vertex_current - vertex_before;
-							vertex_next = vertex_before + (delta_element);
-						}
-						else
-						{
-							// inner point
-							vertex_next = basis_curve_points.at(ii + 1);
-							vertex_before = basis_curve_points.at(ii - 1);
-						}
-
-						carve::geom::vector<3> bisecting_normal;
-						GeomUtils::bisectingPlane(vertex_before, vertex_current, vertex_next, bisecting_normal);
-
-						carve::geom::vector<3> section1 = vertex_current - vertex_before;
-						carve::geom::vector<3> section2 = vertex_next - vertex_current;
-						section1.normalize();
-						section2.normalize();
-						double dot_product = dot(section1, section2);
-						double dot_product_abs = abs(dot_product);
-
-						if (dot_product_abs < (1.0 - 0.0001) || dot_product_abs >(1.0 + 0.0001))
-						{
-							// bend found, compute next local z vector
-							carve::geom::vector<3> lateral_vec = cross(section1, section2);
-							local_z = cross(lateral_vec, section1);
-							local_z.normalize();
-						}
-						if (ii == num_base_points - 1)
-						{
-							bisecting_normal *= -1.0;
-						}
-
-						GeomUtils::convertPlane2Matrix(bisecting_normal, vertex_current, local_z, matrix_sweep);
-						matrix_sweep = pos * matrix_sweep;
-
-						for (int jj = 0; jj < nvc; ++jj)
-						{
-							carve::geom::vector<3> vertex = circle_points.at(jj);
-							vertex = matrix_sweep * vertex;
-							pipe_data->addVertex(vertex);
-						}
-
-						if (radius_inner > 0)
-						{
-							for (int jj = 0; jj < nvc; ++jj)
-							{
-								carve::geom::vector<3> vertex = circle_points_inner.at(jj);
-								vertex = matrix_sweep * vertex;
-								inner_shape_points.push_back(vertex);
-								//pipe_data->addVertex( vertex );
-							}
-						}
-					}
-
-					// outer shape
-					size_t num_vertices_outer = pipe_data->getVertexCount();
-					for (size_t i = 0; i < num_base_points - 1; ++i)
-					{
-						int i_offset = i * nvc;
-						int i_offset_next = (i + 1)*nvc;
-						for (int jj = 0; jj < nvc; ++jj)
-						{
-							int current_loop_pt = jj + i_offset;
-							int current_loop_pt_next = (jj + 1) % nvc + i_offset;
-
-							int next_loop_pt = jj + i_offset_next;
-							int next_loop_pt_next = (jj + 1) % nvc + i_offset_next;
-							pipe_data->addFace(current_loop_pt, next_loop_pt, next_loop_pt_next, current_loop_pt_next);
-						}
-					}
-
-					if (radius_inner > 0)
-					{
-						if (inner_shape_points.size() != num_vertices_outer)
-						{
-							std::cout << "IfcSweptDiskSolid: inner_shape_points.size() != num_vertices_outer" << std::endl;
-						}
-
-						// add points for inner shape
-						for (size_t i = 0; i < inner_shape_points.size(); ++i)
-						{
-							pipe_data->addVertex(inner_shape_points[i]);
-						}
-
-						// faces of inner shape
-						for (size_t i = 0; i < num_base_points - 1; ++i)
-						{
-							int i_offset = i * nvc + num_vertices_outer;
-							int i_offset_next = (i + 1)*nvc + num_vertices_outer;
-							for (int jj = 0; jj < nvc; ++jj)
-							{
-								int current_loop_pt = jj + i_offset;
-								int current_loop_pt_next = (jj + 1) % nvc + i_offset;
-
-								int next_loop_pt = jj + i_offset_next;
-								int next_loop_pt_next = (jj + 1) % nvc + i_offset_next;
-								//pipe_data->addFace( current_loop_pt, next_loop_pt, next_loop_pt_next, current_loop_pt_next );  
-								pipe_data->addFace(current_loop_pt, current_loop_pt_next, next_loop_pt_next, next_loop_pt);
-							}
-						}
-
-						// front cap
-						for (int jj = 0; jj < nvc; ++jj)
-						{
-							int outer_rim_next = (jj + 1) % nvc;
-							int inner_rim_next = outer_rim_next + num_vertices_outer;
-							pipe_data->addFace(jj, outer_rim_next, num_vertices_outer + jj);
-							pipe_data->addFace(outer_rim_next, inner_rim_next, num_vertices_outer + jj);
-						}
-
-						// back cap
-						int back_offset = (num_base_points - 1)*nvc;
-						for (int jj = 0; jj < nvc; ++jj)
-						{
-							int outer_rim_next = (jj + 1) % nvc + back_offset;
-							int inner_rim_next = outer_rim_next + num_vertices_outer;
-							pipe_data->addFace(jj + back_offset, num_vertices_outer + jj + back_offset, outer_rim_next);
-							pipe_data->addFace(outer_rim_next, num_vertices_outer + jj + back_offset, inner_rim_next);
-						}
-					}
-					else
-					{
-						// front cap, full pipe, create triangle fan
-						for (int jj = 0; jj < nvc - 2; ++jj)
-						{
-							pipe_data->addFace(0, jj + 1, jj + 2);
-						}
-
-						// back cap
-						int back_offset = (num_base_points - 1)*nvc;
-						for (int jj = 0; jj < nvc - 2; ++jj)
-						{
-							pipe_data->addFace(back_offset, back_offset + jj + 2, back_offset + jj + 1);
-						}
-					}
-
+					convertIfcSweptDiskSolid(solidModel.template as<typename IfcEntityTypesT::IfcSweptDiskSolid>(), 
+						pos, itemData);
 					return;
-				} // endif swept_disp_solid
+				} // End of IfcSweptDiskSolid.
 
-				convertIfcSpecificSolidModel(solidModel, pos, itemData);
-
-				BLUE_LOG(error) << "Unhandled IFC Representation: #" << solidModel->getId() << "=" << solidModel->classname();
-
+				// Other entities we do not support.
+				throw oip::UnhandledException(solidModel);
 			}
 
-            void convertIfcCsgSolid(const carve::math::Matrix& pos, 
-				std::shared_ptr<ItemData> itemData, 
-				const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid) throw(...)
+            void convertIfcCsgSolid(const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid, 
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) throw(...)
             {
                 if(csg_solid.expired())
                     throw oip::ReferenceExpiredException(csg_solid);
@@ -493,7 +255,11 @@ namespace OpenInfraPlatform
                             std::back_inserter(itemData->closed_polyhedrons));
             }
 
-			void convertIfcSectionedSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolid>& sectioned_solid) throw(...)
+			void convertIfcSectionedSolid(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolid>& sectioned_solid,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) throw(...)
 			{
 				if (sectioned_solid.expired())
 					throw oip::ReferenceExpiredException(sectioned_solid);
@@ -501,16 +267,18 @@ namespace OpenInfraPlatform
 				// (1/1) IfcSectionedSolidHorizontal SUBTYPE of IfcSectionedSolid
 				if (sectioned_solid.template isOfType<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>())
 				{
-					convertIfcSectionedSolidHorizontal(pos, itemData, sectioned_solid.template as<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>());
+					convertIfcSectionedSolidHorizontal(sectioned_solid.template as<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>(), 
+						pos, itemData);
 					return;
 				}
 
 				throw oip::UnhandledException(sectioned_solid);
 			}
 			
-			void convertIfcSectionedSolidHorizontal(const carve::math::Matrix& pos, 
-				std::shared_ptr<ItemData> itemData, 
-				const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal
+			void convertIfcSectionedSolidHorizontal(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectioned_solid_horizontal,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
 			) throw(...)
 			{
 				if (sectioned_solid_horizontal.expired())
@@ -1394,6 +1162,269 @@ namespace OpenInfraPlatform
 					polyhedron_data->addFace(j_offset + num_polygon_points - 1, j_offset, j_offset + num_polygon_points, j_offset + num_polygon_points + num_polygon_points - 1);
 				}
 			}
+
+			void convertIfcSweptDiskSolid(
+				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSweptDiskSolid>& swept_disk_solid,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) throw(...)
+			{
+				// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrix_curve = swept_disk_solid->Directrix;
+
+				double length_in_meter = UnitConvert()->getLengthInMeterFactor();
+				double radius = swept_disk_solid->Radius * length_in_meter;
+
+
+				double radius_inner = swept_disk_solid->InnerRadius.value_or(0.0);
+				//double start_param = swept_disk_solid->StartParam.value_or(0.0);
+				//double end_param = swept_disk_solid->EndParam.value_or(1.0);
+
+				// TODO: handle inner radius, start param, end param and check for formal propositions!
+
+				// (1/1) IfcSweptDiskSolidPolygonal SUBTYPE of IfcSweptDiskSolid
+				//std::shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal> swept_disk_solid_polygonal =
+				//	std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>(swept_disk_solid);
+				//if (swept_disk_solid_polygonal)
+				//{
+					// Get fillet radius (attribute 6). 
+					//double fillet_radius = swept_disk_solid_polygonal->FilletRadius;
+					// TODO: implement and check for formal propositions.
+
+				//} //endif swept_disk_solid_polygonal
+
+				// TO DO: understand what happens here
+				std::vector<carve::geom::vector<3> > segment_start_points;
+				std::vector<carve::geom::vector<3> > basis_curve_points;
+				curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);
+
+				std::shared_ptr<carve::input::PolyhedronData> pipe_data(new carve::input::PolyhedronData());
+				itemData->closed_polyhedrons.push_back(pipe_data);
+				std::vector<carve::geom::vector<3> > inner_shape_points;
+
+				const int nvc = GeomSettings()->getNumberOfVerticesForTessellation(radius);
+				double delta_angle = GeomSettings()->getAngleLength(radius);
+
+				std::vector<carve::geom::vector<3> > circle_points;
+				std::vector<carve::geom::vector<3> > circle_points_inner;
+				int i; double angle;
+				for (i = 0, angle = 0.;
+					i < nvc;
+					++i, angle += delta_angle)
+				{
+					// cross section (circle) is defined in YZ plane
+					double x = sin(angle);
+					double y = cos(angle);
+					circle_points.push_back(carve::geom::VECTOR(0.0, x*radius, y*radius));
+					circle_points_inner.push_back(carve::geom::VECTOR(0.0, x*radius_inner, y*radius_inner));
+				}
+
+				int num_base_points = basis_curve_points.size();
+				carve::math::Matrix matrix_sweep;
+
+				carve::geom::vector<3> local_z(carve::geom::VECTOR(0, 0, 1));
+
+				if (num_base_points < 2)
+				{
+					std::cout << "IfcSweptDiskSolid: num curve points < 2" << std::endl;
+					return;
+				}
+
+				bool bend_found = false;
+				if (num_base_points > 3)
+				{
+					// compute local z vector by dot product of the first bend of the reference line
+					carve::geom::vector<3> vertex_back2 = basis_curve_points.at(0);
+					carve::geom::vector<3> vertex_back1 = basis_curve_points.at(1);
+					for (int i = 2; i < num_base_points; ++i)
+					{
+						carve::geom::vector<3> vertex_current = basis_curve_points.at(i);
+						carve::geom::vector<3> section1 = vertex_back1 - vertex_back2;
+						carve::geom::vector<3> section2 = vertex_current - vertex_back1;
+						section1.normalize();
+						section2.normalize();
+
+						double dot_product = dot(section1, section2);
+						double dot_product_abs = abs(dot_product);
+
+						// if dot == 1 or -1, then points are colinear
+						if (dot_product_abs < (1.0 - 0.0001) || dot_product_abs >(1.0 + 0.0001))
+						{
+							// bend found, compute cross product
+							carve::geom::vector<3> lateral_vec = cross(section1, section2);
+							local_z = cross(lateral_vec, section1);
+							local_z.normalize();
+							bend_found = true;
+							break;
+						}
+					}
+				}
+
+				if (!bend_found)
+				{
+					// sweeping curve is linear. assume any local z vector
+					local_z = carve::geom::VECTOR(0, 0, 1);
+					double dot_normal_local_z = dot((basis_curve_points.at(1) - basis_curve_points.at(0)), local_z);
+					if (abs(dot_normal_local_z) < 0.0001)
+					{
+						local_z = carve::geom::VECTOR(0, 1, 0);
+						local_z.normalize();
+					}
+				}
+
+				for (int ii = 0; ii < num_base_points; ++ii)
+				{
+					carve::geom::vector<3> vertex_current = basis_curve_points.at(ii);
+					carve::geom::vector<3> vertex_next;
+					carve::geom::vector<3> vertex_before;
+					if (ii == 0)
+					{
+						// first point
+						vertex_next = basis_curve_points.at(ii + 1);
+						carve::geom::vector<3> delta_element = vertex_next - vertex_current;
+						vertex_before = vertex_current - (delta_element);
+					}
+					else if (ii == num_base_points - 1)
+					{
+						// last point
+						vertex_before = basis_curve_points.at(ii - 1);
+						carve::geom::vector<3> delta_element = vertex_current - vertex_before;
+						vertex_next = vertex_before + (delta_element);
+					}
+					else
+					{
+						// inner point
+						vertex_next = basis_curve_points.at(ii + 1);
+						vertex_before = basis_curve_points.at(ii - 1);
+					}
+
+					carve::geom::vector<3> bisecting_normal;
+					GeomUtils::bisectingPlane(vertex_before, vertex_current, vertex_next, bisecting_normal);
+
+					carve::geom::vector<3> section1 = vertex_current - vertex_before;
+					carve::geom::vector<3> section2 = vertex_next - vertex_current;
+					section1.normalize();
+					section2.normalize();
+					double dot_product = dot(section1, section2);
+					double dot_product_abs = abs(dot_product);
+
+					if (dot_product_abs < (1.0 - 0.0001) || dot_product_abs >(1.0 + 0.0001))
+					{
+						// bend found, compute next local z vector
+						carve::geom::vector<3> lateral_vec = cross(section1, section2);
+						local_z = cross(lateral_vec, section1);
+						local_z.normalize();
+					}
+					if (ii == num_base_points - 1)
+					{
+						bisecting_normal *= -1.0;
+					}
+
+					GeomUtils::convertPlane2Matrix(bisecting_normal, vertex_current, local_z, matrix_sweep);
+					matrix_sweep = pos * matrix_sweep;
+
+					for (int jj = 0; jj < nvc; ++jj)
+					{
+						carve::geom::vector<3> vertex = circle_points.at(jj);
+						vertex = matrix_sweep * vertex;
+						pipe_data->addVertex(vertex);
+					}
+
+					if (radius_inner > 0)
+					{
+						for (int jj = 0; jj < nvc; ++jj)
+						{
+							carve::geom::vector<3> vertex = circle_points_inner.at(jj);
+							vertex = matrix_sweep * vertex;
+							inner_shape_points.push_back(vertex);
+							//pipe_data->addVertex( vertex );
+						}
+					}
+				}
+
+				// outer shape
+				size_t num_vertices_outer = pipe_data->getVertexCount();
+				for (size_t i = 0; i < num_base_points - 1; ++i)
+				{
+					int i_offset = i * nvc;
+					int i_offset_next = (i + 1)*nvc;
+					for (int jj = 0; jj < nvc; ++jj)
+					{
+						int current_loop_pt = jj + i_offset;
+						int current_loop_pt_next = (jj + 1) % nvc + i_offset;
+
+						int next_loop_pt = jj + i_offset_next;
+						int next_loop_pt_next = (jj + 1) % nvc + i_offset_next;
+						pipe_data->addFace(current_loop_pt, next_loop_pt, next_loop_pt_next, current_loop_pt_next);
+					}
+				}
+
+				if (radius_inner > 0)
+				{
+					if (inner_shape_points.size() != num_vertices_outer)
+					{
+						std::cout << "IfcSweptDiskSolid: inner_shape_points.size() != num_vertices_outer" << std::endl;
+					}
+
+					// add points for inner shape
+					for (size_t i = 0; i < inner_shape_points.size(); ++i)
+					{
+						pipe_data->addVertex(inner_shape_points[i]);
+					}
+
+					// faces of inner shape
+					for (size_t i = 0; i < num_base_points - 1; ++i)
+					{
+						int i_offset = i * nvc + num_vertices_outer;
+						int i_offset_next = (i + 1)*nvc + num_vertices_outer;
+						for (int jj = 0; jj < nvc; ++jj)
+						{
+							int current_loop_pt = jj + i_offset;
+							int current_loop_pt_next = (jj + 1) % nvc + i_offset;
+
+							int next_loop_pt = jj + i_offset_next;
+							int next_loop_pt_next = (jj + 1) % nvc + i_offset_next;
+							//pipe_data->addFace( current_loop_pt, next_loop_pt, next_loop_pt_next, current_loop_pt_next );  
+							pipe_data->addFace(current_loop_pt, current_loop_pt_next, next_loop_pt_next, next_loop_pt);
+						}
+					}
+
+					// front cap
+					for (int jj = 0; jj < nvc; ++jj)
+					{
+						int outer_rim_next = (jj + 1) % nvc;
+						int inner_rim_next = outer_rim_next + num_vertices_outer;
+						pipe_data->addFace(jj, outer_rim_next, num_vertices_outer + jj);
+						pipe_data->addFace(outer_rim_next, inner_rim_next, num_vertices_outer + jj);
+					}
+
+					// back cap
+					int back_offset = (num_base_points - 1)*nvc;
+					for (int jj = 0; jj < nvc; ++jj)
+					{
+						int outer_rim_next = (jj + 1) % nvc + back_offset;
+						int inner_rim_next = outer_rim_next + num_vertices_outer;
+						pipe_data->addFace(jj + back_offset, num_vertices_outer + jj + back_offset, outer_rim_next);
+						pipe_data->addFace(outer_rim_next, num_vertices_outer + jj + back_offset, inner_rim_next);
+					}
+				}
+				else
+				{
+					// front cap, full pipe, create triangle fan
+					for (int jj = 0; jj < nvc - 2; ++jj)
+					{
+						pipe_data->addFace(0, jj + 1, jj + 2);
+					}
+
+					// back cap
+					int back_offset = (num_base_points - 1)*nvc;
+					for (int jj = 0; jj < nvc - 2; ++jj)
+					{
+						pipe_data->addFace(back_offset, back_offset + jj + 2, back_offset + jj + 1);
+					}
+				}
+			}
+
 
 			void convertIfcBooleanResult(const std::shared_ptr<typename IfcEntityTypesT::IfcBooleanResult>& boolResult,
 				const carve::math::Matrix& pos,
@@ -2422,14 +2453,6 @@ namespace OpenInfraPlatform
 				std::cout << __FUNC__ << " num vertices check failed." << std::endl;
 				}*/
 			}
-
-			void convertIfcSpecificSolidModel(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSolidModel>& solidModel,
-				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData)
-			{
-				std::cout << "Ifc-specific solid model " << solidModel->classname() << " not supported" << std::endl;
-			}
-
 
 			// triangulate polyline data to flat triangulated geometry
 			void triangulatePolyline(const std::shared_ptr<typename IfcEntityTypesT::IfcPolyline>& polyline,
