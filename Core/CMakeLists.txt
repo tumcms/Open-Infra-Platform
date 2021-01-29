@@ -26,12 +26,14 @@ file(GLOB Core_Source 								src/*.*)
 file(GLOB Core_DataManagement_Source 				src/DataManagement/*.*)
 file(GLOB Core_DataManagement_General_Source 		src/DataManagement/General/*.*)
 file(GLOB Core_IfcGeometryConverter_Source			src/IfcGeometryConverter/*.*)
+file(GLOB Core_OffConverter_Source					src/OffConverter/*.*)
 file(GLOB Core_Exception_Source						src/Exception/*.*)
 
 source_group(Core								FILES $Core_Source})
 source_group(Core\\DataManagement				FILES ${Core_DataManagement_Source})
 source_group(Core\\DataManagement\\General		FILES ${Core_DataManagement_General_Source})
 source_group(Core\\IfcGeometryConverter			FILES ${Core_IfcGeometryConverter_Source})
+source_group(Core\\OffConverter					FILES ${Core_OffConverter_Source})
 source_group(Core\\Exception					FILES ${Core_Exception_Source})
 
 add_library(OpenInfraPlatform.Core STATIC
@@ -39,6 +41,7 @@ add_library(OpenInfraPlatform.Core STATIC
 	${Core_DataManagement_Source}
 	${Core_DataManagement_General_Source}
 	${Core_IfcGeometryConverter_Source}
+	${Core_OffConverter_Source}
 	${Core_Exception_Source}
 )
 
