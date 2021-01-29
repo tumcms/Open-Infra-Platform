@@ -93,11 +93,11 @@ namespace OpenInfraPlatform
 			*/
 
 			/**********************************************************************************************/
-			/*! \brief Converts \c IfcSolidModel to a complete representation of the nominal shape.
+			/*! \brief Converts \c IfcSolidModel to meshes.
 			*
-			* \param[in] solidModel				A pointer to data from \c IfcSolidModel.
-			* \param[in] pos					The location of the model.
-			* \param[out] itemData				A pointer to description of the model.
+			* \param[in] solidModel				The \c IfcSolidModel to be converted.
+			* \param[in] pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+			* \param[out] itemData				A pointer to be filled with the relevant data.
 			*
 			* \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcsolidmodel.htm
 			*/
@@ -170,11 +170,11 @@ namespace OpenInfraPlatform
 			}
 
 			/**********************************************************************************************/
-			/*! \brief Converts \c IfcCsgSolid to a complete representation of the nominal shape.
+			/*! \brief Converts \c IfcCsgSolid to meshes.
 			*
-			* \param[in] csgSolid				A pointer to data from \c IfcCsgSolid.
-			* \param[in] pos					The location of the model.
-			* \param[out] itemData				A pointer to description of the model.
+			* \param[in] csgSolid				The \c IfcCsgSolid to be converted.
+			* \param[in] pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+			* \param[out] itemData				A pointer to be filled with the relevant data.
 			*
 			* \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifccsgsolid.htm
 			*/
@@ -206,45 +206,88 @@ namespace OpenInfraPlatform
                 }
             }
 
-			
-
 			/*! \brief Converts \c IfcManifoldSolidBrep to meshes.
 			 *
-			 * \param[in] manifoldSolidBrep The \c IfcManifoldSolidBrep to be converted.
-			 * \param[in] pos The relative location of the origin of the representation's coordinate system within the geometric context.
-			 * \param[out] itemData A pointer to be filled with the relevant data.
-			 */
+			 * \param[in] manifoldSolidBrep			The \c IfcManifoldSolidBrep to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcmanifoldsolidbrep.htm
+			*/
 			void convertIfcManifoldSolidBrep(
 				const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
 			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcManifoldSolidBrep
+				//		ABSTRACT SUPERTYPE OF(ONEOF(
+				//			IfcAdvancedBrep, 
+				//			IfcFacetedBrep))
+				//		SUBTYPE OF(IfcSolidModel);
+				//		Outer: IfcClosedShell;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
 				// check input
 				if (manifoldSolidBrep.expired())
 					throw oip::ReferenceExpiredException(manifoldSolidBrep);
 
 				// (1/2) IfcAdvancedBrep SUBTYPE of IfcManifoldSolidBrep
-				if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>())
-					throw oip::UnhandledException(manifoldSolidBrep);
+				if (manifoldSolidBrep.template isOfType<typename IfcEntityTypesT::IfcAdvancedBrep>())
+				{
+					convertIfcAdvancedBrep(manifoldSolidBrep.template as<typename IfcEntityTypesT::IfcAdvancedBrep>(),
+						pos, itemData);
+					return;
+				}
 
 				// (2/2) IfcFacetedBrep SUBTYPE of IfcManifoldSolidBrep
-				if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
-					// (1/2) IfcFacetedBrepWithVoids SUBTYPE of IfcFacetedBrep
-					if (manifoldSolidBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrepWithVoids>())
-						throw oip::UnhandledException(manifoldSolidBrep);
-					// (2/2) IfcFacetedBrep
-					else
-					{
-						// Get outer (attribute 1).
-						convertIfcClosedShell(manifoldSolidBrep->Outer, pos, itemData);
-						// Done
-						return;
-					}
+				if (manifoldSolidBrep.template isOfType<typename IfcEntityTypesT::IfcFacetedBrep>()) {
+					convertIfcFacetedBrep(manifoldSolidBrep.template as<typename IfcEntityTypesT::IfcFacetedBrep>(), 
+						pos, itemData);
+					return;
 				}
 
 				// the rest is not supported
 				throw oip::UnhandledException(manifoldSolidBrep);
+			}
+
+			void convertIfcAdvancedBrep(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcAdvancedBrep> &advancedBrep,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				throw oip::UnhandledException(advancedBrep);
+			}
+
+			void convertIfcFacetedBrep(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcFacetedBrep> &facetedBrep,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				// (1/2) IfcFacetedBrepWithVoids SUBTYPE of IfcFacetedBrep
+				if (facetedBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrepWithVoids>()) 
+				{
+					convertIfcFacetedBrepWithVoids(facetedBrep.template as<typename IfcEntityTypesT::IfcFacetedBrepWithVoids>(),
+						pos, itemData);
+					return;
+				}
+				// (2/2) IfcFacetedBrep
+				// Get outer (attribute 1).
+				convertIfcClosedShell(facetedBrep->Outer, pos, itemData);
+				// Done
+			}
+
+			void convertIfcFacetedBrepWithVoids(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcFacetedBrepWithVoids> &facetedBrepWithVoids,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				throw oip::UnhandledException(facetedBrepWithVoids);
 			}
 
             void convertIfcClosedShell(
