@@ -43,16 +43,6 @@ namespace OpenInfraPlatform {
 				// return the curve
                 return linearPlacement->PlacementRelTo.as<emt::IFC4X1EntityTypes::IfcBoundedCurve>();
             }
-			
-			template <>
-			double PlacementConverterT<emt::IFC4X1EntityTypes>::convertRelativePlacement(
-				const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linear_placement,
-				std::vector<EXPRESSReference<emt::IFC4X1EntityTypes::IfcObjectPlacement>>& alreadyApplied
-			) const
-            {
-				// no relative placement in IFC4x1
-                return 0.;
-            }
 		#endif
 
         }
