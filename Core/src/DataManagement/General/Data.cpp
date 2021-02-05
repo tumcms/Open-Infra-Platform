@@ -46,6 +46,8 @@
 #include "IfcGeometryConverter\GeometryInputData.h"
 #include "IfcGeometryConverter\IfcPeekStepReader.h"
 #include "IfcGeometryConverter\IfcImporterImpl.h"
+#include "OffConverter\OffModel.h"
+#include "OffConverter\OffReader.h"
 #include "Exception\IfcPeekReaderException.h"
 
 #include <QtXml>
@@ -116,6 +118,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::import(const std::string & f
 	}
 }
 
+
 void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing ").append(filename));
@@ -176,6 +179,13 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 		IFCVersionNotCompiled(strSchema);
 		return;
 	}	
+
+	else if (filetype == ".off") {
+		auto offModel = OpenInfraPlatform::Core::OffConverter::OffReader::readFile(filename);
+		addModel(offModel);
+		latestChangeFlag_ = ChangeFlag::OffGeometry;
+		return;
+	}
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
