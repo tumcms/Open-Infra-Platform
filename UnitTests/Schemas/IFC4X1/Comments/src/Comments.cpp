@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <reader/IFC4X1Reader.h>
+#include <EarlyBinding/IFC4X1/src/reader/IFC4X1Reader.h>
 #include <namespace.h>
 
 using namespace testing;
