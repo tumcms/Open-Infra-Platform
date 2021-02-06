@@ -21,19 +21,20 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_BEGIN
 
 EffectBase::EffectBase(buw::IRenderSystem* renderSytem) 
     : buw::Effect(renderSytem),
-      offset_(0.,0.,0.)
+      offset_(0.,0.,0.), offsetValid_(false)
 {
 
 }
 
 void EffectBase::setOffset( const buw::Vector3d& offsetNew )
 {
-    if( offsetNew == offset_ )
+    if( offsetNew == offset_ && offsetValid_)
         return;
 
     changeOffset( offset_, offsetNew );
 
     offset_ = offsetNew;
+	offsetValid_ = true;
 }
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_RENDERING_END

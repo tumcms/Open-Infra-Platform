@@ -15,7 +15,7 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <reader/IFC4x1Reader.h>
+#include <EarlyBinding/IFC4X1/src/reader/IFC4X1Reader.h>
 #include <namespace.h>
 
 #include <VisualTest.h>
@@ -39,8 +39,7 @@ protected:
 		express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
 
 		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
-		importer->collectGeometryData(express_model);
-		oip::ConverterBuwT<emt::IFC4X1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
+		model = importer->collectData(express_model);
 
 		_background = renderer->captureImage();
 		renderer->setModel(model);
