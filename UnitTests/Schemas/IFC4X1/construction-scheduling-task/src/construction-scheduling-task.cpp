@@ -15,7 +15,7 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <reader/IFC4x1Reader.h>
+#include <EarlyBinding/IFC4X1/src/reader/IFC4X1Reader.h>
 #include <namespace.h>
 
 #include <VisualTest.h>
