@@ -419,17 +419,17 @@ namespace OpenInfraPlatform
 				for (int i = 0; i < vec_cross_sections.size(); ++i)
 				{
 					std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profileConverter = profileCache->getProfileConverter(vec_cross_sections[i]);
-					const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profileConverter->getCoordinates();
+					const std::vector<std::vector<carve::geom::vector<2> > >& profileCoords = profileConverter->getCoordinates();
 
 					// Save profile coords in paths
-					std::vector<std::vector<carve::geom::vector<2> > > profile_coords_2d;
-					for (int p = 0; p < profile_coords.size(); ++p)
+					std::vector<std::vector<carve::geom::vector<2> > > profileCoords2D;
+					for (int p = 0; p < profileCoords.size(); ++p)
 					{
-						const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[p];
+						const std::vector<carve::geom::vector<2> >& profileLoop = profileCoords[p];
 								
-						profile_coords_2d.push_back(profile_loop);
+						profileCoords2D.push_back(profileLoop);
 					}
-					paths.push_back(profile_coords_2d);
+					paths.push_back(profileCoords2D);
 
 				}
 
@@ -945,25 +945,8 @@ namespace OpenInfraPlatform
 				}
 
 				// direction and length of extrusion
-				const double depth = (typename IfcEntityTypesT::IfcLengthMeasure)(extrudedArea->Depth) * UnitConvert()->getLengthInMeterFactor();
-				carve::geom::vector<3>  extrusionVector = carve::geom::VECTOR(0.0, 0.0, 0.0);
-				auto& vecDirection = extrudedArea->ExtrudedDirection->DirectionRatios;
-				
-				switch (vecDirection.size()) 
-				{
-				case 3:
-				{
-					extrusionVector.z = vecDirection[2] * depth;
-				}
-				case 2:
-				{
-					extrusionVector.x = vecDirection[0] * depth;
-					extrusionVector.y = vecDirection[1] * depth;
-					break;
-				}
-				default:
-					throw oip::InconsistentModellingException(extrudedArea, "Cardinality of the direction ratios can be only 2 or 3");
-				}
+				const double depth = (typename IfcEntityTypesT::IfcLengthMeasure)(extrudedArea->Depth) * this->UnitConvert()->getLengthInMeterFactor();
+				carve::geom::vector<3> extrusionVector = placementConverter->convertIfcDirection(extrudedArea->ExtrudedDirection);
 				
 				// swept area
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> sweptArea = extrudedArea->SweptArea;
@@ -976,7 +959,7 @@ namespace OpenInfraPlatform
 
 				if (paths.size() == 0)
 				{
-					return;
+					throw oip::InconsistentModellingException(extrudedArea, "Paths are empty!");
 				}
 
 				// .AREA. vs .CURVE. (is the result closed or open, i.e. full solid vs pipe)
@@ -1014,40 +997,31 @@ namespace OpenInfraPlatform
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
 			{
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcRevolvedAreaSolid #" << revolvedArea->getId();
-#endif
-				// Get axis and angle (attributes 3-4). 
-				std::shared_ptr<typename IfcEntityTypesT::IfcAxis1Placement> axis =
-					revolvedArea->Axis.lock();
-				
+				if (revolvedArea.expired())
+					throw oip::ReferenceExpiredException(revolvedArea);
 
-				if (!revolvedArea->SweptArea)
-				{
-					return;
-				}
-				double length_factor = UnitConvert()->getLengthInMeterFactor();
+				// Get axis and angle (attributes 3-4). 
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis1Placement> axis = revolvedArea->Axis;
 
 				// angle and axis
-				double angle_factor = UnitConvert()->getAngleInRadianFactor();
-				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> sweptArea_profile = revolvedArea->SweptArea;
-				double revolution_angle = revolvedArea->Angle * angle_factor;
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> sweptAreaProfile = revolvedArea->SweptArea;
+				double revolutionAngle = revolvedArea->Angle * this->UnitConvert()->getAngleInRadianFactor();
 
-				carve::geom::vector<3>  axis_location;
-				carve::geom::vector<3>  axis_direction;
+				carve::geom::vector<3>  axisLocation;
+				carve::geom::vector<3>  axisDirection;
 				if (revolvedArea->Axis)
 				{
-					std::shared_ptr<typename IfcEntityTypesT::IfcAxis1Placement> axis_placement = revolvedArea->Axis.lock();
+					oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis1Placement> axisPlacement = revolvedArea->Axis;
 
-					if (axis_placement->Location)
+					if (axisPlacement->Location)
 					{
-						axis_location = placementConverter->convertIfcCartesianPoint(axis_placement->Location );
+						axisLocation = placementConverter->convertIfcCartesianPoint(axisPlacement->Location );
 					}
 
-					if (axis_placement->Axis)
+					if (axisPlacement->Axis)
 					{
-						decltype(axis_placement->Axis)::type axis = axis_placement->Axis;
-						axis_direction = carve::geom::VECTOR(
+						decltype(axisPlacement->Axis)::type axis = axisPlacement->Axis;
+						axisDirection = carve::geom::VECTOR(
 							axis->DirectionRatios[0],
 							axis->DirectionRatios[1],
 							axis->DirectionRatios[2]);
@@ -1056,195 +1030,158 @@ namespace OpenInfraPlatform
 
 				// rotation base point is the one with the smallest distance on the rotation axis
 				carve::geom::vector<3>  origin;
-				carve::geom::vector<3>  base_point;
-				GeomUtils::closestPointOnLine(origin, axis_location, axis_direction, base_point);
-				base_point *= -1;
+				carve::geom::vector<3>  basePoint;
+				GeomUtils::closestPointOnLine(origin, axisLocation, axisDirection, basePoint);
+				basePoint *= -1;
 
 				// swept area
-				std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profileConverter = profileCache->getProfileConverter(sweptArea_profile);
-				const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profileConverter->getCoordinates();
+				std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profileConverter = profileCache->getProfileConverter(sweptAreaProfile);
+				const std::vector<std::vector<carve::geom::vector<2>>>& profileCoords = profileConverter->getCoordinates();
 
 				// tesselate
-				std::vector<std::vector<carve::geom::vector<2> > > profile_coords_2d;
-				for (int i = 0; i < profile_coords.size(); ++i)
-				{
-					const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[i];
-					//std::vector<carve::geom::vector<2> > profile_loop_2d;
-					//for( int j = 0; j<profile_loop.size(); ++j )
-					//{
-					//	profile_loop_2d.push_back( carve::geom::VECTOR( profile_loop[j].x, profile_loop[j].y ) );
-					//}
-					profile_coords_2d.push_back(profile_loop);
-				}
-
-				std::vector<carve::geom::vector<2> > merged;
+				std::vector<std::vector<carve::geom::vector<2>>> profileCoords2D = profileCoords;
+			
+				std::vector<carve::geom::vector<2>> merged;
 				std::vector<carve::triangulate::tri_idx> triangulated;
-				try
+
+				try //TODO> Decide, if it is necessary here to have try ... catch (...).
 				{
-					std::vector<std::pair<size_t, size_t> > result = carve::triangulate::incorporateHolesIntoPolygon(profile_coords_2d);	// first is loop index, second is vertex index in loop
+					std::vector<std::pair<size_t, size_t>> result = carve::triangulate::incorporateHolesIntoPolygon(profileCoords2D);	// first is loop index, second is vertex index in loop
 					merged.resize(result.size());
 					for (size_t i = 0; i < result.size(); ++i)
 					{
-						int loop_number = result[i].first;
-						int index_in_loop = result[i].second;
+						int loopNumber = result[i].first;
+						int indexInLoop = result[i].second;
 
-						if (loop_number >= profile_coords_2d.size())
+						if (loopNumber >= profileCoords2D.size())
 						{
-							std::cout << ": loop_number >= face_loops_projected.size()" << std::endl;
+							std::cout << ": loopNumber >= face_loops_projected.size()" << std::endl;
 							continue;
 						}
 
-						std::vector<carve::geom2d::P2>& loop_projected = profile_coords_2d[loop_number];
+						std::vector<carve::geom2d::P2>& loopProjected = profileCoords2D[loopNumber];
 
-						carve::geom2d::P2& point_projected = loop_projected[index_in_loop];
-						merged.push_back(point_projected);
+						carve::geom2d::P2& pointProjected = loopProjected[indexInLoop];
+						merged.push_back(pointProjected);
 					}
 					carve::triangulate::triangulate(merged, triangulated);
 					carve::triangulate::improve(merged, triangulated);
 				}
 				catch (...)
 				{
-					/*for( size_t i = 0; i < profile_coords_2d.size(); ++i )
-					{
-					for ( size_t j = 0; j < profile_coords_2d[i].size(); ++j)
-					{
-					int loop_number = i;
-					int index_in_loop = j;
-
-					carve::geom2d::P2& loop_point = profile_coords_2d[loop_number][index_in_loop];
-					merged.push_back( loop_point );
-
-					if( loop_number >= profile_coords_2d.size() )
-					{
-					std::cout << __FUNC__ << ": loop_number >= face_loops_projected.size()" << std::endl;
-					continue;
-					}
-
-					std::vector<carve::geom2d::P2>& loop_projected = profile_coords_2d[loop_number];
-
-					carve::geom2d::P2& point_projected = loop_projected[index_in_loop];
-					merged.push_back( point_projected );
-					}
-					}
-					carve::triangulate::triangulate(merged, triangulated);
-					carve::triangulate::improve(merged, triangulated);*/
-
-
 					BLUE_LOG(error) << "carve::triangulate::incorporateHolesIntoPolygon failed ";
 					return;
 				}
 
-				if (profile_coords.size() == 0)
+				if (profileCoords.size() == 0)
 				{
-					BLUE_LOG(error) << "#" << revolvedArea->getId() << " = IfcRevolvedAreaSolid: convertIfcRevolvedAreaSolid: num_loops == 0";
-					return;
+					throw oip::InconsistentModellingException(revolvedArea, "profileCoords are empty!");
 				}
-				if (profile_coords[0].size() < 3)
+				if (profileCoords[0].size() < 3)
 				{
-					BLUE_LOG(error) << "#" << revolvedArea->getId() << " = IfcRevolvedAreaSolid: convertIfcRevolvedAreaSolid: num_polygon_points < 3";
-					return;
+					throw oip::InconsistentModellingException(revolvedArea, "Not enough coordinates!");
 				}
 
 				// determine the biggest distance to rotational axis -> biggest radius that needs to be tesselated
 				double biggestRadius = 0.;
-				for (int i = 0; i < profile_coords.size(); ++i)
+				for (int i = 0; i < profileCoords.size(); ++i)
 				{
-					const std::vector<carve::geom::vector<2> >& profile_loop = profile_coords[i];
-					for( int j=0; j < profile_loop.size(); ++j)
+					const std::vector<carve::geom::vector<2>>& profileLoop = profileCoords[i];
+					for( int j=0; j < profileLoop.size(); ++j)
 					{
-						const carve::geom::vector<2>& pt_2d = profile_loop.at(j);
-						carve::geom::vector<3>  point(carve::geom::VECTOR(pt_2d.x, pt_2d.y, 0.));
+						const carve::geom::vector<2>& point2d = profileLoop.at(j);
+						carve::geom::vector<3>  point(carve::geom::VECTOR(point2d.x, point2d.y, 0.));
 						carve::geom::vector<3>  pointOnLine;
-						GeomUtils::closestPointOnLine(point, axis_location, axis_direction, pointOnLine);
+						GeomUtils::closestPointOnLine(point, axisLocation, axisDirection, pointOnLine);
 						biggestRadius = std::max(biggestRadius, (pointOnLine - point).length());
 					}
 				}
 
-				if (revolution_angle > M_PI * 2) revolution_angle = M_PI * 2;
-				if (revolution_angle < -M_PI * 2) revolution_angle = M_PI * 2;
+				if (revolutionAngle > M_PI * 2.) revolutionAngle = M_PI * 2.;
+				if (revolutionAngle < -M_PI * 2.) revolutionAngle = M_PI * 2.;
 
-				int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(biggestRadius, abs(revolution_angle));
-				if (num_segments < 6)
+				int numOfSegments = GeomSettings()->getNumberOfSegmentsForTessellation(biggestRadius, abs(revolutionAngle));
+				if (numOfSegments < 6)
 				{
-					num_segments = 6;
+					numOfSegments = 6;
 				}
 				double angle = 0.0;
-				double d_angle = revolution_angle / (double)num_segments;
+				double deltaAngle = revolutionAngle / (double)numOfSegments;
 
 				// check if we have to change the direction
-				carve::geom::vector<3>  polygon_normal = GeomUtils::computePolygon2DNormal(profile_coords[0]);
-				const carve::geom::vector<2>&  pt0_2d = profile_coords[0][0];
-				carve::geom::vector<3>  pt0_3d(carve::geom::VECTOR(pt0_2d.x, pt0_2d.y, 0));
-				carve::geom::vector<3>  pt0 = carve::math::Matrix::ROT(d_angle, axis_direction)*(pt0_3d + base_point);
-				if (polygon_normal.z*pt0.z > 0)
+				carve::geom::vector<3>  polygonNormal = GeomUtils::computePolygon2DNormal(profileCoords[0]);
+				const carve::geom::vector<2>&  Opoint2D = profileCoords[0][0];
+				carve::geom::vector<3>  Opoint3D(carve::geom::VECTOR(Opoint2D.x, Opoint2D.y, 0));
+				carve::geom::vector<3>  point0 = carve::math::Matrix::ROT(deltaAngle, axisDirection)*(Opoint3D + basePoint);
+				if (polygonNormal.z*point0.z > 0)
 				{
-					angle = revolution_angle;
-					d_angle = -d_angle;
+					angle = revolutionAngle;
+					deltaAngle = -deltaAngle;
 				}
 
-				std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
-				itemData->closed_polyhedrons.push_back(polyhedron_data);
+				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
+				itemData->closed_polyhedrons.push_back(polyhedronData);
 
 				// create vertices
-				carve::math::Matrix m;
-				for (int i = 0; i <= num_segments; ++i)
+				carve::math::Matrix martix;
+				for (int i = 0; i <= numOfSegments; ++i)
 				{
-					m = carve::math::Matrix::ROT(angle, -axis_direction);
-					for (int j = 0; j < profile_coords.size(); ++j)
+					martix = carve::math::Matrix::ROT(angle, -axisDirection);
+					for (int j = 0; j < profileCoords.size(); ++j)
 					{
-						const std::vector<carve::geom::vector<2> >& loop = profile_coords[j];
+						const std::vector<carve::geom::vector<2>>& loop = profileCoords[j];
 
 						for (int k = 0; k < loop.size(); ++k)
 						{
 							const carve::geom::vector<2>& point = loop[k];
 
-							carve::geom::vector<3>  vertex = m * (carve::geom::VECTOR(point.x, point.y, 0) + base_point) - base_point;
-							polyhedron_data->addVertex(pos*vertex);
+							carve::geom::vector<3>  vertex = martix * (carve::geom::VECTOR(point.x, point.y, 0) + basePoint) - basePoint;
+							polyhedronData->addVertex(pos*vertex);
 						}
 					}
-					angle += d_angle;
+					angle += deltaAngle;
 				}
 
 				// front cap
-				std::vector<int> front_face_loop;
-				int num_polygon_points = 0;
-				for (int j = 0; j < profile_coords.size(); ++j)
+				std::vector<int> frontFaceLoop;
+				int numPolygonPoints = 0;
+				for (int j = 0; j < profileCoords.size(); ++j)
 				{
-					const std::vector<carve::geom::vector<2> >& loop = profile_coords[j];
+					const std::vector<carve::geom::vector<2>>& loop = profileCoords[j];
 
 					for (int k = 0; k < loop.size(); ++k)
 					{
-						front_face_loop.push_back(j*loop.size() + k);
-						++num_polygon_points;
+						frontFaceLoop.push_back(j*loop.size() + k);
+						++numPolygonPoints;
 					}
 				}
 				// TODO: use triangulated
-				polyhedron_data->addFace(front_face_loop.rbegin(), front_face_loop.rend());
+				polyhedronData->addFace(frontFaceLoop.rbegin(), frontFaceLoop.rend());
 
 				// end cap
 				std::vector<int> end_face_loop;
-				const int end_face_begin = num_segments * num_polygon_points;
-				for (int j = 0; j < num_polygon_points; ++j)
+				const int end_face_begin = numOfSegments * numPolygonPoints;
+				for (int j = 0; j < numPolygonPoints; ++j)
 				{
 					end_face_loop.push_back(end_face_begin + j);
 				}
-				polyhedron_data->addFace(end_face_loop.begin(), end_face_loop.end());
+				polyhedronData->addFace(end_face_loop.begin(), end_face_loop.end());
 
 				// faces of revolved shape
-				for (int i = 0; i < num_polygon_points - 1; ++i)
+				for (int i = 0; i < numPolygonPoints - 1; ++i)
 				{
-					int i_offset_next = i + num_polygon_points;
-					for (int j = 0; j < num_segments; ++j)
+					int i_offset_next = i + numPolygonPoints;
+					for (int j = 0; j < numOfSegments; ++j)
 					{
-						int j_offset = j * num_polygon_points;
-						polyhedron_data->addFace(j_offset + i, j_offset + i + 1, j_offset + 1 + i_offset_next, j_offset + i_offset_next);
+						int j_offset = j * numPolygonPoints;
+						polyhedronData->addFace(j_offset + i, j_offset + i + 1, j_offset + 1 + i_offset_next, j_offset + i_offset_next);
 					}
 				}
 
-				for (int j = 0; j < num_segments; ++j)
+				for (int j = 0; j < numOfSegments; ++j)
 				{
-					int j_offset = j * num_polygon_points;
-					polyhedron_data->addFace(j_offset + num_polygon_points - 1, j_offset, j_offset + num_polygon_points, j_offset + num_polygon_points + num_polygon_points - 1);
+					int j_offset = j * numPolygonPoints;
+					polyhedronData->addFace(j_offset + numPolygonPoints - 1, j_offset, j_offset + numPolygonPoints, j_offset + numPolygonPoints + numPolygonPoints - 1);
 				}
 			}
 
@@ -1838,8 +1775,8 @@ namespace OpenInfraPlatform
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
 
 					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTessellation(radius);
-					double d_angle = GeomSettings()->getAngleLength(radius);
-					for (double angle = 0.; angle < 2 * M_PI; angle += d_angle)
+					double deltaAngle = GeomSettings()->getAngleLength(radius);
+					for (double angle = 0.; angle < 2 * M_PI; angle += deltaAngle)
 					{
 						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
 					}
@@ -1885,8 +1822,8 @@ namespace OpenInfraPlatform
 					int slices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
 					double rad = 0;
 
-					double d_angle = GeomSettings()->getAngleLength(radius);
-					for (double angle = 0.; angle < 2 * M_PI; angle += d_angle)
+					double deltaAngle = GeomSettings()->getAngleLength(radius);
+					for (double angle = 0.; angle < 2 * M_PI; angle += deltaAngle)
 					{
 						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, height));
 						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
@@ -2087,7 +2024,7 @@ namespace OpenInfraPlatform
 				if (otherOperand)
 				{
 					carve::geom::aabb<3> aabb;
-					otherOperand->createMeshSetsFromClosedPolyhedrons();
+					otherOperand->createMeshSetsFromclosed_polyhedrons();
 					for (int ii = 0; ii < otherOperand->meshsets.size(); ++ii)
 					{
 						std::shared_ptr<carve::mesh::MeshSet<3> >& meshset = otherOperand->meshsets[ii];
