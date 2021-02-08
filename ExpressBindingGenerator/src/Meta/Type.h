@@ -81,7 +81,7 @@ public:
 
 	std::vector<std::string> getTypes() const;
 
-	std::string Type::getType(const int index) const;
+	std::string getType(const int index) const;
 
 	//! check if this type is a simple type (Real)
 	bool isSimpleType() const;

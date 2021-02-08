@@ -19,7 +19,7 @@
 #ifndef OpenInfraPlatform_UserInterface_PreferencesDialog_38da791c_994f_450a_abc1_6676bdf555c4_h
 #define OpenInfraPlatform_UserInterface_PreferencesDialog_38da791c_994f_450a_abc1_6676bdf555c4_h
 
-#include "ui_PreferencesDialog.h"
+#include <ui_PreferencesDialog.h>
 #include "ColorPicker/colorpickerwidget.h"
 #include "ViewPanel/View.h"
 //#include <BlueFramework/Engine/Camera/InfraCameraController.h>

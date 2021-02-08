@@ -27,6 +27,10 @@
 
 #include <math.h>
 
+#if _MSVC_LANG > 201700L
+#include <algorithm>
+#endif
+
 namespace carve {
   namespace geom3d {
 

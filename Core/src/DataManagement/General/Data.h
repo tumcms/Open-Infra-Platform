@@ -30,6 +30,8 @@
 #include <map>
 #include <list>
 
+#include "IfcGeometryConverter/IfcImporter.h"
+
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 #include <PointCloudProcessing.h>
 #include <PointCloud.h>

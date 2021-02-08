@@ -92,7 +92,7 @@ namespace OpenInfraPlatform
 
 			*/
 
-                        void convertIfcCsgSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid) throw(...)
+                        void convertIfcCsgSolid(const carve::math::Matrix& pos, std::shared_ptr<ItemData> itemData, const EXPRESSReference<typename IfcEntityTypesT::IfcCsgSolid> &csg_solid) noexcept(false)
                         {
                             if(csg_solid.expired())
                                 throw oip::ReferenceExpiredException(csg_solid);
@@ -114,7 +114,7 @@ namespace OpenInfraPlatform
 				const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell, 
 				const carve::math::Matrix& pos, 
 				std::shared_ptr<ItemData>& itemData
-			) const throw(...)
+			) const noexcept(false)
             {
 				if (outerShell.expired())
 					throw oip::ReferenceExpiredException(outerShell);
@@ -138,7 +138,7 @@ namespace OpenInfraPlatform
 				const EXPRESSReference<typename IfcEntityTypesT::IfcManifoldSolidBrep> &manifoldSolidBrep,
 				const carve::math::Matrix& pos,  
 				std::shared_ptr<ItemData> itemData
-			) const throw(...)
+			) const noexcept(false)
             {
 				// check input
                 if(manifoldSolidBrep.expired())
@@ -771,7 +771,7 @@ namespace OpenInfraPlatform
 					// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
 					oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix_curve = swept_disk_solid->Directrix;
 					
-					double length_in_meter = UnitConvert()->getLengthInMeterFactor();
+					double length_in_meter = this->UnitConvert()->getLengthInMeterFactor();
 					double radius = swept_disk_solid->Radius * length_in_meter;
 					
 
@@ -801,8 +801,8 @@ namespace OpenInfraPlatform
 					itemData->closed_polyhedrons.push_back(pipe_data);
 					std::vector<carve::geom::vector<3> > inner_shape_points;
 
-					const int nvc = GeomSettings()->getNumberOfVerticesForTessellation(radius);
-					double delta_angle = GeomSettings()->getAngleLength(radius);
+					const int nvc = this->GeomSettings()->getNumberOfVerticesForTessellation(radius);
+					double delta_angle = this->GeomSettings()->getAngleLength(radius);
 
 					std::vector<carve::geom::vector<3> > circle_points;
 					std::vector<carve::geom::vector<3> > circle_points_inner;
@@ -1053,7 +1053,7 @@ namespace OpenInfraPlatform
 					BLUE_LOG(error) << "Invalid Depth ";
 					return;
 				}
-				double length_factor = UnitConvert()->getLengthInMeterFactor();
+				double length_factor = this->UnitConvert()->getLengthInMeterFactor();
 
 				// direction and length of extrusion
 				const double depth = (typename IfcEntityTypesT::IfcLengthMeasure)(extrudedArea->Depth) * length_factor;
@@ -1090,10 +1090,10 @@ namespace OpenInfraPlatform
 				bool closed = true;
 				switch (swept_area->ProfileType)
 				{
-				case typename IfcEntityTypesT::IfcProfileTypeEnum::ENUM::ENUM_AREA:
+				case IfcEntityTypesT::IfcProfileTypeEnum::ENUM::ENUM_AREA:
 					closed = true;
 					break;
-				case typename IfcEntityTypesT::IfcProfileTypeEnum::ENUM::ENUM_CURVE:
+				case IfcEntityTypesT::IfcProfileTypeEnum::ENUM::ENUM_CURVE:
 					closed = false;
 					break;
 				default:
@@ -1135,10 +1135,10 @@ namespace OpenInfraPlatform
 				{
 					return;
 				}
-				double length_factor = UnitConvert()->getLengthInMeterFactor();
+				double length_factor = this->UnitConvert()->getLengthInMeterFactor();
 
 				// angle and axis
-				double angle_factor = UnitConvert()->getAngleInRadianFactor();
+				double angle_factor = this->UnitConvert()->getAngleInRadianFactor();
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> swept_area_profile = revolvedArea->SweptArea;
 				double revolution_angle = revolvedArea->Angle * angle_factor;
 
@@ -1155,7 +1155,7 @@ namespace OpenInfraPlatform
 
 					if (axis_placement->Axis)
 					{
-						decltype(axis_placement->Axis)::type axis = axis_placement->Axis;
+						auto axis = axis_placement->Axis;
 						axis_direction = carve::geom::VECTOR(
 							axis->DirectionRatios[0],
 							axis->DirectionRatios[1],
@@ -1272,7 +1272,7 @@ namespace OpenInfraPlatform
 				if (revolution_angle > M_PI * 2) revolution_angle = M_PI * 2;
 				if (revolution_angle < -M_PI * 2) revolution_angle = M_PI * 2;
 
-				int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(biggestRadius, abs(revolution_angle));
+				int num_segments = this->GeomSettings()->getNumberOfSegmentsForTessellation(biggestRadius, abs(revolution_angle));
 				if (num_segments < 6)
 				{
 					num_segments = 6;
@@ -1385,15 +1385,15 @@ namespace OpenInfraPlatform
 					//}
 
 					carve::csg::CSG::OP csg_operation = carve::csg::CSG::A_MINUS_B;
-					if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_UNION)
+					if (ifc_boolean_operator == IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_UNION)
 					{
 						csg_operation = carve::csg::CSG::UNION;
 					}
-					else if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_INTERSECTION)
+					else if (ifc_boolean_operator == IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_INTERSECTION)
 					{
 						csg_operation = carve::csg::CSG::INTERSECTION;
 					}
-					else if (ifc_boolean_operator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_DIFFERENCE)
+					else if (ifc_boolean_operator == IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_DIFFERENCE)
 					{
 						csg_operation = carve::csg::CSG::A_MINUS_B;
 					}
@@ -1484,7 +1484,7 @@ namespace OpenInfraPlatform
 				std::shared_ptr<ItemData> itemData)
 			{
 				std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
-				double length_factor = UnitConvert()->getLengthInMeterFactor();
+				double length_factor = this->UnitConvert()->getLengthInMeterFactor();
 
 				// ENTITY IfcCsgPrimitive3D  ABSTRACT SUPERTYPE OF(ONEOF(IfcBlock, IfcRectangularPyramid, IfcRightCircularCone, IfcRightCircularCylinder, IfcSphere)
 				
@@ -1604,8 +1604,8 @@ namespace OpenInfraPlatform
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
 					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
 
-					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTessellation(radius);
-					double d_angle = GeomSettings()->getAngleLength(radius);
+					int numVerticesInCircle = this->GeomSettings()->getNumberOfVerticesForTessellation(radius);
+					double d_angle = this->GeomSettings()->getAngleLength(radius);
 					for (double angle = 0.; angle < 2*M_PI; angle += d_angle)
 					{
 						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
@@ -1649,10 +1649,10 @@ namespace OpenInfraPlatform
 					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Height)*length_factor;
 					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Radius)*length_factor;
 
-					int slices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
+					int slices = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius);
 					double rad = 0;
 
-					double d_angle = GeomSettings()->getAngleLength(radius);
+					double d_angle = this->GeomSettings()->getAngleLength(radius);
 					for (double angle = 0.; angle < 2 * M_PI; angle += d_angle)
 					{
 						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, height));
@@ -1695,8 +1695,8 @@ namespace OpenInfraPlatform
 					std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
 					polyhedron_data->addVertex(pos*carve::geom::VECTOR(0.0, 0.0, radius)); // top
 
-					const int nvc = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
-					const double d_horizontal_angle = GeomSettings()->getAngleLength(radius);
+					const int nvc = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius);
+					const double d_horizontal_angle = this->GeomSettings()->getAngleLength(radius);
 					const int num_vertical_edges = ceil(0.5 * nvc);
 					double d_vertical_angle = M_PI / double(num_vertical_edges - 1);	// TODO: adapt to model size and complexity
 					double vertical_angle = d_vertical_angle;
@@ -1807,13 +1807,13 @@ namespace OpenInfraPlatform
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
 				const std::shared_ptr<ItemData>& otherOperand
-			) const throw(...)
+			) const noexcept(false)
 			{					
 				/*
 				//ENTITY IfcHalfSpaceSolid SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
 				std::shared_ptr<typename IfcEntityTypesT::IfcSurface> base_surface = half_space_solid->BaseSurface.lock();
 
-				double length_factor = UnitConvert()->getLengthInMeterFactor();
+				double length_factor = this->UnitConvert()->getLengthInMeterFactor();
 
 				// base surface
 				std::shared_ptr<typename IfcEntityTypesT::IfcElementarySurface> elem_base_surface =
@@ -2157,7 +2157,7 @@ namespace OpenInfraPlatform
 					{
 						result = std::shared_ptr<carve::mesh::MeshSet<3>>(csg.compute(op1, op2,
 							operation, nullptr,
-							GeomSettings()->getCSGtype()));
+							this->GeomSettings()->getCSGtype()));
 
 						isCSGComputationOk = GeomUtils::checkMeshSet(result.get(), err, -1);
 

@@ -50,7 +50,7 @@ void ColorPickerWidget::pickMode()
 {
     if(ecran!=0)
         delete ecran;
-    ecran = new screen;
+    ecran = screen();
         connect( ecran, SIGNAL(colorSelected(QColor)), colorTriangle, SLOT(setColor(QColor)) );
 }
 

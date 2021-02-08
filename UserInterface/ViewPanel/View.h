@@ -20,8 +20,9 @@
 #define OpenInfraPlatform_UserInterface_View_05741137_3101_4ec4_bf4b_61206b15ebce_h
 
 #include "Viewport.h"
-//#include "buw.BlueApplication.h"
 #include "DataManagement/General/Data.h"
+
+#include "buw.Rasterizer.h"
 
 #include <QMenuBar>
 #include <QDockWidget>

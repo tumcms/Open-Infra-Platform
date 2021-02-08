@@ -18,12 +18,11 @@
 #ifndef COLORPICKERWIDGET_H
 #define COLORPICKERWIDGET_H
 
-#include <QWidget>
+#include <QScreen>
 #include <QPushbutton>
 #include <QGridLayout>
 #include "qtcolortriangle.h"
 #include "colorviewer.h"
-#include "screen.h"
 
 #include <iostream>
 
@@ -55,7 +54,7 @@ private:
 
     QGridLayout *layout;
 
-    screen *ecran;
+    QScreen* ecran;
 };
 
 #endif // COLORPICKERWIDGET_H

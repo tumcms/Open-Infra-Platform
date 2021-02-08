@@ -74,7 +74,7 @@ namespace OpenInfraPlatform {
 							BLUE_LOG(trace) << "Creating ProfileConverterT for IfcProfile #" << profile_id;
 #endif
 							std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter =
-								std::make_shared<ProfileConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert(), placementConverter);
+								std::make_shared<ProfileConverterT<IfcEntityTypesT>>( this->GeomSettings(),  this->UnitConvert(), placementConverter);
 
 							profile_converter->computeProfile(ifcProfile);
 

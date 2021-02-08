@@ -100,14 +100,8 @@ Currently, only the point cloud processing module is supported.
 These options are specified [here](https://github.com/tumcms/Open-Infra-Platform/blob/development/CMakeLists.txt).
 
 | Option                          | Default | 
-|---------------------------------|---------|
-| `MODULES_DIGITAL_ELEVATION_MODEL` | OFF     |           
-| `MODULES_GIRDER`                  | OFF     |           
-| `MODULES_POINT_CLOUD_PROCESSING`  | OFF     |           
-| `MODULES_PROXY_MODEL`             | OFF     |            
-| `MODULES_RAILWAY`                 | OFF     |            
-| `MODULES_SLABFIELD`               | OFF     |        
-| `MODULES_TESSELATION`             | OFF     |     
+|---------------------------------|---------|         
+| `OIP_WITH_POINT_CLOUD_PROCESSING`  | OFF     | 
 
 [Go back to overview](#project-options)
 

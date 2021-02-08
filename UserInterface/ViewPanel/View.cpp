@@ -21,6 +21,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QDateTime>
+#include <QWidget>
 #include "BlueFramework/Rasterizer/util.h"
 
 
