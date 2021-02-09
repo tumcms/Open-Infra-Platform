@@ -3332,3 +3332,38 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeMainAxis() {
 	mainAxis_ = CCVector3(getEigenvectors<1>().cast<float>().normalized().data());
 	BLUE_LOG(trace) << "Finished computing main axis.";
 }
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// Interface IModel implementation
+bool OpenInfraPlatform::PointCloudProcessing::PointCloud::isEmpty() const
+{
+	return size() == 0;
+}
+
+std::string OpenInfraPlatform::PointCloudProcessing::PointCloud::getSource() const
+{
+	return getName().toStdString();
+}
+
+oip::BBox OpenInfraPlatform::PointCloudProcessing::PointCloud::getExtent()
+{
+	CCVector3 minPos, maxPos;
+	getBoundingBox(minPos, maxPos);
+	oip::BBox bb;
+	bb.update(minPos.x, minPos.y, minPos.z);
+	bb.update(maxPos.x, maxPos.y, maxPos.z);
+	return bb;
+}
+
+oip::GeorefMetadata OpenInfraPlatform::PointCloudProcessing::PointCloud::getGeorefMetadata() const
+{
+	throw std::exception("Not implemented: PointCloud::getGeorefMetadata()");
+}
+
+void OpenInfraPlatform::PointCloudProcessing::PointCloud::transformAllPoints(
+	const oip::GeorefMetadata& newGeorefMetadata,
+	std::function<std::tuple<double, double, double> const(double, double, double)>& transf
+)
+{
+	throw std::exception("Not implemented: PointCloud::transformAllPoints()");
+}

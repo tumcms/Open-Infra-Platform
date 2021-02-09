@@ -26,12 +26,13 @@
 #include <memory>
 #include "CarveHeaders.h"
 
+#include "GeomUtils.h"
 #include "ConverterBase.h"
 
 #include <BlueFramework/Core/Diagnostics/log.h>
 
 #include <EXPRESS/EXPRESSReference.h>
-
+#include <EXPRESS/EXPRESSOptional.h>
 
 /**********************************************************************************************/
 
@@ -49,10 +50,10 @@ namespace OpenInfraPlatform {
             *
             * \param IfcEntityTypesT The IFC version templates
             */
-            template <
-                class IfcEntityTypesT
-            >
-            class PlacementConverterT : public ConverterBaseT<IfcEntityTypesT> {
+			template <
+				class IfcEntityTypesT
+			>
+				class PlacementConverterT : public ConverterBaseT<IfcEntityTypesT>, public std::enable_shared_from_this<PlacementConverterT<IfcEntityTypesT>> {
             public:
                 //! Constructor
                 PlacementConverterT(
@@ -586,33 +587,56 @@ namespace OpenInfraPlatform {
 				 * @param[in] relativeDistAlong Account for a relative placement in linear placement.
                  * @return The first vector are the coordinates of the point, the second vector of the direction.
                  */
-                std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(
+				std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement,
 					const double relativeDistAlong = 0.
-				) const throw(...)
-                {
+				) const noexcept(false)
+				{
 					// check input
 					if (linear_placement.expired())
 						throw oip::ReferenceExpiredException(linear_placement);
 
+					return calculatePositionOnAndDirectionOfBaseCurve(
+						getCurveOfPlacement(linear_placement),
+						linear_placement->Distance,
+						relativeDistAlong);
+				}
+
+				/**
+				 * @brief Compute the position along given curve
+				 *  and returns the respective point and the direction at that point
+				 *
+				 * @param[in] curve The curve along which the calculation should happen.
+				 * @param[in] distExpr The distance along the \c curve at which the point and direction should be calculated.
+				 * @param[in] relativeDistAlong Account for a relative placement in linear placement.
+				 * @return The first vector are the coordinates of the point, the second vector of the direction.
+				 */
+				std::tuple< carve::geom::vector<3>, carve::geom::vector<3>> calculatePositionOnAndDirectionOfBaseCurve(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve>& curve,
+					const EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>& distExpr,
+					const double relativeDistAlong = 0.
+				) const noexcept(false)
+				{
 					// defaults
                     carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
                     carve::geom::vector<3> directionOfCurve = carve::geom::VECTOR(1.0, 0.0, 0.0);
 					
 					// account for relative placement
-					double dDistAlong = 
-						linear_placement->Distance->DistanceAlong * UnitConvert()->getLengthInMeterFactor()
+					double distAlong = 
+						distExpr->DistanceAlong * this->UnitConvert()->getLengthInMeterFactor() 
 						+ relativeDistAlong;
-					
+
 					// convert the point
-                    convertBoundedCurveDistAlongToPoint3D(
-                        getCurveOfPlacement(linear_placement),
-                        dDistAlong,
-                        linear_placement->Distance->AlongHorizontal.value_or(true),
-                        pointOnCurve,
-                        directionOfCurve
-                    );
-                    return { pointOnCurve, directionOfCurve };
+					if (convertBoundedCurveDistAlongToPoint3D(
+						curve,
+						distAlong,
+						distExpr->AlongHorizontal.value_or(true),
+						pointOnCurve,
+						directionOfCurve
+					))
+						return { pointOnCurve, directionOfCurve };
+					else
+						throw oip::InconsistentGeometryException(curve, "Could not determine position on curve at: " + std::to_string(distAlong));
                 }
 
                 /**
@@ -753,9 +777,257 @@ namespace OpenInfraPlatform {
 						BLUE_LOG(warning) << ex.what();
 					}
                     
-					// return
+					// return 
 					return object_placement_matrix;
                 }
+				
+				/**********************************************************************************************/
+				/*! \brief Convert \c IfcGridAxis
+				* \param[in] IfcGridAxis			The \c IfcGridAxis to be converted
+				* \return							The tessellated axis' curve (an ordered array of points, i.e. a polyline)
+				*/
+				std::vector<carve::geom::vector<2>> convertIfcGridAxis(const EXPRESSReference<typename IfcEntityTypesT::IfcGridAxis>& gridAxis
+				) const throw(...)
+				{
+					//	ENTITY IfcGridAxis;
+					//		AxisTag: OPTIONAL IfcLabel;
+					//			AxisCurve: IfcCurve;
+					//			SameSense: IfcBoolean;
+					//		INVERSE
+					//			PartOfW : SET[0:1] OF IfcGrid FOR WAxes;
+					//			PartOfV: SET[0:1] OF IfcGrid FOR VAxes;
+					//			PartOfU: SET[0:1] OF IfcGrid FOR UAxes;
+					//			HasIntersections: SET[0:? ] OF IfcVirtualGridIntersection FOR IntersectingAxes;
+					//		WHERE
+					//			WR1 : AxisCurve.Dim = 2;
+					//			WR2: (SIZEOF(PartOfU) = 1) XOR(SIZEOF(PartOfV) = 1) XOR(SIZEOF(PartOfW) = 1);
+					//	END_ENTITY;
+
+					std::vector<carve::geom::vector<2>> axisVector;
+					carve::math::Matrix gridPositionMatrix = carve::math::Matrix::IDENT();
+					std::vector<carve::geom::vector<2>> segmentStartPoints;
+					
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter = std::make_shared<PlacementConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert());
+
+					CurveConverterT<IfcEntityTypesT> gridConv(GeomSettings(), UnitConvert(), placementConverter);
+					gridConv.convertIfcCurve2D(gridAxis->AxisCurve, axisVector, segmentStartPoints);
+
+					if (!gridAxis->SameSense)
+						// turn around the axis
+						std::reverse(std::begin(axisVector), std::end(axisVector));
+
+					if (!gridAxis->PartOfU.empty() && gridAxis->PartOfV.empty() && gridAxis->PartOfW.empty()) {
+						gridPositionMatrix = getGridPosition(gridAxis->PartOfU[0]);
+						return applyGridPositionToAxis(gridPositionMatrix, axisVector);
+					}
+					else if (gridAxis->PartOfU.empty() && !gridAxis->PartOfV.empty() && gridAxis->PartOfW.empty()) {
+						gridPositionMatrix = getGridPosition(gridAxis->PartOfV[0]);
+						return applyGridPositionToAxis(gridPositionMatrix, axisVector);
+					}
+					else if (gridAxis->PartOfU.empty() && gridAxis->PartOfV.empty() && !gridAxis->PartOfW.empty()) {
+						gridPositionMatrix = getGridPosition(gridAxis->PartOfW[0]);
+						return applyGridPositionToAxis(gridPositionMatrix, axisVector);
+					}
+					else  {
+						throw oip::InconsistentModellingException(gridAxis, "IfcGridAxis can only refer to a single instance of IfcGrid.");
+					}
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Calculates a position of the grid. 
+				* \param[in] grid					A pointer to data from \c IfcGrid.
+				* \return							A grid position matrix.
+				*/
+				carve::math::Matrix getGridPosition(const EXPRESSReference< typename IfcEntityTypesT::IfcGrid>& grid
+				)const throw(...)
+				{
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>> placementAlreadyApplied;
+					if (grid->ObjectPlacement) {
+						return convertIfcObjectPlacement(grid->ObjectPlacement, placementAlreadyApplied);
+					}
+					else {
+						throw oip::InconsistentModellingException(grid, "An IfcPositioningElement must have a placement");
+					}
+				}
+				
+				/**********************************************************************************************/
+				/*! \brief Applies position of the grid to the tessellated axis' curve.
+				* \param[in] gridPositionMatrix			A grid position matrix.
+				* \param[in] axisVector					The tessellated axis' curve without applied position of the grid.
+				* \return								The tessellated axis' curve with applied position of the grid.
+				*/
+				std::vector<carve::geom::vector<2>> applyGridPositionToAxis(const carve::math::Matrix& gridPositionMatrix,
+					const std::vector<carve::geom::vector<2>>& axisVector
+				)const throw(...) 
+				{
+					std::vector<carve::geom::vector<2>> axisVectorOnGrid;
+					
+					for (int i = 0; i < axisVector.size(); i++) {
+						carve::geom::vector<2> pnt = axisVector.at(i);
+						carve::geom::vector<3> pnt3D = carve::geom::VECTOR(pnt.x, pnt.y, 0.);
+						pnt3D = gridPositionMatrix * pnt3D;
+						axisVectorOnGrid.push_back(carve::geom::VECTOR(pnt3D.x, pnt3D.y));
+					}
+						
+					return axisVectorOnGrid;
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Convert \c IfcVirtualGridIntersection to a transformation matrix
+				* \param[in] intersection			The \c IfcVirtualGridIntersection to be converted
+				* \return 							A tuple: 1: Location of the grid, 2: tangent of the first intersecting axis	
+				*/
+				std::tuple<carve::geom::vector<3>, carve::geom::vector<3>> convertIfcVirtualGridIntersection(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcVirtualGridIntersection>& intersection
+				) const throw(...)
+				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcvirtualgridintersection.htm
+					//	ENTITY IfcVirtualGridIntersection;
+					//		IntersectingAxes: LIST[2:2] OF UNIQUE IfcGridAxis;
+					//		OffsetDistances: LIST[2:3] OF IfcLengthMeasure;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+					if (intersection.expired())
+						throw oip::ReferenceExpiredException(intersection);
+
+					std::vector<carve::geom::vector<2>> xAxis = convertIfcGridAxis(intersection->IntersectingAxes[0]);
+					std::vector<carve::geom::vector<2>> yAxis = convertIfcGridAxis(intersection->IntersectingAxes[1]);
+
+					carve::geom::vector<2> intersectionPoint;
+					carve::geom::vector<2> xAxisPosition;
+					carve::geom::vector<2> xAxisPosition2;
+					carve::geom::vector<2> yAxisPosition;
+					carve::geom::vector<2> yAxisPosition2;
+
+					for (int i = 0; i < xAxis.size()-1; i++) {
+						xAxisPosition = xAxis[i];
+						xAxisPosition2 = xAxis[i+1];
+						for (int j = 0; j < yAxis.size()-1; j++) {
+							yAxisPosition = yAxis[i];
+							yAxisPosition2 = yAxis[i+1];
+							if (GeomUtils::LineSegmentToLineSegmentIntersection(xAxisPosition2, xAxisPosition, yAxisPosition2, yAxisPosition, intersectionPoint)) {
+								i = xAxis.size();
+								j = yAxis.size();
+							}
+						}
+					}
+					
+					carve::geom::vector<3> intersectingAxes1 = carve::geom::VECTOR(xAxisPosition2[0] - xAxisPosition[0], xAxisPosition2[1] - xAxisPosition[1], 0.0);
+					intersectingAxes1.normalize();
+					carve::geom::vector<3> intersectingAxes2 = carve::geom::VECTOR(yAxisPosition2[0] - yAxisPosition[0], yAxisPosition2[1] - yAxisPosition[1], 0.0);
+					intersectingAxes2.normalize();
+
+					carve::geom::vector<3> location = carve::geom::VECTOR(intersectionPoint.x, intersectionPoint.y, 0.0);
+					switch (intersection->OffsetDistances.size())
+					{
+					case 3: {
+
+						carve::geom::vector<3> orthogonalComplement = carve::geom::VECTOR(-intersectingAxes1.y, intersectingAxes1.x, 0.0);
+
+						//cross product of IntersectingAxes[1] and the orthogonal complement of the IntersectingAxes[1] 
+						carve::geom::vector<3> crossProduct = carve::geom::cross(intersectingAxes1, orthogonalComplement);
+						crossProduct.normalize();
+						location = location + crossProduct * intersection->OffsetDistances[2];
+					}
+					case 2: {
+						carve::geom::vector<3> orthogonalComplement1 = carve::geom::VECTOR(-intersectingAxes1.y, intersectingAxes1.x, 0.0);
+						carve::geom::vector<3> orthogonalComplement2 = carve::geom::VECTOR(-intersectingAxes2.y, intersectingAxes2.x, 0.0);
+	
+						location = location + orthogonalComplement1 * intersection->OffsetDistances[0];
+						location = location + orthogonalComplement2 * intersection->OffsetDistances[1];
+						break;
+					}
+					default:
+						throw oip::InconsistentGeometryException( "Number of coordinates is inconsistent.");
+					}
+					
+					return { location, intersectingAxes1 };
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Calculates X-axis direction of the grid using \c IfcGridPlacementDirectionSelect 
+				* \param[in] directionSelect			A pointer to data from \c IfcGridPlacementDirectionSelect.
+				* \param[in] location					Location of the grid.
+				* \param[in] intersectingAxes1			Tangent of the first intersecting axis	
+				* \return								X-axis direction
+				*/
+				carve::geom::vector<3> convertIfcGridPlacementDirectionSelect(const EXPRESSOptional<typename IfcEntityTypesT::IfcGridPlacementDirectionSelect>& directionSelect,
+					const carve::geom::vector<3>& location,
+					const carve::geom::vector<3>& intersectingAxes1
+				) const throw(...)
+				{	
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcgridplacementdirectionselect.htm
+					//	TYPE IfcGridPlacementDirectionSelect = SELECT
+					//		(IfcDirection,
+					//		IfcVirtualGridIntersection);
+					//	END_TYPE;
+					// **************************************************************************************************************************
+					if (!directionSelect)
+						return intersectingAxes1.normalized();
+
+					switch (directionSelect.get().which()) {
+					case 0:
+						return convertIfcDirection(directionSelect.get().get<0>());
+					case 1: {
+						carve::geom::vector<3> location2;
+						carve::geom::vector<3> intersectingAxes2;
+						std::tie(location2, intersectingAxes2) = convertIfcVirtualGridIntersection(directionSelect.get().get<1>());
+						return (location2 - location).normalized();
+					}	
+					default:
+						throw  oip::UnhandledException("Unable to determine grid placement direction.");
+					}
+				}
+				
+				/**********************************************************************************************/
+				/*! \brief Convert \c IfcGridPlacement to a transformation matrix
+				* \param[in] gridPlacement			The \c IfcGridPlacement to be converted
+				* \param[in] alreadyApplied			An array of references to already applied \c IfcObjectPlacement-s.
+				* \return							The transformation matrix
+				*/
+				carve::math::Matrix convertIfcGridPlacement(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcGridPlacement>& gridPlacement,
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
+				) const throw(...)
+				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcgridplacement.htm
+					//	ENTITY IfcGridPlacement
+					//		SUBTYPE OF(IfcObjectPlacement);
+					//			PlacementLocation: IfcVirtualGridIntersection;
+					//			PlacementRefDirection: OPTIONAL IfcGridPlacementDirectionSelect;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+
+					if (gridPlacement.expired())
+						throw oip::ReferenceExpiredException(gridPlacement);
+
+					carve::geom::vector<3> location;
+					carve::geom::vector<3> intersectingAxes1;
+
+					std::tie(location, intersectingAxes1) = convertIfcVirtualGridIntersection(gridPlacement->PlacementLocation);
+					carve::geom::vector<3> xAxisDirection = convertIfcGridPlacementDirectionSelect(gridPlacement->PlacementRefDirection, location, intersectingAxes1);
+					
+					carve::geom::vector<3> yAxisDirection = carve::geom::VECTOR(-xAxisDirection.y, xAxisDirection.x, 0.0);
+					// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcgridplacement.htm :
+					//  The plane defined by the x and y axis shall be co-planar to the xy plane of the local placement of the IfcGrid. ?
+
+					 carve::geom::vector<3> zAxisDirection = carve::geom::cross(xAxisDirection, yAxisDirection);
+					// https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricconstraintresource/lexical/ifcgridplacement.htm :
+					// the z-axis of the IfcGridPlacement shall be co-linear to the z-axis of the local placement of the IfcGrid. ?
+
+					carve::math::Matrix object_placement_matrix = carve::math::Matrix(
+						xAxisDirection.x, yAxisDirection.x, zAxisDirection.x, location.x,
+						xAxisDirection.y, yAxisDirection.y, zAxisDirection.y, location.y,
+						xAxisDirection.z, yAxisDirection.z, zAxisDirection.z, location.z,
+						 0.0, 0.0, 0.0, 1.0);
+
+					return object_placement_matrix;
+				}
+
+
 
                 /*! \brief Converts \c IfcObjectPlacement to a transformation matrix.
 				 * 
@@ -810,7 +1082,8 @@ namespace OpenInfraPlatform {
 					// (2/3) IfcGridPlacement SUBTYPE OF IfcObjectPlacement
 					else if (objectPlacement.isOfType<typename IfcEntityTypesT::IfcGridPlacement>()) {
 						//TODO Not implemented
-						throw oip::UnhandledException(objectPlacement);
+						//throw oip::UnhandledException(objectPlacement);
+						object_placement_matrix = convertIfcGridPlacement(objectPlacement.as<typename IfcEntityTypesT::IfcGridPlacement>(), alreadyApplied);
 					} // end if IfcGridPlacement
 
 					// (3/3) IfcLinearPlacement SUBTYPE OF IfcObjectPlacement
@@ -1116,12 +1389,13 @@ namespace OpenInfraPlatform {
                  * \param[in]	bDistMeasuredAlongHorizontal	Is the distance measured only along the x-y projection of the curve?
                  * \param[out]	vkt3DtargetPoint				The calculated 3D point.
                  * \param[out]	vkt3DtargetDirection			The calculated 3D direction vector of the tangent to the curve at that point.
-
+				 *
                  * \note \c dDistAlongOfPoint need to account for unit conversion outside of function.
                  * \note Function currently only supports \c IfcAlignmentCurve.
                  * \note Function presets the returns to (0.,0.,0.) and (1.,0.,0.).
+				 * \return true, if calculation was successful. false otherwise.
                  */
-                void convertBoundedCurveDistAlongToPoint3D(
+                bool convertBoundedCurveDistAlongToPoint3D(
                     const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedCurve>& ifcCurve,
                     const double dDistAlongOfPoint,
                     const bool bDistMeasuredAlongHorizontal,
@@ -1152,14 +1426,12 @@ namespace OpenInfraPlatform {
                         std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal>& horizontal = alignment_curve->Horizontal.lock();
 
                         if(!horizontal) {
-                            BLUE_LOG(error) << alignment_curve->getErrorLog() << ": No IfcAlignment2DHorizontal!";
-                            return;
+                            throw oip::InconsistentModellingException( alignment_curve, "No IfcAlignment2DHorizontal!");
                         }
 
                         // Segments type IfcAlignment2DHorizontalSegment L[1:?]
                         if(horizontal->Segments.empty()) {
-                            BLUE_LOG(error) << horizontal->getErrorLog() << ": Segments are emtpy!";
-                            return;
+							throw oip::InconsistentModellingException(horizontal, "Segments are emtpy!");
                         }
                         // the vector of horizontal segments - used in analysis
                         std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontalSegment>> horSegments;
@@ -1231,14 +1503,12 @@ namespace OpenInfraPlatform {
                             // Get the segment's length
                             double horizSegLength = horCurveGeometryRelevantToPoint->SegmentLength * length_factor;
                             if(horizSegLength <= 0.) {
-                                BLUE_LOG(trace) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Segment length is negative/ZERO?!";
-                                return;
+								throw oip::InconsistentModellingException(horCurveGeometryRelevantToPoint, "Segment length is negative/ZERO?!");
                             }
 
                             // if begin of this segment is after the station -> sth went wrong
                             if(horizSegStartDistAlong > dDistAlongOfPoint) {
-                                BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Inconsistency! Segment begins after the specified station.";
-                                return;
+                                throw oip::InconsistentModellingException(horCurveGeometryRelevantToPoint, "Inconsistency! Segment begins after the specified station.");
                             }
 
                             //*********************************************************************
@@ -1268,6 +1538,7 @@ namespace OpenInfraPlatform {
                             double verSegDistAlong = 0.;
 
                             // Iterate over vertical segments
+							bool bFirst = true;
                             for(auto& it_segment : verSegments) {
 
                                 // ENTITY IfcAlignment2DVerticalSegment
@@ -1286,7 +1557,7 @@ namespace OpenInfraPlatform {
                                 // Get the start distance along: StartDistAlong
                                 verSegDistAlong = it_segment->StartDistAlong * length_factor;
                                 if(verSegDistAlong < 0.) {
-                                    BLUE_LOG(error) << it_segment->getErrorLog() << ": Start distance along is inconsistent.";
+                                    BLUE_LOG(trace) << it_segment->getErrorLog() << ": Start distance along is negative.";
                                     //return;
                                 }
 
@@ -1299,8 +1570,9 @@ namespace OpenInfraPlatform {
 
                                 // if begin of this segment is after the station -> sth went wrong
                                 if(verSegDistAlong > dDistAlongOfPoint) {
-                                    BLUE_LOG(error) << it_segment->getErrorLog() << ": Inconsistency! Segment begins after the specified station.";
-                                    return;
+									if (bFirst)
+										break; // skip height calculations for this horizontal segment - vertical starts after the start of horizontal
+									throw oip::InconsistentModellingException(it_segment, "Segment begins after the specified station.");
                                 }
 
                                 //*********************************************************************
@@ -1313,6 +1585,8 @@ namespace OpenInfraPlatform {
                                     // break the for loop, since we have found the element!
                                     break;
                                 } // end if (verSegDistAlong + verSegLength > dDistAlongOfPoint)
+
+								bFirst = false;
                             }// end vertical stations iteration
                         } // end if (!verSegments.empty())
 
@@ -1321,19 +1595,15 @@ namespace OpenInfraPlatform {
                         //     as well as the horizontal direction from horizontal segment
 
                         // get the starting point of segment
-                        const auto& curveSegStartPoint = horCurveGeometryRelevantToPoint->StartPoint.lock();
+                        const auto& curveSegStartPoint = horCurveGeometryRelevantToPoint->StartPoint;
                         if(!curveSegStartPoint) {
-                            BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog()
-                                << ": No curve segment start point.";
-                            return;
+							throw oip::InconsistentModellingException(horCurveGeometryRelevantToPoint, "No curve segment start point.");
                         }
 
                         // get the length of the segment
                         double horizSegLength = horCurveGeometryRelevantToPoint->SegmentLength * length_factor;
                         if(horizSegLength <= 0.) {
-                            BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog()
-                                << ": Curve segment length inconsistent.";
-                            return;
+							throw oip::InconsistentModellingException(horCurveGeometryRelevantToPoint, " Curve segment length negative.");
                         }
                         // Distance from start of segment to point along alignment.
                         double distanceToStart = dDistAlongOfPoint - horizSegStartDistAlong;
@@ -1398,8 +1668,7 @@ namespace OpenInfraPlatform {
                         else if(circular_arc_segment_2D) {
                             // Radius type IfcPositiveLengthMeasure [1:1]
                             if(circular_arc_segment_2D->Radius <= 0.) {
-                                BLUE_LOG(error) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Radius inconsistent.";
-                                return;
+								throw oip::InconsistentModellingException(horCurveGeometryRelevantToPoint, "negative radius.");
                             }
                             //double radius = circular_arc_segment_2D->Radius * length_factor;
                             fctRadii = [&](double& bStartRadius, double& bEndRadius) -> void
@@ -1650,8 +1919,11 @@ namespace OpenInfraPlatform {
                         double dRadStart, dRadEnd;
                         fctRadii(dRadStart, dRadEnd);
                         if(dRadStart != 0. && dRadEnd != 0. && dRadStart != dRadEnd) {
-                            BLUE_LOG(warning) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Different radii with != 0. not supported.";
-                            return;
+                            BLUE_LOG(warning) << horCurveGeometryRelevantToPoint->getErrorLog() << ": Different radii with != 0. not supported. Setting the bigger one to INF.";
+							if (dRadStart > dRadEnd)
+								dRadStart = 0.;
+							else
+								dRadEnd = 0.;
                         }
                         // is it a curve with decreasing curvature? (doesn't matter with straights and circular arcs)
                         bool curveOut = (dRadStart != 0. && dRadStart != dRadEnd);
@@ -1792,8 +2064,7 @@ namespace OpenInfraPlatform {
                                 // https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifcalignment2dversegcirculararc.htm
                                 // Radius type IfcPositiveLengthMeasure [1:1] 
                                 if(v_seg_circ_arc_2D->Radius <= 0.) {
-                                    BLUE_LOG(error) << verticalSegmentRelevantToPoint->getErrorLog() << ": No radius.";
-                                    return;
+									throw oip::InconsistentModellingException(verticalSegmentRelevantToPoint, "No radius.");
                                 }
                                 double radius = v_seg_circ_arc_2D->Radius * length_factor;
 
@@ -1816,8 +2087,7 @@ namespace OpenInfraPlatform {
                                 // https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifcalignment2dversegparabolicarc.htm
                                 // ParabolaConstant type IfcPositiveLengthMeasure [1:1]
                                 if(v_seg_par_arc_2D->ParabolaConstant <= 0.) {
-                                    BLUE_LOG(error) << verticalSegmentRelevantToPoint->getErrorLog() << ": No parabola constant.";
-                                    return;
+									throw oip::InconsistentModellingException(verticalSegmentRelevantToPoint, "No parabola constant.");
                                 }
                                 double arc_const = v_seg_par_arc_2D->ParabolaConstant * length_factor;
 
@@ -1841,7 +2111,8 @@ namespace OpenInfraPlatform {
 
                         // normalize the direction
                         vkt3DtargetDirection.normalize();
-
+						// everything OK
+						return true;
                     }//end if alignment curve
                 }//end convertAlignmentCurveDistAlongToPoint3D
 

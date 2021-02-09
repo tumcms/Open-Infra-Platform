@@ -82,6 +82,8 @@ class Entity {
 
 	const std::vector<EntityAttribute> getAttributes() const;
 
+	void addInverseCounterpart(const std::string& attrName, const std::string& inverseEntity, const std::string& inverseAttr);
+
 	//---------------------------------------------------------------
 	// Qualified Attributes
 	//---------------------------------------------------------------
@@ -124,6 +126,6 @@ class Entity {
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_END
 
-EMBED_INTO_OIP_NAMESPACE(Entity)
+EMBED_EXPRESSBINDINGGENERATOR_INTO_OIP_NAMESPACE(Entity)
 
 #endif // end define OpenInfraPlatform_ExpressBindingGenerator_Entity_ae022d70_8143_4f95_aec7_d51148a382a0_h

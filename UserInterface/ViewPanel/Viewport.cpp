@@ -31,7 +31,7 @@
 //#include "../UserInterface/ViewPanel/Effects/BillboardEffect.h"
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-#include "ViewPanel/Effects/PointCloudProcessing/PointCloudEffect.h"
+#include "Effects/PointCloudProcessing/PointCloudEffect.h"
 #endif
 
 
@@ -163,11 +163,11 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	BLUE_LOG(trace) << "Creating effects (9)";
-	pointCloudEffect_ = buw::makeReferenceCounted<PointCloudEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+	pointCloudEffect_ = buw::makeReferenceCounted<oip::PointCloudEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
 	pointCloudEffect_->init();
 
 	BLUE_LOG(trace) << "Creating effects (10)";
-	sectionsBoundingBoxEffect_ = buw::makeReferenceCounted<BoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+	sectionsBoundingBoxEffect_ = buw::makeReferenceCounted<oip::BoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
 	sectionsBoundingBoxEffect_->init();
 
 	pointCloudEffect_->sectionsBoundingBoxEffect_ = sectionsBoundingBoxEffect_;
@@ -184,6 +184,10 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
     BLUE_LOG(trace) << "Creating Skybox effect";
     skyboxEffect_ = buw::makeReferenceCounted<oip::SkyboxEffect>(renderSystem_.get(), viewport_, worldBuffer_);
     skyboxEffect_->init();
+
+	BLUE_LOG(trace) << "Creating OffGeometry effects";
+	offGeometryEffect_ = buw::makeReferenceCounted<oip::OffGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+	offGeometryEffect_->init();
 
     timer_ = new QTimer();
     timer_->setInterval(16);
@@ -225,6 +229,7 @@ Viewport::~Viewport() {
 
     skyboxEffect_ = nullptr;
     ifcGeometryEffect_ = nullptr;
+	offGeometryEffect_ = nullptr;
 
     viewCube_ = nullptr;
 
@@ -777,121 +782,83 @@ void Viewport::onChange() {
     onChange(data.getLatesChangeFlag());
 }
 
-void Viewport::onChange(ChangeFlag changeFlag) 
+void Viewport::onChange( const ChangeFlag changeFlag ) 
 {
+	// Change in settings?
+	if (changeFlag & ChangeFlag::Preferences) {
+		//TODO
+	}
+
+	auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
+
+	// if no models there: just ignore everything
+	if (!data.hasModels())
+		return;
+
 	// the extents
-	oip::BoundingBox bb;
-
-    auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
- //   auto dem = data.getDigitalElevationModel();
- //   auto alignment = data.getAlignmentModel();
- //   auto trafficSignModel = data.getTrafficSignModel();
- //   auto girderModel = data.getGirderModel();
- //   auto slabFieldModel = data.getSlabFieldModel();
-	//auto proxyModel = data.getProxyModel();
-   /* if (dem && dem->getSurfaceCount() > 0)
-        dem->getSurfacesExtend(min, max);
-    else if (alignment && alignment->getAlignmentCount() > 0) {
-        auto bb = alignment->getExtends();
-        min = bb.getMinimum();
-        max = bb.getMaximum();
-	}*/
-
-	// get the extents of the IFC model
-    auto ifcGeometryModel = data.getIfcGeometryModel();
-	if (ifcGeometryModel && !ifcGeometryModel->isEmpty())
-	{
-		bb.update(ifcGeometryModel->bb_);
-		BLUE_LOG(trace) << "boundingbox:" << bb.toString();
-	}
-
-
-	// get the extents of the point cloud
-#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-	auto pointCloud = data.getPointCloud();
-	if(pointCloud && pointCloud->size() > 0) {
-		CCVector3 minPos, maxPos;
-		pointCloud->getBoundingBox(minPos, maxPos);
-		bb.update(minPos.x, minPos.y, minPos.z);
-		bb.update(maxPos.x, maxPos.y, maxPos.z);
-		BLUE_LOG(trace) << "boundingbox:" << bb.toString();
-	}
-#endif
-
-	// if bounding box is still on default, overwrite
-	if( bb.isEmpty() )
-	{
-		bb.fit( carve::geom::VECTOR( -1., -1., -1. ), carve::geom::VECTOR(  1.,  1.,  1. ));
-	}
-
-	
-
-    buw::Vector3d offset = -bb.center();
+	oip::BBox bb = data.getExtents();
+	buw::Vector3d offset = -bb.center();
     minExtend_ = (bb.min() + offset).cast<float>();
     maxExtend_ = (bb.max() + offset).cast<float>();
-	buw::Vector3f extend = maxExtend_ - minExtend_;
-	
-
+	//buw::Vector3f extend = maxExtend_ - minExtend_;
     boundingBoxEffect_->setBounds(bb.min(), bb.max());
 
- //   if(changeFlag & ChangeFlag::DigitalElevationModel && dem) {
- //       demEffect_->setDEM(dem, offset);
- //       activeEffects_.push_back(demEffect_);
- //   }
-
- //   if(changeFlag & ChangeFlag::AlignmentModel && alignment) {
- //       alignmentEffect_->setAlignment(alignment, offset);
- //       activeEffects_.push_back(alignmentEffect_);
- //   }
-
-    if(changeFlag & ChangeFlag::IfcGeometry && ifcGeometryModel) {
-        ifcGeometryEffect_->setIfcGeometryModel(ifcGeometryModel, offset);
-        activeEffects_.push_back(ifcGeometryEffect_);
+	// change in IFC geometry?
+    if( changeFlag & ChangeFlag::IfcGeometry ) {
+		auto ifcGeometryModel = std::dynamic_pointer_cast<oip::IfcModel>(data.getLastModel());
+		if( ifcGeometryModel )
+		{
+			buw::ReferenceCounted<oip::IfcGeometryEffect> ifcGeometryEffect 
+				= buw::makeReferenceCounted<oip::IfcGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+			ifcGeometryEffect->init();
+			ifcGeometryEffect->setIfcGeometryModel(ifcGeometryModel);
+			activeEffects_.push_back(ifcGeometryEffect);
+		}
     }
 
- //   if(changeFlag & ChangeFlag::TrafficModel && trafficSignModel) {
- //       trafficSignEffect_->setData(alignment, offset, trafficSignModel);
- //       activeEffects_.push_back(trafficSignEffect_);
- //   }
+	// change in OFF geometry?
+	if (changeFlag & ChangeFlag::OffGeometry) {
+		auto offGeometryModel = std::dynamic_pointer_cast<oip::OffModel>(data.getLastModel());
+		if (offGeometryModel)
+		{
+			buw::ReferenceCounted<oip::OffGeometryEffect> offGeometryEffect
+				= buw::makeReferenceCounted<oip::OffGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+			offGeometryEffect->init();
+			offGeometryEffect->setOffModel(offGeometryModel);
+			activeEffects_.push_back(offGeometryEffect);
+		}
+	}
 
- //   if(changeFlag & ChangeFlag::GirderModel && girderModel) {
- //       girderEffect_->setData(girderModel, offset);
- //       activeEffects_.push_back(girderEffect_);
- //   }
-
- //   if(changeFlag & ChangeFlag::SlabFieldModel && slabFieldModel) {
- //       slabFieldEffect_->setData(slabFieldModel, offset);
- //       activeEffects_.push_back(slabFieldEffect_);
- //   }
-
- //   if(changeFlag & ChangeFlag::SelectedAlignmentIndex && alignment) {
- //       selectedAlignmentIndex_ = data.getSelectedAlignment();
- //       alignmentEffect_->setCurrentSelectedAlignment(selectedAlignmentIndex_);
- //   }
-
+	// change in Point cloud
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-	if(changeFlag & ChangeFlag::PointCloud && pointCloud && pointCloud->size() > 0) {
-		pointCloudEffect_->setPointCloud(pointCloud, offset);
-		activeEffects_.push_back(pointCloudEffect_);
-		activeEffects_.push_back(sectionsBoundingBoxEffect_);
+	if(changeFlag & ChangeFlag::PointCloud ) {
+		auto pointCloud = std::dynamic_pointer_cast<oip::PointCloud>(data.getLastModel());
+		if( pointCloud )
+		{
+			auto pointCloudEffect_ 
+				= buw::makeReferenceCounted<oip::PointCloudEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+			pointCloudEffect_->init();
+
+			auto sectionsBoundingBoxEffect_ 
+				= buw::makeReferenceCounted<oip::BoxEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+			sectionsBoundingBoxEffect_->init();
+
+			pointCloudEffect_->sectionsBoundingBoxEffect_ = sectionsBoundingBoxEffect_;
+			pointCloudEffect_->setPointCloud(pointCloud);
+
+			activeEffects_.push_back(pointCloudEffect_);
+			activeEffects_.push_back(sectionsBoundingBoxEffect_);
+		}
 	}
 #endif
 
-	//if (/*changeFlag & ChangeFlag::ProxyModel && */proxyModel && proxyModel->getAccidentReportCount()) {
-	//	billboardEffect_->setProxyModel(proxyModel, offset);
-	//	billboardEffect_->setPointSize(621.0f);
-	//	billboardEffect_->drawPointsWithUniformColor(false);
-	//	billboardEffect_->drawPointsWithUniformSize(true);
-	//	activeEffects_.push_back(billboardEffect_);
-	//}
-
-    if(changeFlag & ChangeFlag::Preferences) {
-        //TODO
-    }
+	// tell all effects what offset we are currently having
+	for (auto& effect : activeEffects_)
+		effect->setOffset(offset);
 }
 
 void Viewport::onClear() {
-    activeEffects_.clear();
+    //activeEffects_.clear();
 }
 
 void Viewport::reloadShader() {

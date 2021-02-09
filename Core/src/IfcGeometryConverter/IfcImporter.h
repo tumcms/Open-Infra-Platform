@@ -26,270 +26,154 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 
+#include "namespace.h"
 #include "CarveHeaders.h"
 #include "RepresentationConverter.h"
 #include "UnitConverter.h"
+#include "GeorefConverter.h"
 
 #include "EXPRESS/EXPRESS.h"
 
-namespace OpenInfraPlatform 
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
+
+class GeometrySettings;
+
+/*! \brief The IFC importer class.
+	*
+	* This class calls other converters correspondingly.
+	* This should be used as an entry point to the IFC converter functionalities.
+	*
+	* \param IfcEntityTypesT The IFC version templates
+	*/
+template <
+	class IfcEntityTypesT
+>
+class IfcImporterT 
 {
-	namespace Core 
+public:
+	//! constructor
+	IfcImporterT();
+
+	//! destructor
+	virtual ~IfcImporterT()	{}
+
+	/**
+	 * \brief Interprets the data from the read-in IFC file.
+	 *
+	 * This is the main interpreting function. 
+	 *
+	 * \param[in] model The IFC content.
+	 * \return A pointer to an \c IfcModel. Could be empty, though!
+	 */
+	std::shared_ptr<IfcModel> collectData(std::shared_ptr<oip::EXPRESSModel> expressModel)
 	{
-		namespace IfcGeometryConverter 
+		auto ifcModel = std::make_shared<IfcModel>();
+		try
 		{
-			class GeometrySettings;
+			// set the default units
+			unitConverter->init(expressModel);
 
-			// IfcImporterUtil class with loadIfcProductsJob, convertIfcProduct, computeMeshsetsFromPolyhedrons.
-			class IfcImporterUtil {
-			public:
-				IfcImporterUtil() {}
-				~IfcImporterUtil() {}
+			// get the georeferencingmetadata from the file
+			georefConverter->init(expressModel);
 
-				template <
-					class IfcEntityTypesT
-				>
-					static void convertIfcProduct(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
-						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
-						const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter);
-//				{
-//					//#ifdef _DEBUG
-//					//				std::cout << "Info\t| IfcGeometryConverter.Importer.RepConverter: Converting IFC product " << product->classname() << " #" << product->getId() << std::endl;
-//					//#endif
-//
-//					// get id of product
-//					const uint32_t productId = product->getId();
-//
-//					double lengthFactor = unitConverter->getLengthInMeterFactor();
-//					carve::math::Matrix matProduct(carve::math::Matrix::IDENT());
-//
-//					// check if there's any global object placement for this product
-//					// if yes, then apply the placement
-//					if(product->ObjectPlacement) {
-//						// decltype(x) returns the compile time type of x.
-//						//decltype(product->ObjectPlacement)::type &objectPlacement = product->ObjectPlacement;
-//
-//						OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement = product->ObjectPlacement;
-//
-//						//auto& optObjectPlacement = product->ObjectPlacement;	// store optional<weak_ptr> product->ObjectPlacement in optObjectPlacement.
-//						//auto& objectPlacement = *optObjectPlacement;			// extract weak_ptr from optional<weak_ptr> optObjectPlacement.
-//						auto& objectPlacement_ptr = objectPlacement.lock();		// get std::shared_ptr used to construct the weak_ptr.
-//																				// OR auto& objectPlacement = optObjectPlacement.get();
-//
-//						std::set<int> placementAlreadyApplied;
-//						PlacementConverterT<IfcEntityTypesT>::convertIfcObjectPlacement(objectPlacement_ptr,
-//							matProduct, lengthFactor,
-//							placementAlreadyApplied);
-//
-//#ifdef _DEBUG
-//						BLUE_LOG(trace) << "Processed IfcObjectPlacement #" << objectPlacement->getId();
-//#endif
-//					}
-//
-//					// error string
-//					std::stringstream strerr;
-//
-//					// go through all representations of the product
-//					if(product->Representation) {
-//#ifdef _DEBUG
-//						BLUE_LOG(trace) << "Processing IfcProductRepresentation #" << product->Representation->getId();
-//#endif
-//						OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcProductRepresentation>& representation = product->Representation;
-//						// so evaluate its geometry
-//						for(EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& rep : representation->Representations) {
-//							// convert each shape of the represenation
-//#ifdef _DEBUG
-//							BLUE_LOG(trace) << "Processing IfcRepresentation #" << rep->getId();
-//#endif
-//							repConverter->convertIfcRepresentation(rep.lock(), matProduct, productShape, strerr);
-//#ifdef _DEBUG
-//							BLUE_LOG(trace) << "Processed IfcRepresentation #" << rep->getId();
-//#endif
-//						}
-//
-//						IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, strerr, repConverter);
-//#ifdef _DEBUG
-//						BLUE_LOG(trace) << "Processed IfcProductRepresentation #" << representation->getId();
-//#endif
-//					}
-//
-//					if (std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product)) {
-//						auto alignment = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product);
-//						std::shared_ptr<ItemData> itemData(new ItemData());
-//						productShape->vec_item_data.push_back(itemData);
-//						std::shared_ptr<typename IfcEntityTypesT::IfcGeometricRepresentationItem> axis = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(alignment->Axis.lock());
-//						repConverter->convertIfcGeometricRepresentationItem(axis, carve::math::Matrix::IDENT(), itemData, strerr);
-//					}
-//
-//#ifdef _DEBUG
-//					if(strerr.tellp() <= 0) return;
-//
-//					std::stringstream ss;
-//					ss << "log/" << "-" << product->classname()
-//						<< "#" << product->getId() << ".txt";
-//
-//					std::ofstream debugLog(ss.str());
-//					debugLog << strerr.str();
-//					debugLog.close();
-//#endif
-//				}
+			// collect all geometries
+			if (!collectGeometryData(expressModel))
+				return ifcModel;
 
-				// ***************************************
-				// 3: Compute Meshsets from Polyhedrons
-				// ***************************************
-				template <
-					class IfcEntityTypesT
-				>
-					static void computeMeshsetsFromPolyhedrons(const std::shared_ptr<oip::EXPRESSEntity>& entity,
-						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
-						std::stringstream& strerr,
-						const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter)
-				{
-					// now examine the opening data of the product representation
-					std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> openingDatas;
+			auto converter = ConverterBuwT<IfcEntityTypesT>();
+			if (!converter.createGeometryModel(ifcModel, shapeInputData))
+				return ifcModel;
 
-					// check if the product is an ifcElement, if so, it may contain opening data
-					std::shared_ptr<typename IfcEntityTypesT::IfcElement> element =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcElement>(entity);
-
-					if(element) {
-						// then collect opening data
-						repConverter->convertOpenings(element, openingDatas);
-					}
-
-					// go through all shapes and convert them to meshsets
-					for(auto& itemData : productShape->vec_item_data) {
-						// convert closed polyhedrons to meshsets
-						itemData->createMeshSetsFromClosedPolyhedrons();
-
-						// if product is IfcElement, then subtract openings like windows, doors, etc.
-						if(element) {
-							repConverter->subtractOpenings(element, itemData, openingDatas);
-						}
-
-						// convert all open polyhedrons to meshsets
-						for(auto& openPoly : itemData->open_polyhedrons) {
-
-							if(openPoly->getVertexCount() < 3) { continue; }
-
-							std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(openPoly->createMesh(carve::input::opts()));
-							itemData->meshsets.push_back(openMeshset);
-						}
-
-						// convert all open or closed polyhedrons to meshsets
-						for(auto& openClosedPoly : itemData->open_or_closed_polyhedrons) {
-
-							if(openClosedPoly->getVertexCount() < 3) { continue; }
-
-							std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(
-								openClosedPoly->createMesh(carve::input::opts()));
-							itemData->meshsets.push_back(openMeshset);
-						}
-
-						// simplify geometry of all meshsets
-						for(auto& meshset : itemData->meshsets) {
-							repConverter->getSolidConverter()->simplifyMesh(meshset);
-						}
-						// polylines are handled by rendering engine
-					}
-
-					productShape->computeAABB();
-				}
-			};
-
-			template <
-				class IfcEntityTypesT
-			>
-				// IfcImporterT class with readStepFile, collectGeometryData, getter and setter. 
-			class IfcImporterT 
-			{
-				public:
-					IfcImporterT()
-					{
-						geomSettings = std::make_shared<GeometrySettings>();
-						unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
-						repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT>>(geomSettings, unitConverter);
-					}
-
-					virtual ~IfcImporterT()
-					{
-
-					}
-
-
-					bool collectGeometryData(std::shared_ptr<oip::EXPRESSModel> model)
-					{
-						BLUE_LOG(info) << "Importing geometry from express model.";
-
-						auto project = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair) { return boost::algorithm::to_upper_copy(pair.second->classname())  == "IFCPROJECT"; });
-
-						if(project != model->entities.end()) {
-
-							// Set the unit conversion factors
-							std::shared_ptr<typename IfcEntityTypesT::IfcProject> ifcproject =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProject>(project->second);
-							unitConverter->setIfcProject(ifcproject);
-
-							//std::for_each(model->entities.begin(), model->entities.end(), [this, &model](std::pair<size_t, std::shared_ptr<oip::EXPRESSEntity>> &pair) {
-							//	std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
-							//	if (product) {
-							//		// create new shape input data for product
-							//		std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
-							//		productShape->ifc_product = product;
-							//		IfcImporterUtil::convertIfcProduct<IfcEntityTypesT, IfcUnitConverterT>(product, productShape, unitConverter, repConverter);
-							//		shapeInputData.insert(std::make_pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>(pair.first, productShape));
-							//	}
-							//});
-							try {
-								for (auto& pair : model->entities) {
-									std::shared_ptr<typename IfcEntityTypesT::IfcProduct> product = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcProduct>(pair.second);
-									if (product) {
-#ifdef _DEBUG
-										BLUE_LOG(trace) << "Converting IfcProduct #" << product->getId();
-#endif
-										// create new shape input data for product
-										std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
-										productShape->ifc_product = product;
-										IfcImporterUtil::convertIfcProduct<IfcEntityTypesT>(product, productShape, repConverter);
-										shapeInputData.insert(std::pair<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>(pair.first, productShape));
-									}
-								}
-							}
-							catch (std::exception e) {
-								BLUE_LOG(warning) << "Failed collecting geometry data. Abort. " << e.what();
-								return false;
-							}
-						}
-						else {
-							BLUE_LOG(warning) << "No IfcProject found in model.";
-							return false;
-						}
-						BLUE_LOG(info) << "Imported geometry from express model.";
-						return true;
-					}
-
-					// ***************************************
-					// 3: Getter and Setter
-					// ***************************************
-
-
-					std::shared_ptr<GeometrySettings>& getGeomSettings() { return geomSettings; }
-					std::shared_ptr<UnitConverter<IfcEntityTypesT>>& getUnitConverter() { return unitConverter; }
-					std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& getShapeDatas() { return shapeInputData; }
-
-				protected:
-
-					std::shared_ptr<GeometrySettings>							geomSettings;
-					std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
-					std::shared_ptr<UnitConverter<IfcEntityTypesT>>				unitConverter;
-
-
-					// shape input data of all products
-					std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;
-			};
+			return ifcModel;
 		}
+		catch (const oip::InconsistentModellingException& ex)
+		{
+			BLUE_LOG(warning) << "Inconsistent IFC moddelling: " << ex.what();
+			return ifcModel;
+		}
+		catch (...)
+		{
+			BLUE_LOG(warning) << "Something went wrong while collecting data from the IFC file.";
+			return ifcModel;
+		}
+		return ifcModel;
 	}
-}
+
+private:
+	/**
+	 * \brief Interprets the data from the read-in IFC file.
+	 *
+	 * This is the main interpreting function.
+	 * It sets the member variables with the interpreted data to be given to the renderer, UI or whatever.
+	 *
+	 * \param[in] model The IFC content.
+	 * \return true, if successful. false, otherwise.
+	 */
+	bool collectGeometryData(std::shared_ptr<oip::EXPRESSModel> model)
+	{
+		BLUE_LOG(info) << "Importing geometry from express model.";
+
+		auto project = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair) 
+			{ return boost::algorithm::to_upper_copy(pair.second->classname())  == "IFCPROJECT"; });
+
+		if(project != model->entities.end()) {
+							
+			try {
+				for (auto& pair : model->entities) {
+					oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct> product =
+						oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>::constructInstance(pair.first, model);
+					if (product) {
+						#ifdef _DEBUG
+						BLUE_LOG(trace) << "Converting " << product->getErrorLog();
+						#endif
+						// create new shape input data for product
+						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = convertIfcProduct(product);
+						productShape->ifc_product = product;
+						shapeInputData.push_back( productShape );
+					}
+				}
+			}
+			catch (std::exception e) {
+				BLUE_LOG(warning) << "Failed collecting geometry data. Abort. " << e.what();
+				return false;
+			}
+		}
+		else {
+			BLUE_LOG(warning) << "No IfcProject found in model.";
+			return false;
+		}
+		BLUE_LOG(info) << "Imported geometry from express model.";
+		return true;
+	}
+
+	/**
+	 * \brief Converts all geometries of an \c IfcProduct to triangles and lines.
+	 * 
+	 * \param[in] product The product to be interpreted.
+	 * \return A pointer to shape data.
+	 */
+	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> convertIfcProduct(
+		const EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product) const;
+				
+	/**
+	 * \brief Computes meshes given \c ShapeInputDataT-s.
+	 *
+	 * \param[in] productShape The shape datas to be parsed.
+	 */
+	void computeMeshsetsFromPolyhedrons(
+		std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape) const;
+					
+	// the converters
+	std::shared_ptr<GeometrySettings>							geomSettings;
+	std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
+	std::shared_ptr<UnitConverter<IfcEntityTypesT>>				unitConverter;
+	std::shared_ptr<GeoreferencingConverterT<IfcEntityTypesT>>	georefConverter;
+
+	//! interpreted data of all products
+	std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapeInputData;
+};
+
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_END
 
 EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(IfcImporterT)
 

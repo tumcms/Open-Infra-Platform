@@ -28,7 +28,7 @@ IfcGeometryEffect::IfcGeometryEffect(buw::IRenderSystem * renderSystem,
                                      buw::ReferenceCounted<buw::ITexture2D> depthStencilMSAA,
                                      buw::ReferenceCounted<buw::IConstantBuffer> worldBuffer)
     :
-    Effect(renderSystem),
+    EffectBase(renderSystem),
     viewport_(viewport),
     depthStencilMSAA_(depthStencilMSAA),
     worldBuffer_(worldBuffer)
@@ -47,85 +47,112 @@ IfcGeometryEffect::~IfcGeometryEffect() {
     depthStencilMSAA_ = nullptr;
 }
 
-void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel, const buw::Vector3d & offset)
+void IfcGeometryEffect::setIfcGeometryModel(buw::ReferenceCounted<Core::IfcGeometryConverter::IfcModel> ifcGeometryModel)
 {
 	ifcGeometryModel_ = ifcGeometryModel;
-	offset_ = offset;
+}
 
-    if(!ifcGeometryModel->isEmpty()) {
-        buw::vertexBufferDescription vbd;
-        buw::indexBufferDescription ibd;
-        valid_ = true;        
+void IfcGeometryEffect::changeOffset( const buw::Vector3d& offsetOld, const buw::Vector3d& offsetNew )
+{
+	if (!ifcGeometryModel_)
+		return;
 
-		if(!ifcGeometryModel->meshDescription_.isEmpty()) {
+    if(!ifcGeometryModel_->isEmpty()) {
 
-			std::vector< VertexLayout> vertices;
-			vertices.reserve(ifcGeometryModel->meshDescription_.vertices.size());
-			for (auto& vertex : ifcGeometryModel->meshDescription_.vertices)
-			{
-				VertexLayout vtx(vertex);
-				vtx.position[0] += offset.x();
-				vtx.position[1] += offset.y();
-				vtx.position[2] += offset.z();
-				vertices.push_back( vtx );
+		// reset
+		if( meshVertexBuffer_ ) meshVertexBuffer_ = nullptr;
+		if( meshIndexBuffer_)	meshIndexBuffer_ = nullptr;
+		if( polylineVertexBuffer_)	polylineVertexBuffer_ = nullptr;
+		if( polylineIndexBuffer_)	polylineIndexBuffer_ = nullptr;
+		
+		// tmp containers
+		std::vector< VertexLayout > verticesMesh;
+		std::vector< uint32_t > indicesMesh;
+		std::vector< buw::Vector3f > verticesPoly;
+		std::vector< uint32_t > indicesPoly;
+
+		// process the data
+		for( auto &geom : ifcGeometryModel_->geometries() )
+		{
+			if(!geom->meshDescription.isEmpty()) {
+
+				std::vector< VertexLayout> vertices;
+				vertices.reserve(geom->meshDescription.vertices.size());
+				for (auto& vertex : geom->meshDescription.vertices)
+				{
+					VertexLayout vtx(vertex);
+					vtx.position[0] += offsetNew.x();
+					vtx.position[1] += offsetNew.y();
+					vtx.position[2] += offsetNew.z();
+					vertices.push_back( vtx );
+				}
+
+				const uint32_t verticesOffset = verticesMesh.size();
+				verticesMesh.insert(verticesMesh.end(), vertices.begin(), vertices.end());
+
+				const uint32_t indicesOffset = indicesMesh.size();
+				indicesMesh.insert(indicesMesh.end(), geom->meshDescription.indices.begin(), geom->meshDescription.indices.end());
+				std::for_each(indicesMesh.begin() + indicesOffset, indicesMesh.end(), [&verticesOffset](uint32_t& index) { index += verticesOffset; });
 			}
 
-			vbd.data = vertices.data(); // &ifcGeometryModel->meshDescription_.vertices[0];
-			vbd.vertexCount = vertices.size(); // ifcGeometryModel->meshDescription_.vertices.size();
-            vbd.vertexLayout = buw::VertexPosition3Color3Normal3::getVertexLayout();
-            if(meshVertexBuffer_)
-                meshVertexBuffer_->uploadData(vbd);
-            else
-                meshVertexBuffer_ = renderSystem()->createVertexBuffer(vbd);
+			if(!geom->polylineDescription.isEmpty()) {
 
-			BLUE_LOG(trace) << "Done creating IFC geometry meshes vertex buffer. Size:" << QString::number(vertices.size()).toStdString();
+				std::vector< buw::Vector3f > vertices;
+				vertices.reserve(geom->polylineDescription.vertices.size());
+				for (auto& vertex : geom->polylineDescription.vertices)
+				{
+					vertices.push_back(vertex + offsetNew.cast<float>());
+				}
 
-            ibd.data = &ifcGeometryModel->meshDescription_.indices[0];
-            ibd.indexCount = ifcGeometryModel->meshDescription_.indices.size();
-            ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
+				const uint32_t verticesOffset = verticesPoly.size();
+				verticesPoly.insert(verticesPoly.end(), vertices.begin(), vertices.end());
 
-            if(meshIndexBuffer_)
-                meshIndexBuffer_ = nullptr;
-            meshIndexBuffer_ = renderSystem()->createIndexBuffer(ibd);
-        }
-        else {
-            meshVertexBuffer_.reset();
-            meshIndexBuffer_.reset();
-        }
-
-        if(!ifcGeometryModel->polylineDescription_.isEmpty()) {
-
-			std::vector< buw::Vector3f > vertices;
-			vertices.reserve(ifcGeometryModel->polylineDescription_.vertices.size());
-			for (auto& vertex : ifcGeometryModel->polylineDescription_.vertices)
-			{
-				buw::Vector3f vtx(vertex);
-				vtx.x() += offset.x();
-				vertices.push_back(vertex + offset.cast<float>());
+				const uint32_t indicesOffset = indicesPoly.size();
+				indicesPoly.insert(indicesPoly.end(), geom->polylineDescription.indices.begin(), geom->polylineDescription.indices.end());
+				std::for_each(indicesPoly.begin() + indicesOffset, indicesPoly.end(), [&verticesOffset](uint32_t& index) { index += verticesOffset; });
 			}
-            vbd.data = vertices.data();  //&ifcGeometryModel->polylineDescription_.vertices[0];
-            vbd.vertexCount = vertices.size(); //ifcGeometryModel->polylineDescription_.vertices.size();
-            vbd.vertexLayout = buw::VertexPosition3::getVertexLayout();
+		}
 
-            if(polylineVertexBuffer_)
-                polylineVertexBuffer_->uploadData(vbd);
-            else
-                polylineVertexBuffer_ = renderSystem()->createVertexBuffer(vbd);
+		// upload data
+		if( !verticesMesh.empty() )
+		{
+			// the descriptions
+			buw::vertexBufferDescription vbdMesh;
+			buw::indexBufferDescription ibdMesh;
 
-			BLUE_LOG(trace) << "Done creating IFC geometry polyline vertex buffer. Size:" << QString::number(vertices.size()).toStdString();
+			vbdMesh.data = verticesMesh.data();
+			vbdMesh.vertexCount = verticesMesh.size();
+			vbdMesh.vertexLayout = buw::VertexPosition3Color3Normal3::getVertexLayout();
+			meshVertexBuffer_ = renderSystem()->createVertexBuffer(vbdMesh);
 
-            ibd.data = &ifcGeometryModel->polylineDescription_.indices[0];
-            ibd.indexCount = ifcGeometryModel->polylineDescription_.indices.size();
-			ibd.format = buw::eIndexBufferFormat::UnsignedInt32;
+			BLUE_LOG(trace) << "Done creating IFC geometry meshes vertex buffer. Size:" << QString::number(verticesMesh.size()).toStdString();
 
-            if(polylineIndexBuffer_)
-                polylineIndexBuffer_ = nullptr;
-            polylineIndexBuffer_ = renderSystem()->createIndexBuffer(ibd);
-        }
-        else {
-            polylineVertexBuffer_.reset();
-            polylineIndexBuffer_.reset();
-        }
+			ibdMesh.data = &indicesMesh[0];
+			ibdMesh.indexCount = indicesMesh.size();
+			ibdMesh.format = buw::eIndexBufferFormat::UnsignedInt32;
+			meshIndexBuffer_ = renderSystem()->createIndexBuffer(ibdMesh);
+		}
+		if (!verticesPoly.empty())
+		{
+			// the descriptions
+			buw::vertexBufferDescription vbdPoly;
+			buw::indexBufferDescription  ibdPoly;
+
+			vbdPoly.data = verticesPoly.data();
+			vbdPoly.vertexCount = verticesPoly.size();
+			vbdPoly.vertexLayout = buw::VertexPosition3::getVertexLayout();
+			polylineVertexBuffer_ = renderSystem()->createVertexBuffer(vbdPoly);
+
+			BLUE_LOG(trace) << "Done creating IFC geometry polyline vertex buffer. Size:" << QString::number(verticesPoly.size()).toStdString();
+
+			ibdPoly.data = &indicesPoly[0];
+			ibdPoly.indexCount = indicesPoly.size();
+			ibdPoly.format = buw::eIndexBufferFormat::UnsignedInt32;
+			polylineIndexBuffer_ = renderSystem()->createIndexBuffer(ibdPoly);
+
+		}
+
+		valid_ = true;
     }
     else {
         valid_ = false;

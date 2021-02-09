@@ -60,31 +60,31 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
     , ui_(new Ui::MainWindow)
     , loaded_(false) {
 	ui_->setupUi(this);
-	variantEditor_ = new QtTreePropertyBrowser();
+	//variantEditor_ = new QtTreePropertyBrowser();
 
-	variantManager_ = new QtVariantPropertyManager();
+	//variantManager_ = new QtVariantPropertyManager();
 
-	propertyHorizontalAlignment_ = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId());
-	propertyVerticalAlignment_ = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId());
+	//propertyHorizontalAlignment_ = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId());
+	//propertyVerticalAlignment_ = variantManager_->addProperty(QtVariantPropertyManager::groupTypeId());
 
-	itemStartStation_ = variantManager_->addProperty(QVariant::Double);
-	itemStartStation_->setValue(0);
-	itemEndStation_ = variantManager_->addProperty(QVariant::Double);
-	itemStartStation_->setValue(0);
-	itemLength_ = variantManager_->addProperty(QVariant::Double);
-	itemLength_->setValue(0);
+	//itemStartStation_ = variantManager_->addProperty(QVariant::Double);
+	//itemStartStation_->setValue(0);
+	//itemEndStation_ = variantManager_->addProperty(QVariant::Double);
+	//itemStartStation_->setValue(0);
+	//itemLength_ = variantManager_->addProperty(QVariant::Double);
+	//itemLength_->setValue(0);
 
-	variantEditor_->setStyleSheet("");
-	variantEditor_->setFactoryForManager(variantManager_, new QtVariantEditorFactory());
-	variantEditor_->addProperty(itemStartStation_);
-	variantEditor_->addProperty(itemEndStation_);
-	variantEditor_->addProperty(itemLength_);
-	variantEditor_->setPropertiesWithoutValueMarked(true);
-	variantEditor_->setRootIsDecorated(false);
-	variantEditor_->addProperty(propertyHorizontalAlignment_);
-	variantEditor_->addProperty(propertyVerticalAlignment_);
+	//variantEditor_->setStyleSheet("");
+	//variantEditor_->setFactoryForManager(variantManager_, new QtVariantEditorFactory());
+	//variantEditor_->addProperty(itemStartStation_);
+	//variantEditor_->addProperty(itemEndStation_);
+	//variantEditor_->addProperty(itemLength_);
+	//variantEditor_->setPropertiesWithoutValueMarked(true);
+	//variantEditor_->setRootIsDecorated(false);
+	//variantEditor_->addProperty(propertyHorizontalAlignment_);
+	//variantEditor_->addProperty(propertyVerticalAlignment_);
 
-	ui_->verticalLayoutAlignment->addWidget(variantEditor_);
+	//ui_->verticalLayoutAlignment->addWidget(variantEditor_);
 
 	view_ = new View();
 	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, view_, Qt::Orientation::Horizontal);
@@ -221,7 +221,11 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 
 #endif
 
-	ui_->tabMap->setVisible(false);
+	// remove the UI elements not needed anymore (20201025)
+	ui_->tabWidgetView->removeTab(ui_->tabWidgetView->indexOf(ui_->tabAlignment));
+	ui_->tabWidgetView->removeTab(ui_->tabWidgetView->indexOf(ui_->tabTerrain));
+	ui_->tabWidgetView->removeTab(ui_->tabWidgetView->indexOf(ui_->tabProxies));
+	ui_->tabWidgetView->removeTab(ui_->tabWidgetView->indexOf(ui_->tabMap));
 
 	Benchmark::getInstance().finishStartup();
 	Benchmark::getInstance().print();
@@ -273,6 +277,14 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	checkForUpdates();
 
 	setAcceptDrops(true);
+
+	// add tree widget
+	modelsTreeWidget_ = new QTreeWidget();
+	modelsTreeWidget_->setHeaderLabels(QStringList({ QString("Property"), QString("Value") })); //TODO tr()
+	ui_->verticalLayoutModels->addWidget(modelsTreeWidget_);
+
+	// update models UI
+	updateModelsUI();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::checkForUpdates() {
@@ -354,13 +366,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::dropEvent(QDropEvent* ev) {
 			std::string DropName = filePathList[0].toStdString();
 
 			if (boost::filesystem::exists(DropName)) {
-				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().clear();
-				OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import(DropName);
-				addToRecentFilesList(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().recentFileName);
-				updateRecentFileActions();
-
-				boost::filesystem::path p(DropName.c_str());
-				updateWindowTitle(p.filename().string());
+				auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
+				data.import(DropName);
 			}
 			else {
 				QMessageBox::warning(this, QApplication::applicationName(), tr("Cannot import the dropped file. File does not exist."));
@@ -388,6 +395,129 @@ void OpenInfraPlatform::UserInterface::MainWindow::emitPoints(QDialog* toolDialo
 }
 
 
+void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
+{
+	// get data
+	auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
+
+	// update 
+	if (data.hasModels())
+	{
+		// menu recent files
+		addToRecentFilesList(QString::fromStdString(data.getLastModel()->getSource()));
+		updateRecentFileActions();
+
+		// window title update
+		boost::filesystem::path p(data.getLastModel()->getSource());
+		updateWindowTitle(p.filename().string());
+
+		// small helper functions
+		auto addVector3D = []( QTreeWidgetItem* parent, const buw::Vector3d& vct, const std::string& propName) -> QTreeWidgetItem* {
+			// grouping
+			auto itemVct = new QTreeWidgetItem(parent);
+			itemVct->setText(0, propName.c_str());
+
+			// x
+			auto itemX = new QTreeWidgetItem(itemVct); 
+			itemX->setText(0, "x"); 
+			itemX->setText(1, QString("%1").arg(vct.x()));
+
+			// y
+			auto itemY = new QTreeWidgetItem(itemVct);
+			itemY->setText(0, "y"); 
+			itemY->setText(1, QString("%1").arg(vct.y()));
+
+			// z
+			auto itemZ = new QTreeWidgetItem(itemVct);
+			itemZ->setText(0, "z");
+			itemZ->setText(1, QString("%1").arg(vct.z()));
+
+			// expanded per default
+			itemVct->setExpanded(true);
+
+			// return the grouping
+			return itemVct;
+		};
+		auto addBBox = [addVector3D]( QTreeWidgetItem* parent, const oip::BBox& bbox) -> QTreeWidgetItem* {
+			// grouping
+			auto itemBBox = new QTreeWidgetItem( parent, nullptr );
+			itemBBox->setText(0, "AABB");
+			itemBBox->setText(1, "Axis aligned bounding box");
+
+			// add properties - 3D vectors
+			auto itemMin = addVector3D(itemBBox, bbox.min(), "Min");
+			auto itemMid = addVector3D(itemBBox, bbox.center(), "Mid");
+			auto itemMax = addVector3D(itemBBox, bbox.max(), "Max");
+
+			// collapsed per default
+			itemBBox->setExpanded(false);
+
+			//return the grouping
+			return itemBBox;
+		};
+
+		// remove the notice added if no models are loaded
+		for (auto el : modelsTreeWidget_->findItems("No models", Qt::MatchFlag::MatchExactly, 0))
+			modelsTreeWidget_->invisibleRootItem()->removeChild(el);
+
+		// update the "Complete bounding box"
+		auto title = modelsTreeWidget_->findItems("Complete bounding box", Qt::MatchFlag::MatchExactly, 1);
+		if ( !title.isEmpty() )
+		{
+			// remove the bounding box
+			modelsTreeWidget_->invisibleRootItem()->removeChild(modelsBBoxWidgetItem_);
+			delete modelsBBoxWidgetItem_; modelsBBoxWidgetItem_ = nullptr;
+		}
+		// add the complete bounding box
+		modelsBBoxWidgetItem_ = addBBox(modelsTreeWidget_->invisibleRootItem(), data.getExtents());
+		modelsBBoxWidgetItem_->setText(1, "Complete bounding box");
+
+		// loop through the models
+		for (auto& model : data.getModels())
+		{
+			boost::filesystem::path p(model->getSource());
+			auto filename = QString::fromStdString(p.filename().string());
+
+			// only add if not yet present
+			if ( modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 1).isEmpty() )
+			{
+				// structure
+				// 1. filename
+				// 2.  - source : filepath
+				// 3.  - BBox   : bounding box
+				//       - min, mid, max : QVector3D
+
+				// 1. filename
+				auto itemModel = new QTreeWidgetItem(modelsTreeWidget_);
+				itemModel->setText(0, "Model");
+				itemModel->setText(1, filename);
+
+				// 2.  - source : filepath
+				auto itemSource = new QTreeWidgetItem(itemModel); 
+				itemSource->setText(0, "Filepath");
+				itemSource->setText(1, QString::fromStdString(p.string()));
+
+				// 3.  - BBox   : bounding box
+				//       - min, mid, max : QVector3D
+				addBBox(itemModel, model->getExtent());
+				
+				// expanded per default
+				itemModel->setExpanded(true);
+			}
+		}
+	}
+	else
+	{
+		// update the tree view
+		modelsTreeWidget_->clear();
+		QTreeWidgetItem *item = new QTreeWidgetItem(modelsTreeWidget_);
+		item->setText(0, "No models");
+		item->setText(1, "Import or drop in files."); //TODO tr()
+
+		// window title update
+		updateWindowTitle("Import a file");
+	}
+}
 
 //---------------------------------------------------------------------------//
 // Recent files
@@ -478,20 +608,20 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionClearMenu_triggered(
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
 	QString head, desc;
 
-	head = tr("<h2><b>TUM Open Infra Platform 2018</b><br/></h2>");
+	head = tr("<h2><b>TUM Open Infra Platform 2020</b><br/></h2>");
 
-	const QString copyright(tr("Copyright &copy; 2018"));
+	const QString copyright(tr("Copyright &copy; 2020"));
 
 	desc = QString(
 	         "Version %2<br/>%1<br/>Technische Universit&auml;t M&uuml;nchen<br/>"
 	         "Faculty of Civil, Geo and Environmental Engineering<br/>"
 	         "Chair of Computational Modeling and Simulation<br/><br/>"
 	         "Website: <a href=\"http://www.cms.bgu.tum.de/oip\"><font color=\"#48B7E7\">http://www.cms.bgu.tum.de/oip</font></a><br/>"
-	         "Please submit your bug reports or support requests to our repository <a href=\"https://bitbucket.org/tumcms/openinfraplatform\"><font "
-	         "color=\"#48B7E7\">https://bitbucket.org/tumcms/openinfraplatform</font></a><br/><br/>")
+	         "Please submit your bug reports or support requests to our repository <a href=\"https://github.com/tumcms/Open-Infra-Platform\"><font "
+	         "color=\"#48B7E7\">https://github.com/tumcms/Open-Infra-Platform</font></a><br/><br/>")
 	         .arg(copyright, updater->installedVersion());
 
-	QMessageBox::about(this, tr("About TUM Open Infra Platform 2018"), head + desc);
+	QMessageBox::about(this, tr("About TUM Open Infra Platform 2020"), head + desc);
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionStroke_To_Alignment_triggered()
@@ -505,21 +635,22 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionStroke_To_Alignment_
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionExportPointCloud_triggered()
 {
-	if(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud().get() != nullptr) {
-		QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin;;*.las"));
-		if(!filename.isNull()) {
-			OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
-		}
-	}
-	else {
+	//if(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().getPointCloud().get() != nullptr) {
+	//	QString filename = QFileDialog::getSaveFileName(this, tr("Save Document"), QDir::currentPath(), tr("*.bin;;*.las"));
+	//	if(!filename.isNull()) {
+	//		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().exportPointCloud(filename.toStdString());
+	//	}
+	//}
+	//else {
 		QMessageBox dialog;
 		dialog.setStandardButtons(QMessageBox::StandardButton::Ok);
 		dialog.setIcon(QMessageBox::Icon::Warning);
-		dialog.setText("No Point Cloud to export available.");
+		//dialog.setText("No Point Cloud to export available.");
+		dialog.setText("Point Cloud export currently not available.");
 		dialog.setWindowTitle(tr("Disclaimer"));
 		dialog.setWindowFlags(((Qt::Dialog) | (Qt::MSWindowsFixedSizeDialogHint)));
 		dialog.exec();
-	}
+	//}
 }
 #endif
 
@@ -641,8 +772,6 @@ QString OpenInfraPlatform::UserInterface::MainWindow::strippedName(const QString
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionOpen_triggered() {
 	try {
 		handle_actionOpen_triggered();
-		addToRecentFilesList(OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().recentFileName);
-		updateRecentFileActions();
 	} catch (const buw::Exception& exception) {
 		QMessageBox::warning(this, QApplication::applicationName(), tr("Cannot open the selected file."));
 	}
@@ -696,6 +825,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::jobFinishing(int id, bool com
 	progressDialog_->setRange(0, 1);
 	progressDialog_->setValue(1);
 	progressDialog_->repaint();
+
+	updateModelsUI();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::jobFinished(int id, bool comepleted) {
@@ -1551,11 +1682,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::openRecentFileViaAction(QActi
 	fileName = fileName.substr(4, fileName.length());
 
 	if (boost::filesystem::exists(fileName)) {
-		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import(fileName);
-		addToRecentFilesList(fileName.c_str());
-		updateRecentFileActions();
-		boost::filesystem::path p(fileName.c_str());
-		updateWindowTitle(p.filename().string());
+		auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
+		data.import(fileName);
 	} else {
 		QMessageBox::warning(this, QApplication::applicationName(), tr("Cannot import the selected file. File does not exist."));
 	}

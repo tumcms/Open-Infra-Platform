@@ -55,7 +55,7 @@ namespace OpenInfraPlatform {
 					}
 
 					std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> getProfileConverter(
-						std::shared_ptr<typename IfcEntityTypesT::IfcProfileDef>& ifcProfile)
+						oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef>& ifcProfile)
 					{
 						const int profile_id = ifcProfile->getId();
 #ifdef _DEBUG

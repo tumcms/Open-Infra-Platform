@@ -103,13 +103,11 @@ option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to find boost, Eigen and Qt
 
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
-	find_path(BOOST_ROOT NAMES boost/version.hpp HINTS
+	find_path(OIP_Boost_DIR NAMES boost/version.hpp HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
 		"C:\\thirdparty\\boost_1_65_1")
-	find_path(Boost_DIR NAMES boost/version.hpp HINTS
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
-		"C:\\thirdparty\\boost_1_65_1")
-	find_path(CMAKE_PREFIX_PATH NAMES include/QtCore/QObject HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64")
+	find_path(OIP_QT_DIR NAMES Qt5 HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64\\lib\\cmake")
+	find_path(OIP_PROJ_DIR NAMES proj-config.cmake HINTS "C:\\OSGeo4W64\\apps\\proj-dev\\share\\cmake\\proj4\\proj")
 endif()
 
 #------------------------------------------------------------------------------
@@ -142,6 +140,7 @@ endif (WIN32)
 set(Boost_USE_STATIC_LIBS ON)
 
 # As of revision 530, boost 1.65.1 required.
+set(BOOST_ROOT ${OIP_Boost_DIR})
 find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
 
 if(Boost_FOUND)
@@ -206,6 +205,7 @@ set(QT5_COMPONENTS
 	Positioning
 	Location
 )
+set(CMAKE_PREFIX_PATH ${OIP_QT_DIR})
 
 find_package( Qt5 5.12.1 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
 
@@ -243,7 +243,14 @@ FetchContent_GetProperties(blue_framework)
 if(NOT blue_framework_POPULATED)
 	FetchContent_Populate(blue_framework)
 	add_subdirectory(${blue_framework_SOURCE_DIR} ${blue_framework_BINARY_DIR})
+	set_target_properties(DEPLOY PROPERTIES FOLDER "BlueFramework/Commands")
+	set_target_properties(ExecuteQtDeployTool PROPERTIES FOLDER "BlueFramework/Commands")
+	set_target_properties(UpdateLibsAndDLLs PROPERTIES FOLDER "BlueFramework/Commands")
+	set_target_properties(UpdateLibsAndDLLsForCurrentBuildConfiguration PROPERTIES FOLDER "BlueFramework/Commands")
 endif()
+
+set (CMAKE_PREFIX_PATH ${OIP_PROJ_DIR})
+find_package(PROJ REQUIRED)
 
 #------------------------------------------------------------------------------
 # Set include directories and link directories.
@@ -260,6 +267,7 @@ include_directories(
 	${visit_struct_INCLUDE_DIR}
 	thirdparty/doxygen
 	thirdparty/graphviz_dot
+	${PROJ_INCLUDE_DIRS}
 	# external:
 	external/QtXlsxWriter/src/xlsx
 	external/QSimpleUpdater/src
@@ -272,6 +280,7 @@ include_directories(
 	ExpressBindingGenerator
 	UserInterface
 	Core
+	Base
 )
 
 link_directories(
@@ -279,6 +288,7 @@ link_directories(
 	${OKLABI_ROOT_DIR}
 	${FFTW3_LIBRARY_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>
+	${PROJ4_LIBRARY_DIRS}
 )
 
 #------------------------------------------------------------------------------
@@ -302,27 +312,27 @@ endforeach()
 #------------------------------------------------------------------------------
 # DOXYGEN. 
 #------------------------------------------------------------------------------
-Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM Open Infra Platform." ON)
+Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM OpenInfraPlatform." ON)
 
 if(DOXYGEN_GENERATE_DOCUMENTATION)
 
-find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
-"C:/thirdparty/doxygen"
-)
+	find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
+		"C:/thirdparty/doxygen"
+	)
 
-find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
-"C:/thirdparty/graphviz_dot/release/bin"
-)
+	find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
+		"C:/thirdparty/graphviz_dot/release/bin"
+	)
 
-find_package(Doxygen
-	REQUIRED dot
-)
+	find_package(Doxygen
+		REQUIRED dot
+	)
 
-include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
-set_target_properties(OpenInfraPlatform.GenerateDocumentation 			PROPERTIES FOLDER "OpenInfraPlatform/Commands")
+	include(ConfigureDoxygen OPTIONAL)	# Refer to ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureDoxygen.cmake 
+	set_target_properties(OpenInfraPlatform.GenerateDocumentation 			PROPERTIES FOLDER "OpenInfraPlatform/Commands")
 
-else()
-message("DOXYGEN_GENERATE_DOCUMENTATION box not checked. Thus not generating doxygen documentation for TUM Open Infra Platform project. To generate doxygen documentation, check the box next to DOXYGEN_GENERATE_DOCUMENTATION.")
+else(DOXYGEN_GENERATE_DOCUMENTATION)
+	message("DOXYGEN_GENERATE_DOCUMENTATION box not checked. Thus not generating doxygen documentation for TUM OpenInfraPlatform project. To generate doxygen documentation, check the DOXYGEN_GENERATE_DOCUMENTATION.")
 endif(DOXYGEN_GENERATE_DOCUMENTATION)
 
 #----------------------------------------------------------
@@ -332,11 +342,13 @@ endif(DOXYGEN_GENERATE_DOCUMENTATION)
 Option(MODULES_POINT_CLOUD_PROCESSING OFF)
 
 if(MODULES_POINT_CLOUD_PROCESSING)
+	set(CMAKE_PREFIX_PATH ${OIP_QT_DIR})
 	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
 	add_subdirectory(PointCloudProcessing)
 endif()
 
 
+add_subdirectory(Base)
 add_subdirectory(Core)
 add_subdirectory(Rendering)
 add_subdirectory(UnitTests)
@@ -493,6 +505,7 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT O
 #https://cmake.org/cmake/help/latest/command/target_link_libraries.html
 target_link_libraries( OpenInfraPlatform.UI
 	PUBLIC
+		OpenInfraPlatform.Base
 		OpenInfraPlatform.Core
 		OpenInfraPlatform.Rendering
 		Qt5::WinMain  # New target available via find_package ( Qt5Core )
@@ -519,6 +532,7 @@ target_link_libraries( OpenInfraPlatform.UI
 		zlib
 		Rpcrt4.lib
 		eigen
+		${PROJ_LIBRARIES}
 )
 
 set(QT_WINDEPLOY_FLAGS -xml -concurrent)
@@ -671,11 +685,15 @@ set_target_properties(OklabiCopyBinaries								PROPERTIES FOLDER "OpenInfraPlat
 set_target_properties(QSimpleUpdaterCopyBinaries						PROPERTIES FOLDER "OpenInfraPlatform/Copy")
 
 set_target_properties(OpenInfraPlatform.UI								PROPERTIES FOLDER "OpenInfraPlatform")
+set_target_properties(OpenInfraPlatform.Base							PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.Core							PROPERTIES FOLDER "OpenInfraPlatform")
 set_target_properties(OpenInfraPlatform.Rendering						PROPERTIES FOLDER "OpenInfraPlatform")
 
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator			PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
+# clean up the solution a bit
+set_target_properties(glew_s PROPERTIES FOLDER "ThirdParty")
+set_target_properties(tinyxml2 PROPERTIES FOLDER "ThirdParty")
 
 # Currently not included. 
 #set_target_properties(OpenInfraPlatform.CommandLineUtilities		PROPERTIES FOLDER "OpenInfraPlatform")

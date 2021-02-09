@@ -46,7 +46,11 @@
 #include <Effects/BoxEffect.h>
 #include <Effects/IfcGeometryEffect.h>
 #include <Effects/GradientClearEffect.h>
+#include <Effects/OffGeometryEffect.h>
 
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
+#include <Effects\PointCloudProcessing\PointCloudEffect.h>
+#endif
 
 namespace OpenInfraPlatform {
 	namespace UserInterface {
@@ -85,7 +89,7 @@ namespace OpenInfraPlatform {
 			}
 
 			void onChange();
-			void onChange(ChangeFlag changeFlag);
+			void onChange(const ChangeFlag changeFlag);
 			void onClear();
 
 			void reloadShader();
@@ -153,8 +157,6 @@ namespace OpenInfraPlatform {
 			void createDepthStencil();
 			void resizeDepthStencil();
 
-			void createIfcGeometry(buw::ReferenceCounted<OpenInfraPlatform::Core::IfcGeometryConverter::IfcGeometryModel> ifcGeometryModel);
-
 		private Q_SLOTS:
 			void tick();
 
@@ -195,14 +197,15 @@ namespace OpenInfraPlatform {
 			buw::ReferenceCounted<oip::UIElementsEffect> uiElements_;
 			buw::ReferenceCounted<oip::BoundingBoxEffect> boundingBoxEffect_;
 			buw::ReferenceCounted<oip::SkyboxEffect> skyboxEffect_;
+			buw::ReferenceCounted<oip::OffGeometryEffect> offGeometryEffect_;
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
-			buw::ReferenceCounted<PointCloudEffect> pointCloudEffect_ = nullptr;
-			buw::ReferenceCounted<BoxEffect> sectionsBoundingBoxEffect_ = nullptr;
+			buw::ReferenceCounted<oip::PointCloudEffect> pointCloudEffect_ = nullptr;
+			buw::ReferenceCounted<oip::BoxEffect> sectionsBoundingBoxEffect_ = nullptr;
 #endif
 
 			//buw::ReferenceCounted<oip::BillboardEffect> billboardEffect_;
-			std::vector<buw::ReferenceCounted<buw::Effect>> activeEffects_;
+			std::vector<buw::ReferenceCounted<oip::EffectBase>> activeEffects_;
 
 			// Clear
 			bool gradientClear_ = true;

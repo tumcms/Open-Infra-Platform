@@ -23,147 +23,181 @@
 #include "BlueFramework/Core/Diagnostics/log.h"
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC2X3
-#include "EMTIFC2X3EntityTypes.h"
-#include "IFC2X3Entities.h"
+#include "EarlyBinding\IFC2X3\src\EMTIFC2X3EntityTypes.h"
+#include "EarlyBinding\IFC2X3\src\IFC2X3Entities.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4
-#include "EMTIFC4EntityTypes.h"
-#include "IFC4Entities.h"
+#include "EarlyBinding\IFC4\src\EMTIFC4EntityTypes.h"
+#include "EarlyBinding\IFC4\src\IFC4Entities.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-#include "EMTIFC4X1EntityTypes.h"
-#include "IFC4X1Entities.h"
+#include "EarlyBinding\IFC4X1\src\EMTIFC4X1EntityTypes.h"
+#include "EarlyBinding\IFC4X1\src\IFC4X1Entities.h"
 #endif
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-#include "EMTIFC4X3_RC1EntityTypes.h"
-#include "IFC4X3_RC1Entities.h"
+#include "EarlyBinding\IFC4X3_RC1\src\EMTIFC4X3_RC1EntityTypes.h"
+#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1Entities.h"
 #endif
 
+#include "namespace.h"
 #include "PlacementConverterImpl.h"
+
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
 template <
 	class IfcEntityTypesT
 >
-static void OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterUtil::convertIfcProduct(
-	const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
-	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape,
-	const std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>> repConverter)
+IfcImporterT<IfcEntityTypesT>::IfcImporterT<IfcEntityTypesT>()
 {
+	geomSettings = std::make_shared<GeometrySettings>();
+	unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
+	georefConverter = std::make_shared<GeoreferencingConverterT<IfcEntityTypesT>>(geomSettings, unitConverter);
+	repConverter = std::make_shared<RepresentationConverterT<IfcEntityTypesT>>(geomSettings, unitConverter, georefConverter);
+}
+
+template <
+	class IfcEntityTypesT
+>
+std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> IfcImporterT<IfcEntityTypesT>::convertIfcProduct(
+	const EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product
+) const
+{
+	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
 	try
 	{
-		//#ifdef _DEBUG
-		//				std::cout << "Info\t| IfcGeometryConverter.Importer.RepConverter: Converting IFC product " << product->classname() << " #" << product->getId() << std::endl;
-		//#endif
-
-		// get id of product
-		const uint32_t productId = product->getId();
-
-		carve::math::Matrix matProduct(carve::math::Matrix::IDENT());
+		carve::math::Matrix productPlacement(carve::math::Matrix::IDENT());
 
 		// check if there's any global object placement for this product
 		// if yes, then apply the placement
 		if (product->ObjectPlacement) {
-			// decltype(x) returns the compile time type of x.
-			//decltype(product->ObjectPlacement)::type &objectPlacement = product->ObjectPlacement;
-
-			OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement = product->ObjectPlacement;
-
-			//auto& optObjectPlacement = product->ObjectPlacement;	// store optional<weak_ptr> product->ObjectPlacement in optObjectPlacement.
-			//auto& objectPlacement = *optObjectPlacement;			// extract weak_ptr from optional<weak_ptr> optObjectPlacement.
-			//auto& objectPlacement_ptr = objectPlacement.lock();		// get std::shared_ptr used to construct the weak_ptr.
-																	// OR auto& objectPlacement = optObjectPlacement.get();
-
 			std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>> placementAlreadyApplied;
-			matProduct = repConverter->getPlacementConverter()->convertIfcObjectPlacement(
-				objectPlacement,
+			productPlacement = repConverter->getPlacementConverter()->convertIfcObjectPlacement(
+				product->ObjectPlacement,
 				placementAlreadyApplied);
-
-#ifdef _DEBUG
-			BLUE_LOG(trace) << "Processed IfcObjectPlacement #" << objectPlacement->getId();
-#endif
 		}
-
-		// error string
-		std::stringstream strerr;
 
 		// go through all representations of the product
 		if (product->Representation) {
+			auto representation = product->Representation.get();
 #ifdef _DEBUG
-			BLUE_LOG(trace) << "Processing IfcProductRepresentation #" << product->Representation->getId();
+			BLUE_LOG(trace) << "Processing " << representation->getErrorLog();
 #endif
-			OpenInfraPlatform::EarlyBinding::EXPRESSReference<typename IfcEntityTypesT::IfcProductRepresentation>& representation = product->Representation;
 			// so evaluate its geometry
 			for (EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& rep : representation->Representations) {
 				// convert each shape of the represenation
 #ifdef _DEBUG
-				BLUE_LOG(trace) << "Processing IfcRepresentation #" << rep->getId();
+				BLUE_LOG(trace) << "Processing " << rep->getErrorLog();
 #endif
-				repConverter->convertIfcRepresentation(rep, matProduct, productShape);
+				repConverter->convertIfcRepresentation(rep, productPlacement, productShape);
 #ifdef _DEBUG
-				BLUE_LOG(trace) << "Processed IfcRepresentation #" << rep->getId();
+				BLUE_LOG(trace) << "Processed " << rep->getErrorLog();
 #endif
 			}
 
-			IfcImporterUtil::computeMeshsetsFromPolyhedrons<IfcEntityTypesT>(product, productShape, strerr, repConverter);
+			computeMeshsetsFromPolyhedrons(productShape);
 #ifdef _DEBUG
-			BLUE_LOG(trace) << "Processed IfcProductRepresentation #" << representation->getId();
+			BLUE_LOG(trace) << "Processed " << representation->getErrorLog();
 #endif
 		}
 
-		if (repConverter->isOfType<typename IfcEntityTypesT::IfcAlignment>(product)) {
-			auto alignment = std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcAlignment>(product);
+		if (product.template isOfType<typename IfcEntityTypesT::IfcAlignment>()) {
 			std::shared_ptr<ItemData> itemData(new ItemData());
 			productShape->vec_item_data.push_back(itemData);
 			repConverter->convertIfcGeometricRepresentationItem(
-				alignment->Axis.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(), 
-				carve::math::Matrix::IDENT(), itemData);
+				product.template as<typename IfcEntityTypesT::IfcAlignment>()->
+					Axis.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(),
+				productPlacement, itemData);
 		}
-
-#ifdef _DEBUG
-		if (strerr.tellp() <= 0) return;
-
-		std::stringstream ss;
-		ss << "log/" << "-" << product->classname()
-			<< "#" << product->getId() << ".txt";
-
-		std::ofstream debugLog(ss.str());
-		debugLog << strerr.str();
-		debugLog.close();
-#endif
 	}
 	catch (const oip::UnhandledException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown.";
-		BLUE_LOG(warning) << ex.what();
+		BLUE_LOG(warning) << product->getErrorLog() + " -> unhandled error: " + std::string(ex.what());
 	}
 	catch (const oip::InconsistentGeometryException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with geometry.";
-		BLUE_LOG(warning) << ex.what();
+		BLUE_LOG(warning) << product->getErrorLog() + " -> geometry error: " + std::string(ex.what());
 	}
 	catch (const oip::InconsistentModellingException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with data modelling:";
-		BLUE_LOG(warning) << ex.what();
+		BLUE_LOG(warning) << product->getErrorLog() + " -> modelling error: " + std::string(ex.what());
 	}
 	catch (const oip::ReferenceExpiredException& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth wrong with internal references:";
-		BLUE_LOG(warning) << ex.what();
+		BLUE_LOG(warning) << product->getErrorLog() + " -> reference error: " + std::string(ex.what());
 	}
 	catch (const std::exception& ex)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - sth is wrong:";
-		BLUE_LOG(warning) << ex.what();
+		BLUE_LOG(warning) << product->getErrorLog() + " -> general error: " + std::string(ex.what());
 	}
 	catch (...)
 	{
-		BLUE_LOG(warning) << product->getErrorLog() + ": Nothing is shown - unknown error.";
+		BLUE_LOG(warning) << product->getErrorLog() + " -> unknown error.";
 		throw; // throw onwards
 	}
+
+	// return the shape data
+	return productShape;
 }
+
+
+template <
+	class IfcEntityTypesT
+>
+void IfcImporterT<IfcEntityTypesT>::computeMeshsetsFromPolyhedrons(
+	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape
+) const
+{
+	// now examine the opening data of the product representation
+	std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> openingDatas;
+
+	// check if the product is an ifcElement, if so, it may contain opening data
+	if (productShape->ifc_product.template isOfType<typename IfcEntityTypesT::IfcElement>()) {
+		// then collect opening data
+		repConverter->convertOpenings(productShape->ifc_product.template as<typename IfcEntityTypesT::IfcElement>(), openingDatas);
+	}
+
+	// go through all shapes and convert them to meshsets
+	for (auto& itemData : productShape->vec_item_data) {
+		// convert closed polyhedrons to meshsets
+		itemData->createMeshSetsFromClosedPolyhedrons();
+
+		// if product is IfcElement, then subtract openings like windows, doors, etc.
+		if (!openingDatas.empty()) {
+			repConverter->subtractOpenings(
+				productShape->ifc_product.template as<typename IfcEntityTypesT::IfcElement>(), 
+				itemData, openingDatas);
+		}
+
+		// convert all open polyhedrons to meshsets
+		for (auto& openPoly : itemData->open_polyhedrons) {
+
+			if (openPoly->getVertexCount() < 3) { continue; }
+
+			std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(openPoly->createMesh(carve::input::opts()));
+			itemData->meshsets.push_back(openMeshset);
+		}
+
+		// convert all open or closed polyhedrons to meshsets
+		for (auto& openClosedPoly : itemData->open_or_closed_polyhedrons) {
+
+			if (openClosedPoly->getVertexCount() < 3) { continue; }
+
+			std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(
+				openClosedPoly->createMesh(carve::input::opts()));
+			itemData->meshsets.push_back(openMeshset);
+		}
+
+		// simplify geometry of all meshsets
+		for (auto& meshset : itemData->meshsets) {
+			repConverter->getSolidConverter()->simplifyMesh(meshset);
+		}
+		// polylines are handled by rendering engine
+	}
+}
+
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_END
 
 #endif // IFCIMPORTERIMPL_H

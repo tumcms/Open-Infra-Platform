@@ -19,9 +19,8 @@
 #ifndef BlueFramework_UserInterface_UIElementsEffect_ce3ae2a7_9ba0_4302_9860_f5d26081abd7_h
 #define BlueFramework_UserInterface_UIElementsEffect_ce3ae2a7_9ba0_4302_9860_f5d26081abd7_h
 
+#include <Resources/EffectBase.h>
 #include <Resources/RenderResources.h>
-#include <buw.Engine.h>
-#include <buw.Rasterizer.h>
 
 #include "../namespace.h"
 
@@ -32,7 +31,7 @@ struct ViewportBuffer {
 	int p1, p2;
 };
 
-class UIElementsEffect : public buw::Effect {
+class UIElementsEffect : public EffectBase {
 public:
 	UIElementsEffect(
 		buw::IRenderSystem* renderSystem,
@@ -47,6 +46,9 @@ private:
 	void v_init();
 
 	void v_render();
+	
+	//! EffectBase interface - do nothing
+	virtual void changeOffset(const buw::Vector3d& offsetOld, const buw::Vector3d& offsetNew) override {}
 
 private:
 	buw::ReferenceCounted<buw::IPipelineState> pipelineState_;

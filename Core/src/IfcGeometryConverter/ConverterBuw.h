@@ -29,117 +29,18 @@
 #include <BlueFramework/Rasterizer/vertex.h>
 #include "CarveHeaders.h"
 #include "GeometryInputData.h"
+#include "IfcGeometryModel.h"
+#include <BBox.h>
 
 #include "namespace.h"
+#include "EXPRESS/EXPRESS.h"
 
 /***********************************************************************************************/
 
-typedef buw::VertexPosition3Color3Normal3 VertexLayout;
 typedef std::unordered_map<std::string, uint32_t> VertexMapTriangles;
 typedef std::unordered_map<std::string, uint32_t> VertexMapLines;
 
-namespace OpenInfraPlatform
-{
-	namespace Core 
-	{
-		namespace IfcGeometryConverter {
-			/*!
-			\brief Internal implementation of a bounding box.
-
-			This is a wrapper around the carve's aabb (axis-aligned bounding box).
-			*/
-			struct BoundingBox : public carve::geom::aabb<3> {
-				using base = carve::geom::aabb<3>;
-			public:
-				//! constructor
-				BoundingBox() { reset(); }
-				/*!
-				 * \brief updates the bounding box extent
-				 *
-				 * \param[in] x the x-coordinate of the point
-				 * \param[in] y the y-coordinate of the point
-				 * \param[in] z the z-coordinate of the point
-				 */
-				void update(const float x, const float y, const float z)
-				{
-					if (isEmpty())
-					{
-						base::fit( carve::geom::VECTOR(x, y, z));
-						isFirst = false;
-					}
-					else
-						update( base( carve::geom::VECTOR( x, y, z ), base::mid() ) );
-				}
-				/*!
-				 * \brief updates the bounding box extent
-				 *
-				 * \param[in] other the other bounding box to update self with
-				 */
-				void update(const base& other)
-				{
-					if (other.isEmpty())
-						return;
-
-					if (isEmpty())
-					{
-						base::operator=( other );
-						isFirst = false;
-					}
-					else
-						base::unionAABB( other );
-				}
-				//! resets the bounding box to zero
-				void reset() { base::empty(); isFirst = true; }
-				//! is the bounding box empty?
-				bool isEmpty() { return isFirst && base::isEmpty(); }
-				//! returns the min-max extents
-				std::string toString() const {
-					return "min: (" + std::to_string(min().x()) + ", " + std::to_string(min().y()) + ", " + std::to_string(min().z())
-					   + ") max: (" + std::to_string(max().x()) + ", " + std::to_string(max().y()) + ", " + std::to_string(max().z()) + ")";
-				}
-				//! returns the center point of the bounding box
-				buw::Vector3d center() const { return buw::Vector3d( base::mid().x, base::mid().y, base::mid().z); }
-				//! returns the smallest point of the bounding box
-				buw::Vector3d min() const { return buw::Vector3d( base::min().x, base::min().y, base::min().z ); }
-				//! returns the maximal point of the bounding box
-				buw::Vector3d max() const { return buw::Vector3d( base::max().x, base::max().y, base::max().z ); }
-				//! carve::geom::aabb doesn't have a "not set" value, but rather everything is 0,0,0 per default. This variable helps overcome this.
-				bool isFirst = true;
-			};
-
-			struct IndexedMeshDescription {
-				std::vector<uint32_t>		indices;
-				std::vector<VertexLayout>	vertices;
-				bool isEmpty() { return (indices.size() == 0 && vertices.size() == 0); };
-				void reset() { indices.clear(); vertices.clear(); }
-			};
-
-			struct PolylineDescription {
-				std::vector<uint32_t>		indices;
-				std::vector<buw::Vector3f>	vertices;
-				bool isEmpty() { return (indices.size() == 0 && vertices.size() == 0); };
-				void reset() { indices.clear(); vertices.clear(); }
-			};
-
-			struct IfcGeometryModel {
-				BoundingBox			   bb_;
-				IndexedMeshDescription meshDescription_;
-				PolylineDescription    polylineDescription_;
-				bool isEmpty() { return (meshDescription_.isEmpty() && polylineDescription_.isEmpty()); };
-				void reset() { bb_.reset(); meshDescription_.reset(); polylineDescription_.reset(); }
-			};
-
-
-			class ConverterBuwUtil {
-			public:
-				ConverterBuwUtil() {}
-				~ConverterBuwUtil() {}
-
-				// static caches for vertices (for triangle and line geometry)
-				// static VertexMapTriangles vertexMapTriangles_;
-				// static VertexMapLines vertexMapLines_;
-				static std::mutex s_geometryMutex;
-			};
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
 			template <
 				class IfcEntityTypesT
@@ -153,11 +54,17 @@ namespace OpenInfraPlatform
 
 					virtual ~ConverterBuwT() {}
 
-					static bool insertFaceIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					static bool insertFaceIntoBuffers(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::mesh::Face<3>* face,
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
 					{
+						// omit spaces & opening elements
+						if (product.template isOfType<typename IfcEntityTypesT::IfcSpace>()
+						 || product.template isOfType<typename IfcEntityTypesT::IfcFeatureElementSubtraction>()) {
+							return false;//color.w() <= FullyOpaqueAlphaThreshold;
+						}
+
 						const int32_t numVertices = face->nVertices();
 
 						if(numVertices > 4) {
@@ -185,11 +92,6 @@ namespace OpenInfraPlatform
 						}
 
 						buw::Vector3f normal(face->plane.N.x, face->plane.N.y, face->plane.N.z);
-
-						// omit spaces
-						if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSpace>(product)) {
-							return false;//color.w() <= FullyOpaqueAlphaThreshold;
-						}
 
 						if(numVertices == 3) {
 							VertexLayout v0, v1, v2;
@@ -247,7 +149,7 @@ namespace OpenInfraPlatform
 						return true;
 					}
 
-					static bool insertMeshIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					static bool insertMeshIntoBuffers(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::mesh::Mesh<3>* mesh,
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
@@ -266,7 +168,7 @@ namespace OpenInfraPlatform
 						return ret;
 					}
 
-					static bool insertMeshSetIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					static bool insertMeshSetIntoBuffers(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::mesh::MeshSet<3>* meshSet,
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
@@ -283,7 +185,7 @@ namespace OpenInfraPlatform
 						return ret;
 					}
 
-					static bool insertOpenMeshIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					static bool insertOpenMeshIntoBuffers(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::input::PolyhedronData* polyData,
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
@@ -359,25 +261,21 @@ namespace OpenInfraPlatform
 						return true; // color.w() <= FullyOpaqueAlphaThreshold;
 					}
 
-					static bool insertPolyhedronIntoBuffers(const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product,
+					static bool insertPolyhedronIntoBuffers(const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product,
 						const carve::poly::Polyhedron* polyhedron,
 						std::vector<VertexLayout>& vertices,
 						std::vector<uint32_t>& indices)
 					{
-						std::shared_ptr<carve::mesh::MeshSet<3>> meshSet(carve::meshFromPolyhedron(polyhedron, -1));
-						bool ret = false;
-						for(const auto& mesh : meshSet->meshes) {
-							ret |= insertMeshIntoBuffers(product, mesh, vertices, indices);
-						}
-						return ret;
+						return insertMeshSetIntoBuffers(product, carve::meshFromPolyhedron(polyhedron, -1), vertices, indices);
 					}
 
 					static bool insertPolylineIntoBuffers(const std::shared_ptr<carve::input::PolylineSetData> polylineData,
 						std::vector<buw::Vector3f>& vertices,
 						std::vector<uint32_t>& indices)
 					{
-						// global offset of inserted vertices
-						const uint32_t vertexOffset = vertices.size();
+						// check input
+						if (polylineData->getVertexCount() < 1)
+							return true; // nothing to add
 
 						// temporary polyline vertex index to global index map
 						std::map<uint32_t, uint32_t> indexMap;
@@ -424,8 +322,8 @@ namespace OpenInfraPlatform
 						return true;
 					}
 
-					static bool createGeometryModel(buw::ReferenceCounted<IfcGeometryModel> ifcGeometryModel,
-						std::map<int, std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& shapeDatas)
+					static bool createGeometryModel(buw::ReferenceCounted<IfcModel> ifcGeometryModel,
+						std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& shapeDatas)
 					{
 						std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Create geometry model from meshsets for BlueFramework API" << std::endl;
 						//! NOTE (mk): Could be optimized if we omit cache building and just add triangles (with redundant vertices)
@@ -440,7 +338,7 @@ namespace OpenInfraPlatform
 						std::vector<std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>> tasks(maxNumThreads);
 						uint32_t counter = 0;
 						for(auto it = shapeDatas.begin(); it != shapeDatas.end(); ++it) {
-							std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> shapeData = it->second;
+							std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> shapeData = *it;
 							tasks[counter % maxNumThreads].push_back(shapeData);
 							counter++;
 						}
@@ -463,137 +361,112 @@ namespace OpenInfraPlatform
 
 					// convert mesh and polyline descriptions to triangles/lines for BlueFramework
 					static void createTrianglesJob(const std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& tasks,
-						int threadID, buw::ReferenceCounted<IfcGeometryModel>& ifcGeometryModel/*IndexedMeshDescription* meshDesc, PolylineDescription* polyDesc*/)
+						int threadID, buw::ReferenceCounted<IfcModel>& ifcModel)
 					{
-						//#ifdef _DEBUG
-						//				std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Starting thread " << threadID << " to create triangles and polylines" << std::endl;
-						//#endif
-						BoundingBox bb;
-						IndexedMeshDescription threadMeshDesc;
-						PolylineDescription threadLineDesc;
-
-						bb.reset();
-						threadMeshDesc.reset();
-						threadLineDesc.reset();
-
 						for(const auto& shapeData : tasks) {
-							const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product = shapeData->ifc_product;
-
-							//#ifdef _DEBUG
+							const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product = shapeData->ifc_product;
 							//					std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Create triangles and polylines for entity " << product->classname() << " #" << product->getId() << std::endl;
-							//#endif
+
+							std::shared_ptr<GeometryDescription> geometry = std::make_shared<GeometryDescription>();
+							geometry->reset();
 
 							for(const auto& itemData : shapeData->vec_item_data) {
 								// data for triangles
 								for(const auto& meshset : itemData->meshsets) {
 									ConverterBuwT<IfcEntityTypesT>::insertMeshSetIntoBuffers(product, meshset.get(),
-										threadMeshDesc.vertices, threadMeshDesc.indices);
+										geometry->meshDescription.vertices, geometry->meshDescription.indices);
 								}
 
 								// data for polylines
 								for(const auto& polyline : itemData->polylines) {
 									ConverterBuwT<IfcEntityTypesT>::insertPolylineIntoBuffers(polyline,
-										threadLineDesc.vertices, threadLineDesc.indices);
+										geometry->polylineDescription.vertices, geometry->polylineDescription.indices);
 								}
 							}
+							
+							// if no geometry for this product
+							if (geometry->isEmpty())
+								continue;
+
+							// update the BBox
+							geometry->UpdateBBox();
+							// add to the model
+							ifcModel->addGeometry(geometry);
 						}
-
-						// update the bounding box
-						for (const auto& vertex : threadMeshDesc.vertices)
-							bb.update(vertex.position[0], vertex.position[1], vertex.position[2]);
-						for (const auto& vertex : threadLineDesc.vertices)
-							bb.update(vertex[0], vertex[1], vertex[2]);
-
-						// lock the multithread access to the lists
-						ConverterBuwUtil::s_geometryMutex.lock();
-
-						const uint64_t globalIndexOffsetMesh = ifcGeometryModel->meshDescription_.vertices.size();
-						const uint64_t globalIndexOffsetLines = ifcGeometryModel->polylineDescription_.vertices.size();
-
-						std::for_each(threadMeshDesc.indices.begin(), threadMeshDesc.indices.end(),
-							[&](uint32_t& index) { index += globalIndexOffsetMesh; });
-						std::for_each(threadLineDesc.indices.begin(), threadLineDesc.indices.end(),
-							[&](uint32_t& index) { index += globalIndexOffsetLines; });
-
-						ifcGeometryModel->meshDescription_	  .vertices.insert(ifcGeometryModel->meshDescription_	 .vertices.end(), threadMeshDesc.vertices.begin(), threadMeshDesc.vertices.end());
-						ifcGeometryModel->meshDescription_	  .indices .insert(ifcGeometryModel->meshDescription_	 .indices .end(), threadMeshDesc.indices .begin(), threadMeshDesc.indices .end());
-						ifcGeometryModel->polylineDescription_.vertices.insert(ifcGeometryModel->polylineDescription_.vertices.end(), threadLineDesc.vertices.begin(), threadLineDesc.vertices.end());
-						ifcGeometryModel->polylineDescription_.indices .insert(ifcGeometryModel->polylineDescription_.indices .end(), threadLineDesc.indices .begin(), threadLineDesc.indices .end());
-						ifcGeometryModel->bb_.update(bb);
-
-						// free the access to the lists
-						ConverterBuwUtil::s_geometryMutex.unlock();
-						
-						//#ifdef _DEBUG
-						//				std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Finished thread " << threadID << std::endl;
-						//#endif
 					}
 
 				protected:
 
 					static buw::Vector3f determineColorFromBaseTypes(
-						const std::shared_ptr<typename IfcEntityTypesT::IfcProduct>& product)
+						const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product)
 					{
-						if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcWindow>(product)) {
+						if(product.template isOfType<typename IfcEntityTypesT::IfcWindow>()) {
 							return buw::Vector3f(0.1f, 0.6f, 1.0f);//, 0.4f);
 						}
 
 						// Balken
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBeam>(product)
-							|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcColumn>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcBeam>()
+							|| product.template isOfType<typename IfcEntityTypesT::IfcColumn>()) {
 							return buw::Vector3f(0.4f, 0.4f, 0.4f);//, 1.0f);
 						}
 
 						// ignore spaces!
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSpace>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcSpace>()) {
 							return buw::Vector3f(0.1f, 0.2f, 1.0f);//, 1.0f);
 						}
 
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDoor>(product)) {
+						#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+						else if (product.template isOfType<typename IfcEntityTypesT::IfcGeotechnicalElement>()
+							||   product.template isOfType<typename IfcEntityTypesT::IfcGeographicElement>()) {
+							return buw::Vector3f(0.3f, 1.0f, 0.0f);//, 0.4f);
+						} 
+						#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcDoor>()) {
 							return buw::Vector3f(0.8f, 0.6f, 0.2f);//, 0.5f);
 						}
 
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRoof>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcRoof>()) {
 							return buw::Vector3f(0.6f, 0.15f, 0.15f);//, 1.0f);
 						}
 
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcStair>(product)
-							|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcStairFlight>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcStair>()
+							|| product.template isOfType<typename IfcEntityTypesT::IfcStairFlight>()) {
 							return buw::Vector3f(0.8f, 0.4f, 0.4f);//, 1.0f);
 						}
 
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRamp>(product)
-							|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRampFlight>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcRamp>()
+							|| product.template isOfType<typename IfcEntityTypesT::IfcRampFlight>()) {
 							return buw::Vector3f(0.6f, 0.6f, 0.4f);//, 1.0f);
 						}
 
-						// Gel�nder
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRailing>(product)) {
+						// Gelaender
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcRailing>()) {
 							return buw::Vector3f(0.7f, 0.7f, 0.2f);//, 1.0f);
 						}
 
-						// Gel�nder
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcPile>(product)) {
+						// Pile
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcPile>()) {
 							return buw::Vector3f(0.15f, 0.7f, 0.0f);//, 1.0f);
 						}
 
-						// M�bel
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFurnishingElement>(product)) {
+						// Moebel
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcFurnishingElement>()) {
 							return buw::Vector3f(0.8f, 0.6f, 0.2f);//, 1.0f);
 						}
 						// Land
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSite>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcSite>()) {
 							return buw::Vector3f(0.1f, 0.5f, 0.1f);//, 1.0f);
 						}
 						// Wasser/Gas Elemente
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFlowTerminal>(product)
-							|| std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcDistributionFlowElement>(product)) {
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcFlowTerminal>()
+							|| product.template isOfType<typename IfcEntityTypesT::IfcDistributionFlowElement>()) {
 							return buw::Vector3f(0.4f, 0.4f, 0.6f);//, 1.0f);
 						}
-						// Platte als Dach oder Gel�nder?
-						else if(std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSlab>(product)) {
-							const std::shared_ptr<typename IfcEntityTypesT::IfcSlab>& slab =
-								std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSlab>(product);
+						// Platte als Dach oder Gelaender?
+						else if(product.template isOfType<typename IfcEntityTypesT::IfcSlab>()) {
+							const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSlab>& slab =
+								product.template as<typename IfcEntityTypesT::IfcSlab>();
 
 							if(slab->PredefinedType) {
 								// Dach
@@ -629,12 +502,9 @@ namespace OpenInfraPlatform
 					};
 
 			};
-		}
-	}
-}
 
-EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(BoundingBox)
-EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(IfcGeometryModel)
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_END
+
 EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(ConverterBuwT)
 
 #endif
