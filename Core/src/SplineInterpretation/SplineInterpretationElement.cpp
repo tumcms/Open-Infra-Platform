@@ -39,9 +39,9 @@
 //double clothoidparameterA_;
 
 // CONSTRUCTOR
-OpenInfraPlatform::UserInterface::SplineInterpretationElement::SplineInterpretationElement() {}
+OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::SplineInterpretationElement() {}
 
-OpenInfraPlatform::UserInterface::SplineInterpretationElement::SplineInterpretationElement(
+OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::SplineInterpretationElement(
 	double lengthBSpline,
 	int indicator, 
 	std::pair<size_t, size_t> indices)
@@ -53,114 +53,114 @@ OpenInfraPlatform::UserInterface::SplineInterpretationElement::SplineInterpretat
 
 
 // PUBLIC FUNCTIONS WITH ACCESS TO VARIABLES
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setLengthBSpline(double lengthBSpline){
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setLengthBSpline(double lengthBSpline){
 	lengthBSpline_ = lengthBSpline; }
 
-double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getLengthBSpline() const{
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getLengthBSpline() const{
 	return lengthBSpline_; }
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setindicator(int indicator){
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setindicator(int indicator){
 	indicator_ = indicator; }
 
-int OpenInfraPlatform::UserInterface::SplineInterpretationElement::getIndicator() const{
+int OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getIndicator() const{
 	return indicator_; }
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setIndices(size_t startIndice, size_t endIndice){
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIndices(size_t startIndice, size_t endIndice){
 	indices_.first = startIndice;
 	indices_.second = endIndice; }
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setIndicesStart(size_t startIndice){
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIndicesStart(size_t startIndice){
 	indices_.first = startIndice; }
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setIndicesEnd(size_t endIndice){
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIndicesEnd(size_t endIndice){
 	indices_.second = endIndice; }
 
-std::pair<size_t, size_t> OpenInfraPlatform::UserInterface::SplineInterpretationElement::getIndices() const{
+std::pair<size_t, size_t> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getIndices() const{
 	return indices_; }
 
-size_t OpenInfraPlatform::UserInterface::SplineInterpretationElement::getIndicesStart() const{
+size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getIndicesStart() const{
 	return indices_.first; }
 
-size_t OpenInfraPlatform::UserInterface::SplineInterpretationElement::getIndicesEnd() const{
+size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getIndicesEnd() const{
 	return indices_.second; }
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setType(std::string type){
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setType(std::string type){
 	type_ = type; }
 
-std::string OpenInfraPlatform::UserInterface::SplineInterpretationElement::getType() const {
+std::string OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getType() const {
 	return type_; }
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setStartpoint(carve::geom::vector<3> startpoint) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setStartpoint(carve::geom::vector<3> startpoint) {
 	startpoint_ = startpoint; }
 
-carve::geom::vector<3> OpenInfraPlatform::UserInterface::SplineInterpretationElement::getStartpoint() const {
+carve::geom::vector<3> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getStartpoint() const {
 	return startpoint_;}
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setDirection(double direction) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setDirection(double direction) {
 	direction_ = direction; }
 
-double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getDirection() const {
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getDirection() const {
 	return direction_; }
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setLength(double length) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setLength(double length) {
 	length_ = length; }
 
-double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getLength() const {
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getLength() const {
 	return length_;}
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setRadius(double radius) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setRadius(double radius) {
 	radius_ = radius; }
 
-double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getRadius() const {
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getRadius() const {
 	return radius_; }
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setAngle(double angle) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setAngle(double angle) {
 	angle_ = angle; }
 
-double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getAngle() const {
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getAngle() const {
 	return angle_; }
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setIsCCW(int isCCW) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIsCCW(int isCCW) {
 	isCCW_ = isCCW; }
 
-int OpenInfraPlatform::UserInterface::SplineInterpretationElement::getIsCCW() const {
+int OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getIsCCW() const {
 	return isCCW_; }
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setCenter(carve::geom::vector<3> center) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setCenter(carve::geom::vector<3> center) {
 	center_ = center; }
 
-carve::geom::vector<3> OpenInfraPlatform::UserInterface::SplineInterpretationElement::getCenter() const {
+carve::geom::vector<3> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getCenter() const {
 	return center_; }
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setRadiusClothoidStart(double radiusClothoidStart) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setRadiusClothoidStart(double radiusClothoidStart) {
 	radiusClothoidStart_ = radiusClothoidStart; }
 
-double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getRadiusClothoidStart() const {
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getRadiusClothoidStart() const {
 	return radiusClothoidStart_; }
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setRadiusClothoidEnd(double radiusClothoidEnd) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setRadiusClothoidEnd(double radiusClothoidEnd) {
 	radiusClothoidEnd_ = radiusClothoidEnd; }
 
-double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getRadiusClothoidEnd() const {
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getRadiusClothoidEnd() const {
 	return radiusClothoidEnd_; }
 
 
-void OpenInfraPlatform::UserInterface::SplineInterpretationElement::setClothoidparameterA(double clothoidparameter) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setClothoidparameterA(double clothoidparameter) {
 	clothoidparameterA_ = clothoidparameter; }
 
-double OpenInfraPlatform::UserInterface::SplineInterpretationElement::getClothoidparameterA() const {
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getClothoidparameterA() const {
 	return clothoidparameterA_; }
 
 
