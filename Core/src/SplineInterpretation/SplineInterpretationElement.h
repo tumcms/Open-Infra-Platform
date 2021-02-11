@@ -59,51 +59,51 @@ namespace OpenInfraPlatform
 
 
 				// FUNCTIONS WITH ACCESS TO VARIABLES
-				void setLengthBSpline(double lengthBSpline);
-				double getLengthBSpline() const;
+				void setLengthBSpline(double lengthBSpline) noexcept(true);
+				double getLengthBSpline() const noexcept(true);
 
-				void setindicator(int indicator);
-				int getIndicator() const;
+				void setindicator(int indicator) noexcept(true);
+				int getIndicator() const noexcept(true);
 
-				void setIndices(size_t startIndice, size_t endIndice);
-				void setIndicesStart(size_t startIndice);
-				void setIndicesEnd(size_t endIndice);
-				std::pair<size_t, size_t> getIndices() const;
-				size_t getIndicesStart() const;
-				size_t getIndicesEnd() const;
+				void setIndices(size_t startIndice, size_t endIndice) noexcept(true);
+				void setIndicesStart(size_t startIndice) noexcept(true);
+				void setIndicesEnd(size_t endIndice) noexcept(true);
+				std::pair<size_t, size_t> getIndices() const noexcept(true);
+				size_t getIndicesStart() const noexcept(true);
+				size_t getIndicesEnd() const noexcept(true);
 
-				void setType(std::string type);
-				std::string getType() const;
+				void setType(std::string type) noexcept(true);
+				std::string getType() const noexcept(true);
 
-				void setStartpoint(carve::geom::vector<3> startpoint);
-				carve::geom::vector<3> getStartpoint() const;
+				void setStartpoint(const carve::geom::vector<3>& startpoint) noexcept(true);
+				carve::geom::vector<3> getStartpoint() const noexcept(true);
 
-				void setDirection(double direction);
-				double getDirection() const;
+				void setDirection(double direction) noexcept(true);
+				double getDirection() const noexcept(true);
 
-				void setLength(double length);
-				double getLength() const;
+				void setLength(double length) noexcept(true);
+				double getLength() const noexcept(true);
 
-				void setRadius(double radius);
-				double getRadius() const;
+				void setRadius(double radius) noexcept(true);
+				double getRadius() const noexcept(true);
 
-				void setAngle(double angle);
-				double getAngle() const;
+				void setAngle(double angle) noexcept(true);
+				double getAngle() const noexcept(true);
 
-				void setIsCCW(int isCCW);
-				int getIsCCW() const;
+				void setIsCCW(int isCCW) noexcept(true);
+				int getIsCCW() const noexcept(true);
 
-				void setCenter(carve::geom::vector<3> center);
-				carve::geom::vector<3> getCenter() const;
+				void setCenter(const carve::geom::vector<3>& center) noexcept(true);
+				carve::geom::vector<3> getCenter() const noexcept(true);
 
-				void setRadiusClothoidStart(double radiusClothoidStart);
-				double getRadiusClothoidStart() const;
+				void setRadiusClothoidStart(double radiusClothoidStart) noexcept(true);
+				double getRadiusClothoidStart() const noexcept(true);
 
-				void setRadiusClothoidEnd(double radiusClothoidEnd);
-				double getRadiusClothoidEnd() const;
+				void setRadiusClothoidEnd(double radiusClothoidEnd) noexcept(true);
+				double getRadiusClothoidEnd() const noexcept(true);
 
-				void setClothoidparameterA(double clothoidparameter);
-				double getClothoidparameterA() const;
+				void setClothoidparameterA(double clothoidparameter) noexcept(true);
+				double getClothoidparameterA() const noexcept(true);
 				// FUNCTIONS
 			private:
 				// FUNCTIONS
