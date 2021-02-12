@@ -412,7 +412,7 @@ namespace OpenInfraPlatform {
                     carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
 
                     // interpret Location
-					translate = convertIfcPoint(axis2placement3d->Location);
+					translate = convertIfcPoint(axis2placement3d->Location.template as<typename IfcEntityTypesT::IfcPoint>());
 
                     // interpret RefDirection [OPTIONAL]
                     if(axis2placement3d->RefDirection) {
