@@ -43,6 +43,12 @@
 	#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1.h"
 #endif
 
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+	#include "EarlyBinding\IFC4X3_RC2\src\reader/IFC4X3_RC2Reader.h"
+	#include "EarlyBinding\IFC4X3_RC2\src\EMTIFC4X3_RC2EntityTypes.h"
+	#include "EarlyBinding\IFC4X3_RC2\src\IFC4X3_RC2.h"
+#endif
+
 #include "IfcGeometryConverter\GeometryInputData.h"
 #include "IfcGeometryConverter\IfcPeekStepReader.h"
 #include "IfcGeometryConverter\IfcImporterImpl.h"
@@ -174,6 +180,15 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 #else // OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 			IFCVersionNotCompiled("IFC4X3_RC1");
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+		}
+
+		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC2) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+			ParseExpressAndGeometryModel<emt::IFC4X3_RC2EntityTypes, OpenInfraPlatform::IFC4X3_RC2::IFC4X3_RC2Reader>(filename);
+			return;
+#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+			IFCVersionNotCompiled("IFC4X3_RC2");
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC2
 		}
 
 		IFCVersionNotCompiled(strSchema);
