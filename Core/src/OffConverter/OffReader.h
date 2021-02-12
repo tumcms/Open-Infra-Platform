@@ -28,9 +28,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_BEGIN
 
 /*! \brief The Off reader class
-	*
-	* This class is used to read the information from an .off file and pass it to the Off Model
-	*/
+*
+* This class is used to read the information from an .off file and pass it to the Off Model
+*/
 class OffReader
 {
 public:
@@ -46,6 +46,7 @@ public:
 	* This is the function to call to read all the information from the .off file
 	*
 	* \param[in] filename The name of the .off file
+	* \return The pointer that points to the Off model
 	*/
 	static std::shared_ptr<OffModel> readFile(const std::string& filename);
 
@@ -82,7 +83,7 @@ public:
 		std::vector<buw::Vector3f>& offVertices);
 
 	/**
-	* \brief Reads all the vertices from the .off file
+	* \brief Reads and interprets all the vertices from the .off file
 	*
 	* This function reads through all the lines  in the .off file that specify vertices.
 	* It saves them in a vector that is being returned.
@@ -102,6 +103,7 @@ public:
 	* \param[in] vertex1 The first vertex of the triangle.
 	* \param[in] vertex2 The second vertex of the triangle.
 	* \param[in] vertex3 The third vertex of the triangle.
+	* \return The calculated normal vector
 	*/
 	static buw::Vector3f calcNormal(const buw::Vector3f& vertex1,
 		const buw::Vector3f& vertex2,
