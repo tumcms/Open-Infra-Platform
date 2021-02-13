@@ -498,8 +498,9 @@ namespace OpenInfraPlatform {
 				 * @return  The converted placement matrix.
 				 *
 				 */
+				template <typename TObjectPlacement>
 				carve::math::Matrix convertRelativePlacement(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& placement,
+					const EXPRESSReference<TObjectPlacement>& placement,
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
 				) const throw(...)
 				{
@@ -544,7 +545,7 @@ namespace OpenInfraPlatform {
 					if (local_placement.expired())
 						throw oip::ReferenceExpiredException(local_placement);
 
-					return convertRelativePlacement(local_placement.template as<typename IfcEntityTypesT::IfcObjectPlacement>(), alreadyApplied)
+					return convertRelativePlacement<typename IfcEntityTypesT::IfcLocalPlacement>(local_placement, alreadyApplied)
 						 * convertIfcAxis2Placement(local_placement->RelativePlacement);
                 }
 
@@ -873,6 +874,12 @@ namespace OpenInfraPlatform {
 						BLUE_LOG(warning) << ex.what();
 					}
                     
+					// account for relative placement
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+#else
+					object_placement_matrix = convertRelativePlacement<typename IfcEntityTypesT::IfcLinearPlacement>(linear_placement, alreadyApplied) * object_placement_matrix;
+#endif
+
 					// return 
 					return object_placement_matrix;
                 }
