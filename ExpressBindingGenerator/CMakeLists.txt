@@ -77,7 +77,7 @@ add_format(IFC4X1		 	IFC4x1_RC3		OFF)
 add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)
 add_format(IFC4X2			IFC4x2			OFF)
 add_format(IFC4X3_RC1	 	IFC4X3_RC1		OFF)
-add_format(IFC4X3_RC2	 	IFC4X3_RC2		ON)
+add_format(IFC4X3_RC2	 	IFC4X3_RC2		OFF)
 
 # Add options to create early bindings for formats
 foreach(standard IN LISTS SUPPORTED_IFC_FORMATS)
