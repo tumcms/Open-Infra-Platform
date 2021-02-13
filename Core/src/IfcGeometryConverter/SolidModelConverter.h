@@ -224,7 +224,7 @@ namespace OpenInfraPlatform
 								sectioned_solid_horizontal->CrossSections;
 
 							// Get cross section positions and fixed axis vertical (attributes 3-4).
-							const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>>& cross_section_positions =
+							const auto& cross_section_positions =
 								sectioned_solid_horizontal->CrossSectionPositions;
 
 							bool fixed_axis_vertical = sectioned_solid_horizontal->FixedAxisVertical;
@@ -237,8 +237,13 @@ namespace OpenInfraPlatform
 
 							//Give directrix to Curve converter: for each station 1 Point and 1 Direction
 							// the stations at which a point of the tessellation has to be calcuated - to be converted and fill the targetVec
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 							std::vector<double> stations = curveConverter->getStationsForTessellationOfIfcAlignmentCurve(
 								directrix.typename as<typename IfcEntityTypesT::IfcAlignmentCurve>());
+#else
+							std::vector<double> stations;
+							throw oip::UnhandledException(sectioned_solid_horizontal);
+#endif
 
 							carve::geom::vector<3> targetPoint3D;
 							carve::geom::vector<3> targetDirection3D;
@@ -725,8 +730,8 @@ namespace OpenInfraPlatform
 						// Get directrix, start parameter, end paramter and reference surface (attributes 3-6).
 						oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrix =
 							surface_curve_swept_area_solid->Directrix;	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
-						double start_param = surface_curve_swept_area_solid->StartParam;	// TO DO: optional
-						double end_param = surface_curve_swept_area_solid->EndParam;		// TO DO: optional
+						//double start_param = surface_curve_swept_area_solid->StartParam;	// TO DO: optional
+						//double end_param = surface_curve_swept_area_solid->EndParam;		// TO DO: optional
 						oip::EXPRESSReference<typename IfcEntityTypesT::IfcSurface> ref_surface =
 							surface_curve_swept_area_solid->ReferenceSurface;	// TO DO: next level
 
@@ -1150,7 +1155,7 @@ namespace OpenInfraPlatform
 
 					if (axis_placement->Location)
 					{
-						axis_location = placementConverter->convertIfcCartesianPoint(axis_placement->Location );
+						axis_location = placementConverter->convertIfcPoint(axis_placement->Location );
 					}
 
 					if (axis_placement->Axis)
