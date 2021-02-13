@@ -366,8 +366,7 @@ namespace OpenInfraPlatform
 					sectionedSolid_horizontal->CrossSections;
 
 				// Get cross section positions and fixed axis vertical (attributes 3-4).
-				const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>>& cross_section_positions =
-					sectionedSolid_horizontal->CrossSectionPositions;
+				const auto& cross_section_positions = sectionedSolid_horizontal->CrossSectionPositions;
 
 				bool fixed_axis_vertical = sectionedSolid_horizontal->FixedAxisVertical;
 
@@ -379,9 +378,13 @@ namespace OpenInfraPlatform
 
 				//Give directrix to Curve converter: for each station 1 Point and 1 Direction
 				// the stations at which a point of the tessellation has to be calcuated - to be converted and fill the targetVec
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 				std::vector<double> stations = curveConverter->getStationsForTessellationOfIfcAlignmentCurve(
 					directrix.typename as<typename IfcEntityTypesT::IfcAlignmentCurve>());
-
+#else
+				std::vector<double> stations;
+				throw oip::UnhandledException(sectioned_solid_horizontal);
+#endif
 				carve::geom::vector<3> targetPoint3D;
 				carve::geom::vector<3> targetDirection3D;
 				std::vector<carve::geom::vector<3>> BasisCurvePoints;
@@ -763,7 +766,7 @@ namespace OpenInfraPlatform
 				const carve::geom::vector<3> directionOfCurve,
 				const bool fixed_axis_vertical,
 				const carve::geom::vector<3> translate = carve::geom::VECTOR(0., 0., 0.)
-			) const throw(...)
+			) const noexcept(false)
 			{
 
 				carve::geom::vector<3> local_z(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, fixed_axis_vertical ? 0.0 : directionOfCurve.z));
@@ -882,8 +885,8 @@ namespace OpenInfraPlatform
 				// Get directrix, start parameter, end paramter and reference surface (attributes 3-6).
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrix =
 					surfaceCurveSweptAreaSolid->Directrix;	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
-				double startParam = surfaceCurveSweptAreaSolid->StartParam;	// TO DO: optional
-				double endParam = surfaceCurveSweptAreaSolid->EndParam;		// TO DO: optional
+				//double startParam = surfaceCurveSweptAreaSolid->StartParam;	// TO DO: optional
+				//double endParam = surfaceCurveSweptAreaSolid->EndParam;		// TO DO: optional
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcSurface> ref_surface =
 					surfaceCurveSweptAreaSolid->ReferenceSurface;	// TO DO: next level
 
@@ -991,6 +994,14 @@ namespace OpenInfraPlatform
 
 			}//end convertIfcExtrudedAreaSolid()
 
+			/*! \brief Converts \c IfcRevolvedAreaSolid to meshes.
+			 *
+			 * \param[in] revolvedArea				The \c IfcRevolvedAreaSolid to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcrevolvedareasolid.htm
+			*/
 			void convertIfcRevolvedAreaSolid(
 				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcRevolvedAreaSolid>& revolvedArea,
 				const carve::math::Matrix& pos,
@@ -1015,7 +1026,7 @@ namespace OpenInfraPlatform
 
 					if (axisPlacement->Location)
 					{
-						axisLocation = placementConverter->convertIfcCartesianPoint(axisPlacement->Location );
+						axisLocation = placementConverter->convertIfcPoint(axisPlacement->Location);
 					}
 
 					if (axisPlacement->Axis)
