@@ -1008,6 +1008,20 @@ namespace OpenInfraPlatform
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
 			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcRevolvedAreaSolid
+				//		SUPERTYPE OF(IfcRevolvedAreaSolidTapered)
+				//		SUBTYPE OF(IfcSweptAreaSolid);
+				//			Axis: IfcAxis1Placement;
+				//			Angle: IfcPlaneAngleMeasure;
+				//		DERIVE
+				//			AxisLine : IfcLine: = IfcRepresentationItem() || IfcGeometricRepresentationItem() || IfcCurve() || IfcLine(Axis.Location, IfcRepresentationItem() || IfcGeometricRepresentationItem() || IfcVector(Axis.Z, 1.0));
+				//		WHERE
+				//			AxisStartInXY : Axis.Location.Coordinates[3] = 0.0;
+				//			AxisDirectionInXY: Axis.Z.DirectionRatios[3] = 0.0;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
 				if (revolvedArea.expired())
 					throw oip::ReferenceExpiredException(revolvedArea);
 
@@ -1196,35 +1210,60 @@ namespace OpenInfraPlatform
 				}
 			}
 
+
+
+			/*! \brief Converts \c IfcSweptDiskSolid to meshes.
+			 *
+			 * \param[in] sweptDiskSolid			The \c IfcSweptDiskSolid to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcsweptdisksolid.htm
+			*/
 			void convertIfcSweptDiskSolid(
-				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSweptDiskSolid>& swept_disk_solid,
+				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSweptDiskSolid>& sweptDiskSolid,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
 			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcSweptDiskSolid
+				//		SUPERTYPE OF(IfcSweptDiskSolidPolygonal)
+				//		SUBTYPE OF(IfcSolidModel);
+				//			Directrix: IfcCurve;
+				//			Radius: IfcPositiveLengthMeasure;
+				//			InnerRadius: OPTIONAL IfcPositiveLengthMeasure;
+				//			StartParam: OPTIONAL IfcParameterValue;
+				//			EndParam: OPTIONAL IfcParameterValue;
+				//		WHERE
+				//			DirectrixDim : Directrix.Dim = 3;
+				//			InnerRadiusSize: (NOT EXISTS(InnerRadius)) OR(Radius > InnerRadius);
+				//			DirectrixBounded: (EXISTS(StartParam) AND EXISTS(EndParam)) OR
+				//		(SIZEOF(['IFCGEOMETRYRESOURCE.IfcConic', 'IFCGEOMETRYRESOURCE.IfcBoundedCurve'] * TYPEOF(Directrix)) = 1);
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
 				// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
-				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrix_curve = swept_disk_solid->Directrix;
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrix_curve = sweptDiskSolid->Directrix;
 
 				double length_in_meter = UnitConvert()->getLengthInMeterFactor();
-				double radius = swept_disk_solid->Radius * length_in_meter;
+				double radius = sweptDiskSolid->Radius * length_in_meter;
 
 
-				double radius_inner = swept_disk_solid->InnerRadius.value_or(0.0);
-				//double startParam = swept_disk_solid->StartParam.value_or(0.0);
-				//double endParam = swept_disk_solid->EndParam.value_or(1.0);
+				double radius_inner = sweptDiskSolid->InnerRadius.value_or(0.0);
+				//double startParam = sweptDiskSolid->StartParam.value_or(0.0);
+				//double endParam = sweptDiskSolid->EndParam.value_or(1.0);
 
 				// TODO: handle inner radius, start param, end param and check for formal propositions!
 
-				// (1/1) IfcSweptDiskSolidPolygonal SUBTYPE of IfcSweptDiskSolid
-				//std::shared_ptr<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal> swept_disk_solid_polygonal =
-				//	std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>(swept_disk_solid);
-				//if (swept_disk_solid_polygonal)
-				//{
-					// Get fillet radius (attribute 6). 
-					//double fillet_radius = swept_disk_solid_polygonal->FilletRadius;
-					// TODO: implement and check for formal propositions.
+				// IfcSweptDiskSolidPolygonal SUBTYPE of IfcSweptDiskSolid
+				if (sweptDiskSolid.template isOfType<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>())
+				{
+					convertIfcSweptDiskSolidPolygonal(sweptDiskSolid.template as<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>(),
+						pos, itemData);
+					//TODO: implement and check for formal propositions.
 
-				//} //endif swept_disk_solid_polygonal
+				} //endif sweptDiskSolid_polygonal
 
 				// TO DO: understand what happens here
 				std::vector<carve::geom::vector<3> > segment_start_points;
@@ -1456,6 +1495,17 @@ namespace OpenInfraPlatform
 						pipe_data->addFace(back_offset, back_offset + jj + 2, back_offset + jj + 1);
 					}
 				}
+			}
+
+			void convertIfcSweptDiskSolidPolygonal(
+				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>& sweptDiskSolidPolygonal,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				throw oip::UnhandledException(sweptDiskSolidPolygonal);
+				//Get fillet radius(attribute 6).
+				//double fillet_radius = sweptDiskSolid_polygonal->FilletRadius;
 			}
 
 			void convertIfcBooleanResult(
