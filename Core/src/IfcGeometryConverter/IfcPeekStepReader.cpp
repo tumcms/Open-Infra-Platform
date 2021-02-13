@@ -33,7 +33,8 @@ std::map<std::string, IfcPeekStepReader::IfcSchema> schemata = {
 	MapType("ifc2x3", IfcPeekStepReader::IfcSchema::IFC2X3),
 	MapType("ifc4", IfcPeekStepReader::IfcSchema::IFC4),
 	MapType("ifc4x1", IfcPeekStepReader::IfcSchema::IFC4X1),
-	MapType("ifc4x3_rc1", IfcPeekStepReader::IfcSchema::IFC4X3_RC1)
+	MapType("ifc4x3_rc1", IfcPeekStepReader::IfcSchema::IFC4X3_RC1),
+	MapType("ifc4x3_rc2", IfcPeekStepReader::IfcSchema::IFC4X3_RC2)
 };
 
 IfcPeekStepReader::IfcPeekStepReader()
