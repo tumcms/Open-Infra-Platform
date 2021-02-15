@@ -6,7 +6,7 @@
 It comes with its own `EXPRESS` parser and `C++` classes generator.
 
 
-![Beta1_5_Windows8_1.png](Documentation/Beta1_5_Windows8_1.png)
+![Beta1_5_Windows8_1.png](./Documentation/images/Beta1_5_Windows8_1.png)
 
 ## Documentation
 
