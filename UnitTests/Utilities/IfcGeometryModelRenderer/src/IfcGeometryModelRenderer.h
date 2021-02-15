@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
 
 #include <buw.Engine.h>
 
+#include "GeometryModelRenderer.h"
 #include "IfcGeometryConverter/ConverterBuw.h"
 
 #include <Effects/IfcGeometryEffect.h>
@@ -31,82 +32,40 @@
  * \brief Utility class to render \c IfcGeometryModel data without UI for automated unit tests.
  * 
  */
-class IfcGeometryModelRenderer
+class IfcGeometryModelRenderer : public GeometryModelRenderer
 {
 public:
     /*!
      * \brief Constructs the renderer by injecting the rendering system. 
      * \param renderSystem
      */
-    IfcGeometryModelRenderer(const buw::ReferenceCounted<buw::IRenderSystem>& renderSystem);
+	IfcGeometryModelRenderer(const buw::ReferenceCounted<buw::IRenderSystem>& renderSystem);
 
-    /*!
-     * \brief Releases all resources. 
-     */
-    virtual ~IfcGeometryModelRenderer();
+	/*!
+	 * \brief Releases all resources.
+	 */
+	virtual ~IfcGeometryModelRenderer();
 
     /*!
      * \brief Set the model to be rendered. 
      * \param model
      * \note This also moves the camera to it's default position.
      */
-    void setModel(const std::shared_ptr<oip::IfcModel>& model);
-
-    /*!
-     * \brief Repaints and returns back buffer image.
-     * \return Rendered back buffer image.
-     */
-    buw::Image4b captureImage();
-
-    /*!
-     * \brief Set the viewing angle.
-     * \param direction The direction flag denoting the viewing angle.
-	 * \param fitViewToModel Should the model be fit to the view (true, default), or just the view rotated without changing the scale (false)?
-     */
-    void setViewDirection(const buw::eViewDirection &direction, const bool fitViewToModel = true);
+    virtual void setModel(const std::shared_ptr<oip::IfcModel>& model) override;
 
 protected:
-
-    /*!
-    * \brief Moves the camera such that the whole model is to be seen.
-    */
-    void fitViewToModel() const;
-
-    /*!
-    * \brief Clears the back buffer image and depth stencil.
-    * \note Current clear color is RGBA(0,0,0,0).
-    */
-    void clearBackBuffer();
+	/*!
+	* \brief Moves the camera such that the whole model is to be seen.
+	*/
+	virtual void fitViewToModel() const override;
 
     /*!
      * \brief Renders the model and updates the front buffer so that the image is presented.
      */
     void repaint();
 
-    /*!
-     * \brief Updates the world buffer with camera matrices.
-     */
-    void updateWorldBuffer();
-
-    /*!
-     * \brief Copies the current back buffer texture content into the returned image.
-     * \return Rendered back buffer image.
-     */
-    buw::Image4b getBackBufferImage() const;
-
-
 private:
-    int width_ = 640;
-    int height_ = 480;
-
-    buw::ReferenceCounted<BlueFramework::Engine::Camera> camera_ = nullptr;
-    buw::ReferenceCounted<BlueFramework::Engine::CameraController> cameraController_ = nullptr;
-    buw::ReferenceCounted<BlueFramework::Rasterizer::IRenderSystem> renderSystem_ = nullptr;
-    buw::ReferenceCounted<BlueFramework::Rasterizer::IViewport> viewport_ = nullptr;
     buw::ReferenceCounted<OpenInfraPlatform::Rendering::IfcGeometryEffect> ifcGeometryEffect_ = nullptr;
-    buw::ReferenceCounted<BlueFramework::Rasterizer::ITexture2D> depthStencilMSAA_ = nullptr;
-    buw::ReferenceCounted<BlueFramework::Rasterizer::IConstantBuffer> worldBuffer_ = nullptr;
-    buw::ReferenceCounted<BlueFramework::Rasterizer::ITexture2D> backBuffer_ = nullptr;
     buw::ReferenceCounted<oip::IfcModel> model_ = nullptr;
 };
 
