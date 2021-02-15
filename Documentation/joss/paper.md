@@ -37,7 +37,7 @@ OIP supports reading, visualization, navigating, and handling of:
 Multiple models can be loaded at once and compared between each other.
 Their absolute position is accounted for, so the models can be checked against one another for internal differences based on location of elements.
 
-![](../images/ifc_and_pcd.png "A point cloud model together with an IFC model loaded in OIP.")
+![](../images/ifc_and_pcd.png "A PCD model together with an IFC model loaded in OIP.")
 
 Additionally, OIP incorporates its own EXPRESS lexer and parser.
 This enables automatic code generation for IFC early-binding library [Hecht:2019:FBI].
@@ -67,7 +67,7 @@ The origins of the software date back to the first projects expanding IFC for in
  at the Technical University of Munich [Singer:2014:IfcAlignment, Amann:2015:OIP, Amann:2015:OKSTRA, Amann:2015:ICCBEI].
 There, first implementations of roads' geometric concepts and interfacing between multiple standards (like IFC, OKSTRA and LandXML) have been explored.
 
-![](../Beta1_5_Windows8_1.png "A view of road geometry on terrain's surface with clearly marked cuts and fills.")
+![](../images/Beta1_5_Windows8_1.png "A view of road geometry on terrain's surface with clearly marked cuts and fills.")
 
 Further on, many prototypical additions were implemented during the course of projects:
 
