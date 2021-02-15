@@ -17,7 +17,7 @@ Yes, GPLv3.0 - see [licence](../../Licence.txt).
 
 > * The software should have an obvious research application.
 
-See list of publications made with OIP (TUM Open Infra Platform) [here](./paper.bib).
+See list of publications made with OIP (TUM OpenInfraPlatform) [here](./paper.bib).
 
 > * You should be a major contributor to the software you are submitting.
 
@@ -45,7 +45,7 @@ I believe we fall under the term *engineering*, offering a *library*.
 
 > Your software should be a significant contribution to the available open source software that either enables some new research challenges to be addressed or makes addressing research challenges significantly better (e.g., faster, easier, simpler).
 
-Our software enables simultaneous loading of IFC (Industry Foundation Classes) as well as PCD data while being open source - we're not aware of any other open source library supporting the same.
+Our software enables simultaneous loading of IFC (Industry Foundation Classes) as well as Point Cloud Data (PCD) while being open source - we're not aware of any other open source library supporting the same.
 
 > As a rule of thumb, JOSS’ minimum allowable contribution should represent not less than three months of work for an individual. Some factors that may be considered by editors and reviewers when judging effort include:
 > * Age of software (is this a well-established software project) / length of commit history.
@@ -117,16 +117,14 @@ See list of publications made with the software [here](./paper.bib).
 
 See list of publications made about the software [here](./paper.bib).
 
----
 > In addition, JOSS requires that software should be feature-complete (i.e. no half-baked solutions) and designed for maintainable extension (not one-off modifications of existing tools). "Minor utility" packages, including "thin" API clients, and single-function packages are not acceptable.
 
-TODO. This might be a bit tricky one. 
 There are a lot of dangling parts (prototypical implementations from many students' projects). 
+These are well documented as issues, though.
 
-However, I believe that the core functionality is available and stable.
+I believe that the core functionality is available and stable.
 There are a lot of possibilities of expansion and further development.
 
----
 
 ## Submission flow
 
@@ -140,11 +138,12 @@ Done:
 
 > * Make sure that the software complies with the JOSS review criteria. In particular, your software should be full-featured, well-documented, and contain procedures (such as automated tests) for checking correctness.
 
-TODO.
+The base functionality is there and is being constantly improved and extended.
+I believe that the software will never be "done", there will always be possible additions, extensions, rework.
 
 > * Write a short paper in Markdown format using `paper.md` as file name, including a title, summary, author names, affiliations, and key references. See our [example paper](https://joss.readthedocs.io/en/latest/submitting.html#example-paper-and-bibliography) to follow the correct format.
 
-TODO.
+[Done](./paper.md).
 
 > * (Optional) create a metadata file describing your software and include it in your repository. We provide a script that automates the generation of this metadata.
 
