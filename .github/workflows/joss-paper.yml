@@ -1,9 +1,10 @@
+name: joss-paper
 on: [push]
 
 # taken from https://github.com/marketplace/actions/open-journals-pdf-generator
 
 jobs:
-  paper:
+  compile:
     runs-on: ubuntu-latest
     name: Paper Draft
     steps:
