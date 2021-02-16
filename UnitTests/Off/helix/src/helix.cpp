@@ -15,14 +15,12 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <EarlyBinding/IFC4X3_RC2/src/reader/IFC4X3_RC2Reader.h>
-#include <namespace.h>
+#include <namespace.h> //???
 
 #include <VisualTest.h>
 
-#include <IfcGeometryConverter/IfcImporterImpl.h>
-#include <IfcGeometryConverter/ConverterBuw.h>
-#include <IfcGeometryConverter/IfcImporter.h>
+#include <OffConverter/OffReader.h>
+
 
 using namespace testing;
 
@@ -36,35 +34,30 @@ protected:
 	virtual void SetUp() override {
 		VisualTest::SetUp();
 
-		express_model = OpenInfraPlatform::IFC4X3_RC2::IFC4X3_RC2Reader::FromFile(filename.string());
-
-		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC2EntityTypes>>();
-		model = importer->collectData(express_model);
+		model = oip::OffReader::readFile(filename.string());
 
 		_background = renderer->captureImage();
-                renderer->setModel(model);
+                //renderer->setModel(model);
                 //need to make a change to renderer to select between off and ifc
 	}
 
 	virtual void TearDown() override {
-		express_model.reset();
+		model.reset();
 		VisualTest::TearDown();
 	}
 
-	virtual std::string TestName() const { return "tessellated-item"; }
-	virtual std::string Schema() const { return "IFC4X3_RC2"; }
+	virtual std::string TestName() const { return "helix"; }
 
-	const boost::filesystem::path filename = dataPath("tessellated-item.ifc");
+	const boost::filesystem::path filename = dataPath("helix.off");
 
-	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
-	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC2EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
+	//buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC2EntityTypes>> importer = nullptr;
+	buw::ReferenceCounted<oip::OffModel> model = buw::makeReferenceCounted<oip::OffModel>();
         //same for off format
 };
 
 TEST_F(TesselatedItem, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(29));
-        //test for loaded vertices and faces (505, 500)
+	EXPECT_THAT(model->geometry().vertices.size(), Eq(505)); //not sure about .size()
+	EXPECT_THAT(model->geometry().indices.size(), Eq(500)); //not sure about .size()
 }
 
 TEST_F(TesselatedItem, ImageIsSaved)
@@ -73,10 +66,10 @@ TEST_F(TesselatedItem, ImageIsSaved)
 	buw::Image4b image = renderer->captureImage();
 
 	// Act
-        buw::storeImage(testPath("off-helix.png").string(), image);
+        buw::storeImage(testPath("helix.png").string(), image);
 
 	// Assert
-        EXPECT_NO_THROW(buw::loadImage4b(testPath("off-helix.png").string()));
+        EXPECT_NO_THROW(buw::loadImage4b(testPath("helix.png").string()));
 }
 
 TEST_F(TesselatedItem, PlaneSurfaceViews)
