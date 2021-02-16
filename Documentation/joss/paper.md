@@ -67,8 +67,6 @@ The origins of the software date back to the first projects expanding IFC for in
  at the Technical University of Munich [@Singer:2014:IfcAlignment; @Amann:2015:OIP; @Amann:2015:OKSTRA; @Amann:2015:ICCBEI].
 There, first implementations of roads' geometric concepts and interfacing between multiple standards (like IFC, OKSTRA and LandXML) have been explored.
 
-![A view of road geometry on terrain's surface with clearly marked cuts and fills.](../images/Beta1_5_Windows8_1.png)
-
 Further on, many prototypical additions were implemented during the course of projects:
 
 - support for `IFC4x1`, `IFC4x2`, and `IFC4x3` candidate versions of the IFC standard during their development [@Jaud:2020:siBIM];
@@ -76,6 +74,8 @@ Further on, many prototypical additions were implemented during the course of pr
 - support for linked data approaches [@Beetz:2019:linkeddata];
 - support for PCD and their analysis [@Hecht:2018:PCdtoAlignment];
 - support for IFC Programming Language (IFC-PL) [@Amann:2018:Diss].
+
+![A view of road geometry on terrain's surface with clearly marked cuts and fills.](../images/Beta1_5_Windows8_1.png)
 
 # Acknowledgements
 
