@@ -48,7 +48,7 @@ function(CreateIfcFileVisualUnitTestForSchema test_name schema)
         PUBLIC
             OpenInfraPlatform.${schema}
             OpenInfraPlatform.Rendering
-            IfcGeometryModelRenderer
+            GeometryModelRenderer
             BlueFramework.Engine
             gmock
             gtest
@@ -98,7 +98,7 @@ function(CreateOffFileVisualUnitTest test_name)
     target_link_libraries(${UnitTest_Executable_Name}
         PUBLIC
             OpenInfraPlatform.Rendering 
-            IfcGeometryModelRenderer
+            GeometryModelRenderer
             BlueFramework.Engine
             gmock
             gtest
