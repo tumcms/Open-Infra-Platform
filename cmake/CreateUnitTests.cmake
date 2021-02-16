@@ -18,7 +18,7 @@
 enable_testing()
 include(GoogleTest)
 
-function(CreateIfcFileUnitTestForSchema test_name schema)
+function(CreateIfcFileVisualUnitTestForSchema test_name schema)
 
     file(GLOB OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}		src/*.cpp)
     file(GLOB OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}_h	src/*.h)
@@ -47,6 +47,8 @@ function(CreateIfcFileUnitTestForSchema test_name schema)
     target_link_libraries(${UnitTest_Executable_Name}
         PUBLIC
             OpenInfraPlatform.${schema}
+            OpenInfraPlatform.Rendering
+            IfcGeometryModelRenderer
             BlueFramework.Engine
             gmock
             gtest
@@ -65,11 +67,6 @@ function(CreateIfcFileUnitTestForSchema test_name schema)
         COMMAND	${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${UnitTest_Data_Rel_Path} ${CMAKE_BINARY_DIR}/$<CONFIG>/${UnitTest_Data_Rel_Path}
     )
 
-endfunction()
-
-function(CreateIfcFileVisualUnitTestForSchema test_name schema)
-  CreateIfcFileUnitTestForSchema(${test_name} ${schema})
-  target_link_libraries(${test_name} PUBLIC OpenInfraPlatform.Rendering IfcGeometryModelRenderer)
 endfunction(CreateIfcFileVisualUnitTestForSchema)
 
 function(CreateOffFileVisualUnitTest test_name)
