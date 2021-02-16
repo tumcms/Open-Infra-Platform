@@ -13,6 +13,7 @@ authors:
   - name: Julian Amann
     affiliation: 1
   - name: Jonas Schlenger
+    orcid: 0000-0002-4875-5117
     affiliation: 1
 affiliations:
  - name: Chair for Computational Modelling and Simulation, Technical University of Munich
@@ -83,7 +84,7 @@ The development of the software has been supported through many projects founded
 
 - buildingSMART International Ltd.;
 - Federal Ministry for Transport and Digital Infrastructure, Germany (Bundesministerium für Verkehr und digitale Infrastruktur);
-- Federal Highway Research Institute, Germany (Bundesanstallt für Straßenwesen);
+- Federal Highway Research Institute, Germany (Bundesanstalt für Straßenwesen);
 - German research Foundation, Germany (Deutsche Forschungsgesellschaft).
 
 We gratefully acknowledge their support.
