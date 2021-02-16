@@ -1,5 +1,5 @@
 ---
-title: 'TUM Open Infra Platform: open source package for simultaneous viewing and analysis of Industry Foundation Classes (IFC) and Point Cloud Data (PCD) models'
+title: 'TUM Open Infra Platform: open source package for simultaneous viewing and analysis of digital models in the civil engineering domain'
 tags:
   - industry foundation classes (IFC)
   - point cloud data (PCD)
