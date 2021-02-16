@@ -48,7 +48,7 @@ Major elements were already realigned, while some (previously available) functio
 
 The Architecture, Engineering and Construction (AEC) domain is in its transition from 2D design processes to 3D object-oriented modelling. 
 Building Information Modelling (BIM) is steadily gaining importance replacing the conventional Computer-Aided Design (CAD) practices
- and getting implemented in every aspect of the very complex software and stakeholder landscape [@Jaud:2018:iccce].
+ and getting implemented in every aspect of the very complex software and stakeholder landscape [@Jaud:2019:iccce].
 
 During the development of IFC standard, a clear need for an independent software
  capable of consuming and producing IFC files according to the newly developed schemata was determined [@Amann:2015:OIP; @Amann:2015:ICCBEI].
@@ -75,7 +75,7 @@ Further on, many prototypical additions were implemented during the course of pr
 - support for first experimental IFC schema additions for tunnel [@vilgertshofer:2017:iwcce];
 - support for linked data approaches [@Beetz:2019:linkeddata];
 - support for PCD and their analysis [@Hecht:2018:PCdtoAlignment];
-- support for IFC Programming Language (IFC-PL) [@Amann:2018:diss].
+- support for IFC Programming Language (IFC-PL) [@Amann:2018:Diss].
 
 # Acknowledgements
 
