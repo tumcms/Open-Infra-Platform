@@ -51,7 +51,7 @@ public:
      * \param model
      * \note This also moves the camera to it's default position.
      */
-    virtual void setModel(const std::shared_ptr<oip::IfcModel>& model) override;
+    void setModel(const std::shared_ptr<oip::IfcModel>& model);
 
 protected:
 	/*!
@@ -65,8 +65,8 @@ protected:
     void repaint();
 
 private:
+	buw::ReferenceCounted<oip::IfcModel> model_ = nullptr;
     buw::ReferenceCounted<OpenInfraPlatform::Rendering::IfcGeometryEffect> ifcGeometryEffect_ = nullptr;
-    buw::ReferenceCounted<oip::IfcModel> model_ = nullptr;
 };
 
 #endif // IFCGEOMETRYMODELRENDERER_H

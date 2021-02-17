@@ -24,7 +24,6 @@
 #include "OffConverter/OffModel.h"
 #include "IfcGeometryConverter/IfcGeometryModel.h"
 
-
 /*!
  * \brief Utility class to render \c GeometryModel data without UI for automated unit tests.
  *
@@ -48,8 +47,8 @@ public:
 	 * \param model
 	 * \note This also moves the camera to it's default position.
 	 */
+	//virtual void setModel(const std::shared_ptr<oip::IfcModel>& model);
 	//virtual void setModel(const std::shared_ptr<oip::OffModel>& model);
-	virtual void setModel(const std::shared_ptr<oip::IfcModel>& model) = 0;
 
 	/*!
 	 * \brief Repaints and returns back buffer image.

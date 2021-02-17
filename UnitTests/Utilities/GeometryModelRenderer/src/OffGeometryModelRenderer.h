@@ -50,7 +50,7 @@ public:
 	 * \param model
 	 * \note This also moves the camera to it's default position.
 	 */
-	//virtual void setModel(const std::shared_ptr<oip::OffModel>& model) override;
+	void setModel(const std::shared_ptr<oip::OffModel>& model);
 
 protected:
 	/*!

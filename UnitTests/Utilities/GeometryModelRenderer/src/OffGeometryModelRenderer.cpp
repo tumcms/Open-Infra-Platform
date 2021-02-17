@@ -31,16 +31,16 @@ OffGeometryModelRenderer::~OffGeometryModelRenderer()
 	offGeometryEffect_.reset();
 }
 
-//void OffGeometryModelRenderer::setModel(const std::shared_ptr<oip::OffModel>& model) 
-//{
-//	model_.reset();
-//	model_ = model;
-//	offGeometryEffect_->setOffModel(model);
-//
-//	offGeometryEffect_->setOffset(-model->getExtent().center());
-//
-//	fitViewToModel();
-//}
+void OffGeometryModelRenderer::setModel(const std::shared_ptr<oip::OffModel>& model) 
+{
+	model_.reset();
+	model_ = model;
+	offGeometryEffect_->setOffModel(model);
+
+	offGeometryEffect_->setOffset(-model->getExtent().center());
+
+	fitViewToModel();
+}
 
 void OffGeometryModelRenderer::fitViewToModel() const
 {
