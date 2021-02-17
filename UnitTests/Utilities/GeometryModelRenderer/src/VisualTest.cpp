@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -38,38 +38,9 @@ VisualTest::~VisualTest()
     renderSystem_.reset();
 }
 
-void VisualTest::SetUp()
-{
-    renderer = buw::makeReferenceCounted<IfcGeometryModelRenderer>(renderSystem_);
-
-	// make a Test directory for test-specific data
-	boost::filesystem::create_directory(filePath("Test"));
-}
-
-void VisualTest::TearDown()
-{
-    renderer.reset();
-}
-
-buw::Image4b VisualTest::CaptureImage()
-{
-	return renderer->captureImage();
-}
-
 boost::filesystem::path VisualTest::executablePath() const
 {
 	return boost::dll::program_location().parent_path();
-}
-
-boost::filesystem::path VisualTest::filePath(const std::string& relPath) const
-{
-	return executablePath()
-		.concat("\\UnitTests\\Schemas\\")
-		.concat(Schema())
-		.concat("\\")
-		.concat(TestName())
-		.concat("\\")
-		.concat(relPath);
 }
 
 boost::filesystem::path VisualTest::dataPath(const std::string& relPath) const

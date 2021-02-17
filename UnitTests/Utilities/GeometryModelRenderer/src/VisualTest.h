@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 
 #include <namespace.h>
 
+#include <OffGeometryModelRenderer.h>
 #include <IfcGeometryModelRenderer.h>
 
 #include <buw.Engine.h>
@@ -34,31 +35,26 @@ using namespace testing;
 class VisualTest : public Test
 {
 protected:
-
     buw::ReferenceCounted<buw::IRenderSystem> renderSystem_ = nullptr;
-    buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = nullptr;
 
     VisualTest();
 
     virtual ~VisualTest();
 
-    virtual void SetUp() override;
+    //virtual void SetUp() override = 0;
 
-    virtual void TearDown() override;
+    //virtual void TearDown() override = 0;
 
 public:
-	virtual buw::Image4b CaptureImage();
+	virtual buw::Image4b CaptureImage() = 0;
 
-	virtual std::string TestName() const = 0; // provide the test name as specified in the solution and the folder structure
-	virtual std::string Schema() const = 0; // provide the schema as specified in the solution and the folder structure
+	//virtual std::string TestName() const = 0; // provide the test name as specified in the solution and the folder structure
 
 	boost::filesystem::path executablePath() const;
 
-	virtual boost::filesystem::path filePath(const std::string& relPath) const;
+	virtual boost::filesystem::path filePath(const std::string& relPath) const = 0;
 
 	boost::filesystem::path dataPath(const std::string& relPath) const;
 
 	boost::filesystem::path testPath(const std::string& relPath) const;
-
-
 };
