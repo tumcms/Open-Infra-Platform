@@ -32,13 +32,18 @@ IfcGeometryModelRenderer::~IfcGeometryModelRenderer()
     ifcGeometryEffect_.reset();
 }
 
-void IfcGeometryModelRenderer::fitViewToModel() const
+//void IfcGeometryModelRenderer::fitViewToModel() const
+//{
+//	cameraController_->fitToView((model_->getExtent().min() - model_->getExtent().center()).cast<float>(), 
+//		(model_->getExtent().max() - model_->getExtent().center()).cast<float>());
+//		
+//    cameraController_->tick(1.0f);
+//    camera_->tick(1.0f);
+//}
+
+oip::BBox IfcGeometryModelRenderer::getExtent() const
 {
-	cameraController_->fitToView((model_->getExtent().min() - model_->getExtent().center()).cast<float>(), 
-		(model_->getExtent().max() - model_->getExtent().center()).cast<float>());
-		
-    cameraController_->tick(1.0f);
-    camera_->tick(1.0f);
+	return model_->getExtent();
 }
 
 void IfcGeometryModelRenderer::setModel(const std::shared_ptr<oip::IfcModel>& model)
@@ -52,10 +57,7 @@ void IfcGeometryModelRenderer::setModel(const std::shared_ptr<oip::IfcModel>& mo
     fitViewToModel();
 }
 
-void IfcGeometryModelRenderer::repaint()
+void IfcGeometryModelRenderer::render()
 {
-    clearBackBuffer();
-    updateWorldBuffer();
     ifcGeometryEffect_->render();
-    renderSystem_->present();
 }

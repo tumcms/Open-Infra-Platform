@@ -55,8 +55,8 @@ protected:
 
 TEST_F(Helix, AllEdgesAndFacesRed) 
 {
-	EXPECT_THAT(model->geometry().vertices.size(), Eq(505)); //not sure about .size()
-	EXPECT_THAT(model->geometry().indices.size(), Eq(500)); //not sure about .size()
+	EXPECT_THAT(model->geometry().vertices.size(), Eq(3000)); //not sure about .size()
+	EXPECT_THAT(model->geometry().indices.size(), Eq(3000)); //not sure about .size()
 }
 
 TEST_F(Helix, ImageIsSaved)
@@ -73,13 +73,13 @@ TEST_F(Helix, ImageIsSaved)
 
 TEST_F(Helix, PlaneSurfaceViews)
 {
-	//// Arrange
- //       const auto expected_front = buw::loadImage4b(dataPath("helix_front.png").string());
- //       const auto expected_top = buw::loadImage4b(dataPath("helix_top.png").string());
- //       const auto expected_bottom = buw::loadImage4b(dataPath("helix_bottom.png").string());
- //       const auto expected_left = buw::loadImage4b(dataPath("helix_left.png").string());
- //       const auto expected_right = buw::loadImage4b(dataPath("helix_right.png").string());
- //       const auto expected_back = buw::loadImage4b(dataPath("helix_back.png").string());
+	// Arrange
+    const auto expected_front = buw::loadImage4b(dataPath("helix_front.png").string());
+    const auto expected_top = buw::loadImage4b(dataPath("helix_top.png").string());
+    const auto expected_bottom = buw::loadImage4b(dataPath("helix_bottom.png").string());
+    const auto expected_left = buw::loadImage4b(dataPath("helix_left.png").string());
+    const auto expected_right = buw::loadImage4b(dataPath("helix_right.png").string());
+    const auto expected_back = buw::loadImage4b(dataPath("helix_back.png").string());
 
 	// Act (Front)
 	rendererOff->setViewDirection(buw::eViewDirection::Front);
@@ -102,34 +102,34 @@ TEST_F(Helix, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 
-        buw::storeImage(testPath("helix_front.png").string(), image_front);
-        buw::storeImage(testPath("helix_top.png").string(), image_top);
-        buw::storeImage(testPath("helix_bottom.png").string(), image_bottom);
-        buw::storeImage(testPath("helix_left.png").string(), image_left);
-        buw::storeImage(testPath("helix_right.png").string(), image_right);
-        buw::storeImage(testPath("helix_back.png").string(), image_back);
+    //buw::storeImage(testPath("helix_front.png").string(), image_front);
+    //buw::storeImage(testPath("helix_top.png").string(), image_top);
+    //buw::storeImage(testPath("helix_bottom.png").string(), image_bottom);
+    //buw::storeImage(testPath("helix_left.png").string(), image_left);
+    //buw::storeImage(testPath("helix_right.png").string(), image_right);
+    //buw::storeImage(testPath("helix_back.png").string(), image_back);
 
 
-	//// Assert
-	//EXPECT_EQ(image_front, expected_front);
-	//EXPECT_EQ(image_top, expected_top);
-	//EXPECT_EQ(image_bottom, expected_bottom);
-	//EXPECT_EQ(image_left, expected_left);
-	//EXPECT_EQ(image_right, expected_right);
-	//EXPECT_EQ(image_back, expected_back);
+	// Assert
+	EXPECT_EQ(image_front, expected_front);
+	EXPECT_EQ(image_top, expected_top);
+	EXPECT_EQ(image_bottom, expected_bottom);
+	EXPECT_EQ(image_left, expected_left);
+	EXPECT_EQ(image_right, expected_right);
+	EXPECT_EQ(image_back, expected_back);
 }
 
 TEST_F(Helix, VertexViews)
 {
 	// Arrange
-        const auto expected_front_left_bottom = buw::loadImage4b(dataPath("helix_front_left_bottom.png").string());
-        const auto expected_front_right_bottom = buw::loadImage4b(dataPath("helix_front_right_bottom.png").string());
-        const auto expected_top_left_front = buw::loadImage4b(dataPath("helix_top_left_front.png").string());
-        const auto expected_top_front_right = buw::loadImage4b(dataPath("helix_top_front_right.png").string());
-        const auto expected_top_left_back = buw::loadImage4b(dataPath("helix_top_left_back.png").string());
-        const auto expected_top_right_back = buw::loadImage4b(dataPath("helix_top_right_back.png").string());
-        const auto expected_back_left_bottom = buw::loadImage4b(dataPath("helix_back_left_bottom.png").string());
-        const auto expected_right_bottom_back = buw::loadImage4b(dataPath("helix_right_bottom_back.png").string());
+    const auto expected_front_left_bottom = buw::loadImage4b(dataPath("helix_front_left_bottom.png").string());
+    const auto expected_front_right_bottom = buw::loadImage4b(dataPath("helix_front_right_bottom.png").string());
+    const auto expected_top_left_front = buw::loadImage4b(dataPath("helix_top_left_front.png").string());
+    const auto expected_top_front_right = buw::loadImage4b(dataPath("helix_top_front_right.png").string());
+    const auto expected_top_left_back = buw::loadImage4b(dataPath("helix_top_left_back.png").string());
+    const auto expected_top_right_back = buw::loadImage4b(dataPath("helix_top_right_back.png").string());
+    const auto expected_back_left_bottom = buw::loadImage4b(dataPath("helix_back_left_bottom.png").string());
+    const auto expected_right_bottom_back = buw::loadImage4b(dataPath("helix_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
 	rendererOff->setViewDirection(buw::eViewDirection::FrontLeftBottom);
@@ -158,14 +158,14 @@ TEST_F(Helix, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 
-        buw::storeImage(testPath("helix_front_left_bottom.png").string(), image_front_left_bottom);
-        buw::storeImage(testPath("helix_front_right_bottom.png").string(), image_front_right_bottom);
-        buw::storeImage(testPath("helix_top_left_front.png").string(), image_top_left_front);
-        buw::storeImage(testPath("helix_top_front_right.png").string(), image_top_front_right);
-        buw::storeImage(testPath("helix_top_left_back.png").string(), image_top_left_back);
-        buw::storeImage(testPath("helix_top_right_back.png").string(), image_top_right_back);
-        buw::storeImage(testPath("helix_back_left_bottom.png").string(), image_back_left_bottom);
-        buw::storeImage(testPath("helix_right_bottom_back.png").string(), image_right_bottom_back);
+    //buw::storeImage(testPath("helix_front_left_bottom.png").string(), image_front_left_bottom);
+    //buw::storeImage(testPath("helix_front_right_bottom.png").string(), image_front_right_bottom);
+    //buw::storeImage(testPath("helix_top_left_front.png").string(), image_top_left_front);
+    //buw::storeImage(testPath("helix_top_front_right.png").string(), image_top_front_right);
+    //buw::storeImage(testPath("helix_top_left_back.png").string(), image_top_left_back);
+    //buw::storeImage(testPath("helix_top_right_back.png").string(), image_top_right_back);
+    //buw::storeImage(testPath("helix_back_left_bottom.png").string(), image_back_left_bottom);
+    //buw::storeImage(testPath("helix_right_bottom_back.png").string(), image_right_bottom_back);
 
 
 	// Assert

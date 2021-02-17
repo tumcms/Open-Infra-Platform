@@ -63,12 +63,14 @@ public:
 	 */
 	void setViewDirection(const buw::eViewDirection &direction, const bool fitViewToModel = true);
 
+	virtual oip::BBox getExtent() const = 0;
+
 protected:
 
 	/*!
 	* \brief Moves the camera such that the whole model is to be seen.
 	*/
-	virtual void fitViewToModel() const = 0;
+	virtual void fitViewToModel() const;
 
 	/*!
 	* \brief Clears the back buffer image and depth stencil.
@@ -80,6 +82,8 @@ protected:
 	 * \brief Renders the model and updates the front buffer so that the image is presented.
 	 */
 	void repaint();
+	
+	virtual void render() = 0;
 
 	/*!
 	 * \brief Updates the world buffer with camera matrices.

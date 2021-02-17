@@ -57,12 +57,16 @@ protected:
 	/*!
 	* \brief Moves the camera such that the whole model is to be seen.
 	*/
-	virtual void fitViewToModel() const override;
+	//virtual void fitViewToModel() const override;
+
+	virtual oip::BBox getExtent() const override;
 
     /*!
      * \brief Renders the model and updates the front buffer so that the image is presented.
      */
-    void repaint();
+    //void repaint();
+
+	virtual void render() override;
 
 private:
 	buw::ReferenceCounted<oip::IfcModel> model_ = nullptr;

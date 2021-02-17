@@ -97,9 +97,20 @@ void GeometryModelRenderer::repaint()
 {
 	clearBackBuffer();
 	updateWorldBuffer();
+	render();
 	renderSystem_->present();
 
 	//ifcGeometryEffect_->render();
+}
+
+void GeometryModelRenderer::fitViewToModel() const
+{
+	oip::BBox extent = getExtent();
+	cameraController_->fitToView((extent.min() - extent.center()).cast<float>(), 
+		(extent.max() - extent.center()).cast<float>());
+		
+    cameraController_->tick(1.0f);
+    camera_->tick(1.0f);
 }
 
 void GeometryModelRenderer::updateWorldBuffer()
