@@ -1,9 +1,11 @@
 ---
 title: 'TUM Open Infra Platform: open source package for simultaneous viewing and analysis of digital models in the civil engineering domain'
 tags:
+  - building information modelling (BIM)
   - industry foundation classes (IFC)
   - point cloud data (PCD)
   - EXPRESS parser
+  - code generation
 authors:
   - name: Stefan Jaud^[corresponding author]
     orcid: 0000-0003-0387-3440
@@ -36,14 +38,15 @@ Their absolute position is accounted for, so the models can be checked against o
 
 ![A PCD model together with an IFC model loaded in OIP.\label{fig:ifcpcd}](../images/ifc_and_pcd.png)
 
-Additionally, OIP incorporates its own EXPRESS lexer and parser.
-This enables automatic code generation for IFC early-binding library [@Hecht:2019:FBI].
+Additionally, OIP incorporates its own EXPRESS parser.
+This enables automatic code generation for IFC early-binding library [@Hecht:2019:FBI;@Amann:2018:Programming].
 As such, complete contents of IFC files can be interpreted and analysed.
 Moreover, type safety is guaranteed at compile time thus reducing the risk for bugs and errors.
 
 Let it be stated here that OIP serves as a prototypical playground for developments.
-During the past 3 years, OIP was completely restructured and its code base overhauled - the IFC now stands as the internal model [@Hecht:2019:FBI].
-Major elements were already realigned, while some (previously available) functionality is still considered as work-in-progress.
+The software architecture, features, and functionalities have been changed, added or removed as need be along the way.
+Nowadays, OIP uses the IFC schema and Cloud Compare's model as independent internal data models [@Hecht:2019:FBI].
+Major elements from previous developments were already realigned, while some (previously available) functionality is still considered as work-in-progress.
 
 # Statement of Need
 
@@ -52,11 +55,12 @@ Building Information Modelling (BIM) is steadily gaining importance replacing th
  and getting implemented in every aspect of the very complex software and stakeholder landscape [@Jaud:2019:iccce].
 
 During the development of IFC standard, a clear need for an independent software
- capable of consuming and producing IFC files according to the newly developed schemata was determined [@Amann:2015:OIP; @Amann:2015:ICCBEI].
-OIP fulfils this role by being open source and based on well known libraries (like Qt and Boost).
+ capable of consuming and producing IFC files according to the newly developed schemas was determined [@Amann:2015:OIP; @Amann:2015:ICCBEI].
+OIP fulfils this role by being open source, using CMake as a build system generator to support various platforms,
+ and being based on well known libraries (like Qt and Boost).
 
 Additionally, the EXPRESS parser provided proved useful for automatically producing
- source code and data models from newly developed schemata as needed [@vilgertshofer:2017:iwcce].
+ source code and data models from newly developed schemas as needed [@vilgertshofer:2017:iwcce].
 
 With the emergence of Scan2BIM and ScanVsBIM research field (deriving from or merely comparing PCD and BIM models),
  a tool that supports both PCD and IFC data is a welcomed addition to the research processes.
