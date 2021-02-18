@@ -17,7 +17,7 @@ Yes, GPLv3.0 - see [licence](../../Licence.txt).
 
 > * The software should have an obvious research application.
 
-See list of publications made with OIP (TUM OpenInfraPlatform) [here](./paper.bib).
+See list of publications made with OIP (TUM Open Infra Platform) [here](./paper.bib).
 
 > * You should be a major contributor to the software you are submitting.
 
