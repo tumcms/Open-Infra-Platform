@@ -22,7 +22,6 @@
 #include <buw.Engine.h>
 
 #include "OffConverter/OffModel.h"
-#include "IfcGeometryConverter/IfcGeometryModel.h"
 
 /*!
  * \brief Utility class to render \c GeometryModel data without UI for automated unit tests.
