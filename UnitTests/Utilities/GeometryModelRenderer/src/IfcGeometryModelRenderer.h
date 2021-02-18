@@ -55,17 +55,13 @@ public:
 
 protected:
 	/*!
-	* \brief Moves the camera such that the whole model is to be seen.
+	* \brief Returns extent of the ifc model in form of a bounding box.
 	*/
-	//virtual void fitViewToModel() const override;
-
 	virtual oip::BBox getExtent() const override;
 
     /*!
-     * \brief Renders the model and updates the front buffer so that the image is presented.
+     * \brief Renders the IfcGeometryEffect.
      */
-    //void repaint();
-
 	virtual void render() override;
 
 private:

@@ -55,8 +55,12 @@ protected:
 
 TEST_F(Helix, AllEdgesAndFacesRed) 
 {
-	EXPECT_THAT(model->geometry().vertices.size(), Eq(3000)); //not sure about .size()
-	EXPECT_THAT(model->geometry().indices.size(), Eq(3000)); //not sure about .size()
+	// check for the number of vertices 
+	// does not coincide with the number of vertices mentioned in the off file since some vertices are
+	// stored once for every triangle they are part of
+	EXPECT_THAT(model->geometry().vertices.size(), Eq(3000));
+	// check for the number of indices (see comment for vertices)
+	EXPECT_THAT(model->geometry().indices.size(), Eq(3000));
 }
 
 TEST_F(Helix, ImageIsSaved)
@@ -65,10 +69,10 @@ TEST_F(Helix, ImageIsSaved)
 	buw::Image4b image = rendererOff->captureImage();
 
 	// Act
-        buw::storeImage(testPath("helix.png").string(), image);
+    buw::storeImage(testPath("helix.png").string(), image);
 
 	// Assert
-        EXPECT_NO_THROW(buw::loadImage4b(testPath("helix.png").string()));
+    EXPECT_NO_THROW(buw::loadImage4b(testPath("helix.png").string()));
 }
 
 TEST_F(Helix, PlaneSurfaceViews)
@@ -157,7 +161,7 @@ TEST_F(Helix, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-
+	
     //buw::storeImage(testPath("helix_front_left_bottom.png").string(), image_front_left_bottom);
     //buw::storeImage(testPath("helix_front_right_bottom.png").string(), image_front_right_bottom);
     //buw::storeImage(testPath("helix_top_left_front.png").string(), image_top_left_front);

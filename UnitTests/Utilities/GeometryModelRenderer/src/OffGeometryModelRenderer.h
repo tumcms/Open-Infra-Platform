@@ -54,17 +54,13 @@ public:
 
 protected:
 	/*!
-	 * \brief Moves the camera such that the whole model is to be seen.
+	 * \brief Returns the extent of the loaded off model.
 	 */
-	//virtual void fitViewToModel() const override;
-
 	virtual oip::BBox getExtent() const override;
 
 	/*!
-	 * \brief Renders the model and updates the front buffer so that the image is presented.
+	 * \brief Renders the OffGeometryEffect.
 	 */
-	//void repaint();
-
 	virtual void render() override;
 
 private:

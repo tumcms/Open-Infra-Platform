@@ -32,15 +32,6 @@ IfcGeometryModelRenderer::~IfcGeometryModelRenderer()
     ifcGeometryEffect_.reset();
 }
 
-//void IfcGeometryModelRenderer::fitViewToModel() const
-//{
-//	cameraController_->fitToView((model_->getExtent().min() - model_->getExtent().center()).cast<float>(), 
-//		(model_->getExtent().max() - model_->getExtent().center()).cast<float>());
-//		
-//    cameraController_->tick(1.0f);
-//    camera_->tick(1.0f);
-//}
-
 oip::BBox IfcGeometryModelRenderer::getExtent() const
 {
 	return model_->getExtent();

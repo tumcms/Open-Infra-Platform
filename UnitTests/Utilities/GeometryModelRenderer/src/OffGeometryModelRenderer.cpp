@@ -42,15 +42,6 @@ void OffGeometryModelRenderer::setModel(const std::shared_ptr<oip::OffModel>& mo
 	fitViewToModel();
 }
 
-//void OffGeometryModelRenderer::fitViewToModel() const
-//{
-//	cameraController_->fitToView((model_->getExtent().min() - model_->getExtent().center()).cast<float>(),
-//		(model_->getExtent().max() - model_->getExtent().center()).cast<float>());
-//
-//	cameraController_->tick(1.0f);
-//	camera_->tick(1.0f);
-//}
-
 oip::BBox OffGeometryModelRenderer::getExtent() const
 {
 	return model_->getExtent();

@@ -58,25 +58,11 @@ GeometryModelRenderer::GeometryModelRenderer(const buw::ReferenceCounted<buw::IR
 	cbd0.data = nullptr;
 	worldBuffer_ = renderSystem_->createConstantBuffer(cbd0);
 
-	WorldBuffer world;
-	world.viewProjection = camera_->viewProjectionMatrix();
-	world.projection = camera_->frustum().projectionMatrix();
-	world.view = camera_->transformation().viewMatrix();
-	world.cam = (camera_->transformation().transformationMatrix() * buw::Vector4f(0, 0, 0, 1)).block<3, 1>(0, 0);
-	world.rotation = camera_->transformation().rotationMatrix();
-
-	buw::constantBufferDescription cbd;
-	cbd.sizeInBytes = sizeof(WorldBuffer);
-	cbd.data = &world;
-	worldBuffer_->uploadData(cbd);
-
-	//create a GeometryEffect in Ifc and Off class constructor
+	updateWorldBuffer();
 }
 
 GeometryModelRenderer::~GeometryModelRenderer()
 {
-	//model_.reset();
-	//ifcGeometryEffect_.reset();
 	worldBuffer_.reset();
 	viewport_.reset();
 	depthStencilMSAA_.reset();
@@ -99,8 +85,6 @@ void GeometryModelRenderer::repaint()
 	updateWorldBuffer();
 	render();
 	renderSystem_->present();
-
-	//ifcGeometryEffect_->render();
 }
 
 void GeometryModelRenderer::fitViewToModel() const

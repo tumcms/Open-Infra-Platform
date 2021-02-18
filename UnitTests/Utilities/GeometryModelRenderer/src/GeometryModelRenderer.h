@@ -27,6 +27,8 @@
 /*!
  * \brief Utility class to render \c GeometryModel data without UI for automated unit tests.
  *
+ * This class is a base class used by all types geometric visual tests.
+ * All supported file formats should implement a child class that specifies their behaviour.
  */
 class GeometryModelRenderer
 {
@@ -43,14 +45,6 @@ public:
 	virtual ~GeometryModelRenderer();
 
 	/*!
-	 * \brief Set the model to be rendered.
-	 * \param model
-	 * \note This also moves the camera to it's default position.
-	 */
-	//virtual void setModel(const std::shared_ptr<oip::IfcModel>& model);
-	//virtual void setModel(const std::shared_ptr<oip::OffModel>& model);
-
-	/*!
 	 * \brief Repaints and returns back buffer image.
 	 * \return Rendered back buffer image.
 	 */
@@ -63,6 +57,9 @@ public:
 	 */
 	void setViewDirection(const buw::eViewDirection &direction, const bool fitViewToModel = true);
 
+	/*!
+ 	 * \brief Returns a bounding box according to the size of the loaded model
+	 */
 	virtual oip::BBox getExtent() const = 0;
 
 protected:
@@ -83,6 +80,9 @@ protected:
 	 */
 	void repaint();
 	
+	/*!
+	 * \brief Calls the child class specific geometry effect.
+	 */
 	virtual void render() = 0;
 
 	/*!

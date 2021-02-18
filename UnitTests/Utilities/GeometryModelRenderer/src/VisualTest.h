@@ -22,9 +22,6 @@
 
 #include <namespace.h>
 
-#include <OffGeometryModelRenderer.h>
-#include <IfcGeometryModelRenderer.h>
-
 #include <buw.Engine.h>
 #include <buw.ImageProcessing.h>
 
@@ -32,29 +29,46 @@
 
 using namespace testing;
 
+
+/*! \brief The visual test class
+*
+* This class is used for implementing basic functionality for creating visual tests with the help of the gtest library.
+* Child classes implement format specific functionality.
+*/
 class VisualTest : public Test
 {
 protected:
     buw::ReferenceCounted<buw::IRenderSystem> renderSystem_ = nullptr;
 
+	//! constructor
     VisualTest();
 
+	//! destructor
     virtual ~VisualTest();
 
-    //virtual void SetUp() override = 0;
-
-    //virtual void TearDown() override = 0;
-
 public:
+	/*! 
+	 * \brief Captures an image of the rendered object.
+	 */
 	virtual buw::Image4b CaptureImage() = 0;
 
-	//virtual std::string TestName() const = 0; // provide the test name as specified in the solution and the folder structure
-
+	/*!
+	 * \brief Returns the executable path.
+	 */
 	boost::filesystem::path executablePath() const;
 
+	/*!
+	 * \brief Returns the file path.
+	 */
 	virtual boost::filesystem::path filePath(const std::string& relPath) const = 0;
 
+	/*!
+	 * \brief Returns path where the test file and reference images are stored.
+	 */
 	boost::filesystem::path dataPath(const std::string& relPath) const;
 
+	/*!
+	 * \brief Returns path where test specific data is stored.
+	 */
 	boost::filesystem::path testPath(const std::string& relPath) const;
 };
