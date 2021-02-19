@@ -93,7 +93,7 @@ namespace OpenInfraPlatform {
 					if (point.isOfType<typename IfcEntityTypesT::IfcCartesianPoint>())
 						return convertIfcCartesianPoint(point.as<typename IfcEntityTypesT::IfcCartesianPoint>());
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
 					// IfcPointByDistanceExpression
 					if (point.template isOfType<typename IfcEntityTypesT::IfcPointByDistanceExpression>())
 						return convertIfcDistanceExpressionOffsets(point.template as<typename IfcEntityTypesT::IfcPointByDistanceExpression>());
@@ -153,7 +153,7 @@ namespace OpenInfraPlatform {
 					return point * UnitConvert()->getLengthInMeterFactor();
                 }
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
 				/*! \brief Converts \c IfcPointByDistanceExpression to a 3D vector.
 				 *
 				 * \param[in]	point	\c IfcPointByDistanceExpression entity to be interpreted.
@@ -301,7 +301,7 @@ namespace OpenInfraPlatform {
                         return convertIfcAxis2Placement3D( placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());
                     }
 					// (4/3) IfcAxis2PlacementLinear SUBTYPE OF IfcPlacement
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
 					else if (placement.isOfType<typename IfcEntityTypesT::IfcAxis2PlacementLinear>()) {
 						return convertIfcAxis2PlacementLinear(placement.as<typename IfcEntityTypesT::IfcAxis2PlacementLinear>());
 					}
@@ -445,7 +445,7 @@ namespace OpenInfraPlatform {
                 }
 					
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
 				/*! \brief Converts \c IfcAxis2PlacementLinear to a transformation matrix.
 				 *
 				 * \param[in]	axis2placementLinear	\c IfcAxis2PlacementLinear entity to be interpreted.
@@ -671,7 +671,7 @@ namespace OpenInfraPlatform {
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 					bAlongHorizontal = distExpr->AlongHorizontal.value_or(true);
 #endif
-					// IFC4x3_RC2+ -> no attribute -> stays in 3D (if given)
+					// IFC4X3_RC3+ -> no attribute -> stays in 3D (if given)
 
 					// account for relative placement
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
