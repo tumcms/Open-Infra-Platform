@@ -711,7 +711,7 @@ namespace OpenInfraPlatform {
 
 						int numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
 
-						std::vector<carve::geom::vector<2> > circle_points;
+						std::vector<carve::geom::vector<2>> circle_points;
 						ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
 							circle_points, radius,
 							theta1, openingAngle,
@@ -963,11 +963,11 @@ namespace OpenInfraPlatform {
 					
 					// Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming begin.
 					carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim1Vec, trimmingPreference);
-					double startAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
+					double startAngle = getAngleOnCircle(conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
 					
 					// Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming end.
 					point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim2Vec, trimmingPreference);
-					double endAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
+					double endAngle = getAngleOnCircle(conicPositionMatrix * carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
 					
 					// Calculate an opening angle.
 					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
@@ -976,7 +976,7 @@ namespace OpenInfraPlatform {
 
 					const double circleCenter_x = 0.0;
 					const double circleCenter_y = 0.0;
-					std::vector<carve::geom::vector<2> > circle_points;
+					std::vector<carve::geom::vector<2>> circle_points;
 					ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
 						circle_points, circleRadius,
 						startAngle, openingAngle,
@@ -985,19 +985,19 @@ namespace OpenInfraPlatform {
 
 					if (circle_points.size() > 0) {
 						// apply position
+						std::vector<carve::geom::vector<3>> newCirclePoints;
 						for (unsigned int i = 0; i < circle_points.size(); ++i) {
 							carve::geom::vector<2>&  point = circle_points.at(i);
 							carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
 							point3d = conicPositionMatrix * point3d;
-							point.x = point3d.x;
-							point.y = point3d.y;
+							newCirclePoints.push_back(point3d);
 						}
 
-						GeomUtils::appendPointsToCurve(circle_points, targetVec);
+						GeomUtils::appendPointsToCurve(newCirclePoints, targetVec);
 						segmentStartPoints.push_back(carve::geom::VECTOR(
-							circle_points.at(0).x,
-							circle_points.at(0).y,
-							0));
+							newCirclePoints.at(0).x,
+							newCirclePoints.at(0).y,
+							newCirclePoints.at(0).z));
 					}
 					return;
 				}
