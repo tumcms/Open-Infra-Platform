@@ -1871,41 +1871,77 @@ namespace OpenInfraPlatform {
 				) const throw(...)
 				{
 					carve::geom::vector<3> centerToTrimPoint = trimPoint - circleCenter;
-
-					if (this->GeomSettings()->areEqual(centerToTrimPoint.length(), circleRadius)){
+					
+					if (this->GeomSettings()->areEqual(centerToTrimPoint.length(), circleRadius)) {
 						centerToTrimPoint.normalize();
-						double cosAngle = carve::geom::dot(centerToTrimPoint, carve::geom::vector<3>(carve::geom::VECTOR(1., 0., 0.)));
 
-						if (this->GeomSettings()->areEqual(abs(cosAngle), 0.)) {
-							if (centerToTrimPoint.y > 0.) {
-								return M_PI_2;
+						if (!this->GeomSettings()->areEqual(centerToTrimPoint.x, 0.) &&
+							!this->GeomSettings()->areEqual(centerToTrimPoint.y, 0.) &&
+							!this->GeomSettings()->areEqual(centerToTrimPoint.z, 0.))
+						{
+							throw oip::InconsistentGeometryException("It is not possible to get only one Angle in Three-dimensional space");
+						}
+						else if (!this->GeomSettings()->areEqual(centerToTrimPoint.x, 0.))
+						{
+							double cosAngle = carve::geom::dot(centerToTrimPoint, carve::geom::vector<3>(carve::geom::VECTOR(1., 0., 0.)));
+
+							if (!this->GeomSettings()->areEqual(centerToTrimPoint.y, 0.))
+							{
+								// Calculate angle in XY plane
+								return getAngleOnCircle2DPlane(carve::geom::VECTOR(centerToTrimPoint.x, centerToTrimPoint.y), cosAngle);
 							}
-							else if (centerToTrimPoint.y < 0.) {
-								return M_PI * 1.5;
+							else if (!this->GeomSettings()->areEqual(centerToTrimPoint.z, 0.))
+							{
+								// Calculate angle in XZ plane
+								return getAngleOnCircle2DPlane(carve::geom::VECTOR(centerToTrimPoint.x, centerToTrimPoint.z), cosAngle);
 							}
 							else {
-								throw oip::InconsistentGeometryException("Cosine and sine cannot be 0 simultaneously!");
+								// Angle is either 0 or Pi
+								return getAngleOnCircle2DPlane(carve::geom::VECTOR(centerToTrimPoint.x, 0.), cosAngle);
 							}
 						}
-						else {
-							if (centerToTrimPoint.y > 0.) {
-								return acos(cosAngle);
-							}
-							else if (centerToTrimPoint.y < 0.) {
-								return 2.0*M_PI - acos(cosAngle);
-							}
-							else {
-								if (centerToTrimPoint.x > 0.) {
-									return 0.;
-								}
-								else {
-									return M_PI;
-								}
-							}
+						else
+						{
+							// Calculate angle in YZ plane
+							double cosAngle = carve::geom::dot(centerToTrimPoint, carve::geom::vector<3>(carve::geom::VECTOR(0., 1., 0.)));
+							return getAngleOnCircle2DPlane(carve::geom::VECTOR(centerToTrimPoint.y, centerToTrimPoint.z), cosAngle);
 						}
+						
 					}
 					else {
 						throw oip::InconsistentGeometryException("The point is not located on the circle");
+					}
+					
+				}
+
+				double getAngleOnCircle2DPlane(const carve::geom::vector<2>& centerToTrimPoint, const double cosAngle) const noexcept(false)
+				{
+					if (this->GeomSettings()->areEqual(abs(cosAngle), 0.)) {
+						if (centerToTrimPoint.y > 0.) {
+							return M_PI_2;
+						}
+						else if (centerToTrimPoint.y < 0.) {
+							return M_PI * 1.5;
+						}
+						else {
+							throw oip::InconsistentGeometryException("Cosine and sine cannot be 0 simultaneously!");
+						}
+					}
+					else {
+						if (centerToTrimPoint.y > 0.) {
+							return acos(cosAngle);
+						}
+						else if (centerToTrimPoint.y < 0.) {
+							return 2.0*M_PI - acos(cosAngle);
+						}
+						else {
+							if (centerToTrimPoint.x > 0.) {
+								return 0.;
+							}
+							else {
+								return M_PI;
+							}
+						}
 					}
 				}
 
@@ -2028,9 +2064,9 @@ namespace OpenInfraPlatform {
 					{
 						switch (trimmingPreference)
 						{
-						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN:
-							return points[0]; 
 						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_PARAMETER:
+							return points[0]; 
+						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN:
 							return points[1];
 						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_UNSPECIFIED:
 							return points[0];
