@@ -47,10 +47,8 @@ OIP supports reading, visualization, navigating, and handling of:
 Multiple models can be loaded at once and compared between each other (see Figure \ref{fig:ifcpcd}).
 Their absolute position is accounted for, so the models can be checked against one another for internal differences based on location of elements.
 
-![A PCD model together with an IFC model loaded in OIP.\label{fig:ifcpcd}](../images/ifc_and_pcd.png)
-
 Additionally, OIP incorporates its own EXPRESS parser.
-This enables automatic code generation for IFC early-binding library [@Hecht:2019:FBI;@Amann:2018:Programming].
+This enables automatic code generation for IFC early-binding library [@Amann:2018:Diss; @Hecht:2019:FBI; @Amann:2018:Programming].
 As such, complete contents of IFC files can be interpreted and analysed.
 Moreover, type safety is guaranteed at compile time thus reducing the risk for bugs and errors.
 
@@ -58,6 +56,8 @@ Let it be stated here that OIP serves as a prototypical playground for developme
 The software architecture, features, and functionalities have been changed, added or removed as need be along the way.
 Nowadays, OIP uses the IFC schema and Cloud Compare's model as independent internal data models [@Hecht:2019:FBI].
 Major elements from previous developments were already realigned, while some (previously available) functionality is still considered as work-in-progress.
+
+![A PCD model together with an IFC model loaded in OIP.\label{fig:ifcpcd}](../images/ifc_and_pcd.png)
 
 # Statement of Need
 
@@ -81,7 +81,7 @@ There, first implementations of roads' geometric concepts and interfacing betwee
 
 Further on, many prototypical additions were implemented during the course of projects:
 
-- support for `IFC4x1`, `IFC4x2`, and `IFC4x3` candidate versions of the IFC standard during their development [@Jaud:2020:siBIM];
+- support for IFC4x1, IFC4x2, and IFC4x3 candidate versions of the IFC standard during their development [@Jaud:2020:siBIM];
 - support for first experimental IFC schema additions for tunnel [@vilgertshofer:2017:iwcce];
 - support for linked data approaches [@Beetz:2019:linkeddata];
 - support for PCD and their analysis [@Hecht:2018:PCdtoAlignment];
