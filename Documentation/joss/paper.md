@@ -1,5 +1,5 @@
 ---
-title: 'TUM Open Infra Platform: open source package for simultaneous viewing and analysis of digital models in the civil engineering domain'
+title: 'TUM Open Infra Platform: an open source package for simultaneous viewing and analysis of digital models in the civil engineering domain'
 tags:
   - building information modelling (BIM)
   - industry foundation classes (IFC)
@@ -12,19 +12,30 @@ authors:
     affiliation: 1
   - name: Helge Hecht
     affiliation: 1
-  - name: Julian Amann
-    affiliation: 1
   - name: Jonas Schlenger
     orcid: 0000-0002-4875-5117
+    affiliation: 1
+  - name: Julian Amann
     affiliation: 1
 affiliations:
  - name: Chair for Computational Modelling and Simulation, Technical University of Munich
    index: 1
-date: 24 December 2020
+date: 24 February 2021
 bibliography: paper.bib
 ---
 
 # Summary
+
+The Architecture, Engineering and Construction (AEC) is in its transition from 2D design processes to 3D object-oriented modelling. 
+Building Information Modeling (BIM) is steadily gaining importance replacing the conventional Computer-Aided Design (CAD) practices
+ and getting implemented in every aspect of the very complex software and stakeholder landscape [@Jaud:2019:iccce].
+As one of the main principles, BIM describes the idea of integrating all information
+ relevant to the life cycle of a structure, such as a tunnel, bridge, building or road, in a digital (BIM) model.
+The digital model is to ensure, among other things:
+
+- that all relevant data is available to all project participants;
+- that all data is in a consistent state (data integrity should be guaranteed);
+- that the data can be used efficiently [@Amann:2018:Diss].
 
 *TUM Open Infra Platform* (OIP) is an open source application for
  viewing and analysis of different BIM models used in the civil engineering field.
@@ -50,17 +61,13 @@ Major elements from previous developments were already realigned, while some (pr
 
 # Statement of Need
 
-The Architecture, Engineering and Construction (AEC) domain is in its transition from 2D design processes to 3D object-oriented modelling. 
-Building Information Modelling (BIM) is steadily gaining importance replacing the conventional Computer-Aided Design (CAD) practices
- and getting implemented in every aspect of the very complex software and stakeholder landscape [@Jaud:2019:iccce].
-
 During the development of IFC standard, a clear need for an independent software
  capable of consuming and producing IFC files according to the newly developed schemas was determined [@Amann:2015:OIP; @Amann:2015:ICCBEI].
 OIP fulfils this role by being open source, using CMake as a build system generator to support various platforms,
- and being based on well known libraries (like Qt and Boost).
+ and being based on well known libraries (like Qt, Eigen, and Boost).
 
 Additionally, the EXPRESS parser provided proved useful for automatically producing
- source code and data models from newly developed schemas as needed [@vilgertshofer:2017:iwcce].
+ source code and data models from newly developed schemas as needed [@vilgertshofer:2017:iwcce; @Amann:2018:Diss].
 
 With the emergence of Scan2BIM and ScanVsBIM research field (deriving from or merely comparing PCD and BIM models),
  a tool that supports both PCD and IFC data is a welcomed addition to the research processes.
@@ -69,7 +76,7 @@ Recently, OIP was selected among many other software solutions as best suitable 
 # Research Projects
 
 The origins of the software date back to the first projects expanding IFC for infrastructure
- at the Technical University of Munich [@Singer:2014:IfcAlignment; @Amann:2015:OIP; @Amann:2015:OKSTRA; @Amann:2015:ICCBEI].
+ at the Technical University of Munich [@Amann:2014:ECPPM; @Singer:2014:IfcAlignment; @Amann:2015:OIP; @Amann:2015:OKSTRA; @Amann:2015:ICCBEI].
 There, first implementations of roads' geometric concepts and interfacing between multiple standards (like IFC, OKSTRA and LandXML) have been explored.
 
 Further on, many prototypical additions were implemented during the course of projects:
@@ -80,7 +87,7 @@ Further on, many prototypical additions were implemented during the course of pr
 - support for PCD and their analysis [@Hecht:2018:PCdtoAlignment];
 - support for IFC Programming Language (IFC-PL) [@Amann:2018:Diss].
 
-![A view of road geometry on terrain's surface with clearly marked cuts and fills.](../images/Beta1_5_Windows8_1.png)
+![A perspective view of road geometry on terrain's surface with clearly marked fills.](../images/Beta1_5_Windows8_1.png)
 
 # Acknowledgements
 
