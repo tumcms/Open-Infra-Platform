@@ -20,7 +20,7 @@
 
 #include <fstream>
 
-#include <VisualTest.h>
+#include <IfcVisualTest.h>
 
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
@@ -28,14 +28,14 @@
 
 using namespace testing;
 
-class SurfaceModelTest : public VisualTest {
+class SurfaceModelTest : public IfcVisualTest {
 	protected:
 
 	// Test standard values
 	buw::Image4b _background = buw::Image4b(0, 0);
 
 	virtual void SetUp() override {
-		VisualTest::SetUp();
+                IfcVisualTest::SetUp();
 
 		express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
 
@@ -48,7 +48,7 @@ class SurfaceModelTest : public VisualTest {
 
 	virtual void TearDown() override {
 		express_model.reset();
-		VisualTest::TearDown();
+                IfcVisualTest::TearDown();
 	}
 
 	virtual std::string TestName() const { return "surface-model"; }

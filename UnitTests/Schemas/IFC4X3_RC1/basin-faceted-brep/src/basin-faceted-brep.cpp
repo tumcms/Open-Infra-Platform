@@ -18,7 +18,7 @@
 #include <EarlyBinding\IFC4X3_RC1\src\reader\IFC4X3_RC1Reader.h>
 #include <namespace.h>
 
-#include <VisualTest.h>
+#include <IfcVisualTest.h>
 
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
@@ -27,13 +27,13 @@
 
 using namespace testing;
 
-class BasinFacetedBrepTest : public VisualTest {
+class BasinFacetedBrepTest : public IfcVisualTest {
 protected:
 	// Test standard values
 	buw::Image4b _background = buw::Image4b(0, 0);
 
 	virtual void SetUp() override {
-		VisualTest::SetUp();
+                IfcVisualTest::SetUp();
 
 		express_model = OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader::FromFile(filename.string());
 
@@ -47,7 +47,7 @@ protected:
 
 	virtual void TearDown() override {
 		express_model.reset();
-		VisualTest::TearDown();
+                IfcVisualTest::TearDown();
 	}
 
 	virtual std::string TestName() const { return "basin-faceted-brep"; }
