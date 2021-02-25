@@ -308,7 +308,7 @@ std::vector<std::pair<double, double>> OpenInfraPlatform::Core::SplineInterpreta
 	return xy;
 }
 
-std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::movingAverageVariableWindow(std::vector<double>& data) const noexcept(true)
+std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::movingAverageVariableWindow(const std::vector<double>& data) const noexcept(true)
 {
 	// window size
 	const size_t range = variogrammGetRange(data);
@@ -351,7 +351,7 @@ std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpr
 	return value;
 }
 
-size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::variogrammGetRange(std::vector<double>& data) const noexcept(true)
+size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::variogrammGetRange(const std::vector<double>& data) const noexcept(true)
 {
 	// initialice vector of semivariogramm variable gamma(h)
 	std::vector<double> gamma(data.size() - 1, 0.0);
@@ -389,7 +389,7 @@ size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::vari
 	return range;
 }
 
-std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::numericDerivative(std::vector<std::pair<double, double>>& xy) const noexcept(true)
+std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::numericDerivative(const std::vector<std::pair<double, double>>& xy) const noexcept(true)
 {
 	// initialice target vector
 	std::vector<double> dy;
@@ -403,8 +403,8 @@ std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpr
 }
 
 std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::identifyElementEndpoints(
-	std::vector<std::pair<double, double>> lengthsWithCurvatures, 
-	std::vector<double> curvatureChange) const noexcept(true)
+	const std::vector<std::pair<double, double>>& lengthsWithCurvatures, 
+	const std::vector<double>& curvatureChange) const noexcept(true)
 {
 	// indicate the change of curvature
 	//   curvatureZero: threshold
@@ -428,7 +428,7 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpre
 }
 
 std::tuple<std::vector<int>, double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::indicateCurvatureChange(
-	std::vector<double> curvatureChange) const noexcept(true)
+	const std::vector<double>& curvatureChange) const noexcept(true)
 {
 	// threshold of curvatureChange
 	const double curvatureZero = obtainThreshold(curvatureChange);
@@ -444,7 +444,7 @@ std::tuple<std::vector<int>, double> OpenInfraPlatform::Core::SplineInterpretati
 	return { indicator, curvatureZero };
 }
 
-double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainThreshold(std::vector<double> data) const noexcept(true) {
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainThreshold(const std::vector<double>& data) const noexcept(true) {
 	// allows +- 25 % around 0
 	return std::max(
 		0.25 * std::abs(*std::min_element(data.begin(), data.end())),
@@ -452,8 +452,8 @@ double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obta
 }
 
 std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainElementsFromIndicator(
-	std::vector<int> indicator,
-	std::vector<std::pair<double, double>> lengthsWithCurvatures) const noexcept(true)
+	const std::vector<int>& indicator,
+	const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const noexcept(true)
 {
 	// predetermine variables with first point
 	// vector-id of each element start
@@ -494,8 +494,8 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpre
 }
 
 std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::correctShortElements(
-	std::vector<SplineInterpretationElement> elements, 
-	std::vector<double> curvatureChange, 
+	std::vector<SplineInterpretationElement>& elements, 
+	const std::vector<double>& curvatureChange, 
 	const double curvatureZero) const noexcept(true)
 {
 	// minimum length of an element
@@ -561,7 +561,7 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpre
 //	return indicateDataByAverage(obtainCurvatureFrom_lengthWithCurvatures(lengthsWithCurvatures), threshold);
 //}
 
-int OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::indicateDataByAverage(std::vector<double> data, double threshold) const noexcept(true)
+int OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::indicateDataByAverage(const std::vector<double>& data, const double threshold) const noexcept(true)
 {
 	// sum up all values (begin to end) of curvatureChange, divide by the number of values 
 	double average = std::accumulate(data.begin(), data.end(), 0.0) / data.size();
@@ -576,7 +576,7 @@ int OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::indicat
 }
 
 std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::mergeShortElements(
-	std::vector<SplineInterpretationElement> elements) const noexcept(true)
+	std::vector<SplineInterpretationElement>& elements) const noexcept(true)
 {
 	// run over elements vector from end to begin (because the vector becomes shorter)
 	for (size_t i = elements.size() - 1; i > 0; i--)
@@ -862,7 +862,7 @@ carve::geom::vector<3>  OpenInfraPlatform::Core::SplineInterpretation::SplineInt
 }
 
 carve::geom::vector<3> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tangentVectorFromDirection(
-	double direction) const noexcept(true)
+	const double direction) const noexcept(true)
 {
 	return carve::geom::VECTOR(cos(direction*M_PI / 180), sin(direction*M_PI / 180), 0.0);
 }

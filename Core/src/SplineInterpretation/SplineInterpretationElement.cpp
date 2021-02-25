@@ -53,14 +53,14 @@ OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::Spli
 
 
 // PUBLIC FUNCTIONS WITH ACCESS TO VARIABLES
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setLengthBSpline(double lengthBSpline) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setLengthBSpline(const double lengthBSpline) noexcept(true) {
 	lengthBSpline_ = lengthBSpline; }
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getLengthBSpline() const noexcept(true) {
 	return lengthBSpline_; }
 
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setindicator(int indicator) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setindicator(const int indicator) noexcept(true) {
 	indicator_ = indicator; }
 
 int OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getIndicator() const noexcept(true) {
@@ -71,10 +71,10 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement:
 	indices_.first = startIndice;
 	indices_.second = endIndice; }
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIndicesStart(size_t startIndice) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIndicesStart(const size_t startIndice) noexcept(true) {
 	indices_.first = startIndice; }
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIndicesEnd(size_t endIndice) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIndicesEnd(const size_t endIndice) noexcept(true) {
 	indices_.second = endIndice; }
 
 std::pair<size_t, size_t> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getIndices() const noexcept(true) {
@@ -87,7 +87,7 @@ size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElemen
 	return indices_.second; }
 
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setType(std::string type) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setType(const std::string type) noexcept(true) {
 	type_ = type; }
 
 std::string OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getType() const noexcept(true) {
@@ -101,35 +101,35 @@ carve::geom::vector<3> OpenInfraPlatform::Core::SplineInterpretation::SplineInte
 	return startpoint_;}
 
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setDirection(double direction) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setDirection(const double direction) noexcept(true) {
 	direction_ = direction; }
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getDirection() const noexcept(true) {
 	return direction_; }
 
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setLength(double length) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setLength(const double length) noexcept(true) {
 	length_ = length; }
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getLength() const noexcept(true) {
 	return length_;}
 
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setRadius(double radius) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setRadius(const double radius) noexcept(true) {
 	radius_ = radius; }
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getRadius() const noexcept(true) {
 	return radius_; }
 
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setAngle(double angle) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setAngle(const double angle) noexcept(true) {
 	angle_ = angle; }
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getAngle() const noexcept(true) {
 	return angle_; }
 
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIsCCW(int isCCW) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIsCCW(const int isCCW) noexcept(true) {
 	isCCW_ = isCCW; }
 
 int OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getIsCCW() const noexcept(true) {
@@ -143,21 +143,21 @@ carve::geom::vector<3> OpenInfraPlatform::Core::SplineInterpretation::SplineInte
 	return center_; }
 
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setRadiusClothoidStart(double radiusClothoidStart) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setRadiusClothoidStart(const double radiusClothoidStart) noexcept(true) {
 	radiusClothoidStart_ = radiusClothoidStart; }
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getRadiusClothoidStart() const noexcept(true) {
 	return radiusClothoidStart_; }
 
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setRadiusClothoidEnd(double radiusClothoidEnd) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setRadiusClothoidEnd(const double radiusClothoidEnd) noexcept(true) {
 	radiusClothoidEnd_ = radiusClothoidEnd; }
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getRadiusClothoidEnd() const noexcept(true) {
 	return radiusClothoidEnd_; }
 
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setClothoidparameterA(double clothoidparameter) noexcept(true) {
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setClothoidparameterA(const double clothoidparameter) noexcept(true) {
 	clothoidparameterA_ = clothoidparameter; }
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getClothoidparameterA() const noexcept(true) {

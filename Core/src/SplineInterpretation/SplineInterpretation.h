@@ -124,7 +124,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return				A vector of \c double, but the values are smoothed by the moving average.
 				 */
-				std::vector<double> movingAverageVariableWindow(std::vector<double>& data) const noexcept(true);
+				std::vector<double> movingAverageVariableWindow(const std::vector<double>& data) const noexcept(true);
 
 				/* \brief Calculates the range of a variogramm.
 				 *
@@ -136,7 +136,7 @@ namespace OpenInfraPlatform
 				 *
 				 * return	Range of a semivariogramm regarding the number of values.
 				 */
-				size_t variogrammGetRange(std::vector<double>& data) const noexcept(true);
+				size_t variogrammGetRange(const std::vector<double>& data) const noexcept(true);
 
 				/* \brief Calculates the numeric derivative of a vector of x-y-pairs.
 				 *
@@ -144,7 +144,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	A vector of the y-values of the derivative. The vector will be one shorter as the original vector of pairs.
 				 */
-				std::vector<double> numericDerivative(std::vector<std::pair<double, double>>& xy) const noexcept(true);
+				std::vector<double> numericDerivative(const std::vector<std::pair<double, double>>& xy) const noexcept(true);
 
 				/* \brief Identifies the endpoints of the alignment elements based on the change of curvature.
 				 *
@@ -161,7 +161,7 @@ namespace OpenInfraPlatform
 				 * \return	A vector of \c SplineInterpretationElement, per element the information about start-/end-point, length, and corresponding id in 'lengthWithCurvature' is stored.
 				 */
 				std::vector<SplineInterpretationElement> identifyElementEndpoints(
-					std::vector<std::pair<double, double>> lengthsWithCurvatures, std::vector<double> curvatureChange) const noexcept(true);
+					const std::vector<std::pair<double, double>>& lengthsWithCurvatures, const std::vector<double>& curvatureChange) const noexcept(true);
 
 				/* \brief Examines the value of curvature change by a relative threshold.
 				 *
@@ -171,7 +171,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return		Vector with indicators of curvature change and the (one) corresponding threshold value.
 				 */
-				std::tuple<std::vector<int>, double> indicateCurvatureChange(std::vector<double> curvatureChange) const noexcept(true);
+				std::tuple<std::vector<int>, double> indicateCurvatureChange(const std::vector<double>& curvatureChange) const noexcept(true);
 
 				/* \brief Returns the threshold value from a vector of \c double.
 				 *
@@ -181,7 +181,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	Threshold value.
 				 */
-				double obtainThreshold(std::vector<double> data) const noexcept(true);
+				double obtainThreshold(const std::vector<double>& data) const noexcept(true);
 
 				/* \brief Converts a vector of indicators to a vector of elements.
 				 *
@@ -194,7 +194,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	A vector of \c SplineInterpretationElement, per element the information about start-/end-point, length, and corresponding id in 'lengthWithCurvature' is stored.
 				 */
-				std::vector<SplineInterpretationElement> obtainElementsFromIndicator(std::vector<int> indicator, std::vector<std::pair<double, double>> lengthsWithCurvatures) const noexcept(true);
+				std::vector<SplineInterpretationElement> obtainElementsFromIndicator(const std::vector<int>& indicator, const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const noexcept(true);
 
 				/* \brief Corrects the indicator of short elements.
 				 *
@@ -208,7 +208,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	Vector of elements with corrected indicators.
 				 */
-				std::vector<SplineInterpretationElement> correctShortElements(std::vector<SplineInterpretationElement> elements, std::vector<double> curvatureChange, const double curvatureZero) const noexcept(true);
+				std::vector<SplineInterpretationElement> correctShortElements(std::vector<SplineInterpretationElement>& elements, const std::vector<double>& curvatureChange, const double curvatureZero) const noexcept(true);
 
 				//int indicateDataByAverage(std::vector<std::pair<double, double>> lengthsWithCurvatures, double threshold) const throw(...);
 
@@ -224,7 +224,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	The obtained indicator.
 				 */
-				int indicateDataByAverage(std::vector<double> data, double threshold) const noexcept(true);
+				int indicateDataByAverage(const std::vector<double>& data, const double threshold) const noexcept(true);
 
 				/* \brief Contiguous elements with an identical indicator will be merged to one large element.
 				 *
@@ -232,7 +232,7 @@ namespace OpenInfraPlatform
 
 				 * \return	Vector with merged alignment elements.
 				 */
-				std::vector<SplineInterpretationElement> mergeShortElements(std::vector<SplineInterpretationElement> elements) const noexcept(true);
+				std::vector<SplineInterpretationElement> mergeShortElements(std::vector<SplineInterpretationElement>& elements) const noexcept(true);
 
 				/* \brief	Obtains the type and its parameter of the alignment elements.
 				 *
@@ -346,7 +346,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	Tangential vector of the given direction / angle.
 				 */
-				carve::geom::vector<3> tangentVectorFromDirection(double direction) const noexcept(true);
+				carve::geom::vector<3> tangentVectorFromDirection(const double direction) const noexcept(true);
 
 				/* \brief	Prints the obtained information of all alignment elements as result into the console window.
 				 *
