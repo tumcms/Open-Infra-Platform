@@ -45,7 +45,7 @@ namespace OpenInfraPlatform
 				 * During execution, the user decides whether the input data will be sketched on screen or
 				 * will be loaded from a file. The function interprets the data and convert it to an alignment.
 				 */
-				void convertSketchToAlignment() const throw(...);
+				void convertSketchToAlignment() const noexcept(false);
 
 			private:
 				// VARIABLES
@@ -63,7 +63,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return A vector of the control points.
 				 */
-				std::vector<carve::geom::vector<3>> obtainControlPoints() const throw(...);
+				std::vector<carve::geom::vector<3>> obtainControlPoints() const noexcept(false);
 
 				/*! \brief Saves the control points or points from sketch input into a file.
 				 *
@@ -75,7 +75,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \param [in]	controlPoints	The control points or points from sketch input, which are in a \c std::vector<carve::geom::vector<3>>.
 				 */
-				void saveControlPointsIntoFile(const std::vector<carve::geom::vector<3>>& points) const throw(...);
+				void saveControlPointsIntoFile(const std::vector<carve::geom::vector<3>>& points) const noexcept(true);
 
 				/*! \brief Loads the control points or points from a previous sketch input from a file.
 				 *
@@ -86,7 +86,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	A vector of the control points.
 				 */
-				std::vector<carve::geom::vector<3>> loadControlPointsFromFile() const throw(...);
+				std::vector<carve::geom::vector<3>> loadControlPointsFromFile() const noexcept(false);
 
 				/*! \brief Generates the open uniform knot array of a B-Spline.
 				 *
@@ -101,7 +101,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return		The open uniform knots array.
 				 */
-				std::vector<double> obtainKnotArrayOpenUniform(const size_t nPoints, const int order) const throw(...);
+				std::vector<double> obtainKnotArrayOpenUniform(const size_t nPoints, const int order) const noexcept(true);
 
 				/*! \brief Applies the moving average with variable window on the y-data of \c xy.
 				 *
@@ -113,7 +113,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return			The pair from the input, but the y-values are smoothed by the moving average.
 				 */
-				std::vector<std::pair<double, double>> movingAverageVariableWindow(std::vector<std::pair<double, double>>& xy) const throw(...);
+				std::vector<std::pair<double, double>> movingAverageVariableWindow(std::vector<std::pair<double, double>>& xy) const noexcept(true);
 
 				/*! \brief Applies the moving average with variable window on the vector \c data.
 				 *
@@ -124,7 +124,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return				A vector of \c double, but the values are smoothed by the moving average.
 				 */
-				std::vector<double> movingAverageVariableWindow(std::vector<double>& data) const throw(...);
+				std::vector<double> movingAverageVariableWindow(std::vector<double>& data) const noexcept(true);
 
 				/* \brief Calculates the range of a variogramm.
 				 *
@@ -136,7 +136,7 @@ namespace OpenInfraPlatform
 				 *
 				 * return	Range of a semivariogramm regarding the number of values.
 				 */
-				size_t variogrammGetRange(std::vector<double>& data) const throw(...);
+				size_t variogrammGetRange(std::vector<double>& data) const noexcept(true);
 
 				/* \brief Calculates the numeric derivative of a vector of x-y-pairs.
 				 *
@@ -144,7 +144,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	A vector of the y-values of the derivative. The vector will be one shorter as the original vector of pairs.
 				 */
-				std::vector<double> numericDerivative(std::vector<std::pair<double, double>>& xy) const throw(...);
+				std::vector<double> numericDerivative(std::vector<std::pair<double, double>>& xy) const noexcept(true);
 
 				/* \brief Identifies the endpoints of the alignment elements based on the change of curvature.
 				 *
@@ -161,7 +161,7 @@ namespace OpenInfraPlatform
 				 * \return	A vector of \c SplineInterpretationElement, per element the information about start-/end-point, length, and corresponding id in 'lengthWithCurvature' is stored.
 				 */
 				std::vector<SplineInterpretationElement> identifyElementEndpoints(
-					std::vector<std::pair<double, double>> lengthsWithCurvatures, std::vector<double> curvatureChange) const throw(...);
+					std::vector<std::pair<double, double>> lengthsWithCurvatures, std::vector<double> curvatureChange) const noexcept(true);
 
 				/* \brief Examines the value of curvature change by a relative threshold.
 				 *
@@ -171,7 +171,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return		Vector with indicators of curvature change and the (one) corresponding threshold value.
 				 */
-				std::tuple<std::vector<int>, double> indicateCurvatureChange(std::vector<double> curvatureChange) const throw(...);
+				std::tuple<std::vector<int>, double> indicateCurvatureChange(std::vector<double> curvatureChange) const noexcept(true);
 
 				/* \brief Returns the threshold value from a vector of \c double.
 				 *
@@ -181,7 +181,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	Threshold value.
 				 */
-				double obtainThreshold(std::vector<double> data) const throw(...);
+				double obtainThreshold(std::vector<double> data) const noexcept(true);
 
 				/* \brief Converts a vector of indicators to a vector of elements.
 				 *
@@ -194,7 +194,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	A vector of \c SplineInterpretationElement, per element the information about start-/end-point, length, and corresponding id in 'lengthWithCurvature' is stored.
 				 */
-				std::vector<SplineInterpretationElement> obtainElementsFromIndicator(std::vector<int> indicator, std::vector<std::pair<double, double>> lengthsWithCurvatures) const throw(...);
+				std::vector<SplineInterpretationElement> obtainElementsFromIndicator(std::vector<int> indicator, std::vector<std::pair<double, double>> lengthsWithCurvatures) const noexcept(true);
 
 				/* \brief Corrects the indicator of short elements.
 				 *
@@ -208,7 +208,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	Vector of elements with corrected indicators.
 				 */
-				std::vector<SplineInterpretationElement> correctShortElements(std::vector<SplineInterpretationElement> elements, std::vector<double> curvatureChange, const double curvatureZero) const throw(...);
+				std::vector<SplineInterpretationElement> correctShortElements(std::vector<SplineInterpretationElement> elements, std::vector<double> curvatureChange, const double curvatureZero) const noexcept(true);
 
 				//int indicateDataByAverage(std::vector<std::pair<double, double>> lengthsWithCurvatures, double threshold) const throw(...);
 
@@ -224,7 +224,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	The obtained indicator.
 				 */
-				int indicateDataByAverage(std::vector<double> data, double threshold) const throw(...);
+				int indicateDataByAverage(std::vector<double> data, double threshold) const noexcept(true);
 
 				/* \brief Contiguous elements with an identical indicator will be merged to one large element.
 				 *
@@ -232,7 +232,7 @@ namespace OpenInfraPlatform
 
 				 * \return	Vector with merged alignment elements.
 				 */
-				std::vector<SplineInterpretationElement> mergeShortElements(std::vector<SplineInterpretationElement> elements) const throw(...);
+				std::vector<SplineInterpretationElement> mergeShortElements(std::vector<SplineInterpretationElement> elements) const noexcept(true);
 
 				/* \brief	Obtains the type and its parameter of the alignment elements.
 				 *
@@ -248,7 +248,7 @@ namespace OpenInfraPlatform
 				std::vector<SplineInterpretationElement> identifyElementTypes(
 					const std::vector<carve::geom::vector<3>>& bsplinePoints,
 					const std::vector<std::pair<double, double>>& lengthsWithCurvatures,
-					std::vector<SplineInterpretationElement>& elements) const throw(...);
+					std::vector<SplineInterpretationElement>& elements) const noexcept(true);
 
 				/* \brief	The function sets the parameters of a straight.
 				 *
@@ -261,7 +261,7 @@ namespace OpenInfraPlatform
 				 * \return	\c element object with the parameters of the straight.
 				 */
 				SplineInterpretationElement obtainStraight(
-					const carve::geom::vector<3>& startPoint, const carve::geom::vector<3>& endPoint, SplineInterpretationElement& element) const throw(...);
+					const carve::geom::vector<3>& startPoint, const carve::geom::vector<3>& endPoint, SplineInterpretationElement& element) const noexcept(true);
 
 				/* \brief	The function sets the parameters of a circular arc.
 				 *
@@ -282,7 +282,7 @@ namespace OpenInfraPlatform
 					const carve::geom::vector<3>& midPoint,
 					const carve::geom::vector<3>& endPoint,
 					const int curvatureIndicator,
-					SplineInterpretationElement& element) const throw(...);
+					SplineInterpretationElement& element) const noexcept(true);
 
 				/* \brief	The function sets the parameters of a clothoid.
 				 *
@@ -297,10 +297,10 @@ namespace OpenInfraPlatform
 				 * \return	\c element object with the parameters of the clothoid.
 				 */
 				SplineInterpretationElement obtainClothoid(
-					const SplineInterpretationElement previousElement,
-					const SplineInterpretationElement nextElement,
+					const SplineInterpretationElement& previousElement,
+					const SplineInterpretationElement& nextElement,
 					const carve::geom::vector<3>& startPoint,
-					SplineInterpretationElement& element) const throw(...);
+					SplineInterpretationElement& element) const noexcept(true);
 
 				/* \brief	Calculates the angle in degree measured in xy-plane between two 3D vectors.
 				 *
@@ -311,7 +311,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	Angle [degree] between vectors.
 				 */
-				double angleOfVectors2D(const carve::geom::vector<3>& a, const carve::geom::vector<3>& b) const throw(...);
+				double angleOfVectors2D(const carve::geom::vector<3>& a, const carve::geom::vector<3>& b) const noexcept(true);
 
 				/* \brief Calculates the direction / angle of an tangential straight at one point of an arc, relative to the positive x-axis, in xy-plane.
 				 *
@@ -323,7 +323,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	Tangential direction at the given tangent point.
 				 */
-				double tangentDirection(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const throw(...);
+				double tangentDirection(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const noexcept(true);
 
 				/* \brief Calculates the 2D tangential vector at one point of an arc.
 				 *
@@ -335,7 +335,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	Tangential vector at the given tangent point.
 				 */
-				carve::geom::vector<3> tangentVector(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const throw(...);
+				carve::geom::vector<3> tangentVector(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const noexcept(true);
 
 				/* \brief	Gives an unit vector which shows in the direction of the given angle \c direction, relative to the positive x-axis.
 				 *
@@ -346,13 +346,13 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	Tangential vector of the given direction / angle.
 				 */
-				carve::geom::vector<3> tangentVectorFromDirection(double direction) const throw(...);
+				carve::geom::vector<3> tangentVectorFromDirection(double direction) const noexcept(true);
 
 				/* \brief	Prints the obtained information of all alignment elements as result into the console window.
 				 *
 				 * \param[in]	elements	Vector of \c SplineInterpretationElement which contains all obtained information about the alignment elements.
 				 */
-				void printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const;
+				void printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const noexcept(true);
 
 
 				/*! \brief Displays the vector of length with curvature in the console window.
@@ -361,7 +361,7 @@ namespace OpenInfraPlatform
 				 *
 				 * param[in] lengthsWithCurvatures	The vector of length with curvature which is the return of \c SplineUtilities::computeCurvatureOfBSplineCurveWithKnots
 				 */
-				void debugFunction_printCurvatureInConsolWindow(const std::vector<std::pair<double, double>>&) const throw(...);
+				void debugFunction_printCurvatureInConsolWindow(const std::vector<std::pair<double, double>>&) const noexcept(true);
 
 				/*! \brief Displays the coordinates of a \c std::vector<carve::geom::vector<3>> in the console window.
 				 *
@@ -370,7 +370,7 @@ namespace OpenInfraPlatform
 				 *
 				 * param[in] lengthsWithCurvatures	The vector of length with curvature which is the return of \c SplineUtilities::computeCurvatureOfBSplineCurveWithKnots
 				 */
-				void debugFunction_printVectorOfPointsInConsolWindow(const std::vector<carve::geom::vector<3>>&) const throw(...);
+				void debugFunction_printVectorOfPointsInConsolWindow(const std::vector<carve::geom::vector<3>>&) const noexcept(true);
 
 				/*! \brief Displays a \c std::vector<double> in the console window.
 				 *
@@ -379,7 +379,7 @@ namespace OpenInfraPlatform
 				 *
 				 * param[in] curvatureChange	The vector of \c double which should be displayed.
 				 */
-				void debugFunction_printCurvatureChangeInConsolWindow(const std::vector<double> curvatureChange) const throw(...);
+				void debugFunction_printCurvatureChangeInConsolWindow(const std::vector<double>& curvatureChange) const noexcept(true);
 
 			}; // end of class SplineInterpretation
 		} // end namespace SplineInterpretation

@@ -36,7 +36,7 @@ OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::SplineInter
 {}
 
 // PUBLIC FUNCTIONS
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::convertSketchToAlignment() const throw(...)
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::convertSketchToAlignment() const noexcept(false)
 {
 	// obtain control points from sketch or from file
 	// (from file is from past sketch or from [external] test data)
@@ -112,7 +112,7 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::conver
 }
 
 // PRIVATE FUNCTIONS
-std::vector<carve::geom::vector<3>> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainControlPoints() const throw(...)
+std::vector<carve::geom::vector<3>> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainControlPoints() const noexcept(false)
 {
 	// initialice MessageBox
 	QMessageBox msgBox;
@@ -147,7 +147,7 @@ std::vector<carve::geom::vector<3>> OpenInfraPlatform::Core::SplineInterpretatio
 	return controlPoints;
 }
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::saveControlPointsIntoFile(const std::vector<carve::geom::vector<3>>& points) const throw(...)
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::saveControlPointsIntoFile(const std::vector<carve::geom::vector<3>>& points) const noexcept(true)
 {
 	// get number of files, which are in the default folder of sketches
 	const QString path = "testdata/StrokeToAlignment/";
@@ -196,7 +196,7 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::saveCo
 	}
 }
 
-std::vector<carve::geom::vector<3>> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::loadControlPointsFromFile() const throw(...)
+std::vector<carve::geom::vector<3>> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::loadControlPointsFromFile() const noexcept(false)
 {
 	// from a file open dialog, get file name (including path) which should be opened
 	const std::string fileName = QFileDialog::getOpenFileName(nullptr, // parent Widget
@@ -271,7 +271,7 @@ std::vector<carve::geom::vector<3>> OpenInfraPlatform::Core::SplineInterpretatio
 	}
 }
 
-std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainKnotArrayOpenUniform(const size_t nPoints, const int order) const throw(...)
+std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainKnotArrayOpenUniform(const size_t nPoints, const int order) const noexcept(true)
 {
 	std::vector<double> knotArray;
 	// .resize sets all vector values to 0
@@ -288,7 +288,7 @@ std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpr
 	return knotArray;
 }
 
-std::vector<std::pair<double, double>> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::movingAverageVariableWindow(std::vector<std::pair<double, double>>& xy) const throw(...)
+std::vector<std::pair<double, double>> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::movingAverageVariableWindow(std::vector<std::pair<double, double>>& xy) const noexcept(true)
 {
 	// get y-values into data vector
 	std::vector<double> data;
@@ -308,7 +308,7 @@ std::vector<std::pair<double, double>> OpenInfraPlatform::Core::SplineInterpreta
 	return xy;
 }
 
-std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::movingAverageVariableWindow(std::vector<double>& data) const throw(...)
+std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::movingAverageVariableWindow(std::vector<double>& data) const noexcept(true)
 {
 	// window size
 	const size_t range = variogrammGetRange(data);
@@ -351,7 +351,7 @@ std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpr
 	return value;
 }
 
-size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::variogrammGetRange(std::vector<double>& data) const throw(...)
+size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::variogrammGetRange(std::vector<double>& data) const noexcept(true)
 {
 	// initialice vector of semivariogramm variable gamma(h)
 	std::vector<double> gamma(data.size() - 1, 0.0);
@@ -389,7 +389,7 @@ size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::vari
 	return range;
 }
 
-std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::numericDerivative(std::vector<std::pair<double, double>>& xy) const throw(...)
+std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::numericDerivative(std::vector<std::pair<double, double>>& xy) const noexcept(true)
 {
 	// initialice target vector
 	std::vector<double> dy;
@@ -404,7 +404,7 @@ std::vector<double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpr
 
 std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::identifyElementEndpoints(
 	std::vector<std::pair<double, double>> lengthsWithCurvatures, 
-	std::vector<double> curvatureChange) const throw(...)
+	std::vector<double> curvatureChange) const noexcept(true)
 {
 	// indicate the change of curvature
 	//   curvatureZero: threshold
@@ -428,7 +428,7 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpre
 }
 
 std::tuple<std::vector<int>, double> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::indicateCurvatureChange(
-	std::vector<double> curvatureChange) const throw(...)
+	std::vector<double> curvatureChange) const noexcept(true)
 {
 	// threshold of curvatureChange
 	const double curvatureZero = obtainThreshold(curvatureChange);
@@ -444,7 +444,7 @@ std::tuple<std::vector<int>, double> OpenInfraPlatform::Core::SplineInterpretati
 	return { indicator, curvatureZero };
 }
 
-double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainThreshold(std::vector<double> data) const throw(...) {
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainThreshold(std::vector<double> data) const noexcept(true) {
 	// allows +- 25 % around 0
 	return std::max(
 		0.25 * std::abs(*std::min_element(data.begin(), data.end())),
@@ -453,7 +453,7 @@ double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obta
 
 std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainElementsFromIndicator(
 	std::vector<int> indicator,
-	std::vector<std::pair<double, double>> lengthsWithCurvatures) const throw(...)
+	std::vector<std::pair<double, double>> lengthsWithCurvatures) const noexcept(true)
 {
 	// predetermine variables with first point
 	// vector-id of each element start
@@ -496,7 +496,7 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpre
 std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::correctShortElements(
 	std::vector<SplineInterpretationElement> elements, 
 	std::vector<double> curvatureChange, 
-	const double curvatureZero) const throw(...)
+	const double curvatureZero) const noexcept(true)
 {
 	// minimum length of an element
 	const double minLength = 50;
@@ -561,7 +561,7 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpre
 //	return indicateDataByAverage(obtainCurvatureFrom_lengthWithCurvatures(lengthsWithCurvatures), threshold);
 //}
 
-int OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::indicateDataByAverage(std::vector<double> data, double threshold) const throw(...)
+int OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::indicateDataByAverage(std::vector<double> data, double threshold) const noexcept(true)
 {
 	// sum up all values (begin to end) of curvatureChange, divide by the number of values 
 	double average = std::accumulate(data.begin(), data.end(), 0.0) / data.size();
@@ -576,7 +576,7 @@ int OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::indicat
 }
 
 std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::mergeShortElements(
-	std::vector<SplineInterpretationElement> elements) const throw(...)
+	std::vector<SplineInterpretationElement> elements) const noexcept(true)
 {
 	// run over elements vector from end to begin (because the vector becomes shorter)
 	for (size_t i = elements.size() - 1; i > 0; i--)
@@ -597,7 +597,7 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpre
 std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::identifyElementTypes(
 	const std::vector<carve::geom::vector<3>>& bsplinePoints,
 	const std::vector<std::pair<double, double>>& lengthsWithCurvatures,
-	std::vector<SplineInterpretationElement>& elements) const throw(...)
+	std::vector<SplineInterpretationElement>& elements) const noexcept(true)
 {
 	// parameters over complete curve
 	//   get curvature values from lengthsWithCurvatures into curvature vector
@@ -709,7 +709,7 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpre
 SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainStraight(
 	const carve::geom::vector<3>& startPoint,
 	const carve::geom::vector<3>& endPoint,
-	SplineInterpretationElement& element) const throw(...)
+	SplineInterpretationElement& element) const noexcept(true)
 {
 	element.setType("straight");
 	element.setStartpoint(startPoint);
@@ -729,7 +729,7 @@ SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::Splin
 	const carve::geom::vector<3>& midPoint,
 	const carve::geom::vector<3>& endPoint,
 	const int curvatureIndicator,
-	SplineInterpretationElement& element) const throw(...)
+	SplineInterpretationElement& element) const noexcept(true)
 {
 	element.setType("arc");
 	element.setStartpoint(startPoint);
@@ -771,10 +771,10 @@ SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::Splin
 }
 
 SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::obtainClothoid(
-	const SplineInterpretationElement previousElement,
-	const SplineInterpretationElement nextElement,
+	const SplineInterpretationElement& previousElement,
+	const SplineInterpretationElement& nextElement,
 	const carve::geom::vector<3>& startPoint,
-	SplineInterpretationElement& element) const throw(...) 
+	SplineInterpretationElement& element) const noexcept(true)
 {
 	element.setType("clothoid");
 	element.setStartpoint(startPoint);
@@ -830,7 +830,7 @@ SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::Splin
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::angleOfVectors2D(
 	const carve::geom::vector<3>& a, 
-	const carve::geom::vector<3>& b) const throw(...)
+	const carve::geom::vector<3>& b) const noexcept(true)
 {
 	// angle in degree
 	return acos((a.x*b.x + a.y*b.y)
@@ -840,7 +840,7 @@ double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::angl
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tangentDirection(
 	const carve::geom::vector<3>& centerPoint, 
 	const carve::geom::vector<3>& tangentPoint, 
-	const int isCCW) const throw(...)
+	const int isCCW) const noexcept(true)
 {
 	return angleOfVectors2D(
 		carve::geom::VECTOR(1.0, 0.0, 0.0),
@@ -850,7 +850,7 @@ double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tang
 carve::geom::vector<3>  OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tangentVector(
 	const carve::geom::vector<3>& centerPoint, 
 	const carve::geom::vector<3>& tangentPoint, 
-	const int isCCW) const throw(...)
+	const int isCCW) const noexcept(true)
 {
 	// vector from center to tangent point
 	const carve::geom::vector<3> radialVector = tangentPoint - centerPoint;
@@ -862,12 +862,12 @@ carve::geom::vector<3>  OpenInfraPlatform::Core::SplineInterpretation::SplineInt
 }
 
 carve::geom::vector<3> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tangentVectorFromDirection(
-	double direction) const throw(...)
+	double direction) const noexcept(true)
 {
 	return carve::geom::VECTOR(cos(direction*M_PI / 180), sin(direction*M_PI / 180), 0.0);
 }
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const noexcept(true)
 {
 	using std::cout;
 	using std::endl;
@@ -911,7 +911,7 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printE
 }
 
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::debugFunction_printCurvatureInConsolWindow(
-	const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const throw(...)
+	const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const noexcept(true)
 {
 	using std::cout;
 	using std::endl;
@@ -925,7 +925,7 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::debugF
 }
 
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::debugFunction_printVectorOfPointsInConsolWindow(
-	const std::vector<carve::geom::vector<3>>& points) const throw(...)
+	const std::vector<carve::geom::vector<3>>& points) const noexcept(true)
 {
 	using std::cout;
 	using std::endl;
@@ -939,7 +939,7 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::debugF
 }
 
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::debugFunction_printCurvatureChangeInConsolWindow(
-	const std::vector<double> curvatureChange) const throw(...)
+	const std::vector<double>& curvatureChange) const noexcept(true)
 {
 	using std::cout;
 	using std::endl;
