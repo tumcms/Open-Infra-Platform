@@ -20,6 +20,8 @@
 
 #define _USE_MATH_DEFINES 
 #include <math.h>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
 
 #include "CarveHeaders.h"
 
@@ -956,7 +958,10 @@ namespace OpenInfraPlatform {
 					//	END_ENTITY;
 					// **************************************************************************************************************************
 					// Determine position
-					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
+					//carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
+
+					boost::numeric::ublas::matrix<double> conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
+					boost::numeric::ublas::matrix<double> inverseConicPositionMatrix = -conicPositionMatrix;
 
 					// Get radius
 					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
