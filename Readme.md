@@ -1,5 +1,7 @@
 # TUM Open Infra Platform
 
+[![status](https://joss.theoj.org/papers/ab5757cf53fc55c74f4948e8b336a7ca/status.svg)](https://joss.theoj.org/papers/ab5757cf53fc55c74f4948e8b336a7ca)
+
 ## Info
 
 `TUM Open Infra Platform` (OIP in short) is a software for checking and viewing IFC data. 
