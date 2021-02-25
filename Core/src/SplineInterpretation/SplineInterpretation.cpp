@@ -239,7 +239,7 @@ std::vector<carve::geom::vector<3>> OpenInfraPlatform::Core::SplineInterpretatio
 			while (getline(file, lineString))
 			{
 				// convert string to stringstream
-				std::stringstream line(lineString);
+				line.str(lineString);
 
 				// obtain x, y and z from line
 				// get first number in stringstream 'line', save in 'dStr', convert to double
@@ -263,7 +263,7 @@ std::vector<carve::geom::vector<3>> OpenInfraPlatform::Core::SplineInterpretatio
 
 		return points;
 	}
-	catch (const std::exception& e)
+	catch (const std::exception&)
 	{
 		// in case of an error, return an empty vector
 		std::vector<carve::geom::vector<3>> pointsEmpty;
@@ -368,9 +368,10 @@ size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::vari
 		gamma[h - 1] /= (2 * N);
 	}
 
-	// initialice range with nonsense value
-	size_t range = -1;
 	size_t rangeMax = std::min((size_t)100, gamma.size() - 1);
+
+	// if no range will be set in the for-loop below, it's (temporarlly) the max. step size
+	size_t range = rangeMax;
 
 	for (size_t h = 0; h < rangeMax; h++)
 	{
@@ -381,10 +382,6 @@ size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::vari
 			break;
 		}
 	}
-
-	// if no range was set, it's (temporarlly) the max. step size
-	if (range == -1)
-		range = rangeMax;
 
 	return range;
 }
@@ -780,7 +777,10 @@ SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::Splin
 	element.setStartpoint(startPoint);
 
 	// radius of clothoid (for calculation)
-	double radius;
+	//   0 is just a preset value;
+	//   the actual one will be obtained surely in one of the following if-cases,
+	//   because of the requirement of one arc at one clothoid end
+	double radius = 0;
 
 	// tangential vector at element start
 	carve::geom::vector<3> tangentStart;
@@ -881,7 +881,7 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printE
 		std::string elementType = element.getType();
 
 		cout << endl;
-		printf("Element %i: %s\n", i + 1, elementType.c_str());
+		printf("Element %zu: %s\n", i + 1, elementType.c_str());
 
 		if (elementType == "straight" || elementType == "arc" || elementType == "clothoid")
 		{
