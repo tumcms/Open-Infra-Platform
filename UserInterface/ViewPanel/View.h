@@ -156,6 +156,7 @@ namespace OpenInfraPlatform
 
 			QAction* cameraGhostModeAction_;
 			QAction* homeAction_;
+			QAction* playAction_;
             QAction* snowAction_;
 
 			Viewport*	viewport_;
