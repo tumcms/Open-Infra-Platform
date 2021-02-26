@@ -136,6 +136,7 @@ namespace OpenInfraPlatform
 			void on_home();
 			void on_actionToggleCameraGhostMode();
             void on_actionToggleSnow();
+			void on_actionTogglePlay();
 
 		private:
 			QMenu* menuView_;

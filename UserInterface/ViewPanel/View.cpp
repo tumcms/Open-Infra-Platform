@@ -127,6 +127,7 @@ OpenInfraPlatform::UserInterface::View::View() : QDockWidget(), // no parent
 	QObject::connect(homeAction_, &QAction::triggered, this, &View::on_home);
 	QObject::connect(cameraGhostModeAction_, &QAction::triggered, this, &View::on_actionToggleCameraGhostMode);
     QObject::connect(snowAction_, &QAction::triggered, this, &View::on_actionToggleSnow);
+	QObject::connect(playAction_, &QAction::triggered, this, &View::on_actionTogglePlay);
 
 	setFeatures(DockWidgetFeature::NoDockWidgetFeatures);
 
@@ -584,6 +585,15 @@ void OpenInfraPlatform::UserInterface::View::on_actionToggleSnow()
         snowAction_->setIcon(snowUnselectedIcon);
 }
 
+
+void OpenInfraPlatform::UserInterface::View::on_actionTogglePlay()
+{
+	if (playIcon.isDetached())
+		playAction_->setIcon(playIcon);
+	else
+		playAction_->setIcon(pauseIcon);
+	viewport_->toggleRotation();
+}
 
 void OpenInfraPlatform::UserInterface::View::cameraControlModeChanged()
 {
