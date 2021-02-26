@@ -608,9 +608,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionClearMenu_triggered(
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
 	QString head, desc;
 
-	head = tr("<h2><b>TUM Open Infra Platform 2020</b><br/></h2>");
+	head = tr("<h2><b>TUM Open Infra Platform 2021</b><br/></h2>");
 
-	const QString copyright(tr("Copyright &copy; 2020"));
+	const QString copyright(tr("Copyright &copy; 2021"));
 
 	desc = QString(
 	         "Version %2<br/>%1<br/>Technische Universit&auml;t M&uuml;nchen<br/>"
@@ -621,7 +621,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
 	         "color=\"#48B7E7\">https://github.com/tumcms/Open-Infra-Platform</font></a><br/><br/>")
 	         .arg(copyright, updater->installedVersion());
 
-	QMessageBox::about(this, tr("About TUM Open Infra Platform 2020"), head + desc);
+	QMessageBox::about(this, tr("About TUM Open Infra Platform 2021"), head + desc);
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
