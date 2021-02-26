@@ -585,8 +585,8 @@ void Viewport::rotate()
 		// get the current pitch & yaw
 		float pitch = camera_->transformation().pitch();
 		float yaw = camera_->transformation().yaw();
-		BLUE_LOG(trace) << "yaw = " << yaw << "  pitch = " << pitch;
-		BLUE_LOG(trace) << "i = " << rotating_ << " angle = " << angles[rotating_ % 4 + 1];
+		//BLUE_LOG(trace) << "yaw = " << yaw << "  pitch = " << pitch;
+		//BLUE_LOG(trace) << "i = " << rotating_ << " angle = " << angles[rotating_ % 4 + 1];
 		// calculate the new direction
 		buw::Vector3f newDir( sin(angles[rotating_ % 4 + 1]) * cos(pitch), sin(pitch) , cos(angles[rotating_ % 4 + 1]) * cos(pitch));
 		rotating_++;
