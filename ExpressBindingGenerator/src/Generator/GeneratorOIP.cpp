@@ -68,7 +68,7 @@ std::string license =
 
 std::string license_cmake =
 "#\n\
-#    Copyright(c) 2020 Technical University of Munich\n\
+#    Copyright(c) 2021 Technical University of Munich\n\
 #    Chair of Computational Modeling and Simulation.\n\
 #\n\
 #    TUM Open Infra Platform is free software; you can redistribute it and/or modify\n\
