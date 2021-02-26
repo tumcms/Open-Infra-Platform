@@ -1,5 +1,5 @@
 /*
-	Copyright (c) 2018 Technical University of Munich
+	Copyright (c) 2021 Technical University of Munich
 	Chair of Computational Modeling and Simulation.
 
 	TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -971,7 +971,7 @@ namespace {
 			model_->insertEntity(application);
 			application->m_ApplicationDeveloper = applicationDeveloper;
 			application->m_Version = std::make_shared<IfcLabel>("RTM");
-			application->m_ApplicationFullName = std::make_shared<IfcLabel>("TUM Open Infra Platform 2018");
+			application->m_ApplicationFullName = std::make_shared<IfcLabel>("TUM Open Infra Platform 2021");
 			application->m_ApplicationIdentifier = std::make_shared<IfcIdentifier>("OIP");
 			return application;
 		}
