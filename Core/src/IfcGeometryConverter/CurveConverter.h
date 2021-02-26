@@ -959,8 +959,7 @@ namespace OpenInfraPlatform {
 					// **************************************************************************************************************************
 					// Determine position
 					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
-					carve::math::Matrix inverseConicPositionMatrix;
-					GeomUtils::computeInverse(conicPositionMatrix, inverseConicPositionMatrix);
+					carve::math::Matrix inverseConicPositionMatrix = GeomUtils::computeInverse(conicPositionMatrix);
 
 					// Get radius
 					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();

@@ -433,8 +433,13 @@ void GeomUtils::extrude(
 }
 
 /**********************************************************************************************/
-
-void GeomUtils::computeInverse( const carve::math::Matrix& matrix_a, carve::math::Matrix& inv ) 
+/*! \brief Computes an inverse of the matrix.
+*
+* \param[in] matrix_a				An initial invertible matrix.
+*
+* \return							Inverted matrix
+*/
+carve::math::Matrix GeomUtils::computeInverse(const carve::math::Matrix& matrix_a)
 {
 	int i, j;	// col, row
 	int s;		// step
@@ -445,6 +450,7 @@ void GeomUtils::computeInverse( const carve::math::Matrix& matrix_a, carve::math
 	double max;
 	int pivot = 1;
 	double a[4][8];
+	carve::math::Matrix inv;
 
 	a[0][0] = matrix_a._11;
 	a[0][1] = matrix_a._12;
@@ -560,6 +566,8 @@ void GeomUtils::computeInverse( const carve::math::Matrix& matrix_a, carve::math
 	inv._42 = a[3][5];
 	inv._43 = a[3][6];
 	inv._44 = a[3][7];
+
+	return inv;
 }
 
 /**********************************************************************************************/
