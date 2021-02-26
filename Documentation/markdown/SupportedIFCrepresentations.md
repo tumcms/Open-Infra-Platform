@@ -27,4 +27,4 @@ Meaning of columns:
 | Entity                | Covered              | Converter                  | Unit test             | Issue |
 |-----------------------|----------------------|----------------------------|-----------------------|-------|
 | `IfcCartesianPoint`   | :heavy_check_mark:   | `PlacementConverter`       | :heavy_check_mark:    | -     |
-| `IfcPointOnCurve`     | :x:                  | -                          | -                     | [#359](github.com/tumcms/Open-Infra-Platform/issues/359) |
+| `IfcPointOnCurve`     | :x:                  | -                          | -                     | [#359](https://www.github.com/tumcms/Open-Infra-Platform/issues/359) |
