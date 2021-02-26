@@ -441,7 +441,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 		auto addBBox = [addVector3D]( QTreeWidgetItem* parent, const oip::BBox& bbox) -> QTreeWidgetItem* {
 			// grouping
 			auto itemBBox = new QTreeWidgetItem( parent, nullptr );
-			itemBBox->setText(0, "Bounding box");
+			itemBBox->setText(0, "AABB");
+			itemBBox->setText(1, "Axis aligned bounding box");
 
 			// add properties - 3D vectors
 			auto itemMin = addVector3D(itemBBox, bbox.min(), "Min");
@@ -460,7 +461,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 			modelsTreeWidget_->invisibleRootItem()->removeChild(el);
 
 		// update the "Complete bounding box"
-		auto title = modelsTreeWidget_->findItems("Complete bounding box", Qt::MatchFlag::MatchExactly, 0);
+		auto title = modelsTreeWidget_->findItems("Complete bounding box", Qt::MatchFlag::MatchExactly, 1);
 		if ( !title.isEmpty() )
 		{
 			// remove the bounding box
@@ -469,7 +470,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 		}
 		// add the complete bounding box
 		modelsBBoxWidgetItem_ = addBBox(modelsTreeWidget_->invisibleRootItem(), data.getExtents());
-		modelsBBoxWidgetItem_->setText(0, "Complete bounding box");
+		modelsBBoxWidgetItem_->setText(1, "Complete bounding box");
 
 		// loop through the models
 		for (auto& model : data.getModels())
@@ -478,7 +479,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 			auto filename = QString::fromStdString(p.filename().string());
 
 			// only add if not yet present
-			if ( modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 0).isEmpty() )
+			if ( modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 1).isEmpty() )
 			{
 				// structure
 				// 1. filename
@@ -487,8 +488,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				//       - min, mid, max : QVector3D
 
 				// 1. filename
-				auto itemModel = new QTreeWidgetItem(modelsTreeWidget_); // , modelsTreeWidget_->invisibleRootItem()->child(modelsTreeWidget_->invisibleRootItem()->childCount() - 1));
-				itemModel->setText(0, filename);
+				auto itemModel = new QTreeWidgetItem(modelsTreeWidget_);
+				itemModel->setText(0, "Model");
+				itemModel->setText(1, filename);
 
 				// 2.  - source : filepath
 				auto itemSource = new QTreeWidgetItem(itemModel); 

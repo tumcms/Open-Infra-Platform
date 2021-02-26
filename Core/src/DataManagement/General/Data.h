@@ -49,7 +49,8 @@ namespace OpenInfraPlatform
 				IfcGeometry = 1 << 0,
 				PointCloud = 1 << 1,
 				Preferences = 1 << 2,
-				All = IfcGeometry | PointCloud | Preferences
+				OffGeometry = 1 << 3,
+				All = IfcGeometry | PointCloud | Preferences | OffGeometry
 			};
 
 			inline ChangeFlag operator|(ChangeFlag a, ChangeFlag b)
@@ -160,18 +161,13 @@ namespace OpenInfraPlatform
 
 				template <typename IfcEntityTypesT, typename IfcReader>
 				void ParseExpressAndGeometryModel(const std::string &filename) {
-					auto expressModel_ = IfcReader::FromFile(filename);
+					auto expressModel = IfcReader::FromFile(filename);
 					auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>();
-					if (importer.collectGeometryData(expressModel_)) {
-						auto ifcModel = std::make_shared<OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel>();
-						auto converter = IfcGeometryConverter::ConverterBuwT<IfcEntityTypesT>();
-						if (converter.createGeometryModel(ifcModel, importer.getShapeDatas())) {
-							if (!ifcModel->isEmpty()) {
-								ifcModel->setFilename(filename);
-								addModel(ifcModel);
-								latestChangeFlag_ = ChangeFlag::IfcGeometry;
-							}
-						}
+					auto ifcModel = importer.collectData(expressModel);
+					if (ifcModel && !ifcModel->isEmpty()) {
+						ifcModel->setFilename(filename);
+						addModel(ifcModel);
+						latestChangeFlag_ = ChangeFlag::IfcGeometry;
 					}
 				}
 

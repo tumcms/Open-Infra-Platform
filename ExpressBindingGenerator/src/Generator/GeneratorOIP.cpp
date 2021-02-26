@@ -1345,6 +1345,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	std::function<std::vector<std::string>(std::string)> getAttributes = [&schema](const std::string& name) -> std::vector<std::string> {
 		std::vector<std::string> attributes;
 		for (const auto& attr : schema.getEntityByName(name).getAttributes()) // only own attributes, but inverses as well
+		{
 			if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed)
 				attributes.push_back(attr.type->toString()); // doesn't matter if it is a type or an entity
 			else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
@@ -1354,6 +1355,12 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 				}
 				attributes.push_back(elementType->toString()); // doesn't matter if it is a type or an entity
 			}
+			// also provide its inverses
+			if (attr.isInverse() || attr.hasInverseCounterpart())
+				for (const auto& inv : attr.getInverses())
+					if( std::find(attributes.begin(), attributes.end(), std::template get<0>(inv)) == attributes.end())
+						attributes.push_back(std::template get<0>(inv));
+		}
 		return attributes;
 	};
 	for (const auto& entity : schema.entities_)

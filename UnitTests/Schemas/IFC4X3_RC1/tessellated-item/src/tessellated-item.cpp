@@ -15,10 +15,10 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <reader/IFC4X3_RC1Reader.h>
+#include <EarlyBinding\IFC4X3_RC1\src\reader\IFC4X3_RC1Reader.h>
 #include <namespace.h>
 
-#include <VisualTest.h>
+#include <IfcVisualTest.h>
 
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
@@ -26,20 +26,19 @@
 
 using namespace testing;
 
-class TessellatedItemTest : public VisualTest {
+class TessellatedItemTest : public IfcVisualTest {
     protected:
 
     // Test standard values
     buw::Image4b _background = buw::Image4b(0, 0);
 
     virtual void SetUp() override {
-        VisualTest::SetUp();
+        IfcVisualTest::SetUp();
 
         express_model = OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader::FromFile(filename.string());
 
-        importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC1EntityTypes>>();
-        importer->collectGeometryData(express_model);
-		oip::ConverterBuwT<emt::IFC4X3_RC1EntityTypes>::createGeometryModel(model, importer->getShapeDatas());
+        importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC1EntityTypes>>(); 
+		model = importer->collectData(express_model);
 
         _background = CaptureImage();
         renderer->setModel(model);
@@ -48,7 +47,7 @@ class TessellatedItemTest : public VisualTest {
 
     virtual void TearDown() override {
         express_model.reset();
-        VisualTest::TearDown();
+        IfcVisualTest::TearDown();
     }
 
 	virtual std::string TestName() const { return "tessellated-item"; }
@@ -61,7 +60,7 @@ class TessellatedItemTest : public VisualTest {
 
     std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
     buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC1EntityTypes>> importer = nullptr;
-    buw::ReferenceCounted<oip::IfcGeometryModel> model = buw::makeReferenceCounted<oip::IfcGeometryModel>();
+    buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(TessellatedItemTest, AllEntitiesAreRead) {

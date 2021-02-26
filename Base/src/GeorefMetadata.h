@@ -43,15 +43,22 @@ public:
 
 	//! additional meta values (like projection's epsg etc.)
 	std::map<std::string, std::string> data;
+	//! add another entry to data
+	void addDataEntry(const std::string& key, const std::string& val) { data.insert(std::pair<std::string,std::string>(key, val)); }
 
 	//! shift values
 	double x = 0.0, y = 0.0, z = 0.0;
+	//! rotation angle around z-axis, in [rad]
+	double angle = 0.0;
+	//! scale
+	double scale = 1.0;
+	//! the resulting transformation matrix
 	carve::math::Matrix transformationMatrix()
 	{
 		return carve::math::Matrix(
-			1.0, 0.0, 0.0, x,
-			0.0, 1.0, 0.0, y,
-			0.0, 0.0, 1.0, z,
+			scale, 0.0, 0.0, x,
+			0.0, scale*cos(angle), sin(angle), y,
+			0.0, sin(angle), -scale*cos(angle), z,
 			0.0, 0.0, 0.0, 1.0);
 	}
     

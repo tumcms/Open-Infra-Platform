@@ -391,7 +391,8 @@ namespace OpenInfraPlatform {
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
 					else if (boundedCurve.isOfType<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>())
 					{
-						return convertIfcGradientCurve(boundedCurve.as<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>(),
+						return convertIfcSegmentedReferenceCurve(
+							boundedCurve.as<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>(),
 							targetVec, segmentStartPoints);
 					} // end if IfcSegmentedReferenceCurve
 #endif 
@@ -443,18 +444,18 @@ namespace OpenInfraPlatform {
 					for (auto& it_station : stations)
 					{
 						// call the placement converter that handles the geometry and calculates the 3D point along a curve
-						placementConverter->convertBoundedCurveDistAlongToPoint3D(
+						if( placementConverter->convertBoundedCurveDistAlongToPoint3D(
 							alignmentCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>(), 
-							it_station, true, targetPoint3D, targetDirection3D);
-						curve_points.push_back(targetPoint3D);
+							it_station, true, targetPoint3D, targetDirection3D)	)
+							curve_points.push_back(targetPoint3D);
 					}
 					GeomUtils::appendPointsToCurve(curve_points, targetVec);
 
 					// add the first point to segments
-					placementConverter->convertBoundedCurveDistAlongToPoint3D(
+					if(	placementConverter->convertBoundedCurveDistAlongToPoint3D(
 						alignmentCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>(),
-						stations.at(0), true, targetPoint3D, targetDirection3D);
-					segmentStartPoints.push_back(targetPoint3D);
+						stations.at(0), true, targetPoint3D, targetDirection3D)	)
+						segmentStartPoints.push_back(targetPoint3D);
 				}
 #endif
 
@@ -489,7 +490,11 @@ namespace OpenInfraPlatform {
 					for (auto &segment: compositeCurve->Segments) {
 						std::vector<carve::geom::vector<3>> segment_vec;
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 						convertIfcCurve(segment->ParentCurve, segment_vec, segmentStartPoints);
+#else
+						convertIfcSegment(segment, segment_vec, segmentStartPoints);
+#endif
 						if (!segment_vec.empty()) {
 							GeomUtils::appendPointsToCurve(segment_vec, targetVec);
 						}
@@ -507,7 +512,7 @@ namespace OpenInfraPlatform {
 				* \note The function is not implemented.
 				* \internal TODO.
 				*/
-				void convertIfcGradientCurve(EXPRESSReference<typename IfcEntityTypesT::IfcGradientCurve>& gradientCurve,
+				void convertIfcGradientCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcGradientCurve>& gradientCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
@@ -698,13 +703,13 @@ namespace OpenInfraPlatform {
 
 						// correct for -2*PI <= angle <= 2*PI
 						if (openingAngle > 0) {
-							GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
+							this->GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
 						}
 						else {
-							GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
+							this->GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
 						}
 
-						int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
+						int numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
 
 						std::vector<carve::geom::vector<2> > circle_points;
 						ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
@@ -724,6 +729,9 @@ namespace OpenInfraPlatform {
 								normalVector.z * distance + firstOrthogonalDirection.z * circle_points[i].x + secondOrthogonalDirection.z * circle_points[i].y));
 						}
 						return loop_intern;
+					}
+					else {
+						throw oip::InconsistentGeometryException("The distance between points cannot be 0.");
 					}
 				}
 
@@ -780,7 +788,8 @@ namespace OpenInfraPlatform {
 				* \param[out] targetVec						The tessellated line.
 				* \param[out] segmentStartPoints			The starting points of separate segments.
 				*/
-				void convertIfcSegmentedReferenceCurve(EXPRESSReference<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>& segmentedReferenceCurve,
+				void convertIfcSegmentedReferenceCurve(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>& segmentedReferenceCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
@@ -970,7 +979,7 @@ namespace OpenInfraPlatform {
 					// Calculate an opening angle.
 					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
-					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(circleRadius, abs(openingAngle));
+					int numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(circleRadius, abs(openingAngle));
 
 					const double circleCenter_x = 0.0;
 					const double circleCenter_y = 0.0;
@@ -1039,7 +1048,7 @@ namespace OpenInfraPlatform {
 					double radiusMin = std::min(xRadius, yRadius);
 
 					// Calculate a number of segments.
-					int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
+					int numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
 					double deltaAngle = 2.0 * M_PI / numSegments;
 
 					double startAngle = 0.;
@@ -1056,7 +1065,7 @@ namespace OpenInfraPlatform {
 						double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
 						// Calculate a number of segments.
-						numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax, abs(openingAngle));
+						numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax, abs(openingAngle));
 						deltaAngle = openingAngle/ numSegments;
 					}
 
@@ -1244,7 +1253,8 @@ namespace OpenInfraPlatform {
 				* \note The function is not implemented.
 				* \internal TODO.
 				*/
-				void convertIfcSeriesParameterCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeriesParameterCurve>& seriesParameterCurve,
+				void convertIfcSeriesParameterCurve(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSeriesParameterCurve>& seriesParameterCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints,
 					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
@@ -1253,7 +1263,7 @@ namespace OpenInfraPlatform {
 					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
-					throw oip::UnhandledException(pcurve);
+					throw oip::UnhandledException(seriesParameterCurve);
 				}
 				
 #endif
@@ -1379,7 +1389,7 @@ namespace OpenInfraPlatform {
 					// If first and last point have same coordinates, remove last point
 					while (loop.size() > 2) {
 						
-						if (GeomSettings()->areEqual(loop.front(), loop.back()))
+						if (this->GeomSettings()->areEqual(loop.front(), loop.back()))
 						{
 							loop.pop_back();
 							continue;
@@ -1594,6 +1604,7 @@ namespace OpenInfraPlatform {
 					return loop;
 				}
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 				/*! \brief Gets stations for \c IfcAlignmentCurve at which a point of the tesselation has to be calcuated. 
 				* \param[in] alignmentCurve			The \c IfcAlignmentCurve to be converted.
 				* \retrun							The series of stations at which a point of the tesselation has to be calcuated.
@@ -1712,7 +1723,7 @@ namespace OpenInfraPlatform {
 						}
 
 						dHorizontalRadius *= UnitConvert()->getLengthInMeterFactor();
-						nFragments = GeomSettings()->getNumberOfSegmentsForTessellation(dHorizontalRadius);
+						nFragments = this->GeomSettings()->getNumberOfSegmentsForTessellation(dHorizontalRadius);
 						dFragmentLength = dHorizontalSegLength / (double)(nFragments);
 						// Step 2 finished: We have the necessary information from the horizontal element
 
@@ -1750,7 +1761,7 @@ namespace OpenInfraPlatform {
 								//      5:                  +-------+
 								//      6:                       +-+
 								//      7:                        +-------+
-								//      8:                               +---------+    <------- should never ever happen
+								//      8:                               +---------+    <------- should never ever happen (except if we're considering the first vertical element that strats way beyond the end of the first horizontal segment)
 
 								// option 1 & 2 - bLoop stays on true
 								// - these elements should have been considered with previous horizontal element
@@ -1761,7 +1772,17 @@ namespace OpenInfraPlatform {
 
 								// option 8
 								if (dVerticalSegStart > dHorizontalSegEnd)
-									throw oip::InconsistentModellingException(*itVerticalSegment, "Invalid sequence of vertical elements.");
+								{
+									if (itVerticalSegment == vertical->Segments.begin())
+									{
+										goto vertical_starts_late; // skip height calculations for this horizontal segment
+									}
+									else
+									{
+										throw oip::InconsistentModellingException(
+											*itVerticalSegment, "Invalid sequence of vertical elements.");
+									}
+								}
 
 								// take the next element
 								if (bLoop)
@@ -1796,7 +1817,7 @@ namespace OpenInfraPlatform {
 							dVerticalRadius *= UnitConvert()->getLengthInMeterFactor();
 
 							// determine tesselation density
-							int nVerFragments = GeomSettings()->getNumberOfSegmentsForTessellation(dVerticalRadius);
+							int nVerFragments = this->GeomSettings()->getNumberOfSegmentsForTessellation(dVerticalRadius);
 							double dVerFragmentsLength = dVerticalSegLength / (double)(nVerFragments);
 
 							// Select greater accuracy / more fragments / smaller fragments.
@@ -1808,6 +1829,7 @@ namespace OpenInfraPlatform {
 							dOverlapEnd = std::min(dOverlapEnd, dVerticalSegEnd);
 						}
 
+						vertical_starts_late:
 						double newStationDistAlong = dOverlapStart;
 
 						// Add stations according to length of fragments until the end of the overlapping area.
@@ -1840,6 +1862,7 @@ namespace OpenInfraPlatform {
 
 					return stations;
 				}
+#endif
 
 				// Function 3: Get angle on circle (returns angle if the given point lies on the circle; if not, -1 is returned). 
 				/**********************************************************************************************/
@@ -1855,16 +1878,20 @@ namespace OpenInfraPlatform {
 				) const throw(...)
 				{
 					carve::geom::vector<3> centerToTrimPoint = trimPoint - circleCenter;
-					if (abs(centerToTrimPoint.length() - circleRadius) < 0.0001) {
+
+					if (this->GeomSettings()->areEqual(centerToTrimPoint.length(), circleRadius)){
 						centerToTrimPoint.normalize();
 						double cosAngle = carve::geom::dot(centerToTrimPoint, carve::geom::vector<3>(carve::geom::VECTOR(1., 0., 0.)));
 
-						if (abs(cosAngle) < 0.0001) {
+						if (this->GeomSettings()->areEqual(abs(cosAngle), 0.)) {
 							if (centerToTrimPoint.y > 0.) {
 								return M_PI_2;
 							}
 							else if (centerToTrimPoint.y < 0.) {
 								return M_PI * 1.5;
+							}
+							else {
+								throw oip::InconsistentGeometryException("Cosine and sine cannot be 0 simultaneously!");
 							}
 						}
 						else {
@@ -1908,12 +1935,15 @@ namespace OpenInfraPlatform {
 					if ((centerToTrimPoint.x / ellipseRadiusX) <= 1. && (centerToTrimPoint.y / ellipseRadiusY) <= 1.) {
 						double cosAngle = centerToTrimPoint.x / ellipseRadiusX;
 
-						if (abs(cosAngle) < 0.0001) {
+						if (this->GeomSettings()->areEqual(abs(cosAngle), 0.)) {
 							if (centerToTrimPoint.y > 0.) {
 								return M_PI_2;
 							}
 							else if (centerToTrimPoint.y < 0.) {
-								return 3 * M_PI_2;
+								return M_PI * 1.5;
+							}
+							else {
+								throw oip::InconsistentGeometryException("Cosine and sine cannot be 0 simultaneously!");
 							}
 						}
 						else {
@@ -1969,10 +1999,10 @@ namespace OpenInfraPlatform {
 
 					// correct for -2*PI <= angle <= 2*PI
 					if (openingAngle > 0) {
-						GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
+						this->GeomSettings()->normalizeAngle(openingAngle, 0., M_TWOPI);
 					}
 					else {
-						GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
+						this->GeomSettings()->normalizeAngle(openingAngle, -M_TWOPI, 0.);
 					}
 					return openingAngle;
 				}

@@ -43,9 +43,17 @@
 	#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1.h"
 #endif
 
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+	#include "EarlyBinding\IFC4X3_RC2\src\reader/IFC4X3_RC2Reader.h"
+	#include "EarlyBinding\IFC4X3_RC2\src\EMTIFC4X3_RC2EntityTypes.h"
+	#include "EarlyBinding\IFC4X3_RC2\src\IFC4X3_RC2.h"
+#endif
+
 #include "IfcGeometryConverter\GeometryInputData.h"
 #include "IfcGeometryConverter\IfcPeekStepReader.h"
 #include "IfcGeometryConverter\IfcImporterImpl.h"
+#include "OffConverter\OffModel.h"
+#include "OffConverter\OffReader.h"
 #include "Exception\IfcPeekReaderException.h"
 
 #include <QtXml>
@@ -116,6 +124,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::import(const std::string & f
 	}
 }
 
+
 void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing ").append(filename));
@@ -173,9 +182,25 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 		}
 
+		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC2) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+			ParseExpressAndGeometryModel<emt::IFC4X3_RC2EntityTypes, OpenInfraPlatform::IFC4X3_RC2::IFC4X3_RC2Reader>(filename);
+			return;
+#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+			IFCVersionNotCompiled("IFC4X3_RC2");
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+		}
+
 		IFCVersionNotCompiled(strSchema);
 		return;
 	}	
+
+	else if (filetype == ".off") {
+		auto offModel = OpenInfraPlatform::Core::OffConverter::OffReader::readFile(filename);
+		addModel(offModel);
+		latestChangeFlag_ = ChangeFlag::OffGeometry;
+		return;
+	}
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());

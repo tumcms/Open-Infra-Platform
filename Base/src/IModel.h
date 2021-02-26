@@ -50,7 +50,6 @@ public:
 
     // needed for correct correlation between multiple models
     // also to determine if a transformation would be needed
-	// the function should return empty string if unknown
     virtual GeorefMetadata getGeorefMetadata() const = 0;
 
 	// change the georeferencing coordinate reference system to the \c newGeorefMetadata

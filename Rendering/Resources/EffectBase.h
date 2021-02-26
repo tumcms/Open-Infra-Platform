@@ -66,6 +66,8 @@ private:
 
 	//! the applied offset
     buw::Vector3d offset_;
+	//! was the offset set already
+	bool offsetValid_;
 
 };
 
