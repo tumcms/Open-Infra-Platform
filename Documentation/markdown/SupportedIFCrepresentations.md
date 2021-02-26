@@ -22,8 +22,9 @@ Meaning of columns:
 | Covered | does OIP handle the entity; denoted by symbol, see [legend above](#legend) |
 | Converter | which converter class handles the entity |
 | Unit test | does OIP have unit tests for this entity; denoted by symbol, see [legend above](#legend) |
+| Issue | Link to corresponding open issue(s) |
 
-| Entity                | Covered              | Converter                  | Unit test             |
-|-----------------------|----------------------|----------------------------|-----------------------|
-| `IfcCartesianPoint`   | :heavy_check_mark:   | `PlacementConverter`       | :heavy_check_mark:    |
-| `IfcPointOnCurve`     | :x:                  | -                          | -                     |
+| Entity                | Covered              | Converter                  | Unit test             | Issue |
+|-----------------------|----------------------|----------------------------|-----------------------|-------|
+| `IfcCartesianPoint`   | :heavy_check_mark:   | `PlacementConverter`       | :heavy_check_mark:    | -     |
+| `IfcPointOnCurve`     | :x:                  | -                          | -                     | [#359](github.com/tumcms/Open-Infra-Platform/issues/359) |
