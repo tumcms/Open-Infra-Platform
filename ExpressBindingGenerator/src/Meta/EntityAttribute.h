@@ -1,7 +1,7 @@
 /*
     This file is part of TUM Open Infra Platform Early Binding EXPRESS 
 	Generator, a simple early binding generator for EXPRESS.
-	Copyright (c) 2016-2017 Technical University of Munich
+	Copyright (c) 2021 Technical University of Munich
 	Chair of Computational Modeling and Simulation.
 
 	TUM Open Infra Platform Early Binding EXPRESS Generator is free 

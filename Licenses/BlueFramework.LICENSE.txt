@@ -1,5 +1,5 @@
 This file is part of BlueFramework, a simple 3D engine.
-Copyright (c) 2018 Technical University of Munich
+Copyright (c) 2021 Technical University of Munich
 Chair of Computational Modeling and Simulation.
 
 BlueFramework is free software; you can redistribute it and/or modify

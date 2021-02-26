@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
     try {
         application.addLibraryPath(QCoreApplication::applicationDirPath() + "/plugins");
 
-        QApplication::setApplicationName("TUM Open Infra Platform 2018");
+        QApplication::setApplicationName("TUM Open Infra Platform 2021");
         QApplication::setApplicationVersion(OpenInfraPlatform::VERSION_STR.c_str());
         QApplication::setOrganizationName("Technische Universitaet Muenchen Chair of Computational Modeling and Simulation");
         QApplication::setOrganizationDomain("cms.bv.tum.de");
