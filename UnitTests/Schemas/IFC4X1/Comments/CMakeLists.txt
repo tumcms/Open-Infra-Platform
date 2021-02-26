@@ -17,4 +17,4 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileUnitTestForSchema(Comments IFC4X1)
+CreateIfcFileVisualUnitTestForSchema(Comments IFC4X1)
