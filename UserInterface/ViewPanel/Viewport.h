@@ -68,6 +68,7 @@ namespace OpenInfraPlatform {
 			void goHome();
 
 			void toggleSnow();
+			void toggleRotation();
 
 			void toggleCameraMode();
 			void setCameraMode(buw::CameraController::eState mode);
@@ -159,6 +160,7 @@ namespace OpenInfraPlatform {
 
 		private Q_SLOTS:
 			void tick();
+			void rotate();
 
 		private:
 			QTimer* timer_;
@@ -210,6 +212,7 @@ namespace OpenInfraPlatform {
 			// Clear
 			bool gradientClear_ = true;
 			bool snow_ = false;
+			size_t rotating_ = 0;
 			buw::Color3f clearColor_;
 
 			int selectedAlignmentIndex_;

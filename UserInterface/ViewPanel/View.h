@@ -136,6 +136,7 @@ namespace OpenInfraPlatform
 			void on_home();
 			void on_actionToggleCameraGhostMode();
             void on_actionToggleSnow();
+			void on_actionTogglePlay();
 
 		private:
 			QMenu* menuView_;
@@ -156,6 +157,7 @@ namespace OpenInfraPlatform
 
 			QAction* cameraGhostModeAction_;
 			QAction* homeAction_;
+			QAction* playAction_;
             QAction* snowAction_;
 
 			Viewport*	viewport_;
