@@ -1536,15 +1536,6 @@ namespace OpenInfraPlatform {
 								//continue;
 							}
 
-							/*if (abs(vertex.x - vertex_previous.x) < 0.00000001) {
-								if (abs(vertex.y - vertex_previous.y) < 0.00000001) {
-									if (abs(vertex.z - vertex_previous.z) < 0.00000001) {
-										// TODO: is it better to report degenerated loops, or to just omit them?
-										BLUE_LOG(warning) << "Duplicate point in polyloop. IfcPoint #" << cp->getId();
-										//continue;
-									}
-								}
-							}*/
 						}
 						else
 							first = false;
