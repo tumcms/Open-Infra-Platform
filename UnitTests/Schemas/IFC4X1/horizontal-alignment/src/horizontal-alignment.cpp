@@ -41,8 +41,8 @@ protected:
 		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
 		model = importer->collectData(express_model);
 
-		_background = renderer->captureImage();
-		renderer->setModel(model);
+		_background = rendererIfc->captureImage();
+		rendererIfc->setModel(model);
 
 	}
 
@@ -92,7 +92,7 @@ TEST_F(HorizontalAlignment, CountEssentialEntities) {
 TEST_F(HorizontalAlignment, ImageIsSaved)
 {
 	// Arrange
-	buw::Image4b image = renderer->captureImage();
+	buw::Image4b image = rendererIfc->captureImage();
 
 	// Act
 	buw::storeImage(testPath("horizontal-alignment.png").string(), image);
@@ -112,22 +112,22 @@ TEST_F(HorizontalAlignment, PlaneSurfaceViews)
 	const auto expected_back = buw::loadImage4b(dataPath("horizontal-alignment_back.png").string());
 
 	// Act (Front)
-	renderer->setViewDirection(buw::eViewDirection::Front);
+	rendererIfc->setViewDirection(buw::eViewDirection::Front);
 	buw::Image4b image_front = CaptureImage();
 	// Act (Top)
-	renderer->setViewDirection(buw::eViewDirection::Top);
+	rendererIfc->setViewDirection(buw::eViewDirection::Top);
 	buw::Image4b image_top = CaptureImage();
 	// Act (Bottom)
-	renderer->setViewDirection(buw::eViewDirection::Bottom);
+	rendererIfc->setViewDirection(buw::eViewDirection::Bottom);
 	buw::Image4b image_bottom = CaptureImage();
 	// Act (Left)
-	renderer->setViewDirection(buw::eViewDirection::Left);
+	rendererIfc->setViewDirection(buw::eViewDirection::Left);
 	buw::Image4b image_left = CaptureImage();
 	// Act (Right)
-	renderer->setViewDirection(buw::eViewDirection::Right);
+	rendererIfc->setViewDirection(buw::eViewDirection::Right);
 	buw::Image4b image_right = CaptureImage();
 	// Act (Back)
-	renderer->setViewDirection(buw::eViewDirection::Back);
+	rendererIfc->setViewDirection(buw::eViewDirection::Back);
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
@@ -162,28 +162,28 @@ TEST_F(HorizontalAlignment, VertexViews)
 	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("horizontal-alignment_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
-	renderer->setViewDirection(buw::eViewDirection::FrontLeftBottom);
+	rendererIfc->setViewDirection(buw::eViewDirection::FrontLeftBottom);
 	buw::Image4b image_front_left_bottom = CaptureImage();
 	// Act (FrontRightBottom)
-	renderer->setViewDirection(buw::eViewDirection::FrontRightBottom);
+	rendererIfc->setViewDirection(buw::eViewDirection::FrontRightBottom);
 	buw::Image4b image_front_right_bottom = CaptureImage();
 	// Act (TopLeftFront)
-	renderer->setViewDirection(buw::eViewDirection::TopLeftFront);
+	rendererIfc->setViewDirection(buw::eViewDirection::TopLeftFront);
 	buw::Image4b image_top_left_front = CaptureImage();
 	// Act (TopFrontRight)
-	renderer->setViewDirection(buw::eViewDirection::TopFrontRight);
+	rendererIfc->setViewDirection(buw::eViewDirection::TopFrontRight);
 	buw::Image4b image_top_front_right = CaptureImage();
 	// Act (TopLeftBack)
-	renderer->setViewDirection(buw::eViewDirection::TopLeftBack);
+	rendererIfc->setViewDirection(buw::eViewDirection::TopLeftBack);
 	buw::Image4b image_top_left_back = CaptureImage();
 	// Act (TopRightBack)
-	renderer->setViewDirection(buw::eViewDirection::TopRightBack);
+	rendererIfc->setViewDirection(buw::eViewDirection::TopRightBack);
 	buw::Image4b image_top_right_back = CaptureImage();
 	// Act (BackLeftBottom)
-	renderer->setViewDirection(buw::eViewDirection::BackLeftBottom);
+	rendererIfc->setViewDirection(buw::eViewDirection::BackLeftBottom);
 	buw::Image4b image_back_left_bottom = CaptureImage();
 	// Act (RightBottomBack)
-	renderer->setViewDirection(buw::eViewDirection::RightBottomBack);
+	rendererIfc->setViewDirection(buw::eViewDirection::RightBottomBack);
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
