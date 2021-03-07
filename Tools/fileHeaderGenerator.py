@@ -1,6 +1,6 @@
 #/*
 #    This file is part of BlueFramework, a simple 3D engine.
-#	 Copyright (c) 2016 Technical University of Munich
+#	 Copyright (c) 2021 Technical University of Munich
 #	 Chair of Computational Modeling and Simulation.
 #
 #    BlueFramework is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ from optparse import OptionParser
 #print 'Argument List:', str(sys.argv)
 
 textHeader = """/*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
