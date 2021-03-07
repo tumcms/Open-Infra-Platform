@@ -1155,7 +1155,7 @@ namespace OpenInfraPlatform
 
 					if (axis_placement->Location)
 					{
-						axis_location = placementConverter->convertIfcPoint(axis_placement->Location );
+						axis_location = placementConverter->convertIfcPoint(axis_placement->Location.template as<typename IfcEntityTypesT::IfcPoint>());
 					}
 
 					if (axis_placement->Axis)

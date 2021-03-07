@@ -20,6 +20,8 @@
 
 #define _USE_MATH_DEFINES 
 #include <math.h>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
 
 #include "CarveHeaders.h"
 
@@ -711,7 +713,7 @@ namespace OpenInfraPlatform {
 
 						int numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
 
-						std::vector<carve::geom::vector<2> > circle_points;
+						std::vector<carve::geom::vector<2>> circle_points;
 						ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
 							circle_points, radius,
 							theta1, openingAngle,
@@ -957,17 +959,18 @@ namespace OpenInfraPlatform {
 					// **************************************************************************************************************************
 					// Determine position
 					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
+					carve::math::Matrix inverseConicPositionMatrix = GeomUtils::computeInverse(conicPositionMatrix);
 
 					// Get radius
 					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
 					
 					// Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming begin.
 					carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim1Vec, trimmingPreference);
-					double startAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
+					double startAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, inverseConicPositionMatrix * point);
 					
 					// Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming end.
 					point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim2Vec, trimmingPreference);
-					double endAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
+					double endAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, inverseConicPositionMatrix * point);
 					
 					// Calculate an opening angle.
 					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
@@ -976,7 +979,7 @@ namespace OpenInfraPlatform {
 
 					const double circleCenter_x = 0.0;
 					const double circleCenter_y = 0.0;
-					std::vector<carve::geom::vector<2> > circle_points;
+					std::vector<carve::geom::vector<2>> circle_points;
 					ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
 						circle_points, circleRadius,
 						startAngle, openingAngle,
@@ -985,19 +988,19 @@ namespace OpenInfraPlatform {
 
 					if (circle_points.size() > 0) {
 						// apply position
+						std::vector<carve::geom::vector<3>> newCirclePoints;
 						for (unsigned int i = 0; i < circle_points.size(); ++i) {
 							carve::geom::vector<2>&  point = circle_points.at(i);
 							carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
 							point3d = conicPositionMatrix * point3d;
-							point.x = point3d.x;
-							point.y = point3d.y;
+							newCirclePoints.push_back(point3d);
 						}
 
-						GeomUtils::appendPointsToCurve(circle_points, targetVec);
+						GeomUtils::appendPointsToCurve(newCirclePoints, targetVec);
 						segmentStartPoints.push_back(carve::geom::VECTOR(
-							circle_points.at(0).x,
-							circle_points.at(0).y,
-							0));
+							newCirclePoints.at(0).x,
+							newCirclePoints.at(0).y,
+							newCirclePoints.at(0).z));
 					}
 					return;
 				}
@@ -1870,9 +1873,10 @@ namespace OpenInfraPlatform {
 				) const throw(...)
 				{
 					carve::geom::vector<3> centerToTrimPoint = trimPoint - circleCenter;
-
-					if (this->GeomSettings()->areEqual(centerToTrimPoint.length(), circleRadius)){
+					
+					if (this->GeomSettings()->areEqual(centerToTrimPoint.length(), circleRadius)) {
 						centerToTrimPoint.normalize();
+
 						double cosAngle = carve::geom::dot(centerToTrimPoint, carve::geom::vector<3>(carve::geom::VECTOR(1., 0., 0.)));
 
 						if (this->GeomSettings()->areEqual(abs(cosAngle), 0.)) {
@@ -2027,9 +2031,9 @@ namespace OpenInfraPlatform {
 					{
 						switch (trimmingPreference)
 						{
-						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN:
-							return points[0]; 
 						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_PARAMETER:
+							return points[0]; 
+						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN:
 							return points[1];
 						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_UNSPECIFIED:
 							return points[0];
@@ -2124,11 +2128,15 @@ namespace OpenInfraPlatform {
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
-					double angle = parameter * UnitConvert()->getAngleInRadianFactor();
-					
+					// Interpret parameter
+					double angle = parameter * this->UnitConvert()->getAngleInRadianFactor();
+
 					// Get radius
-					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
-					return carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
+					double circleRadius = circle->Radius * this->UnitConvert()->getLengthInMeterFactor();
+					// Get conic's position
+					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(circle->Position);
+					// Calculate point + apply position
+					return placement * carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
 				}
 
 				/**********************************************************************************************/
@@ -2136,20 +2144,20 @@ namespace OpenInfraPlatform {
 				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
-				* \note								The position is not applied. All calculations are made based on center in ( 0., 0., 0.).
 				*/
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
-					double angle = parameter * UnitConvert()->getAngleInRadianFactor();
-					// determine position
-					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
+					// Interpret parameter
+					double angle = parameter * this->UnitConvert()->getAngleInRadianFactor();
 
 					// Get radius
-					double xRadius = ellipse->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
-					double yRadius = ellipse->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
-
-					return conicPositionMatrix * carve::geom::VECTOR(xRadius * cos(angle), yRadius * sin(angle), 0.);
+					double xRadius = ellipse->SemiAxis1 * this->UnitConvert()->getLengthInMeterFactor();
+					double yRadius = ellipse->SemiAxis2 * this->UnitConvert()->getLengthInMeterFactor();
+					// Get conic's position
+					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(ellipse->Position);
+					// Calculate point + apply position
+					return placement * carve::geom::VECTOR(xRadius * cos(angle), yRadius * sin(angle), 0.);
 				}
 
 				/**********************************************************************************************/
