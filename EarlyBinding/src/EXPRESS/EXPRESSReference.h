@@ -96,6 +96,11 @@ public:
 
 	const std::string getStepParameter() const override;
 	
+	template <class V>
+	bool operator==(const EXPRESSReference<V>& other) const
+	{
+		return this->refId == other.refId;
+	}
 
 	T* operator->() { return this->lock().operator->(); }
 	const T* const operator->() const { return this->base::lock().operator->(); }
