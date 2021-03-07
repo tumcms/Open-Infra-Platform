@@ -149,7 +149,10 @@ private:
 			georefMeta->angle = angle;
 
 			if( mapConv->Scale )
-				georefMeta->scale = mapConv->Scale;
+			{
+				georefMeta->scaleX *= mapConv->Scale;
+				georefMeta->scaleY *= mapConv->Scale;
+			}
 		}
 
 		return GeorefPair(geomContextID, georefMeta);
@@ -190,7 +193,9 @@ private:
 			if (projectedCRS->MapUnit)
 			{
 				double factor = UnitConvert()->convertUnit(projectedCRS->MapUnit);
-				georefMeta->scale = factor;
+				georefMeta->scaleX *= factor;
+				georefMeta->scaleY *= factor;
+				georefMeta->scaleZ *= factor;
 				georefMeta->addDataEntry( "Map Unit Factor to meters", std::to_string(factor) );
 			}
 		}
