@@ -368,7 +368,7 @@ size_t OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::vari
 		for (size_t i = 0; i < N; i++)
 			gamma[h - 1] += pow(data[i] - data[i + h], 2);
 		// divide by pre-factor
-		gamma[h - 1] /= (2 * N);
+		gamma[h - 1] /= (2.0 * N);
 	}
 
 	size_t rangeMax = std::min((size_t)100, gamma.size() - 1);
@@ -499,7 +499,7 @@ std::vector<SplineInterpretationElement> OpenInfraPlatform::Core::SplineInterpre
 	const double curvatureZero) const noexcept(true)
 {
 	// minimum length of an element
-	const double minLength = 50;
+	const double minLength = 50.0;
 
 	// id..Element regarding vector of elements
 	size_t idFirstElement;
@@ -750,7 +750,7 @@ SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::Splin
 	const double n2 = (v.x*(P2.y - P1.y) - v.y*(P2.x - P1.x)) / (w.x*v.y - w.y*v.x);
 
 	element.setCenter(carve::geom::VECTOR(P2.x + n2 * w.x, P2.y + n2 * w.y, 0.0));
-	element.setRadius(sqrt(pow(startPoint.x-element.getCenter().x,2) + pow(startPoint.y - element.getCenter().y, 2)));
+	element.setRadius(sqrt(pow(startPoint.x - element.getCenter().x, 2) + pow(startPoint.y - element.getCenter().y, 2)));
 
 	if (curvatureIndicator == 1)
 		element.setIsCCW(1); // left curve / turn
@@ -765,7 +765,7 @@ SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::Splin
 		angleOfVectors2D(startPoint - element.getCenter(), midPoint - element.getCenter())
 		+ angleOfVectors2D(midPoint - element.getCenter(), endPoint - element.getCenter())));
 	// convert angle to radian, calculate curve length of arc
-	element.setLength(element.getRadius() * element.getAngle() * M_PI / 180);
+	element.setLength(element.getRadius() * element.getAngle() * M_PI / 180.0);
 
 	return element;
 }
@@ -783,7 +783,7 @@ SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::Splin
 	//   0 is just a preset value;
 	//   the actual one will be obtained surely in one of the following if-cases,
 	//   because of the requirement of one arc at one clothoid end
-	double radius = 0;
+	double radius = 0.0;
 
 	// tangential vector at element start
 	carve::geom::vector<3> tangentStart;
@@ -823,7 +823,7 @@ SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::Splin
 	const double tau = angleOfVectors2D(tangentStart, tangentEnd);
 
 	// element curve length
-	element.setLength(2 * radius*(tau*M_PI / 180));
+	element.setLength(2.0 * radius*(tau*M_PI / 180.0));
 
 	// clothoid parameter A
 	element.setClothoidparameterA(sqrt(radius * element.getLength()));
@@ -837,7 +837,7 @@ double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::angl
 {
 	// angle in degree
 	return acos((a.x*b.x + a.y*b.y)
-		/ (sqrt(pow(a.x, 2) + pow(a.y, 2))*sqrt(pow(b.x, 2) + pow(b.y, 2)))) * 180 / M_PI;
+		/ (sqrt(pow(a.x, 2) + pow(a.y, 2))*sqrt(pow(b.x, 2) + pow(b.y, 2)))) * 180.0 / M_PI;
 }
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tangentDirection(
@@ -867,7 +867,7 @@ carve::geom::vector<3>  OpenInfraPlatform::Core::SplineInterpretation::SplineInt
 carve::geom::vector<3> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tangentVectorFromDirection(
 	const double direction) const noexcept(true)
 {
-	return carve::geom::VECTOR(cos(direction*M_PI / 180), sin(direction*M_PI / 180), 0.0);
+	return carve::geom::VECTOR(cos(direction*M_PI / 180.0), sin(direction*M_PI / 180.0), 0.0);
 }
 
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const noexcept(true)
