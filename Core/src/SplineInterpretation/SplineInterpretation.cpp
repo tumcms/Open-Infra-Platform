@@ -30,6 +30,7 @@ using OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement
 #include <algorithm>
 
 #include "IfcGeometryConverter/SplineUtilities.h"
+#include "BlueFramework/Core/Diagnostics/log.h"
 
 // CONSTRUCTOR
 OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::SplineInterpretation()
@@ -263,8 +264,10 @@ std::vector<carve::geom::vector<3>> OpenInfraPlatform::Core::SplineInterpretatio
 
 		return points;
 	}
-	catch (const std::exception&)
+	catch (const std::exception& e)
 	{
+		BLUE_LOG(warning) << "SplineInterpretation: Failed loading input control points from file '" << fileName <<"'. Error message: " << e.what();
+
 		// in case of an error, return an empty vector
 		std::vector<carve::geom::vector<3>> pointsEmpty;
 		return pointsEmpty;
