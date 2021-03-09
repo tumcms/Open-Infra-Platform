@@ -28,7 +28,6 @@
 
 #include "GeomUtils.h"
 #include "ConverterBase.h"
-#include "CurveConverter.h"
 
 #include <BlueFramework/Core/Diagnostics/log.h>
 
@@ -81,7 +80,7 @@ namespace OpenInfraPlatform {
 				 */
 				carve::geom::vector<3> convertIfcPoint(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPoint>& point
-				) const throw(...)
+				) const noexcept(false)
 				{
 					// **************************************************************************************************************************
 					// ENTITY IfcPoint
@@ -103,7 +102,7 @@ namespace OpenInfraPlatform {
 
 					// IfcPointOnCurve 
 					if (point.isOfType<typename IfcEntityTypesT::IfcPointOnCurve>())
-						return convertIfcPointOnCurve(point.as<typename IfcEntityTypesT::IfcPointOnCurve>());
+						return convertIfcPointOnCurve(point.template as<typename IfcEntityTypesT::IfcPointOnCurve>());
 					// IfcPointOnSurface are not supported
 					throw oip::UnhandledException(point);
 				}
@@ -118,7 +117,7 @@ namespace OpenInfraPlatform {
                  */
 				carve::geom::vector<3> convertIfcCartesianPoint(
                     const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint
-                ) const throw(...)
+                ) const noexcept(false)
                 {
                     // **************************************************************************************************************************
                     // IfcCartesianPoint
@@ -165,12 +164,12 @@ namespace OpenInfraPlatform {
 				 */
 				carve::geom::vector<3> convertIfcPointOnCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPointOnCurve>& pointOnCurve
-				) const throw(...) {
+				) const noexcept(false) {
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter
 						= std::make_shared<PlacementConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert());
 
-					CurveConverterT<IfcEntityTypesT> gridConv(this->GeomSettings(), this->UnitConvert(), placementConverter);
-					return gridConv.getPointOnCurve<typename IfcEntityTypesT::IfcCurve>(pointOnCurve->BasisCurve, pointOnCurve->PointParameter);
+					CurveConverterT<IfcEntityTypesT> pointOnCurve(this->GeomSettings(), this->UnitConvert(), placementConverter);
+					return pointOnCurve.getPointOnCurve<typename IfcEntityTypesT::IfcCurve>(pointOnCurve->BasisCurve, pointOnCurve->PointParameter);
 				}
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)

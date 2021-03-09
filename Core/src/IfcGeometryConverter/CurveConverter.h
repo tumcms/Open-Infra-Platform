@@ -2065,7 +2065,7 @@ namespace OpenInfraPlatform {
 					case 1:
 					{
 						// Calculate a trimming point using \c IfcParameterValue.
-						return getPointOnCurve(curve, trimming.get<1>());
+						return getPointOnCurve<TCurve>(curve, trimming.get<1>());
 					}
 					default:
 						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
@@ -2115,10 +2115,10 @@ namespace OpenInfraPlatform {
 				}
 
 				/**********************************************************************************************/
-				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint.
+				/*! \brief Calculates a trimming point on the curve using \c IfcParameterValue.
 				* \tparam TCurve					A type of the curve.
 				* \param[in] curve					A pointer to data from the curve.
-				* \param[in] cartesianPoint			A pointer to data from \c IfcCartesianPoint.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				* \note								The position is not applied.All calculations are made based on center in(0., 0., 0.).
 				*/
