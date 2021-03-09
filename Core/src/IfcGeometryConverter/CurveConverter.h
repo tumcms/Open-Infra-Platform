@@ -2069,7 +2069,7 @@ namespace OpenInfraPlatform {
 					case 1:
 					{
 						// Calculate a trimming point using \c IfcParameterValue.
-						return getPointOnCurve(curve, trimming.get<1>());
+						return getPointOnCurve<TCurve>(curve, trimming.get<1>());
 					}
 					default:
 						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
@@ -2119,12 +2119,28 @@ namespace OpenInfraPlatform {
 				}
 
 				/**********************************************************************************************/
+				/*! \brief Calculates a trimming point on the curve using \c IfcParameterValue.
+				* \tparam TCurve					A type of the curve.
+				* \param[in] curve					A pointer to data from the curve.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The location of the trimming point.
+				* \note								The position is not applied.All calculations are made based on center in(0., 0., 0.).
+				*/
+				template <typename TCurve>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve> & curve,
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+				{
+					throw oip::UnhandledException(curve);
+				}
+
+				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the circle using \c IfcParameterValue.
 				* \param[in] circle					A pointer to data from \c IfcCircle.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				* \note								The position is not applied. All calculations are made based on center in ( 0., 0., 0.).
 				*/
+				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
@@ -2145,6 +2161,7 @@ namespace OpenInfraPlatform {
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				*/
+				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
@@ -2166,6 +2183,7 @@ namespace OpenInfraPlatform {
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				*/
+				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcLine>& line,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter)const throw (...)
 				{
