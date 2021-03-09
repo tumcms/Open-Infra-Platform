@@ -168,8 +168,8 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter
 						= std::make_shared<PlacementConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert());
 
-					CurveConverterT<IfcEntityTypesT> pointOnCurve(this->GeomSettings(), this->UnitConvert(), placementConverter);
-					return pointOnCurve.getPointOnCurve<typename IfcEntityTypesT::IfcCurve>(pointOnCurve->BasisCurve, pointOnCurve->PointParameter);
+					CurveConverterT<IfcEntityTypesT> getPoint(this->GeomSettings(), this->UnitConvert(), placementConverter);
+					return getPoint.getPointOnCurve<typename IfcEntityTypesT::IfcCurve>(pointOnCurve->BasisCurve, pointOnCurve->PointParameter);
 				}
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
