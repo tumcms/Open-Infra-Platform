@@ -82,6 +82,13 @@ public:
 
 	}
 
+	oip::GeorefMetadata getGeorefMetadata() const noexcept(false) {
+		if (georefMetadata_.size() < 1)
+			throw std::invalid_argument("No georefencing metadata available");
+
+		return *(georefMetadata_[0].second);
+	}
+
 
 	carve::math::Matrix getContextPlacement(
 		const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationContext>& context
