@@ -126,19 +126,19 @@ namespace OpenInfraPlatform
 				 */
 				std::vector<double> movingAverageVariableWindow(const std::vector<double>& data) const noexcept(true);
 
-				/* \brief Calculates the range of a variogramm.
+				/*! \brief Calculates the range of a variogramm.
 				 *
 				 * Calculates the semevariogramm variable with the values in \c data.
 				 * The lags are defined by the vector elements; a corresponding vector of x-values should be about equally spaced.
 				 * In this implementation, the range is obtaind as the position of the first maximum turning point.
 				 *
-				 * param[in]	data	A vector of \c double.
+				 * \param[in]	data	A vector of \c double.
 				 *
-				 * return	Range of a semivariogramm regarding the number of values.
+				 * \return	Range of a semivariogramm regarding the number of values.
 				 */
 				size_t variogrammGetRange(const std::vector<double>& data) const noexcept(true);
 
-				/* \brief Calculates the numeric derivative of a vector of x-y-pairs.
+				/*! \brief Calculates the numeric derivative of a vector of x-y-pairs.
 				 *
 				 * \param[in]	xy	A vector of pairs; the first pair value denotes x, second pair value denotes y. In example, the pair denotes {curveLength, curvature}.
 				 *
@@ -146,7 +146,7 @@ namespace OpenInfraPlatform
 				 */
 				std::vector<double> numericDerivative(const std::vector<std::pair<double, double>>& xy) const noexcept(true);
 
-				/* \brief Identifies the endpoints of the alignment elements based on the change of curvature.
+				/*! \brief Identifies the endpoints of the alignment elements based on the change of curvature.
 				 *
 				 * A curve (e.g. a B-Spline curve), described by its curvature and change of curvature, is analysed to find the start- and end-points of alignment elements.
 				 * Based on the relative value of the curvature change an alternate sequence of (1) transition curves and (2) straights or circular arcs are defined by their
@@ -163,7 +163,7 @@ namespace OpenInfraPlatform
 				std::vector<SplineInterpretationElement> identifyElementEndpoints(
 					const std::vector<std::pair<double, double>>& lengthsWithCurvatures, const std::vector<double>& curvatureChange) const noexcept(true);
 
-				/* \brief Examines the value of curvature change by a relative threshold.
+				/*! \brief Examines the value of curvature change by a relative threshold.
 				 *
 				 * If an absolute value is less than the threshold, the indicator is 0, otherwise 1. The threshold is obtained by the call of the function \c obtainThreshold.
 				 *
@@ -173,7 +173,7 @@ namespace OpenInfraPlatform
 				 */
 				std::tuple<std::vector<int>, double> indicateCurvatureChange(const std::vector<double>& curvatureChange) const noexcept(true);
 
-				/* \brief Returns the threshold value from a vector of \c double.
+				/*! \brief Returns the threshold value from a vector of \c double.
 				 *
 				 * The threshold is defined by the function as 25 % of the absolute magnitude.
 				 *
@@ -183,7 +183,7 @@ namespace OpenInfraPlatform
 				 */
 				double obtainThreshold(const std::vector<double>& data) const noexcept(true);
 
-				/* \brief Converts a vector of indicators to a vector of elements.
+				/*! \brief Converts a vector of indicators to a vector of elements.
 				 *
 				 * Each sequence of identical indicators is grouped as one element. This function doesn't care about the minimum length of elements.
 				 * Per element the information about start-/end-point, length, and corresponding id in 'lengthWithCurvature' is stored in a \c SplineInterpretationElement.
@@ -196,7 +196,7 @@ namespace OpenInfraPlatform
 				 */
 				std::vector<SplineInterpretationElement> obtainElementsFromIndicator(const std::vector<int>& indicator, const std::vector<std::pair<double, double>>& lengthsWithCurvatures) const noexcept(true);
 
-				/* \brief Corrects the indicator of short elements.
+				/*! \brief Corrects the indicator of short elements.
 				 *
 				 * If an element is shorter than the minimum length (50 m), its indicator will be changed in dependency of neighbour elements:
 				 * In case one element is to short, its indicator will be changed.
@@ -212,9 +212,9 @@ namespace OpenInfraPlatform
 
 				//int indicateDataByAverage(std::vector<std::pair<double, double>> lengthsWithCurvatures, double threshold) const throw(...);
 
-				/* \brief Gives the indicator of the \c data vector, based on the given \c threshold.
+				/*! \brief Gives the indicator of the \c data vector, based on the given \c threshold.
 				 *
-				 * The function calculates the arithmetical average of the values in \c data and returns an indicator (-1, 0, or 1) based on the \c threshold:\n
+				 * The function calculates the arithmetical average of the values in \c data and returns an indicator (-1, 0, or 1) based on the \c threshold: \n
 				 * average < -threshold -> -1\n
 				 * average >  threshold ->  1\n
 				 * else -> 0
@@ -226,7 +226,7 @@ namespace OpenInfraPlatform
 				 */
 				int indicateDataByAverage(const std::vector<double>& data, const double threshold) const noexcept(true);
 
-				/* \brief Contiguous elements with an identical indicator will be merged to one large element.
+				/*! \brief Contiguous elements with an identical indicator will be merged to one large element.
 				 *
 				 * \param[in]	elements	Vector of alignment elements of type \c SplineInterpretationElement.
 
@@ -234,7 +234,7 @@ namespace OpenInfraPlatform
 				 */
 				std::vector<SplineInterpretationElement> mergeShortElements(std::vector<SplineInterpretationElement>& elements) const noexcept(true);
 
-				/* \brief	Obtains the type and its parameter of the alignment elements.
+				/*! \brief	Obtains the type and its parameter of the alignment elements.
 				 *
 				 * The function decides per element which type it is (straight, circular arc, clothoid) and obtains their parameters by the call of appropriate functions.
 				 * The results are saved in the vector \c elements.
@@ -250,7 +250,7 @@ namespace OpenInfraPlatform
 					const std::vector<std::pair<double, double>>& lengthsWithCurvatures,
 					std::vector<SplineInterpretationElement>& elements) const noexcept(true);
 
-				/* \brief	The function sets the parameters of a straight.
+				/*! \brief	The function sets the parameters of a straight.
 				 *
 				 * The parameters type, start point, direction, and length will be calculated and set in the \c element object.
 				 *
@@ -263,7 +263,7 @@ namespace OpenInfraPlatform
 				SplineInterpretationElement obtainStraight(
 					const carve::geom::vector<3>& startPoint, const carve::geom::vector<3>& endPoint, SplineInterpretationElement& element) const noexcept(true);
 
-				/* \brief	The function sets the parameters of a circular arc.
+				/*! \brief	The function sets the parameters of a circular arc.
 				 *
 				 * The parameters type, start point, direction, length, center, radius, isCCW, and angle will be calculated and set in the \c element object.
 				 * The parameter isCCW stands for 'is counter-clock-wise' and describes the orientation of the arc. If isCCW is 'true', it's a left turn, otherwise it's a right turn.
@@ -284,7 +284,7 @@ namespace OpenInfraPlatform
 					const int curvatureIndicator,
 					SplineInterpretationElement& element) const noexcept(true);
 
-				/* \brief	The function sets the parameters of a clothoid.
+				/*! \brief	The function sets the parameters of a clothoid.
 				 *
 				 * The parameters type, start point, direction, length, radius at start, radius at end, isCCW, and clothoid parameter will be calculated and set in the \c element object.
 				 * The parameter isCCW stands for 'is counter-clock-wise' and describes the orientation of the arc. If isCCW is 'true', it's a left turn, otherwise it's a right turn.
@@ -302,7 +302,7 @@ namespace OpenInfraPlatform
 					const carve::geom::vector<3>& startPoint,
 					SplineInterpretationElement& element) const noexcept(true);
 
-				/* \brief	Calculates the angle in radian measured in xy-plane between two 3D vectors.
+				/*! \brief	Calculates the angle in radian measured in xy-plane between two 3D vectors.
 				 *
 				 * The z coordinate will be ignored
 				 *
@@ -313,7 +313,7 @@ namespace OpenInfraPlatform
 				 */
 				double angleOfVectors2D(const carve::geom::vector<3>& a, const carve::geom::vector<3>& b) const noexcept(true);
 
-				/* \brief Calculates the direction / angle of an tangential straight at one point of an arc, relative to the positive x-axis, in xy-plane.
+				/*! \brief Calculates the direction / angle of an tangential straight at one point of an arc, relative to the positive x-axis, in xy-plane.
 				 *
 				 * The calculation is in the xy-plane, the z coordinate will be ignored.
 				 *
@@ -325,7 +325,7 @@ namespace OpenInfraPlatform
 				 */
 				double tangentDirection(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const noexcept(true);
 
-				/* \brief Calculates the 2D tangential vector at one point of an arc.
+				/*! \brief Calculates the 2D tangential vector at one point of an arc.
 				 *
 				 * The calculation is in the xy-plane, the z coordinate will be ignored.
 				 *
@@ -337,7 +337,7 @@ namespace OpenInfraPlatform
 				 */
 				carve::geom::vector<3> tangentVector(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const noexcept(true);
 
-				/* \brief	Gives an unit vector which shows in the direction of the given angle \c direction, relative to the positive x-axis.
+				/*! \brief	Gives an unit vector which shows in the direction of the given angle \c direction, relative to the positive x-axis.
 				 *
 				 * The function name correspondes to the usage in the class \c SplienInterpretation
 				 * where this function usually calculate the tangential vector at an alignment element start.
@@ -348,7 +348,7 @@ namespace OpenInfraPlatform
 				 */
 				carve::geom::vector<3> tangentVectorFromDirection(const double direction) const noexcept(true);
 
-				/* \brief	Prints the obtained information of all alignment elements as result into the console window.
+				/*! \brief	Prints the obtained information of all alignment elements as result into the console window.
 				 *
 				 * \param[in]	elements	Vector of \c SplineInterpretationElement which contains all obtained information about the alignment elements.
 				 */
@@ -359,7 +359,7 @@ namespace OpenInfraPlatform
 				 *
 				 * The syntax in the consol matches the syntax of MATLAB. The information can be pasted into MATLAB as nx2-matrix.
 				 *
-				 * param[in] lengthsWithCurvatures	The vector of length with curvature which is the return of \c SplineUtilities::computeCurvatureOfBSplineCurveWithKnots
+				 * \param[in] lengthsWithCurvatures	The vector of length with curvature which is the return of \c SplineUtilities::computeCurvatureOfBSplineCurveWithKnots
 				 */
 				void debugFunction_printCurvatureInConsolWindow(const std::vector<std::pair<double, double>>&) const noexcept(true);
 
@@ -368,7 +368,7 @@ namespace OpenInfraPlatform
 				 * In example, this function can be used to print the coordinates of a B-Spline.
 				 * The syntax in the consol matches the syntax of MATLAB. The information can be pasted into MATLAB as nx2-matrix.
 				 *
-				 * param[in] lengthsWithCurvatures	The vector of length with curvature which is the return of \c SplineUtilities::computeCurvatureOfBSplineCurveWithKnots
+				 * \param[in] lengthsWithCurvatures	The vector of length with curvature which is the return of \c SplineUtilities::computeCurvatureOfBSplineCurveWithKnots
 				 */
 				void debugFunction_printVectorOfPointsInConsolWindow(const std::vector<carve::geom::vector<3>>&) const noexcept(true);
 
@@ -377,7 +377,7 @@ namespace OpenInfraPlatform
 				 * In example, this function can be used to print the \c curvatureChange.
 				 * The syntax in the consol matches the syntax of MATLAB. The information can be pasted into MATLAB as nx1-matrix.
 				 *
-				 * param[in] curvatureChange	The vector of \c double which should be displayed.
+				 * \param[in] curvatureChange	The vector of \c double which should be displayed.
 				 */
 				void debugFunction_printCurvatureChangeInConsolWindow(const std::vector<double>& curvatureChange) const noexcept(true);
 
