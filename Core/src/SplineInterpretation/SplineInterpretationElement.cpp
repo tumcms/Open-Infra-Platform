@@ -107,6 +107,9 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement:
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getDirection() const noexcept(true) {
 	return direction_; }
 
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getDircetionDegree() const noexcept(true) {
+	return direction_ * 180.0 / M_PI; }
+
 
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setLength(const double length) noexcept(true) {
 	length_ = length; }
@@ -127,6 +130,9 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement:
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getAngle() const noexcept(true) {
 	return angle_; }
+
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getAngleDegree() const noexcept(true) {
+	return angle_ * 180.0 / M_PI; }
 
 
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIsCCW(const int isCCW) noexcept(true) {

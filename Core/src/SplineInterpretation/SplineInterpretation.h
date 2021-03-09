@@ -302,14 +302,14 @@ namespace OpenInfraPlatform
 					const carve::geom::vector<3>& startPoint,
 					SplineInterpretationElement& element) const noexcept(true);
 
-				/* \brief	Calculates the angle in degree measured in xy-plane between two 3D vectors.
+				/* \brief	Calculates the angle in radian measured in xy-plane between two 3D vectors.
 				 *
 				 * The z coordinate will be ignored
 				 *
 				 * \param[in]	a	First vector.
 				 ' \param[in]	b	Second vector.
 				 *
-				 * \return	Angle [degree] between vectors.
+				 * \return	Angle [radian] between vectors.
 				 */
 				double angleOfVectors2D(const carve::geom::vector<3>& a, const carve::geom::vector<3>& b) const noexcept(true);
 

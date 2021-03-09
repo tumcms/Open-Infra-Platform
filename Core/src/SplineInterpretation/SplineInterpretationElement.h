@@ -80,6 +80,7 @@ namespace OpenInfraPlatform
 
 				void setDirection(const double direction) noexcept(true);
 				double getDirection() const noexcept(true);
+				double getDircetionDegree() const noexcept(true);
 
 				void setLength(const double length) noexcept(true);
 				double getLength() const noexcept(true);
@@ -89,6 +90,7 @@ namespace OpenInfraPlatform
 
 				void setAngle(const double angle) noexcept(true);
 				double getAngle() const noexcept(true);
+				double getAngleDegree() const noexcept(true);
 
 				void setIsCCW(const int isCCW) noexcept(true);
 				int getIsCCW() const noexcept(true);

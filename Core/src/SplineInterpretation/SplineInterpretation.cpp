@@ -760,12 +760,12 @@ SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::Splin
 	// tangential direction at element start
 	element.setDirection(tangentDirection(element.getCenter(), element.getStartpoint(), element.getIsCCW()));
 	
-	// angle in degree of the arc in two steps, this makes angles 180° to 359.9° possible as well
+	// angle in radian of the arc in two steps, this makes angles 1*pi (180°) to 2*pi (359.9°) possible as well
 	element.setAngle(abs(
 		angleOfVectors2D(startPoint - element.getCenter(), midPoint - element.getCenter())
 		+ angleOfVectors2D(midPoint - element.getCenter(), endPoint - element.getCenter())));
-	// convert angle to radian, calculate curve length of arc
-	element.setLength(element.getRadius() * element.getAngle() * M_PI / 180.0);
+	// calculate curve length of arc
+	element.setLength(element.getRadius() * element.getAngle());
 
 	return element;
 }
@@ -823,7 +823,7 @@ SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::Splin
 	const double tau = angleOfVectors2D(tangentStart, tangentEnd);
 
 	// element curve length
-	element.setLength(2.0 * radius*(tau*M_PI / 180.0));
+	element.setLength(2.0 * radius * tau);
 
 	// clothoid parameter A
 	element.setClothoidparameterA(sqrt(radius * element.getLength()));
@@ -835,9 +835,9 @@ double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::angl
 	const carve::geom::vector<3>& a, 
 	const carve::geom::vector<3>& b) const noexcept(true)
 {
-	// angle in degree
-	return acos((a.x*b.x + a.y*b.y)
-		/ (sqrt(pow(a.x, 2) + pow(a.y, 2))*sqrt(pow(b.x, 2) + pow(b.y, 2)))) * 180.0 / M_PI;
+	// angle in radian
+	return acos(
+		(a.x*b.x + a.y*b.y) / ( sqrt(pow(a.x, 2) + pow(a.y, 2)) * sqrt(pow(b.x, 2) + pow(b.y, 2)) ));
 }
 
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tangentDirection(
@@ -867,7 +867,7 @@ carve::geom::vector<3>  OpenInfraPlatform::Core::SplineInterpretation::SplineInt
 carve::geom::vector<3> OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tangentVectorFromDirection(
 	const double direction) const noexcept(true)
 {
-	return carve::geom::VECTOR(cos(direction*M_PI / 180.0), sin(direction*M_PI / 180.0), 0.0);
+	return carve::geom::VECTOR(cos(direction), sin(direction), 0.0);
 }
 
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const noexcept(true)
@@ -889,14 +889,15 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printE
 		if (elementType == "straight" || elementType == "arc" || elementType == "clothoid")
 		{
 			printf("   Start Point: x = %.3f; y = %.3f\n", element.getStartpoint().x, element.getStartpoint().y);
-			printf("   Direction = %.3f      Length = %.3f\n", element.getDirection(), element.getLength());
+			printf("   Direction = %.3f [rad] = %.3f [deg]\n", element.getDirection(), element.getDircetionDegree());
+			printf("   Length = %.3f\n", element.getLength());
 		}
 
 		if (elementType == "arc")
 		{
 			printf("   Radius = %.3f      isCCW = %i\n", element.getRadius(), element.getIsCCW());
 			printf("   Center: x = %.3f; y = %.3f\n", element.getCenter().x, element.getCenter().y);
-			printf("   Angle = %.3f\n", element.getAngle());
+			printf("   Angle = %.3f [rad] = %.3f [deg]\n", element.getAngle(), element.getAngleDegree());
 		}
 
 		if (elementType == "clothoid")
