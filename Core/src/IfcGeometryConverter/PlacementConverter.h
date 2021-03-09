@@ -101,7 +101,7 @@ namespace OpenInfraPlatform {
 #endif
 
 					// IfcPointOnCurve 
-					if (point.isOfType<typename IfcEntityTypesT::IfcPointOnCurve>())
+					if (point.template isOfType<typename IfcEntityTypesT::IfcPointOnCurve>())
 						return convertIfcPointOnCurve(point.template as<typename IfcEntityTypesT::IfcPointOnCurve>());
 					// IfcPointOnSurface are not supported
 					throw oip::UnhandledException(point);
@@ -168,8 +168,8 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter
 						= std::make_shared<PlacementConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert());
 
-					CurveConverterT<IfcEntityTypesT> getPoint(this->GeomSettings(), this->UnitConvert(), placementConverter);
-					return getPoint.getPointOnCurve<typename IfcEntityTypesT::IfcCurve>(pointOnCurve->BasisCurve, pointOnCurve->PointParameter);
+					CurveConverterT<IfcEntityTypesT> curveConv(this->GeomSettings(), this->UnitConvert(), placementConverter);
+					return curveConv.getPointOnCurve<typename IfcEntityTypesT::IfcCurve>(pointOnCurve->BasisCurve, pointOnCurve->PointParameter);
 				}
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
