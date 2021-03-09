@@ -106,7 +106,7 @@ public:
 	template <class V>
 	bool operator==(const EXPRESSReference<V>& other) const
 	{
-		return this->refId == other.refId;
+		return this->refId == other.getId();
 	}
 
 	T* operator->() { return this->lock().operator->(); }
@@ -145,6 +145,9 @@ public:
 		if (model->entities.count(refId) > 0) {
 			reference.base::operator=(std::dynamic_pointer_cast<T>(model->entities[refId]));
 		}
+		else {
+			throw std::invalid_argument("Could not find reference with ID=" + std::to_string(refId));
+		}
 		reference.refId = refId;
 		reference.model = model;
 		return reference;
@@ -152,6 +155,7 @@ public:
 
 	const std::string classname() const override;
 	
+	const size_t getId() const { return refId; }
 
 	friend void swap(EXPRESSReference& first, EXPRESSReference& second)
 	{
@@ -164,18 +168,14 @@ public:
 		if (!isOfType<TTarget>())
 			return EXPRESSReference<TTarget>();
 
-		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());
-		return target;
-		//return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+		return EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());;
 	}
 
 	template <typename TTarget> const EXPRESSReference<TTarget> as() const {
 		if (!isOfType<TTarget>())
 			return EXPRESSReference<TTarget>();
 
-		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());
-		return target;
-		//return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+		return EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());
 	}
 
 	template <typename TTarget> bool isOfType() const {
