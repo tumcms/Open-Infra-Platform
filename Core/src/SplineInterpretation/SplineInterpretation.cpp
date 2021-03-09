@@ -889,7 +889,7 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printE
 		if (elementType == "straight" || elementType == "arc" || elementType == "clothoid")
 		{
 			printf("   Start Point: x = %.3f; y = %.3f\n", element.getStartpoint().x, element.getStartpoint().y);
-			printf("   Direction = %.3f [rad] = %.3f [deg]\n", element.getDirection(), element.getDircetionDegree());
+			printf("   Direction = %.3f [rad] = %.3f [deg]\n", element.getDirection(), element.getDirection(true));
 			printf("   Length = %.3f\n", element.getLength());
 		}
 
@@ -897,7 +897,7 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printE
 		{
 			printf("   Radius = %.3f      isCCW = %i\n", element.getRadius(), element.getIsCCW());
 			printf("   Center: x = %.3f; y = %.3f\n", element.getCenter().x, element.getCenter().y);
-			printf("   Angle = %.3f [rad] = %.3f [deg]\n", element.getAngle(), element.getAngleDegree());
+			printf("   Angle = %.3f [rad] = %.3f [deg]\n", element.getAngle(), element.getAngle(true));
 		}
 
 		if (elementType == "clothoid")

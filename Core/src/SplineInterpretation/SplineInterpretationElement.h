@@ -43,7 +43,7 @@ namespace OpenInfraPlatform
 				double length_;
 
 				double radius_;
-				double angle_;
+				double angle_; // = central angle of a circular arc
 				int isCCW_; // = is counter clockwise
 				carve::geom::vector<3> center_;
 
@@ -79,8 +79,17 @@ namespace OpenInfraPlatform
 				carve::geom::vector<3> getStartpoint() const noexcept(true);
 
 				void setDirection(const double direction) noexcept(true);
-				double getDirection() const noexcept(true);
-				double getDircetionDegree() const noexcept(true);
+
+				/*! \brief	Returns the direction at the element start in radian or degree.
+				 *
+				 * To get radian: Function call \c getDirection() without parameter or \c getDirection(false).\n
+				 * To get degree: Function call \c getDirection(true).
+				 *
+				 * \param[in]	inDegree	Indicats with \c ture, if the direction angle should be in degree.
+				 *
+				 * \return	Direction at the element start.
+				 */
+				double getDirection(bool inDegree = false) const noexcept(true);
 
 				void setLength(const double length) noexcept(true);
 				double getLength() const noexcept(true);
@@ -89,8 +98,17 @@ namespace OpenInfraPlatform
 				double getRadius() const noexcept(true);
 
 				void setAngle(const double angle) noexcept(true);
-				double getAngle() const noexcept(true);
-				double getAngleDegree() const noexcept(true);
+
+				/*! \brief	Returns the central angle of a circular arc.
+				 *
+				 * To get radian: Function call \c getAngle() without parameter or \c getAngle(false).\n
+				 * To get degree: Function call \c getAngle(true).
+				 *
+				 * \param[in]	inDegree	Indicates with \c ture, if the angle should be in degree.
+				 *
+				 * \return	Central angle of a circular arc.
+				 */
+				double getAngle(bool inDegree = false) const noexcept(true);
 
 				void setIsCCW(const int isCCW) noexcept(true);
 				int getIsCCW() const noexcept(true);

@@ -104,11 +104,8 @@ carve::geom::vector<3> OpenInfraPlatform::Core::SplineInterpretation::SplineInte
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setDirection(const double direction) noexcept(true) {
 	direction_ = direction; }
 
-double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getDirection() const noexcept(true) {
-	return direction_; }
-
-double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getDircetionDegree() const noexcept(true) {
-	return direction_ * 180.0 / M_PI; }
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getDirection(bool inDegree) const noexcept(true) {
+	return direction_ * (inDegree ? (180.0 / M_PI) : 1.0); }
 
 
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setLength(const double length) noexcept(true) {
@@ -128,11 +125,8 @@ double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElemen
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setAngle(const double angle) noexcept(true) {
 	angle_ = angle; }
 
-double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getAngle() const noexcept(true) {
-	return angle_; }
-
-double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getAngleDegree() const noexcept(true) {
-	return angle_ * 180.0 / M_PI; }
+double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getAngle(bool inDegree) const noexcept(true) {
+	return angle_ * (inDegree ? (180.0 / M_PI) : 1.0); }
 
 
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIsCCW(const int isCCW) noexcept(true) {
