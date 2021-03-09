@@ -82,6 +82,23 @@ public:
 
 	}
 
+
+	carve::math::Matrix getContextPlacement(
+		const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationContext>& context
+	) const noexcept(false)
+	{
+		// find the correct pair
+		for (auto& el : georefMetadata)
+		{
+			if (el.first == context)
+			{
+				return el.second->transformationMatrix();
+			}
+		}
+		// otherwise return identity
+		return carve::math::Matrix::IDENT();
+	}
+
 private:
 
 	GeorefPair convertGeoref(
