@@ -74,7 +74,7 @@ public:
 				EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation>::constructInstance(georef->first, model));
 
 			// add to the parsed map
-			georefMetadata.push_back( georefMeta );
+			georefMetadata_.push_back( georefMeta );
 		} 
 		while ((georef = std::find_if(++georef, model->entities.end(), [](auto pair)
 			{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateOperation>(pair.second) != nullptr; }
@@ -88,7 +88,7 @@ public:
 	) const noexcept(false)
 	{
 		// find the correct pair
-		for (auto& el : georefMetadata)
+		for (auto& el : georefMetadata_)
 		{
 			if (el.first == context)
 			{
@@ -227,7 +227,7 @@ private:
 		//std::pair<
 		//EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationContext>,
 		//std::shared_ptr<oip::GeorefMetadata>>
-	> georefMetadata;
+	> georefMetadata_;
 
 };
 
