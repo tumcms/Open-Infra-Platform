@@ -753,9 +753,9 @@ SplineInterpretationElement OpenInfraPlatform::Core::SplineInterpretation::Splin
 	element.setRadius(sqrt(pow(startPoint.x - element.getCenter().x, 2) + pow(startPoint.y - element.getCenter().y, 2)));
 
 	if (curvatureIndicator == 1)
-		element.setIsCCW(1); // left curve / turn
+		element.setIsCCW(true); // left curve / turn
 	else // curvatureIndicator == -1
-		element.setIsCCW(0); // right curve / turn
+		element.setIsCCW(false); // right curve / turn
 
 	// tangential direction at element start
 	element.setDirection(tangentDirection(element.getCenter(), element.getStartpoint(), element.getIsCCW()));
@@ -843,7 +843,7 @@ double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::angl
 double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tangentDirection(
 	const carve::geom::vector<3>& centerPoint, 
 	const carve::geom::vector<3>& tangentPoint, 
-	const int isCCW) const noexcept(true)
+	const bool isCCW) const noexcept(true)
 {
 	return angleOfVectors2D(
 		carve::geom::VECTOR(1.0, 0.0, 0.0),
@@ -853,12 +853,12 @@ double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tang
 carve::geom::vector<3>  OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::tangentVector(
 	const carve::geom::vector<3>& centerPoint, 
 	const carve::geom::vector<3>& tangentPoint, 
-	const int isCCW) const noexcept(true)
+	const bool isCCW) const noexcept(true)
 {
 	// vector from center to tangent point
 	const carve::geom::vector<3> radialVector = tangentPoint - centerPoint;
 
-	if (isCCW == 1)
+	if (isCCW == true)
 		return carve::geom::VECTOR(-radialVector.y, radialVector.x, 0.0);
 	else
 		return carve::geom::VECTOR(radialVector.y, -radialVector.x, 0.0);
@@ -895,7 +895,7 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printE
 
 		if (elementType == "arc")
 		{
-			printf("   Radius = %.3f      isCCW = %i\n", element.getRadius(), element.getIsCCW());
+			printf("   Radius = %.3f      isCCW = %s\n", element.getRadius(), (element.getIsCCW() ? "true" : "false") );
 			printf("   Center: x = %.3f; y = %.3f\n", element.getCenter().x, element.getCenter().y);
 			printf("   Angle = %.3f [rad] = %.3f [deg]\n", element.getAngle(), element.getAngle(true));
 		}
@@ -904,7 +904,7 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printE
 		{
 			printf("   Clothoid Parameter A = %.3f\n", element.getClothoidparameterA());
 			printf("   Radius Start = %.3f      Radius End = %.3f\n", element.getRadiusClothoidStart(), element.getRadiusClothoidEnd());
-			printf("   isCCW = %i\n", element.getIsCCW());
+			printf("   isCCW = %s\n", (element.getIsCCW() ? "true" : "false"));
 		}
 	}
 

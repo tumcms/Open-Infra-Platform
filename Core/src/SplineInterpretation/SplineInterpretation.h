@@ -323,7 +323,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	Tangential direction at the given tangent point.
 				 */
-				double tangentDirection(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const noexcept(true);
+				double tangentDirection(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const bool isCCW) const noexcept(true);
 
 				/*! \brief Calculates the 2D tangential vector at one point of an arc.
 				 *
@@ -335,7 +335,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	Tangential vector at the given tangent point.
 				 */
-				carve::geom::vector<3> tangentVector(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const int isCCW) const noexcept(true);
+				carve::geom::vector<3> tangentVector(const carve::geom::vector<3>& centerPoint, const carve::geom::vector<3>& tangentPoint, const bool isCCW) const noexcept(true);
 
 				/*! \brief	Gives an unit vector which shows in the direction of the given angle \c direction, relative to the positive x-axis.
 				 *

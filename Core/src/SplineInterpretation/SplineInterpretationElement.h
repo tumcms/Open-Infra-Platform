@@ -44,7 +44,7 @@ namespace OpenInfraPlatform
 
 				double radius_;
 				double angle_; // = central angle of a circular arc
-				int isCCW_; // = is counter clockwise
+				bool isCCW_; // = is counter clockwise
 				carve::geom::vector<3> center_;
 
 				double radiusClothoidStart_;
@@ -111,7 +111,7 @@ namespace OpenInfraPlatform
 				double getAngle(bool inDegree = false) const noexcept(true);
 
 				void setIsCCW(const int isCCW) noexcept(true);
-				int getIsCCW() const noexcept(true);
+				bool getIsCCW() const noexcept(true);
 
 				void setCenter(const carve::geom::vector<3>& center) noexcept(true);
 				carve::geom::vector<3> getCenter() const noexcept(true);

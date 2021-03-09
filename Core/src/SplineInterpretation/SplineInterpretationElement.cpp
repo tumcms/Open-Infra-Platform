@@ -132,7 +132,7 @@ double OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElemen
 void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::setIsCCW(const int isCCW) noexcept(true) {
 	isCCW_ = isCCW; }
 
-int OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getIsCCW() const noexcept(true) {
+bool OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement::getIsCCW() const noexcept(true) {
 	return isCCW_; }
 
 
