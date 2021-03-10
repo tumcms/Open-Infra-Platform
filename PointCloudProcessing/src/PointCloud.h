@@ -184,7 +184,7 @@ namespace OpenInfraPlatform {
 			// ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 			void setGeorefMetadata(const oip::GeorefMetadata georefMeta) {
-				georefMeta_ = georefMeta;
+				georefMetadata_ = georefMeta;
 			}
 
 		private:
@@ -215,7 +215,7 @@ namespace OpenInfraPlatform {
 			buw::CenterlineComputationDescription centerlineDescription_;
 			static bool areFiltersInitialized_;
 
-			oip::GeorefMetadata georefMeta_;
+			oip::GeorefMetadata georefMetadata_;
 		};
 	}
 }

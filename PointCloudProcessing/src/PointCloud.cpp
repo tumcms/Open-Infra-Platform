@@ -3361,7 +3361,7 @@ oip::BBox OpenInfraPlatform::PointCloudProcessing::PointCloud::getExtent()
 
 oip::GeorefMetadata OpenInfraPlatform::PointCloudProcessing::PointCloud::getGeorefMetadata() const
 {
-	throw std::exception("Not implemented: PointCloud::getGeorefMetadata()");
+	return georefMetadata_;
 }
 
 void OpenInfraPlatform::PointCloudProcessing::PointCloud::transformAllPoints(
