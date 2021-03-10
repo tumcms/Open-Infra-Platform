@@ -117,6 +117,10 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::
 			BLUE_LOG(info) << "Signature: " << header.GetFileSignature();
 			BLUE_LOG(info) << "Points count: " << header.GetPointRecordsCount();
 
+			auto const & srs = header.GetSRS();
+			oip::GeorefMetadata metaTemp;
+			metaTemp.WKT = srs.GetWKT(liblas::SpatialReference::eCompoundOK, true);
+
 			buw::Vector3d minv(0, 0, 0);
 			buw::Vector3d maxv(0, 0, 0);
 

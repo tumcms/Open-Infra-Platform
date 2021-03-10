@@ -40,6 +40,8 @@ public:
 
 	//! code from the EPSG database
     std::string codeEPSG = "";
+	//! Well known-text representation
+	std::string WKT = "";
 
 	//! additional meta values (like projection's epsg etc.)
 	std::map<std::string, std::string> data;

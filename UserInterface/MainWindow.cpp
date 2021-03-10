@@ -509,10 +509,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				itemGeoref->setText(0, "GeoRef");
 				try
 				{
-					if( model->getGeorefMetadata().codeEPSG != "" )
+					if(    model->getGeorefMetadata().codeEPSG != ""
+						|| model->getGeorefMetadata().WKT != "" )
 					{
 						// first, get the EPSG code
-						itemGeoref->setText(1, QString::fromStdString(model->getGeorefMetadata().codeEPSG));
+						if (model->getGeorefMetadata().codeEPSG != "")
+							itemGeoref->setText(1, QString::fromStdString(model->getGeorefMetadata().codeEPSG));
+						if (model->getGeorefMetadata().WKT != "")
+							itemGeoref->setText(1, QString::fromStdString(model->getGeorefMetadata().WKT));
 						for (auto& el : model->getGeorefMetadata().data)
 						{
 							auto item = new QTreeWidgetItem(itemGeoref);
